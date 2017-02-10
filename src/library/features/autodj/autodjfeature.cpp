@@ -104,8 +104,9 @@ QString AutoDJFeature::getSettingsName() const {
     return "AutoDJFeature";
 }
 
-QWidget* AutoDJFeature::createPaneWidget(KeyboardEventFilter*, int paneId) {
-    WTrackTableView* pTrackTableView = createTableWidget(paneId);
+parented_ptr<QWidget> AutoDJFeature::createPaneWidget(KeyboardEventFilter*, 
+            int paneId, QWidget* parent) {
+    auto pTrackTableView = createTableWidget(paneId, parent);
     pTrackTableView->loadTrackModel(m_pAutoDJProcessor->getTableModel());
 
     connect(pTrackTableView->selectionModel(),
@@ -113,29 +114,29 @@ QWidget* AutoDJFeature::createPaneWidget(KeyboardEventFilter*, int paneId) {
             this,
             SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
 
-    return pTrackTableView;
+    return std::move(pTrackTableView);
 }
 
-QWidget* AutoDJFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
-    QTabWidget* pContainer = new QTabWidget(nullptr);
+parented_ptr<QWidget> AutoDJFeature::createInnerSidebarWidget(
+            KeyboardEventFilter* pKeyboard, QWidget* parent) {
+    auto pContainer = make_parented<QTabWidget>(parent);
 
     // now the icon loader is set up and get an icon 
     m_pCratesTreeItem->setIcon(WPixmapStore::getLibraryIcon(
             ":/images/library/ic_library_crates.png"));
 
     // Add controls
-    m_pAutoDJView = new DlgAutoDJ(pContainer, m_pAutoDJProcessor);
+    auto pAutoDJView = make_parented<DlgAutoDJ>(pContainer.get(), m_pAutoDJProcessor);
+    m_pAutoDJView = pAutoDJView.toWeakRef();
     m_pAutoDJView->installEventFilter(pKeyboard);
-    QScrollArea* pScroll = new QScrollArea(pContainer);
+    auto pScroll = make_parented<QScrollArea>(pContainer.get());
     pScroll->setWidget(m_pAutoDJView);
     pScroll->setWidgetResizable(true);
-    pContainer->addTab(pScroll, tr("Controls"));
+    pContainer->addTab(pScroll.get(), tr("Controls"));
 
     // Add drop target
-    WLibrarySidebar* pSidebar = createLibrarySidebarWidget(pKeyboard);
-    pSidebar->setParent(pContainer);
-
-    pContainer->addTab(pSidebar, tr("Track source"));
+    auto pSidebar = createLibrarySidebarWidget(pContainer.get());
+    pContainer->addTab(pSidebar.get(), tr("Track source"));
 
     // Be informed when the user wants to add another random track.
     connect(m_pAutoDJProcessor,SIGNAL(randomTrackRequested(int)),
@@ -143,7 +144,7 @@ QWidget* AutoDJFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard)
     connect(m_pAutoDJView, SIGNAL(addRandomButton(bool)),
             this, SLOT(slotAddRandomTrack()));
 
-    return pContainer;
+    return std::move(pContainer);
 }
 
 TreeItemModel* AutoDJFeature::getChildModel() {

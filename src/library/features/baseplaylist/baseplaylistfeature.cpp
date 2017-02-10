@@ -27,7 +27,6 @@ BasePlaylistFeature::BasePlaylistFeature(UserSettingsPointer pConfig,
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_trackDao(pTrackCollection->getTrackDAO()),
           m_pPlaylistTableModel(nullptr) {
-    m_childModel = new TreeItemModel;
     
     m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"),this);
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
@@ -679,28 +678,23 @@ void BasePlaylistFeature::slotAnalyzePlaylist() {
     }
 }
 
-TreeItemModel* BasePlaylistFeature::getChildModel() {
-    return m_childModel;
-}
-
-QWidget* BasePlaylistFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
-                                               int paneId) {
-    WLibraryStack* pStack = new WLibraryStack(nullptr);
-    m_panes[paneId] = pStack;
+parented_ptr<QWidget> BasePlaylistFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
+                                               int paneId, QWidget* parent) {
+    auto pStack = make_parented<WLibraryStack>(parent);
+    m_panes[paneId] = pStack.toWeakRef();
     
-    WLibraryTextBrowser* edit = new WLibraryTextBrowser(pStack);
+    auto edit = make_parented<WLibraryTextBrowser>(pStack.get());
     edit->setHtml(getRootViewHtml());
     edit->setOpenLinks(false);
     edit->installEventFilter(pKeyboard);
-    connect(edit, SIGNAL(anchorClicked(const QUrl)),
+    connect(edit.get(), SIGNAL(anchorClicked(const QUrl)),
             this, SLOT(htmlLinkClicked(const QUrl)));
-    m_browseIndexByPaneId[paneId] = pStack->addWidget(edit);
+    m_browseIndexByPaneId[paneId] = pStack->addWidget(edit.get());
     
-    QWidget* pTable = LibraryFeature::createPaneWidget(pKeyboard, paneId);
-    pTable->setParent(pStack);
-    m_tableIndexByPaneId[paneId] = pStack->addWidget(pTable);
+    auto pTable = LibraryFeature::createPaneWidget(pKeyboard, paneId, pStack.get());
+    m_tableIndexByPaneId[paneId] = pStack->addWidget(pTable.get());
     
-    return pStack;
+    return std::move(pStack);
 }
 
 void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {
@@ -738,8 +732,9 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selectedId) {
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
-    m_childModel->insertTreeItemRows(dataList, 0);
-    return m_childModel->index(selectedRow, 0);
+    TreeItemModel *pChildModel = getChildModel();
+    pChildModel->insertTreeItemRows(dataList, 0);
+    return pChildModel->index(selectedRow, 0);
 }
 
 void BasePlaylistFeature::updateChildModel(int selectedId) {
@@ -750,7 +745,7 @@ void BasePlaylistFeature::updateChildModel(int selectedId) {
         return;
     }
     
-    TreeItem* item = m_childModel->getItem(index);
+    TreeItem* item = getChildModel()->getItem(index);
     VERIFY_OR_DEBUG_ASSERT(item) {
         return;
     }
@@ -770,7 +765,7 @@ QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) const {
         return QModelIndex();
     }
     
-    return m_childModel->index(row, 0);
+    return getConstChildModel()->index(row, 0);
 }
 
 void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
@@ -783,12 +778,13 @@ void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
 
     // Set all playlists the track is in bold (or if there is no track selected,
     // clear all the bolding).
+    TreeItemModel* pChildModel = getChildModel();
     for (const PlaylistItem& p : m_playlistList) { 
         QModelIndex index = indexFromPlaylistId(p.id);
         
         bool shouldBold = m_playlistsSelectedTrackIsIn.contains(p.id);
-        m_childModel->setData(index, shouldBold, AbstractRole::RoleBold);
+        pChildModel->setData(index, shouldBold, AbstractRole::RoleBold);
     }
 
-    m_childModel->triggerRepaint();
+    pChildModel->triggerRepaint();
 }

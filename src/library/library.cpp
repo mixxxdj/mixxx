@@ -156,7 +156,7 @@ void Library::bindPaneWidget(WLibraryPane* pPaneWidget,
 void Library::bindSidebarExpanded(WBaseLibrary* expandedPane,
                                   KeyboardEventFilter* pKeyboard) {
     //qDebug() << "Library::bindSidebarExpanded";
-    m_pSidebarExpanded = new LibrarySidebarExpandedManager(this);
+    m_pSidebarExpanded = std::make_unique<LibrarySidebarExpandedManager>(this);
     m_pSidebarExpanded->addFeatures(m_features);    
     m_pSidebarExpanded->bindPaneWidget(expandedPane, pKeyboard);
 }
@@ -169,7 +169,7 @@ void Library::bindBreadCrumb(WLibraryBreadCrumb* pBreadCrumb, int paneId) {
 
 void Library::destroyInterface() {
     m_pSidebarExpanded->deleteLater();
-    m_pSidebarExpanded = nullptr;
+    m_pSidebarExpanded.reset(nullptr);
     
     for (LibraryPaneManager* p : m_panes) {
         p->deleteLater();
@@ -295,7 +295,7 @@ void Library::paneFocused(LibraryPaneManager* pPane) {
         return;
     }
     
-    if (pPane != m_pSidebarExpanded) {
+    if (pPane != m_pSidebarExpanded.get()) {
         m_focusedPaneId = pPane->getPaneId();
         pPane->getCurrentFeature()->setFeaturePaneId(m_focusedPaneId);
         VERIFY_OR_DEBUG_ASSERT(m_focusedPaneId != -1) {

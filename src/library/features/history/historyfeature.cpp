@@ -30,8 +30,8 @@ HistoryFeature::HistoryFeature(UserSettingsPointer pConfig,
     emit(slotGetNewPlaylist());
 
     //construct child model
-    delete m_childModel;
-    m_childModel = m_pHistoryTreeModel = new HistoryTreeModel(this, m_pTrackCollection);
+    m_pHistoryTreeModel = std::make_unique<HistoryTreeModel>(this, 
+                                                             m_pTrackCollection);
     constructChildModel(-1);
     
     connect(&PlayerInfo::instance(), SIGNAL(currentPlayingTrackChanged(TrackPointer)),
@@ -139,6 +139,10 @@ void HistoryFeature::decorateChild(TreeItem* item, int playlist_id) {
     }
 }
 
+TreeItemModel *HistoryFeature::getChildModel() {
+    return m_pHistoryTreeModel.get();
+}
+
 QModelIndex HistoryFeature::constructChildModel(int selected_id) {
     buildPlaylistList();
     QModelIndex index = m_pHistoryTreeModel->reloadListsTree(selected_id);
@@ -199,10 +203,16 @@ void HistoryFeature::slotGetNewPlaylist() {
     showTrackModel(m_pPlaylistTableModel);
 }
 
-QWidget* HistoryFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
-    m_pSidebar = createLibrarySidebarWidget(pKeyboard);
+parented_ptr<QWidget> HistoryFeature::createInnerSidebarWidget(
+            KeyboardEventFilter*, QWidget* parent) {
+    auto pSidebar = createLibrarySidebarWidget(parent);
+    m_pSidebar = pSidebar.toWeakRef();
     m_pSidebar->expandAll();
-    return m_pSidebar;
+    return std::move(pSidebar);
+}
+
+const TreeItemModel* HistoryFeature::getConstChildModel() const {
+    return m_pHistoryTreeModel.get();
 }
 
 void HistoryFeature::slotJoinWithNext() {

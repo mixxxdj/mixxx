@@ -1279,82 +1279,84 @@ QWidget* LegacySkinParser::parseLibraryPane(const QDomElement& node) {
         return nullptr;
     }
     //qDebug() << "LegacySkinParser::parseLibrary:ID" << id;
-    WLibraryPane* pLibraryPaneWidget = new WLibraryPane(m_pParent);
+    // Create the parented pointer here, actually all the parse.. functions
+    // should use the parented_ptr
+    auto pLibraryPaneWidget = make_parented<WLibraryPane>(m_pParent);
     pLibraryPaneWidget->installEventFilter(m_pKeyboard);
     pLibraryPaneWidget->installEventFilter(
             m_pControllerManager->getControllerLearningEventFilter());
     
-    m_pLibrary->bindPaneWidget(pLibraryPaneWidget, m_pKeyboard, id);
+    m_pLibrary->bindPaneWidget(pLibraryPaneWidget.get(), m_pKeyboard, id);
     
     // This must come after the bindWidget or we will not style any of the
     // LibraryView's because they have not been added yet.
-    commonWidgetSetup(node, pLibraryPaneWidget, false);
-    return pLibraryPaneWidget;
+    commonWidgetSetup(node, pLibraryPaneWidget.get(), false);
+    return pLibraryPaneWidget.get();
 }
 
 QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
 	// Must add both a SearchBox and a LibraryPane
-	QFrame* pContainer = new QFrame(m_pParent);
-	QVBoxLayout* pLayout = new QVBoxLayout(pContainer);
-	pContainer->setLayout(pLayout);    
+	auto pContainer = make_parented<QFrame>(m_pParent);
+	auto pLayout = make_parented<QVBoxLayout>(pContainer.get());
+	pContainer->setLayout(pLayout.get());
     
-    WLibraryBreadCrumb* pBreadCrumb = new WLibraryBreadCrumb(pContainer);
-    m_pLibrary->bindBreadCrumb(pBreadCrumb, m_paneId);
-    setupWidget(node, pBreadCrumb);
-    pLayout->addWidget(pBreadCrumb);
+    auto pBreadCrumb = make_parented<WLibraryBreadCrumb>(pContainer.get());
+    m_pLibrary->bindBreadCrumb(pBreadCrumb.get(), m_paneId);
+    setupWidget(node, pBreadCrumb.get());
+    pLayout->addWidget(pBreadCrumb.get());
 	
-	WSearchLineEdit* pSearchBox = new WSearchLineEdit(pContainer);
+	auto pSearchBox = make_parented<WSearchLineEdit>(pContainer.get());
 	pSearchBox->setup(node, *m_pContext);
-	m_pLibrary->bindSearchBar(pSearchBox, m_paneId);
-	commonWidgetSetup(node, pSearchBox);
-	pLayout->addWidget(pSearchBox);
+	m_pLibrary->bindSearchBar(pSearchBox.get(), m_paneId);
+	commonWidgetSetup(node, pSearchBox.get());
+	pLayout->addWidget(pSearchBox.get());
 	
-	WLibraryPane* pLibraryWidget = new WLibraryPane(pContainer);
+	auto pLibraryWidget = make_parented<WLibraryPane>(pContainer.get());
 	pLibraryWidget->installEventFilter(m_pKeyboard);
 	pLibraryWidget->installEventFilter(
 	        m_pControllerManager->getControllerLearningEventFilter());
-	pLayout->addWidget(pLibraryWidget);
+	pLayout->addWidget(pLibraryWidget.get());
 	
-	m_pLibrary->bindPaneWidget(pLibraryWidget, m_pKeyboard, m_paneId);
-	commonWidgetSetup(node, pLibraryWidget, false);
+	m_pLibrary->bindPaneWidget(pLibraryWidget.get(), m_pKeyboard, m_paneId);
+	commonWidgetSetup(node, pLibraryWidget.get(), false);
 	qDebug() << "LegacySkinParser::parseLibrary";
 	
 	++m_paneId;
-	return pContainer;
+	return pContainer.get();
 }
 
 
 QWidget* LegacySkinParser::parseLibrarySidebar(const QDomElement& node) {
     // We must create both LibrarySidebarButtons and LibrarySidebarExpanded
 	// to allow support for old skins    
-	QFrame* pContainer = new QFrame(m_pParent);
-	QHBoxLayout* pLayout = new QHBoxLayout(pContainer);
-	pContainer->setLayout(pLayout);
+	auto pContainer = make_parented<QFrame>(m_pParent);
+	auto pLayout = make_parented<QHBoxLayout>(pContainer.get());
+	pContainer->setLayout(pLayout.get());
 	
     // Create config object for WButtonBar
     ConfigKey confKey("[Library]", "show_icon_text");
 	controlFromConfigKey(confKey, true, nullptr);
     m_pConfig->set(confKey, QString::number(1.0));
     
-    WVerticalScrollArea* scroll = new WVerticalScrollArea(pContainer);
+    auto scroll = make_parented<WVerticalScrollArea>(pContainer.get());
 	scroll->installEventFilter(m_pKeyboard);
-    pLayout->addWidget(scroll);
+    pLayout->addWidget(scroll.get());
 	
-    WButtonBar* pLibrarySidebar = new WButtonBar(scroll);
-	m_pLibrary->bindSidebarButtons(pLibrarySidebar);
-	scroll->setWidget(pLibrarySidebar);
-	connect(pLibrarySidebar, SIGNAL(ensureVisible(QWidget*)),
-	        scroll, SLOT(slotEnsureVisible(QWidget*)));
+    auto pLibrarySidebar = make_parented<WButtonBar>(scroll.get());
+	m_pLibrary->bindSidebarButtons(pLibrarySidebar.get());
+	scroll->setWidget(pLibrarySidebar.get());
+	connect(pLibrarySidebar.get(), SIGNAL(ensureVisible(QWidget*)),
+	        scroll.get(), SLOT(slotEnsureVisible(QWidget*)));
 
-	WBaseLibrary* pLibrarySidebarExpanded = new WBaseLibrary(pContainer);
+    auto pLibrarySidebarExpanded = make_parented<WBaseLibrary>(pContainer.get());
 	pLibrarySidebarExpanded->installEventFilter(m_pKeyboard);
 	pLibrarySidebarExpanded->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
-	m_pLibrary->bindSidebarExpanded(pLibrarySidebarExpanded, m_pKeyboard);
-	pLayout->addWidget(pLibrarySidebarExpanded);
+	m_pLibrary->bindSidebarExpanded(pLibrarySidebarExpanded.get(), m_pKeyboard);
+	pLayout->addWidget(pLibrarySidebarExpanded.get());
 	
-    setupWidget(node, pLibrarySidebar);
-	commonWidgetSetup(node, pLibrarySidebarExpanded, false);    
-	return pContainer;
+    setupWidget(node, pLibrarySidebar.get());
+	commonWidgetSetup(node, pLibrarySidebarExpanded.get(), false);    
+	return pContainer.get();
 }
 
 QWidget* LegacySkinParser::parseLibrarySidebarButtons(const QDomElement& node) {
@@ -1372,13 +1374,13 @@ QWidget* LegacySkinParser::parseLibrarySidebarButtons(const QDomElement& node) {
     return scroll;
 }
 
-QWidget *LegacySkinParser::parseLibrarySidebarExpanded(const QDomElement &node) {
-    WBaseLibrary* pLibrarySidebarExpanded = new WBaseLibrary(m_pParent);
+QWidget* LegacySkinParser::parseLibrarySidebarExpanded(const QDomElement &node) {
+    auto pLibrarySidebarExpanded = make_parented<WBaseLibrary>(m_pParent);
     pLibrarySidebarExpanded->installEventFilter(m_pKeyboard);
     pLibrarySidebarExpanded->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
-    m_pLibrary->bindSidebarExpanded(pLibrarySidebarExpanded, m_pKeyboard);
-    commonWidgetSetup(node, pLibrarySidebarExpanded, false);    
-    return pLibrarySidebarExpanded;
+    m_pLibrary->bindSidebarExpanded(pLibrarySidebarExpanded.get(), m_pKeyboard);
+    commonWidgetSetup(node, pLibrarySidebarExpanded.get(), false);    
+    return pLibrarySidebarExpanded.get();
 }
 
 QWidget* LegacySkinParser::parseLibraryBreadCrumb(const QDomElement& node) {

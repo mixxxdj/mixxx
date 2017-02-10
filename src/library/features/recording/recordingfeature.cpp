@@ -45,24 +45,24 @@ TreeItemModel* RecordingFeature::getChildModel() {
     return &m_childModel;
 }
 
-QWidget* RecordingFeature::createPaneWidget(
-        KeyboardEventFilter* pKeyboard, int paneId) {
-    Q_UNUSED(pKeyboard);
-    WTrackTableView* pTable = LibraryFeature::createTableWidget(paneId);
+parented_ptr<QWidget> RecordingFeature::createPaneWidget(KeyboardEventFilter*, 
+            int paneId, QWidget* parent) {
+    auto pTable = LibraryFeature::createTableWidget(paneId, parent);
     pTable->setSorting(false);    
-    return pTable;
+    return std::move(pTable);
 }
 
-QWidget *RecordingFeature::createInnerSidebarWidget(
-        KeyboardEventFilter* pKeyboard) {
-    m_pRecordingView = new DlgRecording(nullptr, 
-                                        m_pTrackCollection,
-                                        m_pRecordingManager);
+parented_ptr<QWidget> RecordingFeature::createInnerSidebarWidget(
+            KeyboardEventFilter* pKeyboard, QWidget* parent) {
+    auto pRecordingView = make_parented<DlgRecording>(parent, 
+                                                      m_pTrackCollection,
+                                                      m_pRecordingManager);
+    m_pRecordingView = pRecordingView.toWeakRef();
     m_pRecordingView->installEventFilter(pKeyboard);
     m_pRecordingView->setBrowseTableModel(getBrowseTableModel());
     m_pRecordingView->setProxyTrackModel(getProxyTrackModel());
     
-    return m_pRecordingView;
+    return std::move(pRecordingView);
 }
 
 

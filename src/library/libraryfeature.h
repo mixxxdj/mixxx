@@ -8,12 +8,12 @@
 #include <QFileDialog>
 #include <QHash>
 #include <QPointer>
-#include <QString>
 #include <QUrl>
 
 #include "preferences/usersettings.h"
 #include "library/dao/savedqueriesdao.h"
 #include "track/track.h"
+#include "util/parented_ptr.h"
 
 class Library;
 class KeyboardEventFilter;
@@ -60,12 +60,13 @@ class LibraryFeature : public QObject {
     
     // Reimplement this to register custom views with the library widget
     // at the right pane.
-    virtual QWidget* createPaneWidget(KeyboardEventFilter* pKeyboard, 
-                                      int paneId);
+    virtual parented_ptr<QWidget> createPaneWidget(KeyboardEventFilter* pKeyboard, 
+                                                   int paneId, QWidget* parent);
     
     // Reimplement this to register custom views with the library widget,
     // at the sidebar expanded pane
-    virtual QWidget* createSidebarWidget(KeyboardEventFilter* pKeyboard);
+    virtual parented_ptr<QWidget> createSidebarWidget(KeyboardEventFilter* pKeyboard,
+                                                      QWidget* parent);
     
     virtual TreeItemModel* getChildModel() = 0;
     
@@ -141,15 +142,15 @@ class LibraryFeature : public QObject {
     }
     
     // Creates a table widget with no model
-    WTrackTableView* createTableWidget(int paneId);
+    parented_ptr<WTrackTableView> createTableWidget(int paneId, QWidget *parent);
     
     // Creates a WLibrarySidebar widget with the getChildModel() function as
     // model
-    WLibrarySidebar* createLibrarySidebarWidget(KeyboardEventFilter*);
+    parented_ptr<WLibrarySidebar> createLibrarySidebarWidget(QWidget* parent);
     
     // Override this function to create a custom inner widget for the sidebar,
     // the default widget is a WLibrarySidebar widget
-    virtual QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard);
+    virtual parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter* pKeyboard, QWidget* parent);
     
     void showTrackModel(QAbstractItemModel* model);
     void switchToFeature();

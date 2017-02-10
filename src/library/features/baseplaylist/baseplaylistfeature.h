@@ -1,22 +1,15 @@
 #ifndef BASEPLAYLISTFEATURE_H
 #define BASEPLAYLISTFEATURE_H
 
-#include <QAction>
 #include <QUrl>
-#include <QObject>
-#include <QAction>
 #include <QList>
-#include <QPair>
 #include <QPersistentModelIndex>
 #include <QSet>
-#include <QString>
 
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
 #include "library/libraryfeature.h"
-#include "track/track.h"
 
-class KeyboardEventFilter;
 class PlaylistTableModel;
 class TrackCollection;
 class TreeItem;
@@ -31,10 +24,8 @@ class BasePlaylistFeature : public LibraryFeature {
                         QObject* parent,
                         TrackCollection* pTrackCollection);
     virtual ~BasePlaylistFeature();
-
-    TreeItemModel* getChildModel();
-
-    QWidget* createPaneWidget(KeyboardEventFilter*pKeyboard, int paneId) override;
+    parented_ptr<QWidget> createPaneWidget(KeyboardEventFilter*pKeyboard, 
+                                           int paneId, QWidget* parent) override;
 
   signals:
     void showPage(const QUrl& page);
@@ -84,6 +75,8 @@ class BasePlaylistFeature : public LibraryFeature {
         }
     };
     
+    virtual const TreeItemModel* getConstChildModel() const = 0;
+    
     virtual QModelIndex constructChildModel(int selected_id);
     virtual void updateChildModel(int selectedId);
     virtual void buildPlaylistList() = 0;
@@ -121,7 +114,6 @@ class BasePlaylistFeature : public LibraryFeature {
     QAction *m_pAnalyzePlaylistAction;
     QList<PlaylistItem> m_playlistList;
     QPersistentModelIndex m_lastRightClickedIndex;
-    TreeItemModel* m_childModel;
     TrackPointer m_pSelectedTrack;
     
     QHash<int, QPersistentModelIndex> m_lastChildClicked;

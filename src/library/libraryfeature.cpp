@@ -66,41 +66,40 @@ bool LibraryFeature::dragMoveAcceptChild(const QModelIndex &, QUrl) {
     return false;
 }
 
-QWidget* LibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
-                                          int paneId) {
+parented_ptr<QWidget> LibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
+                                          int paneId, QWidget* parent) {
     Q_UNUSED(pKeyboard);
-    return createTableWidget(paneId);
+    return std::move(createTableWidget(paneId, parent));
 }
 
-QWidget *LibraryFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard) {
+parented_ptr<QWidget> LibraryFeature::createSidebarWidget(KeyboardEventFilter* pKeyboard, QWidget* parent) {
     //qDebug() << "LibraryFeature::bindSidebarWidget";
-    QFrame* pContainer = new QFrame(nullptr);
+    auto pContainer = make_parented<QFrame>(parent);
     pContainer->setContentsMargins(0,0,0,0);
     
-    QVBoxLayout* pLayout = new QVBoxLayout(pContainer);
+    auto pLayout = make_parented<QVBoxLayout>(pContainer.get());
     pLayout->setContentsMargins(0,0,0,0);
     pLayout->setSpacing(0);
-    pContainer->setLayout(pLayout);
+    pContainer->setLayout(pLayout.get());
     
-    QHBoxLayout* pLayoutTitle = new QHBoxLayout(pContainer);
+    auto pLayoutTitle = make_parented<QHBoxLayout>(pContainer.get());
     
-    QLabel* pIcon = new QLabel(pContainer);
+    auto pIcon = make_parented<QLabel>(pContainer.get());
     int height = pIcon->fontMetrics().height();
     pIcon->setPixmap(getIcon().pixmap(height));
-    pLayoutTitle->addWidget(pIcon);
+    pLayoutTitle->addWidget(pIcon.get());
     
-    QLabel* pTitle = new QLabel(title().toString(), pContainer);
-    pLayoutTitle->addWidget(pTitle);
+    auto pTitle = make_parented<QLabel>(title().toString(), pContainer.get());
+    pLayoutTitle->addWidget(pTitle.get());
     pLayoutTitle->addSpacerItem(new QSpacerItem(0, 0, 
                                                 QSizePolicy::Expanding, 
                                                 QSizePolicy::Minimum));
-    pLayout->addLayout(pLayoutTitle);
+    pLayout->addLayout(pLayoutTitle.get());
     
-    QWidget* pSidebar = createInnerSidebarWidget(pKeyboard);
-    pSidebar->setParent(pContainer);
-    pLayout->addWidget(pSidebar);
+    auto pSidebar = createInnerSidebarWidget(pKeyboard, pContainer.get());
+    pLayout->addWidget(pSidebar.get());
     
-    return pContainer;
+    return std::move(pContainer);
 }
 
 void LibraryFeature::setFeaturePaneId(int paneId) {
@@ -176,69 +175,71 @@ QList<SavedSearchQuery> LibraryFeature::getSavedQueries() const {
     return m_savedDAO.getSavedQueries(this);
 }
 
-WTrackTableView* LibraryFeature::createTableWidget(int paneId) {
-    WTrackTableView* pTrackTableView = 
-            new WTrackTableView(nullptr, m_pConfig, m_pTrackCollection, true);
-    m_trackTablesByPaneId[paneId] = pTrackTableView;
-        
-    WMiniViewScrollBar* pScrollBar = new WMiniViewScrollBar(pTrackTableView);
-    pTrackTableView->setScrollBar(pScrollBar);
+parented_ptr<WTrackTableView> LibraryFeature::createTableWidget(int paneId, QWidget* parent) {
+    auto pTrackTableView = make_parented<WTrackTableView>(parent, m_pConfig, 
+            m_pTrackCollection, true);
     
-    connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
+    m_trackTablesByPaneId[paneId] = pTrackTableView.get();
+        
+    auto pScrollBar = make_parented<WMiniViewScrollBar>(pTrackTableView.get());
+    pTrackTableView->setScrollBar(pScrollBar.get());
+    
+    connect(pTrackTableView.get(), SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+    connect(pTrackTableView.get(), SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
-    connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
+    connect(pTrackTableView.get(), SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
-    connect(pTrackTableView, SIGNAL(tableChanged()),
+    connect(pTrackTableView.get(), SIGNAL(tableChanged()),
             this, SLOT(restoreSaveButton()));
     
     connect(m_pLibrary, SIGNAL(setTrackTableFont(QFont)),
-            pTrackTableView, SLOT(setTrackTableFont(QFont)));
+            pTrackTableView.get(), SLOT(setTrackTableFont(QFont)));
     connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
-            pTrackTableView, SLOT(setTrackTableRowHeight(int)));
+            pTrackTableView.get(), SLOT(setTrackTableRowHeight(int)));
     
-    return pTrackTableView;
+    return std::move(pTrackTableView);
 }
 
-QWidget* LibraryFeature::createInnerSidebarWidget(KeyboardEventFilter *pKeyboard) {
-    return createLibrarySidebarWidget(pKeyboard);
+parented_ptr<QWidget> LibraryFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard, QWidget* parent) {
+    Q_UNUSED(pKeyboard);
+    return std::move(createLibrarySidebarWidget(parent));
 }
 
-WLibrarySidebar* LibraryFeature::createLibrarySidebarWidget(KeyboardEventFilter*) {
-    WLibrarySidebar* pSidebar = new WLibrarySidebar(nullptr);
+parented_ptr<WLibrarySidebar> LibraryFeature::createLibrarySidebarWidget(QWidget* parent) {
+    auto pSidebar = make_parented<WLibrarySidebar>(parent);
     QAbstractItemModel* pModel = getChildModel();
     pSidebar->setModel(pModel);
     
     // Set sidebar mini view
-    WMiniViewScrollBar* pMiniView = new WMiniViewScrollBar(pSidebar);
-    pMiniView->setTreeView(pSidebar);
+    auto pMiniView = make_parented<WMiniViewScrollBar>(pSidebar.get());
+    pMiniView->setTreeView(pSidebar.get());
     pMiniView->setModel(pModel);
-    pSidebar->setVerticalScrollBar(pMiniView);
+    pSidebar->setVerticalScrollBar(pMiniView.get());
     // invalidate probably stored QModelIndex
     invalidateChild();
     
-    connect(pSidebar, SIGNAL(pressed(const QModelIndex&)),
+    connect(pSidebar.get(), SIGNAL(pressed(const QModelIndex&)),
             this, SLOT(activateChild(const QModelIndex&)));
-    connect(pSidebar, SIGNAL(doubleClicked(const QModelIndex&)),
+    connect(pSidebar.get(), SIGNAL(doubleClicked(const QModelIndex&)),
             this, SLOT(onLazyChildExpandation(const QModelIndex&)));
-    connect(pSidebar, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
+    connect(pSidebar.get(), SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
             this, SLOT(onRightClickChild(const QPoint&, const QModelIndex&)));
-    connect(pSidebar, SIGNAL(expanded(const QModelIndex&)),
+    connect(pSidebar.get(), SIGNAL(expanded(const QModelIndex&)),
             this, SLOT(onLazyChildExpandation(const QModelIndex&)));
     connect(this, SIGNAL(selectIndex(const QModelIndex&)),
-            pSidebar, SLOT(selectIndex(const QModelIndex&)));
+            pSidebar.get(), SLOT(selectIndex(const QModelIndex&)));
     
-    connect(pSidebar, SIGNAL(hovered()),
+    connect(pSidebar.get(), SIGNAL(hovered()),
             this, SLOT(slotSetHoveredSidebar()));
-    connect(pSidebar, SIGNAL(leaved()),
+    connect(pSidebar.get(), SIGNAL(leaved()),
             this, SLOT(slotResetHoveredSidebar()));
-    connect(pSidebar, SIGNAL(focusIn()),
+    connect(pSidebar.get(), SIGNAL(focusIn()),
             this, SLOT(slotSetFocusedSidebar()));
-    connect(pSidebar, SIGNAL(focusOut()),
+    connect(pSidebar.get(), SIGNAL(focusOut()),
             this, SLOT(slotResetFocusedSidebar()));
 
-    return pSidebar;
+    return std::move(pSidebar);
 }
 
 void LibraryFeature::showTrackModel(QAbstractItemModel *model) {

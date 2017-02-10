@@ -48,7 +48,8 @@ class MixxxLibraryFeature : public LibraryFeature {
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
     TreeItemModel* getChildModel();
-    QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) override;
+    parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter*, 
+                                                   QWidget* parent) override;
 
   public slots:
     void activate() override;

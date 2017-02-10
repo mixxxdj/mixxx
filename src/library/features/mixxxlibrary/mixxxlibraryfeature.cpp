@@ -23,24 +23,21 @@
 
 const QString MixxxLibraryFeature::kLibraryTitle = tr("Tracks");
 
-const QStringList MixxxLibraryFeature::kGroupingText = 
-    QStringList::fromStdList({
-        tr("Artist > Album"),
-        tr("Album"),
-        tr("Genre > Artist > Album"),
-        tr("Genre > Album"),
-        tr("Folder")
-});
+const QStringList MixxxLibraryFeature::kGroupingText {
+    tr("Artist > Album"),
+    tr("Album"),
+    tr("Genre > Artist > Album"),
+    tr("Genre > Album"),
+    tr("Folder")
+};
 
-const QList<QStringList> MixxxLibraryFeature::kGroupingOptions =
-    QList<QStringList>::fromStdList({
-        QStringList::fromStdList({ LIBRARYTABLE_ARTIST, LIBRARYTABLE_ALBUM }),
-        QStringList::fromStdList({ LIBRARYTABLE_ALBUM }),
-        QStringList::fromStdList({ LIBRARYTABLE_GENRE, LIBRARYTABLE_ARTIST, 
-                                   LIBRARYTABLE_ALBUM }),
-        QStringList::fromStdList({ LIBRARYTABLE_GENRE, LIBRARYTABLE_ALBUM }),
-        QStringList::fromStdList({ LIBRARYFOLDERMODEL_FOLDER })
-});
+const QList<QStringList> MixxxLibraryFeature::kGroupingOptions {
+        { LIBRARYTABLE_ARTIST, LIBRARYTABLE_ALBUM },
+        { LIBRARYTABLE_ALBUM },
+        { LIBRARYTABLE_GENRE, LIBRARYTABLE_ARTIST, LIBRARYTABLE_ALBUM },
+        { LIBRARYTABLE_GENRE, LIBRARYTABLE_ALBUM },
+        { LIBRARYFOLDERMODEL_FOLDER }
+};
 
 MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
                                          Library* pLibrary,
@@ -143,11 +140,13 @@ TreeItemModel* MixxxLibraryFeature::getChildModel() {
     return m_pChildModel;
 }
 
-QWidget* MixxxLibraryFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
-    m_pSidebar = createLibrarySidebarWidget(pKeyboard);
+parented_ptr<QWidget> MixxxLibraryFeature::createInnerSidebarWidget(
+            KeyboardEventFilter*, QWidget* parent) {
+    auto pSidebar = createLibrarySidebarWidget(parent);
+    m_pSidebar = pSidebar.toWeakRef();
     m_pSidebar->setIconSize(m_pChildModel->getDefaultIconSize());    
     m_pChildModel->reloadTree();
-    return m_pSidebar;
+    return std::move(pSidebaar);
 }
 
 void MixxxLibraryFeature::refreshLibraryModels() {

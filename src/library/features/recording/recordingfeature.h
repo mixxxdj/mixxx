@@ -32,8 +32,10 @@ class RecordingFeature : public LibraryFeature {
     QString getIconPath() override;
     QString getSettingsName() const override;
 
-    QWidget* createPaneWidget(KeyboardEventFilter *pKeyboard, int paneId) override;
-    QWidget* createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) override;
+    parented_ptr<QWidget> createPaneWidget(KeyboardEventFilter*, int paneId, 
+                                           QWidget* parent) override;
+    parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter* pKeyboard, 
+                                                   QWidget* parent) override;
 
     TreeItemModel* getChildModel();
 

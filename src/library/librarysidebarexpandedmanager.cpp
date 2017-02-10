@@ -12,12 +12,11 @@ void LibrarySidebarExpandedManager::bindPaneWidget(WBaseLibrary* sidebarWidget,
     m_pPaneWidget = sidebarWidget;
 
     for (LibraryFeature* f : m_features) {        
-        QWidget* pPane = f->createSidebarWidget(pKeyboard);
-        if (pPane == nullptr) {
+        auto pPane = f->createSidebarWidget(pKeyboard, m_pPaneWidget);
+        if (pPane.get() == nullptr) {
             continue;
         }
-        pPane->setParent(sidebarWidget);
-        sidebarWidget->registerView(f, pPane);
+        m_pPaneWidget->registerView(f, pPane.get());
     }
 }
 

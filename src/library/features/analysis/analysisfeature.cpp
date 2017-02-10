@@ -61,20 +61,23 @@ QString AnalysisFeature::getSettingsName() const {
     return "AnalysisFeature";
 }
 
-QWidget* AnalysisFeature::createPaneWidget(KeyboardEventFilter*, int paneId) {
-    WTrackTableView* pTable = createTableWidget(paneId);
+parented_ptr<QWidget> AnalysisFeature::createPaneWidget(KeyboardEventFilter*, 
+            int paneId, QWidget* parent) {
+    auto pTable = createTableWidget(paneId, parent);
     pTable->loadTrackModel(&m_analysisLibraryTableModel);
     connect(pTable->selectionModel(), 
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this, 
             SLOT(tableSelectionChanged(const QItemSelection&, const QItemSelection&)));
     
-    return pTable;
+    return std::move(pTable);
 }
 
-QWidget* AnalysisFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboard) {
-    m_pAnalysisView = new DlgAnalysis(nullptr, this, m_pTrackCollection);
+parented_ptr<QWidget> AnalysisFeature::createInnerSidebarWidget(
+            KeyboardEventFilter* pKeyboard, QWidget* parent) {
+    auto pAnalysisView = make_parented<DlgAnalysis>(parent, this, m_pTrackCollection);
     
+    m_pAnalysisView = pAnalysisView.toWeakRef();
     m_pAnalysisView->setTableModel(&m_analysisLibraryTableModel);
     
     connect(this, SIGNAL(analysisActive(bool)),
@@ -87,9 +90,10 @@ QWidget* AnalysisFeature::createInnerSidebarWidget(KeyboardEventFilter* pKeyboar
     // Let the DlgAnalysis know whether or not analysis is active.
     bool bAnalysisActive = m_pAnalyzerQueue != nullptr;
     emit(analysisActive(bAnalysisActive));
+    
     m_pAnalysisView->onShow();
     
-    return m_pAnalysisView;
+    return std::move(pAnalysisView);
 }
 
 TreeItemModel* AnalysisFeature::getChildModel() {
