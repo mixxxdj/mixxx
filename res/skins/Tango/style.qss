@@ -595,13 +595,15 @@ are still drawn full-size.
   font-size: 16px/16px;
   font-weight: bold;
   text-align: center;
-  padding-top: 1px;	/*
+  padding-top: 1px;
+  border-radius: 2px;	/*
+  border: 1px solid #666666;
   background-color: #999111;	*/
   }
   #SyncButtonOverlay:hover, #KeyReset:hover, 
   #KeyUp:hover, #KeyDown:hover {
     border: 1px solid #ff4800;
-    border-radius: 2px;	/*	*/
+    border-radius: 2px;
   }
   #KeyDisplay {
     font-size: 14px/14px; /*
@@ -611,27 +613,27 @@ are still drawn full-size.
     font-size: 16px/13px;
     font-weight: bold;
     border-radius: 2px;
-    border: 1px solid #333333;
+    border: 1px solid #666666;
     }
     #KeyUp {
       border-left: none;
       }
+      #KeyUp:hover {
+        background: transparent url(skin:/buttons/btn_plus.svg) no-repeat center center;
+        }
     #KeyDown {
       border-right: none;
       }
+      #KeyDown:hover {
+        background: transparent url(skin:/buttons/btn_minus.svg) no-repeat center center;
+        }
     #KeyReset {
       border-left: none;
       border-right: none;
-    }
-    #KeyUp:hover {
-      background: transparent url(skin:/buttons/btn_plus.svg) no-repeat center center;
       }
-    #KeyDown:hover {
-      background: transparent url(skin:/buttons/btn_minus.svg) no-repeat center center;
-      }
-    #KeyReset:hover {	/* wrong. Left-click = Sync, right-click = reset
-      background: transparent url(skin:/buttons/btn_reset.svg) no-repeat center center;	*/
-      }
+      #KeyReset:hover {	/* wrong. Left-click = Sync, right-click = reset
+        background: transparent url(skin:/buttons/btn_reset.svg) no-repeat center center;	*/
+        }
   
 #PitchSliderContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
