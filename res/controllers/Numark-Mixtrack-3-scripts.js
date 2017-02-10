@@ -264,20 +264,6 @@ function sendShortMsg(control, midino, value) {
     midi.sendShortMsg(control, midino, value);
 }
 
-function parameterSoftTakeOver(group, control, value) {
-    var threshold = 0.07; //on the CMD Studio 4a this threshold got the right balance 
-    //between smooth takeover and keeping up with quick turns, but you can adjust the value to suit your needs
-    var currentKnobVal = value / 127;
-    var currentParamVal = engine.getParameter(group, control);
-    var spread = Math.abs(currentParamVal - currentKnobVal);
-
-    if (spread < threshold) {
-        engine.setParameter(group, control, currentKnobVal); //set the new value
-    } else {
-        return; //do nothing until we get close
-    }
-}
-
 // =====================================================================
 // Reusable Objects (special buttons handling, LEDs, iCUT and Jog wheels)
 // =====================================================================
@@ -1029,8 +1015,6 @@ NumarkMixtrack3.init = function(id, debug) {
         'beatloop_1_enabled': 4
     };
 
-    var i, j, k;
-
     print("==========================================================");
     print("                  Initialize LEDs");
     print("");
@@ -1042,16 +1026,16 @@ NumarkMixtrack3.init = function(id, debug) {
     NumarkMixtrack3.AllLeds.onOff(ON);
 
     // Initialise some others (PAD LEDs)
-    for (k = 1; k <= 8; k++) {
+    for (var i = 1; k <= 8; i++) {
         NumarkMixtrack3.samplers["S" + k].LEDs["PADsampler" + k].onOff(PADcolors.black);
     }
 
-    for (i = 1; i <= 4; i++) {
+    for (var i = 1; i <= 4; i++) {
         for (led in NumarkMixtrack3.decks["D" + i]) {
             led.onOff(OFF);
         }
 
-        for (j = 1; j <= 4; j++) {
+        for (var j = 1; j <= 4; j++) {
             NumarkMixtrack3.decks["D" + i].LEDs["PADloop" + j].onOff(PADcolors.black);
         }
 
@@ -1068,14 +1052,28 @@ NumarkMixtrack3.init = function(id, debug) {
     print("");
 
     // Set soft-takeover for all Sampler volumes
-    for (i = engine.getValue("[Master]", "num_samplers"); i >= 1; i--) {
+    for (var i = engine.getValue("[Master]", "num_samplers"); i >= 1; i--) {
         engine.softTakeover("[Sampler" + i + "]", "pregain", true);
     }
 
-    for (i = engine.getValue("[Master]", "num_decks"); i >= 1; i--) {
+    for (var i = engine.getValue("[Master]", "num_decks"); i >= 1; i--) {
         engine.softTakeover("[Channel" + i + "]", "rate", true); // Enable soft-takeover for Pitch slider
         engine.softTakeover("[Channel" + i + "]", "volume", true); // Enable soft-takeover for volume
         engine.setParameter("[Channel" + i + "]", "volume", 0); // Set volume to zero for each deck (initial load only)
+
+        // filter knob
+        engine.softTakeover("[QuickEffectRack1_[Channel" + i + "]]", "super1", true);
+        engine.softTakeover("[EffectRack1_EffectUnit" + i + "_Effect1]", "parameter4", true);
+        engine.softTakeover("[EffectRack1_EffectUnit" + i + "_Effect2]", "parameter4", true);
+        engine.softTakeover("[EffectRack1_EffectUnit" + i + "_Effect3]", "parameter4", true);
+
+        // eq knobs
+        for (var j = 1; j <= 3; j++) {
+            engine.softTakeover("[EqualizerRack1_[Channel" + i + "]_Effect1]", "parameter" + j, true);
+            engine.softTakeover("[EffectRack1_EffectUnit" + i + "_Effect1]", "parameter" + j, true);
+            engine.softTakeover("[EffectRack1_EffectUnit" + i + "_Effect2]", "parameter" + j, true);
+            engine.softTakeover("[EffectRack1_EffectUnit" + i + "_Effect3]", "parameter" + j, true);
+        }
     }
 
     for (i = 1; i <= 8; i++) {
@@ -2301,22 +2299,20 @@ NumarkMixtrack3.EQKnob = function(channel, control, value, status, group) {
             break;
     }
 
+    // default behavior is to control EQ
     if (!deck.shiftKey && !deck.PADMode && !deck.TapDown) {
-        parameterSoftTakeOver("[EqualizerRack1_[Channel" + decknum +
-            "]_Effect1]", "parameter" + EQp, value);
+        engine.setParameter("[EqualizerRack1_[Channel" + decknum + "]_Effect1]", "parameter" + EQp, value);
     }
 
+    // modified behaviour controls effect parameters
     if (deck.shiftKey) {
-        parameterSoftTakeOver("[EffectRack1_EffectUnit" + decknum +
-            "_Effect1]", "parameter" + FXp, value);
+        engine.setParameter("[EffectRack1_EffectUnit" + decknum + "_Effect1]", "parameter" + FXp, value);
     }
     if (deck.PADMode) {
-        parameterSoftTakeOver("[EffectRack1_EffectUnit" + decknum +
-            "_Effect2]", "parameter" + FXp, value);
+        engine.setParameter("[EffectRack1_EffectUnit" + decknum + "_Effect2]", "parameter" + FXp, value);
     }
     if (deck.TapDown) {
-        parameterSoftTakeOver("[EffectRack1_EffectUnit" + decknum +
-            "_Effect3]", "parameter" + FXp, value);
+        engine.setParameter("[EffectRack1_EffectUnit" + decknum + "_Effect3]", "parameter" + FXp, value);
     }
 };
 
@@ -2325,21 +2321,20 @@ NumarkMixtrack3.FilterKnob = function(channel, control, value, status, group) {
     decknum = NumarkMixtrack3.deckFromGroup("[Channel" + decknum + "]");
     var deck = NumarkMixtrack3.decks["D" + decknum];
 
+    // default behavior is to control filter
     if (!deck.shiftKey && !deck.PADMode && !deck.TapDown) {
-        parameterSoftTakeOver("[QuickEffectRack1_[Channel" + decknum + "]]", "super1", value);
+        engine.setParameter("[QuickEffectRack1_[Channel" + decknum + "]]", "super1", value);
     }
 
+    // modified behaviour controls effect parameters
     if (deck.shiftKey) {
-        parameterSoftTakeOver("[EffectRack1_EffectUnit" + decknum +
-            "_Effect1]", "parameter4", value);
+        engine.setParameter("[EffectRack1_EffectUnit" + decknum + "_Effect1]", "parameter4", value);
     }
     if (deck.PADMode) {
-        parameterSoftTakeOver("[EffectRack1_EffectUnit" + decknum +
-            "_Effect2]", "parameter4", value);
+        engine.setParameter("[EffectRack1_EffectUnit" + decknum + "_Effect2]", "parameter4", value);
     }
     if (deck.TapDown) {
-        parameterSoftTakeOver("[EffectRack1_EffectUnit" + decknum +
-            "_Effect3]", "parameter4", value);
+        engine.setParameter("[EffectRack1_EffectUnit" + decknum + "_Effect3]", "parameter4", value);
     }
 };
 
