@@ -1031,8 +1031,10 @@ NumarkMixtrack3.init = function(id, debug) {
     }
 
     for (var i = 1; i <= 4; i++) {
-        for (led in NumarkMixtrack3.decks["D" + i]) {
-            led.onOff(OFF);
+        for (led in NumarkMixtrack3.decks["D" + i].LEDs) {
+            if (led.hasOwnProperty("onOff")) {
+                led.onOff(OFF);
+            };
         }
 
         for (var j = 1; j <= 4; j++) {
