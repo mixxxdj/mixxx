@@ -1,4 +1,11 @@
 ToDo
+
+# 1024 x 600
+  - Skin buttons from center to top row
+  - MixerBar goes there, too
+  - ...just like the crossfader
+
+
 * General / Wording
   - remove layout-spacing workarounds when this is fixed
     https://bugs.launchpad.net/mixxx/+bug/1578111
@@ -9,6 +16,7 @@ ToDo
       
 * Decks
   - replace Deck (text, overview, buttons) when Vinyl passthrough is enabled
+    (bit buggy right now)
   
 * Mixer
   - brighter Gain knob notch (as well Super knob notch)
@@ -21,7 +29,6 @@ ToDo
 
 * Skin Controls
   - improve positioning of Crossfader in 4-decks mode, as well as for varying FX units
-  - show Logo when Crossfader is visible
   - Recording duration widget behind Rec toggler
   
 * FX
@@ -35,10 +42,10 @@ ToDo
   - distinguish focused/unfocused TreeView/Tracks/other?
     * emphasize border
     * darken background-color when focused
+  - SearchBox | Maximize button
         
 * Skin Settings menu
-  - make Spinny/Cover button a 3-state button: empty/Spinny/Cover
-  - add option to hide MixerBar when Library is maximized
+  - add option to hide MixerBar when Library is maximized?
 
 
 
