@@ -3,7 +3,6 @@
 #include "library/dao/trackschema.h"
 #include "mixer/playermanager.h"
 
-
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
                                        TrackCollection* pTrackCollection,
                                        const char* settingsNamespace,
@@ -45,7 +44,6 @@ void PlaylistTableModel::setTableModel(int playlistId) {
             // For sorting the cover art column we give LIBRARYTABLE_COVERART
             // the same value as the cover hash.
             << LIBRARYTABLE_COVERART_HASH + " AS " + LIBRARYTABLE_COVERART;
-
 
     QString queryString = QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
                                   "SELECT %2 FROM PlaylistTracks "
@@ -143,7 +141,7 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
 }
 
 void PlaylistTableModel::removeHiddenTracks() {
-    // This query deletes all tracks marked as deletd and all
+    // This query deletes all tracks marked as deleted and all
     // phantom track_ids with no match in the library table
     QString queryString = QString(
             "DELETE FROM PlaylistTracks "

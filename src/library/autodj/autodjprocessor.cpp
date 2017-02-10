@@ -76,7 +76,7 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
           m_transitionTime(kTransitionPreferenceDefault),
           m_nextTransitionTime(kTransitionPreferenceDefault) {
     m_pAutoDJTableModel = new PlaylistTableModel(this, pTrackCollection,
-                                                 "mixxx.db.model.autodj"); //show all tracks
+                                                 "mixxx.db.model.autodj");
     m_pAutoDJTableModel->setTableModel(iAutoDJPlaylistId);
 
     m_pShufflePlaylist = new ControlPushButton(
@@ -595,7 +595,7 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
 
     while (true) {
         TrackPointer nextTrack = m_pAutoDJTableModel->getTrack(
-                m_pAutoDJTableModel->index(0, 0));
+            m_pAutoDJTableModel->index(0, 0));
 
         if (nextTrack) {
             if (nextTrack->exists()) {
