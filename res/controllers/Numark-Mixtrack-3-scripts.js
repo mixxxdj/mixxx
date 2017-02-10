@@ -106,6 +106,7 @@ var loopsize = [2, 4, 8, 16, 0.125, 0.25, 0.5, 1];
  * 2017-02-10 (2.3) - Radu Suciu
  *             - Load sample on sample button press if none is currently loaded
  *             - Configurable beatjump size
+ *             - Add mapping for loop move: Tap + Pitch Bend +/-
  *
  ***********************************************************************
  *                           GPL v2 licence
@@ -860,6 +861,7 @@ NumarkMixtrack3.deck = function(decknum) {
     // See http://www.mixxx.org/wiki/doku.php/midi_scripting#scratching
     // and see "Jogger" object constructor
     this.beatJumpSize = 1;
+    this.loopMoveSize = 1;
 };
 
 // ******************************************************************
@@ -2284,6 +2286,8 @@ NumarkMixtrack3.PitchBendMinusButton = function(channel, control, value, status,
     if (value === DOWN) {
         if (deck.shiftKey) {
             engine.setValue("[Channel" + decknum + "]", "beatjump", -deck.beatJumpSize);
+        } else if (deck.TapDown) {
+            engine.setValue("[Channel" + decknum + "]", 'loop_move', -deck.loopMoveSize);
         } else {
             engine.setValue("[Channel" + decknum + "]", "rate_temp_down", true);
         }
@@ -2299,6 +2303,8 @@ NumarkMixtrack3.PitchBendPlusButton = function(channel, control, value, status, 
     if (value === DOWN) {
         if (deck.shiftKey) {
             engine.setValue("[Channel" + decknum + "]", "beatjump", deck.beatJumpSize);
+        } else if (deck.TapDown) {
+            engine.setValue("[Channel" + decknum + "]", 'loop_move', deck.loopMoveSize);
         } else {
             engine.setValue("[Channel" + decknum + "]", "rate_temp_up", true);
         }
