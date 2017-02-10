@@ -11,7 +11,6 @@ var TrackEndWarning = true;
 var iCutEnabled = true;
 
 // fastSeekEnabled: enable fast seek with Jog Wheel with Wheel Off and Shift ON 
-// Shift can be locked or not
 var fastSeekEnabled = true;
 
 //activate PFL of deck on track load
@@ -821,7 +820,6 @@ NumarkMixtrack3.deck = function(decknum) {
     this.jogWheelsInScratchMode = false;
     this.PADMode = false; //false = not pressed; true = pressed
     this.shiftKey = false;
-    this.shiftLock = false;
     this.touch = false;
     this.faderstart = false;
     this.PitchFaderHigh = 0;
