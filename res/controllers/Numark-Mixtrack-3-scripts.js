@@ -1440,8 +1440,8 @@ NumarkMixtrack3.LoadButton = function(channel, control, value, status, group) {
             deck.faderstart = true;
             deck.LEDs["headphones"].flashOn(250, ON, 250);
 
-            if (!deck.TrackIsLoaded) {
-                engine.setValue("[Channel" + decknum + "]", 'LoadSelectedTrack', true);
+            if (!deck.TrackIsLoaded()) {
+                engine.setValue(deck.group, 'LoadSelectedTrack', true);
             }
         }
 
