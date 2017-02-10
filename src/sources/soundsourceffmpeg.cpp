@@ -254,7 +254,7 @@ void SoundSourceFFmpeg::ClosableAVStreamPtr::take(AVStream** ppClosableStream) {
 
 void SoundSourceFFmpeg::ClosableAVStreamPtr::close() {
     if (m_pClosableStream != nullptr) {
-#if ! LIBAVFORMAT_CHANGE_AVSTREAM
+#if ! AVSTREAM_FROM_API_VERSION_3_1
         const int avcodec_close_result = avcodec_close(m_pClosableStream->codec);
         if (avcodec_close_result != 0) {
             qWarning() << "[SoundSourceFFmpeg]"
@@ -267,7 +267,7 @@ void SoundSourceFFmpeg::ClosableAVStreamPtr::close() {
     }
 }
 
-#if LIBAVFORMAT_CHANGE_AVSTREAM
+#if AVSTREAM_FROM_API_VERSION_3_1
 void SoundSourceFFmpeg::ClosableAVCodecContextPtr::take(AVCodecContext** ppClosableContext) {
     DEBUG_ASSERT(ppClosableContext != nullptr);
     if (m_pClosableContext != *ppClosableContext) {
@@ -345,7 +345,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
         return SoundSource::OpenResult::ABORTED;
     }
 
-#if LIBAVFORMAT_CHANGE_AVSTREAM
+#if AVSTREAM_FROM_API_VERSION_3_1
     AVCodecContext *pCodecContext = avcodec_alloc_context3(pDecoder);
 
     if (pCodecContext == nullptr) {
@@ -419,7 +419,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
     setSamplingRate(samplingRate);
     setFrameCount(frameCount);
 
-#if LIBAVFORMAT_CHANGE_AVSTREAM
+#if AVSTREAM_FROM_API_VERSION_3_1
     m_pResample = std::make_unique<EncoderFfmpegResample>(m_pAudioContext);
 #else
     m_pResample = std::make_unique<EncoderFfmpegResample>(m_pAudioStream->codec);
@@ -440,7 +440,7 @@ void SoundSourceFFmpeg::close() {
         free(l_SRmJmp);
     }
 
-#if LIBAVFORMAT_CHANGE_AVSTREAM
+#if AVSTREAM_FROM_API_VERSION_3_1
     m_pAudioContext.close();
 #endif
     m_pAudioStream.close();
@@ -464,7 +464,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
     l_SPacket.size = 0;
     AVFrame *l_pFrame = nullptr;
     bool l_bStop = false;
-#if ! LIBAVFORMAT_CHANGE_AVSTREAM
+#if ! AVSTREAM_FROM_API_VERSION_3_1
     int l_iFrameFinished = 0;
 #endif
     struct ffmpegCacheObject *l_SObj = nullptr;
@@ -539,7 +539,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                     m_SStoredJumpPoint = nullptr;
                 }
 
-#if LIBAVFORMAT_CHANGE_AVSTREAM
+#if AVSTREAM_FROM_API_VERSION_3_1
                 // AVERROR(EAGAIN) means that we need to feed more
                 // That we can decode Frame or Packet
                 

@@ -22,7 +22,7 @@ extern "C" {
 
 #include "util/memory.h" // std::unique_ptr<> + std::make_unique()
 
-#define LIBAVFORMAT_CHANGE_AVSTREAM \
+#define AVSTREAM_FROM_API_VERSION_3_1 \
     (LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(57, 48, 0))
 
 // forward declaration
@@ -42,7 +42,7 @@ namespace {
   };
 
   // Implement classes for version befor 3.1 and after that
-#if LIBAVFORMAT_CHANGE_AVSTREAM
+#if AVSTREAM_FROM_API_VERSION_3_1
   // This is after version 3.1
   class AVStreamWrapperImpl : public AVStreamWrapper {
     public:
@@ -210,7 +210,7 @@ class SoundSourceFFmpeg : public SoundSource {
     ClosableAVStreamPtr m_pAudioStream;
 
 
-#if LIBAVFORMAT_CHANGE_AVSTREAM
+#if AVSTREAM_FROM_API_VERSION_3_1
     // Takes ownership of an opened (audio) codec context and ensures that
     // the corresponding AVCodecContext is closed, either explicitly or
     // implicitly by the destructor. The wrapper can only be moved,
