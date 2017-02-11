@@ -1123,6 +1123,16 @@ are still drawn full-size.
   background-color: #333333;
 }
 
+#SamplersMiniMaxiButton[displayValue="0"] {
+  background: #333333 url(skin:/buttons/btn_samplers_maxi.svg) no-repeat center center;
+  border-radius: 2px;
+}
+
+#SamplersMiniMaxiButton[displayValue="1"] {
+  background: #333333 url(skin:/buttons/btn_samplers_mini.svg) no-repeat center center;
+  border-radius: 2px;
+}
+
 #SamplersLoadButton {
   background: #333333 url(skin:/buttons/btn_samplers_load.svg) no-repeat center center;
   border-radius: 2px;
@@ -1131,7 +1141,7 @@ are still drawn full-size.
   background: #333333 url(skin:/buttons/btn_samplers_save.svg) no-repeat center center;
   border-radius: 2px;
 }
-  #SamplersLoadButton:hover, #SamplersSaveButton:hover {
+  #SamplersLoadButton:hover, #SamplersSaveButton:hover, #SamplersMiniMaxiButton:hover {
     background-color: #666666;
   }
 
