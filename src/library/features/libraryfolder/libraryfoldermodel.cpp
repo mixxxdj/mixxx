@@ -96,11 +96,12 @@ void LibraryFolderModel::createTracksTree() {
                        "FROM track_locations INNER JOIN library ON %3=%4 "
                        "WHERE %2=0 AND %1 LIKE :dir "
                        "GROUP BY %1 "
-                       "ORDER BY %1 COLLATE localeAwareCompare";
+                       "ORDER BY ";
     queryStr = queryStr.arg(TRACKLOCATIONSTABLE_DIRECTORY,
                             "library." + LIBRARYTABLE_MIXXXDELETED,
                             "library." + LIBRARYTABLE_ID,
                             "track_locations." + TRACKLOCATIONSTABLE_ID);
+    queryStr += DbConnection::collateLexicographically(TRACKLOCATIONSTABLE_DIRECTORY);
 
     QSqlQuery query(m_pTrackCollection->database());
     query.prepare(queryStr);
