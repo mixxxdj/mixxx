@@ -287,16 +287,28 @@ void EffectParameterSlot::loadParameterSlotFromXml(const QDomElement& parameterE
     } else {
         // Need to use setParameterFrom(..., nullptr) here to
         // trigger valueChanged() signal emission and execute slotValueChanged()
-        m_pControlValue->setParameterFrom(
-            XmlParse::selectNodeDouble(parameterElement,
-                                       EffectXml::ParameterValue),
-            nullptr);
-        m_pControlLinkType->set(static_cast<double>(
-            EffectManifestParameter::LinkTypeFromString(
-                XmlParse::selectNodeQString(parameterElement,
-                                            EffectXml::ParameterLinkType))));
-        m_pControlLinkInverse->set(
-            XmlParse::selectNodeDouble(parameterElement,
-                                       EffectXml::ParameterLinkInversion));
+        bool conversionWorked = false;
+        double value = XmlParse::selectNodeDouble(parameterElement,
+                           EffectXml::ParameterValue, &conversionWorked);
+        if (conversionWorked) {
+            // Need to use setParameterFrom(..., nullptr) here to
+            // trigger valueChanged() signal emission and execute slotValueChanged()
+            m_pControlValue->setParameterFrom(value, nullptr);
+        }
+        // If the conversion failed, the default value is kept.
+
+        QString linkTypeString = XmlParse::selectNodeQString(parameterElement,
+                                     EffectXml::ParameterLinkType);
+        if (!linkTypeString.isEmpty()) {
+            m_pControlLinkType->set(static_cast<double>(
+                EffectManifestParameter::LinkTypeFromString(linkTypeString)));
+        }
+
+        conversionWorked = false;
+        double linkInversion = XmlParse::selectNodeDouble(parameterElement,
+                                   EffectXml::ParameterLinkInversion, &conversionWorked);
+        if (conversionWorked) {
+            m_pControlLinkInverse->set(linkInversion);
+        }
     }
 }
