@@ -138,7 +138,7 @@ bool EffectChainManager::saveEffectChains() {
     QDomElement rootNode = doc.documentElement();
 
     for (EffectRackPointer pRack : m_standardEffectRacks) {
-        rootNode.appendChild(pRack->toXML(&doc));
+        rootNode.appendChild(pRack->toXml(&doc));
     }
     // TODO? Save QuickEffects in effects.xml too, or keep stored in ConfigObjects?
 //     foreach(EffectRackPointer pRack, m_quickEffectRacks) {

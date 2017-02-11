@@ -51,7 +51,7 @@ class EffectChainSlot : public QObject {
         return m_group;
     }
 
-    QDomElement toXML(QDomDocument* doc) const;
+    QDomElement toXml(QDomDocument* doc) const;
     void loadChainSlotFromXml(const QDomElement& effectChainElement);
 
   signals:

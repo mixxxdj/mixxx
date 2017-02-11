@@ -52,7 +52,7 @@ class EffectRack : public QObject {
         return m_group;
     }
 
-    QDomElement toXML(QDomDocument* doc) const;
+    QDomElement toXml(QDomDocument* doc) const;
 
   public slots:
     void slotClearRack(double v);

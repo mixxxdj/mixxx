@@ -202,7 +202,7 @@ void EffectRack::loadPrevEffect(const unsigned int iChainSlotNumber,
     pChain->replaceEffect(iEffectSlotNumber, pPrevEffect);
 }
 
-QDomElement EffectRack::toXML(QDomDocument* doc) const {
+QDomElement EffectRack::toXml(QDomDocument* doc) const {
     QDomElement rackElement = doc->createElement("Rack");
     QDomElement groupElement = doc->createElement("Group");
     QDomText groupText = doc->createTextNode(m_group);
@@ -211,7 +211,7 @@ QDomElement EffectRack::toXML(QDomDocument* doc) const {
 
     QDomElement chainsElement = doc->createElement("Chains");
     for (EffectChainSlotPointer pChainSlot : m_effectChainSlots) {
-        QDomElement chain = pChainSlot->toXML(doc);
+        QDomElement chain = pChainSlot->toXml(doc);
         chainsElement.appendChild(chain);
     }
     rackElement.appendChild(chainsElement);

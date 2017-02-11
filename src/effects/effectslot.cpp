@@ -273,7 +273,7 @@ void EffectSlot::slotEffectMetaParameter(double v, bool force) {
     }
 }
 
-QDomElement EffectSlot::toXML(QDomDocument* doc) const {
+QDomElement EffectSlot::toXml(QDomDocument* doc) const {
     QDomElement effectElement = doc->createElement(EffectXml::Effect);
     if (m_pEffect == nullptr) {
         return effectElement;
@@ -292,7 +292,7 @@ QDomElement EffectSlot::toXML(QDomDocument* doc) const {
     QDomElement parametersElement = doc->createElement(EffectXml::ParametersRoot);
 
     for (const auto& pParameter : m_parametersById) {
-        QDomElement parameterElement = pParameter->toXML(doc);
+        QDomElement parameterElement = pParameter->toXml(doc);
         XmlParse::addElement(*doc, parameterElement,
                              EffectXml::ParameterId,
                              pParameter->getManifest().id());

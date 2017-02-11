@@ -254,7 +254,7 @@ void EffectParameterSlot::slotValueChanged(double v) {
     }
 }
 
-QDomElement EffectParameterSlot::toXML(QDomDocument* doc) const {
+QDomElement EffectParameterSlot::toXml(QDomDocument* doc) const {
     QDomElement parameterElement;
     if (m_pEffectParameter != nullptr) {
         parameterElement = doc->createElement(EffectXml::Parameter);

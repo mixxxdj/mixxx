@@ -434,7 +434,7 @@ unsigned int EffectChainSlot::getChainSlotNumber() const {
     return m_iChainSlotNumber;
 }
 
-QDomElement EffectChainSlot::toXML(QDomDocument* doc) const {
+QDomElement EffectChainSlot::toXml(QDomDocument* doc) const {
     QDomElement chainElement = doc->createElement(EffectXml::Chain);
     if (m_pEffectChain == nullptr) {
         return chainElement;
@@ -457,7 +457,7 @@ QDomElement EffectChainSlot::toXML(QDomDocument* doc) const {
     for (const auto& pEffectSlot : m_slots) {
         QDomElement effectNode;
         if (pEffectSlot->getEffect()) {
-            effectNode = pEffectSlot->toXML(doc);
+            effectNode = pEffectSlot->toXml(doc);
         } else {
             // Create empty element to ensure effects stay in order
             // if there are empty slots before loaded slots.
