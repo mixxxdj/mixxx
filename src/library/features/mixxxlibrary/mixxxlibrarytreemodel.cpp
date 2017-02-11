@@ -9,6 +9,7 @@
 #include "widget/wpixmapstore.h"
 
 #include "library/features/mixxxlibrary/mixxxlibrarytreemodel.h"
+#include "util/db/dbconnection.h"
 
 namespace  {
 // This is used since MixxxLibraryTreeModel inherits QAbstractItemModel
@@ -211,7 +212,7 @@ void MixxxLibraryTreeModel::createTracksTree() {
     QStringList sortColumns;
 #ifdef __SQLITE3__
     for (const QString& col : m_sortOrder) {
-        sortColumns << col + " COLLATE localeAwareCompare";
+        sortColumns << DbConnection::collateLexicographically(col);
     }
 #else
     sortColumns = m_sortOrder;
