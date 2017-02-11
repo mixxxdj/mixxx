@@ -1026,10 +1026,10 @@ void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
     const TagLib::ID3v2::FrameList bpmFrame(tag.frameListMap()["TBPM"]);
     if (!bpmFrame.isEmpty()) {
         parseBpm(pTrackMetadata, toQStringFirstNotEmpty(bpmFrame));
-        long bpmValue = pTrackMetadata->getBpm().getValue();
+        double bpmValue = pTrackMetadata->getBpm().getValue();
         //Some software uses (or used) to write decimated values without comma,
         //so the number reads as 1352 or 14525 when it is 135.2 or 145.25
-        long bpmValueOriginal = bpmValue;
+        double bpmValueOriginal = bpmValue;
         while (bpmValue > Bpm::kValueMax) {
             bpmValue /= 10.0;  
         }
