@@ -6,15 +6,17 @@ ToDo
   - ...just like the crossfader
 
 
-* General / Wording
+* General / Wording / qss
   - remove layout-spacing workarounds when this is fixed
     https://bugs.launchpad.net/mixxx/+bug/1578111
   - work around SizeAwareStacks' kicking out Library
     (i.e. when switching from 4 to 2 FX units, LIb and Samplers are disabled)
   - investigate decreasing MinimumSize to 1024px
   - better name for "Extra Deck Buttons"
+  - qss: unify button colors (no background-color, deck buttons etc.)
       
 * Decks
+  - CF assignment buttons with 4 decks
   - replace Deck (text, overview, buttons) when Vinyl passthrough is enabled
     (bit buggy right now, file bug report)
   

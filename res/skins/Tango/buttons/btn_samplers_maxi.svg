@@ -35,7 +35,7 @@
      inkscape:snap-smooth-nodes="true"
      inkscape:object-nodes="true"
      inkscape:zoom="16"
-     inkscape:cx="-3.9187033"
+     inkscape:cx="-14.481203"
      inkscape:cy="9.3132457"
      inkscape:window-x="0"
      inkscape:window-y="0"
@@ -71,7 +71,7 @@
      id="layer2"
      inkscape:label="btn"
      transform="translate(0,-29)"><path
-       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none"
        d="m 2,6 0,2 0,2 0,1 1,0 17,0 0,-1 0,-2 0,-2 z m 1,2 16,0 0,2 -16,0 z"
        transform="translate(0,25)"
        id="rect2994"

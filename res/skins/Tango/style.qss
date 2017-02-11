@@ -134,17 +134,10 @@ WWidget, QLabel {
     color: #eeeeee;
     background-color: none;
     border-top: none;	/*
-    border-bottom: 1px solid #000000;
-    font: 14px/16px;
     color: #d2d2d2;
-    text-align: left;
-    border-bottom: 1px solid #000000;
-    padding: 0px;
-    margin: 0px;
-    margin-top: 8px;
-    margin-bottom: 5px;
-    padding-top: 3px
+    font: 14px/16px;
     font-weight: bold;
+    border-bottom: 1px solid #000000;
     background-color: #456129;	*/
   }
   #SubmenuCover {
@@ -812,7 +805,7 @@ are still drawn full-size.
       background: transparent url(skin:/buttons/btn_broadcast_off.svg) no-repeat center center;
       }
       #BroadcastButton[displayValue="0"]:hover {
-        background: #000000 url(skin:/buttons/btn_broadcast_off_hover.svg) no-repeat center center;
+        background: #0f0f0f url(skin:/buttons/btn_broadcast_off_hover.svg) no-repeat center center;
         }
     #BroadcastButton[displayValue="1"] {
       background: transparent url(skin:/buttons/btn_broadcast_connecting.svg) no-repeat center center;
@@ -824,7 +817,7 @@ are still drawn full-size.
       background: transparent url(skin:/buttons/btn_broadcast_failure.svg) no-repeat center center;
       }
       #BroadcastButton[displayValue="2"]:hover, #BroadcastButton[displayValue="3"]:hover {
-        background-color: #000000;
+        background-color: #0f0f0f;
         border: 1px solid #666666;
       }
 /*	*/
@@ -832,7 +825,7 @@ are still drawn full-size.
     background: transparent url(skin:/buttons/btn_skinsettings_off.svg) no-repeat center center; 
     }
     #SkinSettingsToggler[displayValue="0"]:hover {
-      background: #000000 url(skin:/buttons/btn_skinsettings_on.svg) no-repeat center center; 
+      background: #0f0f0f url(skin:/buttons/btn_skinsettings_on.svg) no-repeat center center; 
     }
   #SkinSettingsToggler[displayValue="1"] {
     background: #333333 url(skin:/buttons/btn_skinsettings_on.svg) no-repeat center center;
@@ -1124,26 +1117,35 @@ are still drawn full-size.
 }
 
 #SamplersMiniMaxiButton[displayValue="0"] {
-  background: #333333 url(skin:/buttons/btn_samplers_maxi.svg) no-repeat center center;
+  background: transparent url(skin:/buttons/btn_samplers_maxi.svg) no-repeat center center;
   border-radius: 2px;
-}
+  }
+  #SamplersMiniMaxiButton[displayValue="0"]:hover {
+    background: #0f0f0f url(skin:/buttons/btn_samplers_maxi_hover.svg) no-repeat center center;
+  }
 
 #SamplersMiniMaxiButton[displayValue="1"] {
-  background: #333333 url(skin:/buttons/btn_samplers_mini.svg) no-repeat center center;
-  border-radius: 2px;
-}
+  background: transparent url(skin:/buttons/btn_samplers_mini.svg) no-repeat center center;
+  }
+  #SamplersMiniMaxiButton[displayValue="1"]:hover {
+    background: #0f0f0f url(skin:/buttons/btn_samplers_mini_hover.svg) no-repeat center center;
+  }
 
 #SamplersLoadButton {
-  background: #333333 url(skin:/buttons/btn_samplers_load.svg) no-repeat center center;
-  border-radius: 2px;
-}
-#SamplersSaveButton {
-  background: #333333 url(skin:/buttons/btn_samplers_save.svg) no-repeat center center;
-  border-radius: 2px;
-}
-  #SamplersLoadButton:hover, #SamplersSaveButton:hover, #SamplersMiniMaxiButton:hover {
-    background-color: #666666;
+  background: transparent url(skin:/buttons/btn_samplers_load.svg) no-repeat center center;
   }
+  #SamplersLoadButton:hover {
+    background: #0f0f0f url(skin:/buttons/btn_samplers_load_hover.svg) no-repeat center center;
+  }
+#SamplersSaveButton {
+  background: transparent url(skin:/buttons/btn_samplers_save.svg) no-repeat center center;
+  }
+  #SamplersSaveButton:hover {
+    background: #0f0f0f url(skin:/buttons/btn_samplers_save_hover.svg) no-repeat center center;
+  }
+#SamplersLoadButton:hover, #SamplersSaveButton:hover, #SamplersMiniMaxiButton:hover {
+  border-radius: 2px;
+}
 
 #SamplerSyncGainPfl, #SamplerVU, #SamplerPitchSlider, #SamplerTitle {
   background-color: #333333;
