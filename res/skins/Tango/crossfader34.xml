@@ -7,7 +7,7 @@
     
       <WidgetGroup><Size>1min,34f</Size></WidgetGroup>
       
-      <WidgetStack currentpage="[Tango],crossfader_logo" persist="true"><!-- CrossfaderBox 4 Decks-->
+      <WidgetStack currentpage="[Tango],crossfader_logo_Stack" persist="true"><!-- CrossfaderBox 4 Decks-->
         <Layout>horizontal</Layout>
         <Size>104f,26f</Size>
         <Children>

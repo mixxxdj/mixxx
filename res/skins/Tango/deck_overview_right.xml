@@ -54,7 +54,7 @@
 
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],spinnyCover</ConfigKey>
+              <ConfigKey persist="true">[Tango],empty_spinny_cover</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /Spinny / CoverArt -->

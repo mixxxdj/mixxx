@@ -204,7 +204,7 @@
       </WidgetGroup><!-- /Broadcast + Clock Skin + Settings -->
 
       <!-- LogoCrossfaderBox 2 Decks-->
-      <WidgetStack currentpage="[Tango],crossfader_logo" persist="true">
+      <WidgetStack currentpage="[Tango],crossfader_logo_Stack" persist="true">
         <Layout>horizontal</Layout>
         <Size>104f,28max</Size>
         <Children>
