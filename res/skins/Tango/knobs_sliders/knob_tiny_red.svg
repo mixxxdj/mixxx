@@ -823,9 +823,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="11.313709"
-     inkscape:cx="-24.220483"
-     inkscape:cy="13.624416"
+     inkscape:zoom="45.254836"
+     inkscape:cx="9.5057101"
+     inkscape:cy="16.435943"
      inkscape:document-units="px"
      inkscape:current-layer="layer4"
      showgrid="false"
@@ -880,7 +880,7 @@
        id="guide3944" />
     <sodipodi:guide
        orientation="0,1"
-       position="15.999727,6.3158122"
+       position="11,2.96875"
        id="guide3946" />
     <inkscape:grid
        type="xygrid"
@@ -913,7 +913,7 @@
      style="display:inline"
      transform="translate(-1,-11)">
     <path
-       style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#c80000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.5;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#ff0000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.50000000000000000;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
        d="m 11,1.03125 c -0.452171,0 -0.883661,0.142295 -1.1875,0.4375 -0.303838,0.295206 -0.466962,0.730882 -0.46875,1.1875 l 0,5 c 0,0.460453 0.163315,0.892749 0.46875,1.1875 0.305435,0.29475 0.737137,0.4375 1.1875,0.4375 0.452171,0 0.883661,-0.142295 1.1875,-0.4375 0.303838,-0.295206 0.466962,-0.730882 0.46875,-1.1875 l 0,-5 c 0,-0.460453 -0.163315,-0.892749 -0.46875,-1.1875 C 11.882065,1.174 11.450363,1.03125 11,1.03125 z"
        transform="translate(1,11)"
        id="rect5578-8-2"

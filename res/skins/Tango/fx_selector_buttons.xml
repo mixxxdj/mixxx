@@ -46,7 +46,6 @@ Variables:
 								<EffectRack><Variable name="EffectRack"/></EffectRack>
 								<EffectUnit><Variable name="EffectUnit"/></EffectUnit>
 								<Effect><Variable name="Effect"/></Effect>
-								<Elide>right</Elide>
 							</EffectName>
 						</Children>
 					</WidgetGroup>
