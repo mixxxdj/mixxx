@@ -180,14 +180,7 @@ void PlaylistFeature::buildPlaylistList() {
         LOG_FAILED_QUERY(query);
     }
 
-    // Setup the sidebar playlist model
-    QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
-    playlistTableModel.setTable("PlaylistsCountsDurations");
-    playlistTableModel.select();
-    while (playlistTableModel.canFetchMore()) {
-        playlistTableModel.fetchMore();
-    }
-    QSqlRecord record = playlistTableModel.record();
+    QSqlRecord record = query.record();
     int nameColumn = record.indexOf("name");
     int idColumn = record.indexOf("id");
     int countColumn = record.indexOf("count");
