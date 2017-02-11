@@ -1,6 +1,7 @@
 
 #include "library/librarytablemodel.h"
 #include "library/queryutil.h"
+#include "library/dao/trackschema.h"
 #include "mixer/playermanager.h"
 
 namespace {
@@ -31,7 +32,7 @@ void LibraryTableModel::setTableModel(int id) {
 
     const QString tableName = "library_view";
 
-    QSqlQuery query(m_pTrackCollection->getDatabase());
+    QSqlQuery query(m_pTrackCollection->database());
     QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
             "SELECT " + columns.join(", ") +
             " FROM library INNER JOIN track_locations "
@@ -64,7 +65,7 @@ int LibraryTableModel::addTracks(const QModelIndex& index,
     foreach (QString fileLocation, locations) {
         fileInfoList.append(QFileInfo(fileLocation));
     }
-    QList<TrackId> trackIds = m_trackDAO.addMultipleTracks(fileInfoList, true);
+    QList<TrackId> trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(fileInfoList, true);
     select();
     return trackIds.size();
 }

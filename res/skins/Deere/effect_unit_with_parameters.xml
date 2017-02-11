@@ -1,0 +1,70 @@
+<!DOCTYPE template>
+<!--
+EffectUnit with all parameters showing
+
+Variables:
+  EffectRack: the rack
+  EffectUnit: the chain
+-->
+<Template>
+  <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <!-- A little more vertical space is needed when show_focus is 1 because of the focused effect's border.-->
+    <MinimumSize>-1,150</MinimumSize>
+    <MaximumSize>-1,180</MaximumSize>
+    <Children>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>EffectUnitEffects</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+            <Layout>vertical</Layout>
+            <Children>
+
+              <Template src="skin:effect_single_with_parameters.xml">
+                <SetVariable name="Effect">1</SetVariable>
+              </Template>
+
+              <Template src="skin:effect_single_with_parameters.xml">
+                <SetVariable name="Effect">2</SetVariable>
+              </Template>
+
+              <Template src="skin:effect_single_with_parameters.xml">
+                <SetVariable name="Effect">3</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>EffectUnitControls</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>max,max</SizePolicy>
+            <Children>
+
+              <Template src="skin:knob_with_label.xml">
+                <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
+                <SetVariable name="control">mix</SetVariable>
+                <SetVariable name="label">Mix</SetVariable>
+                <SetVariable name="color">blue</SetVariable>
+              </Template>
+
+              <Template src="skin:knob_with_label.xml">
+                <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
+                <SetVariable name="control">super1</SetVariable>
+                <SetVariable name="label">Super</SetVariable>
+                <SetVariable name="color">yellow</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

@@ -52,12 +52,12 @@ P32.init = function () {
         this.inKey = 'beatsync';
     };
 
-    P32.leftDeck = new P32.Deck([1,3], 1);
-    P32.rightDeck = new P32.Deck([2,4], 2);
-
     if (engine.getValue('[Master]', 'num_samplers') < 32) {
         engine.setValue('[Master]', 'num_samplers', 32);
     }
+
+    P32.leftDeck = new P32.Deck([1,3], 1);
+    P32.rightDeck = new P32.Deck([2,4], 2);
 
     // tell controller to send MIDI messages with positions of faders and knobs
     midi.sendShortMsg(0xB0, 0x7F, 0x7F);

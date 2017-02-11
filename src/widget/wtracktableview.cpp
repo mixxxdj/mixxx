@@ -14,6 +14,8 @@
 #include "library/coverartcache.h"
 #include "library/dlgtrackinfo.h"
 #include "library/librarytablemodel.h"
+#include "library/crate/cratefeaturehelper.h"
+#include "library/dao/trackschema.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "track/track.h"
@@ -818,29 +820,20 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOCRATE)) {
         m_pCrateMenu->clear();
-        CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
-        QMap<QString , int> crates;
-        int numCrates = crateDao.crateCount();
-        for (int i = 0; i < numCrates; ++i) {
-            int iCrateId = crateDao.getCrateId(i);
-            crates.insert(crateDao.crateName(iCrateId),iCrateId);
-        }
-        QMapIterator<QString, int> it(crates);
-        while (it.hasNext()) {
-            it.next();
-            // No leak because making the menu the parent means they will be
-            // auto-deleted
-            auto pAction = new QAction(it.key(), m_pCrateMenu);
-            bool locked = crateDao.isCrateLocked(it.value());
-            pAction->setEnabled(!locked);
-            m_pCrateMenu->addAction(pAction);
-            m_crateMapper.setMapping(pAction, it.value());
-            connect(pAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
+        CrateSelectResult allCrates(m_pTrackCollection->crates().selectCrates());
+        Crate crate;
+        while (allCrates.populateNext(&crate)) {
+            auto pAction = std::make_unique<QAction>(crate.getName(), m_pCrateMenu);
+            pAction->setEnabled(!crate.isLocked());
+            m_crateMapper.setMapping(pAction.get(), crate.getId().toInt());
+            connect(pAction.get(), SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
+            m_pCrateMenu->addAction(pAction.get());
+            pAction.release();
         }
         m_pCrateMenu->addSeparator();
         QAction* newCrateAction = new QAction(tr("Create New Crate"), m_pCrateMenu);
         m_pCrateMenu->addAction(newCrateAction);
-        m_crateMapper.setMapping(newCrateAction, -1);// -1 to signify new playlist
+        m_crateMapper.setMapping(newCrateAction, CrateId().toInt());// invalid crate id for new crate
         connect(newCrateAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
 
         m_pMenu->addMenu(m_pCrateMenu);
@@ -1350,7 +1343,7 @@ void WTrackTableView::sendToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
         }
     }
 
-    m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
+    m_pTrackCollection->unhideTracks(trackIds);
 
     // TODO(XXX): Care whether the append succeeded.
     playlistDao.sendToAutoDJ(trackIds, loc);
@@ -1452,13 +1445,12 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
    }
     if (trackIds.size() > 0) {
         // TODO(XXX): Care whether the append succeeded.
-        m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
+        m_pTrackCollection->unhideTracks(trackIds);
         playlistDao.appendTracksToPlaylist(trackIds, iPlaylistId);
     }
 }
 
 void WTrackTableView::addSelectionToCrate(int iCrateId) {
-    CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
     TrackModel* trackModel = getTrackModel();
 
     if (!trackModel) {
@@ -1477,47 +1469,19 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
             trackIds.append(trackId);
         }
     }
-    if (iCrateId == -1) { // i.e. a new crate is suppose to be created
-        QString name;
-        bool validNameGiven = false;
-        do {
-            bool ok = false;
-            name = QInputDialog::getText(nullptr,
-                                         tr("Create New Crate"),
-                                         tr("Enter name for new crate:"),
-                                         QLineEdit::Normal, tr("New Crate"),
-                                         &ok).trimmed();
-            if (!ok) {
-                return;
-            }
-            int existingId = crateDao.getCrateIdByName(name);
-            if (existingId != -1) {
-                QMessageBox::warning(nullptr,
-                                     tr("Creating Crate Failed"),
-                                     tr("A crate by that name already exists."));
-            }
-            else if (name.isEmpty()) {
-                QMessageBox::warning(nullptr,
-                                     tr("Creating Crate Failed"),
-                                     tr("A crate cannot have a blank name."));
-            }
-            else {
-                validNameGiven = true;
-            }
-        } while (!validNameGiven);
-        iCrateId = crateDao.createCrate(name);// -1 is changed to the new crate ID returned by the DAO
-        if (iCrateId == -1) {
-            qDebug() << "Error creating crate with name " << name;
-            QMessageBox::warning(nullptr,
-                                 tr("Creating Crate Failed"),
-                                 tr("An unknown error occurred while creating crate: ")
-                                 + name);
-            return;
-        }
+    if (trackIds.isEmpty()) {
+        qWarning() << "Cannot add empty track selection to crate";
+        return;
     }
-    if (trackIds.size() > 0) {
-        m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
-        crateDao.addTracksToCrate(iCrateId, &trackIds);
+
+    CrateId crateId(iCrateId);
+    if (!crateId.isValid()) { // i.e. a new crate is suppose to be created
+        crateId = CrateFeatureHelper(
+                m_pTrackCollection, m_pConfig).createEmptyCrate();
+    }
+    if (crateId.isValid()) {
+        m_pTrackCollection->unhideTracks(trackIds);
+        m_pTrackCollection->addCrateTracks(crateId, trackIds);
     }
 }
 

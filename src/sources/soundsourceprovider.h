@@ -57,11 +57,6 @@ public:
 
 typedef std::shared_ptr<SoundSourceProvider> SoundSourceProviderPointer;
 
-template<typename T>
-static SoundSourceProviderPointer newSoundSourceProvider() {
-    return std::make_shared<T>();
-}
-
 } // namespace mixxx
 
 #endif // MIXXX_SOUNDSOURCEPROVIDER_H
