@@ -292,7 +292,11 @@ QDomElement EffectSlot::toXML(QDomDocument* doc) const {
     QDomElement parametersElement = doc->createElement(EffectXml::ParametersRoot);
 
     for (const auto& pParameter : m_parametersById) {
-        parametersElement.appendChild(pParameter->toXML(doc));
+        QDomElement parameterElement = pParameter->toXML(doc);
+        XmlParse::addElement(*doc, parameterElement,
+                             EffectXml::ParameterId,
+                             pParameter->getManifest().id());
+        parametersElement.appendChild(parameterElement);
     }
 
     effectElement.appendChild(parametersElement);

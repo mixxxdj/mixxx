@@ -259,9 +259,6 @@ QDomElement EffectParameterSlot::toXML(QDomDocument* doc) const {
     if (m_pEffectParameter != nullptr) {
         parameterElement = doc->createElement(EffectXml::Parameter);
         XmlParse::addElement(*doc, parameterElement,
-                             EffectXml::ParameterId,
-                             m_pEffectParameter->id());
-        XmlParse::addElement(*doc, parameterElement,
                              EffectXml::ParameterValue,
                              QString::number(m_pControlValue->getParameter()));
         XmlParse::addElement(*doc, parameterElement,
