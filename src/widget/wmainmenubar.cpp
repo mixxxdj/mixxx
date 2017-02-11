@@ -301,7 +301,7 @@ void WMainMenuBar::initialize() {
     QString toggleMenuBarText = tr("Hide menu bar");
     QAction* pToggleMenuBar = new QAction(toggleMenuBarTitle, this);
     pToggleMenuBar->setShortcut(
-        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+        QKeySequence(m_pKbdConfig->getValue(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_ToggleMenuBar"),
                                                   "F12")));
     pToggleMenuBar->setShortcutContext(Qt::ApplicationShortcut);
