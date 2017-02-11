@@ -25,10 +25,10 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     m_iPlaylistId = playlistId;
 
     if (!m_showAll) {
-        // We drop files that have been explicitly deleted from mixxx
-        // (mixxx_deleted=0) from the view. There was a bug in <= 1.9.0 where
-        // removed files were not removed from playlists, so some users will have
-        // libraries where this is the case.
+        // From Mixxx 2.1 we drop tracks that have been explicitly deleted
+        // in the library (mixxx_deleted = 0) from playlists.
+        // These invisible tracks, consuming a playlist position number where
+        // a source user of confusion in the past.
         removeHiddenTracks();
     }
 
