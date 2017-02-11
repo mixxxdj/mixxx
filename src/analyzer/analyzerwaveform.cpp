@@ -82,11 +82,6 @@ bool AnalyzerWaveform::initialize(TrackPointer tio, int sampleRate, int totalSam
         m_waveformSummary = WaveformPointer(new Waveform(
                 sampleRate, totalSamples, mainWaveformSampleRate,
                 summaryWaveformSamples));
-        //I force it to NOT dirty, because other Mixxx threads like the Main thread can trigger 
-        //TrackDAO.updateTrack(), which would try to save an empty or incomplete analysis. 
-        m_waveform->setDirty(false);
-        m_waveformSummary->setDirty(false);
-
 
         // Now, that the Waveform memory is initialized, we can set set them to
         // the TIO. Be aware that other threads of Mixxx can touch them from
@@ -302,9 +297,7 @@ void AnalyzerWaveform::finalize(TrackPointer tio) {
 
     // Force completion to waveform size
     if (m_waveform) {
-        //I force it to dirty, because other Mixxx threads like the Main thread might have triggered abort
-        //TrackDAO.updateTrack(), which would have saved a waveform without version. 
-        m_waveform->setDirty(true);
+        m_waveform->setSaveState(Waveform::SaveState::SavePending);
         m_waveform->setCompletion(m_waveform->getDataSize());
         m_waveform->setVersion(WaveformFactory::currentWaveformVersion());
         m_waveform->setDescription(WaveformFactory::currentWaveformDescription());
@@ -316,9 +309,7 @@ void AnalyzerWaveform::finalize(TrackPointer tio) {
 
     // Force completion to waveform size
     if (m_waveformSummary) {
-        //I force it to dirty, because other Mixxx threads like the Main thread might have triggered abort
-        //TrackDAO.updateTrack(), which would have saved a waveform without version. 
-        m_waveformSummary->setDirty(true);
+        m_waveformSummary->setSaveState(Waveform::SaveState::SavePending);
         m_waveformSummary->setCompletion(m_waveformSummary->getDataSize());
         m_waveformSummary->setVersion(WaveformFactory::currentWaveformSummaryVersion());
         m_waveformSummary->setDescription(WaveformFactory::currentWaveformSummaryDescription());
@@ -331,9 +322,11 @@ void AnalyzerWaveform::finalize(TrackPointer tio) {
 #ifdef TEST_HEAT_MAP
     test_heatMap->save("heatMap.png");
 #endif
-    //Ensure that the analyses get saved. This is also called from TrackDAO.updateTrack(), but it can
-    //happen that we analyze only the waveforms (i.e. if the config setting was disabled in a previous scan)
-    //and then it is not called. The other analyzers have signals which control the update of their data.
+    // Ensure that the analyses get saved. This is also called from
+    // TrackDAO.updateTrack(), but it can happen that we analyze only the
+    // waveforms (i.e. if the config setting was disabled in a previous scan)
+    // and then it is not called. The other analyzers have signals which control
+    // the update of their data.
     m_pAnalysisDao->saveTrackAnalyses(*tio);
 
     qDebug() << "Waveform generation for track" << tio->getId() << "done"

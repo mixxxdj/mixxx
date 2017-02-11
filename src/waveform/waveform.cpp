@@ -19,7 +19,7 @@ int computeTextureStride(int size) {
 
 Waveform::Waveform(const QByteArray data)
         : m_id(-1),
-          m_bDirty(true),
+          m_saveState(SaveState::Virgin),
           m_dataSize(0),
           m_visualSampleRate(0),
           m_audioVisualRatio(0),
@@ -31,7 +31,7 @@ Waveform::Waveform(const QByteArray data)
 Waveform::Waveform(int audioSampleRate, int audioSamples,
                    int desiredVisualSampleRate, int maxVisualSamples)
         : m_id(-1),
-          m_bDirty(true),
+          m_saveState(SaveState::Virgin),
           m_dataSize(0),
           m_visualSampleRate(0),
           m_audioVisualRatio(0),
@@ -193,21 +193,21 @@ void Waveform::readByteArray(const QByteArray& data) {
         m_data[i].filtered.high = use_high ? static_cast<unsigned char>(high.value(i)) : 0;
     }
     m_completion = dataSize;
-    m_bDirty = false;
+    m_saveState = SaveState::Saved;
 }
 
 void Waveform::resize(int size) {
     m_dataSize = size;
     m_textureStride = computeTextureStride(size);
     m_data.resize(m_textureStride * m_textureStride);
-    m_bDirty = true;
+    m_saveState = SaveState::SavePending;
 }
 
 void Waveform::assign(int size, int value) {
     m_dataSize = size;
     m_textureStride = computeTextureStride(size);
     m_data.assign(m_textureStride * m_textureStride, value);
-    m_bDirty = true;
+    m_saveState = SaveState::SavePending;
 }
 
 void Waveform::dump() const {
