@@ -82,6 +82,7 @@
       <attribute persist="true" config_key="[Tango],spinnyWithCoverArt">0</attribute>
       <attribute persist="true" config_key="[Tango],spinnyWithCoverArt_stack">0</attribute>
       <attribute persist="true" config_key="[Tango],loop_beatjump_controls">0</attribute>
+      <attribute persist="true" config_key="[Tango],Samplers_miniMAXI">1</attribute>
     </attributes>
   </manifest>
 

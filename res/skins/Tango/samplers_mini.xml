@@ -6,7 +6,7 @@ Variables:
 <Template>
   <WidgetGroup><!-- 4x2 minimized Samplers -->
     <Layout>horizontal</Layout>
-    <SizePolicy>me,max</SizePolicy>
+    <Size>770me,37min</Size>
     <Children>
 
       <WidgetGroup><!-- Mini Samplers 1-2 + 5-6 -->
@@ -86,7 +86,7 @@ Variables:
             <Children>
               <Template src="skin:button_1state.xml">
                 <SetVariable name="ObjectName">SamplersLoadButton</SetVariable>
-                <SetVariable name="Size">22f,22f</SetVariable>
+                <SetVariable name="Size">22f,22me</SetVariable>
                 <SetVariable name="ConfigKey">[Sampler],LoadSamplerBank</SetVariable>
               </Template>
 
@@ -94,7 +94,7 @@ Variables:
 
               <Template src="skin:button_1state.xml">
                 <SetVariable name="ObjectName">SamplersSaveButton</SetVariable>
-                <SetVariable name="Size">22f,22f</SetVariable>
+                <SetVariable name="Size">22f,22me</SetVariable>
                 <SetVariable name="ConfigKey">[Sampler],SaveSamplerBank</SetVariable>
               </Template>
 

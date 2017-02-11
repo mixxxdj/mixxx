@@ -1111,7 +1111,7 @@ are still drawn full-size.
 #SamplerDecks {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop'; 	/*
   background-color: #1e1e1e;	*/
-  padding-bottom: 3px;
+  margin-bottom: 3px;
 }
   #SamplerDeck {
     qproperty-layoutAlignment: 'AlignHCenter | AlignTop'; /*
