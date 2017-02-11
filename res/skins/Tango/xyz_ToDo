@@ -14,6 +14,7 @@ ToDo
   - investigate decreasing MinimumSize to 1024px
   - better name for "Extra Deck Buttons"
   - qss: unify button colors (no background-color, deck buttons etc.)
+  (- with variables?)
       
 * Decks
   - CF assignment buttons with 4 decks
