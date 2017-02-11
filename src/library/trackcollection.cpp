@@ -155,6 +155,8 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
         return false;
     }
 
+    m_playlistDao.removeTracksFromPlaylists(trackIds);
+
     // Post-processing
     // TODO(XXX): Move signals from TrackDAO to TrackCollection
     m_trackDao.afterHidingTracks(trackIds);
