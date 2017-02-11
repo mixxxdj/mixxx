@@ -37,7 +37,7 @@ Variables:
 
                   <Template src="skin:button_2state_persist.xml">
                     <SetVariable name="ObjectName">SamplersMiniMaxiButton</SetVariable>
-                    <SetVariable name="Size">22f,13f</SetVariable>
+                    <SetVariable name="Size">22f,9f</SetVariable>
                     <SetVariable name="ConfigKeyPerm">[Tango],Samplers_miniMAXI</SetVariable>
                   </Template>
 
@@ -45,7 +45,7 @@ Variables:
 
                   <Template src="skin:button_1state.xml">
                     <SetVariable name="ObjectName">SamplersLoadButton</SetVariable>
-                    <SetVariable name="Size">22f,26me</SetVariable>
+                    <SetVariable name="Size">22f,22me</SetVariable>
                     <SetVariable name="ConfigKey">[Sampler],LoadSamplerBank</SetVariable>
                   </Template>
 
@@ -53,7 +53,7 @@ Variables:
 
                   <Template src="skin:button_1state.xml">
                     <SetVariable name="ObjectName">SamplersSaveButton</SetVariable>
-                    <SetVariable name="Size">22f,26me</SetVariable>
+                    <SetVariable name="Size">22f,22me</SetVariable>
                     <SetVariable name="ConfigKey">[Sampler],SaveSamplerBank</SetVariable>
                   </Template>
 
@@ -119,7 +119,7 @@ Variables:
       </WidgetGroup><!-- /2  4x2 Maximized Samplers -->
 
       <Template src="skin:samplers_mini.xml" on-hide-select="0">
-        <SetVariable name="MaxiButtonSize">22f,13f</SetVariable>
+        <SetVariable name="MaxiButtonSize">22me,9f</SetVariable>
         <SetVariable name="SpacerSize">1min,3f</SetVariable>
       </Template>
 
