@@ -16,21 +16,21 @@ ToDo
       
 * Decks
   - replace Deck (text, overview, buttons) when Vinyl passthrough is enabled
-    (bit buggy right now)
+    (bit buggy right now, file bug report)
   
 * Mixer
-  - brighter Gain knob notch (as well Super knob notch)
+  - brighter Gain knob indicator (as well Super knob indicator)
   		
 * Mixerbar
-  - move on top of Library?
-  - Mute button on each SectionLabel
+  - move on top of Library? optional
   - VUMeter for each section
+  - Mute button on each SectionLabel
   - Mic auto-duck button, ducking strength knob
   - make it lower to save space?
 
 * Skin Controls
   - improve positioning of Crossfader in 4-decks mode, as well as for varying FX units
-  - Recording duration widget behind Rec toggler
+  (- Recording duration widget behind Rec toggler)
   
 * FX
   - minimal/expanded 2.1 FX Units with toggle button
@@ -49,6 +49,7 @@ ToDo
         
 * Skin Settings menu
   - add option to hide MixerBar when Library is maximized?
+  - add option to show MixerBar above Library?
 
 
 
