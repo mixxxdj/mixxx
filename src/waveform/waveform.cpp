@@ -167,6 +167,7 @@ void Waveform::readByteArray(const QByteArray& data) {
         qDebug() << "ERROR: Couldn't resize Waveform to" << all.value_size()
                  << "while reading.";
         resize(0);
+        m_saveState = SaveState::Virgin;
         return;
     }
 
@@ -200,7 +201,6 @@ void Waveform::resize(int size) {
     m_dataSize = size;
     m_textureStride = computeTextureStride(size);
     m_data.resize(m_textureStride * m_textureStride);
-    m_saveState = SaveState::SavePending;
 }
 
 void Waveform::assign(int size, int value) {
