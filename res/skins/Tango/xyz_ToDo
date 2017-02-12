@@ -37,7 +37,7 @@ ToDo
   (- Recording duration widget behind Rec toggler)
   
 * FX
-  - minimal/expanded 2.1 FX Units with toggle button
+  - 2.1 FX Units
   - a way to collapse FX units automatically when space is scarse
   - extend group assignment buttons to 4 Mics/4AUX > proper 4th column
   - colorize group assignment buttons like other togglers (OFF grey / ON white with bg-color)

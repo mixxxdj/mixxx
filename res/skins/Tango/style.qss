@@ -850,6 +850,10 @@ are still drawn full-size.
 ####### Effects  ###############################################
 ################################################################ */
 
+#EffectUnits12 {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
 #EffectRack {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
   background-color: #ffffff;	*/
@@ -1031,9 +1035,8 @@ are still drawn full-size.
       qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
       background-color: #167913;	*/
       }
-    #SuperWetDryLabel {	/*
-      qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	*/
-      margin-top: 28px;
+    #SuperWetDryLabel {	/*	*/
+      margin-top: 27px;
       font-size: 11px/13px;
       font-weight: bold;
       text-align: center;
@@ -1041,13 +1044,22 @@ are still drawn full-size.
       }
 
 #EffectUnitToggleButton {
-/*	qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';	*/
   font-size: 11px/13px;
   font-weight: bold;
   text-align: center;
-  background-color: #333333;
   border-radius: 2px;
-}
+  background-repeat: no-repeat;
+  background-position: center center;
+  }
+  #EffectUnitToggleButton[displayValue="0"] {
+    background-image: url(skin:/buttons/btn_off.svg);
+    }
+    #EffectUnitToggleButton[displayValue="0"]:hover {
+      background-image: url(skin:/buttons/btn_on.svg);
+    }
+  #EffectUnitToggleButton[displayValue="1"] {
+    background-image: url(skin:/buttons/btn_on.svg);
+    }
 
 #EffectUnitGroupColumn {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';	/*
@@ -1329,6 +1341,9 @@ are still drawn full-size.
 }
 #AlignCenter {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+}
+#AlignTopLeft {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
 
 #Spacer0f {

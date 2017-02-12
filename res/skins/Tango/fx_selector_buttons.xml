@@ -1,70 +1,36 @@
 <!--
 Description:
-	Effect selector buttons
-	- previous effect
-	- effect name with toggle button over/underlay
-	- next effect
+  Effect selector buttons
+  - previous effect
+  - effect name with toggle button over/underlay
+  - next effect
 Variables:
-	EffectRack: the rack
-	EffectUnit: the chain
-	Effect: the effect
+  EffectRack: the rack
+  EffectUnit: the chain
+  Effect: the effect
 -->
 <Template>
-	<SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>]</SetVariable>
-	<WidgetGroup>
-		<Layout>horizontal</Layout>
-		<Size>114f,20f</Size>
-		<Children>
+  <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>]</SetVariable>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Size>114f,20f</Size>
+    <Children>
 
-			<Template src="skin:button_1state.xml">
-				<SetVariable name="ToolTipId">EffectSlot_prev_effect</SetVariable>
-				<SetVariable name="ObjectName">EffectSelectorButtonPrev</SetVariable>
-				<SetVariable name="Size">20f,20f</SetVariable>
-				<SetVariable name="ConfigKey"><Variable name="group"/>,prev_effect</SetVariable>
-			</Template>
-		
-			<WidgetGroup>
-				<ObjectName>EffectSelectorButtons</ObjectName>
-				<Layout>stacked</Layout>
-				<Size>74,20</Size>
-				<Children>
-					
-					<!-- invisible, clickable Overlay to toggle Effect -->
-					<Template src="skin:button_2state.xml"><!-- EffectToggleButton -->
-						<SetVariable name="ObjectName">EffectToggleButton</SetVariable>
-						<SetVariable name="Size">74f,20f</SetVariable>
-						<SetVariable name="ConfigKey"><Variable name="group"/>,enabled</SetVariable>
-					</Template>
-				
-					<WidgetGroup>
-						<ObjectName>fxNameContainer</ObjectName>
-						<Size>74,20</Size>
-						<Layout>horizontal</Layout>
-						<Children>					
-							<EffectName>
-								<ObjectName>fxName</ObjectName>
-								<EffectRack><Variable name="EffectRack"/></EffectRack>
-								<EffectUnit><Variable name="EffectUnit"/></EffectUnit>
-								<Effect><Variable name="Effect"/></Effect>
-							</EffectName>
-						</Children>
-					</WidgetGroup>
-					<!-- Colored background to communicate the Effect's ON/OFF status -->
-					<Template src="skin:button_2state.xml"><!-- EffectToggleButton -->
-						<SetVariable name="ObjectName">EffectToggleButtonUnderlay</SetVariable>
-						<SetVariable name="Size">74f,20f</SetVariable>
-						<SetVariable name="ConfigKey"><Variable name="group"/>,enabled</SetVariable>
-					</Template>
-					
-				</Children>
-			</WidgetGroup>
+      <Template src="skin:button_1state.xml">
+        <SetVariable name="ToolTipId">EffectSlot_prev_effect</SetVariable>
+        <SetVariable name="ObjectName">EffectSelectorButtonPrev</SetVariable>
+        <SetVariable name="Size">20f,20f</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="group"/>,prev_effect</SetVariable>
+      </Template>
 
-			<Template src="skin:button_1state.xml">
-				<SetVariable name="ToolTipId">EffectSlot_next_effect</SetVariable>
-				<SetVariable name="ObjectName">EffectSelectorButtonNext</SetVariable>
-				<SetVariable name="Size">20f,20f</SetVariable>
-				<SetVariable name="ConfigKey"><Variable name="group"/>,next_effect</SetVariable>
-			</Template>
-		</Children>
-	</WidgetGroup>
+      <Template src="skin:fx_toggler.xml"/>
+
+      <Template src="skin:button_1state.xml">
+        <SetVariable name="ToolTipId">EffectSlot_next_effect</SetVariable>
+        <SetVariable name="ObjectName">EffectSelectorButtonNext</SetVariable>
+        <SetVariable name="Size">20f,20f</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="group"/>,next_effect</SetVariable>
+      </Template>
+    </Children>
+  </WidgetGroup>
 </Template>

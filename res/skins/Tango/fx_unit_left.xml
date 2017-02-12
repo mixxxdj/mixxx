@@ -74,12 +74,12 @@
           <WidgetGroup><!-- EffectUnitMixer -->
             <ObjectName>EffectUnitMixer</ObjectName>
             <Layout>vertical</Layout>
-            <Size>81f,61f</Size>
+            <Size>81f,60f</Size>
             <Children>
               <WidgetGroup>
                 <ObjectName>SuperWetDryContainer</ObjectName>
                 <Layout>horizontal</Layout>
-                <Size>80f,40f</Size>
+                <Size>80f,39f</Size>
                 <Children>
 
                   <Template src="skin:fx_superwetdry_knob.xml">
@@ -110,8 +110,6 @@
                     <SetVariable name="ToolTipId">EffectUnit_enabled</SetVariable>
                     <SetVariable name="ObjectName">EffectUnitToggleButton</SetVariable>
                     <SetVariable name="Size">1me,20f</SetVariable>
-                    <SetVariable name="state_0_text">OFF</SetVariable>
-                    <SetVariable name="state_1_text">ON</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,enabled</SetVariable>
                   </Template>
                 </Children>

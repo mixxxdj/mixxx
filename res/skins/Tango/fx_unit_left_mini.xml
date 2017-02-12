@@ -1,0 +1,79 @@
+<!--
+  Description:
+    An effect chain widget.
+  Variables:
+    EffectRack: Number of effect rack.
+    EffectUnit: Number of effect unit.
+-->
+<Template>
+  <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>]</SetVariable>
+  <WidgetGroup><!-- EffectUnit -->
+    <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
+    <Layout>horizontal</Layout>
+    <Size>526me,42f</Size>
+    <Children>
+      <WidgetGroup><!-- EffectSlot 1 -->
+        <ObjectName>EffectSlotLeft</ObjectName>
+        <SizePolicy>me,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+
+          <Template src="skin:fx_toggler.xml">
+            <SetVariable name="Effect">3</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>9f,1min</Size><Children/></WidgetGroup>
+          <Template src="skin:fx_toggler.xml">
+            <SetVariable name="Effect">2</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>9f,1min</Size><Children/></WidgetGroup>
+
+          <Template src="skin:fx_toggler.xml">
+            <SetVariable name="Effect">1</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>9f,1min</Size><Children/></WidgetGroup>
+
+        </Children>
+      </WidgetGroup><!-- /EffectSlots -->
+
+      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>SuperWetDryContainer</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>80f,39f</Size>
+        <Children>
+
+          <Template src="skin:fx_superwetdry_knob.xml">
+            <SetVariable name="ToolTipId">EffectUnit_super1</SetVariable>
+            <SetVariable name="ObjectName">SuperWetDry</SetVariable>
+            <SetVariable name="ConfigKey">super1</SetVariable>
+            <SetVariable name="Color">blue</SetVariable>
+            <SetVariable name="Label">Super</SetVariable>
+          </Template>
+
+          <Template src="skin:fx_superwetdry_knob.xml">
+            <SetVariable name="ToolTipId">EffectUnit_mix</SetVariable>
+            <SetVariable name="ObjectName">SuperWetDry</SetVariable>
+            <SetVariable name="ConfigKey">mix</SetVariable>
+            <SetVariable name="Color">red</SetVariable>
+            <SetVariable name="Label">Mix</SetVariable>
+          </Template>
+
+        </Children>
+      </WidgetGroup><!-- /SuperWetDryContainer -->
+
+      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+
+      <Template src="skin:button_2state.xml">
+        <SetVariable name="ToolTipId">EffectUnit_enabled</SetVariable>
+        <SetVariable name="ObjectName">EffectUnitToggleButton</SetVariable>
+        <SetVariable name="Size">30f,1min</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="group"/>,enabled</SetVariable>
+      </Template>
+
+    </Children>
+  </WidgetGroup><!-- /EffectUnit -->
+</Template>
