@@ -10,7 +10,7 @@
   <WidgetGroup><!-- EffectUnit -->
     <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
     <Layout>horizontal</Layout>
-    <Size>526me,122f</Size><!-- 39px + 1px + 39px + 1px + 39px + 3px margin-bottom = 122px-->
+    <SizePolicy>me,min</SizePolicy>
     <Children>
 
       <WidgetGroup><!-- EffectSlots 1-3 -->
