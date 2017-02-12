@@ -77,7 +77,8 @@ class ControlPotmeter : public ControlObject {
                     bool allowOutOfBounds = false,
                     bool bIgnoreNops = true,
                     bool bTrack = false,
-                    bool bPersist = false);
+                    bool bPersist = false,
+                    double defaultValue = 0.0);
     virtual ~ControlPotmeter();
 
     // Sets the step count of the associated PushButtons.
