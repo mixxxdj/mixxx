@@ -182,10 +182,20 @@
         unshift: function () {
             this.inKey = 'play';
             this.onlyOnPress = true;
+            this.inValueScale = Button.prototype.inValueScale;
+            // Stop reversing playback if the user releases the shift button before this PlayButton.
+            if (engine.getValue(this.group, 'reverse') === 1) {
+                engine.setValue(this.group, 'reverse', 0);
+            }
         },
         shift: function () {
             this.inKey = 'reverse';
             this.onlyOnPress = false;
+            // The prototype inValueScale function would not work properly if the deck was already
+            // playing in reverse.
+            this.inValueScale = function (value) {
+                return value > 0;
+            };
         },
         outKey: 'play_indicator',
     });
@@ -199,6 +209,11 @@
         },
         shift: function () {
             this.inKey = 'start_stop';
+        },
+        // The prototype inValueScale function would not work properly if the cue button was already
+        // pressed with the GUI or another controller.
+        inValueScale: function (value) {
+            return value > 0;
         },
         onlyOnPress: false,
         outKey: 'cue_indicator',
