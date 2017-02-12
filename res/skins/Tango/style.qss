@@ -430,7 +430,6 @@ are still drawn full-size.
 #DeckButtonsRight {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
   padding: 1px 1px 1px 0px;
-  border-radius: 2px;
   background-color: #333333;
   }
   #DeckButtonTogglerLeft[displayValue="0"], #DeckButtonTogglerRight[displayValue="1"] {
@@ -1017,12 +1016,12 @@ are still drawn full-size.
 
 #EffectUnitMixer {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
-  background-color: #333333;
   margin-left: 1px;
   }
   #SuperWetDryContainer {
     qproperty-layoutAlignment: 'AlignRight | AlignTop';	/*
     background-color: #123987;	*/
+    background-color: #333333;
     }
     #SuperWetDry {
       qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
@@ -1046,17 +1045,9 @@ are still drawn full-size.
   font-size: 11px/13px;
   font-weight: bold;
   text-align: center;
+  background-color: #333333;
+  border-radius: 2px;
 }
-  #EffectUnitToggleButton:hover {
-    background-color: #666666;
-    border-radius: 2px;
-    }
-  #EffectUnitToggleButton[displayValue="0"] {
-    color: #000000;
-    }
-  #EffectUnitToggleButton[displayValue="1"] {
-    color: #eeeeee;
-  }
 
 #EffectUnitGroupColumn {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';	/*
@@ -1072,14 +1063,16 @@ are still drawn full-size.
     background-position: center;
     /* this has no effect on Backpath <Pressed> <Unpressed> */
   }
-    #EffectUnitGroupButton:hover {
+    #EffectUnitGroupButton:hover, #EffectUnitToggleButton:hover {
       border: 1px solid #eeeeee;
     }
-    #EffectUnitGroupButton[displayValue="0"] {
+    #EffectUnitGroupButton[displayValue="0"],
+    #EffectUnitToggleButton[displayValue="0"] {
       background-color: #333333;
       color: #000000;
     }
-    #EffectUnitGroupButton[displayValue="1"] {
+    #EffectUnitGroupButton[displayValue="1"],
+    #EffectUnitToggleButton[displayValue="1"] {
       background-color: #666666;
       color: #eeeeee;
     }
@@ -1655,6 +1648,7 @@ QSpinBox {
 WSearchLineEdit {
   padding: 2px;
   border: 1px solid #656565;
+  border-left: 0px;
   background: #0f0f0f;
   color: #CFCFCF;
   margin-bottom: 5px;

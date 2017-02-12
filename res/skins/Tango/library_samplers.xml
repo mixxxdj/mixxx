@@ -27,7 +27,7 @@ Modes:
         <MinimumSize>770,88</MinimumSize>
         <MaximumSize>-1,166</MaximumSize>
         <Children>
-          <WidgetStack>
+          <WidgetStack currentpage="[Tango],sam_lib_stack1" persist="true">
             <Children>
 
               <!-- workaround -->
