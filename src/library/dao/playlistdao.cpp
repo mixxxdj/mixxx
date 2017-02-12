@@ -380,56 +380,39 @@ bool PlaylistDAO::isHidden(const int playlistId) const {
     return true;
 }
 
-void PlaylistDAO::removeTrackFromPlaylist(const int playlistId, const int position)
-{
+void PlaylistDAO::removeTrackFromPlaylist(const int playlistId, const TrackId& trackId) {
+    ScopedTransaction transaction(m_database);
+
+    QSqlQuery query(m_database);
+    query.prepare("SELECT position FROM PlaylistTracks WHERE playlist_id=:id "
+                "AND track_id=:track_id");
+    query.bindValue(":id", playlistId);
+    query.bindValue(":track_id", trackId.toVariant());
+
+    query.setForwardOnly(true);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return;
+    }
+
+    while (query.next()) {
+    	int position = query.value(query.record().indexOf("position")).toInt();
+        removeTracksFromPlaylistInner(playlistId, position);
+
+    }
+
+    transaction.commit();
+    emit(changed(playlistId));
+}
+
+
+void PlaylistDAO::removeTrackFromPlaylist(const int playlistId, const int position) {
     // qDebug() << "PlaylistDAO::removeTrackFromPlaylist"
     //          << QThread::currentThread() << m_database.connectionName();
     ScopedTransaction transaction(m_database);
-    QSqlQuery query(m_database);
-
-    query.prepare("SELECT track_id FROM PlaylistTracks WHERE playlist_id=:id "
-                  "AND position=:position");
-    query.bindValue(":id", playlistId);
-    query.bindValue(":position", position);
-
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        return;
-    }
-
-    if (!query.next()) {
-        qDebug() << "removeTrackFromPlaylist no track exists at position:"
-                 << position << "in playlist:" << playlistId;
-        return;
-    }
-    TrackId trackId(query.value(query.record().indexOf("track_id")));
-
-    //Delete the track from the playlist.
-    query.prepare("DELETE FROM PlaylistTracks "
-                  "WHERE playlist_id=:id AND position= :position");
-    query.bindValue(":id", playlistId);
-    query.bindValue(":position", position);
-
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        return;
-    }
-
-    QString queryString;
-    queryString = QString("UPDATE PlaylistTracks SET position=position-1 "
-                          "WHERE position>=%1 AND "
-                          "playlist_id=%2").arg(QString::number(position),
-                                                QString::number(playlistId));
-    if (!query.exec(queryString)) {
-        LOG_FAILED_QUERY(query);
-    }
+    removeTracksFromPlaylistInner(playlistId, position);
     transaction.commit();
-
-    m_playlistsTrackIsIn.remove(trackId, playlistId);
-
-    emit(trackRemoved(playlistId, trackId, position));
     emit(changed(playlistId));
-
 }
 
 void PlaylistDAO::removeTracksFromPlaylist(const int playlistId, QList<int>& positions) {
@@ -441,49 +424,56 @@ void PlaylistDAO::removeTracksFromPlaylist(const int playlistId, QList<int>& pos
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
     foreach (int position , positions) {
-        query.prepare("SELECT track_id FROM PlaylistTracks WHERE playlist_id=:id "
-                    "AND position=:position");
-        query.bindValue(":id", playlistId);
-        query.bindValue(":position", position);
-
-        if (!query.exec()) {
-            LOG_FAILED_QUERY(query);
-            return;
-        }
-
-        if (!query.next()) {
-            qDebug() << "removeTrackFromPlaylist no track exists at position:"
-                    << position << "in playlist:" << playlistId;
-            return;
-        }
-        TrackId trackId(query.value(query.record().indexOf("track_id")));
-
-        // Delete the track from the playlist.
-        query.prepare("DELETE FROM PlaylistTracks "
-                    "WHERE playlist_id=:id AND position= :position");
-        query.bindValue(":id", playlistId);
-        query.bindValue(":position", position);
-
-        if (!query.exec()) {
-            LOG_FAILED_QUERY(query);
-            return;
-        }
-
-        QString queryString;
-        queryString = QString("UPDATE PlaylistTracks SET position=position-1 "
-                            "WHERE position>=%1 AND "
-                            "playlist_id=%2").arg(QString::number(position),
-                                                    QString::number(playlistId));
-        if (!query.exec(queryString)) {
-            LOG_FAILED_QUERY(query);
-        }
-
-        m_playlistsTrackIsIn.remove(trackId, playlistId);
-        emit(trackRemoved(playlistId, trackId, position));
+    	removeTracksFromPlaylistInner(playlistId, position);
     }
     transaction.commit();
     emit(changed(playlistId));
 }
+
+void PlaylistDAO::removeTracksFromPlaylistInner(int playlistId, int position) {
+    QSqlQuery query(m_database);
+    query.prepare("SELECT track_id FROM PlaylistTracks WHERE playlist_id=:id "
+                "AND position=:position");
+    query.bindValue(":id", playlistId);
+    query.bindValue(":position", position);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return;
+    }
+
+    if (!query.next()) {
+        qDebug() << "removeTrackFromPlaylist no track exists at position:"
+                << position << "in playlist:" << playlistId;
+        return;
+    }
+    TrackId trackId(query.value(query.record().indexOf("track_id")));
+
+    // Delete the track from the playlist.
+    query.prepare("DELETE FROM PlaylistTracks "
+                "WHERE playlist_id=:id AND position= :position");
+    query.bindValue(":id", playlistId);
+    query.bindValue(":position", position);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return;
+    }
+
+    QString queryString;
+    queryString = QString("UPDATE PlaylistTracks SET position=position-1 "
+                        "WHERE position>=%1 AND "
+                        "playlist_id=%2").arg(QString::number(position),
+                                                QString::number(playlistId));
+    if (!query.exec(queryString)) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    m_playlistsTrackIsIn.remove(trackId, playlistId);
+    emit(trackRemoved(playlistId, trackId, position));
+}
+
+
 
 bool PlaylistDAO::insertTrackIntoPlaylist(TrackId trackId, const int playlistId, int position) {
     if (playlistId < 0 || !trackId.isValid() || position < 0)
@@ -723,54 +713,12 @@ int PlaylistDAO::getMaxPosition(const int playlistId) const {
 }
 
 void PlaylistDAO::removeTracksFromPlaylists(const QList<TrackId>& trackIds) {
-    QStringList trackIdList;
     for (const auto& trackId: trackIds) {
-        if (trackIdList.count() >= 255) {
-            // Avoid that the resulting SQL query to exceed the maximum length
-            // The maximum number of bytes in the text of an SQL statement is
-            // limited to SQLITE_MAX_SQL_LENGTH which defaults to 1000000
-            // (from http://www.sqlite.org/limits.html)
-            removeTracksFromPlaylistsInner(trackIdList);
-            trackIdList.clear();
-        }
-        trackIdList << trackId.toString();
-    }
-    removeTracksFromPlaylistsInner(trackIdList);
-
-    // Update the in-memory hash. TODO(XXX) this assumes all the removes
-    // succeeded.
-    for (const auto& trackId: trackIds) {
-        m_playlistsTrackIsIn.remove(trackId);
-    }
-
-}
-
-void PlaylistDAO::removeTracksFromPlaylistsInner(const QStringList& trackIdList) {
-    QSqlQuery query(m_database);
-    query.prepare(QString("SELECT DISTINCT playlist_id FROM PlaylistTracks WHERE track_id in (%1)")
-                  .arg(trackIdList.join(",")));
-
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        return;
-    }
-
-    // Collect all ids of the playlists that contains the tracks to remove
-    QList<int> removedTracksPlaylistIds;
-    const int playlistIDColoumn = query.record().indexOf("playlist_id");
-    while (query.next()) {
-        removedTracksPlaylistIds.append(query.value(playlistIDColoumn).toInt());
-    }
-
-    query.prepare(QString("DELETE FROM PlaylistTracks WHERE track_id in (%1)")
-                  .arg(trackIdList.join(",")));
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        return;
-    }
-
-    foreach (int playlistId, removedTracksPlaylistIds) {
-        emit(changed(playlistId));
+    	const auto it = m_playlistsTrackIsIn.find(trackId);
+    	while (it != m_playlistsTrackIsIn.end() && it.key() == trackId) {
+    		removeTrackFromPlaylist(it.value(), trackId);
+    	}
+    	m_playlistsTrackIsIn.remove(trackId);
     }
 }
 

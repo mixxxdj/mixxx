@@ -87,6 +87,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     // Remove a track from all playlists
     void removeTracksFromPlaylists(const QList<TrackId>& trackIds);
     // Remove a track from a playlist
+    void removeTrackFromPlaylist(const int playlistId, const TrackId& trackId);
     void removeTrackFromPlaylist(const int playlistId, const int position);
     void removeTracksFromPlaylist(const int playlistId, QList<int>& positions);
     // Insert a track into a specific position in a playlist
@@ -127,7 +128,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
 
   private:
     bool removeTracksFromPlaylist(const int playlistId, const int startIndex);
-    void removeTracksFromPlaylistsInner(const QStringList& idList);
+    void removeTracksFromPlaylistInner(int playlistId, int position);
     void searchForDuplicateTrack(const int fromPosition,
                                  const int toPosition,
                                  TrackId trackID,
