@@ -199,6 +199,13 @@ void AnalyzerManager::slotNextTrack(AnalyzerWorker* worker) {
             otherworker->resume();
             m_pausedWorkers.removeOne(otherworker);
             m_defaultWorkers.append(otherworker);
+            if (m_priorityWorkers.isEmpty() && !m_pausedWorkers.isEmpty()) {
+                //Once the priority workers have ended, restart the extra paused default worker.
+                otherworker = m_pausedWorkers.first();
+                otherworker->resume();
+                m_pausedWorkers.removeOne(otherworker);
+                m_defaultWorkers.append(otherworker);
+            }
         }
     }
 }
