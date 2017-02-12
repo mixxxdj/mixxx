@@ -181,9 +181,11 @@
     PlayButton.prototype = new Button({
         unshift: function () {
             this.inKey = 'play';
+            this.onlyOnPress = true;
         },
         shift: function () {
-            this.inKey = 'start_stop';
+            this.inKey = 'reverse';
+            this.onlyOnPress = false;
         },
         outKey: 'play_indicator',
     });
@@ -192,7 +194,12 @@
         Button.call(this, options);
     };
     CueButton.prototype = new Button({
-        inKey: 'cue_default',
+        unshift: function () {
+            this.inKey = 'cue_default';
+        },
+        shift: function () {
+            this.inKey = 'start_stop';
+        },
         outKey: 'cue_indicator',
         onlyOnPress: false,
     });
