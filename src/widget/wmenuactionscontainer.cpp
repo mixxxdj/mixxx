@@ -1,6 +1,7 @@
-#include "widget/wmainmenubar.h"
+#include "widget/wmenuactionscontainer.h"
 
 #include <QDesktopServices>
+#include <QMenuBar>
 #include <QUrl>
 
 #include "control/controlproxy.h"
@@ -58,9 +59,9 @@ QString fullScreenDefaultKeyBinding() {
 
 }  // namespace
 
-WMainMenuBar::WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
+WMenuActionsContainer::WMenuActionsContainer(QWidget* pParent, UserSettingsPointer pConfig,
                            ConfigObject<ConfigValueKbd>* pKbdConfig)
-        : QMenuBar(pParent),
+        : QWidget(pParent),
           m_pConfig(pConfig),
           m_pKbdConfig(pKbdConfig) {
     initialize();
@@ -72,7 +73,7 @@ WMainMenuBar::WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
             this, SIGNAL(toggleVinylControl(int)));
 }
 
-void WMainMenuBar::initialize() {
+void WMenuActionsContainer::initialize() {
     // FILE MENU
     QMenu* pFileMenu = new QMenu(tr("&File"));
 
@@ -118,8 +119,8 @@ void WMainMenuBar::initialize() {
     pFileQuit->setMenuRole(QAction::QuitRole);
     connect(pFileQuit, SIGNAL(triggered()), this, SIGNAL(quit()));
     pFileMenu->addAction(pFileQuit);
-
-    addMenu(pFileMenu);
+    m_menus.append(pFileMenu);
+    this->addActions(pFileMenu->actions());
 
     // LIBRARY MENU
     QMenu* pLibraryMenu = new QMenu(tr("&Library"));
@@ -166,8 +167,8 @@ void WMainMenuBar::initialize() {
     connect(pLibraryCreateCrate, SIGNAL(triggered()),
             this, SIGNAL(createCrate()));
     pLibraryMenu->addAction(pLibraryCreateCrate);
-
-    addMenu(pLibraryMenu);
+    m_menus.append(pLibraryMenu);
+    this->addActions(pLibraryMenu->actions());
 
     // VIEW MENU
     QMenu* pViewMenu = new QMenu(tr("&View"));
@@ -297,23 +298,22 @@ void WMainMenuBar::initialize() {
             pViewFullScreen, SLOT(setChecked(bool)));
     pViewMenu->addAction(pViewFullScreen);
 
-    QString toggleMenuBarTitle = tr("&Hide menu bar");
-    QString toggleMenuBarText = tr("Hide menu bar");
-    QAction* pToggleMenuBar = new QAction(toggleMenuBarTitle, this);
-    pToggleMenuBar->setShortcut(
+    QString showMenuBarTitle = tr("&Show menu bar");
+    QString showMenuBarText = tr("Show menu bar");
+    QAction* pShowMenuBar = new QAction(showMenuBarTitle, this);
+    pShowMenuBar->setShortcut(
         QKeySequence(m_pKbdConfig->getValue(ConfigKey("[KeyboardShortcuts]",
-                                                  "ViewMenu_ToggleMenuBar"),
+                                                  "ViewMenu_ShowMenuBar"),
                                                   "F12")));
-    pToggleMenuBar->setShortcutContext(Qt::ApplicationShortcut);
-    pToggleMenuBar->setCheckable(true);
-    pToggleMenuBar->setChecked(false);
-    pToggleMenuBar->setStatusTip(toggleMenuBarText);
-    pToggleMenuBar->setWhatsThis(buildWhatsThis(toggleMenuBarTitle, toggleMenuBarText));
-    connect(pToggleMenuBar, SIGNAL(triggered(bool)),
-            this, SLOT(slotToggleMenuBar(bool)));
-    pViewMenu->addAction(pToggleMenuBar);
-
-    addMenu(pViewMenu);
+    pShowMenuBar->setShortcutContext(Qt::ApplicationShortcut);
+    pShowMenuBar->setCheckable(true);
+    pShowMenuBar->setChecked(false);
+    pShowMenuBar->setStatusTip(showMenuBarText);
+    pShowMenuBar->setWhatsThis(buildWhatsThis(showMenuBarTitle, showMenuBarText));
+    createVisibilityControl(pShowMenuBar, ConfigKey("[MainWindow]", "show_menubar"));
+    pViewMenu->addAction(pShowMenuBar);
+    m_menus.append(pViewMenu);
+    this->addActions(pViewMenu->actions());
 
     // OPTIONS MENU
     QMenu* pOptionsMenu = new QMenu(tr("&Options"));
@@ -432,8 +432,8 @@ void WMainMenuBar::initialize() {
     connect(pOptionsPreferences, SIGNAL(triggered()),
             this, SIGNAL(showPreferences()));
     pOptionsMenu->addAction(pOptionsPreferences);
-
-    addMenu(pOptionsMenu);
+    m_menus.append(pOptionsMenu);
+    this->addActions(pOptionsMenu->actions());
 
     // DEVELOPER MENU
     if (CmdlineArgs::Instance().getDeveloper()) {
@@ -525,11 +525,11 @@ void WMainMenuBar::initialize() {
         connect(pDeveloperDebugger, SIGNAL(triggered(bool)),
                 this, SLOT(slotDeveloperDebugger(bool)));
         pDeveloperMenu->addAction(pDeveloperDebugger);
-
-        addMenu(pDeveloperMenu);
+        m_menus.append(pDeveloperMenu);
+        this->addActions(pDeveloperMenu->actions());
     }
 
-    addSeparator();
+    //addSeparator();
 
     // HELP MENU
     QMenu* pHelpMenu = new QMenu(tr("&Help"), this);
@@ -615,54 +615,51 @@ void WMainMenuBar::initialize() {
             this, SIGNAL(showAbout()));
 
     pHelpMenu->addAction(pHelpAboutApp);
-    addMenu(pHelpMenu);
-
-    //Add all menu actions with keyboard shortcuts to Main Window.
-    //Otherwise they are not working when menu is hidden
-    foreach (QAction* pAction, findChildren<QAction*>()) {
-        if (pAction->shortcut()) {
-            parentWidget()->addAction(pAction);
-        }
-    }
+    m_menus.append(pHelpMenu);
+    this->addActions(pHelpMenu->actions());
 }
 
-void WMainMenuBar::onLibraryScanStarted() {
+QList<QMenu*> WMenuActionsContainer::getMenus() {
+    return m_menus;
+}
+
+void WMenuActionsContainer::onLibraryScanStarted() {
     emit(internalLibraryScanActive(true));
 }
 
-void WMainMenuBar::onLibraryScanFinished() {
+void WMenuActionsContainer::onLibraryScanFinished() {
     emit(internalLibraryScanActive(false));
 }
 
-void WMainMenuBar::onNewSkinLoaded() {
+void WMenuActionsContainer::onNewSkinLoaded() {
     emit(internalOnNewSkinLoaded());
 }
 
-void WMainMenuBar::onNewSkinAboutToLoad() {
+void WMenuActionsContainer::onNewSkinAboutToLoad() {
     emit(internalOnNewSkinAboutToLoad());
 }
 
-void WMainMenuBar::onRecordingStateChange(bool recording) {
+void WMenuActionsContainer::onRecordingStateChange(bool recording) {
     emit(internalRecordingStateChange(recording));
 }
 
-void WMainMenuBar::onBroadcastingStateChange(bool broadcasting) {
+void WMenuActionsContainer::onBroadcastingStateChange(bool broadcasting) {
     emit(internalBroadcastingStateChange(broadcasting));
 }
 
-void WMainMenuBar::onDeveloperToolsShown() {
+void WMenuActionsContainer::onDeveloperToolsShown() {
     emit(internalDeveloperToolsStateChange(true));
 }
 
-void WMainMenuBar::onDeveloperToolsHidden() {
+void WMenuActionsContainer::onDeveloperToolsHidden() {
     emit(internalDeveloperToolsStateChange(false));
 }
 
-void WMainMenuBar::onFullScreenStateChange(bool fullscreen) {
+void WMenuActionsContainer::onFullScreenStateChange(bool fullscreen) {
     emit(internalFullScreenStateChange(fullscreen));
 }
 
-void WMainMenuBar::onVinylControlDeckEnabledStateChange(int deck, bool enabled) {
+void WMenuActionsContainer::onVinylControlDeckEnabledStateChange(int deck, bool enabled) {
     if (deck < 0 || deck >= m_vinylControlEnabledActions.size()) {
         DEBUG_ASSERT(false);
         return;
@@ -670,15 +667,7 @@ void WMainMenuBar::onVinylControlDeckEnabledStateChange(int deck, bool enabled) 
     m_vinylControlEnabledActions.at(deck)->setChecked(enabled);
 }
 
-void WMainMenuBar::slotToggleMenuBar(bool enable) {
-    if (enable) {
-        hide();
-    } else {
-        show();
-    }
-}
-
-void WMainMenuBar::slotDeveloperStatsBase(bool enable) {
+void WMenuActionsContainer::slotDeveloperStatsBase(bool enable) {
     if (enable) {
         Experiment::setBase();
     } else {
@@ -686,7 +675,7 @@ void WMainMenuBar::slotDeveloperStatsBase(bool enable) {
     }
 }
 
-void WMainMenuBar::slotDeveloperStatsExperiment(bool enable) {
+void WMenuActionsContainer::slotDeveloperStatsExperiment(bool enable) {
     if (enable) {
         Experiment::setExperiment();
     } else {
@@ -694,16 +683,16 @@ void WMainMenuBar::slotDeveloperStatsExperiment(bool enable) {
     }
 }
 
-void WMainMenuBar::slotDeveloperDebugger(bool toggle) {
+void WMenuActionsContainer::slotDeveloperDebugger(bool toggle) {
     m_pConfig->set(ConfigKey("[ScriptDebugger]","Enabled"),
                    ConfigValue(toggle ? 1 : 0));
 }
 
-void WMainMenuBar::slotVisitUrl(const QString& url) {
+void WMenuActionsContainer::slotVisitUrl(const QString& url) {
     QDesktopServices::openUrl(QUrl(url));
 }
 
-void WMainMenuBar::createVisibilityControl(QAction* pAction,
+void WMenuActionsContainer::createVisibilityControl(QAction* pAction,
                                            const ConfigKey& key) {
     auto pConnection = new VisibilityControlConnection(this, pAction, key);
     connect(this, SIGNAL(internalOnNewSkinLoaded()),
@@ -712,7 +701,7 @@ void WMainMenuBar::createVisibilityControl(QAction* pAction,
             pConnection, SLOT(slotClearControl()));
 }
 
-void WMainMenuBar::onNumberOfDecksChanged(int decks) {
+void WMenuActionsContainer::onNumberOfDecksChanged(int decks) {
     int deck = 0;
     for (QAction* pVinylControlEnabled : m_vinylControlEnabledActions) {
         pVinylControlEnabled->setVisible(deck++ < decks);
@@ -722,6 +711,8 @@ void WMainMenuBar::onNumberOfDecksChanged(int decks) {
         pLoadToDeck->setVisible(deck++ < decks);
     }
 }
+
+
 
 VisibilityControlConnection::VisibilityControlConnection(
     QObject* pParent, QAction* pAction, const ConfigKey& key)

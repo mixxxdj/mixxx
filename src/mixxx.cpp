@@ -63,7 +63,6 @@
 #include "util/translations.h"
 #include "skin/launchimage.h"
 #include "preferences/settingsmanager.h"
-#include "widget/wmainmenubar.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrolmanager.h"
@@ -98,7 +97,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 #endif
           m_pKeyboard(nullptr),
           m_pLibrary(nullptr),
-          m_pMenuBar(nullptr),
+          m_pMenuActionsContainer(nullptr),
           m_pDeveloperToolsDlg(nullptr),
           m_pPrefDlg(nullptr),
           m_pKbdConfig(nullptr),
@@ -125,7 +124,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     mixxx::Translations::initializeTranslations(
         m_pSettingsManager->settings(), pApp, args.getLocale());
 
-    createMenuBar();
+    createMenuActionsContainer();
 
     initializeWindow();
 
@@ -315,7 +314,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Connect signals to the menubar. Should be done before we go fullscreen
     // and emit newSkinLoaded.
-    connectMenuBar();
+    connectMenuActionsContainer();
 
     // Before creating the first skin we need to create a QGLWidget so that all
     // the QGLWidget's we create can use it as a shared QGLContext.
@@ -334,7 +333,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
                                                            m_pControllerManager,
                                                            m_pLibrary,
                                                            m_pVCManager,
-                                                           m_pEffectsManager))) {
+                                                           m_pEffectsManager,
+                                                           m_pMenuActionsContainer))) {
         reportCriticalErrorAndQuit(
                 "default skin cannot be loaded see <b>mixxx</b> trace for more information.");
 
@@ -475,22 +475,9 @@ void MixxxMainWindow::finalize() {
         qWarning() << "Central widget was not deleted by our sendPostedEvents trick.";
     }
 
-    // TODO(rryan): WMainMenuBar holds references to controls so we need to delete it
-    // before MixxxMainWindow is destroyed. QMainWindow calls deleteLater() in
-    // setMenuBar() but we need to delete it now so we can ask for
-    // DeferredDelete events to be processed for it. Once Mixxx shutdown lives
-    // outside of MixxxMainWindow the parent relationship will directly destroy
-    // the WMainMenuBar and this will no longer be a problem.
-    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting menubar";
-    QPointer<QWidget> pMenuBar(menuBar());
-    setMenuBar(nullptr);
-    if (!pMenuBar.isNull()) {
-        QCoreApplication::sendPostedEvents(pMenuBar, QEvent::DeferredDelete);
-    }
-    // Our main menu is now deleted.
-    VERIFY_OR_DEBUG_ASSERT(pMenuBar.isNull()) {
-        qWarning() << "WMainMenuBar was not deleted by our sendPostedEvents trick.";
-    }
+    // Dele MenuActionsContainer
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting MenuActionsContainer";
+    delete m_pMenuActionsContainer;
 
     // SoundManager depend on Engine and Config
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting SoundManager";
@@ -606,19 +593,6 @@ void MixxxMainWindow::finalize() {
 }
 
 void MixxxMainWindow::initializeWindow() {
-    // be sure createMenuBar() is called first
-    DEBUG_ASSERT(m_pMenuBar != nullptr);
-
-    QPalette Pal(palette());
-    // safe default QMenuBar background
-    QColor MenuBarBackground(m_pMenuBar->palette().color(QPalette::Background));
-    Pal.setColor(QPalette::Background, QColor(0x202020));
-    setAutoFillBackground(true);
-    setPalette(Pal);
-    // restore default QMenuBar background
-    Pal.setColor(QPalette::Background, MenuBarBackground);
-    m_pMenuBar->setPalette(Pal);
-
     // Restore the current window state (position, maximized, etc)
     restoreGeometry(QByteArray::fromBase64(m_pSettingsManager->settings()->getValueString(
         ConfigKey("[MainWindow]", "geometry")).toUtf8()));
@@ -847,89 +821,88 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
     this->setWindowTitle(appTitle);
 }
 
-void MixxxMainWindow::createMenuBar() {
-    ScopedTimer t("MixxxMainWindow::createMenuBar");
+void MixxxMainWindow::createMenuActionsContainer() {
+    ScopedTimer t("MixxxMainWindow::createMenuActionsContainer");
     DEBUG_ASSERT(m_pKbdConfig != nullptr);
-    m_pMenuBar = new WMainMenuBar(this, m_pSettingsManager->settings(),
+    m_pMenuActionsContainer = new WMenuActionsContainer(this, m_pSettingsManager->settings(),
                                   m_pKbdConfig);
-    setMenuBar(m_pMenuBar);
 }
 
-void MixxxMainWindow::connectMenuBar() {
-    ScopedTimer t("MixxxMainWindow::connectMenuBar");
+void MixxxMainWindow::connectMenuActionsContainer() {
+    ScopedTimer t("MixxxMainWindow::connectMenuActionsContainer");
     connect(this, SIGNAL(newSkinLoaded()),
-            m_pMenuBar, SLOT(onNewSkinLoaded()));
+            m_pMenuActionsContainer, SLOT(onNewSkinLoaded()));
 
     // Misc
-    connect(m_pMenuBar, SIGNAL(quit()), this, SLOT(close()));
-    connect(m_pMenuBar, SIGNAL(showPreferences()),
+    connect(m_pMenuActionsContainer, SIGNAL(quit()), this, SLOT(close()));
+    connect(m_pMenuActionsContainer, SIGNAL(showPreferences()),
             this, SLOT(slotOptionsPreferences()));
-    connect(m_pMenuBar, SIGNAL(loadTrackToDeck(int)),
+    connect(m_pMenuActionsContainer, SIGNAL(loadTrackToDeck(int)),
             this, SLOT(slotFileLoadSongPlayer(int)));
 
     // Fullscreen
-    connect(m_pMenuBar, SIGNAL(toggleFullScreen(bool)),
+    connect(m_pMenuActionsContainer, SIGNAL(toggleFullScreen(bool)),
             this, SLOT(slotViewFullScreen(bool)));
     connect(this, SIGNAL(fullScreenChanged(bool)),
-            m_pMenuBar, SLOT(onFullScreenStateChange(bool)));
+            m_pMenuActionsContainer, SLOT(onFullScreenStateChange(bool)));
 
     // Keyboard shortcuts
-    connect(m_pMenuBar, SIGNAL(toggleKeyboardShortcuts(bool)),
+    connect(m_pMenuActionsContainer, SIGNAL(toggleKeyboardShortcuts(bool)),
             this, SLOT(slotOptionsKeyboard(bool)));
 
     // Help
-    connect(m_pMenuBar, SIGNAL(showAbout()),
+    connect(m_pMenuActionsContainer, SIGNAL(showAbout()),
             this, SLOT(slotHelpAbout()));
 
     // Developer
-    connect(m_pMenuBar, SIGNAL(reloadSkin()),
+    connect(m_pMenuActionsContainer, SIGNAL(reloadSkin()),
             this, SLOT(rebootMixxxView()));
-    connect(m_pMenuBar, SIGNAL(toggleDeveloperTools(bool)),
+    connect(m_pMenuActionsContainer, SIGNAL(toggleDeveloperTools(bool)),
             this, SLOT(slotDeveloperTools(bool)));
 
     if (m_pRecordingManager) {
         connect(m_pRecordingManager, SIGNAL(isRecording(bool)),
-                m_pMenuBar, SLOT(onRecordingStateChange(bool)));
-        connect(m_pMenuBar, SIGNAL(toggleRecording(bool)),
+                m_pMenuActionsContainer, SLOT(onRecordingStateChange(bool)));
+        connect(m_pMenuActionsContainer, SIGNAL(toggleRecording(bool)),
                 m_pRecordingManager, SLOT(slotSetRecording(bool)));
-        m_pMenuBar->onRecordingStateChange(m_pRecordingManager->isRecordingActive());
+        m_pMenuActionsContainer->onRecordingStateChange(m_pRecordingManager->isRecordingActive());
     }
 
 #ifdef __BROADCAST__
     if (m_pBroadcastManager) {
         connect(m_pBroadcastManager, SIGNAL(broadcastEnabled(bool)),
-                m_pMenuBar, SLOT(onBroadcastingStateChange(bool)));
-        connect(m_pMenuBar, SIGNAL(toggleBroadcasting(bool)),
+                m_pMenuActionsContainer, SLOT(onBroadcastingStateChange(bool)));
+        connect(m_pMenuActionsContainer, SIGNAL(toggleBroadcasting(bool)),
                 m_pBroadcastManager, SLOT(setEnabled(bool)));
-        m_pMenuBar->onBroadcastingStateChange(m_pBroadcastManager->isEnabled());
+        m_pMenuActionsContainer->onBroadcastingStateChange(m_pBroadcastManager->isEnabled());
     }
 #endif
 
 #ifdef __VINYLCONTROL__
     if (m_pVCManager) {
-        connect(m_pMenuBar, SIGNAL(toggleVinylControl(int)),
+        connect(m_pMenuActionsContainer, SIGNAL(toggleVinylControl(int)),
                 m_pVCManager, SLOT(toggleVinylControl(int)));
         connect(m_pVCManager, SIGNAL(vinylControlDeckEnabled(int, bool)),
-                m_pMenuBar, SLOT(onVinylControlDeckEnabledStateChange(int, bool)));
+                m_pMenuActionsContainer, SLOT(onVinylControlDeckEnabledStateChange(int, bool)));
     }
 #endif
 
     if (m_pPlayerManager) {
         connect(m_pPlayerManager, SIGNAL(numberOfDecksChanged(int)),
-                m_pMenuBar, SLOT(onNumberOfDecksChanged(int)));
-        m_pMenuBar->onNumberOfDecksChanged(m_pPlayerManager->numberOfDecks());
+                m_pMenuActionsContainer, SLOT(onNumberOfDecksChanged(int)));
+        m_pMenuActionsContainer->onNumberOfDecksChanged(m_pPlayerManager->numberOfDecks());
     }
 
     if (m_pLibrary) {
-        connect(m_pMenuBar, SIGNAL(createCrate()),
+        connect(m_pMenuActionsContainer, SIGNAL(createCrate()),
                 m_pLibrary, SLOT(slotCreateCrate()));
-        connect(m_pMenuBar, SIGNAL(createPlaylist()),
+        connect(m_pMenuActionsContainer, SIGNAL(createPlaylist()),
                 m_pLibrary, SLOT(slotCreatePlaylist()));
         connect(m_pLibrary, SIGNAL(scanStarted()),
-                m_pMenuBar, SLOT(onLibraryScanStarted()));
+                m_pMenuActionsContainer, SLOT(onLibraryScanStarted()));
         connect(m_pLibrary, SIGNAL(scanFinished()),
-                m_pMenuBar, SLOT(onLibraryScanFinished()));
-        connect(m_pMenuBar, SIGNAL(rescanLibrary()),
+                m_pMenuActionsContainer, SLOT(onLibraryScanFinished()));
+        connect(m_pMenuActionsContainer, SIGNAL(rescanLibrary()),
                 m_pLibrary, SLOT(scan()));
     }
 
@@ -1000,9 +973,9 @@ void MixxxMainWindow::slotDeveloperTools(bool visible) {
             connect(this, SIGNAL(closeDeveloperToolsDlgChecked(int)),
                     m_pDeveloperToolsDlg, SLOT(done(int)));
             connect(m_pDeveloperToolsDlg, SIGNAL(destroyed()),
-                    m_pMenuBar, SLOT(onDeveloperToolsHidden()));
+                    m_pMenuActionsContainer, SLOT(onDeveloperToolsHidden()));
         }
-        m_pMenuBar->onDeveloperToolsShown();
+        m_pMenuActionsContainer->onDeveloperToolsShown();
         m_pDeveloperToolsDlg->show();
         m_pDeveloperToolsDlg->activateWindow();
     } else {
@@ -1021,21 +994,7 @@ void MixxxMainWindow::slotViewFullScreen(bool toggle) {
 
     if (toggle) {
         showFullScreen();
-#ifdef __LINUX__
-        // Fix for "No menu bar with ubuntu unity in full screen mode" Bug
-        // #885890 and Bug #1076789. Before touching anything here, please read
-        // those bugs.
-        createMenuBar();
-        connectMenuBar();
-        if (m_pMenuBar->isNativeMenuBar()) {
-            m_pMenuBar->setNativeMenuBar(false);
-        }
-#endif
     } else {
-#ifdef __LINUX__
-        createMenuBar();
-        connectMenuBar();
-#endif
         showNormal();
     }
     emit(fullScreenChanged(toggle));
@@ -1101,7 +1060,7 @@ void MixxxMainWindow::rebootMixxxView() {
     // create a new one. It holds "visibility" controls (e.g. "Show Samplers")
     // that need to be deleted -- otherwise we can't tell what features the skin
     // supports since the controls from the previous skin will be left over.
-    m_pMenuBar->onNewSkinAboutToLoad();
+    m_pMenuActionsContainer->onNewSkinAboutToLoad();
 
     if (m_pWidgetParent) {
         m_pWidgetParent->hide();
@@ -1125,7 +1084,8 @@ void MixxxMainWindow::rebootMixxxView() {
                                                            m_pControllerManager,
                                                            m_pLibrary,
                                                            m_pVCManager,
-                                                           m_pEffectsManager))) {
+                                                           m_pEffectsManager,
+                                                           m_pMenuActionsContainer))) {
 
         QMessageBox::critical(this,
                               tr("Error in skin file"),

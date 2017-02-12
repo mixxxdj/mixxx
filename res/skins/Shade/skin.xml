@@ -70,6 +70,7 @@
 			<attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
 			<attribute persist="true" config_key="[Library],show_coverart">0</attribute>
 			<attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
+                        <attribute persist="true" config_key="[MainWindow],show_menubar">1</attribute>
 		</attributes>
 	</manifest>
 
@@ -154,6 +155,7 @@
     </LaunchImageStyle>
 
 	<Children>
+                <Template src="skin:menubar.xml"/>
 		<WidgetGroup>
 			<ObjectName>DecksAndMixer</ObjectName>
 			<MinimumSize>1024,265</MinimumSize>

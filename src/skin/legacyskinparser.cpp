@@ -76,6 +76,7 @@
 #include "widget/wcombobox.h"
 #include "widget/wsplitter.h"
 #include "widget/wsingletoncontainer.h"
+#include "widget/wmenubar.h"
 #include "util/valuetransformer.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
@@ -143,7 +144,8 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig)
           m_pLibrary(NULL),
           m_pVCManager(NULL),
           m_pEffectsManager(NULL),
-          m_pParent(NULL) {
+          m_pParent(NULL),
+          m_pMenuActionsContainer(NULL){
 }
 
 LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
@@ -152,7 +154,8 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
                                    ControllerManager* pControllerManager,
                                    Library* pLibrary,
                                    VinylControlManager* pVCMan,
-                                   EffectsManager* pEffectsManager)
+                                   EffectsManager* pEffectsManager,
+                                   WMenuActionsContainer* pMenuActionsContainer)
         : m_pConfig(pConfig),
           m_pKeyboard(pKeyboard),
           m_pPlayerManager(pPlayerManager),
@@ -160,6 +163,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
           m_pLibrary(pLibrary),
           m_pVCManager(pVCMan),
           m_pEffectsManager(pEffectsManager),
+          m_pMenuActionsContainer(pMenuActionsContainer),
           m_pParent(NULL) {
 }
 
@@ -570,6 +574,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         parseSingletonDefinition(node);
     } else if (nodeName == "SingletonContainer") {
         result = wrapWidget(parseStandardWidget<WSingletonContainer>(node));
+    } else if (nodeName == "MenuBar") {
+        result = wrapWidget(parseMenuBar(node));
     } else {
         SKIN_WARNING(node, *m_pContext) << "Invalid node name in skin:"
                                        << nodeName;
@@ -1096,6 +1102,12 @@ QWidget* LegacySkinParser::parseBattery(const QDomElement& node) {
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    return p;
+}
+
+QWidget* LegacySkinParser::parseMenuBar(const QDomElement& node) {
+    WMenuBar *p = new WMenuBar(m_pParent, m_pMenuActionsContainer->getMenus());
+    commonWidgetSetup(node, p);
     return p;
 }
 

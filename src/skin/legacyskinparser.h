@@ -13,6 +13,7 @@
 #include "skin/tooltips.h"
 #include "proto/skin.pb.h"
 #include "util/memory.h"
+#include "widget/wmenuactionscontainer.h"
 
 class WBaseWidget;
 class Library;
@@ -34,7 +35,7 @@ class LegacySkinParser : public QObject, public SkinParser {
                      KeyboardEventFilter* pKeyboard, PlayerManager* pPlayerManager,
                      ControllerManager* pControllerManager,
                      Library* pLibrary, VinylControlManager* pVCMan,
-                     EffectsManager* pEffectsManager);
+                     EffectsManager* pEffectsManager, WMenuActionsContainer* pMenuActionsContainer);
     virtual ~LegacySkinParser();
 
     virtual bool canParse(const QString& skinPath);
@@ -109,6 +110,9 @@ class LegacySkinParser : public QObject, public SkinParser {
     // Renders a template.
     QList<QWidget*> parseTemplate(const QDomElement& node);
 
+    // Menu bar
+    QWidget* parseMenuBar(const QDomElement& node);
+
     void commonWidgetSetup(const QDomNode& node, WBaseWidget* pBaseWidget,
                            bool allowConnections=true);
     void setupPosition(const QDomNode& node, QWidget* pWidget);
@@ -140,6 +144,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* m_pParent;
     std::unique_ptr<SkinContext> m_pContext;
     Tooltips m_tooltips;
+    WMenuActionsContainer* m_pMenuActionsContainer;
     QHash<QString, QDomElement> m_templateCache;
     static QList<const char*> s_channelStrs;
     static QMutex s_safeStringMutex;

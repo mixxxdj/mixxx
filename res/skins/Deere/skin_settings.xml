@@ -170,6 +170,25 @@
           </PushButton>
 
           <PushButton>
+            <TooltipId>show_menubar</TooltipId>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9744; Show Menu Bar</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9745; Show Menu Bar</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey persist="true">[MainWindow],show_menubar</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
             <TooltipId>maximize_library</TooltipId>
             <Size>80me,20f</Size>
             <NumberStates>2</NumberStates>
