@@ -200,8 +200,8 @@
         shift: function () {
             this.inKey = 'start_stop';
         },
-        outKey: 'cue_indicator',
         onlyOnPress: false,
+        outKey: 'cue_indicator',
     });
 
     var SyncButton = function (options) {
@@ -226,9 +226,6 @@
             return 1;
         },
         outKey: 'loop_enabled',
-        outValueScale: function (value) {
-            return (value) ? this.on : this.off;
-        },
     });
 
     var HotcueButton = function (options) {
