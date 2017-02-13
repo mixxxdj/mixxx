@@ -221,7 +221,7 @@ void SoundDeviceNetwork::writeProcess() {
         //qDebug() << "writeProcess():" << (float) writeAvailable / outChunkSize << "Overflow";
     }
     //qDebug() << "writeProcess():" << (float) writeAvailable / outChunkSize;
-    if (writeCount) {
+    if (writeCount > 0) {
         CSAMPLE* dataPtr1;
         ring_buffer_size_t size1;
         CSAMPLE* dataPtr2;
@@ -275,7 +275,7 @@ void SoundDeviceNetwork::writeProcess() {
             if (m_outputDrift) {
                 //qDebug() << "SoundDeviceNetwork::writeProcess() skip one frame"
                 //         << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;
-                copyCount += m_iNumOutputChannels;
+            	copyCount = qMin(readAvailable, copyCount + m_iNumOutputChannels);
             } else {
                 m_outputDrift = true;
             }

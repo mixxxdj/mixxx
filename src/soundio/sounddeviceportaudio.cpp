@@ -575,7 +575,7 @@ void SoundDevicePortAudio::writeProcess() {
             m_pSoundManager->underflowHappened(16);
             //qDebug() << "writeProcess():" << (float) writeAvailable / outChunkSize << "Overflow";
         }
-        if (writeCount) {
+        if (writeCount > 0) {
             CSAMPLE* dataPtr1;
             ring_buffer_size_t size1;
             CSAMPLE* dataPtr2;
@@ -641,7 +641,7 @@ void SoundDevicePortAudio::writeProcess() {
                     if (m_outputDrift) {
                         //qDebug() << "SoundDevicePortAudio::writeProcess() skip one frame"
                         //        << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;
-                        copyCount += m_outputParams.channelCount;
+                    	copyCount = qMin(readAvailable, copyCount + m_iNumOutputChannels);
                     } else {
                         m_outputDrift = true;
                     }
