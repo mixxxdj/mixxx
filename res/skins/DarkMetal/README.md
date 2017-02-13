@@ -63,7 +63,7 @@ DARK METAL skin at MIXXX forums: http://www.mixxx.org/forums/viewtopic.php?t=605
 	
 --------------------------------------------------------------------------------------------------
 
-- This project at GITHUB: https://github.com/jorgerosa/Mixxx-Dark-Metal
+- This project at GITHUB: https://github.com/jorgerosa/mixxx/tree/DarkMetal/res/skins/DarkMetal
 - This project CLONED at SOURCEFORGE.NET: https://sourceforge.net/u/jorgerosa/profile
 - Developer: Jorge Rosa *(Portugal - With love to ASCR)*
 - Email: jorge.bigarte@gmail.com
