@@ -11,7 +11,7 @@ Modes:
   <SizeAwareStack>
     <Children>
 
-      <WidgetGroup trigger="[Tango],no_space_at_bottom"><!-- 0 -->
+      <WidgetGroup><!-- 0 -->
         <ObjectName>Library_Samplers</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>me,min</SizePolicy>
@@ -35,12 +35,38 @@ Modes:
 
               <WidgetGroup trigger="[Samplers],show_samplers" persist="true" on_hide_select="0">
                 <SizePolicy>me,min</SizePolicy>
-                <Layout>horizontal</Layout>
+                <Layout>vertical</Layout>
                 <Children>
-                  <Template src="skin:samplers_mini.xml">
-                    <SetVariable name="MaxiButtonSize">0f,0f</SetVariable>
-                    <SetVariable name="SpacerSize">0f,0f</SetVariable>
-                  </Template>
+
+                  <WidgetGroup><!-- 4 miniSamplers / 4 maxiSamplers -->
+                    <SizePolicy>me,min</SizePolicy>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <Template src="skin:samplers_maxi.xml"/>
+                    </Children>
+                    <Connection>
+                      <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+                      <Transform><Add>-1</Add><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup><!-- /4 miniSamplers / 4 maxiSamplers -->
+
+                  <WidgetGroup><!-- 8 miniSamplers, no MAXI button -->
+                    <SizePolicy>me,min</SizePolicy>
+                    <Layout>vertical</Layout>
+                    <Children>                    
+                      <Template src="skin:samplers_mini.xml">
+                        <SetVariable name="MaxiButtonSize">0f,0f</SetVariable>
+                        <SetVariable name="SpacerSize">0f,0f</SetVariable>
+                      </Template>
+                    </Children>
+                    <Connection>
+                      <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+                      <Transform><Add>-1</Add></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup><!-- /8 miniSamplers, no MAXI button -->
+
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
@@ -92,7 +118,7 @@ Modes:
                 <Children/>
               </WidgetGroup>
 
-              <WidgetGroup trigger="[Library],show_library" persist="true">
+              <WidgetGroup>
                 <Layout>vertical</Layout>
                 <SizePolicy>me,min</SizePolicy>
                 <MinimumSize>770,85</MinimumSize>
