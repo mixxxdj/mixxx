@@ -593,14 +593,14 @@ void SoundManager::checkConfig() {
     // latency checks itself for validity on SMConfig::setLatency()
 }
 
-void SoundManager::onDeviceOutputCallback(const unsigned int iFramesPerBuffer) {
+void SoundManager::onDeviceOutputCallback(const SINT iFramesPerBuffer) {
     // Produce a block of samples for output. EngineMaster expects stereo
     // samples so multiply iFramesPerBuffer by 2.
-    m_pMaster->process(iFramesPerBuffer*2);
+    m_pMaster->process(iFramesPerBuffer * 2);
 }
 
 void SoundManager::pushInputBuffers(const QList<AudioInputBuffer>& inputs,
-                                    const unsigned int iFramesPerBuffer) {
+                                    const SINT iFramesPerBuffer) {
    for (QList<AudioInputBuffer>::ConstIterator i = inputs.begin(),
                  e = inputs.end(); i != e; ++i) {
         const AudioInputBuffer& in = *i;

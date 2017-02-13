@@ -59,7 +59,7 @@ int paV19Callback(const void *inputBuffer, void *outputBuffer,
                   PaStreamCallbackFlags statusFlags,
                   void *soundDevice) {
     return ((SoundDevicePortAudio*) soundDevice)->callbackProcess(
-            (unsigned int) framesPerBuffer, (CSAMPLE*) outputBuffer,
+            (SINT) framesPerBuffer, (CSAMPLE*) outputBuffer,
             (const CSAMPLE*) inputBuffer, timeInfo, statusFlags);
 }
 
@@ -69,7 +69,7 @@ int paV19CallbackDrift(const void *inputBuffer, void *outputBuffer,
                        PaStreamCallbackFlags statusFlags,
                        void *soundDevice) {
     return ((SoundDevicePortAudio*) soundDevice)->callbackProcessDrift(
-            (unsigned int) framesPerBuffer, (CSAMPLE*) outputBuffer,
+            (SINT) framesPerBuffer, (CSAMPLE*) outputBuffer,
             (const CSAMPLE*) inputBuffer, timeInfo, statusFlags);
 }
 
@@ -79,7 +79,7 @@ int paV19CallbackClkRef(const void *inputBuffer, void *outputBuffer,
                         PaStreamCallbackFlags statusFlags,
                         void *soundDevice) {
     return ((SoundDevicePortAudio*) soundDevice)->callbackProcessClkRef(
-            (unsigned int) framesPerBuffer, (CSAMPLE*) outputBuffer,
+            (SINT) framesPerBuffer, (CSAMPLE*) outputBuffer,
             (const CSAMPLE*) inputBuffer, timeInfo, statusFlags);
 }
 
@@ -585,12 +585,12 @@ void SoundDevicePortAudio::writeProcess() {
                     &size1, &dataPtr2, &size2);
             // Fetch fresh samples and write to the the output buffer
             composeOutputBuffer(dataPtr1, size1 / m_outputParams.channelCount, 0,
-                    static_cast<unsigned int>(m_outputParams.channelCount));
+            		            m_outputParams.channelCount);
             if (size2 > 0) {
                 composeOutputBuffer(dataPtr2,
                         size2 / m_outputParams.channelCount,
                         size1 / m_outputParams.channelCount,
-                        static_cast<unsigned int>(m_outputParams.channelCount));
+                        m_outputParams.channelCount);
             }
             m_outputFifo->releaseWriteRegions(writeCount);
         }
@@ -669,7 +669,7 @@ void SoundDevicePortAudio::writeProcess() {
 }
 
 int SoundDevicePortAudio::callbackProcessDrift(
-        const unsigned int framesPerBuffer, CSAMPLE *out, const CSAMPLE *in,
+        const SINT framesPerBuffer, CSAMPLE *out, const CSAMPLE *in,
         const PaStreamCallbackTimeInfo *timeInfo,
         PaStreamCallbackFlags statusFlags) {
     Q_UNUSED(timeInfo);
@@ -801,7 +801,7 @@ int SoundDevicePortAudio::callbackProcessDrift(
     return paContinue;
 }
 
-int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
+int SoundDevicePortAudio::callbackProcess(const SINT framesPerBuffer,
         CSAMPLE *out, const CSAMPLE *in,
         const PaStreamCallbackTimeInfo *timeInfo,
         PaStreamCallbackFlags statusFlags) {
@@ -854,7 +854,7 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
 }
 
 int SoundDevicePortAudio::callbackProcessClkRef(
-        const unsigned int framesPerBuffer, CSAMPLE *out, const CSAMPLE *in,
+        const SINT framesPerBuffer, CSAMPLE *out, const CSAMPLE *in,
         const PaStreamCallbackTimeInfo *timeInfo,
         PaStreamCallbackFlags statusFlags) {
     // This must be the very first call, else timeInfo becomes invalid
@@ -929,8 +929,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
     if (in) {
         ScopedTimer t("SoundDevicePortAudio::callbackProcess input %1",
                 getInternalName());
-        composeInputBuffer(in, framesPerBuffer, 0,
-                           m_inputParams.channelCount);
+        composeInputBuffer(in, framesPerBuffer, 0, m_inputParams.channelCount);
         m_pSoundManager->pushInputBuffers(m_audioInputs, m_framesPerBuffer);
     }
 
@@ -954,8 +953,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
             return paContinue;
         }
 
-        composeOutputBuffer(out, framesPerBuffer, 0, static_cast<unsigned int>(
-                m_outputParams.channelCount));
+        composeOutputBuffer(out, framesPerBuffer, 0, m_outputParams.channelCount);
     }
 
     m_pSoundManager->writeProcess();
@@ -1035,7 +1033,7 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
 }
 
 void SoundDevicePortAudio::updateAudioLatencyUsage(
-        const unsigned int framesPerBuffer) {
+        const SINT framesPerBuffer) {
     m_framesSinceAudioLatencyUsageUpdate += framesPerBuffer;
     if (m_framesSinceAudioLatencyUsageUpdate
             > (m_dSampleRate / CPU_USAGE_UPDATE_RATE)) {

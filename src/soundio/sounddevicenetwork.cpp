@@ -230,13 +230,12 @@ void SoundDeviceNetwork::writeProcess() {
         (void)m_outputFifo->aquireWriteRegions(writeCount, &dataPtr1,
                 &size1, &dataPtr2, &size2);
         // Fetch fresh samples and write to the the output buffer
-        composeOutputBuffer(dataPtr1, size1 / m_iNumOutputChannels, 0,
-                static_cast<unsigned int>(m_iNumOutputChannels));
+        composeOutputBuffer(dataPtr1, size1 / m_iNumOutputChannels, 0, m_iNumOutputChannels);
         if (size2 > 0) {
             composeOutputBuffer(dataPtr2,
                     size2 / m_iNumOutputChannels,
                     size1 / m_iNumOutputChannels,
-                    static_cast<unsigned int>(m_iNumOutputChannels));
+                    m_iNumOutputChannels);
         }
         m_outputFifo->releaseWriteRegions(writeCount);
     }
