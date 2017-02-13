@@ -47,7 +47,7 @@
 --------------------------------------------------------------------------------------------------
 
 Skin Developer Tools:
-- Notepad++ *(To open and edit the XML, MD, QSS files)* - https://notepad-plus-plus.org
+- Notepad++ *(To open and edit the XML, TXT, MD, QSS files)* - https://notepad-plus-plus.org
 - Inkscape *(To open and edit the SVG files)* - https://inkscape.org/en
 - SVG Explorer Extension *(To have SVG thumbnais in the explorer)* - https://svgextension.codeplex.com
 
@@ -63,8 +63,8 @@ DARK METAL skin at MIXXX forums: http://www.mixxx.org/forums/viewtopic.php?t=605
 	
 --------------------------------------------------------------------------------------------------
 
-- This project at GITHUB: https://github.com/jorgerosa/mixxx/tree/DarkMetal/res/skins/DarkMetal
-- This project CLONED at SOURCEFORGE.NET: https://sourceforge.net/u/jorgerosa/profile
+- This project at GITHUB: https://github.com/jorgerosa/mixxx/tree/master/res/skins/DarkMetal
+- This project at SOURCEFORGE.NET: https://sourceforge.net/u/jorgerosa/profile
 - Developer: Jorge Rosa *(Portugal - With love to ASCR)*
 - Email: jorge.bigarte@gmail.com
 - Portfolio: http://sites.google.com/site/jorgerosaportfolio *(Many more stuff there...)*
