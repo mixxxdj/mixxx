@@ -406,6 +406,7 @@
                         <Template src="skin:library_samplers.xml"/>
 
                         <WidgetGroup><!-- MixerBar when Library is not shown -->
+                          <ObjectName>MixerBar_Container_skin</ObjectName>
                           <Layout>horizontal</Layout>
                           <SizePolicy>min,min</SizePolicy>
                           <Children>

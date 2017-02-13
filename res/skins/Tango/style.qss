@@ -20,7 +20,7 @@ WWidget, QLabel {
   font-weight: normal;
 }
 
-#Library_Samplers {
+#Library_Samplers_0, #Library_Samplers_1, #Library_Samplers_2, #Library_Samplers_3 {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   margin-top: 3px;	/*
   background-color: #415263;	*/
@@ -207,7 +207,7 @@ WWidget, QLabel {
 ################################################################ */
 
 #MixerBar { /*
-  margin-top: 4px;  */
+  background-color: #A900FF;  */
 }
 
 #MixerBarExtra {

@@ -18,7 +18,7 @@ Variables:
   <WidgetGroup><!-- SamplerDeck -->
     <Layout>horizontal</Layout>
     <ObjectName>SamplerDeck</ObjectName>
-    <Size>180me,79f</Size><!-- 79 + 3bottom -->
+    <Size>180me,79f</Size>
     <Children>
 
       <WidgetGroup><!-- SamplerMain -->

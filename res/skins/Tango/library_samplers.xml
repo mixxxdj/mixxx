@@ -12,19 +12,19 @@ Modes:
     <Children>
 
       <WidgetGroup><!-- 0 -->
-        <ObjectName>Library_Samplers</ObjectName>
+        <ObjectName>Library_Samplers_0</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>me,min</SizePolicy>
+        <SizePolicy>me,max</SizePolicy>
         <MinimumSize>770,0</MinimumSize>
-        <MaximumSize>i,87</MaximumSize>
+        <MaximumSize>i,70</MaximumSize>
         <Children/>
       </WidgetGroup>
 
       <WidgetGroup><!-- 1   Samplers mini / Lib / nothing -->
-        <ObjectName>Library_Samplers</ObjectName>
+        <ObjectName>Library_Samplers_1</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>me,me</SizePolicy>
-        <MinimumSize>770,88</MinimumSize>
+        <MinimumSize>770,71</MinimumSize>
         <MaximumSize>-1,166</MaximumSize>
         <Children>
           <WidgetStack currentpage="[Tango],sam_lib_stack1" persist="true">
@@ -88,7 +88,7 @@ Modes:
       </WidgetGroup><!-- /1   SamplersSamplers mini / Lib / nothing -->
 
       <WidgetGroup><!-- 2   Samplers maxi / Lib // Samplers mini & Lib -->
-        <ObjectName>Library_Samplers</ObjectName>
+        <ObjectName>Library_Samplers_2</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>me,me</SizePolicy>
         <MinimumSize>770,167</MinimumSize>
@@ -141,7 +141,7 @@ Modes:
       </WidgetGroup><!-- /2   Samplers maxi / Lib // Samplers mini & Lib -->
 
       <WidgetGroup><!-- 3   Samplers mini/Maxi & Lib -->
-        <ObjectName>Library_Samplers</ObjectName>
+        <ObjectName>Library_Samplers_3</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>me,me</SizePolicy>
         <MinimumSize>770,252</MinimumSize>
