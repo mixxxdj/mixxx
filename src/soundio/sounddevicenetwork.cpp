@@ -20,12 +20,9 @@ SoundDeviceNetwork::SoundDeviceNetwork(UserSettingsPointer config,
                                        QSharedPointer<EngineNetworkStream> pNetworkStream)
         : SoundDevice(config, sm),
           m_pNetworkStream(pNetworkStream),
-          m_outputFifo(NULL),
-          m_inputFifo(NULL),
           m_outputDrift(false),
           m_inputDrift(false),
           m_framesSinceAudioLatencyUsageUpdate(0),
-          m_pThread(NULL),
           m_denormals(false),
           m_targetTime(0),
           m_lastCallbackEntrytoDacSecs(0) {
@@ -37,12 +34,11 @@ SoundDeviceNetwork::SoundDeviceNetwork(UserSettingsPointer config,
     m_iNumInputChannels = pNetworkStream->getNumInputChannels();
     m_iNumOutputChannels = pNetworkStream->getNumOutputChannels();
 
-    m_pMasterAudioLatencyUsage = new ControlProxy("[Master]",
+    m_pMasterAudioLatencyUsage = std::make_unique<ControlProxy>("[Master]",
             "audio_latency_usage");
 }
 
 SoundDeviceNetwork::~SoundDeviceNetwork() {
-    delete m_pMasterAudioLatencyUsage;
 }
 
 SoundDeviceError SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) {
@@ -66,11 +62,11 @@ SoundDeviceError SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) 
     // clock reference device callback
     // This is what should work best.
     if (m_iNumOutputChannels) {
-        m_outputFifo = new FIFO<CSAMPLE>(
+        m_outputFifo = std::make_unique<FIFO<CSAMPLE> >(
                 m_iNumOutputChannels * m_framesPerBuffer * 2);
     }
     if (m_iNumInputChannels) {
-        m_inputFifo = new FIFO<CSAMPLE>(
+        m_inputFifo = std::make_unique<FIFO<CSAMPLE> >(
                 m_iNumInputChannels * m_framesPerBuffer * 2);
     }
 
@@ -91,7 +87,7 @@ SoundDeviceError SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) 
         // The first callback runs early to do the one time setups
         m_targetTime = m_audioBufferTime.toIntegerMicros();
 
-        m_pThread = new SoundDeviceNetworkThread(this);
+        m_pThread = std::make_unique<SoundDeviceNetworkThread>(this);
         m_pThread->start(QThread::TimeCriticalPriority);
     }
 
@@ -108,18 +104,12 @@ SoundDeviceError SoundDeviceNetwork::close() {
     if (m_pThread) {
         m_pThread->stop();
         m_pThread->wait();
-        delete m_pThread;
-        m_pThread = nullptr;
+        m_pThread.reset();
     }
 
-    if (m_outputFifo) {
-        delete m_outputFifo;
-        m_outputFifo = NULL;
-    }
-    if (m_inputFifo) {
-        delete m_inputFifo;
-        m_inputFifo = NULL;
-    }
+    m_outputFifo.reset();
+    m_inputFifo.reset();
+
     return SOUNDDEVICE_ERROR_OK;
 }
 

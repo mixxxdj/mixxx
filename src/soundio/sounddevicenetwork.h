@@ -5,6 +5,7 @@
 #include <QThread>
 
 #include "util/performancetimer.h"
+#include "util/memory.h"
 #include "soundio/sounddevice.h"
 
 #define CPU_USAGE_UPDATE_RATE 30 // in 1/s, fits to display frame rate
@@ -41,16 +42,16 @@ class SoundDeviceNetwork : public SoundDevice {
     void updateAudioLatencyUsage();
 
     QSharedPointer<EngineNetworkStream> m_pNetworkStream;
-    FIFO<CSAMPLE>* m_outputFifo;
-    FIFO<CSAMPLE>* m_inputFifo;
+    std::unique_ptr<FIFO<CSAMPLE> > m_outputFifo;
+    std::unique_ptr<FIFO<CSAMPLE> > m_inputFifo;
     bool m_outputDrift;
     bool m_inputDrift;
 
-    ControlProxy* m_pMasterAudioLatencyUsage;
+    std::unique_ptr<ControlProxy> m_pMasterAudioLatencyUsage;
     mixxx::Duration m_timeInAudioCallback;
     mixxx::Duration m_audioBufferTime;
     int m_framesSinceAudioLatencyUsageUpdate;
-    SoundDeviceNetworkThread* m_pThread;
+    std::unique_ptr<SoundDeviceNetworkThread> m_pThread;
     bool m_denormals;
     qint64 m_targetTime;
     PerformanceTimer m_clkRefTimer;
