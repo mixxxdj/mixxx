@@ -31,14 +31,12 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Template src="skin:button_2state.xml">
+              <Template src="skin:button_1state.xml">
                 <SetVariable name="ObjectName">DeckButton</SetVariable>
-                <SetVariable name="Size">22f,22f</SetVariable>
+                <SetVariable name="Size">20f,22f</SetVariable>
                 <SetVariable name="ToolTipID">eject</SetVariable>
-                <SetVariable name="state_0_pressed">eject.svg</SetVariable>
+                <SetVariable name="state_0_pressed">eject_down.svg</SetVariable>
                 <SetVariable name="state_0_unpressed">eject.svg</SetVariable>
-                <SetVariable name="state_1_pressed">eject_down.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">eject_down.svg</SetVariable>
                 <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],eject</SetVariable>
               </Template>
               <Template src="skin:button_2state.xml">

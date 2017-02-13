@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="7.919596"
-     inkscape:cx="-4.5379476"
-     inkscape:cy="10.57943"
+     inkscape:zoom="32"
+     inkscape:cx="8.72901"
+     inkscape:cy="11.676973"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -44,24 +44,7 @@
      inkscape:window-height="746"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="1">
-    <sodipodi:guide
-       orientation="0,1"
-       position="13.4375,17"
-       id="guide3012" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="10.922274,5"
-       id="guide3014" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="4,18.62505"
-       id="guide3016" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="9,17.93"
-       id="guide3828" />
-  </sodipodi:namedview>
+     inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -94,11 +77,11 @@
        inkscape:rounded="0"
        inkscape:randomized="0"
        d="m 18.119611,5 -22.6794164,13.093967 0,-26.187934 z"
-       transform="matrix(0.45822504,0,0,0.45822504,6.089417,1039.0711)"
-       inkscape:transform-center-x="-1.7320461" />
+       transform="matrix(0.39683453,-0.22911252,0.22911252,0.39683453,5.6639174,1038.1372)"
+       inkscape:transform-center-y="1.732056" />
     <path
        sodipodi:type="star"
-       style="fill:#eeeeee;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       style="fill:#999999;fill-opacity:1;fill-rule:nonzero;stroke:none"
        id="path3018"
        sodipodi:sides="3"
        sodipodi:cx="3"
@@ -111,7 +94,7 @@
        inkscape:rounded="0"
        inkscape:randomized="0"
        d="m 18.119611,5 -22.6794164,13.093967 0,-26.187934 z"
-       transform="matrix(0.45822504,0,0,0.45822504,11.089417,1039.0711)"
-       inkscape:transform-center-x="-1.7320461" />
+       transform="matrix(0.39683453,-0.22911252,0.22911252,0.39683453,11.663882,1038.1372)"
+       inkscape:transform-center-y="1.732056" />
   </g>
 </svg>
