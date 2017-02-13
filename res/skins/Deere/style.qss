@@ -663,8 +663,12 @@ WWidget, QLabel {
   qproperty-layoutSpacing: 2;
 }
 
-#LoopingContainer WPushButton, #BeatLoopContainer WPushButton, #TransportContainer WPushButton, #VinylControlsContainer WPushButton {
+#LoopingContainer WPushButton, #TransportContainer WPushButton, #VinylControlsContainer WPushButton {
   font-size: 12px;
+}
+
+#BeatLoopButton {
+  font-size: 18px;
 }
 /* End spacing for Deck controls row */
 
@@ -1427,7 +1431,7 @@ WPushButton[value="2"]:hover {
   border: none;
 }
 
-#BeatJumpValue, #BeatLoopButton, #LoopMoveValue, #HotcueButton, #DeckCue, #DeckSync, #BeatsyncButton {
+#BeatJumpValue, #LoopMoveValue, #HotcueButton, #DeckCue, #DeckSync, #BeatsyncButton {
   font: bold 12px;
 }
 

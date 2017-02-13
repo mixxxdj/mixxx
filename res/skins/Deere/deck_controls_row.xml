@@ -20,6 +20,7 @@
           <!-- Expanding spacers in between control contexts -->
           <WidgetGroup><Size>-1me,1min</Size><Children/></WidgetGroup>
           <Template src="skin:beatloop.xml"/>
+          <WidgetGroup><Size>-1me,1min</Size><Children/></WidgetGroup>
           <Template src="skin:loop.xml"/>
           <WidgetGroup><Size>-1me,1min</Size><Children/></WidgetGroup>
           <Template src="skin:hotcue.xml"/>
