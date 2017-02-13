@@ -219,15 +219,30 @@ WWidget, QLabel {
 
 #MixerBarSection {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  margin: 4px 4px 0px 0px;
-  padding: 1px 2px 1px 2px;
-  border-width: 1px 0px 0px 1px;
-  border-style: solid;
-  border-color: #585858;
-  background-color: #0F0F0F;	/*
-  background-color: #333333;	*/
+  margin: 0px 0px 0px 0px;
+  padding: 2px 2px 1px 0px;	/*
+  border-top: 2px solid #151515;
+  border-bottom: 2px solid #151515;
+  border-right: 1px solid #585858;
+  background-color: #333333;
+  background-color: #0F0F0F;	*/
 }
+
+#MixerBarDivider {
+  image: url(skin:/graphics/divider_vert.svg) repeat left center;
+}
+
 #MixerBarLabel {
+  }
+  #MasterLabel, #HeadLabel, #Mic1Label, #Mic2Label, #Aux1Label, #Aux2Label {
+    border: 1px solid #585858;
+    border-right: 0px;
+    border-bottom: 0px;
+  }
+  #MasterLabel:hover, #HeadLabel:hover, #Mic1Label:hover,
+  #Mic2Label:hover, #Aux1Label:hover, #Aux2Label:hover {
+    background-color: #000000;
+    border-bottom-right-radius: 2px;
   }
   #MasterLabel {
     image: url(skin:/buttons/btn_master.svg) no-repeat center center;
@@ -248,26 +263,16 @@ WWidget, QLabel {
     image: url(skin:/buttons/btn_aux2.svg) no-repeat center center;
     }
 
-#MixerBarButton, #MixerBarSlider, #MixerBarKnob, #SamplerGainKnob {
-  border-radius: 2px;
-  }
-#MixerBarButton[displayValue="0"] {
+#MixerBarButton {
   border: 1px solid #000000;
   }
-#MixerBarButton[displayValue="1"] {
-  background-color: #666666;
-  }
-  
-/* This just results in an offset of the border and background,
-while Slider background and handle, as well as Hover-sensitive area
-are still drawn full-size.
-#MixerBarSlider {
-  margin-left: 4px;
-  padding-left: 4px;
-} */
-#MixerBarButton[displayValue="0"]:hover, #MixerBarButton[displayValue="1"]:hover, #MixerBarSlider:hover, #MixerBarKnob:hover {
-  border: 1px solid #666666;
+  #MixerBarButton:hover {
+    border: 1px solid #eeeeee;
+    }
+#MixerBarButton:hover, #MixerBarButton:hover, #MixerBarSlider:hover, #MixerBarKnob:hover {  /*
+  border: 1px solid #666666;  */
   background-color: #000000;
+  border-radius: 2px;
   }
 
 /*################################################################
