@@ -185,6 +185,9 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
             this, SLOT(slotEjectTrack(double)),
             Qt::DirectConnection);
 
+    m_pTrackLoaded = new ControlObject(ConfigKey(m_group, "track_loaded"));
+    m_pTrackLoaded->setReadOnly();
+
     // Quantization Controller for enabling and disabling the
     // quantization (alignment) of loop in/out positions and (hot)cues with
     // beats.
@@ -292,6 +295,7 @@ EngineBuffer::~EngineBuffer() {
     delete m_pRepeat;
     delete m_pSampleRate;
 
+    delete m_pTrackLoaded;
     delete m_pTrackSamples;
     delete m_pTrackSampleRate;
 
@@ -370,7 +374,7 @@ void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
     // All seeks need to be done in the Engine thread so queue it up.
     // Write the position before the seek type, to reduce a possible race
     // condition effect
-    DEBUG_ASSERT_AND_HANDLE(seekType != SEEK_PHASE) {
+    VERIFY_OR_DEBUG_ASSERT(seekType != SEEK_PHASE) {
         // SEEK_PHASE with a position is not supported
         // use SEEK_STANDARD for that
         seekType = SEEK_STANDARD;
@@ -485,20 +489,14 @@ void EngineBuffer::slotTrackLoading() {
     m_pTrackSamples->set(0); // Stop renderer
 }
 
-TrackPointer EngineBuffer::loadFakeTrack(double filebpm) {
-    TrackPointer pTrack(Track::newTemporary());
-    pTrack->setSampleRate(44100);
-    // 10 seconds
-    pTrack->setDuration(10);
-    if (filebpm > 0) {
-        double bpm = pTrack->setBpm(filebpm);
-        BeatsPointer pBeats = BeatFactory::makeBeatGrid(*pTrack, bpm, 0.0);
-        pTrack->setBeats(pBeats);
+void EngineBuffer::loadFakeTrack(TrackPointer pTrack, bool bPlay) {
+    if (bPlay) {
+        m_playButton->set((double)bPlay);
     }
-    slotTrackLoaded(pTrack, 44100, 44100 * 10);
-    m_pSyncControl->setLocalBpm(filebpm);
+    slotTrackLoaded(pTrack, pTrack->getSampleRate(),
+                    pTrack->getSampleRate() * pTrack->getDurationInt());
+    m_pSyncControl->setLocalBpm(pTrack->getBpm());
     m_pSyncControl->trackLoaded(pTrack, TrackPointer());
-    return pTrack;
 }
 
 // WARNING: Always called from the EngineWorker thread pool
@@ -521,6 +519,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_bSlipEnabledProcessing = false;
     m_dSlipPosition = 0.;
     m_dSlipRate = 0;
+    m_pTrackLoaded->forceSet(1);
     // Reset the pitch value for the new track.
     m_pause.unlock();
 
@@ -550,6 +549,7 @@ void EngineBuffer::ejectTrack() {
     //qDebug() << "EngineBuffer::ejectTrack()";
     m_pause.lock();
     m_iTrackLoading = 0;
+    m_pTrackLoaded->forceSet(0);
     m_pTrackSamples->set(0);
     m_pTrackSampleRate->set(0);
     TrackPointer pTrack = m_pCurrentTrack;
@@ -561,6 +561,9 @@ void EngineBuffer::ejectTrack() {
     m_visualKey->set(0.0);
     doSeekFractional(0.0, SEEK_EXACT);
     m_pause.unlock();
+
+    // Close open file handles by unloading the current track
+    m_pReader->newTrack(TrackPointer());
 
     if (pTrack) {
         emit(trackLoaded(TrackPointer(), pTrack));
@@ -594,9 +597,8 @@ void EngineBuffer::doSeekFractional(double fractionalPos, enum SeekRequest seekT
     if (isnan(fractionalPos)) {
         return;
     }
-    // Find new play frame, restrict to valid ranges.
-    double newPlayFrame = round(fractionalPos * m_trackSamplesOld / kSamplesPerFrame);
-    doSeekPlayPos(newPlayFrame * kSamplesPerFrame, seekType);
+    double newSamplePosition = fractionalPos * m_trackSamplesOld;
+    doSeekPlayPos(newSamplePosition, seekType);
 }
 
 void EngineBuffer::doSeekPlayPos(double new_playpos, enum SeekRequest seekType) {
@@ -716,7 +718,7 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
 
 void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     // Bail if we receive a buffer size with incomplete sample frames. Assert in debug builds.
-    DEBUG_ASSERT_AND_HANDLE((iBufferSize % kSamplesPerFrame) == 0) {
+    VERIFY_OR_DEBUG_ASSERT((iBufferSize % kSamplesPerFrame) == 0) {
         return;
     }
     m_pReader->process();
@@ -1133,7 +1135,7 @@ void EngineBuffer::processSyncRequests() {
 void EngineBuffer::processSeek(bool paused) {
     // We need to read position just after reading seekType, to ensure that we
     // read the matching position to seek_typ or a position from a new (second)
-    // seek just queued from an other thread
+    // seek just queued from another thread
     // The later case is ok, because we will process the new seek in the next
     // call anyway again.
 

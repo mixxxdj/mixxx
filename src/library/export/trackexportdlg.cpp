@@ -32,7 +32,7 @@ TrackExportDlg::TrackExportDlg(QWidget *parent,
 
 void TrackExportDlg::showEvent(QShowEvent* event) {
     QDialog::showEvent(event);
-    DEBUG_ASSERT_AND_HANDLE(m_worker) {
+    VERIFY_OR_DEBUG_ASSERT(m_worker) {
         // It's not worth checking for m_exporter != nullptr elsewhere in this
         // class... it'll be clear very quickly that someone screwed up and
         // forgot to call selectDestinationDirectory().

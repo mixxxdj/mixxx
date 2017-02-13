@@ -1,5 +1,6 @@
 #include "library/playlisttablemodel.h"
 #include "library/queryutil.h"
+#include "library/dao/trackschema.h"
 #include "mixer/playermanager.h"
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
@@ -91,7 +92,7 @@ int PlaylistTableModel::addTracks(const QModelIndex& index,
         }
     }
 
-    QList<TrackId> trackIds = m_trackDAO.addMultipleTracks(fileInfoList, true);
+    QList<TrackId> trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(fileInfoList, true);
 
     int tracksAdded = m_pTrackCollection->getPlaylistDAO().insertTracksIntoPlaylist(
         trackIds, m_iPlaylistId, position);

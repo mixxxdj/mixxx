@@ -727,6 +727,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Super Knob Mode")
             << tr("Set how linked effect parameters change when turning the Super Knob.");
 
+    add("EffectSlot_parameter_inversion")
+            << tr("Super Knob Inversion")
+            << tr("Inverts how linked effect parameters change when turning the Super Knob.");
+
     add("EffectSlot_button_parameter")
             << tr("Equalizer Parameter Kill")
             << tr("Holds the gain of the EQ to zero while active.")

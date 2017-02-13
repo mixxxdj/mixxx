@@ -7,6 +7,10 @@
 #include "library/dao/directorydao.h"
 #include "library/queryutil.h"
 
+#include "util/db/sqllikewildcards.h"
+#include "util/db/sqllikewildcardescaper.h"
+
+
 DirectoryDAO::DirectoryDAO(QSqlDatabase& database)
             : m_database(database) {
 }
@@ -106,11 +110,10 @@ QSet<TrackId> DirectoryDAO::relocateDirectory(const QString& oldFolder,
         return QSet<TrackId>();
     }
 
-    FieldEscaper escaper(m_database);
     // on Windows the absolute path starts with the drive name
     // we also need to check for that
-    QString startsWithOldFolder = escaper.escapeStringForLike(
-        QDir(oldFolder).absolutePath() + "/", '%') + "%";
+    QString startsWithOldFolder = SqlLikeWildcardEscaper::apply(
+        QDir(oldFolder).absolutePath() + "/", kSqlLikeMatchAll) + kSqlLikeMatchAll;
 
     // Also update information in the track_locations table. This is where mixxx
     // gets the location information for a track. Put marks around %1 so that
@@ -118,8 +121,8 @@ QSet<TrackId> DirectoryDAO::relocateDirectory(const QString& oldFolder,
     query.prepare(QString("SELECT library.id, track_locations.id, track_locations.location "
                           "FROM library INNER JOIN track_locations ON "
                           "track_locations.id = library.location WHERE "
-                          "track_locations.location LIKE '%1' ESCAPE '%'")
-                  .arg(startsWithOldFolder));
+                          "track_locations.location LIKE '%1' ESCAPE '%2'")
+                  .arg(startsWithOldFolder, kSqlLikeMatchAll));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not relocate path of tracks";
         return QSet<TrackId>();

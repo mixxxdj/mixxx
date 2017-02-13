@@ -29,23 +29,23 @@ static const bool sDebug = false;
 static const int kIdColumn = 0;
 static const int kMaxSortColumns = 3;
 
-// Constant for getModelSetting(name) 
+// Constant for getModelSetting(name)
 static const char* COLUMNS_SORTING = "ColumnsSorting";
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
                                      TrackCollection* pTrackCollection,
                                      const char* settingsNamespace)
         : QAbstractTableModel(pParent),
-          TrackModel(pTrackCollection->getDatabase(), settingsNamespace),
+          TrackModel(pTrackCollection->database(), settingsNamespace),
           m_pTrackCollection(pTrackCollection),
-          m_trackDAO(pTrackCollection->getTrackDAO()),
-          m_database(pTrackCollection->getDatabase()),
+          m_database(pTrackCollection->database()),
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
           m_bInitialized(false),
           m_currentSearch("") {
+    DEBUG_ASSERT(m_pTrackCollection);
     connect(&PlayerInfo::instance(), SIGNAL(trackLoaded(QString, TrackPointer)),
             this, SLOT(trackLoaded(QString, TrackPointer)));
-    connect(&m_trackDAO, SIGNAL(forceModelUpdate()),
+    connect(&m_pTrackCollection->getTrackDAO(), SIGNAL(forceModelUpdate()),
             this, SLOT(select()));
     trackLoaded(m_previewDeckGroup, PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
 }
@@ -108,10 +108,6 @@ void BaseSqlTableModel::initHeaderData() {
                         tr("Cover Art"), 90);
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN,
                         tr("ReplayGain"), 50);
-}
-
-QSqlDatabase BaseSqlTableModel::database() const {
-    return m_database;
 }
 
 void BaseSqlTableModel::setHeaderProperties(
@@ -185,6 +181,41 @@ bool BaseSqlTableModel::isColumnHiddenByDefault(int column) {
     return false;
 }
 
+void BaseSqlTableModel::clearRows() {
+    DEBUG_ASSERT(m_rowInfo.empty() == m_trackIdToRows.empty());
+    DEBUG_ASSERT(m_rowInfo.size() >= m_trackIdToRows.size());
+    if (!m_rowInfo.isEmpty()) {
+        beginRemoveRows(QModelIndex(), 0, m_rowInfo.size() - 1);
+        m_rowInfo.clear();
+        m_trackIdToRows.clear();
+        endRemoveRows();
+    }
+    DEBUG_ASSERT(m_rowInfo.isEmpty());
+    DEBUG_ASSERT(m_trackIdToRows.isEmpty());
+}
+
+void BaseSqlTableModel::replaceRows(
+            QVector<RowInfo>&& rows,
+            TrackId2Rows&& trackIdToRows) {
+    // NOTE(uklotzde): Use r-value references for parameters here, because
+    // conceptually those parameters should replace the corresponding internal
+    // member variables. Currently Qt4/5 doesn't support move semantics and
+    // instead prevents unnecessary deep copying by implicit sharing (COW)
+    // behind the scenes. Moving would be more efficient, although implicit
+    // sharing meets all requirements. If Qt will ever add move support for
+    // its container types in the future this code becomes even more efficient.
+    DEBUG_ASSERT(rows.empty() == trackIdToRows.empty());
+    DEBUG_ASSERT(rows.size() >= trackIdToRows.size());
+    if (rows.isEmpty()) {
+        clearRows();
+    } else {
+        beginInsertRows(QModelIndex(), 0, rows.size() - 1);
+        m_rowInfo = rows;
+        m_trackIdToRows = trackIdToRows;
+        endInsertRows();
+    }
+}
+
 void BaseSqlTableModel::select() {
     if (!m_bInitialized) {
         return;
@@ -219,27 +250,23 @@ void BaseSqlTableModel::select() {
     // This causes a memory savings since QSqlCachedResult (what QtSQLite uses)
     // won't allocate a giant in-memory table that we won't use at all.
     query.setForwardOnly(true);
-    query.prepare(queryString);
-
+    if (!query.prepare(queryString)) {
+        LOG_FAILED_QUERY(query);
+        return;
+    }
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return;
     }
 
-    // Remove all the rows from the table. We wait to do this until after the
-    // table query has succeeded. See Bug #1090888.
+    // Remove all the rows from the table after(!) the query has been
+    // executed successfully. See Bug #1090888.
     // TODO(rryan) we could edit the table in place instead of clearing it?
-    if (!m_rowInfo.isEmpty()) {
-        beginRemoveRows(QModelIndex(), 0, m_rowInfo.size() - 1);
-        m_rowInfo.clear();
-        m_trackIdToRows.clear();
-        endRemoveRows();
-    }
-    // sqlite does not set size and m_rowInfo was just cleared
-    //if (sDebug) {
-    //    qDebug() << "Rows returned" << rows << m_rowInfo.size();
-    //}
+    clearRows();
 
+    // The size of the result set is not known in advance for a
+    // forward-only query, so we cannot reserve memory for rows
+    // in advance.
     QVector<RowInfo> rowInfo;
     QSet<TrackId> trackIds;
     while (query.next()) {
@@ -293,7 +320,7 @@ void BaseSqlTableModel::select() {
     // should not disturb that if we are only removing tracks.
     qStableSort(rowInfo.begin(), rowInfo.end());
 
-    m_trackIdToRows.clear();
+    TrackId2Rows trackIdToRows;
     for (int i = 0; i < rowInfo.size(); ++i) {
         const RowInfo& row = rowInfo[i];
 
@@ -303,19 +330,18 @@ void BaseSqlTableModel::select() {
             rowInfo.resize(i);
             break;
         }
-        QLinkedList<int>& rows = m_trackIdToRows[row.trackId];
-        rows.push_back(i);
+        trackIdToRows[row.trackId].push_back(i);
     }
 
     // We're done! Issue the update signals and replace the master maps.
-    if (!rowInfo.isEmpty()) {
-        beginInsertRows(QModelIndex(), 0, rowInfo.size() - 1);
-        m_rowInfo = rowInfo;
-        endInsertRows();
-    }
+    replaceRows(
+            std::move(rowInfo),
+            std::move(trackIdToRows));
+    // Both rowInfo and trackIdToRows (might) have been moved and
+    // must not be used afterwards!
 
     qDebug() << this << "select() took" << time.elapsed().debugMillisWithUnit()
-             << rowInfo.size();
+             << m_rowInfo.size();
 }
 
 void BaseSqlTableModel::setTable(const QString& tableName,
@@ -398,24 +424,24 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
         qWarning() << "BaseSqlTableModel::setSort invalid column:" << column;
         return;
     }
-        
+
     // There's no item to sort already, load from Settings last sort
     if (m_sortColumns.isEmpty()) {
         QString val = getModelSetting(COLUMNS_SORTING);
         QTextStream in(&val);
-        
+
         while (!in.atEnd()) {
             int ordI = -1;
             QString name;
-            
+
             in >> name >> ordI;
-            
+
             int col = fieldIndex(name);
             if (col < 0) continue;
-            
+
             Qt::SortOrder ord;
             ord = ordI > 0 ? Qt::AscendingOrder : Qt::DescendingOrder;
-            
+
             m_sortColumns << SortColumn(col, ord);
         }
     }
@@ -439,13 +465,13 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
             m_sortColumns.removeLast();
         }
     }
-    
+
     // Write new sortColumns order to user settings
     QString val;
     QTextStream out(&val);
     for (SortColumn& sc : m_sortColumns) {
 
-        QString name;        
+        QString name;
         if (sc.m_column > 0 && sc.m_column < m_tableColumns.size()) {
             name = m_tableColumns[sc.m_column];
         } else {
@@ -463,7 +489,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     if (sDebug) {
         qDebug() << "setSort() sortColumns:" << val;
     }
-    
+
 
     // we have two selects for sorting, since keeping the select history
     // across the two selects is hard, we do this only for the trackSource
@@ -484,10 +510,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
             m_tableOrderBy = "ORDER BY ";
             QString field = m_tableColumns[column];
             QString sort_field = QString("%1.%2").arg(m_tableName, field);
-            m_tableOrderBy.append(sort_field);
-        #ifdef __SQLITE3__
-            m_tableOrderBy.append(" COLLATE localeAwareCompare");
-        #endif
+            m_tableOrderBy.append(DbConnection::collateLexicographically(sort_field));
             m_tableOrderBy.append((order == Qt::AscendingOrder) ? " ASC" : " DESC");
         }
         m_sortColumns.clear();
@@ -504,7 +527,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
                     sort_field = "RANDOM()";
                 } else {
                     // we can't sort by other table columns here since primary sort is a track
-                    // column: skip   
+                    // column: skip
                     continue;
                 }
             } else {
@@ -512,16 +535,12 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
                 int ccColumn = sc.m_column - m_tableColumns.size() + 1;
                 sort_field = m_trackSource->columnSortForFieldIndex(ccColumn);
             }
-            DEBUG_ASSERT_AND_HANDLE(!sort_field.isEmpty()) {
+            VERIFY_OR_DEBUG_ASSERT(!sort_field.isEmpty()) {
                 continue;
             }
 
             m_trackSourceOrderBy.append(first ? "ORDER BY ": ", ");
-            m_trackSourceOrderBy.append(sort_field);
-
-    #ifdef __SQLITE3__
-            m_trackSourceOrderBy.append(" COLLATE localeAwareCompare");
-    #endif
+            m_trackSourceOrderBy.append(DbConnection::collateLexicographically(sort_field));
             m_trackSourceOrderBy.append((sc.m_order == Qt::AscendingOrder) ?
                     " ASC" : " DESC");
             //qDebug() << m_trackSourceOrderBy;
@@ -741,7 +760,7 @@ bool BaseSqlTableModel::setData(
 
     // TODO(rryan) ugly and only works because the mixxx library tables are the
     // only ones that aren't read-only. This should be moved into BTC.
-    TrackPointer pTrack = m_trackDAO.getTrack(trackId);
+    TrackPointer pTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
     if (!pTrack) {
         return false;
     }
@@ -826,7 +845,7 @@ TrackId BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
 }
 
 TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
-    return m_trackDAO.getTrack(getTrackId(index));
+    return m_pTrackCollection->getTrackDAO().getTrack(getTrackId(index));
 }
 
 QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
@@ -923,7 +942,7 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         pTrack->setBpmLocked(value.toBool());
     } else {
         // We never should get up to this point!
-        DEBUG_ASSERT_AND_HANDLE(false) {
+        VERIFY_OR_DEBUG_ASSERT(false) {
             qWarning() << "Column"
                     << m_tableColumnCache.columnNameForFieldIndex(column)
                     << "is not editable!";
@@ -1044,7 +1063,7 @@ void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
         trackIds.append(trackId);
     }
 
-    m_trackDAO.hideTracks(trackIds);
+    m_pTrackCollection->hideTracks(trackIds);
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.

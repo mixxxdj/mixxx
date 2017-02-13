@@ -57,9 +57,6 @@ class SoundSourceProviderRegistryTest : public testing::Test {
         m_supportedFileExtensions.append(FILE_EXT2);
     }
 
-    void TearDown() override {
-    }
-
     SoundSourceProviderPointer createProvider(
             QString name,
             QStringList supportedFileExtensions,

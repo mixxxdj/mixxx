@@ -4,15 +4,9 @@
 #include <QTemporaryFile>
 
 #include "library/queryutil.h"
+#include "util/db/sqllikewildcardescaper.h"
 
-class QueryUtilTest : public testing::Test {
-  protected:
-    virtual void SetUp() {
-    }
-
-    virtual void TearDown() {
-    }
-};
+class QueryUtilTest : public testing::Test {};
 
 TEST_F(QueryUtilTest, FieldEscaperEscapesQuotes) {
     QTemporaryFile databaseFile("mixxxdb.sqlite");
@@ -48,5 +42,5 @@ TEST_F(QueryUtilTest, FieldEscaperEscapesForLike) {
     FieldEscaper f(db);
 
     EXPECT_STREQ(qPrintable(QString("xx44xx4%yy4_yy")),
-                 qPrintable(f.escapeStringForLike("xx4xx%yy_yy", '4')));
+                 qPrintable(SqlLikeWildcardEscaper::apply("xx4xx%yy_yy", '4')));
 }

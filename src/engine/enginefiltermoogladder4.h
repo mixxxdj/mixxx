@@ -21,12 +21,16 @@
 #include "util/sample.h"
 #include "util/timer.h"
 
+namespace {
+
 // 'thermal voltage of a transistor'
 // defines the strange of the non linearity
 // 1.2 = drives the transistor in full range, giving a maximum Waveshaper effect
 // big values disables the non linearity
-static const float kVt = 1.2;
-static const float kPi = 3.14159265358979323846;
+const float kVt = 1.2;
+const float kPi = 3.14159265358979323846;
+
+} // anonymous namespace
 
 enum MoogMode {
     LP,
@@ -49,9 +53,13 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
     };
 
   public:
-    EngineFilterMoogLadderBase(unsigned int sampleRate, float cutoff, float resonance) {
-        setParameter(sampleRate, cutoff, resonance);
+    EngineFilterMoogLadderBase(
+            unsigned int sampleRate, float cutoff, float resonance) {
         initBuffers();
+        setParameter(sampleRate, cutoff, resonance);
+        m_postGain = m_postGainNew;
+        m_kacr = m_kacrNew;
+        m_k2vg = m_k2vgNew;
     }
 
     virtual ~EngineFilterMoogLadderBase() {
@@ -60,6 +68,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
     void initBuffers() {
         memset(&m_buf, 0, sizeof(m_buf));
         m_buffersClear = true;
+        m_doRamping = true;
     }
 
     // cutoff  in Hz
@@ -79,17 +88,19 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
         float x  = -2.0 * kPi * kfcr * kf; // input for taylor approximations
         float exp_out  = expf(x);
-        m_k2vg = v2 * (1 - exp_out); // filter tuning
+        m_k2vgNew = v2 * (1 - exp_out); // filter tuning
 
         // Resonance correction for self oscillation ~4
-        m_kacr = resonance * (-3.9364 * (kfc*kfc) + 1.8409 * kfc + 0.9968);
+        m_kacrNew = resonance * (-3.9364 * (kfc*kfc) + 1.8409 * kfc + 0.9968);
 
         if (MODE == HP_OVERS || MODE == HP) {
-            m_postGain = 1;
+            m_postGainNew = 1;
         } else {
-            m_postGain = (1 + resonance / 4 * (1.1f + cutoff / sampleRate * 3.5f))
+            m_postGainNew = (1 + resonance / 4 * (1.1f + cutoff / sampleRate * 3.5f))
                     * (2 - (1.0f - resonance / 4) * (1.0f - resonance / 4));
         }
+
+        m_doRamping = true;
 
         // qDebug() << "setParameter" << m_cutoff << m_resonance;
     }
@@ -109,12 +120,34 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput,
                          const int iBufferSize) {
-        if (!m_buffersClear) {
+        if (!m_doRamping) {
             for (int i = 0; i < iBufferSize; i += 2) {
                 pOutput[i] = processSample(pIn[i], &m_buf[0]);
                 pOutput[i+1] = processSample(pIn[i+1], &m_buf[1]);
             }
+        } else if (!m_buffersClear) {
+            float startPostGain = m_postGain;
+            float startKacr = m_kacr;
+            float startK2vg = m_k2vg;
+            double cross_mix = 0.0;
+            double cross_inc = 2.0 / static_cast<double>(iBufferSize);
+
+            for (int i = 0; i < iBufferSize; i += 2) {
+                cross_mix += cross_inc;
+                m_postGain = m_postGainNew * cross_mix
+                        + startPostGain * (1.0 - cross_mix);
+                m_kacr = m_kacrNew * cross_mix
+                        + startKacr * (1.0 - cross_mix);
+                m_k2vg = m_k2vgNew * cross_mix
+                        + startK2vg * (1.0 - cross_mix);
+                pOutput[i] = processSample(pIn[i], &m_buf[0]);
+                pOutput[i+1] = processSample(pIn[i+1], &m_buf[1]);
+            }
+            
         } else {
+            m_postGain = m_postGainNew;
+            m_kacr = m_kacrNew;
+            m_k2vg = m_k2vgNew;
             double cross_mix = 0.0;
             double cross_inc = 4.0 / static_cast<double>(iBufferSize);
             for (int i = 0; i < iBufferSize; i += 2) {
@@ -144,15 +177,16 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
                     cross_mix += cross_inc;
                 }
             }
-            m_buffersClear = false;
         }
+        m_doRamping = false;
+        m_buffersClear = false;
     }
 
     inline CSAMPLE processSample(float input, struct Buffer* pB) {
 
         const float v2 = 2 + kVt;   // twice the 'thermal voltage of a transistor'
 
-        // cascade of 4 1st order sections
+        // cascade of 4 1st-order sections
         float x1 = input - pB->m_amf * m_kacr;
         float az1 = pB->m_azt1 + m_k2vg * tanh_approx(x1 / v2);
         float at1 = m_k2vg * tanh_approx(az1 / v2);
@@ -214,6 +248,12 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
     float m_postGain;
     float m_kacr; // resonance factor
     float m_k2vg; // IIF factor
+
+    float m_postGainNew;
+    float m_kacrNew; // resonance factor
+    float m_k2vgNew; // IIF factor
+
+    bool m_doRamping;
 
     bool m_buffersClear;
 };

@@ -129,7 +129,7 @@ bool SoundManagerConfig::writeToDisk() const {
     docElement.setAttribute("deck_count", m_deckCount);
     doc.appendChild(docElement);
 
-    foreach (QString device, m_outputs.keys().toSet().unite(m_inputs.keys().toSet())) {
+    for (const auto& device: getDevices()) {
         QDomElement devElement(doc.createElement("SoundDevice"));
         devElement.setAttribute("name", device);
         foreach (AudioInput in, m_inputs.values(device)) {
@@ -220,7 +220,7 @@ void SoundManagerConfig::setDeckCount(unsigned int deckCount) {
 void SoundManagerConfig::setCorrectDeckCount(int configuredDeckCount) {
     int minimum_deck_count = 0;
 
-    foreach (QString device, m_outputs.keys().toSet().unite(m_inputs.keys().toSet())) {
+    for (const auto& device: getDevices()) {
         foreach (AudioInput in, m_inputs.values(device)) {
             if ((in.getType() == AudioInput::DECK ||
                  in.getType() == AudioInput::VINYLCONTROL ||
@@ -253,7 +253,7 @@ unsigned int SoundManagerConfig::getAudioBufferSizeIndex() const {
 unsigned int SoundManagerConfig::getFramesPerBuffer() const {
     // endless loop otherwise
     unsigned int audioBufferSizeIndex = m_audioBufferSizeIndex;
-    DEBUG_ASSERT_AND_HANDLE(audioBufferSizeIndex > 0) {
+    VERIFY_OR_DEBUG_ASSERT(audioBufferSizeIndex > 0) {
         audioBufferSizeIndex = kDefaultAudioBufferSizeIndex;
     }
     unsigned int framesPerBuffer = 1;
@@ -303,46 +303,6 @@ void SoundManagerConfig::clearOutputs() {
 
 void SoundManagerConfig::clearInputs() {
     m_inputs.clear();
-}
-
-/**
- * Removes any outputs with devices that do not exist in the given
- * SoundManager.
- */
-void SoundManagerConfig::filterOutputs(SoundManager *soundManager) {
-    QSet<QString> deviceNames;
-    QSet<QString> toDelete;
-    foreach (SoundDevice *device, soundManager->getDeviceList(m_api, true, false)) {
-        deviceNames.insert(device->getInternalName());
-    }
-    foreach (QString deviceName, m_outputs.uniqueKeys()) {
-        if (!deviceNames.contains(deviceName)) {
-            toDelete.insert(deviceName);
-        }
-    }
-    foreach (QString del, toDelete) {
-        m_outputs.remove(del);
-    }
-}
-
-/**
- * Removes any inputs with devices that do not exist in the given
- * SoundManager.
- */
-void SoundManagerConfig::filterInputs(SoundManager *soundManager) {
-    QSet<QString> deviceNames;
-    QSet<QString> toDelete;
-    foreach (SoundDevice *device, soundManager->getDeviceList(m_api, false, true)) {
-        deviceNames.insert(device->getInternalName());
-    }
-    foreach (QString deviceName, m_inputs.uniqueKeys()) {
-        if (!deviceNames.contains(deviceName)) {
-            toDelete.insert(deviceName);
-        }
-    }
-    foreach (QString del, toDelete) {
-        m_inputs.remove(del);
-    }
 }
 
 /**
@@ -417,3 +377,16 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
 
     m_syncBuffers = kDefaultSyncBuffers;
 }
+
+QSet<QString> SoundManagerConfig::getDevices() const {
+    QSet<QString> devices;
+    devices.reserve(m_outputs.size() + m_inputs.size());
+    for (auto it = m_outputs.constBegin(); it != m_outputs.constEnd(); ++it) {
+        devices.insert(it.key());
+    }
+    for (auto it = m_inputs.constBegin(); it != m_inputs.constEnd(); ++it) {
+        devices.insert(it.key());
+    }
+    return devices;
+}
+

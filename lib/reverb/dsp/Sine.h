@@ -1,11 +1,11 @@
 /*
 	dsp/Sine.h
-	
-	Copyright 2003-13 Tim Goetze <tim@quitte.de>
-	
+
+	Copyright 2003-14 Tim Goetze <tim@quitte.de>
+
 	http://quitte.de/dsp/
 
-	Direct form I recursive sin() generator.  Utilising doubles 
+	Direct form I recursive sin() generator.  Utilising doubles
 	for stability.
 
 */
@@ -26,11 +26,11 @@
 	02111-1307, USA or point your web browser to http://www.gnu.org.
 */
 
-#ifndef _DSP_SINE_H_
-#define _DSP_SINE_H_
+#ifndef DSP_SINE_H
+#define DSP_SINE_H
 
 namespace DSP {
-	
+
 class Sine
 {
 	public:
@@ -40,7 +40,7 @@ class Sine
 
 	public:
 		Sine()
-			{ 
+			{
 				b = 0;
 				y[0] = y[1] = 0;
 				z = 0;
@@ -63,16 +63,16 @@ class Sine
 
 		inline void set_f (double w, double phase)
 			{
-				b = 2 * cos (w);
+				b = 2*cos(w);
 				y[0] = sin (phase - w);
-				y[1] = sin (phase - w * 2);
+				y[1] = sin (phase - 2*w);
 				z = 0;
 			}
 
 		/* advance and return 1 sample */
 		inline double get()
 			{
-				register double s = b * y[z]; 
+				register double s = b*y[z];
 				z ^= 1;
 				s -= y[z];
 				return y[z] = s;
@@ -80,14 +80,11 @@ class Sine
 
 		double get_phase()
 			{
-				double x0 = y[z], x1 = b * y[z] - y[z^1];
-				double phi = asin (x0);
-				
-				/* slope is falling, we're into the 2nd half. */
-				if (x1 < x0)
-					return M_PI - phi;
+				double x0 = y[z], x1 = b*y[z] - y[z^1];
+				double phi = asin(x0);
 
-				return phi;
+				/* slope is falling: into the 2nd half. */
+				return x1 < x0 ? M_PI - phi : phi;
 			}
 };
 
@@ -104,7 +101,7 @@ class DampedSine
 
 		inline double get()
 			{
-				register double s = b * y[z]; 
+				register double s = b * y[z];
 				z ^= 1;
 				s -= d * y[z];
 				return y[z] = d * s;
@@ -113,4 +110,4 @@ class DampedSine
 
 } /* namespace DSP */
 
-#endif /* _DSP_SINE_H_ */
+#endif /* DSP_SINE_H */

@@ -32,7 +32,7 @@ SoundDeviceNetwork::SoundDeviceNetwork(UserSettingsPointer config,
 SoundDeviceNetwork::~SoundDeviceNetwork() {
 }
 
-Result SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) {
+SoundDeviceError SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) {
     Q_UNUSED(syncBuffers);
     qDebug() << "SoundDeviceNetwork::open()" << getInternalName();
 
@@ -68,14 +68,14 @@ Result SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) {
 
     m_pNetworkStream->startStream(m_dSampleRate);
 
-    return OK;
+    return SOUNDDEVICE_ERROR_OK;
 }
 
 bool SoundDeviceNetwork::isOpen() const {
     return (m_inputFifo != NULL || m_outputFifo != NULL);
 }
 
-Result SoundDeviceNetwork::close() {
+SoundDeviceError SoundDeviceNetwork::close() {
     //qDebug() << "SoundDeviceNetwork::close()" << getInternalName();
     m_pNetworkStream->stopStream();
     if (m_outputFifo) {
@@ -86,7 +86,7 @@ Result SoundDeviceNetwork::close() {
         delete m_inputFifo;
         m_inputFifo = NULL;
     }
-    return OK;
+    return SOUNDDEVICE_ERROR_OK;
 }
 
 QString SoundDeviceNetwork::getError() const {
@@ -264,5 +264,6 @@ void SoundDeviceNetwork::writeProcess() {
                     size2 / m_iNumOutputChannels);
         }
         m_outputFifo->releaseReadRegions(copyCount);
+        m_pNetworkStream->writingDone(copyCount);
     }
 }

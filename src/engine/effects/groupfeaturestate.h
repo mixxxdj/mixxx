@@ -24,7 +24,9 @@ struct GroupFeatureState {
               has_file_key(false),
               file_key(mixxx::track::io::key::INVALID),
               has_key(false),
-              key(mixxx::track::io::key::INVALID) {
+              key(mixxx::track::io::key::INVALID),
+              has_gain(false),
+              gain(1.0) {
     }
 
     // The current player position (if it is a player with the concept of a
@@ -70,6 +72,9 @@ struct GroupFeatureState {
     // The effective musical key of this group (pitch-shifted).
     bool has_key;
     mixxx::track::io::key::ChromaticKey key;
+
+    bool has_gain;
+    double gain;
 };
 
 #endif /* GROUPFEATURESTATE_H */

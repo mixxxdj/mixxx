@@ -687,7 +687,7 @@ double ControllerEngine::getDefaultParameter(QString group, QString name) {
    Output:  -
    -------- ------------------------------------------------------ */
 void ControllerEngine::log(QString message) {
-    qDebug() << message;
+    controllerDebug(message);
 }
 
 /* -------- ------------------------------------------------------

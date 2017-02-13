@@ -1,3 +1,5 @@
+#include "library/dao/trackdao.h"
+
 #include <QtDebug>
 #include <QDir>
 #include <QDirIterator>
@@ -8,14 +10,17 @@
 #include <QCoreApplication>
 #include <QChar>
 
-#include "library/dao/trackdao.h"
-
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "library/queryutil.h"
+#include "util/db/sqlstringformatter.h"
+#include "util/db/sqllikewildcards.h"
+#include "util/db/sqllikewildcardescaper.h"
+#include "util/db/sqltransaction.h"
 #include "library/coverart.h"
 #include "library/coverartutils.h"
-#include "library/dao/cratedao.h"
+#include "library/dao/trackschema.h"
+#include "library/crate/cratestorage.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
@@ -66,14 +71,12 @@ const int kRecentTracksCacheSize = 5;
 TrackDAO::TrackDAO(QSqlDatabase& database,
                    CueDAO& cueDao,
                    PlaylistDAO& playlistDao,
-                   CrateDAO& crateDao,
                    AnalysisDao& analysisDao,
                    LibraryHashDAO& libraryHashDao,
                    UserSettingsPointer pConfig)
         : m_database(database),
           m_cueDao(cueDao),
           m_playlistDao(playlistDao),
-          m_crateDao(crateDao),
           m_analysisDao(analysisDao),
           m_libraryHashDao(libraryHashDao),
           m_pConfig(pConfig),
@@ -127,14 +130,14 @@ void TrackDAO::finish() {
     qDebug() << "Clearing played information for this session";
     QSqlQuery query(m_database);
     if (!query.exec("UPDATE library SET played=0 where played>0")) {
-	// Note: whithout where, this call updates every row which takes long
-	LOG_FAILED_QUERY(query)
+        // Note: whithout where, this call updates every row which takes long
+        LOG_FAILED_QUERY(query)
                 << "Error clearing played value";
     }
 
     // Do housekeeping on the LibraryHashes/track_locations tables.
     qDebug() << "Cleaning LibraryHashes/track_locations tables.";
-    ScopedTransaction transaction(m_database);
+    SqlTransaction transaction(m_database);
     QStringList deletedHashDirs = m_libraryHashDao.getDeletedDirectories();
 
     // Delete any LibraryHashes directories that have been marked as deleted.
@@ -177,18 +180,21 @@ TrackId TrackDAO::getTrackId(const QString& absoluteFilePath) {
 }
 
 QList<TrackId> TrackDAO::getTrackIds(const QList<QFileInfo>& files) {
-
     QList<TrackId> trackIds;
+    trackIds.reserve(files.size());
 
-    QStringList pathList;
-    FieldEscaper escaper(m_database);
-    for (const auto& file: files) {
-        pathList << escaper.escapeString(file.absoluteFilePath());
-    }
     QSqlQuery query(m_database);
-    query.prepare(QString("SELECT library.id FROM library INNER JOIN "
-                          "track_locations ON library.location = track_locations.id "
-                          "WHERE track_locations.location in (%1)").arg(pathList.join(",")));
+    {
+        QStringList pathList;
+        pathList.reserve(files.size());
+        for (const auto& file: files) {
+            pathList << file.absoluteFilePath();
+        }
+        query.prepare(QString("SELECT library.id FROM library INNER JOIN "
+                              "track_locations ON library.location = track_locations.id "
+                              "WHERE track_locations.location in (%1)").arg(
+                                      SqlStringFormatter::formatList(m_database, pathList)));
+    }
     if (query.exec()) {
         const int idColumn = query.record().indexOf("id");
         while (query.next()) {
@@ -288,7 +294,7 @@ void TrackDAO::saveTrack(Track* pTrack) {
 
 void TrackDAO::slotTrackDirty(Track* pTrack) {
     // Should not be possible.
-    DEBUG_ASSERT_AND_HANDLE(pTrack != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
         return;
     }
 
@@ -308,7 +314,7 @@ void TrackDAO::slotTrackDirty(Track* pTrack) {
 
 void TrackDAO::slotTrackClean(Track* pTrack) {
     // Should not be possible.
-    DEBUG_ASSERT_AND_HANDLE(pTrack != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
         return;
     }
 
@@ -343,7 +349,7 @@ void TrackDAO::databaseTracksChanged(QSet<TrackId> tracksChanged) {
 
 void TrackDAO::slotTrackChanged(Track* pTrack) {
     // Should not be possible.
-    DEBUG_ASSERT_AND_HANDLE(pTrack != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
         return;
     }
 
@@ -370,7 +376,7 @@ void TrackDAO::addTracksPrepare() {
         addTracksFinish(true);
     }
     // Start the transaction
-    m_pTransaction = std::make_unique<ScopedTransaction>(m_database);
+    m_pTransaction = std::make_unique<SqlTransaction>(m_database);
 
     m_pQueryTrackLocationInsert = std::make_unique<QSqlQuery>(m_database);
     m_pQueryTrackLocationSelect = std::make_unique<QSqlQuery>(m_database);
@@ -553,7 +559,7 @@ namespace {
 
 TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
     DEBUG_ASSERT(pTrack);
-    DEBUG_ASSERT_AND_HANDLE(m_pQueryLibraryInsert || m_pQueryTrackLocationInsert ||
+    VERIFY_OR_DEBUG_ASSERT(m_pQueryLibraryInsert || m_pQueryTrackLocationInsert ||
         m_pQueryLibrarySelect || m_pQueryTrackLocationSelect) {
         qDebug() << "TrackDAO::addTracksAddTrack: needed SqlQuerys have not "
                 "been prepared. Skipping track"
@@ -642,7 +648,7 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
         // track location into the table AND we could not retrieve the id of
         // that track location from the same table. "It shouldn't
         // happen"... unless I screwed up - Albert :)
-        DEBUG_ASSERT_AND_HANDLE(trackLocationId.isValid()) {
+        VERIFY_OR_DEBUG_ASSERT(trackLocationId.isValid()) {
             return TrackId();
         }
 
@@ -650,7 +656,7 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
             return TrackId();
         }
         trackId = TrackId(m_pQueryLibraryInsert->lastInsertId());
-        DEBUG_ASSERT_AND_HANDLE(trackId.isValid()) {
+        VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
             return TrackId();
         }
 
@@ -833,22 +839,24 @@ QList<TrackId> TrackDAO::addMultipleTracks(
     return trackIds;
 }
 
-void TrackDAO::hideTracks(const QList<TrackId>& trackIds) {
+bool TrackDAO::onHidingTracks(
+        SqlTransaction& transaction,
+        const QList<TrackId>& trackIds) {
+    DEBUG_ASSERT(transaction);
     QStringList idList;
     for (const auto& trackId: trackIds) {
         idList.append(trackId.toString());
     }
+    FwdSqlQuery query(m_database, QString(
+            "UPDATE library SET mixxx_deleted=1 WHERE id in (%1)").arg(
+                    idList.join(",")));
+    return !query.hasError() && query.execPrepared();
+}
 
-    QSqlQuery query(m_database);
-    query.prepare(QString("UPDATE library SET mixxx_deleted=1 WHERE id in (%1)")
-                  .arg(idList.join(",")));
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
-
+void TrackDAO::afterHidingTracks(
+        const QList<TrackId>& trackIds) {
     // This signal is received by basetrackcache to remove the tracks from cache
-    QSet<TrackId> tracksRemovedSet = QSet<TrackId>::fromList(trackIds);
-    emit(tracksRemoved(tracksRemovedSet));
+    emit(tracksRemoved(QSet<TrackId>::fromList(trackIds)));
 }
 
 // If a track has been manually "hidden" from Mixxx's library by the user via
@@ -857,37 +865,40 @@ void TrackDAO::hideTracks(const QList<TrackId>& trackIds) {
 // up in the library views again.
 // This function should get called if you drag-and-drop a file that's been
 // "hidden" from Mixxx back into the library view.
-void TrackDAO::unhideTracks(const QList<TrackId>& trackIds) {
+bool TrackDAO::onUnhidingTracks(
+        SqlTransaction& transaction,
+        const QList<TrackId>& trackIds) {
+    DEBUG_ASSERT(transaction);
     QStringList idList;
     for (const auto& trackId: trackIds) {
         idList.append(trackId.toString());
     }
-
-    QSqlQuery query(m_database);
-    query.prepare(QString("UPDATE library SET mixxx_deleted=0 "
+    FwdSqlQuery query(m_database, QString(
+            "UPDATE library SET mixxx_deleted=0 "
                   "WHERE id in (%1)").arg(idList.join(",")));
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
-    QSet<TrackId> tracksAddedSet = QSet<TrackId>::fromList(trackIds);
-    emit(tracksAdded(tracksAddedSet));
+    return !query.hasError() && query.execPrepared();
 }
 
-void TrackDAO::purgeTracks(const QString& dir) {
-    QSqlQuery query(m_database);
-    FieldEscaper escaper(m_database);
+void TrackDAO::afterUnhidingTracks(
+        const QList<TrackId>& trackIds) {
+    emit(tracksAdded(QSet<TrackId>::fromList(trackIds)));
+}
+
+QList<TrackId> TrackDAO::getTrackIds(const QDir& dir) {
     // Capture entries that start with the directory prefix dir.
     // dir needs to end in a slash otherwise we might match other
     // directories.
-    QString likeClause = escaper.escapeStringForLike(QDir(dir).absolutePath() + "/", '%') + "%";
+    const QString dirPath = dir.absolutePath();
+    QString likeClause = SqlLikeWildcardEscaper::apply(dirPath + "/", kSqlLikeMatchAll) + kSqlLikeMatchAll;
 
+    QSqlQuery query(m_database);
     query.prepare(QString("SELECT library.id FROM library INNER JOIN track_locations "
                           "ON library.location = track_locations.id "
-                          "WHERE track_locations.location LIKE %1 ESCAPE '%'")
-                  .arg(escaper.escapeString(likeClause)));
+                          "WHERE track_locations.location LIKE %1 ESCAPE '%2'")
+                  .arg(SqlStringFormatter::format(m_database, likeClause), kSqlLikeMatchAll));
 
     if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << dir;
+        LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << dirPath;
     }
 
     QList<TrackId> trackIds;
@@ -895,14 +906,16 @@ void TrackDAO::purgeTracks(const QString& dir) {
     while (query.next()) {
         trackIds.append(TrackId(query.value(idColumn)));
     }
-    purgeTracks(trackIds);
+
+    return trackIds;
 }
 
-// Warning, purge cannot be undone check before if there is no reference to this
-// track id's on other library tables
-void TrackDAO::purgeTracks(const QList<TrackId>& trackIds) {
+bool TrackDAO::onPurgingTracks(
+        SqlTransaction& transaction,
+        const QList<TrackId>& trackIds) {
+    DEBUG_ASSERT(transaction);
     if (trackIds.empty()) {
-        return;
+        return true; // nothing to do
     }
 
     QStringList idList;
@@ -911,71 +924,67 @@ void TrackDAO::purgeTracks(const QList<TrackId>& trackIds) {
     }
     QString idListJoined = idList.join(",");
 
-    ScopedTransaction transaction(m_database);
+    QStringList locations;
+    QSet<QString> directories;
+    {
+        FwdSqlQuery query(m_database, QString(
+                "SELECT track_locations.location, track_locations.directory FROM "
+                "track_locations INNER JOIN library ON library.location = "
+                "track_locations.id WHERE library.id in (%1)").arg(idListJoined));
+        if (query.hasError() || !query.execPrepared()) {
+            return false;
+        }
 
-    QSqlQuery query(m_database);
-    query.prepare(QString("SELECT track_locations.location, track_locations.directory FROM "
-                          "track_locations INNER JOIN library ON library.location = "
-                          "track_locations.id WHERE library.id in (%1)").arg(idListJoined));
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
+        QSqlRecord queryRecord = query.record();
+        const int locationColumn = queryRecord.indexOf("location");
+        const int directoryColumn = queryRecord.indexOf("directory");
+        while (query.next()) {
+            QString filePath = query.record().value(locationColumn).toString();
+            locations << filePath;
+            QString directory = query.record().value(directoryColumn).toString();
+            directories << directory;
+        }
+        if (locations.empty()) {
+            return false;
+        }
+    }
+    {
+        // Remove location from track_locations table
+        FwdSqlQuery query(m_database, QString(
+                "DELETE FROM track_locations "
+                "WHERE location in (%1)").arg(
+                        SqlStringFormatter::formatList(m_database, locations)));
+        if (query.hasError() || !query.execPrepared()) {
+            return false;
+        }
+    }
+    {
+        // Remove Track from library table
+        FwdSqlQuery query(m_database, QString(
+                "DELETE FROM library "
+                "WHERE id in (%1)").arg(idListJoined));
+        if (query.hasError() || !query.execPrepared()) {
+            return false;
+        }
+    }
+    {
+        // mark LibraryHash with needs_verification and invalidate the hash
+        // in case the file was not deleted to detect it on a rescan
+        // TODO(XXX) delegate to libraryHashDAO
+        FwdSqlQuery query(m_database, QString(
+                "UPDATE LibraryHashes SET needs_verification=1, "
+                "hash=-1 WHERE directory_path in (%1)").arg(
+                        SqlStringFormatter::formatList(m_database, directories)));
+        if (query.hasError() || !query.execPrepared()) {
+            return false;
+        }
     }
 
-    FieldEscaper escaper(m_database);
-    QStringList locationList;
-    QSet<QString> dirs;
-    QSqlRecord queryRecord = query.record();
-    const int locationColumn = queryRecord.indexOf("location");
-    const int directoryColumn = queryRecord.indexOf("directory");
-    while (query.next()) {
-        QString filePath = query.value(locationColumn).toString();
-        locationList << escaper.escapeString(filePath);
-        QString directory = query.value(directoryColumn).toString();
-        dirs << escaper.escapeString(directory);
-    }
+    return true;
+}
 
-    if (locationList.empty()) {
-        LOG_FAILED_QUERY(query);
-    }
-
-    // Remove location from track_locations table
-    query.prepare(QString("DELETE FROM track_locations "
-                          "WHERE location in (%1)").arg(locationList.join(",")));
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
-
-    // Remove Track from library table
-    query.prepare(QString("DELETE FROM library "
-                          "WHERE id in (%1)").arg(idListJoined));
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
-
-    // mark LibraryHash with needs_verification and invalidate the hash
-    // in case the file was not deleted to detect it on a rescan
-    // TODO(XXX) delegate to libraryHashDAO
-    QStringList dirList = QStringList::fromSet(dirs);
-    query.prepare(QString("UPDATE LibraryHashes SET needs_verification=1, "
-                          "hash=-1 WHERE directory_path in (%1)").arg(dirList.join(",")));
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
-
-    // TODO(XXX) Not sure if we should check any of these for errors or just not
-    // care if there were errors and commit anyway.
-    if (query.lastError().isValid()) {
-        return;
-    }
-    transaction.commit();
-
-    // also need to clean playlists, crates, cues and track_analyses
-
-    m_cueDao.deleteCuesForTracks(trackIds);
-    m_playlistDao.removeTracksFromPlaylists(trackIds);
-    m_crateDao.removeTracksFromCrates(trackIds);
-    m_analysisDao.deleteAnalyses(trackIds);
-
+void TrackDAO::afterPurgingTracks(
+        const QList<TrackId>& trackIds) {
     QSet<TrackId> tracksRemovedSet = QSet<TrackId>::fromList(trackIds);
     emit(tracksRemoved(tracksRemovedSet));
     // notify trackmodels that they should update their cache as well.
@@ -984,7 +993,7 @@ void TrackDAO::purgeTracks(const QList<TrackId>& trackIds) {
 
 void TrackDAO::slotTrackReferenceExpired(Track* pTrack) {
     // Should not be possible.
-    DEBUG_ASSERT_AND_HANDLE(pTrack != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
         return;
     }
 
@@ -1112,7 +1121,7 @@ bool setTrackSampleRate(const QSqlRecord& record, const int column,
 
 bool setTrackCuePoint(const QSqlRecord& record, const int column,
                       TrackPointer pTrack) {
-    pTrack->setCuePoint(record.value(column).toInt());
+    pTrack->setCuePoint(record.value(column).toDouble());
     return false;
 }
 
@@ -1341,7 +1350,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
 
     QSqlRecord queryRecord = query.record();
     int recordCount = queryRecord.count();
-    DEBUG_ASSERT_AND_HANDLE(recordCount == columnsCount) {
+    VERIFY_OR_DEBUG_ASSERT(recordCount == columnsCount) {
         recordCount = math_min(recordCount, columnsCount);
     }
 
@@ -1517,7 +1526,7 @@ bool TrackDAO::updateTrack(Track* pTrack) {
     const TrackId trackId(pTrack->getId());
     DEBUG_ASSERT(trackId.isValid());
 
-    ScopedTransaction transaction(m_database);
+    SqlTransaction transaction(m_database);
     // PerformanceTimer time;
     // time.start();
     qDebug() << "TrackDAO:"
@@ -1612,14 +1621,11 @@ void TrackDAO::invalidateTrackLocationsInLibrary() {
 void TrackDAO::markTrackLocationsAsVerified(const QStringList& locations) {
     //qDebug() << "TrackDAO::markTrackLocationsAsVerified" << QThread::currentThread() << m_database.connectionName();
 
-    FieldEscaper escaper(m_database);
-    QStringList escapedLocations = escaper.escapeStrings(locations);
-
     QSqlQuery query(m_database);
     query.prepare(QString("UPDATE track_locations "
                           "SET needs_verification=0, fs_deleted=0 "
                           "WHERE location IN (%1)").arg(
-                              escapedLocations.join(",")));
+                                  SqlStringFormatter::formatList(m_database, locations)));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
                 << "Couldn't mark track locations as verified.";
@@ -1629,14 +1635,12 @@ void TrackDAO::markTrackLocationsAsVerified(const QStringList& locations) {
 void TrackDAO::markTracksInDirectoriesAsVerified(const QStringList& directories) {
     //qDebug() << "TrackDAO::markTracksInDirectoryAsVerified" << QThread::currentThread() << m_database.connectionName();
 
-    FieldEscaper escaper(m_database);
-    QStringList escapedDirectories = escaper.escapeStrings(directories);
-
     QSqlQuery query(m_database);
     query.prepare(
         QString("UPDATE track_locations "
                 "SET needs_verification=0 "
-                "WHERE directory IN (%1)").arg(escapedDirectories.join(",")));
+                "WHERE directory IN (%1)").arg(
+                        SqlStringFormatter::formatList(m_database, directories)));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
                 << "Couldn't mark tracks in" << directories.size() << "directories as verified.";
@@ -1718,16 +1722,14 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
         LOG_FAILED_QUERY(deletedTrackQuery);
     }
 
-    FieldEscaper escaper(m_database);
-    QStringList escapedAddedTracks = escaper.escapeStrings(addedTracks);
-
     // Query possible successors
     newTrackQuery.prepare(
             QString("SELECT track_locations.id FROM track_locations "
                     "INNER JOIN library ON track_locations.id=library.location "
                     "WHERE track_locations.location IN (%1) AND "
                     "filename=:filename AND "
-                    "duration=:duration").arg(escapedAddedTracks.join(",")));
+                    "duration=:duration").arg(
+                            SqlStringFormatter::formatList(m_database, addedTracks)));
 
     QSqlRecord queryRecord = deletedTrackQuery.record();
     const int idColumn = queryRecord.indexOf("id");
@@ -1840,19 +1842,16 @@ void TrackDAO::clearCache() {
 }
 
 void TrackDAO::markTracksAsMixxxDeleted(const QString& dir) {
-    QSqlQuery query(m_database);
-
-    FieldEscaper escaper(m_database);
-
     // Capture entries that start with the directory prefix dir.
     // dir needs to end in a slash otherwise we might match other
     // directories.
-    QString likeClause = escaper.escapeStringForLike(dir + "/", '%') + "%";
+    QString likeClause = SqlLikeWildcardEscaper::apply(dir + "/", kSqlLikeMatchAll) + kSqlLikeMatchAll;
 
+    QSqlQuery query(m_database);
     query.prepare(QString("SELECT library.id FROM library INNER JOIN track_locations "
                           "ON library.location = track_locations.id "
-                          "WHERE track_locations.location LIKE %1 ESCAPE '%'")
-                  .arg(escaper.escapeString(likeClause)));
+                          "WHERE track_locations.location LIKE %1 ESCAPE '%2'")
+                  .arg(SqlStringFormatter::format(m_database, likeClause), kSqlLikeMatchAll));
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << dir;
@@ -1985,7 +1984,7 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
 
         CoverInfo::Source source = static_cast<CoverInfo::Source>(
             query.value(4).toInt());
-        DEBUG_ASSERT_AND_HANDLE(source != CoverInfo::USER_SELECTED) {
+        VERIFY_OR_DEBUG_ASSERT(source != CoverInfo::USER_SELECTED) {
             qWarning() << "PROGRAMMING ERROR! detectCoverArtForTracksWithoutCover()"
                        << "got a USER_SELECTED track. Skipping.";
             continue;
