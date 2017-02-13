@@ -238,11 +238,11 @@ WWidget, QLabel {
     border: 1px solid #585858;
     border-right: 0px;
     border-bottom: 0px;
+    border-radius: 2px;
   }
   #MasterLabel:hover, #HeadLabel:hover, #Mic1Label:hover,
   #Mic2Label:hover, #Aux1Label:hover, #Aux2Label:hover {
     background-color: #000000;
-    border-bottom-right-radius: 2px;
   }
   #MasterLabel {
     image: url(skin:/buttons/btn_master.svg) no-repeat center center;
@@ -265,14 +265,14 @@ WWidget, QLabel {
 
 #MixerBarButton {
   border: 1px solid #000000;
+  border-radius: 2px;
   }
   #MixerBarButton:hover {
-    border: 1px solid #eeeeee;
+    border: 1px solid #888888;
     }
 #MixerBarButton:hover, #MixerBarButton:hover, #MixerBarSlider:hover, #MixerBarKnob:hover {  /*
   border: 1px solid #666666;  */
   background-color: #000000;
-  border-radius: 2px;
   }
 
 /*################################################################
@@ -766,9 +766,12 @@ WWidget, QLabel {
   font-size: 12px/12px;
   font-weight: bold;
   }
-  #GuiToggleButton:hover, #GuiToggleButton2:hover {
-    border: 1px solid #eeeeee;	/*
+  #GuiToggleButton[displayValue="0"]:hover, #GuiToggleButton2:hover {
+    border: 1px solid #888888;	/*
     background-color: #333333;	*/
+    }
+  #GuiToggleButton[displayValue="1"]:hover, #GuiToggleButton[displayValue="2"]:hover {
+    border: 1px solid #eeeeee;
     }
   #GuiToggleButton:hover {
     background-color: #666666;
@@ -1081,18 +1084,25 @@ WWidget, QLabel {
     /* this has no effect on Backpath <Pressed> <Unpressed> */
   }
     #EffectUnitGroupButton:hover, #EffectUnitToggleButton:hover {
-      border: 1px solid #eeeeee;
     }
     #EffectUnitGroupButton[displayValue="0"],
     #EffectUnitToggleButton[displayValue="0"] {
       background-color: #333333;
       color: #000000;
-    }
+      }
+      #EffectUnitGroupButton[displayValue="0"]:hover,
+      #EffectUnitToggleButton[displayValue="0"]:hover {
+        border: 1px solid #888888;
+      }
     #EffectUnitGroupButton[displayValue="1"],
     #EffectUnitToggleButton[displayValue="1"] {
       background-color: #666666;
       color: #eeeeee;
-    }
+      }
+      #EffectUnitGroupButton[displayValue="1"]:hover,
+      #EffectUnitToggleButton[displayValue="1"]:hover {
+        border: 1px solid #eeeeee;
+      }
 
 #EffectSelectorButtonPrev {
   background: none url(skin:/buttons/btn_left.svg) no-repeat;
