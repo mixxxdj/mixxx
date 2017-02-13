@@ -76,6 +76,7 @@
             <Layout>vertical</Layout>
             <Size>81f,60f</Size>
             <Children>
+
               <WidgetGroup>
                 <ObjectName>SuperWetDryContainer</ObjectName>
                 <Layout>horizontal</Layout>
@@ -100,12 +101,21 @@
                 </Children>
               </WidgetGroup><!-- /SuperWetDryContainer -->
 
-              <WidgetGroup><Size>1me,1f</Size><Children/></WidgetGroup>
+              <WidgetGroup><Size>1min,1f</Size><Children/></WidgetGroup>
 
-              <WidgetGroup>
+              <WidgetGroup><!-- Clear FX unit + ON/OFF -->
                 <Layout>horizontal</Layout>
                 <Size>80f,20f</Size>
                 <Children>
+                  <Template src="skin:button_1state.xml">
+                    <SetVariable name="ObjectName">EffectEject</SetVariable>
+                    <SetVariable name="Size">20f,20f</SetVariable>
+                    <SetVariable name="ToolTipID">eject</SetVariable>
+                    <SetVariable name="state_0_pressed">eject_down.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">eject.svg</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,clear</SetVariable>
+                  </Template>
+                    <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
                   <Template src="skin:button_2state.xml">
                     <SetVariable name="ToolTipId">EffectUnit_enabled</SetVariable>
                     <SetVariable name="ObjectName">EffectUnitToggleButton</SetVariable>
@@ -113,7 +123,8 @@
                     <SetVariable name="ConfigKey"><Variable name="group"/>,enabled</SetVariable>
                   </Template>
                 </Children>
-              </WidgetGroup><!-- /EffectChainSelector + ON/OFF -->
+              </WidgetGroup><!-- /Clear FX unit + ON/OFF -->
+
             </Children>
           </WidgetGroup><!-- EffectUnitMixer -->
 

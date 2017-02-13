@@ -9,15 +9,15 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="22"
-   height="22"
+   width="20"
+   height="20"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
    inkscape:export-filename="/home/ronso/.mixxx/skins/FlatNite/btn_sampler_repeat.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90"
-   sodipodi:docname="btn_sampler_eject_down.svg">
+   sodipodi:docname="btn_eject_down.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -47,36 +47,7 @@
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:snap-page="true">
-    <sodipodi:guide
-       orientation="0,1"
-       position="10.803571,9"
-       id="guide3027" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="9,11.429"
-       id="guide3029" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="5.9999996,12"
-       id="guide3826" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="5.9999996,14.000011"
-       id="guide3828" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="1,12.643"
-       id="guide3834" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="3,7.4375"
-       id="guide4042" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="15,9"
-       id="guide4044" />
-  </sodipodi:namedview>
+     inkscape:snap-page="true" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -85,7 +56,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -93,7 +64,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-1030.3622)">
+     transform="translate(0,-1032.3622)">
     <g
        id="g3989"
        style="fill:#888888;fill-opacity:1">
@@ -101,9 +72,9 @@
          style="fill:#4fb7ff;fill-opacity:1;fill-rule:nonzero;stroke:none"
          id="rect4046"
          width="12"
-         height="3"
-         x="5"
-         y="1044.3622" />
+         height="2"
+         x="4"
+         y="1046.3622" />
       <path
          sodipodi:type="star"
          style="fill:#4fb7ff;fill-opacity:1;fill-rule:nonzero;stroke:none"
@@ -119,7 +90,7 @@
          inkscape:rounded="0"
          inkscape:randomized="0"
          d="m 11.376027,15.398402 -8.3760269,0 -8.3760276,0 L -1.1880142,8.144549 3,0.89069653 7.1880141,8.1445488 z"
-         transform="matrix(0.71633003,0,0,0.54765418,8.8510099,1034.9292)"
+         transform="matrix(0.71633003,0,0,0.54765418,7.85101,1034.9292)"
          inkscape:transform-center-y="-1.3242038" />
     </g>
   </g>

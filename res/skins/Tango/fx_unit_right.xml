@@ -18,24 +18,17 @@
         <Layout>vertical</Layout>
         <Size>81f,1me</Size>
         <Children>
-          <WidgetGroup><!-- EffectUnitToggleMix -->
+          <WidgetGroup><!-- EffectUnitMixer -->
             <ObjectName>EffectUnitMixer</ObjectName>
             <Layout>vertical</Layout>
             <Size>81f,60f</Size>
             <Children>
-              <WidgetGroup><!-- SuperWetDryContainer -->
+
+              <WidgetGroup>
                 <ObjectName>SuperWetDryContainer</ObjectName>
                 <Layout>horizontal</Layout>
                 <Size>80f,39f</Size>
                 <Children>
-
-                  <Template src="skin:fx_superwetdry_knob.xml">
-                    <SetVariable name="ToolTipId">EffectUnit_mix</SetVariable>
-                    <SetVariable name="ObjectName">SuperWetDry</SetVariable>
-                    <SetVariable name="ConfigKey">mix</SetVariable>
-                    <SetVariable name="Color">red</SetVariable>
-                    <SetVariable name="Label">Mix</SetVariable>
-                  </Template>
 
                   <Template src="skin:fx_superwetdry_knob.xml">
                     <SetVariable name="ToolTipId">EffectUnit_super1</SetVariable>
@@ -44,12 +37,20 @@
                     <SetVariable name="Color">blue</SetVariable>
                     <SetVariable name="Label">Super</SetVariable>
                   </Template>
+
+                  <Template src="skin:fx_superwetdry_knob.xml">
+                    <SetVariable name="ToolTipId">EffectUnit_mix</SetVariable>
+                    <SetVariable name="ObjectName">SuperWetDry</SetVariable>
+                    <SetVariable name="ConfigKey">mix</SetVariable>
+                    <SetVariable name="Color">red</SetVariable>
+                    <SetVariable name="Label">Mix</SetVariable>
+                  </Template>
                 </Children>
               </WidgetGroup><!-- /SuperWetDryContainer -->
 
-              <WidgetGroup><Size>1me,1f</Size><Children/></WidgetGroup>
+              <WidgetGroup><Size>1min,1f</Size><Children/></WidgetGroup>
 
-              <WidgetGroup>
+              <WidgetGroup><!-- Clear FX unit + ON/OFF -->
                 <Layout>horizontal</Layout>
                 <Size>80f,20f</Size>
                 <Children>
@@ -59,10 +60,20 @@
                     <SetVariable name="Size">1me,20f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,enabled</SetVariable>
                   </Template>
+                    <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+                  <Template src="skin:button_1state.xml">
+                    <SetVariable name="ObjectName">EffectEject</SetVariable>
+                    <SetVariable name="Size">20f,20f</SetVariable>
+                    <SetVariable name="ToolTipID">eject</SetVariable>
+                    <SetVariable name="state_0_pressed">eject_down.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">eject.svg</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,clear</SetVariable>
+                  </Template>
                 </Children>
-              </WidgetGroup>
+              </WidgetGroup><!-- /Clear FX unit + ON/OFF -->
+
             </Children>
-          </WidgetGroup><!-- EffectUnitToggleMix -->
+          </WidgetGroup><!-- EffectUnitMixer -->
 
           <WidgetGroup><!-- Group Columns Left, Center, Right -->
             <Layout>horizontal</Layout>

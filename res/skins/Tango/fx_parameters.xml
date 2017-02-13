@@ -12,7 +12,7 @@ Variables:
 	<WidgetGroup><!-- EffectSlotParameterKnobs -->
 		<ObjectName>EffectSlotParameters</ObjectName>
 		<Layout>horizontal</Layout>
-		<Size>348min,39f</Size><!-- per additional fx_knob, increase hori.size by 60px -->
+		<Size>max,39f</Size><!-- per additional fx_knob, increase hori.size by 60px -->
 		<Children>
 		
 			<Template src="skin:fx_parameter_knob.xml">
