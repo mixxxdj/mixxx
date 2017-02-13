@@ -15,7 +15,7 @@
    viewBox="0 0 40 40.000001"
    id="svg4222"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.0 r15299"
    sodipodi:docname="background_knob1.svg">
   <defs
      id="defs4224">
@@ -227,7 +227,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="12.842657"
-     inkscape:cx="14.882099"
+     inkscape:cx="2.2289541"
      inkscape:cy="9.7572468"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -243,7 +243,8 @@
     <sodipodi:guide
        position="38.903399,3981.4657"
        orientation="0,1"
-       id="guide4179" />
+       id="guide4179"
+       inkscape:locked="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata4227">
@@ -268,7 +269,7 @@
        id="path4744-33-0"
        inkscape:connector-curvature="0" />
     <path
-       style="opacity:0.4;fill:none;fill-opacity:1;stroke:url(#radialGradient4173-0-4-2);stroke-width:1.63170648;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:0.5;fill:none;fill-opacity:1;stroke:url(#radialGradient4173-0-4-2);stroke-width:1.63170648;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 3.1420347,1032.3623 c -2.7e-6,4.4735 1.7425683,8.5403 4.5859705,11.5586 3.0742108,3.2627 7.4352248,5.2995 12.2719948,5.2995 4.828076,0 9.182101,-2.0297 12.255403,-5.2825 2.853212,-3.0193 4.602563,-7.0933 4.602562,-11.5755 1.53e-4,-9.3108 -7.547458,-16.8584 -16.857965,-16.8584 -9.310508,0 -16.8581196,7.5476 -16.8579653,16.8583 z"
        id="path4770-6-1-6-7"
        inkscape:connector-curvature="0"

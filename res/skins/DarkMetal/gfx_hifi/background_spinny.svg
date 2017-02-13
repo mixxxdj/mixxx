@@ -15,7 +15,7 @@
    viewBox="0 0 118 118"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.0 r15299"
    sodipodi:docname="background_spinny.svg">
   <defs
      id="defs4">
@@ -113,7 +113,7 @@
        fy="993.13348"
        r="59.148"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.0892551,6.1814042e-8,-8.6896288e-8,1.5312415,-1057.628,-1579.7269)" />
+       gradientTransform="matrix(1.0434328,-2.2141091e-7,3.5166025e-7,1.6572527,-1054.9248,-1704.8729)" />
     <radialGradient
        inkscape:collect="always"
        xlink:href="#linearGradient4173"
@@ -229,8 +229,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="4.4276024"
-     inkscape:cx="28.088476"
-     inkscape:cy="67.107644"
+     inkscape:cx="41.5269"
+     inkscape:cy="54.459715"
      inkscape:document-units="px"
      inkscape:current-layer="g4406"
      showgrid="false"

@@ -15,7 +15,7 @@
    viewBox="0 0 50 50"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.0 r15299"
    sodipodi:docname="background_analogvu_1.svg">
   <defs
      id="defs4">
@@ -35,11 +35,11 @@
        inkscape:collect="always"
        id="linearGradient4235">
       <stop
-         style="stop-color:#e5d1ff;stop-opacity:1"
+         style="stop-color:#dec8ff;stop-opacity:1"
          offset="0"
          id="stop4237" />
       <stop
-         style="stop-color:#3b3448;stop-opacity:1"
+         style="stop-color:#322d3c;stop-opacity:1"
          offset="1"
          id="stop4240" />
     </linearGradient>
@@ -76,12 +76,12 @@
        inkscape:collect="always"
        xlink:href="#linearGradient4235"
        id="radialGradient4242"
-       cx="24.884363"
-       cy="1024.6848"
-       fx="24.884363"
-       fy="1024.6848"
+       cx="24.968983"
+       cy="1026.1323"
+       fx="24.968983"
+       fy="1026.1323"
        r="22.627417"
-       gradientTransform="matrix(1.8824015,-4.1445217e-8,1.9773692e-8,0.89810188,-21.939462,102.23524)"
+       gradientTransform="matrix(1.1050772,0.02734375,-0.01692859,0.68415626,14.769615,316.54732)"
        gradientUnits="userSpaceOnUse" />
     <radialGradient
        inkscape:collect="always"
@@ -94,6 +94,17 @@
        r="23.377417"
        gradientTransform="matrix(1.93232,0,0,1.2550538,-23.307996,-262.04119)"
        gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4235"
+       id="radialGradient4540"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.0311921,-0.0188255,0.01640956,0.89885582,-17.74838,96.312427)"
+       cx="25.046122"
+       cy="1031.1677"
+       fx="25.046122"
+       fy="1031.1677"
+       r="22.627417" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -103,7 +114,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="11.313709"
-     inkscape:cx="17.010292"
+     inkscape:cx="2.6471861"
      inkscape:cy="31.497291"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -152,8 +163,8 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
        transform="translate(7.3339618,1013.8494)" />
     <path
        sodipodi:nodetypes="sssssssss"
-       style="opacity:1;fill:url(#radialGradient4242);fill-opacity:1;stroke:none;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 5.3199753,1001.1127 39.3426637,0.062 c 1.479474,0 1.045533,1.2981 1.045533,3.0658 l 0,43.2212 c 0,1.7678 -1.191057,3.1908 -2.670533,3.1908 l -36.0926638,0 c -1.4794755,0 -2.6705333,-1.423 -2.6705333,-3.1908 l 0,-43.2212 c 0,-1.7677 -0.4339403,-3.1307 1.0455334,-3.1283 z"
+       style="opacity:1;fill:url(#radialGradient4540);fill-opacity:1;stroke:none;stroke-width:1.34028924;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 5.3286682,1001.4786 39.3426638,0.049 c 1.479474,0 1.045533,1.0364 1.045533,2.4477 v 34.5074 c 0,1.4113 -1.191057,2.5475 -2.670533,2.5475 H 6.9536681 c -1.4794755,0 -2.6705333,-1.1362 -2.6705333,-2.5475 v -34.5074 c 0,-1.4113 -0.4339403,-2.4995 1.0455334,-2.4976 z"
        id="rect4189"
        inkscape:connector-curvature="0" />
     <path
