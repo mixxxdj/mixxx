@@ -9,10 +9,12 @@
   <WidgetGroup>
     <ObjectName>ControlsRow</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,max</SizePolicy>
+    <SizePolicy>me,me</SizePolicy>
     <Children>
       <WidgetGroup>
+        <ObjectName>FullControlsRow</ObjectName>
         <Layout>horizontal</Layout>
+        <Size>-1,-1me</Size>
         <Children>
           <Template src="skin:transport.xml"/>
           <!-- Expanding spacers in between control contexts -->
@@ -34,6 +36,7 @@
 
       <WidgetGroup>
         <Layout>horizontal</Layout>
+        <Size>-1,-1me</Size>
         <ObjectName>MinimalControlsContainer</ObjectName>
         <Children>
 

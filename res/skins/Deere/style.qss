@@ -632,8 +632,13 @@ WWidget, QLabel {
   qproperty-layoutSpacing: 5;
 }
 
+#FullControlsRow, #MinimalControlsContainer {
+  qproperty-layoutAlignment: 'AlignBottom';
+}
+
 #MinimalControlsContainer {
-  qproperty-layoutSpacing: 2;}
+  qproperty-layoutSpacing: 2;
+}
 
 #HotcueGrid, #HotcueGridExtended {
   background-color: #333333;
