@@ -36,11 +36,6 @@ class PlaylistTableModel : public BaseSqlTableModel {
     void playlistChanged(int playlistId);
 
   private:
-    // This is a function to remove hidden Tracks,
-    // There was a bug in <= 1.9.0 where files were not removed from
-    // playlists, call this to fix the issue
-    void removeHiddenTracks();
-
     int m_iPlaylistId;
     bool m_showAll;
 };

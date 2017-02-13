@@ -380,6 +380,44 @@ bool PlaylistDAO::isHidden(const int playlistId) const {
     return true;
 }
 
+
+void PlaylistDAO::removeHiddenTracks(const int playlistId) {
+	ScopedTransaction transaction(m_database);
+    // This query deletes all tracks marked as deleted and all
+    // phantom track_ids with no match in the library table
+    QString queryString = QString(
+            "SELECT position FROM PlaylistTracks "
+            "WHERE PlaylistTracks.id NOT IN ("
+                "SELECT PlaylistTracks.id "
+                "FROM PlaylistTracks "
+                "INNER JOIN library ON library.id = PlaylistTracks.track_id "
+                "WHERE PlaylistTracks.playlist_id = %1 "
+                "AND library.mixxx_deleted = 0 ) "
+            "AND PlaylistTracks.playlist_id = %1")
+            .arg(QString::number(playlistId));
+
+    QSqlQuery query(m_database);
+    if (!query.prepare(queryString)) {
+        LOG_FAILED_QUERY(query);
+        return;
+    }
+
+    query.setForwardOnly(true);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return;
+    }
+
+    while (query.next()) {
+    	int position = query.value(query.record().indexOf("position")).toInt();
+    	removeTracksFromPlaylistInner(playlistId, position);
+    }
+
+    transaction.commit();
+    emit(changed(playlistId));
+}
+
+
 void PlaylistDAO::removeTrackFromPlaylist(const int playlistId, const TrackId& trackId) {
     ScopedTransaction transaction(m_database);
 
@@ -718,7 +756,6 @@ void PlaylistDAO::removeTracksFromPlaylists(const QList<TrackId>& trackIds) {
     	while (it != m_playlistsTrackIsIn.end() && it.key() == trackId) {
     		removeTrackFromPlaylist(it.value(), trackId);
     	}
-    	m_playlistsTrackIsIn.remove(trackId);
     }
 }
 

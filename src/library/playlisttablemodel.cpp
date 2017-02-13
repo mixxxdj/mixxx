@@ -29,7 +29,7 @@ void PlaylistTableModel::setTableModel(int playlistId) {
         // in the library (mixxx_deleted = 0) from playlists.
         // These invisible tracks, consuming a playlist position number where
         // a source user of confusion in the past.
-        removeHiddenTracks();
+    	m_pTrackCollection->getPlaylistDAO().removeHiddenTracks(m_iPlaylistId);
     }
 
     QString playlistTableName = "playlist_" + QString::number(m_iPlaylistId);
@@ -138,31 +138,6 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
     }
 
     m_pTrackCollection->getPlaylistDAO().removeTracksFromPlaylist(m_iPlaylistId, trackPositions);
-}
-
-void PlaylistTableModel::removeHiddenTracks() {
-    // This query deletes all tracks marked as deleted and all
-    // phantom track_ids with no match in the library table
-    QString queryString = QString(
-            "DELETE FROM PlaylistTracks "
-            "WHERE PlaylistTracks.id NOT IN ("
-                "SELECT PlaylistTracks.id "
-                "FROM PlaylistTracks "
-                "INNER JOIN library ON library.id = PlaylistTracks.track_id "
-                "WHERE PlaylistTracks.playlist_id = %1 "
-                "AND library.mixxx_deleted = 0 ) "
-            "AND PlaylistTracks.playlist_id = %1")
-            .arg(QString::number(m_iPlaylistId));
-
-    QSqlQuery query(m_database);
-    if (!query.prepare(queryString)) {
-        LOG_FAILED_QUERY(query);
-        return;
-    }
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        return;
-    }
 }
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
