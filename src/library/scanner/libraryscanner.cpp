@@ -39,11 +39,11 @@ LibraryScanner::LibraryScanner(TrackCollection* collection,
                 m_libraryHashDao(m_database),
                 m_cueDao(m_database),
                 m_playlistDao(m_database),
-                m_crateDao(m_database),
                 m_directoryDao(m_database),
                 m_analysisDao(m_database, pConfig),
-                m_trackDao(m_database, m_cueDao, m_playlistDao,
-                           m_crateDao, m_analysisDao, m_libraryHashDao,
+                m_trackDao(m_database,
+                           m_cueDao, m_playlistDao,
+                           m_analysisDao, m_libraryHashDao,
                            pConfig),
                 m_stateSema(1), // only one transaction is possible at a time
                 m_state(IDLE) {
@@ -124,7 +124,7 @@ void LibraryScanner::run() {
     Trace trace("LibraryScanner");
     if (m_pCollection != NULL) { // false only during tests
         if (!m_database.isValid()) {
-            m_database = QSqlDatabase::cloneDatabase(m_pCollection->getDatabase(), "LIBRARY_SCANNER");
+            m_database = QSqlDatabase::cloneDatabase(m_pCollection->database(), "LIBRARY_SCANNER");
         }
 
         if (!m_database.isOpen()) {
@@ -234,7 +234,7 @@ void LibraryScanner::slotStartScan() {
 // is called when all tasks of the first stage are done (threads are finished)
 void LibraryScanner::slotFinishHashedScan() {
     qDebug() << "LibraryScanner::slotFinishHashedScan";
-    DEBUG_ASSERT_AND_HANDLE(!m_scannerGlobal.isNull()) {
+    VERIFY_OR_DEBUG_ASSERT(!m_scannerGlobal.isNull()) {
         qWarning() << "No scanner global state exists in LibraryScanner::slotFinishHashedScan";
         return;
     }
@@ -336,7 +336,7 @@ void LibraryScanner::cleanUpScan() {
 
     qDebug() << "Detecting cover art for unscanned files.";
     QSet<TrackId> coverArtTracksChanged;
-    m_trackDao.detectCoverArtForUnknownTracks(
+    m_trackDao.detectCoverArtForTracksWithoutCover(
             m_scannerGlobal->shouldCancelPointer(), &coverArtTracksChanged);
 
     // Update BaseTrackCache via signals connected to the main TrackDAO.
@@ -348,7 +348,7 @@ void LibraryScanner::cleanUpScan() {
 // is called when all tasks of the second stage are done (threads are finished)
 void LibraryScanner::slotFinishUnhashedScan() {
     qDebug() << "LibraryScanner::slotFinishUnhashedScan";
-    DEBUG_ASSERT_AND_HANDLE(!m_scannerGlobal.isNull()) {
+    VERIFY_OR_DEBUG_ASSERT(!m_scannerGlobal.isNull()) {
         qWarning() << "No scanner global state exists in LibraryScanner::slotFinishUnhashedScan";
         return;
     }
@@ -511,17 +511,7 @@ void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
     ScopedTimer timer("LibraryScanner::addNewTrack");
     // For statistics tracking and to detect moved tracks
     TrackPointer pTrack(m_trackDao.addTracksAddFile(trackPath, false));
-    if (pTrack.isNull()) {
-        // Acknowledge failed track addition
-        // TODO(XXX): Is it really intended to acknowledge a failed
-        // track addition with a trackAdded() signal??
-        if (m_scannerGlobal) {
-            m_scannerGlobal->trackAdded(trackPath);
-        }
-        qWarning()
-                << "Failed to add track to library:"
-                << trackPath;
-    } else {
+    if (pTrack) {
         // The track's actual location might differ from the
         // given trackPath
         const QString trackLocation(pTrack->getLocation());
@@ -533,6 +523,16 @@ void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
         // a new track in the database.
         emit(trackAdded(pTrack));
         emit(progressLoading(trackLocation));
+    } else {
+        // Acknowledge failed track addition
+        // TODO(XXX): Is it really intended to acknowledge a failed
+        // track addition with a trackAdded() signal??
+        if (m_scannerGlobal) {
+            m_scannerGlobal->trackAdded(trackPath);
+        }
+        qWarning()
+                << "Failed to add track to library:"
+                << trackPath;
     }
 }
 

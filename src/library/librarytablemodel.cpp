@@ -1,10 +1,15 @@
 
 #include "library/librarytablemodel.h"
 #include "library/queryutil.h"
+#include "library/dao/trackschema.h"
 #include "mixer/playermanager.h"
 
-const QString LibraryTableModel::DEFAULT_LIBRARYFILTER =
+namespace {
+
+const QString kDefaultLibraryFilter =
         "mixxx_deleted=0 AND fs_deleted=0";
+
+} // anonymous namespace
 
 LibraryTableModel::LibraryTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection,
@@ -27,12 +32,12 @@ void LibraryTableModel::setTableModel(int id) {
 
     const QString tableName = "library_view";
 
-    QSqlQuery query(m_pTrackCollection->getDatabase());
+    QSqlQuery query(m_pTrackCollection->database());
     QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
             "SELECT " + columns.join(", ") +
             " FROM library INNER JOIN track_locations "
             "ON library.location = track_locations.id "
-            "WHERE (" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
+            "WHERE (" + kDefaultLibraryFilter + ")";
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -60,7 +65,7 @@ int LibraryTableModel::addTracks(const QModelIndex& index,
     foreach (QString fileLocation, locations) {
         fileInfoList.append(QFileInfo(fileLocation));
     }
-    QList<TrackId> trackIds = m_trackDAO.addMultipleTracks(fileInfoList, true);
+    QList<TrackId> trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(fileInfoList, true);
     select();
     return trackIds.size();
 }

@@ -50,36 +50,36 @@ void DlgPrefModplug::slotResetToDefaults() {
 }
 
 void DlgPrefModplug::loadSettings() {
-    m_pUi->memoryLimit->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"PerTrackMemoryLimitMB"),"256").toInt());
-    m_pUi->oversampling->setChecked(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"OversamplingEnabled"),"1") == QString("1"));
-    m_pUi->noiseReduction->setChecked(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"NoiseReductionEnabled"),"0") == QString("1"));
-    m_pUi->stereoSeparation->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"StereoSeparation"),"1").toInt());
-    m_pUi->maxMixChannels->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"MaxMixChannels"),"128").toInt());
-    m_pUi->resampleMode->setCurrentIndex(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"ResamplingMode"),"1").toInt());
-    m_pUi->reverb->setChecked(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"ReverbEnabled"),"0") == QString("1"));
-    m_pUi->reverbDepth->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"ReverbLevel"),"50").toInt());
-    m_pUi->reverbDelay->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"ReverbDelay"),"50").toInt());
-    m_pUi->megabass->setChecked(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"MegabassEnabled"),"0") == QString("1"));
-    m_pUi->bassDepth->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"MegabassLevel"),"50").toInt());
-    m_pUi->bassCutoff->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"MegabassCutoff"),"50").toInt());
-    m_pUi->surround->setChecked(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"SurroundEnabled"),"0") == QString("1"));
-    m_pUi->surroundDepth->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"SurroundLevel"),"50").toInt());
-    m_pUi->surroundDelay->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"SurroundDelay"),"50").toInt());
+    m_pUi->memoryLimit->setValue(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"PerTrackMemoryLimitMB"), 256));
+    m_pUi->oversampling->setChecked(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"OversamplingEnabled"), true));
+    m_pUi->noiseReduction->setChecked(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"NoiseReductionEnabled"), false));
+    m_pUi->stereoSeparation->setValue(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"StereoSeparation"), 1));
+    m_pUi->maxMixChannels->setValue(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"MaxMixChannels"), 128));
+    m_pUi->resampleMode->setCurrentIndex(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"ResamplingMode"), 1));
+    m_pUi->reverb->setChecked(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"ReverbEnabled"), false));
+    m_pUi->reverbDepth->setValue(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"ReverbLevel"), 50));
+    m_pUi->reverbDelay->setValue(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"ReverbDelay"), 50));
+    m_pUi->megabass->setChecked(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"MegabassEnabled"), false));
+    m_pUi->bassDepth->setValue(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"MegabassLevel"), 50));
+    m_pUi->bassCutoff->setValue(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"MegabassCutoff"), 50));
+    m_pUi->surround->setChecked(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"SurroundEnabled"), false));
+    m_pUi->surroundDepth->setValue(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"SurroundLevel"), 50));
+    m_pUi->surroundDelay->setValue(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"SurroundDelay"), 50));
 }
 
 void DlgPrefModplug::saveSettings() {
@@ -125,11 +125,11 @@ void DlgPrefModplug::applySettings() {
     // Currently this is fixed to 16bit 44.1kHz stereo
 
     // Number of channels - 1 for mono or 2 for stereo
-    settings.mChannels = Mixxx::SoundSourceModPlug::kChannelCount;
+    settings.mChannels = mixxx::SoundSourceModPlug::kChannelCount;
     // Bits per sample - 8, 16, or 32
-    settings.mBits = Mixxx::SoundSourceModPlug::kBitsPerSample;
+    settings.mBits = mixxx::SoundSourceModPlug::kBitsPerSample;
     // Sampling rate - 11025, 22050, or 44100
-    settings.mFrequency = Mixxx::SoundSourceModPlug::kSamplingRate;
+    settings.mFrequency = mixxx::SoundSourceModPlug::kSamplingRate;
 
     // enabled features flags
     settings.mFlags = 0;
@@ -180,5 +180,5 @@ void DlgPrefModplug::applySettings() {
     settings.mLoopCount = 0;
 
     // apply modplug settings
-    Mixxx::SoundSourceModPlug::configure(bufferSizeLimit, settings);
+    mixxx::SoundSourceModPlug::configure(bufferSizeLimit, settings);
 }

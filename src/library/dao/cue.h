@@ -1,14 +1,12 @@
-// cue.h
-// Created 10/26/2009 by RJ Ryan (rryan@mit.edu)
-
-#ifndef CUE_H
-#define CUE_H
+#ifndef MIXXX_CUE_H
+#define MIXXX_CUE_H
 
 #include <QObject>
 #include <QMutex>
-#include <QSharedPointer>
+#include <QColor>
 
 #include "track/trackid.h"
+#include "util/memory.h"
 
 class CueDAO;
 class Track;
@@ -18,14 +16,14 @@ class Cue : public QObject {
   public:
     enum CueType {
         INVALID = 0,
-        CUE,
-        LOAD,
-        BEAT,
-        LOOP,
-        JUMP,
+        CUE     = 1, // hot cue
+        LOAD    = 2, // the cue
+        BEAT    = 3,
+        LOOP    = 4,
+        JUMP    = 5,
     };
 
-    virtual ~Cue();
+    ~Cue() override;
 
     bool isDirty() const;
     int getId() const;
@@ -34,25 +32,28 @@ class Cue : public QObject {
     CueType getType() const;
     void setType(CueType type);
 
-    int getPosition() const;
-    void setPosition(int position);
+    double getPosition() const;
+    void setPosition(double samplePosition);
 
-    int getLength() const;
-    void setLength(int length);
+    double getLength() const;
+    void setLength(double length);
 
     int getHotCue() const;
     void setHotCue(int hotCue);
 
     QString getLabel() const;
-    void setLabel(const QString label);
+    void setLabel(QString label);
+
+    QColor getColor() const;
+    void setColor(QColor color);
 
   signals:
     void updated();
 
   private:
     explicit Cue(TrackId trackId);
-    Cue(int id, TrackId trackId, CueType type, int position, int length,
-        int hotCue, QString label);
+    Cue(int id, TrackId trackId, CueType type, double position, double length,
+        int hotCue, QString label, QColor color);
     void setDirty(bool dirty);
     void setId(int id);
     void setTrackId(TrackId trackId);
@@ -63,15 +64,29 @@ class Cue : public QObject {
     int m_iId;
     TrackId m_trackId;
     CueType m_type;
-    int m_iPosition;
-    int m_iLength;
+    double m_samplePosition;
+    double m_length;
     int m_iHotCue;
     QString m_label;
+    QColor m_color;
 
     friend class Track;
     friend class CueDAO;
 };
 
-typedef QSharedPointer<Cue> CuePointer;
+class CuePointer: public std::shared_ptr<Cue> {
+  public:
+    CuePointer() {}
+    explicit CuePointer(Cue* pCue)
+          : std::shared_ptr<Cue>(pCue, deleteLater) {
+    }
 
-#endif /* CUE_H */
+  private:
+    static void deleteLater(Cue* pCue) {
+        if (pCue != nullptr) {
+            pCue->deleteLater();
+        }
+    }
+};
+
+#endif // MIXXX_CUE_H

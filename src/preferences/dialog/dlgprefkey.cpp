@@ -22,7 +22,7 @@
 
 #include "analyzer/vamp/vampanalyzer.h"
 #include "analyzer/vamp/vamppluginloader.h"
-#include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "track/key_preferences.h"
 #include "util/xml.h"
 
@@ -65,6 +65,8 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer _config)
     m_keyLineEdits.insert(mixxx::track::io::key::A_MINOR, a_minor_edit);
     m_keyLineEdits.insert(mixxx::track::io::key::B_FLAT_MINOR, b_flat_minor_edit);
     m_keyLineEdits.insert(mixxx::track::io::key::B_MINOR, b_minor_edit);
+
+    m_pKeyNotation = new ControlProxy(ConfigKey("[Library]", "key_notation"), this);
 
     populate();
     loadSettings();
@@ -325,6 +327,7 @@ void DlgPrefKey::setNotationCustom(bool active) {
          it != m_keyLineEdits.end(); ++it) {
         it.value()->setEnabled(true);
     }
+    m_pKeyNotation->set(KeyUtils::CUSTOM);
     slotUpdate();
 }
 
@@ -334,6 +337,7 @@ void DlgPrefKey::setNotation(KeyUtils::KeyNotation notation) {
         it.value()->setText(KeyUtils::keyToString(it.key(), notation));
         it.value()->setEnabled(false);
     }
+    m_pKeyNotation->set(notation);
     slotUpdate();
 }
 

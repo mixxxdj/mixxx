@@ -2,7 +2,7 @@
 
 #include "track/trackmetadatataglib.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 /*static*/ QString SoundSource::getFileExtensionFromUrl(const QUrl& url) {
     return url.toString().section(".", -1).toLower().trimmed();
@@ -23,17 +23,19 @@ SoundSource::SoundSource(const QUrl& url, const QString& type)
 
 SoundSource::OpenResult SoundSource::open(const AudioSourceConfig& audioSrcCfg) {
     close(); // reopening is not supported
+
     OpenResult result;
     try {
         result = tryOpen(audioSrcCfg);
     } catch (const std::exception& e) {
-        qWarning() << "tryOpen failed" << getLocalFileName() << e.what();
-        close();
-        return OpenResult::FAILED;
+        qWarning() << "Caught unexpected exception from SoundSource::tryOpen():" << e.what();
+        result = OpenResult::FAILED;
+    } catch (...) {
+        qWarning() << "Caught unknown exception from SoundSource::tryOpen()";
+        result = OpenResult::FAILED;
     }
-
     if (OpenResult::SUCCEEDED != result) {
-        close();
+        close(); // rollback
     }
     return result;
 }
@@ -41,12 +43,12 @@ SoundSource::OpenResult SoundSource::open(const AudioSourceConfig& audioSrcCfg) 
 Result SoundSource::parseTrackMetadataAndCoverArt(
         TrackMetadata* pTrackMetadata,
         QImage* pCoverArt) const {
-    return readTrackMetadataAndCoverArtFromFile(pTrackMetadata, pCoverArt, getLocalFileName());
+    return taglib::readTrackMetadataAndCoverArtFromFile(pTrackMetadata, pCoverArt, getLocalFileName());
 }
 
 Result SoundSource::writeTrackMetadata(
         const TrackMetadata& trackMetadata) const {
-    return writeTrackMetadataIntoFile(trackMetadata, getLocalFileName());
+    return taglib::writeTrackMetadataIntoFile(trackMetadata, getLocalFileName());
 }
 
-} //namespace Mixxx
+} //namespace mixxx

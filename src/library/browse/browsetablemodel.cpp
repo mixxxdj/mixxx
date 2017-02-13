@@ -17,7 +17,7 @@
 BrowseTableModel::BrowseTableModel(QObject* parent,
                                    TrackCollection* pTrackCollection,
                                    RecordingManager* pRecordingManager)
-        : TrackModel(pTrackCollection->getDatabase(),
+        : TrackModel(pTrackCollection->database(),
                      "mixxx.db.model.browse"),
           QStandardItemModel(parent),
           m_pTrackCollection(pTrackCollection),
@@ -268,14 +268,14 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
     int row = index.row();
     int col = index.column();
 
-    Mixxx::TrackMetadata trackMetadata;
+    mixxx::TrackMetadata trackMetadata;
 
     // set tagger information
     trackMetadata.setArtist(this->index(row, COLUMN_ARTIST).data().toString());
     trackMetadata.setTitle(this->index(row, COLUMN_TITLE).data().toString());
     trackMetadata.setAlbum(this->index(row, COLUMN_ALBUM).data().toString());
     trackMetadata.setKey(this->index(row, COLUMN_KEY).data().toString());
-    trackMetadata.setBpm(Mixxx::Bpm(this->index(row, COLUMN_BPM).data().toDouble()));
+    trackMetadata.setBpm(mixxx::Bpm(this->index(row, COLUMN_BPM).data().toDouble()));
     trackMetadata.setComment(this->index(row, COLUMN_COMMENT).data().toString());
     trackMetadata.setTrackNumber(this->index(row, COLUMN_TRACK_NUMBER).data().toString());
     trackMetadata.setYear(this->index(row, COLUMN_YEAR).data().toString());
@@ -292,7 +292,7 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
     } else if (col == COLUMN_ALBUM) {
         trackMetadata.setAlbum(value.toString());
     } else if (col == COLUMN_BPM) {
-        trackMetadata.setBpm(Mixxx::Bpm(value.toDouble()));
+        trackMetadata.setBpm(mixxx::Bpm(value.toDouble()));
     } else if (col == COLUMN_KEY) {
         trackMetadata.setKey(value.toString());
     } else if (col == COLUMN_TRACK_NUMBER) {
@@ -316,7 +316,7 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
 
     QStandardItem* item = itemFromIndex(index);
     QString track_location(getTrackLocation(index));
-    if (OK == writeTrackMetadataIntoFile(trackMetadata, track_location)) {
+    if (OK == mixxx::taglib::writeTrackMetadataIntoFile(trackMetadata, track_location)) {
         // Modify underlying interalPointer object
         item->setText(value.toString());
         item->setToolTip(item->text());

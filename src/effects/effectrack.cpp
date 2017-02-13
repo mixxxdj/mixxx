@@ -17,8 +17,7 @@ EffectRack::EffectRack(EffectsManager* pEffectsManager,
           m_pEngineEffectRack(NULL) {
     connect(&m_controlClearRack, SIGNAL(valueChanged(double)),
             this, SLOT(slotClearRack(double)));
-    m_controlNumEffectChainSlots.connectValueChangeRequest(
-            this, SLOT(slotNumEffectChainSlots(double)));
+    m_controlNumEffectChainSlots.setReadOnly();
     addToEngine();
 }
 
@@ -74,13 +73,6 @@ void EffectRack::registerChannel(const ChannelHandleAndGroup& handle_group) {
     }
 }
 
-void EffectRack::slotNumEffectChainSlots(double v) {
-    // Ignore sets to num_effectchain_slots
-    Q_UNUSED(v);
-    //qDebug() << debugString() << "slotNumEffectChainSlots" << v;
-    qWarning() << "WARNING: num_effectchain_slots is a read-only control.";
-}
-
 void EffectRack::slotClearRack(double v) {
     if (v > 0) {
         foreach (EffectChainSlotPointer pChainSlot, m_effectChainSlots) {
@@ -102,7 +94,7 @@ int EffectRack::numEffectChainSlots() const {
 
 void EffectRack::addEffectChainSlotInternal(EffectChainSlotPointer pChainSlot) {
     m_effectChainSlots.append(pChainSlot);
-    m_controlNumEffectChainSlots.setAndConfirm(
+    m_controlNumEffectChainSlots.forceSet(
         m_controlNumEffectChainSlots.get() + 1);
 }
 
@@ -139,6 +131,33 @@ void EffectRack::loadPrevChain(const unsigned int iChainSlotNumber,
 
     pPrevChain = EffectChain::clone(pPrevChain);
     m_effectChainSlots[iChainSlotNumber]->loadEffectChain(pPrevChain);
+}
+
+void EffectRack::maybeLoadEffect(const unsigned int iChainSlotNumber,
+                                 const unsigned int iEffectSlotNumber,
+                                 const QString& id) {
+    if (iChainSlotNumber >= static_cast<unsigned int>(m_effectChainSlots.size())) {
+        return;
+    }
+
+    EffectChainSlotPointer pChainSlot = m_effectChainSlots[iChainSlotNumber];
+    if (pChainSlot == nullptr) {
+        return;
+    }
+    EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(iEffectSlotNumber);
+
+    bool loadNew = false;
+    if (pEffectSlot == nullptr || pEffectSlot->getEffect() == nullptr) {
+        loadNew = true;
+    } else if (id != pEffectSlot->getEffect()->getManifest().id()) {
+        loadNew = true;
+    }
+
+    if (loadNew) {
+        EffectChainPointer pChain = pChainSlot->getEffectChain();
+        EffectPointer pEffect = m_pEffectsManager->instantiateEffect(id);
+        pChain->replaceEffect(iEffectSlotNumber, pEffect);
+    }
 }
 
 void EffectRack::loadNextEffect(const unsigned int iChainSlotNumber,
@@ -335,11 +354,11 @@ bool QuickEffectRack::loadEffectToGroup(const QString& groupName,
 
     pChain->replaceEffect(0, pEffect);
 
-    // Force update the new effect to match the current superknob position.
-    EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(0);
-    if (pEffectSlot) {
-        pEffectSlot->onChainSuperParameterChanged(
-                pChainSlot->getSuperParameter(), true);
+    // Force update metaknobs and parameters to match state of superknob
+    pChainSlot->setSuperParameter(pChainSlot->getSuperParameter(), true);
+
+    if (pEffect != nullptr) {
+        pEffect->setEnabled(true);
     }
     return true;
 }
@@ -374,6 +393,9 @@ bool EqualizerRack::loadEffectToGroup(const QString& groupName,
     }
 
     pChain->replaceEffect(0, pEffect);
+    if (pEffect != nullptr) {
+        pEffect->setEnabled(true);
+    }
     return true;
 }
 

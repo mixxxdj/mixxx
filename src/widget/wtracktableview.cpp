@@ -14,7 +14,8 @@
 #include "library/coverartcache.h"
 #include "library/dlgtrackinfo.h"
 #include "library/librarytablemodel.h"
-#include "library/trackcollection.h"
+#include "library/crate/cratefeaturehelper.h"
+#include "library/dao/trackschema.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "track/track.h"
@@ -73,8 +74,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pBPMMenu->setTitle(tr("BPM Options"));
     m_pCoverMenu = new WCoverArtMenu(this);
     m_pCoverMenu->setTitle(tr("Cover Art"));
-    connect(m_pCoverMenu, SIGNAL(coverArtSelected(const CoverArt&)),
-            this, SLOT(slotCoverArtSelected(const CoverArt&)));
+    connect(m_pCoverMenu, SIGNAL(coverInfoSelected(const CoverInfo&)),
+            this, SLOT(slotCoverInfoSelected(const CoverInfo&)));
     connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
             this, SLOT(slotReloadCoverArt()));
 
@@ -117,8 +118,9 @@ WTrackTableView::~WTrackTableView() {
     delete m_pReloadMetadataAct;
     delete m_pReloadMetadataFromMusicBrainzAct;
     delete m_pAddToPreviewDeck;
-    delete m_pAutoDJAct;
+    delete m_pAutoDJBottomAct;
     delete m_pAutoDJTopAct;
+    delete m_pAutoDJReplaceAct;
     delete m_pRemoveAct;
     delete m_pHideAct;
     delete m_pUnhideAct;
@@ -132,6 +134,8 @@ WTrackTableView::~WTrackTableView() {
     delete m_pBpmHalveAction;
     delete m_pBpmTwoThirdsAction;
     delete m_pBpmThreeFourthsAction;
+    delete m_pBpmFourThirdsAction;
+    delete m_pBpmThreeHalvesAction;
     delete m_pBPMMenu;
     delete m_pReplayGainResetAction;
     delete m_pPurgeAct;
@@ -147,7 +151,7 @@ void WTrackTableView::enableCachedOnly() {
         emit(onlyCachedCoverArt(true));
         m_loadCachedOnly = true;
     }
-    m_lastUserAction = Time::elapsed();
+    m_lastUserAction = mixxx::Time::elapsed();
 }
 
 void WTrackTableView::slotScrollValueChanged(int /*unused*/) {
@@ -164,7 +168,7 @@ void WTrackTableView::selectionChanged(const QItemSelection& selected,
 void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
     // if the user is stopped in the same row for more than 0.1 s,
     // we load un-cached cover arts as well.
-    mixxx::Duration timeDelta = Time::elapsed() - m_lastUserAction;
+    mixxx::Duration timeDelta = mixxx::Time::elapsed() - m_lastUserAction;
     if (m_loadCachedOnly && timeDelta > mixxx::Duration::fromMillis(100)) {
 
         // Show the currently selected track in the large cover art view. Doing
@@ -199,10 +203,10 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
 
-    DEBUG_ASSERT_AND_HANDLE(model) {
+    VERIFY_OR_DEBUG_ASSERT(model) {
         return;
     }
-    DEBUG_ASSERT_AND_HANDLE(trackModel) {
+    VERIFY_OR_DEBUG_ASSERT(trackModel) {
         return;
     }
 
@@ -381,12 +385,17 @@ void WTrackTableView::createActions() {
     connect(m_pFileBrowserAct, SIGNAL(triggered()),
             this, SLOT(slotOpenInFileBrowser()));
 
-    m_pAutoDJAct = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
-    connect(m_pAutoDJAct, SIGNAL(triggered()), this, SLOT(slotSendToAutoDJ()));
+    m_pAutoDJBottomAct = new QAction(tr("Add to Auto-DJ Queue (bottom)"), this);
+    connect(m_pAutoDJBottomAct, SIGNAL(triggered()),
+            this, SLOT(slotSendToAutoDJBottom()));
 
     m_pAutoDJTopAct = new QAction(tr("Add to Auto DJ Queue (top)"), this);
     connect(m_pAutoDJTopAct, SIGNAL(triggered()),
             this, SLOT(slotSendToAutoDJTop()));
+
+    m_pAutoDJReplaceAct = new QAction(tr("Add to Auto-DJ Queue (replace)"), this);
+    connect(m_pAutoDJReplaceAct, SIGNAL(triggered()),
+            this, SLOT(slotSendToAutoDJReplace()));
 
     m_pReloadMetadataAct = new QAction(tr("Reload Metadata from File"), this);
     connect(m_pReloadMetadataAct, SIGNAL(triggered()),
@@ -419,11 +428,15 @@ void WTrackTableView::createActions() {
     m_pBpmHalveAction = new QAction(tr("Halve BPM"), this);
     m_pBpmTwoThirdsAction = new QAction(tr("2/3 BPM"), this);
     m_pBpmThreeFourthsAction = new QAction(tr("3/4 BPM"), this);
+    m_pBpmFourThirdsAction = new QAction(tr("4/3 BPM"), this);
+    m_pBpmThreeHalvesAction = new QAction(tr("3/2 BPM"), this);
 
     m_BpmMapper.setMapping(m_pBpmDoubleAction, Beats::DOUBLE);
     m_BpmMapper.setMapping(m_pBpmHalveAction, Beats::HALVE);
     m_BpmMapper.setMapping(m_pBpmTwoThirdsAction, Beats::TWOTHIRDS);
     m_BpmMapper.setMapping(m_pBpmThreeFourthsAction, Beats::THREEFOURTHS);
+    m_BpmMapper.setMapping(m_pBpmFourThirdsAction, Beats::FOURTHIRDS);
+    m_BpmMapper.setMapping(m_pBpmThreeHalvesAction, Beats::THREEHALVES);
 
     connect(m_pBpmDoubleAction, SIGNAL(triggered()),
             &m_BpmMapper, SLOT(map()));
@@ -432,6 +445,10 @@ void WTrackTableView::createActions() {
     connect(m_pBpmTwoThirdsAction, SIGNAL(triggered()),
             &m_BpmMapper, SLOT(map()));
     connect(m_pBpmThreeFourthsAction, SIGNAL(triggered()),
+            &m_BpmMapper, SLOT(map()));
+    connect(m_pBpmFourThirdsAction, SIGNAL(triggered()),
+            &m_BpmMapper, SLOT(map()));
+    connect(m_pBpmThreeHalvesAction, SIGNAL(triggered()),
             &m_BpmMapper, SLOT(map()));
 
     m_pClearBeatsAction = new QAction(tr("Clear BPM and Beatgrid"), this);
@@ -455,10 +472,10 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
     }
     switch (action) {
     case DlgPrefLibrary::ADD_TRACK_BOTTOM:
-            sendToAutoDJ(false); // add track to Auto-DJ Queue (bottom)
+            sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM); // add track to Auto-DJ Queue (bottom)
             break;
     case DlgPrefLibrary::ADD_TRACK_TOP:
-            sendToAutoDJ(true); // add track to Auto-DJ Queue (top)
+            sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP); // add track to Auto-DJ Queue (top)
             break;
     default: // load track to next available deck
             TrackModel* trackModel = getTrackModel();
@@ -716,8 +733,9 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     m_pMenu->clear();
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
-        m_pMenu->addAction(m_pAutoDJAct);
+        m_pMenu->addAction(m_pAutoDJBottomAct);
         m_pMenu->addAction(m_pAutoDJTopAct);
+        m_pMenu->addAction(m_pAutoDJReplaceAct);
         m_pMenu->addSeparator();
     }
 
@@ -729,8 +747,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 QString deckGroup = PlayerManager::groupForDeck(i - 1);
                 bool deckPlaying = ControlObject::get(
                         ConfigKey(deckGroup, "play")) > 0.0;
-                bool loadTrackIntoPlayingDeck = m_pConfig->getValueString(
-                    ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt();
+                bool loadTrackIntoPlayingDeck = m_pConfig->getValue<bool>(
+                        ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"));
                 bool deckEnabled = (!deckPlaying  || loadTrackIntoPlayingDeck)  && oneSongSelected;
                 QAction* pAction = new QAction(tr("Load to Deck %1").arg(i), m_pMenu);
                 pAction->setEnabled(deckEnabled);
@@ -802,29 +820,20 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOCRATE)) {
         m_pCrateMenu->clear();
-        CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
-        QMap<QString , int> crates;
-        int numCrates = crateDao.crateCount();
-        for (int i = 0; i < numCrates; ++i) {
-            int iCrateId = crateDao.getCrateId(i);
-            crates.insert(crateDao.crateName(iCrateId),iCrateId);
-        }
-        QMapIterator<QString, int> it(crates);
-        while (it.hasNext()) {
-            it.next();
-            // No leak because making the menu the parent means they will be
-            // auto-deleted
-            auto pAction = new QAction(it.key(), m_pCrateMenu);
-            bool locked = crateDao.isCrateLocked(it.value());
-            pAction->setEnabled(!locked);
-            m_pCrateMenu->addAction(pAction);
-            m_crateMapper.setMapping(pAction, it.value());
-            connect(pAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
+        CrateSelectResult allCrates(m_pTrackCollection->crates().selectCrates());
+        Crate crate;
+        while (allCrates.populateNext(&crate)) {
+            auto pAction = std::make_unique<QAction>(crate.getName(), m_pCrateMenu);
+            pAction->setEnabled(!crate.isLocked());
+            m_crateMapper.setMapping(pAction.get(), crate.getId().toInt());
+            connect(pAction.get(), SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
+            m_pCrateMenu->addAction(pAction.get());
+            pAction.release();
         }
         m_pCrateMenu->addSeparator();
         QAction* newCrateAction = new QAction(tr("Create New Crate"), m_pCrateMenu);
         m_pCrateMenu->addAction(newCrateAction);
-        m_crateMapper.setMapping(newCrateAction, -1);// -1 to signify new playlist
+        m_crateMapper.setMapping(newCrateAction, CrateId().toInt());// invalid crate id for new crate
         connect(newCrateAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
 
         m_pMenu->addMenu(m_pCrateMenu);
@@ -837,6 +846,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pBPMMenu->addAction(m_pBpmHalveAction);
         m_pBPMMenu->addAction(m_pBpmTwoThirdsAction);
         m_pBPMMenu->addAction(m_pBpmThreeFourthsAction);
+        m_pBPMMenu->addAction(m_pBpmFourThirdsAction);
+        m_pBPMMenu->addAction(m_pBpmThreeHalvesAction);
         m_pBPMMenu->addSeparator();
         m_pBPMMenu->addAction(m_pBpmLockAction);
         m_pBPMMenu->addAction(m_pBpmUnlockAction);
@@ -854,6 +865,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 m_pBpmHalveAction->setEnabled(false);
                 m_pBpmTwoThirdsAction->setEnabled(false);
                 m_pBpmThreeFourthsAction->setEnabled(false);
+                m_pBpmFourThirdsAction->setEnabled(false);
+                m_pBpmThreeHalvesAction->setEnabled(false);
             } else { //BPM is not locked
                 m_pBpmUnlockAction->setEnabled(false);
                 m_pBpmLockAction->setEnabled(true);
@@ -861,6 +874,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 m_pBpmHalveAction->setEnabled(true);
                 m_pBpmTwoThirdsAction->setEnabled(true);
                 m_pBpmThreeFourthsAction->setEnabled(true);
+                m_pBpmFourThirdsAction->setEnabled(true);
+                m_pBpmThreeHalvesAction->setEnabled(true);
             }
         } else {
             bool anyLocked = false; //true if any of the selected items are locked
@@ -878,12 +893,18 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 m_pBpmDoubleAction->setEnabled(false);
                 m_pBpmHalveAction->setEnabled(false);
                 m_pBpmTwoThirdsAction->setEnabled(false);
+                m_pBpmThreeFourthsAction->setEnabled(false);
+                m_pBpmFourThirdsAction->setEnabled(false);
+                m_pBpmThreeHalvesAction->setEnabled(false);
             } else {
                 m_pBpmLockAction->setEnabled(true);
                 m_pBpmUnlockAction->setEnabled(false);
                 m_pBpmDoubleAction->setEnabled(true);
                 m_pBpmHalveAction->setEnabled(true);
                 m_pBpmTwoThirdsAction->setEnabled(true);
+                m_pBpmThreeFourthsAction->setEnabled(true);
+                m_pBpmFourThirdsAction->setEnabled(true);
+                m_pBpmThreeHalvesAction->setEnabled(true);
             }
         }
     }
@@ -932,7 +953,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             last.row(), m_iTrackLocationColumn).data().toString();
         info.coverLocation = last.sibling(
             last.row(), m_iCoverLocationColumn).data().toString();
-        m_pCoverMenu->setCoverArt(QString(), info);
+        m_pCoverMenu->setCoverArt(info);
         m_pMenu->addMenu(m_pCoverMenu);
     }
 
@@ -1283,16 +1304,20 @@ void WTrackTableView::loadSelectedTrackToGroup(QString group, bool play) {
     loadSelectionToGroup(group, play);
 }
 
-void WTrackTableView::slotSendToAutoDJ() {
+void WTrackTableView::slotSendToAutoDJBottom() {
     // append to auto DJ
-    sendToAutoDJ(false); // bTop = false
+    sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
 }
 
 void WTrackTableView::slotSendToAutoDJTop() {
-    sendToAutoDJ(true); // bTop = true
+    sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
 }
 
-void WTrackTableView::sendToAutoDJ(bool bTop) {
+void WTrackTableView::slotSendToAutoDJReplace() {
+    sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::REPLACE);
+}
+
+void WTrackTableView::sendToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
         return;
     }
@@ -1318,10 +1343,10 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
         }
     }
 
-    m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
+    m_pTrackCollection->unhideTracks(trackIds);
 
     // TODO(XXX): Care whether the append succeeded.
-    playlistDao.sendToAutoDJ(trackIds, bTop);
+    playlistDao.sendToAutoDJ(trackIds, loc);
 }
 
 void WTrackTableView::slotReloadTrackMetadata() {
@@ -1420,13 +1445,12 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
    }
     if (trackIds.size() > 0) {
         // TODO(XXX): Care whether the append succeeded.
-        m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
+        m_pTrackCollection->unhideTracks(trackIds);
         playlistDao.appendTracksToPlaylist(trackIds, iPlaylistId);
     }
 }
 
 void WTrackTableView::addSelectionToCrate(int iCrateId) {
-    CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
     TrackModel* trackModel = getTrackModel();
 
     if (!trackModel) {
@@ -1445,47 +1469,19 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
             trackIds.append(trackId);
         }
     }
-    if (iCrateId == -1) { // i.e. a new crate is suppose to be created
-        QString name;
-        bool validNameGiven = false;
-        do {
-            bool ok = false;
-            name = QInputDialog::getText(nullptr,
-                                         tr("Create New Crate"),
-                                         tr("Enter name for new crate:"),
-                                         QLineEdit::Normal, tr("New Crate"),
-                                         &ok).trimmed();
-            if (!ok) {
-                return;
-            }
-            int existingId = crateDao.getCrateIdByName(name);
-            if (existingId != -1) {
-                QMessageBox::warning(nullptr,
-                                     tr("Creating Crate Failed"),
-                                     tr("A crate by that name already exists."));
-            }
-            else if (name.isEmpty()) {
-                QMessageBox::warning(nullptr,
-                                     tr("Creating Crate Failed"),
-                                     tr("A crate cannot have a blank name."));
-            }
-            else {
-                validNameGiven = true;
-            }
-        } while (!validNameGiven);
-        iCrateId = crateDao.createCrate(name);// -1 is changed to the new crate ID returned by the DAO
-        if (iCrateId == -1) {
-            qDebug() << "Error creating crate with name " << name;
-            QMessageBox::warning(nullptr,
-                                 tr("Creating Crate Failed"),
-                                 tr("An unknown error occurred while creating crate: ")
-                                 + name);
-            return;
-        }
+    if (trackIds.isEmpty()) {
+        qWarning() << "Cannot add empty track selection to crate";
+        return;
     }
-    if (trackIds.size() > 0) {
-        m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
-        crateDao.addTracksToCrate(iCrateId, &trackIds);
+
+    CrateId crateId(iCrateId);
+    if (!crateId.isValid()) { // i.e. a new crate is suppose to be created
+        crateId = CrateFeatureHelper(
+                m_pTrackCollection, m_pConfig).createEmptyCrate();
+    }
+    if (crateId.isValid()) {
+        m_pTrackCollection->unhideTracks(trackIds);
+        m_pTrackCollection->addCrateTracks(crateId, trackIds);
     }
 }
 
@@ -1621,12 +1617,12 @@ void WTrackTableView::slotReplayGainReset() {
     for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->setReplayGain(Mixxx::ReplayGain());
+            pTrack->setReplayGain(mixxx::ReplayGain());
         }
     }
 }
 
-void WTrackTableView::slotCoverArtSelected(const CoverArt& art) {
+void WTrackTableView::slotCoverInfoSelected(const CoverInfo& coverInfo) {
     TrackModel* trackModel = getTrackModel();
     if (trackModel == nullptr) {
         return;
@@ -1635,7 +1631,7 @@ void WTrackTableView::slotCoverArtSelected(const CoverArt& art) {
     for (const QModelIndex& index : selection) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->setCoverArt(art);
+            pTrack->setCoverInfo(coverInfo);
         }
     }
 }
@@ -1657,4 +1653,8 @@ void WTrackTableView::slotReloadCoverArt() {
     if (pCache) {
         pCache->requestGuessCovers(selectedTracks);
     }
+}
+
+bool WTrackTableView::hasFocus() const {
+    return QWidget::hasFocus();
 }

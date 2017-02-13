@@ -5,7 +5,7 @@
 #include "library/playlisttablemodel.h"
 #include "widget/wtracktableview.h"
 #include "util/assert.h"
-#include "util/time.h"
+#include "util/duration.h"
 
 DlgAutoDJ::DlgAutoDJ(QWidget* parent,
                      UserSettingsPointer pConfig,
@@ -38,7 +38,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
 
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
-    DEBUG_ASSERT_AND_HANDLE(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
+    VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
     } else {
         box->removeWidget(m_pTrackTablePlaceholder);
         m_pTrackTablePlaceholder->hide();
@@ -200,7 +200,7 @@ void DlgAutoDJ::setTrackTableRowHeight(int rowHeight) {
 }
 
 void DlgAutoDJ::updateSelectionInfo() {
-    int duration = 0;
+    double duration = 0.0;
 
     QModelIndexList indices = m_pTrackTableView->selectionModel()->selectedRows();
 
@@ -214,7 +214,7 @@ void DlgAutoDJ::updateSelectionInfo() {
     QString label;
 
     if (!indices.isEmpty()) {
-        label.append(Time::formatSeconds(duration));
+        label.append(mixxx::Duration::formatSeconds(duration));
         label.append(QString(" (%1)").arg(indices.size()));
         labelSelectionInfo->setText(label);
         labelSelectionInfo->setEnabled(true);
@@ -222,4 +222,8 @@ void DlgAutoDJ::updateSelectionInfo() {
         labelSelectionInfo->setText("");
         labelSelectionInfo->setEnabled(false);
     }
+}
+
+bool DlgAutoDJ::hasFocus() const {
+    return QWidget::hasFocus();
 }

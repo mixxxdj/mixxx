@@ -223,7 +223,7 @@
 							<PlayPosColor>#00FF00</PlayPosColor>
 							<EndOfTrackColor>#EA0000</EndOfTrackColor>
 							<DefaultMark>
-								<Align>bottom</Align>
+								<Align>bottom|right</Align>
 								<Color>#FD0564</Color>
 								<TextColor>#FFFFFF</TextColor>
 								<Text> %1 </Text>
@@ -238,7 +238,7 @@
 							<Mark>
 								<Control>cue_point</Control>
 								<Text>C</Text>
-								<Align>top</Align>
+								<Align>top|right</Align>
 								<Color>#FF001C</Color>
 								<TextColor>#FFFFFF</TextColor>
 							</Mark>

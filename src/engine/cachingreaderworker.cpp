@@ -18,7 +18,8 @@ CachingReaderWorker::CachingReaderWorker(
           m_tag(QString("CachingReaderWorker %1").arg(m_group)),
           m_pChunkReadRequestFIFO(pChunkReadRequestFIFO),
           m_pReaderStatusFIFO(pReaderStatusFIFO),
-          m_maxReadableFrameIndex(Mixxx::AudioSource::getMinFrameIndex()),
+          m_newTrackAvailable(false),
+          m_maxReadableFrameIndex(mixxx::AudioSource::getMinFrameIndex()),
           m_stop(0) {
 }
 
@@ -64,7 +65,8 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
 // WARNING: Always called from a different thread (GUI)
 void CachingReaderWorker::newTrack(TrackPointer pTrack) {
     QMutexLocker locker(&m_newTrackMutex);
-    m_newTrack = pTrack;
+    m_pNewTrack = pTrack;
+    m_newTrackAvailable = true;
 }
 
 void CachingReaderWorker::run() {
@@ -75,12 +77,13 @@ void CachingReaderWorker::run() {
 
     Event::start(m_tag);
     while (!load_atomic(m_stop)) {
-        if (m_newTrack) {
+        if (m_newTrackAvailable) {
             TrackPointer pLoadTrack;
             { // locking scope
                 QMutexLocker locker(&m_newTrackMutex);
-                pLoadTrack = m_newTrack;
-                m_newTrack = TrackPointer();
+                pLoadTrack = m_pNewTrack;
+                m_pNewTrack.reset();
+                m_newTrackAvailable = false;
             } // implicitly unlocks the mutex
             loadTrack(pLoadTrack);
         } else if (m_pChunkReadRequestFIFO->read(&request, 1) == 1) {
@@ -97,12 +100,12 @@ void CachingReaderWorker::run() {
 
 namespace
 {
-    Mixxx::AudioSourcePointer openAudioSourceForReading(const TrackPointer& pTrack, const Mixxx::AudioSourceConfig& audioSrcCfg) {
+    mixxx::AudioSourcePointer openAudioSourceForReading(const TrackPointer& pTrack, const mixxx::AudioSourceConfig& audioSrcCfg) {
         SoundSourceProxy soundSourceProxy(pTrack);
-        Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource(audioSrcCfg));
-        if (pAudioSource.isNull()) {
+        mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource(audioSrcCfg));
+        if (!pAudioSource) {
             qWarning() << "Failed to open file:" << pTrack->getLocation();
-            return Mixxx::AudioSourcePointer();
+            return mixxx::AudioSourcePointer();
         }
         // successfully opened and readable
         return pAudioSource;
@@ -110,13 +113,19 @@ namespace
 }
 
 void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
-    //qDebug() << m_group << "CachingReaderWorker::loadTrack() lock acquired for load.";
-
     // Emit that a new track is loading, stops the current track
     emit(trackLoading());
 
     ReaderStatusUpdate status;
     status.status = TRACK_NOT_LOADED;
+
+    if (!pTrack) {
+        // Unload track
+        m_pAudioSource.reset(); // Close open file handles
+        m_maxReadableFrameIndex = mixxx::AudioSource::getMinFrameIndex();
+        m_pReaderStatusFIFO->writeBlocking(&status, 1);
+        return;
+    }
 
     QString filename = pTrack->getLocation();
     if (filename.isEmpty() || !pTrack->exists()) {
@@ -129,11 +138,11 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
         return;
     }
 
-    Mixxx::AudioSourceConfig audioSrcCfg;
+    mixxx::AudioSourceConfig audioSrcCfg;
     audioSrcCfg.setChannelCount(CachingReaderChunk::kChannels);
     m_pAudioSource = openAudioSourceForReading(pTrack, audioSrcCfg);
-    if (m_pAudioSource.isNull()) {
-        m_maxReadableFrameIndex = Mixxx::AudioSource::getMinFrameIndex();
+    if (!m_pAudioSource) {
+        m_maxReadableFrameIndex = mixxx::AudioSource::getMinFrameIndex();
         // Must unlock before emitting to avoid deadlock
         qDebug() << m_group << "CachingReaderWorker::loadTrack() load failed for\""
                  << filename << "\", file invalid, unlocked reader lock";

@@ -21,6 +21,8 @@ class EngineNetworkStream {
     void read(CSAMPLE* buffer, int frames);
     void writeSilence(int frames);
 
+    void writingDone(int interval);
+
     qint64 getStreamTimeUs();
     qint64 getStreamTimeFrames();
 
@@ -37,7 +39,6 @@ class EngineNetworkStream {
     void addWorker(QSharedPointer<NetworkStreamWorker> pWorker);
 
   private:
-    void scheduleWorker();
 
     FIFO<CSAMPLE>* m_pOutputFifo;
     FIFO<CSAMPLE>* m_pInputFifo;

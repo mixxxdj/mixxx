@@ -66,11 +66,14 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
     void setupEqControls();
 
+    // For testing, loads a fake track.
+    TrackPointer loadFakeTrack(bool bPlay, double filebpm);
+
   public slots:
     void slotLoadTrack(TrackPointer track, bool bPlay) override;
     void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotLoadFailed(TrackPointer pTrack, QString reason);
-    void slotSetReplayGain(Mixxx::ReplayGain replayGain);
+    void slotSetReplayGain(mixxx::ReplayGain replayGain);
     void slotPlayToggled(double);
 
   private slots:
@@ -81,6 +84,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void setReplayGain(double value);
 
     UserSettingsPointer m_pConfig;
+    EngineMaster* m_pEngineMaster;
     TrackPointer m_pLoadedTrack;
 
     // Waveform display related controls

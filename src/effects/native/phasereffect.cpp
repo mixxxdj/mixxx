@@ -21,28 +21,7 @@ EffectManifest PhaserEffect::getManifest() {
     manifest.setDescription(QObject::tr(
                 "A more complex sound effect obtained by mixing the input signal"
                 " with a copy passed through a series of all-pass filters."));
-
-    EffectManifestParameter* stereo = manifest.addParameter();
-    stereo->setId("stereo");
-    stereo->setName(QObject::tr("Stereo"));
-    stereo->setDescription(QObject::tr("Enables/disables stereo"));
-    stereo->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
-    stereo->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    stereo->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    stereo->setDefault(0);
-    stereo->setMinimum(0);
-    stereo->setMaximum(1);
-
-    EffectManifestParameter* stages = manifest.addParameter();
-    stages->setId("stages");
-    stages->setName(QObject::tr("Stages"));
-    stages->setDescription(QObject::tr("Sets number of stages."));
-    stages->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    stages->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    stages->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    stages->setDefault(1.0);
-    stages->setMinimum(1.0);
-    stages->setMaximum(6.0);
+    manifest.setEffectRampsFromDry(true);
 
     EffectManifestParameter* frequency = manifest.addParameter();
     frequency->setId("lfo_frequency");
@@ -51,31 +30,9 @@ EffectManifest PhaserEffect::getManifest() {
     frequency->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     frequency->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     frequency->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    frequency->setDefault(0.5);
     frequency->setMinimum(0.0);
     frequency->setMaximum(5.0);
-
-    EffectManifestParameter* depth = manifest.addParameter();
-    depth->setId("depth");
-    depth->setName(QObject::tr("Depth"));
-    depth->setDescription("Controls the intensity of the effect.");
-    depth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    depth->setDefault(0.0);
-    depth->setMinimum(0.0);
-    depth->setMaximum(1.0);
-
-    EffectManifestParameter* fb = manifest.addParameter();
-    fb->setId("feedback");
-    fb->setName(QObject::tr("Feedback"));
-    fb->setDescription(QObject::tr("Controls how much of the output signal is looped"));
-    fb->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    fb->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    fb->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    fb->setDefault(0.0);
-    fb->setMinimum(-0.95);
-    fb->setMaximum(0.95);
+    frequency->setDefault(2.5);
 
     EffectManifestParameter* range = manifest.addParameter();
     range->setId("range");
@@ -84,9 +41,54 @@ EffectManifest PhaserEffect::getManifest() {
     range->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     range->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     range->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    range->setDefault(0.5);
     range->setMinimum(0.05);
     range->setMaximum(0.95);
+    range->setDefault(0.05);
+
+    EffectManifestParameter* stages = manifest.addParameter();
+    stages->setId("stages");
+    stages->setName(QObject::tr("Stages"));
+    stages->setDescription(QObject::tr("Sets number of stages."));
+    stages->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    stages->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    stages->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    stages->setMinimum(1.0);
+    stages->setMaximum(6.0);
+    stages->setDefault(3.5);
+
+    EffectManifestParameter* fb = manifest.addParameter();
+    fb->setId("feedback");
+    fb->setName(QObject::tr("Feedback"));
+    fb->setDescription(QObject::tr("Controls how much of the output signal is looped"));
+    fb->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    fb->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    fb->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    fb->setMinimum(-0.95);
+    fb->setMaximum(0.95);
+    fb->setDefault(0.0);
+
+    EffectManifestParameter* depth = manifest.addParameter();
+    depth->setId("depth");
+    depth->setName(QObject::tr("Depth"));
+    depth->setDescription("Controls the intensity of the effect.");
+    depth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    depth->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    depth->setMinimum(0.5);
+    depth->setMaximum(1.0);
+    depth->setDefault(0.0);
+
+    EffectManifestParameter* stereo = manifest.addParameter();
+    stereo->setId("stereo");
+    stereo->setName(QObject::tr("Stereo"));
+    stereo->setDescription(QObject::tr("Enables/disables stereo"));
+    stereo->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
+    stereo->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    stereo->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    stereo->setMinimum(0);
+    stereo->setMaximum(1);
+    stereo->setDefault(0);
 
     return manifest;
 }

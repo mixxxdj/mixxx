@@ -45,9 +45,7 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
     }
 
     // Make input_configured read-only.
-    m_pInputConfigured->connectValueChangeRequest(
-        this, SLOT(slotInputConfiguredChangeRequest(double)),
-        Qt::DirectConnection);
+    m_pInputConfigured->setReadOnly();
 
     // Set up passthrough utilities and fields
     m_pPassing->setButtonMode(ControlPushButton::POWERWINDOW);
@@ -109,6 +107,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
         // This is out of date by a callback but some effects will want the RMS
         // volume.
         m_pVUMeter->collectFeatures(&features);
+        m_pPregain->collectFeatures(&features);
         m_pEngineEffectsManager->process(
                 getHandle(), pOut, iBufferSize,
                 static_cast<unsigned int>(m_pSampleRate->get()), features);
@@ -158,7 +157,7 @@ void EngineDeck::onInputConfigured(AudioInput input) {
         qDebug() << "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";
         return;
     }
-    m_pInputConfigured->setAndConfirm(1.0);
+    m_pInputConfigured->forceSet(1.0);
     m_sampleBuffer =  NULL;
 }
 
@@ -168,7 +167,7 @@ void EngineDeck::onInputUnconfigured(AudioInput input) {
         qDebug() << "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";
         return;
     }
-    m_pInputConfigured->setAndConfirm(0.0);
+    m_pInputConfigured->forceSet(0.0);
     m_sampleBuffer = NULL;
 }
 

@@ -1,15 +1,25 @@
-
-
 #include <QtDebug>
 #include <QTouchEvent>
-
 #include "mixxxapplication.h"
+
+#include "library/crate/crateid.h"
 #include "control/controlproxy.h"
 #include "mixxx.h"
 
-extern void qt_translateRawTouchEvent(QWidget *window,
-        QTouchEvent::DeviceType deviceType,
-        const QList<QTouchEvent::TouchPoint> &touchPoints);
+// When linking Qt statically on Windows we have to Q_IMPORT_PLUGIN all the
+// plugins we link in build/depends.py.
+#ifdef QT_NODLL
+#include <QtPlugin>
+// iconengines plugins
+Q_IMPORT_PLUGIN(qsvgicon)
+// imageformats plugins
+Q_IMPORT_PLUGIN(qsvg)
+Q_IMPORT_PLUGIN(qico)
+Q_IMPORT_PLUGIN(qtga)
+// accessible plugins
+Q_IMPORT_PLUGIN(qtaccessiblewidgets)
+#endif
+
 
 MixxxApplication::MixxxApplication(int& argc, char** argv)
         : QApplication(argc, argv),
@@ -17,12 +27,32 @@ MixxxApplication::MixxxApplication(int& argc, char** argv)
           m_fakeMouseWidget(NULL),
           m_activeTouchButton(Qt::NoButton),
           m_pTouchShift(NULL) {
+    registerMetaTypes();
 }
 
 MixxxApplication::~MixxxApplication() {
 }
 
+void MixxxApplication::registerMetaTypes() {
+    // Register custom data types for signal processing
+    qRegisterMetaType<TrackId>("TrackId");
+    qRegisterMetaType<QList<TrackId>>("QList<TrackId>");
+    qRegisterMetaType<QSet<TrackId>>("QSet<TrackId>");
+    qRegisterMetaType<CrateId>("CrateId");
+    qRegisterMetaType<QList<CrateId>>("QList<CrateId>");
+    qRegisterMetaType<QSet<CrateId>>("QSet<CrateId>");
+    qRegisterMetaType<TrackPointer>("TrackPointer");
+    qRegisterMetaType<mixxx::ReplayGain>("mixxx::ReplayGain");
+    qRegisterMetaType<mixxx::Bpm>("mixxx::Bpm");
+    qRegisterMetaType<mixxx::Duration>("mixxx::Duration");
+}
+
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+
+extern void qt_translateRawTouchEvent(QWidget *window,
+        QTouchEvent::DeviceType deviceType,
+        const QList<QTouchEvent::TouchPoint> &touchPoints);
+
 bool MixxxApplication::notify(QObject* target, QEvent* event) {
     switch (event->type()) {
     case QEvent::TouchBegin:

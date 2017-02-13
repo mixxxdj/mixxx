@@ -3,7 +3,7 @@
 
 #include "util/math.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
 
@@ -72,13 +72,13 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& a
             &m_inputFormat);
     if (err != noErr) {
         qDebug() << "SSCA: Error getting file format (" << fileName << ")";
-        return OpenResult::UNSUPPORTED_FORMAT;
+        return OpenResult::ABORTED;
     }
     m_bFileIsMp3 = m_inputFormat.mFormatID == kAudioFormatMPEGLayer3;
 
     // create the output format
     const UInt32 numChannels =
-            audioSrcCfg.hasChannelCount() ? audioSrcCfg.getChannelCount() : 2;
+            audioSrcCfg.hasValidChannelCount() ? audioSrcCfg.getChannelCount() : 2;
     m_outputFormat = CAStreamBasicDescription(m_inputFormat.mSampleRate,
             numChannels, CAStreamBasicDescription::kPCMFormatFloat32, true);
 
@@ -167,9 +167,27 @@ SINT SoundSourceCoreAudio::seekSampleFrame(SINT frameIndex) {
 
 SINT SoundSourceCoreAudio::readSampleFrames(
         SINT numberOfFrames, CSAMPLE* sampleBuffer) {
-    //if (!m_decoder) return 0;
-    SINT numFramesRead = 0;
+    DEBUG_ASSERT(numberOfFrames >= 0);
+    if (numberOfFrames <= 0) {
+        return 0;
+    }
 
+    // Handle special case: Skipping instead of reading
+    if (sampleBuffer == nullptr) {
+        SInt64 frameOffset = 0;
+        const OSStatus osErr = ExtAudioFileTell(m_audioFile, &frameOffset);
+        if (osErr == noErr) {
+            const SINT frameIndexBefore = getMinFrameIndex() + frameOffset;
+            const SINT frameIndexAfter = seekSampleFrame(frameIndexBefore + numberOfFrames);
+            DEBUG_ASSERT(frameIndexBefore <= frameIndexAfter);
+            return frameIndexAfter - frameIndexBefore;
+        } else {
+            qWarning() << "SSCA: Error to determine the current position for skipping sample frames" << osErr;
+            return 0; // abort
+        }
+    }
+
+    SINT numFramesRead = 0;
     while (numFramesRead < numberOfFrames) {
         SINT numFramesToRead = numberOfFrames - numFramesRead;
 
@@ -210,4 +228,4 @@ QStringList SoundSourceProviderCoreAudio::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
-}  // namespace Mixxx
+}  // namespace mixxx

@@ -18,59 +18,10 @@
 #include "util/class.h"
 #include "util/memory.h"
 
-#define LIBRARY_TABLE "library"
-
-const QString LIBRARYTABLE_ID = "id";
-const QString LIBRARYTABLE_ARTIST = "artist";
-const QString LIBRARYTABLE_TITLE = "title";
-const QString LIBRARYTABLE_ALBUM = "album";
-const QString LIBRARYTABLE_ALBUMARTIST = "album_artist";
-const QString LIBRARYTABLE_YEAR = "year";
-const QString LIBRARYTABLE_GENRE = "genre";
-const QString LIBRARYTABLE_COMPOSER = "composer";
-const QString LIBRARYTABLE_GROUPING = "grouping";
-const QString LIBRARYTABLE_TRACKNUMBER = "tracknumber";
-const QString LIBRARYTABLE_FILETYPE = "filetype";
-const QString LIBRARYTABLE_LOCATION = "location";
-const QString LIBRARYTABLE_COMMENT = "comment";
-const QString LIBRARYTABLE_DURATION = "duration";
-const QString LIBRARYTABLE_BITRATE = "bitrate";
-const QString LIBRARYTABLE_BPM = "bpm";
-const QString LIBRARYTABLE_REPLAYGAIN = "replaygain";
-const QString LIBRARYTABLE_CUEPOINT = "cuepoint";
-const QString LIBRARYTABLE_URL = "url";
-const QString LIBRARYTABLE_SAMPLERATE = "samplerate";
-const QString LIBRARYTABLE_WAVESUMMARYHEX = "wavesummaryhex";
-const QString LIBRARYTABLE_CHANNELS = "channels";
-const QString LIBRARYTABLE_MIXXXDELETED = "mixxx_deleted";
-const QString LIBRARYTABLE_DATETIMEADDED = "datetime_added";
-const QString LIBRARYTABLE_HEADERPARSED = "header_parsed";
-const QString LIBRARYTABLE_TIMESPLAYED = "timesplayed";
-const QString LIBRARYTABLE_PLAYED = "played";
-const QString LIBRARYTABLE_RATING = "rating";
-const QString LIBRARYTABLE_KEY = "key";
-const QString LIBRARYTABLE_KEY_ID = "key_id";
-const QString LIBRARYTABLE_BPM_LOCK = "bpm_lock";
-const QString LIBRARYTABLE_PREVIEW = "preview";
-const QString LIBRARYTABLE_COVERART = "coverart";
-const QString LIBRARYTABLE_COVERART_SOURCE = "coverart_source";
-const QString LIBRARYTABLE_COVERART_TYPE = "coverart_type";
-const QString LIBRARYTABLE_COVERART_LOCATION = "coverart_location";
-const QString LIBRARYTABLE_COVERART_HASH = "coverart_hash";
-
-const QString TRACKLOCATIONSTABLE_ID = "id";
-const QString TRACKLOCATIONSTABLE_LOCATION = "location";
-const QString TRACKLOCATIONSTABLE_FILENAME = "filename";
-const QString TRACKLOCATIONSTABLE_DIRECTORY = "directory";
-const QString TRACKLOCATIONSTABLE_FILESIZE = "filesize";
-const QString TRACKLOCATIONSTABLE_FSDELETED = "fs_deleted";
-const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = "needs_verification";
-
-class ScopedTransaction;
+class SqlTransaction;
 class PlaylistDAO;
 class AnalysisDao;
 class CueDAO;
-class CrateDAO;
 class LibraryHashDAO;
 
 // Holds a strong reference to a track while it is in the "recent tracks"
@@ -104,8 +55,9 @@ class TrackDAO : public QObject, public virtual DAO {
     // The 'config object' is necessary because users decide ID3 tags get
     // synchronized on track metadata change
     TrackDAO(QSqlDatabase& database, CueDAO& cueDao,
-             PlaylistDAO& playlistDao, CrateDAO& crateDao,
-             AnalysisDao& analysisDao, LibraryHashDAO& libraryHashDao,
+             PlaylistDAO& playlistDao,
+             AnalysisDao& analysisDao,
+             LibraryHashDAO& libraryHashDao,
              UserSettingsPointer pConfig);
     virtual ~TrackDAO();
 
@@ -116,6 +68,7 @@ class TrackDAO : public QObject, public virtual DAO {
 
     TrackId getTrackId(const QString& absoluteFilePath);
     QList<TrackId> getTrackIds(const QList<QFileInfo>& files);
+    QList<TrackId> getTrackIds(const QDir& dir);
 
     bool trackExistsInDatabase(const QString& absoluteFilePath);
 
@@ -134,10 +87,23 @@ class TrackDAO : public QObject, public virtual DAO {
     TrackId addTracksAddTrack(const TrackPointer& pTrack, bool unremove);
     void addTracksFinish(bool rollback = false);
 
-    void hideTracks(const QList<TrackId>& trackIds);
-    void purgeTracks(const QList<TrackId>& trackIds);
-    void purgeTracks(const QString& dir);
-    void unhideTracks(const QList<TrackId>& trackIds);
+    bool onHidingTracks(
+            SqlTransaction& transaction,
+            const QList<TrackId>& trackIds);
+    void afterHidingTracks(
+            const QList<TrackId>& trackIds);
+
+    bool onUnhidingTracks(
+            SqlTransaction& transaction,
+            const QList<TrackId>& trackIds);
+    void afterUnhidingTracks(
+            const QList<TrackId>& trackIds);
+
+    bool onPurgingTracks(
+            SqlTransaction& transaction,
+            const QList<TrackId>& trackIds);
+    void afterPurgingTracks(
+            const QList<TrackId>& trackIds);
 
     // Fetches trackLocation from the database or adds it. If searchForCoverArt
     // is true, searches the track and its directory for cover art via
@@ -165,7 +131,8 @@ class TrackDAO : public QObject, public virtual DAO {
     bool verifyRemainingTracks(
             const QStringList& libraryRootDirs,
             volatile const bool* pCancel);
-    void detectCoverArtForUnknownTracks(volatile const bool* pCancel,
+
+    void detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
                                         QSet<TrackId>* pTracksChanged);
 
   signals:
@@ -184,7 +151,7 @@ class TrackDAO : public QObject, public virtual DAO {
     // have a guarantee that the track will not be deleted while we are working
     // on it. However, private parts of TrackDAO can use the raw saveTrack(TIO*)
     // call.
-    void saveTrack(TrackPointer pTrack);
+    void saveTrack(const TrackPointer& pTrack);
 
     // Clears the cached Tracks, which can be useful when the
     // underlying database tables change (eg. during a library rescan,
@@ -208,12 +175,13 @@ class TrackDAO : public QObject, public virtual DAO {
     void saveTrack(Track* pTrack);
     bool updateTrack(Track* pTrack);
 
-    QSqlDatabase& m_database;
+    QSqlDatabase m_database;
+
     CueDAO& m_cueDao;
     PlaylistDAO& m_playlistDao;
-    CrateDAO& m_crateDao;
     AnalysisDao& m_analysisDao;
     LibraryHashDAO& m_libraryHashDao;
+
     UserSettingsPointer m_pConfig;
     // Mutex that protects m_sTracks.
     static QMutex m_sTracksMutex;
@@ -238,7 +206,7 @@ class TrackDAO : public QObject, public virtual DAO {
     std::unique_ptr<QSqlQuery> m_pQueryLibraryInsert;
     std::unique_ptr<QSqlQuery> m_pQueryLibraryUpdate;
     std::unique_ptr<QSqlQuery> m_pQueryLibrarySelect;
-    std::unique_ptr<ScopedTransaction> m_pTransaction;
+    std::unique_ptr<SqlTransaction> m_pTransaction;
     int m_trackLocationIdColumn;
     int m_queryLibraryIdColumn;
     int m_queryLibraryMixxxDeletedColumn;

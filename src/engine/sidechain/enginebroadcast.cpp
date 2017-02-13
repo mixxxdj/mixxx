@@ -1,4 +1,5 @@
 #include <QtDebug>
+#include <QUrl>
 
 #include <signal.h>
 
@@ -21,22 +22,23 @@
 #include "mixer/playerinfo.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
-#include "util/sleep.h"
 
 static const int kConnectRetries = 30;
 static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
+// Shoutcast default receive buffer 1048576 and autodumpsourcetime 30 s
+// http://wiki.shoutcast.com/wiki/SHOUTcast_DNAS_Server_2
 static const int kMaxShoutFailures = 3;
 
 EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig)
-        : m_pTextCodec(NULL),
+        : m_pTextCodec(nullptr),
           m_pMetaData(),
-          m_pShout(NULL),
-          m_pShoutMetaData(NULL),
+          m_pShout(nullptr),
+          m_pShoutMetaData(nullptr),
           m_iMetaDataLife(0),
           m_iShoutStatus(0),
           m_iShoutFailures(0),
-          m_pConfig(pConfig),
-          m_encoder(NULL),
+          m_settings(pConfig),
+          m_encoder(nullptr),
           m_pMasterSamplerate(new ControlProxy("[Master]", "samplerate")),
           m_custom_metadata(false),
           m_firstCall(false),
@@ -47,7 +49,13 @@ EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig)
           m_protocol_is_shoutcast(false),
           m_ogg_dynamic_update(false),
           m_threadWaiting(false),
-          m_pOutputFifo(NULL) {
+          m_pOutputFifo(nullptr),
+          m_retryCount(0),
+          m_reconnectFirstDelay(0.0),
+          m_reconnectPeriod(5.0),
+          m_noDelayFirstReconnect(true),
+          m_limitReconnects(true),
+          m_maximumRetries(10) {
     const bool persist = true;
     m_pBroadcastEnabled = new ControlPushButton(
             ConfigKey(BROADCAST_PREF_KEY,"enabled"), persist);
@@ -56,9 +64,8 @@ EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig)
             this, SLOT(slotEnableCO(double)));
 
     m_pStatusCO = new ControlObject(ConfigKey(BROADCAST_PREF_KEY, "status"));
-    m_pStatusCO->connectValueChangeRequest(
-            this, SLOT(slotStatusCO(double)));
-    m_pStatusCO->setAndConfirm(STATUSCO_UNCONNECTED);
+    m_pStatusCO->setReadOnly();
+    m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
 
     setState(NETWORKSTREAMWORKER_STATE_INIT);
 
@@ -66,16 +73,19 @@ EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig)
     shout_init();
 
     if (!(m_pShout = shout_new())) {
-        errorDialog(tr("Mixxx encountered a problem"), tr("Could not allocate shout_t"));
+        errorDialog(tr("Mixxx encountered a problem"),
+                tr("Could not allocate shout_t"));
     }
 
     if (!(m_pShoutMetaData = shout_metadata_new())) {
-        errorDialog(tr("Mixxx encountered a problem"), tr("Could not allocate shout_metadata_t"));
+        errorDialog(tr("Mixxx encountered a problem"),
+                tr("Could not allocate shout_metadata_t"));
     }
 
     setFunctionCode(14);
     if (shout_set_nonblocking(m_pShout, 1) != SHOUTERR_SUCCESS) {
-        errorDialog(tr("Error setting non-blocking mode:"), shout_get_error(m_pShout));
+        errorDialog(tr("Error setting non-blocking mode:"),
+                shout_get_error(m_pShout));
     }
 }
 
@@ -88,7 +98,7 @@ EngineBroadcast::~EngineBroadcast() {
     wait(4000);
 
     // Signal user if thread doesn't die
-    DEBUG_ASSERT_AND_HANDLE(!isRunning()) {
+    VERIFY_OR_DEBUG_ASSERT(!isRunning()) {
        qWarning() << "EngineBroadcast:~EngineBroadcast(): Thread didn't die.\
        Ignored but file a bug report if problems rise!";
     }
@@ -129,11 +139,20 @@ void EngineBroadcast::updateFromPreferences() {
     double dStatus = m_pStatusCO->get();
     if (dStatus == STATUSCO_CONNECTED ||
             dStatus == STATUSCO_CONNECTING) {
-        qDebug() << "EngineBroadcast::updateFromPreferences: Can't edit preferences when playing";
+        qDebug() << "EngineBroadcast::updateFromPreferences status:"
+                 << dStatus
+                 << ". Can't edit preferences when playing";
         return;
     }
 
     setState(NETWORKSTREAMWORKER_STATE_BUSY);
+
+    // delete m_encoder if it has been initialized (with maybe) different
+    // bitrate
+    // delete m_encoder calls write() check if it will be exit early
+    DEBUG_ASSERT(m_iShoutStatus != SHOUTERR_CONNECTED);
+    delete m_encoder;
+    m_encoder = nullptr;
 
     m_format_is_mp3 = false;
     m_format_is_ov = false;
@@ -145,8 +164,7 @@ void EngineBroadcast::updateFromPreferences() {
     // Convert a bunch of QStrings to QByteArrays so we can get regular C char*
     // strings to pass to libshout.
 
-    QString codec = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "metadata_charset"));
+    QString codec = m_settings.getMetadataCharset();
     QByteArray baCodec = codec.toLatin1();
     m_pTextCodec = QTextCodec::codecForName(baCodec);
     if (!m_pTextCodec) {
@@ -157,84 +175,101 @@ void EngineBroadcast::updateFromPreferences() {
     // Indicates our metadata is in the provided charset.
     shout_metadata_add(m_pShoutMetaData, "charset",  baCodec.constData());
 
-    // Host, server type, port, mountpoint, login, password should be latin1.
-    QByteArray baHost = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "host")).toLatin1();
-    QByteArray baServerType = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "servertype")).toLatin1();
-    QByteArray baPort = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "port")).toLatin1();
-    QByteArray baMountPoint = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "mountpoint")).toLatin1();
-    QByteArray baLogin = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "login")).toLatin1();
-    QByteArray baPassword = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "password")).toLatin1();
-    QByteArray baFormat = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "format")).toLatin1();
-    QByteArray baBitrate = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "bitrate")).toLatin1();
+    QString serverType = m_settings.getServertype();
+
+    QString host = m_settings.getHost();
+    int start = host.indexOf(QLatin1String("//"));
+    if (start == -1) {
+        // the host part requires preceding //.
+        // Without them, the path is treated relative and goes to the
+        // path() section.
+        host.prepend(QLatin1String("//"));
+    }
+    QUrl serverUrl = host;
+
+    int port = m_settings.getPort();
+    serverUrl.setPort(port);
+
+    QString mountPoint = m_settings.getMountpoint();
+    if (!mountPoint.isEmpty()) {
+        if (!mountPoint.startsWith('/')) {
+            mountPoint.prepend('/');
+        }
+        serverUrl.setPath(mountPoint);
+    }
+
+    QString login = m_settings.getLogin();
+    if (!login.isEmpty()) {
+        serverUrl.setUserName(login);
+    }
+
+    qDebug() << "Using server URL:" << serverUrl;
+
+    QByteArray baPassword = m_settings.getPassword().toLatin1();
+    QByteArray baFormat = m_settings.getFormat().toLatin1();
+    int iBitrate = m_settings.getBitrate();
 
     // Encode metadata like stream name, website, desc, genre, title/author with
     // the chosen TextCodec.
-    QByteArray baStreamName = encodeString(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "stream_name")));
-    QByteArray baStreamWebsite = encodeString(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "stream_website")));
-    QByteArray baStreamDesc = encodeString(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "stream_desc")));
-    QByteArray baStreamGenre = encodeString(m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "stream_genre")));
+    QByteArray baStreamName = encodeString(m_settings.getStreamName());
+    QByteArray baStreamWebsite = encodeString(m_settings.getStreamWebsite());
+    QByteArray baStreamDesc = encodeString(m_settings.getStreamDesc());
+    QByteArray baStreamGenre = encodeString(m_settings.getStreamGenre());
 
     // Whether the stream is public.
-    bool streamPublic = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "stream_public")).toInt() > 0;
+    bool streamPublic = m_settings.getStreamPublic();
 
     // Dynamic Ogg metadata update
-    m_ogg_dynamic_update = (bool)m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY,"ogg_dynamicupdate")).toInt();
+    m_ogg_dynamic_update = m_settings.getOggDynamicUpdate();
 
-    m_custom_metadata = (bool)m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "enable_metadata")).toInt();
-    m_customTitle = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "custom_title"));
-    m_customArtist = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "custom_artist"));
+    m_custom_metadata = m_settings.getEnableMetadata();
+    m_customTitle = m_settings.getCustomTitle();
+    m_customArtist = m_settings.getCustomArtist();
 
-    m_metadataFormat = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "metadata_format"));
+    m_metadataFormat = m_settings.getMetadataFormat();
+
+    bool enableReconnect = m_settings.getEnableReconnect();
+    if (enableReconnect) {
+        m_reconnectFirstDelay = m_settings.getReconnectFirstDelay();
+        m_reconnectPeriod = m_settings.getReconnectPeriod();
+        m_noDelayFirstReconnect = m_settings.getNoDelayFirstReconnect();
+        m_limitReconnects = m_settings.getLimitReconnects();
+        m_maximumRetries = m_settings.getMaximumRetries();
+    } else {
+        m_limitReconnects = true;
+        m_maximumRetries = 0;
+    }
 
     int format;
     int protocol;
 
-    if (shout_set_host(m_pShout, baHost.constData()) != SHOUTERR_SUCCESS) {
+    if (shout_set_host(m_pShout, serverUrl.host().toLatin1().constData())
+            != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting hostname!"), shout_get_error(m_pShout));
         return;
     }
 
-    // WTF? Why SHOUT_PROTOCOL_HTTP and not.. the chosen protocol?
-    if (shout_set_protocol(m_pShout, SHOUT_PROTOCOL_HTTP) != SHOUTERR_SUCCESS) {
-        errorDialog(tr("Error setting protocol!"), shout_get_error(m_pShout));
-        return;
-    }
-
-    if (shout_set_port(m_pShout, baPort.toUInt()) != SHOUTERR_SUCCESS) {
+    if (shout_set_port(m_pShout,
+            static_cast<unsigned short>(serverUrl.port(BROADCAST_DEFAULT_PORT)))
+            != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting port!"), shout_get_error(m_pShout));
         return;
     }
 
-    if (shout_set_password(m_pShout, baPassword.constData()) != SHOUTERR_SUCCESS) {
+    if (shout_set_password(m_pShout, baPassword.constData())
+            != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting password!"), shout_get_error(m_pShout));
         return;
     }
 
-    if (shout_set_mount(m_pShout, baMountPoint.constData()) != SHOUTERR_SUCCESS) {
+    if (shout_set_mount(m_pShout, serverUrl.path().toLatin1().constData())
+            != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting mount!"), shout_get_error(m_pShout));
         return;
     }
 
-
-    if (shout_set_user(m_pShout, baLogin.constData()) != SHOUTERR_SUCCESS) {
+    if (shout_set_user(m_pShout, serverUrl.userName().toLatin1().constData())
+            != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting username!"), shout_get_error(m_pShout));
         return;
     }
@@ -280,11 +315,8 @@ void EngineBroadcast::updateFromPreferences() {
         return;
     }
 
-    bool bitrate_is_int = false;
-    int iBitrate = baBitrate.toInt(&bitrate_is_int);
-
-    if (!bitrate_is_int) {
-        qWarning() << "Error: unknown bitrate:" << baBitrate.constData();
+    if (iBitrate < 0) {
+        qWarning() << "Error: unknown bit rate:" << iBitrate;
     }
 
     int iMasterSamplerate = m_pMasterSamplerate->get();
@@ -297,14 +329,16 @@ void EngineBroadcast::updateFromPreferences() {
         return;
     }
 
-    if (shout_set_audio_info(m_pShout, SHOUT_AI_BITRATE, baBitrate.constData()) != SHOUTERR_SUCCESS) {
+    if (shout_set_audio_info(
+            m_pShout, SHOUT_AI_BITRATE,
+            QByteArray::number(iBitrate).constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting bitrate"), shout_get_error(m_pShout));
         return;
     }
 
-    m_protocol_is_icecast2 = !qstricmp(baServerType.constData(), BROADCAST_SERVER_ICECAST2);
-    m_protocol_is_shoutcast = !qstricmp(baServerType.constData(), BROADCAST_SERVER_SHOUTCAST);
-    m_protocol_is_icecast1 = !qstricmp(baServerType.constData(), BROADCAST_SERVER_ICECAST1);
+    m_protocol_is_icecast2 = serverType == BROADCAST_SERVER_ICECAST2;
+    m_protocol_is_shoutcast = serverType == BROADCAST_SERVER_SHOUTCAST;
+    m_protocol_is_icecast1 = serverType == BROADCAST_SERVER_ICECAST1;
 
 
     if (m_protocol_is_icecast2) {
@@ -330,27 +364,28 @@ void EngineBroadcast::updateFromPreferences() {
     }
 
     // Initialize m_encoder
-    if (m_encoder) {
-        // delete m_encoder if it has been initialized (with maybe) different bitrate
-        delete m_encoder;
-        m_encoder = NULL;
-    }
-
     if (m_format_is_mp3) {
         m_encoder = new EncoderMp3(this);
     } else if (m_format_is_ov) {
         m_encoder = new EncoderVorbis(this);
     } else {
         qDebug() << "**** Unknown Encoder Format";
+        setState(NETWORKSTREAMWORKER_STATE_ERROR);
+        m_lastErrorStr = "Encoder format error";
         return;
     }
 
     if (m_encoder->initEncoder(iBitrate, iMasterSamplerate) < 0) {
-        //e.g., if lame is not found
-        //init m_encoder itself will display a message box
+        // e.g., if lame is not found
+        // init m_encoder itself will display a message box
         qDebug() << "**** Encoder init failed";
+        // delete m_encoder calls write() make sure it will be exit early
+        DEBUG_ASSERT(m_iShoutStatus != SHOUTERR_CONNECTED);
         delete m_encoder;
-        m_encoder = NULL;
+        m_encoder = nullptr;
+        setState(NETWORKSTREAMWORKER_STATE_ERROR);
+        m_lastErrorStr = "Encoder error";
+        return;
     }
     setState(NETWORKSTREAMWORKER_STATE_READY);
 }
@@ -362,12 +397,19 @@ bool EngineBroadcast::serverConnect() {
 }
 
 bool EngineBroadcast::processConnect() {
+    qDebug() << "EngineBroadcast::processConnect()";
+
     // Make sure that we call updateFromPreferences always
-    if (m_encoder == NULL) {
-        updateFromPreferences();
+    updateFromPreferences();
+
+    if (!m_encoder) {
+        // updateFromPreferences failed
+        m_pStatusCO->forceSet(STATUSCO_FAILURE);
+        qDebug() << "EngineBroadcast::processConnect() returning false";
+        return false;
     }
 
-    m_pStatusCO->setAndConfirm(STATUSCO_CONNECTING);
+    m_pStatusCO->forceSet(STATUSCO_CONNECTING);
     m_iShoutFailures = 0;
     m_lastErrorStr.clear();
     // set to a high number to automatically update the metadata
@@ -376,9 +418,9 @@ bool EngineBroadcast::processConnect() {
     // clear metadata, to make sure the first track is not skipped
     // because it was sent via an previous connection (see metaDataHasChanged)
     if(m_pMetaData) {
-        m_pMetaData.clear();
+        m_pMetaData.reset();
     }
-    //If static metadata is available, we only need to send metadata one time
+    // If static metadata is available, we only need to send metadata one time
     m_firstCall = false;
 
     while (m_iShoutFailures < kMaxShoutFailures) {
@@ -419,9 +461,9 @@ bool EngineBroadcast::processConnect() {
 
     // If we don't have any fatal errors let's try to connect
     if ((m_iShoutStatus == SHOUTERR_BUSY ||
-         m_iShoutStatus == SHOUTERR_CONNECTED ||
-         m_iShoutStatus == SHOUTERR_SUCCESS) &&
-         m_iShoutFailures < kMaxShoutFailures) {
+             m_iShoutStatus == SHOUTERR_CONNECTED ||
+             m_iShoutStatus == SHOUTERR_SUCCESS) &&
+             m_iShoutFailures < kMaxShoutFailures) {
         m_iShoutFailures = 0;
         int timeout = 0;
         while (m_iShoutStatus == SHOUTERR_BUSY &&
@@ -440,7 +482,9 @@ bool EngineBroadcast::processConnect() {
 
             // If socket is busy then we wait half second
             if (m_iShoutStatus == SHOUTERR_BUSY) {
-               QThread::msleep(500);
+                m_enabledMutex.lock();
+                m_waitEnabled.wait(&m_enabledMutex, 500);
+                m_enabledMutex.unlock();
             }
 
             ++ timeout;
@@ -449,15 +493,15 @@ bool EngineBroadcast::processConnect() {
             setState(NETWORKSTREAMWORKER_STATE_READY);
             qDebug() << "***********Connected to streaming server...";
 
-            // Signal user also that we are connected
-            infoDialog(tr("Mixxx has successfully connected to the streaming server"), "");
+            m_retryCount = 0;
 
             if (m_pOutputFifo->readAvailable()) {
                 m_pOutputFifo->flushReadData(m_pOutputFifo->readAvailable());
             }
             m_threadWaiting = true;
-            m_pStatusCO->setAndConfirm(STATUSCO_CONNECTED);
+            m_pStatusCO->forceSet(STATUSCO_CONNECTED);
             emit(broadcastConnected());
+            qDebug() << "EngineBroadcast::processConnect() returning true";
             return true;
         } else if (m_iShoutStatus == SHOUTERR_SOCKET) {
             m_lastErrorStr = "Socket error";
@@ -468,75 +512,68 @@ bool EngineBroadcast::processConnect() {
             qDebug() << "EngineBroadcast::processConnect() error:"
                      << m_iShoutStatus << m_lastErrorStr;
         }
-    } else {
-        // no connection
+    }
 
-    }
+    // no connection, clean up
     shout_close(m_pShout);
-    if (m_encoder) {
-        m_encoder->flush();
-        delete m_encoder;
-        m_encoder = NULL;
-    }
+    // delete m_encoder calls write() check if it will be exit early
+    DEBUG_ASSERT(m_iShoutStatus != SHOUTERR_CONNECTED);
+    delete m_encoder;
+    m_encoder = nullptr;
     if (m_pBroadcastEnabled->toBool()) {
-        m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
-        m_pBroadcastEnabled->set(0);
+        m_pStatusCO->forceSet(STATUSCO_FAILURE);
     } else {
-        m_pStatusCO->setAndConfirm(STATUSCO_UNCONNECTED);
+        m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
     }
+    qDebug() << "EngineBroadcast::processConnect() returning false";
     return false;
 }
 
-void EngineBroadcast::processDisconnect() {
+bool EngineBroadcast::processDisconnect() {
     qDebug() << "EngineBroadcast::processDisconnect()";
+    bool disconnected = false;
     if (isConnected()) {
         m_threadWaiting = false;
-        // We are conneced but broadcast is disabled. Disconnect.
+        // We are connected but broadcast is disabled. Disconnect.
         shout_close(m_pShout);
-        infoDialog(tr("Mixxx has successfully disconnected from the streaming server"), "");
         m_iShoutStatus = SHOUTERR_UNCONNECTED;
         emit(broadcastDisconnected());
+        disconnected = true;
     }
-
-    if (m_encoder) {
-        m_encoder->flush();
-        delete m_encoder;
-        m_encoder = NULL;
-    }
+    // delete m_encoder calls write() check if it will be exit early
+    DEBUG_ASSERT(m_iShoutStatus != SHOUTERR_CONNECTED);
+    delete m_encoder;
+    m_encoder = nullptr;
+    return disconnected;
 }
 
 void EngineBroadcast::write(unsigned char *header, unsigned char *body,
                             int headerLen, int bodyLen) {
     setFunctionCode(7);
-    if (!m_pShout) {
+    if (!m_pShout || m_iShoutStatus != SHOUTERR_CONNECTED) {
+        // This happens when the decoder calls flush() and the connection is
+        // already down
         return;
     }
 
-    if (m_iShoutStatus == SHOUTERR_CONNECTED) {
-        // Send header if there is one
-        if (headerLen > 0) {
-            if(!writeSingle(header, headerLen)) {
-                return;
-            }
-        }
-
-        if(!writeSingle(body, bodyLen)) {
+    // Send header if there is one
+    if (headerLen > 0) {
+        if(!writeSingle(header, headerLen)) {
             return;
         }
+    }
 
-        ssize_t queuelen = shout_queuelen(m_pShout);
-        if (queuelen > 0) {
-            qDebug() << "shout_queuelen" << queuelen;
-            NetworkStreamWorker::debugState();
-            if (queuelen > kMaxNetworkCache) {
-                m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
-                processDisconnect();
-                if (!processConnect()) {
-                    errorDialog(tr("Lost connection to streaming server and the attempt to reconnect failed"),
-                                m_lastErrorStr + "\n" +
-                                tr("Please check your connection to the Internet"));
-                }
-            }
+    if(!writeSingle(body, bodyLen)) {
+        return;
+    }
+
+    ssize_t queuelen = shout_queuelen(m_pShout);
+    if (queuelen > 0) {
+        qDebug() << "shout_queuelen" << queuelen;
+        NetworkStreamWorker::debugState();
+        if (queuelen > kMaxNetworkCache) {
+            m_lastErrorStr = tr("Network cache overflow");
+            tryReconnect();
         }
     }
 }
@@ -545,21 +582,20 @@ bool EngineBroadcast::writeSingle(const unsigned char* data, size_t len) {
     // We are already synced by EngineNetworkstream
     setFunctionCode(8);
     int ret = shout_send_raw(m_pShout, data, len);
-    if (ret < SHOUTERR_SUCCESS && ret != SHOUTERR_BUSY) {
-        // in case of bussy, frames are queued and queue is checked below
-        qDebug() << "EngineBroadcast::write() header error:"
-                 << ret << shout_get_error(m_pShout);
+    if (ret == SHOUTERR_BUSY) {
+        // in case of busy, frames are queued
+        // try to flush queue after a short sleep
+        qDebug() << "EngineBroadcast::writeSingle() SHOUTERR_BUSY, trying again";
+        QThread::msleep(10); // wait 10 ms until "busy" is over. TODO() tweak for an optimum.
+        // if this fails, the queue is transmitted after the next regular shout_send_raw()
+        (void)shout_send_raw(m_pShout, nullptr, 0);
+    } else if (ret < SHOUTERR_SUCCESS) {
+        m_lastErrorStr = shout_get_error(m_pShout);
+        qDebug() << "EngineBroadcast::writeSingle() error:"
+                 << ret << m_lastErrorStr;
         NetworkStreamWorker::debugState();
-        if (m_iShoutFailures > kMaxShoutFailures) {
-            m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
-            processDisconnect();
-            if (!processConnect()) {
-                errorDialog(tr("Lost connection to streaming server and the attempt to reconnect failed"),
-                            m_lastErrorStr + "\n" +
-                            tr("Please check your connection to the Internet"));
-            }
-        } else{
-            m_iShoutFailures++;
+        if (++m_iShoutFailures > kMaxShoutFailures) {
+            tryReconnect();
         }
         return false;
     } else {
@@ -645,7 +681,7 @@ void EngineBroadcast::updateMetaData() {
     // If we use either MP3 streaming or OGG streaming with dynamic update of
     // metadata being enabled, we want dynamic metadata changes
     if (!m_custom_metadata && (m_format_is_mp3 || m_ogg_dynamic_update)) {
-        if (m_pMetaData != NULL) {
+        if (m_pMetaData != nullptr) {
 
             QString artist = m_pMetaData->getArtist();
             QString title = m_pMetaData->getTitle();
@@ -773,18 +809,22 @@ void EngineBroadcast::run() {
     ignoreSigpipe();
 #endif
 
-    DEBUG_ASSERT_AND_HANDLE(m_pOutputFifo) {
+    VERIFY_OR_DEBUG_ASSERT(m_pOutputFifo) {
         qDebug() << "EngineBroadcast::run: Broadcast FIFO handle is not available. Aborting";
         return;
     }
 
     setState(NETWORKSTREAMWORKER_STATE_BUSY);
     if (!processConnect()) {
+        m_pBroadcastEnabled->set(0);
         errorDialog(tr("Can't connect to streaming server"),
                     m_lastErrorStr + "\n" +
                     tr("Please check your connection to the Internet and verify that your username and password are correct."));
         return;
     }
+
+    // Signal user also that we are connected
+    infoDialog(tr("Mixxx has successfully connected to the streaming server"), "");
 
     while(true) {
         setFunctionCode(1);
@@ -794,8 +834,10 @@ void EngineBroadcast::run() {
         // broadcast if necessary.
         if (!m_pBroadcastEnabled->toBool()) {
             m_threadWaiting = false;
-            m_pStatusCO->setAndConfirm(STATUSCO_UNCONNECTED);
-            processDisconnect();
+            if (processDisconnect()) {
+                m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
+                infoDialog(tr("Mixxx has successfully disconnected from the streaming server"), "");
+            }
             setFunctionCode(2);
             return;
         }
@@ -823,29 +865,31 @@ bool EngineBroadcast::threadWaiting() {
 }
 
 #ifndef __WINDOWS__
-void EngineBroadcast::ignoreSigpipe()
-{
-    // shout_send_raw() can cause SIGPIPE, which is passed to this theread
-    // and which will finally crash Mixxx if it remains unhandled.
-    // Each thread has its own signal mask, so it is safe to do this for the
-    // broadcast thread only
+void EngineBroadcast::ignoreSigpipe() {
+    // If the remote connection is closed, shout_send_raw() can cause a
+    // SIGPIPE. If it is unhandled then Mixxx will quit immediately.
+#ifdef Q_OS_MAC
+    // The per-thread approach using pthread_sigmask below does not seem to work
+    // on macOS.
+    struct sigaction sa;
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_handler = SIG_IGN;
+    if (sigaction(SIGPIPE, &sa, NULL) != 0) {
+        qDebug() << "EngineBroadcast::ignoreSigpipe() failed";
+    }
+#else
     // http://www.microhowto.info/howto/ignore_sigpipe_without_affecting_other_threads_in_a_process.html
     sigset_t sigpipe_mask;
     sigemptyset(&sigpipe_mask);
     sigaddset(&sigpipe_mask, SIGPIPE);
     sigset_t saved_mask;
-    if (pthread_sigmask(SIG_BLOCK, &sigpipe_mask, &saved_mask) == -1) {
+    if (pthread_sigmask(SIG_BLOCK, &sigpipe_mask, &saved_mask) != 0) {
         qDebug() << "EngineBroadcast::ignoreSigpipe() failed";
     }
+#endif
 }
 #endif
 
-void EngineBroadcast::slotStatusCO(double v) {
-    // Ignore external sets "status"
-    Q_UNUSED(v);
-    qWarning() << "WARNING:"
-            << BROADCAST_PREF_KEY << "\"status\" is a read-only control, ignoring";
-}
 
 void EngineBroadcast::slotEnableCO(double v) {
     if (v > 1.0) {
@@ -853,8 +897,67 @@ void EngineBroadcast::slotEnableCO(double v) {
         // Wrapping around in WPushbutton does not work
         // since the status button has 4 states, but this CO is bool
         m_pBroadcastEnabled->set(0.0);
+        v = 0.0;
     }
     if (v > 0.0) {
         serverConnect();
+    } else {
+        // return early from Timeouts
+        m_waitEnabled.wakeAll();
+    }
+}
+
+bool EngineBroadcast::waitForRetry() {
+    if (m_limitReconnects &&
+            m_retryCount >= m_maximumRetries) {
+        return false;
+    }
+    ++m_retryCount;
+
+    qDebug() << "waitForRetry()" << m_retryCount << "/" << m_maximumRetries;
+
+    double delay;
+    if (m_retryCount == 1) {
+        delay = m_reconnectFirstDelay;
+    } else {
+        delay = m_reconnectPeriod;
+    }
+
+    if (delay > 0) {
+        m_enabledMutex.lock();
+        m_waitEnabled.wait(&m_enabledMutex, delay * 1000);
+        m_enabledMutex.unlock();
+        if (!m_pBroadcastEnabled->toBool()) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void EngineBroadcast::tryReconnect() {
+    QString originalErrorStr = m_lastErrorStr;
+    m_pStatusCO->forceSet(STATUSCO_FAILURE);
+
+    processDisconnect();
+    while (waitForRetry()) {
+        if (processConnect()) {
+            break;
+        }
+    }
+
+    if (m_pStatusCO->get() == STATUSCO_FAILURE) {
+        m_pBroadcastEnabled->set(0);
+        m_readSema.release();
+        QString errorText;
+        if (m_retryCount > 0) {
+            errorText = tr("Lost connection to streaming server and %1 attempts to reconnect have failed.")
+                    .arg(m_retryCount);
+        } else {
+            errorText = tr("Lost connection to streaming server.");
+        }
+        errorDialog(errorText,
+                    originalErrorStr + "\n" +
+                    m_lastErrorStr + "\n" +
+                    tr("Please check your connection to the Internet."));
     }
 }

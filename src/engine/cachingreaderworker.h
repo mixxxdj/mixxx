@@ -39,7 +39,7 @@ typedef struct ReaderStatusUpdate {
     ReaderStatusUpdate()
         : status(INVALID)
         , chunk(nullptr)
-        , maxReadableFrameIndex(Mixxx::AudioSource::getMinFrameIndex()) {
+        , maxReadableFrameIndex(mixxx::AudioSource::getMinFrameIndex()) {
     }
     ReaderStatusUpdate(
             ReaderStatus statusArg,
@@ -88,7 +88,8 @@ class CachingReaderWorker : public EngineWorker {
     // Queue of Tracks to load, and the corresponding lock. Must acquire the
     // lock to touch.
     QMutex m_newTrackMutex;
-    TrackPointer m_newTrack;
+    bool m_newTrackAvailable;
+    TrackPointer m_pNewTrack;
 
     // Internal method to load a track. Emits trackLoaded when finished.
     void loadTrack(const TrackPointer& pTrack);
@@ -97,7 +98,7 @@ class CachingReaderWorker : public EngineWorker {
             const CachingReaderChunkReadRequest& request);
 
     // The current audio source of the track loaded
-    Mixxx::AudioSourcePointer m_pAudioSource;
+    mixxx::AudioSourcePointer m_pAudioSource;
 
     // The maximum readable frame index of the AudioSource. Might
     // be adjusted when decoding errors occur to prevent reading

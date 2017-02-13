@@ -607,9 +607,11 @@ void ControllerEngine::setParameter(QString group, QString name, double newParam
 
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
-    // TODO(XXX): support soft takeover.
     if (coScript != nullptr) {
-        coScript->setParameter(newParameter);
+        ControlObject* pControl = ControlObject::getControl(coScript->getKey());
+        if (pControl && !m_st.ignore(pControl, newParameter)) {
+          coScript->setParameter(newParameter);
+        }
     }
 }
 
@@ -685,7 +687,7 @@ double ControllerEngine::getDefaultParameter(QString group, QString name) {
    Output:  -
    -------- ------------------------------------------------------ */
 void ControllerEngine::log(QString message) {
-    qDebug() << message;
+    controllerDebug(message);
 }
 
 /* -------- ------------------------------------------------------
@@ -768,12 +770,15 @@ QScriptValue ControllerEngine::connectControl(
     }
 
     if (function.isFunction()) {
-        qDebug() << "Connection:" << group << name;
-
         ControllerEngineConnection conn;
         conn.key = key;
         conn.ce = this;
         conn.function = function;
+
+        if (disconnect) {
+            disconnectControl(conn);
+            return QScriptValue(true);
+        }
 
         QScriptContext *ctxt = m_pEngine->currentContext();
         // Our current context is a function call to engine.connectControl. We
@@ -1160,7 +1165,7 @@ void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, double rpm,
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::scratchTick(int deck, int interval) {
-    m_lastMovement[deck] = Time::elapsed();
+    m_lastMovement[deck] = mixxx::Time::elapsed();
     m_intervalAccumulator[deck] += interval;
 }
 
@@ -1186,7 +1191,7 @@ void ControllerEngine::scratchProcess(int timerId) {
     // If we're ramping to end scratching and the wheel hasn't been turned very
     // recently (spinback after lift-off,) feed fixed data
     if (m_ramp[deck] &&
-        ((Time::elapsed() - m_lastMovement[deck]) >= mixxx::Duration::fromMillis(1))) {
+        ((mixxx::Time::elapsed() - m_lastMovement[deck]) >= mixxx::Duration::fromMillis(1))) {
         filter->observation(m_rampTo[deck] * m_rampFactor[deck]);
         // Once this code path is run, latch so it always runs until reset
         //m_lastMovement[deck] += mixxx::Duration::fromSeconds(1);
@@ -1269,7 +1274,7 @@ void ControllerEngine::scratchDisable(int deck, bool ramp) {
         m_rampTo[deck] = getDeckRate(group);
     }
 
-    m_lastMovement[deck] = Time::elapsed();
+    m_lastMovement[deck] = mixxx::Time::elapsed();
     m_ramp[deck] = true;    // Activate the ramping in scratchProcess()
 }
 

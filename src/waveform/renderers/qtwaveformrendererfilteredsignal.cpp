@@ -83,9 +83,9 @@ void QtWaveformRendererFilteredSignal::onSetup(const QDomNode& /*node*/) {
 }
 
 void QtWaveformRendererFilteredSignal::onResize() {
-    m_polygon[0].resize(2*m_waveformRenderer->getWidth()+2);
-    m_polygon[1].resize(2*m_waveformRenderer->getWidth()+2);
-    m_polygon[2].resize(2*m_waveformRenderer->getWidth()+2);
+    m_polygon[0].resize(2 * m_waveformRenderer->getLength() + 2);
+    m_polygon[1].resize(2 * m_waveformRenderer->getLength() + 2);
+    m_polygon[2].resize(2 * m_waveformRenderer->getLength() + 2);
 }
 
 inline void setPoint(QPointF& point, qreal x, qreal y) {
@@ -123,9 +123,9 @@ int QtWaveformRendererFilteredSignal::buildPolygon() {
     m_polygon[1].clear();
     m_polygon[2].clear();
 
-    m_polygon[0].reserve(2 * m_waveformRenderer->getWidth() + 2);
-    m_polygon[1].reserve(2 * m_waveformRenderer->getWidth() + 2);
-    m_polygon[2].reserve(2 * m_waveformRenderer->getWidth() + 2);
+    m_polygon[0].reserve(2 * m_waveformRenderer->getLength() + 2);
+    m_polygon[1].reserve(2 * m_waveformRenderer->getLength() + 2);
+    m_polygon[2].reserve(2 * m_waveformRenderer->getLength() + 2);
 
     QPointF point(0.0, 0.0);
     m_polygon[0].append(point);
@@ -136,7 +136,7 @@ int QtWaveformRendererFilteredSignal::buildPolygon() {
 
     // Represents the # of waveform data points per horizontal pixel.
     const double gain = (lastVisualIndex - firstVisualIndex) /
-            (double)m_waveformRenderer->getWidth();
+            (double)m_waveformRenderer->getLength();
 
     float lowGain(1.0), midGain(1.0), highGain(1.0);
     getGains(NULL, &lowGain, &midGain, &highGain);
@@ -149,22 +149,22 @@ int QtWaveformRendererFilteredSignal::buildPolygon() {
 
     for (int channel = 0; channel < channelSeparation; ++channel) {
         int startPixel = 0;
-        int endPixel = m_waveformRenderer->getWidth() - 1;
+        int endPixel = m_waveformRenderer->getLength() - 1;
         int delta = 1;
         double direction = 1.0;
 
-        //Reverse display for merged bottom channel
-        if (m_alignment == Qt::AlignBottom)
+        // Reverse display for merged bottom/left channel
+        if (m_alignment == Qt::AlignBottom || m_alignment == Qt::AlignLeft)
             direction = -1.0;
 
         if (channel == 1) {
-            startPixel = m_waveformRenderer->getWidth() - 1;
+            startPixel = m_waveformRenderer->getLength() - 1;
             endPixel = 0;
             delta = -1;
             direction = -1.0;
 
             // After preparing the first channel, insert the pivot point.
-            point = QPointF(m_waveformRenderer->getWidth(), 0.0);
+            point = QPointF(m_waveformRenderer->getLength(), 0.0);
             m_polygon[0].append(point);
             m_polygon[1].append(point);
             m_polygon[2].append(point);
@@ -179,9 +179,9 @@ int QtWaveformRendererFilteredSignal::buildPolygon() {
             // back since adding locking, but I'm leaving this so that we can
             // get some info about it before crashing. (The crash usually
             // corrupts a lot of the stack).
-            if (m_polygon[0].size() > 2 * m_waveformRenderer->getWidth() + 2) {
+            if (m_polygon[0].size() > 2 * m_waveformRenderer->getLength() + 2) {
                 qDebug() << "OUT OF CONTROL"
-                         << 2 * m_waveformRenderer->getWidth() + 2
+                         << 2 * m_waveformRenderer->getLength() + 2
                          << dataSize
                          << channel << m_polygon[0].size() << x;
             }
@@ -261,7 +261,7 @@ int QtWaveformRendererFilteredSignal::buildPolygon() {
 
     //If channel are not displayed separately we need to close the loop properly
     if (channelSeparation == 1) {
-        point = QPointF(m_waveformRenderer->getWidth(), 0.0);
+        point = QPointF(m_waveformRenderer->getLength(), 0.0);
         m_polygon[0].append(point);
         m_polygon[1].append(point);
         m_polygon[2].append(point);
@@ -280,26 +280,31 @@ void QtWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     painter->setRenderHint(QPainter::Antialiasing);
     painter->resetTransform();
 
+    // Rotate if drawing vertical waveforms
+    if (m_waveformRenderer->getOrientation() == Qt::Vertical) {
+        painter->setTransform(QTransform(0, 1, -1, 0, m_waveformRenderer->getWidth(), 0));
+    }
+
     //visual gain
     float allGain(1.0);
     getGains(&allGain, NULL, NULL, NULL);
 
-    double heightGain = allGain * (double)m_waveformRenderer->getHeight()/255.0;
-    if (m_alignment == Qt::AlignTop) {
+    double heightGain = allGain * (double)m_waveformRenderer->getBreadth() / 255.0;
+    if (m_alignment == Qt::AlignTop || m_alignment == Qt::AlignRight) {
         painter->translate(0.0, 0.0);
         painter->scale(1.0, heightGain);
-    } else if (m_alignment == Qt::AlignBottom) {
-        painter->translate(0.0, m_waveformRenderer->getHeight());
+    } else if (m_alignment == Qt::AlignBottom || m_alignment == Qt::AlignLeft) {
+        painter->translate(0.0, m_waveformRenderer->getBreadth());
         painter->scale(1.0, heightGain);
     } else {
-        painter->translate(0.0, m_waveformRenderer->getHeight()/2.0);
+        painter->translate(0.0, m_waveformRenderer->getBreadth()/2.0);
         painter->scale(1.0, 0.5*heightGain);
     }
 
     //draw reference line
     if (m_alignment == Qt::AlignCenter) {
         painter->setPen(m_pColors->getAxesColor());
-        painter->drawLine(0,0,m_waveformRenderer->getWidth(),0);
+        painter->drawLine(0, 0, m_waveformRenderer->getLength(), 0);
     }
 
     int numberOfPoints = buildPolygon();

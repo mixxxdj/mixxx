@@ -645,7 +645,7 @@ void LoopingControl::setLoopingEnabled(bool enabled) {
 void LoopingControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     Q_UNUSED(pOldTrack);
     if (m_pTrack) {
-        disconnect(m_pTrack.data(), SIGNAL(beatsUpdated()),
+        disconnect(m_pTrack.get(), SIGNAL(beatsUpdated()),
                    this, SLOT(slotUpdatedTrackBeats()));
     }
 
@@ -654,10 +654,10 @@ void LoopingControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack)
     if (pNewTrack) {
         m_pTrack = pNewTrack;
         m_pBeats = m_pTrack->getBeats();
-        connect(m_pTrack.data(), SIGNAL(beatsUpdated()),
+        connect(m_pTrack.get(), SIGNAL(beatsUpdated()),
                 this, SLOT(slotUpdatedTrackBeats()));
     } else {
-        m_pTrack.clear();
+        m_pTrack.reset();
         m_pBeats.clear();
     }
 }
@@ -924,7 +924,7 @@ void LoopingControl::seekInsideAdjustedLoop(int old_loop_in, int old_loop_out,
     int adjusted_position = currentSample;
     while (adjusted_position > new_loop_out) {
         adjusted_position -= new_loop_size;
-        DEBUG_ASSERT_AND_HANDLE(adjusted_position > new_loop_in) {
+        VERIFY_OR_DEBUG_ASSERT(adjusted_position > new_loop_in) {
             // I'm not even sure this is possible.  The new loop would have to be bigger than the
             // old loop, and the playhead was somehow outside the old loop.
             qWarning() << "SHOULDN'T HAPPEN: seekInsideAdjustedLoop couldn't find a new position --"
@@ -935,7 +935,7 @@ void LoopingControl::seekInsideAdjustedLoop(int old_loop_in, int old_loop_out,
     }
     while (adjusted_position < new_loop_in) {
         adjusted_position += new_loop_size;
-        DEBUG_ASSERT_AND_HANDLE(adjusted_position < new_loop_out) {
+        VERIFY_OR_DEBUG_ASSERT(adjusted_position < new_loop_out) {
             qWarning() << "SHOULDN'T HAPPEN: seekInsideAdjustedLoop couldn't find a new position --"
                        << " seeking to in point";
             adjusted_position = new_loop_in;

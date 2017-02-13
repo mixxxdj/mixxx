@@ -58,7 +58,7 @@ void AnalyzerEbur128::process(const CSAMPLE *pIn, const int iLen) {
     ScopedTimer t("AnalyzerEbur128::process()");
     size_t frames = iLen / 2;
     int e = ebur128_add_frames_float(m_pState, pIn, frames);
-    DEBUG_ASSERT_AND_HANDLE(e == EBUR128_SUCCESS) {
+    VERIFY_OR_DEBUG_ASSERT(e == EBUR128_SUCCESS) {
         qWarning() << "AnalyzerEbur128::process() failed with" << e;
         return;
     }
@@ -71,7 +71,7 @@ void AnalyzerEbur128::finalize(TrackPointer tio) {
     double averageLufs;
     int e = ebur128_loudness_global(m_pState, &averageLufs);
     cleanup(tio);
-    DEBUG_ASSERT_AND_HANDLE(e == EBUR128_SUCCESS) {
+    VERIFY_OR_DEBUG_ASSERT(e == EBUR128_SUCCESS) {
         qWarning() << "AnalyzerEbur128::finalize() failed with" << e;
         return;
     }
@@ -82,7 +82,7 @@ void AnalyzerEbur128::finalize(TrackPointer tio) {
     }
 
     const double fReplayGain2 = kReplayGain2ReferenceLUFS - averageLufs;
-    Mixxx::ReplayGain replayGain(tio->getReplayGain());
+    mixxx::ReplayGain replayGain(tio->getReplayGain());
     replayGain.setRatio(db2ratio(fReplayGain2));
     tio->setReplayGain(replayGain);
     qDebug() << "ReplayGain 2.0 (libebur128) result is" << fReplayGain2 << "dB for" << tio->getLocation();

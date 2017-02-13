@@ -40,7 +40,7 @@ CachingReader::CachingReader(QString group,
           m_mruCachingReaderChunk(nullptr),
           m_lruCachingReaderChunk(nullptr),
           m_sampleBuffer(CachingReaderChunk::kSamples * maximumCachingReaderChunksInMemory),
-          m_maxReadableFrameIndex(Mixxx::AudioSource::getMinFrameIndex()),
+          m_maxReadableFrameIndex(mixxx::AudioSource::getMinFrameIndex()),
           m_worker(group, &m_chunkReadRequestFIFO, &m_readerStatusFIFO) {
 
     m_allocatedCachingReaderChunks.reserve(maximumCachingReaderChunksInMemory);
@@ -217,19 +217,28 @@ void CachingReader::process() {
         if (m_readerStatus == TRACK_LOADED) {
             m_maxReadableFrameIndex = math_min(status.maxReadableFrameIndex, m_maxReadableFrameIndex);
         } else {
-            m_maxReadableFrameIndex = Mixxx::AudioSource::getMinFrameIndex();
+            m_maxReadableFrameIndex = mixxx::AudioSource::getMinFrameIndex();
         }
     }
 }
 
-int CachingReader::read(int sample, bool reverse, int numSamples, CSAMPLE* buffer) {
+SINT CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPLE* buffer) {
+    // the samples are always read in forward direction
+    // If reverse = true, the frames are copied in reverse order to the
+    // destination buffer
+    SINT sample = startSample;
+    if (reverse) {
+        // Start with the last sample in buffer
+        sample -= numSamples;
+    }
+
     // Check for bad inputs
-    DEBUG_ASSERT_AND_HANDLE(sample % CachingReaderChunk::kChannels == 0) {
+    VERIFY_OR_DEBUG_ASSERT(sample % CachingReaderChunk::kChannels == 0) {
         // This problem is easy to fix, but this type of call should be
         // complained about loudly.
         --sample;
     }
-    DEBUG_ASSERT_AND_HANDLE(numSamples % CachingReaderChunk::kChannels == 0) {
+    VERIFY_OR_DEBUG_ASSERT(numSamples % CachingReaderChunk::kChannels == 0) {
         --numSamples;
     }
     if (numSamples < 0 || !buffer) {
@@ -258,9 +267,9 @@ int CachingReader::read(int sample, bool reverse, int numSamples, CSAMPLE* buffe
     // silence. This may happen when the engine is in preroll,
     // i.e. if the frame index points a region before the first
     // track sample.
-    if (Mixxx::AudioSource::getMinFrameIndex() > frameIndex) {
+    if (mixxx::AudioSource::getMinFrameIndex() > frameIndex) {
         const SINT prerollFrames = math_min(numFrames,
-                Mixxx::AudioSource::getMinFrameIndex() - frameIndex);
+                mixxx::AudioSource::getMinFrameIndex() - frameIndex);
         const SINT prerollSamples = CachingReaderChunk::frames2samples(prerollFrames);
         if (reverse) {
             SampleUtil::clear(&buffer[numSamples - prerollSamples], prerollSamples);
@@ -281,7 +290,7 @@ int CachingReader::read(int sample, bool reverse, int numSamples, CSAMPLE* buffe
     if (numSamples > samplesRead) {
         // If any unread samples from the track are left the current
         // frame index must be at or beyond the first track sample.
-        DEBUG_ASSERT(Mixxx::AudioSource::getMinFrameIndex() <= frameIndex);
+        DEBUG_ASSERT(mixxx::AudioSource::getMinFrameIndex() <= frameIndex);
 
         SINT maxReadableFrameIndex = math_min(frameIndex + numFrames, m_maxReadableFrameIndex);
         if (maxReadableFrameIndex > frameIndex) {
@@ -389,7 +398,7 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
 
         SINT minReadableFrameIndex = hintFrame;
         SINT maxReadableFrameIndex = hintFrame + hintFrameCount;
-        Mixxx::AudioSource::clampFrameInterval(&minReadableFrameIndex, &maxReadableFrameIndex, m_maxReadableFrameIndex);
+        mixxx::AudioSource::clampFrameInterval(&minReadableFrameIndex, &maxReadableFrameIndex, m_maxReadableFrameIndex);
         if (minReadableFrameIndex >= maxReadableFrameIndex) {
             // skip empty frame interval silently
             continue;

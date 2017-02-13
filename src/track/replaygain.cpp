@@ -2,18 +2,15 @@
 
 #include "util/math.h"
 
-namespace Mixxx {
+namespace mixxx {
 
-// TODO(uklotzde): Replace 'const' with 'constexpr' and remove
-// initialization after switching to Visual Studio 2015.
+/*static*/ constexpr double ReplayGain::kRatioUndefined;
+/*static*/ constexpr double ReplayGain::kRatioMin;
+/*static*/ constexpr double ReplayGain::kRatio0dB;
 
-/*static*/ const double ReplayGain::kRatioUndefined = 0.0;
-/*static*/ const double ReplayGain::kRatioMin = 0.0; // lower bound (exclusive)
-/*static*/ const double ReplayGain::kRatio0dB = 1.0;
-
-/*static*/ const CSAMPLE ReplayGain::kPeakUndefined = -CSAMPLE_PEAK;
-/*static*/ const CSAMPLE ReplayGain::kPeakMin = CSAMPLE_ZERO; // lower bound (inclusive)
-/*static*/ const CSAMPLE ReplayGain::kPeakClip = CSAMPLE_PEAK; // upper bound (inclusive) represents digital full scale without clipping;
+/*static*/ constexpr CSAMPLE ReplayGain::kPeakUndefined;
+/*static*/ constexpr CSAMPLE ReplayGain::kPeakMin;
+/*static*/ constexpr CSAMPLE ReplayGain::kPeakClip;
 
 namespace {
 
@@ -159,4 +156,4 @@ CSAMPLE ReplayGain::normalizePeak(CSAMPLE peak) {
     }
 }
 
-} //namespace Mixxx
+} //namespace mixxx

@@ -16,7 +16,7 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
-#include "util/time.h"
+#include "util/duration.h"
 
 PlaylistFeature::PlaylistFeature(QObject* parent,
                                  TrackCollection* pTrackCollection,
@@ -27,8 +27,8 @@ PlaylistFeature::PlaylistFeature(QObject* parent,
                                                    "mixxx.db.model.playlist");
 
     //construct child model
-    TreeItem *rootItem = new TreeItem();
-    m_childModel.setRootItem(rootItem);
+    auto pRootItem = std::make_unique<TreeItem>(this);
+    m_childModel.setRootItem(std::move(pRootItem));
     constructChildModel(-1);
 }
 
@@ -95,7 +95,7 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
     QList<TrackId> trackIds;
     if (pSource) {
         trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
-        m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
+        m_pTrackCollection->unhideTracks(trackIds);
     } else {
         // If a track is dropped onto a playlist's name, but the track isn't in the
         // library, then add the track to the library before adding it to the
@@ -130,25 +130,26 @@ void PlaylistFeature::buildPlaylistList() {
     QString queryString = QString(
         "CREATE TEMPORARY VIEW IF NOT EXISTS PlaylistsCountsDurations "
         "AS SELECT "
-        "  Playlists.id as id, "
-        "  Playlists.name as name, "
-        "  COUNT(library.id) as count, "
-        "  SUM(library.duration) as durationSeconds "
+        "  Playlists.id AS id, "
+        "  Playlists.name AS name, "
+        "  LOWER(Playlists.name) AS sort_name, "
+        "  COUNT(case library.mixxx_deleted when 0 then 1 else null end) AS count, "
+        "  SUM(case library.mixxx_deleted when 0 then library.duration else 0 end) AS durationSeconds "
         "FROM Playlists "
         "LEFT JOIN PlaylistTracks ON PlaylistTracks.playlist_id = Playlists.id "
         "LEFT JOIN library ON PlaylistTracks.track_id = library.id "
         "WHERE Playlists.hidden = 0 "
-        "GROUP BY Playlists.id;");
-    QSqlQuery query(m_pTrackCollection->getDatabase());
+        "GROUP BY Playlists.id");
+    queryString.append(DbConnection::collateLexicographically(
+            " ORDER BY sort_name"));
+    QSqlQuery query(m_pTrackCollection->database());
     if (!query.exec(queryString)) {
         LOG_FAILED_QUERY(query);
     }
 
     // Setup the sidebar playlist model
-    QSqlTableModel playlistTableModel(this, m_pTrackCollection->getDatabase());
+    QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
     playlistTableModel.setTable("PlaylistsCountsDurations");
-    playlistTableModel.setSort(playlistTableModel.fieldIndex("name"),
-                               Qt::AscendingOrder);
     playlistTableModel.select();
     while (playlistTableModel.canFetchMore()) {
         playlistTableModel.fetchMore();
@@ -170,7 +171,7 @@ void PlaylistFeature::buildPlaylistList() {
             playlistTableModel.index(row, durationColumn)).toInt();
         m_playlistList.append(qMakePair(id, QString("%1 (%2) %3")
                                         .arg(name, QString::number(count),
-                                             Time::formatSeconds(duration))));
+                                                mixxx::Duration::formatSeconds(duration))));
     }
 }
 

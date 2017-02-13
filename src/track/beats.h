@@ -45,6 +45,8 @@ class Beats {
         HALVE,
         TWOTHIRDS,
         THREEFOURTHS,
+        FOURTHIRDS,
+        THREEHALVES,
     };
 
     virtual Beats::CapabilitiesFlags getCapabilities() const = 0;

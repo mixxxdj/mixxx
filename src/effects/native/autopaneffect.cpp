@@ -26,30 +26,6 @@ EffectManifest AutoPanEffect::getManifest() {
             "A delay, inversed on each side, is added to increase the "
             "spatial move and the period can be synced with the BPM."));
 
-    // Width : applied on the channel with gain reducing.
-    EffectManifestParameter* width = manifest.addParameter();
-    width->setId("width");
-    width->setName(QObject::tr("Width"));
-    width->setDescription("How far the signal goes on the left or on the right");
-    width->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    width->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    width->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    width->setMinimum(0.0);
-    width->setMaximum(1.0);    // 0.02 * sampleRate => 20ms
-    width->setDefault(0.5);
-
-    // Period unit
-    EffectManifestParameter* periodUnit = manifest.addParameter();
-    periodUnit->setId("periodUnit");
-    periodUnit->setName(QObject::tr("Sync"));
-    periodUnit->setDescription(QObject::tr("Synchronizes the period with the BPM if it can be retrieved"));
-    periodUnit->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
-    periodUnit->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    periodUnit->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    periodUnit->setDefault(0);
-    periodUnit->setMinimum(0);
-    periodUnit->setMaximum(1);
-
     // Period
     // The maximum is at 128 + 1 allowing 128 as max value and
     // enabling us to pause time when the parameter is above
@@ -69,16 +45,42 @@ EffectManifest AutoPanEffect::getManifest() {
     EffectManifestParameter* smoothing = manifest.addParameter();
     smoothing->setId("smoothing");
     smoothing->setName(QObject::tr("Smoothing"));
+    smoothing->setShortName(QObject::tr("Smooth"));
     smoothing->setDescription(
-            QObject::tr("How fast the signal goes from a channel to an other"));
+            QObject::tr("How fast the signal goes from a channel to another"));
     smoothing->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     smoothing->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     smoothing->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     smoothing->setMinimum(0.0);
     smoothing->setMaximum(0.5);  // there are two steps per period so max is half
-    smoothing->setDefault(0.25);
+    smoothing->setDefault(0.5);
     // TODO(Ferran Pujol): when KnobComposedMaskedRing branch is merged to master,
     //                     make the scaleStartParameter for this be 1.
+
+    // Width : applied on the channel with gain reducing.
+    EffectManifestParameter* width = manifest.addParameter();
+    width->setId("width");
+    width->setName(QObject::tr("Width"));
+    width->setDescription("How far the signal goes on the left or on the right");
+    width->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    width->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    width->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    width->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    width->setMinimum(0.0);
+    width->setMaximum(1.0);    // 0.02 * sampleRate => 20ms
+    width->setDefault(0.5);
+
+    // Period unit
+    EffectManifestParameter* periodUnit = manifest.addParameter();
+    periodUnit->setId("periodUnit");
+    periodUnit->setName(QObject::tr("Sync"));
+    periodUnit->setDescription(QObject::tr("Synchronizes the period with the BPM if it can be retrieved"));
+    periodUnit->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
+    periodUnit->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    periodUnit->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    periodUnit->setDefault(1);
+    periodUnit->setMinimum(0);
+    periodUnit->setMaximum(1);
 
     return manifest;
 }

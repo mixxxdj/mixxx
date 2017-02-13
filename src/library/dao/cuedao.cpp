@@ -62,8 +62,9 @@ CuePointer CueDAO::cueFromRow(const QSqlQuery& query) const {
     int length = record.value(record.indexOf("length")).toInt();
     int hotcue = record.value(record.indexOf("hotcue")).toInt();
     QString label = record.value(record.indexOf("label")).toString();
+    QColor color = QColor::fromRgba(record.value(record.indexOf("color")).toInt());
     CuePointer pCue(new Cue(id, trackId, (Cue::CueType)type,
-                       position, length, hotcue, label));
+                       position, length, hotcue, label, color));
     m_cues[id] = pCue;
     return pCue;
 }
@@ -142,19 +143,20 @@ bool CueDAO::deleteCuesForTracks(const QList<TrackId>& trackIds) {
 
 bool CueDAO::saveCue(Cue* cue) {
     //qDebug() << "CueDAO::saveCue" << QThread::currentThread() << m_database.connectionName();
-    DEBUG_ASSERT_AND_HANDLE(cue) {
+    VERIFY_OR_DEBUG_ASSERT(cue) {
         return false;
     }
     if (cue->getId() == -1) {
         // New cue
         QSqlQuery query(m_database);
-        query.prepare("INSERT INTO " CUE_TABLE " (track_id, type, position, length, hotcue, label) VALUES (:track_id, :type, :position, :length, :hotcue, :label)");
+        query.prepare("INSERT INTO " CUE_TABLE " (track_id, type, position, length, hotcue, label, color) VALUES (:track_id, :type, :position, :length, :hotcue, :label, :color)");
         query.bindValue(":track_id", cue->getTrackId().toVariant());
         query.bindValue(":type", cue->getType());
         query.bindValue(":position", cue->getPosition());
         query.bindValue(":length", cue->getLength());
         query.bindValue(":hotcue", cue->getHotCue());
         query.bindValue(":label", cue->getLabel());
+        query.bindValue(":color", cue->getColor().rgba());
 
         if (query.exec()) {
             int id = query.lastInsertId().toInt();
@@ -172,7 +174,8 @@ bool CueDAO::saveCue(Cue* cue) {
                         "position = :position,"
                         "length = :length,"
                         "hotcue = :hotcue,"
-                        "label = :label"
+                        "label = :label,"
+                        "color = :color"
                         " WHERE id = :id");
         query.bindValue(":id", cue->getId());
         query.bindValue(":track_id", cue->getTrackId().toVariant());
@@ -181,6 +184,7 @@ bool CueDAO::saveCue(Cue* cue) {
         query.bindValue(":length", cue->getLength());
         query.bindValue(":hotcue", cue->getHotCue());
         query.bindValue(":label", cue->getLabel());
+        query.bindValue(":color", cue->getColor().rgba());
 
         if (query.exec()) {
             cue->setDirty(false);
@@ -209,13 +213,11 @@ bool CueDAO::deleteCue(Cue* cue) {
     return false;
 }
 
-void CueDAO::saveTrackCues(TrackId trackId, Track* pTrack) {
+void CueDAO::saveTrackCues(TrackId trackId, const QList<CuePointer>& cueList) {
     //qDebug() << "CueDAO::saveTrackCues" << QThread::currentThread() << m_database.connectionName();
     // TODO(XXX) transaction, but people who are already in a transaction call
     // this.
     PerformanceTimer time;
-
-    const QList<CuePointer> cueList(pTrack->getCuePoints());
 
     // qDebug() << "CueDAO::saveTrackCues old size:" << oldCueList.size()
     //          << "new size:" << cueList.size();
@@ -238,7 +240,7 @@ void CueDAO::saveTrackCues(TrackId trackId, Track* pTrack) {
         }
         // Update or save cue
         if (pCue->isDirty()) {
-            saveCue(pCue.data());
+            saveCue(pCue.get());
 
             // Since this cue didn't have an id until now, add it to the list of
             // cues not to delete.

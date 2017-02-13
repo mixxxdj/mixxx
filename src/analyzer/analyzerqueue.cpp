@@ -33,7 +33,7 @@ namespace {
     // We need to use a smaller block size, because on Linux the AnalyzerQueue
     // can starve the CPU of its resources, resulting in xruns. A block size
     // of 4096 frames per block seems to do fine.
-    const SINT kAnalysisChannels = Mixxx::AudioSource::kChannelCountStereo;
+    const SINT kAnalysisChannels = mixxx::AudioSource::kChannelCountStereo;
     const SINT kAnalysisFramesPerBlock = 4096;
     const SINT kAnalysisSamplesPerBlock =
             kAnalysisFramesPerBlock * kAnalysisChannels;
@@ -177,7 +177,7 @@ TrackPointer AnalyzerQueue::dequeueNextBlocking() {
 }
 
 // This is called from the AnalyzerQueue thread
-bool AnalyzerQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudioSource) {
+bool AnalyzerQueue::doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAudioSource) {
 
     QTime progressUpdateInhibitTimer;
     progressUpdateInhibitTimer.start(); // Inhibit Updates for 60 milliseconds
@@ -294,7 +294,7 @@ void AnalyzerQueue::run() {
     if (m_aq.size() == 0)
         return;
 
-    m_progressInfo.current_track.clear();
+    m_progressInfo.current_track.reset();
     m_progressInfo.track_progress = 0;
     m_progressInfo.queue_size = 0;
     m_progressInfo.sema.release(); // Initialize with one
@@ -320,9 +320,9 @@ void AnalyzerQueue::run() {
 
         // Get the audio
         SoundSourceProxy soundSourceProxy(nextTrack);
-        Mixxx::AudioSourceConfig audioSrcCfg;
+        mixxx::AudioSourceConfig audioSrcCfg;
         audioSrcCfg.setChannelCount(kAnalysisChannels);
-        Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource(audioSrcCfg));
+        mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource(audioSrcCfg));
         if (!pAudioSource) {
             qWarning() << "Failed to open file for analyzing:" << nextTrack->getLocation();
             emptyCheck();
@@ -407,9 +407,8 @@ void AnalyzerQueue::emitUpdateProgress(TrackPointer track, int progress) {
 //slot
 void AnalyzerQueue::slotUpdateProgress() {
     if (m_progressInfo.current_track) {
-        m_progressInfo.current_track->setAnalyzerProgress(
-        		m_progressInfo.track_progress);
-        m_progressInfo.current_track.clear();
+        m_progressInfo.current_track->setAnalyzerProgress(m_progressInfo.track_progress);
+        m_progressInfo.current_track.reset();
     }
     emit(trackProgress(m_progressInfo.track_progress / 10));
     if (m_progressInfo.track_progress == 1000) {
@@ -457,6 +456,9 @@ AnalyzerQueue* AnalyzerQueue::createAnalysisFeatureAnalyzerQueue(
         UserSettingsPointer pConfig, TrackCollection* pTrackCollection) {
     AnalyzerQueue* ret = new AnalyzerQueue(pTrackCollection);
 
+    if (pConfig->getValue<bool>(ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"))) {
+        ret->addAnalyzer(new AnalyzerWaveform(pConfig));
+    }
     ret->addAnalyzer(new AnalyzerGain(pConfig));
     ret->addAnalyzer(new AnalyzerEbur128(pConfig));
 #ifdef __VAMP__

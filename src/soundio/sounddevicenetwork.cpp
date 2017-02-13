@@ -45,7 +45,7 @@ SoundDeviceNetwork::~SoundDeviceNetwork() {
     delete m_pMasterAudioLatencyUsage;
 }
 
-Result SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) {
+SoundDeviceError SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) {
     Q_UNUSED(syncBuffers);
     qDebug() << "SoundDeviceNetwork::open()" << getInternalName();
 
@@ -95,14 +95,14 @@ Result SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) {
         m_pThread->start(QThread::TimeCriticalPriority);
     }
 
-    return OK;
+    return SOUNDDEVICE_ERROR_OK;
 }
 
 bool SoundDeviceNetwork::isOpen() const {
     return (m_inputFifo != NULL || m_outputFifo != NULL);
 }
 
-Result SoundDeviceNetwork::close() {
+SoundDeviceError SoundDeviceNetwork::close() {
     //qDebug() << "SoundDeviceNetwork::close()" << getInternalName();
     m_pNetworkStream->stopStream();
     if (m_pThread) {
@@ -120,7 +120,7 @@ Result SoundDeviceNetwork::close() {
         delete m_inputFifo;
         m_inputFifo = NULL;
     }
-    return OK;
+    return SOUNDDEVICE_ERROR_OK;
 }
 
 QString SoundDeviceNetwork::getError() const {
@@ -301,6 +301,7 @@ void SoundDeviceNetwork::writeProcess() {
                     size2 / m_iNumOutputChannels);
         }
         m_outputFifo->releaseReadRegions(copyCount);
+        m_pNetworkStream->writingDone(copyCount);
     }
 }
 
@@ -334,7 +335,7 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
         // verify if flush to zero or denormals to zero works
         // test passes if one of the two flag is set.
         volatile double doubleMin = DBL_MIN; // the smallest normalized double
-        DEBUG_ASSERT_AND_HANDLE(doubleMin / 2 == 0.0) {
+        VERIFY_OR_DEBUG_ASSERT(doubleMin / 2 == 0.0) {
             qWarning() << "SSE: Denormals to zero mode is not working. EQs and effects may suffer high CPU load";
         } else {
             qDebug() << "SSE: Denormals to zero mode is working";

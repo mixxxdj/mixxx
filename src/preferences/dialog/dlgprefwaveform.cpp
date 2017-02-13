@@ -103,21 +103,25 @@ void DlgPrefWaveform::slotUpdate() {
     normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
     defaultZoomComboBox->setCurrentIndex(factory->getDefaultZoom() - 1);
 
-    // By default we set filtered woverview = "0"
-    int overviewType = m_pConfig->getValueString(
-            ConfigKey("[Waveform]","WaveformOverviewType"), "0").toInt();
+    // By default we set RGB woverview = "2"
+    int overviewType = m_pConfig->getValue(
+            ConfigKey("[Waveform]","WaveformOverviewType"), 2);
     if (overviewType != waveformOverviewComboBox->currentIndex()) {
         waveformOverviewComboBox->setCurrentIndex(overviewType);
     }
 
     WaveformSettings waveformSettings(m_pConfig);
     enableWaveformCaching->setChecked(waveformSettings.waveformCachingEnabled());
+    enableWaveformGenerationWithAnalysis->setChecked(
+        waveformSettings.waveformGenerationWithAnalysisEnabled());
     calculateCachedWaveformDiskUsage();
 }
 
 void DlgPrefWaveform::slotApply() {
     WaveformSettings waveformSettings(m_pConfig);
     waveformSettings.setWaveformCachingEnabled(enableWaveformCaching->isChecked());
+    waveformSettings.setWaveformGenerationWithAnalysisEnabled(
+        enableWaveformGenerationWithAnalysis->isChecked());
 }
 
 void DlgPrefWaveform::slotResetToDefaults() {
@@ -142,8 +146,8 @@ void DlgPrefWaveform::slotResetToDefaults() {
     // Don't synchronize zoom by default.
     synchronizeZoomCheckBox->setChecked(false);
 
-    // Filtered overview.
-    waveformOverviewComboBox->setCurrentIndex(0);
+    // RGB overview.
+    waveformOverviewComboBox->setCurrentIndex(2);
 
     // Don't normalize overview.
     normalizeOverviewCheckBox->setChecked(false);
@@ -154,6 +158,7 @@ void DlgPrefWaveform::slotResetToDefaults() {
 
     // Waveform caching enabled.
     enableWaveformCaching->setChecked(true);
+    enableWaveformGenerationWithAnalysis->setChecked(false);
 }
 
 void DlgPrefWaveform::slotSetFrameRate(int frameRate) {

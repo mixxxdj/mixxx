@@ -117,17 +117,17 @@ BasePlaylistFeature::~BasePlaylistFeature() {
 
 int BasePlaylistFeature::playlistIdFromIndex(QModelIndex index) {
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
-    if (item == NULL) {
+    if (item == nullptr) {
         return -1;
     }
 
-    QString dataPath = item->dataPath().toString();
     bool ok = false;
-    int playlistId = dataPath.toInt(&ok);
-    if (!ok) {
+    int playlistId = item->getData().toInt(&ok);
+    if (ok) {
+        return playlistId;
+    } else {
         return -1;
     }
-    return playlistId;
 }
 
 void BasePlaylistFeature::activate() {
@@ -324,7 +324,7 @@ void BasePlaylistFeature::slotDeletePlaylist() {
     }
 
     if (m_lastRightClickedIndex.isValid()) {
-        DEBUG_ASSERT_AND_HANDLE(playlistId >= 0) {
+        VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
             return;
         }
 
@@ -451,7 +451,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
     QString playlistName = m_playlistDao.getPlaylistName(playlistId);
     qDebug() << "Export playlist" << playlistName;
 
-    QString lastPlaylistDirectory = m_pConfig->getValueString(
+    QString lastPlaylistDirectory = m_pConfig->getValue(
                 ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
                 QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
 
@@ -500,8 +500,8 @@ void BasePlaylistFeature::slotExportPlaylist() {
     pPlaylistTableModel->select();
 
     // check config if relative paths are desired
-    bool useRelativePath = static_cast<bool>(m_pConfig->getValueString(
-        ConfigKey("[Library]", "UseRelativePathOnExport")).toInt());
+    bool useRelativePath = m_pConfig->getValue<bool>(
+            ConfigKey("[Library]", "UseRelativePathOnExport"));
 
     if (file_location.endsWith(".csv", Qt::CaseInsensitive)) {
         ParserCsv::writeCSVFile(file_location, pPlaylistTableModel.data(), useRelativePath);
@@ -621,8 +621,6 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
     buildPlaylistList();
     QList<TreeItem*> data_list;
     int selected_row = -1;
-    // Access the invisible root item
-    TreeItem* root = m_childModel.getItem(QModelIndex());
 
     int row = 0;
     for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
@@ -637,7 +635,7 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
         }
 
         // Create the TreeItem whose parent is the invisible root item
-        TreeItem* item = new TreeItem(playlist_name, QString::number(playlist_id), this, root);
+        TreeItem* item = new TreeItem(this, playlist_name, playlist_id);
         item->setBold(m_playlistsSelectedTrackIsIn.contains(playlist_id));
 
         decorateChild(item, playlist_id);
@@ -645,7 +643,7 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
-    m_childModel.insertRows(data_list, 0, m_playlistList.size());
+    m_childModel.insertTreeItemRows(data_list, 0);
     if (selected_row == -1) {
         return QModelIndex();
     }
@@ -663,7 +661,8 @@ void BasePlaylistFeature::updateChildModel(int selected_id) {
 
         if (selected_id == playlist_id) {
             TreeItem* item = m_childModel.getItem(indexFromPlaylistId(playlist_id));
-            item->setData(playlist_name, QString::number(playlist_id));
+            item->setLabel(playlist_name);
+            item->setData(playlist_id);
             decorateChild(item, playlist_id);
         }
 
@@ -696,12 +695,12 @@ QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
 void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
     m_pSelectedTrack = pTrack;
     TrackId trackId;
-    if (!pTrack.isNull()) {
+    if (pTrack) {
         trackId = pTrack->getId();
     }
     m_playlistDao.getPlaylistsTrackIsIn(trackId, &m_playlistsSelectedTrackIsIn);
 
-    TreeItem* rootItem = m_childModel.getItem(QModelIndex());
+    TreeItem* rootItem = m_childModel.getRootItem();
     if (rootItem == nullptr) {
         return;
     }

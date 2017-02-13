@@ -30,13 +30,13 @@ WCoverArt::WCoverArt(QWidget* parent,
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != nullptr) {
-        connect(pCache, SIGNAL(coverFound(const QObject*, const int,
+        connect(pCache, SIGNAL(coverFound(const QObject*,
                                           const CoverInfo&, QPixmap, bool)),
-                this, SLOT(slotCoverFound(const QObject*, const int,
+                this, SLOT(slotCoverFound(const QObject*,
                                           const CoverInfo&, QPixmap, bool)));
     }
-    connect(m_pMenu, SIGNAL(coverArtSelected(const CoverArt&)),
-            this, SLOT(slotCoverArtSelected(const CoverArt&)));
+    connect(m_pMenu, SIGNAL(coverInfoSelected(const CoverInfo&)),
+            this, SLOT(slotCoverInfoSelected(const CoverInfo&)));
     connect(m_pMenu, SIGNAL(reloadCoverArt()),
             this, SLOT(slotReloadCoverArt()));
 }
@@ -93,10 +93,10 @@ void WCoverArt::slotReloadCoverArt() {
     }
 }
 
-void WCoverArt::slotCoverArtSelected(const CoverArt& art) {
+void WCoverArt::slotCoverInfoSelected(const CoverInfo& coverInfo) {
     if (m_loadedTrack) {
         // Will trigger slotTrackCoverArtUpdated().
-        m_loadedTrack->setCoverArt(art);
+        m_loadedTrack->setCoverInfo(coverInfo);
     }
 }
 
@@ -118,17 +118,23 @@ void WCoverArt::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
 
 void WCoverArt::slotReset() {
     if (m_loadedTrack) {
-        disconnect(m_loadedTrack.data(), SIGNAL(coverArtUpdated()),
+        disconnect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
                    this, SLOT(slotTrackCoverArtUpdated()));
     }
-    m_loadedTrack = TrackPointer();
+    m_loadedTrack.reset();
     m_lastRequestedCover = CoverInfo();
     m_loadedCover = QPixmap();
     m_loadedCoverScaled = QPixmap();
     update();
 }
 
-void WCoverArt::slotCoverFound(const QObject* pRequestor, int requestReference,
+void WCoverArt::slotTrackCoverArtUpdated() {
+    if (m_loadedTrack) {
+        CoverArtCache::requestCover(*m_loadedTrack, this);
+    }
+}
+
+void WCoverArt::slotCoverFound(const QObject* pRequestor,
                                const CoverInfo& info, QPixmap pixmap,
                                bool fromCache) {
     Q_UNUSED(info);
@@ -138,7 +144,7 @@ void WCoverArt::slotCoverFound(const QObject* pRequestor, int requestReference,
     }
 
     if (pRequestor == this && m_loadedTrack &&
-            m_loadedTrack->getId().toInt() == requestReference) {
+            m_loadedTrack->getCoverHash() == info.hash) {
         qDebug() << "WCoverArt::slotCoverFound" << pRequestor << info
                  << pixmap.size();
         m_loadedCover = pixmap;
@@ -147,21 +153,9 @@ void WCoverArt::slotCoverFound(const QObject* pRequestor, int requestReference,
     }
 }
 
-void WCoverArt::slotTrackCoverArtUpdated() {
-    if (m_loadedTrack) {
-        m_lastRequestedCover = m_loadedTrack->getCoverInfo();
-        m_lastRequestedCover.trackLocation = m_loadedTrack->getLocation();
-        CoverArtCache* pCache = CoverArtCache::instance();
-        if (pCache != nullptr) {
-            // TODO(rryan): Don't use track id.
-            pCache->requestCover(m_lastRequestedCover, this, m_loadedTrack->getId().toInt());
-        }
-    }
-}
-
 void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
     if (m_loadedTrack) {
-        disconnect(m_loadedTrack.data(), SIGNAL(coverArtUpdated()),
+        disconnect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
                    this, SLOT(slotTrackCoverArtUpdated()));
     }
     m_lastRequestedCover = CoverInfo();
@@ -169,7 +163,7 @@ void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
     m_loadedCoverScaled = QPixmap();
     m_loadedTrack = pTrack;
     if (m_loadedTrack) {
-        connect(m_loadedTrack.data(), SIGNAL(coverArtUpdated()),
+        connect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
                 this, SLOT(slotTrackCoverArtUpdated()));
     }
 
@@ -223,13 +217,13 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
     }
 
     if (event->button() == Qt::RightButton && m_loadedTrack) { // show context-menu
-        m_pMenu->setCoverArt(m_loadedTrack->getLocation(), m_lastRequestedCover);
+        m_pMenu->setCoverArt(m_lastRequestedCover);
         m_pMenu->popup(event->globalPos());
     } else if (event->button() == Qt::LeftButton) { // init/close fullsize cover
         if (m_pDlgFullSize->isVisible()) {
             m_pDlgFullSize->close();
         } else {
-            m_pDlgFullSize->init(m_lastRequestedCover);
+            m_pDlgFullSize->init(m_loadedCover);
         }
     }
 }

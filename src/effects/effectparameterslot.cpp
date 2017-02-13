@@ -31,11 +31,8 @@ EffectParameterSlot::EffectParameterSlot(const QString& group, const unsigned in
             this, SLOT(slotValueChanged(double)));
 
     // Read-only controls.
-    m_pControlType->connectValueChangeRequest(
-            this, SLOT(slotValueType(double)));
-    m_pControlLoaded->connectValueChangeRequest(
-            this, SLOT(slotLoaded(double)));
-
+    m_pControlType->setReadOnly();
+    m_pControlLoaded->setReadOnly();
 
     m_pSoftTakeover = new SoftTakeover();
 
@@ -81,17 +78,13 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             m_pControlValue->setDefaultValue(dDefault);
             m_pControlValue->set(dValue);
             // TODO(rryan) expose this from EffectParameter
-            m_pControlType->setAndConfirm(static_cast<double>(type));
+            m_pControlType->forceSet(static_cast<double>(type));
             // Default loaded parameters to loaded and unlinked
-            m_pControlLoaded->setAndConfirm(1.0);
+            m_pControlLoaded->forceSet(1.0);
 
             m_pControlLinkType->set(m_pEffectParameter->getDefaultLinkType());
-
-            if (m_pEffectParameter->getNeutralPointOnScale() == 1.0) {
-                m_pControlLinkInverse->set(1);
-            } else {
-                m_pControlLinkInverse->set(0);
-            }
+            m_pControlLinkInverse->set(
+                static_cast<double>(m_pEffectParameter->getDefaultLinkInversion()));
 
             connect(m_pEffectParameter, SIGNAL(valueChanged(double)),
                     this, SLOT(slotParameterValueChanged(double)));
@@ -107,10 +100,10 @@ void EffectParameterSlot::clear() {
         m_pEffectParameter = NULL;
     }
 
-    m_pControlLoaded->setAndConfirm(0.0);
+    m_pControlLoaded->forceSet(0.0);
     m_pControlValue->set(0.0);
     m_pControlValue->setDefaultValue(0.0);
-    m_pControlType->setAndConfirm(0.0);
+    m_pControlType->forceSet(0.0);
     m_pControlLinkType->setAndConfirm(EffectManifestParameter::LINK_NONE);
     m_pSoftTakeover->setThreshold(SoftTakeover::kDefaultTakeoverThreshold);
     m_pControlLinkInverse->set(0.0);
@@ -149,7 +142,7 @@ void EffectParameterSlot::slotLinkInverseChanged(double v) {
     m_pSoftTakeover->ignoreNext();
 }
 
-void EffectParameterSlot::onChainSuperParameterChanged(double parameter, bool force) {
+void EffectParameterSlot::onEffectMetaParameterChanged(double parameter, bool force) {
     m_dChainParameter = parameter;
     if (m_pEffectParameter != NULL) {
         // Intermediate cast to integer is needed for VC++.
@@ -172,7 +165,7 @@ void EffectParameterSlot::onChainSuperParameterChanged(double parameter, bool fo
                             neutral = 1.0 - neutral;
                         }
                         // Knob is already a split knob
-                        // Match to center position of Super knob
+                        // Match to center position of meta knob
                         if (parameter <= 0.5) {
                             parameter /= 0.5;
                             parameter *= neutral;
@@ -187,10 +180,9 @@ void EffectParameterSlot::onChainSuperParameterChanged(double parameter, bool fo
                 break;
             case EffectManifestParameter::LINK_LINKED_LEFT:
                 if (parameter >= 0.5 && parameter <= 1.0) {
-                    parameter = 0;
+                    parameter = 1;
                 } else if (parameter >= 0.0 && parameter <= 0.5) {
                     parameter *= 2;
-                    parameter = 1.0 - parameter;
                 } else {
                     return;
                 }
@@ -225,7 +217,7 @@ void EffectParameterSlot::onChainSuperParameterChanged(double parameter, bool fo
             parameter = 1.0 - parameter;
         }
 
-        //qDebug() << "onChainParameterChanged" << parameter;
+        //qDebug() << "onEffectMetaParameterChanged" << debugString() << parameter << "force?" << force;
         if (force) {
             m_pControlValue->setParameterFrom(parameter, NULL);
             // This ensures that softtakover is in sync for following updates

@@ -16,14 +16,14 @@
 class FakeController : public Controller {
   public:
     FakeController();
-    virtual ~FakeController();
+    ~FakeController() override;
 
-    virtual QString presetExtension() {
+    QString presetExtension() override {
         // Doesn't affect anything at the moment.
         return ".test.xml";
     }
 
-    virtual ControllerPresetPointer getPreset() const {
+    ControllerPresetPointer getPreset() const override {
         if (m_bHidPreset) {
             HidControllerPreset* pClone = new HidControllerPreset();
             *pClone = m_hidPreset;
@@ -35,30 +35,30 @@ class FakeController : public Controller {
         }
     }
 
-    virtual bool savePreset(const QString fileName) const {
+    bool savePreset(const QString fileName) const override {
         Q_UNUSED(fileName);
         return true;
     }
 
-    virtual void visit(const MidiControllerPreset* preset) {
+    void visit(const MidiControllerPreset* preset) override {
         m_bMidiPreset = true;
         m_bHidPreset = false;
         m_midiPreset = *preset;
         m_hidPreset = HidControllerPreset();
     }
-    virtual void visit(const HidControllerPreset* preset) {
+    void visit(const HidControllerPreset* preset) override {
         m_bMidiPreset = false;
         m_bHidPreset = true;
         m_midiPreset = MidiControllerPreset();
         m_hidPreset = *preset;
     }
 
-    virtual void accept(ControllerVisitor* visitor) {
+    void accept(ControllerVisitor* visitor) override {
         // Do nothing since we aren't a normal controller.
         Q_UNUSED(visitor);
     }
 
-    virtual bool isMappable() const {
+    bool isMappable() const override {
         if (m_bMidiPreset) {
             return m_midiPreset.isMappable();
         } else if (m_bHidPreset) {
@@ -67,7 +67,7 @@ class FakeController : public Controller {
         return false;
     }
 
-    virtual bool matchPreset(const PresetInfo& preset) {
+    bool matchPreset(const PresetInfo& preset) override {
         // We're not testing product info matching in this test.
         Q_UNUSED(preset);
         return false;
@@ -81,25 +81,23 @@ class FakeController : public Controller {
     }
 
   private slots:
-    int open() {
+    int open() override {
         return 0;
     }
-    int close() {
+    int close() override {
         return 0;
     }
 
   private:
-    virtual void send(QByteArray data) {
+    void send(QByteArray data) override {
         Q_UNUSED(data);
     }
     virtual void send(QByteArray data, unsigned int reportID) {
         Q_UNUSED(data);
         Q_UNUSED(reportID);
     }
-    virtual bool isPolling() const {
-        return false;
-    }
-    virtual ControllerPreset* preset() {
+
+    ControllerPreset* preset() override {
         if (m_bHidPreset) {
             return &m_hidPreset;
         } else {
@@ -124,7 +122,7 @@ FakeController::~FakeController() {
 
 class ControllerPresetValidationTest : public MixxxTest {
   protected:
-    virtual void SetUp() {
+    void SetUp() override {
         m_presetPaths << QDir::currentPath() + "/res/controllers";
         m_pEnumerator.reset(new PresetInfoEnumerator(m_presetPaths));
     }

@@ -7,7 +7,7 @@
 
 class QFile;
 
-namespace Mixxx {
+namespace mixxx {
 
 class SoundSourceWV: public SoundSourcePlugin {
   public:
@@ -38,6 +38,8 @@ class SoundSourceWV: public SoundSourcePlugin {
     CSAMPLE m_sampleScaleFactor;
     QFile* m_pWVFile;
     QFile* m_pWVCFile;
+
+    SINT m_curFrameIndex;
 };
 
 class SoundSourceProviderWV: public SoundSourceProvider {
@@ -49,12 +51,12 @@ public:
     SoundSourcePointer newSoundSource(const QUrl& url) override;
 };
 
-}  // namespace Mixxx
+}  // namespace mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-Mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider();
+mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider();
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(Mixxx::SoundSourceProvider*);
+void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(mixxx::SoundSourceProvider*);
 
 #endif // MIXXX_SOUNDSOURCEWV_H

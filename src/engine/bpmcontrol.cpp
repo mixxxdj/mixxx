@@ -34,19 +34,17 @@ BpmControl::BpmControl(QString group,
         m_tapFilter(this, kFilterLength, kMaxInterval),
         m_sGroup(group) {
     m_pPlayButton = new ControlProxy(group, "play", this);
-    m_pPlayButton->connectValueChanged(SLOT(slotControlPlay(double)),
-            Qt::DirectConnection);
     m_pReverseButton = new ControlProxy(group, "reverse", this);
     m_pRateSlider = new ControlProxy(group, "rate", this);
-    m_pRateSlider->connectValueChanged(SLOT(slotAdjustRateSlider()),
-            Qt::DirectConnection);
+    m_pRateSlider->connectValueChanged(SLOT(slotUpdateEngineBpm()),
+                                       Qt::DirectConnection);
     m_pQuantize = ControlObject::getControl(group, "quantize");
     m_pRateRange = new ControlProxy(group, "rateRange", this);
-    m_pRateRange->connectValueChanged(SLOT(slotAdjustRateSlider()),
-            Qt::DirectConnection);
+    m_pRateRange->connectValueChanged(SLOT(slotUpdateRateSlider()),
+                                      Qt::DirectConnection);
     m_pRateDir = new ControlProxy(group, "rate_dir", this);
-    m_pRateDir->connectValueChanged(SLOT(slotAdjustRateSlider()),
-            Qt::DirectConnection);
+    m_pRateDir->connectValueChanged(SLOT(slotUpdateEngineBpm()),
+                                    Qt::DirectConnection);
 
     m_pPrevBeat.reset(new ControlProxy(group, "beat_prev"));
     m_pNextBeat.reset(new ControlProxy(group, "beat_next"));
@@ -55,8 +53,6 @@ BpmControl::BpmControl(QString group,
     m_pLoopEnabled = new ControlProxy(group, "loop_enabled", this);
     m_pLoopStartPosition = new ControlProxy(group, "loop_start_position", this);
     m_pLoopEndPosition = new ControlProxy(group, "loop_end_position", this);
-
-    m_pVCEnabled = new ControlProxy(group, "vinylcontrol_enabled", this);
 
     m_pFileBpm = new ControlObject(ConfigKey(group, "file_bpm"));
     connect(m_pFileBpm, SIGNAL(valueChanged(double)),
@@ -87,7 +83,7 @@ BpmControl::BpmControl(QString group,
     // bpm_up_small / bpm_down_small steps by 0.1
     m_pEngineBpm = new ControlLinPotmeter(ConfigKey(group, "bpm"), 1, 200, 1, 0.1, true);
     connect(m_pEngineBpm, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetEngineBpm(double)),
+            this, SLOT(slotUpdateRateSlider()),
             Qt::DirectConnection);
 
     m_pButtonTap = new ControlPushButton(ConfigKey(group, "bpm_tap"));
@@ -168,7 +164,7 @@ void BpmControl::slotFileBpmChanged(double bpm) {
         m_pLocalBpm->set(bpm);
     }
     if (getSyncMode() == SYNC_NONE) {
-        slotAdjustRateSlider();
+        slotUpdateEngineBpm();
     }
     resetSyncAdjustment();
 }
@@ -205,18 +201,6 @@ void BpmControl::slotTranslateBeatsLater(double v) {
     }
 }
 
-void BpmControl::slotSetEngineBpm(double bpm) {
-    //qDebug() << getGroup() << "BpmControl::slotSetEngineBpm" << bpm;
-    double localbpm = m_pLocalBpm->get();
-    double ratedir = m_pRateDir->get();
-    double raterange = m_pRateRange->get();
-
-    if (localbpm && ratedir && raterange) {
-        double newRateRatio = bpm / localbpm;
-        m_pRateSlider->set((newRateRatio - 1.0) / ratedir / raterange);
-    }
-}
-
 void BpmControl::slotBpmTap(double v) {
     if (v > 0) {
         m_tapFilter.tap();
@@ -238,15 +222,7 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     double averageBpm = 60.0 * 1000.0 / averageLength;
     double dRate = calcRateRatio();
     m_pFileBpm->set(averageBpm / dRate);
-    slotAdjustRateSlider();
-}
-
-void BpmControl::slotControlPlay(double v) {
-    if (v > 0.0) {
-        if (m_pQuantize->get() > 0.0 && m_pVCEnabled->get() == 0) {
-            getEngineBuffer()->requestSyncPhase();
-        }
-    }
+    slotUpdateEngineBpm();
 }
 
 void BpmControl::slotControlBeatSyncPhase(double v) {
@@ -730,16 +706,28 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
     return dNewPlaypos - dThisPosition;
 }
 
-void BpmControl::slotAdjustRateSlider() {
+void BpmControl::slotUpdateEngineBpm() {
     // Adjust playback bpm in response to a change in the rate slider.
     double dRate = calcRateRatio();
     m_pEngineBpm->set(m_pLocalBpm->get() * dRate);
 }
 
+void BpmControl::slotUpdateRateSlider() {
+    // Adjust rate slider position to reflect change in rate range.
+    double localBpm = m_pLocalBpm->get();
+    double rateScale = m_pRateDir->get() * m_pRateRange->get();
+    if (localBpm == 0.0 || rateScale == 0.0) {
+        return;
+    }
+
+    double dRateSlider = (m_pEngineBpm->get() / localBpm - 1.0) / rateScale;
+    m_pRateSlider->set(dRateSlider);
+}
+
 void BpmControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     Q_UNUSED(pOldTrack);
     if (m_pTrack) {
-        disconnect(m_pTrack.data(), SIGNAL(beatsUpdated()),
+        disconnect(m_pTrack.get(), SIGNAL(beatsUpdated()),
                    this, SLOT(slotUpdatedTrackBeats()));
     }
 
@@ -749,10 +737,10 @@ void BpmControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     if (pNewTrack) {
         m_pTrack = pNewTrack;
         m_pBeats = m_pTrack->getBeats();
-        connect(m_pTrack.data(), SIGNAL(beatsUpdated()),
+        connect(m_pTrack.get(), SIGNAL(beatsUpdated()),
                 this, SLOT(slotUpdatedTrackBeats()));
     } else {
-        m_pTrack.clear();
+        m_pTrack.reset();
         m_pBeats.clear();
     }
 }
@@ -817,7 +805,7 @@ double BpmControl::updateLocalBpm() {
     }
     if (local_bpm != prev_local_bpm) {
         m_pLocalBpm->set(local_bpm);
-        slotAdjustRateSlider();
+        slotUpdateEngineBpm();
     }
     return local_bpm;
 }

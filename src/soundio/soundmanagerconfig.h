@@ -61,6 +61,7 @@ public:
     unsigned int getDeckCount() const;
     void setDeckCount(unsigned int deckCount);
     void setCorrectDeckCount(int configuredDeckCount);
+    QSet<QString> getDevices() const;
 
     unsigned int getAudioBufferSizeIndex() const;
     unsigned int getFramesPerBuffer() const;
@@ -75,9 +76,6 @@ public:
     QMultiHash<QString, AudioInput> getInputs() const;
     void clearOutputs();
     void clearInputs();
-    // I'd prefer for these to be const but SoundManager::getDeviceList isn't
-    void filterOutputs(SoundManager *soundManager);
-    void filterInputs(SoundManager *soundManager);
     void loadDefaults(SoundManager *soundManager, unsigned int flags);
 private:
     QFileInfo m_configFile;

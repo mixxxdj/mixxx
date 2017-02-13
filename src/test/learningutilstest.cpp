@@ -2,6 +2,7 @@
 
 #include "test/mixxxtest.h"
 #include "controllers/learningutils.h"
+#include "util/memory.h"
 
 std::ostream& operator<<(std::ostream& stream, const MidiInputMapping& mapping) {
     stream << mapping.key.key << mapping.options.all;
@@ -97,7 +98,7 @@ TEST_F(LearningUtilsTest, CC7BitKnob_CenterPointButton_NoteOn) {
     ConfigKey control("[Test]", "SomeControl");
     // This message recognizer checks for the existence of a _reset control.
     ConfigKey resetControl("[Test]", "SomeControl_set_default");
-    QScopedPointer<ControlObject> pResetControl(new ControlObject(resetControl));
+    auto pResetControl = std::make_unique<ControlObject>(resetControl);
     MidiInputMappings mappings =
             LearningUtils::guessMidiInputMappings(control, m_messages);
 

@@ -5,7 +5,7 @@
 
 #include <QUrl>
 
-namespace Mixxx {
+namespace mixxx {
 
 class UrlResource {
 public:
@@ -40,6 +40,6 @@ private:
     const QUrl m_url;
 };
 
-} // namespace Mixxx
+} // namespace mixxx
 
 #endif // MIXXX_URLRESOURCE_H
