@@ -55,11 +55,6 @@
             <SetVariable name="left_connection_control"><Variable name="group"/>,quantize</SetVariable>
           </Template>
 
-          <!-- Workaround for layout spacing -->
-          <Template src="skin:spacer_hx.xml">
-            <SetVariable name="width">2</SetVariable>
-          </Template>
-
           <Template src="skin:left_2state_button.xml">
             <SetVariable name="TooltipId">keylock</SetVariable>
             <SetVariable name="ObjectName">KeylockButton</SetVariable>
@@ -75,7 +70,20 @@
             <SetVariable name="left_connection_control"><Variable name="group"/>,keylock</SetVariable>
           </Template>
 
-
+          <Template src="skin:left_2state_button.xml">
+            <SetVariable name="TooltipId">slip_mode</SetVariable>
+            <SetVariable name="ObjectName">SlipModeButton</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_slip_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_slip_48px.svg</SetVariable>
+            <SetVariable name="state_1_text"></SetVariable>
+            <SetVariable name="state_1_pressed">icon/ic_slip_48px.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">icon/ic_slip_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,slip_enabled</SetVariable>
+          </Template>
 
           <Template src="skin:spacer_h.xml"/>
 
@@ -97,11 +105,6 @@
             <SetVariable name="left_connection_control"><Variable name="group"/>,sync_enabled</SetVariable>
           </Template>
 
-          <!-- Workaround for layout spacing -->
-          <Template src="skin:spacer_hx.xml">
-            <SetVariable name="width">2</SetVariable>
-          </Template>
-
           <Template src="skin:left_right_display_2state_button.xml">
             <SetVariable name="TooltipId">cue_default_cue_gotoandstop</SetVariable>
             <SetVariable name="ObjectName">DeckCue</SetVariable>
@@ -119,11 +122,6 @@
             <SetVariable name="left_connection_control"><Variable name="group"/>,cue_default</SetVariable>
             <SetVariable name="right_connection_control"><Variable name="group"/>,cue_gotoandstop</SetVariable>
             <SetVariable name="display_connection_control"><Variable name="group"/>,cue_indicator</SetVariable>
-          </Template>
-
-          <!-- Workaround for layout spacing -->
-          <Template src="skin:spacer_hx.xml">
-            <SetVariable name="width">2</SetVariable>
           </Template>
 
           <Template src="skin:left_right_display_2state_button.xml">

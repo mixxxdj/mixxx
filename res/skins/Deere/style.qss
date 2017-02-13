@@ -637,7 +637,7 @@ WWidget, QLabel {
 }
 
 #MinimalControlsContainer {
-  qproperty-layoutSpacing: 2;
+  qproperty-layoutSpacing: 4;
 }
 
 #HotcueGrid, #HotcueGridExtended {
@@ -823,17 +823,6 @@ WWidget, QLabel {
 #EffectUnitNameContainer {
   padding: 2px;
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-}
-
-#EffectUnitNextPrevContainer {
-  background-color: #333333;
-  padding: 1px;
-  qproperty-layoutSpacing: 2;
-  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-}
-
-#EffectUnitNextPrevContainer WPushButton {
-  font-size: 11px;
 }
 
 #EffectMetaKnobControls > WPushButton {
