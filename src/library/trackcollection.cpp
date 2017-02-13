@@ -144,21 +144,21 @@ void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
 
 bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     // Warn if tracks have a playlist membership
-    QSet<int> allPlaylisIds;
+    QSet<int> allPlaylistIds;
     for (const auto& trackId: trackIds) {
         QSet<int> playlisIds;
         m_playlistDao.getPlaylistsTrackIsIn(trackId, &playlisIds);
         QString playlistNames;
         for (const auto& playlisId: playlisIds) {
             if (m_playlistDao.getHiddenType(playlisId) != PlaylistDAO::PLHT_SET_LOG) {
-                allPlaylisIds.insert(playlisId);
+                allPlaylistIds.insert(playlisId);
             }
         }
     }
 
-    if (allPlaylisIds.count()) {
+    if (allPlaylistIds.count()) {
         QString playlistNames;
-        for (const auto& playlisId: allPlaylisIds) {
+        for (const auto& playlisId: allPlaylistIds) {
             playlistNames += "\"" + m_playlistDao.getPlaylistName(playlisId) + "\"\n";
         }
 
