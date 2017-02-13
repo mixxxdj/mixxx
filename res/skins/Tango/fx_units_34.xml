@@ -82,6 +82,17 @@ Variables:
         </Connection>
       </WidgetGroup>
 
+      <!-- Sapcer to keep Deck & FX unit aligned without Channel Mixer -->
+      <WidgetGroup>
+        <Size>22f,1min</Size>
+        <Children/>
+        <Connection>
+          <ConfigKey>[Tango],channel_mixer</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform><Not/></Transform>
+        </Connection>
+      </WidgetGroup>
+
       <WidgetGroup><!-- EffectUnit 4 -->
         <SizePolicy>me,min</SizePolicy>
         <Layout>horizontal</Layout>
