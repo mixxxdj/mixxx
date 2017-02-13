@@ -471,7 +471,7 @@ void PlaylistDAO::removeTracksFromPlaylist(const int playlistId, QList<int>& pos
 void PlaylistDAO::removeTracksFromPlaylistInner(int playlistId, int position) {
     QSqlQuery query(m_database);
     query.prepare("SELECT track_id FROM PlaylistTracks WHERE playlist_id=:id "
-                "AND position=:position");
+                  "AND position=:position");
     query.bindValue(":id", playlistId);
     query.bindValue(":position", position);
 
@@ -482,14 +482,14 @@ void PlaylistDAO::removeTracksFromPlaylistInner(int playlistId, int position) {
 
     if (!query.next()) {
         qDebug() << "removeTrackFromPlaylist no track exists at position:"
-                << position << "in playlist:" << playlistId;
+                 << position << "in playlist:" << playlistId;
         return;
     }
     TrackId trackId(query.value(query.record().indexOf("track_id")));
 
     // Delete the track from the playlist.
     query.prepare("DELETE FROM PlaylistTracks "
-                "WHERE playlist_id=:id AND position= :position");
+                  "WHERE playlist_id=:id AND position= :position");
     query.bindValue(":id", playlistId);
     query.bindValue(":position", position);
 
@@ -500,8 +500,8 @@ void PlaylistDAO::removeTracksFromPlaylistInner(int playlistId, int position) {
 
     QString queryString;
     queryString = QString("UPDATE PlaylistTracks SET position=position-1 "
-                        "WHERE position>=%1 AND "
-                        "playlist_id=%2").arg(QString::number(position),
+                          "WHERE position>=%1 AND "
+                          "playlist_id=%2").arg(QString::number(position),
                                                 QString::number(playlistId));
     if (!query.exec(queryString)) {
         LOG_FAILED_QUERY(query);
