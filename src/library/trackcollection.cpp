@@ -157,18 +157,18 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     }
 
     if (allPlaylistIds.count()) {
-        QString playlistNames;
+        QString playlistNames = "\n\n";
         for (const auto& playlisId: allPlaylistIds) {
             playlistNames += "\"" + m_playlistDao.getPlaylistName(playlisId) + "\"\n";
         }
+        playlistNames += "\n";
 
         if (QMessageBox::question(
                 nullptr,
                 tr("Hiding tracks"),
-                tr("The selected tracks are member of the following playlists:\n\n"
-                    "%1\n"
-                    "Hiding them from library will permanently remove them from these "
-                    "playlists as well. Continue?")
+                tr("The selected tracks are in the following playlists:"
+                    "%1"
+                    "Hiding them will remove them from these playlists. Continue?")
                         .arg(playlistNames),
                 QMessageBox::Ok | QMessageBox::Cancel) != QMessageBox::Ok) {
             return false;
