@@ -15,21 +15,21 @@
    viewBox="0 0 25 25.000001"
    id="svg4222"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.0 r15299"
    sodipodi:docname="pointer_knob4.svg">
   <defs
      id="defs4224">
     <linearGradient
        inkscape:collect="always"
-       id="linearGradient4231">
+       id="linearGradient857">
       <stop
-         style="stop-color:#330080;stop-opacity:1"
+         style="stop-color:#6f3cbb;stop-opacity:1;"
          offset="0"
-         id="stop4233" />
+         id="stop853" />
       <stop
-         style="stop-color:#b380ff;stop-opacity:1"
+         style="stop-color:#6f3cbb;stop-opacity:0.6"
          offset="1"
-         id="stop4235" />
+         id="stop855" />
     </linearGradient>
     <clipPath
        clipPathUnits="userSpaceOnUse"
@@ -202,17 +202,16 @@
        width="6"
        patternUnits="userSpaceOnUse"
        id="EMFhbasepattern" />
-    <radialGradient
+    <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient4231"
-       id="radialGradient4237"
-       cx="23.8125"
-       cy="1024.5006"
-       fx="23.8125"
-       fy="1024.5006"
-       r="2.3747423"
-       gradientTransform="matrix(2.015128,0,0,3.7681139,-35.485236,-2820.4527)"
-       gradientUnits="userSpaceOnUse" />
+       xlink:href="#linearGradient857"
+       id="linearGradient859"
+       x1="12.450951"
+       y1="1034.9835"
+       x2="12.450951"
+       y2="1030.976"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(0,-2.0193054e-5)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -221,9 +220,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="11.313709"
-     inkscape:cx="26.225707"
-     inkscape:cy="20.593077"
+     inkscape:zoom="32.688267"
+     inkscape:cx="12.197591"
+     inkscape:cy="12.551145"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -238,7 +237,18 @@
     <sodipodi:guide
        position="38.903399,3981.4657"
        orientation="0,1"
-       id="guide4179" />
+       id="guide4179"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="14.71476,23.18875"
+       orientation="0,1"
+       id="guide847"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="12.450951,12.114439"
+       orientation="1,0"
+       id="guide849"
+       inkscape:locked="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata4227">
@@ -248,7 +258,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -257,14 +267,11 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-1027.3622)">
-    <rect
-       style="opacity:1;fill:url(#radialGradient4237);fill-opacity:1;stroke:#000000;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="rect4229"
-       width="2.2967563"
-       height="8.2412996"
-       x="11.351622"
-       y="1029.7051"
-       rx="0.26781526"
-       ry="0.45330578" />
+    <circle
+       style="opacity:1;fill:url(#linearGradient859);fill-opacity:1;stroke:#000000;stroke-width:0.70494044"
+       id="path851"
+       cy="1033.1174"
+       cx="12.489594"
+       r="2.7172594" />
   </g>
 </svg>

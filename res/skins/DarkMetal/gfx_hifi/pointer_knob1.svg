@@ -15,7 +15,7 @@
    viewBox="0 0 40 40.000001"
    id="svg4222"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.0 r15299"
    sodipodi:docname="pointer_knob1.svg">
   <defs
      id="defs4224">
@@ -205,7 +205,7 @@
        x2="19.9865"
        y2="1028.1428"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.1373459,0,0,1.0215733,-2.7469187,-22.014358)" />
+       gradientTransform="matrix(1.1759244,0,0,1.1462193,-3.5184876,-149.20841)" />
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient4207"
@@ -215,7 +215,7 @@
        x2="19.9865"
        y2="1027.3641"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.0073957,0,0,1,-0.14791452,0)" />
+       gradientTransform="matrix(1.2449039,0,0,1.1354538,-4.8980782,-138.12796)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -225,7 +225,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="51.370629"
-     inkscape:cx="20.878616"
+     inkscape:cx="17.71533"
      inkscape:cy="26.10274"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -241,23 +241,28 @@
     <sodipodi:guide
        position="38.903399,3981.4657"
        orientation="0,1"
-       id="guide4179" />
+       id="guide4179"
+       inkscape:locked="false" />
     <sodipodi:guide
        position="21.140565,20.002405"
        orientation="0,1"
-       id="guide4272" />
+       id="guide4272"
+       inkscape:locked="false" />
     <sodipodi:guide
        position="19.9865,18.279664"
        orientation="1,0"
-       id="guide4274" />
+       id="guide4274"
+       inkscape:locked="false" />
     <sodipodi:guide
        position="18.278928,31.924858"
        orientation="0,1"
-       id="guide4166" />
+       id="guide4166"
+       inkscape:locked="false" />
     <sodipodi:guide
        position="15.534168,32.430984"
        orientation="0,1"
-       id="guide4182" />
+       id="guide4182"
+       inkscape:locked="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata4227">
@@ -277,22 +282,22 @@
      id="layer1"
      transform="translate(0,-1012.3622)">
     <rect
-       style="opacity:1;fill:url(#linearGradient4205);fill-opacity:1;stroke:none;stroke-width:0.58200002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:url(#linearGradient4205);fill-opacity:1;stroke:none;stroke-width:0.62685269;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect4217-0"
-       width="4.8359652"
-       height="8.2962065"
-       x="17.582016"
+       width="5"
+       height="9.3084583"
+       x="17.5"
        y="1020.4421"
-       rx="0.57016045"
-       ry="0.72370547" />
+       rx="0.58950019"
+       ry="0.81200749" />
     <rect
-       style="opacity:1;fill:url(#linearGradient4213);fill-opacity:1;stroke:none;stroke-width:0.58200002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:url(#linearGradient4213);fill-opacity:1;stroke:none;stroke-width:0.68940699;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect4217"
-       width="2.8322546"
-       height="7.9263449"
-       x="18.583872"
-       y="1019.9359"
-       rx="0.41847935"
-       ry="0.50142974" />
+       width="3.5"
+       height="9"
+       x="18.25"
+       y="1019.9622"
+       rx="0.51714194"
+       ry="0.56935042" />
   </g>
 </svg>
