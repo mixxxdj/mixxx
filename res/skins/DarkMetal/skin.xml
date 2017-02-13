@@ -6,7 +6,7 @@
 	<!--
 	###############################################################################################
 
-	DARK METAL skin by: Jorge Rosa (Portugal)- With love to ASCR
+	DARK METAL skin by Jorge Rosa (Portugal - With love to ASCR)
 	Email: jorge.bigarte@gmail.com
 	Portfolio: http://sites.google.com/site/jorgerosaportfolio
 
@@ -130,23 +130,33 @@
 	<attribute persist="true" config_key="[EffectsModule3],show">1</attribute>
 	<attribute persist="true" config_key="[EffectsModule4],show">0</attribute>	
 
-	<!-- TODO: Set effects: (Turn FX buttons to off) -->
-	<!--
+	<!-- Effects: (By default, the FX buttons are off) -->
 	<attribute config_key="[EffectRack1_EffectUnit1_Effect1],enabled">0</attribute>
 	<attribute config_key="[EffectRack1_EffectUnit2_Effect1],enabled">0</attribute>
 	<attribute config_key="[EffectRack1_EffectUnit3_Effect1],enabled">0</attribute>
 	<attribute config_key="[EffectRack1_EffectUnit4_Effect1],enabled">0</attribute>
+	
+	<!-- TO-DO: Effects: (By default, Loads an effect into module) -->
+	<!--
+	<attribute config_key="[EffectRack1_EffectUnit1],next_chain">1</attribute>
+	<attribute config_key="[EffectRack1_EffectUnit2],next_chain">1</attribute>
+	<attribute config_key="[EffectRack1_EffectUnit3],next_chain">1</attribute>
+	<attribute config_key="[EffectRack1_EffectUnit4],next_chain">1</attribute>	
+	<attribute config_key="[EffectRack1_EffectUnit1_Effect1],next_effect">1</attribute>	
+	<attribute config_key="[EffectRack1_EffectUnit2_Effect1],next_effect">1</attribute>	
+	<attribute config_key="[EffectRack1_EffectUnit3_Effect1],next_effect">1</attribute>	
+	<attribute config_key="[EffectRack1_EffectUnit4_Effect1],next_effect">1</attribute>
 	-->
-
+	
 	</attributes>
 	</manifest>
 
 	<!-- START (THE INTRO SPLASH SCREEN): -->
 	<LaunchImageStyle>
-    LaunchImage { qproperty-layoutAlignment: AlignCenter; background-color: #000000; }
-    QLabel { image: url(skin:/gfx_hifi/start.svg); padding:0; margin:0; border:none; min-width: 400px; max-width: 400px; min-height: 50px; max-height: 50px; }
-    QProgressBar { background-color: #000000; border:none; min-width: 400px; max-width: 400px; min-height: 3px; max-height: 3px; }
-    QProgressBar::chunk { background-color: #a1a1a1; }
+    LaunchImage { qproperty-layoutAlignment:AlignCenter; background-color:#000000; }
+    QLabel { image:url(skin:/gfx_hifi/start.svg); padding:0; margin:0; border:none; min-width:400px; max-width:400px; min-height:50px; max-height:50px; }
+    QProgressBar { background-color: #000000; border:none; min-width:400px; max-width:400px; min-height:3px; max-height:3px; }
+    QProgressBar::chunk { background-color:#a1a1a1; }
 	</LaunchImageStyle>
 
 	<!--
@@ -163,7 +173,7 @@
 	<Schemes>
 	
 	<Scheme>
-	<Name>Purple 1 (Default/Original)</Name>
+	<Name>Purple 1 - Default</Name>
 	<Filters>
 	<HSVTweak>	
 	<HConst>0</HConst><SConst>0</SConst><VConst>0</VConst> <!-- HSV (perfect) -->
@@ -172,7 +182,7 @@
 	</Scheme>
 
 	<Scheme>
-	<Name>Purple 2 (Pale)</Name>
+	<Name>Purple 2 - Pale</Name>
 	<Filters>
 	<HSVTweak>	
 	<HConst>0</HConst><SConst>-60</SConst><VConst>0</VConst> <!-- HSV (perfect) -->
@@ -181,7 +191,7 @@
 	</Scheme>
 	
 	<Scheme>
-	<Name>Purple 3 (Glow)</Name>
+	<Name>Purple 3 - Glow</Name>
 	<Filters>
 	<HSVTweak>	
 	<HConst>20</HConst><SConst>50</SConst><VConst>0</VConst> <!-- HSV (...) -->
@@ -190,16 +200,16 @@
 	</Scheme>
 	
 	<Scheme>
-	<Name>Grey 1 (Metal)</Name>
+	<Name>Grey 1 - Dark Metal - Metropolis</Name>
 	<Filters>
 	<HSVTweak>
-	<HConst>0</HConst><SConst>-365</SConst><VConst>0</VConst> <!-- HSV (perfect) -->
+	<HConst>-3</HConst><SConst>-365</SConst><VConst>-3</VConst> <!-- HSV (perfect) -->
 	</HSVTweak>
 	</Filters>
 	</Scheme>
-	
+
 	<Scheme>
-	<Name>Orange 1 (Normal/Devs/Pick)</Name>
+	<Name>Orange 1 - Normal</Name>
 	<Filters>
 	<HSVTweak>
 	<HConst>-240</HConst><SConst>140</SConst><VConst>0</VConst> <!-- HSV (perfect) -->
@@ -208,7 +218,7 @@
 	</Scheme>
 
 	<Scheme>
-	<Name>Orange 2 (Dark)</Name>
+	<Name>Orange 2 - Dark</Name>
 	<Filters>
 	<HSVTweak>
 	<HConst>-242</HConst><SConst>210</SConst><VConst>0</VConst> <!-- HSV (perfect) -->
@@ -217,7 +227,7 @@
 	</Scheme>
 
 	<Scheme>
-	<Name>Blue 1 (Normal)</Name>
+	<Name>Blue 1 - Normal</Name>
 	<Filters>
 	<HSVTweak>	
 	<HConst>-49</HConst><SConst>210</SConst><VConst>0</VConst> <!-- HSV (perfect) -->
@@ -226,7 +236,7 @@
 	</Scheme>
 	
 	<Scheme>
-	<Name>Blue 2 (Jeans)</Name>
+	<Name>Blue 2 - Jeans</Name>
 	<Filters>
 	<HSVTweak>	
 	<HConst>-68</HConst><SConst>48</SConst><VConst>0</VConst> <!-- HSV (perfect) -->
@@ -235,7 +245,7 @@
 	</Scheme>
 	
 	<Scheme>
-	<Name>Blue 3 (Dark)</Name>
+	<Name>Blue 3 - Dark</Name>
 	<Filters>
 	<HSVTweak>
 	<HConst>-60</HConst><SConst>250</SConst><VConst>0</VConst> <!-- HSV (...) -->
@@ -244,7 +254,7 @@
 	</Scheme>
 	
 	<Scheme>
-	<Name>Blue 4 (Soft)</Name>
+	<Name>Blue 4 - Soft</Name>
 	<Filters>
 	<HSVTweak>
 	<HConst>-70</HConst><SConst>120</SConst><VConst>0</VConst> <!-- HSV (...) -->
@@ -253,7 +263,7 @@
 	</Scheme>	
 	
 	<Scheme>
-	<Name>Red 1 (Normal)</Name>
+	<Name>Red 1 - Normal</Name>
 	<Filters>
 	<HSVTweak>
 	<HConst>-265</HConst><SConst>210</SConst><VConst>0</VConst> <!-- HSV (perfect) -->
@@ -262,7 +272,7 @@
 	</Scheme>
 	
 	<Scheme>
-	<Name>Red 2 (Pale)</Name>
+	<Name>Red 2 - Pale</Name>
 	<Filters>
 	<HSVTweak>
 	<HConst>80</HConst><SConst>200</SConst><VConst>0</VConst> <!-- HSV (...) -->
@@ -271,7 +281,7 @@
 	</Scheme>
 	
 	<Scheme>
-	<Name>Red 3 (Wine)</Name>
+	<Name>Red 3 - Wine</Name>
 	<Filters>
 	<HSVTweak> 	
 	<HConst>-290</HConst><SConst>10</SConst><VConst>0</VConst> <!-- HSV (...) -->
@@ -280,7 +290,7 @@
 	</Scheme>
 	
 	<Scheme>
-	<Name>Red 4 (Bright)</Name>
+	<Name>Red 4 - Bright</Name>
 	<Filters>
 	<HSVTweak>
 	<HConst>-260</HConst><SConst>120</SConst><VConst>0</VConst> <!-- HSV (...) -->
@@ -289,7 +299,7 @@
 	</Scheme>
 	
 	<Scheme>
-	<Name>Brown 1 (Soft)</Name>
+	<Name>Brown 1 - Soft</Name>
 	<Filters>
 	<HSVTweak>
 	<HConst>100</HConst><SConst>30</SConst><VConst>0</VConst> <!-- HSV (...) -->
@@ -298,7 +308,7 @@
 	</Scheme>	
 
 	<Scheme>
-	<Name>Brown 2 (Chocolatte)</Name>
+	<Name>Brown 2 - Chocolatte</Name>
 	<Filters>
 	<HSVTweak>
 	<HConst>-260</HConst><SConst>50</SConst><VConst>0</VConst> <!-- HSV (...) -->
@@ -307,7 +317,7 @@
 	</Scheme>
 	
 	<Scheme>
-	<Name>Brown 3 (Dark)</Name>
+	<Name>Brown 3 - Dark</Name>
 	<Filters>
 	<HSVTweak>
 	<HConst>-240</HConst><SConst>210</SConst><VConst>0</VConst> <!-- HSV (...) -->
@@ -316,7 +326,7 @@
 	</Scheme>
 	
 	<Scheme>
-	<Name>Pink 1 (Normal)</Name>
+	<Name>Pink 1 - Normal</Name>
 	<Filters>
 	<HSVTweak>
 	<HConst>36</HConst><SConst>46</SConst><VConst>0</VConst> <!-- HSV (...) -->
@@ -325,7 +335,7 @@
 	</Scheme>
 	
 	<Scheme>
-	<Name>Pink 2 (Pale)</Name>
+	<Name>Pink 2 - Pale</Name>
 	<Filters>
 	<HSVTweak>
 	<HConst>55</HConst><SConst>-20</SConst><VConst>0</VConst> <!-- HSV (...) -->
@@ -334,7 +344,7 @@
 	</Scheme>
 	
 	<Scheme>
-	<Name>Pink 3 (Dark)</Name>
+	<Name>Pink 3 - Dark</Name>
 	<Filters>
 	<HSVTweak>
 	<HConst>40</HConst><SConst>10</SConst><VConst>0</VConst> <!-- HSV (...) -->
@@ -343,7 +353,7 @@
 	</Scheme>
 
 	<Scheme>
-	<Name>Yellow 1 (Normal)</Name>
+	<Name>Yellow 1 - Normal</Name>
 	<Filters>
 	<HSVTweak>
 	<HConst>-225</HConst><SConst>85</SConst><VConst>0</VConst> <!-- HSV (...) -->
@@ -352,7 +362,7 @@
 	</Scheme>
 	
 	<Scheme>
-	<Name>Yellow 2 (Dark)</Name>
+	<Name>Yellow 2 - Dark</Name>
 	<Filters>
 	<HSVTweak>
 	<HConst>-230</HConst><SConst>120</SConst><VConst>0</VConst> <!-- HSV (...) -->
@@ -361,7 +371,7 @@
 	</Scheme>
 	
 	<Scheme>
-	<Name>Green 1 (Normal)</Name>
+	<Name>Green 1 - Normal</Name>
 	<Filters>
 	<HSVTweak>
 	<HConst>-159</HConst><SConst>210</SConst><VConst>0</VConst> <!-- HSV (perfect) -->
@@ -370,7 +380,7 @@
 	</Scheme>
 	
 	<Scheme>
-	<Name>Green 2 (Lime)</Name>
+	<Name>Green 2 - Lime</Name>
 	<Filters>
 	<HSVTweak>
 	<HConst>-190</HConst><SConst>85</SConst><VConst>0</VConst> <!-- HSV (perfect) -->
@@ -379,7 +389,7 @@
 	</Scheme>
 	
 	<Scheme>
-	<Name>Green 3 (Pale)</Name>
+	<Name>Green 3 - Pale</Name>
 	<Filters>
 	<HSVTweak>
 	<HConst>255</HConst><SConst>0</SConst><VConst>0</VConst> <!-- HSV (...) -->
@@ -388,7 +398,7 @@
 	</Scheme>
 	
 	<Scheme>
-	<Name>Green 4 (Glow)</Name>
+	<Name>Green 4 - Glow</Name>
 	<Filters>
 	<HSVTweak>
 	<HConst>200</HConst><SConst>30</SConst><VConst>0</VConst> <!-- HSV (...) -->
@@ -397,7 +407,7 @@
 	</Scheme>
 	
 	<Scheme>
-	<Name>Green 5 (Olive)</Name>
+	<Name>Green 5 - Olive</Name>
 	<Filters>
 	<HSVTweak>	
 	<HConst>150</HConst><SConst>5</SConst><VConst>0</VConst> <!-- HSV (...) -->
