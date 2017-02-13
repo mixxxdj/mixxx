@@ -94,7 +94,7 @@ Variables:
                 </Connection>
               </WidgetGroup>
 
-              <!-- Sapcer to keep Deck & FX unit aligned without Channel Mixer-->
+              <!-- Sapcer to keep Deck & FX unit aligned without Channel Mixer -->
               <WidgetGroup>
                 <Size>22f,1min</Size>
                 <Children/>
