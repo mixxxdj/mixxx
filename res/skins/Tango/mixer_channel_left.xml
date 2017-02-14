@@ -29,7 +29,7 @@ Variables:
 
       <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
 
-      <WidgetGroup><!-- EQs -->
+      <WidgetGroup><!-- EQs + Filter + Pfl -->
         <ObjectName>EQKnobs</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
@@ -47,7 +47,7 @@ Variables:
             <SetVariable name="ToolTipID">filterLow</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
+          <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
 
           <!-- Filter knob + PflButton / Pfl button only -->
           <WidgetStack currentpage="[Tango],filter_pfl_stack" persist="true">
@@ -59,7 +59,7 @@ Variables:
                 <Layout>horizontal</Layout>
                 <Children>
 
-                  <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
+                  <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
                   <Template src="skin:button_2state.xml">
                     <SetVariable name="ToolTipID">pfl</SetVariable>
@@ -72,7 +72,7 @@ Variables:
                     <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],pfl</SetVariable>
                   </Template>
 
-                  <WidgetGroup><Size>30f,1min</Size></WidgetGroup>
+                  <WidgetGroup><Size>31f,1min</Size></WidgetGroup>
 
                 </Children>
               </WidgetGroup><!-- /PflButton only -->
@@ -118,12 +118,21 @@ Variables:
             </Children>
           </WidgetStack><!-- /Filter knob + PflButton / Pfl button only -->
 
+          <WidgetGroup>
+            <Size>1min,2f</Size>
+            <Connection>
+              <ConfigKey persist="true">[Tango],filter_knob</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
         </Children>
         <Connection>
           <ConfigKey persist="true">[Tango],eq_knobs</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- /EQs -->
+      </WidgetGroup><!-- /EQs + Filter + Pfl -->
 
       <WidgetGroup><!--  Volume Slider + Gain knob -->
         <ObjectName>VolumeSliderGain</ObjectName>
