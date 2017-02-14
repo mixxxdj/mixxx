@@ -1928,24 +1928,12 @@ NumarkMixtrack3.FXButton = function(channel, control, value, status, group) {
     }
 
     // Standard FX Control done, now deal with extra features
-    if (value === DOWN && deck.PADMode && ButtonNum === 2) {
-        engine.spinback(deck.decknum, true); // enable spinback effect
-    } else {
-        engine.spinback(deck.decknum, false); // disable spinback effect
-    }
-
     if (deck.PADMode && ButtonNum === 1) {
-        NumarkMixtrack3.brake_button(decknum, value);
+        engine.brake(deck.decknum, value === DOWN);
     }
-};
 
-NumarkMixtrack3.brake_button = function(decknum, value) {
-   var activate = value > 0;
-
-    if (activate) {
-        engine.brake(decknum, true); // enable brake effect
-    } else {
-        engine.brake(decknum, false); // disable brake effect
+    if (deck.PADMode && ButtonNum === 2) {
+        engine.spinback(deck.decknum, value === DOWN);
     }
 };
 
