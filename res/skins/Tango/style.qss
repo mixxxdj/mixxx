@@ -707,12 +707,12 @@ WWidget, QLabel {
   }
   #EQKnobLeft {
     qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-    margin: 4px 18px 0px 0px;	/*
+    margin: 4px 12px 0px 0px;	/*
     background-color: #976939;	*/
     }
   #EQKnobRight {
     qproperty-layoutAlignment: 'AlignRight | AlignTop';
-    margin: 4px 0px 0px 18px;	/*
+    margin: 4px 0px 0px 12px;	/*
     background-color: #976939;	*/
     }
   #EQKillButton {
