@@ -20,9 +20,7 @@ class DlgAnalysis : public QFrame, public Ui::DlgAnalysis {
     
   public:
     
-    DlgAnalysis(QWidget *parent,
-                AnalysisFeature* pAnalysis,
-                TrackCollection* pTrackCollection);
+    DlgAnalysis(QWidget *parent, AnalysisFeature* pAnalysis);
     ~DlgAnalysis() override;
 
     void onShow();
@@ -45,7 +43,6 @@ class DlgAnalysis : public QFrame, public Ui::DlgAnalysis {
     
   private:
     //Note m_pTrackTablePlaceholder is defined in the .ui file
-    TrackCollection* m_pTrackCollection;
     bool m_bAnalysisActive;
     QButtonGroup m_songsButtonGroup;
     AnalysisLibraryTableModel* m_pAnalysisLibraryTableModel;

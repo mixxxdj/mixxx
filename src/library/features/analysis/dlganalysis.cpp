@@ -9,10 +9,8 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
-DlgAnalysis::DlgAnalysis(QWidget* parent, AnalysisFeature *pAnalysis,
-                         TrackCollection* pTrackCollection)
+DlgAnalysis::DlgAnalysis(QWidget* parent, AnalysisFeature *pAnalysis)
         : QFrame(parent),
-          m_pTrackCollection(pTrackCollection),
           m_bAnalysisActive(false),
           m_pAnalysis(pAnalysis),
           m_tracksInQueue(0),
