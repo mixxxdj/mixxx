@@ -15,8 +15,8 @@
    version="1.1"
    inkscape:version="0.48.4 r9939"
    width="26"
-   height="32"
-   sodipodi:docname="headMix_handle.svg"
+   height="28"
+   sodipodi:docname="slider_headMix_handle.svg"
    inkscape:export-filename="/home/ronso/.mixxx/skins/FlatNite/volume_slider.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
@@ -237,14 +237,14 @@
      id="layer1"
      inkscape:label="Layer"
      style="display:inline"
-     transform="translate(0,-71)">
+     transform="translate(0,-75)">
     <rect
        style="fill:#0872e8;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect3785"
        width="5"
-       height="26"
+       height="23.5"
        x="9.5"
-       y="74"
+       y="77.25"
        rx="2"
        ry="2" />
   </g>

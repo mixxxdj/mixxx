@@ -408,7 +408,7 @@
                         <WidgetGroup><!-- MixerBar when Library is not shown -->
                           <ObjectName>MixerBar_Container_skin</ObjectName>
                           <Layout>horizontal</Layout>
-                          <SizePolicy>min,min</SizePolicy>
+                          <SizePolicy>min,max</SizePolicy>
                           <Children>
                             <Template src="skin:mixerbar.xml"/>
                           </Children>

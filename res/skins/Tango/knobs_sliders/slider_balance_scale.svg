@@ -14,8 +14,8 @@
    version="1.1"
    inkscape:version="0.48.4 r9939"
    width="72"
-   height="32"
-   sodipodi:docname="balance_slider.svg"
+   height="28"
+   sodipodi:docname="slider_balance_scale.svg"
    inkscape:export-filename="/home/ronso/.mixxx/skins/FlatNite/crossfader_slider.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
@@ -27,7 +27,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -86,9 +86,9 @@
      inkscape:window-height="746"
      id="namedview3244"
      showgrid="false"
-     inkscape:zoom="5.6568542"
-     inkscape:cx="6.5898367"
-     inkscape:cy="26.767755"
+     inkscape:zoom="2.8284271"
+     inkscape:cx="-56.468299"
+     inkscape:cy="38.528838"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -117,10 +117,10 @@
      id="layer4"
      inkscape:label="vector"
      style="display:inline"
-     transform="translate(0,6)">
+     transform="translate(0,2)">
     <g
        id="g4297"
-       transform="translate(2,-3)">
+       transform="matrix(1,0,0,0.91666667,2,0.08333333)">
       <rect
          y="1"
          x="1"

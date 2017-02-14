@@ -14,7 +14,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_aux1.svg">
+   sodipodi:docname="btn_aux1_mute.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -24,11 +24,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.6568542"
-     inkscape:cx="-42.636227"
-     inkscape:cy="22.177467"
+     inkscape:zoom="7.9999999"
+     inkscape:cx="44.551568"
+     inkscape:cy="16.609475"
      inkscape:document-units="px"
-     inkscape:current-layer="flowRoot3890"
+     inkscape:current-layer="g3923"
      showgrid="false"
      inkscape:snap-page="true"
      inkscape:snap-bbox="true"
@@ -56,7 +56,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -69,11 +69,6 @@
     <g
        id="g2989"
        transform="translate(-88.571429,8.1332715)" />
-    <path
-       style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       d="m 68.223758,1018.0534 c -0.438812,0 -0.792079,0.3532 -0.792079,0.792 l 0,7.5001 -3.316834,0 0,10.4702 2.376239,4.7526 0,6.4851 4.752479,0 0,-6.4851 2.376239,-4.7526 0,-10.4702 -3.316833,0 0,-7.5001 c 0,-0.4388 -0.353269,-0.792 -0.792081,-0.792 l -1.28713,0 z"
-       id="rect3835"
-       inkscape:connector-curvature="0" />
     <g
        transform="translate(30.84525,1007.0622)"
        style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Ubuntu;-inkscape-font-specification:Ubuntu"
@@ -89,5 +84,15 @@
          id="rect3835-6"
          inkscape:connector-curvature="0" />
     </g>
+    <rect
+       style="fill:#fe0000;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
+       id="rect3017"
+       width="2.2857144"
+       height="32"
+       x="742.98956"
+       y="707.12128"
+       transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
+       rx="1"
+       ry="1" />
   </g>
 </svg>

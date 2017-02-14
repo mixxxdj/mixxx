@@ -15,8 +15,8 @@
    version="1.1"
    inkscape:version="0.48.4 r9939"
    width="8"
-   height="32"
-   sodipodi:docname="balance_handle.svg"
+   height="28"
+   sodipodi:docname="slider_balance_handle.svg"
    inkscape:export-filename="/home/ronso/.mixxx/skins/FlatNite/volume_slider.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
@@ -201,9 +201,9 @@
      inkscape:window-height="746"
      id="namedview4453"
      showgrid="false"
-     inkscape:zoom="8.0000004"
-     inkscape:cx="-39.586254"
-     inkscape:cy="17.356041"
+     inkscape:zoom="16.000001"
+     inkscape:cx="-17.521392"
+     inkscape:cy="16.548078"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -237,15 +237,15 @@
      id="layer1"
      inkscape:label="Layer"
      style="display:inline"
-     transform="translate(0,-71)">
+     transform="translate(0,-75)">
     <rect
        style="fill:#0872e8;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
        id="rect3785-3"
        width="5"
-       height="26"
+       height="23.5"
        x="1.5"
-       y="74"
+       y="77.25"
        rx="2"
-       ry="2" />
+       ry="1.9999999" />
   </g>
 </svg>

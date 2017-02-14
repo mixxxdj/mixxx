@@ -14,8 +14,8 @@
    version="1.1"
    inkscape:version="0.48.4 r9939"
    width="72"
-   height="32"
-   sodipodi:docname="balance_slider.svg"
+   height="28"
+   sodipodi:docname="slider_volume_h_scale.svg"
    inkscape:export-filename="/home/ronso/.mixxx/skins/FlatNite/crossfader_slider.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
@@ -27,7 +27,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -86,9 +86,9 @@
      inkscape:window-height="746"
      id="namedview3244"
      showgrid="false"
-     inkscape:zoom="4"
-     inkscape:cx="33.837663"
-     inkscape:cy="21.091433"
+     inkscape:zoom="8"
+     inkscape:cx="51.919878"
+     inkscape:cy="18.053337"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -117,142 +117,142 @@
      id="layer4"
      inkscape:label="vector"
      style="display:inline"
-     transform="translate(0,6)">
+     transform="translate(0,2)">
     <rect
        style="fill:#828282;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
        id="rect2989-0"
        width="2"
-       height="24"
+       height="23"
        x="-69"
-       y="-2"
+       y="-1.2212453e-15"
        transform="scale(-1,1)" />
     <rect
        style="fill:#828282;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
        id="rect2989-0-3"
        width="2"
-       height="22.625"
+       height="21.682291"
        x="-65"
-       y="-0.625"
+       y="1.3177084"
        transform="scale(-1,1)" />
     <rect
        style="fill:#828282;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
        id="rect2989-0-6"
        width="2"
-       height="21.25"
+       height="20.364584"
        x="-61"
-       y="0.75"
+       y="2.6354167"
        transform="scale(-1,1)" />
     <rect
        style="fill:#828282;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
        id="rect2989-0-3-7"
        width="2"
-       height="19.875"
+       height="19.046875"
        x="-57"
-       y="2.125"
+       y="3.953125"
        transform="scale(-1,1)" />
     <rect
        style="fill:#828282;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
        id="rect2989-0-5"
        width="2"
-       height="18.5"
+       height="17.729166"
        x="-53"
-       y="3.5"
+       y="5.2708335"
        transform="scale(-1,1)" />
     <rect
        style="fill:#828282;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
        id="rect2989-0-3-3"
        width="2"
-       height="17.125"
+       height="16.411459"
        x="-49"
-       y="4.875"
+       y="6.5885415"
        transform="scale(-1,1)" />
     <rect
        style="fill:#828282;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
        id="rect2989-0-6-5"
        width="2"
-       height="15.75"
+       height="15.09375"
        x="-45"
-       y="6.25"
+       y="7.90625"
        transform="scale(-1,1)" />
     <rect
        style="fill:#828282;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
        id="rect2989-0-3-7-6"
        width="2"
-       height="14.375"
+       height="13.776042"
        x="-41"
-       y="7.625"
+       y="9.223958"
        transform="scale(-1,1)" />
     <rect
        style="fill:#828282;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
        id="rect2989-0-2"
        width="2"
-       height="13"
+       height="12.458333"
        x="-37"
-       y="9"
+       y="10.541667"
        transform="scale(-1,1)" />
     <rect
        style="fill:#828282;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
        id="rect2989-0-3-9"
        width="2"
-       height="11.625"
+       height="11.140625"
        x="-33"
-       y="10.375"
+       y="11.859375"
        transform="scale(-1,1)" />
     <rect
        style="fill:#828282;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
        id="rect2989-0-6-1"
        width="2"
-       height="10.25"
+       height="9.822917"
        x="-29"
-       y="11.75"
+       y="13.177083"
        transform="scale(-1,1)" />
     <rect
        style="fill:#828282;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
        id="rect2989-0-3-7-2"
        width="2"
-       height="8.875"
+       height="8.505208"
        x="-25"
-       y="13.125"
+       y="14.494792"
        transform="scale(-1,1)" />
     <rect
        style="fill:#828282;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
        id="rect2989-0-5-7"
        width="2"
-       height="7.5"
+       height="7.1875"
        x="-21"
-       y="14.5"
+       y="15.8125"
        transform="scale(-1,1)" />
     <rect
        style="fill:#828282;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
        id="rect2989-0-3-3-0"
        width="2"
-       height="6.125"
+       height="5.8697915"
        x="-17"
-       y="15.875"
+       y="17.130209"
        transform="scale(-1,1)" />
     <rect
        style="fill:#828282;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
        id="rect2989-0-6-5-9"
        width="2"
-       height="4.75"
+       height="4.5520835"
        x="-13"
-       y="17.25"
+       y="18.447916"
        transform="scale(-1,1)" />
     <rect
        style="fill:#828282;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
        id="rect2989-0-3-7-6-3"
        width="2"
-       height="3.375"
+       height="3.234375"
        x="-9"
-       y="18.625"
+       y="19.765625"
        transform="scale(-1,1)" />
     <rect
        style="fill:#828282;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
        id="rect2989-0-3-7-6-3-6"
        width="2"
-       height="2"
+       height="1.9166666"
        x="-5"
-       y="20"
+       y="21.083334"
        transform="scale(-1,1)" />
   </g>
 </svg>

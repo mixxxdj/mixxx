@@ -15,8 +15,8 @@
    version="1.1"
    inkscape:version="0.48.4 r9939"
    width="8"
-   height="32"
-   sodipodi:docname="volume_handle_hori.svg"
+   height="28"
+   sodipodi:docname="slider_volume_h_handle.svg"
    inkscape:export-filename="/home/ronso/.mixxx/skins/FlatNite/volume_slider.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
@@ -198,14 +198,14 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:window-width="1366"
-     inkscape:window-height="747"
+     inkscape:window-height="746"
      id="namedview4453"
      showgrid="false"
-     inkscape:zoom="16.000001"
-     inkscape:cx="-16.489892"
-     inkscape:cy="21.197292"
+     inkscape:zoom="8.0000005"
+     inkscape:cx="-29.904405"
+     inkscape:cy="21.086604"
      inkscape:window-x="0"
-     inkscape:window-y="21"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1"
      showguides="true"
@@ -237,14 +237,14 @@
      id="layer1"
      inkscape:label="Layer"
      style="display:inline"
-     transform="translate(0,-71)">
+     transform="translate(0,-75)">
     <rect
        style="fill:#b50000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
        id="rect3785-3"
        width="5"
-       height="26"
+       height="23.5"
        x="1.5"
-       y="74"
+       y="77.25"
        rx="2"
        ry="2" />
   </g>

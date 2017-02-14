@@ -206,11 +206,9 @@ WWidget, QLabel {
 ######## Mixer Bar #############################################
 ################################################################ */
 
-#MixerBar { /*
+#MixerBar {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop'; /*
   background-color: #A900FF;  */
-}
-
-#MixerBarExtra {
   margin: 0px;
   padding: 0px;
   border: 0px;
@@ -218,54 +216,84 @@ WWidget, QLabel {
 }
 
 #MixerBarSection {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  margin: 0px 0px 0px 0px;
-  padding: 2px 2px 1px 0px;	/*
+  qproperty-layoutAlignment: 'AlignTop';
+  margin: 2px 8px 1px 0px;	/*
+  padding: 2px 2px 1px 0px;
   border-top: 2px solid #151515;
   border-bottom: 2px solid #151515;
   border-right: 1px solid #585858;
-  background-color: #333333;
-  background-color: #0F0F0F;	*/
+  background-color: #331299;	*/
 }
 
-#MixerBarDivider {
-  image: url(skin:/graphics/divider_vert.svg) repeat left center;
+#MasterLabel, #HeadLabel, #Mic1Label, #Mic2Label, #Aux1Label, #Aux2Label {
+  border: 1px solid #585858;
+  border-radius: 2px; /*
+  border-right: 0px;
+  border-bottom: 0px; */
+}
+#HeadLabel:hover, #Mic1Label:hover,
+#Mic2Label:hover, #Aux1Label:hover, #Aux2Label:hover {
+  background-color: #000000;
 }
 
-#MixerBarLabel {
+#MasterLabel {
+  image: url(skin:/buttons/btn_master.svg) no-repeat center center;
   }
-  #MasterLabel, #HeadLabel, #Mic1Label, #Mic2Label, #Aux1Label, #Aux2Label {
-    border: 1px solid #585858;
-    border-right: 0px;
-    border-bottom: 0px;
-    border-radius: 2px;
+
+#HeadLabel[displayValue="0"] {
+  image: url(skin:/buttons/btn_head.svg) no-repeat center center;
   }
-  #MasterLabel:hover, #HeadLabel:hover, #Mic1Label:hover,
-  #Mic2Label:hover, #Aux1Label:hover, #Aux2Label:hover {
-    background-color: #000000;
+  #HeadLabel[displayValue="0"]:hover {
+    image: url(skin:/buttons/btn_head_mute_hover.svg) no-repeat center center;
   }
-  #MasterLabel {
-    image: url(skin:/buttons/btn_master.svg) no-repeat center center;
-    }
-  #HeadLabel {
-    image: url(skin:/buttons/btn_head.svg) no-repeat center center;
-    }
-  #Mic1Label {
-    image: url(skin:/buttons/btn_mic1.svg) no-repeat center center;
-    }
-  #Mic2Label {
-    image: url(skin:/buttons/btn_mic2.svg) no-repeat center center;
-    }
-  #Aux1Label {
-    image: url(skin:/buttons/btn_aux1.svg) no-repeat center center;
-    }
-  #Aux2Label {
-    image: url(skin:/buttons/btn_aux2.svg) no-repeat center center;
-    }
+  #HeadLabel[displayValue="1"] {
+    image: url(skin:/buttons/btn_head_mute.svg) no-repeat center center;
+  }
+
+#Mic1Label[displayValue="0"] {
+  image: url(skin:/buttons/btn_mic1.svg) no-repeat center center;
+  }
+  #Mic1Label[displayValue="0"]:hover {
+    image: url(skin:/buttons/btn_mic1_mute_hover.svg) no-repeat center center;
+  }
+  #Mic1Label[displayValue="1"] {
+    image: url(skin:/buttons/btn_mic1_mute.svg) no-repeat center center;
+  }
+
+#Mic2Label[displayValue="0"] {
+  image: url(skin:/buttons/btn_mic2.svg) no-repeat center center;
+  }
+  #Mic2Label[displayValue="0"]:hover {
+    image: url(skin:/buttons/btn_mic2_mute_hover.svg) no-repeat center center;
+  }
+  #Mic2Label[displayValue="1"] {
+    image: url(skin:/buttons/btn_mic2_mute.svg) no-repeat center center;
+  }
+
+#Aux1Label[displayValue="0"] {
+  image: url(skin:/buttons/btn_aux1.svg) no-repeat center center;
+  }
+  #Aux1Label[displayValue="0"]:hover {
+    image: url(skin:/buttons/btn_aux1_mute_hover.svg) no-repeat center center;
+  }
+  #Aux1Label[displayValue="1"] {
+    image: url(skin:/buttons/btn_aux1_mute.svg) no-repeat center center;
+  }
+
+#Aux2Label[displayValue="0"] {
+  image: url(skin:/buttons/btn_aux2.svg) no-repeat center center;
+  }
+  #Aux2Label[displayValue="0"]:hover {
+    image: url(skin:/buttons/btn_aux2_mute_hover.svg) no-repeat center center;
+  }
+  #Aux2Label[displayValue="1"] {
+    image: url(skin:/buttons/btn_aux2_mute.svg) no-repeat center center;
+  }
 
 #MixerBarButton {
   border: 1px solid #000000;
   border-radius: 2px;
+  margin-bottom: 4px;
   }
   #MixerBarButton:hover {
     border: 1px solid #888888;
@@ -273,7 +301,12 @@ WWidget, QLabel {
 #MixerBarButton:hover, #MixerBarButton:hover, #MixerBarSlider:hover, #MixerBarKnob:hover {  /*
   border: 1px solid #666666;  */
   background-color: #000000;
+  border-radius: 2px;
   }
+
+#VUMeterFloating_h {
+  margin: 0px 3px 0px 1px;
+}
 
 /*################################################################
 ####### Decks  #################################################
@@ -1368,6 +1401,9 @@ WWidget, QLabel {
 }
 #AlignTopLeft {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+}
+#AlignBottomLeft {
+  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
 }
 
 #Spacer0f {

@@ -9,12 +9,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="32"
-   height="36"
+   width="28"
+   height="32"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_mic2.svg">
+   sodipodi:docname="btn_mic1.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.6568542"
-     inkscape:cx="22.329419"
-     inkscape:cy="14.100021"
+     inkscape:zoom="11.313708"
+     inkscape:cx="0.55199789"
+     inkscape:cy="9.3057691"
      inkscape:document-units="px"
      inkscape:current-layer="g3923"
      showgrid="false"
@@ -56,12 +56,12 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <g
-     transform="translate(0,-1016.3622)"
+     transform="translate(0,-1020.3622)"
      id="g3923"
      inkscape:groupmode="layer"
      inkscape:label="OFF"
@@ -70,8 +70,18 @@
        id="g2989"
        transform="translate(-88.571429,8.1332715)" />
     <g
+       transform="translate(27.316193,1007.2844)"
+       style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#888888;fill-opacity:1;stroke:none;font-family:Ubuntu;-inkscape-font-specification:Ubuntu"
+       id="flowRoot3890">
+      <path
+         d="m -7.81725,40.444 0,-9.688 c -0.5226721,0.373346 -1.1200048,0.709345 -1.792,1.008 -0.672004,0.280011 -1.241336,0.504011 -1.708,0.672 l -1.12,-2.856 c 0.447998,-0.167986 0.933331,-0.382653 1.456,-0.644 0.522663,-0.261319 1.0453295,-0.550652 1.568,-0.868 0.5226618,-0.317318 1.0173279,-0.653317 1.484,-1.008 0.4666603,-0.35465 0.8679933,-0.71865 1.204,-1.092 l 2.352,0 0,14.476 3.444,0 0,2.856 -10.528,0 0,-2.856 3.64,0"
+         style="font-size:28px;font-weight:bold;fill:#888888;fill-opacity:1;font-family:Ubuntu Mono;-inkscape-font-specification:Ubuntu Mono Bold"
+         id="path3902"
+         inkscape:connector-curvature="0" />
+    </g>
+    <g
        id="g3785"
-       transform="matrix(0.580304,0.26552477,-0.26552477,0.580304,273.32209,435.11622)">
+       transform="matrix(0.51582577,0.23602201,-0.23602201,0.51582577,242.67325,503.6991)">
       <path
          inkscape:connector-curvature="0"
          id="path2994"
@@ -82,15 +92,6 @@
          id="path3024"
          d="m 12.53125,1013.9247 2.21875,33.7813 6.5,0 2.21875,-33.7813 -10.9375,0 z M 18,1017.5497 c 0.829921,0 1.5,0.669 1.5,1.5 l 0,5.0313 c 0,0.831 -0.670079,1.5 -1.5,1.5 -0.829921,0 -1.5,-0.669 -1.5,-1.5 l 0,-5.0313 c 0,-0.831 0.670079,-1.5 1.5,-1.5 z"
          style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline" />
-    </g>
-    <g
-       transform="translate(30.84525,1007.0622)"
-       style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#888888;fill-opacity:1;stroke:none;font-family:Ubuntu;-inkscape-font-specification:Ubuntu"
-       id="flowRoot3890">
-      <path
-         d="m -7.81725,40.444 0,-9.688 c -0.5226721,0.373346 -1.1200048,0.709345 -1.792,1.008 -0.672004,0.280011 -1.241336,0.504011 -1.708,0.672 l -1.12,-2.856 c 0.447998,-0.167986 0.933331,-0.382653 1.456,-0.644 0.522663,-0.261319 1.0453295,-0.550652 1.568,-0.868 0.5226618,-0.317318 1.0173279,-0.653317 1.484,-1.008 0.4666603,-0.35465 0.8679933,-0.71865 1.204,-1.092 l 2.352,0 0,14.476 3.444,0 0,2.856 -10.528,0 0,-2.856 3.64,0"
-         style="font-size:28px;font-weight:bold;font-family:Ubuntu Mono;-inkscape-font-specification:Ubuntu Mono Bold;fill:#888888;fill-opacity:1"
-         id="path3902" />
     </g>
   </g>
 </svg>
