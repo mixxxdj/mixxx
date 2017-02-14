@@ -1029,7 +1029,7 @@ NumarkMixtrack3.init = function(id, debug) {
         for (led in NumarkMixtrack3.decks["D" + i].LEDs) {
             if (led.hasOwnProperty("onOff")) {
                 led.onOff(OFF);
-            };
+            }
         }
 
         for (var j = 1; j <= 4; j++) {
