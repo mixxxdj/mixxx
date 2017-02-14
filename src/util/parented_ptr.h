@@ -23,6 +23,20 @@ class parented_ptr {
         DEBUG_ASSERT(u->parent() != nullptr);
     }
 
+#if __GNUC__ < 5
+    // gcc 4.8 does not implicit use the typ conversion move constructor
+    // from above when returning form a function and use finally RVO.
+    // It requires
+    //return std::move(pObject)
+    // This hack avoids it:
+    template <typename U>
+    operator parented_ptr<U>() const {
+        static_assert(std::is_convertible<T*, U*>::value,
+                "No implicit conversion from T* to U* found.");
+        return *this;
+    }
+#endif
+
     // Delete copy constructor and copy assignment operator
     parented_ptr(const parented_ptr<T>&) = delete;
     parented_ptr& operator=(const parented_ptr<T>&) = delete;
