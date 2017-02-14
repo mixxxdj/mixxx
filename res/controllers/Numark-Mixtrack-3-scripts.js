@@ -328,16 +328,16 @@ LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount,
     this.flashOnceOn(num_ms_on, value);
 
     if (flashCount !== 1) {
-        // flashcount =0 means permanent flash,
-        // flashcount>0 , means temporary flash, first flash already done,
-        // so we don't need this part  if flashcount=1
-        // permanent timer
+        // flashcount == 0 means permanent flash,
+        // flashcount > 0 , means temporary flash, first flash already done,
+        // so we don't need this part  if flashcount == 1
 
-        this.flashTimer = engine.beginTimer(num_ms_on + num_ms_off,
-            function() {
-                myself.flashOnceOn(false);
-            });
+        // permanent timer
+        this.flashTimer = engine.beginTimer(num_ms_on + num_ms_off, function() {
+            myself.flashOnceOn(false);
+        });
     }
+
     if (flashCount > 1) {
         // flashcount>0 , means temporary flash, first flash already done,
         // so we don't need this part  if flashcount=1
