@@ -28,7 +28,7 @@ class ThreeBandBiquadEQEffectGroupState final {
     std::unique_ptr<EngineFilterBiquad1Peaking> m_lowCut;
     std::unique_ptr<EngineFilterBiquad1Peaking> m_midCut;
     std::unique_ptr<EngineFilterBiquad1HighShelving> m_highCut;
-    std::unique_ptr<SampleBuffer> m_pTempBuf;
+    SampleBuffer m_tempBuf;
     double m_oldLowBoost;
     double m_oldMidBoost;
     double m_oldHighBoost;
