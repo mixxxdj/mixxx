@@ -22,22 +22,17 @@ ToDo
     (bit buggy right now, file bug report)
   
 * Mixer
-  - add Filter knob
-  - brighter Gain knob indicator (as well Super knob indicator)
   		
 * Mixerbar
   - move on top of Library? optional
-  - VUMeter for each section
-  - Mute button on each SectionLabel
   - Mic auto-duck button, ducking strength knob
-  - make it lower to save space?
 
 * Skin Controls
   - improve positioning of Crossfader in 4-decks mode, as well as for varying FX units
   (- Recording duration widget behind Rec toggler)
   
 * FX
-  - 2.1 FX Units (MetaKnob, Highlight, Focus)
+  - 2.1 FX Units (MetaKnob, Highlight, Focus) > option to choose version 2.0 or 2.1
   - a way to collapse FX units automatically when space is scarse
   - extend group assignment buttons to 4 Mics/4AUX > proper 4th column
   - colorize group assignment buttons like other togglers (OFF grey / ON white with bg-color)

@@ -239,7 +239,7 @@ Variables:
                     <SetVariable name="Size">28f,28f</SetVariable>
                     <SetVariable name="group">[Microphone]</SetVariable>
                     <SetVariable name="ConfigKey">pregain</SetVariable>
-                    <SetVariable name="Color">red</SetVariable>
+                    <SetVariable name="Color">yellow</SetVariable>
                   </Template>
 
                   <WidgetGroup><!-- Volume fader + VU Meter -->
@@ -323,7 +323,7 @@ Variables:
                     <SetVariable name="Size">28f,28f</SetVariable>
                     <SetVariable name="group">[Microphone2]</SetVariable>
                     <SetVariable name="ConfigKey">pregain</SetVariable>
-                    <SetVariable name="Color">red</SetVariable>
+                    <SetVariable name="Color">yellow</SetVariable>
                   </Template>
 
                   <WidgetGroup><!-- Volume fader + VU Meter -->
@@ -419,7 +419,7 @@ Variables:
                     <SetVariable name="Size">28f,28f</SetVariable>
                     <SetVariable name="group">[Auxiliary1]</SetVariable>
                     <SetVariable name="ConfigKey">pregain</SetVariable>
-                    <SetVariable name="Color">red</SetVariable>
+                    <SetVariable name="Color">yellow</SetVariable>
                   </Template>
 
                   <WidgetGroup><!-- Volume fader + VU Meter -->
@@ -503,7 +503,7 @@ Variables:
                     <SetVariable name="Size">28f,28f</SetVariable>
                     <SetVariable name="group">[Auxiliary2]</SetVariable>
                     <SetVariable name="ConfigKey">pregain</SetVariable>
-                    <SetVariable name="Color">red</SetVariable>
+                    <SetVariable name="Color">yellow</SetVariable>
                   </Template>
 
                   <WidgetGroup><!-- Volume fader + VU Meter -->
