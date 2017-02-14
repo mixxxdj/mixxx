@@ -5,19 +5,15 @@
 #ifndef ANALYSISFEATURE_H
 #define ANALYSISFEATURE_H
 
-#include <QStringListModel>
 #include <QUrl>
-#include <QObject>
-#include <QVariant>
-#include <QIcon>
 #include <QList>
 
 #include "library/libraryfeature.h"
 #include "library/features/analysis/dlganalysis.h"
 #include "library/treeitemmodel.h"
-#include "preferences/usersettings.h"
 
 class AnalyzerQueue;
+class DlgAnalysis;
 class TrackCollection;
 
 class AnalysisFeature : public LibraryFeature {

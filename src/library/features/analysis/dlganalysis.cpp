@@ -1,15 +1,9 @@
-#include <QSqlTableModel>
-
-#include "library/features/analysis/analysisfeature.h"
 #include "library/features/analysis/dlganalysis.h"
-#include "library/trackcollection.h"
 #include "library/dao/trackschema.h"
 #include "util/assert.h"
-#include "widget/wanalysislibrarytableview.h"
-#include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
-DlgAnalysis::DlgAnalysis(QWidget* parent, AnalysisFeature *pAnalysis)
+DlgAnalysis::DlgAnalysis(QWidget* parent, AnalysisFeature* pAnalysis)
         : QFrame(parent),
           m_bAnalysisActive(false),
           m_pAnalysis(pAnalysis),
@@ -25,7 +19,7 @@ DlgAnalysis::DlgAnalysis(QWidget* parent, AnalysisFeature *pAnalysis)
             this, SLOT(analyze()));
 
     connect(pushButtonSelectAll, SIGNAL(clicked()),
-            m_pAnalysis, SLOT(selectAll()));
+            m_pAnalysis.data(), SLOT(selectAll()));
 }
 
 DlgAnalysis::~DlgAnalysis() {
