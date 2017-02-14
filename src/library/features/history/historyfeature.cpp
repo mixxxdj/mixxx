@@ -152,9 +152,9 @@ QModelIndex HistoryFeature::constructChildModel(int selected_id) {
     return index;
 }
 
-PlaylistTableModel* HistoryFeature::constructTableModel() {
-    return new PlaylistTableModel(this, m_pTrackCollection, 
-                                  "mixxx.db.model.setlog", true);
+parented_ptr<PlaylistTableModel> HistoryFeature::constructTableModel() {
+    return make_parented<PlaylistTableModel>(this, m_pTrackCollection, 
+            "mixxx.db.model.setlog", true);
 }
 
 QSet<int> HistoryFeature::playlistIdsFromIndex(const QModelIndex& index) const {

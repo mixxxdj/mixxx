@@ -41,7 +41,7 @@ class PlaylistFeature : public BasePlaylistFeature {
     const TreeItemModel* getConstChildModel() const override;
     void buildPlaylistList();
     void decorateChild(TreeItem *pChild, int playlist_id);
-    PlaylistTableModel* constructTableModel();
+    parented_ptr<PlaylistTableModel> constructTableModel();
 
   private:
     QString getRootViewHtml() const;

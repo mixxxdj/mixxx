@@ -118,7 +118,8 @@ QPointer<PlaylistTableModel> BasePlaylistFeature::getPlaylistTableModel(int pane
     }
     auto it = m_playlistTableModel.find(paneId);
     if (it == m_playlistTableModel.end() || it->isNull()) {
-        it = m_playlistTableModel.insert(paneId, constructTableModel());
+        auto pTableModel = constructTableModel();
+        it = m_playlistTableModel.insert(paneId, pTableModel.toWeakRef());
     }
     return *it;
 }

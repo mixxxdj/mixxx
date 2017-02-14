@@ -77,8 +77,8 @@ class BrowseFeature : public LibraryFeature {
     QAction* m_pAddQuickLinkAction;
     QAction* m_pRemoveQuickLinkAction;
     QAction* m_pAddtoLibraryAction;
-    TreeItem* m_pLastRightClickedItem;
-    TreeItem* m_pQuickLinkItem;
+    QPersistentModelIndex m_lastRightClickedIndex;
+    parented_ptr<TreeItem> m_pQuickLinkItem;
     QStringList m_quickLinkList;
     QPersistentModelIndex m_lastClickedChild;
     

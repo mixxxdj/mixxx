@@ -85,7 +85,7 @@ class BasePlaylistFeature : public LibraryFeature {
     QString getValidPlaylistName() const;
     
     QPointer<PlaylistTableModel> getPlaylistTableModel(int paneId = -1);
-    virtual PlaylistTableModel* constructTableModel() = 0;
+    virtual parented_ptr<PlaylistTableModel> constructTableModel() = 0;
     
     virtual QSet<int> playlistIdsFromIndex(const QModelIndex& index) const;
     int playlistIdFromIndex(const QModelIndex& index) const;

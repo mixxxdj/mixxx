@@ -39,7 +39,7 @@ public:
     const TreeItemModel* getConstChildModel() const override;
     void buildPlaylistList() override;
     QModelIndex constructChildModel(int selected_id);
-    PlaylistTableModel* constructTableModel() override;
+    parented_ptr<PlaylistTableModel> constructTableModel() override;
     QSet<int> playlistIdsFromIndex(const QModelIndex &index) const override;
     QModelIndex indexFromPlaylistId(int playlistId) const override;
 
