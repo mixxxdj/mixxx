@@ -81,23 +81,8 @@ var loopsize = [2, 4, 8, 16, 0.125, 0.25, 0.5, 1];
  * 2016-02-17 (1.0 beta 4) 2016-04-08 (V1.3 )- Stéphane Morin
  * 2016-04-08 (1.3) - Stéphane Morin - https://github.com/mixxxdj/mixxx/pull/905
  * 2016-09-14 (1.31) - Stefan Mikolajczyk - https://github.com/mixxxdj/mixxx/pull/1012
- * 2016-04-08 (1.4) to 2016-09-26 (1.8) - Stéphane Morin - https://github.com/mixxxdj/mixxx/pull/1014
- * 2016-09-26 (2.0) - Stéphane Morin - 4 deck support
- *              - Added 4 deck support (Shift + Tap button = deck toggle)
- *              - Remove TAP LED flashing on BeatActive to prevent confusion with deck selection
- *              - Change Shift Lock visual indicator from TAP LED to 
- *                Wheel Button LED. It will flash quickly on Shift lock
- *                with the use of LONG_PRESS (stop on release) and Single press (on/off behavior)
- *              - Add brake effect: PADMode + FX button 1
- *              - Add spinback effect: PADMode + FX button 2
- * 2016-11-03 (2.1) - Stéphane Morin - FX Mode selection based on skin used
- * 2016-12-05 (2.2) - Stéphane Morin 
- *              - Always allow use of wheel to position song when song is not playing 
- *              - Add configuration option for to choose if pitch bend is allowed when wheel is off
- * 2017-02-10 (2.3) - Radu Suciu
- *             - Load sample on sample button press if none is currently loaded
- *             - Configurable beatjump size
- *             - Add mapping for loop move: Tap + Pitch Bend +/-
+ * 2016-04-08 (1.4) to 2017-01-05 (2.2) - Stéphane Morin - https://github.com/mixxxdj/mixxx/pull/1014
+ * 2017-02-10 (2.3) - Radu Suciu - https://github.com/mixxxdj/mixxx/pull/1180
  *
  ***********************************************************************
  *                           GPL v2 licence
