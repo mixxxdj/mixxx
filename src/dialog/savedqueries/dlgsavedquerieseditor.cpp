@@ -12,11 +12,9 @@ DlgSavedQueriesEditor::DlgSavedQueriesEditor(LibraryFeature* pFeature,
           m_pTrackCollection(pTrackCollection),
           m_pFeature(pFeature) {
     setupUi(this);
-    SavedQueriesTableModel *pSaveModel = 
-            new SavedQueriesTableModel(m_pFeature, 
-                                       m_pTrackCollection->getSavedQueriesDAO(),
-                                       parent);
-    tableView->setModel(pSaveModel);
+    auto pSaveModel = make_parented<SavedQueriesTableModel>(m_pFeature, 
+            m_pTrackCollection->getSavedQueriesDAO(), parent);
+    tableView->setModel(pSaveModel.get());
     int numColumns = static_cast<int>(SavedQueryColumns::NUM_COLUMNS);
     for (int i = 0; i < numColumns; ++i) {
         tableView->setColumnHidden(i, pSaveModel->isColumnInternal(i));
