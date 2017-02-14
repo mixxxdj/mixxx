@@ -1096,10 +1096,9 @@ NumarkMixtrack3.initDeck = function(group, remove) {
 
 NumarkMixtrack3.connectDeckControls = function(group, remove) {
     // If the 'remove' parameter is not passed to this function, set remove = false
-    remove = (typeof remove !== 'undefined') ? remove : false;
+    remove = remove || false;
     var OnDeck = parseInt(NumarkMixtrack3.channelRegEx.exec(group)[1]); 
     var OffDeck = OnDeck;
-    var i; 
 
     if (OffDeck <= 2) {
         OffDeck += 2;
@@ -1115,38 +1114,21 @@ NumarkMixtrack3.connectDeckControls = function(group, remove) {
         // make sure that the shift is no longer active on either deck to prevent confusion
         NumarkMixtrack3.decks["D" + OffDeck].shiftKey = false;
         NumarkMixtrack3.decks["D" + OnDeck].shiftKey = false; 
-        NumarkMixtrack3.decks["D" + OffDeck].LEDs.jogWheelsInScratchMode.onOff(OFF);
-        NumarkMixtrack3.decks["D" + OffDeck].LEDs.headphones.onOff(OFF);
-        NumarkMixtrack3.decks["D" + OffDeck].LEDs.loopin.onOff(OFF);
-        NumarkMixtrack3.decks["D" + OffDeck].LEDs.loopout.onOff(OFF);
-        NumarkMixtrack3.decks["D" + OffDeck].LEDs.reloop_exit.onOff(OFF);
-        NumarkMixtrack3.decks["D" + OffDeck].LEDs.loop_halve.onOff(OFF);
-        NumarkMixtrack3.decks["D" + OffDeck].LEDs.hotCue1.onOff(OFF);
-        NumarkMixtrack3.decks["D" + OffDeck].LEDs.hotCue2.onOff(OFF);
-        NumarkMixtrack3.decks["D" + OffDeck].LEDs.hotCue3.onOff(OFF);
-        NumarkMixtrack3.decks["D" + OffDeck].LEDs.hotCue4.onOff(OFF);
-        NumarkMixtrack3.decks["D" + OffDeck].LEDs.Cue.onOff(OFF);
-        NumarkMixtrack3.decks["D" + OffDeck].LEDs.sync.onOff(OFF);
-        NumarkMixtrack3.decks["D" + OffDeck].LEDs.play.onOff(OFF);
-        NumarkMixtrack3.decks["D" + OffDeck].LEDs.fx1.onOff(OFF);
-        NumarkMixtrack3.decks["D" + OffDeck].LEDs.fx2.onOff(OFF);
-        NumarkMixtrack3.decks["D" + OffDeck].LEDs.fx3.onOff(OFF);
-        NumarkMixtrack3.decks["D" + OffDeck].LEDs.tap.onOff(OFF);
-        NumarkMixtrack3.decks["D" + OffDeck].LEDs.meter.onOff(OFF);
-        
-        for (i = 0; i < 4; i++) {
-        var index = i + 1;
 
-        NumarkMixtrack3.decks["D" + OffDeck].LEDs["PADloop" + index].onOff(
-            OFF);
-        NumarkMixtrack3.decks["D" + OnDeck].LEDs["PADloop" + index].onOff(
-            PADcolors.yellow);
+        for (led in NumarkMixtrack3.decks["D" + OffDeck].LEDs) {
+            if (led.hasOwnProperty('onOff')) {
+                led.onOff(OFF);
+            }
+        }
+
+        for (var i = 1; i <= 4; i++) {
+            NumarkMixtrack3.decks["D" + OnDeck].LEDs["PADloop" + i].onOff(PADcolors.yellow);
         }
     } 
-        
-        print("==========================================================");
-        print("         Connect controls and triggers deck "+ OnDeck);
-        print("");
+
+    print("==========================================================");
+    print("         Connect controls and triggers deck "+ OnDeck);
+    print("");
     
     var controlsToFunctions = {
         'hotcue_1_enabled': 'NumarkMixtrack3.OnHotcueChange',
@@ -1189,14 +1171,14 @@ NumarkMixtrack3.connectDeckControls = function(group, remove) {
     // Set InstantFX LEDs to flash if required
     var arrayLength = NumarkMixtrack3.decks["D" + OnDeck].InstantFX.length;
 
-    for (i = 0; i < arrayLength; i++) {
+    for (var i = 0; i < arrayLength; i++) {
         var ButtonNum = NumarkMixtrack3.decks["D" + OnDeck].InstantFX[i];
         NumarkMixtrack3.decks["D" + OnDeck].LEDs["fx" + ButtonNum].flashOn(250, ON, 250);
     }
 
     for (var control in controlsToFunctions) {
         if (controlsToFunctions.hasOwnProperty(control)) {
-            if (remove){
+            if (remove) {
                 engine.connectControl("[Channel" + OffDeck + "]", control, controlsToFunctions[control], true);
             }
             engine.connectControl(group, control, controlsToFunctions[control]);
@@ -1205,7 +1187,7 @@ NumarkMixtrack3.connectDeckControls = function(group, remove) {
     }
 
     if (!remove) { 
-        for (i = 1; i <= 4; i++) {
+        for (var i = 1; i <= 4; i++) {
             engine.setValue("[EffectRack1_EffectUnit" + i + "_Effect1]", "enabled", false);
             engine.setValue("[EffectRack1_EffectUnit" + i + "_Effect2]", "enabled", false);
             engine.setValue("[EffectRack1_EffectUnit" + i + "_Effect3]", "enabled", false);
