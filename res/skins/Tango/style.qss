@@ -688,21 +688,31 @@ WWidget, QLabel {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   border-left: 1px solid #0f0f0f;
   background-color: #333333;		/*
+  padding: 0px 0px 0px 4px;
   background-color: #546981;	*/
 }
 #MixerChannelRight {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
   border-right: 1px solid #0f0f0f;
-  background-color: #333333;	/*
+  background-color: #333333;		/*
+  padding: 0px 4px 0px 0px;
   background-color: #546981;		*/
 }
 
 #EQKnobs {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
+  has no effect:
+  padding: 4px;
   background-color: #411223;	*/
   }
-  #EQKnob {
-    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
+  #EQKnobLeft {
+    qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+    margin: 4px 18px 0px 0px;	/*
+    background-color: #976939;	*/
+    }
+  #EQKnobRight {
+    qproperty-layoutAlignment: 'AlignRight | AlignTop';
+    margin: 4px 0px 0px 18px;	/*
     background-color: #976939;	*/
     }
   #EQKillButton {
@@ -733,6 +743,11 @@ WWidget, QLabel {
     border-top-right-radius: 15px;
     border-bottom-right-radius: 15px;
     }
+
+  #FilterKnob {	/*
+    margin: 0px 4px 0px 4px;
+    background-color: #976939;	*/
+    }
 /*  This wouldn't scale the image:
 #PflButton[displayValue="0"] {
   background: transparent url(skin:/buttons/btn_pfl_off.svg) no-repeat center center;
@@ -752,6 +767,7 @@ WWidget, QLabel {
   }
         
 #VolumeSliderGain {
+  qproperty-layoutAlignment: 'AlignHCenter';
   margin-top: 2px;	/*
   background-color: #774512;	*/
 }

@@ -12,12 +12,13 @@ Variables:
 <Template>
   <SetVariable name="EqualizerEffectGroup">[EqualizerRack1_<Variable name="group"/>_Effect1]</SetVariable>
   <WidgetGroup>
-    <ObjectName>EQKnob</ObjectName>
+    <ObjectName>EQKnobLeft</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>min,min</SizePolicy>
+    <Size>60f,34f</Size><!-- 42f,30f + [4 8 0 0] margin -->
     <Children>
       
       <WidgetGroup>
+        <SizePolicy>min,min</SizePolicy>
         <Layout>stacked</Layout>
         <Children>
           <Template src="skin:knob_textless.xml">

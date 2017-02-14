@@ -15,7 +15,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="knob_indicator_red.svg">
+   sodipodi:docname="knob_red.svg">
   <defs
      id="defs4">
     <linearGradient
@@ -620,15 +620,6 @@
          offset="1"
          id="stop3943-54-9" />
     </linearGradient>
-    <filter
-       inkscape:collect="always"
-       id="filter5815-7-9"
-       color-interpolation-filters="sRGB">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="0.42678198"
-         id="feGaussianBlur5817-6-1" />
-    </filter>
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient4937-6-6"
@@ -812,9 +803,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="22.627417"
-     inkscape:cx="16.932583"
-     inkscape:cy="25.524826"
+     inkscape:zoom="8"
+     inkscape:cx="-16.434173"
+     inkscape:cy="30.787331"
      inkscape:document-units="px"
      inkscape:current-layer="layer4"
      showgrid="false"
@@ -836,58 +827,6 @@
      inkscape:snap-smooth-nodes="true"
      inkscape:bbox-nodes="true"
      inkscape:snap-bbox-midpoints="true">
-    <sodipodi:guide
-       orientation="0,1"
-       position="15.999767,15.965812"
-       id="guide3057" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="16,31.634722"
-       id="guide3884" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="14.30161,27.52903"
-       id="guide3888" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="17.7,29.915521"
-       id="guide3896" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="20.1875,24.625"
-       id="guide3898" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="17.70149,27.52903"
-       id="guide3900" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="11.8125,25.84375"
-       id="guide3182" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="20.1875,25.8125"
-       id="guide3184" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="16,31.634722"
-       id="guide3940" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="6.3497669,15.470406"
-       id="guide3942" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="25.649687,15.470406"
-       id="guide3944" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="15.999727,6.3158122"
-       id="guide3946" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="15.999767,25.615812"
-       id="guide3950" />
   </sodipodi:namedview>
   <metadata
      id="metadata7">
@@ -914,7 +853,7 @@
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cscczccc" />
     <path
-       style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#9c9c9c;fill-opacity:1;stroke:none;stroke-width:1.10780871;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans"
+       style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#b4b4b4;fill-opacity:1;stroke:none;stroke-width:1.10780871000000003;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans"
        d="M 12.8125,8.375 C 8.5101381,10.449216 6.2941972,15.444786 7.84375,20.09375 9.5259413,25.1404 14.984684,27.869685 20.03125,26.1875 25.077838,24.505307 27.838414,19.046642 26.15625,14 25.299917,11.430925 23.449925,9.4650358 21.1875,8.375 l 0,1.78125 c 1.592102,0.957272 2.864943,2.438531 3.5,4.34375 1.417976,4.254055 -0.870996,8.832002 -5.125,10.25 -4.253976,1.41799 -8.832,-0.870936 -10.25,-5.125 -1.2227691,-3.668549 0.3253826,-7.553596 3.5,-9.46875 l 0,-1.78125 z"
        id=" path4669-5-5-8-2-4-3"
        inkscape:connector-curvature="0" />

@@ -24,47 +24,64 @@ Variables:
   <WidgetGroup>
     <ObjectName>MixerChannelLeft</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>min,me</SizePolicy>
+    <SizePolicy>min,min</SizePolicy>
     <Children>
 
-      <WidgetGroup><!-- EQs --><!-- 4 + 36px + 4 -->
+      <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+
+      <WidgetGroup><!-- EQs --><!-- 4 + 30 + 12 + 4 -->
         <ObjectName>EQKnobs</ObjectName>
         <Layout>vertical</Layout>
-        <Size>50f,1me</Size>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
           <Template src="skin:eq_knob_left.xml"><!-- High EQ -->
             <SetVariable name="parameter">3</SetVariable>
             <SetVariable name="ToolTipID">filterHigh</SetVariable>
           </Template>
-            <WidgetGroup><Size>1me,4f</Size><Children/></WidgetGroup>
           <Template src="skin:eq_knob_left.xml"><!-- Mid EQ -->
             <SetVariable name="parameter">2</SetVariable>
             <SetVariable name="ToolTipID">filterMid</SetVariable>
           </Template>
-            <WidgetGroup><Size>1me,4f</Size><Children/></WidgetGroup>
           <Template src="skin:eq_knob_left.xml"><!-- Low EQ -->
             <SetVariable name="parameter">1</SetVariable>
             <SetVariable name="ToolTipID">filterLow</SetVariable>
           </Template>
-          <WidgetGroup><!-- PflButton -->
-            <SizePolicy>me,me</SizePolicy><!-- (EQs = 36px) 28 + 12 -->
+
+          <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
+
+          <WidgetGroup><!-- Filter knob + PflButton -->
+            <ObjectName>FilterPflContainer</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
+
+              <Template src="skin:knob_textless.xml">
+                <SetVariable name="ObjectName">FilterKnob</SetVariable>
+                <SetVariable name="ToolTipID"></SetVariable>
+                <SetVariable name="Size">30f,30f</SetVariable>
+                <SetVariable name="Color">blue</SetVariable>
+                <SetVariable name="group">[QuickEffectRack1_[Channel<Variable name="channum"/>]]</SetVariable>
+                <SetVariable name="ConfigKey">super1</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+
               <Template src="skin:button_2state.xml">
                 <SetVariable name="ToolTipID">pfl</SetVariable>
                 <SetVariable name="ObjectName">PflButton</SetVariable>
-                <SetVariable name="Size">28f,28f</SetVariable>
+                <SetVariable name="Size">24f,24f</SetVariable>
                 <SetVariable name="state_0_pressed">pfl_off.svg</SetVariable>
                 <SetVariable name="state_0_unpressed">pfl_off.svg</SetVariable>
                 <SetVariable name="state_1_pressed">pfl_on.svg</SetVariable>
                 <SetVariable name="state_1_unpressed">pfl_on.svg</SetVariable>
                 <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],pfl</SetVariable>
               </Template>
-          <!--	Added spacers here because <Pos> and margin only affected
-              clickable area, not background-image -->
-              <WidgetGroup><Size>12f,1me</Size><Children/></WidgetGroup>
+
+              <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
+
             </Children>
-          </WidgetGroup><!-- /PflButton -->
+          </WidgetGroup><!-- /Filter knob + PflButton -->
+
         </Children>
         <Connection>
           <ConfigKey persist="true">[Tango],eq_knobs</ConfigKey>
@@ -72,7 +89,9 @@ Variables:
         </Connection>
       </WidgetGroup><!-- /EQs -->
 
+      <!--
       <WidgetGroup><Size>4f,1me</Size><Children/></WidgetGroup>
+              -->
 
       <WidgetGroup><!--  Volume Slider + Gain knob --><!-- 36px -->
         <ObjectName>VolumeSliderGain</ObjectName>
@@ -90,28 +109,32 @@ Variables:
             </Connection>
           </SliderComposed><!-- /Volume slider -->
 
-          <WidgetGroup><Size>1me,1me</Size><Children/></WidgetGroup>
+          <WidgetGroup><Size>1min,1me</Size></WidgetGroup>
 
           <WidgetGroup><!--  Gain knob -->
-            <Layout>vertical</Layout>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
             <Children>
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
               <Template src="skin:knob_textless.xml">
                 <SetVariable name="ObjectName">GainKnob</SetVariable>
                 <SetVariable name="ToolTipID">pregain</SetVariable>
                 <SetVariable name="Size">30f,30f</SetVariable>
-                <SetVariable name="Color">blue</SetVariable>
+                <SetVariable name="Color">yellow</SetVariable>
                 <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
                 <SetVariable name="ConfigKey">pregain</SetVariable>
               </Template>
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
             </Children>
           </WidgetGroup><!--  /Gain knob -->
+
         </Children>
       </WidgetGroup><!--  /Volume Slider + Gain knob -->
 
     <!-- No matter if VUMeter is visible, make sure there's 4px padding on the right -->
-      <WidgetGroup><Size>2f,1me</Size><Children/></WidgetGroup>
+      <WidgetGroup><Size>2f,1me</Size></WidgetGroup>
       <Template src="skin:vumeter_mixer.xml"/><!-- 12px = 2px + 8px + 2px -->
-      <WidgetGroup><Size>2f,1me</Size><Children/></WidgetGroup>
+      <WidgetGroup><Size>2f,1me</Size></WidgetGroup>
 
     </Children>
     <Connection>

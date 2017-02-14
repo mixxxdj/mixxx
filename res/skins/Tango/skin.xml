@@ -384,6 +384,7 @@
                             <SingletonContainer>
                               <ObjectName>Decks12_Singleton</ObjectName>
                             </SingletonContainer>
+
                             <Template src="skin:fx_units_12.xml"/>
 
                             <SingletonContainer>
