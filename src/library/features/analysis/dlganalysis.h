@@ -45,7 +45,7 @@ class DlgAnalysis : public QFrame, public Ui::DlgAnalysis {
     //Note m_pTrackTablePlaceholder is defined in the .ui file
     bool m_bAnalysisActive;
     QButtonGroup m_songsButtonGroup;
-    AnalysisLibraryTableModel* m_pAnalysisLibraryTableModel;
+    QPointer<AnalysisLibraryTableModel> m_pAnalysisLibraryTableModel;
     AnalysisFeature* m_pAnalysis;
     int m_tracksInQueue;
     int m_currentTrack;
