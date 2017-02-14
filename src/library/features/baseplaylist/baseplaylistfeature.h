@@ -53,7 +53,7 @@ class BasePlaylistFeature : public LibraryFeature {
     void slotRenamePlaylist();
     void slotTogglePlaylistLock();
     void slotImportPlaylist();
-    void slotImportPlaylistFile(const QString &playlist_file);
+    void slotImportPlaylistFile(const QString& playlist_file);
     void slotCreateImportPlaylist();
     void slotExportPlaylist();
     // Copy all of the tracks in a playlist to a new directory.
@@ -96,8 +96,8 @@ class BasePlaylistFeature : public LibraryFeature {
     // on failure.
     virtual QModelIndex indexFromPlaylistId(int playlistId) const;
 
-    PlaylistDAO &m_playlistDao;
-    TrackDAO &m_trackDao;
+    PlaylistDAO& m_playlistDao;
+    TrackDAO& m_trackDao;
     QPointer<PlaylistTableModel> m_pPlaylistTableModel;
     QHash<int, QPointer<PlaylistTableModel> > m_playlistTableModel;
     QAction *m_pCreatePlaylistAction;
