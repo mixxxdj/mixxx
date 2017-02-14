@@ -215,32 +215,6 @@ function toggleValue(group, key) {
     engine.setValue(group, key, !engine.getValue(group, key));
 }
 
-function RealDuration(group) {
-    var ts = engine.getValue(group, "track_samples");
-    if (ts <= 0) {
-        return 0;
-    } else {
-        // this is an integer :
-        var d1 = engine.getValue(group, "duration");
-        //this is a real value :
-        var d2 = engine.getValue(group, "track_samples") / engine.getValue(
-            group, "track_samplerate");
-
-        if (d1 === d2) {
-            //it is mono
-            return d2;
-        } else {
-            if ((d1 > Math.floor(d2)) && (d1 < Math.ceil(d2))) {
-                //It is mono
-                return d2;
-            } else {
-                //It is stereo
-                return d2 / 2;
-            }
-        }
-    }
-}
-
 function sendShortMsg(control, midino, value) {
     midi.sendShortMsg(control, midino, value);
 }
@@ -2293,6 +2267,7 @@ NumarkMixtrack3.OnVuMeterChange = function(value, group, control) {
 
 NumarkMixtrack3.OnPlaypositionChange = function(value, group, control) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
+    var duration = engine.getValue(group, "duration");
 
     if (deck.loaded && TrackEndWarning) {
         var timeremaining = RealDuration(group) * (1 - value);
