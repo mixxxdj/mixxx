@@ -19,7 +19,7 @@
         <Children>
 
           <Template src="skin:fx_toggler.xml">
-            <SetVariable name="Effect">3</SetVariable>
+            <SetVariable name="Effect">1</SetVariable>
           </Template>
 
           <WidgetGroup><Size>9f,1min</Size><Children/></WidgetGroup>
@@ -30,7 +30,7 @@
           <WidgetGroup><Size>9f,1min</Size><Children/></WidgetGroup>
 
           <Template src="skin:fx_toggler.xml">
-            <SetVariable name="Effect">1</SetVariable>
+            <SetVariable name="Effect">3</SetVariable>
           </Template>
 
           <WidgetGroup><Size>9f,1min</Size><Children/></WidgetGroup>
