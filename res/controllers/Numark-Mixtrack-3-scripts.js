@@ -1988,17 +1988,7 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
     // direct interaction with knob, without any button combination
     if (!deck.PADMode && !deck.shiftKey) {
         var mixValue = engine.getParameter("[EffectRack1_EffectUnit" + deck.decknum + "]", "mix");
-        mixValue += increment;
-
-        // value must be between 0 and 1
-        if (mixValue < 0) {
-            mixValue = 0;
-        }
-        if (mixValue > 1) {
-            gainValue = 1;
-        }
-
-        engine.setParameter("[EffectRack1_EffectUnit" + deck.decknum + "]", "mix", mixValue);
+        engine.setParameter("[EffectRack1_EffectUnit" + deck.decknum + "]", "mix", mixValue + increment);
     }
 
     if (deck.shiftKey) {
