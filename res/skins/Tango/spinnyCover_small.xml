@@ -54,8 +54,8 @@ Variables:
 
       <CoverArt>
         <Size>50f,50f</Size>
-        <Group>[Channel<Variable name="channum" />]</Group>
-        <DefaultCover>skin:/graphics/cover_default_small.svg</DefaultCover>
+        <Group>[Channel<Variable name="channum"/>]</Group>
+        <DefaultCover>skin:/graphics/cover_default_small_<Variable name="channum"/>.svg</DefaultCover>
         <Connection>
           <ConfigKey persist="true">[Tango],empty_spinny_cover</ConfigKey>
           <BindProperty>visible</BindProperty>
