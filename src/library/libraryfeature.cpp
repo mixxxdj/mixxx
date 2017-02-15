@@ -82,7 +82,8 @@ parented_ptr<QWidget> LibraryFeature::createSidebarWidget(KeyboardEventFilter* p
     pLayout->setSpacing(0);
     pContainer->setLayout(pLayout.get());
     
-    auto pLayoutTitle = make_parented<QHBoxLayout>(pContainer.get());
+    // Note: cannot set directly set pLayout as parent, because it is not a QWidget
+    auto pLayoutTitle = std::make_unique<QHBoxLayout>();
     
     auto pIcon = make_parented<QLabel>(pContainer.get());
     int height = pIcon->fontMetrics().height();
@@ -94,7 +95,7 @@ parented_ptr<QWidget> LibraryFeature::createSidebarWidget(KeyboardEventFilter* p
     pLayoutTitle->addSpacerItem(new QSpacerItem(0, 0, 
                                                 QSizePolicy::Expanding, 
                                                 QSizePolicy::Minimum));
-    pLayout->addLayout(pLayoutTitle.get());
+    pLayout->addLayout(pLayoutTitle.release());
     
     auto pSidebar = createInnerSidebarWidget(pKeyboard, pContainer.get());
     pLayout->addWidget(pSidebar.get());
