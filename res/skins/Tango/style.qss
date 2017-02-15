@@ -1642,13 +1642,13 @@ QPushButton {
   /* 'Enable AutoDJ' button	*/
   QPushButton#pushButtonAutoDJ:unchecked:hover {
     min-width: 112px;
-    max-width: 112px;
+    max-width: 140px;
     background-color: #FF7B00;
   }
   /* 'Start/Stop Recording' button	*/
   QPushButton#pushButtonRecording {
     min-width: 126px;
-    max-width: 126px;
+    max-width: 140px;
   }
   QPushButton#pushButtonRecording:unchecked {
     color: #888888;
