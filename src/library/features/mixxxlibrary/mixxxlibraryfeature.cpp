@@ -115,13 +115,20 @@ MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
     connect(&m_trackDao, SIGNAL(dbTrackAdded(TrackPointer)),
             m_pBaseTrackCache.data(), SLOT(slotDbTrackAdded(TrackPointer)));
 
-    setChildModel(new LibraryFolderModel(this, m_pTrackCollection, m_pConfig));
-    m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection, "mixxx.db.model.library");
+    m_pChildModel = std::make_unique<LibraryFolderModel>(this,
+            m_pTrackCollection, m_pConfig);
+    connect(&m_trackDao, SIGNAL(trackChanged(TrackId)),
+            m_pChildModel.get(), SLOT(reloadTree()));
+    connect(&m_trackDao, SIGNAL(tracksRemoved(QSet<TrackId>)),
+            m_pChildModel.get(), SLOT(reloadTree()));
+    connect(&m_trackDao, SIGNAL(tracksAdded(QSet<TrackId>)),
+            m_pChildModel.get(), SLOT(reloadTree()));
+    
+    m_pLibraryTableModel = make_parented<LibraryTableModel>(this, 
+            pTrackCollection, "mixxx.db.model.library");
 }
 
 MixxxLibraryFeature::~MixxxLibraryFeature() {
-    delete m_pChildModel;
-    delete m_pLibraryTableModel;
 }
 
 QVariant MixxxLibraryFeature::title() {
@@ -137,7 +144,7 @@ QString MixxxLibraryFeature::getSettingsName() const {
 }
 
 QPointer<TreeItemModel> MixxxLibraryFeature::getChildModel() {
-    return m_pChildModel;
+    return m_pChildModel.get();
 }
 
 parented_ptr<QWidget> MixxxLibraryFeature::createInnerSidebarWidget(
@@ -162,20 +169,6 @@ void MixxxLibraryFeature::onSearch(const QString&) {
     }
 }
 
-void MixxxLibraryFeature::setChildModel(TreeItemModel* pChild) {
-    if (!m_pChildModel.isNull()) {
-        delete m_pChildModel;
-    }
-    
-    m_pChildModel = pChild;
-    connect(&m_trackDao, SIGNAL(trackChanged(TrackId)),
-            m_pChildModel, SLOT(reloadTree()));
-    connect(&m_trackDao, SIGNAL(tracksRemoved(QSet<TrackId>)),
-            m_pChildModel, SLOT(reloadTree()));
-    connect(&m_trackDao, SIGNAL(tracksAdded(QSet<TrackId>)),
-            m_pChildModel, SLOT(reloadTree()));
-}
-
 void MixxxLibraryFeature::activate() {    
     if (m_lastClickedIndex.isValid()) {
         activateChild(m_lastClickedIndex);
@@ -183,7 +176,7 @@ void MixxxLibraryFeature::activate() {
     }
     
     //qDebug() << "MixxxLibraryFeature::activate()";
-    showTrackModel(m_pLibraryTableModel);
+    showTrackModel(m_pLibraryTableModel.get());
     restoreSearch("");
     showBreadCrumb();
     
@@ -270,9 +263,6 @@ bool MixxxLibraryFeature::dragMoveAccept(QUrl url) {
 
 void MixxxLibraryFeature::setTreeSettings(const QVariant& settings, 
                                           AbstractRole role) {
-    if (m_pChildModel.isNull()) {
-        return;
-    }
     m_pChildModel->setData(QModelIndex(), settings, role);
     m_pChildModel->reloadTree();
 }
