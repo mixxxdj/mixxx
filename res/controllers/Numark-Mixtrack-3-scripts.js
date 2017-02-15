@@ -1977,54 +1977,33 @@ NumarkMixtrack3.PitchBendPlusButton = function(channel, control, value, status, 
 
 NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
-    var gainIncrement;
-    var gainValue = [];
-    var knobValue;
+    var increment = 1 / 20;
+    var knobValue = value;
 
-    if (!deck.PADMode) {
+    // beat knobs sends 1 or 127 as value. If value = 127, turn is counterclockwise, reduce values
+    if (value === 127) {
+        increment = -increment;
+    }
 
-        // Default mode, direct interaction with knob, without any button combination
-        for (var i = 1; i <= 4; i++) {
-            gainValue[i - 1] = engine.getParameter("[EffectRack1_EffectUnit" + [i] + "]", "mix");
+    // direct interaction with knob, without any button combination
+    if (!deck.PADMode && !deck.shiftKey) {
+        var mixValue = engine.getParameter("[EffectRack1_EffectUnit" + deck.decknum + "]", "mix");
+        mixValue += increment;
 
-            // increment value between 0 and 1
-            gainIncrement = 1 / 20; // 20 increments in one full knob turn   
-
-            // beat knobs sends 1 or 127 as value. If value = 127, turn is counterclockwise, we reduce gain
-            if (value === 127) {
-                gainIncrement = -gainIncrement;
-            }
-
-            gainValue[i - 1] = gainValue[i - 1] + gainIncrement;
-
-            if ((gainValue[i - 1] + gainIncrement) < 0) {
-                gainValue[i - 1] = 0;
-            }
-            if ((gainValue[i - 1] + gainIncrement) > 1) {
-                gainValue[i - 1] = 1;
-            }
-
+        // value must be between 0 and 1
+        if (mixValue < 0) {
+            mixValue = 0;
+        }
+        if (mixValue > 1) {
+            gainValue = 1;
         }
 
-        // we adjust pregain with adjusted value
-        for (i = 1; i <= 5; i++) {
-            if (gainValue[i - 1] >= 0 && gainValue[i - 1] <= 4) {
-                if (deck.TapDown) {
-                    engine.setParameter("[EffectRack1_EffectUnit" + i + "_Effect1]", "parameter2", gainValue[i - 1]);
-                } else {
-                    if (deck.decknum === i) {
-                        engine.setParameter("[EffectRack1_EffectUnit" + i + "]", "mix", gainValue[i - 1]);
-                    }
-                }
-            }
-        }
+        engine.setParameter("[EffectRack1_EffectUnit" + deck.decknum + "]", "mix", mixValue);
     }
 
     if (deck.shiftKey) {
         if (value - 64 > 0) {
             knobValue = value - 128;
-        } else {
-            knobValue = value;
         }
 
         if (knobValue < 0) {
@@ -2034,10 +2013,8 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
         }
     }
 
+    // adjust sampler pregain
     if (deck.PADMode) {
-        // PadMode button is used, Shift key is not used, we adjust Sampler volumes
-        // Define new value of sampler pregain
-        // Off = 1, centered = 1, max = 4
         var startingSampler;
 
         if (deck.decknum === 1 || deck.decknum === 3) {
@@ -2047,35 +2024,25 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
         }
 
         for (var i = startingSampler; i <= startingSampler + 3; i++) {
-            gainValue[i - 1] = engine.getValue("[Sampler" + [i] + "]", "pregain");
+            var gainValue = engine.getValue("[Sampler" + i + "]", "pregain");
+            var gainMultiplier = 3;
 
-            if (gainValue[i - 1] <= 1) {
-                // increment value between 0 and 1
-                gainIncrement = 1 / 20; // 20 increments in one full knob turn   
-            } else {
-                // increment value between 1 and 4
-                gainIncrement = 3 / 20; // 20 increments in one full knob turn
+            // for higher gain, we increment the gain by more
+            if (gainValue > 1) {
+                increment = increment * gainMultiplier;
             }
 
-            // beat knobs sends 1 or 127 as value. If value = 127, turn is counterclockwise, we reduce gain
-            if (value === 127) {
-                gainIncrement = -gainIncrement;
+            gainValue = gainValue + increment;
+
+            if (gainValue < 0) {
+                gainValue = 0;
             }
 
-            gainValue[i - 1] = gainValue[i - 1] + gainIncrement;
-
-            if ((gainValue[i - 1] + gainIncrement) < 0) {
-                gainValue[i - 1] = 0;
+            if (gainValue > 4) {
+                gainValue = 4;
             }
 
-            if ((gainValue[i - 1] + gainIncrement) > 4) {
-                gainValue[i - 1] = 4;
-            }
-
-            if (gainValue[i - 1] >= 0 && gainValue[i - 1] <= 4) {
-                engine.setValue("[Sampler" + i + "]", "pregain",
-                    gainValue[i - 1]);
-            }
+            engine.setValue("[Sampler" + i + "]", "pregain", gainValue);
         }
     }
 };
