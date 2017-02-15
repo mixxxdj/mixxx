@@ -68,7 +68,7 @@ parented_ptr<QWidget> AnalysisFeature::createPaneWidget(KeyboardEventFilter*,
             this, 
             SLOT(tableSelectionChanged(const QItemSelection&, const QItemSelection&)));
     
-    return std::move(pTable);
+    return pTable;
 }
 
 parented_ptr<QWidget> AnalysisFeature::createInnerSidebarWidget(
@@ -91,7 +91,7 @@ parented_ptr<QWidget> AnalysisFeature::createInnerSidebarWidget(
     
     m_pAnalysisView->onShow();
     
-    return std::move(pAnalysisView);
+    return pAnalysisView;
 }
 
 TreeItemModel* AnalysisFeature::getChildModel() {

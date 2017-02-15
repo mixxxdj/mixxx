@@ -23,7 +23,7 @@ class parented_ptr {
         DEBUG_ASSERT(u->parent() != nullptr);
     }
 
-#if __GNUC__ < 5
+#if defined(__GNUC__) && __GNUC__ < 5
     // gcc 4.8 does not implicit use the typ conversion move constructor
     // from above when returning form a function and use finally RVO.
     // It requires
@@ -33,8 +33,9 @@ class parented_ptr {
     operator parented_ptr<U>() const {
         static_assert(std::is_convertible<T*, U*>::value,
                 "No implicit conversion from T* to U* found.");
-        return *this;
+        return parented_ptr<U>(this->get());
     }
+
 #endif
 
     // Delete copy constructor and copy assignment operator

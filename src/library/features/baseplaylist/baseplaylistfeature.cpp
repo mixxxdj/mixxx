@@ -695,7 +695,7 @@ parented_ptr<QWidget> BasePlaylistFeature::createPaneWidget(KeyboardEventFilter*
     auto pTable = LibraryFeature::createPaneWidget(pKeyboard, paneId, pStack.get());
     m_tableIndexByPaneId[paneId] = pStack->addWidget(pTable.get());
     
-    return std::move(pStack);
+    return pStack;
 }
 
 void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {

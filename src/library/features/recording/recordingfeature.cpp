@@ -49,7 +49,7 @@ parented_ptr<QWidget> RecordingFeature::createPaneWidget(KeyboardEventFilter*,
             int paneId, QWidget* parent) {
     auto pTable = LibraryFeature::createTableWidget(paneId, parent);
     pTable->setSorting(false);    
-    return std::move(pTable);
+    return pTable;
 }
 
 parented_ptr<QWidget> RecordingFeature::createInnerSidebarWidget(
@@ -62,7 +62,7 @@ parented_ptr<QWidget> RecordingFeature::createInnerSidebarWidget(
     m_pRecordingView->setBrowseTableModel(getBrowseTableModel());
     m_pRecordingView->setProxyTrackModel(getProxyTrackModel());
     
-    return std::move(pRecordingView);
+    return pRecordingView;
 }
 
 

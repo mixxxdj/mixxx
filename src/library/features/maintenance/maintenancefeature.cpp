@@ -105,7 +105,7 @@ parented_ptr<QWidget> MaintenanceFeature::createInnerSidebarWidget(
     m_idExpandedHidden = m_pTab->addTab(m_pHiddenView, kHiddenTitle);
     m_idExpandedMissing = m_pTab->addTab(m_pMissingView, kMissingTitle);
 
-    return std::move(pTab);
+    return pTab;
 }
 
 void MaintenanceFeature::slotTabIndexChanged(int index) {
