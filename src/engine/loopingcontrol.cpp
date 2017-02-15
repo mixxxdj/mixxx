@@ -108,6 +108,9 @@ LoopingControl::LoopingControl(QString group,
     m_pCOBeatLoopToggle = new ControlPushButton(ConfigKey(group, "beatloop_toggle"));
     connect(m_pCOBeatLoopToggle, SIGNAL(valueChanged(double)),
             this, SLOT(slotBeatLoopToggle(double)));
+    m_pCOBeatLoopRollToggle = new ControlPushButton(ConfigKey(group, "beatlooproll_toggle"));
+    connect(m_pCOBeatLoopRollToggle, SIGNAL(valueChanged(double)),
+            this, SLOT(slotBeatLoopRollToggle(double)));
     m_pCOBeatLoopEnabled = new ControlPushButton(ConfigKey(group, "beatloop_enabled"));
     m_pCOBeatLoopEnabled->setReadOnly();
 
@@ -910,6 +913,17 @@ void LoopingControl::slotBeatLoopToggle(double value) {
     }
 }
 
+void LoopingControl::slotBeatLoopRollToggle(double value) {
+    if (value > 0.0) {
+        m_pSlipEnabled->set(1.0);
+        slotBeatLoop(m_pCOBeatLoopSize->get());
+        m_bLoopRollActive = true;
+    } else {
+        setLoopingEnabled(false);
+        m_pSlipEnabled->set(0);
+        m_bLoopRollActive = false;
+    }
+}
 void LoopingControl::slotBeatJump(double beats) {
     if (!m_pTrack || !m_pBeats) {
         return;
