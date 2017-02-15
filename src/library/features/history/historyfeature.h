@@ -54,8 +54,8 @@ public:
 
     QPointer<WLibrarySidebar> m_pSidebar;
     QLinkedList<TrackId> m_recentTracks;
-    QAction* m_pJoinWithNextAction;
-    QAction* m_pGetNewPlaylist;
+    parented_ptr<QAction> m_pJoinWithNextAction;
+    parented_ptr<QAction> m_pGetNewPlaylist;
     std::unique_ptr<HistoryTreeModel> m_pHistoryTreeModel;
     int m_playlistId;
 };
