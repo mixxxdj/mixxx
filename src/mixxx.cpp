@@ -261,6 +261,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
                              m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
 
+    m_pLibrary->scan();
     launchProgress(35);
 
     // Get Music dir
