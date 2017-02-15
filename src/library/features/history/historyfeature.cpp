@@ -208,7 +208,7 @@ parented_ptr<QWidget> HistoryFeature::createInnerSidebarWidget(
     auto pSidebar = createLibrarySidebarWidget(parent);
     m_pSidebar = pSidebar.toWeakRef();
     m_pSidebar->expandAll();
-    return std::move(pSidebar);
+    return pSidebar;
 }
 
 const TreeItemModel* HistoryFeature::getConstChildModel() const {

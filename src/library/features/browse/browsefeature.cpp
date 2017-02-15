@@ -210,7 +210,7 @@ parented_ptr<QWidget> BrowseFeature::createPaneWidget(KeyboardEventFilter* pKeyb
     auto pTable = LibraryFeature::createPaneWidget(pKeyboard, paneId, pStack.get());
     m_idTable[paneId] = pStack->addWidget(pTable.get());
     
-    return std::move(pStack);
+    return pStack;
 }
 
 void BrowseFeature::activate() {
