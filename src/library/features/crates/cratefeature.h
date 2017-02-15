@@ -47,7 +47,7 @@ class CrateFeature : public LibraryFeature {
     parented_ptr<QWidget> createPaneWidget(KeyboardEventFilter* pKeyboard, 
                                            int paneId, QWidget* parent) override;
     
-    TreeItemModel* getChildModel() override;
+    QPointer<TreeItemModel> getChildModel() override;
 
   signals:
     void analyzeTracks(QList<TrackId>);

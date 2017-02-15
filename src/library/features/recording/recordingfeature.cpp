@@ -41,7 +41,7 @@ QString RecordingFeature::getSettingsName() const {
     return "RecordingFeature";
 }
 
-TreeItemModel* RecordingFeature::getChildModel() {
+QPointer<TreeItemModel> RecordingFeature::getChildModel() {
     return &m_childModel;
 }
 

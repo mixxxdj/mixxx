@@ -147,7 +147,7 @@ parented_ptr<QWidget> AutoDJFeature::createInnerSidebarWidget(
     return pContainer;
 }
 
-TreeItemModel* AutoDJFeature::getChildModel() {
+QPointer<TreeItemModel> AutoDJFeature::getChildModel() {
     return &m_childModel;
 }
 

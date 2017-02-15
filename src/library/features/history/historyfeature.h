@@ -24,7 +24,7 @@ public:
     QString getIconPath() override;
     QString getSettingsName() const override;
     void decorateChild(TreeItem *pChild, int playlist_id) override;
-    TreeItemModel* getChildModel() override;
+    QPointer<TreeItemModel> getChildModel() override;
 
   public slots:
     void onRightClick(const QPoint&) override;

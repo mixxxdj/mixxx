@@ -193,7 +193,7 @@ void BrowseFeature::slotRemoveQuickLink() {
     saveQuickLinks();
 }
 
-TreeItemModel* BrowseFeature::getChildModel() {
+QPointer<TreeItemModel> BrowseFeature::getChildModel() {
     return &m_childModel;
 }
 

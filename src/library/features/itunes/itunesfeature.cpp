@@ -195,7 +195,7 @@ void ITunesFeature::activateChild(const QModelIndex& index) {
     showBreadCrumb(index);
 }
 
-TreeItemModel* ITunesFeature::getChildModel() {
+QPointer<TreeItemModel> ITunesFeature::getChildModel() {
     return &m_childModel;
 }
 

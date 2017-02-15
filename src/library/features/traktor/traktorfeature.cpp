@@ -131,7 +131,7 @@ bool TraktorFeature::isSupported() {
     return (QFile::exists(getTraktorMusicDatabase()));
 }
 
-TreeItemModel* TraktorFeature::getChildModel() {
+QPointer<TreeItemModel> TraktorFeature::getChildModel() {
     return &m_childModel;
 }
 

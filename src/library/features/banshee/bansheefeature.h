@@ -30,7 +30,7 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     QString getIconPath() override;
     QString getSettingsName() const override;
 
-    virtual TreeItemModel* getChildModel();
+    virtual QPointer<TreeItemModel> getChildModel();
 
   public slots:
     virtual void activate();

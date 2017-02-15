@@ -94,7 +94,7 @@ parented_ptr<QWidget> AnalysisFeature::createInnerSidebarWidget(
     return pAnalysisView;
 }
 
-TreeItemModel* AnalysisFeature::getChildModel() {
+QPointer<TreeItemModel> AnalysisFeature::getChildModel() {
     return &m_childModel;
 }
 

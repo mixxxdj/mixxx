@@ -23,7 +23,7 @@ class MaintenanceFeature : public LibraryFeature
     QVariant title() override;
     QString getIconPath() override;
     QString getSettingsName() const override;
-    TreeItemModel* getChildModel();
+    QPointer<TreeItemModel> getChildModel();
 
   public slots:
     void activate();

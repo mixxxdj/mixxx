@@ -47,7 +47,7 @@ bool PlaylistFeature::isSinglePane() const {
     return false;
 }
 
-TreeItemModel* PlaylistFeature::getChildModel() {
+QPointer<TreeItemModel> PlaylistFeature::getChildModel() {
     return m_pChildModel.get();
 }
 

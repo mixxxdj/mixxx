@@ -136,7 +136,7 @@ QString MixxxLibraryFeature::getSettingsName() const {
     return "MixxxLibraryFeature";
 }
 
-TreeItemModel* MixxxLibraryFeature::getChildModel() {
+QPointer<TreeItemModel> MixxxLibraryFeature::getChildModel() {
     return m_pChildModel;
 }
 

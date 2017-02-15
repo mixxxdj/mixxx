@@ -139,7 +139,7 @@ void HistoryFeature::decorateChild(TreeItem* item, int playlist_id) {
     }
 }
 
-TreeItemModel *HistoryFeature::getChildModel() {
+QPointer<TreeItemModel> HistoryFeature::getChildModel() {
     return m_pHistoryTreeModel.get();
 }
 

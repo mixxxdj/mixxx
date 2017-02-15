@@ -22,7 +22,7 @@ class PlaylistFeature : public BasePlaylistFeature {
     QString getIconPath() override;
     QString getSettingsName() const override;
     bool isSinglePane() const override;
-    TreeItemModel* getChildModel() override;
+    QPointer<TreeItemModel> getChildModel() override;
 
     bool dragMoveAccept(QUrl url);
     bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls, QObject* pSource);

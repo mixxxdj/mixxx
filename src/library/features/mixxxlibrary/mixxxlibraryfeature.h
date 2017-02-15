@@ -47,7 +47,7 @@ class MixxxLibraryFeature : public LibraryFeature {
 
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
-    TreeItemModel* getChildModel();
+    QPointer<TreeItemModel> getChildModel();
     parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter*, 
                                                    QWidget* parent) override;
 

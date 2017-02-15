@@ -37,7 +37,7 @@ class AnalysisFeature : public LibraryFeature {
     parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter* pKeyboard, 
                                                    QWidget* parent) override;
     
-    TreeItemModel* getChildModel();
+    QPointer<TreeItemModel> getChildModel();
     void refreshLibraryModels();
     void stopAnalysis();
 

@@ -32,7 +32,7 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     QString getIconPath() override;
     QString getSettingsName() const override;
 
-    TreeItemModel* getChildModel();
+    QPointer<TreeItemModel> getChildModel();
     // processes the music collection
     TreeItem* importMusicCollection();
     // processes the playlist entries

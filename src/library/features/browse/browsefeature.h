@@ -43,7 +43,7 @@ class BrowseFeature : public LibraryFeature {
     parented_ptr<QWidget> createPaneWidget(KeyboardEventFilter*pKeyboard, 
                                            int paneId, QWidget* parent) override;
 
-    TreeItemModel* getChildModel();
+    QPointer<TreeItemModel> getChildModel();
 
   public slots:
     void slotAddQuickLink();

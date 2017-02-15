@@ -37,8 +37,8 @@ QString MaintenanceFeature::getSettingsName() const {
     return "MaintenanceFeature";
 }
 
-TreeItemModel* MaintenanceFeature::getChildModel() {
-    return nullptr;
+QPointer<TreeItemModel> MaintenanceFeature::getChildModel() {
+    return QPointer<TreeItemModel>();
 }
 
 void MaintenanceFeature::activate() {

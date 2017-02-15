@@ -714,7 +714,10 @@ void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {
 QModelIndex BasePlaylistFeature::constructChildModel(int selectedId) {
     buildPlaylistList();
     int selectedRow = -1;
-    TreeItemModel* pChildModel = getChildModel();
+    QPointer<TreeItemModel> pChildModel = getChildModel();
+    if (pChildModel.isNull())
+        return QModelIndex();
+    
     TreeItem* pRoot = pChildModel->setRootItem(std::make_unique<TreeItem>(this));
     
     int row = 0;
@@ -743,8 +746,11 @@ void BasePlaylistFeature::updateChildModel(int selectedId) {
     if (!index.isValid()) {
         return;
     }
+    QPointer<TreeItemModel> pChildModel = getChildModel();
+    VERIFY_OR_DEBUG_ASSERT (pChildModel.isNull()) 
+        return;
     
-    TreeItem* item = getChildModel()->getItem(index);
+    TreeItem* item = pChildModel->getItem(index);
     VERIFY_OR_DEBUG_ASSERT(item) {
         return;
     }
@@ -777,7 +783,10 @@ void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
 
     // Set all playlists the track is in bold (or if there is no track selected,
     // clear all the bolding).
-    TreeItemModel* pChildModel = getChildModel();
+    QPointer<TreeItemModel> pChildModel = getChildModel();
+    VERIFY_OR_DEBUG_ASSERT(!pChildModel.isNull()) 
+        return;
+    
     for (const PlaylistItem& p : m_playlistList) { 
         QModelIndex index = indexFromPlaylistId(p.id);
         
