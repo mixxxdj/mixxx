@@ -219,7 +219,11 @@ LoopingControl::~LoopingControl() {
     }
     delete m_pCOBeatLoopSize;
     delete m_pCOBeatLoopToggle;
+    delete m_pCOBeatLoopRollToggle;
     delete m_pCOBeatLoopEnabled;
+
+    delete m_pCOLoopAutoToggle;
+    delete m_pCOLoopManualToggle;
 
     delete m_pCOBeatJump;
     while (!m_beatJumps.isEmpty()) {
@@ -232,6 +236,8 @@ LoopingControl::~LoopingControl() {
         LoopMoveControl* pLoopMove = m_loopMoves.takeLast();
         delete pLoopMove;
     }
+    delete m_pCOLoopMoveForward;
+    delete m_pCOLoopMoveBackward;
 }
 
 void LoopingControl::slotLoopScale(double scale) {
