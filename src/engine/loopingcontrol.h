@@ -71,6 +71,8 @@ class LoopingControl : public EngineControl {
     // Generate a loop of 'beats' length. It can also do fractions for a
     // beatslicing effect.
     void slotBeatLoop(double loopSize, bool keepStartPoint=false);
+    void slotBeatLoopSizeChanged(double beats);
+    void slotBeatLoopToggle(double value);
     void slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl);
     void slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopControl);
     void slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl);
@@ -101,9 +103,11 @@ class LoopingControl : public EngineControl {
     void seekInsideAdjustedLoop(int old_loop_in, int old_loop_out,
                                 int new_loop_in, int new_loop_out);
 
+    ControlPushButton* m_pCOBeatLoopToggle;
     ControlObject* m_pCOLoopStartPosition;
     ControlObject* m_pCOLoopEndPosition;
     ControlObject* m_pCOLoopEnabled;
+    ControlObject* m_pCOBeatLoopEnabled;
     ControlPushButton* m_pLoopInButton;
     ControlPushButton* m_pLoopOutButton;
     ControlPushButton* m_pLoopExitButton;
@@ -126,6 +130,7 @@ class LoopingControl : public EngineControl {
 
     // Base BeatLoop Control Object.
     ControlObject* m_pCOBeatLoop;
+    ControlObject* m_pCOBeatLoopSize;
     // Different sizes for Beat Loops/Seeks.
     static double s_dBeatSizes[];
     // Array of BeatLoopingControls, one for each size.
