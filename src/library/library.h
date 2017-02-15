@@ -174,7 +174,7 @@ public:
     int m_iTrackTableRowHeight;
     QScopedPointer<ControlObject> m_pKeyNotation;
     
-    QHash<int, LibraryPaneManager*> m_panes;
+    QHash<int, std::shared_ptr<LibraryPaneManager> > m_panes;
     std::unique_ptr<LibrarySidebarExpandedManager> m_pSidebarExpanded;
     QList<LibraryFeature*> m_features;
     QSet<int> m_collapsedPanes;

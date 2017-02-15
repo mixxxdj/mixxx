@@ -171,7 +171,7 @@ void Library::destroyInterface() {
     m_pSidebarExpanded->deleteLater();
     m_pSidebarExpanded.reset(nullptr);
     
-    for (LibraryPaneManager* p : m_panes) {
+    for (auto p : m_panes) {
         p->deleteLater();
     }
     
@@ -182,7 +182,7 @@ void Library::destroyInterface() {
 }
 
 LibraryView* Library::getActiveView() {
-    LibraryPaneManager* pPane = m_panes.value(m_focusedPaneId);
+    auto pPane = m_panes.value(m_focusedPaneId);
     VERIFY_OR_DEBUG_ASSERT(pPane) {
         return nullptr;
     }
@@ -459,14 +459,14 @@ void Library::paneCollapsed(int paneId) {
     m_collapsedPanes.insert(paneId);
     
     // Automatically switch the focus to a non collapsed pane
-    LibraryPaneManager* pPane = m_panes.value(paneId);
+    auto pPane = m_panes.value(paneId);
     if (pPane) {
         pPane->setFocused(false);
     }
 
     
     bool focused = false;
-    for (LibraryPaneManager* pPane : m_panes) {
+    for (auto pPane : m_panes) {
         int auxId = pPane->getPaneId();
         if (!m_collapsedPanes.contains(auxId) && !focused) {
             m_focusedPaneId = pPane->getPaneId();
@@ -485,7 +485,7 @@ void Library::paneUncollapsed(int paneId) {
     // If the current shown feature in some pane is the same as the uncollapsed
     // pane feature, switch the feature from one pane to the other and set
     // instead the saved feature
-    LibraryPaneManager* pPane = m_panes.value(paneId);
+    auto pPane = m_panes.value(paneId);
     if (pPane == nullptr) {
         return;
     }
@@ -495,7 +495,7 @@ void Library::paneUncollapsed(int paneId) {
     }
     pFeature->setFeaturePaneId(pPane->getPaneId());
     
-    for (LibraryPaneManager* pPane : m_panes) {
+    for (auto pPane : m_panes) {
         int auxId = pPane->getPaneId();
         if (auxId != paneId && pFeature == pPane->getCurrentFeature()) {
             LibraryFeature* pSaved = m_savedFeatures[auxId];
@@ -514,7 +514,7 @@ void Library::slotActivateFeature(LibraryFeature* pFeature) {
     }
     
     bool featureActivated = false;
-    LibraryPaneManager* pSelectedPane = m_panes.value(selectedPane);
+    auto pSelectedPane = m_panes.value(selectedPane);
     if (pSelectedPane) {
         pFeature->setFeaturePaneId(selectedPane);
 
@@ -592,9 +592,9 @@ void Library::slotResetFocusedFeature(LibraryFeature* pFeature) {
 LibraryPaneManager* Library::getOrCreatePane(int paneId) {
     //qDebug() << "Library::createPane" << id;
     // Get the value once to avoid searching again in the hash
-    LibraryPaneManager* pPane = m_panes.value(paneId);
+    std::shared_ptr<LibraryPaneManager> pPane = m_panes.value(paneId);
     if (pPane) {
-        return pPane;
+        return pPane.get();
     }
     
     // The paneId must be non negative
@@ -608,21 +608,21 @@ LibraryPaneManager* Library::getOrCreatePane(int paneId) {
         return nullptr;
     }
     
-    pPane = new LibraryPaneManager(paneId, this);
+    pPane = std::make_shared<LibraryPaneManager>(paneId, this);
     pPane->addFeatures(m_features);
     m_panes.insert(paneId, pPane);
     
     m_focusedPaneId = paneId;
-    return pPane;
+    return pPane.get();
 }
 
 LibraryPaneManager* Library::getFocusedPane() {
     //qDebug() << "Focused" << m_focusedPane;
-    return m_panes.value(m_focusedPaneId);
+    return m_panes.value(m_focusedPaneId).get();
 }
 
 LibraryPaneManager* Library::getPreselectedPane() {
-    return m_panes.value(m_preselectedPane);
+    return m_panes.value(m_preselectedPane).get();
 }
 
 void Library::createTrackCache() {
@@ -760,21 +760,21 @@ void Library::createFeatures(UserSettingsPointer pConfig,
 void Library::handleFocus() {
     // Changes the visual focus effect, removes the existing one and adds the
     // new focus
-    for (LibraryPaneManager* pPane : m_panes) {
+    for (auto pPane : m_panes) {
         pPane->setFocused(false);
     }
-    LibraryPaneManager* pFocusPane = m_panes.value(m_focusedPaneId);
+    auto pFocusPane = m_panes.value(m_focusedPaneId);
     if (pFocusPane) {
         pFocusPane->setFocused(true);
     }
 }
 
 void Library::handlePreselection() {
-    for (LibraryPaneManager* pPane : m_panes) {
+    for (auto pPane : m_panes) {
         pPane->setPreselected(false);
         pPane->setPreviewed(false);
     }
-    LibraryPaneManager* pSelectedPane = m_panes.value(m_preselectedPane);
+    auto pSelectedPane = m_panes.value(m_preselectedPane);
     if (pSelectedPane) {
         pSelectedPane->setPreselected(true);
     } else {
@@ -786,11 +786,11 @@ void Library::handlePreselection() {
 }
 
 void Library::focusSearch() {
-    LibraryPaneManager* pFocusPane = m_panes.value(m_focusedPaneId);
+    auto pFocusPane = m_panes.value(m_focusedPaneId);
     if (pFocusPane == nullptr) return;
     bool ok = pFocusPane->focusSearch();
     if (ok) return;
-    for (LibraryPaneManager* pPane : m_panes) {
+    for (auto pPane : m_panes) {
         if (pPane == nullptr) continue;
         ok = pPane->focusSearch();
         if (ok) break;
