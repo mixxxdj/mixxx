@@ -27,9 +27,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="22.627417"
-     inkscape:cx="4.7308552"
-     inkscape:cy="10.678586"
+     inkscape:zoom="16"
+     inkscape:cx="4.2923764"
+     inkscape:cy="11.239272"
      inkscape:document-units="px"
      inkscape:current-layer="g3989"
      showgrid="false"
@@ -46,36 +46,7 @@
      inkscape:window-height="746"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="1">
-    <sodipodi:guide
-       orientation="0,1"
-       position="10.803571,9"
-       id="guide3027" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="9,11.429"
-       id="guide3029" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="5.9999996,12"
-       id="guide3826" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="5.9999996,14.000011"
-       id="guide3828" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="1,12.643"
-       id="guide3834" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="3,7.4375"
-       id="guide4042" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="15,9"
-       id="guide4044" />
-  </sodipodi:namedview>
+     inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -84,7 +55,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -100,9 +71,9 @@
          style="fill:#4fb7ff;fill-opacity:1;fill-rule:nonzero;stroke:none"
          id="rect4046"
          width="12"
-         height="3"
+         height="2"
          x="3"
-         y="1046.3622" />
+         y="1047.3622" />
       <path
          sodipodi:type="star"
          style="fill:#4fb7ff;fill-opacity:1;fill-rule:nonzero;stroke:none"
@@ -118,7 +89,7 @@
          inkscape:rounded="0"
          inkscape:randomized="0"
          d="m 11.376027,15.398402 -8.3760269,0 -8.3760276,0 L -1.1880142,8.144549 3,0.89069653 7.1880141,8.1445488 z"
-         transform="matrix(0.71633003,0,0,0.54765418,6.8510099,1036.9292)"
+         transform="matrix(0.71633003,0,0,0.54765418,6.85101,1035.9292)"
          inkscape:transform-center-y="-1.3242038" />
     </g>
   </g>

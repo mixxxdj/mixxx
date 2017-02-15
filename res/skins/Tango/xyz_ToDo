@@ -39,12 +39,13 @@ ToDo
  (- FX chain Save & Load buttons)
 
 * Samplers
+  - pregain > volume (check LateNight & Deere)
 
 * Library
   - distinguish focused/unfocused TreeView/Tracks/other?
     * emphasize border
     * darken background-color when focused
-  - SearchBox | Maximize button
+  - SearchBox + Maximize button
         
 * Skin Settings menu
   - add option to hide MixerBar when Library is maximized?
