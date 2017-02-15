@@ -217,10 +217,10 @@ void MixxxLibraryFeature::onRightClickChild(const QPoint& pos,
             QModelIndex(), AbstractRole::RoleSettings).toBool();
     
     
-    QActionGroup* orderGroup = new QActionGroup(&menu);
+    parented_ptr<QActionGroup> orderGroup = make_parented<QActionGroup>(&menu);
     for (int i = 0; i < kGroupingOptions.size(); ++i) {
         QAction* action = menu.addAction(kGroupingText.at(i));
-        action->setActionGroup(orderGroup);
+        action->setActionGroup(orderGroup.get());
         action->setData(kGroupingOptions.at(i));
         action->setCheckable(true);
         action->setChecked(currentSort == kGroupingOptions.at(i));

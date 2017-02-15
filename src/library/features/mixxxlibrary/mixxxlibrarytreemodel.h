@@ -33,8 +33,8 @@ class MixxxLibraryTreeModel : public TreeItemModel {
     virtual void createTracksTree();
     virtual QString getGroupingOptions();
     
-    TreeItem* m_pGrouping;
-    TreeItem* m_pShowAll;
+    parented_ptr<TreeItem> m_pGrouping;
+    parented_ptr<TreeItem> m_pShowAll;
     
     LibraryFeature* m_pFeature;
     TrackCollection* m_pTrackCollection;

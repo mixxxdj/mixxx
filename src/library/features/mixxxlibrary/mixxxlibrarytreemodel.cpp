@@ -139,10 +139,10 @@ void MixxxLibraryTreeModel::reloadTree() {
     // Create root item
     TreeItem* pRootItem = setRootItem(std::make_unique<TreeItem>(m_pFeature));
 
-    m_pShowAll = pRootItem->appendChild(tr("Show all"), "");
+    m_pShowAll = parented_ptr<TreeItem>(pRootItem->appendChild(tr("Show all"), ""));
 
     QString groupTitle = tr("Grouping Options (%1)").arg(getGroupingOptions());
-    m_pGrouping = pRootItem->appendChild(groupTitle, "");
+    m_pGrouping = parented_ptr<TreeItem>(pRootItem->appendChild(groupTitle, ""));
     
     // Deletes the old root item if the previous root item was not null
     createTracksTree();
