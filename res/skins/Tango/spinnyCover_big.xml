@@ -49,7 +49,7 @@ Variables:
       <CoverArt>
         <Size>111f,111f</Size>
         <Group>[Channel<Variable name="channum" />]</Group>
-        <DefaultCover>skin:/graphics/cover_default_big.svg</DefaultCover>
+        <DefaultCover>skin:/graphics/cover_default_big_NEW.svg</DefaultCover>
         <Connection>
           <ConfigKey persist="true">[Tango],empty_spinny_cover</ConfigKey>
           <BindProperty>visible</BindProperty>
