@@ -16,10 +16,6 @@ var smartPFL = true;
 // use beatlooproll instead of beatloop
 var beatlooprollActivate = false;
 
-// If Dark Metal Skin is used, set this to true: 
-// this is required to expand library view with DM skin.
-var DarkMetalSkin = false;
-
 //Disable Play on Sync button Double Press
 var noPlayOnSyncDoublePress = false;
 
@@ -1244,29 +1240,15 @@ NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) 
     var expand;
     var contract;
 
-    if (DarkMetalSkin) {
-        LibraryGroup = "[Hifi]";
-        LibraryCommand = "show";
-        expand = 0;
-        contract = 1;
-    } else {
-        LibraryGroup = "[Master]";
-        LibraryCommand = "maximize_library";
-        expand = 1;
-        contract = 0;
-    }
-
     if (shifted && value === ON) {
         // SHIFT+ BROWSE push : directory mode -- > Open/Close selected side bar item
         engine.setValue(group, "ToggleSelectedSidebarItem", true);
     } else {
         // Browse push : maximize/minimize library view
         if (value === ON) {
-
             NumarkMixtrack3.libraryMode = !NumarkMixtrack3.libraryMode;
             if (maxview) {
                 engine.setValue(LibraryGroup, LibraryCommand, expand);
-
             } else {
                 engine.setValue(LibraryGroup, LibraryCommand, contract);
             }
