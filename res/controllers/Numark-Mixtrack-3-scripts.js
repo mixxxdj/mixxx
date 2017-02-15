@@ -830,18 +830,15 @@ NumarkMixtrack3.deck.prototype.StripEffect = function(value, decknum) {
 // Initialization of the mapping
 // =====================================================================
 
-NumarkMixtrack3.decks.D1 = new NumarkMixtrack3.deck("1");
-NumarkMixtrack3.decks.D2 = new NumarkMixtrack3.deck("2");
-NumarkMixtrack3.decks.D3 = new NumarkMixtrack3.deck("3");
-NumarkMixtrack3.decks.D4 = new NumarkMixtrack3.deck("4");
-NumarkMixtrack3.samplers.S1 = new NumarkMixtrack3.sampler("1");
-NumarkMixtrack3.samplers.S2 = new NumarkMixtrack3.sampler("2");
-NumarkMixtrack3.samplers.S3 = new NumarkMixtrack3.sampler("3");
-NumarkMixtrack3.samplers.S4 = new NumarkMixtrack3.sampler("4");
-NumarkMixtrack3.samplers.S5 = new NumarkMixtrack3.sampler("5");
-NumarkMixtrack3.samplers.S6 = new NumarkMixtrack3.sampler("6");
-NumarkMixtrack3.samplers.S7 = new NumarkMixtrack3.sampler("7");
-NumarkMixtrack3.samplers.S8 = new NumarkMixtrack3.sampler("8");
+// initialize 4 decks
+for (var i = 1; i <= 4; i++) {
+    NumarkMixtrack3.decks['D' + i] = new NumarkMixtrack3.deck(i);
+}
+
+//initialize 8 samplers
+for (var i = 1; i <= 8; i++) {
+    NumarkMixtrack3.samplers['S' + i] = new NumarkMixtrack3.sampler(i);
+}
 
 NumarkMixtrack3.initLEDsObjects = function() {
     var decks = NumarkMixtrack3.decks;
