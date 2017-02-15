@@ -22,7 +22,12 @@ MaintenanceFeature::MaintenanceFeature(UserSettingsPointer pConfig,
           m_pTab(nullptr),
           m_idExpandedHidden(-1),
           m_idExpandedMissing(-1) {
-
+    
+    auto pHiddenTable = make_parented<HiddenTableModel>(this, m_pTrackCollection);
+    m_pHiddenTableModel = pHiddenTable.toWeakRef();
+    
+    auto pMissingTable = make_parented<MissingTableModel>(this, m_pTrackCollection);
+    m_pMissingTableModel = pMissingTable.toWeakRef();
 }
 
 QVariant MaintenanceFeature::title() {
@@ -89,7 +94,7 @@ parented_ptr<QWidget> MaintenanceFeature::createInnerSidebarWidget(
 
     auto pHiddenView = make_parented<DlgHidden>(m_pTab);
     m_pHiddenView = pHiddenView.toWeakRef();
-    m_pHiddenView->setTableModel(getHiddenTableModel());
+    m_pHiddenView->setTableModel(m_pHiddenTableModel);
     m_pHiddenView->installEventFilter(pKeyboard);
     connect(m_pHiddenView, SIGNAL(unhide()), this, SLOT(slotUnhideHidden()));
     connect(m_pHiddenView, SIGNAL(purge()), this, SLOT(slotPurge()));
@@ -97,7 +102,7 @@ parented_ptr<QWidget> MaintenanceFeature::createInnerSidebarWidget(
 
     auto pMissingView = make_parented<DlgMissing>(m_pTab);
     m_pMissingView = pMissingView.toWeakRef();
-    m_pMissingView->setTableModel(getMissingTableModel());
+    m_pMissingView->setTableModel(m_pMissingTableModel);
     m_pMissingView->installEventFilter(pKeyboard);
     connect(m_pMissingView, SIGNAL(purge()), this, SLOT(slotPurge()));
     connect(m_pMissingView, SIGNAL(selectAll()), this, SLOT(selectAll()));
@@ -121,7 +126,7 @@ void MaintenanceFeature::slotTabIndexChanged(int index) {
             return;
         }
         m_idPaneCurrent[m_featurePane] = Pane::Hidden;
-        pTable->loadTrackModel(getHiddenTableModel());
+        pTable->loadTrackModel(m_pHiddenTableModel);
 
         title = &kHiddenTitle;
         m_pHiddenView->onShow();
@@ -131,7 +136,7 @@ void MaintenanceFeature::slotTabIndexChanged(int index) {
         }
 
         m_idPaneCurrent[m_featurePane] = Pane::Missing;
-        pTable->loadTrackModel(getMissingTableModel());
+        pTable->loadTrackModel(m_pMissingTableModel);
 
         title = &kMissingTitle;
         m_pMissingView->onShow();
@@ -171,18 +176,3 @@ void MaintenanceFeature::slotPurge() {
     m_pMissingView->onShow();
     m_pHiddenView->onShow();
 }
-
-HiddenTableModel* MaintenanceFeature::getHiddenTableModel() {
-    if (m_pHiddenTableModel.isNull()) {
-        m_pHiddenTableModel = new HiddenTableModel(this, m_pTrackCollection);
-    }
-    return m_pHiddenTableModel;
-}
-
-MissingTableModel* MaintenanceFeature::getMissingTableModel() {
-    if (m_pMissingTableModel.isNull()) {
-        m_pMissingTableModel = new MissingTableModel(this, m_pTrackCollection);
-    }
-    return m_pMissingTableModel;
-}
-

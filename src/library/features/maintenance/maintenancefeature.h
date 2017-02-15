@@ -53,7 +53,6 @@ class MaintenanceFeature : public LibraryFeature
 
   private:
 
-    HiddenTableModel* getHiddenTableModel();
     MissingTableModel* getMissingTableModel();
 
     QPointer<DlgHidden> m_pHiddenView;

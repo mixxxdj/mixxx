@@ -3,6 +3,7 @@
 #include "library/features/history/historyfeature.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
+#include "util/assert.h"
 
 #include "library/features/history/historytreemodel.h"
 
@@ -22,7 +23,10 @@ HistoryTreeModel::HistoryTreeModel(HistoryFeature* pFeature,
 }
 
 QModelIndex HistoryTreeModel::reloadListsTree(int playlistId) {
-    TreeItem* pRootItem = setRootItem(std::make_unique<TreeItem>(m_pFeature));
+    VERIFY_OR_DEBUG_ASSERT (m_pFeature.isNull())
+        return QModelIndex();
+    
+    TreeItem* pRootItem = setRootItem(std::make_unique<TreeItem>(m_pFeature.data()));
     QString trackCountName = "TrackCount";
     
     QString queryStr = "SELECT %1,COUNT(%2) AS %7 "
