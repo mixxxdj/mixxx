@@ -33,8 +33,9 @@ class parented_ptr {
     operator parented_ptr<U>() const {
         static_assert(std::is_convertible<T*, U*>::value,
                 "No implicit conversion from T* to U* found.");
-        return *this;
+        return parented_ptr<U>(this->get());
     }
+
 #endif
 
     // Delete copy constructor and copy assignment operator
