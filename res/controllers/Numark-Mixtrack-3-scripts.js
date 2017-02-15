@@ -1235,10 +1235,6 @@ NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) 
         .D2.shiftKey || NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey);
 
     var maxview = !NumarkMixtrack3.libraryMode;
-    var LibraryCommand;
-    var LibraryGroup;
-    var expand;
-    var contract;
 
     if (shifted && value === ON) {
         // SHIFT+ BROWSE push : directory mode -- > Open/Close selected side bar item
@@ -1248,9 +1244,9 @@ NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) 
         if (value === ON) {
             NumarkMixtrack3.libraryMode = !NumarkMixtrack3.libraryMode;
             if (maxview) {
-                engine.setValue(LibraryGroup, LibraryCommand, expand);
+                engine.setValue("[Master]", "maximize_library", 1);
             } else {
-                engine.setValue(LibraryGroup, LibraryCommand, contract);
+                engine.setValue("[Master]", "maximize_library", 0);
             }
         }
     }
