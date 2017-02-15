@@ -158,6 +158,12 @@ LoopingControl::LoopingControl(QString group,
     m_pCOLoopMove = new ControlObject(ConfigKey(group, "loop_move"), false);
     connect(m_pCOLoopMove, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoopMove(double)), Qt::DirectConnection);
+    m_pCOLoopMoveForward = new ControlPushButton(ConfigKey(group, "loop_move_forward"));
+    connect(m_pCOLoopMoveForward, SIGNAL(valueChanged(double)),
+            this, SLOT(slotLoopMoveForward(double)));
+    m_pCOLoopMoveBackward = new ControlPushButton(ConfigKey(group, "loop_move_backward"));
+    connect(m_pCOLoopMoveBackward, SIGNAL(valueChanged(double)),
+            this, SLOT(slotLoopMoveBackward(double)));
 
     // Create loop_move_(SIZE) CO's which all call loop_move, but with a set
     // value.
@@ -1004,6 +1010,28 @@ void LoopingControl::slotLoopMove(double beats) {
         if (m_bLoopingEnabled) {
             seekInsideAdjustedLoop(old_loop_in, old_loop_out,
                                    new_loop_in, new_loop_out);
+        }
+    }
+}
+
+void LoopingControl::slotLoopMoveForward(double pressed) {
+    if (pressed > 0.0) {
+        double beatloop_size = m_pCOBeatLoopSize->get();
+        if (beatloop_size >= 1) {
+            slotLoopMove(1.0);
+        } else {
+            slotLoopMove(beatloop_size);
+        }
+    }
+}
+
+void LoopingControl::slotLoopMoveBackward(double pressed) {
+    if (pressed > 0.0) {
+        double beatloop_size = m_pCOBeatLoopSize->get();
+        if (beatloop_size >= 1) {
+            slotLoopMove(-1.0);
+        } else {
+            slotLoopMove(-beatloop_size);
         }
     }
 }
