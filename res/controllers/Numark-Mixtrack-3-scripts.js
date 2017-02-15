@@ -106,11 +106,11 @@ var loopsize = [2, 4, 8, 16, 0.125, 0.25, 0.5, 1];
 /* global engine                                                      */
 /* global print                                                       */
 /* global midi                                                        */
-/* global bpm                                                        */
+/* global bpm                                                         */
+/* jshint sub:true                                                    */
+/* jshint shadow:true                                                 */
 ////////////////////////////////////////////////////////////////////////
 
-// Line below to remove warnings from JSHINT page regarding dot notation
-/*jshint sub:true*/
 
 function NumarkMixtrack3() {}
 
@@ -371,10 +371,9 @@ LED.prototype.flashOnceOn = function(relight) {
     sendShortMsg(this.control, this.midino, this.valueon);
     pauseScript(scriptpause);
     this.flashOnceDuration = this.num_ms_on;
-    this.flashOnceTimer = engine.beginTimer(this.num_ms_on - scriptpause,
-        function() {
-            myself.flashOnceOff(relight);
-        }, true);
+    this.flashOnceTimer = engine.beginTimer(this.num_ms_on - scriptpause, function() {
+        myself.flashOnceOff(relight);
+    }, true);
 };
 
 // private :call back function (called in flashOnceOn() )
@@ -976,12 +975,12 @@ NumarkMixtrack3.init = function(id, debug) {
     NumarkMixtrack3.AllLeds.onOff(ON);
 
     // Initialise some others (PAD LEDs)
-    for (var i = 1; k <= 8; i++) {
+    for (var i = 1; i <= 8; i++) {
         NumarkMixtrack3.samplers["S" + k].LEDs["PADsampler" + k].onOff(PADcolors.black);
     }
 
     for (var i = 1; i <= 4; i++) {
-        for (led in NumarkMixtrack3.decks["D" + i].LEDs) {
+        for (var led in NumarkMixtrack3.decks["D" + i].LEDs) {
             if (led.hasOwnProperty("onOff")) {
                 led.onOff(OFF);
             }
@@ -1027,7 +1026,7 @@ NumarkMixtrack3.init = function(id, debug) {
         }
     }
 
-    for (i = 1; i <= 8; i++) {
+    for (var i = 1; i <= 8; i++) {
         engine.connectControl("[Sampler" + i + "]", "play",
             "NumarkMixtrack3.OnSamplePlayStop");
     }
@@ -1085,7 +1084,7 @@ NumarkMixtrack3.connectDeckControls = function(group, remove) {
         NumarkMixtrack3.decks["D" + OffDeck].shiftKey = false;
         NumarkMixtrack3.decks["D" + OnDeck].shiftKey = false; 
 
-        for (led in NumarkMixtrack3.decks["D" + OffDeck].LEDs) {
+        for (var led in NumarkMixtrack3.decks["D" + OffDeck].LEDs) {
             if (led.hasOwnProperty('onOff')) {
                 led.onOff(OFF);
             }
@@ -1253,7 +1252,6 @@ NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) 
 };
 
 NumarkMixtrack3.BrowseKnob = function(channel, control, value, status, group) {
-    var i;
     var shifted = (NumarkMixtrack3.decks.D1.shiftKey || NumarkMixtrack3.decks
         .D2.shiftKey || NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey);
     // value = 1 / 2 / 3 ... for positive //value = 1 / 2 / 3  
@@ -1262,11 +1260,11 @@ NumarkMixtrack3.BrowseKnob = function(channel, control, value, status, group) {
     if (shifted) {
         // SHIFT+Turn BROWSE Knob : directory mode --> select Play List/Side bar item
         if (nval > 0) {
-            for (i = 0; i < nval; i++) {
+            for (var i = 0; i < nval; i++) {
                 engine.setValue(group, "SelectNextPlaylist", 1);
             }
         } else {
-            for (i = 0; i < -nval; i++) {
+            for (var i = 0; i < -nval; i++) {
                 engine.setValue(group, "SelectPrevPlaylist", 1);
             }
         }
@@ -1371,7 +1369,7 @@ NumarkMixtrack3.OnLoadSelectedTrack = function(value, group, control) {
     if (smartPFL && deck.duration !== trackDuration && trackDuration !== 0) {
         for (var i = 1; i <= 4; i++) {
             // change headphone cue (pfl) to the deck on which the song loaded.
-            engine.setValue("[Channel" + i + "]", "pfl", (deck.decknum === i) ? 1 : 0);
+            engine.setValue("[Channel" + i + "]", "pfl", deck.decknum === i);
         }
     }
 
@@ -1399,7 +1397,7 @@ NumarkMixtrack3.SyncButton = function(channel, control, value, status, group) {
 
     if (!deck.shiftKey) {
         if (value === DOWN) {
-            deck.SyncButtonControl.ButtonDown(channel, control, value, status, deck, group);
+            deck.SyncButtonControl.ButtonDown(channel, control, value, status, deck.group);
         } else {
             deck.SyncButtonControl.ButtonUp();
         }
@@ -1561,7 +1559,7 @@ NumarkMixtrack3.WheelMove = function(channel, control, value, status, group) {
 
     engine.scratchTick(deck.decknum, adjustedJog);
 
-    var isPlaying = engine.getValue(deck.Jog.group, "play")
+    var isPlaying = engine.getValue(deck.Jog.group, "play");
 
     // pitch bend when playing - side or platter have same effect
     if (isPlaying && (PitchBenOnWheelOff || deck.jogWheelsInScratchMode)) {
