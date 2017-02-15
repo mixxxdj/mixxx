@@ -48,6 +48,7 @@
 #include "widget/wtrackproperty.h"
 #include "widget/wstarrating.h"
 #include "widget/wnumber.h"
+#include "widget/wnumberbeatsize.h"
 #include "widget/wnumberdb.h"
 #include "widget/wnumberpos.h"
 #include "widget/wnumberrate.h"
@@ -511,6 +512,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseStandardWidget<WStatusLight>(node));
     } else if (nodeName == "Display") {
         result = wrapWidget(parseStandardWidget<WDisplay>(node));
+    } else if (nodeName == "NumberBeatSize") {
+        result = wrapWidget(parseBeatSize(node));
     } else if (nodeName == "NumberRate") {
         result = wrapWidget(parseNumberRate(node));
     } else if (nodeName == "NumberPos") {
@@ -1086,6 +1089,12 @@ QWidget* LegacySkinParser::parseEngineKey(const QDomElement& node) {
     WKey* pEngineKey = new WKey(pSafeChannelStr, m_pParent);
     setupLabelWidget(node, pEngineKey);
     return pEngineKey;
+}
+
+QWidget* LegacySkinParser::parseBeatSize(const QDomElement& node) {
+    WNumberBeatSize* p = new WNumberBeatSize(m_pParent);
+    setupLabelWidget(node, p);
+    return p;
 }
 
 QWidget* LegacySkinParser::parseBattery(const QDomElement& node) {
