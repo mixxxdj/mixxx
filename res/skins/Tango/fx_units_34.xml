@@ -82,16 +82,27 @@ Variables:
         </Connection>
       </WidgetGroup>
 
-      <!-- Sapcer to keep Deck & FX unit aligned without Channel Mixer -->
-      <WidgetGroup>
-        <Size>22f,1min</Size>
-        <Children/>
+      <WidgetGroup><!-- VU Meter spacer when Channel Mixer is hidden -->
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Size>22f,1min</Size>
+            <Children>
+            </Children>
+            <Connection>
+              <ConfigKey>[Tango],vumeter</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
         <Connection>
           <ConfigKey>[Tango],channel_mixer</ConfigKey>
           <BindProperty>visible</BindProperty>
           <Transform><Not/></Transform>
         </Connection>
-      </WidgetGroup>
+      </WidgetGroup><!-- /VU Meter spacer when Channel Mixer is hidden -->
 
       <WidgetGroup><!-- EffectUnit 4 -->
         <SizePolicy>me,min</SizePolicy>
