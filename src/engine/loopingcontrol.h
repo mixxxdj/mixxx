@@ -64,7 +64,7 @@ class LoopingControl : public EngineControl {
     void slotLoopOut(double);
     void slotLoopOutSeek(double);
     void slotLoopExit(double);
-    void slotReloopExit(double);
+    void slotReloopToggle(double);
     void slotLoopStartPos(double);
     void slotLoopEndPos(double);
     virtual void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
@@ -124,7 +124,7 @@ class LoopingControl : public EngineControl {
     ControlPushButton* m_pLoopOutButton;
     ControlPushButton* m_pLoopOutSeekButton;
     ControlPushButton* m_pLoopExitButton;
-    ControlPushButton* m_pReloopExitButton;
+    ControlPushButton* m_pReloopToggleButton;
     ControlObject* m_pCOLoopScale;
     ControlPushButton* m_pLoopHalveButton;
     ControlPushButton* m_pLoopDoubleButton;

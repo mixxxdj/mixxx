@@ -74,11 +74,14 @@ LoopingControl::LoopingControl(QString group,
             Qt::DirectConnection);
     m_pLoopExitButton->set(0);
 
-    m_pReloopExitButton = new ControlPushButton(ConfigKey(group, "reloop_exit"));
-    connect(m_pReloopExitButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotReloopExit(double)),
+    m_pReloopToggleButton = new ControlPushButton(ConfigKey(group, "reloop_toggle"));
+    connect(m_pReloopToggleButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotReloopToggle(double)),
             Qt::DirectConnection);
-    m_pReloopExitButton->set(0);
+    m_pReloopToggleButton->set(0);
+    // The old reloop_exit name was confusing. This CO does both entering and exiting.
+    ControlDoublePrivate::insertAlias(ConfigKey(group, "reloop_exit"),
+                                      ConfigKey(group, "reloop_toggle"));
 
     m_pCOLoopEnabled = new ControlObject(ConfigKey(group, "loop_enabled"));
     m_pCOLoopEnabled->set(0.0);
@@ -201,7 +204,7 @@ LoopingControl::~LoopingControl() {
     delete m_pLoopInButton;
     delete m_pLoopInSeekButton;
     delete m_pLoopExitButton;
-    delete m_pReloopExitButton;
+    delete m_pReloopToggleButton;
     delete m_pCOLoopEnabled;
     delete m_pCOLoopStartPosition;
     delete m_pCOLoopEndPosition;
@@ -596,7 +599,7 @@ void LoopingControl::slotLoopExit(double val) {
     }
 }
 
-void LoopingControl::slotReloopExit(double val) {
+void LoopingControl::slotReloopToggle(double val) {
     if (!m_pTrack || val <= 0.0) {
         return;
     }
@@ -975,7 +978,7 @@ void LoopingControl::slotLoopAutoToggle(double value) {
 
 void LoopingControl::slotLoopManualToggle(double value) {
     if (m_bLoopingEnabled) {
-        slotReloopExit(1.0);
+        slotReloopToggle(1.0);
     } else {
         if (value > 0.0) {
             slotLoopIn(1.0);
