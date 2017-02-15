@@ -111,6 +111,14 @@ LoopingControl::LoopingControl(QString group,
     m_pCOBeatLoopRollToggle = new ControlPushButton(ConfigKey(group, "beatlooproll_toggle"));
     connect(m_pCOBeatLoopRollToggle, SIGNAL(valueChanged(double)),
             this, SLOT(slotBeatLoopRollToggle(double)));
+
+    m_pCOLoopAutoToggle = new ControlPushButton(ConfigKey(group, "loopauto_toggle"));
+    connect(m_pCOLoopAutoToggle, SIGNAL(valueChanged(double)),
+            this, SLOT(slotLoopAutoToggle(double)));
+    m_pCOLoopManualToggle = new ControlPushButton(ConfigKey(group, "loopmanual_toggle"));
+    connect(m_pCOLoopManualToggle, SIGNAL(valueChanged(double)),
+            this, SLOT(slotLoopManualToggle(double)));
+
     m_pCOBeatLoopEnabled = new ControlPushButton(ConfigKey(group, "beatloop_enabled"));
     m_pCOBeatLoopEnabled->setReadOnly();
 
@@ -550,7 +558,7 @@ void LoopingControl::slotLoopExit(double val) {
     if (!m_pTrack || val <= 0.0) {
         return;
     }
- 
+
     // If we're looping, stop looping
     if (m_bLoopingEnabled) {
         setLoopingEnabled(false);
@@ -924,6 +932,30 @@ void LoopingControl::slotBeatLoopRollToggle(double value) {
         m_bLoopRollActive = false;
     }
 }
+
+void LoopingControl::slotLoopAutoToggle(double value) {
+    double beatloop_size = m_pCOBeatLoopSize->get();
+    if (beatloop_size > 1.0) {
+        slotBeatLoopToggle(value);
+    } else {
+        slotBeatLoopRollToggle(value);
+    }
+}
+
+void LoopingControl::slotLoopManualToggle(double value) {
+    if (m_bLoopingEnabled) {
+        slotReloopExit(1.0);
+    } else {
+        if (value > 0.0) {
+            slotLoopIn(1.0);
+            slotLoopIn(0.0);
+        } else {
+            slotLoopOut(1.0);
+            slotLoopOut(0.0);
+        }
+    }
+}
+
 void LoopingControl::slotBeatJump(double beats) {
     if (!m_pTrack || !m_pBeats) {
         return;
