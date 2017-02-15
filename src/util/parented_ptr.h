@@ -23,7 +23,7 @@ class parented_ptr {
         DEBUG_ASSERT(u->parent() != nullptr);
     }
 
-#if __GNUC__ < 5
+#if defined(__GNUC__) && __GNUC__ < 5
     // gcc 4.8 does not implicit use the typ conversion move constructor
     // from above when returning form a function and use finally RVO.
     // It requires
