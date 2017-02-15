@@ -104,6 +104,11 @@ inline parented_ptr<T> make_parented(Args&&... args) {
     return parented_ptr<T>(new T(std::forward<Args>(args)...));
 }
 
+template<typename T, typename U>
+bool operator== (const T* pLeft, const parented_ptr<U>& pRight) {
+    return pRight == pLeft;
+}
+
 } // namespace
 
 #endif // UTIL_PARENTED_PTR_H
