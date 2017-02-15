@@ -188,7 +188,7 @@ void BrowseFeature::slotRemoveQuickLink() {
     if (index == -1) {
         return;
     }
-    m_pQuickLinkItem->removeChild(index);
+    m_childModel.removeRow(index, m_lastRightClickedIndex.parent());
     m_quickLinkList.removeAt(index);
     saveQuickLinks();
 }
@@ -259,11 +259,11 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
     
 }
 
-void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
-    TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+void BrowseFeature::onRightClickChild(const QPoint& globalPos,
+                                      const QModelIndex& index) {
     m_lastRightClickedIndex = index;
 
-    if (!index.isValid())
+    if (!index.isValid() || !index.parent().isValid())
         return;
 
     QString path = index.data(AbstractRole::RoleData).toString();
@@ -272,15 +272,18 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
         return;
     }
 
-    QMenu menu(NULL);
-    if (item->parent()->getData().toString() == QUICK_LINK_NODE) {
+    QMenu menu(nullptr);
+    if (index.parent().data(AbstractRole::RoleData).toString() == QUICK_LINK_NODE) {
+        // Store as persistent because otherwise if the user decides to remove
+        // the quick link it causes a segmentation fault.
+        QPersistentModelIndex persitstentIndex = index;
         menu.addAction(m_pRemoveQuickLinkAction);
         menu.exec(globalPos);
-        onLazyChildExpandation(index);
+        onLazyChildExpandation(persitstentIndex);
         return;
     }
-
-    foreach (const QString& str, m_quickLinkList) {
+    
+    for (const QString& str : m_quickLinkList) {
         if (str == path) {
              return;
         }
@@ -298,15 +301,11 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
     if (!index.isValid())
         return;
     
-    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-    if (!item) {
-        return;
-    }
+    QString label = index.data().toString();
+    QString path = index.data(AbstractRole::RoleData).toString();
 
-    qDebug() << "BrowseFeature::onLazyChildExpandation " << item->getLabel()
-             << " " << item->getData();
-
-    QString path = item->getData().toString();
+    qDebug() << "BrowseFeature::onLazyChildExpandation " << label
+             << " " << path;
 
     // If the item is a build-in node, e.g., 'QuickLink' return
     if (path == QUICK_LINK_NODE) {
@@ -314,7 +313,8 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
     }
 
     // Before we populate the subtree, we need to delete old subtrees
-    m_childModel.removeRows(0, item->childRows(), index);
+    int rows = m_childModel.rowCount(index);
+    m_childModel.removeRows(0, rows, index);
 
     // List of subfolders or drive letters
     QList<TreeItem*> folders;

@@ -51,7 +51,7 @@ class BrowseFeature : public LibraryFeature {
     void slotAddToLibrary();
     void activate();
     void activateChild(const QModelIndex& index);
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    void onRightClickChild(const QPoint& globalPos, const QModelIndex& index);
     void onLazyChildExpandation(const QModelIndex& index);
     void slotLibraryScanStarted();
     void slotLibraryScanFinished();
