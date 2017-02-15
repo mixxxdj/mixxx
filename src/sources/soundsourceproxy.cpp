@@ -147,32 +147,32 @@ void SoundSourceProxy::loadPlugins() {
 #ifdef __FFMPEGFILE__
     // Use FFmpeg as the last resort.
     s_soundSourceProviders.registerProvider(
-            mixxx::newSoundSourceProvider<mixxx::SoundSourceProviderFFmpeg>());
+            std::make_shared<mixxx::SoundSourceProviderFFmpeg>());
 #endif
 #ifdef __SNDFILE__
     // libsndfile is another fallback
     s_soundSourceProviders.registerProvider(
-            mixxx::newSoundSourceProvider<mixxx::SoundSourceProviderSndFile>());
+            std::make_shared<mixxx::SoundSourceProviderSndFile>());
 #endif
     s_soundSourceProviders.registerProvider(
-            mixxx::newSoundSourceProvider<mixxx::SoundSourceProviderFLAC>());
+            std::make_shared<mixxx::SoundSourceProviderFLAC>());
     s_soundSourceProviders.registerProvider(
-            mixxx::newSoundSourceProvider<mixxx::SoundSourceProviderOggVorbis>());
+            std::make_shared<mixxx::SoundSourceProviderOggVorbis>());
 #ifdef __OPUS__
     s_soundSourceProviders.registerProvider(
-            mixxx::newSoundSourceProvider<mixxx::SoundSourceProviderOpus>());
+            std::make_shared<mixxx::SoundSourceProviderOpus>());
 #endif
 #ifdef __MAD__
     s_soundSourceProviders.registerProvider(
-            mixxx::newSoundSourceProvider<mixxx::SoundSourceProviderMp3>());
+            std::make_shared<mixxx::SoundSourceProviderMp3>());
 #endif
 #ifdef __MODPLUG__
     s_soundSourceProviders.registerProvider(
-            mixxx::newSoundSourceProvider<mixxx::SoundSourceProviderModPlug>());
+            std::make_shared<mixxx::SoundSourceProviderModPlug>());
 #endif
 #ifdef __COREAUDIO__
     s_soundSourceProviders.registerProvider(
-            mixxx::newSoundSourceProvider<mixxx::SoundSourceProviderCoreAudio>());
+            std::make_shared<mixxx::SoundSourceProviderCoreAudio>());
 #endif
 
     // Scan for and initialize all plugins.
@@ -536,7 +536,7 @@ public:
         DEBUG_ASSERT(pTrack);
         DEBUG_ASSERT(pAudioSource);
         return mixxx::AudioSourcePointer(
-                new AudioSourceProxy(pTrack, pAudioSource));
+                std::make_shared<AudioSourceProxy>(pTrack, pAudioSource));
     }
 
     SINT seekSampleFrame(SINT frameIndex) override {
@@ -571,57 +571,65 @@ private:
 
 mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSourceConfig& audioSrcCfg) {
     DEBUG_ASSERT(m_pTrack);
-    while (!m_pAudioSource) {
-        if (!m_pSoundSource) {
-            qWarning() << "Failed to open AudioSource for file"
-                       << getUrl().toString();
-            return m_pAudioSource; // failure -> exit loop
+    while (m_pSoundSource && !m_pAudioSource) {
+        qDebug() << "Opening file"
+                << getUrl().toString()
+                << "with provider"
+                << getSoundSourceProvider()->getName();
+        const mixxx::SoundSource::OpenResult openResult =
+                m_pSoundSource->open(audioSrcCfg);
+        if (openResult == mixxx::SoundSource::OpenResult::ABORTED) {
+            qWarning() << "Unable to open file"
+                    << getUrl().toString()
+                    << "with provider"
+                    << getSoundSourceProvider()->getName();
+            // Continue with the next SoundSource provider
+            nextSoundSourceProvider();
+            initSoundSource();
+            continue; // try again
         }
-        const mixxx::SoundSource::OpenResult openResult = m_pSoundSource->open(audioSrcCfg);
-        if (mixxx::SoundSource::OpenResult::UNSUPPORTED_FORMAT != openResult) {
-            qDebug() << "Opened AudioSource for file"
-                     << getUrl().toString()
-                     << "with provider"
-                     << getSoundSourceProvider()->getName();
-            if ((mixxx::SoundSource::OpenResult::SUCCEEDED == openResult) && m_pSoundSource->verifyReadable()) {
-                m_pAudioSource =
-                        AudioSourceProxy::create(m_pTrack, m_pSoundSource);
-                if (m_pAudioSource->isEmpty()) {
-                    qWarning() << "Empty audio data in file"
-                               << getUrl().toString();
-                }
-                // Overwrite metadata with actual audio properties
-                if (m_pTrack) {
-                    m_pTrack->setChannels(m_pAudioSource->getChannelCount());
-                    m_pTrack->setSampleRate(m_pAudioSource->getSamplingRate());
-                    if (m_pAudioSource->hasDuration()) {
-                        m_pTrack->setDuration(m_pAudioSource->getDuration());
-                    }
-                    if (m_pAudioSource->hasBitrate()) {
-                        m_pTrack->setBitrate(m_pAudioSource->getBitrate());
-                    }
-                }
-                return m_pAudioSource; // success -> exit loop
-            } else {
-                qWarning() << "Invalid audio data in file"
+        if ((openResult == mixxx::SoundSource::OpenResult::SUCCEEDED) && m_pSoundSource->verifyReadable()) {
+            m_pAudioSource =
+                    AudioSourceProxy::create(m_pTrack, m_pSoundSource);
+            DEBUG_ASSERT(m_pAudioSource);
+            if (m_pAudioSource->isEmpty()) {
+                qWarning() << "File is empty"
                            << getUrl().toString();
-                // Do NOT retry with the next SoundSource provider if
-                // the file itself is malformed!
-                m_pSoundSource->close();
-                break; // exit loop
             }
+            // Overwrite metadata with actual audio properties
+            if (m_pTrack) {
+                DEBUG_ASSERT(m_pAudioSource->hasValidChannelCount());
+                m_pTrack->setChannels(m_pAudioSource->getChannelCount());
+                DEBUG_ASSERT(m_pAudioSource->hasValidSamplingRate());
+                m_pTrack->setSampleRate(m_pAudioSource->getSamplingRate());
+                if (m_pAudioSource->hasDuration()) {
+                    // optional property
+                    m_pTrack->setDuration(m_pAudioSource->getDuration());
+                }
+                if (m_pAudioSource->hasBitrate()) {
+                    // optional property
+                    m_pTrack->setBitrate(m_pAudioSource->getBitrate());
+                }
+            }
+        } else {
+            qWarning() << "Failed to open file"
+                       << getUrl().toString()
+                       << "with provider"
+                       << getSoundSourceProvider()->getName();
+            if (openResult == mixxx::SoundSource::OpenResult::SUCCEEDED) {
+                m_pSoundSource->close(); // cleanup
+            }
+            // Do NOT retry with the next SoundSource provider if the file
+            // itself is the cause!
+            DEBUG_ASSERT(!m_pAudioSource);
         }
-        qWarning() << "Failed to open AudioSource for file"
-                   << getUrl().toString()
-                   << "with provider"
-                   << getSoundSourceProvider()->getName();
-        // Continue with the next SoundSource provider
-        nextSoundSourceProvider();
-        initSoundSource();
+        return m_pAudioSource; // either success or failure
     }
-    // m_pSoundSource might be invalid when reaching this point
-    qWarning() << "Failed to open AudioSource for file"
-               << getUrl().toString();
+    // All available providers have returned OpenResult::ABORTED when
+    // getting here. m_pSoundSource might already be invalid/null!
+    qWarning() << "Unable to decode file"
+            << getUrl().toString();
+    DEBUG_ASSERT(!m_pAudioSource);
     return m_pAudioSource;
 }
 

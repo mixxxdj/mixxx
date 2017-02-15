@@ -38,6 +38,8 @@ class SoundSourceWV: public SoundSourcePlugin {
     CSAMPLE m_sampleScaleFactor;
     QFile* m_pWVFile;
     QFile* m_pWVCFile;
+
+    SINT m_curFrameIndex;
 };
 
 class SoundSourceProviderWV: public SoundSourceProvider {

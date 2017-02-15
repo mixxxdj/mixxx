@@ -133,6 +133,33 @@ void EffectRack::loadPrevChain(const unsigned int iChainSlotNumber,
     m_effectChainSlots[iChainSlotNumber]->loadEffectChain(pPrevChain);
 }
 
+void EffectRack::maybeLoadEffect(const unsigned int iChainSlotNumber,
+                                 const unsigned int iEffectSlotNumber,
+                                 const QString& id) {
+    if (iChainSlotNumber >= static_cast<unsigned int>(m_effectChainSlots.size())) {
+        return;
+    }
+
+    EffectChainSlotPointer pChainSlot = m_effectChainSlots[iChainSlotNumber];
+    if (pChainSlot == nullptr) {
+        return;
+    }
+    EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(iEffectSlotNumber);
+
+    bool loadNew = false;
+    if (pEffectSlot == nullptr || pEffectSlot->getEffect() == nullptr) {
+        loadNew = true;
+    } else if (id != pEffectSlot->getEffect()->getManifest().id()) {
+        loadNew = true;
+    }
+
+    if (loadNew) {
+        EffectChainPointer pChain = pChainSlot->getEffectChain();
+        EffectPointer pEffect = m_pEffectsManager->instantiateEffect(id);
+        pChain->replaceEffect(iEffectSlotNumber, pEffect);
+    }
+}
+
 void EffectRack::loadNextEffect(const unsigned int iChainSlotNumber,
                                 const unsigned int iEffectSlotNumber,
                                 EffectPointer pEffect) {
@@ -327,12 +354,8 @@ bool QuickEffectRack::loadEffectToGroup(const QString& groupName,
 
     pChain->replaceEffect(0, pEffect);
 
-    // Force update the new effect to match the current superknob position.
-    EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(0);
-    if (pEffectSlot) {
-        pEffectSlot->onChainSuperParameterChanged(
-                pChainSlot->getSuperParameter(), true);
-    }
+    // Force update metaknobs and parameters to match state of superknob
+    pChainSlot->setSuperParameter(pChainSlot->getSuperParameter(), true);
 
     if (pEffect != nullptr) {
         pEffect->setEnabled(true);

@@ -29,25 +29,23 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
         return false;
     }
 
-    m_bPreferencesKeyDetectionEnabled = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(KEY_CONFIG_KEY, KEY_DETECTION_ENABLED)).toInt());
+    m_bPreferencesKeyDetectionEnabled = m_pConfig->getValue<bool>(
+            ConfigKey(KEY_CONFIG_KEY, KEY_DETECTION_ENABLED));
     if (!m_bPreferencesKeyDetectionEnabled) {
         qDebug() << "Key detection is deactivated";
         return false;
     }
 
-    m_bPreferencesFastAnalysisEnabled = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(KEY_CONFIG_KEY, KEY_FAST_ANALYSIS)).toInt());
-    QString library = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_LIBRARY),
-        // TODO(rryan) this default really doesn't belong here.
-        "libmixxxminimal");
-    QString pluginID = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID),
-        // TODO(rryan) this default really doesn't belong here.
-        VAMP_ANALYZER_KEY_DEFAULT_PLUGIN_ID);
+    m_bPreferencesFastAnalysisEnabled = m_pConfig->getValue<bool>(
+            ConfigKey(KEY_CONFIG_KEY, KEY_FAST_ANALYSIS));
+    QString library = m_pConfig->getValue(
+            ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_LIBRARY),
+            // TODO(rryan) this default really doesn't belong here.
+            "libmixxxminimal");
+    QString pluginID = m_pConfig->getValue(
+            ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID),
+            // TODO(rryan) this default really doesn't belong here.
+            VAMP_ANALYZER_KEY_DEFAULT_PLUGIN_ID);
 
     m_pluginId = pluginID;
     m_iSampleRate = sampleRate;
@@ -77,14 +75,13 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
 }
 
 bool AnalyzerKey::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
-    bool bPreferencesFastAnalysisEnabled = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(KEY_CONFIG_KEY, KEY_FAST_ANALYSIS)).toInt());
+    bool bPreferencesFastAnalysisEnabled = m_pConfig->getValue<bool>(
+            ConfigKey(KEY_CONFIG_KEY, KEY_FAST_ANALYSIS));
 
     QString library = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_LIBRARY));
+            ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_LIBRARY));
     QString pluginID = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID));
+            ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID));
 
     // TODO(rryan): This belongs elsewhere.
     if (library.isEmpty() || library.isNull())

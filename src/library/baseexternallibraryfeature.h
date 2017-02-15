@@ -30,6 +30,8 @@ class BaseExternalLibraryFeature : public LibraryFeature {
 
     QModelIndex m_lastRightClickedIndex;
 
+    TrackCollection* const m_pTrackCollection;
+
   private slots:
     void slotAddToAutoDJ();
     void slotAddToAutoDJTop();
@@ -38,7 +40,6 @@ class BaseExternalLibraryFeature : public LibraryFeature {
   private:
     void addToAutoDJ(bool bTop);
 
-    TrackCollection* m_pTrackCollection;
     QAction* m_pAddToAutoDJAction;
     QAction* m_pAddToAutoDJTopAction;
     QAction* m_pImportAsMixxxPlaylistAction;

@@ -122,7 +122,7 @@ BrowseFeature::~BrowseFeature() {
 }
 
 QVariant BrowseFeature::title() {
-    return QVariant(tr("Browse"));
+    return QVariant(tr("Computer"));
 }
 
 void BrowseFeature::slotAddQuickLink() {
@@ -188,7 +188,7 @@ void BrowseFeature::slotRemoveQuickLink() {
 }
 
 QIcon BrowseFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_browse.png");
+    return QIcon(":/images/library/ic_library_computer.png");
 }
 
 TreeItemModel* BrowseFeature::getChildModel() {
@@ -349,13 +349,13 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
     // On Ubuntu 10.04, otherwise, this will draw an icon although the folder
     // has no subfolders
     if (!folders.isEmpty()) {
-        m_childModel.insertRows(folders, 0, folders.size(), index);
+        m_childModel.insertTreeItemRows(folders, 0, index);
     }
 }
 
 QString BrowseFeature::getRootViewHtml() const {
-    QString browseTitle = tr("Browse");
-    QString browseSummary = tr("Browse lets you navigate, view, and load tracks"
+    QString browseTitle = tr("Computer");
+    QString browseSummary = tr("\"Computer\" lets you navigate, view, and load tracks"
                         " from folders on your hard disk and external devices.");
 
     QString html;

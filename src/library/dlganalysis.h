@@ -18,15 +18,17 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     DlgAnalysis(QWidget *parent,
                UserSettingsPointer pConfig,
                TrackCollection* pTrackCollection);
-    virtual ~DlgAnalysis();
+    ~DlgAnalysis() override;
 
-    virtual void onSearch(const QString& text);
-    virtual void onShow();
-    virtual void loadSelectedTrack();
-    virtual void loadSelectedTrackToGroup(QString group, bool play);
-    virtual void slotSendToAutoDJ();
-    virtual void slotSendToAutoDJTop();
-    virtual void moveSelection(int delta);
+    void onSearch(const QString& text) override;
+    void onShow() override;
+    bool hasFocus() const override;
+    void loadSelectedTrack() override;
+    void loadSelectedTrackToGroup(QString group, bool play) override;
+    void slotSendToAutoDJBottom() override;
+    void slotSendToAutoDJTop() override;
+    void slotSendToAutoDJReplace() override;
+    void moveSelection(int delta) override;
     inline const QString currentSearch() {
         return m_pAnalysisLibraryTableModel->currentSearch();
     }

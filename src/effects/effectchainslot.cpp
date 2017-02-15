@@ -66,6 +66,22 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
 
     connect(&m_channelStatusMapper, SIGNAL(mapped(const QString&)),
             this, SLOT(slotChannelStatusChanged(const QString&)));
+
+    // ControlObjects for skin <-> controller mapping interaction.
+    // Refer to comment in header for full explanation.
+    m_pControlChainShowFocus = new ControlPushButton(
+                                   ConfigKey(m_group, "show_focus"),
+                                   true);
+    m_pControlChainShowFocus->setButtonMode(ControlPushButton::TOGGLE);
+
+    m_pControlChainShowParameters = new ControlPushButton(
+                                        ConfigKey(m_group, "show_parameters"),
+                                        true);
+    m_pControlChainShowParameters->setButtonMode(ControlPushButton::TOGGLE);
+
+    m_pControlChainFocusedEffect = new ControlObject(
+                                       ConfigKey(m_group, "focused_effect"),
+                                       true, false, true);
 }
 
 EffectChainSlot::~EffectChainSlot() {
@@ -82,6 +98,9 @@ EffectChainSlot::~EffectChainSlot() {
     delete m_pControlChainPrevPreset;
     delete m_pControlChainNextPreset;
     delete m_pControlChainSelector;
+    delete m_pControlChainShowFocus;
+    delete m_pControlChainShowParameters;
+    delete m_pControlChainFocusedEffect;
 
     for (QMap<QString, ChannelInfo*>::iterator it = m_channelInfoByName.begin();
          it != m_channelInfoByName.end();) {
@@ -103,8 +122,9 @@ double EffectChainSlot::getSuperParameter() const {
     return m_pControlChainSuperParameter->get();
 }
 
-void EffectChainSlot::setSuperParameter(double value) {
+void EffectChainSlot::setSuperParameter(double value, bool force) {
     m_pControlChainSuperParameter->set(value);
+    slotControlChainSuperParameter(value, force);
 }
 
 void EffectChainSlot::setSuperParameterDefaultValue(double value) {
@@ -139,25 +159,32 @@ void EffectChainSlot::slotChainChannelStatusChanged(const QString& group,
     }
 }
 
-void EffectChainSlot::slotChainEffectsChanged(bool shouldEmit) {
-    //qDebug() << debugString() << "slotChainEffectsChanged";
+void EffectChainSlot::slotChainEffectChanged(unsigned int effectSlotNumber,
+                                             bool shouldEmit) {
+    //qDebug() << debugString() << "slotChainEffectChanged" << effectSlotNumber;
     if (m_pEffectChain) {
-        QList<EffectPointer> effects = m_pEffectChain->effects();
+        const QList<EffectPointer> effects = m_pEffectChain->effects();
+        EffectSlotPointer pSlot;
+        EffectPointer pEffect;
+
         if (effects.size() > m_slots.size()) {
             qWarning() << debugString() << "has too few slots for effect";
         }
-        for (int i = 0; i < m_slots.size(); ++i) {
-            EffectSlotPointer pSlot = m_slots[i];
-            EffectPointer pEffect;
-            if (i < effects.size()) {
-                pEffect = effects[i];
-            }
-            if (pSlot)
-                pSlot->loadEffect(pEffect);
+
+        if (effectSlotNumber < (unsigned) m_slots.size()) {
+            pSlot = m_slots.at(effectSlotNumber);
         }
+        if (effectSlotNumber < (unsigned) effects.size()) {
+            pEffect = effects.at(effectSlotNumber);
+        }
+        if (pSlot != nullptr) {
+            pSlot->loadEffect(pEffect);
+        }
+
         m_pControlNumEffects->forceSet(math_min(
             static_cast<unsigned int>(m_slots.size()),
             m_pEffectChain->numEffects()));
+
         if (shouldEmit) {
             emit(updated());
         }
@@ -174,8 +201,8 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
                                     m_iChainSlotNumber);
         m_pEffectChain->updateEngineState();
 
-        connect(m_pEffectChain.data(), SIGNAL(effectsChanged()),
-                this, SLOT(slotChainEffectsChanged()));
+        connect(m_pEffectChain.data(), SIGNAL(effectChanged(unsigned int)),
+                this, SLOT(slotChainEffectChanged(unsigned int)));
         connect(m_pEffectChain.data(), SIGNAL(nameChanged(const QString&)),
                 this, SLOT(slotChainNameChanged(const QString&)));
         connect(m_pEffectChain.data(), SIGNAL(enabledChanged(bool)),
@@ -203,7 +230,9 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
         }
 
         // Don't emit because we will below.
-        slotChainEffectsChanged(false);
+        for (int i = 0; i < m_slots.size(); ++i) {
+            slotChainEffectChanged(i, false);
+        }
     }
 
     emit(effectChainLoaded(pEffectChain));
@@ -338,7 +367,7 @@ void EffectChainSlot::slotControlChainMix(double v) {
     }
 }
 
-void EffectChainSlot::slotControlChainSuperParameter(double v) {
+void EffectChainSlot::slotControlChainSuperParameter(double v, bool force) {
     //qDebug() << debugString() << "slotControlChainSuperParameter" << v;
 
     // Clamp to [0.0, 1.0]
@@ -347,8 +376,8 @@ void EffectChainSlot::slotControlChainSuperParameter(double v) {
         v = math_clamp(v, 0.0, 1.0);
         m_pControlChainSuperParameter->set(v);
     }
-    for (int i = 0; i < m_slots.size(); ++i) {
-        m_slots[i]->onChainSuperParameterChanged(v);
+    for (const auto& pSlot : m_slots) {
+        pSlot->setMetaParameter(v, force);
     }
 }
 

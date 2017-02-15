@@ -17,7 +17,7 @@ DlgHidden::DlgHidden(QWidget* parent, UserSettingsPointer pConfig,
 
     // Install our own trackTable
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
-    DEBUG_ASSERT_AND_HANDLE(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
+    VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
     } else {
         box->removeWidget(m_pTrackTablePlaceholder);
         m_pTrackTablePlaceholder->hide();
@@ -93,4 +93,8 @@ void DlgHidden::setTrackTableFont(const QFont& font) {
 
 void DlgHidden::setTrackTableRowHeight(int rowHeight) {
     m_pTrackTableView->setTrackTableRowHeight(rowHeight);
+}
+
+bool DlgHidden::hasFocus() const {
+    return QWidget::hasFocus();
 }

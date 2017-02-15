@@ -12,6 +12,7 @@
 #include "library/missingtablemodel.h"
 #include "library/hiddentablemodel.h"
 #include "library/queryutil.h"
+#include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "treeitem.h"
 #include "sources/soundsourceproxy.h"
@@ -65,7 +66,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             << "library." + LIBRARYTABLE_COVERART_LOCATION
             << "library." + LIBRARYTABLE_COVERART_HASH;
 
-    QSqlQuery query(pTrackCollection->getDatabase());
+    QSqlQuery query(pTrackCollection->database());
     QString tableName = "library_cache_view";
     QString queryString = QString(
         "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
@@ -135,11 +136,11 @@ void MixxxLibraryFeature::bindWidget(WLibrary* pLibraryWidget,
 }
 
 QVariant MixxxLibraryFeature::title() {
-    return tr("Library");
+    return tr("Tracks");
 }
 
 QIcon MixxxLibraryFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_library.png");
+    return QIcon(":/images/library/ic_library_tracks.png");
 }
 
 TreeItemModel* MixxxLibraryFeature::getChildModel() {

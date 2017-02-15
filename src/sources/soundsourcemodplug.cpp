@@ -39,9 +39,9 @@ QString getModPlugTypeFromUrl(QUrl url) {
 
 } // anonymous namespace
 
-const SINT SoundSourceModPlug::kChannelCount = AudioSource::kChannelCountStereo;
-const SINT SoundSourceModPlug::kBitsPerSample = 16;
-const SINT SoundSourceModPlug::kSamplingRate = 44100; // 44.1 kHz
+/*static*/ constexpr SINT SoundSourceModPlug::kChannelCount;
+/*static*/ constexpr SINT SoundSourceModPlug::kBitsPerSample;
+/*static*/ constexpr SINT SoundSourceModPlug::kSamplingRate;
 
 unsigned int SoundSourceModPlug::s_bufferSizeLimit = 0;
 
