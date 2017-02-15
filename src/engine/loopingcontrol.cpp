@@ -53,11 +53,20 @@ LoopingControl::LoopingControl(QString group,
             Qt::DirectConnection);
     m_pLoopInButton->set(0);
 
+    m_pLoopInSeekButton = new ControlPushButton(ConfigKey(group, "seek_loop_in"));
+    connect(m_pLoopInSeekButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotLoopInSeek(double)));
+
     m_pLoopOutButton = new ControlPushButton(ConfigKey(group, "loop_out"));
     connect(m_pLoopOutButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoopOut(double)),
             Qt::DirectConnection);
     m_pLoopOutButton->set(0);
+
+    m_pLoopOutSeekButton = new ControlPushButton(ConfigKey(group, "seek_loop_out"));
+    connect(m_pLoopOutSeekButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotLoopOutSeek(double)));
+
 
     m_pLoopExitButton = new ControlPushButton(ConfigKey(group, "loop_exit"));
     connect(m_pLoopExitButton, SIGNAL(valueChanged(double)),
@@ -188,7 +197,9 @@ LoopingControl::LoopingControl(QString group,
 
 LoopingControl::~LoopingControl() {
     delete m_pLoopOutButton;
+    delete m_pLoopOutSeekButton;
     delete m_pLoopInButton;
+    delete m_pLoopInSeekButton;
     delete m_pLoopExitButton;
     delete m_pReloopExitButton;
     delete m_pCOLoopEnabled;
@@ -503,6 +514,13 @@ void LoopingControl::slotLoopIn(double val) {
     //qDebug() << "set loop_in to " << loopSamples.start;
 }
 
+void LoopingControl::slotLoopInSeek(double pressed) {
+    if (pressed > 0.0) {
+        seekAbs(static_cast<double>(
+            m_loopSamples.getValue().start));
+    }
+}
+
 void LoopingControl::slotLoopOut(double val) {
     if (!m_pTrack || val <= 0.0) {
         return;
@@ -558,6 +576,13 @@ void LoopingControl::slotLoopOut(double val) {
         setLoopingEnabled(true);
     }
     //qDebug() << "set loop_out to " << loopSamples.end;
+}
+
+void LoopingControl::slotLoopOutSeek(double pressed) {
+    if (pressed > 0.0) {
+        seekAbs(static_cast<double>(
+            m_loopSamples.getValue().end));
+    }
 }
 
 void LoopingControl::slotLoopExit(double val) {
