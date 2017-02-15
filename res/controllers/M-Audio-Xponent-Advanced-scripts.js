@@ -2,16 +2,21 @@ function MaudioXponent () {}
 
 // ----------   Global variables    ----------
 MaudioXponent.id = "";   // The ID for the particular device being controlled for use in debugging, set at init time
+
+MaudioXponent.config = {
+    nudgeButtonMode : 0,    // 0 = Normal, 1 = Reversed
+    pflMode : 1,            // 0 = Independent, 1 = Toggle
+    syncFlashMode : 0,      // 0 = Off, 1 = Simple, 2 = Toggle
+    vuMeterMode : 0,        // 0 = Per-Channel mode, 1 = Master Mode
+}
+
 MaudioXponent.state = { 
-    deck : [],              // Represents everything about an individual deck.
+    deck : [],              // Stores everything about an individual deck
     faderPosition : 0,      // Temporary storage for cross-fader position during punch-ins.
     focusedEffect : 0,
-    nudgeButtonMode : 0,    // 0=normal, 1=reversed
-    pflMode : 1,            // 0=independent, 1=toggle
+    numDecks : 0,
     plnumberpos : 0, 
     plnumberneg : 0,
-    syncFlashMode : 1,      // 0=off, 1=simple, 2=toggle
-    vuMeterMode : 0,        // 0=channel mode, 1=master mode
 };
 
 MaudioXponent.leds = {
@@ -67,8 +72,6 @@ MaudioXponent.binleds = {
     36: "play"
 };
 
-// MaudioXponent.timer = [-1, -1];  // Temporary storage of timer IDs
-
 MaudioXponent.Handshake1 = [0xF0,0x7E,0x7F,0x06,0x01,0xF7];
 MaudioXponent.Handshake2 = [0xF0,0x00,0x20,0x08,0x00,0x00,0x63,0x0E,0x16,0x40,0x00,0x01,0xF7];
 MaudioXponent.Handshake3 = [0xF0,0x00,0x20,0x08,0x00,0x00,0x63,0x0E,0x16,0x40,0x00,0x00,0xF7];
@@ -79,6 +82,8 @@ MaudioXponent.logParams = function(a, b, c, d, e, f) {
 };
 
 MaudioXponent.init = function (id) {
+    MaudioXponent.state.numDecks = engine.getValue("[Master]", "num_decks");
+
     MaudioXponent.initDecks();
     MaudioXponent.initLights();
     MaudioXponent.syncLights();
@@ -86,7 +91,7 @@ MaudioXponent.init = function (id) {
 };
 
 MaudioXponent.initDecks = function() {
-    if (MaudioXponent.state.vuMeterMode == 1) {
+    if (MaudioXponent.config.vuMeterMode == 1) {
         engine.connectControl("[Master]", "VuMeterL", function(value) { MaudioXponent.volumeLEDs(0, value); });
         engine.connectControl("[Master]", "VuMeterR", function(value) { MaudioXponent.volumeLEDs(1, value); });
     } else {
@@ -94,15 +99,14 @@ MaudioXponent.initDecks = function() {
         engine.connectControl("[Channel2]", "VuMeter", function(value) { MaudioXponent.volumeLEDs(1, value); });
     }
 
-    var numDecks = engine.getValue("[Master]", "num_decks");
-    for (channel = 0; channel < numDecks; channel++) {
+    for (channel = 0; channel < MaudioXponent.state.numDecks; channel++) {
         var group = "[Channel" + (channel + 1) + "]";
         var deck = MaudioXponent.state.deck[channel] = 
         {
             id : channel + 1,
             beatState : false,
             group : group,
-            off : 0x80 + channel,
+            off : 0x80 + channel + (channel >= 3 ? 5 : 0),
             on : 0x90 + channel,
             shift : false,
             warnAt : 0,
@@ -126,8 +130,18 @@ MaudioXponent.initDecks = function() {
         }
 
         engine.connectControl(group, "keylock", "MaudioXponent.onKeyLock");
-        //engine.connectControl(group, "bpm", "MaudioXponent.onBpm");
+        engine.connectControl(group, "bpm", "MaudioXponent.onBpmChanged");
+
+        engine.softTakeover(group, "rate", true);
     }
+
+    // Effects parameters... not working in Mixxx 2.0, should work in 2.1
+    for(i = 1; i < 5; i++) {
+        engine.softTakeover("[EffectRack1_EffectUnit" + i + "_Effect1]", "parameter1", true);
+        engine.softTakeover("[EffectRack1_EffectUnit" + i + "_Effect1]", "parameter2", true);
+        engine.softTakeover("[EffectRack1_EffectUnit" + i + "_Effect1]", "parameter3", true);
+        engine.softTakeover("[EffectRack1_EffectUnit" + i + "]", "mix", true);
+    }       
 };
 
 MaudioXponent.initLights = function () {
@@ -175,9 +189,7 @@ MaudioXponent.initLights = function () {
 };
 
 MaudioXponent.syncLights = function() {
-    var numDecks = engine.getValue("[Master]", "num_decks");
-
-    for (i = 0; i < numDecks; i++) {
+    for (i = 0; i < MaudioXponent.state.numDecks; i++) {
         var channel = i + 1;
         var group = "[Channel" + channel + "]";
         engine.trigger(group, "keylock");
@@ -189,31 +201,12 @@ MaudioXponent.syncLights = function() {
     }
 };
 
-MaudioXponent.enableSoftTakeover = function() {
-    var numDecks = engine.getValue("[Master]", "num_decks");
-    for (i = 0; i < numDecks; i++) {
-        var channel = i + 1;
-        var group = "[Channel" + channel + "]";
-        engine.softTakeover(group, "rate", true);        
-    }
-
-    // Effects parameters... not working in Mixxx 2.0, should work in 2.1
-    for(i = 1; i < 5; i++) {
-        engine.softTakeover("[EffectRack1_EffectUnit" + i + "_Effect1]", "parameter1", true);
-        engine.softTakeover("[EffectRack1_EffectUnit" + i + "_Effect1]", "parameter2", true);
-        engine.softTakeover("[EffectRack1_EffectUnit" + i + "_Effect1]", "parameter3", true);
-        engine.softTakeover("[EffectRack1_EffectUnit" + i + "]", "mix", true);
-    }    
-};
-
 MaudioXponent.convert = function(value) {
-    value = value * 127;
-    value = value.toFixed(0);
-    return (value);
+    return (value * 127).toFixed(0);
 };
 
-MaudioXponent.getChannel = function(group) {
-    return parseInt(group.substring(8)) - 1;
+MaudioXponent.getDeck = function(group) {
+    var deck = MaudioXponent.state.deck[parseInt(group.substring(8)) - 1];
 };
 
 MaudioXponent.pauseScript = function(ms) {
@@ -263,37 +256,34 @@ MaudioXponent.wheelTouch = function(channel, control, value, status) {
 }
 
 MaudioXponent.onBeatActive = function(value, group) {
-    var channel = MaudioXponent.getChannel(group);
-    var deck = MaudioXponent.state.deck[channel];
+    var deck = MaudioXponent.getDeck[group];
 
-    if (MaudioXponent.state.syncFlashMode === 1) {
+    if (MaudioXponent.config.syncFlashMode === 1) {
         midi.sendShortMsg(deck.on, 0x02, value);
     }
     
     if (value) {
         deck.beatState = !deck.beatState;
         
-        if (MaudioXponent.state.syncFlashMode === 2) {
+        if (MaudioXponent.config.syncFlashMode === 2) {
             midi.sendShortMsg(deck.on, 0x02, deck.beatState);
         }
     }
 };
 
 MaudioXponent.onBeatLoop = function(value, group, control) {
-    var channel = MaudioXponent.getChannel(group);
-    var deck = MaudioXponent.state.deck[channel];
+    var deck = MaudioXponent.getDeck[group];
     var offset = Math.log(parseInt(control.substring(9))) / Math.log(2)
     
     midi.sendShortMsg(deck.on, MaudioXponent.leds.loop1 + offset, value);
 }
 
-MaudioXponent.onBpm = function(value, group) {
-    print ("BPM Change, " + group + ", value=" + value);
+MaudioXponent.onBpmChanged = function(value, group) {
+    //print ("BPM Change, " + group + ", value=" + value);
 };
 
 MaudioXponent.onPlayPositionChange = function(value, group) {
-    var channel = MaudioXponent.getChannel(group);
-    var deck = MaudioXponent.state.deck[channel];
+    var deck = MaudioXponent.getDeck[group];
 
     if (deck) {
         if ((value < deck.warnAt) || (value >= deck.warnAt && deck.beatState)) {
@@ -332,8 +322,7 @@ MaudioXponent.actbinstop = function(channel, control, value, status) {
 };
 
 MaudioXponent.onHotCue = function(value, group, control) {
-    var channel = MaudioXponent.getChannel(group);
-    var deck = MaudioXponent.state.deck[channel];
+    var deck = MaudioXponent.getDeck[group];
     var cueNumber = parseInt(control.substring(7)) - 1;
     midi.sendShortMsg(deck.on, MaudioXponent.leds.cue1 + cueNumber, value);
 }
@@ -351,24 +340,20 @@ MaudioXponent.hotcue = function(channel, control, value, status, group) {
     }
 };
 
-MaudioXponent.onLoopIn = function(value, group, control)
-{
-    var channel = MaudioXponent.getChannel(group);
-    var deck = MaudioXponent.state.deck[channel];
+MaudioXponent.onLoopIn = function(value, group, control){
+    var deck = MaudioXponent.getDeck[group];
     midi.sendShortMsg(deck.on, 0x29, engine.getValue(group, control) != -1);
 }
 
 MaudioXponent.onLoopOut = function(value, group, control) 
 {
-    var channel = MaudioXponent.getChannel(group);
-    var deck = MaudioXponent.state.deck[channel];
+    var deck = MaudioXponent.getDeck[group];
     midi.sendShortMsg(deck.on, 0x2B, engine.getValue(group, control) != -1);
 }
 
 MaudioXponent.onLoopExit = function(value, group, control) 
 {
-    var channel = MaudioXponent.getChannel(group);
-    var deck = MaudioXponent.state.deck[channel];
+    var deck = MaudioXponent.getDeck[group];
     midi.sendShortMsg(deck.on, 0x2A, engine.getValue(group, control) == 1);
 }
 
@@ -470,8 +455,7 @@ MaudioXponent.playlistoff = function(channel, control, value, status) {
 };
 
 MaudioXponent.onKeyLock = function(value, group) {
-    var channel = MaudioXponent.getChannel(group);
-    var deck = MaudioXponent.state.deck[channel];
+    var deck = MaudioXponent.getDeck[group];
 
     if (value) {
         midi.sendShortMsg(deck.on, 0x1E, 0x01)
@@ -657,15 +641,14 @@ MaudioXponent.fx = function(channel, control, value, status) {
 };
 
 MaudioXponent.onTrackLoaded = function(duration, group) {
-    var channel = MaudioXponent.getChannel(group);
-    var deck = MaudioXponent.state.deck[channel];
+    var deck = MaudioXponent.getDeck[group];
     deck.warnAt = (duration - 30) / parseFloat(duration);
 };
 
 MaudioXponent.nudge = function (channel, control, value, status, group) {
     //script.midiDebug(channel, control, value, status, group);
     var deck = MaudioXponent.state.deck[channel];
-    var controlName = ((control == 0x10 && MaudioXponent.state.nudgeButtonMode == 0) || (control != 0x10 && MaudioXponent.state.nudgeButtonMode == 1))
+    var controlName = ((control == 0x10 && MaudioXponent.config.nudgeButtonMode == 0) || (control != 0x10 && MaudioXponent.config.nudgeButtonMode == 1))
         ? "rate_temp_down" 
         : "rate_temp_up";
     var activate = (status == deck.on);
@@ -682,7 +665,7 @@ MaudioXponent.pfl = function(channel, control, value, status) {
 
         if (i == channel + 1) {
             engine.setValue(group, "pfl", !currentValue);
-        } else if (MaudioXponent.state.pflMode == 1) {
+        } else if (MaudioXponent.config.pflMode == 1) {
             engine.setValue(group, "pfl", 0);
         }
     }
