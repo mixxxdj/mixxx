@@ -1608,7 +1608,7 @@ NumarkMixtrack3.SamplerButton = function(channel, control, value, status, group)
     var isplaying = engine.getValue(group, "play");
     var isLoaded = engine.getValue(group, "track_loaded");
     var padIndex = parseInt(group.substring(8, 9));
-    var sampler = NumarkMixtrack3.samplers["S" + padindex];
+    var sampler = NumarkMixtrack3.samplers["S" + padIndex];
     var decknum = 1;
 
     if (padIndex > 4) {
@@ -1791,7 +1791,7 @@ NumarkMixtrack3.StripTouchEffect = function(channel, control, value, status, gro
     if (deck.shiftKey) {
         engine.setValue(deck.group, "playposition", value / 127);
     } else {
-        deck.StripEffect(value, decknum);
+        deck.StripEffect(value, deck.decknum);
     }
 };
 
