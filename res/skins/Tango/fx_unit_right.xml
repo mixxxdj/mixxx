@@ -31,19 +31,19 @@
                 <Children>
 
                   <Template src="skin:fx_superwetdry_knob.xml">
-                    <SetVariable name="ToolTipId">EffectUnit_super1</SetVariable>
-                    <SetVariable name="ObjectName">SuperWetDry</SetVariable>
-                    <SetVariable name="ConfigKey">super1</SetVariable>
-                    <SetVariable name="Color">blue</SetVariable>
-                    <SetVariable name="Label">Super</SetVariable>
-                  </Template>
-
-                  <Template src="skin:fx_superwetdry_knob.xml">
                     <SetVariable name="ToolTipId">EffectUnit_mix</SetVariable>
                     <SetVariable name="ObjectName">SuperWetDry</SetVariable>
                     <SetVariable name="ConfigKey">mix</SetVariable>
                     <SetVariable name="Color">red</SetVariable>
                     <SetVariable name="Label">Mix</SetVariable>
+                  </Template>
+
+                  <Template src="skin:fx_superwetdry_knob.xml">
+                    <SetVariable name="ToolTipId">EffectUnit_super1</SetVariable>
+                    <SetVariable name="ObjectName">SuperWetDry</SetVariable>
+                    <SetVariable name="ConfigKey">super1</SetVariable>
+                    <SetVariable name="Color">blue</SetVariable>
+                    <SetVariable name="Label">Super</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup><!-- /SuperWetDryContainer -->
