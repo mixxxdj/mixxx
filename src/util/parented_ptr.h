@@ -88,34 +88,35 @@ inline parented_ptr<T> make_parented(Args&&... args) {
     return parented_ptr<T>(new T(std::forward<Args>(args)...));
 }
 
+// Comparison operator definitions
 template<typename T, typename U>
 inline bool operator== (const T* lhs, const parented_ptr<U>& rhs) {
     return lhs == rhs.get();
 }
 
 template<typename T, typename U>
-inline bool operator== (const parented_ptr<T>& lhs, const T* rhs) {
+inline bool operator== (const parented_ptr<T>& lhs, const U* rhs) {
     return lhs.get() == rhs;
 }
 
-template<typename T>
-inline bool operator== (const parented_ptr<T>& lhs, const parented_ptr<T>& rhs) const {
+template<typename T, typename U>
+inline bool operator== (const parented_ptr<T>& lhs, const parented_ptr<U>& rhs) const {
     return lhs.get() == rhs.get();
 }
 
 template<typename T, typename U>
 inline bool operator!= (const T* lhs, const parented_ptr<U>& rhs) {
-    return lhs != rhs.get();
+    return !(lhs == rhs.get());
 }
 
 template<typename T, typename U>
-inline bool operator!= (const parented_ptr<T>& lhs, const T* rhs) {
-    return lhs.get() != rhs;
+inline bool operator!= (const parented_ptr<T>& lhs, const U* rhs) {
+    return !(lhs.get() == rhs);
 }
 
-template<typename T>
-inline bool operator!= (const parented_ptr<T>& lhs, const parented_ptr<T>& rhs) const {
-    return lhs.get() != rhs.get();
+template<typename T, typename U>
+inline bool operator!= (const parented_ptr<T>& lhs, const parented_ptr<U>& rhs) const {
+    return !(lhs.get() == rhs.get());
 }
 
 } // namespace
