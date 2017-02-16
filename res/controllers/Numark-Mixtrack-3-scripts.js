@@ -35,10 +35,10 @@ var scriptpause = 0;
 /**************************
  * Constants for scratching :
  **************************/
-var intervalsPerRev = 1200,
-    rpm = 33 + 1 / 3, //Like a real vinyl !!! :)
-    alpha = 1.0 / 8, //Adjust to suit.
-    beta = alpha / 32; //Adjust to suit.
+var intervalsPerRev = 1200;
+var rpm = 33 + 1 / 3;   // Like a real vinyl !!! :)
+var alpha = 1.0 / 8;    // Adjust to suit.
+var beta = alpha / 32;  // Adjust to suit.
 
 /**************************
  * Loop Size array 
@@ -343,7 +343,9 @@ LED.prototype.flashOff = function(relight) {
         // reset flash variables to 0
         this.flashTimer2 = 0;
     }
+
     this.flashDuration = 0;
+
     if (relight) {
         this.onOff(this.lit);
     } else {
@@ -414,32 +416,25 @@ var SingleDoubleBtn = function(Callback, DoublePressTimeOut) {
     this.status = 0;
     this.group = "";
     this.Callback = Callback;
-    if (DoublePressTimeOut) {
-        this.DoublePressTimeOut = DoublePressTimeOut;
-    } else {
-        //Sets a default value of 400 ms
-        this.DoublePressTimeOut = 400;
-    }
+    this.DoublePressTimeOut = DoublePressTimeOut || 400;
     this.ButtonCount = 0;
     this.ButtonTimer = 0;
 };
 
 // Button pressed
-SingleDoubleBtn.prototype.ButtonDown = function(channel, control, value,
-    status, group) {
+SingleDoubleBtn.prototype.ButtonDown = function(channel, control, value, status, group) {
     var myself = this;
+
     this.channel = channel;
     this.control = control;
     this.value = value;
     this.status = status;
     this.group = group;
-    if (this.ButtonTimer === 0) { // first press
 
-        this.ButtonTimer =
-            engine.beginTimer(this.DoublePressTimeOut,
-                function() {
-                    myself.ButtonDecide();
-                }, true);
+    if (this.ButtonTimer === 0) { // first press
+        this.ButtonTimer = engine.beginTimer(this.DoublePressTimeOut, function() {
+            myself.ButtonDecide();
+        }, true);
         this.ButtonCount = 1;
     } else { // 2nd press (before timer's out)
         engine.stopTimer(this.ButtonTimer);
@@ -452,8 +447,7 @@ SingleDoubleBtn.prototype.ButtonDown = function(channel, control, value,
 // Take action
 SingleDoubleBtn.prototype.ButtonDecide = function() {
     this.ButtonTimer = 0;
-    this.Callback(this.channel, this.control, this.value, this.status, this
-        .group, this.ButtonCount);
+    this.Callback(this.channel, this.control, this.value, this.status, this.group, this.ButtonCount);
     this.ButtonCount = 0;
 };
 
@@ -481,13 +475,7 @@ var LongShortBtn = function(Callback, LongPressThreshold, CallBackOKLongPress) {
     this.status = 0;
     this.group = "";
     this.CallBackOKLongPress = CallBackOKLongPress;
-    if (LongPressThreshold) {
-        this.LongPressThreshold = LongPressThreshold;
-    } else {
-        //Sets a default value of 500 ms
-        this.LongPressThreshold = 500;
-    }
-
+    this.LongPressThreshold = LongPressThreshold || 500;
     this.ButtonLongPress = false;
     this.ButtonLongPressTimer = 0;
 };
@@ -501,13 +489,11 @@ LongShortBtn.prototype.ButtonAssertLongPress = function() {
     // Make sure the callback is a function​ and exist
     if (typeof callback === "function") {
         // Call it, since we have confirmed it is callable​
-        this.CallBackOKLongPress(this.channel, this.control, this.value,
-            this.status, this.group, LONG_PRESS);
+        this.CallBackOKLongPress(this.channel, this.control, this.value, this.status, this.group, LONG_PRESS);
     }
 };
 
-LongShortBtn.prototype.ButtonDown = function(channel, control, value, status,
-    group) {
+LongShortBtn.prototype.ButtonDown = function(channel, control, value, status, group) {
     var myself = this;
     this.channel = channel;
     this.control = control;
@@ -515,10 +501,9 @@ LongShortBtn.prototype.ButtonDown = function(channel, control, value, status,
     this.status = status;
     this.group = group;
     this.ButtonLongPress = false;
-    this.ButtonLongPressTimer = engine.beginTimer(this.LongPressThreshold,
-        function() {
-            myself.ButtonAssertLongPress();
-        }, true);
+    this.ButtonLongPressTimer = engine.beginTimer(this.LongPressThreshold, function() {
+        myself.ButtonAssertLongPress();
+    }, true);
 };
 
 LongShortBtn.prototype.ButtonUp = function() {
@@ -526,12 +511,11 @@ LongShortBtn.prototype.ButtonUp = function() {
         engine.stopTimer(this.ButtonLongPressTimer);
         this.ButtonLongPressTimer = 0;
     }
+
     if (this.ButtonLongPress) {
-        this.Callback(this.channel, this.control, this.value, this.status,
-            this.group, LONG_PRESS);
+        this.Callback(this.channel, this.control, this.value, this.status, this.group, LONG_PRESS);
     } else {
-        this.Callback(this.channel, this.control, this.value, this.status,
-            this.group, QUICK_PRESS);
+        this.Callback(this.channel, this.control, this.value, this.status, this.group, QUICK_PRESS);
     }
 };
 
@@ -553,26 +537,15 @@ LongShortBtn.prototype.ButtonUp = function() {
 //                      button will not be considered as a potential double
 //                      but as a new press cycle event (default = 400ms).
 
-var LongShortDoubleBtn = function(Callback, LongPressThreshold,
-    DoublePressTimeOut) {
+var LongShortDoubleBtn = function(Callback, LongPressThreshold, DoublePressTimeOut) {
     this.Callback = Callback;
     this.channel = 0;
     this.control = 0;
     this.value = 0;
     this.status = 0;
     this.group = "";
-    if (LongPressThreshold) {
-        this.LongPressThreshold = LongPressThreshold;
-    } else {
-        // Sets a default value of 500 ms
-        this.LongPressThreshold = 500;
-    }
-    if (DoublePressTimeOut) {
-        this.DoublePressTimeOut = DoublePressTimeOut;
-    } else {
-        // Sets a default value of 400 ms
-        this.DoublePressTimeOut = 400;
-    }
+    this.LongPressThreshold = LongPressThreshold || 500;
+    this.DoublePressTimeOut = DoublePressTimeOut || 400;
     this.ButtonTimer = 0;
     this.ButtonLongPress = false;
     this.ButtonLongPressTimer = 0;
@@ -606,9 +579,9 @@ LongShortDoubleBtn.prototype.ButtonAssert1Press = function() {
 };
 
 // Button pressed (function called by mapper's code)
-LongShortDoubleBtn.prototype.ButtonDown = function(channel, control, value,
-    status, group) {
+LongShortDoubleBtn.prototype.ButtonDown = function(channel, control, value, status, group) {
     var myself = this;
+
     this.channel = channel;
     this.control = control;
     this.value = value;
@@ -620,18 +593,12 @@ LongShortDoubleBtn.prototype.ButtonDown = function(channel, control, value,
         this.ButtonCount = 1;
         // and short press
         this.ButtonLongPress = false;
-        this.ButtonLongPressTimer =
-            engine.beginTimer(this.LongPressThreshold,
-                function() {
-                    myself.ButtonAssertLongPress();
-                },
-                true);
-        this.ButtonTimer =
-            engine.beginTimer(this.DoublePressTimeOut,
-                function() {
-                    myself.ButtonAssert1Press();
-                },
-                true);
+        this.ButtonLongPressTimer = engine.beginTimer(this.LongPressThreshold, function() {
+            myself.ButtonAssertLongPress();
+        }, true);
+        this.ButtonTimer = engine.beginTimer(this.DoublePressTimeOut, function() {
+            myself.ButtonAssert1Press();
+        }, true);
     } else if (this.ButtonCount === 1) { // 2nd press (before short timer's out)
         // stop timers...           
         if (this.ButtonLongPressTimer !== 0) {
@@ -682,19 +649,17 @@ LongShortDoubleBtn.prototype.ButtonDecide = function() {
     if (this.ButtonLongPressTimer !== 0) {
         engine.stopTimer(this.ButtonLongPressTimer);
     }
+
     this.ButtonLongPressTimer = 0;
     this.ButtonTimer = 0;
 
     if (this.ButtonLongPress) {
-        this.Callback(this.channel, this.control, this.value, this.status,
-            this.group, LONG_PRESS);
+        this.Callback(this.channel, this.control, this.value, this.status, this.group, LONG_PRESS);
     } else {
         if (this.ButtonCount === 2) {
-            this.Callback(this.channel, this.control, this.value, this.status,
-                this.group, DOUBLE_PRESS);
+            this.Callback(this.channel, this.control, this.value, this.status, this.group, DOUBLE_PRESS);
         } else { // We pressed sync only once
-            this.Callback(this.channel, this.control, this.value, this.status,
-                this.group, QUICK_PRESS);
+            this.Callback(this.channel, this.control, this.value, this.status, this.group, QUICK_PRESS);
         }
     }
     // re-init
@@ -810,14 +775,12 @@ NumarkMixtrack3.deck.prototype.TrackIsLoaded = function() {
 
 NumarkMixtrack3.deck.prototype.StripEffect = function(value, decknum) {
     var deck = NumarkMixtrack3.decks["D" + decknum];
-    var ButtonNum;
     var arrayLength = deck.InstantFX.length;
-    var i;
 
     if (!deck.shiftKey) {
         // if deck.shiftKey is true, we are fast seeking thru the track
-        for (i = 0; i < arrayLength; i++) {
-            ButtonNum = deck.InstantFX[i];
+        for (var i = 0; i < arrayLength; i++) {
+            var ButtonNum = deck.InstantFX[i];
             engine.setValue("[EffectRack1_EffectUnit" + decknum + "_Effect" + ButtonNum + "]",
                 "enabled", true);
         }
@@ -1038,6 +1001,7 @@ NumarkMixtrack3.init = function(id, debug) {
 NumarkMixtrack3.initDeck = function(group, remove) {
     var disconnectDeck = parseInt(NumarkMixtrack3.channelRegEx.exec(group)[1]);
     var connectedLED = disconnectDeck;
+
     if (disconnectDeck <= 2) {
         disconnectDeck += 2;
     } else {
@@ -1328,7 +1292,7 @@ NumarkMixtrack3.LoadButton = function(channel, control, value, status, group) {
         if (smartPFL) {
             for (var i = 1; i <= 4; i++) {
                 //Change headphone cue (pfl) to the deck on which the song loaded.
-                engine.setValue("[Channel" + i + "]", "pfl", (deck.decknum === i) ? 1 : 0);
+                engine.setValue("[Channel" + i + "]", "pfl", deck.decknum === i);
             }
         }
 
@@ -1584,11 +1548,7 @@ NumarkMixtrack3.HotCueButton = function(channel, control, value, status, group) 
             deck.LEDs["hotCue" + hotCue].onOff(OFF);
         }
     } else {
-        if (value === DOWN) {
-            engine.setValue(deck.group, "hotcue_" + hotCue + "_activate", 1);
-        } else {
-            engine.setValue(deck.group, "hotcue_" + hotCue + "_activate", 0);
-        }
+        engine.setValue(deck.group, "hotcue_" + hotCue + "_activate", value === DOWN);
     }
 };
 
