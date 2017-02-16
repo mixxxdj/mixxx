@@ -773,22 +773,6 @@ NumarkMixtrack3.deck.prototype.TrackIsLoaded = function() {
     return engine.getValue(this.group, "track_loaded");
 };
 
-NumarkMixtrack3.deck.prototype.StripEffect = function(value, decknum) {
-    var deck = NumarkMixtrack3.decks["D" + decknum];
-    var arrayLength = deck.InstantFX.length;
-
-    if (!deck.shiftKey) {
-        // if deck.shiftKey is true, we are fast seeking thru the track
-        for (var i = 0; i < arrayLength; i++) {
-            var ButtonNum = deck.InstantFX[i];
-            engine.setValue("[EffectRack1_EffectUnit" + decknum + "_Effect" + ButtonNum + "]",
-                "enabled", true);
-        }
-    }
-
-    engine.setValue("[EffectRack1_EffectUnit" + decknum + "]", "super1", value / 127);
-};
-
 // =====================================================================
 // Initialization of the mapping
 // =====================================================================
@@ -1746,7 +1730,15 @@ NumarkMixtrack3.StripTouchEffect = function(channel, control, value, status, gro
     if (deck.shiftKey) {
         engine.setValue(deck.group, "playposition", value / 127);
     } else {
-        deck.StripEffect(value, deck.decknum);
+        for (var i = 0; i < deck.InstantFX.length; i++) {
+            engine.setValue(
+                "[EffectRack1_EffectUnit" + deck.decknum + "_Effect" + deck.InstantFX[i] + "]",
+                "enabled",
+                true
+            );
+        }
+
+        engine.setValue("[EffectRack1_EffectUnit" + deck.decknum + "]", "super1", value / 127);
     }
 };
 
