@@ -884,7 +884,7 @@ WWidget, QLabel {
       background: #0f0f0f url(skin:/buttons/btn_skinsettings_on.svg) no-repeat center center; 
     }
   #SkinSettingsToggler[displayValue="1"] {
-    background: #333333 url(skin:/buttons/btn_skinsettings_on.svg) no-repeat center center;
+    background: #0f0f0f url(skin:/buttons/btn_skinsettings_on.svg) no-repeat center center;
     }
     #SkinSettingsToggler[displayValue="1"]:hover {
       border: 1px solid #666666;
@@ -1194,34 +1194,39 @@ WWidget, QLabel {
 }
 
 #SamplersMiniMaxiButton[displayValue="0"] {
-  background: transparent url(skin:/buttons/btn_samplers_maxi.svg) no-repeat center center;
+  image: url(skin:/buttons/btn_down_thin.svg) no-repeat center center;
   border-radius: 2px;
   }
-  #SamplersMiniMaxiButton[displayValue="0"]:hover {
-    background: #0f0f0f url(skin:/buttons/btn_samplers_maxi_hover.svg) no-repeat center center;
+  #SamplersMiniMaxiButton[displayValue="0"]:hover { /*
+    background: #0f0f0f url(skin:/buttons/btn_down_thin_hover.svg) no-repeat center center; */
+    image: url(skin:/buttons/btn_down_thin_hover.svg) no-repeat center center;
   }
 
-#SamplersMiniMaxiButton[displayValue="1"] {
-  background: transparent url(skin:/buttons/btn_samplers_mini.svg) no-repeat center center;
+#SamplersMiniMaxiButton[displayValue="1"] { /*
+  background: transparent url(skin:/buttons/btn_down_thin.svg) no-repeat center center; */
+  image: url(skin:/buttons/btn_up_thin.svg) no-repeat center center;
   }
-  #SamplersMiniMaxiButton[displayValue="1"]:hover {
-    background: #0f0f0f url(skin:/buttons/btn_samplers_mini_hover.svg) no-repeat center center;
+  #SamplersMiniMaxiButton[displayValue="1"]:hover { /*
+    background: #0f0f0f url(skin:/buttons/btn_up_thin_hover.svg) no-repeat center center;*/
+    image: url(skin:/buttons/btn_up_thin_hover.svg) no-repeat center center;
   }
-
 #SamplersLoadButton {
-  background: transparent url(skin:/buttons/btn_samplers_load.svg) no-repeat center center;
+  image: url(skin:/buttons/btn_samplers_load.svg) no-repeat center center;
   }
-  #SamplersLoadButton:hover {
-    background: #0f0f0f url(skin:/buttons/btn_samplers_load_hover.svg) no-repeat center center;
+  #SamplersLoadButton:hover { /*
+    background: #0f0f0f url(skin:/buttons/btn_samplers_load_hover.svg) no-repeat center center; */
+    image: url(skin:/buttons/btn_samplers_load_hover.svg) no-repeat center center;
   }
 #SamplersSaveButton {
-  background: transparent url(skin:/buttons/btn_samplers_save.svg) no-repeat center center;
+  image: url(skin:/buttons/btn_samplers_save.svg) no-repeat center center;
   }
-  #SamplersSaveButton:hover {
-    background: #0f0f0f url(skin:/buttons/btn_samplers_save_hover.svg) no-repeat center center;
+  #SamplersSaveButton:hover { /*
+    background: #0f0f0f url(skin:/buttons/btn_samplers_save_hover.svg) no-repeat center center; */
+    image: url(skin:/buttons/btn_samplers_save_hover.svg) no-repeat center center;
   }
 #SamplersLoadButton:hover, #SamplersSaveButton:hover, #SamplersMiniMaxiButton:hover {
-  border-radius: 2px;
+  border-radius: 2px; /*
+  background-color: #0f0f0f;  */
 }
 
 #SamplerSyncGainPfl, #SamplerVU, #SamplerPitchSlider, #SamplerTitle {
@@ -1275,8 +1280,9 @@ WWidget, QLabel {
 } /*
   #SamplerButton[displayValue="0"], #SamplerButton[displayValue="2"] {
     color: #4FB7FF;
-  } */
-  #SamplerButton:hover, #SamplerGainKnob:hover {
+  }
+  #SamplerButton:hover, #SamplerGainKnob:hover { */
+  #SamplerButton:hover {
     background-color: #0f0f0f;
     border-radius: 2px;
   }
@@ -1292,8 +1298,8 @@ WWidget, QLabel {
   background-color: #876818;
   margin-left: 1px;	*/
   }
-  #SamplerPitchSlider:hover {
-    background-color: #1a1a1a;
+  #SamplerPitchSlider:hover { /*
+    background-color: #1a1a1a;  */
   }
 
 #SamplerPlay {

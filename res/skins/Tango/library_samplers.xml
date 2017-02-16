@@ -57,7 +57,6 @@ Modes:
                     <Children>                    
                       <Template src="skin:samplers_mini.xml">
                         <SetVariable name="MaxiButtonSize">0f,0f</SetVariable>
-                        <SetVariable name="SpacerSize">0f,0f</SetVariable>
                       </Template>
                     </Children>
                     <Connection>

@@ -78,7 +78,7 @@ Variables:
             <SetVariable name="ConfigKeyPerm">[Tango],Samplers_miniMAXI</SetVariable>
           </Template>
 
-          <WidgetGroup><Size><Variable name="SpacerSize"/></Size></WidgetGroup>
+          <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
 
           <WidgetGroup>
             <Layout>horizontal</Layout>
@@ -123,7 +123,7 @@ Variables:
             <SetVariable name="ConfigKeyPerm">[Tango],Samplers_miniMAXI</SetVariable>
           </Template>
 
-          <WidgetGroup><Size><Variable name="SpacerSize"/></Size></WidgetGroup>
+          <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
 
           <Template src="skin:button_1state.xml">
             <SetVariable name="ObjectName">SamplersLoadButton</SetVariable>
