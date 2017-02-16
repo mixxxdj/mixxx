@@ -971,8 +971,7 @@ NumarkMixtrack3.init = function(id, debug) {
     }
 
     for (var i = 1; i <= 8; i++) {
-        engine.connectControl("[Sampler" + i + "]", "play",
-            "NumarkMixtrack3.OnSamplePlayStop");
+        engine.connectControl("[Sampler" + i + "]", "play", "NumarkMixtrack3.OnSamplePlayStop");
     }
 
     NumarkMixtrack3.initDeck('[Channel1]', false); //Initial load, "remove" is set to false
@@ -1225,10 +1224,9 @@ NumarkMixtrack3.PadModeButton = function(channel, control, value, status, group)
 
     if (value === DOWN) {
         deck.PADMode = true;
-
         //ensure all LEDs are ON (default)
         for (var i = 1; i <= 8; i++) {
-            NumarkMixtrack3.samplers["S" + i + ""].LEDs["PADsampler" + i + ""].onOff(PADcolors.purple);
+            NumarkMixtrack3.samplers["S" + i].LEDs["PADsampler" + i].onOff(PADcolors.purple);
         }
 
         deck.LEDs["PADloop1"].onOff(PADcolors.yellow);
@@ -1789,7 +1787,7 @@ NumarkMixtrack3.FXButton = function(channel, control, value, status, group) {
         }
     } else if (value === DOWN && !deck.TapDown && !deck.PADMode) {
         if (deck.shiftKey) {
-            // Select Effect 
+            // Select Effect
             engine.setValue("[EffectRack1_EffectUnit" + decknum + "_Effect" + ButtonNum + "]",
                 "next_effect", true); // Load FX, but not active
             engine.setValue("[EffectRack1_EffectUnit" + decknum + "_Effect" + ButtonNum + "]",
@@ -1799,10 +1797,7 @@ NumarkMixtrack3.FXButton = function(channel, control, value, status, group) {
         } else {
             // Toggle effect if InstantFX is not active
             if (deck.InstantFX.indexOf(ButtonNum) === -1) {
-                new_value = !engine.getValue("[EffectRack1_EffectUnit" + decknum + "_Effect" + ButtonNum + "]",
-                    "enabled");
-                engine.setValue("[EffectRack1_EffectUnit" + decknum + "_Effect" + ButtonNum + "]", "enabled",
-                    new_value);
+                toggleValue("[EffectRack1_EffectUnit" + decknum + "_Effect" + ButtonNum + "]", "enabled");
                 deck.LEDs["fx" + ButtonNum].onOff(new_value ? ON : OFF);
             }
         }
