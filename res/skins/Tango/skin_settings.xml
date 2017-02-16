@@ -150,75 +150,6 @@ Description:
             </Children>
           </WidgetGroup>
 
-          <Label>
-            <ObjectName>CategoryLabel</ObjectName>
-            <Text>Spinny</Text>
-          </Label>
-          <WidgetGroup><!-- Spinny Settings -->
-            <ObjectName>SkinSettingsCategory</ObjectName>
-            <Layout>vertical</Layout>
-            <Size>200f,min</Size>
-            <Children>
-
-              <Template src="skin:button_3state_persist.xml">
-                <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                <SetVariable name="Size">172f,20f</SetVariable>
-                <SetVariable name="Align">left</SetVariable>
-                <SetVariable name="state_0_text">      Spinny  /  Cover</SetVariable>
-                <SetVariable name="state_1_text"> &#10003; Spinny&#9668; Cover</SetVariable>
-                <SetVariable name="state_2_text"> &#10003; Spinny &#9658;Cover</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Tango],empty_spinny_cover</SetVariable>
-              </Template>
-
-              <WidgetGroup><!-- SpinnyCover submenu -->
-                <Layout>stacked</Layout>
-                <SizePolicy>max,max</SizePolicy>
-                <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
-                  <WidgetGroup><!-- translucent cover when Spinny/Cover is hidden -->
-                    <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>vertical</Layout>
-                    <SizePolicy>me,me</SizePolicy>
-                    <Children/>
-                    <Connection>
-                      <ConfigKey persist="true">[Tango],empty_spinny_cover</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                      <Transform><Not/></Transform>
-                    </Connection>
-                  </WidgetGroup>
-
-                  <WidgetGroup><!-- SpinnyCover submenu buttons -->
-                    <Layout>vertical</Layout>
-                    <SizePolicy>max,max</SizePolicy>
-                    <Children>
-
-                      <Template src="skin:button_2state_persist.xml">
-                        <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                        <SetVariable name="Size">172f,20f</SetVariable>
-                        <SetVariable name="Align">left</SetVariable>
-                        <SetVariable name="state_0_text">      °&#9668; O</SetVariable>
-                        <SetVariable name="state_1_text">      ° &#9658;O</SetVariable>
-                        <SetVariable name="ConfigKeyPerm">[Tango],spinnyCoverBIG</SetVariable>
-                      </Template>
-
-                      <Template src="skin:button_2state_persist.xml">
-                        <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                        <SetVariable name="Size">172f,20f</SetVariable>
-                        <SetVariable name="Align">left</SetVariable>
-                        <SetVariable name="state_0_text">      Cover on Spinny</SetVariable>
-                        <SetVariable name="state_1_text"> &#10003; Cover on Spinny</SetVariable>
-                        <SetVariable name="ConfigKeyPerm">[Tango],spinnyWithCoverArt</SetVariable>
-                      </Template>
-                    </Children>
-                  </WidgetGroup><!-- Spinny/Cover submenu buttons -->
-                </Children>
-              </WidgetGroup><!-- Spinny/Cover submenu -->
-
-            </Children>
-          </WidgetGroup><!-- /Spinny Settings -->
-
           <Label><!-- Mixer Settings -->
             <ObjectName>CategoryLabel</ObjectName>
             <Text>Mixer</Text>
@@ -393,6 +324,75 @@ Description:
               </WidgetGroup><!-- MixerBar submenu -->
             </Children>
           </WidgetGroup><!-- /Mixer Settings -->
+
+          <Label>
+            <ObjectName>CategoryLabel</ObjectName>
+            <Text>Spinny</Text>
+          </Label>
+          <WidgetGroup><!-- Spinny Settings -->
+            <ObjectName>SkinSettingsCategory</ObjectName>
+            <Layout>vertical</Layout>
+            <Size>200f,min</Size>
+            <Children>
+
+              <Template src="skin:button_3state_persist.xml">
+                <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
+                <SetVariable name="Size">172f,20f</SetVariable>
+                <SetVariable name="Align">left</SetVariable>
+                <SetVariable name="state_0_text">      Spinny  /  Cover</SetVariable>
+                <SetVariable name="state_1_text"> &#10003; Spinny&#9668; Cover</SetVariable>
+                <SetVariable name="state_2_text"> &#10003; Spinny &#9658;Cover</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Tango],empty_spinny_cover</SetVariable>
+              </Template>
+
+              <WidgetGroup><!-- SpinnyCover submenu -->
+                <Layout>stacked</Layout>
+                <SizePolicy>max,max</SizePolicy>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover when Spinny/Cover is hidden -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Children/>
+                    <Connection>
+                      <ConfigKey persist="true">[Tango],empty_spinny_cover</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                      <Transform><Not/></Transform>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <WidgetGroup><!-- SpinnyCover submenu buttons -->
+                    <Layout>vertical</Layout>
+                    <SizePolicy>max,max</SizePolicy>
+                    <Children>
+
+                      <Template src="skin:button_2state_persist.xml">
+                        <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
+                        <SetVariable name="Size">172f,20f</SetVariable>
+                        <SetVariable name="Align">left</SetVariable>
+                        <SetVariable name="state_0_text">      °&#9668; O</SetVariable>
+                        <SetVariable name="state_1_text">      ° &#9658;O</SetVariable>
+                        <SetVariable name="ConfigKeyPerm">[Tango],spinnyCoverBIG</SetVariable>
+                      </Template>
+
+                      <Template src="skin:button_2state_persist.xml">
+                        <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
+                        <SetVariable name="Size">172f,20f</SetVariable>
+                        <SetVariable name="Align">left</SetVariable>
+                        <SetVariable name="state_0_text">      Cover on Spinny</SetVariable>
+                        <SetVariable name="state_1_text"> &#10003; Cover on Spinny</SetVariable>
+                        <SetVariable name="ConfigKeyPerm">[Tango],spinnyWithCoverArt</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup><!-- Spinny/Cover submenu buttons -->
+                </Children>
+              </WidgetGroup><!-- Spinny/Cover submenu -->
+
+            </Children>
+          </WidgetGroup><!-- /Spinny Settings -->
 
           <Label><!-- Extras -->
             <ObjectName>CategoryLabel</ObjectName>
