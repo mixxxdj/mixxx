@@ -225,87 +225,124 @@ WWidget, QLabel {
   background-color: #331299;	*/
 }
 
-#MasterLabel, #HeadLabel, #Mic1Label, #Mic2Label, #Aux1Label, #Aux2Label {
+#MasterLabel, #HeadLabel, #MicLabel, #Mic1Label, #Mic2Label, #Aux1Label, #Aux2Label { /*
+  border-radius: 2px;
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 0.5, y2: 0,
+                                    stop: 0 #666666,
+                                    stop: 1 #1e1e1e); */
   border: 1px solid #585858;
-  border-radius: 2px; /*
   border-right: 0px;
-  border-bottom: 0px; */
-}
-#HeadLabel:hover, #Mic1Label:hover,
-#Mic2Label:hover, #Aux1Label:hover, #Aux2Label:hover {
-  background-color: #000000;
+  border-bottom: 0px;
 }
 
 #MasterLabel {
   image: url(skin:/buttons/btn_master.svg) no-repeat center center;
   }
 
-#HeadLabel[displayValue="0"] {
+#HeadLabel {
   image: url(skin:/buttons/btn_head.svg) no-repeat center center;
-  }
+  } /*
   #HeadLabel[displayValue="0"]:hover {
     image: url(skin:/buttons/btn_head_mute_hover.svg) no-repeat center center;
   }
   #HeadLabel[displayValue="1"] {
     image: url(skin:/buttons/btn_head_mute.svg) no-repeat center center;
+  } */
+
+#MicLabel {
+  image: url(skin:/buttons/btn_mic.svg) no-repeat center center;
   }
 
-#Mic1Label[displayValue="0"] {
+#Mic1Label {
   image: url(skin:/buttons/btn_mic1.svg) no-repeat center center;
-  }
+  } /*
   #Mic1Label[displayValue="0"]:hover {
     image: url(skin:/buttons/btn_mic1_mute_hover.svg) no-repeat center center;
   }
   #Mic1Label[displayValue="1"] {
     image: url(skin:/buttons/btn_mic1_mute.svg) no-repeat center center;
-  }
+  } */
 
-#Mic2Label[displayValue="0"] {
+#Mic2Label {
   image: url(skin:/buttons/btn_mic2.svg) no-repeat center center;
-  }
+  } /*
   #Mic2Label[displayValue="0"]:hover {
     image: url(skin:/buttons/btn_mic2_mute_hover.svg) no-repeat center center;
   }
   #Mic2Label[displayValue="1"] {
     image: url(skin:/buttons/btn_mic2_mute.svg) no-repeat center center;
-  }
+  } */
 
-#Aux1Label[displayValue="0"] {
+#Aux1Label {
   image: url(skin:/buttons/btn_aux1.svg) no-repeat center center;
-  }
+  } /*
   #Aux1Label[displayValue="0"]:hover {
     image: url(skin:/buttons/btn_aux1_mute_hover.svg) no-repeat center center;
   }
   #Aux1Label[displayValue="1"] {
     image: url(skin:/buttons/btn_aux1_mute.svg) no-repeat center center;
-  }
+  } */
 
-#Aux2Label[displayValue="0"] {
+#Aux2Label {
   image: url(skin:/buttons/btn_aux2.svg) no-repeat center center;
-  }
+  } /*
   #Aux2Label[displayValue="0"]:hover {
     image: url(skin:/buttons/btn_aux2_mute_hover.svg) no-repeat center center;
   }
   #Aux2Label[displayValue="1"] {
     image: url(skin:/buttons/btn_aux2_mute.svg) no-repeat center center;
-  }
+  } */
 
 #MixerBarButton {
-  border: 1px solid #000000;
   border-radius: 2px;
-  margin-bottom: 4px;
+  font-weight: bold; /*
+  margin: 2px 0px 6px 0px;  */
   }
-  #MixerBarButton:hover {
-    border: 1px solid #888888;
+  #MixerBarButton[displayValue="0"] {
+    background-color: #333333;
+    color: #888888;
     }
-#MixerBarButton:hover, #MixerBarButton:hover, #MixerBarSlider:hover, #MixerBarKnob:hover {  /*
-  border: 1px solid #666666;  */
+    #MixerBarButton:hover[displayValue="0"] {
+      border: 1px solid #888888;
+    }
+  #MixerBarButton[displayValue="1"],
+  #MixerBarButton[displayValue="2"] {
+    background-color: #666666;
+    color: #eeeeee;
+    }
+    #MixerBarButton:hover[displayValue="1"]:hover,
+    #MixerBarButton:hover[displayValue="2"]:hover {
+      border: 1px solid #eeeeee;
+    }
+
+#MixerBarSlider:hover, #MixerBarKnob:hover {  /*
+  border: 1px solid #666666;
   background-color: #000000;
-  border-radius: 2px;
+  border-radius: 2px;  */
   }
 
 #VUMeterFloating_h {
   margin: 0px 3px 0px 1px;
+}
+
+#MixerBarToggler[displayValue="0"] {
+  background: transparent url(skin:/buttons/btn_right_thin.svg) no-repeat center top;
+}
+
+#MixerBarToggler[displayValue="0"]:hover {
+  background: transparent url(skin:/buttons/btn_right_thin_hover.svg) no-repeat center top;
+}
+
+#MixerBarToggler[displayValue="1"] {
+  background: transparent url(skin:/buttons/btn_left_thin.svg) no-repeat center top;
+}
+
+#MixerBarToggler[displayValue="1"]:hover {
+  background: transparent url(skin:/buttons/btn_left_thin_hover.svg) no-repeat center top;
+}
+
+#MixerBarCover {
+  background-color: rgba(30, 30, 30, 200);
 }
 
 /*################################################################
@@ -470,16 +507,20 @@ WWidget, QLabel {
   padding: 1px 1px 1px 0px;
   background-color: #333333;
   }
-  #DeckButtonTogglerLeft[displayValue="0"], #DeckButtonTogglerRight[displayValue="1"] {
+  #DeckButtonTogglerLeft[displayValue="0"],
+  #DeckButtonTogglerRight[displayValue="1"] {
     background: transparent url(skin:/buttons/btn_right_thin.svg) no-repeat center center;
   }
-  #DeckButtonTogglerLeft[displayValue="0"]:hover, #DeckButtonTogglerRight[displayValue="1"]:hover {
+  #DeckButtonTogglerLeft[displayValue="0"]:hover,
+  #DeckButtonTogglerRight[displayValue="1"]:hover {
     background: transparent url(skin:/buttons/btn_right_thin_hover.svg) no-repeat center center;
   }
-  #DeckButtonTogglerLeft[displayValue="1"], #DeckButtonTogglerRight[displayValue="0"] {
+  #DeckButtonTogglerLeft[displayValue="1"],
+  #DeckButtonTogglerRight[displayValue="0"] {
     background: transparent url(skin:/buttons/btn_left_thin.svg) no-repeat center center;
   }
-  #DeckButtonTogglerLeft[displayValue="1"]:hover, #DeckButtonTogglerRight[displayValue="0"]:hover {
+  #DeckButtonTogglerLeft[displayValue="1"]:hover,
+  #DeckButtonTogglerRight[displayValue="0"]:hover {
     background: transparent url(skin:/buttons/btn_left_thin_hover.svg) no-repeat center center;
   }
   #DeckButton:hover {
@@ -1194,21 +1235,21 @@ WWidget, QLabel {
 }
 
 #SamplersMiniMaxiButton[displayValue="0"] {
-  image: url(skin:/buttons/btn_down_thin.svg) no-repeat center center;
+  image: url(skin:/buttons/btn_down_thin.svg) no-repeat center top;
   border-radius: 2px;
   }
   #SamplersMiniMaxiButton[displayValue="0"]:hover { /*
     background: #0f0f0f url(skin:/buttons/btn_down_thin_hover.svg) no-repeat center center; */
-    image: url(skin:/buttons/btn_down_thin_hover.svg) no-repeat center center;
+    image: url(skin:/buttons/btn_down_thin_hover.svg) no-repeat center top;
   }
 
 #SamplersMiniMaxiButton[displayValue="1"] { /*
   background: transparent url(skin:/buttons/btn_down_thin.svg) no-repeat center center; */
-  image: url(skin:/buttons/btn_up_thin.svg) no-repeat center center;
+  image: url(skin:/buttons/btn_up_thin.svg) no-repeat center top;
   }
   #SamplersMiniMaxiButton[displayValue="1"]:hover { /*
     background: #0f0f0f url(skin:/buttons/btn_up_thin_hover.svg) no-repeat center center;*/
-    image: url(skin:/buttons/btn_up_thin_hover.svg) no-repeat center center;
+    image: url(skin:/buttons/btn_up_thin_hover.svg) no-repeat center top;
   }
 #SamplersLoadButton {
   image: url(skin:/buttons/btn_samplers_load.svg) no-repeat center center;

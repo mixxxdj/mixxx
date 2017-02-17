@@ -14,7 +14,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_pfl_on.svg">
+   sodipodi:docname="btn_head.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -25,7 +25,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="2.8"
-     inkscape:cx="-47.231622"
+     inkscape:cx="-107.58876"
      inkscape:cy="25.550003"
      inkscape:document-units="px"
      inkscape:current-layer="g3923"
@@ -46,24 +46,7 @@
      inkscape:window-height="746"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="1">
-    <sodipodi:guide
-       orientation="1,0"
-       position="3.4642849,24.0089"
-       id="guide3828" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="8.4642849,2.272843"
-       id="guide3830" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="8.73181,21.1386"
-       id="guide3850" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="34.976532,21.1386"
-       id="guide3852" />
-  </sodipodi:namedview>
+     inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -72,7 +55,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -85,7 +68,7 @@
     <path
        id="path3925"
        d="m 28,1004.081 c -11.176118,0 -20.28125,9.1049 -20.28125,20.2812 0,1.2779 0.1165944,2.5073 0.34375,3.7188 l 2,10.6875 1,5.0937 4.40625,-0.8437 -0.96875,-5.0625 -2.03125,-10.6875 -0.0625,-0.2813 0.0625,0 c -0.147469,-0.8597 -0.25,-1.7157 -0.25,-2.625 0,-8.7438 7.037512,-15.7812 15.78125,-15.7812 8.743738,-10e-5 15.78125,7.0374 15.78125,15.7812 0,1.0064 -0.104443,1.9581 -0.28125,2.9063 l -2,10.6875 -0.96875,5.0937 4.40625,0.8125 1,-5.0937 1.9375,-10.375 -0.03125,0 0.0625,-0.3125 c 0.227911,-1.2155 0.375,-2.445 0.375,-3.7188 0,-11.1763 -9.105133,-20.2812 -20.28125,-20.2812 z"
-       style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#888888;fill-opacity:1;stroke:none;stroke-width:0.50000000000000000;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans"
+       style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#d2d2d2;fill-opacity:1;stroke:none;stroke-width:0.50000000000000000;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans"
        inkscape:connector-curvature="0" />
     <rect
        inkscape:transform-center-y="-2.1158793"
@@ -98,7 +81,7 @@
        height="16.861713"
        width="8.5496006"
        id="rect3927"
-       style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none" />
+       style="fill:#d2d2d2;fill-opacity:1;fill-rule:nonzero;stroke:none" />
     <rect
        inkscape:transform-center-y="-2.1159343"
        inkscape:transform-center-x="-4.7982362"
@@ -110,6 +93,6 @@
        height="16.861725"
        width="8.5497475"
        id="rect3929"
-       style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none" />
+       style="fill:#d2d2d2;fill-opacity:1;fill-rule:nonzero;stroke:none" />
   </g>
 </svg>

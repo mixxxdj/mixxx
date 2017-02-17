@@ -346,82 +346,91 @@
                       </Connection>
                     </WidgetGroup>
 
-                    <WidgetGroup><!-- [Decks + 2 FX / Decks + 4 FX] + Samplers_Library -->
-                      <Layout>vertical</Layout>
+                    <WidgetGroup><!-- Decks + size-aware triggers in the back -->
+                      <Layout>stacked</Layout>
                       <SizePolicy>me,min</SizePolicy>
                       <Children>
-                        <WidgetGroup><!-- Decks + 2 FX Units -->
+                        <WidgetGroup><!-- [Decks + 2 FX / Decks + 4 FX] + Samplers_Library -->
                           <Layout>vertical</Layout>
                           <SizePolicy>me,min</SizePolicy>
                           <Children>
+                            <WidgetGroup><!-- Decks + 2 FX Units -->
+                              <Layout>vertical</Layout>
+                              <SizePolicy>me,min</SizePolicy>
+                              <Children>
 
-                            <SingletonContainer>
-                              <ObjectName>Decks12_Singleton</ObjectName>
-                            </SingletonContainer>
-                            <SingletonContainer>
-                              <ObjectName>Decks34_Singleton</ObjectName>
+                                <SingletonContainer>
+                                  <ObjectName>Decks12_Singleton</ObjectName>
+                                </SingletonContainer>
+                                <SingletonContainer>
+                                  <ObjectName>Decks34_Singleton</ObjectName>
+                                  <Connection>
+                                    <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+                                    <BindProperty>visible</BindProperty>
+                                  </Connection>
+                                </SingletonContainer>
+
+                                <Template src="skin:fx_units_12.xml"/>
+
+                              </Children>
                               <Connection>
-                                <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+                                <ConfigKey persist="true">[Tango],2or4_fxUnits</ConfigKey>
+                                <Transform><Not/></Transform>
                                 <BindProperty>visible</BindProperty>
                               </Connection>
-                            </SingletonContainer>
+                            </WidgetGroup><!-- /Decks + 2 FX Units +  -->
 
-                            <Template src="skin:fx_units_12.xml"/>
+                            <WidgetGroup><!-- Decks + 4  FX Units -->
+                              <Layout>vertical</Layout>
+                              <SizePolicy>me,min</SizePolicy>
+                              <Children>
 
-                          </Children>
-                          <Connection>
-                            <ConfigKey persist="true">[Tango],2or4_fxUnits</ConfigKey>
-                            <Transform><Not/></Transform>
-                            <BindProperty>visible</BindProperty>
-                          </Connection>
-                        </WidgetGroup><!-- /Decks + 2 FX Units +  -->
+                                <SingletonContainer>
+                                  <ObjectName>Decks12_Singleton</ObjectName>
+                                </SingletonContainer>
 
-                        <WidgetGroup><!-- Decks + 4  FX Units -->
-                          <Layout>vertical</Layout>
-                          <SizePolicy>me,min</SizePolicy>
-                          <Children>
+                                <Template src="skin:fx_units_12.xml"/>
 
-                            <SingletonContainer>
-                              <ObjectName>Decks12_Singleton</ObjectName>
-                            </SingletonContainer>
+                                <SingletonContainer>
+                                  <ObjectName>Decks34_Singleton</ObjectName>
+                                  <Connection>
+                                    <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+                                    <BindProperty>visible</BindProperty>
+                                  </Connection>
+                                </SingletonContainer>
 
-                            <Template src="skin:fx_units_12.xml"/>
+                                <Template src="skin:fx_units_34.xml"/>
 
-                            <SingletonContainer>
-                              <ObjectName>Decks34_Singleton</ObjectName>
+                              </Children>
                               <Connection>
-                                <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+                                <ConfigKey persist="true">[Tango],2or4_fxUnits</ConfigKey>
                                 <BindProperty>visible</BindProperty>
                               </Connection>
-                            </SingletonContainer>
+                            </WidgetGroup><!-- /Decks + 4 FX Units -->
 
-                            <Template src="skin:fx_units_34.xml"/>
+                            <Template src="skin:library_samplers.xml"/>
+
+                            <WidgetGroup><!-- MixerBar when Library is not shown -->
+                              <ObjectName>MixerBar_Container_skin</ObjectName>
+                              <Layout>horizontal</Layout>
+                              <SizePolicy>min,max</SizePolicy>
+                              <Children>
+                                <Template src="skin:mixerbar.xml"/>
+                              </Children>
+                              <Connection>
+                                <ConfigKey>[Library],show_library</ConfigKey>
+                                <Transform><Not/></Transform>
+                                <BindProperty>visible</BindProperty>
+                              </Connection>
+                            </WidgetGroup><!-- /MixerBar when Library is not shown -->
 
                           </Children>
-                          <Connection>
-                            <ConfigKey persist="true">[Tango],2or4_fxUnits</ConfigKey>
-                            <BindProperty>visible</BindProperty>
-                          </Connection>
-                        </WidgetGroup><!-- /Decks + 4 FX Units -->
-
-                        <Template src="skin:library_samplers.xml"/>
-
-                        <WidgetGroup><!-- MixerBar when Library is not shown -->
-                          <ObjectName>MixerBar_Container_skin</ObjectName>
-                          <Layout>horizontal</Layout>
-                          <SizePolicy>min,max</SizePolicy>
-                          <Children>
-                            <Template src="skin:mixerbar.xml"/>
-                          </Children>
-                          <Connection>
-                            <ConfigKey>[Library],show_library</ConfigKey>
-                            <Transform><Not/></Transform>
-                            <BindProperty>visible</BindProperty>
-                          </Connection>
-                        </WidgetGroup><!-- /MixerBar when Library is not shown -->
-
+                        </WidgetGroup><!-- /2 FX + Decks, 4 FX + Decks, Samplers_Library -->
+                        
+                        <Template src="skin:vsize_detector.xml"/>
+                        
                       </Children>
-                    </WidgetGroup><!-- /2 FX + Decks, 4 FX + Decks, Samplers_Library -->
+                    </WidgetGroup><!-- Decks + size-aware triggers in the back -->
                   </Children>
                 </Splitter><!-- /Lib normal, stacked resizable waveforms -->
 

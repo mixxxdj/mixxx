@@ -24,11 +24,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.6568542"
-     inkscape:cx="-42.636227"
-     inkscape:cy="22.177467"
+     inkscape:zoom="4"
+     inkscape:cx="8.1815619"
+     inkscape:cy="57.60342"
      inkscape:document-units="px"
-     inkscape:current-layer="flowRoot3890"
+     inkscape:current-layer="g3923"
      showgrid="false"
      inkscape:snap-page="true"
      inkscape:snap-bbox="true"
@@ -67,24 +67,16 @@
      inkscape:label="OFF"
      style="display:inline">
     <g
-       id="g2989"
-       transform="translate(-88.571429,8.1332715)" />
-    <path
-       style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       d="m 68.223758,1018.0534 c -0.438812,0 -0.792079,0.3532 -0.792079,0.792 l 0,7.5001 -3.316834,0 0,10.4702 2.376239,4.7526 0,6.4851 4.752479,0 0,-6.4851 2.376239,-4.7526 0,-10.4702 -3.316833,0 0,-7.5001 c 0,-0.4388 -0.353269,-0.792 -0.792081,-0.792 l -1.28713,0 z"
-       id="rect3835"
-       inkscape:connector-curvature="0" />
-    <g
        transform="translate(30.84525,1007.0622)"
        style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Ubuntu;-inkscape-font-specification:Ubuntu"
        id="flowRoot3890">
       <path
          d="m -11.066584,40.666189 0,-9.688 c -0.522672,0.373346 -1.120005,0.709345 -1.792,1.008 -0.672004,0.280011 -1.241336,0.504011 -1.708,0.672 l -1.12,-2.856 c 0.447998,-0.167986 0.933331,-0.382653 1.456,-0.644 0.522663,-0.261319 1.045329,-0.550652 1.568,-0.868 0.522662,-0.317318 1.017328,-0.653317 1.484,-1.008 0.46666,-0.35465 0.867993,-0.71865 1.2040005,-1.092 l 2.352,0 0,14.476 3.444,0 0,2.856 -10.5280005,0 0,-2.856 3.64,0"
-         style="font-size:28px;font-weight:bold;fill:#888888;fill-opacity:1;font-family:Ubuntu Mono;-inkscape-font-specification:Ubuntu Mono Bold"
+         style="font-size:28px;font-weight:bold;fill:#d2d2d2;fill-opacity:1;font-family:Ubuntu Mono;-inkscape-font-specification:Ubuntu Mono Bold"
          id="path2989"
          inkscape:connector-curvature="0" />
       <path
-         style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none"
+         style="fill:#d2d2d2;fill-opacity:1;fill-rule:nonzero;stroke:none"
          d="m -22.684947,15.9032 c -0.390055,0 -0.70407,0.314 -0.70407,0.704 l 0,6.6667 -2.948297,0 0,9.3068 2.112213,4.2247 0,5.7644 4.224425,0 0,-5.7644 2.112213,-4.2247 0,-9.3068 -2.948296,0 0,-6.6667 c 0,-0.39 -0.314017,-0.704 -0.704072,-0.704 l -1.144116,0 z"
          id="rect3835-6"
          inkscape:connector-curvature="0" />
