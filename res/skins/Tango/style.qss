@@ -532,6 +532,7 @@ WWidget, QLabel {
     border: 1px solid #cccccc;	*/
   }
   #SyncModeButton {
+    font-weight: bold;
     color: #888888;
     }
     #SyncModeButton:hover {

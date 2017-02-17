@@ -24,21 +24,17 @@
   * Waveforms
     - redesign beatgrid buttons, incl. hover
     - color center line?
-    - fixed size for beatgrid button containers > v-centerd, only min container has bg-color
 
   * Decks
     - CF assignment buttons with 4 decks
     - Vinyl passthrough: replace Deck (text, overview, buttons)
       (annoying Pref pop-up when switching OFF [undefined], file bug report)
     - bold Sync mode buttons
-    - smaĺler text size for beatloop/beatlooproll buttons
 
   * Mixer
-    - 4-decks CF: replace Logo, move desat. Logo to bottom
 
   * Mixerbar
     - move on top of Library? optional
-    - Mic auto-duck button, ducking strength knob
     - Mute icons
 
   * Skin Controls
@@ -53,8 +49,6 @@
    - FX chain Save & Load buttons
 
   * Samplers
-    - pregain > volume (check LateNight & Deere)
-    - mini/MAXI icon
 
   * Library
     - distinguish focused/unfocused TreeView/Tracks/other?
