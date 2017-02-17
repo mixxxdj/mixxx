@@ -920,7 +920,7 @@ NumarkMixtrack3.init = function(id, debug) {
 
     // Initialise some others (PAD LEDs)
     for (var i = 1; i <= 8; i++) {
-        NumarkMixtrack3.samplers["S" + k].LEDs["PADsampler" + k].onOff(PADcolors.black);
+        NumarkMixtrack3.samplers["S" + i].LEDs["PADsampler" + i].onOff(PADcolors.black);
     }
 
     for (var i = 1; i <= 4; i++) {
@@ -1505,7 +1505,7 @@ NumarkMixtrack3.WheelMove = function(channel, control, value, status, group) {
     var isPlaying = engine.getValue(deck.Jog.group, "play");
 
     // pitch bend when playing - side or platter have same effect
-    if (isPlaying && (PitchBenOnWheelOff || deck.jogWheelsInScratchMode)) {
+    if (isPlaying && (PitchBendOnWheelOff || deck.jogWheelsInScratchMode)) {
         var gammaInputRange = 13; // Max jog speed
         var maxOutFraction = 0.8; // Where on the curve it should peak; 0.5 is half-way
         var sensitivity = 0.5; // Adjustment gamma
@@ -1575,10 +1575,10 @@ NumarkMixtrack3.SamplerButton = function(channel, control, value, status, group)
                 engine.setValue(group, "beatsync", 1);
             }
 
-            sampler.LEDs["PADsampler" + padindex].flashOn(300, PADcolors.purple, 300);
+            sampler.LEDs["PADsampler" + padIndex].flashOn(300, PADcolors.purple, 300);
         } else {
             engine.setValue(group, "stop", 1);
-            sampler.LEDs["PADsampler" + padindex].onOff(ON);
+            sampler.LEDs["PADsampler" + padIndex].onOff(ON);
 
             if (deck.shiftKey) {
                 engine.setValue(group, "eject", 1);
@@ -1605,7 +1605,7 @@ NumarkMixtrack3.onPADSampleButtonHold = function(channel, control, value, status
     // pad button is lifted, the Sampler stops
     if (eventkind === LONG_PRESS) {
         engine.setValue(group, "stop", 1);
-        sampler.LEDs["PADsampler" + padindex].onOff(ON);
+        sampler.LEDs["PADsampler" + padIndex].onOff(ON);
     }
 };
 
@@ -1986,6 +1986,7 @@ NumarkMixtrack3.bpmTap = function(channel, control, value, status, group) {
 NumarkMixtrack3.EQKnob = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
     var decknum = deck.decknum;
+    var knobValue = value / 127;
     var EQp, FXp;
 
     switch (control) {
@@ -2005,24 +2006,25 @@ NumarkMixtrack3.EQKnob = function(channel, control, value, status, group) {
 
     // default behavior is to control EQ
     if (!deck.shiftKey && !deck.PADMode && !deck.TapDown) {
-        engine.setParameter("[EqualizerRack1_[Channel" + decknum + "]_Effect1]", "parameter" + EQp, value);
+        engine.setParameter("[EqualizerRack1_[Channel" + decknum + "]_Effect1]", "parameter" + EQp, knobValue);
     }
 
     // modified behaviour controls effect parameters
     if (deck.shiftKey) {
-        engine.setParameter("[EffectRack1_EffectUnit" + decknum + "_Effect1]", "parameter" + FXp, value);
+        engine.setParameter("[EffectRack1_EffectUnit" + decknum + "_Effect1]", "parameter" + FXp, knobValue);
     }
     if (deck.PADMode) {
-        engine.setParameter("[EffectRack1_EffectUnit" + decknum + "_Effect2]", "parameter" + FXp, value);
+        engine.setParameter("[EffectRack1_EffectUnit" + decknum + "_Effect2]", "parameter" + FXp, knobValue);
     }
     if (deck.TapDown) {
-        engine.setParameter("[EffectRack1_EffectUnit" + decknum + "_Effect3]", "parameter" + FXp, value);
+        engine.setParameter("[EffectRack1_EffectUnit" + decknum + "_Effect3]", "parameter" + FXp, knobValue);
     }
 };
 
 NumarkMixtrack3.FilterKnob = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup("[Channel" + group.substring(26, 27) + "]");
     var decknum = deck.decknum;
+    var knobValue = value / 127;
 
     // default behavior is to control filter
     if (!deck.shiftKey && !deck.PADMode && !deck.TapDown) {
@@ -2034,10 +2036,10 @@ NumarkMixtrack3.FilterKnob = function(channel, control, value, status, group) {
         engine.setParameter("[EffectRack1_EffectUnit" + decknum + "_Effect1]", "parameter4", value);
     }
     if (deck.PADMode) {
-        engine.setParameter("[EffectRack1_EffectUnit" + decknum + "_Effect2]", "parameter4", value);
+        engine.setParameter("[EffectRack1_EffectUnit" + decknum + "_Effect2]", "parameter4", knobValue);
     }
     if (deck.TapDown) {
-        engine.setParameter("[EffectRack1_EffectUnit" + decknum + "_Effect3]", "parameter4", value);
+        engine.setParameter("[EffectRack1_EffectUnit" + decknum + "_Effect3]", "parameter4", knobValue);
     }
 };
 
@@ -2147,7 +2149,7 @@ NumarkMixtrack3.OnPlaypositionChange = function(value, group, control) {
     var duration = engine.getValue(group, "duration");
 
     if (deck.loaded && TrackEndWarning) {
-        var timeremaining = RealDuration(group) * (1 - value);
+        var timeremaining = duration * (1 - value);
 
         if (timeremaining <= 30) {
             // flashing slowly
