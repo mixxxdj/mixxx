@@ -1986,44 +1986,34 @@ NumarkMixtrack3.bpmTap = function(channel, control, value, status, group) {
 NumarkMixtrack3.EQKnob = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
     var decknum = deck.decknum;
+    var focusedEffect = engine.getValue("[EffectRack1_EffectUnit" + decknum + "]", "focused_effect");
     var EQp = 4 - control; // convert control number to parameter number in mixxx
     var FXp = control; // control number matches effect param order
 
     // default behavior is to control EQ
-    if (!deck.shiftKey && !deck.PADMode && !deck.TapDown) {
+    // when shifted, change parameters of focused effect
+    if (deck.shiftKey && focusedEffect) {
+        parameterSoftTakeOver(
+            "[EffectRack1_EffectUnit" + decknum + "_Effect" + focusedEffect +"]", "parameter" + FXp, value
+        );
+    } else {
         parameterSoftTakeOver("[EqualizerRack1_[Channel" + decknum + "]_Effect1]", "parameter" + EQp, value);
-    }
-
-    // modified behaviour controls effect parameters
-    if (deck.shiftKey) {
-        parameterSoftTakeOver("[EffectRack1_EffectUnit" + decknum + "_Effect1]", "parameter" + FXp, value);
-    }
-    if (deck.PADMode) {
-        parameterSoftTakeOver("[EffectRack1_EffectUnit" + decknum + "_Effect2]", "parameter" + FXp, value);
-    }
-    if (deck.TapDown) {
-        parameterSoftTakeOver("[EffectRack1_EffectUnit" + decknum + "_Effect3]", "parameter" + FXp, value);
     }
 };
 
 NumarkMixtrack3.FilterKnob = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup("[Channel" + group.substring(26, 27) + "]");
     var decknum = deck.decknum;
+    var focusedEffect = engine.getValue("[EffectRack1_EffectUnit" + decknum + "]", "focused_effect");
 
     // default behavior is to control filter
-    if (!deck.shiftKey && !deck.PADMode && !deck.TapDown) {
+    // when shifted, change parameters of focused effect
+    if (deck.shiftKey && focusedEffect) {
+        parameterSoftTakeOver(
+            "[EffectRack1_EffectUnit" + decknum + "_Effect" + focusedEffect + "]", "parameter4", value
+        );
+    } else {
         parameterSoftTakeOver("[QuickEffectRack1_[Channel" + decknum + "]]", "super1", value);
-    }
-
-    // modified behaviour controls effect parameters
-    if (deck.shiftKey) {
-        parameterSoftTakeOver("[EffectRack1_EffectUnit" + decknum + "_Effect1]", "parameter4", value);
-    }
-    if (deck.PADMode) {
-        parameterSoftTakeOver("[EffectRack1_EffectUnit" + decknum + "_Effect2]", "parameter4", value);
-    }
-    if (deck.TapDown) {
-        parameterSoftTakeOver("[EffectRack1_EffectUnit" + decknum + "_Effect3]", "parameter4", value);
     }
 };
 
