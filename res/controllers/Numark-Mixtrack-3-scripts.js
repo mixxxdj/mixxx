@@ -1593,13 +1593,13 @@ NumarkMixtrack3.SamplerButton = function(channel, control, value, status, group)
 
 NumarkMixtrack3.onPADSampleButtonHold = function(channel, control, value, status, group, eventkind) {
     var padIndex = parseInt(group.substring(8, 9));
+    var sampler = NumarkMixtrack3.samplers["S" + padIndex];
     var decknum = 1;
 
     if (padIndex > 4) {
         decknum = 2;
     }
 
-    var sampler = NumarkMixtrack3.samplers["S" + decknum];
 
     // the event is a Long Press, LONG_PRESS is true, we set a variable so that when the 
     // pad button is lifted, the Sampler stops
@@ -1610,13 +1610,13 @@ NumarkMixtrack3.onPADSampleButtonHold = function(channel, control, value, status
 };
 
 NumarkMixtrack3.OnSamplePlayStop = function(value, group, control) {
-    var decknum = parseInt(group.substring(8, 9));
-    var sampler = NumarkMixtrack3.samplers["S" + decknum];
+    var padIndex = parseInt(group.substring(8, 9));
+    var sampler = NumarkMixtrack3.samplers["S" + padIndex];
 
     if (value === 1) {
-        sampler.LEDs["PADsampler" + decknum].flashOn(300, PADcolors.purple, 300);
+        sampler.LEDs["PADsampler" + padIndex].flashOn(300, PADcolors.purple, 300);
     } else {
-        sampler.LEDs["PADsampler" + decknum].onOff(ON);
+        sampler.LEDs["PADsampler" + padIndex].onOff(ON);
     }
 };
 
