@@ -62,7 +62,7 @@
       <attribute persist="true" config_key="[Tango],crossfader">0</attribute>
       <attribute persist="true" config_key="[Tango],crossfader_logo_Stack">0</attribute>
       <attribute persist="true" config_key="[Tango],eq_knobs">1</attribute>
-      <attribute persist="true" config_key="[Tango],extra_deckbuttons">1</attribute>
+      <attribute persist="true" config_key="[Tango],deck_controls">1</attribute>
       <attribute persist="true" config_key="[Tango],hotcues">2</attribute>
       <attribute persist="true" config_key="[Tango],mixerbar">0</attribute>
       <attribute persist="true" config_key="[Tango],mixerbar_aux">1</attribute>

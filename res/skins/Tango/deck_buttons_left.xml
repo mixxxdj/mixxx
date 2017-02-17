@@ -24,7 +24,7 @@
           <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
             <SetVariable name="ObjectName">DeckButtonTogglerLeft</SetVariable>
             <SetVariable name="Size">11f,22f</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[Tango],extra_deckbuttons</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Tango],deck_controls</SetVariable>
           </Template>
 
           <WidgetGroup><!-- Extra Deck Buttons -->
@@ -81,7 +81,7 @@
               </Template>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],extra_deckbuttons</ConfigKey>
+              <ConfigKey persist="true">[Tango],deck_controls</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /Extra Deck Buttons -->

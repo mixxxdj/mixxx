@@ -77,9 +77,9 @@ Description:
                 <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
                 <SetVariable name="Size">172f,20f</SetVariable>
                 <SetVariable name="Align">left</SetVariable>
-                <SetVariable name="state_0_text">      Extra Deck Buttons</SetVariable>
-                <SetVariable name="state_1_text"> &#10003; Extra Deck Buttons</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Tango],extra_deckbuttons</SetVariable>
+                <SetVariable name="state_0_text">      Deck Controls</SetVariable>
+                <SetVariable name="state_1_text"> &#10003; Deck Controls</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Tango],deck_controls</SetVariable>
               </Template>
 
               <Template src="skin:button_2state_persist.xml">
