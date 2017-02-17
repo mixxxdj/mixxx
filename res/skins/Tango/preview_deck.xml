@@ -17,7 +17,9 @@ Variables:
   <WidgetGroup><!-- Preview Deck Column 1 Row 1 -->
     <ObjectName>PreviewDeck</ObjectName>
     <Layout>vertical</Layout>
-    <Size>183me,83f</Size>
+    <MinimumSize>183,62</MinimumSize>
+    <MaximumSize>i,83</MaximumSize>
+    <SizePolicy>me,max</SizePolicy>
     <!-- 'XXXme' is overwritten by parent column in library.xml
     thus previewdeck would be truncated if XXXme here is bigger than there -->
     <Children>
@@ -129,8 +131,10 @@ Variables:
       
       <WidgetGroup><!-- PreviewHotcues -->
         <Layout>horizontal</Layout>
-        <ObjectNAme>PreviewHotcues</ObjectNAme>
-        <Size>1me,24f</Size>
+        <ObjectName>PreviewHotcues</ObjectName>
+        <MinimumSize>0,3</MinimumSize>
+        <MaximumSize>i,24</MaximumSize>
+        <SizePolicy>me,max</SizePolicy>
         <Children>
 
           <Template src="skin:hotcues.xml"/>
