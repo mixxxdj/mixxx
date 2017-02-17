@@ -499,10 +499,8 @@ LongShortBtn.prototype.ButtonAssertLongPress = function() {
     this.ButtonLongPress = true;
     //the timer was stopped, we set it to zero
     this.ButtonLongPressTimer = 0;
-    // let's take action of the long press
-    // Make sure the callback is a function​ and exist
-    if (typeof callback === "function") {
-        // Call it, since we have confirmed it is callable​
+
+    if (typeof this.CallBackOKLongPress === "function") {
         this.CallBackOKLongPress(this.channel, this.control, this.value, this.status, this.group, LONG_PRESS);
     }
 };
