@@ -53,16 +53,16 @@ WWidget, QLabel {
   color: #d910f0;	/* SignalColor: #df4df0		> decks_right.xml */
 }
 
-#Waveform1 {
+#WaveformContainer1 {
   background-color: #001D33;
 }
-#Waveform2 {
+#WaveformContainer2 {
   background-color: #2F290a;
 }
-#Waveform3 {
+#WaveformContainer3 {
   background-color: #032603;
 }
-#Waveform4 {
+#WaveformContainer4 {
   background-color: #3A0440;
 }
 
@@ -160,18 +160,21 @@ WWidget, QLabel {
 ####### Waveforms ##############################################
 ################################################################ */
 
-#WaveformContainer {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-}
 /* Also, see color definition above. */
-#Waveform1, #Waveform2, #Waveform3, #Waveform4 {
+#WaveformContainer1, #WaveformContainer2, #WaveformContainer3, #WaveformContainer4 {
 /* this will shift waveforms' center position to the left.
   Useful to 'look ahead' further (who cares about history, ha?)
   margin-left: -350px;	*/
+  qproperty-layoutAlignment: 'AlignVCenter';
 }
 
-#BeatgridButtonToggler {
+#Waveform {  /*  */
+  border-right: 1px solid #0f0f0f;
+}
+
+#BeatgridButtonToggler {  /*
   border-left: 1px solid #0f0f0f;
+  margin-left: 1px; */
 }
   #BeatgridButtonToggler[displayValue="0"] {
     background: transparent url(skin:/buttons/btn_left_thin.svg) no-repeat top center;
@@ -187,7 +190,7 @@ WWidget, QLabel {
   }
 
 #BeatgridButtons {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  qproperty-layoutAlignment: 'AlignVCenter';
   padding-left: 1px;
   background-color: #0f0f0f;
   }

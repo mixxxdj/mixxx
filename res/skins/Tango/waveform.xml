@@ -13,13 +13,14 @@ Variables:
 -->
 <Template>
   <WidgetGroup>
-  <ObjectName>Waveform<Variable name="channum"/></ObjectName>
+  <ObjectName>WaveformContainer<Variable name="channum"/></ObjectName>
     <Layout>horizontal</Layout>
     <Size><Variable name="Size"/></Size>
     <Children>
 
       <Visual><!-- Visual- Waveform -->
         <TooltipId>waveform_display</TooltipId>
+        <ObjectName>Waveform</ObjectName>
         <Size><Variable name="Size"/></Size>
         <Channel><Variable name="channum"/></Channel>
         <BgColor><Variable name="SignalBgColor"/></BgColor>
@@ -79,9 +80,11 @@ Variables:
         </Mark>
       </Visual><!-- /Visual- Waveform -->
 
+      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1me</Size></WidgetGroup>
+
       <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
         <SetVariable name="ObjectName">BeatgridButtonToggler</SetVariable>
-        <SetVariable name="Size">11f,50me</SetVariable>
+        <SetVariable name="Size">11f,50f</SetVariable>
         <SetVariable name="ConfigKeyPerm">[Tango],beatgrid_buttons</SetVariable>
       </Template>
 
@@ -95,11 +98,11 @@ Variables:
             <Layout>vertical</Layout>
             <SizePolicy>f,me</SizePolicy>
             <Children>
-              <WidgetGroup><Size>1me,1f</Size><Children/></WidgetGroup>
+              <WidgetGroup><Size>1min,1f</Size><Children/></WidgetGroup>
               <Template src="skin:button_1state.xml">
                 <SetVariable name="ToolTipId">beats_translate_curpos</SetVariable>
                 <SetVariable name="ObjectName">BeatgridButton</SetVariable>
-                <SetVariable name="Size">24f,49me</SetVariable>
+                <SetVariable name="Size">24f,49f</SetVariable>
                 <SetVariable name="state_0_pressed">beats_curpos.svg</SetVariable>
                 <SetVariable name="state_0_unpressed">beats_curpos.svg</SetVariable>
                 <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],beats_translate_curpos</SetVariable>
@@ -107,32 +110,32 @@ Variables:
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup><Size>1f,1me</Size><Children/></WidgetGroup>
+          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
 
           <WidgetGroup>
             <Layout>vertical</Layout>
-            <SizePolicy>f,me</SizePolicy>
+            <SizePolicy>f,f</SizePolicy>
             <Children>
 
-              <WidgetGroup><Size>1me,1f</Size><Children/></WidgetGroup>
+              <WidgetGroup><Size>1min,1f</Size><Children/></WidgetGroup>
 
               <WidgetGroup><!-- beats later & earlier -->
                 <Layout>horizontal</Layout>
-                <SizePolicy>f,me</SizePolicy>
+                <SizePolicy>f,mf</SizePolicy>
                 <Children>
                   <Template src="skin:button_1state.xml">
                     <SetVariable name="ToolTipId">beats_translate_earlier</SetVariable>
                     <SetVariable name="ObjectName">BeatgridButton</SetVariable>
-                    <SetVariable name="Size">24f,24me</SetVariable>
+                    <SetVariable name="Size">24f,24f</SetVariable>
                     <SetVariable name="state_0_pressed">beats_earlier.svg</SetVariable>
                     <SetVariable name="state_0_unpressed">beats_earlier.svg</SetVariable>
                     <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],beats_translate_earlier</SetVariable>
                   </Template>
-                    <WidgetGroup><Size>1f,1me</Size><Children/></WidgetGroup>
+                    <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
                   <Template src="skin:button_1state.xml">
                     <SetVariable name="ToolTipId">beats_translate_later</SetVariable>
                     <SetVariable name="ObjectName">BeatgridButton</SetVariable>
-                    <SetVariable name="Size">24f,24me</SetVariable>
+                    <SetVariable name="Size">24f,24f</SetVariable>
                     <SetVariable name="state_0_pressed">beats_later.svg</SetVariable>
                     <SetVariable name="state_0_unpressed">beats_later.svg</SetVariable>
                     <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],beats_translate_later</SetVariable>
@@ -140,25 +143,25 @@ Variables:
                 </Children>
               </WidgetGroup>
 
-              <WidgetGroup><Size>1me,1f</Size><Children/></WidgetGroup>
+              <WidgetGroup><Size>1min,1f</Size><Children/></WidgetGroup>
 
               <WidgetGroup><!-- beats slower & faster -->
                 <Layout>horizontal</Layout>
-                <SizePolicy>f,me</SizePolicy>
+                <SizePolicy>f,min</SizePolicy>
                 <Children>
                   <Template src="skin:button_1state.xml">
                     <SetVariable name="ToolTipId">beats_adjust_faster</SetVariable>
                     <SetVariable name="ObjectName">BeatgridButton</SetVariable>
-                    <SetVariable name="Size">24f,24me</SetVariable>
+                    <SetVariable name="Size">24f,24f</SetVariable>
                     <SetVariable name="state_0_pressed">beats_faster.svg</SetVariable>
                     <SetVariable name="state_0_unpressed">beats_faster.svg</SetVariable>
                     <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],beats_adjust_faster</SetVariable>
                   </Template>
-                    <WidgetGroup><Size>1f,1me</Size><Children/></WidgetGroup>
+                    <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
                   <Template src="skin:button_1state.xml">
                     <SetVariable name="ToolTipId">beats_adjust_slower</SetVariable>
                     <SetVariable name="ObjectName">BeatgridButton</SetVariable>
-                    <SetVariable name="Size">24f,24me</SetVariable>
+                    <SetVariable name="Size">24f,24f</SetVariable>
                     <SetVariable name="state_0_pressed">beats_slower.svg</SetVariable>
                     <SetVariable name="state_0_unpressed">beats_slower.svg</SetVariable>
                     <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],beats_adjust_slower</SetVariable>
