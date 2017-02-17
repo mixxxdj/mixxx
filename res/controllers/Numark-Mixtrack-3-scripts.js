@@ -1986,22 +1986,8 @@ NumarkMixtrack3.bpmTap = function(channel, control, value, status, group) {
 NumarkMixtrack3.EQKnob = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
     var decknum = deck.decknum;
-    var EQp, FXp;
-
-    switch (control) {
-        case 1: // Treble
-            EQp = 3;
-            FXp = 1;
-            break;
-        case 2: // Mid
-            EQp = 2;
-            FXp = 2;
-            break;
-        case 3: // Bass
-            EQp = 1;
-            FXp = 3;
-            break;
-    }
+    var EQp = 4 - control; // convert control number to parameter number in mixxx
+    var FXp = control; // control number matches effect param order
 
     // default behavior is to control EQ
     if (!deck.shiftKey && !deck.PADMode && !deck.TapDown) {
