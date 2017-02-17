@@ -1307,7 +1307,7 @@ WWidget, QLabel {
   #SamplerTitle_mini WLabel {
     font-size: 14px/16px;
     font-weight: bold;
-    color: #ffffff;
+    color: #bababa;
     text-align: left;
   }
 
@@ -1371,6 +1371,7 @@ WWidget, QLabel {
   font-weight: bold;
   border-radius: 2px;
   text-align: left;
+  color: #999999;
   background-color: #0f0f0f;
 }
   #SamplerSyncButton:hover {
