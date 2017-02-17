@@ -17,7 +17,7 @@ Variables:
   <WidgetGroup><!-- Preview Deck Column 1 Row 1 -->
     <ObjectName>PreviewDeck</ObjectName>
     <Layout>vertical</Layout>
-    <MinimumSize>183,62</MinimumSize>
+    <MinimumSize>183,59</MinimumSize>
     <MaximumSize>i,83</MaximumSize>
     <SizePolicy>me,max</SizePolicy>
     <!-- 'XXXme' is overwritten by parent column in library.xml
@@ -114,15 +114,15 @@ Variables:
 
           <WidgetGroup>
             <ObjectName>PreviewGainKnob</ObjectName>
-            <Size>30f,34f</Size>
+            <Size>22f,34f</Size>
             <Layout>vertical</Layout>
             <Children>
               <!-- Wrapping in WidgetGroup enables padding -->
               <Template src="skin:knob_textless.xml">
-                <SetVariable name="Size">30f,30f</SetVariable>
+                <SetVariable name="Size">22f,22f</SetVariable>
                 <SetVariable name="group">[PreviewDeck1]</SetVariable>
                 <SetVariable name="ConfigKey">pregain</SetVariable>
-                <SetVariable name="Color">red</SetVariable>
+                <SetVariable name="Color">tiny_red</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
@@ -132,7 +132,7 @@ Variables:
       <WidgetGroup><!-- PreviewHotcues -->
         <Layout>horizontal</Layout>
         <ObjectName>PreviewHotcues</ObjectName>
-        <MinimumSize>0,3</MinimumSize>
+        <MinimumSize>0,0</MinimumSize>
         <MaximumSize>i,24</MaximumSize>
         <SizePolicy>me,max</SizePolicy>
         <Children>
@@ -141,7 +141,7 @@ Variables:
 
           <WidgetGroup>
             <ObjectName>Spacer33</ObjectName>
-            <Size>0me,1me</Size>
+            <Size>0me,0min</Size>
             <Children/>
           </WidgetGroup>
 
