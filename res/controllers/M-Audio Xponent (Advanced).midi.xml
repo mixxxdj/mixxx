@@ -8,7 +8,7 @@
         Includes Samplers, Effects, Loops, Hotcues, and more. See Wiki for details.
         Make sure to set the bank switch on the bottom of the Xponent to A.
         </description>
-        <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&t=8884</forums>
+        <forums>http://www.mixxx.org/forums/viewtopic.php?t=8884</forums>
         <wiki>http://www.mixxx.org/wiki/doku.php/m-audio_xponent</wiki>
     </info>
     <controller id="Xponent">
@@ -1477,12 +1477,20 @@
         </controls>
         <outputs>
             <output>
+                <group>[Channel1]</group>
+                <key>loop_enabled</key>
+                <status>0x90</status>
+                <midino>0x2A</midino>
+                <minimum>1</minimum>
+            </output>
+            <output>
                 <group>[Channel2]</group>
                 <key>loop_enabled</key>
                 <status>0x91</status>
                 <midino>0x2A</midino>
                 <minimum>1</minimum>
             </output>
+
             <output>
                 <group>[Channel1]</group>
                 <key>pfl</key>
@@ -1551,13 +1559,6 @@
                 <key>play</key>
                 <status>0x90</status>
                 <midino>0x24</midino>
-                <minimum>1</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>loop_enabled</key>
-                <status>0x90</status>
-                <midino>0x2A</midino>
                 <minimum>1</minimum>
             </output>
             <output>
