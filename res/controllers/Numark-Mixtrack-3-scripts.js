@@ -871,7 +871,6 @@ NumarkMixtrack3.init = function(id, debug) {
     print("               Initialize variables");
     print("");
 
-    NumarkMixtrack3.libraryMode = false;
     NumarkMixtrack3.id = id; // Store the ID of this device for later use
     NumarkMixtrack3.debug = debug;
     NumarkMixtrack3.deckGroup = {
@@ -1177,20 +1176,13 @@ NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) 
     var shifted = (NumarkMixtrack3.decks.D1.shiftKey || NumarkMixtrack3.decks
         .D2.shiftKey || NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey);
 
-    var maxview = !NumarkMixtrack3.libraryMode;
-
     if (shifted && value === ON) {
-        // SHIFT+ BROWSE push : directory mode -- > Open/Close selected side bar item
+        // SHIFT + BROWSE push : directory mode -- > Open/Close selected side bar item
         engine.setValue(group, "ToggleSelectedSidebarItem", true);
     } else {
         // Browse push : maximize/minimize library view
         if (value === ON) {
-            NumarkMixtrack3.libraryMode = !NumarkMixtrack3.libraryMode;
-            if (maxview) {
-                engine.setValue("[Master]", "maximize_library", 1);
-            } else {
-                engine.setValue("[Master]", "maximize_library", 0);
-            }
+            toggleValue("[Master]", "maximize_library");
         }
     }
 };
