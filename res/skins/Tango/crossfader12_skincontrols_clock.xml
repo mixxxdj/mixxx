@@ -209,12 +209,23 @@
         <Size>104f,28max</Size>
         <Children>
 
-          <WidgetGroup>
-            <ObjectName>Logo</ObjectName>
-            <Size>104f,26f</Size>
-            <Layout>horizontal</Layout>
-            <Children/>
-          </WidgetGroup>
+          <WidgetStack>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+              <WidgetGroup on-hide-select="0">
+                <ObjectName>Logo</ObjectName>
+                <Size>104f,26f</Size>
+                <Layout>horizontal</Layout>
+                <Children/>
+                <Connection>
+                  <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+          </WidgetStack>
 
           <SliderComposed trigger="[Tango],crossfader" persist="true" on-hide-select="0">
             <ObjectName>Crossfader</ObjectName>
@@ -232,11 +243,6 @@
           </SliderComposed>
 
         </Children>
-        <Connection>
-          <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
-          <Transform><Not/></Transform>
-          <BindProperty>visible</BindProperty>
-        </Connection>
       </WidgetStack><!-- /LogoCrossfaderBox 2 Decks -->
 
     </Children>

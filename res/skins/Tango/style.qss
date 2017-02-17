@@ -703,6 +703,7 @@ WWidget, QLabel {
       #KeyReset:hover {	/* wrong. Left-click = Sync, right-click = reset
         background: transparent url(skin:/buttons/btn_reset.svg) no-repeat center center;	*/
         }
+
   
 #PitchSliderContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
