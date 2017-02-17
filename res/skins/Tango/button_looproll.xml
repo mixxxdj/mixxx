@@ -9,7 +9,7 @@
 <Template>
   <Template src="skin:button_1state.xml">
     <SetVariable name="TooltipId">beatloop</SetVariable>
-    <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
+    <SetVariable name="ObjectName">LoopRollButton</SetVariable>
     <SetVariable name="Size">22f,22f</SetVariable>
     <SetVariable name="state_0_text"><Variable name="LoopLength_Text"/></SetVariable>
     <SetVariable name="ConfigKey"><Variable name="group"/>,beatlooproll_<Variable name="LoopLength_Control"/>_activate</SetVariable>

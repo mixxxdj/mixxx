@@ -623,18 +623,21 @@ WWidget, QLabel {
 #LoopBeatJumpContainer {
   padding-top: 1px;
 }
-  #LoopBeatJumpButton {
+  #LoopBeatJumpButton, #LoopSizeButton, #LoopRollButton {
     font-weight: bold;
     color: #888888;
     background-color: #333333;
     border-radius: 2px;
   }
-  #LoopBeatJumpButton:hover {  /*
+  #LoopBeatJumpButton:hover, #LoopSizeButton:hover, #LoopRollButton:hover {  /*
     background-color: #151515;  */
     border: 1px solid #888888;
   }
   #LoopBeatJumpButton[displayValue="1"], #LoopBeatJumpButton[displayValue="1"]:hover {
     border: 1px solid #FF8F00;
+  }
+  #LoopSizeButton, #LoopRollButton {
+    font-size: 12px/12px;
   }
   /* See also #LoopIndicator near DeckButtons */
 

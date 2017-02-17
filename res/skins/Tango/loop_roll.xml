@@ -18,17 +18,17 @@ group: The group for the controls.
         
           <Template src="skin:button_looproll.xml">
             <SetVariable name="LoopLength_Control">0.125</SetVariable>
-            <SetVariable name="LoopLength_Text">1/8</SetVariable>
+            <SetVariable name="LoopLength_Text">/8</SetVariable>
           </Template>
             <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
           <Template src="skin:button_looproll.xml">
             <SetVariable name="LoopLength_Control">0.25</SetVariable>
-            <SetVariable name="LoopLength_Text">1/4</SetVariable>
+            <SetVariable name="LoopLength_Text">/4</SetVariable>
           </Template>
             <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
           <Template src="skin:button_looproll.xml">
             <SetVariable name="LoopLength_Control">0.5</SetVariable>
-            <SetVariable name="LoopLength_Text">1/2</SetVariable>
+            <SetVariable name="LoopLength_Text">/2</SetVariable>
           </Template>
             <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
           <Template src="skin:button_looproll.xml">
