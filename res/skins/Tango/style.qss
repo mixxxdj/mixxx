@@ -933,12 +933,20 @@ WWidget, QLabel {
     }
 
 #Logo {
-  background: transparent url(skin:/graphics/mixxx_logo_104x26.svg) no-repeat center center;	/*
+  background: transparent url(skin:/graphics/mixxx_logo_104x26_grey.svg) no-repeat center center;	/*
   background-color: #798145;	*/
   }
+  #Logo:hover {
+    background: transparent url(skin:/graphics/mixxx_logo_104x26.svg) no-repeat center center;	/*
+    background-color: #798145;	*/
+  }
 #LogoMini {
-  background: transparent url(skin:/graphics/mixxx_logo_52x13.svg) no-repeat center center;	/*
+  background: transparent url(skin:/graphics/mixxx_logo_52x13_grey.svg) no-repeat center center;	/*
   background-color: #798145;	*/
+  }
+  #LogoMini:hover {
+    background: transparent url(skin:/graphics/mixxx_logo_52x13.svg) no-repeat center center;	/*
+    background-color: #798145;	*/
   }
 #CrossfaderBox {
   qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';		/*
