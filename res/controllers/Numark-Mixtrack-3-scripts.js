@@ -689,8 +689,6 @@ LongShortDoubleBtn.prototype.ButtonDecide = function() {
 var AutoCut = function(decknum) {
     this.decknum = decknum;
     this.timer = 0;
-    this.delay = 20;
-    this.fadersave = 0;
     this.enabled = false;
 };
 
@@ -729,12 +727,11 @@ AutoCut.prototype.Off = function() {
 // Jog wheel management (scratching, bending, ...)
 // *************************************************
 
-var Jogger = function(group, decknum, model) {
+var Jogger = function(group, decknum) {
     this.decknum = decknum;
     this.group = group;
     this.wheelTouchInertiaTimer = 0;
     this.iCUT = new AutoCut(decknum);
-    this.model = model;
 };
 
 // ******************************************************************
@@ -758,11 +755,8 @@ NumarkMixtrack3.deck = function(decknum) {
     this.LEDs = [];
     this.TapDown = false;
     this.InstantFX = [];
-    this.Jog = new Jogger(this.group, this.decknum, "A");
+    this.Jog = new Jogger(this.group, this.decknum);
     this.duration = 0;
-    // NMTP3 is a "Model A" controller for scratching, it centers on 0.
-    // See http://www.mixxx.org/wiki/doku.php/midi_scripting#scratching
-    // and see "Jogger" object constructor
     this.beatJumpSize = 1;
     this.loopMoveSize = 1;
 };
@@ -1127,12 +1121,7 @@ NumarkMixtrack3.deckFromGroup = function(group) { // DFG // for easy find
 
 NumarkMixtrack3.ShiftButton = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
-
-    if (value === DOWN) {
-        deck.shiftKey = true;
-    } else {
-        deck.shiftKey = false;
-    }
+    deck.shiftKey = (value === DOWN);
 };
 
 /******************     Play Button :
@@ -1471,6 +1460,8 @@ NumarkMixtrack3.WheelMove = function(channel, control, value, status, group) {
     var adjustedJog = parseFloat(value); // set jog value
     var direction = 1; // 1 = clockwise, -1 = counter-clockwise
 
+    // NMTP3 is a "Model A" controller for scratching, it centers on 0.
+    // See http://www.mixxx.org/wiki/doku.php/midi_scripting#scratching
     if (adjustedJog > 63) { // Counter-clockwise
         direction = -1;
         adjustedJog = value - 128;
@@ -1584,12 +1575,6 @@ NumarkMixtrack3.SamplerButton = function(channel, control, value, status, group)
 NumarkMixtrack3.onPADSampleButtonHold = function(channel, control, value, status, group, eventkind) {
     var padIndex = parseInt(group.substring(8, 9));
     var sampler = NumarkMixtrack3.samplers["S" + padIndex];
-    var decknum = 1;
-
-    if (padIndex > 4) {
-        decknum = 2;
-    }
-
 
     // the event is a Long Press, LONG_PRESS is true, we set a variable so that when the 
     // pad button is lifted, the Sampler stops
