@@ -332,9 +332,9 @@ script.brake = function(channel, control, value, status, group, factor) {
    Output:  none
    -------- ------------------------------------------------------ */
 script.softStart = function(channel, control, value, status, group, factor) {
-	if (factor === undefined) {
-		factor = 1;
-	}
+    if (factor === undefined) {
+        factor = 1;
+    }
     // disable on note-off or zero value note/cc, use default increase rate '1'
     engine.softStart(parseInt(group.substring(8,9)), ((status & 0xF0) !== 0x80 && value > 0), factor);
 }
