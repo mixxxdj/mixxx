@@ -14,7 +14,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="spinnyBig_mask_cover.svg"
+   sodipodi:docname="spinnyBig_mask.svg"
    enable-background="new">
   <defs
      id="defs4">
@@ -48,9 +48,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2"
-     inkscape:cx="46.914764"
-     inkscape:cy="34.328601"
+     inkscape:zoom="11.313708"
+     inkscape:cx="61.45348"
+     inkscape:cy="3.1761761"
      inkscape:document-units="px"
      inkscape:current-layer="svg2"
      showgrid="false"
@@ -70,12 +70,12 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <path
-     style="fill:#1e1e1e;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
+     style="fill:#333333;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
      d="M 0 0 L 0 96 L 96 96 L 96 0 L 0 0 z M 48 1.875 C 73.474392 1.875 94.125 22.515393 94.125 48 C 94.125 73.484597 73.474392 94.125 48 94.125 C 22.525606 94.125 1.875 73.484597 1.875 48 C 1.875 22.515393 22.525606 1.875 48 1.875 z "
      id="path5294" />
   <path

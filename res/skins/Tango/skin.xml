@@ -391,15 +391,23 @@
 
                                 <Template src="skin:fx_units_12.xml"/>
 
-                                <SingletonContainer>
-                                  <ObjectName>Decks34_Singleton</ObjectName>
+                                <WidgetGroup>
+                                  <Layout>vertical</Layout>
+                                  <SizePolicy>me,min</SizePolicy>
+                                  <Children>
+
+                                    <SingletonContainer>
+                                      <ObjectName>Decks34_Singleton</ObjectName>
+                                    </SingletonContainer>
+
+                                    <Template src="skin:fx_units_34.xml"/>
+
+                                  </Children>
                                   <Connection>
                                     <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
                                     <BindProperty>visible</BindProperty>
                                   </Connection>
-                                </SingletonContainer>
-
-                                <Template src="skin:fx_units_34.xml"/>
+                                </WidgetGroup>
 
                               </Children>
                               <Connection>
