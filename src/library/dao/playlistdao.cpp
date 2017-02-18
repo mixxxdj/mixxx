@@ -751,9 +751,11 @@ int PlaylistDAO::getMaxPosition(const int playlistId) const {
 }
 
 void PlaylistDAO::removeTracksFromPlaylists(const QList<TrackId>& trackIds) {
+    // copy the hash, because there is no guarantee that "it" is valid after remove
+    QMultiHash<TrackId, int> playlistsTrackIsInCopy = m_playlistsTrackIsIn;
     for (const auto& trackId: trackIds) {
-    	const auto it = m_playlistsTrackIsIn.find(trackId);
-    	while (it != m_playlistsTrackIsIn.end() && it.key() == trackId) {
+    	const auto it = playlistsTrackIsInCopy.find(trackId);
+    	while (it != playlistsTrackIsInCopy.end() && it.key() == trackId) {
     		removeTrackFromPlaylist(it.value(), trackId);
     	}
     }
