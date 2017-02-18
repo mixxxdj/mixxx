@@ -10,8 +10,8 @@
 
 
   * General / Wording / qss
+    - restore full-width Launch image, make in-app Logo a 2-state button (grey/colored) 
     - make button colors consistent, simplify qss [Vinyl/Deckbutton/Beatgrid togglers hover]
-    - better name for "Extra Deck Buttons"
     (- remove layout-spacing workarounds when this is fixed
       https://bugs.launchpad.net/mixxx/+bug/1578111)
     (- work around SizeAwareStacks' kicking out Library
@@ -41,19 +41,22 @@
 
   * FX
     - 2.1 FX Units (MetaKnob, Highlight, Focus) > optional 2.0 or 2.1
-    - allow 4 FX units only with 4 decks
+    - allow 4 FX units ONLY with 4 decks (proper re-structuring skin.xml)
     - collapse FX units automatically when space is scarse (SizeAware like samplers)
     - extend group assignment buttons to 4 Mics/4AUX > proper 4th column
     - colorize group assignment buttons like other togglers (OFF grey / ON white with bg-color)
-   - FX chain Save & Load buttons
+    - FX chain Save & Load buttons
 
   * Samplers
+    - mini: Gain > Volume
+    - CoverArt! underneath Play button?!
+    - block Hotcue removal?
 
   * Library
     - distinguish focused/unfocused TreeView/Tracks/other?
       * emphasize border
       * darken background-color when focused
-    - SearchBox + Maximize button
+    - SearchBox + LibMaximize button
 
   * Skin Settings menu
     - add option to hide MixerBar when Library is maximized?
