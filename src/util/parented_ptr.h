@@ -100,7 +100,7 @@ inline bool operator== (const parented_ptr<T>& lhs, const U* rhs) {
 }
 
 template<typename T, typename U>
-inline bool operator== (const parented_ptr<T>& lhs, const parented_ptr<U>& rhs) const {
+inline bool operator== (const parented_ptr<T>& lhs, const parented_ptr<U>& rhs) {
     return lhs.get() == rhs.get();
 }
 
@@ -115,7 +115,7 @@ inline bool operator!= (const parented_ptr<T>& lhs, const U* rhs) {
 }
 
 template<typename T, typename U>
-inline bool operator!= (const parented_ptr<T>& lhs, const parented_ptr<U>& rhs) const {
+inline bool operator!= (const parented_ptr<T>& lhs, const parented_ptr<U>& rhs) {
     return !(lhs.get() == rhs.get());
 }
 
