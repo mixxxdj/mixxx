@@ -50,7 +50,7 @@ class MetadataTest : public testing::Test {
         mixxx::TrackMetadata trackMetadata;
         mixxx::taglib::readTrackMetadataFromID3v2Tag(&trackMetadata, tag);        
 
-        EXPECT_DOUBLE_EQ(trackMetadata.getBpm().getValue(), expectedValue);
+        EXPECT_DOUBLE_EQ(expectedValue,trackMetadata.getBpm().getValue());
     }
 };
 
