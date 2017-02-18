@@ -132,7 +132,7 @@ Variables:
             <SetVariable name="ObjectName">SamplerGainKnob</SetVariable>
             <SetVariable name="Size">22f,22f</SetVariable>
             <SetVariable name="group">[Sampler<Variable name="samplernum"/>]</SetVariable>
-            <SetVariable name="ConfigKey">pregain</SetVariable>
+            <SetVariable name="ConfigKey">volume</SetVariable>
             <SetVariable name="Color">tiny_red</SetVariable>
           </Template>
 
