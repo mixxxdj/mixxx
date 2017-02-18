@@ -146,17 +146,16 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     // Warn if tracks have a playlist membership
     QSet<int> allPlaylistIds;
     for (const auto& trackId: trackIds) {
-        QSet<int> playlisIds;
-        m_playlistDao.getPlaylistsTrackIsIn(trackId, &playlisIds);
-        QString playlistNames;
-        for (const auto& playlisId: playlisIds) {
+        QSet<int> playlistIds;
+        m_playlistDao.getPlaylistsTrackIsIn(trackId, &playlistIds);
+        for (const auto& playlisId: playlistIds) {
             if (m_playlistDao.getHiddenType(playlisId) != PlaylistDAO::PLHT_SET_LOG) {
                 allPlaylistIds.insert(playlisId);
             }
         }
     }
 
-    if (allPlaylistIds.count()) {
+    if (!allPlaylistIds.isEmpty()) {
         QString playlistNames = "\n\n";
         for (const auto& playlisId: allPlaylistIds) {
             playlistNames += "\"" + m_playlistDao.getPlaylistName(playlisId) + "\"\n";

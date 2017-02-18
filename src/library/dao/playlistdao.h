@@ -86,7 +86,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     int getMaxPosition(const int playlistId) const;
     // Remove a track from all playlists
     void removeTracksFromPlaylists(const QList<TrackId>& trackIds);
-    // removes all hidden and purged Tracks form the playlist
+    // removes all hidden and purged Tracks from the playlist
     void removeHiddenTracks(const int playlistId);
     // Remove a track from a playlist
     void removeTrackFromPlaylist(const int playlistId, const TrackId& trackId);

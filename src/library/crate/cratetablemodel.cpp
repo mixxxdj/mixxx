@@ -34,7 +34,7 @@ void CrateTableModel::selectCrate(CrateId crateId) {
             << LIBRARYTABLE_COVERART_HASH + " AS " + LIBRARYTABLE_COVERART;
     // We hide files that have been explicitly deleted in the library
     // (mixxx_deleted = 0) from the view.
-    // They are kept in the database, because we treat crate memershipas a
+    // They are kept in the database, because we treat crate membership as a
     // track property, which persist over a hide / unhide cycle.
     QString queryString = QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
                                   "SELECT %2 FROM %3 "
