@@ -156,23 +156,28 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     }
 
     if (!allPlaylistIds.isEmpty()) {
-        QString playlistNames = "\n\n";
-        for (const auto& playlisId: allPlaylistIds) {
-            playlistNames += "\"" + m_playlistDao.getPlaylistName(playlisId) + "\"\n";
-        }
-        playlistNames += "\n";
+         QStringList playlistNames;
+         playlistNames.reserve(allPlaylistIds.count());
+         for (const auto& playlisId: allPlaylistIds) {
+             playlistNames.append(m_playlistDao.getPlaylistName(playlisId));
+         }
 
-        if (QMessageBox::question(
-                nullptr,
-                tr("Hiding tracks"),
-                tr("The selected tracks are in the following playlists:"
-                    "%1"
-                    "Hiding them will remove them from these playlists. Continue?")
-                        .arg(playlistNames),
-                QMessageBox::Ok | QMessageBox::Cancel) != QMessageBox::Ok) {
-            return false;
-        }
-    }
+         QString playlistNamesSection =
+                 "\n\n\"" %
+                 playlistNames.join("\"\n\"") %
+                 "\"\n\n";
+
+         if (QMessageBox::question(
+                 nullptr,
+                 tr("Hiding tracks"),
+                 tr("The selected tracks are in the following playlists:"
+                     "%1"
+                     "Hiding them will remove them from these playlists. Continue?")
+                         .arg(playlistNamesSection),
+                 QMessageBox::Ok | QMessageBox::Cancel) != QMessageBox::Ok) {
+             return false;
+         }
+     }
 
     // Transactional
     SqlTransaction transaction(database());
