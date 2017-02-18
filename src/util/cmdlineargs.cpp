@@ -11,6 +11,7 @@ CmdlineArgs::CmdlineArgs()
       m_midiDebug(false),
       m_developer(false),
       m_safeMode(false),
+      m_debugAssertBreak(false),
       m_settingsPathSet(false),
       m_logLevel(mixxx::Logging::kLogLevelDefault),
 // We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see lp:1463273
@@ -77,6 +78,8 @@ warnings and errors to the console unless this is set properly.\n", stdout);
             m_developer = true;
         } else if (QString::fromLocal8Bit(argv[i]).contains("--safeMode", Qt::CaseInsensitive)) {
             m_safeMode = true;
+        } else if (QString::fromLocal8Bit(argv[i]).contains("--debugAssertBreak", Qt::CaseInsensitive)) {
+            m_debugAssertBreak = true;
         } else {
             m_musicFiles += QString::fromLocal8Bit(argv[i]);
         }
@@ -142,7 +145,15 @@ void CmdlineArgs::printUsage() {
                         warning - Above + Warnings\n\
                         info - Above + Informational messages\n\
                         debug - Above + Debug/Developer messages\n\
-\n\
+\n"
+#ifdef MIXXX_BUILD_DEBUG
+"\
+--debugAssertBreak      Breaks (SIGINT) Mixxx, if a DEBUG_ASSERT\n\
+                        evaluates to false. Under a debugger you can\n\
+                        continue afterwards.\
+\n"
+#endif
+"\
 -h, --help              Display this help message and exit", stdout);
 
     fputs("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n",stdout);

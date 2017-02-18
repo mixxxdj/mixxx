@@ -97,6 +97,9 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
             this, SLOT(slotTrackSelected(TrackPointer)));
     connect(pLibrary, SIGNAL(switchToView(const QString&)),
             this, SLOT(slotResetSelectedTrack()));
+
+
+    DEBUG_ASSERT(false);
 }
 
 BasePlaylistFeature::~BasePlaylistFeature() {

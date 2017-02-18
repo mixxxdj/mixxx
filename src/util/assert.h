@@ -2,15 +2,22 @@
 #define ASSERT_H
 
 #include <QtDebug>
+#include <signal.h>
+#include <util/cmdlineargs.h>
 
 inline void mixxx_noop(void) {}
 
 inline void mixxx_debug_assert(const char* assertion, const char* file, int line, const char* function) {
+    if (CmdlineArgs::Instance().getDebugAssertBreak()) {
+        qWarning("DEBUG ASSERT: \"%s\" in function %s at %s:%d", assertion, function, file, line);
+        raise(SIGINT);
+    } else {
 #ifdef MIXXX_DEBUG_ASSERTIONS_FATAL
-    qFatal("DEBUG ASSERT: \"%s\" in function %s at %s:%d", assertion, function, file, line);
+        qFatal("DEBUG ASSERT: \"%s\" in function %s at %s:%d", assertion, function, file, line);
 #else
-    qWarning("DEBUG ASSERT: \"%s\" in function %s at %s:%d", assertion, function, file, line);
+        qWarning("DEBUG ASSERT: \"%s\" in function %s at %s:%d", assertion, function, file, line);
 #endif
+    }
 }
 
 inline bool mixxx_maybe_debug_assert_return_true(const char* assertion, const char* file, int line, const char* function) {
