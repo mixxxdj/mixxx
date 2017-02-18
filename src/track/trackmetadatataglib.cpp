@@ -1027,8 +1027,8 @@ void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
     if (!bpmFrame.isEmpty()) {
         parseBpm(pTrackMetadata, toQStringFirstNotEmpty(bpmFrame));
         double bpmValue = pTrackMetadata->getBpm().getValue();
-        //Some software uses (or used) to write decimated values without comma,
-        //so the number reads as 1352 or 14525 when it is 135.2 or 145.25
+        // Some software use (or used) to write decimated values without comma,
+        // so the number reads as 1352 or 14525 when it is 135.2 or 145.25
         double bpmValueOriginal = bpmValue;
         while (bpmValue > Bpm::kValueMax) {
             bpmValue /= 10.0;  
@@ -1037,7 +1037,7 @@ void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
             qWarning() << " Changing BPM on " << pTrackMetadata->getArtist() << " - " << 
                 pTrackMetadata->getTitle() << " from " << bpmValueOriginal << " to " << bpmValue;
         }
-        pTrackMetadata->getBpm().setValue(bpmValue);
+        pTrackMetadata->setBpm(Bpm(bpmValue));
     }
 
     const TagLib::ID3v2::FrameList keyFrame(tag.frameListMap()["TKEY"]);
