@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <signal.h>
 
 #include <QByteArray>
 #include <QFile>
@@ -132,11 +133,41 @@ void MessageHandler(QtMsgType type,
         }
         break;
     case QtCriticalMsg:
-        // Critical errors are always shown on the console.
-        fprintf(stderr, "Critical %s", ba.constData());
-        if (Logfile.isOpen()) {
-            Logfile.write("Critical ");
-            Logfile.write(ba);
+        {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+            bool debugAssert = strncmp(input, Logging::kAssertPrefix,
+                                           strlen(Logging::kAssertPrefix)) == 0;
+#else
+            bool debugAssert = input.startsWith(QLatin1String(Logging::kAssertPrefix));
+#endif
+            if (debugAssert) {
+                if (CmdlineArgs::Instance().getDebugAssertBreak()) {
+                    fprintf(stderr, "%s", ba.constData());
+                    if (Logfile.isOpen()) {
+                        Logfile.write(ba);
+                    }
+                    raise(SIGINT);
+                } else {
+ #ifdef MIXXX_DEBUG_ASSERTIONS_FATAL
+                    // re-send as fatal
+                    locker.unlock();
+                    qFatal("%s", input);
+                    return;
+ #else
+                    fprintf(stderr, "%s", ba.constData());
+                    if (Logfile.isOpen()) {
+                        Logfile.write(ba);
+                    }
+ #endif
+                }
+            } else {
+                // Critical errors are always shown on the console.
+                fprintf(stderr, "Critical %s", ba.constData());
+                if (Logfile.isOpen()) {
+                    Logfile.write("Critical ");
+                    Logfile.write(ba);
+                }
+            }
         }
         break;
     case QtFatalMsg:
