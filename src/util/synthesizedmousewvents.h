@@ -60,6 +60,7 @@ bool isMouseEventSynthesized() {
     // However, when tablet support is active, extraInfo is a packet serial number. This is not a problem
     // since we do not want to ignore mouse events coming from a tablet.
     const quint64 extraInfo = quint64(GetMessageExtraInfo());
+    qDebug() << "extraInfo" << extraInfo;
     if ((extraInfo & signatureMask) == miWpSignature) {
         if (extraInfo & 0x80) { // Bit 7 indicates touch event, else tablet pen.
             return true;
@@ -71,6 +72,7 @@ bool isMouseEventSynthesized() {
 #else
 
 bool isMouseEventSynthesized() {
+    qDebug() << "extraInfo" << "not Supported";
     return false;
 }
 
