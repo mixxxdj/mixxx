@@ -142,23 +142,27 @@ void MessageHandler(QtMsgType type,
 #endif
             if (debugAssert) {
                 if (CmdlineArgs::Instance().getDebugAssertBreak()) {
-                    fprintf(stderr, "%s", ba.constData());
+                    fprintf(stderr, ba.constData());
                     if (Logfile.isOpen()) {
                         Logfile.write(ba);
                     }
                     raise(SIGINT);
                 } else {
- #ifdef MIXXX_DEBUG_ASSERTIONS_FATAL
+#ifdef MIXXX_DEBUG_ASSERTIONS_FATAL
                     // re-send as fatal
                     locker.unlock();
-                    qFatal("%s", input);
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+                    qFatal(input);
+#else
+                    qFatal(input.toLocal8Bit());
+#endif
                     return;
- #else
-                    fprintf(stderr, "%s", ba.constData());
+#else
+                    fprintf(stderr, ba.constData());
                     if (Logfile.isOpen()) {
                         Logfile.write(ba);
                     }
- #endif
+#endif
                 }
             } else {
                 // Critical errors are always shown on the console.
