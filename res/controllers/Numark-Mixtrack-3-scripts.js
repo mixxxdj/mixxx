@@ -106,7 +106,6 @@ var loopsize = [2, 4, 8, 16, 0.125, 0.25, 0.5, 1];
 /* global engine                                                      */
 /* global print                                                       */
 /* global midi                                                        */
-/* global bpm                                                         */
 /* jshint sub:true                                                    */
 /* jshint shadow:true                                                 */
 ////////////////////////////////////////////////////////////////////////
@@ -1950,12 +1949,10 @@ NumarkMixtrack3.bpmTap = function(channel, control, value, status, group) {
             //determine the deck that we want to switch to:
             NumarkMixtrack3.deckGroup[group] = '[Channel' + decknum + ']';
             NumarkMixtrack3.initDeck(NumarkMixtrack3.deckGroup[group], true);
-        } else { //Either use the button as a modifier, or as TAP button
-            bpm.tapButton(decknum);
-            engine.setValue("[Channel" + decknum + "]", "bpm_tap", true);
+        } else {
+            engine.setValue(deck.group, "bpm_tap", true);
         }
     }
-    engine.setValue("[Channel" + decknum + "]", "bpm_tap", false);
 };
 
 NumarkMixtrack3.EQKnob = function(channel, control, value, status, group) {
