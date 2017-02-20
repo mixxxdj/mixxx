@@ -17,7 +17,6 @@
 
 #include <QtDebug>
 #include <QTouchEvent>
-#include <QTime>
 
 #include "widget/wwidget.h"
 #include "control/controlproxy.h"
@@ -50,12 +49,9 @@ bool WWidget::event(QEvent* e) {
         case QEvent::TouchUpdate:
         case QEvent::TouchEnd:
         {
-            qDebug() << this << QTime::currentTime().toString("ss:zzz") << "WWidget::event" << e;
-
             QTouchEvent* touchEvent = dynamic_cast<QTouchEvent*>(e);
             if (touchEvent == nullptr ||
                     touchEvent->deviceType() !=  QTouchEvent::TouchScreen) {
-                qDebug() << this << "WWidget::event no QTouchEvent::TouchScreen";
                 break;
             }
 

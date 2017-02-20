@@ -25,7 +25,6 @@
 #include <QTouchEvent>
 #include <QPaintEvent>
 #include <QApplication>
-#include <QTime>
 
 #include "control/controlbehavior.h"
 #include "control/controlobject.h"
@@ -333,7 +332,6 @@ void WPushButton::paintEvent(QPaintEvent* e) {
 }
 
 void WPushButton::mousePressEvent(QMouseEvent * e) {
-    qDebug() << this << QTime::currentTime().toString("ss:zzz") << "WPushButton::mousePressEvent" << e;
     const bool leftClick = e->button() == Qt::LeftButton;
     const bool rightClick = e->button() == Qt::RightButton;
 
@@ -390,7 +388,6 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
 }
 
 void WPushButton::focusOutEvent(QFocusEvent* e) {
-    qDebug() << this << QTime::currentTime().toString("ss:zzz") << "WPushButton::focusOutEvent" << e;
     Q_UNUSED(e);
     if (e->reason() != Qt::MouseFocusReason) {
         // Since we support multi touch there is no reason to reset
@@ -402,7 +399,6 @@ void WPushButton::focusOutEvent(QFocusEvent* e) {
 }
 
 void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
-    qDebug() << this << QTime::currentTime().toString("ss:zzz") << "WPushButton::mouseReleaseEvent" << e;
     const bool leftClick = e->button() == Qt::LeftButton;
     const bool rightClick = e->button() == Qt::RightButton;
 
