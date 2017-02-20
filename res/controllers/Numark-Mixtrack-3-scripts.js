@@ -758,6 +758,24 @@ NumarkMixtrack3.deck = function(decknum) {
     this.duration = 0;
     this.beatJumpSize = 1;
     this.loopMoveSize = 1;
+
+    engine.setValue('[EffectRack1_EffectUnit' + decknum + ']', 'show_focus', true);
+};
+
+NumarkMixtrack3.deck.prototype.focusedEffect = function(effectNum) {
+    var effectGroup = "[EffectRack1_EffectUnit" + this.decknum + "]";
+
+    if (effectNum) {
+        engine.setValue(effectGroup, "focused_effect", effectNum);
+    } else {
+        return engine.getValue(effectGroup, "focused_effect");
+    }
+};
+
+NumarkMixtrack3.deck.prototype.focusNextEffect = function() {
+    var effectsPerUnit = 3;
+    var nextEffect = (this.focusedEffect() + 1) % (effectsPerUnit + 1);
+    this.focusedEffect(nextEffect);
 };
 
 // ******************************************************************
@@ -1933,23 +1951,18 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
 
 NumarkMixtrack3.bpmTap = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
-    var decknum = deck.decknum;
 
     deck.TapDown = false;
 
     if (value === DOWN) {
         deck.TapDown = true; //to use TAP button as a "shift" key (e.g. InstantFX)
 
-        if (deck.shiftKey) { // Toggle decks
-            if (decknum <= 2) {
-                decknum += 2;
-            } else {
-                decknum -= 2;
-            }
-            //determine the deck that we want to switch to:
-            NumarkMixtrack3.deckGroup[group] = '[Channel' + decknum + ']';
+        if (deck.shiftKey) {
+            var newDeckNum = (deck.decknum + 1) % 4 + 1; // toggle decks 1 -> 3, 2 -> 4 and vice versa
+            NumarkMixtrack3.deckGroup[group] = '[Channel' + newDeckNum + ']';
             NumarkMixtrack3.initDeck(NumarkMixtrack3.deckGroup[group], true);
         } else {
+            deck.focusNextEffect();
             engine.setValue(deck.group, "bpm_tap", true);
         }
     }
@@ -1958,7 +1971,7 @@ NumarkMixtrack3.bpmTap = function(channel, control, value, status, group) {
 NumarkMixtrack3.EQKnob = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
     var decknum = deck.decknum;
-    var focusedEffect = engine.getValue("[EffectRack1_EffectUnit" + decknum + "]", "focused_effect");
+    var focusedEffect = deck.focusedEffect();
     var EQp = 4 - control; // convert control number to parameter number in mixxx
     var FXp = control; // control number matches effect param order
 
@@ -1976,7 +1989,7 @@ NumarkMixtrack3.EQKnob = function(channel, control, value, status, group) {
 NumarkMixtrack3.FilterKnob = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup("[Channel" + group.substring(26, 27) + "]");
     var decknum = deck.decknum;
-    var focusedEffect = engine.getValue("[EffectRack1_EffectUnit" + decknum + "]", "focused_effect");
+    var focusedEffect = deck.focusedEffect();
 
     // default behavior is to control filter
     // when shifted, change parameters of focused effect
