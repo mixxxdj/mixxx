@@ -289,8 +289,7 @@ LED.prototype.onOff = function(value) {
 //           if not set, it considers it as a switch off (default=false)
 // valueoff : like "value". That permits for instance with two colors (once red(on), once blue(off), once red(on), etc...)
 
-LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount,
-    relight, valueoff) {
+LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relight, valueoff) {
     var myself = this;
 
     // stop pending timers
@@ -326,8 +325,7 @@ LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount,
         // so we don't need this part  if flashcount=1
         // temporary timer. The end of this timer stops the permanent flashing
 
-        this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on +
-            num_ms_off) - num_ms_off, function() {
+        this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, function() {
             myself.Stopflash(relight);
         }, true);
     }
@@ -740,7 +738,6 @@ NumarkMixtrack3.deck = function(decknum) {
     this.decknum = decknum;
     this.group = "[Channel" + decknum + "]";
     this.loaded = false;
-    this.LoadInitiated = false;
     this.jogWheelsInScratchMode = false;
     this.PADMode = false; //false = not pressed; true = pressed
     this.shiftKey = false;
@@ -760,6 +757,11 @@ NumarkMixtrack3.deck = function(decknum) {
     this.loopMoveSize = 1;
 
     engine.setValue('[EffectRack1_EffectUnit' + decknum + ']', 'show_focus', true);
+};
+
+
+NumarkMixtrack3.deck.prototype.TrackIsLoaded = function() {
+    return engine.getValue(this.group, "track_loaded");
 };
 
 NumarkMixtrack3.deck.prototype.focusedEffect = function(effectNum) {
@@ -786,14 +788,9 @@ NumarkMixtrack3.sampler = function(decknum) {
     this.decknum = decknum;
     this.group = "[Sampler" + decknum + "]";
     this.loaded = false;
-    this.LoadInitiated = false;
     this.PitchFaderHigh = 0;
     this.lastfadervalue = 0;
     this.LEDs = [];
-};
-
-NumarkMixtrack3.deck.prototype.TrackIsLoaded = function() {
-    return engine.getValue(this.group, "track_loaded");
 };
 
 // =====================================================================
@@ -1321,7 +1318,7 @@ NumarkMixtrack3.OnLoadSelectedTrack = function(value, group, control) {
  * - Double Press : press twice QUICKLY to play the track immediatly,
  *                  synchronized to the tempo (BPM) and to the phase of
  *                 the other track, if the track was paused.
- * - Long Press (Sync Locck) :
+ * - Long Press (Sync Lock) :
  *                 Hold for at least half of a second to enable sync lock
  *                 for this deck. Decks with sync locked will all play at
  *                 the same tempo, and decks that also have quantize
