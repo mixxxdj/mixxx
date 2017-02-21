@@ -1015,37 +1015,33 @@ NumarkMixtrack3.initDeck = function(group, remove) {
 NumarkMixtrack3.connectDeckControls = function(group, remove) {
     // If the 'remove' parameter is not passed to this function, set remove = false
     remove = remove || false;
-    var OnDeck = parseInt(NumarkMixtrack3.channelRegEx.exec(group)[1]); 
-    var OffDeck = OnDeck;
-
-    if (OffDeck <= 2) {
-        OffDeck += 2;
-    } else {
-        OffDeck -= 2;
-    }
+    var onDeckNum = parseInt(NumarkMixtrack3.channelRegEx.exec(group)[1]); 
+    var offDeckNum = (onDeckNum + 1) % 4 + 1;
+    var onDeck = NumarkMixtrack3.decks["D" + onDeckNum];
+    var offDeck = NumarkMixtrack3.decks["D" + offDeckNum];
 
     if (remove) {
         print("==========================================================");
-        print("           Disconnect controls from deck " + OffDeck);
+        print("           Disconnect controls from deck " + offDeckNum);
         print("");
 
         // make sure that the shift is no longer active on either deck to prevent confusion
-        NumarkMixtrack3.decks["D" + OffDeck].shiftKey = false;
-        NumarkMixtrack3.decks["D" + OnDeck].shiftKey = false; 
+        offDeck.shiftKey = false;
+        onDeck.shiftKey = false; 
 
-        for (var led in NumarkMixtrack3.decks["D" + OffDeck].LEDs) {
+        for (var led in offDeck.LEDs) {
             if (led.hasOwnProperty('onOff')) {
                 led.onOff(OFF);
             }
         }
 
         for (var i = 1; i <= 4; i++) {
-            NumarkMixtrack3.decks["D" + OnDeck].LEDs["PADloop" + i].onOff(PADcolors.yellow);
+            onDeck.LEDs["PADloop" + i].onOff(PADcolors.yellow);
         }
     } 
 
     print("==========================================================");
-    print("         Connect controls and triggers deck "+ OnDeck);
+    print("         Connect controls and triggers deck " + onDeckNum);
     print("");
     
     var controlsToFunctions = {
@@ -1075,29 +1071,29 @@ NumarkMixtrack3.connectDeckControls = function(group, remove) {
         'beatloop_0.125_enabled': 'NumarkMixtrack3.OnPADLoopButtonChange'
     };
 
-    engine.connectControl("[EffectRack1_EffectUnit" + OnDeck + "_Effect1]", "enabled",
+    engine.connectControl("[EffectRack1_EffectUnit" + onDeckNum + "_Effect1]", "enabled",
         "NumarkMixtrack3.OnEffectEnabled");
-    engine.connectControl("[EffectRack1_EffectUnit" + OnDeck + "_Effect2]", "enabled",
+    engine.connectControl("[EffectRack1_EffectUnit" + onDeckNum + "_Effect2]", "enabled",
         "NumarkMixtrack3.OnEffectEnabled");
-    engine.connectControl("[EffectRack1_EffectUnit" + OnDeck + "_Effect3]", "enabled",
+    engine.connectControl("[EffectRack1_EffectUnit" + onDeckNum + "_Effect3]", "enabled",
         "NumarkMixtrack3.OnEffectEnabled");
 
-    engine.trigger("[EffectRack1_EffectUnit" + OnDeck + "_Effect1]", "enabled");
-    engine.trigger("[EffectRack1_EffectUnit" + OnDeck + "_Effect2]", "enabled");
-    engine.trigger("[EffectRack1_EffectUnit" + OnDeck + "_Effect3]", "enabled");
+    engine.trigger("[EffectRack1_EffectUnit" + onDeckNum + "_Effect1]", "enabled");
+    engine.trigger("[EffectRack1_EffectUnit" + onDeckNum + "_Effect2]", "enabled");
+    engine.trigger("[EffectRack1_EffectUnit" + onDeckNum + "_Effect3]", "enabled");
 
     // Set InstantFX LEDs to flash if required
-    var arrayLength = NumarkMixtrack3.decks["D" + OnDeck].InstantFX.length;
+    var arrayLength = onDeck.InstantFX.length;
 
     for (var i = 0; i < arrayLength; i++) {
-        var ButtonNum = NumarkMixtrack3.decks["D" + OnDeck].InstantFX[i];
-        NumarkMixtrack3.decks["D" + OnDeck].LEDs["fx" + ButtonNum].flashOn(250, ON, 250);
+        var ButtonNum = onDeck.InstantFX[i];
+        onDeck.LEDs["fx" + ButtonNum].flashOn(250, ON, 250);
     }
 
     for (var control in controlsToFunctions) {
         if (controlsToFunctions.hasOwnProperty(control)) {
             if (remove) {
-                engine.connectControl("[Channel" + OffDeck + "]", control, controlsToFunctions[control], true);
+                engine.connectControl(offDeck.group, control, controlsToFunctions[control], true);
             }
             engine.connectControl(group, control, controlsToFunctions[control]);
             engine.trigger(group, control);
