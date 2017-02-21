@@ -16,6 +16,7 @@
 #include <QtGlobal>
 
 #include "util/cmdlineargs.h"
+#include "util/assert.h"
 
 namespace mixxx {
 namespace {
@@ -135,10 +136,10 @@ void MessageHandler(QtMsgType type,
     case QtCriticalMsg:
         {
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-            bool debugAssert = strncmp(input, Logging::kAssertPrefix,
-                                           strlen(Logging::kAssertPrefix)) == 0;
+            bool debugAssert = strncmp(input, kDebugAssertPrefix,
+                                           strlen(kDebugAssertPrefix)) == 0;
 #else
-            bool debugAssert = input.startsWith(QLatin1String(Logging::kAssertPrefix));
+            bool debugAssert = input.startsWith(QLatin1String(kDebugAssertPrefix));
 #endif
             if (debugAssert) {
                 if (CmdlineArgs::Instance().getDebugAssertBreak()) {

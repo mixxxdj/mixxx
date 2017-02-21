@@ -15,7 +15,6 @@ class Logging {
     // Any debug statement starting with this prefix bypasses the --logLevel
     // command line flags.
     static constexpr const char* kControllerDebugPrefix = "CDBG";
-    static constexpr const char* kAssertPrefix = "DEBUG ASSERT";
 
     static void initialize();
     static void shutdown();
