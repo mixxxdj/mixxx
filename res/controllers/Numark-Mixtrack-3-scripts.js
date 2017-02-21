@@ -751,6 +751,7 @@ NumarkMixtrack3.deck = function(decknum) {
     this.LEDs = [];
     this.TapDown = false;
     this.InstantFX = [];
+    this.instantFxOn = false;
     this.Jog = new Jogger(this.group, this.decknum);
     this.duration = 0;
     this.beatJumpSize = 1;
@@ -1709,19 +1710,30 @@ NumarkMixtrack3.OnPADLoopButtonChange = function(value, group, control) {
 
 NumarkMixtrack3.StripTouchEffect = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
+    var focusedEffect = deck.focusedEffect();
 
     if (deck.shiftKey) {
         engine.setValue(deck.group, "playposition", value / 127);
     } else {
-        for (var i = 0; i < deck.InstantFX.length; i++) {
-            engine.setValue(
-                "[EffectRack1_EffectUnit" + deck.decknum + "_Effect" + deck.InstantFX[i] + "]",
-                "enabled",
-                true
-            );
-        }
+        if (deck.InstantFX.length && !deck.instantFxOn) {
+            for (var i = 0; i < deck.InstantFX.length; i++) {
+                engine.setValue(
+                    "[EffectRack1_EffectUnit" + deck.decknum + "_Effect" + deck.InstantFX[i] + "]",
+                    "enabled",
+                    true
+                );
+            }
 
-        engine.setValue("[EffectRack1_EffectUnit" + deck.decknum + "]", "super1", value / 127);
+            deck.instantFxOn = true;
+        } else if (focusedEffect) {
+            engine.setValue(
+                "[EffectRack1_EffectUnit" + deck.decknum + "_Effect" + focusedEffect + "]",
+                "meta",
+                value / 127
+            );
+        } else {
+            engine.setValue("[EffectRack1_EffectUnit" + deck.decknum + "]", "super1", value / 127);
+        }
     }
 };
 
@@ -1732,6 +1744,8 @@ NumarkMixtrack3.InstantFXOff = function(channel, control, value, status, group) 
         var buttonNum = deck.InstantFX[i];
         engine.setValue("[EffectRack1_EffectUnit" + deck.decknum + "_Effect" + buttonNum + "]", "enabled", false);
     }
+
+    deck.instantFxOn = false;
 };
 
 NumarkMixtrack3.FXButton = function(channel, control, value, status, group) {
