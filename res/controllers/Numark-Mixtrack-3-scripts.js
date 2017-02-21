@@ -1880,9 +1880,9 @@ NumarkMixtrack3.PitchBendMinusButton = function(channel, control, value, status,
 
     if (value === DOWN) {
         if (deck.shiftKey) {
-            engine.setValue(deck.group, "beatjump", -deck.beatJumpSize);
+            engine.setValue(deck.group, "loop_move", -deck.beatJumpSize);
         } else if (deck.TapDown) {
-            engine.setValue(deck.group, 'loop_move', -deck.loopMoveSize);
+            engine.setValue(deck.group, "beatjump", -deck.loopMoveSize);
         } else {
             engine.setValue(deck.group, "rate_temp_down", true);
         }
@@ -1896,9 +1896,9 @@ NumarkMixtrack3.PitchBendPlusButton = function(channel, control, value, status, 
 
     if (value === DOWN) {
         if (deck.shiftKey) {
-            engine.setValue(deck.group, "beatjump", deck.beatJumpSize);
+            engine.setValue(deck.group, "loop_move", deck.beatJumpSize);
         } else if (deck.TapDown) {
-            engine.setValue(deck.group, 'loop_move', deck.loopMoveSize);
+            engine.setValue(deck.group, "beat_jump", deck.loopMoveSize);
         } else {
             engine.setValue(deck.group, "rate_temp_up", true);
         }
