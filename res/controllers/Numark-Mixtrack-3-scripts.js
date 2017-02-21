@@ -47,6 +47,8 @@ var beta = alpha / 32;  // Adjust to suit.
  **************************/
 var loopsize = [2, 4, 8, 16, 0.125, 0.25, 0.5, 1];
 
+var jumpSize = [1/32, 1/16, 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64];
+
 /************************  GPL v2 licence  *****************************
  * Numark Mixtrack Pro 3 controller script
  * Author: Stéphane Morin
@@ -753,8 +755,8 @@ NumarkMixtrack3.deck = function(decknum) {
     this.InstantFX = [];
     this.Jog = new Jogger(this.group, this.decknum);
     this.duration = 0;
-    this.beatJumpSize = 1;
-    this.loopMoveSize = 1;
+    this.beatJumpSize = 4;
+    this.loopMoveSize = 4;
 
     engine.setValue('[EffectRack1_EffectUnit' + decknum + ']', 'show_focus', true);
 };
@@ -772,6 +774,17 @@ NumarkMixtrack3.deck.prototype.focusedEffect = function(effectNum) {
     } else {
         return engine.getValue(effectGroup, "focused_effect");
     }
+};
+
+// go to next jump size, looping back to beginning
+NumarkMixtrack3.deck.prototype.nextJumpSize = function(currentSize) {
+    var index = jumpSize.indexOf(currentSize);
+    return (index + 1) % (jumpSize.length + 1);
+};
+
+NumarkMixtrack3.deck.prototype.prevJumpSize = function(currentSize) {
+    var index = jumpSize.indexOf(currentSize);
+    return (index - 1) % (jumpSize.length + 1);
 };
 
 NumarkMixtrack3.deck.prototype.focusNextEffect = function() {
@@ -1909,30 +1922,41 @@ NumarkMixtrack3.PitchBendPlusButton = function(channel, control, value, status, 
 
 NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
-    var increment = 1 / 20;
-    var knobValue = value;
-
-    // beat knobs sends 1 or 127 as value. If value = 127, turn is counterclockwise, reduce values
-    if (value === 127) {
-        increment = -increment;
-    }
+    // beat knobs sends 1 or 127 as value. If value = 127, turn is counterclockwise
+    var increase = (value !== 127);
+    // function to use to determine next jump size depends on value
+    var nextSizeFun = (increase) ? deck.nextJumpSize : deck.prevJumpSize;
 
     // direct interaction with knob, without any button combination
     if (!deck.PADMode && !deck.shiftKey) {
         var mixValue = engine.getParameter("[EffectRack1_EffectUnit" + deck.decknum + "]", "mix");
+        var increment = 1 / 20;
+
+        if (!increase) {
+            increment = -increment;
+        }
+
         engine.setParameter("[EffectRack1_EffectUnit" + deck.decknum + "]", "mix", mixValue + increment);
     }
 
-    if (deck.shiftKey) {
-        if (value - 64 > 0) {
-            knobValue = value - 128;
-        }
-
-        if (knobValue < 0) {
-            engine.setValue(deck.group, "beats_translate_earlier", true);
-        } else {
+    if (deck.PADMode) {
+        if (increase) {
             engine.setValue(deck.group, "beats_translate_later", true);
+        } else {
+            engine.setValue(deck.group, "beats_translate_earlier", true);
         }
+    }
+
+    if (deck.TapDown) {
+        deck.beatJumpSize = nextSizeFun(deck.beatJumpSize);
+        engine.setValue('[BeatJump]', increase ? 'next': 'prev', true);
+        engine.setValue('[BeatJump]', increase ? 'next': 'prev', false);
+    }
+
+    if (deck.shiftKey) {
+        deack.loopMoveSize = nextSizeFun(deck.loopMoveSize);
+        engine.setValue('[LoopMove]', increase ? 'next': 'prev', true);
+        engine.setValue('[LoopMove]', increase ? 'next': 'prev', false);
     }
 };
 
