@@ -1189,6 +1189,19 @@ NumarkMixtrack3.BrowseKnob = function(channel, control, value, status, group) {
         .D2.shiftKey || NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey);
     // value = 1 / 2 / 3 ... for positive //value = 1 / 2 / 3  
     var nval = (value > 0x40 ? value - 0x80 : value);
+    // adjust sampler pregain using PAD + Browse
+    var startingSampler = 0;
+
+    if (NumarkMixtrack3.decks.D1.PADMode || NumarkMixtrack3.decks.D3.PADMode) {
+        startingSampler = 1;
+    } else if (NumarkMixtrack3.decks.D2.PADMode || NumarkMixtrack3.decks.D4.PADMode) {
+        startingSampler = 5;
+    }
+
+    // unmodified behaviour
+    if (!shifted && !startingSampler) {
+        engine.setValue(group, "SelectTrackKnob", nval);
+    }
 
     if (shifted) {
         // SHIFT+Turn BROWSE Knob : directory mode --> select Play List/Side bar item
@@ -1201,9 +1214,33 @@ NumarkMixtrack3.BrowseKnob = function(channel, control, value, status, group) {
                 engine.setValue(group, "SelectPrevPlaylist", 1);
             }
         }
-    } else {
-        // Turn BROWSE Knob : track list mode -->  select track
-        engine.setValue(group, "SelectTrackKnob", nval);
+    } 
+    
+    if (startingSampler) {
+        for (var i = startingSampler; i <= startingSampler + 3; i++) {
+            var gainValue = engine.getValue("[Sampler" + i + "]", "pregain");
+            var increment = 1 / 20;
+            var gainMultiplier = 3;
+
+            if (nval < 0) {
+                increment = -increment;
+            }
+
+            // for higher gain, we increment the gain by more
+            if (gainValue > 1) {
+                increment = increment * gainMultiplier;
+            }
+
+            gainValue = gainValue + increment;
+
+            if (gainValue < 0) {
+                gainValue = 0;
+            } else if (gainValue > 4) {
+                gainValue = 4;
+            }
+
+            engine.setValue("[Sampler" + i + "]", "pregain", gainValue);
+        }
     }
 };
 
@@ -1895,39 +1932,6 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
             engine.setValue(deck.group, "beats_translate_earlier", true);
         } else {
             engine.setValue(deck.group, "beats_translate_later", true);
-        }
-    }
-
-    // adjust sampler pregain
-    if (deck.PADMode) {
-        var startingSampler;
-
-        if (deck.decknum === 1 || deck.decknum === 3) {
-            startingSampler = 1;
-        } else {
-            startingSampler = 5;
-        }
-
-        for (var i = startingSampler; i <= startingSampler + 3; i++) {
-            var gainValue = engine.getValue("[Sampler" + i + "]", "pregain");
-            var gainMultiplier = 3;
-
-            // for higher gain, we increment the gain by more
-            if (gainValue > 1) {
-                increment = increment * gainMultiplier;
-            }
-
-            gainValue = gainValue + increment;
-
-            if (gainValue < 0) {
-                gainValue = 0;
-            }
-
-            if (gainValue > 4) {
-                gainValue = 4;
-            }
-
-            engine.setValue("[Sampler" + i + "]", "pregain", gainValue);
         }
     }
 };
