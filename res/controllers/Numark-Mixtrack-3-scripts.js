@@ -1877,14 +1877,11 @@ NumarkMixtrack3.OnPFLStatusChange = function(value, group, control) {
     deck.LEDs.headphones.onOff((value) ? ON : OFF);
 };
 
-// Callback for the PFL Button
 NumarkMixtrack3.OnShiftedPFLButton = function(channel, control, value, status, group, eventkind) {
     if (eventkind === DOUBLE_PRESS) {
-        // Double press : toggle slip mode
-        toggleValue(group, "slip_enabled");
-    } else {
-        // Single press : toggle quantize mode
         toggleValue(group, "quantize");
+    } else {
+        toggleValue(group, "slip_enabled");
     }
 };
 
