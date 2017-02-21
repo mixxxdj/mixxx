@@ -1743,70 +1743,47 @@ NumarkMixtrack3.InstantFXOff = function(channel, control, value, status, group) 
 };
 
 NumarkMixtrack3.FXButton = function(channel, control, value, status, group) {
-    //if (!value) return; //not sure why this is there
     var deck = NumarkMixtrack3.deckFromGroup(group);
     var decknum = deck.decknum;
-    var ButtonNum = control - leds.fx1 + 1;
-    var new_value;
+    var effectNum = control - leds.fx1 + 1;
+    var effectGroup = "[EffectRack1_EffectUnit" + decknum + "_Effect" + effectNum + "]";
 
-    if (value === DOWN && deck.TapDown && !deck.PADMode) {
-        if (deck.InstantFX.indexOf(ButtonNum) > -1) {
-            // we are removing the instantFX option from the selected FX button
-            // Find and remove item from an array
-            var i = deck.InstantFX.indexOf(ButtonNum);
-
-            if (i != -1) {
-                deck.InstantFX.splice(i, 1);
-            }
-
-            if (deck.InstantFX.indexOf(ButtonNum) === -1) {
-                new_value = engine.getValue(
-                    "[EffectRack1_EffectUnit" + decknum + "_Effect" + ButtonNum + "]",
-                    "enabled"
-                );
-                deck.LEDs["fx" + ButtonNum].onOff(new_value ? ON : OFF);
-            }
-
-            // reset tapdown modifier early to allow its use as a focus toggle
-            deck.TapDown = false;
+    if (deck.TapDown && value === DOWN) {
+        if (deck.InstantFX.indexOf(effectNum) > -1) {
+            // remove effect from InstantFX and set LED to reflect whether or not effect is enabled
+            var index = deck.InstantFX.indexOf(effectNum);
+            deck.InstantFX.splice(index, 1);
+            deck.LEDs["fx" + effectNum].onOff(engine.getValue(effectGroup, "enabled") ? ON : OFF);
         } else {
-            // we are adding the effect to the InstantFX list, or removing it
-            // tap + FX button enables/disables InstantFX, we check deck.TapDown to know if tap is pressed
-            //in order for FX LEDs to flas in sync, we need to loop thru the array to reset the LEDs
-            deck.InstantFX.push(ButtonNum);
+            // add new effect to InstantFX
+            deck.InstantFX.push(effectNum);
 
-            // Get all LEDs to flash in sync
+            // get all LEDs to flash in sync
             for (var i = 0, n = deck.InstantFX.length; i < n; i++) {
-                ButtonNum = deck.InstantFX[i];
-                deck.LEDs["fx" + ButtonNum].flashOn(250, ON, 250);
+                effectNum = deck.InstantFX[i];
+                deck.LEDs["fx" + effectNum].flashOn(250, ON, 250);
             }
-
-            deck.TapDown = false;
         }
-    } else if (value === DOWN && !deck.TapDown && !deck.PADMode) {
-        if (deck.shiftKey) {
-            // Select Effect
-            engine.setValue("[EffectRack1_EffectUnit" + decknum + "_Effect" + ButtonNum + "]",
-                "next_effect", true); // Load FX, but not active
-            engine.setValue("[EffectRack1_EffectUnit" + decknum + "_Effect" + ButtonNum + "]",
-                "enabled", false); // Load FX, but not active
-            engine.setValue("[EffectRack1_EffectUnit" + decknum + "]",
-                "group_[Channel" + decknum + "]_enable", true); // An FX is loaded, activate Effect Unit
-        } else {
-            // Toggle effect if InstantFX is not active
-            if (deck.InstantFX.indexOf(ButtonNum) === -1) {
-                toggleValue("[EffectRack1_EffectUnit" + decknum + "_Effect" + ButtonNum + "]", "enabled");
-                deck.LEDs["fx" + ButtonNum].onOff(new_value ? ON : OFF);
-            }
+    } else if (deck.PADMode && value === DOWN) {
+        // load next effect, make sure it is inactive, and make sure the unit is enabled
+        engine.setValue(effectGroup, "next_effect", true);
+        engine.setValue(effectGroup, "enabled", false);
+        engine.setValue("[EffectRack1_EffectUnit" + decknum + "]", "group_[Channel" + decknum + "]_enable", true);
+    } else if (deck.shiftKey && value === DOWN) {
+        deck.focusEffect(effectNum);
+    } else if (value === DOWN) {
+        // toggle effect if InstantFX is not active
+        if (deck.InstantFX.indexOf(effectNum) === -1) {
+            toggleValue(effectGroup, "enabled");
         }
     }
 
     // Standard FX Control done, now deal with extra features
-    if (deck.PADMode && ButtonNum === 1) {
+    if (deck.PADMode && effectNum === 1) {
         engine.brake(deck.decknum, value === DOWN);
     }
 
-    if (deck.PADMode && ButtonNum === 2) {
+    if (deck.PADMode && effectNum === 2) {
         engine.spinback(deck.decknum, value === DOWN);
     }
 };
@@ -1957,10 +1934,6 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
 
 NumarkMixtrack3.bpmTap = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
-
-    if (value !== DOWN && !deck.shiftKey && deck.TapDown) {
-        deck.focusNextEffect();
-    }
 
     deck.TapDown = false;
 
