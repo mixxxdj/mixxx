@@ -751,7 +751,6 @@ NumarkMixtrack3.deck = function(decknum) {
     this.LEDs = [];
     this.TapDown = false;
     this.InstantFX = [];
-    this.instantFxOn = false;
     this.Jog = new Jogger(this.group, this.decknum);
     this.duration = 0;
     this.beatJumpSize = 1;
@@ -768,7 +767,7 @@ NumarkMixtrack3.deck.prototype.TrackIsLoaded = function() {
 NumarkMixtrack3.deck.prototype.focusedEffect = function(effectNum) {
     var effectGroup = "[EffectRack1_EffectUnit" + this.decknum + "]";
 
-    if (effectNum) {
+    if (effectNum !== undefined) {
         engine.setValue(effectGroup, "focused_effect", effectNum);
     } else {
         return engine.getValue(effectGroup, "focused_effect");
@@ -1715,23 +1714,20 @@ NumarkMixtrack3.StripTouchEffect = function(channel, control, value, status, gro
     if (deck.shiftKey) {
         engine.setValue(deck.group, "playposition", value / 127);
     } else {
-        if (deck.InstantFX.length && !deck.instantFxOn) {
+        if (deck.InstantFX.length) {
             for (var i = 0; i < deck.InstantFX.length; i++) {
-                engine.setValue(
-                    "[EffectRack1_EffectUnit" + deck.decknum + "_Effect" + deck.InstantFX[i] + "]",
-                    "enabled",
-                    true
-                );
+                var fxGroup = "[EffectRack1_EffectUnit" + deck.decknum + "_Effect" + deck.InstantFX[i] + "]";
+                engine.setValue(fxGroup, "enabled", true);
+                engine.setValue(fxGroup, "meta", value / 127);
             }
+        }
 
-            deck.instantFxOn = true;
-        } else if (focusedEffect) {
-            engine.setValue(
-                "[EffectRack1_EffectUnit" + deck.decknum + "_Effect" + focusedEffect + "]",
-                "meta",
-                value / 127
-            );
-        } else {
+        if (focusedEffect) {
+            var focusedGroup = "[EffectRack1_EffectUnit" + deck.decknum + "_Effect" + focusedEffect + "]";
+            engine.setValue(focusedGroup, "meta", value / 127);
+        }
+
+        if (!focusedEffect && !deck.InstantFX.length) {
             engine.setValue("[EffectRack1_EffectUnit" + deck.decknum + "]", "super1", value / 127);
         }
     }
@@ -1744,8 +1740,6 @@ NumarkMixtrack3.InstantFXOff = function(channel, control, value, status, group) 
         var buttonNum = deck.InstantFX[i];
         engine.setValue("[EffectRack1_EffectUnit" + deck.decknum + "_Effect" + buttonNum + "]", "enabled", false);
     }
-
-    deck.instantFxOn = false;
 };
 
 NumarkMixtrack3.FXButton = function(channel, control, value, status, group) {
@@ -1772,6 +1766,9 @@ NumarkMixtrack3.FXButton = function(channel, control, value, status, group) {
                 );
                 deck.LEDs["fx" + ButtonNum].onOff(new_value ? ON : OFF);
             }
+
+            // reset tapdown modifier early to allow its use as a focus toggle
+            deck.TapDown = false;
         } else {
             // we are adding the effect to the InstantFX list, or removing it
             // tap + FX button enables/disables InstantFX, we check deck.TapDown to know if tap is pressed
@@ -1783,6 +1780,8 @@ NumarkMixtrack3.FXButton = function(channel, control, value, status, group) {
                 ButtonNum = deck.InstantFX[i];
                 deck.LEDs["fx" + ButtonNum].flashOn(250, ON, 250);
             }
+
+            deck.TapDown = false;
         }
     } else if (value === DOWN && !deck.TapDown && !deck.PADMode) {
         if (deck.shiftKey) {
@@ -1959,6 +1958,10 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
 NumarkMixtrack3.bpmTap = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
 
+    if (value !== DOWN && !deck.shiftKey && deck.TapDown) {
+        deck.focusNextEffect();
+    }
+
     deck.TapDown = false;
 
     if (value === DOWN) {
@@ -1969,7 +1972,6 @@ NumarkMixtrack3.bpmTap = function(channel, control, value, status, group) {
             NumarkMixtrack3.deckGroup[group] = '[Channel' + newDeckNum + ']';
             NumarkMixtrack3.initDeck(NumarkMixtrack3.deckGroup[group], true);
         } else {
-            deck.focusNextEffect();
             engine.setValue(deck.group, "bpm_tap", true);
         }
     }
