@@ -1,3 +1,4 @@
+#include <util/synthesizedmouseevents.h>
 #include <QtDebug>
 #include <QTouchEvent>
 #include "mixxxapplication.h"
@@ -5,7 +6,6 @@
 #include "library/crate/crateid.h"
 #include "control/controlproxy.h"
 #include "mixxx.h"
-#include "util/synthesizedmousewvents.h"
 
 // When linking Qt statically on Windows we have to Q_IMPORT_PLUGIN all the
 // plugins we link in build/depends.py.
