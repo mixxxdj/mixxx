@@ -75,7 +75,7 @@ class ControllerEngine : public QObject {
     }
 
     /** Resolve a function name to a QScriptValue. */
-    QScriptValue resolveFunction(QString function, bool useCache) const;
+    QScriptValue resolveFunction(QString function) const;
     /** Look up registered script function prefixes */
     QList<QString>& getScriptFunctionPrefixes() { return m_scriptFunctionPrefixes; };
     /** Disconnect a ControllerEngineConnection */
