@@ -143,7 +143,8 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig)
           m_pLibrary(NULL),
           m_pVCManager(NULL),
           m_pEffectsManager(NULL),
-          m_pParent(NULL) {
+          m_pParent(NULL),
+          m_scaleFactor(1.0) {
 }
 
 LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
@@ -160,7 +161,8 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
           m_pLibrary(pLibrary),
           m_pVCManager(pVCMan),
           m_pEffectsManager(pEffectsManager),
-          m_pParent(NULL) {
+          m_pParent(NULL),
+          m_scaleFactor(1.0) {
 }
 
 LegacySkinParser::~LegacySkinParser() {
@@ -366,8 +368,7 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
     ColorSchemeParser::setupLegacyColorSchemes(skinDocument, m_pConfig);
 
     // Load the config option once, here, rather than in setupSize.
-    // DoubleWidgetSize is boolean, so we add 1 to get the multiplier 1 or 2
-    m_scaleFactor = m_pConfig->getValueString(ConfigKey("[Config]","DoubleWidgetSize"), "0").toInt() + 1;
+    m_scaleFactor = m_pConfig->getValue(ConfigKey("[Config]","ScaleFactor"), 1.0);
 
     QStringList skinPaths(skinPath);
     QDir::setSearchPaths("skin", skinPaths);

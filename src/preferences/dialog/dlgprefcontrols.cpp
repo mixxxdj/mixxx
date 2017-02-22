@@ -298,8 +298,16 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
 
     slotUpdateSchemes();
 
-    checkBoxDoubleWidgetSize->setChecked(m_pConfig->getValueString(
-                       ConfigKey("[Config]", "DoubleWidgetSize")).toInt()==1);
+    double scaleFactor = m_pConfig->getValue(
+            ConfigKey("[Config]", "ScaleFactor"), 1.0);
+
+    if (scaleFactor == 1.0) {
+        checkBoxDoubleWidgetSize->setCheckState(Qt::Unchecked);
+    } else if (scaleFactor == 2.0) {
+        checkBoxDoubleWidgetSize->setCheckState(Qt::Checked);
+    } else {
+        checkBoxDoubleWidgetSize->setCheckState(Qt::PartiallyChecked);
+    }
     connect(checkBoxDoubleWidgetSize, SIGNAL(toggled(bool)),
             this, SLOT(slotSetDoubleWidgetSize(bool)));
 
@@ -573,7 +581,8 @@ void DlgPrefControls::slotSetCueRecall(bool b)
 }
 
 void DlgPrefControls::slotSetDoubleWidgetSize(bool b) {
-    m_pConfig->set(ConfigKey("[Config]", "DoubleWidgetSize"), ConfigValue(b?1:0));
+    checkBoxDoubleWidgetSize->setTristate(false);
+    m_pConfig->setValue(ConfigKey("[Config]", "ScaleFactor"), b ? 2.0 : 1.0);
     // reload the skin when the button is toggled
     m_mixxx->rebootMixxxView();
 }

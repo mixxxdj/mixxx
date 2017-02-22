@@ -144,7 +144,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     static QList<const char*> s_channelStrs;
     static QMutex s_safeStringMutex;
 
-    int m_scaleFactor = 1;
+    double m_scaleFactor;
 };
 
 
