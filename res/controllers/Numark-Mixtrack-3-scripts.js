@@ -47,8 +47,6 @@ var beta = alpha / 32;  // Adjust to suit.
  **************************/
 var loopsize = [2, 4, 8, 16, 0.125, 0.25, 0.5, 1];
 
-var jumpSize = [1/32, 1/16, 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64];
-
 /************************  GPL v2 licence  *****************************
  * Numark Mixtrack Pro 3 controller script
  * Author: Stéphane Morin
@@ -229,6 +227,21 @@ function parameterSoftTakeOver(group, control, value) {
         return; //do nothing until we get close
     }
 }
+
+var beatJumpSize = 4;
+var loopMoveSize = 4;
+var jumpSize = [1/32, 1/16, 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64];
+
+// go to next jump size, looping back to beginning
+var nextJumpSize = function(currentSize) {
+    var index = jumpSize.indexOf(currentSize);
+    return jumpSize[(index + 1) % (jumpSize.length + 1)];
+};
+
+var prevJumpSize = function(currentSize) {
+    var index = jumpSize.indexOf(currentSize);
+    return jumpSize[(index - 1) % (jumpSize.length + 1)];
+};
 
 // =====================================================================
 // Reusable Objects (special buttons handling, LEDs, iCUT and Jog wheels)
@@ -755,8 +768,6 @@ NumarkMixtrack3.deck = function(decknum) {
     this.InstantFX = [];
     this.Jog = new Jogger(this.group, this.decknum);
     this.duration = 0;
-    this.beatJumpSize = 4;
-    this.loopMoveSize = 4;
 
     engine.setValue('[EffectRack1_EffectUnit' + decknum + ']', 'show_focus', true);
 };
@@ -774,17 +785,6 @@ NumarkMixtrack3.deck.prototype.focusedEffect = function(effectNum) {
     } else {
         return engine.getValue(effectGroup, "focused_effect");
     }
-};
-
-// go to next jump size, looping back to beginning
-NumarkMixtrack3.deck.prototype.nextJumpSize = function(currentSize) {
-    var index = jumpSize.indexOf(currentSize);
-    return (index + 1) % (jumpSize.length + 1);
-};
-
-NumarkMixtrack3.deck.prototype.prevJumpSize = function(currentSize) {
-    var index = jumpSize.indexOf(currentSize);
-    return (index - 1) % (jumpSize.length + 1);
 };
 
 NumarkMixtrack3.deck.prototype.focusNextEffect = function() {
@@ -1094,6 +1094,11 @@ NumarkMixtrack3.connectDeckControls = function(group, remove) {
     engine.trigger("[EffectRack1_EffectUnit" + onDeckNum + "_Effect1]", "enabled");
     engine.trigger("[EffectRack1_EffectUnit" + onDeckNum + "_Effect2]", "enabled");
     engine.trigger("[EffectRack1_EffectUnit" + onDeckNum + "_Effect3]", "enabled");
+
+    engine.connectControl("[BeatJump]", "next", "NumarkMixtrack3.OnBeatJump");
+    engine.connectControl("[BeatJump]", "prev", "NumarkMixtrack3.OnBeatJump");
+    engine.connectControl("[LoopMove]", "next", "NumarkMixtrack3.OnLoopMove");
+    engine.connectControl("[LoopMove]", "prev", "NumarkMixtrack3.OnLoopMove");
 
     // Set InstantFX LEDs to flash if required
     var arrayLength = onDeck.InstantFX.length;
@@ -1814,13 +1819,17 @@ NumarkMixtrack3.FXButton = function(channel, control, value, status, group) {
                 deck.LEDs["fx" + effectNum].flashOn(250, ON, 250);
             }
         }
-    } else if (deck.PADMode && value === DOWN) {
+    } else if (deck.shiftKey && value === DOWN) {
         // load next effect, make sure it is inactive, and make sure the unit is enabled
         engine.setValue(effectGroup, "next_effect", true);
         engine.setValue(effectGroup, "enabled", false);
         engine.setValue("[EffectRack1_EffectUnit" + decknum + "]", "group_[Channel" + decknum + "]_enable", true);
     } else if (deck.TapDown && value === DOWN) {
-        deck.focusEffect(effectNum);
+        if (deck.focusedEffect() === effectNum) {
+            deck.focusedEffect(0);
+        } else {
+            deck.focusedEffect(effectNum);
+        }
     } else if (value === DOWN) {
         // toggle effect if InstantFX is not active
         if (deck.InstantFX.indexOf(effectNum) === -1) {
@@ -1864,7 +1873,7 @@ NumarkMixtrack3.PFLButton = function(channel, control, value, status, group) {
         } else {
             toggleValue(deck.group, "pfl");
             for (var i = 1; i <= 4 ; i++) {
-                if (i != deck.decknum) { 
+                if (i !== deck.decknum) { 
                     engine.setValue("[Channel" + i + "]", "pfl", false);
                 }
             }
@@ -1890,9 +1899,9 @@ NumarkMixtrack3.PitchBendMinusButton = function(channel, control, value, status,
 
     if (value === DOWN) {
         if (deck.shiftKey) {
-            engine.setValue(deck.group, "loop_move", -deck.beatJumpSize);
+            engine.setValue(deck.group, "loop_move", -loopMoveSize);
         } else if (deck.TapDown) {
-            engine.setValue(deck.group, "beatjump", -deck.loopMoveSize);
+            engine.setValue(deck.group, "beatjump", -beatJumpSize);
         } else {
             engine.setValue(deck.group, "rate_temp_down", true);
         }
@@ -1906,9 +1915,9 @@ NumarkMixtrack3.PitchBendPlusButton = function(channel, control, value, status, 
 
     if (value === DOWN) {
         if (deck.shiftKey) {
-            engine.setValue(deck.group, "loop_move", deck.beatJumpSize);
+            engine.setValue(deck.group, "loop_move", loopMoveSize);
         } else if (deck.TapDown) {
-            engine.setValue(deck.group, "beat_jump", deck.loopMoveSize);
+            engine.setValue(deck.group, "beatjump", beatJumpSize);
         } else {
             engine.setValue(deck.group, "rate_temp_up", true);
         }
@@ -1921,8 +1930,7 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
     // beat knobs sends 1 or 127 as value. If value = 127, turn is counterclockwise
     var increase = (value !== 127);
-    // function to use to determine next jump size depends on value
-    var nextSizeFun = (increase) ? deck.nextJumpSize : deck.prevJumpSize;
+
 
     // direct interaction with knob, without any button combination
     if (!deck.PADMode && !deck.shiftKey) {
@@ -1945,16 +1953,30 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
     }
 
     if (deck.TapDown) {
-        deck.beatJumpSize = nextSizeFun(deck.beatJumpSize);
         engine.setValue('[BeatJump]', increase ? 'next': 'prev', true);
         engine.setValue('[BeatJump]', increase ? 'next': 'prev', false);
     }
 
     if (deck.shiftKey) {
-        deack.loopMoveSize = nextSizeFun(deck.loopMoveSize);
         engine.setValue('[LoopMove]', increase ? 'next': 'prev', true);
         engine.setValue('[LoopMove]', increase ? 'next': 'prev', false);
     }
+};
+
+NumarkMixtrack3.OnBeatJump = function(value, group, control) {
+    if (!value) return;
+    // function to use to determine next jump size depends on value
+    var nextSizeFun = (control === 'next') ? nextJumpSize : prevJumpSize;
+    print(beatJumpSize);
+    beatJumpSize = nextSizeFun(beatJumpSize);
+    print(beatJumpSize);
+};
+
+NumarkMixtrack3.OnLoopMove = function(value, group, control) {
+    if (!value) return;
+    // function to use to determine next jump size depends on value
+    var nextSizeFun = (control === 'next') ? nextJumpSize : prevJumpSize;
+    loopMoveSize = nextSizeFun(loopMoveSize);
 };
 
 NumarkMixtrack3.bpmTap = function(channel, control, value, status, group) {
