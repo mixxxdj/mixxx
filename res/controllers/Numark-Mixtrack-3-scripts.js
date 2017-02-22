@@ -235,12 +235,12 @@ var jumpSize = [1/32, 1/16, 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64];
 // go to next jump size, looping back to beginning
 var nextJumpSize = function(currentSize) {
     var index = jumpSize.indexOf(currentSize);
-    return jumpSize[(index + 1) % (jumpSize.length + 1)];
+    return jumpSize[(index + 1) % (jumpSize.length)];
 };
 
 var prevJumpSize = function(currentSize) {
     var index = jumpSize.indexOf(currentSize);
-    return jumpSize[(index - 1) % (jumpSize.length + 1)];
+    return jumpSize[(index - 1) % (jumpSize.length)];
 };
 
 // =====================================================================
@@ -1967,9 +1967,7 @@ NumarkMixtrack3.OnBeatJump = function(value, group, control) {
     if (!value) return;
     // function to use to determine next jump size depends on value
     var nextSizeFun = (control === 'next') ? nextJumpSize : prevJumpSize;
-    print(beatJumpSize);
     beatJumpSize = nextSizeFun(beatJumpSize);
-    print(beatJumpSize);
 };
 
 NumarkMixtrack3.OnLoopMove = function(value, group, control) {
