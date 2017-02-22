@@ -6,6 +6,7 @@
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dao/cue.h"
+#include "track/beatfactory.h"
 
 const int kFilterLength = 80;
 const int kMinBPM = 30;
@@ -19,7 +20,7 @@ DlgTrackInfo::DlgTrackInfo(QWidget* parent,
             : QDialog(parent),
               m_pLoadedTrack(NULL),
               m_pTapFilter(new TapFilter(this, kFilterLength, kMaxInterval)),
-              m_dLastBpm(-1.),
+              m_dLastTapedBpm(-1.),
               m_DlgTagFetcher(DlgTagFetcher),
               m_pWCoverArtLabel(new WCoverArtLabel(this)) {
     init();
@@ -62,6 +63,16 @@ void DlgTrackInfo::init() {
             this, SLOT(slotBpmTwoThirds()));
     connect(bpmThreeFourth, SIGNAL(clicked()),
             this, SLOT(slotBpmThreeFourth()));
+    connect(bpmClear, SIGNAL(clicked()),
+            this, SLOT(slotBpmClear()));
+
+    connect(bpmConst, SIGNAL(stateChanged(int)),
+            this, SLOT(slotBpmConstChanged(int)));
+
+    connect(spinBpm, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSpinBpmValueChanged(double)));
+
+
 
     connect(btnCueActivate, SIGNAL(clicked()),
             this, SLOT(cueActivate()));
@@ -151,7 +162,7 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtYear->setText(pTrack->getYear());
     txtTrackNumber->setText(pTrack->getTrackNumber());
     txtComment->setPlainText(pTrack->getComment());
-    spinBpm->setValue(pTrack->getBpm());
+
     // Non-editable fields
     txtDuration->setText(pTrack->getDurationStr());
     txtLocation->setPlainText(pTrack->getLocation());
@@ -159,15 +170,8 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtBitrate->setText(QString(pTrack->getBitrateStr()) + (" ") + tr("kbps"));
     txtBpm->setText(pTrack->getBpmStr());
     txtKey->setText(pTrack->getKeyText());
-    BeatsPointer pBeats = pTrack->getBeats();
-    bool beatsSupportsSet = !pBeats || (pBeats->getCapabilities() & Beats::BEATSCAP_SET);
-    bool enableBpmEditing = !pTrack->hasBpmLock() && beatsSupportsSet;
-    spinBpm->setEnabled(enableBpmEditing);
-    bpmTap->setEnabled(enableBpmEditing);
-    bpmDouble->setEnabled(enableBpmEditing);
-    bpmHalve->setEnabled(enableBpmEditing);
-    bpmTwoThirds->setEnabled(enableBpmEditing);
-    bpmThreeFourth->setEnabled(enableBpmEditing);
+
+    reloadTrackBeats(pTrack);
 
     m_loadedCoverInfo = pTrack->getCoverInfo();
     int reference = pTrack->getId();
@@ -179,18 +183,33 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     }
 }
 
+void DlgTrackInfo::reloadTrackBeats(TrackPointer pTrack) {
+    BeatsPointer pBeats = pTrack->getBeats();
+    if (pBeats) {
+        spinBpm->setValue(pBeats->getBpm());
+        m_pBeatsClone = pBeats->clone();
+    } else {
+        m_pBeatsClone.clear();
+        spinBpm->setValue(0.0);
+    }
+    m_trackHasBeatMap = pBeats && !(pBeats->getCapabilities() & Beats::BEATSCAP_SETBPM);
+    bpmConst->setChecked(!m_trackHasBeatMap);
+    bpmConst->setEnabled(m_trackHasBeatMap); // We cannot make turn a BeatGrid to a BeatMap
+    spinBpm->setEnabled(!m_trackHasBeatMap); // We cannot change bpm continuously or tab them
+    bpmTap->setEnabled(!m_trackHasBeatMap);  // when we have a beatmap
+}
+
 void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
-    m_pLoadedTrack = pTrack;
     clear();
 
-    if (m_pLoadedTrack.isNull()) {
+    if (pTrack.isNull()) {
         return;
     }
 
+    m_pLoadedTrack = pTrack;
+
     populateFields(m_pLoadedTrack);
     populateCues(m_pLoadedTrack);
-
-    disconnect(this, SLOT(updateTrackMetadata()));
 
     // We already listen to changed() so we don't need to listen to individual
     // signals such as cuesUpdates, coverArtUpdated(), etc.
@@ -344,7 +363,8 @@ void DlgTrackInfo::saveTrack() {
     m_pLoadedTrack->setComment(txtComment->toPlainText());
 
     if (!m_pLoadedTrack->hasBpmLock()) {
-        m_pLoadedTrack->setBpm(spinBpm->value());
+        m_pLoadedTrack->setBeats(m_pBeatsClone);
+        reloadTrackBeats(m_pLoadedTrack);
     }
 
     QSet<int> updatedRows;
@@ -411,11 +431,12 @@ void DlgTrackInfo::unloadTrack(bool save) {
     }
 
     clear();
-    disconnect(this, SLOT(updateTrackMetadata()));
-    m_pLoadedTrack.clear();
 }
 
 void DlgTrackInfo::clear() {
+
+    disconnect(this, SLOT(updateTrackMetadata()));
+    m_pLoadedTrack.clear();
 
     txtTrackName->setText("");
     txtArtist->setText("");
@@ -428,6 +449,7 @@ void DlgTrackInfo::clear() {
     txtTrackNumber->setText("");
     txtComment->setPlainText("");
     spinBpm->setValue(0.0);
+    m_pBeatsClone.clear();
 
     txtDuration->setText("");
     txtType->setText("");
@@ -444,19 +466,58 @@ void DlgTrackInfo::clear() {
 }
 
 void DlgTrackInfo::slotBpmDouble() {
-    spinBpm->setValue(spinBpm->value() * 2.0);
+    m_pBeatsClone->scale(Beats::DOUBLE);
+    // read back the actual value
+    double newValue = m_pBeatsClone->getBpm();
+    spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmHalve() {
-    spinBpm->setValue(spinBpm->value() / 2.0);
+    m_pBeatsClone->scale(Beats::HALVE);
+    // read back the actual value
+    double newValue = m_pBeatsClone->getBpm();
+    spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmTwoThirds() {
-    spinBpm->setValue(spinBpm->value() * (2./3.));
+    m_pBeatsClone->scale(Beats::Beats::TWOTHIRDS);
+    // read back the actual value
+    double newValue = m_pBeatsClone->getBpm();
+    spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmThreeFourth() {
-    spinBpm->setValue(spinBpm->value() * (3./4.));
+    m_pBeatsClone->scale(Beats::Beats::THREEFOURTHS);
+    // read back the actual value
+    double newValue = m_pBeatsClone->getBpm();
+    spinBpm->setValue(newValue);
+}
+
+void DlgTrackInfo::slotBpmClear() {
+    spinBpm->setValue(0);
+    m_pBeatsClone.clear();
+
+    bpmConst->setChecked(true);
+    bpmConst->setEnabled(m_trackHasBeatMap);
+    spinBpm->setEnabled(true);
+    bpmTap->setEnabled(true);
+}
+
+void DlgTrackInfo::slotBpmConstChanged(int state) {
+    if (state != Qt::Unchecked) {
+        // const beatgrid requested
+        if (spinBpm->value() > 0) {
+            m_pBeatsClone = BeatFactory::makeBeatGrid(m_pLoadedTrack.data(),
+                    spinBpm->value(), 0);
+        } else {
+            m_pBeatsClone.clear();
+        }
+        spinBpm->setEnabled(true);
+        bpmTap->setEnabled(true);
+    } else {
+        // try to reload BeatMap from the Track
+        reloadTrackBeats(m_pLoadedTrack);
+    }
 }
 
 void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
@@ -466,10 +527,35 @@ void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
     }
     double averageBpm = 60.0 * 1000.0 / averageLength;
     // average bpm needs to be truncated for this comparison:
-    if (averageBpm != m_dLastBpm) {
-        m_dLastBpm = averageBpm;
+    if (averageBpm != m_dLastTapedBpm) {
+        m_dLastTapedBpm = averageBpm;
         spinBpm->setValue(averageBpm);
     }
+}
+
+void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
+    if (value <= 0) {
+        m_pBeatsClone.clear();
+        return;
+    }
+
+    if (!m_pBeatsClone) {
+        m_pBeatsClone = BeatFactory::makeBeatGrid(m_pLoadedTrack.data(),
+                value, 0);
+    }
+
+    double oldValue = m_pBeatsClone->getBpm();
+    if (oldValue == value) {
+        return;
+    }
+
+    if (m_pBeatsClone->getCapabilities() & Beats::BEATSCAP_SETBPM) {
+        m_pBeatsClone->setBpm(value);
+    }
+
+    // read back the actual value
+    double newValue = m_pBeatsClone->getBpm();
+    spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::reloadTrackMetadata() {

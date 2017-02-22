@@ -30,14 +30,17 @@ TEST_F(BeatGridTest, Scale) {
     pGrid->setBpm(bpm);
 
     EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
-    pGrid->scale(2);
+    pGrid->scale(Beats::DOUBLE);
     EXPECT_DOUBLE_EQ(2 * bpm, pGrid->getBpm());
 
-    pGrid->scale(0.5);
+    pGrid->scale(Beats::HALVE);
     EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
 
-    pGrid->scale(0.25);
-    EXPECT_DOUBLE_EQ(0.25 * bpm, pGrid->getBpm());
+    pGrid->scale(Beats::TWOTHIRDS);
+    EXPECT_DOUBLE_EQ(bpm * 2 / 3, pGrid->getBpm());
+
+    pGrid->scale(Beats::THREEFOURTHS);
+    EXPECT_DOUBLE_EQ(bpm / 2, pGrid->getBpm());
 }
 
 TEST_F(BeatGridTest, TestNthBeatWhenOnBeat) {

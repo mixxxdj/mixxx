@@ -49,7 +49,10 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotBpmHalve();
     void slotBpmTwoThirds();
     void slotBpmThreeFourth();
+    void slotBpmClear();
+    void slotBpmConstChanged(int state);
     void slotBpmTap(double averageLength, int numSamples);
+    void slotSpinBpmValueChanged(double value);
 
     void reloadTrackMetadata();
     void updateTrackMetadata();
@@ -62,6 +65,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
   private:
     void populateFields(TrackPointer pTrack);
+    void reloadTrackBeats(TrackPointer pTrack);
     void populateCues(TrackPointer pTrack);
     void saveTrack();
     void unloadTrack(bool save);
@@ -69,9 +73,11 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void init();
     QHash<int, Cue*> m_cueMap;
     TrackPointer m_pLoadedTrack;
+    BeatsPointer m_pBeatsClone;
+    bool m_trackHasBeatMap;
 
     QScopedPointer<TapFilter> m_pTapFilter;
-    double m_dLastBpm;
+    double m_dLastTapedBpm;
 
     DlgTagFetcher& m_DlgTagFetcher;
 
