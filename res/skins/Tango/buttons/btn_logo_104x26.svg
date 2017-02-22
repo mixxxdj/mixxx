@@ -13,7 +13,7 @@
    version="1.1"
    id="svg2"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="mixxx_logo_104x26.svg">
+   sodipodi:docname="btn_logo_104x26.svg">
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -828,7 +828,7 @@
   </defs>
   <g
      id="g3234"
-     transform="matrix(1.2102749,0,0,1.2102749,1.9279915,0.41314102)">
+     transform="scale(1.25,1.25)">
     <g
        transform="matrix(0.23228415,0,0,0.23332511,0,-5.02e-7)"
        id="Background">

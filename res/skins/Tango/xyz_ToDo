@@ -10,8 +10,10 @@
 
 
   * General / Wording / qss
+    - fix lower half: hidden Lib prevents Waveforms' expansion
     - restore full-width Launch image, make in-app Logo a 2-state button (grey/colored) 
     - make button colors consistent, simplify qss [Vinyl/Deckbutton/Beatgrid togglers hover]
+
     (- remove layout-spacing workarounds when this is fixed
       https://bugs.launchpad.net/mixxx/+bug/1578111)
     (- work around SizeAwareStacks' kicking out Library
@@ -33,6 +35,7 @@
   * Mixer
 
   * Mixerbar
+    - resize fader background to make centered handle look better 
     - move on top of Library? optional
     - Mute icons
 
