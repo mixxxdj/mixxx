@@ -1217,8 +1217,10 @@ NumarkMixtrack3.BrowseKnob = function(channel, control, value, status, group) {
 
     if (NumarkMixtrack3.decks.D1.PADMode || NumarkMixtrack3.decks.D3.PADMode) {
         startingSampler = 1;
+        engine.setValue("[Deere]","sampler_bank_1", true);
     } else if (NumarkMixtrack3.decks.D2.PADMode || NumarkMixtrack3.decks.D4.PADMode) {
         startingSampler = 5;
+        engine.setValue("[Deere]","sampler_bank_2", true);
     }
 
     // unmodified behaviour
