@@ -873,8 +873,8 @@ NumarkMixtrack3.initButtonsObjects = function() {
     }
 
     for (var i = 1; i <= 8; i++) {
-        NumarkMixtrack3.samplers["S" + i].PADSampleButtonHold = new LongShortBtn(
-            NumarkMixtrack3.onPADSampleButtonHold
+        NumarkMixtrack3.samplers["S" + i].PADSampleButtonHold = new LongShortDoubleBtn(
+            NumarkMixtrack3.onPADSampleButton
         );
     }
 };
@@ -1631,11 +1631,7 @@ NumarkMixtrack3.SamplerButton = function(channel, control, value, status, group)
             sampler.LEDs["PADsampler" + padIndex].flashOn(300, PADcolors.purple, 300);
         } else {
             engine.setValue(group, "stop", 1);
-            sampler.LEDs["PADsampler" + padIndex].onOff(ON);
-
-            if (deck.shiftKey) {
-                engine.setValue(group, "eject", 1);
-            }
+            sampler.LEDs["PADsampler" + padIndex].onOff(ON)
         }
     }
 
@@ -1644,14 +1640,21 @@ NumarkMixtrack3.SamplerButton = function(channel, control, value, status, group)
     }
 };
 
-NumarkMixtrack3.onPADSampleButtonHold = function(channel, control, value, status, group, eventkind) {
+NumarkMixtrack3.onPADSampleButton = function(channel, control, value, status, group, eventkind) {
     var padIndex = parseInt(group.substring(8, 9));
     var sampler = NumarkMixtrack3.samplers["S" + padIndex];
+    var decknum = (padIndex < 5) ? 1 : 2;
+    var deck = NumarkMixtrack3.deckFromGroup("[Channel" + decknum + "]");
 
     // the event is a Long Press, LONG_PRESS is true, we set a variable so that when the 
     // pad button is lifted, the Sampler stops
     if (eventkind === LONG_PRESS) {
-        engine.setValue(group, "stop", 1);
+        engine.setValue(group, "stop", true);
+        sampler.LEDs["PADsampler" + padIndex].onOff(ON);
+    } else if (eventkind === DOUBLE_PRESS && deck.shiftKey) {
+        engine.setValue(group, "stop", true);
+        engine.setValue(group, "eject", true);
+        engine.setValue(group, "eject", false);
         sampler.LEDs["PADsampler" + padIndex].onOff(ON);
     }
 };
