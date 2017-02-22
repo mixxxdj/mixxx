@@ -1351,6 +1351,7 @@ NumarkMixtrack3.OnLoadButton = function(channel, control, value, status, group, 
 
     if (eventkind === LONG_PRESS) {
         engine.setValue(deck.group, 'eject', true);
+        engine.setValue(deck.group, 'eject', false);
     } else {
         engine.setValue(deck.group, 'LoadSelectedTrack', true);
     }
