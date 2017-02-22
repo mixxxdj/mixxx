@@ -992,6 +992,11 @@ NumarkMixtrack3.init = function(id, debug) {
         engine.connectControl("[Sampler" + i + "]", "play", "NumarkMixtrack3.OnSamplePlayStop");
     }
 
+    engine.connectControl("[BeatJump]", "next", "NumarkMixtrack3.OnBeatJump");
+    engine.connectControl("[BeatJump]", "prev", "NumarkMixtrack3.OnBeatJump");
+    engine.connectControl("[LoopMove]", "next", "NumarkMixtrack3.OnLoopMove");
+    engine.connectControl("[LoopMove]", "prev", "NumarkMixtrack3.OnLoopMove");
+
     NumarkMixtrack3.initDeck('[Channel1]', false); //Initial load, "remove" is set to false
     NumarkMixtrack3.initDeck('[Channel2]', false);
 
@@ -1073,16 +1078,20 @@ NumarkMixtrack3.connectDeckControls = function(group, remove) {
         'loop_start_position': 'NumarkMixtrack3.OnLoopInOutChange',
         'loop_end_position': 'NumarkMixtrack3.OnLoopInOutChange',
         'loop_enabled': 'NumarkMixtrack3.OnLoopInOutChange',
-        'sync_enabled': 'NumarkMixtrack3.OnSyncButtonChange',
-        'beatloop_2_enabled': 'NumarkMixtrack3.OnPADLoopButtonChange',
-        'beatloop_4_enabled': 'NumarkMixtrack3.OnPADLoopButtonChange',
-        'beatloop_8_enabled': 'NumarkMixtrack3.OnPADLoopButtonChange',
-        'beatloop_16_enabled': 'NumarkMixtrack3.OnPADLoopButtonChange',
-        'beatloop_1_enabled': 'NumarkMixtrack3.OnPADLoopButtonChange',
-        'beatloop_0.5_enabled': 'NumarkMixtrack3.OnPADLoopButtonChange',
-        'beatloop_0.25_enabled': 'NumarkMixtrack3.OnPADLoopButtonChange',
-        'beatloop_0.125_enabled': 'NumarkMixtrack3.OnPADLoopButtonChange'
+        'sync_enabled': 'NumarkMixtrack3.OnSyncButtonChange'
     };
+
+    for (var i = 0, n = loopsize.length; i < n; i ++) {
+        controlsToFunctions['beatloop_' + loopsize[i] + '_enabled'] = 'NumarkMixtrack3.OnPADLoopButtonChange';
+    }
+
+    // map jump controls which we use to reset beatJumpSize and loopMoveSize if needed
+    for (var i = 0, n = jumpSize.length; i < n; i++) {
+        controlsToFunctions['beatjump_' + jumpSize[i] + '_forward'] = 'NumarkMixtrack3.OnBeatJumpX';
+        controlsToFunctions['beatjump_' + jumpSize[i] + '_backward'] = 'NumarkMixtrack3.OnBeatJumpX';
+        controlsToFunctions['loop_move_' + jumpSize[i] + '_forward'] = 'NumarkMixtrack3.OnLoopMoveX';
+        controlsToFunctions['loop_move_' + jumpSize[i] + '_backward'] = 'NumarkMixtrack3.OnLoopMoveX';
+    }
 
     engine.connectControl("[EffectRack1_EffectUnit" + onDeckNum + "_Effect1]", "enabled",
         "NumarkMixtrack3.OnEffectEnabled");
@@ -1095,10 +1104,6 @@ NumarkMixtrack3.connectDeckControls = function(group, remove) {
     engine.trigger("[EffectRack1_EffectUnit" + onDeckNum + "_Effect2]", "enabled");
     engine.trigger("[EffectRack1_EffectUnit" + onDeckNum + "_Effect3]", "enabled");
 
-    engine.connectControl("[BeatJump]", "next", "NumarkMixtrack3.OnBeatJump");
-    engine.connectControl("[BeatJump]", "prev", "NumarkMixtrack3.OnBeatJump");
-    engine.connectControl("[LoopMove]", "next", "NumarkMixtrack3.OnLoopMove");
-    engine.connectControl("[LoopMove]", "prev", "NumarkMixtrack3.OnLoopMove");
 
     // Set InstantFX LEDs to flash if required
     var arrayLength = onDeck.InstantFX.length;
@@ -1965,16 +1970,28 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
 
 NumarkMixtrack3.OnBeatJump = function(value, group, control) {
     if (!value) return;
-    // function to use to determine next jump size depends on value
+    // function to use to determine next jump size depends on value of control
     var nextSizeFun = (control === 'next') ? nextJumpSize : prevJumpSize;
     beatJumpSize = nextSizeFun(beatJumpSize);
 };
 
 NumarkMixtrack3.OnLoopMove = function(value, group, control) {
     if (!value) return;
-    // function to use to determine next jump size depends on value
     var nextSizeFun = (control === 'next') ? nextJumpSize : prevJumpSize;
     loopMoveSize = nextSizeFun(loopMoveSize);
+};
+
+// when we hit a button on the UI that beat jumps by a certain amount, reset beatJumpSize
+// to reflect this. This mostly prevents the script and UI from becoming out of sync
+// when the script is reset but the UI is not.
+NumarkMixtrack3.OnBeatJumpX = function(value, group, control) {
+    if (!value) return;
+    beatJumpSize = parseInt(control.match(/\d/)[0]);        
+};
+
+NumarkMixtrack3.OnLoopMoveX = function(value, group, control) {
+    if (!value) return;
+    loopMoveSize = parseInt(control.match(/\d/)[0]);        
 };
 
 NumarkMixtrack3.bpmTap = function(channel, control, value, status, group) {
