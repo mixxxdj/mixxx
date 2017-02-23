@@ -1623,6 +1623,8 @@ NumarkMixtrack3.SamplerButton = function(channel, control, value, status, group)
                 // shift is on, play sampler with no Sync
                 engine.setValue(group, "beatsync", 0);
                 engine.setValue(group, "cue_gotoandplay", 1);
+            } else if (deck.TapDown) {
+                engine.setValue(group, "eject", 1);
             } else {
                 // play sampler with Sync
                 engine.setValue(group, "cue_gotoandplay", 1);
@@ -1633,10 +1635,6 @@ NumarkMixtrack3.SamplerButton = function(channel, control, value, status, group)
         } else {
             engine.setValue(group, "stop", 1);
             sampler.LEDs["PADsampler" + padIndex].onOff(ON);
-
-            if (deck.shiftKey) {
-                engine.setValue(group, "eject", 1);
-            }
         }
     }
 
