@@ -1612,10 +1612,6 @@ NumarkMixtrack3.SamplerButton = function(channel, control, value, status, group)
     var deck = NumarkMixtrack3.deckFromGroup("[Channel" + decknum + "]");
 
     if (value === DOWN) {
-        if (!isLoaded) {
-            engine.setValue(group, "LoadSelectedTrack", 1);
-        }
-
         sampler.PADSampleButtonHold.ButtonDown(channel, control, value, status, group);
 
         if (!isplaying) {
@@ -1623,8 +1619,11 @@ NumarkMixtrack3.SamplerButton = function(channel, control, value, status, group)
                 // shift is on, play sampler with no Sync
                 engine.setValue(group, "beatsync", 0);
                 engine.setValue(group, "cue_gotoandplay", 1);
+            } else if (!isLoaded) {
+                engine.setValue(group, "LoadSelectedTrack", 1);
             } else if (deck.TapDown) {
                 engine.setValue(group, "eject", 1);
+                engine.setValue(group, "eject", 0);
             } else {
                 // play sampler with Sync
                 engine.setValue(group, "cue_gotoandplay", 1);
