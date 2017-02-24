@@ -1,23 +1,8 @@
 <Template>
   <WidgetGroup>
     <SizePolicy>me,me</SizePolicy>
-    <Layout>stacked</Layout>
+    <Layout>vertical</Layout>
     <Children>
-      
-      <!-- zero-sized [index0] to prevent [index1] from being visible by default -->
-      <WidgetGroup><Size>0f,0f</Size><Children/></WidgetGroup><!-- /Passthrough -->
-      
-      <!-- Show alternate Artist/Title when (Vinyl) Passthrough is enabled on deck -->
-      <WidgetGroup>
-        <ObjectName>DeckTitlePassthroughRight</ObjectName>
-        <Layout>horizontal</Layout>
-        <Size>100me,40me</Size>
-        <Children/>
-        <Connection>
-          <ConfigKey persist="true">[Channel<Variable name="channum"/>],passthrough</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup><!-- /Passthrough -->
       
         <WidgetGroup><!-- DeckArtistTitle -->
           <ObjectName>DeckArtistTitleLoopRight</ObjectName>
@@ -110,12 +95,26 @@
               </Children>
             </WidgetGroup><!-- Artist & Title rows -->
           </Children>
+<!--      Deactivated. See deck_artist_title_left.xml for reason.
         <Connection>
           <ConfigKey persist="true">[Channel<Variable name="channum"/>],passthrough</ConfigKey>
           <BindProperty>visible</BindProperty>
           <Transform><Not/></Transform>
-        </Connection>
+        </Connection> -->
       </WidgetGroup><!-- DeckArtistTitle -->
+      
+      <!-- Show alternate Artist/Title when (Vinyl) Passthrough is enabled on deck
+      <WidgetGroup>
+        <ObjectName>DeckTitlePassthroughRight</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>100me,40me</Size>
+        <Children/>
+        <Connection>
+          <ConfigKey persist="true">[Channel<Variable name="channum"/>],passthrough</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup> -->
+
     </Children>
   </WidgetGroup>
 </Template>

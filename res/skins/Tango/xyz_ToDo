@@ -11,7 +11,6 @@
 
   * General / Wording / qss
     - fix lower half: hidden Lib prevents Waveforms' expansion
-    - restore full-width Launch image, make in-app Logo a 2-state button (grey/colored) 
     - make button colors consistent, simplify qss [Vinyl/Deckbutton/Beatgrid togglers hover]
 
     (- remove layout-spacing workarounds when this is fixed
@@ -28,31 +27,30 @@
     - color center line?
 
   * Decks
-    - 4 decks: CF orientation buttons
+    - 4 decks: CF orientation buttons (in deck controls)
     - Vinyl passthrough: replace Deck (text, overview, buttons)
       (annoying Pref pop-up when switching OFF [undefined], file bug report)
 
   * Mixer
 
   * Mixerbar
-    - resize fader background to make centered handle look better 
     - move on top of Library? optional
     - Mute icons
+    - extend to 4 Mics/Aux
 
   * Skin Controls
     - Recording duration widget behind Rec toggler
 
   * FX
     - 2.1 FX Units (MetaKnob, Highlight, Focus) > optional 2.0 or 2.1
-    - allow 4 FX units ONLY with 4 decks (proper re-structuring skin.xml)
+    - allow 4 FX units ONLY with 4 decks (proper re-structuring of skin.xml)
     - collapse FX units automatically when space is scarse (SizeAware like samplers)
     - extend group assignment buttons to 4 Mics/4AUX > proper 4th column
     - colorize group assignment buttons like other togglers (OFF grey / ON white with bg-color)
     - FX chain Save & Load buttons
 
   * Samplers
-    - mini: Gain > Volume
-    - CoverArt! underneath Play button?!
+    - CoverArt! underneath Play button?! requires a new Play icon with edge contrast (like Spinny indicator)
     - block Hotcue removal?
 
   * Library
