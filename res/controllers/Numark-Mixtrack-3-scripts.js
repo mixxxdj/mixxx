@@ -868,7 +868,6 @@ NumarkMixtrack3.initButtonsObjects = function() {
     for (var i = 1; i <= 4; i++) {
         decks["D" + i].LoadButtonControl = new LongShortBtn(NumarkMixtrack3.OnLoadButton);
         decks["D" + i].SyncButtonControl = new LongShortDoubleBtn(NumarkMixtrack3.OnSyncButton);
-        decks["D" + i].ShiftedPFLButtonControl = new SingleDoubleBtn(NumarkMixtrack3.OnShiftedPFLButton);
         decks["D" + i].PADLoopButtonHold = new LongShortBtn(NumarkMixtrack3.onPADLoopButtonHold);
     }
 
@@ -1482,9 +1481,12 @@ NumarkMixtrack3.toggleJogMode = function(channel, control, value, status, group)
     var deck = NumarkMixtrack3.deckFromGroup(group);
 
     if (value === DOWN) {
-        // Toggle setting and light
-        deck.jogWheelsInScratchMode = !deck.jogWheelsInScratchMode;
-        deck.LEDs.jogWheelsInScratchMode.onOff(deck.jogWheelsInScratchMode ? ON : OFF);
+        if (deck.shiftKey) {
+            toggleValue(group, "slip_enabled");
+        } else {
+            deck.jogWheelsInScratchMode = !deck.jogWheelsInScratchMode;
+            deck.LEDs.jogWheelsInScratchMode.onOff(deck.jogWheelsInScratchMode ? ON : OFF);
+        }
     }
 };
 
@@ -1865,8 +1867,7 @@ NumarkMixtrack3.OnEffectEnabled = function(value, group, control) {
 
 /******************     Shift Button :
  * - Press                : toggle PFL
- * - SHIFT + press        : toggle slip mode
- * - SHIFT + double press : toggle quantize mode
+ * - SHIFT + press        : toggle quantize mode
  * *********************************************************************/
 NumarkMixtrack3.PFLButton = function(channel, control, value, status, group) {
     if (!value) return;
@@ -1874,11 +1875,11 @@ NumarkMixtrack3.PFLButton = function(channel, control, value, status, group) {
     
     if (value === DOWN) {
         if (deck.shiftKey) {
-            deck.ShiftedPFLButtonControl.ButtonDown(channel, control, value, status, deck.group);
+            toggleValue(group, "quantize");
         } else {
             toggleValue(deck.group, "pfl");
             for (var i = 1; i <= 4 ; i++) {
-                if (i !== deck.decknum) { 
+                if (i !== deck.decknum) {
                     engine.setValue("[Channel" + i + "]", "pfl", false);
                 }
             }
@@ -1889,14 +1890,6 @@ NumarkMixtrack3.PFLButton = function(channel, control, value, status, group) {
 NumarkMixtrack3.OnPFLStatusChange = function(value, group, control) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
     deck.LEDs.headphones.onOff((value) ? ON : OFF);
-};
-
-NumarkMixtrack3.OnShiftedPFLButton = function(channel, control, value, status, group, eventkind) {
-    if (eventkind === DOUBLE_PRESS) {
-        toggleValue(group, "quantize");
-    } else {
-        toggleValue(group, "slip_enabled");
-    }
 };
 
 NumarkMixtrack3.PitchBendMinusButton = function(channel, control, value, status, group) {
