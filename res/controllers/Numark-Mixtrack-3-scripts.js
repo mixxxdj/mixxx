@@ -2008,6 +2008,7 @@ NumarkMixtrack3.bpmTap = function(channel, control, value, status, group) {
             NumarkMixtrack3.initDeck(NumarkMixtrack3.deckGroup[group], true);
         } else {
             engine.setValue(deck.group, "bpm_tap", true);
+            engine.setValue(deck.group, "bpm_tap", false);
         }
     }
 };
