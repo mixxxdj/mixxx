@@ -48,7 +48,6 @@
 #include "widget/wtrackproperty.h"
 #include "widget/wstarrating.h"
 #include "widget/wnumber.h"
-#include "widget/wnumberbeatsize.h"
 #include "widget/wnumberdb.h"
 #include "widget/wnumberpos.h"
 #include "widget/wnumberrate.h"
@@ -58,6 +57,7 @@
 #include "widget/weffectparameter.h"
 #include "widget/weffectbuttonparameter.h"
 #include "widget/weffectparameterbase.h"
+#include "widget/whalvedoublespinbox.h"
 #include "widget/woverviewlmh.h"
 #include "widget/woverviewhsv.h"
 #include "widget/woverviewrgb.h"
@@ -512,8 +512,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseStandardWidget<WStatusLight>(node));
     } else if (nodeName == "Display") {
         result = wrapWidget(parseStandardWidget<WDisplay>(node));
-    } else if (nodeName == "NumberBeatSize") {
-        result = wrapWidget(parseBeatSize(node));
+    } else if (nodeName == "HalveDoubleSpinBox") {
+        result = wrapWidget(parseHalveDoubleSpinBox(node));
     } else if (nodeName == "NumberRate") {
         result = wrapWidget(parseNumberRate(node));
     } else if (nodeName == "NumberPos") {
@@ -1091,9 +1091,16 @@ QWidget* LegacySkinParser::parseEngineKey(const QDomElement& node) {
     return pEngineKey;
 }
 
-QWidget* LegacySkinParser::parseBeatSize(const QDomElement& node) {
-    WNumberBeatSize* p = new WNumberBeatSize(m_pParent);
-    setupLabelWidget(node, p);
+QWidget* LegacySkinParser::parseHalveDoubleSpinBox(const QDomElement& node) {
+    bool createdValueControl = false;
+    ControlObject* valueControl = controlFromConfigNode(node.toElement(), "Value", &createdValueControl);
+
+    WHalveDoubleSpinBox* p = new WHalveDoubleSpinBox(m_pParent, valueControl);
+
+    if (createdValueControl && valueControl != nullptr) {
+        valueControl->setParent(p);
+    }
+
     return p;
 }
 
