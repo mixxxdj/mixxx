@@ -97,6 +97,7 @@ Library::Library(UserSettingsPointer pConfig,
 }
 
 Library::~Library() {
+    qDeleteAll(m_features);
     m_features.clear();
 
     delete m_pLibraryControl;
@@ -194,7 +195,7 @@ LibraryView* Library::getActiveView() {
 }
 
 
-void Library::addFeature(std::shared_ptr<LibraryFeature> feature) {
+void Library::addFeature(LibraryFeature* feature) {
     VERIFY_OR_DEBUG_ASSERT(feature) {
         return;
     }
@@ -372,8 +373,8 @@ void Library::onSkinLoadFinished() {
         // The first pane always shows the Mixxx Library feature on start
         m_preselectedPane = m_focusedPaneId = m_panes.begin().key();
         handleFocus();
-        m_features.first()->setFeaturePaneId(m_preselectedPane);
-        slotActivateFeature(m_features.first());
+        (*m_features.begin())->setFeaturePaneId(m_preselectedPane);
+        slotActivateFeature(*m_features.begin());
     }
     else {
         qDebug() << "Library::onSkinLoadFinished No Panes loaded!";
@@ -692,38 +693,37 @@ void Library::createTrackCache() {
 
 void Library::createFeatures(UserSettingsPointer pConfig,
                              PlayerManagerInterface* pPlayerManager) {
-    m_pMixxxLibraryFeature = std::make_shared<MixxxLibraryFeature>(
+    m_pMixxxLibraryFeature = new MixxxLibraryFeature(
             pConfig, this, this, m_pTrackCollection);
     addFeature(m_pMixxxLibraryFeature);
 
     addFeature(new AutoDJFeature(
             pConfig, this, this, pPlayerManager, m_pTrackCollection));
     
-    m_pPlaylistFeature = std::make_shared<PlaylistFeature>(
+    m_pPlaylistFeature = new PlaylistFeature(
             pConfig, this, this, m_pTrackCollection);
     addFeature(m_pPlaylistFeature);
     
-    m_pCrateFeature = std::make_shared<CrateFeature>(
+    m_pCrateFeature = new CrateFeature(
             pConfig, this, this, m_pTrackCollection);
     addFeature(m_pCrateFeature);
     
-    auto pBrowseFeature = std::make_shared<BrowseFeature>(
+    BrowseFeature* browseFeature = new BrowseFeature(
 			pConfig, this, this, m_pTrackCollection, m_pRecordingManager);
-    connect(pBrowseFeature, SIGNAL(scanLibrary()),
+    connect(browseFeature, SIGNAL(scanLibrary()),
             &m_scanner, SLOT(scan()));
     connect(&m_scanner, SIGNAL(scanStarted()),
-            pBrowseFeature, SLOT(slotLibraryScanStarted()));
+            browseFeature, SLOT(slotLibraryScanStarted()));
     connect(&m_scanner, SIGNAL(scanFinished()),
-            pBrowseFeature, SLOT(slotLibraryScanFinished()));
-    addFeature(pBrowseFeature);
+            browseFeature, SLOT(slotLibraryScanFinished()));
+    addFeature(browseFeature);
 
-    addFeature(std::make_shared<RecordingFeature>(
+    addFeature(new RecordingFeature(
 			pConfig, this, this, m_pTrackCollection, m_pRecordingManager));
     
-    addFeature(std::make_shared<HistoryFeature>(pConfig, this, this, 
-                                                m_pTrackCollection));
+    addFeature(new HistoryFeature(pConfig, this, this, m_pTrackCollection));
     
-    m_pAnalysisFeature = std::make_shared<AnalysisFeature>(
+    m_pAnalysisFeature = new AnalysisFeature(
 			pConfig, this, m_pTrackCollection, this);
     connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
             m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
@@ -736,30 +736,25 @@ void Library::createFeatures(UserSettingsPointer pConfig,
     //mouse or keyboard if you're using MIDI control and you scroll through them...)
     if (RhythmboxFeature::isSupported() &&
         pConfig->getValue(ConfigKey("[Library]","ShowRhythmboxLibrary"), true)) {
-        addFeature(std::make_shared<RhythmboxFeature>(pConfig, this, this, 
-                                                      m_pTrackCollection));
+        addFeature(new RhythmboxFeature(pConfig, this, this, m_pTrackCollection));
     }
 
     if (pConfig->getValue(ConfigKey("[Library]","ShowBansheeLibrary"), true)) {
         BansheeFeature::prepareDbPath(pConfig);
         if (BansheeFeature::isSupported()) {
-            addFeature(std::make_shared<BansheeFeature>(pConfig, this, this, 
-                                                        m_pTrackCollection));
+            addFeature(new BansheeFeature(pConfig, this, this, m_pTrackCollection));
         }
     }
     if (ITunesFeature::isSupported() &&
         pConfig->getValue(ConfigKey("[Library]","ShowITunesLibrary"), true)) {
-        addFeature(std::make_shared<ITunesFeature>(pConfig, this, this, 
-                                                   m_pTrackCollection));
+        addFeature(new ITunesFeature(pConfig, this, this, m_pTrackCollection));
     }
     if (TraktorFeature::isSupported() &&
         pConfig->getValue(ConfigKey("[Library]","ShowTraktorLibrary"), true)) {
-        addFeature(std::make_shared<TraktorFeature>(pConfig, this, this, 
-                                                    m_pTrackCollection));
+        addFeature(new TraktorFeature(pConfig, this, this, m_pTrackCollection));
     }
     
-    addFeature(std::make_shared<MaintenanceFeature>(pConfig, this, this, 
-                                                    m_pTrackCollection));
+    addFeature(new MaintenanceFeature(pConfig, this, this, m_pTrackCollection));
 }
 
 void Library::handleFocus() {

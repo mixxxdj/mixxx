@@ -70,7 +70,7 @@ public:
     void destroyInterface();
     LibraryView* getActiveView();
     
-    void addFeature(std::shared_ptr<LibraryFeature> feature);
+    void addFeature(LibraryFeature* feature);
     QStringList getDirs();
     
     void paneCollapsed(int paneId);
@@ -163,10 +163,10 @@ public:
     
     UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;
-    std::shared_ptr<MixxxLibraryFeature> m_pMixxxLibraryFeature;
-    std::shared_ptr<PlaylistFeature> m_pPlaylistFeature;
-    std::shared_ptr<CrateFeature> m_pCrateFeature;
-    std::shared_ptr<AnalysisFeature> m_pAnalysisFeature;
+    MixxxLibraryFeature* m_pMixxxLibraryFeature;
+    PlaylistFeature* m_pPlaylistFeature;
+    CrateFeature* m_pCrateFeature;
+    AnalysisFeature* m_pAnalysisFeature;
     LibraryControl* m_pLibraryControl;
     RecordingManager* m_pRecordingManager;
     LibraryScanner m_scanner;
@@ -176,7 +176,7 @@ public:
     
     QHash<int, LibraryPaneManager*> m_panes;
     std::unique_ptr<LibrarySidebarExpandedManager> m_pSidebarExpanded;
-    QList<std::shared_ptr<LibraryFeature> > m_features;
+    QList<LibraryFeature*> m_features;
     QSet<int> m_collapsedPanes;
     QHash<int, LibraryFeature*> m_savedFeatures;
     // Used to show the preselected pane when the mouse is over the button
