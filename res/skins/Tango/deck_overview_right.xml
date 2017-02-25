@@ -62,12 +62,17 @@
           <WidgetGroup><!-- Vinyl Controls -->
             <Layout>horizontal</Layout>
             <Children>
+
               <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
                 <SetVariable name="ObjectName">VinylTogglerRight</SetVariable>
                 <SetVariable name="Size">11f,50f</SetVariable>
                 <SetVariable name="ConfigKeyPerm">[Tango],vinylControlsDeck<Variable name="channum"/></SetVariable>
               </Template>
+
+              <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
+
               <Template src="skin:vinyl_controls_right.xml"/>
+
             </Children>
             <Connection>
               <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>

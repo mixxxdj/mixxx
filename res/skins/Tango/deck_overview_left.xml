@@ -50,6 +50,9 @@
           <WidgetGroup><!-- Vinyl Controls -->
             <Layout>horizontal</Layout>
             <Children>
+
+              <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
+
               <Template src="skin:vinyl_controls_left.xml"/>
 
               <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
@@ -58,6 +61,7 @@
                 <SetVariable name="ToolTipID"></SetVariable>
                 <SetVariable name="ConfigKeyPerm">[Tango],vinylControlsDeck<Variable name="channum"/></SetVariable>
               </Template>
+
             </Children>
             <Connection>
               <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>

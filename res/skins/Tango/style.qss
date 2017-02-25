@@ -381,12 +381,11 @@ WWidget, QLabel {
 #DeckOverview {	/*
     background-color: #123456;
     margin-bottom: 1px;	*/
+    background-color: #0f0f0f;
   }
-  #VinylTogglerLeft[displayValue="0"] {
-    border-left: 1px solid #0f0f0f;
+  #VinylTogglerLeft {
     }
   #VinylTogglerRight {
-    border-right: 1px solid #0f0f0f;
     }
   #VinylTogglerLeft[displayValue="0"], #VinylTogglerRight[displayValue="1"] {
     background: transparent url(skin:/buttons/btn_left_thin.svg) no-repeat top center;
