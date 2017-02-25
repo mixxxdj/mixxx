@@ -69,7 +69,7 @@ Description:
                 <SetVariable name="Align">left</SetVariable>
                 <SetVariable name="state_0_text">      Stacked Overviews</SetVariable>
                 <SetVariable name="state_1_text"> &#10003; Stacked Overviews</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Tango],stackedOverviews</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Tango],stacked_overviews</SetVariable>
               </Template>
 
               <Template src="skin:button_3state_persist.xml">

@@ -57,37 +57,38 @@
       <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
       <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">1</attribute>
       <!-- [Tango] specific defaults -->
+      <attribute persist="true" config_key="[Tango],2or4_fxUnits">0</attribute>
       <attribute persist="true" config_key="[Tango],beatgrid_buttons">0</attribute>
       <attribute persist="true" config_key="[Tango],channel_mixer">1</attribute>
       <attribute persist="true" config_key="[Tango],crossfader">0</attribute>
       <attribute persist="true" config_key="[Tango],crossfader_logo_Stack">0</attribute>
-      <attribute persist="true" config_key="[Tango],eq_knobs">1</attribute>
       <attribute persist="true" config_key="[Tango],deck_controls">1</attribute>
+      <attribute persist="true" config_key="[Tango],empty_spinny_cover">2</attribute>
+      <attribute persist="true" config_key="[Tango],eq_knobs">1</attribute>
       <attribute persist="true" config_key="[Tango],hotcues">2</attribute>
+      <attribute persist="true" config_key="[Tango],key_controls">1</attribute>
+      <attribute persist="true" config_key="[Tango],loop_beatjump_controls">0</attribute>
       <attribute persist="true" config_key="[Tango],mixerbar">0</attribute>
       <attribute persist="true" config_key="[Tango],mixerbar_aux">1</attribute>
       <attribute persist="true" config_key="[Tango],mixerbar_headphone">1</attribute>
       <attribute persist="true" config_key="[Tango],mixerbar_mic">1</attribute>
-      <attribute persist="true" config_key="[Tango],pitch_fader">1</attribute>
-      <attribute persist="true" config_key="[Tango],key_controls">1</attribute>
-      <attribute persist="true" config_key="[Tango],vumeter">1</attribute>
-      <attribute persist="true" config_key="[Tango],stars">1</attribute>
-      <attribute persist="true" config_key="[Tango],trackComment">1</attribute>
-      <attribute persist="true" config_key="[Tango],stacked_waveforms">1</attribute>
-      <attribute persist="true" config_key="[Tango],2or4_fxUnits">0</attribute>
-      <attribute persist="true" config_key="[Tango],empty_spinny_cover">2</attribute>
       <attribute persist="true" config_key="[Tango],mixer_spinnyCover">0</attribute>
-      <attribute persist="true" config_key="[Tango],spinnyCoverBIG">1</attribute>
-      <attribute persist="true" config_key="[Tango],spinny0_cover1_stack">1</attribute>
-      <attribute persist="true" config_key="[Tango],spinnyWithCoverArt">1</attribute>
-      <attribute persist="true" config_key="[Tango],spinnyWithCoverArt_stack">1</attribute>
-      <attribute persist="true" config_key="[Tango],loop_beatjump_controls">0</attribute>
+      <attribute persist="true" config_key="[Tango],pitch_fader">1</attribute>
       <attribute persist="true" config_key="[Tango],Samplers_miniMAXI">1</attribute>
       <attribute persist="true" config_key="[Tango],Samplers_miniMAXI_Stack">0</attribute>
+      <attribute persist="true" config_key="[Tango],stacked_overviews">1</attribute>
+      <attribute persist="true" config_key="[Tango],stacked_waveforms">1</attribute>
+      <attribute persist="true" config_key="[Tango],stars">1</attribute>
+      <attribute persist="true" config_key="[Tango],trackComment">1</attribute>
+      <attribute persist="true" config_key="[Tango],spinny0_cover1_stack">1</attribute>
+      <attribute persist="true" config_key="[Tango],spinnyCoverBIG">1</attribute>
+      <attribute persist="true" config_key="[Tango],spinnyWithCoverArt">1</attribute>
+      <attribute persist="true" config_key="[Tango],spinnyWithCoverArt_stack">1</attribute>
       <attribute persist="true" config_key="[Tango],vinylControlsDeck1">0</attribute>
       <attribute persist="true" config_key="[Tango],vinylControlsDeck2">0</attribute>
       <attribute persist="true" config_key="[Tango],vinylControlsDeck3">0</attribute>
       <attribute persist="true" config_key="[Tango],vinylControlsDeck4">0</attribute>
+      <attribute persist="true" config_key="[Tango],vumeter">1</attribute>
     </attributes>
   </manifest>
 

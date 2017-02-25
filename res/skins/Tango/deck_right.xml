@@ -158,7 +158,7 @@
 
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],stackedOverviews</ConfigKey>
+              <ConfigKey persist="true">[Tango],stacked_overviews</ConfigKey>
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
@@ -195,7 +195,7 @@
 
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],stackedOverviews</ConfigKey>
+              <ConfigKey persist="true">[Tango],stacked_overviews</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /ArtistTitle, Overview, Comment -->

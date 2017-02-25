@@ -19,7 +19,7 @@ Variables:
         <Size>1min,1f</Size>
         <Children/>
         <Connection>
-          <ConfigKey persist="true">[Tango],stackedOverviews</ConfigKey>
+          <ConfigKey persist="true">[Tango],stacked_overviews</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
@@ -119,7 +119,7 @@ Variables:
         <Size>1min,1f</Size>
         <Children/>
         <Connection>
-          <ConfigKey persist="true">[Tango],stackedOverviews</ConfigKey>
+          <ConfigKey persist="true">[Tango],stacked_overviews</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
@@ -139,7 +139,7 @@ Variables:
           </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Tango],stackedOverviews</ConfigKey>
+          <ConfigKey persist="true">[Tango],stacked_overviews</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
