@@ -24,10 +24,11 @@
       
   * Waveforms
     - redesign beatgrid buttons, incl. hover
+    - color beatgrid button container like Waveforms
     - color center line?
 
   * Decks
-    - 4 decks: CF orientation buttons (in deck controls)
+    - CF orientation buttons (in deck controls)
     - Vinyl passthrough: replace Deck (text, overview, buttons)
       (annoying Pref pop-up when switching OFF [undefined], file bug report)
 

@@ -189,15 +189,17 @@ WWidget, QLabel {
     background: transparent url(skin:/buttons/btn_right_thin_hover.svg) no-repeat top center;
   }
 
-#BeatgridButtons {
+#BeatgridButtonGridBox {
   qproperty-layoutAlignment: 'AlignVCenter';
-  padding-left: 1px;
+}
+#BeatgridButtonGrid {
+  qproperty-layoutAlignment: 'AlignVCenter';
   background-color: #0f0f0f;
   }
   #BeatgridButton {
-    background-color: #333333;
+    margin: 1px 0px 0px 1px;
     border-radius: 2px;
-    color: #eeeeee;
+    background-color: #333333;
     }
   #BeatgridButton:hover {
     background-color: #666666;
