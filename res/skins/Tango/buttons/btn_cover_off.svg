@@ -33,7 +33,7 @@
      inkscape:snap-bbox="true"
      inkscape:snap-bbox-midpoints="true"
      inkscape:zoom="8"
-     inkscape:cx="5.9249841"
+     inkscape:cx="-15.200016"
      inkscape:cy="18.15452"
      inkscape:window-x="0"
      inkscape:window-y="0"
@@ -74,19 +74,23 @@
          d="m 322.69873,685.07273 c 24.8903,0.0953 44.98054,20.29791 44.88518,45.16997 -0.0635,24.87206 -20.31278,44.9476 -45.17127,44.8523 -24.89028,-0.0635 -45.01232,-20.2979 -44.91696,-45.1382 0.0954,-24.87205 20.31278,-44.97936 45.20305,-44.88407 z"
          id="label-cutout"
          inkscape:connector-curvature="0" />
-      <path
-         style="fill:none;stroke:#000000;stroke-width:3.99999998000000012;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
-         d="M 5,43 43,5"
-         id="path4049"
-         inkscape:connector-curvature="0"
-         transform="matrix(18.977666,0,0,18.96377,-132.93536,274.94218)"
-         sodipodi:nodetypes="cc" />
-      <path
-         style="fill:none;stroke:#000000;stroke-width:75.88286591;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-         d="M 683.10426,1090.3843 -38.04703,369.76103"
-         id="path4049-7"
-         inkscape:connector-curvature="0"
-         sodipodi:nodetypes="cc" />
+      <g
+         id="g3755"
+         style="fill:none;stroke:#bfbfbf;stroke-opacity:1">
+        <path
+           sodipodi:nodetypes="cc"
+           transform="matrix(18.977666,0,0,18.96377,-132.93536,274.94218)"
+           inkscape:connector-curvature="0"
+           id="path4049"
+           d="M 5,43 43,5"
+           style="fill:none;stroke:#bfbfbf;stroke-width:3.99999998000000012;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none" />
+        <path
+           sodipodi:nodetypes="cc"
+           inkscape:connector-curvature="0"
+           id="path4049-7"
+           d="M 683.10426,1090.3843 -38.04703,369.76103"
+           style="fill:none;stroke:#bfbfbf;stroke-width:75.88286591000000669;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      </g>
     </g>
   </g>
 </svg>
