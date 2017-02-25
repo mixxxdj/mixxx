@@ -185,13 +185,13 @@ void AutoDJCratesDAO::createAutoDjCratesDatabase() {
 
     // Be notified when the status of crates changes.
     connect(m_pTrackCollection, SIGNAL(crateInserted(CrateId)),
-            this, SLOT(slotCrateChanged(CrateId)));
+            this, SLOT(slotCrateInserted(CrateId)));
     connect(m_pTrackCollection, SIGNAL(crateDeleted(CrateId)),
-            this, SLOT(slotCrateChanged(CrateId)));
+            this, SLOT(slotCrateDeleted(CrateId)));
     connect(m_pTrackCollection, SIGNAL(crateUpdated(CrateId)),
-            this, SLOT(slotCrateChanged(CrateId)));
-    connect(m_pTrackCollection, SIGNAL(slotCrateTracksModified(CrateId,QList<TrackId>,QList<TrackId>)),
-            this, SLOT(slotCrateTracksModified(CrateId,QList<TrackId>,QList<TrackId>)));
+            this, SLOT(slotCrateUpdated(CrateId)));
+    connect(m_pTrackCollection, SIGNAL(crateTracksChanged(CrateId,QList<TrackId>,QList<TrackId>)),
+            this, SLOT(slotCrateTracksChanged(CrateId,QList<TrackId>,QList<TrackId>)));
 
     // Be notified when playlists are added/removed.
     // We only care about set-log playlists.
@@ -691,7 +691,7 @@ void AutoDJCratesDAO::deleteAutoDjCrate(CrateId crateId) {
     oTransaction.commit();
 }
 
-void AutoDJCratesDAO::slotCrateTracksModified(CrateId crateId, const QList<TrackId>& addedTrackIds, const QList<TrackId>& removedTrackIds) {
+void AutoDJCratesDAO::slotCrateTracksChanged(CrateId crateId, const QList<TrackId>& addedTrackIds, const QList<TrackId>& removedTrackIds) {
     // Skip this if it's not an auto-DJ crate.
     Crate crate;
     if (!m_pTrackCollection->crates().readCrateById(crateId, &crate) || !crate.isAutoDjSource()) {
