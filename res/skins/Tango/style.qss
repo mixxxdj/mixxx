@@ -385,7 +385,7 @@ WWidget, QLabel {
   #VinylTogglerLeft[displayValue="0"] {
     border-left: 1px solid #0f0f0f;
     }
-  #VinylTogglerRight[displayValue="0"] {
+  #VinylTogglerRight {
     border-right: 1px solid #0f0f0f;
     }
   #VinylTogglerLeft[displayValue="0"], #VinylTogglerRight[displayValue="1"] {
@@ -402,7 +402,6 @@ WWidget, QLabel {
     }
   #VinylControls {
     qproperty-layoutAlignment: 'AlignRight | AlignTop';
-    padding-left: 1px;
     background-color: #0f0f0f;
     }
   #VinylButton, #VinylModeButton {
