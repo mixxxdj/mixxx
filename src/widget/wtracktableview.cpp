@@ -1409,34 +1409,34 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
         return;
     }
 
-   if (iPlaylistId == -1) { // i.e. a new playlist is suppose to be created
-       QString name;
-       bool validNameGiven = false;
-
-       do {
-           bool ok = false;
-           name = QInputDialog::getText(nullptr,
-                                        tr("Create New Playlist"),
-                                        tr("Enter name for new playlist:"),
-                                        QLineEdit::Normal,
-                                        tr("New Playlist"),
-                                        &ok).trimmed();
-           if (!ok) {
-               return;
-           }
-           if (playlistDao.getPlaylistIdFromName(name) != -1) {
-               QMessageBox::warning(nullptr,
-                                    tr("Playlist Creation Failed"),
-                                    tr("A playlist by that name already exists."));
-           } else if (name.isEmpty()) {
-               QMessageBox::warning(nullptr,
-                                    tr("Playlist Creation Failed"),
-                                    tr("A playlist cannot have a blank name."));
-           } else {
-               validNameGiven = true;
-           }
     PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
 
+    if (iPlaylistId == -1) { // i.e. a new playlist is suppose to be created
+        QString name;
+        bool validNameGiven = false;
+
+        do {
+            bool ok = false;
+            name = QInputDialog::getText(nullptr,
+                    tr("Create New Playlist"),
+                    tr("Enter name for new playlist:"),
+                    QLineEdit::Normal,
+                    tr("New Playlist"),
+                    &ok).trimmed();
+            if (!ok) {
+                return;
+            }
+            if (playlistDao.getPlaylistIdFromName(name) != -1) {
+                QMessageBox::warning(nullptr,
+                        tr("Playlist Creation Failed"),
+                        tr("A playlist by that name already exists."));
+            } else if (name.isEmpty()) {
+                QMessageBox::warning(nullptr,
+                        tr("Playlist Creation Failed"),
+                        tr("A playlist cannot have a blank name."));
+            } else {
+                validNameGiven = true;
+            }
        } while (!validNameGiven);
        iPlaylistId = playlistDao.createPlaylist(name);//-1 is changed to the new playlist ID return from the DAO
        if (iPlaylistId == -1) {
