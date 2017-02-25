@@ -113,15 +113,19 @@
         <Children>
         
           <!-- Packed Waveform & ArtistTitle into a fixed-size container,
-          so Deck stays steady while Comment can expand and LoopBeatjump
-          controls can be toggled -->
+          so Deck stays steady while Comment and LoopBeatjump controls can be toggled.
+          On request, I also added the option for symmetrical left & right decks:
+          1 Waveform
+          2 Comment (optional)
+          3 Title / Play position
+          4 Artist / track length -->
           <WidgetGroup><!-- Overview, Comment, ArtistTitle -->
             <Layout>vertical</Layout>
             <Size>250me,111f</Size>
             <Children>
-              <Template src="skin:deck_artist_title_right.xml"/>
+
               <Template src="skin:deck_overview_right.xml">
-              <!-- <SetVariable name="SignalBgColor"><Variable name="SignalBgColor"/></SetVariable> -->
+           <!-- <SetVariable name="SignalBgColor"><Variable name="SignalBgColor"/></SetVariable> -->
                 <SetVariable name="SignalColor"><Variable name="SignalColor"/></SetVariable>
               </Template>
 
@@ -129,8 +133,52 @@
               Useful to explain hotcues, loop, Ins & Outs for live sets etc.
               Deprecated as soon as HotCue labels are easily editable -->
               <WidgetGroup>
-                <ObjectName>TrackCommentRight</ObjectName>
-                <Layout>horizontal</Layout>
+                <ObjectName>TrackComment</ObjectName>
+                <Layout>vertical</Layout>
+                <Children>
+                  <TrackProperty>
+                    <Size>0me,16f</Size>
+                    <Property>comment</Property>
+                    <Elide>right</Elide>
+                    <Channel><Variable name="channum" /></Channel>
+                  </TrackProperty>
+                  <WidgetGroup>
+                    <ObjectName>Spacer0f</ObjectName>
+                    <Size>1min,1f</Size>
+                    <Children/>
+                  </WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],trackComment</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- /Track Comment -->
+
+              <Template src="skin:deck_artist_title_right.xml"/>
+
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],stackedOverviews</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /Overview, Comment, ArtistTitle -->
+
+          <WidgetGroup><!-- ArtistTitle, Overview, Comment -->
+            <Layout>vertical</Layout>
+            <Size>250me,111f</Size>
+            <Children>
+
+              <Template src="skin:deck_artist_title_right.xml"/>
+
+              <Template src="skin:deck_overview_right.xml">
+              <!-- <SetVariable name="SignalBgColor"><Variable name="SignalBgColor"/></SetVariable> -->
+                <SetVariable name="SignalColor"><Variable name="SignalColor"/></SetVariable>
+              </Template>
+
+              <WidgetGroup><!-- Track Comment -->
+                <ObjectName>TrackComment</ObjectName>
+                <Layout>vertical</Layout>
                 <Children>
                   <TrackProperty>
                     <Size>0me,16f</Size>
@@ -146,7 +194,11 @@
               </WidgetGroup><!-- /Track Comment -->
 
             </Children>
-          </WidgetGroup><!-- /Overview, Comment, ArtistTitle -->
+            <Connection>
+              <ConfigKey persist="true">[Tango],stackedOverviews</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /ArtistTitle, Overview, Comment -->
 
           <Template src="skin:deck_buttons_right.xml" /><!-- 24f -->
           <Template src="skin:deck_loop_beatjump_right.xml"/><!-- 50+1 -->

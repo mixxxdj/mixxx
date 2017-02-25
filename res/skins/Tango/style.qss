@@ -423,32 +423,24 @@ WWidget, QLabel {
     font-weight: bold;
     }
 
-#TrackCommentLeft, #TrackCommentRight {
+#TrackComment {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   background-color: #333333;
   padding-left: 2px;
   font-size: 12px/12px;
   }
-  #TrackCommentLeft {
-  }
-  #TrackCommentLeft WLabel, #TrackCommentRight WLabel {
+  #TrackComment WLabel {
   /* defining font-size here breaks top alignment	*/
     color: #888888;
     text-align: left;
     }
 
-#DeckArtistTitleLoopLeft, #DeckTitlePassthroughLeft {
+#DeckArtistTitleLoop, #DeckTitlePassthrough {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-    background-color: #333333;	/*
-    border-top: 1px solid #0f0f0f;	*/
-    margin-top: 1px;
-  }
-#DeckArtistTitleLoopRight, #DeckTitlePassthroughRight {
-  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-    background-color: #333333;  /*
-    border-bottom: 1px solid #0f0f0f; */
-    margin-bottom: 1px;
-  }
+  background-color: #333333;	/*
+  border-top: 1px solid #0f0f0f;
+  margin-top: 1px;	*/
+}
   #TitleTimeRow {
     qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
     padding: 0px 3px 0px 3px;	/*
@@ -940,7 +932,7 @@ WWidget, QLabel {
     }
 
 #LogoMaxi:hover, #LogoMini:hover {
-  background-color: #0f0f0f;
+/*  background-color: #0f0f0f;  */
 }
 
 #CrossfaderBox {

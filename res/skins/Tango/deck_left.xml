@@ -18,6 +18,7 @@
             <Layout>vertical</Layout>
             <Size>250me,111f</Size>
             <Children>
+
               <Template src="skin:deck_overview_left.xml">
               <!-- <SetVariable name="SignalBgColor"><Variable name="SignalBgColor"/></SetVariable> -->
                 <SetVariable name="SignalColor"><Variable name="SignalColor"/></SetVariable>
@@ -27,8 +28,9 @@
               Useful to explain hotcues, loop, Ins & Outs for live sets etc.
               Deprecated as soon as HotCue labels are easily editable -->
               <WidgetGroup>
-                <ObjectName>TrackCommentLeft</ObjectName>
-                <Layout>horizontal</Layout>
+                <ObjectName>TrackComment</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
                 <Children>
                   <TrackProperty>
                     <Size>0me,16f</Size>
@@ -36,6 +38,11 @@
                     <Elide>right</Elide>
                     <Channel><Variable name="channum" /></Channel>
                   </TrackProperty>
+                  <WidgetGroup>
+                    <ObjectName>Spacer0f</ObjectName>
+                    <Size>1min,1f</Size>
+                    <Children/>
+                  </WidgetGroup>
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Tango],trackComment</ConfigKey>

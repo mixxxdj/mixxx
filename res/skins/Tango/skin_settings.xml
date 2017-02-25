@@ -63,6 +63,15 @@ Description:
                 <SetVariable name="ConfigKeyPerm">[Tango],stacked_waveforms</SetVariable>
               </Template>
 
+              <Template src="skin:button_2state_persist.xml">
+                <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
+                <SetVariable name="Size">172f,20f</SetVariable>
+                <SetVariable name="Align">left</SetVariable>
+                <SetVariable name="state_0_text">      Stacked Overviews</SetVariable>
+                <SetVariable name="state_1_text"> &#10003; Stacked Overviews</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Tango],stackedOverviews</SetVariable>
+              </Template>
+
               <Template src="skin:button_3state_persist.xml">
                 <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
                 <SetVariable name="Size">172f,20f</SetVariable>
