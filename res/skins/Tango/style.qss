@@ -425,11 +425,11 @@ WWidget, QLabel {
 #TrackComment {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   background-color: #333333;
-  padding-left: 2px;
   font-size: 12px/12px;
   }
   #TrackComment WLabel {
   /* defining font-size here breaks top alignment	*/
+    padding-left: 2px;
     color: #888888;
     text-align: left;
     }
