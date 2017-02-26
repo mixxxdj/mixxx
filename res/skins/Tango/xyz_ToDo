@@ -10,59 +10,55 @@
 
 
   * General / Wording / qss
-    - fix lower half: hidden Lib prevents Waveforms' expansion
+    ! fix lower half: hidden Lib prevents Waveforms' expansion
+    ! work around SizeAwareStacks' kicking out Library
+      (i.e. when switching from 4 to 2 FX units, LIb and Samplers are disabled)
     - make button colors consistent, simplify qss [Vinyl/Deckbutton/Beatgrid togglers hover]
-
-    (- remove layout-spacing workarounds when this is fixed
-      https://bugs.launchpad.net/mixxx/+bug/1578111)
-    (- work around SizeAwareStacks' kicking out Library
-      (i.e. when switching from 4 to 2 FX units, LIb and Samplers are disabled))
     - use 1 SVG for different button sizes
       * 1:1  "pixel-true"
       * centered
       * all states configurable in one place: 0, 1, 2, ... hover, pressed
+    ? use 1 SVG for different button states (SVG variables)
       
   * Waveforms
     - redesign beatgrid buttons, incl. hover
-    - color beatgrid button container like Waveforms
-    - color center line?
+    ? color center line
 
   * Decks
     - CF orientation buttons (in deck controls)
     - Vinyl passthrough: replace Deck (text, overview, buttons)
       (annoying Pref pop-up when switching OFF [undefined], file bug report)
+    ? Overview bg colors, harmonic color scheme
 
   * Mixer
 
   * Mixerbar
-    - move on top of Library? optional
-    - Mute icons
     - extend to 4 Mics/Aux
+    ? Mute icons
+    ? move on top of Library, optinal
+    ? hide when Library is maximized
 
   * Skin Controls
-    - Recording duration widget behind Rec toggler
+    ? Recording duration widget behind Rec toggler
 
   * FX
-    - 2.1 FX Units (MetaKnob, Highlight, Focus) > optional 2.0 or 2.1
-    - allow 4 FX units ONLY with 4 decks (proper re-structuring of skin.xml)
-    - collapse FX units automatically when space is scarse (SizeAware like samplers)
+    ! 2.1 FX Units (MetaKnob, Highlight, Focus) > optional 2.0 or 2.1
     - extend group assignment buttons to 4 Mics/4AUX > proper 4th column
     - colorize group assignment buttons like other togglers (OFF grey / ON white with bg-color)
-    - FX chain Save & Load buttons
+    ? collapse FX units automatically when space is scarse (SizeAware like samplers)
+    ? allow 4 FX units ONLY with 4 decks (proper re-structuring of skin.xml)
+    ? Save & Load buttons
 
   * Samplers
-    - CoverArt! underneath Play button?! requires a new Play icon with edge contrast (like Spinny indicator)
-    - block Hotcue removal?
+    ? block Hotcue removal
 
   * Library
-    - distinguish focused/unfocused TreeView/Tracks/other?
+    - SearchBox + LibMaximize button
+    ? distinguish focused/unfocused TreeView/Tracks/other
       * emphasize border
       * darken background-color when focused
-    - SearchBox + LibMaximize button
 
   * Skin Settings menu
-    - add option to hide MixerBar when Library is maximized?
-    - add option to show MixerBar above Library?
 
 
 
