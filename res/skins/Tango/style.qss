@@ -177,16 +177,16 @@ WWidget, QLabel {
   margin-left: 1px; */
 }
   #BeatgridButtonToggler[displayValue="0"] {
-    background: transparent url(skin:/buttons/btn_left_thin.svg) no-repeat top center;
+    background: transparent url(skin:/buttons/btn_arrow_left_thin.svg) no-repeat top center;
   }
   #BeatgridButtonToggler[displayValue="0"]:hover {
-    background: transparent url(skin:/buttons/btn_left_thin_hover.svg) no-repeat top center;
+    background: transparent url(skin:/buttons/btn_arrow_left_thin_hover.svg) no-repeat top center;
   }
 #BeatgridButtonToggler[displayValue="1"] {
-  background: transparent url(skin:/buttons/btn_right_thin.svg) no-repeat top center;
+  background: transparent url(skin:/buttons/btn_arrow_right_thin.svg) no-repeat top center;
 }
   #BeatgridButtonToggler[displayValue="1"]:hover {
-    background: transparent url(skin:/buttons/btn_right_thin_hover.svg) no-repeat top center;
+    background: transparent url(skin:/buttons/btn_arrow_right_thin_hover.svg) no-repeat top center;
   }
 
 #BeatgridButtonGridBox {
@@ -331,19 +331,19 @@ WWidget, QLabel {
 }
 
 #MixerBarToggler[displayValue="0"] {
-  background: transparent url(skin:/buttons/btn_right_thin.svg) no-repeat center top;
+  background: transparent url(skin:/buttons/btn_arrow_right_thin.svg) no-repeat center top;
 }
 
 #MixerBarToggler[displayValue="0"]:hover {
-  background: transparent url(skin:/buttons/btn_right_thin_hover.svg) no-repeat center top;
+  background: transparent url(skin:/buttons/btn_arrow_right_thin_hover.svg) no-repeat center top;
 }
 
 #MixerBarToggler[displayValue="1"] {
-  background: transparent url(skin:/buttons/btn_left_thin.svg) no-repeat center top;
+  background: transparent url(skin:/buttons/btn_arrow_left_thin.svg) no-repeat center top;
 }
 
 #MixerBarToggler[displayValue="1"]:hover {
-  background: transparent url(skin:/buttons/btn_left_thin_hover.svg) no-repeat center top;
+  background: transparent url(skin:/buttons/btn_arrow_left_thin_hover.svg) no-repeat center top;
 }
 
 #MixerBarCover {
@@ -390,16 +390,16 @@ WWidget, QLabel {
   #VinylTogglerRight {
     }
   #VinylTogglerLeft[displayValue="0"], #VinylTogglerRight[displayValue="1"] {
-    background: transparent url(skin:/buttons/btn_left_thin.svg) no-repeat top center;
+    background: transparent url(skin:/buttons/btn_arrow_left_thin.svg) no-repeat top center;
     }
   #VinylTogglerLeft[displayValue="0"]:hover, #VinylTogglerRight[displayValue="1"]:hover {
-    background: transparent url(skin:/buttons/btn_left_thin_hover.svg) no-repeat top center;
+    background: transparent url(skin:/buttons/btn_arrow_left_thin_hover.svg) no-repeat top center;
     }
   #VinylTogglerLeft[displayValue="1"], #VinylTogglerRight[displayValue="0"] {
-    background: transparent url(skin:/buttons/btn_right_thin.svg) no-repeat top center;
+    background: transparent url(skin:/buttons/btn_arrow_right_thin.svg) no-repeat top center;
     }
   #VinylTogglerLeft[displayValue="1"]:hover, #VinylTogglerRight[displayValue="0"]:hover {
-    background: transparent url(skin:/buttons/btn_right_thin_hover.svg) no-repeat top center;
+    background: transparent url(skin:/buttons/btn_arrow_right_thin_hover.svg) no-repeat top center;
     }
   #VinylControls {
     qproperty-layoutAlignment: 'AlignRight | AlignTop';
@@ -504,19 +504,19 @@ WWidget, QLabel {
   }
   #DeckButtonTogglerLeft[displayValue="0"],
   #DeckButtonTogglerRight[displayValue="1"] {
-    background: transparent url(skin:/buttons/btn_right_thin.svg) no-repeat center center;
+    background: transparent url(skin:/buttons/btn_arrow_right_thin.svg) no-repeat center center;
   }
   #DeckButtonTogglerLeft[displayValue="0"]:hover,
   #DeckButtonTogglerRight[displayValue="1"]:hover {
-    background: transparent url(skin:/buttons/btn_right_thin_hover.svg) no-repeat center center;
+    background: transparent url(skin:/buttons/btn_arrow_right_thin_hover.svg) no-repeat center center;
   }
   #DeckButtonTogglerLeft[displayValue="1"],
   #DeckButtonTogglerRight[displayValue="0"] {
-    background: transparent url(skin:/buttons/btn_left_thin.svg) no-repeat center center;
+    background: transparent url(skin:/buttons/btn_arrow_left_thin.svg) no-repeat center center;
   }
   #DeckButtonTogglerLeft[displayValue="1"]:hover,
   #DeckButtonTogglerRight[displayValue="0"]:hover {
-    background: transparent url(skin:/buttons/btn_left_thin_hover.svg) no-repeat center center;
+    background: transparent url(skin:/buttons/btn_arrow_left_thin_hover.svg) no-repeat center center;
   }
   #DeckButton:hover {
     background-color: #151515;
@@ -1156,8 +1156,7 @@ WWidget, QLabel {
     }
 
 #EffectUnitGroupColumn {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';	/*
-  background-color: #ffffff;	*/
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
 }
   #EffectUnitGroupButton {
     font-size: 13px/13px;
@@ -1166,8 +1165,8 @@ WWidget, QLabel {
     margin-top: 1px;
     margin-left: 1px;
     border-radius: 2px;
+    /* this has no effect on Backpath <Pressed>/<Unpressed> */
     background-position: center;
-    /* this has no effect on Backpath <Pressed> <Unpressed> */
   }
     #EffectUnitGroupButton:hover, #EffectUnitToggleButton:hover {
     }
@@ -1196,16 +1195,16 @@ WWidget, QLabel {
       }
 
 #EffectSelectorButtonPrev {
-  background: none url(skin:/buttons/btn_left.svg) no-repeat;
+  background: none url(skin:/buttons/btn_arrow_left.svg) no-repeat;
 }
   #EffectSelectorButtonPrev:hover {
-    background: none url(skin:/buttons/btn_left_hover.svg) no-repeat;
+    background: none url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat;
   }
 #EffectSelectorButtonNext {
-  background: none url(skin:/buttons/btn_right.svg) no-repeat;
+  background: none url(skin:/buttons/btn_arrow_right.svg) no-repeat;
 }
   #EffectSelectorButtonNext:hover {
-    background: none url(skin:/buttons/btn_right_hover.svg) no-repeat;
+    background: none url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat;
   }
 
 /*################################################################
@@ -1213,51 +1212,42 @@ WWidget, QLabel {
 ################################################################ */
 
 #SamplerDecks {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop'; 	/*
-  background-color: #1e1e1e;	*/
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   margin-bottom: 3px;
 }
   #SamplerDeck {
-    qproperty-layoutAlignment: 'AlignHCenter | AlignTop'; /*
-    padding-right: 1px;
-    border-bottom: 3px solid #1e1e1e; */
+    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
     background-color: #0f0f0f;
   }
 
 #SamplersLoadButton, #SamplersSaveButton, #SamplersMiniMaxiButton {
-  border-radius: 2px; /*
-  background-color: #0f0f0f;  */
+  border-radius: 2px;
 }
 
 #SamplersMiniMaxiButton[displayValue="0"] {
-  image: url(skin:/buttons/btn_down_thin.svg) no-repeat top;
+  image: url(skin:/buttons/btn_arrow_down_thin.svg) no-repeat top;
   border-radius: 2px;
   }
-  #SamplersMiniMaxiButton[displayValue="0"]:hover { /*
-    background: #0f0f0f url(skin:/buttons/btn_down_thin_hover.svg) no-repeat center center; */
-    image: url(skin:/buttons/btn_down_thin_hover.svg) no-repeat top;
+  #SamplersMiniMaxiButton[displayValue="0"]:hover {
+    image: url(skin:/buttons/btn_arrow_down_thin_hover.svg) no-repeat top;
   }
-#SamplersMiniMaxiButton[displayValue="1"] { /*
-  background: transparent url(skin:/buttons/btn_down_thin.svg) no-repeat center center; */
-  image: url(skin:/buttons/btn_up_thin.svg) no-repeat top;
+#SamplersMiniMaxiButton[displayValue="1"] {
+  image: url(skin:/buttons/btn_arrow_up_thin.svg) no-repeat top;
   }
-  #SamplersMiniMaxiButton[displayValue="1"]:hover { /*
-    background: #0f0f0f url(skin:/buttons/btn_up_thin_hover.svg) no-repeat center center;*/
-    image: url(skin:/buttons/btn_up_thin_hover.svg) no-repeat top;
+  #SamplersMiniMaxiButton[displayValue="1"]:hover {
+    image: url(skin:/buttons/btn_arrow_up_thin_hover.svg) no-repeat top;
   }
 
 #SamplersLoadButton {
   image: url(skin:/buttons/btn_samplers_load.svg) no-repeat center center;
   }
-  #SamplersLoadButton:hover { /*
-    background: #0f0f0f url(skin:/buttons/btn_samplers_load_hover.svg) no-repeat center center; */
+  #SamplersLoadButton:hover {
     image: url(skin:/buttons/btn_samplers_load_hover.svg) no-repeat center center;
   }
 #SamplersSaveButton {
   image: url(skin:/buttons/btn_samplers_save.svg) no-repeat center center;
   }
-  #SamplersSaveButton:hover { /*
-    background: #0f0f0f url(skin:/buttons/btn_samplers_save_hover.svg) no-repeat center center; */
+  #SamplersSaveButton:hover {
     image: url(skin:/buttons/btn_samplers_save_hover.svg) no-repeat center center;
   }
 
@@ -1612,22 +1602,13 @@ QHeaderView {
   font-size: 13px/13px;
   font-weight: bold;
   color: #CFCFCF;
-  background-color: #1e1e1e;	/*
-  border-top: 1px solid #585858;
-  margin-top: -1px;
-  background-color: #0f0f0f;	*/
+  background-color: #1e1e1e;
   }
   /*	Library header 'buttons'	*/
   QHeaderView::section {
     height: 17px;
     padding-left: 4px;
     padding-top: 1px;
-    /* When next line is removed, QHeaderView button style will reset
-    to some 3D default and -when QHeaderView loses focus- will screw up
-    background with some low-res dot pattern.
-    2.1.0-alpha-pre (build master r6071)
-    XFCE ubuntu studio, rt-kernel 3.xx
-    border-top: 0px solid #333333;	*/
     /*	set right border so that first column header
     on the left doesn't have double border on the left	*/ 
     border-right: 1px solid #585858;
@@ -1636,7 +1617,6 @@ QHeaderView {
     }
   QHeaderView::section:hover {
     background-color: #585858;
-    border-top: 1px solid #585858;
     border-radius: 0px;
     }
   

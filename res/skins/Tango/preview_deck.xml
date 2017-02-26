@@ -45,7 +45,7 @@ Variables:
             <SetVariable name="ToolTipId">eject</SetVariable>
             <SetVariable name="ObjectName">PreviewEject</SetVariable>
             <SetVariable name="Size">18f,18f</SetVariable>
-            <SetVariable name="state_0_pressed">sampler_eject_down.svg</SetVariable>
+            <SetVariable name="state_0_pressed">sampler_eject_pressed.svg</SetVariable>
             <SetVariable name="state_0_unpressed">sampler_eject.svg</SetVariable>
             <SetVariable name="ConfigKey">[PreviewDeck1],eject</SetVariable>
           </Template>

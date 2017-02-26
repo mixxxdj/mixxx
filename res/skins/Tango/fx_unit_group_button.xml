@@ -19,13 +19,13 @@ Variables:
 		<SetVariable name="ToolTipId">EffectUnit_group_enabled</SetVariable>
 		<SetVariable name="ObjectName">EffectUnitGroupButton</SetVariable>	
 		<SetVariable name="Size">1me,1me</SetVariable>
-		<SetVariable name="Align"><Variable name="Align"/></SetVariable>
+		<SetVariable name="Align">center</SetVariable>
 		<SetVariable name="state_0_pressed"><Variable name="LabelOff"/>.svg</SetVariable>
 		<SetVariable name="state_0_unpressed"><Variable name="LabelOff"/>.svg</SetVariable>
-		<SetVariable name="state_0_text"><Variable name="Label"/></SetVariable>
+		<SetVariable name="state_0_text"><Variable name="LabelText"/></SetVariable>
 		<SetVariable name="state_1_pressed"><Variable name="LabelOn"/>.svg</SetVariable>
 		<SetVariable name="state_1_unpressed"><Variable name="LabelOn"/>.svg</SetVariable>
-		<SetVariable name="state_1_text"><Variable name="Label"/></SetVariable>
+		<SetVariable name="state_1_text"><Variable name="LabelText"/></SetVariable>
 		<SetVariable name="ConfigKey"><Variable name="group"/>,group_<Variable name="GroupName"/>_enable</SetVariable>
 	</Template>
 </Template>
