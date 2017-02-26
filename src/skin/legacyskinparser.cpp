@@ -1611,8 +1611,10 @@ QWidget* LegacySkinParser::parseEffectButtonParameterName(const QDomElement& nod
 void LegacySkinParser::setupPosition(const QDomNode& node, QWidget* pWidget) {
     QString pos;
     if (m_pContext->hasNodeSelectString(node, "Pos", &pos)) {
-        int x = pos.left(pos.indexOf(",")).toInt();
-        int y = pos.mid(pos.indexOf(",")+1).toInt();
+        QString xs = pos.left(pos.indexOf(","));
+        QString ys = pos.mid(pos.indexOf(",") + 1);
+        int x = m_pContext->scaleToWidgetSize(xs);
+        int y = m_pContext->scaleToWidgetSize(ys);
         pWidget->move(x,y);
     }
 }
