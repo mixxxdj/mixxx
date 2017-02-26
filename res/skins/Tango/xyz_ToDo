@@ -13,8 +13,7 @@
     ! fix lower half: hidden Lib prevents Waveforms' expansion
     ! work around SizeAwareStacks' kicking out Library
       (i.e. when switching from 4 to 2 FX units, LIb and Samplers are disabled)
-    - make button colors consistent, simplify qss [Vinyl/Deckbutton/Beatgrid togglers hover]
-    - use 1 SVG for different button sizes
+    ? use 1 SVG for different button sizes
       * 1:1  "pixel-true"
       * centered
       * all states configurable in one place: 0, 1, 2, ... hover, pressed
@@ -26,7 +25,7 @@
 
   * Decks
     - CF orientation buttons (in deck controls)
-    - Vinyl passthrough: replace Deck (text, overview, buttons)
+    - Vinyl passthrough: replace Deck graphics (text, overview, buttons)
       (annoying Pref pop-up when switching OFF [undefined], file bug report)
     ? Overview bg colors, harmonic color scheme
 
@@ -44,7 +43,6 @@
   * FX
     ! 2.1 FX Units (MetaKnob, Highlight, Focus) > optional 2.0 or 2.1
     - extend group assignment buttons to 4 Mics/4AUX > proper 4th column
-    - colorize group assignment buttons like other togglers (OFF grey / ON white with bg-color)
     ? collapse FX units automatically when space is scarse (SizeAware like samplers)
     ? allow 4 FX units ONLY with 4 decks (proper re-structuring of skin.xml)
     ? Save & Load buttons
