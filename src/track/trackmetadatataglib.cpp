@@ -622,8 +622,10 @@ TagLib::ID3v2::CommentsFrame* findFirstCommentsFrame(
         const TagLib::ID3v2::Tag& tag,
         const QString& description = QString(),
         bool preferNotEmpty = true) {
-    TagLib::ID3v2::FrameList commentsFrames(tag.frameListMap()["COMM"]);
     TagLib::ID3v2::CommentsFrame* pFirstFrame = nullptr;
+    // Bind the const-ref result to avoid a local copy
+    const TagLib::ID3v2::FrameList& commentsFrames =
+            tag.frameListMap()["COMM"];
     for (TagLib::ID3v2::FrameList::ConstIterator it(commentsFrames.begin());
             it != commentsFrames.end(); ++it) {
         auto pFrame =
@@ -650,16 +652,18 @@ TagLib::ID3v2::CommentsFrame* findFirstCommentsFrame(
     return pFirstFrame;
 }
 
-// Finds the first text frame that with a matching description.
-// If multiple comments frames with matching descriptions exist
-// prefer the first with a non-empty content if requested.
+// Finds the first text frame that with a matching description (case-insensitive).
+// If multiple comments frames with matching descriptions exist prefer the first
+// with a non-empty content if requested.
 TagLib::ID3v2::UserTextIdentificationFrame* findFirstUserTextIdentificationFrame(
         const TagLib::ID3v2::Tag& tag,
         const QString& description,
         bool preferNotEmpty = true) {
     DEBUG_ASSERT(!description.isEmpty());
-    TagLib::ID3v2::FrameList textFrames(tag.frameListMap()["TXXX"]);
     TagLib::ID3v2::UserTextIdentificationFrame* pFirstFrame = nullptr;
+    // Bind the const-ref result to avoid a local copy
+    const TagLib::ID3v2::FrameList& textFrames =
+            tag.frameListMap()["TXXX"];
     for (TagLib::ID3v2::FrameList::ConstIterator it(textFrames.begin());
             it != textFrames.end(); ++it) {
         auto pFrame =
