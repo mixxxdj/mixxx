@@ -72,25 +72,25 @@
     <g
        id="g3785"
        transform="matrix(0.580304,0.26552477,-0.26552477,0.580304,273.32209,435.11622)"
-       style="fill:#000000;fill-opacity:1">
+       style="fill:#888888;fill-opacity:1">
       <path
          inkscape:connector-curvature="0"
          id="path2994"
          d="m 18,1000.1524 c -4.336479,0 -7.84375,3.5072 -7.84375,7.8437 0,1.8238 0.613137,3.5109 1.65625,4.8438 l 12.375,0 c 1.043113,-1.3329 1.65625,-3.02 1.65625,-4.8438 0,-4.3365 -3.507271,-7.8437 -7.84375,-7.8437 z"
-         style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none" />
+         style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none" />
       <path
          inkscape:connector-curvature="0"
          id="path3024"
          d="m 12.53125,1013.9247 2.21875,33.7813 6.5,0 2.21875,-33.7813 -10.9375,0 z M 18,1017.5497 c 0.829921,0 1.5,0.669 1.5,1.5 l 0,5.0313 c 0,0.831 -0.670079,1.5 -1.5,1.5 -0.829921,0 -1.5,-0.669 -1.5,-1.5 l 0,-5.0313 c 0,-0.831 0.670079,-1.5 1.5,-1.5 z"
-         style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline" />
+         style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline" />
     </g>
     <g
        transform="translate(30.84525,1007.0622)"
-       style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Ubuntu;-inkscape-font-specification:Ubuntu"
+       style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#888888;fill-opacity:1;stroke:none;font-family:Ubuntu;-inkscape-font-specification:Ubuntu"
        id="flowRoot3890">
       <path
          d="m -7.81725,40.444 0,-9.688 c -0.5226721,0.373346 -1.1200048,0.709345 -1.792,1.008 -0.672004,0.280011 -1.241336,0.504011 -1.708,0.672 l -1.12,-2.856 c 0.447998,-0.167986 0.933331,-0.382653 1.456,-0.644 0.522663,-0.261319 1.0453295,-0.550652 1.568,-0.868 0.5226618,-0.317318 1.0173279,-0.653317 1.484,-1.008 0.4666603,-0.35465 0.8679933,-0.71865 1.204,-1.092 l 2.352,0 0,14.476 3.444,0 0,2.856 -10.528,0 0,-2.856 3.64,0"
-         style="font-size:28px;font-weight:bold;font-family:Ubuntu Mono;-inkscape-font-specification:Ubuntu Mono Bold;fill:#000000;fill-opacity:1"
+         style="font-size:28px;font-weight:bold;font-family:Ubuntu Mono;-inkscape-font-specification:Ubuntu Mono Bold;fill:#888888;fill-opacity:1"
          id="path3902" />
     </g>
   </g>

@@ -1175,7 +1175,7 @@ WWidget, QLabel {
     #EffectUnitToggleButton[displayValue="0"],
     #EffectEject {
       background-color: #333333;
-      color: #000000;
+      color: #888888;
       }
       #EffectUnitGroupButton[displayValue="0"]:hover,
       #EffectUnitToggleButton[displayValue="0"]:hover,
