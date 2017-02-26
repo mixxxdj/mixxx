@@ -1296,7 +1296,7 @@ WWidget, QLabel {
 
 #SamplerMain_mini {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding-right: 1px;
+  padding-right: 2px;
   }
   #SamplerMain_miniUnderlay[displayValue="0"] {
     background-color: #333333;
@@ -1398,7 +1398,7 @@ WWidget, QLabel {
 }
   #SamplerSyncButton:hover {
     background-color: #0f0f0f;
-    border: 1px solid #666666;
+    border: 1px solid #888888;
   }
 
 /*################################################################
