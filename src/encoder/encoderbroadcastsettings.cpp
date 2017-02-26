@@ -50,7 +50,7 @@ QList<int> EncoderBroadcastSettings::getQualityValues() const
 void EncoderBroadcastSettings::setQualityByValue(int qualityValue) 
 {
     if (m_qualList.contains(qualityValue)) {
-        m_settings->setBitrate(qualityValue);
+        m_settings.setBitrate(qualityValue);
     } else {
         qWarning() << "Invalid qualityValue given to EncoderBroadcastSettings: " 
             << qualityValue << ". Ignoring it";
@@ -60,7 +60,7 @@ void EncoderBroadcastSettings::setQualityByValue(int qualityValue)
 void EncoderBroadcastSettings::setQualityByIndex(int qualityIndex)
 {
     if (qualityIndex >= 0 && qualityIndex < m_qualList.size()) {
-        m_settings->setBitrate(m_qualList.at(qualityIndex));
+        m_settings.setBitrate(m_qualList.at(qualityIndex));
     } else {
         qWarning() << "Invalid qualityIndex given to EncoderBroadcastSettings: " 
             << qualityIndex << ". Ignoring it";

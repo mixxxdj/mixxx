@@ -30,7 +30,7 @@ EncoderWaveSettings::EncoderWaveSettings(UserSettingsPointer pConfig, Encoder::F
     names.append("16 bits");
     names.append("24 bits");
     names.append("32 bits float");
-    m_radioList.append(OptionsGroup("Bits", BITS_GROUP, names));
+    m_radioList.append(OptionsGroup("Bit depth", BITS_GROUP, names));
 }
 EncoderWaveSettings::~EncoderWaveSettings()
 {

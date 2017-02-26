@@ -363,7 +363,7 @@ void EngineBroadcast::updateFromPreferences() {
     }
 
     // Initialize m_encoder
-    EncoderBroadcastSettings broadcastSettings(settings);
+    EncoderBroadcastSettings broadcastSettings(m_settings);
     if (m_format_is_mp3) {
         m_encoder = EncoderFactory::getFactory().getNewEncoder(
             EncoderFactory::getFactory().getFormatFor(ENCODING_MP3), m_pConfig, this);

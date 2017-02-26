@@ -18,6 +18,7 @@
 
 #include "encoder/encodersettings.h"
 #include "encoder/encoder.h"
+#include "preferences/broadcastsettings.h"
 
 class EncoderBroadcastSettings : public EncoderSettings {
   public:
