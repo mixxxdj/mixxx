@@ -1224,23 +1224,28 @@ WWidget, QLabel {
     background-color: #0f0f0f;
   }
 
+#SamplersLoadButton, #SamplersSaveButton, #SamplersMiniMaxiButton {
+  border-radius: 2px; /*
+  background-color: #0f0f0f;  */
+}
+
 #SamplersMiniMaxiButton[displayValue="0"] {
-  image: url(skin:/buttons/btn_down_thin.svg) no-repeat center top;
+  image: url(skin:/buttons/btn_down_thin.svg) no-repeat top;
   border-radius: 2px;
   }
   #SamplersMiniMaxiButton[displayValue="0"]:hover { /*
     background: #0f0f0f url(skin:/buttons/btn_down_thin_hover.svg) no-repeat center center; */
-    image: url(skin:/buttons/btn_down_thin_hover.svg) no-repeat center top;
+    image: url(skin:/buttons/btn_down_thin_hover.svg) no-repeat top;
   }
-
 #SamplersMiniMaxiButton[displayValue="1"] { /*
   background: transparent url(skin:/buttons/btn_down_thin.svg) no-repeat center center; */
-  image: url(skin:/buttons/btn_up_thin.svg) no-repeat center top;
+  image: url(skin:/buttons/btn_up_thin.svg) no-repeat top;
   }
   #SamplersMiniMaxiButton[displayValue="1"]:hover { /*
     background: #0f0f0f url(skin:/buttons/btn_up_thin_hover.svg) no-repeat center center;*/
-    image: url(skin:/buttons/btn_up_thin_hover.svg) no-repeat center top;
+    image: url(skin:/buttons/btn_up_thin_hover.svg) no-repeat top;
   }
+
 #SamplersLoadButton {
   image: url(skin:/buttons/btn_samplers_load.svg) no-repeat center center;
   }
@@ -1255,10 +1260,6 @@ WWidget, QLabel {
     background: #0f0f0f url(skin:/buttons/btn_samplers_save_hover.svg) no-repeat center center; */
     image: url(skin:/buttons/btn_samplers_save_hover.svg) no-repeat center center;
   }
-#SamplersLoadButton:hover, #SamplersSaveButton:hover, #SamplersMiniMaxiButton:hover {
-  border-radius: 2px; /*
-  background-color: #0f0f0f;  */
-}
 
 #SamplerSyncGainPfl, #SamplerVU, #SamplerPitchSlider, #SamplerTitle {
   background-color: #333333;

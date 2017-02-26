@@ -82,11 +82,11 @@ Variables:
 
           <WidgetGroup>
             <Layout>horizontal</Layout>
-            <Size>47f,22me</Size>
+            <Size>47f,22f</Size>
             <Children>
               <Template src="skin:button_1state.xml">
                 <SetVariable name="ObjectName">SamplersLoadButton</SetVariable>
-                <SetVariable name="Size">22f,22me</SetVariable>
+                <SetVariable name="Size">22f,22f</SetVariable>
                 <SetVariable name="ConfigKey">[Sampler],LoadSamplerBank</SetVariable>
               </Template>
 
@@ -94,12 +94,14 @@ Variables:
 
               <Template src="skin:button_1state.xml">
                 <SetVariable name="ObjectName">SamplersSaveButton</SetVariable>
-                <SetVariable name="Size">22f,22me</SetVariable>
+                <SetVariable name="Size">22f,22f</SetVariable>
                 <SetVariable name="ConfigKey">[Sampler],SaveSamplerBank</SetVariable>
               </Template>
 
             </Children>
           </WidgetGroup>
+
+          <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
 
         </Children>
         <Connection>
@@ -127,7 +129,7 @@ Variables:
 
           <Template src="skin:button_1state.xml">
             <SetVariable name="ObjectName">SamplersLoadButton</SetVariable>
-            <SetVariable name="Size">22f,22me</SetVariable>
+            <SetVariable name="Size">22f,22f</SetVariable>
             <SetVariable name="ConfigKey">[Sampler],LoadSamplerBank</SetVariable>
           </Template>
 
@@ -135,7 +137,7 @@ Variables:
 
           <Template src="skin:button_1state.xml">
             <SetVariable name="ObjectName">SamplersSaveButton</SetVariable>
-            <SetVariable name="Size">22f,22me</SetVariable>
+            <SetVariable name="Size">22f,22f</SetVariable>
             <SetVariable name="ConfigKey">[Sampler],SaveSamplerBank</SetVariable>
           </Template>
 
