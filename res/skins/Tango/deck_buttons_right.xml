@@ -95,6 +95,18 @@
                 <SetVariable name="state_1_unpressed">quantize_on.svg</SetVariable>
                 <SetVariable name="ConfigKeyPerm">[Channel<Variable name="channum"/>],quantize</SetVariable>
               </Template>
+              <Template src="skin:button_3state_persist.xml">
+                <SetVariable name="ObjectName">DeckButton</SetVariable>
+                <SetVariable name="Size">22f,22f</SetVariable>
+                <SetVariable name="ToolTipID">orientation</SetVariable>
+                <SetVariable name="state_0_pressed">cf_left_white.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">cf_left_white.svg</SetVariable>
+                <SetVariable name="state_1_pressed">cf_center_white.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">cf_center_white.svg</SetVariable>
+                <SetVariable name="state_2_pressed">cf_right.svg</SetVariable>
+                <SetVariable name="state_2_unpressed">cf_right.svg</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Channel<Variable name="channum"/>],orientation</SetVariable>
+              </Template>
               <Template src="skin:button_2state.xml">
                 <SetVariable name="ObjectName">DeckButton</SetVariable>
                 <SetVariable name="Size">22f,22f</SetVariable>

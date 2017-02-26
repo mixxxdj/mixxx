@@ -9,15 +9,15 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="22"
-   height="22"
+   width="20"
+   height="20"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
    inkscape:export-filename="/home/ronso/.mixxx/skins/FlatNite/btn_sampler_repeat.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90"
-   sodipodi:docname="btn_quantize_on.svg">
+   sodipodi:docname="btn_cf_right.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -27,11 +27,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="22.627417"
-     inkscape:cx="8.2452776"
-     inkscape:cy="10.340148"
+     inkscape:zoom="11.313708"
+     inkscape:cx="-12.794203"
+     inkscape:cy="-1.8661398"
      inkscape:document-units="px"
-     inkscape:current-layer="layer3"
+     inkscape:current-layer="g3989"
      showgrid="false"
      showguides="true"
      inkscape:guide-bbox="true"
@@ -47,13 +47,7 @@
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:snap-page="true"
-     inkscape:snap-bbox-edge-midpoints="true">
-    <sodipodi:guide
-       orientation="1,0"
-       position="17.5,11"
-       id="guide5426" />
-  </sodipodi:namedview>
+     inkscape:snap-page="true" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -67,26 +61,35 @@
     </rdf:RDF>
   </metadata>
   <g
+     inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer3"
-     inkscape:label="22x22">
-    <path
-       style="fill:#dc0000;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       d="M 6.65625 6 L 6.65625 8 L 12.375 8 C 14.031853 8 15.375 9.3431463 15.375 11 C 15.375 12.656854 14.031853 14 12.375 14 L 6.65625 14 L 6.65625 16 L 12.5 16 C 15.261423 16 17.5 13.761423 17.5 11 C 17.5 8.238576 15.261423 6.0000001 12.5 6 L 6.65625 6 z "
-       id="path2992" />
-    <rect
-       style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       id="rect2998-3-7"
-       width="1.9999986"
-       height="1.9999986"
-       x="4.6666675"
-       y="13.999999" />
-    <rect
-       style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       id="rect2998-3-7-6"
-       width="1.9999986"
-       height="1.9999986"
-       x="4.6562514"
-       y="6" />
+     id="layer1"
+     transform="translate(0,-1032.3622)">
+    <g
+       id="g3989"
+       style="fill:#888888;fill-opacity:1">
+      <rect
+         style="fill:#b3b3b3;fill-opacity:1;fill-rule:nonzero;stroke:none"
+         id="rect4046"
+         width="14"
+         height="2"
+         x="-1049.3622"
+         y="16"
+         transform="matrix(0,-1,1,0,0,0)" />
+      <rect
+         style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none"
+         id="rect4046-7"
+         width="5"
+         height="2"
+         x="11"
+         y="1041.3622" />
+      <rect
+         style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none"
+         id="rect4046-7-5"
+         width="7"
+         height="2"
+         x="2"
+         y="1041.3622" />
+    </g>
   </g>
 </svg>

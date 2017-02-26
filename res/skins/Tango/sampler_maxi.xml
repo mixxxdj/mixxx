@@ -167,9 +167,12 @@ Variables:
                             <SetVariable name="ToolTipId">orientation</SetVariable>
                             <SetVariable name="ObjectName">SamplerButton</SetVariable>
                             <SetVariable name="Size">18f,18f</SetVariable>
-                            <SetVariable name="state_0_text">|--</SetVariable>
-                            <SetVariable name="state_1_text">-|-</SetVariable>
-                            <SetVariable name="state_2_text">--|</SetVariable>
+                            <SetVariable name="state_0_pressed">sampler_cf_left_white.svg</SetVariable>
+                            <SetVariable name="state_0_unpressed">sampler_cf_left_white.svg</SetVariable>
+                            <SetVariable name="state_1_pressed">sampler_cf_center.svg</SetVariable>
+                            <SetVariable name="state_1_unpressed">sampler_cf_center.svg</SetVariable>
+                            <SetVariable name="state_2_pressed">sampler_cf_right_white.svg</SetVariable>
+                            <SetVariable name="state_2_unpressed">sampler_cf_right_white.svg</SetVariable>
                             <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
                           </Template>
 

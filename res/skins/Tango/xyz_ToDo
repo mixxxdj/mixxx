@@ -24,7 +24,6 @@
     ? color center line
 
   * Decks
-    - CF orientation buttons (in deck controls)
     - Vinyl passthrough: replace Deck graphics (text, overview, buttons)
       (annoying Pref pop-up when switching OFF [undefined], file bug report)
     ? Overview bg colors, harmonic color scheme
