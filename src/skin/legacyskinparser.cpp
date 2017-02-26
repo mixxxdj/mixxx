@@ -143,8 +143,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig)
           m_pLibrary(NULL),
           m_pVCManager(NULL),
           m_pEffectsManager(NULL),
-          m_pParent(NULL),
-          m_scaleFactor(1.0) {
+          m_pParent(NULL) {
 }
 
 LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
@@ -161,8 +160,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
           m_pLibrary(pLibrary),
           m_pVCManager(pVCMan),
           m_pEffectsManager(pEffectsManager),
-          m_pParent(NULL),
-          m_scaleFactor(1.0) {
+          m_pParent(NULL) {
 }
 
 LegacySkinParser::~LegacySkinParser() {
@@ -366,9 +364,6 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
     }
 
     ColorSchemeParser::setupLegacyColorSchemes(skinDocument, m_pConfig);
-
-    // Load the config option once, here, rather than in setupSize.
-    m_scaleFactor = m_pConfig->getValue(ConfigKey("[Config]","ScaleFactor"), 1.0);
 
     QStringList skinPaths(skinPath);
     QDir::setSearchPaths("skin", skinPaths);
@@ -1625,25 +1620,25 @@ void LegacySkinParser::setupPosition(const QDomNode& node, QWidget* pWidget) {
 bool parseSizePolicy(QString* input, QSizePolicy::Policy* policy) {
     if (input->endsWith("me")) {
         *policy = QSizePolicy::MinimumExpanding;
-        *input = input->left(input->size()-2);
+        *input = input->left(input->size() - 2);
     } else if (input->endsWith("e")) {
         *policy = QSizePolicy::Expanding;
-        *input = input->left(input->size()-1);
+        *input = input->left(input->size() - 1);
     } else if (input->endsWith("i")) {
         *policy = QSizePolicy::Ignored;
-        *input = input->left(input->size()-1);
+        *input = input->left(input->size() - 1);
     } else if (input->endsWith("min")) {
         *policy = QSizePolicy::Minimum;
-        *input = input->left(input->size()-3);
+        *input = input->left(input->size() - 3);
     } else if (input->endsWith("max")) {
         *policy = QSizePolicy::Maximum;
-        *input = input->left(input->size()-3);
+        *input = input->left(input->size() - 3);
     } else if (input->endsWith("p")) {
         *policy = QSizePolicy::Preferred;
-        *input = input->left(input->size()-1);
+        *input = input->left(input->size() - 1);
     } else if (input->endsWith("f")) {
         *policy = QSizePolicy::Fixed;
-        *input = input->left(input->size()-1);
+        *input = input->left(input->size() - 1);
     } else {
         return false;
     }
@@ -1655,22 +1650,19 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
     if (m_pContext->hasNodeSelectString(node, "MinimumSize", &size)) {
         int comma = size.indexOf(",");
         QString xs = size.left(comma);
-        QString ys = size.mid(comma+1);
+        QString ys = size.mid(comma + 1);
 
-        bool widthOk = false;
-        int x = xs.toInt(&widthOk) * m_scaleFactor;
-
-        bool heightOk = false;
-        int y = ys.toInt(&heightOk) * m_scaleFactor;
+        int x = m_pContext->scaleToWidgetSize(xs);
+        int y = m_pContext->scaleToWidgetSize(ys);
 
         // -1 means do not set.
-        if (widthOk && heightOk && x >= 0 && y >= 0) {
+        if (x >= 0 && y >= 0) {
             pWidget->setMinimumSize(x, y);
-        } else if (widthOk && x >= 0) {
+        } else if (x >= 0) {
             pWidget->setMinimumWidth(x);
-        } else if (heightOk && y >= 0) {
+        } else if (y >= 0) {
             pWidget->setMinimumHeight(y);
-        } else if (!widthOk && !heightOk) {
+        } else {
             SKIN_WARNING(node, *m_pContext)
                     << "Could not parse widget MinimumSize:" << size;
         }
@@ -1682,20 +1674,17 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
         QString xs = size.left(comma);
         QString ys = size.mid(comma+1);
 
-        bool widthOk = false;
-        int x = xs.toInt(&widthOk) * m_scaleFactor;
-
-        bool heightOk = false;
-        int y = ys.toInt(&heightOk) * m_scaleFactor;
+        int x = m_pContext->scaleToWidgetSize(xs);
+        int y = m_pContext->scaleToWidgetSize(ys);
 
         // -1 means do not set.
-        if (widthOk && heightOk && x >= 0 && y >= 0) {
+        if (x >= 0 && y >= 0) {
             pWidget->setMaximumSize(x, y);
-        } else if (widthOk && x >= 0) {
+        } else if (x >= 0) {
             pWidget->setMaximumWidth(x);
-        } else if (heightOk && y >= 0) {
+        } else if (y >= 0) {
             pWidget->setMaximumHeight(y);
-        } else if (!widthOk && !heightOk) {
+        } else {
             SKIN_WARNING(node, *m_pContext)
                     << "Could not parse widget MaximumSize:" << size;
         }
@@ -1750,9 +1739,8 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
             hasVerticalPolicy = true;
         }
 
-        bool widthOk = false;
-        int x = xs.toInt(&widthOk) * m_scaleFactor;
-        if (widthOk && x >= 0) {
+        int x = m_pContext->scaleToWidgetSize(xs);
+        if (x >= 0) {
             if (hasHorizontalPolicy &&
                     sizePolicy.horizontalPolicy() == QSizePolicy::Fixed) {
                 //qDebug() << "setting width fixed to" << x;
@@ -1763,9 +1751,8 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
             }
         }
 
-        bool heightOk = false;
-        int y = ys.toInt(&heightOk) * m_scaleFactor;
-        if (heightOk && y >= 0) {
+        int y = m_pContext->scaleToWidgetSize(ys);
+        if (y >= 0) {
             if (hasVerticalPolicy &&
                     sizePolicy.verticalPolicy() == QSizePolicy::Fixed) {
                 //qDebug() << "setting height fixed to" << x;
