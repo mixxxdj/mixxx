@@ -690,6 +690,43 @@ TagLib::ID3v2::UserTextIdentificationFrame* findFirstUserTextIdentificationFrame
     return pFirstFrame;
 }
 
+// Deletes all TXXX frame with the given description (case-insensitive).
+int removeUserTextIdentificationFrames(
+        TagLib::ID3v2::Tag* pTag,
+        const QString& description) {
+    DEBUG_ASSERT(pTag != nullptr);
+    DEBUG_ASSERT(!description.isEmpty());
+    int count = 0;
+    bool repeat;
+    do {
+        repeat = false;
+        // Bind the const-ref result to avoid a local copy
+        const TagLib::ID3v2::FrameList& textFrames =
+                pTag->frameListMap()["TXXX"];
+        for (TagLib::ID3v2::FrameList::ConstIterator it(textFrames.begin());
+                it != textFrames.end(); ++it) {
+            auto pFrame =
+                    dynamic_cast<TagLib::ID3v2::UserTextIdentificationFrame*>(*it);
+            if (pFrame != nullptr) {
+                const QString frameDescription(
+                        toQString(pFrame->description()));
+                if (0 == frameDescription.compare(
+                        description, Qt::CaseInsensitive)) {
+                    qDebug() << "Removing ID3v2 TXXX frame:" << toQString(pFrame->description());
+                    // After removing a frame the result of frameListMap()
+                    // is no longer valid!!
+                    pTag->removeFrame(pFrame, false); // remove an unowned frame
+                    ++count;
+                    // Exit and restart loop
+                    repeat = true;
+                    break;
+                }
+            }
+        }
+    } while (repeat);
+    return count;
+}
+
 void writeID3v2TextIdentificationFrame(
         TagLib::ID3v2::Tag* pTag,
         const TagLib::ByteVector &id,
@@ -743,6 +780,15 @@ void writeID3v2CommentsFrame(
             // pTag we need to release the ownership to avoid double deletion!
             pFrame.release();
         }
+    }
+    // Cleanup: Remove non-standard comment frames to avoid redundant and
+    // inconsistent tags.
+    // See also: Compatibility workaround when reading ID3v2 comment tags.
+    int numberOfRemovedCommentFrames =
+            removeUserTextIdentificationFrames(pTag, "COMMENT");
+    if (numberOfRemovedCommentFrames > 0) {
+        qWarning() << "Removed" << numberOfRemovedCommentFrames
+                << "non-standard ID3v2 TXXX comment frames";
     }
 }
 
