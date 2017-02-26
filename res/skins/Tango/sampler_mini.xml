@@ -22,122 +22,143 @@ Variables:
     <Children>
 
       <WidgetGroup>
-        <ObjectName>SamplerPlay_mini</ObjectName>
+        <ObjectName>SamplerPlayBox_mini</ObjectName>
         <Layout>stacked</Layout>
-        <Size>25f,34f</Size>
+        <Size>35f,34f</Size>
         <Children>
           <Template src="skin:button_2state_right_display.xml">
-            <SetVariable name="ObjectName">PlayCue</SetVariable>
-            <SetVariable name="Size">24f,34f</SetVariable>
+            <SetVariable name="ObjectName">SamplerPlayCue</SetVariable>
+            <SetVariable name="Size">34f,34f</SetVariable>
             <SetVariable name="ToolTipID">play_cue_set</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,cue_gotoandplay</SetVariable>
             <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
             <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
           </Template>
-      <!--	Turns Orange when playing Cue/HotCue.
+      <!-- Second layer is CoverArt. DefaultCover is transparent -->
+          <CoverArt>
+            <ObjectName>SamplerCover</ObjectName>
+            <Size>32f,32f</Size>
+            <Group><Variable name="group"/></Group>
+            <DefaultCover>skin:/buttons/btn_.svg</DefaultCover>
+          </CoverArt>
+      <!-- Background turns Orange when playing preview from Cue/HotCue.
           Only visible when play_indicator=0 -->
           <Template src="skin:button_2state.xml">
-            <SetVariable name="ObjectName">PlayCueUnderlay</SetVariable>
-            <SetVariable name="Size">24f,34f</SetVariable>
+            <SetVariable name="ObjectName">SamplerPlayCueUnderlay</SetVariable>
+            <SetVariable name="Size">34f,34f</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup><!-- SamplerMain -->
-        <ObjectName>SamplerMain_mini</ObjectName>
-        <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
+      <WidgetGroup>
+        <Layout>stacked</Layout>
+        <Size>1me,34f</Size>
         <Children>
 
-          <WidgetGroup><!-- Overview + Title -->
-            <ObjectName>SamplerOverviewRow_mini</ObjectName>
-            <Layout>stacked</Layout>
-            <Size>1min,34f</Size>
+          <WidgetGroup><!-- SamplerMain -->
+            <ObjectName>SamplerMain_mini</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
             <Children>
 
-              <WidgetGroup><!-- SamplerTitle -->
-                <ObjectName>SamplerTitle_mini</ObjectName>
-                <Layout>horizontal</Layout>
-                <Size>1me,16f</Size>
+              <WidgetGroup><!-- Overview + Title -->
+                <ObjectName>SamplerOverviewRow_mini</ObjectName>
+                <Layout>stacked</Layout>
+                <Size>1min,34f</Size>
                 <Children>
-                  <Text>
-                    <TooltipId>text</TooltipId>
-                    <Size>1me,16f</Size>
-                    <Group>[Sampler<Variable name="samplernum"/>]</Group>
-                    <Elide>right</Elide>
-                  </Text>
-                </Children>
-              </WidgetGroup><!-- /SamplerTitle -->
 
-              <Overview>
-                <ObjectName>SamplerOverview_mini</ObjectName>
-                <TooltipId>waveform_overview</TooltipId>
-                <SizePolicy>me,min</SizePolicy>
-                <Group><Variable name="group"/></Group>
-                <!-- BgColor has no effect here
-                <BgColor>#1a1a1a</BgColor> -->
-                <AxesColor>#0f0f0f</AxesColor>
-                <SignalColor>#0f0f0f</SignalColor>
-                <PlayPosColor>#FF4300</PlayPosColor>
-                <MarkerColor>#00FF00</MarkerColor>
-                <DefaultMark>
-                  <Align>bottom|right</Align>
-                  <Color>#00FF00</Color>
-                  <TextColor>#FFFFFF</TextColor>
-                  <Text> %1 </Text>
-                </DefaultMark>
-                <Mark>
-                  <Control>cue_point</Control>
-                  <Text>C</Text>
-                  <Align>bottom|right</Align>
-                  <Color>#FF0080</Color>
-                  <TextColor>#FFFFFF</TextColor>
-                </Mark>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
-                </Connection>
-              </Overview>
+                  <WidgetGroup><!-- SamplerTitle -->
+                    <ObjectName>SamplerTitle_mini</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <Size>1me,16f</Size>
+                    <Children>
+                      <Text>
+                        <TooltipId>text</TooltipId>
+                        <Size>1me,16f</Size>
+                        <Group>[Sampler<Variable name="samplernum"/>]</Group>
+                        <Elide>right</Elide>
+                      </Text>
+                    </Children>
+                  </WidgetGroup><!-- /SamplerTitle -->
+
+                  <Overview>
+                    <ObjectName>SamplerOverview_mini</ObjectName>
+                    <TooltipId>waveform_overview</TooltipId>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Group><Variable name="group"/></Group>
+                    <!-- BgColor has no effect here
+                    <BgColor>#1a1a1a</BgColor> -->
+                    <AxesColor>#0f0f0f</AxesColor>
+                    <SignalColor>#0f0f0f</SignalColor>
+                    <PlayPosColor>#FF4300</PlayPosColor>
+                    <MarkerColor>#00FF00</MarkerColor>
+                    <DefaultMark>
+                      <Align>bottom|right</Align>
+                      <Color>#00FF00</Color>
+                      <TextColor>#FFFFFF</TextColor>
+                      <Text> %1 </Text>
+                    </DefaultMark>
+                    <Mark>
+                      <Control>cue_point</Control>
+                      <Text>C</Text>
+                      <Align>bottom|right</Align>
+                      <Color>#FF0080</Color>
+                      <TextColor>#FFFFFF</TextColor>
+                    </Mark>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+                    </Connection>
+                  </Overview>
+
+                </Children>
+              </WidgetGroup><!-- /Overview + Title -->
+
+              <WidgetGroup><Size>2f,1min</Size><Children/></WidgetGroup>
+
+              <Template src="skin:button_1state.xml">
+                <SetVariable name="ToolTipId">beatsync_beatsync_tempo</SetVariable>
+                <SetVariable name="ObjectName">SamplerSyncButton</SetVariable>
+                <SetVariable name="Size">35f,22f</SetVariable>
+                <SetVariable name="state_0_text">SYNC</SetVariable>
+                <SetVariable name="ConfigKey">[Sampler<Variable name="samplernum"/>],beatsync</SetVariable>
+                <SetVariable name="ConfigKeyRight">[Sampler<Variable name="samplernum"/>],beatsync_tempo</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+
+              <Template src="skin:button_3state.xml">
+                <SetVariable name="ToolTipId">orientation</SetVariable>
+                <SetVariable name="ObjectName">SamplerButton_mini</SetVariable>
+                <SetVariable name="Size">18f,22f</SetVariable>
+                <SetVariable name="state_0_text">|--</SetVariable>
+                <SetVariable name="state_1_text">-|-</SetVariable>
+                <SetVariable name="state_2_text">--|</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+
+              <Template src="skin:knob_textless.xml">
+                <SetVariable name="ToolTipID">pregain</SetVariable>
+                <SetVariable name="ObjectName">SamplerGainKnob_mini</SetVariable>
+                <SetVariable name="Size">22f,22f</SetVariable>
+                <SetVariable name="group">[Sampler<Variable name="samplernum"/>]</SetVariable>
+                <SetVariable name="ConfigKey">volume</SetVariable>
+                <SetVariable name="Color">tiny_red</SetVariable>
+              </Template>
 
             </Children>
-          </WidgetGroup><!-- /Overview + Title -->
-
-          <WidgetGroup><Size>2f,1min</Size><Children/></WidgetGroup>
-
-          <Template src="skin:button_1state.xml">
-            <SetVariable name="ToolTipId">beatsync_beatsync_tempo</SetVariable>
-            <SetVariable name="ObjectName">SamplerSyncButton</SetVariable>
-            <SetVariable name="Size">35f,22f</SetVariable>
-            <SetVariable name="state_0_text">SYNC</SetVariable>
-            <SetVariable name="ConfigKey">[Sampler<Variable name="samplernum"/>],beatsync</SetVariable>
-            <SetVariable name="ConfigKeyRight">[Sampler<Variable name="samplernum"/>],beatsync_tempo</SetVariable>
+          </WidgetGroup><!-- /SamplerMain_mini -->
+          
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="ObjectName">SamplerMain_miniUnderlay</SetVariable>
+            <SetVariable name="Size">1me,1me</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,play_indicator</SetVariable>
           </Template>
-
-          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
-
-          <Template src="skin:button_3state.xml">
-            <SetVariable name="ToolTipId">orientation</SetVariable>
-            <SetVariable name="ObjectName">SamplerButton</SetVariable>
-            <SetVariable name="Size">18f,22f</SetVariable>
-            <SetVariable name="state_0_text">|--</SetVariable>
-            <SetVariable name="state_1_text">-|-</SetVariable>
-            <SetVariable name="state_2_text">--|</SetVariable>
-            <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
-          </Template>
-
-          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
-
-          <Template src="skin:knob_textless.xml">
-            <SetVariable name="ToolTipID">pregain</SetVariable>
-            <SetVariable name="ObjectName">SamplerGainKnob</SetVariable>
-            <SetVariable name="Size">22f,22f</SetVariable>
-            <SetVariable name="group">[Sampler<Variable name="samplernum"/>]</SetVariable>
-            <SetVariable name="ConfigKey">volume</SetVariable>
-            <SetVariable name="Color">tiny_red</SetVariable>
-          </Template>
-
+          
         </Children>
-      </WidgetGroup><!-- /SamplerMain -->
+      </WidgetGroup>
 
     </Children>
   </WidgetGroup><!-- /SamplerDeck -->

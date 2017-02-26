@@ -583,10 +583,10 @@ WWidget, QLabel {
     border: 1px solid #eeeeee;
     }
 
-#PlayCue, #PlayCueUnderlay, #SamplerPlayCue, #SamplerPlayCueUnderlay, #PreviewPlayCue, #PreviewPlayCueUnderlay {
+#PlayCue, #PlayCueUnderlay, #PreviewPlayCue, #PreviewPlayCueUnderlay, #SamplerPlayCue, #SamplerPlayCueUnderlay, #SamplerCover {
     border-radius: 2px;
   }
-  #PlayCue[displayValue="0"] {
+  #PlayCue[displayValue="0"], #SamplerPlayCue[displayValue="0"] {
     background: none url(skin:/buttons/btn_paused.svg) no-repeat center center;
     }
   #PlayCue[displayValue="0"]:hover {
@@ -1224,12 +1224,6 @@ WWidget, QLabel {
     background-color: #0f0f0f;
   }
 
-#SamplerMain_mini {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding-right: 1px;
-  background-color: #333333;
-}
-
 #SamplersMiniMaxiButton[displayValue="0"] {
   image: url(skin:/buttons/btn_down_thin.svg) no-repeat center top;
   border-radius: 2px;
@@ -1270,6 +1264,46 @@ WWidget, QLabel {
   background-color: #333333;
 }
 
+#SamplerPlayBox {
+  padding: 1px 1px 1px 0px;
+}
+#SamplerPlayBox_mini {
+  padding: 0px 1px 0px 0px;
+}
+  #SamplerPlayCue, #SamplerPlayCueUnderlay, #SamplerCover {
+    border-radius: 2px;
+  }
+  #SamplerPlayCue[displayValue="0"] {
+    background: none url(skin:/buttons/btn_sampler_paused.svg) no-repeat center center;
+  }
+  #SamplerPlayCue[displayValue="0"]:hover {
+    border: 1px solid #888888;
+  }
+  #SamplerPlayCue[displayValue="1"] {
+    background: none url(skin:/buttons/btn_sampler_playing.svg) no-repeat center center;
+    border: 1px solid #ca0000;
+  }
+  #SamplerPlayCue[displayValue="1"]:hover {
+    border: 1px solid #ff0000;
+  }
+  #SamplerPlayCueUnderlay[displayValue="0"] {
+    background-color: #333333;
+    }
+  #SamplerPlayCueUnderlay[displayValue="1"] {
+    background: #a90000;
+    }
+
+#SamplerMain_mini {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  padding-right: 1px;
+  }
+  #SamplerMain_miniUnderlay[displayValue="0"] {
+    background-color: #333333;
+  }
+  #SamplerMain_miniUnderlay[displayValue="1"] {
+    background-color: #888888;
+  }
+
 #SamplerTitle {
   padding-left: 3px;
   }
@@ -1282,7 +1316,7 @@ WWidget, QLabel {
 
 #SamplerTitle_mini {
   padding: 0px 1px 0px 2px;
-  background-color: rgba(51, 51, 51, 127);
+  background-color: rgba(51, 51, 51, 170);
   }
   #SamplerTitle_mini WLabel {
     font-size: 14px/16px;
@@ -1291,8 +1325,15 @@ WWidget, QLabel {
     text-align: left;
   }
 
-#SamplerOverviewRow, #PreviewOverview, #SamplerOverview_mini {
+#SamplerOverviewRow, #PreviewOverview {
   background-color: #1a1a1a;
+}
+#SamplerOverview_Underlay[displayValue="0"] {
+  background-color: #1a1a1a;
+}
+#SamplerOverview_Underlay[displayValue="1"] {
+  border: 1px solid #eeeeee;
+  background-color: #333333;
 }
 
 #SamplerOverview_mini {
@@ -1309,19 +1350,19 @@ WWidget, QLabel {
   background-color: #334679;	*/
 }
 
-#SamplerButton {
+#SamplerButton, #SamplerButton_mini {
   font-size: 14px/14px;
   font-weight: bold;
   text-align: center;
   color: #888888;
-} /*
-  #SamplerButton[displayValue="0"], #SamplerButton[displayValue="2"] {
-    color: #4FB7FF;
-  }
-  #SamplerButton:hover, #SamplerGainKnob:hover { */
-  #SamplerButton:hover {
+  border-radius: 2px;
+}
+#SamplerButton_mini, #SamplerGainKnob_mini {
+  background-color: #333333;
+  border-radius: 2px;
+}
+  #SamplerButton:hover, #SamplerButton_mini:hover {
     background-color: #0f0f0f;
-    border-radius: 2px;
   }
   #SamplerKeylock {
     margin-left: 3px;
