@@ -74,8 +74,8 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
     m_pMasterSync = new EngineSync(pConfig);
 
     // The last-used bpm value is saved in the destructor of EngineSync.
-    double default_bpm = pConfig->getValueString(ConfigKey("[InternalClock]", "bpm"),
-                                                 "124.0").toDouble();
+    double default_bpm = pConfig->getValue(
+            ConfigKey("[InternalClock]", "bpm"), 124.0);
     ControlObject::getControl(ConfigKey("[InternalClock]","bpm"))->set(default_bpm);
 
     // Crossfader
@@ -469,6 +469,8 @@ void EngineMaster::process(const int iBufferSize) {
             if (m_pVumeter != NULL) {
                 m_pVumeter->collectFeatures(&masterFeatures);
             }
+            masterFeatures.has_gain = true;
+            masterFeatures.gain = m_pMasterGain->get();
             m_pEngineEffectsManager->process(m_masterHandle.handle(), m_pMaster,
                                              iBufferSize, iSampleRate,
                                              masterFeatures);

@@ -1,0 +1,75 @@
+<!DOCTYPE template>
+<!--
+EffectUnit with just metaknobs, but not individual parameter knobs showing
+
+Variables:
+  EffectRack: the rack
+  EffectUnit: the chain
+-->
+<Template>
+  <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,f</SizePolicy>
+    <!-- A little more vertical space is needed when show_focus is 1 because of the focused effect's border.-->
+    <MinimumSize>-1,65</MinimumSize>
+    <MaximumSize>-1,75</MaximumSize>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>EffectUnitNoParameters</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,max</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>EffectUnitEffectsNoParameters</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skin:effect_single_no_parameters.xml">
+                <SetVariable name="Effect">1</SetVariable>
+              </Template>
+
+              <Template src="skin:effect_single_no_parameters.xml">
+                <SetVariable name="Effect">2</SetVariable>
+              </Template>
+
+              <Template src="skin:effect_single_no_parameters.xml">
+                <SetVariable name="Effect">3</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <Template src="skin:spacer_h.xml" />
+
+          <WidgetGroup>
+            <ObjectName>EffectUnitControls</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <MaximumSize>100,50</MaximumSize>
+            <Children>
+              <Template src="skin:knob_with_label.xml">
+                <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
+                <SetVariable name="control">super1</SetVariable>
+                <SetVariable name="label">Super</SetVariable>
+                <SetVariable name="color">yellow</SetVariable>
+              </Template>
+
+              <Template src="skin:knob_with_label.xml">
+                <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
+                <SetVariable name="control">mix</SetVariable>
+                <SetVariable name="label">Mix</SetVariable>
+                <SetVariable name="color">blue</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+
+</Template>

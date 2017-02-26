@@ -19,7 +19,8 @@
 
 #define DEFAULT_BITRATE 128
 
-EncoderBroadcastSettings::EncoderBroadcastSettings(UserSettingsPointer pConfig)
+EncoderBroadcastSettings::EncoderBroadcastSettings(BroadcastSettings settings) :
+m_settings(settings)
 {
     m_qualList.append(32);
     m_qualList.append(48);
@@ -33,7 +34,6 @@ EncoderBroadcastSettings::EncoderBroadcastSettings(UserSettingsPointer pConfig)
     m_qualList.append(224);
     m_qualList.append(256);
     m_qualList.append(320);
-    m_pConfig = m_pConfig;
 }
 EncoderBroadcastSettings::~EncoderBroadcastSettings()
 {
@@ -50,8 +50,7 @@ QList<int> EncoderBroadcastSettings::getQualityValues() const
 void EncoderBroadcastSettings::setQualityByValue(int qualityValue) 
 {
     if (m_qualList.contains(qualityValue)) {
-        m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "bitrate"), 
-                ConfigValue(qualityValue));
+        m_settings->setBitrate(qualityValue);
     } else {
         qWarning() << "Invalid qualityValue given to EncoderBroadcastSettings: " 
             << qualityValue << ". Ignoring it";
@@ -61,8 +60,7 @@ void EncoderBroadcastSettings::setQualityByValue(int qualityValue)
 void EncoderBroadcastSettings::setQualityByIndex(int qualityIndex)
 {
     if (qualityIndex >= 0 && qualityIndex < m_qualList.size()) {
-        m_pConfig->set(ConfigKey(BROADCAST_PREF_KEY, "bitrate"), 
-            ConfigValue(m_qualList.at(qualityIndex)));
+        m_settings->setBitrate(m_qualList.at(qualityIndex));
     } else {
         qWarning() << "Invalid qualityIndex given to EncoderBroadcastSettings: " 
             << qualityIndex << ". Ignoring it";
@@ -71,8 +69,7 @@ void EncoderBroadcastSettings::setQualityByIndex(int qualityIndex)
 
 int EncoderBroadcastSettings::getQuality() const
 {
-    int bitrate = m_pConfig->getValue(
-            ConfigKey(BROADCAST_PREF_KEY, "bitrate"), DEFAULT_BITRATE);
+    int bitrate = m_settings.getBitrate();
     if (m_qualList.contains(bitrate)) {
         return bitrate;
     }

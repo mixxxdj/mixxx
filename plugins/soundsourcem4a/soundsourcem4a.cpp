@@ -139,7 +139,7 @@ MP4TrackId findFirstAudioTrackId(MP4FileHandle hFile, const QString& fileName) {
                     << fileName;
             continue;
         }
-        DEBUG_ASSERT_AND_HANDLE(!"unreachable code") {
+        VERIFY_OR_DEBUG_ASSERT(!"unreachable code") {
             qWarning() << "Skipping track"
                     << trackId
                     << "of"
@@ -203,9 +203,24 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSr
     if (MP4_INVALID_DURATION == m_framesPerSampleBlock) {
       qWarning() << "Unable to determine the fixed sample duration of track"
               << m_trackId << "in file" << getUrlString();
+      // TODO(XXX): The following check for FFmpeg or any another available
+      // AAC decoder should be done at runtime and not at compile time.
+      // Only if this is the last available decoder for handling the file
+      // the default value should be used as a fallback and last resort.
+      // Unfortunately our API currently does not provide this information
+      // for making such a decision at runtime.
+#ifdef __FFMPEGFILE__
+      // Give up and instead let FFmpeg (or any other AAC decoder with
+      // lower priority) handle this file.
+      // Fixes https://bugs.launchpad.net/mixxx/+bug/1504113
+      return OpenResult::ABORTED;
+#else
+      // Fallback: Use a default value if FFmpeg is not available (checked
+      // at compile time).
       qWarning() << "Fallback: Using a default sample duration of"
               << kDefaultFramesPerSampleBlock << "sample frames per block";
       m_framesPerSampleBlock = kDefaultFramesPerSampleBlock;
+#endif // __FFMPEGFILE__
     }
 
     const MP4SampleId numberOfSamples =
@@ -235,7 +250,7 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSr
                 << kMaxSampleBlockInputSizeLimit
                 << "exceeds limit:"
                 << getUrlString();
-        return OpenResult::FAILED;    
+        return OpenResult::ABORTED;
     }
     m_inputBuffer.resize(maxSampleBlockInputSize, 0);
 

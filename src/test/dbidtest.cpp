@@ -2,7 +2,7 @@
 
 #include <QtDebug>
 
-#include "util/dbid.h"
+#include "util/db/dbid.h"
 
 namespace {
 

@@ -21,7 +21,7 @@
 
 class EncoderBroadcastSettings : public EncoderSettings {
   public:
-    EncoderBroadcastSettings(UserSettingsPointer m_pConfig);
+    EncoderBroadcastSettings(BroadcastSettings settings);
     virtual ~EncoderBroadcastSettings();
 
     // Indicates that it uses the quality slider section of the preferences
@@ -43,7 +43,7 @@ class EncoderBroadcastSettings : public EncoderSettings {
 
   private:
     QList<int> m_qualList;
-    UserSettingsPointer m_pConfig;
+    BroadcastSettings m_settings;
 };
 
 

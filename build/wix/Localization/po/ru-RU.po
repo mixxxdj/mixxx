@@ -1,11 +1,11 @@
-#
+# 
 # Translators:
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 # Vladimir Novikov <dancenoise1@gmail.com>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2016-06-13 16:18+0000\n"
+"PO-Revision-Date: 2017-01-22 20:14+0000\n"
 "Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
 "Language-Team: Russian (Russia) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/ru_RU/)\n"
 "MIME-Version: 1.0\n"

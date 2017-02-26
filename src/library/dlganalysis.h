@@ -25,8 +25,9 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     bool hasFocus() const override;
     void loadSelectedTrack() override;
     void loadSelectedTrackToGroup(QString group, bool play) override;
-    void slotSendToAutoDJ() override;
+    void slotSendToAutoDJBottom() override;
     void slotSendToAutoDJTop() override;
+    void slotSendToAutoDJReplace() override;
     void moveSelection(int delta) override;
     inline const QString currentSearch() {
         return m_pAnalysisLibraryTableModel->currentSearch();

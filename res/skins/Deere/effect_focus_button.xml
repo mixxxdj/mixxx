@@ -1,0 +1,55 @@
+<!--
+Effect focus button
+
+Variables:
+  EffectRack: the rack
+  EffectUnit: the chain
+  Effect: the effect
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>EffectFocusButtonContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <Children>
+      <PushButton>
+        <TooltipId><Variable name="button_TooltipId"/></TooltipId>
+        <ObjectName>CircleButton</ObjectName>
+        <Size>15f,15f</Size>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text></Text>
+          <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_off_48px.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_off_48px.svg</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text></Text>
+          <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],focused_effect</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+          <EmitOnPressAndRelease>false</EmitOnPressAndRelease>
+          <Transform>
+            <IsEqual><Variable name="Effect"/></IsEqual>
+          </Transform>
+        </Connection>
+        <Connection>
+          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],focused_effect</ConfigKey>
+          <ButtonState>RightButton</ButtonState>
+          <EmitOnPressAndRelease>false</EmitOnPressAndRelease>
+          <Transform>
+            <IsEqual><Variable name="Effect"/></IsEqual>
+            <Not/>
+          </Transform>
+        </Connection>
+      </PushButton>
+    </Children>
+    <Connection>
+      <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_focus</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

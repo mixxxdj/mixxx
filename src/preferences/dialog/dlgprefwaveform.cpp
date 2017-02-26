@@ -104,8 +104,8 @@ void DlgPrefWaveform::slotUpdate() {
     defaultZoomComboBox->setCurrentIndex(factory->getDefaultZoom() - 1);
 
     // By default we set RGB woverview = "2"
-    int overviewType = m_pConfig->getValueString(
-            ConfigKey("[Waveform]","WaveformOverviewType"), "2").toInt();
+    int overviewType = m_pConfig->getValue(
+            ConfigKey("[Waveform]","WaveformOverviewType"), 2);
     if (overviewType != waveformOverviewComboBox->currentIndex()) {
         waveformOverviewComboBox->setCurrentIndex(overviewType);
     }

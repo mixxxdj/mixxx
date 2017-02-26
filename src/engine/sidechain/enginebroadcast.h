@@ -3,6 +3,7 @@
 
 #include <QMessageBox>
 #include <QMutex>
+#include <QWaitCondition>
 #include <QObject>
 #include <QSemaphore>
 #include <QTextCodec>
@@ -18,6 +19,7 @@
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/fifo.h"
+#include "preferences/broadcastsettings.h"
 
 class ControlPushButton;
 
@@ -81,7 +83,7 @@ class EngineBroadcast
 
   private:
     bool processConnect();
-    void processDisconnect();
+    bool processDisconnect();
 
     // Update the libshout struct with info from Mixxx's broadcast preferences.
     void updateFromPreferences();
@@ -108,6 +110,12 @@ class EngineBroadcast
     bool writeSingle(const unsigned char *data, size_t len);
 
     QByteArray encodeString(const QString& string);
+
+    bool waitForRetry();
+
+    void tryReconnect();
+
+
     QTextCodec* m_pTextCodec;
     TrackPointer m_pMetaData;
     shout_t *m_pShout;
@@ -115,6 +123,7 @@ class EngineBroadcast
     int m_iMetaDataLife;
     long m_iShoutStatus;
     long m_iShoutFailures;
+    BroadcastSettings m_settings;
     UserSettingsPointer m_pConfig;
     EncoderPointer m_encoder;
     ControlPushButton* m_pBroadcastEnabled;
@@ -139,7 +148,18 @@ class EngineBroadcast
     QAtomicInt m_threadWaiting;
     QSemaphore m_readSema;
     FIFO<CSAMPLE>* m_pOutputFifo;
+
     QString m_lastErrorStr;
+    int m_retryCount;
+
+    double m_reconnectFirstDelay;
+    double m_reconnectPeriod;
+    bool m_noDelayFirstReconnect;
+    bool m_limitReconnects;
+    int m_maximumRetries;
+
+    QMutex m_enabledMutex;
+    QWaitCondition m_waitEnabled;
 };
 
 #endif // ENGINE_SIDECHAIN_ENGINEBROADCAST_H

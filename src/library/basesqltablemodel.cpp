@@ -29,23 +29,23 @@ static const bool sDebug = false;
 static const int kIdColumn = 0;
 static const int kMaxSortColumns = 3;
 
-// Constant for getModelSetting(name) 
+// Constant for getModelSetting(name)
 static const char* COLUMNS_SORTING = "ColumnsSorting";
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
                                      TrackCollection* pTrackCollection,
                                      const char* settingsNamespace)
         : QAbstractTableModel(pParent),
-          TrackModel(pTrackCollection->getDatabase(), settingsNamespace),
+          TrackModel(pTrackCollection->database(), settingsNamespace),
           m_pTrackCollection(pTrackCollection),
-          m_trackDAO(pTrackCollection->getTrackDAO()),
-          m_database(pTrackCollection->getDatabase()),
+          m_database(pTrackCollection->database()),
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
           m_bInitialized(false),
           m_currentSearch("") {
+    DEBUG_ASSERT(m_pTrackCollection);
     connect(&PlayerInfo::instance(), SIGNAL(trackLoaded(QString, TrackPointer)),
             this, SLOT(trackLoaded(QString, TrackPointer)));
-    connect(&m_trackDAO, SIGNAL(forceModelUpdate()),
+    connect(&m_pTrackCollection->getTrackDAO(), SIGNAL(forceModelUpdate()),
             this, SLOT(select()));
     trackLoaded(m_previewDeckGroup, PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
 }
@@ -108,10 +108,6 @@ void BaseSqlTableModel::initHeaderData() {
                         tr("Cover Art"), 90);
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN,
                         tr("ReplayGain"), 50);
-}
-
-QSqlDatabase BaseSqlTableModel::database() const {
-    return m_database;
 }
 
 void BaseSqlTableModel::setHeaderProperties(
@@ -428,24 +424,24 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
         qWarning() << "BaseSqlTableModel::setSort invalid column:" << column;
         return;
     }
-        
+
     // There's no item to sort already, load from Settings last sort
     if (m_sortColumns.isEmpty()) {
         QString val = getModelSetting(COLUMNS_SORTING);
         QTextStream in(&val);
-        
+
         while (!in.atEnd()) {
             int ordI = -1;
             QString name;
-            
+
             in >> name >> ordI;
-            
+
             int col = fieldIndex(name);
             if (col < 0) continue;
-            
+
             Qt::SortOrder ord;
             ord = ordI > 0 ? Qt::AscendingOrder : Qt::DescendingOrder;
-            
+
             m_sortColumns << SortColumn(col, ord);
         }
     }
@@ -469,13 +465,13 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
             m_sortColumns.removeLast();
         }
     }
-    
+
     // Write new sortColumns order to user settings
     QString val;
     QTextStream out(&val);
     for (SortColumn& sc : m_sortColumns) {
 
-        QString name;        
+        QString name;
         if (sc.m_column > 0 && sc.m_column < m_tableColumns.size()) {
             name = m_tableColumns[sc.m_column];
         } else {
@@ -493,7 +489,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     if (sDebug) {
         qDebug() << "setSort() sortColumns:" << val;
     }
-    
+
 
     // we have two selects for sorting, since keeping the select history
     // across the two selects is hard, we do this only for the trackSource
@@ -514,10 +510,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
             m_tableOrderBy = "ORDER BY ";
             QString field = m_tableColumns[column];
             QString sort_field = QString("%1.%2").arg(m_tableName, field);
-            m_tableOrderBy.append(sort_field);
-        #ifdef __SQLITE3__
-            m_tableOrderBy.append(" COLLATE localeAwareCompare");
-        #endif
+            m_tableOrderBy.append(DbConnection::collateLexicographically(sort_field));
             m_tableOrderBy.append((order == Qt::AscendingOrder) ? " ASC" : " DESC");
         }
         m_sortColumns.clear();
@@ -534,7 +527,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
                     sort_field = "RANDOM()";
                 } else {
                     // we can't sort by other table columns here since primary sort is a track
-                    // column: skip   
+                    // column: skip
                     continue;
                 }
             } else {
@@ -542,16 +535,12 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
                 int ccColumn = sc.m_column - m_tableColumns.size() + 1;
                 sort_field = m_trackSource->columnSortForFieldIndex(ccColumn);
             }
-            DEBUG_ASSERT_AND_HANDLE(!sort_field.isEmpty()) {
+            VERIFY_OR_DEBUG_ASSERT(!sort_field.isEmpty()) {
                 continue;
             }
 
             m_trackSourceOrderBy.append(first ? "ORDER BY ": ", ");
-            m_trackSourceOrderBy.append(sort_field);
-
-    #ifdef __SQLITE3__
-            m_trackSourceOrderBy.append(" COLLATE localeAwareCompare");
-    #endif
+            m_trackSourceOrderBy.append(DbConnection::collateLexicographically(sort_field));
             m_trackSourceOrderBy.append((sc.m_order == Qt::AscendingOrder) ?
                     " ASC" : " DESC");
             //qDebug() << m_trackSourceOrderBy;
@@ -771,7 +760,7 @@ bool BaseSqlTableModel::setData(
 
     // TODO(rryan) ugly and only works because the mixxx library tables are the
     // only ones that aren't read-only. This should be moved into BTC.
-    TrackPointer pTrack = m_trackDAO.getTrack(trackId);
+    TrackPointer pTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
     if (!pTrack) {
         return false;
     }
@@ -856,7 +845,7 @@ TrackId BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
 }
 
 TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
-    return m_trackDAO.getTrack(getTrackId(index));
+    return m_pTrackCollection->getTrackDAO().getTrack(getTrackId(index));
 }
 
 QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
@@ -953,7 +942,7 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         pTrack->setBpmLocked(value.toBool());
     } else {
         // We never should get up to this point!
-        DEBUG_ASSERT_AND_HANDLE(false) {
+        VERIFY_OR_DEBUG_ASSERT(false) {
             qWarning() << "Column"
                     << m_tableColumnCache.columnNameForFieldIndex(column)
                     << "is not editable!";
@@ -1074,7 +1063,7 @@ void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
         trackIds.append(trackId);
     }
 
-    m_trackDAO.hideTracks(trackIds);
+    m_pTrackCollection->hideTracks(trackIds);
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.

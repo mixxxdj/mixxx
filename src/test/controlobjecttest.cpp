@@ -16,14 +16,6 @@ class ControlObjectTest : public MixxxTest {
         co2 = std::make_unique<ControlObject>(ck2);
     }
 
-    // Simulate restarting Mixxx by saving and reloading the UserSettings.
-    void saveAndReloadConfig() {
-        m_pConfig->save();
-        m_pConfig = UserSettingsPointer(
-            new UserSettings(getTestDataDir().filePath("test.cfg")));
-        ControlDoublePrivate::setUserConfig(m_pConfig);
-    }
-
     ConfigKey ck1, ck2;
     std::unique_ptr<ControlObject> co1;
     std::unique_ptr<ControlObject> co2;

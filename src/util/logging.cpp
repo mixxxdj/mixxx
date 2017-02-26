@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <signal.h>
 
 #include <QByteArray>
 #include <QFile>
@@ -15,13 +16,13 @@
 #include <QtGlobal>
 
 #include "util/cmdlineargs.h"
+#include "util/assert.h"
 
 namespace mixxx {
 namespace {
 
 QFile Logfile;
 QMutex mutexLogfile;
-int debugLevel;
 
 // Debug message handler which outputs to both a logfile and prepends the thread
 // the message came from.
@@ -44,10 +45,22 @@ void MessageHandler(QtMsgType type,
     } else {
         ba = "[?]: ";
     }
+
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    ba += input;
+    bool controllerDebug = strncmp(input, Logging::kControllerDebugPrefix,
+                                   strlen(Logging::kControllerDebugPrefix)) == 0;
+    if (controllerDebug) {
+        ba += (input + strlen(Logging::kControllerDebugPrefix) + 1);
+    } else {
+        ba += input;
+    }
 #else
-    ba += input.toLocal8Bit();
+    bool controllerDebug = input.startsWith(QLatin1String(Logging::kControllerDebugPrefix));
+    if (controllerDebug) {
+        ba += input.mid(strlen(Logging::kControllerDebugPrefix) + 1).toLocal8Bit();
+    } else {
+        ba += input.toLocal8Bit();
+    }
 #endif
     ba += "\n";
 
@@ -88,42 +101,90 @@ void MessageHandler(QtMsgType type,
         Logfile.open(QIODevice::WriteOnly | QIODevice::Text);
     }
 
-    debugLevel = CmdlineArgs::Instance().getDebugLevel(); // Get message verbosity
+    Logging::LogLevel logLevel = CmdlineArgs::Instance().getLogLevel();
 
     switch (type) {
-    case QtDebugMsg: // debugLevel 2
-        if (debugLevel > kDebugLevelDefault)
+    case QtDebugMsg:
+        if (logLevel >= Logging::LogLevel::Debug || controllerDebug) {
             fprintf(stderr, "Debug %s", ba.constData());
+        }
         if (Logfile.isOpen()) {
             Logfile.write("Debug ");
             Logfile.write(ba);
         }
         break;
-    case QtWarningMsg: // debugLevel 1
-        if (debugLevel > kDebugLevelMin)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
+    case QtInfoMsg:
+        if (logLevel >= Logging::LogLevel::Info) {
+            fprintf(stderr, "Info %s", ba.constData());
+        }
+        if (Logfile.isOpen()) {
+            Logfile.write("Info ");
+            Logfile.write(ba);
+        }
+        break;
+#endif
+    case QtWarningMsg:
+        if (logLevel >= Logging::LogLevel::Warning) {
             fprintf(stderr, "Warning %s", ba.constData());
+        }
         if (Logfile.isOpen()) {
             Logfile.write("Warning ");
             Logfile.write(ba);
         }
         break;
-    case QtCriticalMsg: // debugLevel 0 (always shown)
-        fprintf(stderr, "Critical %s", ba.constData());
-        if (Logfile.isOpen()) {
-            Logfile.write("Critical ");
-            Logfile.write(ba);
+    case QtCriticalMsg:
+        {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+            bool debugAssert = strncmp(input, kDebugAssertPrefix,
+                                           strlen(kDebugAssertPrefix)) == 0;
+#else
+            bool debugAssert = input.startsWith(QLatin1String(kDebugAssertPrefix));
+#endif
+            if (debugAssert) {
+                if (CmdlineArgs::Instance().getDebugAssertBreak()) {
+                    fprintf(stderr, ba.constData());
+                    if (Logfile.isOpen()) {
+                        Logfile.write(ba);
+                    }
+                    raise(SIGINT);
+                } else {
+#ifdef MIXXX_DEBUG_ASSERTIONS_FATAL
+                    // re-send as fatal
+                    locker.unlock();
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+                    qFatal(input);
+#else
+                    qFatal(input.toLocal8Bit());
+#endif
+                    return;
+#else
+                    fprintf(stderr, ba.constData());
+                    if (Logfile.isOpen()) {
+                        Logfile.write(ba);
+                    }
+#endif
+                }
+            } else {
+                // Critical errors are always shown on the console.
+                fprintf(stderr, "Critical %s", ba.constData());
+                if (Logfile.isOpen()) {
+                    Logfile.write("Critical ");
+                    Logfile.write(ba);
+                }
+            }
         }
-        break; //NOTREACHED
-    case QtFatalMsg: // debugLevel 0 (always shown)
+        break;
+    case QtFatalMsg:
+        // Fatal errors are always shown on the console.
         fprintf(stderr, "Fatal %s", ba.constData());
         if (Logfile.isOpen()) {
             Logfile.write("Fatal ");
             Logfile.write(ba);
         }
-        break; //NOTREACHED
-    default: // debugLevel unknown, we'll assume Warning
-        if (debugLevel > 0)
-            fprintf(stderr, "Unknown %s", ba.constData());
+        break;
+    default:
+        fprintf(stderr, "Unknown %s", ba.constData());
         if (Logfile.isOpen()) {
             Logfile.write("Unknown ");
             Logfile.write(ba);
@@ -136,6 +197,9 @@ void MessageHandler(QtMsgType type,
 }
 
 }  // namespace
+
+// static
+constexpr Logging::LogLevel Logging::kLogLevelDefault;
 
 // static
 void Logging::initialize() {
