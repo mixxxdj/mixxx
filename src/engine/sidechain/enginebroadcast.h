@@ -12,13 +12,13 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "encoder/encodercallback.h"
+#include "encoder/encoder.h"
 #include "engine/sidechain/networkstreamworker.h"
 #include "errordialoghandler.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/fifo.h"
 
-class Encoder;
 class ControlPushButton;
 
 // Forward declare libshout structures to prevent leaking shout.h definitions
@@ -51,8 +51,15 @@ class EngineBroadcast
 
     // Called by the encoder in method 'encodebuffer()' to flush the stream to
     // the server.
-    void write(unsigned char *header, unsigned char *body,
-               int headerLen, int bodyLen);
+    void write(const unsigned char *header, const unsigned char *body,
+               int headerLen, int bodyLen) override;
+    // gets stream position
+    int tell() override;
+    // sets stream position
+    void seek(int pos) override;
+    // gets stream length
+    int filelen() override;
+
     /** connects to server **/
     bool serverConnect();
     bool serverDisconnect();
@@ -109,7 +116,7 @@ class EngineBroadcast
     long m_iShoutStatus;
     long m_iShoutFailures;
     UserSettingsPointer m_pConfig;
-    Encoder* m_encoder;
+    EncoderPointer m_encoder;
     ControlPushButton* m_pBroadcastEnabled;
     ControlProxy* m_pMasterSamplerate;
     ControlObject* m_pStatusCO;

@@ -24,6 +24,7 @@
 #include "preferences/dialog/ui_dlgprefrecorddlg.h"
 #include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
+#include "encoder/encoder.h"
 
 class ControlObject;
 class ControlProxy;
@@ -40,34 +41,33 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     void slotUpdate();
     void slotResetToDefaults();
 
-
-    void slotEncoding();
-    void slotSliderQuality();
-    void slotRecordPathChange();
-    void slotEnableCueFile(int);
-    void slotChangeSplitSize();
     // Dialog to browse for recordings directory
     void slotBrowseRecordingsDir();
+
+    void slotFormatChanged();
+    void slotSliderQuality();
+    void slotSliderCompression();
+    void slotGroupChanged();
 
   signals:
     void apply(const QString &);
 
   private:
-    void setRecordingFolder();
-    void setMetaData();
+    void setupEncoderUI(Encoder::Format selformat);
     void loadMetaData();
-    int getSliderQualityVal();
     void updateTextQuality();
+    void updateTextCompression();
+    void saveRecordingFolder();
+    void saveMetaData();
+    void saveEncoding();
+    void saveUseCueFile();
+    void saveSplitSize();
 
     // Pointer to config object
     UserSettingsPointer m_pConfig;
-    bool m_bConfirmOverwrite;
-    QString fileTypeExtension;
-    QRadioButton* m_pRadioOgg;
-    QRadioButton* m_pRadioMp3;
-    QRadioButton* m_pRadioAiff;
-    QRadioButton* m_pRadioFlac;
-    QRadioButton* m_pRadioWav;
+    Encoder::Format m_selFormat;
+    QList<QRadioButton*> m_formatButtonss;
+    QList<QWidget*> m_optionWidgets;
 };
 
 #endif

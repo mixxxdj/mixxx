@@ -17,10 +17,11 @@
 #include "broadcast/defs_broadcast.h"
 #include "control/controlpushbutton.h"
 #include "encoder/encoder.h"
-#include "encoder/encodermp3.h"
-#include "encoder/encodervorbis.h"
+#include "encoder/encoderbroadcastsettings.h"
 #include "mixer/playerinfo.h"
 #include "preferences/usersettings.h"
+#include "recording/defs_recording.h"
+
 #include "track/track.h"
 #include "util/sleep.h"
 
@@ -137,12 +138,10 @@ void EngineBroadcast::updateFromPreferences() {
 
     setState(NETWORKSTREAMWORKER_STATE_BUSY);
 
+    // Delete m_encoder if it has been initialized (with maybe) different bitrate.
     if (m_encoder) {
         qDebug() << "delete m_encoder";
-        // delete m_encoder if it has been initialized (with maybe) different
-        // bitrate
-        delete m_encoder;
-        m_encoder = nullptr;
+        m_encoder.reset();
     }
 
     m_format_is_mp3 = false;
@@ -209,8 +208,6 @@ void EngineBroadcast::updateFromPreferences() {
             ConfigKey(BROADCAST_PREF_KEY, "password")).toLatin1();
     QByteArray baFormat = m_pConfig->getValueString(
             ConfigKey(BROADCAST_PREF_KEY, "format")).toLatin1();
-    QByteArray baBitrate = m_pConfig->getValueString(
-            ConfigKey(BROADCAST_PREF_KEY, "bitrate")).toLatin1();
 
     // Encode metadata like stream name, website, desc, genre, title/author with
     // the chosen TextCodec.
@@ -319,12 +316,7 @@ void EngineBroadcast::updateFromPreferences() {
         return;
     }
 
-    bool bitrate_is_int = false;
-    int iBitrate = baBitrate.toInt(&bitrate_is_int);
-
-    if (!bitrate_is_int) {
-        qWarning() << "Error: unknown bitrate:" << baBitrate.constData();
-    }
+    EncoderBroadcastSettings broadcastSettings(m_pConfig);
 
     int iMasterSamplerate = m_pMasterSamplerate->get();
     if (m_format_is_ov && iMasterSamplerate == 96000) {
@@ -336,7 +328,8 @@ void EngineBroadcast::updateFromPreferences() {
         return;
     }
 
-    if (shout_set_audio_info(m_pShout, SHOUT_AI_BITRATE, baBitrate.constData()) != SHOUTERR_SUCCESS) {
+    if (shout_set_audio_info(m_pShout, SHOUT_AI_BITRATE,
+            QString::number(broadcastSettings.getQuality()).toLatin1().constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting bitrate"), shout_get_error(m_pShout));
         return;
     }
@@ -370,9 +363,13 @@ void EngineBroadcast::updateFromPreferences() {
 
     // Initialize m_encoder
     if (m_format_is_mp3) {
-        m_encoder = new EncoderMp3(this);
+        m_encoder = EncoderFactory::getFactory().getNewEncoder(
+            EncoderFactory::getFactory().getFormatFor(ENCODING_MP3), m_pConfig, this);
+        m_encoder->setEncoderSettings(broadcastSettings);
     } else if (m_format_is_ov) {
-        m_encoder = new EncoderVorbis(this);
+        m_encoder = EncoderFactory::getFactory().getNewEncoder(
+            EncoderFactory::getFactory().getFormatFor(ENCODING_OGG), m_pConfig, this);
+        m_encoder->setEncoderSettings(broadcastSettings);
     } else {
         qDebug() << "**** Unknown Encoder Format";
         setState(NETWORKSTREAMWORKER_STATE_ERROR);
@@ -380,12 +377,13 @@ void EngineBroadcast::updateFromPreferences() {
         return;
     }
 
-    if (m_encoder->initEncoder(iBitrate, iMasterSamplerate) < 0) {
+    QString errorMsg;
+    if(m_encoder->initEncoder(iMasterSamplerate, errorMsg) < 0) {
         // e.g., if lame is not found
         // init m_encoder itself will display a message box
         qDebug() << "**** Encoder init failed";
-        delete m_encoder;
-        m_encoder = nullptr;
+        qWarning() << errorMsg;
+        m_encoder.reset();
         setState(NETWORKSTREAMWORKER_STATE_ERROR);
         m_lastErrorStr = "Encoder error";
         return;
@@ -522,8 +520,7 @@ bool EngineBroadcast::processConnect() {
     shout_close(m_pShout);
     if (m_encoder) {
         m_encoder->flush();
-        delete m_encoder;
-        m_encoder = nullptr;
+        m_encoder.reset();
     }
     if (m_pBroadcastEnabled->toBool()) {
         m_pStatusCO->forceSet(STATUSCO_FAILURE);
@@ -548,12 +545,11 @@ void EngineBroadcast::processDisconnect() {
 
     if (m_encoder) {
         m_encoder->flush();
-        delete m_encoder;
-        m_encoder = nullptr;
+        m_encoder.reset();
     }
 }
 
-void EngineBroadcast::write(unsigned char *header, unsigned char *body,
+void EngineBroadcast::write(const unsigned char *header, const unsigned char *body,
                             int headerLen, int bodyLen) {
     setFunctionCode(7);
     if (!m_pShout) {
@@ -587,6 +583,21 @@ void EngineBroadcast::write(unsigned char *header, unsigned char *body,
             }
         }
     }
+}
+// These are not used for streaming, but the interface requires them
+int EngineBroadcast::tell() {
+    if (!m_pShout) {
+        return -1;
+    }
+    return -1;
+}
+// These are not used for streaming, but the interface requires them
+void EngineBroadcast::seek(int pos) {
+    return;
+}
+// These are not used for streaming, but the interface requires them
+int EngineBroadcast::filelen() {
+    return 0;
 }
 
 bool EngineBroadcast::writeSingle(const unsigned char* data, size_t len) {

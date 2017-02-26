@@ -1071,6 +1071,13 @@ class MixxxCore(Feature):
                    "encoder/encoder.cpp",
                    "encoder/encodermp3.cpp",
                    "encoder/encodervorbis.cpp",
+                   "encoder/encoderwave.cpp",
+                   "encoder/encodersndfileflac.cpp",
+                   "encoder/encodermp3settings.cpp",
+                   "encoder/encodervorbissettings.cpp",
+                   "encoder/encoderwavesettings.cpp",
+                   "encoder/encoderflacsettings.cpp",
+                   "encoder/encoderbroadcastsettings.cpp",
 
                    "util/sleepableqthread.cpp",
                    "util/statsmanager.cpp",

@@ -41,7 +41,8 @@ EncoderVorbis::EncoderVorbis(EncoderCallback* pCallback)
           m_pCallback(pCallback),
           m_metaDataTitle(NULL),
           m_metaDataArtist(NULL),
-          m_metaDataAlbum(NULL){
+          m_metaDataAlbum(NULL),
+          m_bitrate(128) {
     m_vdsp.pcm_returned = 0;
     m_vdsp.preextrapolate = 0;
     m_vdsp.eofflag = 0;
@@ -80,6 +81,11 @@ EncoderVorbis::~EncoderVorbis() {
         vorbis_comment_clear(&m_vcomment);
         vorbis_info_clear(&m_vinfo);
     }
+}
+
+void EncoderVorbis::setEncoderSettings(const EncoderSettings& settings)
+{
+    m_bitrate = settings.getQuality();
 }
 
 // call sendPackages() or write() after 'flush()' as outlined in enginebroadcast.cpp
@@ -169,7 +175,7 @@ void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size) {
  *
  * Currently this method is used before init() once to save artist, title and album
 */
-void EncoderVorbis::updateMetaData(char* artist, char* title, char* album) {
+void EncoderVorbis::updateMetaData(const char* artist, const char* title, const char* album) {
     m_metaDataTitle = title;
     m_metaDataArtist = artist;
     m_metaDataAlbum = album;
@@ -212,15 +218,17 @@ void EncoderVorbis::initStream() {
     m_bStreamInitialized = true;
 }
 
-int EncoderVorbis::initEncoder(int bitrate, int samplerate) {
+int EncoderVorbis::initEncoder(int samplerate, QString errorMessage) {
     vorbis_info_init(&m_vinfo);
 
     // initialize VBR quality based mode
-    int ret = vorbis_encode_init(&m_vinfo, 2, samplerate, -1, bitrate*1000, -1);
+    int ret = vorbis_encode_init(&m_vinfo, 2, samplerate, -1, m_bitrate*1000, -1);
 
     if (ret == 0) {
         initStream();
     } else {
+        qDebug() << "Error initializing OGG recording. IS OGG/Vorbis library installed? Error code: " << ret;
+        errorMessage  = "OGG recording is not supported. OGG/Vorbis library could not be initialized.";
         ret = -1;
     };
     return ret;

@@ -15,11 +15,18 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef ENCODERVORBIS_H
-#define ENCODERVORBIS_H
+#ifndef ENCODERWAVE_H
+#define ENCODERWAVE_H
 
-// this also includes vorbis/codec.h
-#include <vorbis/vorbisenc.h>
+
+#include "encoder/encoderwavesettings.h"
+#ifdef Q_OS_WIN
+//Enable unicode in libsndfile on Windows
+//(sf_open uses UTF-8 otherwise)
+#include <windows.h>
+#define ENABLE_SNDFILE_WINDOWS_PROTOTYPES 1
+#endif
+#include <sndfile.h>
 
 #include "util/types.h"
 #include "encoder/encoder.h"
@@ -27,10 +34,10 @@
 
 class EncoderCallback;
 
-class EncoderVorbis : public Encoder {
+class EncoderWave : public Encoder {
   public:
-    EncoderVorbis(EncoderCallback* pCallback=nullptr);
-    virtual ~EncoderVorbis();
+    EncoderWave(EncoderCallback* pCallback=nullptr);
+    virtual ~EncoderWave();
 
     int initEncoder(int samplerate, QString errorMessage) override;
     void encodeBuffer(const CSAMPLE *samples, const int size) override;
@@ -38,31 +45,18 @@ class EncoderVorbis : public Encoder {
     void flush() override;
     void setEncoderSettings(const EncoderSettings& settings) override;
 
-  private:
-    int getSerial();
-    void initStream();
-    bool metaDataHasChanged();
-    //Call this method in conjunction with broadcast streaming
-    void writePage();
-
-    bool m_bStreamInitialized;
-    ogg_stream_state m_oggs;    /* take physical pages, weld into logical stream
-                                 of packets */
-    ogg_page m_oggpage;         /* Ogg bitstream page: contains Vorbis packets */
-    ogg_packet m_oggpacket;     /* raw packet of data */
-    vorbis_block m_vblock;      /* local working space for packet-to-PCM */
-    vorbis_dsp_state m_vdsp;    /* central working space for packet-to-PCM */
-    vorbis_info m_vinfo;        /* stores all static vorbis bitstream settings */
-    vorbis_comment m_vcomment;  /* stores all user comments */
-    bool m_header_write;
-
-    EncoderCallback* m_pCallback;
+  protected:
+    virtual void initStream();
     TrackPointer m_pMetaData;
+    EncoderCallback* m_pCallback;
     const char* m_metaDataTitle;
     const char* m_metaDataArtist;
     const char* m_metaDataAlbum;
-    int m_bitrate;
-    QFile m_file;
+
+    SNDFILE* m_pSndfile;
+    SF_INFO m_sfInfo;
+
+    SF_VIRTUAL_IO m_virtualIo;
 };
 
-#endif
+#endif //ENCODERWAVE_H

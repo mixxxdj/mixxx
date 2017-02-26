@@ -29,6 +29,7 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
     m_metaDataArtist(NULL),
     m_metaDataAlbum(NULL),
     m_bufferOut(NULL),
+    m_bitrate(128),
     m_bufferOutSize(0),
     /*
      * @ Author: Tobias Rafreider
@@ -235,6 +236,11 @@ EncoderMp3::~EncoderMp3() {
     id3tag_set_album = 0;
 }
 
+void EncoderMp3::setEncoderSettings(const EncoderSettings& settings)
+{
+    m_bitrate = settings.getQuality();
+}
+
 /*
  * Grow the outBuffer if needed.
  */
@@ -319,9 +325,11 @@ void EncoderMp3::initStream() {
     return;
 }
 
-int EncoderMp3::initEncoder(int bitrate, int samplerate) {
-    if (m_library == NULL || !m_library->isLoaded())
+int EncoderMp3::initEncoder(int samplerate, QString errorMessage) {
+    if (m_library == NULL || !m_library->isLoaded()) {
+        errorMessage  = "MP3 recording is not supported. Lame could not be initialized";
         return -1;
+    }
 
     unsigned long samplerate_in = samplerate;
     unsigned long samplerate_out =
@@ -331,13 +339,14 @@ int EncoderMp3::initEncoder(int bitrate, int samplerate) {
 
     if (m_lameFlags == NULL) {
         qDebug() << "Unable to initialize MP3";
+        errorMessage  = "MP3 recording is not supported. Lame could not be initialized";
         return -1;
     }
 
     lame_set_num_channels(m_lameFlags, 2);
     lame_set_in_samplerate(m_lameFlags, samplerate_in);
     lame_set_out_samplerate(m_lameFlags, samplerate_out);
-    lame_set_brate(m_lameFlags, bitrate);
+    lame_set_brate(m_lameFlags, m_bitrate);
     lame_set_mode(m_lameFlags, STEREO);
     lame_set_quality(m_lameFlags, 2);
     lame_set_bWriteVbrTag(m_lameFlags, 0);
@@ -354,6 +363,7 @@ int EncoderMp3::initEncoder(int bitrate, int samplerate) {
 
     if ((lame_init_params(m_lameFlags)) < 0) {
         qDebug() << "Unable to initialize MP3 parameters";
+        errorMessage  = "MP3 recording is not supported. Lame could not be initialized";
         return -1;
     }
 
@@ -362,7 +372,7 @@ int EncoderMp3::initEncoder(int bitrate, int samplerate) {
     return 0;
 }
 
-void EncoderMp3::updateMetaData(char* artist, char* title, char* album) {
+void EncoderMp3::updateMetaData(const char* artist, const char* title, const char* album) {
     m_metaDataTitle = title;
     m_metaDataArtist = artist;
     m_metaDataAlbum = album;

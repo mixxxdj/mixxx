@@ -31,10 +31,11 @@ class EncoderMp3 : public Encoder {
     EncoderMp3(EncoderCallback* callback=NULL);
     virtual ~EncoderMp3();
 
-    int initEncoder(int bitrate, int samplerate);
-    void encodeBuffer(const CSAMPLE *samples, const int size);
-    void updateMetaData(char* artist, char* title, char* album);
-    void flush();
+    int initEncoder(int samplerate, QString errorMessage) override;
+    void encodeBuffer(const CSAMPLE *samples, const int size) override;
+    void updateMetaData(const char* artist, const char* title, const char* album) override;
+    void flush() override;
+    void setEncoderSettings(const EncoderSettings& settings) override;
 
   private:
     void initStream();
@@ -104,10 +105,11 @@ class EncoderMp3 : public Encoder {
     id3tag_set_artist__                 id3tag_set_artist;
     id3tag_set_album__                  id3tag_set_album;
 
-    char *m_metaDataTitle;
-    char *m_metaDataArtist;
-    char *m_metaDataAlbum;
+    const char * m_metaDataTitle;
+    const char * m_metaDataArtist;
+    const char * m_metaDataAlbum;
 
+    int m_bitrate;
     unsigned char *m_bufferOut;
     int m_bufferOutSize;
     float *m_bufferIn[2];

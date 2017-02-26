@@ -59,10 +59,11 @@ public:
                       CodecID codec = CODEC_ID_MP2);
 #endif
     ~EncoderFfmpegCore();
-    int initEncoder(int bitrate, int samplerate);
-    void encodeBuffer(const CSAMPLE *samples, const int size);
-    void updateMetaData(char* artist, char* title, char* album);
-    void flush();
+    int initEncoder(int samplerate, QString errorMessage) override;
+    void encodeBuffer(const CSAMPLE *samples, const int size) override;
+    void updateMetaData(const char* artist, const char* title, const char* album) override;
+    void flush() override;
+    void setEncoderSettings(const EncoderSettings& settings) override;
 protected:
     unsigned int reSample(AVFrame *inframe);
 
@@ -73,7 +74,7 @@ private:
     //Call this method in conjunction with broadcast streaming
     int writeAudioFrame(AVFormatContext *oc, AVStream *st);
     void closeAudio(AVStream *st);
-    void openAudio(AVCodec *codec, AVStream *st);
+    int openAudio(AVCodec *codec, AVStream *st);
 #if LIBAVCODEC_VERSION_INT > 3544932
     AVStream *addStream(AVFormatContext *oc, AVCodec **codec,
                         enum AVCodecID codec_id);
@@ -86,9 +87,9 @@ private:
     EncoderCallback* m_pCallback;
     TrackPointer m_pMetaData;
 
-    char *m_strMetaDataTitle;
-    char *m_strMetaDataArtist;
-    char *m_strMetaDataAlbum;
+    const char *m_strMetaDataTitle;
+    const char *m_strMetaDataArtist;
+    const char *m_strMetaDataAlbum;
     QFile m_pFile;
 
     QByteArray m_strReadByteArray;
