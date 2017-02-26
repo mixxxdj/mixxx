@@ -960,6 +960,22 @@ void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
             findFirstCommentsFrame(tag);
     if (nullptr != pCommentsFrame) {
         pTrackMetadata->setComment(toQString(*pCommentsFrame));
+    } else {
+        // Compatibility workaround: ffmpeg 3.1.x maps DESCRIPTION fields of
+        // FLAC files with Vorbis Tags into TXXX frames labeled "comment"
+        // upon conversion to MP3. This might also happen when transcoding
+        // other file types to MP3 if ffmpeg is writing comments into this
+        // non-standard ID3v2 text frame.
+        // Note: The description string that identifies certain text frames
+        // is case-insensitive. We do the lookup with an upper-case string
+        // like for all other frames.
+        TagLib::ID3v2::UserTextIdentificationFrame* pCommentFrame =
+                findFirstUserTextIdentificationFrame(tag, "COMMENT");
+        if (pCommentFrame != nullptr) {
+            // The value is stored in the 2nd field
+            pTrackMetadata->setComment(
+                    toQString(pCommentFrame->fieldList()[1]));
+        }
     }
 
     const TagLib::ID3v2::FrameList albumArtistFrame(tag.frameListMap()["TPE2"]);
