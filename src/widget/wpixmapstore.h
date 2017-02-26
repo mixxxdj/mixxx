@@ -48,8 +48,6 @@ class Paintable {
 
     // Takes ownership of QImage.
     Paintable(QImage* pImage, DrawMode mode);
-    Paintable(const QString& fileName, DrawMode mode);
-    Paintable(const PixmapSource& source, DrawMode mode);
 
     QSize size() const;
     int width() const;

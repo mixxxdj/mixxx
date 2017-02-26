@@ -41,15 +41,7 @@ void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
             WPixmapStore::setLoader(imsrc);
             WImageStore::setLoader(imsrc);
             WSkinColor::setLoader(imsrc);
-        } else {
-            WPixmapStore::setLoader(QSharedPointer<ImgSource>());
-            WImageStore::setLoader(QSharedPointer<ImgSource>());
-            WSkinColor::setLoader(QSharedPointer<ImgSource>());
         }
-    } else {
-        WPixmapStore::setLoader(QSharedPointer<ImgSource>());
-        WImageStore::setLoader(QSharedPointer<ImgSource>());
-        WSkinColor::setLoader(QSharedPointer<ImgSource>());
     }
 }
 

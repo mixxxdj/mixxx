@@ -22,10 +22,12 @@
 #include <QtDebug>
 
 #include "util/math.h"
+#include "skin/imgloader.h"
 
 // static
 QHash<QString, WeakPaintablePointer> WPixmapStore::m_paintableCache;
-QSharedPointer<ImgSource> WPixmapStore::m_loader = QSharedPointer<ImgSource>();
+QSharedPointer<ImgSource> WPixmapStore::m_loader
+        = QSharedPointer<ImgSource>(new ImgLoader());
 
 // static
 Paintable::DrawMode Paintable::DrawModeFromString(const QString& str) {
@@ -73,63 +75,6 @@ Paintable::Paintable(QImage* pImage, DrawMode mode)
 #endif
     delete pImage;
 }
-
-Paintable::Paintable(const QString& fileName, DrawMode mode)
-        : m_draw_mode(mode) {
-    if (fileName.endsWith(".svg", Qt::CaseInsensitive)) {
-        if (mode == TILE) {
-            // The SVG renderer doesn't directly support tiling, so we render
-            // it to a pixmap which will then get tiled.
-            QSvgRenderer renderer(fileName);
-            QImage copy_buffer(renderer.defaultSize(), QImage::Format_ARGB32);
-            copy_buffer.fill(0x00000000);  // Transparent black.
-            m_pPixmap.reset(new QPixmap(renderer.defaultSize()));
-            QPainter painter(&copy_buffer);
-            renderer.render(&painter);
-            m_pPixmap->convertFromImage(copy_buffer);
-        } else {
-            m_pSvg.reset(new QSvgRenderer(fileName));
-        }
-    } else {
-        // TODO: this should detect DoubleWidgetSize setting
-        m_pPixmap.reset(new QPixmap(getAltFileName(fileName)));
-    }
-}
-
-Paintable::Paintable(const PixmapSource& source, DrawMode mode)
-        : m_draw_mode(mode) {
-    if (source.isSVG()) {
-        QScopedPointer<QSvgRenderer> pSvgRenderer(new QSvgRenderer());
-        if (source.getData().isEmpty()) {
-            pSvgRenderer->load(source.getPath());
-        } else {
-            pSvgRenderer->load(source.getData());
-        }
-
-        if (mode == TILE) {
-            // The SVG renderer doesn't directly support tiling, so we render
-            // it to a pixmap which will then get tiled.
-            QImage copy_buffer(pSvgRenderer->defaultSize(), QImage::Format_ARGB32);
-            copy_buffer.fill(0x00000000);  // Transparent black.
-            m_pPixmap.reset(new QPixmap(pSvgRenderer->defaultSize()));
-            QPainter painter(&copy_buffer);
-            pSvgRenderer->render(&painter);
-            m_pPixmap->convertFromImage(copy_buffer);
-        } else {
-            m_pSvg.reset(pSvgRenderer.take());
-        }
-    } else {
-        auto  pPixmap = new QPixmap();
-        if (!source.getData().isEmpty()) {
-            pPixmap->loadFromData(source.getData());
-        } else {
-            // TODO: this should detect DoubleWidgetSize setting
-            pPixmap->load(getAltFileName(source.getPath()));
-        }
-        m_pPixmap.reset(pPixmap);
-    }
-}
-
 
 bool Paintable::isNull() const {
     if (!m_pPixmap.isNull()) {
@@ -334,12 +279,8 @@ PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
     // Otherwise, construct it with the pixmap loader.
     //qDebug() << "WPixmapStore Loading pixmap from file" << source.getPath();
 
-    if (m_loader) {
-        QImage* pImage = m_loader->getImage(source.getPath());
-        pPaintable = PaintablePointer(new Paintable(pImage, mode));
-    } else {
-        pPaintable = PaintablePointer(new Paintable(source, mode));
-    }
+    QImage* pImage = m_loader->getImage(source.getPath());
+    pPaintable = PaintablePointer(new Paintable(pImage, mode));
 
     if (pPaintable.isNull() || pPaintable->isNull()) {
         // Only log if it looks like the user tried to specify a
@@ -356,24 +297,17 @@ PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
     return pPaintable;
 }
 
-
-
-
 // static
 QPixmap* WPixmapStore::getPixmapNoCache(const QString& fileName) {
     QPixmap* pPixmap = nullptr;
-    if (m_loader) {
-        QImage* img = m_loader->getImage(fileName);
+    QImage* img = m_loader->getImage(fileName);
 #if QT_VERSION >= 0x040700
-        pPixmap = new QPixmap();
-        pPixmap->convertFromImage(*img);
+    pPixmap = new QPixmap();
+    pPixmap->convertFromImage(*img);
 #else
-        pPixmap = new QPixmap(QPixmap::fromImage(*img));
+    pPixmap = new QPixmap(QPixmap::fromImage(*img));
 #endif
-        delete img;
-    } else {
-        pPixmap = new QPixmap(fileName);
-    }
+    delete img;
     return pPixmap;
 }
 

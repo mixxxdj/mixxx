@@ -4,9 +4,12 @@
 #include <QSvgRenderer>
 #include <QPainter>
 
+#include "skin/imgloader.h"
+
 // static
 QHash<QString, WImageStore::ImageInfoType*> WImageStore::m_dictionary;
-QSharedPointer<ImgSource> WImageStore::m_loader = QSharedPointer<ImgSource>();
+QSharedPointer<ImgSource> WImageStore::m_loader
+        = QSharedPointer<ImgSource>(new ImgLoader());
 
 // static
 QImage* WImageStore::getImageNoCache(const QString& fileName) {
@@ -69,11 +72,7 @@ QImage* WImageStore::getImageNoCache(const PixmapSource& source) {
         QPainter painter(pImage);
         renderer.render(&painter);
     } else {
-        if (m_loader) {
-            pImage = m_loader->getImage(source.getPath());
-        } else {
-            pImage = new QImage(source.getPath());
-        }
+        pImage = m_loader->getImage(source.getPath());
     }
     return pImage;
 }
@@ -104,9 +103,7 @@ void WImageStore::deleteImage(QImage * p)
 
 // static
 void WImageStore::correctImageColors(QImage* p) {
-    if (m_loader) {
-        m_loader->correctImageColors(p);
-    }
+    m_loader->correctImageColors(p);
 }
 
 // static
