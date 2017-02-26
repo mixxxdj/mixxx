@@ -12,17 +12,17 @@ QSharedPointer<ImgSource> WImageStore::m_loader
         = QSharedPointer<ImgSource>(new ImgLoader());
 
 // static
-QImage* WImageStore::getImageNoCache(const QString& fileName) {
-    return getImageNoCache(PixmapSource(fileName));
+QImage* WImageStore::getImageNoCache(const QString& fileName, double scaleFactor) {
+    return getImageNoCache(PixmapSource(fileName), scaleFactor);
 }
 
 // static
-QImage* WImageStore::getImage(const QString& fileName) {
-    return getImage(PixmapSource(fileName));
+QImage* WImageStore::getImage(const QString& fileName, double scaleFactor) {
+    return getImage(PixmapSource(fileName), scaleFactor);
 }
 
 // static
-QImage* WImageStore::getImage(const PixmapSource& source) {
+QImage* WImageStore::getImage(const PixmapSource& source, double scaleFactor) {
     // Search for Image in list
     ImageInfoType* info = nullptr;
 
@@ -37,7 +37,7 @@ QImage* WImageStore::getImage(const PixmapSource& source) {
     // Image wasn't found, construct it
     //qDebug() << "WImageStore Loading Image from file" << source.getPath();
 
-    QImage* loadedImage = getImageNoCache(source);
+    QImage* loadedImage = getImageNoCache(source, scaleFactor);
 
     if (loadedImage == nullptr) {
         return nullptr;
@@ -57,7 +57,7 @@ QImage* WImageStore::getImage(const PixmapSource& source) {
 }
 
 // static
-QImage* WImageStore::getImageNoCache(const PixmapSource& source) {
+QImage* WImageStore::getImageNoCache(const PixmapSource& source, double scaleFactor) {
     QImage* pImage;
     if (source.isSVG()) {
         QSvgRenderer renderer;
@@ -72,13 +72,13 @@ QImage* WImageStore::getImageNoCache(const PixmapSource& source) {
         QPainter painter(pImage);
         renderer.render(&painter);
     } else {
-        pImage = m_loader->getImage(source.getPath());
+        pImage = m_loader->getImage(source.getPath(), scaleFactor);
     }
     return pImage;
 }
 
 // static
-void WImageStore::deleteImage(QImage * p)
+void WImageStore::deleteImage(QImage* p)
 {
     // Search for Image in list
     ImageInfoType *info = nullptr;

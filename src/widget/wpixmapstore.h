@@ -85,9 +85,11 @@ typedef QWeakPointer<Paintable> WeakPaintablePointer;
 
 class WPixmapStore {
   public:
-    static PaintablePointer getPaintable(PixmapSource source,
-                                            Paintable::DrawMode mode);
-    static QPixmap* getPixmapNoCache(const QString& fileName);
+    static PaintablePointer getPaintable(
+            PixmapSource source,
+            Paintable::DrawMode mode,
+            double scaleFactor);
+    static QPixmap* getPixmapNoCache(const QString& fileName, double scaleFactor);
     static void setLoader(QSharedPointer<ImgSource> ld);
 
   private:

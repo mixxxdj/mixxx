@@ -809,7 +809,7 @@ QWidget* LegacySkinParser::parseBackground(const QDomElement& node,
 
     QString filename = m_pContext->selectString(node, "Path");
     QPixmap* background = WPixmapStore::getPixmapNoCache(
-        m_pContext->getSkinPath(filename));
+        m_pContext->getSkinPath(filename), m_pContext->getScaleFactor());
 
     bg->move(0, 0);
     if (background != NULL && !background->isNull()) {

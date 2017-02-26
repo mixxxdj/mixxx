@@ -269,9 +269,12 @@ QString Paintable::getAltFileName(const QString& fileName) {
 
 // static
 PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
-                                            Paintable::DrawMode mode) {
+                                            Paintable::DrawMode mode,
+                                            double scaleFactor) {
     // See if we have a cached value for the pixmap.
-    PaintablePointer pPaintable = m_paintableCache.value(source.getId(), PaintablePointer());
+    PaintablePointer pPaintable = m_paintableCache.value(
+            source.getId(),
+            PaintablePointer());
     if (pPaintable) {
         return pPaintable;
     }
@@ -279,10 +282,10 @@ PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
     // Otherwise, construct it with the pixmap loader.
     //qDebug() << "WPixmapStore Loading pixmap from file" << source.getPath();
 
-    QImage* pImage = m_loader->getImage(source.getPath());
+    QImage* pImage = m_loader->getImage(source.getPath(), scaleFactor);
     pPaintable = PaintablePointer(new Paintable(pImage, mode));
 
-    if (pPaintable.isNull() || pPaintable->isNull()) {
+    if (pPaintable->isNull()) {
         // Only log if it looks like the user tried to specify a
         // pixmap. Otherwise we probably just have a widget that is calling
         // getPaintable without checking that the skinner actually wanted one.
@@ -298,9 +301,11 @@ PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
 }
 
 // static
-QPixmap* WPixmapStore::getPixmapNoCache(const QString& fileName) {
+QPixmap* WPixmapStore::getPixmapNoCache(
+        const QString& fileName,
+        double scaleFactor) {
     QPixmap* pPixmap = nullptr;
-    QImage* img = m_loader->getImage(fileName);
+    QImage* img = m_loader->getImage(fileName, scaleFactor);
 #if QT_VERSION >= 0x040700
     pPixmap = new QPixmap();
     pPixmap->convertFromImage(*img);
