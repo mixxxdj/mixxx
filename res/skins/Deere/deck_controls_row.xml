@@ -16,7 +16,7 @@
         <Layout>horizontal</Layout>
         <Size>-1,-1me</Size>
         <Children>
-          <Template src="skin:transport.xml"/>
+          <Template src="skin:beatjump.xml"/>
           <!-- Expanding spacers in between control contexts -->
           <WidgetGroup><Size>-1me,1min</Size><Children/></WidgetGroup>
           <Template src="skin:loop.xml"/>

@@ -632,48 +632,33 @@ WWidget, QLabel {
 
 
 /* Start spacing for Deck controls row (transport, beatgrid, looping, hotcue, vinylcontrol) */
-#ControlsRow {
-  qproperty-layoutSpacing: 5;
-}
 
 #FullControlsRow, #MinimalControlsContainer {
+  qproperty-layoutSpacing: 4;
   qproperty-layoutAlignment: 'AlignBottom';
 }
 
-#MinimalControlsContainer {
-  qproperty-layoutSpacing: 4;
-}
-
-#HotcueGrid, #HotcueGridExtended {
+#BeatjumpContainer, #LoopContainer,
+#HotcueGrid, #HotcueGridExtended,
+#VinylControlsContainer {
   background-color: #333333;
   padding: 1px;
   qproperty-layoutSpacing: 2;
 }
 
-#HotcueGrid WWidgetGroup, #HotcueGridExtended WWidgetGroup {
+#BeatjumpContainer WWidgetGroup,
+#LoopContainer WWidgetGroup, #LoopButtons, #LoopButtons WWidgetGroup,
+#HotcueGrid WWidgetGroup, #HotcueGridExtended WWidgetGroup,
+#VinylControlsContainer WWidgetGroup {
   qproperty-layoutSpacing: 2;
 }
 
-#HotcueGrid WPushButton, #HotcueGridExtended WPushButton {
-}
-
-#LoopContainer, #TransportContainer, #VinylControlsContainer {
-  background-color: #333333;
-  padding: 1px;
-  qproperty-layoutSpacing: 2;
-}
-
-#LoopContainer WWidgetGroup, #TransportContainer WWidgetGroup, #VinylControlsContainer WWidgetGroup {
-  qproperty-layoutSpacing: 2;
-}
-
-#LoopContainer WPushButton, #TransportContainer WPushButton, #VinylControlsContainer WPushButton, #MinimalControlsContainer WPushButton {
+#ControlsRow WPushButton, #VinylControlsContainer WPushButton {
   font-size: 12px;
   font-weight: bold;
 }
 
 WHalveDoubleSpinBox {
-  font-size: 16px;
   color: #c1cabe;
   background-color: #1f1e1e;
 

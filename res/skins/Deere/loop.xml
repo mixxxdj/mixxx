@@ -16,6 +16,7 @@
     <Children>
 
       <HalveDoubleSpinBox>
+        <ObjectName>BeatloopSizeSpinBox</ObjectName>
         <Value><Variable name="group"/>,beatloop_size</Value>
       </HalveDoubleSpinBox>
 
