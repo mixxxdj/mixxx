@@ -23,9 +23,9 @@ Variables:
       <WidgetGroup><!-- BpmContainer -->
         <ObjectName>BpmContainer</ObjectName>
         <Layout>stacked</Layout>
-        <Size>50f,16me</Size><!-- 1 + 16 + 12 -->
-        <Children><!--	-->
-          <Template src="skin:button_1state_right.xml">
+        <Size>50f,16me</Size>
+        <Children>
+          <Template src="skin:button_2state_right.xml">
             <SetVariable name="ToolTipID">sync_enabled</SetVariable>
             <SetVariable name="ObjectName">SyncButtonOverlay</SetVariable>
             <SetVariable name="Size">50f,16me</SetVariable>
@@ -48,8 +48,8 @@ Variables:
       <WidgetGroup><!-- KeyContainer -->
         <ObjectName>KeyContainer</ObjectName>
         <Layout>stacked</Layout>
-        <Size>50f,13f</Size><!-- 13 + 24 + 13 -->
-        <Children><!--	-->
+        <Size>50f,13f</Size>
+        <Children>
         
           <WidgetGroup><!-- Overlay buttons: down, reset, up -->
             <ObjectName>KeyDisplayReset</ObjectName>
@@ -103,7 +103,7 @@ Variables:
       <WidgetGroup><!-- PitchSlider -->
         <ObjectName>PitchSliderContainer</ObjectName>
         <Layout>horizontal</Layout>
-        <!-- Define size either here or for BPM/Key container in order to stay
+        <!-- Define size either here or for RateContainer in order to stay
         steady when Key controls are disabled and BPM container expands -->
         <Size>50f,107f</Size>
         <Children>

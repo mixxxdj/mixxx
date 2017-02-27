@@ -33,17 +33,17 @@
   * Mixerbar
     - extend to 4 Mics/Aux
     ? Mute icons
-    ? move on top of Library, optinal
-    ? hide when Library is maximized
+    ? option to move on top of Library
+    ? option to hide when Library is maximized
 
   * Skin Controls
-    ? Recording duration widget behind Rec toggler
+    ? Recording duration widget behind Recording toggler
 
   * FX
-    ! 2.1 FX Units (MetaKnob, Highlight, Focus) > optional 2.0 or 2.1
+    ! 2.1 FX Units (MetaKnob, Highlight, Focus, Effect selector) > optional 2.0 or 2.1
     - extend group assignment buttons to 4 Mics/4AUX > proper 4th column
-    ? collapse FX units automatically when space is scarse (SizeAware like samplers)
     ? allow 4 FX units ONLY with 4 decks (proper re-structuring of skin.xml)
+    ? collapse FX units automatically when space is scarse (SizeAware like samplers)
     ? Save & Load buttons
 
   * Samplers
@@ -56,7 +56,3 @@
       * darken background-color when focused
 
   * Skin Settings menu
-
-
-
-

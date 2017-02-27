@@ -82,6 +82,8 @@
                 <SetVariable name="ConfigKeyPerm">[Channel<Variable name="channum"/>],quantize</SetVariable>
               </Template>
                 <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+              <!-- Disabled because it's not supported, yet.
+                  Long-pressing BPM locks tempo, enable 'quantize' to also aync/lock phase
               <Template src="skin:button_3state.xml">
                 <SetVariable name="ObjectName">SyncModeButton</SetVariable>
                 <SetVariable name="Size">40f,22f</SetVariable>
@@ -90,7 +92,7 @@
                 <SetVariable name="state_1_text">FLW</SetVariable>
                 <SetVariable name="state_2_text">MST</SetVariable>
                 <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],sync_mode</SetVariable>
-              </Template>
+              </Template> -->
             </Children>
             <Connection>
               <ConfigKey persist="true">[Tango],deck_controls</ConfigKey>

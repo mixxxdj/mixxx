@@ -668,10 +668,19 @@ WWidget, QLabel {
   border: 1px solid #666666;
   background-color: #999111;	*/
   }
-  #SyncButtonOverlay:hover, #KeyReset:hover, 
+  #SyncButtonOverlay, #KeyReset,
+  #KeyUp, #KeyDown {
+    border-radius: 2px;
+  }
+  #SyncButtonOverlay[displayValue="0"]:hover, #KeyReset:hover,
   #KeyUp:hover, #KeyDown:hover {
     border: 1px solid #ff4800;
-    border-radius: 2px;
+  }
+  #SyncButtonOverlay[displayValue="1"] {
+    border: 1px solid #ff4800;
+  }
+  #SyncButtonOverlay[displayValue="1"]:hover {
+    border: 1px solid #eeeeee;
   }
   #KeyDisplay {
     font-size: 14px/14px; /*
