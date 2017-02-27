@@ -69,6 +69,7 @@ P32.shutdown = function () {
             midi.sendShortMsg(0x90 + channel, button, 0);
         }
     }
+    // TODO: ask Hercules if it is possible to clear the loop size LEDs
 };
 
 P32.shiftOffset = 3;
@@ -149,8 +150,6 @@ P32.slipButton = new components.Button({
 P32.Deck = function (deckNumbers, channel) {
     components.Deck.call(this, deckNumbers);
 
-    var loopSize = defaultLoopSize;
-    var beatJumpSize = defaultBeatJumpSize;
     var theDeck = this;
 
     this.shiftButton = function (channel, control, value, status, group) {
@@ -258,26 +257,23 @@ P32.Deck = function (deckNumbers, channel) {
 
     // =================================== ENCODERS ==============================================
     this.loopSizeEncoder = new components.Encoder({
-        midi: [0xB0 + channel, 0x1B], // Note: these are the MIDI bytes for the LED readout, not
+        midi: [0xB0 + channel, 0x1B], // Note: these are the MIDI bytes for the digit LEDs, not
                                       // input from the encoder.
         input: function (channel, control, value, status, group) {
+            var loopSize = engine.getValue(this.group, 'beatloop_size');
             if (loopEnabledDot) {
                 if (value > 64 && loopSize > 2) { // turn left
                     /**
                         Unfortunately, there is no way to show 1 with a dot on the
                         loop size LED.
                     **/
-                    loopSize /= 2;
-                    engine.setValue(this.group, 'loop_halve', 1);
-                    engine.setValue(this.group, 'loop_halve', 0);
+                    engine.setValue(this.group, 'beatloop_size', loopSize / 2);
                 } else if (value < 64 && loopSize < 32) { // turn right
                     /**
                         Mixxx supports loops longer than 32 beats, but there is no way
                         to show 64 with a dot on the loop size LED.
                     **/
-                    loopSize *= 2;
-                    engine.setValue(this.group, 'loop_double', 1);
-                    engine.setValue(this.group, 'loop_double', 0);
+                    engine.setValue(this.group, 'beatloop_size', loopSize * 2);
                 }
             } else {
                 if (value > 64 && loopSize > 1/32) { // turn left
@@ -286,60 +282,52 @@ P32.Deck = function (deckNumbers, channel) {
                         way to set the loop size LED less than 1/32 (even though it
                         should be able to show 1/64)
                     **/
-                    loopSize /= 2;
-                    engine.setValue(this.group, 'loop_halve', 1);
-                    engine.setValue(this.group, 'loop_halve', 0);
+                    engine.setValue(this.group, 'beatloop_size', loopSize / 2);
                 } else if (value < 64 && loopSize < 64) { // turn right
                     /**
                         Mixxx supports loops longer than 64 beats, but the loop size LED
                         only has 2 digits, so it couldn't show 128
                     **/
-                    loopSize *= 2;
-                    engine.setValue(this.group, 'loop_double', 1);
-                    engine.setValue(this.group, 'loop_double', 0);
+                    engine.setValue(this.group, 'beatloop_size', loopSize * 2);
                 }
             }
-            this.trigger();
         },
-        outKey: 'loop_enabled',
+        connect: function () {
+            this.connections[0] = engine.connectControl(this.group, 'beatloop_size', this.output);
+            if (loopEnabledDot) {
+                this.connections[1] = engine.connectControl(this.group, 'loop_enabled', this.output);
+            }
+        },
         output: function (value, group, control) {
-            if (loopEnabledDot && value) {
-                this.send(5 - Math.log(loopSize) / Math.log(2));
+            var loopSize = engine.getValue(this.group, 'beatloop_size');
+            var loopSizeLogBase2 = Math.log(loopSize) / Math.log(2);
+            // test if loopSizeLogBase2 is an integer
+            if (Math.floor(loopSizeLogBase2) === loopSizeLogBase2) {
+                if (loopEnabledDot && engine.getValue(this.group, 'loop_enabled') === 1) {
+                    this.send(5 - loopSizeLogBase2);
+                } else {
+                    this.send(5 + loopSizeLogBase2);
+                }
             } else {
-                this.send(5 + Math.log(loopSize) / Math.log(2));
+                this.send(14); // show two dots
             }
         }
     });
 
     this.loopMoveEncoder = function (channel, control, value, status, group) {
-        var direction = (value > 64) ? -1 : 1;
-        if (loopSize < 1) {
-            engine.setValue(this.currentDeck, 'loop_move', loopSize * direction);
-        } else {
-            engine.setValue(this.currentDeck, 'loop_move', 1 * direction);
+        if (value < 64) { // left turn
+            engine.setValue(this.currentDeck, 'loop_move_backward', 1);
+        } else { // right turn
+            engine.setValue(this.currentDeck, 'loop_move_forward', 1);
         }
     };
 
     this.loopToggleEncoderPress = function (channel, control, value, status, group) {
-        if (value) {
-            if (engine.getValue(this.currentDeck, 'loop_enabled')) {
-                engine.setValue(this.currentDeck, 'reloop_exit', 1);
-            } else {
-                engine.setValue(this.currentDeck, 'beatloop_' + loopSize + '_activate', 1);
-            }
-        } else {
-            if (loopSize <= 1 && engine.getValue(this.currentDeck, 'loop_enabled')) {
-                engine.setValue(this.currentDeck, 'reloop_exit', 1);
-            }
-        }
+        engine.setValue(this.currentDeck, 'loopauto_toggle', value / 127);
     };
 
     this.loopEncoderManualLoopPress = function (channel, control, value, status, group) {
-        if (value) {
-            engine.setValue(this.currentDeck, 'loop_in', 1);
-        } else {
-            engine.setValue(this.currentDeck, 'loop_out', 1);
-        }
+        engine.setValue(this.currentDeck, 'loopmanual_toggle', value / 127);
     };
 
     this.tempoEncoder = function (channel, control, value, status, group) {
@@ -354,18 +342,22 @@ P32.Deck = function (deckNumbers, channel) {
     };
 
     this.beatJumpEncoder = function (channel, control, value, status, group) {
-        var direction = (value > 64) ? -1 : 1;
+        var beatJumpSize = engine.getValue(this.currentDeck, 'beatjump_size');
         if (this.beatJumpEncoderPressed) {
             if (value > 64 && beatJumpSize > 1/32) { // turn left
-                beatJumpSize /= 2;
+                engine.setValue(this.currentDeck, 'beatjump_size', beatJumpSize / 2);
             } else if (value < 64 && beatJumpSize < 64) { // turn right
-                beatJumpSize *= 2;
+                engine.setValue(this.currentDeck, 'beatjump_size', beatJumpSize * 2);
             }
             // The firmware will only change the numeric LED readout when sent messages
             // on the unshifted channel.
             midi.sendShortMsg(0xB0 + channel - P32.shiftOffset, 0x1B, 5 + Math.log(beatJumpSize) / Math.log(2));
         } else {
-            engine.setValue(this.currentDeck, 'beatjump', direction * beatJumpSize);
+            var direction = (value > 64) ? 'backward' : 'forward';
+            engine.setValue(this.currentDeck, 'beatjump_' + direction, 1);
+            engine.beginTimer(200, function () {
+                engine.setValue(this.currentDeck, 'beatjump_' + direction, 0);
+            }, true);
         }
     };
 
@@ -374,10 +366,14 @@ P32.Deck = function (deckNumbers, channel) {
         // on the unshifted channel.
         if (value === 127) {
             this.beatJumpEncoderPressed = true;
-            midi.sendShortMsg(0xB0 + channel - P32.shiftOffset, 0x1B, 5 + Math.log(beatJumpSize) / Math.log(2));
+            var beatJumpSize = engine.getValue(this.currentDeck, 'beatjump_size');
+            midi.sendShortMsg(0xB0 + channel - P32.shiftOffset, 0x1B,
+                              5 + Math.log(beatJumpSize) / Math.log(2));
         } else {
             this.beatJumpEncoderPressed = false;
-            midi.sendShortMsg(0xB0 + channel - P32.shiftOffset, 0x1B, 5 + Math.log(loopSize) / Math.log(2));
+            var loopSize = engine.getValue(this.currentDeck, 'beatloop_size');
+            midi.sendShortMsg(0xB0 + channel - P32.shiftOffset, 0x1B,
+                              5 + Math.log(loopSize) / Math.log(2));
         }
     };
 
