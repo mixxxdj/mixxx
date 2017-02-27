@@ -230,6 +230,9 @@ LoopingControl::~LoopingControl() {
     delete m_pCOLoopManualToggle;
 
     delete m_pCOBeatJump;
+    delete m_pCOBeatJumpSize;
+    delete m_pCOBeatJumpForward;
+    delete m_pCOBeatJumpBackward;
     while (!m_beatJumps.isEmpty()) {
         BeatJumpControl* pBeatJump = m_beatJumps.takeLast();
         delete pBeatJump;
