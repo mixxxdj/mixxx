@@ -19,8 +19,6 @@
           <Template src="skin:transport.xml"/>
           <!-- Expanding spacers in between control contexts -->
           <WidgetGroup><Size>-1me,1min</Size><Children/></WidgetGroup>
-          <Template src="skin:beatloop.xml"/>
-          <WidgetGroup><Size>-1me,1min</Size><Children/></WidgetGroup>
           <Template src="skin:loop.xml"/>
           <WidgetGroup><Size>-1me,1min</Size><Children/></WidgetGroup>
           <Template src="skin:hotcue.xml"/>
@@ -88,15 +86,18 @@
 
           <Template src="skin:spacer_h.xml"/>
 
-          <SetVariable name="MinimalControlsButtonWidth">36</SetVariable>
+          <HalveDoubleSpinBox>
+            <Value><Variable name="group"/>,beatloop_size</Value>
+          </HalveDoubleSpinBox>
 
+          <Template src="skin:spacer_h.xml"/>
 
           <Template src="skin:left_2state_button.xml">
             <SetVariable name="TooltipId">sync_enabled</SetVariable>
             <SetVariable name="ObjectName">DeckSync</SetVariable>
-            <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize"><Variable name="MinimalControlsButtonWidth"/></SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="MinimalControlsButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="MinimalControlsButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="MinimalControlsButtonSizePolicy"/></SetVariable>
             <SetVariable name="state_0_text">Sync</SetVariable>
             <SetVariable name="state_0_pressed"></SetVariable>
             <SetVariable name="state_0_unpressed"></SetVariable>
@@ -109,9 +110,9 @@
           <Template src="skin:left_right_display_2state_button.xml">
             <SetVariable name="TooltipId">cue_default_cue_gotoandstop</SetVariable>
             <SetVariable name="ObjectName">DeckCue</SetVariable>
-            <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize"><Variable name="MinimalControlsButtonWidth"/></SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="MinimalControlsButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="MinimalControlsButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="MinimalControlsButtonSizePolicy"/></SetVariable>
             <SetVariable name="LeftClickIsPushButton">true</SetVariable>
             <SetVariable name="RightClickIsPushButton">true</SetVariable>
             <SetVariable name="state_0_text">CUE</SetVariable>
@@ -128,9 +129,9 @@
           <Template src="skin:left_right_display_2state_button.xml">
             <SetVariable name="TooltipId">play_cue_set</SetVariable>
             <SetVariable name="ObjectName">PlayToggle</SetVariable>
-            <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize"><Variable name="MinimalControlsButtonWidth"/></SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="MinimalControlsButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="MinimalControlsButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="MinimalControlsButtonSizePolicy"/></SetVariable>
             <SetVariable name="LeftClickIsPushButton">false</SetVariable>
             <SetVariable name="RightClickIsPushButton">false</SetVariable>
             <SetVariable name="state_0_text"></SetVariable>

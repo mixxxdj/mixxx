@@ -653,23 +653,72 @@ WWidget, QLabel {
 #HotcueGrid WPushButton, #HotcueGridExtended WPushButton {
 }
 
-#LoopingContainer, #BeatLoopContainer, #TransportContainer, #VinylControlsContainer {
+#LoopContainer, #TransportContainer, #VinylControlsContainer {
   background-color: #333333;
   padding: 1px;
   qproperty-layoutSpacing: 2;
 }
 
-#LoopingContainer WWidgetGroup, #BeatLoopContainer WWidgetGroup, #TransportContainer WWidgetGroup, #VinylControlsContainer WWidgetGroup {
+#LoopContainer WWidgetGroup, #TransportContainer WWidgetGroup, #VinylControlsContainer WWidgetGroup {
   qproperty-layoutSpacing: 2;
 }
 
-#LoopingContainer WPushButton, #TransportContainer WPushButton, #VinylControlsContainer WPushButton {
+#LoopContainer WPushButton, #TransportContainer WPushButton, #VinylControlsContainer WPushButton, #MinimalControlsContainer WPushButton {
   font-size: 12px;
+  font-weight: bold;
 }
 
-#BeatLoopButton {
-  font-size: 18px;
+WHalveDoubleSpinBox {
+  font-size: 16px;
+  color: #c1cabe;
+  background-color: #1f1e1e;
+
+  border: 1px solid #444342;
+  border-radius: 3px;
+
+  padding: 2px;
 }
+
+  WHalveDoubleSpinBox:hover {
+    border: 1px ridge #015d8d;
+  }
+
+  WHalveDoubleSpinBox::down-button {
+    subcontrol-origin: border;
+    subcontrol-position: bottom right; /* position at the top right corner */
+    padding-right: 4px;
+    padding-top: -3px;
+    border: 0;
+  }
+
+  WHalveDoubleSpinBox::down-arrow {
+    width: 9px;
+    height: 7px;
+    image: url(skin:/icon/ic_chevron_down_selector.svg);
+  }
+
+  WHalveDoubleSpinBox::down-arrow:hover {
+    image: url(skin:/icon/ic_chevron_down_selector_hover.svg);
+  }
+
+  WHalveDoubleSpinBox::up-button {
+    subcontrol-origin: border;
+    subcontrol-position: top right; /* position at the top right corner */
+    padding-right: 4px;
+    padding-bottom: -3px;
+    border: 0;
+  }
+
+  WHalveDoubleSpinBox::up-arrow {
+    width: 9px;
+    height: 7px;
+    image: url(skin:/icon/ic_chevron_up_selector.svg);
+  }
+
+  WHalveDoubleSpinBox::up-arrow:hover {
+    image: url(skin:/icon/ic_chevron_up_selector_hover.svg);
+  }
+
 /* End spacing for Deck controls row */
 
 /* Start spacing for toolbar */

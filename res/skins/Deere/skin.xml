@@ -60,6 +60,10 @@
     <SetVariable name="SmallWideButtonMaximumSize">40,20</SetVariable>
     <SetVariable name="SmallWideButtonSizePolicy">me,me</SetVariable>
 
+    <SetVariable name="MinimalControlsButtonMinimumSize">34,22</SetVariable>
+    <SetVariable name="MinimalControlsButtonMaximumSize">34,22</SetVariable>
+    <SetVariable name="MinimalControlsButtonSizePolicy">f,f</SetVariable>
+
     <SetVariable name="SmallHorizontalStretchButtonMinimumSize">-1,15</SetVariable>
     <SetVariable name="SmallHorizontalStretchButtonMaximumSize">-1,15</SetVariable>
     <SetVariable name="SmallHorizontalStretchButtonSizePolicy">me,f</SetVariable>
