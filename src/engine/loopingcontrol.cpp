@@ -153,6 +153,14 @@ LoopingControl::LoopingControl(QString group,
     m_pCOBeatJump = new ControlObject(ConfigKey(group, "beatjump"), false);
     connect(m_pCOBeatJump, SIGNAL(valueChanged(double)),
             this, SLOT(slotBeatJump(double)), Qt::DirectConnection);
+    m_pCOBeatJumpSize = new ControlObject(ConfigKey(group, "beatjump_size"),
+                                          true, false, false, 4.0);
+    m_pCOBeatJumpForward = new ControlPushButton(ConfigKey(group, "beatjump_forward"));
+    connect(m_pCOBeatJumpForward, SIGNAL(valueChanged(double)),
+            this, SLOT(slotBeatJumpForward(double)));
+    m_pCOBeatJumpBackward = new ControlPushButton(ConfigKey(group, "beatjump_backward"));
+    connect(m_pCOBeatJumpBackward, SIGNAL(valueChanged(double)),
+            this, SLOT(slotBeatJumpBackward(double)));
 
     // Create beatjump_(SIZE) CO's which all call beatjump, but with a set
     // value.
@@ -990,6 +998,18 @@ void LoopingControl::slotBeatJump(double beats) {
     if (BpmControl::getBeatContext(m_pBeats, dPosition,
                                    NULL, NULL, &dBeatLength, NULL)) {
         seekAbs(dPosition + beats * dBeatLength);
+    }
+}
+
+void LoopingControl::slotBeatJumpForward(double pressed) {
+    if (pressed) {
+        slotBeatJump(m_pCOBeatJumpSize->get());
+    }
+}
+
+void LoopingControl::slotBeatJumpBackward(double pressed) {
+    if (pressed) {
+        slotBeatJump(-1.0 * m_pCOBeatJumpSize->get());
     }
 }
 
