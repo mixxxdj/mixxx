@@ -5,15 +5,6 @@
     email                :
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #ifndef ENGINERECORD_H
 #define ENGINERECORD_H
 
@@ -78,11 +69,11 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
 
     UserSettingsPointer m_pConfig;
     EncoderPointer m_pEncoder;
-    QByteArray m_encoding;
+    QString m_encoding;
     QString m_fileName;
-    QByteArray m_baTitle;
-    QByteArray m_baAuthor;
-    QByteArray m_baAlbum;
+    QString m_baTitle;
+    QString m_baAuthor;
+    QString m_baAlbum;
 
     QFile m_file;
     QFile m_cueFile;
@@ -98,7 +89,7 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
     int m_iMetaDataLife;
     TrackPointer m_pCurrentTrack;
 
-    QByteArray m_cueFileName;
+    QString m_cueFileName;
     quint64 m_cueTrack;
     bool m_bCueIsEnabled;
 };

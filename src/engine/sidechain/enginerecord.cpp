@@ -6,15 +6,6 @@
     email                :
 ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #include "engine/sidechain/enginerecord.h"
 
 #include "preferences/usersettings.h"
@@ -54,10 +45,10 @@ EngineRecord::~EngineRecord() {
 
 void EngineRecord::updateFromPreferences() {
     m_fileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Path"));
-    m_baTitle = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Title")).toLatin1();
-    m_baAuthor = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Author")).toLatin1();
-    m_baAlbum = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Album")).toLatin1();
-    m_cueFileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CuePath")).toLatin1();
+    m_baTitle = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Title"));
+    m_baAuthor = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Author"));
+    m_baAlbum = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Album"));
+    m_cueFileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CuePath"));
     m_bCueIsEnabled = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt();
     m_sampleRate = m_pSamplerate->get();
 
@@ -65,10 +56,10 @@ void EngineRecord::updateFromPreferences() {
     if (m_pEncoder) {
         m_pEncoder.reset();
     }
-    
-    m_pEncoder = EncoderFactory::getFactory().getNewEncoder(
-        EncoderFactory::getFactory().getSelectedFormat(m_pConfig),  m_pConfig, this);
-    m_pEncoder->updateMetaData(m_baAuthor.constData(),m_baTitle.constData(),m_baAlbum.constData());
+    Encoder::Format format = EncoderFactory::getFactory().getSelectedFormat(m_pConfig);
+    m_encoding = format.internalName;
+    m_pEncoder = EncoderFactory::getFactory().getNewEncoder(format,  m_pConfig, this);
+    m_pEncoder->updateMetaData(m_baAuthor,m_baTitle,m_baAlbum);
 
     QString errorMsg;
     if(m_pEncoder->initEncoder(m_sampleRate, errorMsg) < 0) {
@@ -340,11 +331,13 @@ bool EngineRecord::openCueFile() {
                         .toLatin1());
     }
 
-    m_cueFile.write(QString("FILE \"%1\" %2%3\n").arg(
-        QFileInfo(m_fileName).fileName() //strip path
-            .replace(QString("\""), QString("\\\"")), // escape doublequote
-        QString(m_encoding).toUpper(),
-        m_encoding == ENCODING_WAVE ? "E" : " ").toLatin1());
+    m_cueFile.write(QString("FILE \"%1\" %2\n").arg(
+            QFileInfo(m_fileName).fileName() //strip path
+                .replace(QString("\""), QString("\\\"")), // escape doublequote
+            (m_encoding == ENCODING_MP3) ? ENCODING_MP3  :
+            (m_encoding == ENCODING_AIFF) ? ENCODING_AIFF :
+            "WAVE" // MP3 and AIFF are recognized but other formats just use WAVE.
+        ).toLatin1());
     return true;
 }
 

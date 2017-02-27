@@ -6,15 +6,6 @@
                            (C) 2010 by Tobias Rafreider (fixes for broadcast, dynamic loading of lame_enc.dll, etc)
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #include <QtDebug>
 #include <QObject>
 #include <limits.h>
@@ -25,9 +16,6 @@
 
 EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
   : m_lameFlags(NULL),
-    m_metaDataTitle(NULL),
-    m_metaDataArtist(NULL),
-    m_metaDataAlbum(NULL),
     m_bufferOut(NULL),
     m_bitrate(128),
     m_bufferOutSize(0),
@@ -351,14 +339,14 @@ int EncoderMp3::initEncoder(int samplerate, QString errorMessage) {
     lame_set_quality(m_lameFlags, 2);
     lame_set_bWriteVbrTag(m_lameFlags, 0);
 
-    //ID3 Tag if fiels are not NULL
+    //ID3 Tag if fields are not NULL
     id3tag_init(m_lameFlags);
-    if (m_metaDataTitle)
-        id3tag_set_title(m_lameFlags, m_metaDataTitle);
-    if (m_metaDataArtist)
-        id3tag_set_artist(m_lameFlags, m_metaDataArtist);
-    if (m_metaDataAlbum)
-        id3tag_set_album(m_lameFlags,m_metaDataAlbum);
+    if (!m_metaDataTitle.isEmpty())
+        id3tag_set_title(m_lameFlags, m_metaDataTitle.toLatin1().constData());
+    if (!m_metaDataTitle.isEmpty())
+        id3tag_set_artist(m_lameFlags, m_metaDataArtist.toLatin1().constData());
+    if (!m_metaDataTitle.isEmpty())
+        id3tag_set_album(m_lameFlags,m_metaDataAlbum.toLatin1().constData());
 
 
     if ((lame_init_params(m_lameFlags)) < 0) {
@@ -372,7 +360,7 @@ int EncoderMp3::initEncoder(int samplerate, QString errorMessage) {
     return 0;
 }
 
-void EncoderMp3::updateMetaData(const char* artist, const char* title, const char* album) {
+void EncoderMp3::updateMetaData(const QString& artist, const QString& title, const QString& album) {
     m_metaDataTitle = title;
     m_metaDataArtist = artist;
     m_metaDataAlbum = album;

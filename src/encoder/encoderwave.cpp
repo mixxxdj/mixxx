@@ -1,17 +1,9 @@
-/****************************************************************************
-                   encoderwave.cpp  -  vorbis encoder for mixxx
-                             -------------------
-    copyright            : (C) 2017 by Josep Maria Antolín
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/**
+* @file encoderwave.cpp
+* @author Josep Maria Antolín
+* @date Feb 27 2017
+* @brief wave/aiff "encoder" for mixxx
+*/
 
 #include <QtDebug>
 
@@ -79,9 +71,6 @@ static sf_count_t  sf_f_tell (void *user_data)
 
 EncoderWave::EncoderWave(EncoderCallback* pCallback)
         : m_pCallback(pCallback),
-          m_metaDataTitle(nullptr),
-          m_metaDataArtist(nullptr),
-          m_metaDataAlbum(nullptr),
           m_pSndfile(nullptr) {
     m_sfInfo.frames = 0;
     m_sfInfo.samplerate = 0;
@@ -164,7 +153,7 @@ void EncoderWave::encodeBuffer(const CSAMPLE *pBuffer, const int iBufferSize) {
  *
  * Currently this method is used before init() once to save artist, title and album
 */
-void EncoderWave::updateMetaData(const char* artist, const char* title, const char* album) {
+void EncoderWave::updateMetaData(const QString& artist, const QString& title, const QString& album) {
     m_metaDataTitle = title;
     m_metaDataArtist = artist;
     m_metaDataAlbum = album;
@@ -180,18 +169,18 @@ void EncoderWave::initStream() {
     // Ensure CPU_CLIPS_NEGATIVE and CPU_CLIPS_POSITIVE is setup properly in the build.
     sf_command(m_pSndfile, SFC_SET_CLIPPING, NULL, SF_TRUE) ;
 
-    // Set meta data
-    int ret = sf_set_string(m_pSndfile, SF_STR_TITLE, m_metaDataTitle);
+    // Set meta data. Latin1 since WAVE does not officially support UTF8.
+    int ret = sf_set_string(m_pSndfile, SF_STR_TITLE, m_metaDataTitle.toLatin1().constData());
     if (ret != 0) {
         qWarning("libsndfile error: %s", sf_error_number(ret));
     }
 
-    ret = sf_set_string(m_pSndfile, SF_STR_ARTIST, m_metaDataArtist);
+    ret = sf_set_string(m_pSndfile, SF_STR_ARTIST, m_metaDataArtist.toLatin1().constData());
     if (ret != 0) {
         qWarning("libsndfile error: %s", sf_error_number(ret));
     }
 
-    ret = sf_set_string(m_pSndfile, SF_STR_COMMENT, m_metaDataAlbum);
+    ret = sf_set_string(m_pSndfile, SF_STR_COMMENT, m_metaDataAlbum.toLatin1().constData());
     if (ret != 0) {
         qWarning("libsndfile error: %s", sf_error_number(ret));
     }

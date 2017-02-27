@@ -1,19 +1,10 @@
-/***************************************************************************
-                     encodervorbis.h  -  vorbis encoder for mixxx
-                             -------------------
-    copyright            : (C) 2007 by Wesley Stessens
-                           (C) 1994 by Xiph.org (encoder example)
-                           (C) 1994 Tobias Rafreider (broadcast and recording fixes)
- ***************************************************************************/
+/**
+* @file encodersndfileflac.h
+* @author Josep Maria Antolín
+* @date Feb 27 2017
+* @brief encoder for flac using libsndfile
+*/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
 
 #ifndef ENCODERSNDFILEFLAC_H
 #define ENCODERSNDFILEFLAC_H

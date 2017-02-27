@@ -1,18 +1,9 @@
-/****************************************************************************
-                   encoder.cpp  - encoder API for mixxx
-                             -------------------
-    copyright            : (C) 2009 by Phillip Whelan
-    copyright            : (C) 2010 by Tobias Rafreider
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/**
+* @file encoderbroadcastsettings.cpp
+* @author Josep Maria Antolín
+* @date Feb 27 2017
+* @brief storage of broadcast settings for the encoders.
+*/
 
 #include "encoder/encoderbroadcastsettings.h"
 #include "broadcast/defs_broadcast.h"

@@ -6,15 +6,6 @@
                            (C) 2010 by Tobias Rafreider (fixes for broadcast, dynamic loading of lame_enc.dll, etc)
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #ifndef ENCODERMP3_H
 #define ENCODERMP3_H
 
@@ -33,7 +24,7 @@ class EncoderMp3 : public Encoder {
 
     int initEncoder(int samplerate, QString errorMessage) override;
     void encodeBuffer(const CSAMPLE *samples, const int size) override;
-    void updateMetaData(const char* artist, const char* title, const char* album) override;
+    void updateMetaData(const QString& artist, const QString& title, const QString& album) override;
     void flush() override;
     void setEncoderSettings(const EncoderSettings& settings) override;
 
@@ -105,9 +96,9 @@ class EncoderMp3 : public Encoder {
     id3tag_set_artist__                 id3tag_set_artist;
     id3tag_set_album__                  id3tag_set_album;
 
-    const char * m_metaDataTitle;
-    const char * m_metaDataArtist;
-    const char * m_metaDataAlbum;
+    QString m_metaDataTitle;
+    QString m_metaDataArtist;
+    QString m_metaDataAlbum;
 
     int m_bitrate;
     unsigned char *m_bufferOut;

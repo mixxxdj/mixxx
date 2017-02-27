@@ -1,19 +1,9 @@
-/***************************************************************************
-                     encodervorbis.h  -  vorbis encoder for mixxx
-                             -------------------
-    copyright            : (C) 2007 by Wesley Stessens
-                           (C) 1994 by Xiph.org (encoder example)
-                           (C) 1994 Tobias Rafreider (broadcast and recording fixes)
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/**
+* @file encoderwave.h
+* @author Josep Maria Antolín
+* @date Feb 27 2017
+* @brief wave/aiff "encoder" for mixxx
+*/
 
 #ifndef ENCODERWAVE_H
 #define ENCODERWAVE_H
@@ -41,7 +31,7 @@ class EncoderWave : public Encoder {
 
     int initEncoder(int samplerate, QString errorMessage) override;
     void encodeBuffer(const CSAMPLE *samples, const int size) override;
-    void updateMetaData(const char* artist, const char* title, const char* album) override;
+    void updateMetaData(const QString& artist, const QString& title, const QString& album) override;
     void flush() override;
     void setEncoderSettings(const EncoderSettings& settings) override;
 
@@ -49,9 +39,9 @@ class EncoderWave : public Encoder {
     virtual void initStream();
     TrackPointer m_pMetaData;
     EncoderCallback* m_pCallback;
-    const char* m_metaDataTitle;
-    const char* m_metaDataArtist;
-    const char* m_metaDataAlbum;
+    QString m_metaDataTitle;
+    QString m_metaDataArtist;
+    QString m_metaDataAlbum;
 
     SNDFILE* m_pSndfile;
     SF_INFO m_sfInfo;

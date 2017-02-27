@@ -446,7 +446,7 @@ void EncoderFfmpegCore::closeAudio(AVStream *stream) {
     av_free(m_pSamples);
 }
 
-void EncoderFfmpegCore::openAudio(AVCodec *codec, AVStream *stream) {
+int EncoderFfmpegCore::openAudio(AVCodec *codec, AVStream *stream) {
     AVCodecContext *l_SCodecCtx;
     int l_iRet;
 

@@ -3,22 +3,12 @@
                              -------------------
     copyright            : (C) 2009 by Phillip Whelan
     copyright            : (C) 2010 by Tobias Rafreider
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
+    copyright            : (C) 2017 by Josep Maria Antolín
  ***************************************************************************/
 
 #include "encoder/encoder.h"
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
-// TODO: Note: this is incomplete, since encoderffmpegmp3.cpp (and vorbis)
-// are not compiled in any case.
 #ifdef __FFMPEGFILE__
 #include "encoder/encoderffmpegmp3.h"
 #include "encoder/encoderffmpegvorbis.h"
@@ -58,24 +48,24 @@ const QList<Encoder::Format> EncoderFactory::getFormats() const
 
 Encoder::Format EncoderFactory::getSelectedFormat(UserSettingsPointer pConfig) const
 {
-    QString encoding = pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Encoding"));
-    foreach(Encoder::Format format, m_formats) {
-        if (format.internalName == encoding) {
-            return format;
-        }
-    }
-    qWarning() << "Format: " << encoding << " not recognized! Returning format WAV";
-    return m_formats.first();
+    return getFormatFor(pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Encoding")));
 }
 Encoder::Format EncoderFactory::getFormatFor(QString formatText) const
 {
-    foreach(Encoder::Format format, m_formats) {
+    for (const auto& format : m_formats) {
         if (format.internalName == formatText) {
             return format;
         }
     }
-    qWarning() << "Format: " << formatText << " not recognized! Returning format WAV";
+    qWarning() << "Format: " << formatText << " not recognized! Returning format " 
+        << m_formats.first().internalName;
     return m_formats.first();
+}
+
+EncoderPointer EncoderFactory::getNewEncoder(
+    UserSettingsPointer pConfig, EncoderCallback* pCallback) const
+{
+    return getNewEncoder(getSelectedFormat(pConfig),  pConfig, pCallback);
 }
 
 EncoderPointer EncoderFactory::getNewEncoder(Encoder::Format format,
@@ -107,7 +97,7 @@ EncoderPointer EncoderFactory::getNewEncoder(Encoder::Format format,
         pEncoder->setEncoderSettings(EncoderVorbisSettings(pConfig));
     } else {
         qWarning() << "Unsuported format requested! " << format.internalName;
-        // I am unsure what to do here. an assert(false) maybe? Just returning wav settings for now
+        DEBUG_ASSERT(false);
         pEncoder = std::make_shared<EncoderWave>(pCallback);
         pEncoder->setEncoderSettings(EncoderWaveSettings(pConfig, format));
     }
@@ -129,7 +119,7 @@ EncoderSettingsPointer EncoderFactory::getEncoderSettings(Encoder::Format format
         return std::make_shared<EncoderVorbisSettings>(pConfig);
     } else {
         qWarning() << "Unsuported format requested! " << format.internalName;
-        // I am unsure what to do here. an assert(false) maybe? Just returning wav settings for now
+        DEBUG_ASSERT(false);
         return std::make_shared<EncoderWaveSettings>(pConfig, format);
     }
 }

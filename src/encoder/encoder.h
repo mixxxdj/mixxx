@@ -6,14 +6,6 @@
     copyright            : (C) 2017 by Josep Maria Antolín
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
 
 #ifndef ENCODER_H
 #define ENCODER_H
@@ -43,7 +35,7 @@ class Encoder {
     virtual void encodeBuffer(const CSAMPLE *samples, const int size) = 0;
     // Adds metadata to the encoded audio, i.e., the ID3 tag. Currently only used
     // by EngineRecord, EngineBroadcast does something different.
-    virtual void updateMetaData(const char* artist, const char* title, const char* album) = 0;
+    virtual void updateMetaData(const QString& artist, const QString& title, const QString& album) = 0;
     // called at the end when encoding is finished
     virtual void flush() = 0;
     // Setup the encoder with the specific settings
@@ -61,6 +53,8 @@ class EncoderFactory {
     const QList<Encoder::Format> getFormats() const;
     Encoder::Format getSelectedFormat(UserSettingsPointer pConfig) const;
     Encoder::Format getFormatFor(QString format) const;
+    EncoderPointer getNewEncoder(
+        UserSettingsPointer pConfig, EncoderCallback* pCallback) const;
     EncoderPointer getNewEncoder(Encoder::Format format,
         UserSettingsPointer pConfig, EncoderCallback* pCallback) const;
     EncoderSettingsPointer getEncoderSettings(Encoder::Format format,
