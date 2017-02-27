@@ -184,10 +184,24 @@ void WWaveformViewer::slotTrackLoaded(TrackPointer track) {
 }
 
 void WWaveformViewer::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    Q_UNUSED(pNewTrack);
-    Q_UNUSED(pOldTrack);
+    if (pOldTrack) {
+        disconnect(pOldTrack.get(), SIGNAL(waveformUpdated()),
+                   this, SLOT(slotWaveformUpdated()));
+    }
+
     if (m_waveformWidget) {
         m_waveformWidget->setTrack(TrackPointer());
+    }
+
+    if (pNewTrack) {
+        connect(pNewTrack.get(), SIGNAL(waveformUpdated()),
+                this, SLOT(slotWaveformUpdated()));
+    }
+}
+
+void WWaveformViewer::slotWaveformUpdated() {
+    if (m_waveformWidget) {
+        m_waveformWidget->setTrack(m_waveformWidget->getTrackInfo());
     }
 }
 

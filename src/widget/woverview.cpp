@@ -169,12 +169,27 @@ void WOverview::slotWaveformSummaryUpdated() {
         return;
     }
     m_pWaveform = pTrack->getWaveformSummary();
-    // If the waveform is already complete, just draw it.
-    if (m_pWaveform && m_pWaveform->getCompletion() == m_pWaveform->getDataSize()) {
-        m_actualCompletion = 0;
-        if (drawNextPixmapPart()) {
-            update();
+    if (m_pWaveform) {
+        // If the waveform is already complete, just draw it.
+        if (m_pWaveform->getCompletion() == m_pWaveform->getDataSize()) {
+            m_actualCompletion = 0;
+            if (drawNextPixmapPart()) {
+                update();
+            }
         }
+    } else {
+        // Null waveform pointer means waveform was cleared.
+        if (m_pWaveformSourceImage) {
+            delete m_pWaveformSourceImage;
+            m_pWaveformSourceImage = nullptr;
+        }
+
+        m_dAnalyzerProgress = 1.0;
+        m_actualCompletion = 0;
+        m_waveformPeak = -1.0;
+        m_pixmapDone = false;
+
+        update();
     }
 }
 
