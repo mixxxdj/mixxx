@@ -386,7 +386,9 @@ P32.Deck = function (deckNumbers, channel) {
     this.ejectTrack = function (channel, control, value, status, group) {
         if (value === 127) {
             engine.setValue(this.currentDeck, 'eject', 1);
-            engine.beginTimer(250, 'engine.setValue("'+this.currentDeck+'", "eject", 0)', true);
+            engine.beginTimer(225, function () {
+                engine.setValue(this.currentDeck, 'eject', 0);
+            }, true);
         }
     };
 
