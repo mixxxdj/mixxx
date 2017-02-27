@@ -14,7 +14,7 @@ MaudioXponent.Handshake2 = [0xF0,0x00,0x20,0x08,0x00,0x00,0x63,0x0E,0x16,0x40,0x
 MaudioXponent.Handshake3 = [0xF0,0x00,0x20,0x08,0x00,0x00,0x63,0x0E,0x16,0x40,0x00,0x00,0xF7];
 
 MaudioXponent.config = {
-    nudgeButtonMode : 1,    // 0 = Normal, 1 = Reversed
+    nudgeButtonMode : 0,    // 0 = Normal, 1 = Reversed
     pflMode : 0,            // 0 = Independent, 1 = Toggle
     syncFlashMode : 0,      // 0 = Off, 1 = Pulse, 2 = Toggle
     vuMeterMode : 1,        // 0 = Master, 1 = Channel
