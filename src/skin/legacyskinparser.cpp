@@ -1095,13 +1095,14 @@ QWidget* LegacySkinParser::parseHalveDoubleSpinBox(const QDomElement& node) {
     bool createdValueControl = false;
     ControlObject* valueControl = controlFromConfigNode(node.toElement(), "Value", &createdValueControl);
 
-    WHalveDoubleSpinBox* p = new WHalveDoubleSpinBox(m_pParent, valueControl);
+    WHalveDoubleSpinBox* pSpinbox = new WHalveDoubleSpinBox(m_pParent, valueControl);
+    commonWidgetSetup(node, pSpinbox);
 
     if (createdValueControl && valueControl != nullptr) {
-        valueControl->setParent(p);
+        valueControl->setParent(pSpinbox);
     }
 
-    return p;
+    return pSpinbox;
 }
 
 QWidget* LegacySkinParser::parseBattery(const QDomElement& node) {
