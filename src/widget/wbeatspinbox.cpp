@@ -1,10 +1,10 @@
-#include "widget/whalvedoublespinbox.h"
+#include "widget/wbeatspinbox.h"
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "util/math.h"
 
-WHalveDoubleSpinBox::WHalveDoubleSpinBox(QWidget * parent,
+WBeatSpinBox::WBeatSpinBox(QWidget * parent,
                                          ControlObject* pValueControl,
                                          int decimals,
                                          double minimum, double maximum)
@@ -24,7 +24,7 @@ WHalveDoubleSpinBox::WHalveDoubleSpinBox(QWidget * parent,
     m_valueControl.connectValueChanged(SLOT(slotControlValueChanged(double)));
 }
 
-void WHalveDoubleSpinBox::stepBy(int steps) {
+void WBeatSpinBox::stepBy(int steps) {
     double newValue = value() * pow(2, steps);
     if (newValue < minimum()) {
         newValue = minimum();
@@ -34,21 +34,21 @@ void WHalveDoubleSpinBox::stepBy(int steps) {
     setValue(newValue);
 }
 
-void WHalveDoubleSpinBox::slotSpinboxValueChanged(double newValue) {
+void WBeatSpinBox::slotSpinboxValueChanged(double newValue) {
     m_valueControl.set(newValue);
 }
 
-void WHalveDoubleSpinBox::slotControlValueChanged(double newValue) {
+void WBeatSpinBox::slotControlValueChanged(double newValue) {
     if (value() != newValue) {
         setValue(newValue);
     }
 }
 
-QString WHalveDoubleSpinBox::fractionString(int numerator, int denominator) const {
+QString WBeatSpinBox::fractionString(int numerator, int denominator) const {
     return QString("%1/%2").arg(numerator).arg(denominator);
 }
 
-QString WHalveDoubleSpinBox::textFromValue(double value) const {
+QString WBeatSpinBox::textFromValue(double value) const {
     double dWholePart, dFracPart;
     dFracPart = modf(value, &dWholePart);
 
@@ -138,7 +138,7 @@ QString WHalveDoubleSpinBox::textFromValue(double value) const {
     }
 }
 
-double WHalveDoubleSpinBox::valueFromText(const QString& text) const {
+double WBeatSpinBox::valueFromText(const QString& text) const {
     if (text.count(" ") > 1 || text.count("/") > 1) {
         return value();
     }
@@ -167,7 +167,7 @@ double WHalveDoubleSpinBox::valueFromText(const QString& text) const {
     return sIntPart.toDouble() + sNumerator.toDouble() / sDenominator.toDouble();
 }
 
-QValidator::State WHalveDoubleSpinBox::validate(QString& input, int& pos) const {
+QValidator::State WBeatSpinBox::validate(QString& input, int& pos) const {
     Q_UNUSED(pos);
     if (input.isEmpty()) {
         return QValidator::Intermediate;

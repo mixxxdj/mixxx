@@ -1,5 +1,5 @@
-#ifndef WHALVEDOUBLESPINBOX_H
-#define WHALVEDOUBLESPINBOX_H
+#ifndef WBEATSPINBOX_H
+#define WBEATSPINBOX_H
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -9,10 +9,10 @@
 
 class ControlProxy;
 
-class WHalveDoubleSpinBox : public QDoubleSpinBox, public WBaseWidget {
+class WBeatSpinBox : public QDoubleSpinBox, public WBaseWidget {
     Q_OBJECT
   public:
-    WHalveDoubleSpinBox(QWidget *parent=nullptr,
+    WBeatSpinBox(QWidget *parent=nullptr,
                         ControlObject* pValueControl=nullptr,
                         int decimals=5,
                         double minimum=0.03125, double maximum=512.00);

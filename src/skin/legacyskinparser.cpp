@@ -57,7 +57,7 @@
 #include "widget/weffectparameter.h"
 #include "widget/weffectbuttonparameter.h"
 #include "widget/weffectparameterbase.h"
-#include "widget/whalvedoublespinbox.h"
+#include "widget/wbeatspinbox.h"
 #include "widget/woverviewlmh.h"
 #include "widget/woverviewhsv.h"
 #include "widget/woverviewrgb.h"
@@ -512,8 +512,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseStandardWidget<WStatusLight>(node));
     } else if (nodeName == "Display") {
         result = wrapWidget(parseStandardWidget<WDisplay>(node));
-    } else if (nodeName == "HalveDoubleSpinBox") {
-        result = wrapWidget(parseHalveDoubleSpinBox(node));
+    } else if (nodeName == "BeatSpinBox") {
+        result = wrapWidget(parseBeatSpinBox(node));
     } else if (nodeName == "NumberRate") {
         result = wrapWidget(parseNumberRate(node));
     } else if (nodeName == "NumberPos") {
@@ -1091,11 +1091,11 @@ QWidget* LegacySkinParser::parseEngineKey(const QDomElement& node) {
     return pEngineKey;
 }
 
-QWidget* LegacySkinParser::parseHalveDoubleSpinBox(const QDomElement& node) {
+QWidget* LegacySkinParser::parseBeatSpinBox(const QDomElement& node) {
     bool createdValueControl = false;
     ControlObject* valueControl = controlFromConfigNode(node.toElement(), "Value", &createdValueControl);
 
-    WHalveDoubleSpinBox* pSpinbox = new WHalveDoubleSpinBox(m_pParent, valueControl);
+    WBeatSpinBox* pSpinbox = new WBeatSpinBox(m_pParent, valueControl);
     commonWidgetSetup(node, pSpinbox);
 
     if (createdValueControl && valueControl != nullptr) {
