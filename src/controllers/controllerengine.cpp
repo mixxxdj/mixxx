@@ -808,10 +808,8 @@ QScriptValue ControllerEngine::connectControl(
 }
 
 /* -------- ------------------------------------------------------
-   Purpose: (Dis)connects a ControlObject valueChanged() signal to/from a script function
-   Input:   Control group (e.g. [Channel1]), Key name (e.g. [filterHigh]),
-                script function name, true if you want to disconnect
-   Output:  true if successful
+   Purpose: (Dis)connects a ControllerEngineConnection
+   Input:   the ControllerEngineConnection to disconnect
    -------- ------------------------------------------------------ */
 void ControllerEngine::disconnectControl(const ControllerEngineConnection conn) {
     ControlObjectScript* coScript = getControlObjectScript(conn.key.group, conn.key.item);
@@ -832,6 +830,23 @@ void ControllerEngineConnectionScriptValue::disconnect() {
     m_conn.ce->disconnectControl(m_conn);
 }
 
+/* -------- ------------------------------------------------------
+   Purpose: Triggers the callback function of a ControllerEngineConnection
+   Input:   the ControllerEngineConnection to trigger
+   -------- ------------------------------------------------------ */
+void ControllerEngine::triggerControl(const ControllerEngineConnection conn) {
+    ControlObjectScript* coScript = getControlObjectScript(conn.key.group, conn.key.item);
+
+    if (m_pEngine == nullptr || coScript == nullptr) {
+        return;
+    }
+
+    coScript->emitValueChanged();
+}
+
+void ControllerEngineConnectionScriptValue::trigger() {
+    m_conn.ce->triggerControl(m_conn);
+}
 
 /* -------- ------------------------------------------------------
    Purpose: Evaluate a script file
