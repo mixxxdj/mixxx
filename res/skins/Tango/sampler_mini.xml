@@ -37,7 +37,7 @@ Variables:
       <!-- Second layer is CoverArt. DefaultCover is transparent -->
           <CoverArt>
             <ObjectName>SamplerCover</ObjectName>
-            <Size>32f,32f</Size>
+            <Size>34f,34f</Size>
             <Group><Variable name="group"/></Group>
             <DefaultCover>skin:/buttons/btn_.svg</DefaultCover>
           </CoverArt>
