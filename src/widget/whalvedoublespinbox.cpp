@@ -22,8 +22,6 @@ WHalveDoubleSpinBox::WHalveDoubleSpinBox(QWidget * parent,
 
     setValue(m_valueControl.get());
     m_valueControl.connectValueChanged(SLOT(slotControlValueChanged(double)));
-    connect(this, SIGNAL(valueChanged(double)),
-            this, SLOT(slotUpdateControlValue(double)));
 }
 
 void WHalveDoubleSpinBox::stepBy(int steps) {
@@ -170,6 +168,7 @@ double WHalveDoubleSpinBox::valueFromText(const QString& text) const {
 }
 
 QValidator::State WHalveDoubleSpinBox::validate(QString& input, int& pos) const {
+    Q_UNUSED(pos);
     if (input.isEmpty()) {
         return QValidator::Intermediate;
     }
