@@ -131,9 +131,6 @@ LoopingControl::LoopingControl(QString group,
     connect(m_pCOLoopManualToggle, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoopManualToggle(double)));
 
-    m_pCOBeatLoopEnabled = new ControlPushButton(ConfigKey(group, "beatloop_enabled"));
-    m_pCOBeatLoopEnabled->setReadOnly();
-
     // Here we create corresponding beatloop_(SIZE) CO's which all call the same
     // BeatControl, but with a set value.
     for (unsigned int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0])); ++i) {
@@ -220,7 +217,6 @@ LoopingControl::~LoopingControl() {
     delete m_pCOBeatLoopSize;
     delete m_pCOBeatLoopToggle;
     delete m_pCOBeatLoopRollToggle;
-    delete m_pCOBeatLoopEnabled;
 
     delete m_pCOLoopAutoToggle;
     delete m_pCOLoopManualToggle;
@@ -482,11 +478,6 @@ void LoopingControl::slotLoopIn(double val) {
         if (closestBeat != -1) {
             pos = static_cast<int>(floor(closestBeat));
         }
-        if (m_bLoopingEnabled) {
-            m_pCOBeatLoopEnabled->forceSet(1.0);
-        }
-    } else {
-        m_pCOBeatLoopEnabled->forceSet(0.0);
     }
 
     // Reset the loop out position if it is before the loop in so that loops
@@ -543,9 +534,6 @@ void LoopingControl::slotLoopOut(double val) {
         if (closestBeat != -1) {
             pos = static_cast<int>(floor(closestBeat));
         }
-        m_pCOBeatLoopEnabled->forceSet(1.0);
-    } else {
-        m_pCOBeatLoopEnabled->forceSet(0.0);
     }
 
     // If the user is trying to set a loop-out before the loop in or without
@@ -711,9 +699,6 @@ void LoopingControl::notifySeek(double dNewPlaypos) {
 void LoopingControl::setLoopingEnabled(bool enabled) {
     m_bLoopingEnabled = enabled;
     m_pCOLoopEnabled->set(enabled);
-    if (!enabled) {
-        m_pCOBeatLoopEnabled->forceSet(0.0);
-    }
     BeatLoopingControl* pActiveBeatLoop = m_pActiveBeatLoop;
     if (pActiveBeatLoop != nullptr) {
         if (enabled) {
@@ -941,7 +926,6 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
     m_pCOLoopStartPosition->set(newloopSamples.start);
     m_pCOLoopEndPosition->set(newloopSamples.end);
     setLoopingEnabled(true);
-    m_pCOBeatLoopEnabled->forceSet(1.0);
 }
 
 void LoopingControl::slotBeatLoopSizeChanged(double beats) {

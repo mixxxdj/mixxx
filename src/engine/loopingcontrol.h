@@ -118,7 +118,6 @@ class LoopingControl : public EngineControl {
     ControlObject* m_pCOLoopStartPosition;
     ControlObject* m_pCOLoopEndPosition;
     ControlObject* m_pCOLoopEnabled;
-    ControlObject* m_pCOBeatLoopEnabled;
     ControlPushButton* m_pLoopInButton;
     ControlPushButton* m_pLoopInSeekButton;
     ControlPushButton* m_pLoopOutButton;
