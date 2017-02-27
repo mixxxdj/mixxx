@@ -22,6 +22,11 @@ class SavedQueriesTableModel : public QAbstractTableModel
     int columnCount(const QModelIndex& parent = QModelIndex()) const;
     bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex());
     
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+    // Added to avoid compilation error when using Qt4
+    using QObject::parent;
+#endif
+    
 public slots:
     
     bool submit() override;
