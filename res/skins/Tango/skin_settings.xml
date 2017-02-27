@@ -45,50 +45,12 @@ Description:
             <Children>
 
               <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ToolTipID">toggle_4decks</SetVariable>
-                <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                <SetVariable name="Size">172f,20f</SetVariable>
-                <SetVariable name="Align">left</SetVariable>
-                <SetVariable name="state_0_text">      2&#9668; 4 Decks</SetVariable>
-                <SetVariable name="state_1_text">      2 &#9658;4 Decks</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Master],show_4decks</SetVariable>
-              </Template>
-
-              <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                <SetVariable name="Size">172f,20f</SetVariable>
-                <SetVariable name="Align">left</SetVariable>
-                <SetVariable name="state_0_text">      Stacked Waveforms</SetVariable>
-                <SetVariable name="state_1_text"> &#10003; Stacked Waveforms</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Tango],stacked_waveforms</SetVariable>
-              </Template>
-
-              <Template src="skin:button_2state_persist.xml">
                 <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
                 <SetVariable name="Size">172f,20f</SetVariable>
                 <SetVariable name="Align">left</SetVariable>
                 <SetVariable name="state_0_text">      Stacked Overviews</SetVariable>
                 <SetVariable name="state_1_text"> &#10003; Stacked Overviews</SetVariable>
                 <SetVariable name="ConfigKeyPerm">[Tango],stacked_overviews</SetVariable>
-              </Template>
-
-              <Template src="skin:button_3state_persist.xml">
-                <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                <SetVariable name="Size">172f,20f</SetVariable>
-                <SetVariable name="Align">left</SetVariable>
-                <SetVariable name="state_0_text">      Hotcues</SetVariable>
-                <SetVariable name="state_1_text"> &#10003; Hotcues   4&#9668; 8</SetVariable>
-                <SetVariable name="state_2_text"> &#10003; Hotcues   4 &#9658;8</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Tango],hotcues</SetVariable>
-              </Template>
-
-              <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                <SetVariable name="Size">172f,20f</SetVariable>
-                <SetVariable name="Align">left</SetVariable>
-                <SetVariable name="state_0_text">      Deck Controls</SetVariable>
-                <SetVariable name="state_1_text"> &#10003; Deck Controls</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Tango],deck_controls</SetVariable>
               </Template>
 
               <Template src="skin:button_2state_persist.xml">
@@ -454,58 +416,15 @@ Description:
                 </Children>
               </WidgetGroup><!-- EffectRack submenu -->
 
-              <Template src="skin:button_3state_persist.xml">
-                <SetVariable name="ToolTipID">show_samplers</SetVariable>
-                <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                <SetVariable name="Size">172f,20f</SetVariable>
-                <SetVariable name="Align">left</SetVariable>
-                <SetVariable name="state_0_text">      Samplers</SetVariable>
-                <SetVariable name="state_1_text"> &#10003; Samplers 4&#9668; 8</SetVariable>
-                <SetVariable name="state_2_text"> &#10003; Samplers 4 &#9658;8</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Samplers],show_samplers</SetVariable>
-              </Template>
-
               <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ToolTipID">show_library</SetVariable>
+                <SetVariable name="ToolTipID">show_previewdeck</SetVariable>
                 <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
                 <SetVariable name="Size">172f,20f</SetVariable>
                 <SetVariable name="Align">left</SetVariable>
-                <SetVariable name="state_0_text">      Library</SetVariable>
-                <SetVariable name="state_1_text"> &#10003; Library</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Library],show_library</SetVariable>
+                <SetVariable name="state_0_text">      Preview Deck</SetVariable>
+                <SetVariable name="state_1_text"> &#10003; Preview Deck</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[PreviewDeck],show_previewdeck</SetVariable>
               </Template>
-
-              <WidgetGroup><!-- Library submenu -->
-                <Layout>stacked</Layout>
-                <SizePolicy>max,max</SizePolicy>
-                <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
-                  <WidgetGroup><!-- translucent cover when Library is hidden -->
-                    <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>vertical</Layout>
-                    <SizePolicy>me,me</SizePolicy>
-                    <Children/>
-                    <Connection>
-                      <ConfigKey persist="true">[Library],show_library</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                      <Transform><Not/></Transform>
-                    </Connection>
-                  </WidgetGroup>
-
-                  <Template src="skin:button_2state_persist.xml">
-                    <SetVariable name="ToolTipID">show_previewdeck</SetVariable>
-                    <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                    <SetVariable name="Size">172f,20f</SetVariable>
-                    <SetVariable name="Align">left</SetVariable>
-                    <SetVariable name="state_0_text">      Preview Deck</SetVariable>
-                    <SetVariable name="state_1_text"> &#10003; Preview Deck</SetVariable>
-                    <SetVariable name="ConfigKeyPerm">[PreviewDeck],show_previewdeck</SetVariable>
-                  </Template>
-
-                </Children>
-              </WidgetGroup><!-- Library submenu -->
 
             </Children>
           </WidgetGroup><!-- /Extras -->
