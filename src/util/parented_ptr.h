@@ -13,14 +13,18 @@ template <typename T>
 class parented_ptr {
   public:
     explicit parented_ptr(T* t) : m_pObject(t) {
-        DEBUG_ASSERT(t->parent() != nullptr);
+        if (t != nullptr) {
+            DEBUG_ASSERT(t->parent() != nullptr);
+        }
     }
 
     /* If U* is convertible to T* then we also want parented_ptr<U> convertible to parented_ptr<T> */
     template <typename U>
     parented_ptr(parented_ptr<U>&& u, typename std::enable_if<std::is_convertible<U*, T*>::value, void>::type * = 0)
             : m_pObject(u.get()) {
-        DEBUG_ASSERT(u->parent() != nullptr);
+        if (u.m_pObject != nullptr) {
+            DEBUG_ASSERT(u->parent() != nullptr);
+        }
     }
 
 #if defined(__GNUC__) && __GNUC__ < 5
