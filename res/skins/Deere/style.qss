@@ -52,6 +52,10 @@
   border-top: none;
 }
 
+#TempoControlButtons {
+  qproperty-layoutSpacing: 2;
+}
+
 #Deck1InnerColumn, #Deck3InnerColumn {
   border: 0px solid #222;
   border-left: 1px solid #222;
