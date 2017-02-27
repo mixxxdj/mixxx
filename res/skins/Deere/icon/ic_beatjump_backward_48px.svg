@@ -12,7 +12,7 @@
    version="1.1"
    viewBox="0 0 48 48.000001"
    id="svg2"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.0 r"
    sodipodi:docname="ic_beatjump_backward_48px.svg">
   <metadata
      id="metadata10">
@@ -22,6 +22,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -37,19 +38,20 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:window-width="1366"
-     inkscape:window-height="702"
+     inkscape:window-height="696"
      id="namedview6"
      showgrid="false"
-     inkscape:zoom="4.9166667"
-     inkscape:cx="25.220339"
-     inkscape:cy="24"
+     inkscape:zoom="6.9532167"
+     inkscape:cx="22.167859"
+     inkscape:cy="16.318391"
      inkscape:window-x="0"
-     inkscape:window-y="27"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg2" />
   <path
-     d="m 29,38 0,-8 12,0 0,-12 -12,0 0,-8 -14,14 14,14 z m -18,-28 -4,0 0,28 4,0 0,-28 z"
-     id="path4"
+     style="fill:#d2d2d2;fill-opacity:1"
+     d="m 23,10.143818 v 8 h 16 v 12 H 23 v 8 l -14,-14 z"
+     id="path815"
      inkscape:connector-curvature="0"
-     style="fill:#d2d2d2;fill-opacity:1" />
+     sodipodi:nodetypes="cccccccc" />
 </svg>
