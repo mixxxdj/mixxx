@@ -634,7 +634,7 @@ WWidget, QLabel {
 /* Start spacing for Deck controls row (transport, beatgrid, looping, hotcue, vinylcontrol) */
 
 #FullControlsRow, #MinimalControlsContainer {
-  qproperty-layoutSpacing: 4;
+  qproperty-layoutSpacing: 3;
   qproperty-layoutAlignment: 'AlignBottom';
 }
 
