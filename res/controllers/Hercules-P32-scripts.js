@@ -239,7 +239,7 @@ P32.Deck = function (deckNumbers, channel) {
     });
     this.tempFast = new components.Button({
         midi: [0x90 + channel, 0x45],
-        inKey: 'rate_temp_down',
+        inKey: 'rate_temp_up',
         onlyOnPress: false,
     });
     this.alignBeats = new components.Button({
