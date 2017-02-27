@@ -15,10 +15,10 @@
 
     <Children>
 
-      <HalveDoubleSpinBox>
+      <BeatSpinBox>
         <ObjectName>BeatloopSizeSpinBox</ObjectName>
         <Value><Variable name="group"/>,beatloop_size</Value>
-      </HalveDoubleSpinBox>
+      </BeatSpinBox>
 
       <Template src="skin:spacer_hx.xml">
         <SetVariable name="width">2</SetVariable>

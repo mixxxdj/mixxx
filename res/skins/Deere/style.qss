@@ -658,7 +658,7 @@ WWidget, QLabel {
   font-weight: bold;
 }
 
-WHalveDoubleSpinBox {
+WBeatSpinBox {
   color: #c1cabe;
   background-color: #1f1e1e;
 
@@ -668,11 +668,11 @@ WHalveDoubleSpinBox {
   padding: 2px;
 }
 
-  WHalveDoubleSpinBox:hover {
+  WBeatSpinBox:hover {
     border: 1px ridge #015d8d;
   }
 
-  WHalveDoubleSpinBox::down-button {
+  WBeatSpinBox::down-button {
     subcontrol-origin: border;
     subcontrol-position: bottom right; /* position at the top right corner */
     padding-right: 4px;
@@ -680,17 +680,17 @@ WHalveDoubleSpinBox {
     border: 0;
   }
 
-  WHalveDoubleSpinBox::down-arrow {
+  WBeatSpinBox::down-arrow {
     width: 9px;
     height: 7px;
     image: url(skin:/icon/ic_chevron_down_selector.svg);
   }
 
-  WHalveDoubleSpinBox::down-arrow:hover {
+  WBeatSpinBox::down-arrow:hover {
     image: url(skin:/icon/ic_chevron_down_selector_hover.svg);
   }
 
-  WHalveDoubleSpinBox::up-button {
+  WBeatSpinBox::up-button {
     subcontrol-origin: border;
     subcontrol-position: top right; /* position at the top right corner */
     padding-right: 4px;
@@ -698,13 +698,13 @@ WHalveDoubleSpinBox {
     border: 0;
   }
 
-  WHalveDoubleSpinBox::up-arrow {
+  WBeatSpinBox::up-arrow {
     width: 9px;
     height: 7px;
     image: url(skin:/icon/ic_chevron_up_selector.svg);
   }
 
-  WHalveDoubleSpinBox::up-arrow:hover {
+  WBeatSpinBox::up-arrow:hover {
     image: url(skin:/icon/ic_chevron_up_selector_hover.svg);
   }
 

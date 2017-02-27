@@ -27,10 +27,10 @@
         <SetVariable name="width">2</SetVariable>
       </Template>
 
-      <HalveDoubleSpinBox>
+      <BeatSpinBox>
         <ObjectName>BeatjumpSizeSpinBox</ObjectName>
         <Value><Variable name="group"/>,beatjump_size</Value>
-      </HalveDoubleSpinBox>
+      </BeatSpinBox>
 
       <Template src="skin:spacer_hx.xml">
         <SetVariable name="width">2</SetVariable>

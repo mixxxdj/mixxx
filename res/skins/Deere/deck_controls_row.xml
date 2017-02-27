@@ -86,9 +86,9 @@
 
           <Template src="skin:spacer_h.xml"/>
 
-          <HalveDoubleSpinBox>
+          <BeatSpinBox>
             <Value><Variable name="group"/>,beatloop_size</Value>
-          </HalveDoubleSpinBox>
+          </BeatSpinBox>
 
           <Template src="skin:left_right_display_2state_button.xml">
             <SetVariable name="TooltipId">loop_toggle</SetVariable>
