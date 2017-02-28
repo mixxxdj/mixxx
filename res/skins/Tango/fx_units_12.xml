@@ -67,7 +67,7 @@ Variables:
                   <WidgetGroup><Size>1min,3f</Size><Children/></WidgetGroup>
 
                   <Template src="skin:button_2state_persist.xml">
-                    <SetVariable name="ObjectName">SamplersMiniMaxiButton</SetVariable>
+                    <SetVariable name="ObjectName">MiniMaxiButton</SetVariable>
                     <SetVariable name="Size">22f,17f</SetVariable>
                     <SetVariable name="ConfigKeyPerm">[Tango],fx_units_12_miniMAXI</SetVariable>
                   </Template>

@@ -22,11 +22,10 @@ Variables:
 
           <WidgetGroup><!-- Preview Search Cover Tree -->
             <Layout>vertical</Layout>
-            <Size>183min,80me</Size>
+            <Size>183min,74me</Size>
             <Children>
               <Template src="skin:preview_deck.xml"/>
-              <!-- Splitter to make CoverArt resizeable -->
-              <Splitter>
+              <Splitter><!-- Splitter to make CoverArt resizeable -->
                 <ObjectName>LibrarySplitter</ObjectName>
                 <SizePolicy>me,me</SizePolicy>
                 <SplitSizes>1,3</SplitSizes>
@@ -35,7 +34,7 @@ Variables:
                 <Collapsible>0,0</Collapsible>
                 <Children>
                   <CoverArt>
-                    <Size>60min,60min</Size>
+                    <Size>30min,30min</Size>
                     <Connection>
                       <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
                       <BindProperty>visible</BindProperty>
@@ -45,12 +44,23 @@ Variables:
                     <Layout>vertical</Layout>
                     <SizePolicy>me,min</SizePolicy>
                     <Children>
-                      <SearchBox></SearchBox>
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Children>
+                          <SearchBox></SearchBox>
+                          <Template src="skin:button_2state_persist.xml">
+                            <SetVariable name="ObjectName">LibMiniMaxiButton</SetVariable>
+                            <SetVariable name="Size">22f,25f</SetVariable>
+                            <SetVariable name="ConfigKeyPerm">[Master],maximize_library</SetVariable>
+                          </Template>
+                        </Children>
+                      </WidgetGroup>
                       <LibrarySidebar></LibrarySidebar>
                     </Children>
                   </WidgetGroup>
                 </Children>
-              </Splitter>
+              </Splitter><!-- /Splitter to make CoverArt resizeable -->
             </Children>
           </WidgetGroup><!-- /Preview Search Cover Tree -->
 

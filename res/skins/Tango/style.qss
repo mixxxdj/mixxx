@@ -1229,21 +1229,21 @@ WWidget, QLabel {
     background-color: #0f0f0f;
   }
 
-#SamplersLoadButton, #SamplersSaveButton, #SamplersMiniMaxiButton {
+#SamplersLoadButton, #SamplersSaveButton, #MiniMaxiButton {
   border-radius: 2px;
 }
 
-#SamplersMiniMaxiButton[displayValue="0"] {
+#MiniMaxiButton[displayValue="0"] {
   image: url(skin:/buttons/btn_arrow_down_thin.svg) no-repeat top;
   border-radius: 2px;
   }
-  #SamplersMiniMaxiButton[displayValue="0"]:hover {
+  #MiniMaxiButton[displayValue="0"]:hover {
     image: url(skin:/buttons/btn_arrow_down_thin_hover.svg) no-repeat top;
   }
-#SamplersMiniMaxiButton[displayValue="1"] {
+#MiniMaxiButton[displayValue="1"] {
   image: url(skin:/buttons/btn_arrow_up_thin.svg) no-repeat top;
   }
-  #SamplersMiniMaxiButton[displayValue="1"]:hover {
+  #MiniMaxiButton[displayValue="1"]:hover {
     image: url(skin:/buttons/btn_arrow_up_thin_hover.svg) no-repeat top;
   }
 
@@ -1531,6 +1531,23 @@ WWidget, QLabel {
 #Library {
   background-color: #0f0f0f;
 }
+
+#LibMiniMaxiButton {
+  margin-bottom: 12px;
+  }
+  #LibMiniMaxiButton[displayValue="0"] {
+    image: url(skin:/buttons/btn_arrow_up_thin.svg) no-repeat center top;
+    }
+    #LibMiniMaxiButton[displayValue="0"]:hover {
+      image: url(skin:/buttons/btn_arrow_up_thin_hover.svg) no-repeat center top;
+    }
+  #LibMiniMaxiButton[displayValue="1"] {
+    image: url(skin:/buttons/btn_arrow_down_thin.svg) no-repeat center top;
+    border-radius: 2px;
+    }
+    #LibMiniMaxiButton[displayValue="1"]:hover {
+      image: url(skin:/buttons/btn_arrow_down_thin_hover.svg) no-repeat center top;
+    }
 
 QTableView, QTextBrowser, QTreeView {
   border: 1px solid #585858;	/*

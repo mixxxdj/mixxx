@@ -315,9 +315,7 @@
             <!--
             Workaround due to https://bugs.launchpad.net/mixxx/+bug/1627859
             Without this, SkinSettings would be visible at every launch -->
-            <WidgetGroup>
-                <Size>0f,0f</Size>
-            </WidgetGroup>
+            <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
             <!--
             SkinSettings is stacked on top of the skin.
             This way it doesn't affect available screen size

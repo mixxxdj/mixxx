@@ -36,7 +36,7 @@ Variables:
                 <Children>
 
                   <Template src="skin:button_2state_persist.xml">
-                    <SetVariable name="ObjectName">SamplersMiniMaxiButton</SetVariable>
+                    <SetVariable name="ObjectName">MiniMaxiButton</SetVariable>
                     <SetVariable name="Size">22f,13f</SetVariable>
                     <SetVariable name="ConfigKeyPerm">[Tango],Samplers_miniMAXI</SetVariable>
                   </Template>
