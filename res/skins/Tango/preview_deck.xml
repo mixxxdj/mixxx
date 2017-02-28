@@ -17,9 +17,7 @@ Variables:
   <WidgetGroup><!-- Preview Deck Column 1 Row 1 -->
     <ObjectName>PreviewDeck</ObjectName>
     <Layout>vertical</Layout>
-    <MinimumSize>183,59</MinimumSize>
-    <MaximumSize>i,83</MaximumSize>
-    <SizePolicy>me,max</SizePolicy>
+    <SizePolicy>me,min</SizePolicy>
     <!-- 'XXXme' is overwritten by parent column in library.xml
     thus previewdeck would be truncated if XXXme here is bigger than there -->
     <Children>
@@ -132,23 +130,18 @@ Variables:
       <WidgetGroup><!-- PreviewHotcues -->
         <Layout>horizontal</Layout>
         <ObjectName>PreviewHotcues</ObjectName>
-        <MinimumSize>0,0</MinimumSize>
-        <MaximumSize>i,24</MaximumSize>
-        <SizePolicy>me,max</SizePolicy>
+        <Size>1me,24f</Size>
         <Children>
-
           <Template src="skin:hotcues.xml"/>
-
-          <WidgetGroup>
-            <ObjectName>Spacer33</ObjectName>
-            <Size>0me,0min</Size>
-            <Children/>
-          </WidgetGroup>
-
+          <WidgetGroup><ObjectName>Spacer33</ObjectName><Size>0me,0min</Size><Children/></WidgetGroup>
         </Children>
+        <Connection>
+          <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
       </WidgetGroup><!-- /PreviewHotcues -->
 
-      <WidgetGroup><Size>1me,5f</Size><Children/></WidgetGroup>
+      <WidgetGroup><Size>1me,4f</Size><Children/></WidgetGroup>
 
     </Children>
     <Connection>
