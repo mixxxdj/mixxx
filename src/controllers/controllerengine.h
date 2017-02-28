@@ -49,6 +49,7 @@ class ControllerEngineConnectionScriptValue : public QObject {
     }
     const QString& readId() const { return m_conn.id; }
     Q_INVOKABLE void disconnect();
+    Q_INVOKABLE void trigger();
 
   private:
     ControllerEngineConnection m_conn;
@@ -87,6 +88,7 @@ class ControllerEngine : public QObject {
 
     // Disconnect a ControllerEngineConnection
     void disconnectControl(const ControllerEngineConnection conn);
+    void triggerControl(const ControllerEngineConnection conn);
 
   protected:
     Q_INVOKABLE double getValue(QString group, QString name);
