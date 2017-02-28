@@ -82,6 +82,7 @@ class ControllerEngine : public QObject {
 
     // Wrap a snippet of JS code in an anonymous function
     QScriptValue wrapFunctionCode(const QString& codeSnippet, int numberOfArgs);
+    QScriptValue getThisObjectInFunctionCall();
 
     // Look up registered script function prefixes
     const QList<QString>& getScriptFunctionPrefixes() { return m_scriptFunctionPrefixes; };

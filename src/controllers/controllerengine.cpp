@@ -132,6 +132,16 @@ QScriptValue ControllerEngine::wrapFunctionCode(const QString& codeSnippet,
     return wrappedFunction;
 }
 
+QScriptValue ControllerEngine::getThisObjectInFunctionCall() {
+    QScriptContext *ctxt = m_pEngine->currentContext();
+    // Our current context is a function call. We want to grab the 'this'
+    // from the caller's context, so we walk up the stack.
+    if (ctxt) {
+        ctxt = ctxt->parentContext();
+    }
+    return ctxt ? ctxt->thisObject() : QScriptValue();
+}
+
 /* -------- ------------------------------------------------------
 Purpose: Shuts down scripts in an orderly fashion
             (stops timers then executes shutdown functions)
@@ -780,14 +790,7 @@ QScriptValue ControllerEngine::connectControl(
             return QScriptValue(true);
         }
 
-        QScriptContext *ctxt = m_pEngine->currentContext();
-        // Our current context is a function call to engine.connectControl. We
-        // want to grab the 'this' from the caller's context, so we walk up the
-        // stack.
-        if (ctxt) {
-            ctxt = ctxt->parentContext();
-            conn.context = ctxt ? ctxt->thisObject() : QScriptValue();
-        }
+        conn.context = getThisObjectInFunctionCall();
 
         if (callback.isString()) {
             conn.id = callback.toString();
@@ -986,8 +989,7 @@ int ControllerEngine::beginTimer(int interval, QScriptValue timerCallback,
     int timerId = startTimer(interval);
     TimerInfo info;
     info.callback = timerCallback;
-    QScriptContext *ctxt = m_pEngine->currentContext();
-    info.context = ctxt ? ctxt->thisObject() : QScriptValue();
+    info.context = getThisObjectInFunctionCall();
     info.oneShot = oneShot;
     m_timers[timerId] = info;
     if (timerId == 0) {
