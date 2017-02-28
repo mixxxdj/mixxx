@@ -31,9 +31,6 @@ EncoderFfmpegCore::EncoderFfmpegCore(EncoderCallback* pCallback, CodecID codec)
 {
     m_bStreamInitialized = false;
     m_pCallback = pCallback;
-    m_strMetaDataTitle = NULL;
-    m_strMetaDataArtist = NULL;
-    m_strMetaDataAlbum = NULL;
     m_pMetaData = TrackPointer(NULL);
 
     m_pEncodeFormatCtx = NULL;
@@ -199,7 +196,7 @@ void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
 //
 // Currently this method is used before init() once to save artist, title and album
 //
-void EncoderFfmpegCore::updateMetaData(const char* artist, const char* title, const char* album) {
+void EncoderFfmpegCore::updateMetaData(const QString& artist, const QString& title, const QString& album) {
     qDebug() << "ffmpegencodercore: UpdateMetadata: !" << artist << " - " << title <<
              " - " << album;
     m_strMetaDataTitle = title;

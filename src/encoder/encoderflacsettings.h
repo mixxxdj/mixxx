@@ -51,10 +51,6 @@ inline bool EncoderFlacSettings::usesQualitySlider() const
 {
     return false;
 }
-inline bool EncoderFlacSettings::usesCompressionSlider() const
-{
-    return true;
-}
 inline bool EncoderFlacSettings::usesOptionGroups() const
 {
     return true;

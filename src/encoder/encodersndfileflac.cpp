@@ -42,6 +42,8 @@ void EncoderSndfileFlac::setEncoderSettings(const EncoderSettings& settings)
 
 void EncoderSndfileFlac::initStream() {
     EncoderWave::initStream();
+#if defined SFC_SET_COMPRESSION_LEVEL // Seems that this only exists since version 1.0.26
     // Tell the compression setting to use.
     sf_command(m_pSndfile, SFC_SET_COMPRESSION_LEVEL, &m_compression, sizeof(double));
+#endif //SFC_SET_COMPRESSION_LEVEL
 }

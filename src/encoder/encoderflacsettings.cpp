@@ -8,6 +8,7 @@
 
 #include "encoder/encoderflacsettings.h"
 #include "recording/defs_recording.h"
+#include <sndfile.h>
 
 const int EncoderFlacSettings::DEFAULT_QUALITY_VALUE = 5;
 const QString EncoderFlacSettings::BITS_GROUP = "FLAC_BITS";
@@ -36,6 +37,15 @@ EncoderFlacSettings::EncoderFlacSettings(UserSettingsPointer pConfig)
 EncoderFlacSettings::~EncoderFlacSettings()
 {
     
+}
+
+bool EncoderFlacSettings::usesCompressionSlider() const
+{
+#if defined SFC_SET_COMPRESSION_LEVEL // Seems that this only exists since version 1.0.26
+    return true;
+#else
+    return false;
+#endif
 }
 
 // Returns the list of compression values supported, to assign them to the slider

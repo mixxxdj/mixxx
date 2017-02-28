@@ -53,7 +53,7 @@ public:
     ~EncoderFfmpegCore();
     int initEncoder(int samplerate, QString errorMessage) override;
     void encodeBuffer(const CSAMPLE *samples, const int size) override;
-    void updateMetaData(const char* artist, const char* title, const char* album) override;
+    void updateMetaData(const QString& artist, const QString& title, const QString& album) override;
     void flush() override;
     void setEncoderSettings(const EncoderSettings& settings) override;
 protected:
@@ -79,9 +79,9 @@ private:
     EncoderCallback* m_pCallback;
     TrackPointer m_pMetaData;
 
-    const char *m_strMetaDataTitle;
-    const char *m_strMetaDataArtist;
-    const char *m_strMetaDataAlbum;
+    QString m_strMetaDataTitle;
+    QString m_strMetaDataArtist;
+    QString m_strMetaDataAlbum;
     QFile m_pFile;
 
     QByteArray m_strReadByteArray;
