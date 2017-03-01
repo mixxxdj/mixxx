@@ -335,3 +335,28 @@ TEST_F(ControllerEngineTest, connectControl_DisconnectByConnectionObject) {
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
+
+TEST_F(ControllerEngineTest, connectControl_TriggerByConnectionObject) {
+    // Test that triggering using the 'trigger' method on the connection
+    // object returned from connectControl works.
+    auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
+    auto counter = std::make_unique<ControlObject>(ConfigKey("[Test]", "counter"));
+
+    ScopedTemporaryFile script(makeTemporaryFile(
+        "var incrementCounterCO = function () {"
+        "  var counter = engine.getValue('[Test]', 'counter');"
+        "  engine.setValue('[Test]', 'counter', counter + 1);"
+        "};"
+        "var connection1 = engine.connectControl('[Test]', 'co', incrementCounterCO);"
+        // Make a second connection with the same ControlObject
+        // to check that triggering a connection object only triggers that callback,
+        // not every callback connected to its ControlObject.
+        "var connection2 = engine.connectControl('[Test]', 'co', incrementCounterCO);"
+        "connection1.trigger();"
+    ));
+
+    cEngine->evaluate(script->fileName());
+    EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
+    // The counter should have been incremented exactly once.
+    EXPECT_DOUBLE_EQ(1.0, counter->get());
+}
