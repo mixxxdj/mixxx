@@ -16,9 +16,13 @@ class WEffectSelector : public QComboBox, public WBaseWidget {
 
     void setup(const QDomNode& node, const SkinContext& context);
 
+  protected:
+    bool event(QEvent* pEvent) override;
+
   private slots:
     void slotEffectUpdated();
     void slotEffectSelected(int newIndex);
+    void populate();
 
   private:
     EffectsManager* m_pEffectsManager;

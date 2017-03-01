@@ -49,6 +49,8 @@ WPushButton::WPushButton(QWidget* pParent, ControlPushButton::ButtonMode leftBut
 }
 
 void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
+    setScaleFactor(context.getScaleFactor());
+
     // Number of states
     int iNumStates = context.selectInt(node, "NumberStates");
     setStates(iNumStates);

@@ -25,7 +25,8 @@
 WWidget::WWidget(QWidget* parent, Qt::WindowFlags flags)
         : QWidget(parent, flags),
           WBaseWidget(this),
-          m_activeTouchButton(Qt::NoButton) {
+          m_activeTouchButton(Qt::NoButton),
+          m_scaleFactor(1.0) {
     m_pTouchShift = new ControlProxy("[Controls]", "touch_shift");
     setAttribute(Qt::WA_StaticContents);
     setAttribute(Qt::WA_AcceptTouchEvents);
@@ -43,6 +44,17 @@ bool WWidget::touchIsRightButton() {
 bool WWidget::event(QEvent* e) {
     if (e->type() == QEvent::ToolTip) {
         updateTooltip();
+    } if (e->type() == QEvent::FontChange) {
+        const QFont& fonti = font();
+        // Change the new font on the fly by casting away its constness
+        // using setFont() here, would results into a recursive loop
+        // resetting the font to the original css values.
+        if (fonti.pointSizeF() > 0) {
+            const_cast<QFont&>(fonti).setPointSizeF(fonti.pointSizeF() * m_scaleFactor);
+        }
+        if (fonti.pixelSize() > 0) {
+            const_cast<QFont&>(fonti).setPixelSize(fonti.pixelSize() * m_scaleFactor);
+        }
     } else if (isEnabled()) {
         switch(e->type()) {
         case QEvent::TouchBegin:
