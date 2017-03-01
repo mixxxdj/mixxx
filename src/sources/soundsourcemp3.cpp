@@ -12,6 +12,8 @@ namespace {
 // MP3 does only support 1 or 2 channels
 const SINT kChannelCountMax = AudioSource::kChannelCountStereo;
 
+const SINT kMaxBytesPerMp3Frame = 1441;
+
 // mp3 supports 9 different sampling rates
 const int kSamplingRateCount = 9;
 
@@ -161,7 +163,8 @@ SoundSourceMp3::SoundSourceMp3(const QUrl& url)
           m_pFileData(nullptr),
           m_avgSeekFrameCount(0),
           m_curFrameIndex(getMinFrameIndex()),
-          m_madSynthCount(0) {
+          m_madSynthCount(0),
+          m_leftoverBuffer(kMaxBytesPerMp3Frame + MAD_BUFFER_GUARD) {
     m_seekFrameList.reserve(kSeekFrameListCapacity);
     initDecoding();
 }
@@ -584,9 +587,36 @@ SINT SoundSourceMp3::readSampleFrames(
                 if (MAD_ERROR_BUFLEN == m_madStream.error) {
                     // Abort when reaching the end of the stream
                     DEBUG_ASSERT(isUnrecoverableError(m_madStream));
-                    if (m_curFrameIndex < getMaxFrameIndex()) {
-                        qWarning() << "End of MP3 stream is unreachable:"
-                                << m_curFrameIndex << "<" << getMaxFrameIndex();
+                    if (m_madStream.next_frame != nullptr) {
+                        // Decoding of the last MP3 frame fails if it is not padded
+                        // with 0 bytes. MAD requires that the last frame ends with
+                        // at least MAD_BUFFER_GUARD of 0 bytes.
+                        // https://www.mars.org/pipermail/mad-dev/2001-May/000262.html
+                        // "The reason for MAD_BUFFER_GUARD has to do with the way decoding is performed.
+                        // In Layer III, Huffman decoding may inadvertently read a few bytes beyond the
+                        // end of the buffer in the case of certain invalid input. This is not detected
+                        // until after the fact. To prevent this from causing problems, and also to
+                        // ensure the next frame's main_data_begin pointer is always accessible, MAD
+                        // requires MAD_BUFFER_GUARD (currently 8) bytes to be present in the buffer past
+                        // the end of the current frame in order to decode the frame."
+                        const SINT remainingBytes = m_madStream.bufend - m_madStream.next_frame;
+                        DEBUG_ASSERT(remainingBytes <= kMaxBytesPerMp3Frame); // only last MP3 frame
+                        const SINT leftoverBytes = remainingBytes + MAD_BUFFER_GUARD;
+                        if ((remainingBytes > 0) && (leftoverBytes <= SINT(m_leftoverBuffer.size()))) {
+                            // Copy the data of the last MP3 frame into the leftover buffer...
+                            unsigned char* pLeftoverBuffer = &*m_leftoverBuffer.begin();
+                            std::copy(m_madStream.next_frame, m_madStream.next_frame + remainingBytes, pLeftoverBuffer);
+                            // ...append the required guard bytes...
+                            std::fill(pLeftoverBuffer + remainingBytes, pLeftoverBuffer + leftoverBytes, 0);
+                            // ...and retry decoding.
+                            mad_stream_buffer(&m_madStream, pLeftoverBuffer, leftoverBytes);
+                            m_madStream.error = MAD_ERROR_NONE;
+                            continue;
+                        }
+                        if (m_curFrameIndex < getMaxFrameIndex()) {
+                            qWarning() << "Failed to decode the end of the MP3 stream"
+                                    << m_curFrameIndex << "<" << getMaxFrameIndex();
+                        }
                     }
                     break;
                 }

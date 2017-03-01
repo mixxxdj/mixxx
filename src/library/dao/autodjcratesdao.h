@@ -76,7 +76,7 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
     void slotCrateDeleted(CrateId crateId);
 
     // Signaled by the crate DAO when crate tracks are added/removed.
-    void slotCrateTracksModified(CrateId crateId, const QList<TrackId>& addedTrackIds, const QList<TrackId>& removedTrackIds);
+    void slotCrateTracksChanged(CrateId crateId, const QList<TrackId>& addedTrackIds, const QList<TrackId>& removedTrackIds);
 
     // Signaled by the playlist DAO when a playlist is added.
     void slotPlaylistAdded(int playlistId);

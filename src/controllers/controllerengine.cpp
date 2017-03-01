@@ -132,6 +132,16 @@ QScriptValue ControllerEngine::wrapFunctionCode(const QString& codeSnippet,
     return wrappedFunction;
 }
 
+QScriptValue ControllerEngine::getThisObjectInFunctionCall() {
+    QScriptContext *ctxt = m_pEngine->currentContext();
+    // Our current context is a function call. We want to grab the 'this'
+    // from the caller's context, so we walk up the stack.
+    if (ctxt) {
+        ctxt = ctxt->parentContext();
+    }
+    return ctxt ? ctxt->thisObject() : QScriptValue();
+}
+
 /* -------- ------------------------------------------------------
 Purpose: Shuts down scripts in an orderly fashion
             (stops timers then executes shutdown functions)
@@ -780,14 +790,7 @@ QScriptValue ControllerEngine::connectControl(
             return QScriptValue(true);
         }
 
-        QScriptContext *ctxt = m_pEngine->currentContext();
-        // Our current context is a function call to engine.connectControl. We
-        // want to grab the 'this' from the caller's context, so we walk up the
-        // stack.
-        if (ctxt) {
-            ctxt = ctxt->parentContext();
-            conn.context = ctxt ? ctxt->thisObject() : QScriptValue();
-        }
+        conn.context = getThisObjectInFunctionCall();
 
         if (callback.isString()) {
             conn.id = callback.toString();
@@ -808,10 +811,8 @@ QScriptValue ControllerEngine::connectControl(
 }
 
 /* -------- ------------------------------------------------------
-   Purpose: (Dis)connects a ControlObject valueChanged() signal to/from a script function
-   Input:   Control group (e.g. [Channel1]), Key name (e.g. [filterHigh]),
-                script function name, true if you want to disconnect
-   Output:  true if successful
+   Purpose: (Dis)connects a ControllerEngineConnection
+   Input:   the ControllerEngineConnection to disconnect
    -------- ------------------------------------------------------ */
 void ControllerEngine::disconnectControl(const ControllerEngineConnection conn) {
     ControlObjectScript* coScript = getControlObjectScript(conn.key.group, conn.key.item);
@@ -832,6 +833,23 @@ void ControllerEngineConnectionScriptValue::disconnect() {
     m_conn.ce->disconnectControl(m_conn);
 }
 
+/* -------- ------------------------------------------------------
+   Purpose: Triggers the callback function of a ControllerEngineConnection
+   Input:   the ControllerEngineConnection to trigger
+   -------- ------------------------------------------------------ */
+void ControllerEngine::triggerControl(const ControllerEngineConnection conn) {
+    ControlObjectScript* coScript = getControlObjectScript(conn.key.group, conn.key.item);
+
+    if (m_pEngine == nullptr || coScript == nullptr) {
+        return;
+    }
+
+    coScript->emitValueChanged();
+}
+
+void ControllerEngineConnectionScriptValue::trigger() {
+    m_conn.ce->triggerControl(m_conn);
+}
 
 /* -------- ------------------------------------------------------
    Purpose: Evaluate a script file
@@ -971,8 +989,7 @@ int ControllerEngine::beginTimer(int interval, QScriptValue timerCallback,
     int timerId = startTimer(interval);
     TimerInfo info;
     info.callback = timerCallback;
-    QScriptContext *ctxt = m_pEngine->currentContext();
-    info.context = ctxt ? ctxt->thisObject() : QScriptValue();
+    info.context = getThisObjectInFunctionCall();
     info.oneShot = oneShot;
     m_timers[timerId] = info;
     if (timerId == 0) {

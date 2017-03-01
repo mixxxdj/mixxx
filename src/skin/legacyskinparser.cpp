@@ -78,7 +78,6 @@
 #include "widget/wsingletoncontainer.h"
 #include "util/valuetransformer.h"
 #include "util/cmdlineargs.h"
-#include "util/memory.h"
 #include "util/timer.h"
 
 using mixxx::skin::SkinManifest;
