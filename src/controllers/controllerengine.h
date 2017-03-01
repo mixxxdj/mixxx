@@ -33,6 +33,8 @@ class ControllerEngineConnection {
     QScriptValue function;
     ControllerEngine *ce;
     QScriptValue context;
+
+    void executeCallback(double value) const;
 };
 
 class ControllerEngineConnectionScriptValue : public QObject {
