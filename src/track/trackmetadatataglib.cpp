@@ -1539,6 +1539,17 @@ bool writeTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& t
     return true;
 }
 
+bool writeTrackMetadataIntoRIFFTag(TagLib::RIFF::Info::Tag* pTag, const TrackMetadata& trackMetadata) {
+    if (!pTag) {
+        return false;
+    }
+
+    writeTrackMetadataIntoTag(pTag, trackMetadata,
+            WRITE_TAG_OMIT_NONE);
+
+    return true;
+}
+
 Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImage* pCoverArt, QString fileName, FileType fileType) {
     if (fileType == FileType::UNKNOWN) {
         fileType = getFileTypeFromFileName(fileName);
@@ -1979,12 +1990,17 @@ public:
 
 private:
     static bool writeTrackMetadata(TagLib::RIFF::WAV::File* pFile, const TrackMetadata& trackMetadata) {
-        return pFile->isOpen()
+        bool modifiedTags = false;
+        if (pFile->isOpen()) {
+            // Write into all available tags
 #if (TAGLIB_HAS_WAV_ID3V2TAG)
-                && writeTrackMetadataIntoID3v2Tag(pFile->ID3v2Tag(), trackMetadata);
+            modifiedTags |= writeTrackMetadataIntoID3v2Tag(pFile->ID3v2Tag(), trackMetadata);
 #else
-                && writeTrackMetadataIntoID3v2Tag(pFile->tag(), trackMetadata);
+            modifiedTags |= writeTrackMetadataIntoID3v2Tag(pFile->tag(), trackMetadata);
 #endif
+            modifiedTags |= writeTrackMetadataIntoRIFFTag(pFile->InfoTag(), trackMetadata);
+        }
+        return modifiedTags;
     }
 
     TagLib::RIFF::WAV::File m_file;
