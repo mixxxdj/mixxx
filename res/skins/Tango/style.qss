@@ -15,9 +15,13 @@
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
 }
 
-WWidget, QLabel {
+WWidget, WLabel {
   font-family: Ubuntu, "Open Sans", Arial, Verdana, sans-serif;
   font-weight: normal;
+}
+
+WPushButton {
+	border-radius: 2px;
 }
 
 #Library_Samplers_0, #Library_Samplers_1, #Library_Samplers_2, #Library_Samplers_3 {
@@ -197,7 +201,6 @@ WWidget, QLabel {
   }
   #BeatgridButton {
     margin: 1px 0px 0px 1px;
-    border-radius: 2px;
     background-color: #333333;
     }
   #BeatgridButton:hover {
@@ -298,7 +301,6 @@ WWidget, QLabel {
   } */
 
 #MixerBarButton {
-  border-radius: 2px;
   font-weight: bold; /*
   margin: 2px 0px 6px 0px;  */
   }
@@ -407,7 +409,6 @@ WWidget, QLabel {
   #VinylButton, #VinylModeButton {
     font-size: 11px/11px;
     background-color: #333333;
-    border-radius: 2px;
     margin-right: 1px;
     }
   #VinylButton:hover, #VinylModeButton:hover {
@@ -473,7 +474,6 @@ WWidget, QLabel {
       text-align: right;
       }
   #LoopIndicator {
-    border-radius: 2px;
     }
     #LoopIndicator:hover {
       border: 1px solid #ffffff;
@@ -518,8 +518,7 @@ WWidget, QLabel {
     background: transparent url(skin:/buttons/btn_arrow_left_thin_hover.svg) no-repeat center center;
   }
   #DeckButton:hover {
-    background-color: #151515;
-    border-radius: 2px;	/*
+    background-color: #151515;	/*
     border: 1px solid #cccccc;	*/
   }
   #SyncModeButton {
@@ -528,13 +527,11 @@ WWidget, QLabel {
     }
     #SyncModeButton:hover {
       color: #888888;
-      background-color: #151515;
-      border-radius: 2px;	/*
+      background-color: #151515;	/*
       border: 1px solid #cccccc;	*/
     }
     #SyncModeButton[displayValue="1"], #SyncModeButton[displayValue="2"] {
       background-color: #151515;
-      border-radius: 2px;
     }
     #SyncModeButton[displayValue="1"] {
       color: #c66d00;
@@ -565,7 +562,6 @@ WWidget, QLabel {
     font-size: 13px/15px;
     font-weight: bold;
     margin-right: 1px;
-    border-radius: 2px;
     }
   #HotcueButton[displayValue="0"] {
     color: #888888;
@@ -582,10 +578,7 @@ WWidget, QLabel {
     border: 1px solid #eeeeee;
     }
 
-#PlayCue, #PlayCueUnderlay, #PreviewPlayCue, #PreviewPlayCueUnderlay, #SamplerPlayCue, #SamplerPlayCueUnderlay, #SamplerCover {
-    border-radius: 2px;
-  }
-  #PlayCue[displayValue="0"], #SamplerPlayCue[displayValue="0"] {
+#PlayCue[displayValue="0"], #SamplerPlayCue[displayValue="0"] {
     background: none url(skin:/buttons/btn_paused.svg) no-repeat center center;
     }
   #PlayCue[displayValue="0"]:hover {
@@ -619,7 +612,6 @@ WWidget, QLabel {
     font-weight: bold;
     color: #888888;
     background-color: #333333;
-    border-radius: 2px;
   }
   #LoopBeatJumpButton:hover, #LoopSizeButton:hover, #LoopRollButton:hover {  /*
     background-color: #151515;  */
@@ -662,14 +654,12 @@ WWidget, QLabel {
   font-size: 16px/16px;
   font-weight: bold;
   text-align: center;
-  padding-top: 1px;
-  border-radius: 2px;	/*
+  padding-top: 1px;	/*
   border: 1px solid #666666;
   background-color: #999111;	*/
   }
   #SyncButtonOverlay, #KeyReset,
   #KeyUp, #KeyDown {
-    border-radius: 2px;
   }
   #SyncButtonOverlay[displayValue="0"]:hover, #KeyReset:hover,
   #KeyUp:hover, #KeyDown:hover {
@@ -688,7 +678,6 @@ WWidget, QLabel {
   #KeyDown, #KeyUp, #KeyReset {
     font-size: 16px/13px;
     font-weight: bold;
-    border-radius: 2px;
     border: 1px solid #666666;
     }
     #KeyUp {
@@ -719,7 +708,6 @@ WWidget, QLabel {
   }
   #PitchSlider:hover, #Crossfader:hover {
     background-color: #0f0f0f;
-    border-radius: 2px;
   }
 
 /*################################################################
@@ -782,13 +770,11 @@ WWidget, QLabel {
 
   #EQKillButtonUnderlayLeft[displayValue="1"] {
     background-color: #585858;
-    border-radius: 2px;
     border-top-left-radius: 15px;
     border-bottom-left-radius: 15px;
     }
   #EQKillButtonUnderlayRight[displayValue="1"] {
     background-color: #585858;
-    border-radius: 2px;
     border-top-right-radius: 15px;
     border-bottom-right-radius: 15px;
     }
@@ -812,7 +798,6 @@ WWidget, QLabel {
   Though, this is a nice hover effect, even more if border is removed on hover.
   border: 1px solid #eeeeee;  */
   background-color: #0f0f0f;
-  border-radius: 2px;
   }
         
 #VolumeSliderGain {
@@ -860,7 +845,6 @@ WWidget, QLabel {
 
 #GuiToggleButton, #GuiToggleButton2, #RecordingButton {
   text-align: center;
-  border-radius: 2px;
   font-size: 12px/12px;
   font-weight: bold;
   }
@@ -904,7 +888,6 @@ WWidget, QLabel {
   }
 
   #BroadcastButton, #SkinSettingsToggler {
-    border-radius: 2px;
     }
     #BroadcastButton[displayValue="0"] {
       background: transparent url(skin:/buttons/btn_broadcast_off.svg) no-repeat center center;
@@ -989,16 +972,12 @@ WWidget, QLabel {
 #EffectSlotLeft {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
   background-color: #333333;	/*
-  padding-right: 5px;
-  border-radius: 2px;
   background-color: #321654;	*/
 }
 #EffectSlotRight {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
   border-left: 1px solid #0f0f0f;;
   background-color: #333333;	/*
-  padding-left: 5px;
-  border-radius: 2px;
   background-color: #321654;	*/
 }
 #EffectSlotParameters {
@@ -1027,10 +1006,8 @@ WWidget, QLabel {
   }
   #EffectParameterButtonOverlay:hover {
     border: 1px solid #eeeeee;
-    border-radius: 2px;
     }
   #EffectParameterButtonUnderlay {
-    border-radius: 2px;
     }
   #EffectParameterButtonUnderlay[displayValue="0"] {
     background-color: #4B4B4B;
@@ -1049,7 +1026,6 @@ WWidget, QLabel {
     }
 #EffectLinkTypeButton, #EffectLinkTypeButtonUnderlay {
   margin-top: 26px;
-  border-radius: 2px;
   }
   #EffectLinkTypeButton:hover {
     border: 1px solid #eeeeee;
@@ -1092,7 +1068,7 @@ WWidget, QLabel {
         
 #fxNameContainer {
   padding: 1px;
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
+  qproperty-layoutAlignment: 'AlignCenter';	/*
   background-color: #453267;	*/
   }
 #fxName {
@@ -1103,7 +1079,6 @@ WWidget, QLabel {
 }
         
 #EffectToggleButton {
-  border-radius: 2px;
   }
   #EffectToggleButton[displayValue="0"]:hover {	/*		*/
     border: 1px solid #ffb401;
@@ -1112,11 +1087,9 @@ WWidget, QLabel {
     border: 1px solid #FFFFFF;
     }
   #EffectToggleButtonUnderlay[displayValue="0"] {
-    border-radius: 2px;
     background-color: #777777;
     }
   #EffectToggleButtonUnderlay[displayValue="1"] {
-    border-radius: 2px;
     background-color: #ffb401;	/* yellow2 	*/
     }
 
@@ -1149,7 +1122,6 @@ WWidget, QLabel {
   font-size: 11px/13px;
   font-weight: bold;
   text-align: center;
-  border-radius: 2px;
   background-repeat: no-repeat;
   background-position: center center;
   }
@@ -1172,7 +1144,6 @@ WWidget, QLabel {
     text-align: center;
     margin-top: 1px;
     margin-left: 1px;
-    border-radius: 2px;
     /* this has no effect on Backpath <Pressed>/<Unpressed> */
     background-position: center;
   }
@@ -1199,7 +1170,6 @@ WWidget, QLabel {
         border: 1px solid #eeeeee;
       }
     #EffectEject {
-      border-radius: 2px;
       }
 
 #EffectSelectorButtonPrev {
@@ -1229,12 +1199,10 @@ WWidget, QLabel {
   }
 
 #SamplersLoadButton, #SamplersSaveButton, #MiniMaxiButton {
-  border-radius: 2px;
 }
 
 #MiniMaxiButton[displayValue="0"] {
   image: url(skin:/buttons/btn_arrow_down_thin.svg) no-repeat top;
-  border-radius: 2px;
   }
   #MiniMaxiButton[displayValue="0"]:hover {
     image: url(skin:/buttons/btn_arrow_down_thin_hover.svg) no-repeat top;
@@ -1270,7 +1238,6 @@ WWidget, QLabel {
   padding: 0px 1px 0px 0px;
 }
   #SamplerPlayCue, #SamplerPlayCueUnderlay, #SamplerCover {
-    border-radius: 2px;
   }
   #SamplerPlayCue[displayValue="0"] {
     background: none url(skin:/buttons/btn_sampler_paused.svg) no-repeat center center;
@@ -1354,7 +1321,6 @@ WWidget, QLabel {
   font-weight: bold;
   text-align: center;
   color: #888888;
-  border-radius: 2px;
 }
 #SamplerButton_mini, #SamplerGainKnob_mini {
   background-color: #333333;
@@ -1389,7 +1355,6 @@ WWidget, QLabel {
 #SamplerSyncButton {
   font-size: 11px/13px;
   font-weight: bold;
-  border-radius: 2px;
   text-align: left;
   color: #999999;
   background-color: #0f0f0f;
@@ -1441,7 +1406,6 @@ WWidget, QLabel {
     color: #bababa;
   }
   #PreviewEject {
-    border-radius: 2px;
   }
   #PreviewEject:hover {
     border: 1px solid #eeeeee;
@@ -1542,7 +1506,6 @@ WWidget, QLabel {
     }
   #LibMiniMaxiButton[displayValue="1"] {
     image: url(skin:/buttons/btn_arrow_down_thin.svg) no-repeat center top;
-    border-radius: 2px;
     }
     #LibMiniMaxiButton[displayValue="1"]:hover {
       image: url(skin:/buttons/btn_arrow_down_thin_hover.svg) no-repeat center top;

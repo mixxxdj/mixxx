@@ -23,7 +23,7 @@
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:fx_parameters.xml">
+              <Template src="skin:fx_parameter_row.xml">
                 <SetVariable name="Effect">1</SetVariable>
               </Template>
               <Template src="skin:fx_selector_buttons.xml">
@@ -39,7 +39,7 @@
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:fx_parameters.xml">
+              <Template src="skin:fx_parameter_row.xml">
                 <SetVariable name="Effect">2</SetVariable>
               </Template>
               <Template src="skin:fx_selector_buttons.xml">
@@ -55,7 +55,7 @@
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:fx_parameters.xml">
+              <Template src="skin:fx_parameter_row.xml">
                 <SetVariable name="Effect">3</SetVariable>
               </Template>
               <Template src="skin:fx_selector_buttons.xml">
