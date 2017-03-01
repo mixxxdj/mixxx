@@ -114,14 +114,21 @@ P32.recordButton = new components.Button({
 
 P32.slipButton = new components.Button({
     midi: [0x90, 0x03],
+    pressedToToggleDeck: false,
     input: function (channel, control, value, status, group) {
         if (P32.leftDeck.isShifted && value === 127) {
             P32.leftDeck.toggle();
+            this.pressedToToggleDeck = true;
         } else if (P32.rightDeck.isShifted && value === 127) {
             P32.rightDeck.toggle();
+            this.pressedToToggleDeck = true;
         } else {
-            for (var i = 1; i <= 4; i++) {
-                script.toggleControl('[Channel' + i + ']', 'slip_enabled');
+            if (this.pressedToToggleDeck && value === 0) {
+                this.pressedToToggleDeck = false;
+            } else {
+                for (var i = 1; i <= 4; i++) {
+                    script.toggleControl('[Channel' + i + ']', 'slip_enabled');
+                }
             }
         }
     },
