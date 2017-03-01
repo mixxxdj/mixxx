@@ -67,7 +67,8 @@ QImage* WImageStore::getImageNoCache(const PixmapSource& source, double scaleFac
             renderer.load(source.getData());
         }
 
-        pImage = new QImage(renderer.defaultSize(), QImage::Format_ARGB32);
+        pImage = new QImage(renderer.defaultSize() * scaleFactor,
+                            QImage::Format_ARGB32);
         pImage->fill(0x00000000);  // Transparent black.
         QPainter painter(pImage);
         renderer.render(&painter);
