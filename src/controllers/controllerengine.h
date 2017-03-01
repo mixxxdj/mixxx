@@ -49,6 +49,7 @@ class ControllerEngineConnectionScriptValue : public QObject {
     }
     const QString& readId() const { return m_conn.id; }
     Q_INVOKABLE void disconnect();
+    Q_INVOKABLE void trigger();
 
   private:
     ControllerEngineConnection m_conn;
@@ -81,12 +82,14 @@ class ControllerEngine : public QObject {
 
     // Wrap a snippet of JS code in an anonymous function
     QScriptValue wrapFunctionCode(const QString& codeSnippet, int numberOfArgs);
+    QScriptValue getThisObjectInFunctionCall();
 
     // Look up registered script function prefixes
     const QList<QString>& getScriptFunctionPrefixes() { return m_scriptFunctionPrefixes; };
 
     // Disconnect a ControllerEngineConnection
     void disconnectControl(const ControllerEngineConnection conn);
+    void triggerControl(const ControllerEngineConnection conn);
 
   protected:
     Q_INVOKABLE double getValue(QString group, QString name);
