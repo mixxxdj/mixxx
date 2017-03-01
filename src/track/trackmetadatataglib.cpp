@@ -323,6 +323,28 @@ bool readAudioProperties(TrackMetadata* pTrackMetadata,
     return true;
 }
 
+void readTrackMetadataFromRIFFTag(TrackMetadata* pTrackMetadata, const TagLib::RIFF::Info::Tag& tag) {
+    if (!pTrackMetadata) {
+        return; // nothing to do
+    }
+
+    pTrackMetadata->setTitle(toQString(tag.title()));
+    pTrackMetadata->setArtist(toQString(tag.artist()));
+    pTrackMetadata->setAlbum(toQString(tag.album()));
+    pTrackMetadata->setComment(toQString(tag.comment()));
+    pTrackMetadata->setGenre(toQString(tag.genre()));
+
+    int iYear = tag.year();
+    if (iYear > 0) {
+        pTrackMetadata->setYear(QString::number(iYear));
+    }
+
+    int iTrack = tag.track();
+    if (iTrack > 0) {
+        pTrackMetadata->setTrackNumber(QString::number(iTrack));
+    }
+}
+
 void readTrackMetadataFromTag(TrackMetadata* pTrackMetadata, const TagLib::Tag& tag) {
     if (!pTrackMetadata) {
         return; // nothing to do
@@ -1696,9 +1718,9 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
                 return OK;
             } else {
                 // fallback
-                const TagLib::Tag* pTag(file.tag());
+                const TagLib::RIFF::Info::Tag* pTag = file.InfoTag();
                 if (pTag) {
-                    readTrackMetadataFromTag(pTrackMetadata, *pTag);
+                    readTrackMetadataFromRIFFTag(pTrackMetadata, *pTag);
                     return OK;
                 }
             }
