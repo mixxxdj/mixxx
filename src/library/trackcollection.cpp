@@ -184,12 +184,12 @@ bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
     // Post-processing
     // TODO(XXX): Move signals from TrackDAO to TrackCollection
     m_trackDao.afterUnhidingTracks(trackIds);
-    QSet<CrateId> modifiedCrateSummaries(
-            m_crates.collectCrateIdsOfTracks(trackIds));
     // TODO(XXX): Move signals from TrackDAO to TrackCollection
 
     // Emit signal(s)
     // TODO(XXX): Emit signals here instead of from DAOs
+    QSet<CrateId> modifiedCrateSummaries(
+            m_crates.collectCrateIdsOfTracks(trackIds));
     emit(crateSummaryChanged(modifiedCrateSummaries));
 
     return true;
@@ -205,6 +205,11 @@ bool TrackCollection::purgeTracks(
     VERIFY_OR_DEBUG_ASSERT(m_trackDao.onPurgingTracks(transaction, trackIds)) {
         return false;
     }
+    // Collect crates of tracks that will be purged before actually purging
+    // them within the same transactions. Those tracks will be removed from
+    // all crates on purging.
+    QSet<CrateId> modifiedCrateSummaries(
+            m_crates.collectCrateIdsOfTracks(trackIds));
     VERIFY_OR_DEBUG_ASSERT(m_crates.onPurgingTracks(transaction, trackIds)) {
         return false;
     }
@@ -220,7 +225,9 @@ bool TrackCollection::purgeTracks(
     // TODO(XXX): Move signals from TrackDAO to TrackCollection
     m_trackDao.afterPurgingTracks(trackIds);
 
+    // Emit signal(s)
     // TODO(XXX): Emit signals here instead of from DAOs
+    emit(crateSummaryChanged(modifiedCrateSummaries));
 
     return true;
 }
