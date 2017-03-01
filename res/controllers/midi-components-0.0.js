@@ -435,7 +435,7 @@
         setCurrentDeck: function (newGroup) {
             this.currentDeck = newGroup;
             this.reconnectComponents(function (component) {
-                if (component.group.search(script.channelRegExExact) !== -1) {
+                if (component.group.search(script.channelRegEx) !== -1) {
                     component.group = this.currentDeck;
                 } else if (component.group.search(script.eqRegEx) !== -1) {
                     component.group = '[EqualizerRack1_' + this.currentDeck + '_Effect1]';

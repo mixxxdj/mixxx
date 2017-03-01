@@ -366,11 +366,10 @@ bpm.tapButton = function(deck) {
 }
 
 // ----------------- Common regular expressions --------------------------
-script.samplerRegEx = /\[Sampler(\d+)\]/ ;
-script.channelRegEx = /\[Channel(\d+)\]/ ;
-script.channelRegExExact = /^\[Channel(\d+)\]$/ ;
-script.eqRegEx = /\[EqualizerRack1_\[(.*)\]_Effect1\]/ ;
-script.quickEffectRegEx = /\[QuickEffectRack1_\[(.*)\]\]/ ;
+script.samplerRegEx = /^\[Sampler(\d+)\]$/ ;
+script.channelRegEx = /^\[Channel(\d+)\]$/ ;
+script.eqRegEx = /^\[EqualizerRack1_(\[.*\])_Effect1\]$/ ;
+script.quickEffectRegEx = /^\[QuickEffectRack1_(\[.*\])\]$/ ;
 
 // ----------------- Object definitions --------------------------
 
