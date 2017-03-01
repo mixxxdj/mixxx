@@ -835,13 +835,25 @@ void ControllerEngineConnectionScriptValue::disconnect() {
    Input:   the ControllerEngineConnection to trigger
    -------- ------------------------------------------------------ */
 void ControllerEngine::triggerControl(const ControllerEngineConnection conn) {
-    ControlObjectScript* coScript = getControlObjectScript(conn.key.group, conn.key.item);
-
-    if (m_pEngine == nullptr || coScript == nullptr) {
+    if (m_pEngine == nullptr) {
         return;
     }
 
-    coScript->emitValueChanged();
+    ControlObjectScript* coScript = getControlObjectScript(conn.key.group, conn.key.item);
+    if (coScript == nullptr) {
+        return;
+    }
+
+    QScriptValueList args;
+    args << QScriptValue(coScript->get());
+    args << QScriptValue(conn.key.group);
+    args << QScriptValue(conn.key.item);
+    QScriptValue func = conn.function;
+    QScriptValue result = func.call(conn.context, args);
+    if (result.isError()) {
+        qWarning() << "ControllerEngine: Invocation of callback" << conn.id
+                    << "failed:" << result.toString();
+    }
 }
 
 void ControllerEngineConnectionScriptValue::trigger() {
