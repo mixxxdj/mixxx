@@ -29,11 +29,10 @@ WWidget, QLabel {
 #WaveformSplitter::handle:vertical {
   height: 4px;
   image: url(skin:/graphics/splitterVert_handle.png);
-  background-color: #0f0f0f;
-}
-#WaveformSplitter::handle:vertical:hover, #WaveformSplitter::handle:vertical:pressed {
-  image: url(skin:/graphics/splitterVert_handle_pressed.png);
-}
+	}
+	#WaveformSplitter::handle:vertical:hover, #WaveformSplitter::handle:vertical:pressed {
+		image: url(skin:/graphics/splitterVert_handle_pressed.png);
+	}
 
 
 /* 	################################################################
@@ -1698,7 +1697,6 @@ QScrollBar:horizontal {
     }
     #LibrarySplitter::handle:vertical:hover, #LibrarySplitter::handle:vertical:pressed {
       image: url(skin:/graphics/splitterVert_handle_pressed.png);
-      background-color: #0f0f0f;
     }
 
 /* Pushbuttons, a lot of them...	*/
