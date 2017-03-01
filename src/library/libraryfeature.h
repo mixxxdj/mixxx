@@ -68,7 +68,7 @@ class LibraryFeature : public QObject {
     virtual parented_ptr<QWidget> createSidebarWidget(KeyboardEventFilter* pKeyboard,
                                                       QWidget* parent);
     
-    virtual TreeItemModel* getChildModel() = 0;
+    virtual QPointer<TreeItemModel> getChildModel() = 0;
     
     virtual void setFeaturePaneId(int paneId);
     int getFeaturePaneId();

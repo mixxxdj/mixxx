@@ -47,7 +47,7 @@ class MixxxLibraryFeature : public LibraryFeature {
 
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
-    TreeItemModel* getChildModel();
+    QPointer<TreeItemModel> getChildModel();
     parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter*, 
                                                    QWidget* parent) override;
 
@@ -65,12 +65,6 @@ class MixxxLibraryFeature : public LibraryFeature {
     void purgeHidden();
     void purgeMissing();
 
-  protected:
-    void setChildModel(TreeItemModel* pChild);
-    
-    QPointer<TreeItemModel> m_pChildModel;
-    QPointer<WLibrarySidebar> m_pSidebar;
-
   private:
     static const QString kLibraryTitle;
     static const QList<QStringList> kGroupingOptions;
@@ -82,8 +76,10 @@ class MixxxLibraryFeature : public LibraryFeature {
                          AbstractRole role = AbstractRole::RoleSorting);
     
   private:
+    std::unique_ptr<TreeItemModel> m_pChildModel;
+    QPointer<WLibrarySidebar> m_pSidebar;
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
-    LibraryTableModel* m_pLibraryTableModel;
+    parented_ptr<LibraryTableModel> m_pLibraryTableModel;
     TrackDAO& m_trackDao;
     QPersistentModelIndex m_lastClickedIndex;
     bool m_foldersShown;

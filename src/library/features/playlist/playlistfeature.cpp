@@ -47,7 +47,7 @@ bool PlaylistFeature::isSinglePane() const {
     return false;
 }
 
-TreeItemModel* PlaylistFeature::getChildModel() {
+QPointer<TreeItemModel> PlaylistFeature::getChildModel() {
     return m_pChildModel.get();
 }
 
@@ -207,8 +207,9 @@ void PlaylistFeature::decorateChild(TreeItem* item, int playlist_id) {
     }
 }
 
-PlaylistTableModel* PlaylistFeature::constructTableModel() {
-    return new PlaylistTableModel(this, m_pTrackCollection, "mixxx.db.model.playlist");
+parented_ptr<PlaylistTableModel> PlaylistFeature::constructTableModel() {
+    return make_parented<PlaylistTableModel>(this, m_pTrackCollection, 
+                                             "mixxx.db.model.playlist");
 }
 
 void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {

@@ -1,17 +1,13 @@
 #ifndef DLGANALYSIS_H
 #define DLGANALYSIS_H
 
-#include <QItemSelection>
 #include <QButtonGroup>
+#include <QPointer>
 
 #include "library/features/analysis/analysislibrarytablemodel.h"
+#include "library/features/analysis/analysisfeature.h"
 #include "library/features/analysis/ui_dlganalysis.h"
-#include "library/libraryview.h"
-#include "library/trackcollection.h"
-#include "preferences/usersettings.h"
 
-class AnalysisLibraryTableModel;
-class WAnalysisLibraryTableView;
 class AnalysisFeature;
 
 class DlgAnalysis : public QFrame, public Ui::DlgAnalysis {
@@ -20,9 +16,7 @@ class DlgAnalysis : public QFrame, public Ui::DlgAnalysis {
     
   public:
     
-    DlgAnalysis(QWidget *parent,
-                AnalysisFeature* pAnalysis,
-                TrackCollection* pTrackCollection);
+    DlgAnalysis(QWidget* parent, AnalysisFeature* pAnalysis);
     ~DlgAnalysis() override;
 
     void onShow();
@@ -45,11 +39,10 @@ class DlgAnalysis : public QFrame, public Ui::DlgAnalysis {
     
   private:
     //Note m_pTrackTablePlaceholder is defined in the .ui file
-    TrackCollection* m_pTrackCollection;
     bool m_bAnalysisActive;
     QButtonGroup m_songsButtonGroup;
-    AnalysisLibraryTableModel* m_pAnalysisLibraryTableModel;
-    AnalysisFeature* m_pAnalysis;
+    QPointer<AnalysisLibraryTableModel> m_pAnalysisLibraryTableModel;
+    QPointer<AnalysisFeature> m_pAnalysis;
     int m_tracksInQueue;
     int m_currentTrack;
     

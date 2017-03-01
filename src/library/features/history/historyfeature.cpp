@@ -19,12 +19,12 @@ HistoryFeature::HistoryFeature(UserSettingsPointer pConfig,
                              TrackCollection* pTrackCollection)
         : BasePlaylistFeature(pConfig, pLibrary, parent, pTrackCollection),
           m_playlistId(-1) {
-    m_pJoinWithNextAction = new QAction(tr("Join with next"), this);
-    connect(m_pJoinWithNextAction, SIGNAL(triggered()),
+    m_pJoinWithNextAction = make_parented<QAction>(tr("Join with next"), this);
+    connect(m_pJoinWithNextAction.get(), SIGNAL(triggered()),
             this, SLOT(slotJoinWithNext()));
 
-    m_pGetNewPlaylist = new QAction(tr("Create new history playlist"), this);
-    connect(m_pGetNewPlaylist, SIGNAL(triggered()), this, SLOT(slotGetNewPlaylist()));
+    m_pGetNewPlaylist = make_parented<QAction>(tr("Create new history playlist"), this);
+    connect(m_pGetNewPlaylist.get(), SIGNAL(triggered()), this, SLOT(slotGetNewPlaylist()));
 
     // initialized in a new generic slot(get new history playlist purpose)
     emit(slotGetNewPlaylist());
@@ -95,7 +95,7 @@ void HistoryFeature::onRightClickChild(const QPoint& globalPos, const QModelInde
     menu.addAction(m_pAddToAutoDJAction);
     menu.addAction(m_pAddToAutoDJTopAction);
     menu.addAction(m_pRenamePlaylistAction);
-    menu.addAction(m_pJoinWithNextAction);
+    menu.addAction(m_pJoinWithNextAction.get());
     if (playlistId != m_playlistId) {
         // Todays playlist should not be locked or deleted
         menu.addAction(m_pDeletePlaylistAction);
@@ -103,7 +103,7 @@ void HistoryFeature::onRightClickChild(const QPoint& globalPos, const QModelInde
     }
     if (playlistId == m_playlistId && m_playlistDao.tracksInPlaylist(m_playlistId) != 0) {
         // Todays playlists can change !
-        menu.addAction(m_pGetNewPlaylist);
+        menu.addAction(m_pGetNewPlaylist.get());
     }
     menu.addSeparator();
     menu.addAction(m_pExportPlaylistAction);
@@ -139,7 +139,7 @@ void HistoryFeature::decorateChild(TreeItem* item, int playlist_id) {
     }
 }
 
-TreeItemModel *HistoryFeature::getChildModel() {
+QPointer<TreeItemModel> HistoryFeature::getChildModel() {
     return m_pHistoryTreeModel.get();
 }
 
@@ -152,9 +152,9 @@ QModelIndex HistoryFeature::constructChildModel(int selected_id) {
     return index;
 }
 
-PlaylistTableModel* HistoryFeature::constructTableModel() {
-    return new PlaylistTableModel(this, m_pTrackCollection, 
-                                  "mixxx.db.model.setlog", true);
+parented_ptr<PlaylistTableModel> HistoryFeature::constructTableModel() {
+    return make_parented<PlaylistTableModel>(this, m_pTrackCollection, 
+            "mixxx.db.model.setlog", true);
 }
 
 QSet<int> HistoryFeature::playlistIdsFromIndex(const QModelIndex& index) const {

@@ -118,7 +118,8 @@ QPointer<PlaylistTableModel> BasePlaylistFeature::getPlaylistTableModel(int pane
     }
     auto it = m_playlistTableModel.find(paneId);
     if (it == m_playlistTableModel.end() || it->isNull()) {
-        it = m_playlistTableModel.insert(paneId, constructTableModel());
+        auto pTableModel = constructTableModel();
+        it = m_playlistTableModel.insert(paneId, pTableModel.toWeakRef());
     }
     return *it;
 }
@@ -627,7 +628,7 @@ QString BasePlaylistFeature::getValidPlaylistName() const {
     return name;
 }
 
-QSet<int> BasePlaylistFeature::playlistIdsFromIndex(const QModelIndex &index) const {
+QSet<int> BasePlaylistFeature::playlistIdsFromIndex(const QModelIndex& index) const {
     bool ok = false;
     int playlistId = index.data(AbstractRole::RoleData).toInt(&ok);
     QSet<int> set;
@@ -712,9 +713,13 @@ void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {
 */
 QModelIndex BasePlaylistFeature::constructChildModel(int selectedId) {
     buildPlaylistList();
-    QList<TreeItem*> dataList;
     int selectedRow = -1;
-
+    QPointer<TreeItemModel> pChildModel = getChildModel();
+    if (pChildModel.isNull())
+        return QModelIndex();
+    
+    TreeItem* pRoot = pChildModel->setRootItem(std::make_unique<TreeItem>(this));
+    
     int row = 0;
     for (const PlaylistItem& p : m_playlistList) {
         if (selectedId == p.id) {
@@ -723,17 +728,14 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selectedId) {
         }
 
         // Create the TreeItem whose parent is the invisible root item
-        TreeItem* item = new TreeItem(this, p.name, p.id);
+        TreeItem* item = pRoot->appendChild(p.name, p.id);
         item->setBold(m_playlistsSelectedTrackIsIn.contains(p.id));
 
         decorateChild(item, p.id);
-        dataList.append(item);
         ++row;
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
-    TreeItemModel *pChildModel = getChildModel();
-    pChildModel->insertTreeItemRows(dataList, 0);
     return pChildModel->index(selectedRow, 0);
 }
 
@@ -744,8 +746,11 @@ void BasePlaylistFeature::updateChildModel(int selectedId) {
     if (!index.isValid()) {
         return;
     }
+    QPointer<TreeItemModel> pChildModel = getChildModel();
+    VERIFY_OR_DEBUG_ASSERT (pChildModel.isNull()) 
+        return;
     
-    TreeItem* item = getChildModel()->getItem(index);
+    TreeItem* item = pChildModel->getItem(index);
     VERIFY_OR_DEBUG_ASSERT(item) {
         return;
     }
@@ -778,7 +783,10 @@ void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
 
     // Set all playlists the track is in bold (or if there is no track selected,
     // clear all the bolding).
-    TreeItemModel* pChildModel = getChildModel();
+    QPointer<TreeItemModel> pChildModel = getChildModel();
+    VERIFY_OR_DEBUG_ASSERT(!pChildModel.isNull()) 
+        return;
+    
     for (const PlaylistItem& p : m_playlistList) { 
         QModelIndex index = indexFromPlaylistId(p.id);
         

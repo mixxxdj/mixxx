@@ -43,7 +43,7 @@ class BrowseFeature : public LibraryFeature {
     parented_ptr<QWidget> createPaneWidget(KeyboardEventFilter*pKeyboard, 
                                            int paneId, QWidget* parent) override;
 
-    TreeItemModel* getChildModel();
+    QPointer<TreeItemModel> getChildModel();
 
   public slots:
     void slotAddQuickLink();
@@ -51,7 +51,7 @@ class BrowseFeature : public LibraryFeature {
     void slotAddToLibrary();
     void activate();
     void activateChild(const QModelIndex& index);
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    void onRightClickChild(const QPoint& globalPos, const QModelIndex& index);
     void onLazyChildExpandation(const QModelIndex& index);
     void slotLibraryScanStarted();
     void slotLibraryScanFinished();
@@ -77,8 +77,8 @@ class BrowseFeature : public LibraryFeature {
     QAction* m_pAddQuickLinkAction;
     QAction* m_pRemoveQuickLinkAction;
     QAction* m_pAddtoLibraryAction;
-    TreeItem* m_pLastRightClickedItem;
-    TreeItem* m_pQuickLinkItem;
+    QPersistentModelIndex m_lastRightClickedIndex;
+    parented_ptr<TreeItem> m_pQuickLinkItem;
     QStringList m_quickLinkList;
     QPersistentModelIndex m_lastClickedChild;
     

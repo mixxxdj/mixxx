@@ -37,7 +37,7 @@ class RecordingFeature : public LibraryFeature {
     parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter* pKeyboard, 
                                                    QWidget* parent) override;
 
-    TreeItemModel* getChildModel();
+    QPointer<TreeItemModel> getChildModel();
 
   public slots:
     void activate();
@@ -55,8 +55,8 @@ class RecordingFeature : public LibraryFeature {
     RecordingManager* m_pRecordingManager;
     
     QPointer<DlgRecording> m_pRecordingView;
-    QPointer<BrowseTableModel> m_pBrowseModel;
-    QPointer<ProxyTrackModel> m_pProxyModel;
+    parented_ptr<BrowseTableModel> m_pBrowseModel;
+    parented_ptr<ProxyTrackModel> m_pProxyModel;
 };
 
 #endif

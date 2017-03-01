@@ -31,7 +31,7 @@ class DlgHidden : public QFrame, public Ui::DlgHidden {
 
   private:
     void activateButtons(bool enable);
-    HiddenTableModel* m_pHiddenTableModel;
+    QPointer<HiddenTableModel> m_pHiddenTableModel;
 };
 
 #endif //DLGHIDDEN_H

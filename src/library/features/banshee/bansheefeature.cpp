@@ -133,7 +133,7 @@ void BansheeFeature::activateChild(const QModelIndex& index) {
     }
 }
 
-TreeItemModel* BansheeFeature::getChildModel() {
+QPointer<TreeItemModel> BansheeFeature::getChildModel() {
     return &m_childModel;
 }
 

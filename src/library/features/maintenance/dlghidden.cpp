@@ -16,12 +16,12 @@ DlgHidden::DlgHidden(QWidget* parent)
 }
 
 DlgHidden::~DlgHidden() {
-    // Delete m_pTrackTableView before the table model. This is because the
-    // table view saves the header state using the model.
-    delete m_pHiddenTableModel;
 }
 
 void DlgHidden::onShow() {
+    VERIFY_OR_DEBUG_ASSERT (!m_pHiddenTableModel.isNull())
+        return;
+    
     m_pHiddenTableModel->select();
     // no buttons can be selected
     activateButtons(false);

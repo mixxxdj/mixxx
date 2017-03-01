@@ -271,7 +271,7 @@ parented_ptr<QWidget> CrateFeature::createPaneWidget(KeyboardEventFilter* pKeybo
     return pContainer;
 }
 
-TreeItemModel* CrateFeature::getChildModel() {
+QPointer<TreeItemModel> CrateFeature::getChildModel() {
     return &m_childModel;
 }
 

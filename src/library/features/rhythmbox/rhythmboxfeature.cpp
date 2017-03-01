@@ -109,7 +109,7 @@ QString RhythmboxFeature::getSettingsName() const {
     return "RhythmboxFeature";
 }
 
-TreeItemModel* RhythmboxFeature::getChildModel() {
+QPointer<TreeItemModel> RhythmboxFeature::getChildModel() {
     return &m_childModel;
 }
 

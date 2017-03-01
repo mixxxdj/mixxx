@@ -2,6 +2,7 @@
 #define UTIL_PARENTED_PTR_H
 
 #include <QPointer>
+#include <cstddef>
 #include "util/assert.h"
 
 /**
@@ -13,14 +14,18 @@ template <typename T>
 class parented_ptr {
   public:
     explicit parented_ptr(T* t) : m_pObject(t) {
-        DEBUG_ASSERT(t->parent() != nullptr);
+        if (t != nullptr) {
+            DEBUG_ASSERT(t->parent() != nullptr);
+        }
     }
 
     /* If U* is convertible to T* then we also want parented_ptr<U> convertible to parented_ptr<T> */
     template <typename U>
     parented_ptr(parented_ptr<U>&& u, typename std::enable_if<std::is_convertible<U*, T*>::value, void>::type * = 0)
             : m_pObject(u.get()) {
-        DEBUG_ASSERT(u->parent() != nullptr);
+        if (u != nullptr) {
+            DEBUG_ASSERT(u->parent() != nullptr);
+        }
     }
 
 #if defined(__GNUC__) && __GNUC__ < 5
@@ -100,8 +105,18 @@ inline bool operator== (const parented_ptr<T>& lhs, const U* rhs) {
 }
 
 template<typename T, typename U>
-inline bool operator== (const parented_ptr<T>& lhs, const parented_ptr<U>& rhs) const {
+inline bool operator== (const parented_ptr<T>& lhs, const parented_ptr<U>& rhs) {
     return lhs.get() == rhs.get();
+}
+
+template<typename T>
+inline bool operator== (const parented_ptr<T>& p, std::nullptr_t) {
+    return p.get() == nullptr;
+}
+
+template<typename T>
+inline bool operator== (std::nullptr_t, const parented_ptr<T>& p) {
+    return p.get() == nullptr;
 }
 
 template<typename T, typename U>
@@ -115,8 +130,18 @@ inline bool operator!= (const parented_ptr<T>& lhs, const U* rhs) {
 }
 
 template<typename T, typename U>
-inline bool operator!= (const parented_ptr<T>& lhs, const parented_ptr<U>& rhs) const {
+inline bool operator!= (const parented_ptr<T>& lhs, const parented_ptr<U>& rhs) {
     return !(lhs.get() == rhs.get());
+}
+
+template<typename T>
+inline bool operator!= (const parented_ptr<T>& p, std::nullptr_t) {
+    return !(p == nullptr);
+}
+
+template<typename T>
+inline bool operator!= (std::nullptr_t, const parented_ptr<T>& p) {
+    return !(nullptr == p);
 }
 
 } // namespace

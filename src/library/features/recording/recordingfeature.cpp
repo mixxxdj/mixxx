@@ -23,6 +23,10 @@ RecordingFeature::RecordingFeature(UserSettingsPointer pConfig,
           m_pProxyModel(nullptr) {
     
     m_childModel.setRootItem(std::make_unique<TreeItem>(this));
+    
+    m_pBrowseModel = make_parented<BrowseTableModel>(this, 
+            m_pTrackCollection, m_pRecordingManager);
+    m_pProxyModel = make_parented<ProxyTrackModel>(m_pBrowseModel.get());
 }
 
 RecordingFeature::~RecordingFeature() {
@@ -41,7 +45,7 @@ QString RecordingFeature::getSettingsName() const {
     return "RecordingFeature";
 }
 
-TreeItemModel* RecordingFeature::getChildModel() {
+QPointer<TreeItemModel> RecordingFeature::getChildModel() {
     return &m_childModel;
 }
 
@@ -59,8 +63,8 @@ parented_ptr<QWidget> RecordingFeature::createInnerSidebarWidget(
                                                       m_pRecordingManager);
     m_pRecordingView = pRecordingView.toWeakRef();
     m_pRecordingView->installEventFilter(pKeyboard);
-    m_pRecordingView->setBrowseTableModel(getBrowseTableModel());
-    m_pRecordingView->setProxyTrackModel(getProxyTrackModel());
+    m_pRecordingView->setBrowseTableModel(m_pBrowseModel.get());
+    m_pRecordingView->setProxyTrackModel(m_pProxyModel.get());
     
     return pRecordingView;
 }
@@ -72,25 +76,8 @@ void RecordingFeature::activate() {
     }
     
     m_pRecordingView->refreshBrowseModel();
-    showTrackModel(getProxyTrackModel());
+    showTrackModel(m_pProxyModel.get());
     showBreadCrumb();
     restoreSearch("");
     
-}
-
-BrowseTableModel* RecordingFeature::getBrowseTableModel() {
-    if (m_pBrowseModel.isNull()) {
-        m_pBrowseModel = new BrowseTableModel(
-                this, m_pTrackCollection, m_pRecordingManager);
-    }
-    
-    return m_pBrowseModel;
-}
-
-ProxyTrackModel* RecordingFeature::getProxyTrackModel() {
-    if (m_pProxyModel.isNull()) {
-        m_pProxyModel = new ProxyTrackModel(getBrowseTableModel());
-    }
-    
-    return m_pProxyModel;
 }

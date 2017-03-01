@@ -49,7 +49,7 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     QString getSettingsName() const override;
     static bool isSupported();
 
-    TreeItemModel* getChildModel();
+    QPointer<TreeItemModel> getChildModel();
 
   public slots:
     void activate();

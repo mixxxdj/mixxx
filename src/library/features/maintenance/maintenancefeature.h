@@ -23,7 +23,7 @@ class MaintenanceFeature : public LibraryFeature
     QVariant title() override;
     QString getIconPath() override;
     QString getSettingsName() const override;
-    TreeItemModel* getChildModel();
+    QPointer<TreeItemModel> getChildModel();
 
   public slots:
     void activate();
@@ -53,7 +53,6 @@ class MaintenanceFeature : public LibraryFeature
 
   private:
 
-    HiddenTableModel* getHiddenTableModel();
     MissingTableModel* getMissingTableModel();
 
     QPointer<DlgHidden> m_pHiddenView;

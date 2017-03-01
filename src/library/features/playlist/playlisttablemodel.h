@@ -38,6 +38,10 @@ class PlaylistTableModel : public BaseSqlTableModel {
     int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
     bool isLocked() final;
     CapabilitiesFlags getCapabilities() const final;
+    
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+    using QObject::parent;
+#endif
 
   private slots:
     void playlistChanged(int playlistId);

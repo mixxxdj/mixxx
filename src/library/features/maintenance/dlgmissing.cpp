@@ -14,13 +14,14 @@ DlgMissing::DlgMissing(QWidget* parent)
 }
 
 DlgMissing::~DlgMissing() {
-    // Delete m_pTrackTableView before the table model. This is because the
-    // table view saves the header state using the model.
-    delete m_pMissingTableModel;
 }
 
 void DlgMissing::onShow() {
+    VERIFY_OR_DEBUG_ASSERT(!m_pMissingTableModel.isNull())
+        return;
+    
     m_pMissingTableModel->select();
+    // no buttons can be selected
     activateButtons(false);
 }
 

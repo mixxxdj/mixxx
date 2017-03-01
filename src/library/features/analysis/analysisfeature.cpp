@@ -9,10 +9,8 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/features/analysis/analysisfeature.h"
 #include "library/features/analysis/dlganalysis.h"
-#include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
 #include "sources/soundsourceproxy.h"
-#include "util/debug.h"
 #include "util/dnd.h"
 #include "widget/wanalysislibrarytableview.h"
 #include "widget/wtracktableview.h"
@@ -75,7 +73,7 @@ parented_ptr<QWidget> AnalysisFeature::createPaneWidget(KeyboardEventFilter*,
 
 parented_ptr<QWidget> AnalysisFeature::createInnerSidebarWidget(
             KeyboardEventFilter* pKeyboard, QWidget* parent) {
-    auto pAnalysisView = make_parented<DlgAnalysis>(parent, this, m_pTrackCollection);
+    auto pAnalysisView = make_parented<DlgAnalysis>(parent, this);
     
     m_pAnalysisView = pAnalysisView.toWeakRef();
     m_pAnalysisView->setTableModel(&m_analysisLibraryTableModel);
@@ -96,7 +94,7 @@ parented_ptr<QWidget> AnalysisFeature::createInnerSidebarWidget(
     return pAnalysisView;
 }
 
-TreeItemModel* AnalysisFeature::getChildModel() {
+QPointer<TreeItemModel> AnalysisFeature::getChildModel() {
     return &m_childModel;
 }
 

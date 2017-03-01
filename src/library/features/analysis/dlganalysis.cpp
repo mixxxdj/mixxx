@@ -1,18 +1,10 @@
-#include <QSqlTableModel>
-
-#include "library/features/analysis/analysisfeature.h"
 #include "library/features/analysis/dlganalysis.h"
-#include "library/trackcollection.h"
 #include "library/dao/trackschema.h"
 #include "util/assert.h"
-#include "widget/wanalysislibrarytableview.h"
-#include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
-DlgAnalysis::DlgAnalysis(QWidget* parent, AnalysisFeature *pAnalysis,
-                         TrackCollection* pTrackCollection)
+DlgAnalysis::DlgAnalysis(QWidget* parent, AnalysisFeature* pAnalysis)
         : QFrame(parent),
-          m_pTrackCollection(pTrackCollection),
           m_bAnalysisActive(false),
           m_pAnalysis(pAnalysis),
           m_tracksInQueue(0),
@@ -27,7 +19,7 @@ DlgAnalysis::DlgAnalysis(QWidget* parent, AnalysisFeature *pAnalysis,
             this, SLOT(analyze()));
 
     connect(pushButtonSelectAll, SIGNAL(clicked()),
-            m_pAnalysis, SLOT(selectAll()));
+            m_pAnalysis.data(), SLOT(selectAll()));
 }
 
 DlgAnalysis::~DlgAnalysis() {
@@ -36,7 +28,8 @@ DlgAnalysis::~DlgAnalysis() {
 void DlgAnalysis::onShow() {
     // Refresh table
     // There might be new tracks dropped to other views
-    m_pAnalysisLibraryTableModel->select();
+    if (!m_pAnalysisLibraryTableModel.isNull()) 
+        m_pAnalysisLibraryTableModel->select();
     
     // TODO(rryan): This triggers a library search before the UI has even
     // started up. Accounts for 0.2% of skin creation time. Get rid of this!
@@ -48,6 +41,8 @@ void DlgAnalysis::analyze() {
     if (m_bAnalysisActive) {
         m_pAnalysis->stopAnalysis();
     } else {
+        if (m_pAnalysisLibraryTableModel.isNull()) 
+            return;
         QList<TrackId> trackIds;
         for (QModelIndex selectedIndex : m_selectedIndexes) {
             TrackId trackId(selectedIndex.sibling(

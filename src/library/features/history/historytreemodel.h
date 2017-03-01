@@ -29,7 +29,7 @@ class HistoryTreeModel : public TreeItemModel
     QList<QVariant> idsFromItem(TreeItem* pTree) const;
     TreeItem* findItemFromPlaylistId(TreeItem* pTree, int playlistId, int& row) const;
     
-    HistoryFeature* m_pFeature;
+    QPointer<HistoryFeature> m_pFeature;
     TrackCollection* m_pTrackCollection;
     QStringList m_columns;
 };
