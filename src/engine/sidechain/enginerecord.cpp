@@ -374,7 +374,7 @@ bool EngineRecord::openFile() {
                 qWarning("libsndfile error: %s", sf_error_number(ret));
             }
 
-            ret = sf_set_string(m_pSndfile, SF_STR_COMMENT, m_baAlbum.constData());
+            ret = sf_set_string(m_pSndfile, SF_STR_ALBUM, m_baAlbum.constData());
             if (ret != 0) {
                 qWarning("libsndfile error: %s", sf_error_number(ret));
             }
