@@ -811,6 +811,23 @@ QScriptValue ControllerEngine::connectControl(
 }
 
 /* -------- ------------------------------------------------------
+   Purpose: Execute a ControllerEngineConnection's callback
+   Input:   the value of the connected ControlObject to pass to the callback
+   -------- ------------------------------------------------------ */
+void ControllerEngineConnection::executeCallback(double value) const {
+    QScriptValueList args;
+    args << QScriptValue(value);
+    args << QScriptValue(key.group);
+    args << QScriptValue(key.item);
+    QScriptValue func = function; // copy function because QScriptValue::call is not const
+    QScriptValue result = func.call(context, args);
+    if (result.isError()) {
+        qWarning() << "ControllerEngine: Invocation of callback" << id
+                   << "failed:" << result.toString();
+    }
+}
+
+/* -------- ------------------------------------------------------
    Purpose: (Dis)connects a ControllerEngineConnection
    Input:   the ControllerEngineConnection to disconnect
    -------- ------------------------------------------------------ */
@@ -838,13 +855,16 @@ void ControllerEngineConnectionScriptValue::disconnect() {
    Input:   the ControllerEngineConnection to trigger
    -------- ------------------------------------------------------ */
 void ControllerEngine::triggerControl(const ControllerEngineConnection conn) {
-    ControlObjectScript* coScript = getControlObjectScript(conn.key.group, conn.key.item);
-
-    if (m_pEngine == nullptr || coScript == nullptr) {
+    if (m_pEngine == nullptr) {
         return;
     }
 
-    coScript->emitValueChanged();
+    ControlObjectScript* coScript = getControlObjectScript(conn.key.group, conn.key.item);
+    if (coScript == nullptr) {
+        return;
+    }
+
+    conn.executeCallback(coScript->get());
 }
 
 void ControllerEngineConnectionScriptValue::trigger() {

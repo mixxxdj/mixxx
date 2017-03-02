@@ -622,8 +622,10 @@ TagLib::ID3v2::CommentsFrame* findFirstCommentsFrame(
         const TagLib::ID3v2::Tag& tag,
         const QString& description = QString(),
         bool preferNotEmpty = true) {
-    TagLib::ID3v2::FrameList commentsFrames(tag.frameListMap()["COMM"]);
     TagLib::ID3v2::CommentsFrame* pFirstFrame = nullptr;
+    // Bind the const-ref result to avoid a local copy
+    const TagLib::ID3v2::FrameList& commentsFrames =
+            tag.frameListMap()["COMM"];
     for (TagLib::ID3v2::FrameList::ConstIterator it(commentsFrames.begin());
             it != commentsFrames.end(); ++it) {
         auto pFrame =
@@ -650,16 +652,18 @@ TagLib::ID3v2::CommentsFrame* findFirstCommentsFrame(
     return pFirstFrame;
 }
 
-// Finds the first text frame that with a matching description.
-// If multiple comments frames with matching descriptions exist
-// prefer the first with a non-empty content if requested.
+// Finds the first text frame that with a matching description (case-insensitive).
+// If multiple comments frames with matching descriptions exist prefer the first
+// with a non-empty content if requested.
 TagLib::ID3v2::UserTextIdentificationFrame* findFirstUserTextIdentificationFrame(
         const TagLib::ID3v2::Tag& tag,
         const QString& description,
         bool preferNotEmpty = true) {
     DEBUG_ASSERT(!description.isEmpty());
-    TagLib::ID3v2::FrameList textFrames(tag.frameListMap()["TXXX"]);
     TagLib::ID3v2::UserTextIdentificationFrame* pFirstFrame = nullptr;
+    // Bind the const-ref result to avoid a local copy
+    const TagLib::ID3v2::FrameList& textFrames =
+            tag.frameListMap()["TXXX"];
     for (TagLib::ID3v2::FrameList::ConstIterator it(textFrames.begin());
             it != textFrames.end(); ++it) {
         auto pFrame =
@@ -684,6 +688,43 @@ TagLib::ID3v2::UserTextIdentificationFrame* findFirstUserTextIdentificationFrame
     }
     // simply return the first matching frame
     return pFirstFrame;
+}
+
+// Deletes all TXXX frame with the given description (case-insensitive).
+int removeUserTextIdentificationFrames(
+        TagLib::ID3v2::Tag* pTag,
+        const QString& description) {
+    DEBUG_ASSERT(pTag != nullptr);
+    DEBUG_ASSERT(!description.isEmpty());
+    int count = 0;
+    bool repeat;
+    do {
+        repeat = false;
+        // Bind the const-ref result to avoid a local copy
+        const TagLib::ID3v2::FrameList& textFrames =
+                pTag->frameListMap()["TXXX"];
+        for (TagLib::ID3v2::FrameList::ConstIterator it(textFrames.begin());
+                it != textFrames.end(); ++it) {
+            auto pFrame =
+                    dynamic_cast<TagLib::ID3v2::UserTextIdentificationFrame*>(*it);
+            if (pFrame != nullptr) {
+                const QString frameDescription(
+                        toQString(pFrame->description()));
+                if (0 == frameDescription.compare(
+                        description, Qt::CaseInsensitive)) {
+                    qDebug() << "Removing ID3v2 TXXX frame:" << toQString(pFrame->description());
+                    // After removing a frame the result of frameListMap()
+                    // is no longer valid!!
+                    pTag->removeFrame(pFrame, false); // remove an unowned frame
+                    ++count;
+                    // Exit and restart loop
+                    repeat = true;
+                    break;
+                }
+            }
+        }
+    } while (repeat);
+    return count;
 }
 
 void writeID3v2TextIdentificationFrame(
@@ -739,6 +780,15 @@ void writeID3v2CommentsFrame(
             // pTag we need to release the ownership to avoid double deletion!
             pFrame.release();
         }
+    }
+    // Cleanup: Remove non-standard comment frames to avoid redundant and
+    // inconsistent tags.
+    // See also: Compatibility workaround when reading ID3v2 comment tags.
+    int numberOfRemovedCommentFrames =
+            removeUserTextIdentificationFrames(pTag, "COMMENT");
+    if (numberOfRemovedCommentFrames > 0) {
+        qWarning() << "Removed" << numberOfRemovedCommentFrames
+                << "non-standard ID3v2 TXXX comment frames";
     }
 }
 
@@ -960,6 +1010,22 @@ void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
             findFirstCommentsFrame(tag);
     if (nullptr != pCommentsFrame) {
         pTrackMetadata->setComment(toQString(*pCommentsFrame));
+    } else {
+        // Compatibility workaround: ffmpeg 3.1.x maps DESCRIPTION fields of
+        // FLAC files with Vorbis Tags into TXXX frames labeled "comment"
+        // upon conversion to MP3. This might also happen when transcoding
+        // other file types to MP3 if ffmpeg is writing comments into this
+        // non-standard ID3v2 text frame.
+        // Note: The description string that identifies certain text frames
+        // is case-insensitive. We do the lookup with an upper-case string
+        // like for all other frames.
+        TagLib::ID3v2::UserTextIdentificationFrame* pCommentFrame =
+                findFirstUserTextIdentificationFrame(tag, "COMMENT");
+        if (pCommentFrame != nullptr) {
+            // The value is stored in the 2nd field
+            pTrackMetadata->setComment(
+                    toQString(pCommentFrame->fieldList()[1]));
+        }
     }
 
     const TagLib::ID3v2::FrameList albumArtistFrame(tag.frameListMap()["TPE2"]);
