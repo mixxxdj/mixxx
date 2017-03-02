@@ -14,7 +14,6 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   inkscape:export-filename="/home/ronso/.mixxx/skins/FlatNite/btn_sampler_repeat.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90"
    sodipodi:docname="btn_quantize_on.svg">
@@ -27,9 +26,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="22.627417"
-     inkscape:cx="8.2452776"
-     inkscape:cy="10.340148"
+     inkscape:zoom="11.313709"
+     inkscape:cx="10.335627"
+     inkscape:cy="12.611636"
      inkscape:document-units="px"
      inkscape:current-layer="layer3"
      showgrid="false"
@@ -43,17 +42,12 @@
      inkscape:snap-object-midpoints="true"
      inkscape:snap-global="true"
      inkscape:window-width="1366"
-     inkscape:window-height="746"
+     inkscape:window-height="747"
      inkscape:window-x="0"
-     inkscape:window-y="0"
+     inkscape:window-y="21"
      inkscape:window-maximized="1"
      inkscape:snap-page="true"
-     inkscape:snap-bbox-edge-midpoints="true">
-    <sodipodi:guide
-       orientation="1,0"
-       position="17.5,11"
-       id="guide5426" />
-  </sodipodi:namedview>
+     inkscape:snap-bbox-edge-midpoints="true" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -72,21 +66,22 @@
      inkscape:label="22x22">
     <path
        style="fill:#dc0000;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       d="M 6.65625 6 L 6.65625 8 L 12.375 8 C 14.031853 8 15.375 9.3431463 15.375 11 C 15.375 12.656854 14.031853 14 12.375 14 L 6.65625 14 L 6.65625 16 L 12.5 16 C 15.261423 16 17.5 13.761423 17.5 11 C 17.5 8.238576 15.261423 6.0000001 12.5 6 L 6.65625 6 z "
-       id="path2992" />
+       d="m 6.9999986,6 0,2 5.7187504,0 c 1.656853,0 3,1.3431463 3,3 0,1.656854 -1.343147,3 -3,3 l -5.7187504,0 0,2 5.8437504,0 c 2.761423,0 5,-2.238577 5,-5 0,-2.761424 -2.238577,-4.9999999 -5,-5 L 6.9999986,6 z"
+       id="path2992"
+       inkscape:connector-curvature="0" />
     <rect
        style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
        id="rect2998-3-7"
        width="1.9999986"
        height="1.9999986"
-       x="4.6666675"
+       x="5.010416"
        y="13.999999" />
     <rect
        style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
        id="rect2998-3-7-6"
        width="1.9999986"
        height="1.9999986"
-       x="4.6562514"
+       x="5"
        y="6" />
   </g>
 </svg>

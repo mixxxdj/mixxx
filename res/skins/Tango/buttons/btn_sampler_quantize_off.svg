@@ -14,10 +14,9 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   inkscape:export-filename="/home/ronso/.mixxx/skins/FlatNite/btn_sampler_repeat.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90"
-   sodipodi:docname="btn_sampler_quantize_on.svg">
+   sodipodi:docname="btn_sampler_quantize_off.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -27,9 +26,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="8"
-     inkscape:cx="-0.53651278"
-     inkscape:cy="19.004561"
+     inkscape:zoom="22.627417"
+     inkscape:cx="5.7047901"
+     inkscape:cy="11.340093"
      inkscape:document-units="px"
      inkscape:current-layer="layer3"
      showgrid="false"
@@ -43,9 +42,9 @@
      inkscape:snap-object-midpoints="true"
      inkscape:snap-global="true"
      inkscape:window-width="1366"
-     inkscape:window-height="746"
+     inkscape:window-height="747"
      inkscape:window-x="0"
-     inkscape:window-y="0"
+     inkscape:window-y="21"
      inkscape:window-maximized="1"
      inkscape:snap-page="true"
      inkscape:snap-bbox-edge-midpoints="true">
@@ -90,7 +89,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -101,23 +100,22 @@
      transform="translate(0,-4)">
     <path
        style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       d="m 4.6666667,8 0,1.6666667 5.8333333,0 c 1.840949,0 3.333333,1.4923843 3.333333,3.3333333 0,1.840949 -1.492384,3.333333 -3.333333,3.333333 l -5.8333333,0 0,1.666667 L 10.5,18 c 2.761423,0 5,-2.238577 5,-5 0,-2.761424 -2.238577,-4.9999999 -5,-5 z"
-       id="path2992"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccsssccsssc" />
+       d="m 4.999999,8.0000001 0,1.9999999 5.718751,0 c 1.656853,0 3,1.343146 3,3 0,1.656854 -1.343147,3 -3,3 l -5.718751,0 0,2 5.843751,0 c 2.761423,0 5,-2.238577 5,-5 0,-2.761424 -2.238577,-4.9999998 -5,-4.9999999 l -5.843751,0 z"
+       id="path2992-3"
+       inkscape:connector-curvature="0" />
     <rect
-       style="fill:#eeeeef;fill-opacity:0.94117647;fill-rule:nonzero;stroke:none"
-       id="rect2998-6"
-       width="1.6666666"
-       height="1.6666666"
-       x="3.0000002"
+       style="fill:#eeeeee;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect2998-3-7-67"
+       width="1.9999986"
+       height="1.9999986"
+       x="3.010416"
+       y="15.999999" />
+    <rect
+       style="fill:#eeeeee;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect2998-3-7-6"
+       width="1.9999986"
+       height="1.9999986"
+       x="3"
        y="8" />
-    <rect
-       style="fill:#eeeeef;fill-opacity:0.94117647;fill-rule:nonzero;stroke:none"
-       id="rect2998-3-7"
-       width="1.6666666"
-       height="1.6666666"
-       x="3.0000002"
-       y="16.333332" />
   </g>
 </svg>

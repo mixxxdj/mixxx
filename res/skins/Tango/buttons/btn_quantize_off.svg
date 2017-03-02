@@ -14,10 +14,9 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   inkscape:export-filename="/home/ronso/.mixxx/skins/FlatNite/btn_sampler_repeat.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90"
-   sodipodi:docname="btn_sampler_quantize_off.svg">
+   sodipodi:docname="btn_quantize_off.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -28,8 +27,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="16"
-     inkscape:cx="1.228064"
-     inkscape:cy="14.36929"
+     inkscape:cx="-9.1583291"
+     inkscape:cy="19.165423"
      inkscape:document-units="px"
      inkscape:current-layer="layer3"
      showgrid="false"
@@ -43,29 +42,12 @@
      inkscape:snap-object-midpoints="true"
      inkscape:snap-global="true"
      inkscape:window-width="1366"
-     inkscape:window-height="746"
+     inkscape:window-height="747"
      inkscape:window-x="0"
-     inkscape:window-y="0"
+     inkscape:window-y="21"
      inkscape:window-maximized="1"
      inkscape:snap-page="true"
-     inkscape:snap-bbox-edge-midpoints="true">
-    <sodipodi:guide
-       orientation="0,1"
-       position="10.5,4"
-       id="guide3027" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="10.5,14"
-       id="guide3828" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="15.5,9"
-       id="guide3827" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="3.0000002,12.333333"
-       id="guide3904" />
-  </sodipodi:namedview>
+     inkscape:snap-bbox-edge-midpoints="true" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -74,7 +56,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -84,23 +66,22 @@
      inkscape:label="22x22">
     <path
        style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       d="m 6.6666667,6 0,1.6666667 5.8333333,0 c 1.840949,0 3.333333,1.4923843 3.333333,3.3333333 0,1.840949 -1.492384,3.333333 -3.333333,3.333333 l -5.8333333,0 0,1.666667 L 12.5,16 c 2.761423,0 5,-2.238577 5,-5 0,-2.761424 -2.238577,-4.9999999 -5,-5 z"
-       id="path2992"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccsssccsssc" />
+       d="m 6.9999987,6.0000001 0,1.9999999 5.7187503,0 c 1.656853,0 3,1.343146 3,3 0,1.656854 -1.343147,3 -3,3 l -5.7187503,0 0,2 5.8437503,0 c 2.761423,0 5,-2.238577 5,-5 0,-2.761424 -2.238577,-4.9999998 -5,-4.9999999 l -5.8437503,0 z"
+       id="path2992-3"
+       inkscape:connector-curvature="0" />
     <rect
-       style="fill:#eeeeef;fill-opacity:0.94117647;fill-rule:nonzero;stroke:none"
-       id="rect2998-6"
-       width="1.6666666"
-       height="1.6666666"
+       style="fill:#eeeeee;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect2998-3-7-67"
+       width="1.9999986"
+       height="1.9999986"
+       x="5.010416"
+       y="13.999999" />
+    <rect
+       style="fill:#eeeeee;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect2998-3-7-6"
+       width="1.9999986"
+       height="1.9999986"
        x="5"
        y="6" />
-    <rect
-       style="fill:#eeeeef;fill-opacity:0.94117647;fill-rule:nonzero;stroke:none"
-       id="rect2998-3-7"
-       width="1.6666666"
-       height="1.6666666"
-       x="5"
-       y="14.333332" />
   </g>
 </svg>
