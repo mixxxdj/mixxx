@@ -1499,16 +1499,16 @@ WPushButton {
   margin-bottom: 12px;
   }
   #LibMiniMaxiButton[displayValue="0"] {
-    image: url(skin:/buttons/btn_arrow_up_thin.svg) no-repeat center top;
+    image: url(skin:/buttons/btn_lib_maxi.svg) no-repeat center top;
     }
     #LibMiniMaxiButton[displayValue="0"]:hover {
-      image: url(skin:/buttons/btn_arrow_up_thin_hover.svg) no-repeat center top;
+      image: url(skin:/buttons/btn_lib_maxi_hover.svg) no-repeat center top;
     }
   #LibMiniMaxiButton[displayValue="1"] {
-    image: url(skin:/buttons/btn_arrow_down_thin.svg) no-repeat center top;
+    image: url(skin:/buttons/btn_lib_mini.svg) no-repeat center top;
     }
     #LibMiniMaxiButton[displayValue="1"]:hover {
-      image: url(skin:/buttons/btn_arrow_down_thin_hover.svg) no-repeat center top;
+      image: url(skin:/buttons/btn_lib_mini_hover.svg) no-repeat center top;
     }
 
 QTableView, QTextBrowser, QTreeView {
