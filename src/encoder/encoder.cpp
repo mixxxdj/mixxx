@@ -9,7 +9,11 @@
 #include "encoder/encoder.h"
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
-#ifdef __FFMPEGFILE__
+// TODO: __FFMPEGFILE_ENCODERS__ is currently undefined because FFMPEG encoders
+// provide less features than the other encoders and currently we don't have
+// a good fallback for using them. That's why it's a bad idea to have
+// the worse encoders to take precedence over the good ones.
+#ifdef __FFMPEGFILE_ENCODERS__
 #include "encoder/encoderffmpegmp3.h"
 #include "encoder/encoderffmpegvorbis.h"
 #else
@@ -82,14 +86,14 @@ EncoderPointer EncoderFactory::getNewEncoder(Encoder::Format format,
         pEncoder = std::make_shared<EncoderSndfileFlac>(pCallback);
         pEncoder->setEncoderSettings(EncoderFlacSettings(pConfig));
     } else if (format.internalName == ENCODING_MP3) {
-        #ifdef __FFMPEGFILE__
+        #ifdef __FFMPEGFILE_ENCODERS__
         pEncoder = std::make_shared<EncoderFfmpegMp3>(pCallback);
         #else
         pEncoder = std::make_shared<EncoderMp3>(pCallback);
         #endif
         pEncoder->setEncoderSettings(EncoderMp3Settings(pConfig));
     } else if (format.internalName == ENCODING_OGG) {
-        #ifdef __FFMPEGFILE__
+        #ifdef __FFMPEGFILE_ENCODERS__
         pEncoder = std::make_shared<EncoderFfmpegVorbis>(pCallback);
         #else
         pEncoder = std::make_shared<EncoderVorbis>(pCallback);
