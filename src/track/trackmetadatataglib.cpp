@@ -24,6 +24,10 @@
 #define TAGLIB_HAS_TAG_CHECK \
     (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
 
+// TagLib has support for hasID3v2Tag() for AIFF files since version 1.10
+#define TAGLIB_HAS_AIFF_HAS_ID3V2TAG \
+    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 10))
+
 // TagLib has support for length in milliseconds since version 1.10
 #define TAGLIB_HAS_LENGTH_IN_MILLISECONDS \
     (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 10))
@@ -1742,18 +1746,21 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
     {
         TagLib::RIFF::AIFF::File file(TAGLIB_FILENAME_FROM_QSTRING(fileName));
         if (readAudioProperties(pTrackMetadata, file)) {
+#if (TAGLIB_HAS_AIFF_HAS_ID3V2TAG)
+            const TagLib::ID3v2::Tag* pID3v2Tag = file.hasID3v2Tag() ? file.tag() : nullptr;
+#else
             const TagLib::ID3v2::Tag* pID3v2Tag = file.tag();
+#endif
             if (pID3v2Tag) {
                 readTrackMetadataFromID3v2Tag(pTrackMetadata, *pID3v2Tag);
                 readCoverArtFromID3v2Tag(pCoverArt, *pID3v2Tag);
                 return OK;
             } else {
-                // fallback
-                const TagLib::Tag* pTag(file.tag());
-                if (pTag) {
-                    readTrackMetadataFromTag(pTrackMetadata, *pTag);
-                    return OK;
-                }
+                // no fallback available
+                // TagLib (version 1.11.x as of this writing) does only provide
+                // an ID3v2 tag for AIFF files.
+                qWarning() << "No ID3v2 tag found in AIFF file:"
+                        << fileName;
             }
         }
         break;
