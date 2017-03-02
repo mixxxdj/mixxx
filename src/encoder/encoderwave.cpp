@@ -169,18 +169,21 @@ void EncoderWave::initStream() {
     // Ensure CPU_CLIPS_NEGATIVE and CPU_CLIPS_POSITIVE is setup properly in the build.
     sf_command(m_pSndfile, SFC_SET_CLIPPING, NULL, SF_TRUE) ;
 
-    // Set meta data. Latin1 since WAVE does not officially support UTF8.
-    int ret = sf_set_string(m_pSndfile, SF_STR_TITLE, m_metaDataTitle.toLatin1().constData());
+    // Strings passed to and retrieved from sf_get_string/sf_set_string are assumed to be utf-8.
+    // However, while formats like Ogg/Vorbis and FLAC fully support utf-8, others like WAV and
+    // AIFF officially only support ASCII. Writing utf-8 strings to WAV and AIF files with
+    // libsndfile will work when read back with libsndfile, but may not work with other programs.
+    int ret = sf_set_string(m_pSndfile, SF_STR_TITLE, m_metaDataTitle.toAscii().constData());
     if (ret != 0) {
         qWarning("libsndfile error: %s", sf_error_number(ret));
     }
 
-    ret = sf_set_string(m_pSndfile, SF_STR_ARTIST, m_metaDataArtist.toLatin1().constData());
+    ret = sf_set_string(m_pSndfile, SF_STR_ARTIST, m_metaDataArtist.toAscii().constData());
     if (ret != 0) {
         qWarning("libsndfile error: %s", sf_error_number(ret));
     }
 
-    ret = sf_set_string(m_pSndfile, SF_STR_COMMENT, m_metaDataAlbum.toLatin1().constData());
+    ret = sf_set_string(m_pSndfile, SF_STR_ALBUM, m_metaDataAlbum.toAscii().constData());
     if (ret != 0) {
         qWarning("libsndfile error: %s", sf_error_number(ret));
     }
