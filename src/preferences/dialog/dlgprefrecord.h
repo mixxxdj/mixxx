@@ -57,8 +57,10 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     // Pointer to config object
     UserSettingsPointer m_pConfig;
     Encoder::Format m_selFormat;
-    QList<QRadioButton*> m_formatButtonss;
-    QList<QWidget*> m_optionWidgets;
+    QButtonGroup encodersgroup;
+    QButtonGroup optionsgroup;
+    QList<QRadioButton*> m_formatButtons;
+    QList<QAbstractButton*> m_optionWidgets;
 };
 
 #endif

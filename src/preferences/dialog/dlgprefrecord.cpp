@@ -42,14 +42,15 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         QRadioButton* button = new QRadioButton(format.label, this);
         button->setObjectName(format.internalName);
         connect(button, SIGNAL(clicked()), this, SLOT(slotFormatChanged()));
-        EncoderLayout->addWidget(button);
+        EncodersLayout->addWidget(button);
+        encodersgroup.addButton(button);
 
         if (prefformat == format.internalName) {
             m_selFormat = format;
             button->setChecked(true);
             found=true;
         }
-        m_formatButtonss.append(button);
+        m_formatButtons.append(button);
     }
     if (!found) {
         // If no format was available, set to WAVE as default.
@@ -57,7 +58,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
             qWarning() << prefformat <<" format was set in the configuration, but it is not recognized!";
         }
         m_selFormat = EncoderFactory::getFactory().getFormats().first();
-        m_formatButtonss.first()->setChecked(true);
+        m_formatButtons.first()->setChecked(true);
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"),  ConfigValue(m_selFormat.internalName));
     }
 
@@ -114,10 +115,16 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
 DlgPrefRecord::~DlgPrefRecord() {
     // Note: I don't disconnect signals, since that's supposedly done automatically
     // when the object is deleted
-    foreach(QRadioButton* button, m_formatButtonss) {
+    foreach(QRadioButton* button, m_formatButtons) {
+        EncodersLayout->removeWidget(button);
         // TODO: Not sure if this is necessary or correct, or I should simply "delete button;"
         emit(button->deleteLater());
     }
+    foreach(QAbstractButton* widget, m_optionWidgets) {
+        OptionGroupsLayout->removeWidget(widget);
+        emit(widget->deleteLater());
+    }
+    m_optionWidgets.clear();
 }
 
 void DlgPrefRecord::slotApply() {
@@ -143,11 +150,11 @@ void DlgPrefRecord::slotUpdate() {
 }
 
 void DlgPrefRecord::slotResetToDefaults() {
-    m_formatButtonss.first()->setChecked(true);
-    setupEncoderUI(EncoderFactory::getFactory().getFormatFor(m_formatButtonss.first()->objectName()));
+    m_formatButtons.first()->setChecked(true);
+    setupEncoderUI(EncoderFactory::getFactory().getFormatFor(m_formatButtons.first()->objectName()));
     // TODO: There really should be a defaultSettings() option 
     // in the EncoderSettings interface
-    static_cast<QAbstractButton*>(m_optionWidgets.first())->setChecked(true);
+    m_optionWidgets.first()->setChecked(true);
 
     LineEditTitle->setText("");
     LineEditAlbum->setText("");
@@ -189,35 +196,40 @@ void DlgPrefRecord::setupEncoderUI(Encoder::Format selformat)
 {
     EncoderSettingsPointer settings = EncoderFactory::getFactory().getEncoderSettings(selformat, m_pConfig);
     if (settings->usesQualitySlider()) {
-        groupBoxQuality->setVisible(true);
+        SliderQuality->setEnabled(true);
         SliderQuality->setMinimum(0);
         SliderQuality->setMaximum(settings->getQualityValues().size()-1);
         SliderQuality->setValue(settings->getQualityIndex());
     } else {
-        groupBoxQuality->setVisible(false);
+        SliderQuality->setEnabled(false);
     }
     if (settings->usesCompressionSlider()) {
-        groupBoxCompression->setVisible(true);
+        SliderCompression->setEnabled(true);
         SliderCompression->setMinimum(0);
         SliderCompression->setMaximum(settings->getCompressionValues().size()-1);
         SliderCompression->setValue(settings->getCompression());
     } else {
-        groupBoxCompression->setVisible(false);
+        SliderCompression->setEnabled(false);
     }
 
-    foreach(QWidget* widget, m_optionWidgets) {
-        groupBoxOptions->layout()->removeWidget(widget);
+    foreach(QAbstractButton* widget, m_optionWidgets) {
+        optionsgroup.removeButton(widget);
+        OptionGroupsLayout->removeWidget(widget);
         disconnect(widget, SIGNAL(clicked()), this, SLOT(slotGroupChanged()));
         emit(widget->deleteLater());
     }
     m_optionWidgets.clear();
     if (settings->usesOptionGroups()) {
-        groupBoxOptions->setVisible(true);
+        labelOptionGroup->setVisible(true);
         // TODO: Right now i am supporting just one optiongroup.
         // The concept is already there for multiple groups
+        // It will require to generate the buttongroup dynamically like:
+        // >> buttongroup = new QButtonGroup(this);
+        // >> buttongroup->addButton(radioButtonNoFFT);
+	    // >> buttongroup->addButton(radioButtonFFT);
+        
         EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
-        groupBoxOptions->setTitle(group.groupName);
-        groupBoxOptions->setObjectName(group.groupCode);
+        labelOptionGroup->setText(group.groupName);
         int controlIdx = settings->getSelectedOption(group.groupCode);
         foreach(QString name, group.controlNames) {
             QAbstractButton* widget;
@@ -230,7 +242,8 @@ void DlgPrefRecord::setupEncoderUI(Encoder::Format selformat)
             }
             connect(widget, SIGNAL(clicked()), this, SLOT(slotGroupChanged()));
             widget->setObjectName(group.groupCode);
-            groupBoxOptions->layout()->addWidget(widget);
+            OptionGroupsLayout->addWidget(widget);
+            optionsgroup.addButton(widget);
             m_optionWidgets.append(widget);
             if (controlIdx == 0 ) {
                 widget->setChecked(true);
@@ -238,7 +251,7 @@ void DlgPrefRecord::setupEncoderUI(Encoder::Format selformat)
             controlIdx--;
         }
     } else {
-        groupBoxOptions->setVisible(false);
+        labelOptionGroup->setVisible(false);
     }
 }
 
@@ -312,9 +325,9 @@ void DlgPrefRecord::saveEncoding()
         // The concept is already there for multiple groups
         EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
         int i=0;
-        foreach(QWidget* widget, m_optionWidgets) {
+        foreach(QAbstractButton* widget, m_optionWidgets) {
             if (widget->objectName() == group.groupCode) {
-                if (static_cast<QAbstractButton*>(widget)->isChecked() != Qt::Unchecked) {
+                if (widget->isChecked() != Qt::Unchecked) {
                     settings->setGroupOption(group.groupCode, i);
                     break;
                 }
