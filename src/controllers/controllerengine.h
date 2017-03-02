@@ -116,8 +116,9 @@ class ControllerEngine : public QObject {
     Q_INVOKABLE bool isScratching(int deck);
     Q_INVOKABLE void softTakeover(QString group, QString name, bool set);
     Q_INVOKABLE void softTakeoverIgnoreNextValue(QString group, QString name);
-    Q_INVOKABLE void brake(int deck, bool activate, double factor=0.9, double rate=1.0);
+    Q_INVOKABLE void brake(int deck, bool activate, double factor=1.0, double rate=1.0);
     Q_INVOKABLE void spinback(int deck, bool activate, double factor=1.8, double rate=-10.0);
+    Q_INVOKABLE void softStart(int deck, bool activate, double factor=1.0, double finalRate=1.0);
 
     // Handler for timers that scripts set.
     virtual void timerEvent(QTimerEvent *event);
@@ -198,7 +199,7 @@ class ControllerEngine : public QObject {
     QVarLengthArray<int> m_intervalAccumulator;
     QVarLengthArray<mixxx::Duration> m_lastMovement;
     QVarLengthArray<double> m_dx, m_rampTo, m_rampFactor;
-    QVarLengthArray<bool> m_ramp, m_brakeActive;
+    QVarLengthArray<bool> m_ramp, m_brakeActive, m_softStartActive;
     QVarLengthArray<AlphaBetaFilter*> m_scratchFilters;
     QHash<int, int> m_scratchTimers;
     QHash<QString, QScriptValue> m_scriptWrappedFunctionCache;

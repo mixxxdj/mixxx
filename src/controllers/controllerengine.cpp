@@ -46,6 +46,7 @@ ControllerEngine::ControllerEngine(Controller* controller)
     m_scratchFilters.resize(kDecks);
     m_rampFactor.resize(kDecks);
     m_brakeActive.resize(kDecks);
+    m_softStartActive.resize(kDecks);
     // Initialize arrays used for testing and pointers
     for (int i = 0; i < kDecks; ++i) {
         m_dx[i] = 0.0;
@@ -1227,11 +1228,14 @@ void ControllerEngine::scratchProcess(int timerId) {
 
     // If we're ramping to end scratching and the wheel hasn't been turned very
     // recently (spinback after lift-off,) feed fixed data
-    if (m_ramp[deck] &&
+    if (m_ramp[deck] && !m_softStartActive[deck] &&
         ((mixxx::Time::elapsed() - m_lastMovement[deck]) >= mixxx::Duration::fromMillis(1))) {
         filter->observation(m_rampTo[deck] * m_rampFactor[deck]);
         // Once this code path is run, latch so it always runs until reset
         //m_lastMovement[deck] += mixxx::Duration::fromSeconds(1);
+    } else if (m_softStartActive[deck]) {
+        // pretend we have moved by (finalRate*default distance)
+        filter->observation(m_rampTo[deck]*kAlphaBetaDt);
     } else {
         // This will (and should) be 0 if no net ticks have been accumulated
         // (i.e. the wheel is stopped)
@@ -1251,12 +1255,12 @@ void ControllerEngine::scratchProcess(int timerId) {
     m_intervalAccumulator[deck] = 0;
 
     // If we're ramping and the current rate is really close to the rampTo value
-    // or we're in brake mode and have crossed over the zero value, end
-    // scratching
+    // or we're in brake or softStart mode and have crossed over the desired value,
+    // end scratching
     if ((m_ramp[deck] && fabs(m_rampTo[deck] - newRate) <= 0.00001) ||
-        (m_brakeActive[deck] && (
-            (oldRate > 0.0 && newRate < 0.0) ||
-            (oldRate < 0.0 && newRate > 0.0)))) {
+        ((m_brakeActive[deck] || m_softStartActive[deck]) && (
+            (oldRate > m_rampTo[deck] && newRate < m_rampTo[deck]) ||
+            (oldRate < m_rampTo[deck] && newRate > m_rampTo[deck])))) {
         // Not ramping no mo'
         m_ramp[deck] = false;
 
@@ -1283,6 +1287,7 @@ void ControllerEngine::scratchProcess(int timerId) {
 
         m_dx[deck] = 0.0;
         m_brakeActive[deck] = false;
+        m_softStartActive[deck] = false;
     }
 }
 
@@ -1367,7 +1372,7 @@ void ControllerEngine::softTakeoverIgnoreNextValue(QString group, const QString 
 /*  -------- ------------------------------------------------------
     Purpose: [En/dis]ables spinback effect for the channel
     Input:   deck, activate/deactivate, factor (optional),
-             delay (optional), rate (optional)
+             rate (optional)
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::spinback(int deck, bool activate, double factor, double rate) {
@@ -1378,7 +1383,7 @@ void ControllerEngine::spinback(int deck, bool activate, double factor, double r
 /*  -------- ------------------------------------------------------
     Purpose: [En/dis]ables brake/spinback effect for the channel
     Input:   deck, activate/deactivate, factor (optional),
-             delay (optional), rate (optional)
+             rate (optional, necessary for spinback)
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::brake(int deck, bool activate, double factor, double rate) {
@@ -1398,25 +1403,117 @@ void ControllerEngine::brake(int deck, bool activate, double factor, double rate
 
     // used in scratchProcess for the different timer behavior we need
     m_brakeActive[deck] = activate;
+    double initRate = rate;
 
     if (activate) {
         // store the new values for this spinback/brake effect
-        m_rampFactor[deck] = rate * factor / 100000.0; // approx 1 second for a factor of 1
         m_rampTo[deck] = 0.0;
+        if (initRate == 1.0) {// then rate is really 1.0 or was set to default
+            // so check for real value taking pitch into account
+            initRate = getDeckRate(group);
+        }
+        // if softStart()ing, stop it
+        if (m_softStartActive[deck]) {
+            m_softStartActive[deck] = false;
+            AlphaBetaFilter* filter = m_scratchFilters[deck];
+            if (filter != nullptr) {
+                initRate = filter->predictedVelocity();
+            }
+        }
 
         // setup timer and set scratch2
-        int timerId = startTimer(kScratchTimerMs);
+        timerId = startTimer(kScratchTimerMs);
         m_scratchTimers[timerId] = deck;
 
         ControlObjectScript* pScratch2 = getControlObjectScript(group, "scratch2");
         if (pScratch2 != nullptr) {
-            pScratch2->slotSet(rate);
+            pScratch2->slotSet(initRate);
         }
 
-        // setup the filter using the default values of alpha and beta
+        // setup the filter with default alpha and beta*factor
+        double alphaBrake = 1.0/512;
+        // avoid decimals for fine adjusting
+        if (factor>1) {
+            factor = ((factor-1)/10)+1;
+        }
+        double betaBrake = ((1.0/512)/1024)*factor; // default*factor
         AlphaBetaFilter* filter = m_scratchFilters[deck];
         if (filter != nullptr) {
-            filter->init(kAlphaBetaDt, rate);
+            filter->init(kAlphaBetaDt, initRate, alphaBrake, betaBrake);
+        }
+
+        // activate the ramping in scratchProcess()
+        m_ramp[deck] = true;
+    }
+}
+
+/*  -------- ------------------------------------------------------
+    Purpose: [En/dis]ables softStart effect for the channel
+    Input:   deck, activate/deactivate, factor (optional),
+             rate (optiona)
+    Output:  -
+    -------- ------------------------------------------------------ */
+void ControllerEngine::softStart(int deck, bool activate, double factor, double finalRate) {
+    // PlayerManager::groupForDeck is 0-indexed.
+    QString group = PlayerManager::groupForDeck(deck - 1);
+
+    // kill timer when both enabling or disabling
+    int timerId = m_scratchTimers.key(deck);
+    killTimer(timerId);
+    m_scratchTimers.remove(timerId);
+
+    // enable/disable scratch2 mode
+    ControlObjectScript* pScratch2Enable = getControlObjectScript(group, "scratch2_enable");
+    if (pScratch2Enable != nullptr) {
+        pScratch2Enable->slotSet(activate ? 1 : 0);
+    }
+
+    // used in scratchProcess for the different timer behavior we need
+    m_softStartActive[deck] = activate;
+    double initRate = 0.0;
+
+    if (activate) {
+        // store the new values for this spinback/brake effect
+        if (finalRate == 1.0) {// then rate is really 1.0 or was set to default
+            // so check for real value taking pitch into account
+            finalRate = getDeckRate(group);
+        }
+        m_rampTo[deck] = finalRate;
+
+        // if brake()ing, get current rate from filter
+        if (m_brakeActive[deck]) {
+            m_brakeActive[deck] = false;
+
+            AlphaBetaFilter* filter = m_scratchFilters[deck];
+            if (filter != nullptr) {
+                initRate = filter->predictedVelocity();
+            }
+        }
+
+        // setup timer, start playing and set scratch2
+        timerId = startTimer(kScratchTimerMs);
+        m_scratchTimers[timerId] = deck;
+
+        ControlObjectScript* pPlay = getControlObjectScript(group, "play");
+        if (pPlay != nullptr) {
+            pPlay->slotSet(1.0);
+        }
+
+        ControlObjectScript* pScratch2 = getControlObjectScript(group, "scratch2");
+        if (pScratch2 != nullptr) {
+            pScratch2->slotSet(initRate);
+        }
+
+        // setup the filter like in brake(), with default alpha and beta*factor
+        double alphaSoft = 1.0/512;
+        // avoid decimals for fine adjusting
+        if (factor>1) {
+            factor = ((factor-1)/10)+1;
+        }
+        double betaSoft = ((1.0/512)/1024)*factor; // default: (1.0/512)/1024
+        AlphaBetaFilter* filter = m_scratchFilters[deck];
+        if (filter != nullptr) { // kAlphaBetaDt = 1/1000 seconds
+            filter->init(kAlphaBetaDt, initRate, alphaSoft, betaSoft);
         }
 
         // activate the ramping in scratchProcess()
