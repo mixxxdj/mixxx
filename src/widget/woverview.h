@@ -133,6 +133,7 @@ class WOverview : public WWidget {
     double m_dAnalyzerProgress;
     bool m_bAnalyzerFinalizing;
     bool m_trackLoaded;
+    bool m_scaleFactor;
 };
 
 #endif
