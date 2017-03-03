@@ -826,7 +826,7 @@ void Track::setRating (int rating) {
     if (m_metadata.getRating() != rating) {
         m_metadata.setRating(rating);
         markDirtyAndUnlock(&lock);
-	}
+    }
 }
 
 void Track::setKeys(const Keys& keys) {

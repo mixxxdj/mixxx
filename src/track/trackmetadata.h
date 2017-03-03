@@ -140,7 +140,6 @@ public:
         m_bpm.resetValue();
     }
 
-	// rating
     int getRating() const {
         return m_rating;
     }
