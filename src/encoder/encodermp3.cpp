@@ -8,10 +8,10 @@
     Libmp3lame API:
     http://lame.cvs.sourceforge.net/viewvc/lame/lame/API?view=markup
     http://lame.cvs.sourceforge.net/viewvc/lame/lame/include/lame.h?view=markup
-    
+
     Older BladeEncDll API:
     http://lame.cvs.sourceforge.net/viewvc/lame/lame/Dll/BladeMP3EncDLL.h?view=markup
-    
+
 *****************************************************************************/
  
 #include <QtDebug>
@@ -156,7 +156,7 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
     id3tag_set_title            = (id3tag_set_title__)m_library->resolve("id3tag_set_title");
     id3tag_set_artist           = (id3tag_set_artist__)m_library->resolve("id3tag_set_artist");
     id3tag_set_album            = (id3tag_set_album__)m_library->resolve("id3tag_set_album");
-	
+
     id3tag_add_v2               = (id3tag_add_v2__)m_library->resolve("id3tag_add_v2");;
 
     /*
@@ -271,7 +271,7 @@ void EncoderMp3::setEncoderSettings(const EncoderSettings& settings)
             } else {
                 m_vbr_index = 9;
             }
-        }        
+        }
     }
 }
 
@@ -388,12 +388,11 @@ int EncoderMp3::initEncoder(int samplerate, QString errorMessage) {
 
     lame_set_in_samplerate(m_lameFlags, samplerate_in);
     lame_set_out_samplerate(m_lameFlags, samplerate_out);
-        
+
     lame_set_num_channels(m_lameFlags, 2);
     // mode = 0,1,2,3 = stereo, jstereo, dual channel (not supported), mono
-    // default: lame picks based on compression ratio and input channels
-    //ret = lame_set_mode(m_lameFlags, STEREO);
-    //qDebug() << "lame_set_mode: " << ret;
+    // Note: JOINT_STEREO is not "forced joint stereo" (That is lame_set_force_ms )
+    lame_set_mode(m_lameFlags, JOINT_STEREO);
 
     if (m_encoding_mode == vbr_off) {
         qDebug() << " CBR mode with bitrate: " << m_bitrate;

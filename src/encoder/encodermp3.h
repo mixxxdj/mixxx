@@ -83,28 +83,28 @@ class EncoderMp3 : public Encoder {
         unsigned char*      mp3buf,             /* pointer to encoded MP3 stream */
         const int           mp3buf_size );
 
-    // Types of VBR.  default = vbr_off = CBR 
-	typedef int (*lame_set_VBR__)(lame_global_flags *, vbr_mode);
-	
-	// VBR quality level.  0=highest  9=lowest  
-	typedef int (*lame_set_VBR_q__)(lame_global_flags *, int);
-	
-	// Since lame 3.98, else lame_set_VBR_q. Range [0..9.999] (four decimals)
-	typedef int (*lame_set_VBR_quality__)(lame_global_flags *, float);
-	
-	// Ignored except for VBR=vbr_abr (ABR mode) 
-	typedef int (*lame_set_VBR_mean_bitrate_kbps__)(lame_global_flags *, int);
+    // Types of VBR.  default = vbr_off = CBR
+    typedef int (*lame_set_VBR__)(lame_global_flags *, vbr_mode);
+
+    // VBR quality level.  0=highest  9=lowest
+    typedef int (*lame_set_VBR_q__)(lame_global_flags *, int);
+
+    // Since lame 3.98, else lame_set_VBR_q. Range [0..9.999] (four decimals)
+    typedef int (*lame_set_VBR_quality__)(lame_global_flags *, float);
+
+    // Ignored except for VBR=vbr_abr (ABR mode)
+    typedef int (*lame_set_VBR_mean_bitrate_kbps__)(lame_global_flags *, int);
 
     // as lame_encode_buffer_float with +/- 1 full scale and interleaved
     // These methods are present only in lame 3.99, so it's important to test for their presence
     // and fallback to the non-ieee one if not present.
-	typedef int (*lame_encode_buffer_interleaved_ieee_float__)(
-	        lame_t          gfp,
-	        const float     pcm[],             /* PCM data for left and right */
-	                                           /* channel, interleaved        */
-	        const int       nsamples,
-	        unsigned char * mp3buf,
-	        const int       mp3buf_size);
+    typedef int (*lame_encode_buffer_interleaved_ieee_float__)(
+            lame_t          gfp,
+            const float     pcm[],             /* PCM data for left and right */
+                                               /* channel, interleaved        */
+            const int       nsamples,
+            unsigned char * mp3buf,
+            const int       mp3buf_size);
     typedef size_t (*lame_get_lametag_frame__)(
         const lame_global_flags *, unsigned char* buffer, size_t size);
 
@@ -134,7 +134,7 @@ class EncoderMp3 : public Encoder {
     typedef void (*id3tag_set_album__)(lame_global_flags *, const char* album);
     // Since lame 3.98
     // force addition of version 2 tag
-	typedef void (*id3tag_add_v2__)   (lame_t gfp);
+    typedef void (*id3tag_add_v2__)   (lame_t gfp);
 
     id3tag_init__                       id3tag_init;
     id3tag_set_title__                  id3tag_set_title;

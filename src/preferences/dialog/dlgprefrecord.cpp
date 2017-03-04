@@ -42,7 +42,11 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         QRadioButton* button = new QRadioButton(format.label, this);
         button->setObjectName(format.internalName);
         connect(button, SIGNAL(clicked()), this, SLOT(slotFormatChanged()));
-        EncodersLayout->addWidget(button);
+        if (format.lossless) {
+            LosslessEncLayout->addWidget(button);
+        } else {
+            LossyEncLayout->addWidget(button);
+        }
         encodersgroup.addButton(button);
 
         if (prefformat == format.internalName) {
@@ -116,7 +120,11 @@ DlgPrefRecord::~DlgPrefRecord() {
     // Note: I don't disconnect signals, since that's supposedly done automatically
     // when the object is deleted
     foreach(QRadioButton* button, m_formatButtons) {
-        EncodersLayout->removeWidget(button);
+        if (LosslessEncLayout->indexOf(button) != -1) {
+            LosslessEncLayout->removeWidget(button);
+        } else {
+            LossyEncLayout->removeWidget(button);
+        }
         // TODO: Not sure if this is necessary or correct, or I should simply "delete button;"
         emit(button->deleteLater());
     }
