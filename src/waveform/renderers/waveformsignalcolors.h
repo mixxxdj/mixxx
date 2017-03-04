@@ -22,11 +22,13 @@ class WaveformSignalColors {
     inline const QColor& getRgbHighColor() const { return m_rgbHighColor; }
     inline const QColor& getAxesColor() const { return m_axesColor; }
     inline const QColor& getPlayPosColor() const { return m_playPosColor; }
+    inline const QColor& getPlayedOverlayColor() const { return m_playedOverlayColor; }
     inline const QColor& getBgColor() const { return m_bgColor; }
 
   protected:
     void fallBackFromSignalColor();
     void fallBackDefaultColor();
+    QColor rgbaColorFromString(QString sColorString);
 
     float stableHue(float hue) const;
 
@@ -40,6 +42,7 @@ class WaveformSignalColors {
     QColor m_rgbHighColor;
     QColor m_axesColor;
     QColor m_playPosColor;
+    QColor m_playedOverlayColor;
     QColor m_bgColor;
 };
 
