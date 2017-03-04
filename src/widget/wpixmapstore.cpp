@@ -271,9 +271,11 @@ QString Paintable::getAltFileName(const QString& fileName) {
 PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
                                             Paintable::DrawMode mode,
                                             double scaleFactor) {
+    QString key = source.getId() + QString::number(scaleFactor);
+
     // See if we have a cached value for the pixmap.
     PaintablePointer pPaintable = m_paintableCache.value(
-            source.getId(),
+            key,
             PaintablePointer());
     if (pPaintable) {
         return pPaintable;
@@ -296,7 +298,7 @@ PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
         return PaintablePointer();
     }
 
-    m_paintableCache[source.getId()] = pPaintable;
+    m_paintableCache.insert(key, pPaintable);
     return pPaintable;
 }
 

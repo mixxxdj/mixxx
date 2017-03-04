@@ -25,8 +25,9 @@ QImage* WImageStore::getImage(const QString& fileName, double scaleFactor) {
 QImage* WImageStore::getImage(const PixmapSource& source, double scaleFactor) {
     // Search for Image in list
     ImageInfoType* info = nullptr;
+    QString key = source.getId() + QString::number(scaleFactor);
 
-    QHash<QString, ImageInfoType*>::iterator it = m_dictionary.find(source.getId());
+    QHash<QString, ImageInfoType*>::iterator it = m_dictionary.find(key);
     if (it != m_dictionary.end()) {
         info = it.value();
         info->instCount++;
@@ -52,7 +53,7 @@ QImage* WImageStore::getImage(const PixmapSource& source, double scaleFactor) {
     info = new ImageInfoType;
     info->image = loadedImage;
     info->instCount = 1;
-    m_dictionary.insert(source.getId(), info);
+    m_dictionary.insert(key, info);
     return info->image;
 }
 
