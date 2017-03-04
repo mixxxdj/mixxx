@@ -1554,6 +1554,52 @@ bool writeTrackMetadataIntoRIFFTag(TagLib::RIFF::Info::Tag* pTag, const TrackMet
     return true;
 }
 
+namespace {
+
+// Workaround for missing functionality in TagLib 1.11.x that
+// doesn't support to read text chunks from AIFF files.
+// See also:
+// http://www-mmsp.ece.mcgill.ca/Documents/AudioFormats/AIFF/AIFF.html
+// http://paulbourke.net/dataformats/audio/
+//
+//
+class AiffFile: public TagLib::RIFF::AIFF::File {
+  public:
+    explicit AiffFile(TagLib::FileName fileName)
+        : TagLib::RIFF::AIFF::File(fileName) {
+    }
+
+    void readTrackMetadataFromTextChunks(TrackMetadata* pTrackMetadata) /*non-const*/ {
+        if (pTrackMetadata == nullptr) {
+            return; // nothing to do
+        }
+        for(unsigned int i = 0; i < chunkCount(); ++i) {
+            const TagLib::ByteVector chunkId(TagLib::RIFF::AIFF::File::chunkName(i));
+            if (chunkId == "NAME") {
+                pTrackMetadata->setTitle(decodeChunkText(
+                        TagLib::RIFF::AIFF::File::chunkData(i)));
+            } else if (chunkId == "AUTH") {
+                pTrackMetadata->setArtist(decodeChunkText(
+                        TagLib::RIFF::AIFF::File::chunkData(i)));
+            } else if (chunkId == "ANNO") {
+                pTrackMetadata->setComment(decodeChunkText(
+                        TagLib::RIFF::AIFF::File::chunkData(i)));
+            }
+        }
+    }
+
+  private:
+    // From the specs: 13. TEXT CHUNKS - NAME, AUTHOR, COPYRIGHT, ANNOTATION
+    // "text: contains pure ASCII characters"
+    // NOTE(uklotzde): In order to be independent of the currently defined
+    // codec we use QString::fromLatin1() instead of QString::fromAscii()
+    static QString decodeChunkText(const TagLib::ByteVector& chunkData) {
+        return QString::fromLatin1(chunkData.data(), chunkData.size());
+    }
+};
+
+} // anonymous namespace
+
 Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImage* pCoverArt, QString fileName, FileType fileType) {
     if (fileType == FileType::UNKNOWN) {
         fileType = getFileTypeFromFileName(fileName);
@@ -1744,7 +1790,7 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
     }
     case FileType::AIFF:
     {
-        TagLib::RIFF::AIFF::File file(TAGLIB_FILENAME_FROM_QSTRING(fileName));
+        AiffFile file(TAGLIB_FILENAME_FROM_QSTRING(fileName));
         if (readAudioProperties(pTrackMetadata, file)) {
 #if (TAGLIB_HAS_AIFF_HAS_ID3V2TAG)
             const TagLib::ID3v2::Tag* pID3v2Tag = file.hasID3v2Tag() ? file.tag() : nullptr;
@@ -1754,14 +1800,11 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
             if (pID3v2Tag) {
                 readTrackMetadataFromID3v2Tag(pTrackMetadata, *pID3v2Tag);
                 readCoverArtFromID3v2Tag(pCoverArt, *pID3v2Tag);
-                return OK;
             } else {
-                // no fallback available
-                // TagLib (version 1.11.x as of this writing) does only provide
-                // an ID3v2 tag for AIFF files.
-                qWarning() << "No ID3v2 tag found in AIFF file:"
-                        << fileName;
+                // fallback
+                file.readTrackMetadataFromTextChunks(pTrackMetadata);
             }
+            return OK;
         }
         break;
     }
