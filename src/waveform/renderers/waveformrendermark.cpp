@@ -16,7 +16,8 @@ namespace {
     const int kMaxCueLabelLength = 23;
 }
 
-WaveformRenderMark::WaveformRenderMark(WaveformWidgetRenderer* waveformWidgetRenderer) :
+WaveformRenderMark::WaveformRenderMark(
+        WaveformWidgetRenderer* waveformWidgetRenderer) :
     WaveformRendererAbstract(waveformWidgetRenderer) {
 }
 
@@ -116,7 +117,7 @@ void WaveformRenderMark::slotCuesUpdated() {
         WaveformMark* pMark = m_marks.getHotCueMark(hotCue).data();
         WaveformMarkProperties markProperties = pMark->getProperties();
         if (markProperties.m_text.isNull() || newLabel != markProperties.m_text ||
-            !markProperties.m_color.isValid() || newColor != markProperties.m_color) {
+                !markProperties.m_color.isValid() || newColor != markProperties.m_color) {
             markProperties.m_text = newLabel;
             markProperties.m_color = newColor;
             pMark->setProperties(markProperties);
@@ -131,12 +132,13 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
     // Load the pixmap from file -- takes precedence over text.
     if (!markProperties.m_pixmapPath.isEmpty()) {
         QString path = markProperties.m_pixmapPath;
-        QImage image = QImage(path);
+        QImage image = *WImageStore::getImage(path, scaleFactor());
+        //QImage image = QImage(path);
         // If loading the image didn't fail, then we're done. Otherwise fall
         // through and render a label.
         if (!image.isNull()) {
             pMark->m_image = image.convertToFormat(QImage::Format_ARGB32_Premultiplied);
-            WImageStore::correctImageColors(&pMark->m_image);
+            //WImageStore::correctImageColors(&pMark->m_image);
             return;
         }
     }
@@ -160,7 +162,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
         //QFont font("Bitstream Vera Sans");
         //QFont font("Helvetica");
         QFont font; // Uses the application default
-        font.setPointSize(10);
+        font.setPointSizeF(10 * scaleFactor());
         font.setStretch(100);
         font.setWeight(75);
 
