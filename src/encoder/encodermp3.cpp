@@ -420,10 +420,10 @@ int EncoderMp3::initEncoder(int samplerate, QString errorMessage) {
     if (!m_metaDataTitle.isEmpty()) {
         id3tag_set_title(m_lameFlags, m_metaDataTitle.toLatin1().constData());
     }
-    if (!m_metaDataTitle.isEmpty()) {
+    if (!m_metaDataArtist.isEmpty()) {
         id3tag_set_artist(m_lameFlags, m_metaDataArtist.toLatin1().constData());
     }
-    if (!m_metaDataTitle.isEmpty()) {
+    if (!m_metaDataAlbum.isEmpty()) {
         id3tag_set_album(m_lameFlags,m_metaDataAlbum.toLatin1().constData());
     }
 
