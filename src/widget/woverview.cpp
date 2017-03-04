@@ -338,6 +338,8 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
             }
 
             painter.drawImage(rect(), m_waveformImageScaled);
+            // desaturate the scaled waveform-image up to the current play-position by overdrawing semi-transparent black
+            painter.fillRect(0, 0, m_iPos, m_waveformImageScaled.height(), QColor(0,0,0,200));
         }
 
         if (m_dAnalyzerProgress < 1.0) {
