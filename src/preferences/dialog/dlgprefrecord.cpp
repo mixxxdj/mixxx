@@ -200,16 +200,20 @@ void DlgPrefRecord::setupEncoderUI(Encoder::Format selformat)
         SliderQuality->setMinimum(0);
         SliderQuality->setMaximum(settings->getQualityValues().size()-1);
         SliderQuality->setValue(settings->getQualityIndex());
+        updateTextQuality();
     } else {
         SliderQuality->setEnabled(false);
+        TextQuality->setText("");
     }
     if (settings->usesCompressionSlider()) {
         SliderCompression->setEnabled(true);
         SliderCompression->setMinimum(0);
         SliderCompression->setMaximum(settings->getCompressionValues().size()-1);
         SliderCompression->setValue(settings->getCompression());
+        updateTextCompression();
     } else {
         SliderCompression->setEnabled(false);
+        TextCompression->setText("");
     }
 
     foreach(QAbstractButton* widget, m_optionWidgets) {
@@ -263,7 +267,7 @@ void DlgPrefRecord::slotSliderQuality() {
 void DlgPrefRecord::updateTextQuality() {
     EncoderSettingsPointer settings = EncoderFactory::getFactory().getEncoderSettings(m_selFormat, m_pConfig);
     int quality = settings->getQualityValues().at(SliderQuality->value());
-    TextQuality->setText(QString(QString::number(quality) + tr("kbps")));
+    TextQuality->setText(QString(QString::number(quality) + " kbit/s"));
 }
 
 void DlgPrefRecord::slotSliderCompression() {

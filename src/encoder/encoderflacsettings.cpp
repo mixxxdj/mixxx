@@ -86,7 +86,7 @@ QList<EncoderSettings::OptionsGroup> EncoderFlacSettings::getOptionGroups() cons
 void EncoderFlacSettings::setGroupOption(QString groupCode, int optionIndex) 
 {
     bool found=false;
-    foreach(OptionsGroup group, m_radioList) {
+    for (const auto& group : m_radioList) {
         if (groupCode == group.groupCode) {
             found=true;
             if (optionIndex < group.controlNames.size() || optionIndex == 1) {
@@ -108,7 +108,7 @@ int EncoderFlacSettings::getSelectedOption(QString groupCode) const
 {
     bool found=false;
     int value = m_pConfig->getValue(ConfigKey(RECORDING_PREF_KEY, groupCode), 0);
-    foreach(OptionsGroup group, m_radioList) {
+    for (const auto&  group : m_radioList) {
         if (groupCode == group.groupCode) {
             found=true;
             if (value >= group.controlNames.size() && value > 1) {

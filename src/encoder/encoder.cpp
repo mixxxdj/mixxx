@@ -38,11 +38,11 @@ const EncoderFactory& EncoderFactory::getFactory()
 
 EncoderFactory::EncoderFactory() {
     // Add new supported formats here. Also modify the getNewEncoder/getEncoderSettings method.
-    m_formats.append(Encoder::Format("Wave PCM",ENCODING_WAVE, true));
+    m_formats.append(Encoder::Format("WAV PCM",ENCODING_WAVE, true));
     m_formats.append(Encoder::Format("AIFF PCM",ENCODING_AIFF, true));
-    m_formats.append(Encoder::Format("Flac", ENCODING_FLAC, true));
-    m_formats.append(Encoder::Format("Mp3",ENCODING_MP3, false));
-    m_formats.append(Encoder::Format("Ogg Vorbis",ENCODING_OGG, false));
+    m_formats.append(Encoder::Format("FLAC", ENCODING_FLAC, true));
+    m_formats.append(Encoder::Format("MP3",ENCODING_MP3, false));
+    m_formats.append(Encoder::Format("OGG Vorbis",ENCODING_OGG, false));
 }
 
 const QList<Encoder::Format> EncoderFactory::getFormats() const

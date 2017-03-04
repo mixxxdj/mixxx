@@ -8,7 +8,8 @@
 #include "encoder/encodermp3settings.h"
 #include "recording/defs_recording.h"
 
-#define DEFAULT_BITRATE_INDEX 6
+const int EncoderMp3Settings::DEFAULT_BITRATE_INDEX = 6;
+const QString EncoderMp3Settings::ENCODING_MODE_GROUP = "MP3_VBR_MODE";
 
 EncoderMp3Settings::EncoderMp3Settings(UserSettingsPointer pConfig) :
     m_pConfig(pConfig)
@@ -26,7 +27,12 @@ EncoderMp3Settings::EncoderMp3Settings(UserSettingsPointer pConfig) :
     m_qualList.append(224);
     m_qualList.append(256);
     m_qualList.append(320);
-    m_pConfig = m_pConfig;
+    
+    QList<QString> vbrmodes;
+    vbrmodes.append("CBR");
+    vbrmodes.append("ABR");
+    vbrmodes.append("VBR");
+    m_radioList.append(OptionsGroup("Bitrate Mode", ENCODING_MODE_GROUP, vbrmodes));
 }
 EncoderMp3Settings::~EncoderMp3Settings()
 {
@@ -77,4 +83,53 @@ int EncoderMp3Settings::getQualityIndex() const
             << qualityIndex << ". Ignoring it and returning default";
     }
     return DEFAULT_BITRATE_INDEX;
+}
+
+// Returns the list of radio options to show to the user
+QList<EncoderSettings::OptionsGroup> EncoderMp3Settings::getOptionGroups() const
+{
+    return m_radioList;    
+}
+// Selects the option by its index. If it is a single-element option, 
+// index 0 means disabled and 1 enabled.
+void EncoderMp3Settings::setGroupOption(QString groupCode, int optionIndex)
+{
+    bool found=false;
+    for (const auto& group : m_radioList) {
+        if (groupCode == group.groupCode) {
+            found=true;
+            if (optionIndex < group.controlNames.size() || optionIndex == 1) {
+                m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, ENCODING_MODE_GROUP),
+                    ConfigValue(optionIndex));
+            } else {
+                qWarning() << "Received an index out of range for: " 
+                    << groupCode << ", index: " << optionIndex;
+            }
+        }
+    }
+    if (!found) {
+        qWarning() << "Received an unknown groupCode on setGroupOption: " << groupCode;
+    }
+}
+// Return the selected option of the group. If it is a single-element option, 
+// 0 means disabled and 1 enabled.
+int EncoderMp3Settings::getSelectedOption(QString groupCode) const
+{
+    bool found=false;
+    int value = m_pConfig->getValue(
+        ConfigKey(RECORDING_PREF_KEY, ENCODING_MODE_GROUP), 0);
+    for (const auto& group : m_radioList) {
+        if (groupCode == group.groupCode) {
+            found=true;
+            if (value >= group.controlNames.size() && value > 1) {
+                qWarning() << "Value saved for " << groupCode << 
+                    " on preferences is out of range " << value << ". Returning 0";
+                value=0;
+            }
+        }
+    }
+    if (!found) {
+        qWarning() << "Received an unknown groupCode on getSelectedOption: " << groupCode;
+    }
+    return value;
 }

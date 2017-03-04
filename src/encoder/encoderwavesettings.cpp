@@ -41,7 +41,7 @@ QList<EncoderSettings::OptionsGroup> EncoderWaveSettings::getOptionGroups() cons
 void EncoderWaveSettings::setGroupOption(QString groupCode, int optionIndex) 
 {
     bool found=false;
-    foreach(EncoderSettings::OptionsGroup group, m_radioList) {
+    for (const auto& group : m_radioList) {
         if (groupCode == group.groupCode) {
             found=true;
             if (optionIndex < group.controlNames.size() || optionIndex == 1) {
@@ -64,7 +64,7 @@ int EncoderWaveSettings::getSelectedOption(QString groupCode) const
     bool found=false;
     int value = m_pConfig->getValue(
         ConfigKey(RECORDING_PREF_KEY, m_format.internalName + "_" + groupCode), 0);
-    foreach(OptionsGroup group, m_radioList) {
+    for (const auto& group : m_radioList) {
         if (groupCode == group.groupCode) {
             found=true;
             if (value >= group.controlNames.size() && value > 1) {
