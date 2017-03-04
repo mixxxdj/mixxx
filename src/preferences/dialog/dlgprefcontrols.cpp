@@ -308,8 +308,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     } else {
         checkBoxDoubleWidgetSize->setCheckState(Qt::PartiallyChecked);
     }
-    connect(checkBoxDoubleWidgetSize, SIGNAL(toggled(bool)),
-            this, SLOT(slotSetDoubleWidgetSize(bool)));
+    connect(checkBoxDoubleWidgetSize, SIGNAL(stateChanged(int)),
+            this, SLOT(slotSetDoubleWidgetSize(int)));
 
     //
     // Start in fullscreen mode
@@ -580,8 +580,10 @@ void DlgPrefControls::slotSetCueRecall(bool b)
     m_pConfig->set(ConfigKey("[Controls]", "CueRecall"), ConfigValue(b?0:1));
 }
 
-void DlgPrefControls::slotSetDoubleWidgetSize(bool b) {
+void DlgPrefControls::slotSetDoubleWidgetSize(int state) {
+    Q_UNUSED(state);
     checkBoxDoubleWidgetSize->setTristate(false);
+    bool b = checkBoxDoubleWidgetSize->isChecked();
     m_pConfig->setValue(ConfigKey("[Config]", "ScaleFactor"), b ? 2.0 : 1.0);
     // reload the skin when the button is toggled
     m_mixxx->rebootMixxxView();
