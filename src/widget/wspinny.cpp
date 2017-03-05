@@ -378,7 +378,9 @@ void WSpinny::resizeEvent(QResizeEvent* re) {
 
     m_bgImage = m_pBgPaintable->renderToImage(size());
     m_fgImage = m_pFgPaintable->renderToImage(size());
-    m_maskImage = m_pMaskPaintable->renderToImage(size());
+    if (m_pMaskPaintable != nullptr) {
+        m_maskImage = m_pMaskPaintable->renderToImage(size());
+    }
     m_ghostImage = m_pGhostPaintable->renderToImage(size());
 }
 
