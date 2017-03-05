@@ -76,7 +76,7 @@
             <EffectRackGroup><Variable name="QuickEffectRackGroup"/></EffectRackGroup>
             <EffectUnitGroup><Variable name="QuickEffectUnitGroup"/></EffectUnitGroup>
             <Effect><Variable name="QuickEffect"/></Effect>
-            <EffectButtonParameter><Variable name="parameter"/></EffectButtonParameter>
+            <EffectButtonParameter><Variable name="QuickEffect"/></EffectButtonParameter>
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
