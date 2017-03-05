@@ -265,7 +265,7 @@ int SkinContext::scaleToWidgetSize(QString& size) const {
     bool widthOk = false;
     double dSize = size.toDouble(&widthOk);
     if (widthOk && dSize >= 0) {
-        return static_cast<int>(std::round(dSize * m_scaleFactor));
+        return static_cast<int>(round(dSize * m_scaleFactor));
     }
     return -1;
 }
