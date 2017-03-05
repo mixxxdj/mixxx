@@ -148,9 +148,9 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     for (const auto& trackId: trackIds) {
         QSet<int> playlistIds;
         m_playlistDao.getPlaylistsTrackIsIn(trackId, &playlistIds);
-        for (const auto& playlisId: playlistIds) {
-            if (m_playlistDao.getHiddenType(playlisId) != PlaylistDAO::PLHT_SET_LOG) {
-                allPlaylistIds.insert(playlisId);
+        for (const auto& playlistId: playlistIds) {
+            if (m_playlistDao.getHiddenType(playlistId) != PlaylistDAO::PLHT_SET_LOG) {
+                allPlaylistIds.insert(playlistId);
             }
         }
     }
@@ -158,8 +158,8 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     if (!allPlaylistIds.isEmpty()) {
          QStringList playlistNames;
          playlistNames.reserve(allPlaylistIds.count());
-         for (const auto& playlisId: allPlaylistIds) {
-             playlistNames.append(m_playlistDao.getPlaylistName(playlisId));
+         for (const auto& playlistId: allPlaylistIds) {
+             playlistNames.append(m_playlistDao.getPlaylistName(playlistId));
          }
 
          QString playlistNamesSection =
