@@ -97,6 +97,7 @@
                 <EffectRackGroup><Variable name="QuickEffectRackGroup"/></EffectRackGroup>
                 <EffectUnitGroup><Variable name="QuickEffectUnitGroup"/></EffectUnitGroup>
                 <Effect>1</Effect>
+                <Elide>middle</Elide>
               </EffectName>
             </Children>
           </WidgetGroup>
