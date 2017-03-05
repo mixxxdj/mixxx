@@ -25,5 +25,10 @@
       </WidgetGroup>
       
     </Children>
+    <Connection>
+      <ConfigKey>[Tango],netbook_mode</ConfigKey>
+      <Transform><Not/></Transform>
+      <BindProperty>visible</BindProperty>
+    </Connection>
   </WidgetGroup>
 </Template>

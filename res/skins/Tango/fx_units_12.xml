@@ -57,8 +57,7 @@ Variables:
                 </Children>
               </WidgetStack>
 
-              <!-- Sapcer to keep Deck & FX unit aligned, incl. mini/MAXI toggler -->
-              <WidgetGroup>
+              <WidgetGroup><!-- Spacer to keep Deck & FX unit aligned, incl. mini/MAXI toggler -->
                 <ObjectName>AlignTopLeft</ObjectName>
                 <Size>56f,1min</Size>
                 <Layout>vertical</Layout>
@@ -73,50 +72,86 @@ Variables:
                   </Template>
 
                 </Children>
-              </WidgetGroup>
+                <Connection>
+                  <ConfigKey>[Tango],normal_mode</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- Spacer to keep Deck & FX unit aligned, incl. mini/MAXI toggler -->
 
             </Children>
           </WidgetGroup><!-- /EffectUnit 1 -->
 
-          <!-- Sapcer to keep Deck & FX unit aligned without Pitch fader-->
-          <WidgetGroup>
-            <Size>106f,1min</Size>
-            <Children/>
-            <Connection>
-              <ConfigKey>[Tango],pitch_fader</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-
-          <WidgetGroup><!-- VU Meter spacer when Channel Mixer is hidden -->
-            <Layout>vertical</Layout>
+          <WidgetGroup><!-- Spacers for normal width -->
+            <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <WidgetGroup>
-                <Layout>vertical</Layout>
-                <Size>22f,1min</Size>
-                <Children>
-                </Children>
+              <WidgetGroup> <!-- Spacer to keep Deck & FX unit aligned without Pitch fader-->
+                <Size>106f,1min</Size>
+                <Children/>
                 <Connection>
-                  <ConfigKey>[Tango],vumeter</ConfigKey>
+                  <ConfigKey>[Tango],pitch_fader</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
+
+              <WidgetGroup><!-- VU Meter spacer when Channel Mixer is hidden -->
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <Size>22f,1min</Size>
+                    <Children>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Tango],vumeter</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Tango],channel_mixer</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                  <Transform><Not/></Transform>
+                </Connection>
+              </WidgetGroup><!-- /VU Meter spacer when Channel Mixer is hidden -->
             </Children>
             <Connection>
-              <ConfigKey>[Tango],channel_mixer</ConfigKey>
+              <ConfigKey>[Tango],normal_mode</ConfigKey>
               <BindProperty>visible</BindProperty>
-              <Transform><Not/></Transform>
             </Connection>
-          </WidgetGroup><!-- /VU Meter spacer when Channel Mixer is hidden -->
+          </WidgetGroup><!-- /Spacers for normal width -->
+
+          <WidgetGroup><!-- mini/MAXI toggler for netbook mode -->
+            <ObjectName>AlignTopLeft</ObjectName>
+            <Size>22f,1min</Size>
+            <Layout>vertical</Layout>
+            <Children>
+              <WidgetGroup><Size>1min,3f</Size><Children/></WidgetGroup>
+              <Template src="skin:button_2state_persist.xml">
+                <SetVariable name="ObjectName">MiniMaxiButton</SetVariable>
+                <SetVariable name="Size">22f,17f</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Tango],fx_units_12_miniMAXI</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[Tango],netbook_mode</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- mini/MAXI toggler for netbook mode -->
 
           <WidgetGroup><!-- EffectUnit 2 -->
             <SizePolicy>me,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
 
-              <!-- Sapcer to keep Deck & FX unit aligned -->
-              <WidgetGroup><Size>56f,1min</Size><Children/></WidgetGroup>
+              <!-- Spacer to keep Deck & FX unit aligned -->
+              <WidgetGroup><Size>56f,1min</Size><Children/>
+                <Connection>
+                  <ConfigKey>[Tango],normal_mode</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
 
               <WidgetStack currentpage="[Tango],fx_units_12_miniMAXI_stack" persist="true">
                 <SizePolicy>min,max</SizePolicy>

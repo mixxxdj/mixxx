@@ -833,8 +833,8 @@ WPushButton {
 
 #SkinControls {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding: 0px;
-  margin: 0px 5px 0px 5px;	/*
+  padding: 0px;	/*
+  margin: 0px 5px 0px 5px;
   background-color: #321679;	*/
   }
   #SkinControlsRow {
@@ -842,6 +842,14 @@ WPushButton {
     background-color:  #0f0f0f;	/*
     background-color: #921679;	*/
   }
+
+#SkinControlsBarLeft {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+}
+#SkinControlsBarRight {
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+
+}
 
 #GuiToggleButton, #GuiToggleButton2, #RecordingButton {
   text-align: center;

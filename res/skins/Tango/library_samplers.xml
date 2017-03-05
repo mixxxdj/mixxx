@@ -16,9 +16,9 @@ Modes:
         <Layout>vertical</Layout>
         <SizePolicy>me,max</SizePolicy>
         <MinimumSize>770,0</MinimumSize>
-        <MaximumSize>i,70</MaximumSize>
+        <MaximumSize>-1,70</MaximumSize>
         <Children>
-          <SingletonContainer trigger="[Library],show_library" persist="true" on_hide_select="0">
+          <SingletonContainer trigger="[Library],show_library" persist="true">
             <ObjectName>Library_Singleton</ObjectName>
             <Connection>
               <ConfigKey persist="true">[Library],show_library</ConfigKey>

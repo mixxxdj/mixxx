@@ -2,7 +2,7 @@
   <WidgetGroup><!-- Skin Controls -->
     <Layout>vertical</Layout>
     <ObjectName>SkinControls</ObjectName>
-    <SizePolicy>min,me</SizePolicy>
+    <Size>104f,1me</Size>
     <Children>
 
       <WidgetGroup><!-- 4 Decks / Wave / Spinny / HotCues / Mixer -->
@@ -271,5 +271,10 @@
       </WidgetGroup><!-- /LogoCrossfaderBox 2 Decks -->
 
     </Children>
+    <Connection>
+      <ConfigKey>[Tango],netbook_mode</ConfigKey>
+      <Transform><Not/></Transform>
+      <BindProperty>visible</BindProperty>
+    </Connection>
   </WidgetGroup>
 </Template>

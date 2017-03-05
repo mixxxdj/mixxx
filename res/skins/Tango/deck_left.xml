@@ -2,7 +2,7 @@
   <WidgetGroup>
     <ObjectName>DeckContainer</ObjectName>
     <Layout>horizontal</Layout>
-    <Size>578me,136min</Size>
+    <Size>507me,136min</Size>
     <Children>
 
       <WidgetGroup><!-- / [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
@@ -159,6 +159,8 @@
 
         </Children>
       </WidgetGroup><!-- Mixer / [ [Spinny / Cover] + VUMeter ] + Pitch + spacer -->
+
+      <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
 
     </Children>
   </WidgetGroup>
