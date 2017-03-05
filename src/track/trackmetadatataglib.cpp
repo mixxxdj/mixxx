@@ -24,6 +24,10 @@
 #define TAGLIB_HAS_TAG_CHECK \
     (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
 
+// TagLib has support for hasID3v2Tag() for AIFF files since version 1.10
+#define TAGLIB_HAS_AIFF_HAS_ID3V2TAG \
+    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 10))
+
 // TagLib has support for length in milliseconds since version 1.10
 #define TAGLIB_HAS_LENGTH_IN_MILLISECONDS \
     (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 10))
@@ -321,6 +325,28 @@ bool readAudioProperties(TrackMetadata* pTrackMetadata,
     }
     readAudioProperties(pTrackMetadata, *pAudioProperties);
     return true;
+}
+
+void readTrackMetadataFromRIFFTag(TrackMetadata* pTrackMetadata, const TagLib::RIFF::Info::Tag& tag) {
+    if (!pTrackMetadata) {
+        return; // nothing to do
+    }
+
+    pTrackMetadata->setTitle(toQString(tag.title()));
+    pTrackMetadata->setArtist(toQString(tag.artist()));
+    pTrackMetadata->setAlbum(toQString(tag.album()));
+    pTrackMetadata->setComment(toQString(tag.comment()));
+    pTrackMetadata->setGenre(toQString(tag.genre()));
+
+    int iYear = tag.year();
+    if (iYear > 0) {
+        pTrackMetadata->setYear(QString::number(iYear));
+    }
+
+    int iTrack = tag.track();
+    if (iTrack > 0) {
+        pTrackMetadata->setTrackNumber(QString::number(iTrack));
+    }
 }
 
 void readTrackMetadataFromTag(TrackMetadata* pTrackMetadata, const TagLib::Tag& tag) {
@@ -1583,6 +1609,63 @@ bool writeTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& t
     return true;
 }
 
+bool writeTrackMetadataIntoRIFFTag(TagLib::RIFF::Info::Tag* pTag, const TrackMetadata& trackMetadata) {
+    if (!pTag) {
+        return false;
+    }
+
+    writeTrackMetadataIntoTag(pTag, trackMetadata,
+            WRITE_TAG_OMIT_NONE);
+
+    return true;
+}
+
+namespace {
+
+// Workaround for missing functionality in TagLib 1.11.x that
+// doesn't support to read text chunks from AIFF files.
+// See also:
+// http://www-mmsp.ece.mcgill.ca/Documents/AudioFormats/AIFF/AIFF.html
+// http://paulbourke.net/dataformats/audio/
+//
+//
+class AiffFile: public TagLib::RIFF::AIFF::File {
+  public:
+    explicit AiffFile(TagLib::FileName fileName)
+        : TagLib::RIFF::AIFF::File(fileName) {
+    }
+
+    void readTrackMetadataFromTextChunks(TrackMetadata* pTrackMetadata) /*non-const*/ {
+        if (pTrackMetadata == nullptr) {
+            return; // nothing to do
+        }
+        for(unsigned int i = 0; i < chunkCount(); ++i) {
+            const TagLib::ByteVector chunkId(TagLib::RIFF::AIFF::File::chunkName(i));
+            if (chunkId == "NAME") {
+                pTrackMetadata->setTitle(decodeChunkText(
+                        TagLib::RIFF::AIFF::File::chunkData(i)));
+            } else if (chunkId == "AUTH") {
+                pTrackMetadata->setArtist(decodeChunkText(
+                        TagLib::RIFF::AIFF::File::chunkData(i)));
+            } else if (chunkId == "ANNO") {
+                pTrackMetadata->setComment(decodeChunkText(
+                        TagLib::RIFF::AIFF::File::chunkData(i)));
+            }
+        }
+    }
+
+  private:
+    // From the specs: 13. TEXT CHUNKS - NAME, AUTHOR, COPYRIGHT, ANNOTATION
+    // "text: contains pure ASCII characters"
+    // NOTE(uklotzde): In order to be independent of the currently defined
+    // codec we use QString::fromLatin1() instead of QString::fromAscii()
+    static QString decodeChunkText(const TagLib::ByteVector& chunkData) {
+        return QString::fromLatin1(chunkData.data(), chunkData.size());
+    }
+};
+
+} // anonymous namespace
+
 Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImage* pCoverArt, QString fileName, FileType fileType) {
     if (fileType == FileType::UNKNOWN) {
         fileType = getFileTypeFromFileName(fileName);
@@ -1762,9 +1845,9 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
                 return OK;
             } else {
                 // fallback
-                const TagLib::Tag* pTag(file.tag());
+                const TagLib::RIFF::Info::Tag* pTag = file.InfoTag();
                 if (pTag) {
-                    readTrackMetadataFromTag(pTrackMetadata, *pTag);
+                    readTrackMetadataFromRIFFTag(pTrackMetadata, *pTag);
                     return OK;
                 }
             }
@@ -1773,21 +1856,21 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
     }
     case FileType::AIFF:
     {
-        TagLib::RIFF::AIFF::File file(TAGLIB_FILENAME_FROM_QSTRING(fileName));
+        AiffFile file(TAGLIB_FILENAME_FROM_QSTRING(fileName));
         if (readAudioProperties(pTrackMetadata, file)) {
+#if (TAGLIB_HAS_AIFF_HAS_ID3V2TAG)
+            const TagLib::ID3v2::Tag* pID3v2Tag = file.hasID3v2Tag() ? file.tag() : nullptr;
+#else
             const TagLib::ID3v2::Tag* pID3v2Tag = file.tag();
+#endif
             if (pID3v2Tag) {
                 readTrackMetadataFromID3v2Tag(pTrackMetadata, *pID3v2Tag);
                 readCoverArtFromID3v2Tag(pCoverArt, *pID3v2Tag);
-                return OK;
             } else {
                 // fallback
-                const TagLib::Tag* pTag(file.tag());
-                if (pTag) {
-                    readTrackMetadataFromTag(pTrackMetadata, *pTag);
-                    return OK;
-                }
+                file.readTrackMetadataFromTextChunks(pTrackMetadata);
             }
+            return OK;
         }
         break;
     }
@@ -2023,12 +2106,17 @@ public:
 
 private:
     static bool writeTrackMetadata(TagLib::RIFF::WAV::File* pFile, const TrackMetadata& trackMetadata) {
-        return pFile->isOpen()
+        bool modifiedTags = false;
+        if (pFile->isOpen()) {
+            // Write into all available tags
 #if (TAGLIB_HAS_WAV_ID3V2TAG)
-                && writeTrackMetadataIntoID3v2Tag(pFile->ID3v2Tag(), trackMetadata);
+            modifiedTags |= writeTrackMetadataIntoID3v2Tag(pFile->ID3v2Tag(), trackMetadata);
 #else
-                && writeTrackMetadataIntoID3v2Tag(pFile->tag(), trackMetadata);
+            modifiedTags |= writeTrackMetadataIntoID3v2Tag(pFile->tag(), trackMetadata);
 #endif
+            modifiedTags |= writeTrackMetadataIntoRIFFTag(pFile->InfoTag(), trackMetadata);
+        }
+        return modifiedTags;
     }
 
     TagLib::RIFF::WAV::File m_file;
