@@ -101,16 +101,16 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9898; Cover Art</Text>
+              <Text>&#9898; Spinnies</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9899; Cover Art</Text>
+              <Text>&#9899; Spinnies</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey>[Deere],show_coverart</ConfigKey>
+              <ConfigKey>[Master],show_spinnies</ConfigKey>
             </Connection>
           </PushButton>
 

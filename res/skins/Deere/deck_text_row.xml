@@ -11,23 +11,6 @@
     <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
-      <WidgetGroup>
-        <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <CoverArt>
-            <TooltipId>coverart</TooltipId>
-            <ObjectName>DeckCoverArt</ObjectName>
-            <SizePolicy>min,min</SizePolicy>
-            <MinimumSize>70,70</MinimumSize>
-            <Group><Variable name="group"/></Group>
-          </CoverArt>
-        </Children>
-        <Connection>
-          <ConfigKey>[Deere],show_coverart</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>DeckTextColumn</ObjectName>

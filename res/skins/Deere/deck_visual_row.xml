@@ -6,14 +6,72 @@
     group: the group to connect to
 -->
 <Template>
+  <SingletonDefinition>
+    <ObjectName>SpinnySingleton<Variable name="group"/></ObjectName>
+    <Children>
+      <Spinny>
+        <TooltipId>spinny</TooltipId>
+        <Group><Variable name="group"/></Group>
+        <PathBackground scalemode="STRETCH">image/vinyl_spinny_background.svg</PathBackground>
+        <PathForeground>image/vinyl_spinny_foreground.svg</PathForeground>
+        <PathGhost>image/vinyl_spinny_foreground_ghost.svg</PathGhost>
+        <PathMask>image/vinyl_spinny_cover_mask.svg</PathMask>
+        <ShowCover>true</ShowCover>
+      </Spinny>
+    </Children>
+  </SingletonDefinition>
   <WidgetGroup>
     <ObjectName>VisualRow</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,me</SizePolicy>
-    <!-- Because the spinny hides itself and throws off the size
-         calculation we set our minimum size to the spinny size. -->
-<!--     <MinimumSize>-1,21</MinimumSize> -->
     <Children>
+
+      <Template src="skin:vinylcontrol.xml"/>
+
+      <WidgetGroup>
+        <ObjectName>SpinnyHolder</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>max,max</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>max,max</SizePolicy>
+            <Children>
+              <SingletonContainer>
+                 <ObjectName>SpinnySingleton<Variable name="group"/></ObjectName>
+                 <Size>75f,75f</Size>
+              </SingletonContainer>
+            </Children>
+            <Connection>
+              <ConfigKey>[Master],show_4decks</ConfigKey>
+              <Transform>
+                <Not/>
+              </Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>max,max</SizePolicy>
+            <Children>
+              <SingletonContainer>
+                 <ObjectName>SpinnySingleton<Variable name="group"/></ObjectName>
+                 <Size>55f,55f</Size>
+              </SingletonContainer>
+            </Children>
+            <Connection>
+              <ConfigKey>[Master],show_4decks</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey>[Master],show_spinnies</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
       <Visual>
         <TooltipId>waveform_display</TooltipId>
         <Group><Variable name="group"/></Group>
@@ -156,71 +214,6 @@
           </Transform>
         </Connection>
       </WidgetGroup>
-
-      <WidgetGroup>
-        <ObjectName>SpinnyContainer</ObjectName>
-        <Layout>horizontal</Layout>
-        <SizePolicy>max,max</SizePolicy>
-        <MinimumSize>-1,30</MinimumSize>
-        <Children>
-
-          <WidgetGroup>
-            <ObjectName>SpinnyHolder</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>max,max</SizePolicy>
-            <Children>
-              <Spinny>
-                <TooltipId>spinny</TooltipId>
-                <Group><Variable name="group"/></Group>
-                <PathBackground>image/vinyl_spinny_background.svg</PathBackground>
-                <PathForeground>image/vinyl_spinny_foreground.svg</PathForeground>
-                <PathGhost>image/vinyl_spinny_foreground_ghost.svg</PathGhost>
-                <PathMask>image/vinyl_spinny_cover_mask.svg</PathMask>
-                <ShowCover>false</ShowCover>
-              </Spinny>
-            </Children>
-            <Connection>
-              <ConfigKey>[Deere],show_coverart</ConfigKey>
-              <BindProperty>visible</BindProperty>
-              <Transform>
-                <Not/>
-              </Transform>
-            </Connection>
-          </WidgetGroup>
-
-          <WidgetGroup>
-            <ObjectName>SpinnyHolder</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>max,max</SizePolicy>
-            <Children>
-              <Spinny>
-                <TooltipId>spinny</TooltipId>
-                <Group><Variable name="group"/></Group>
-                <PathBackground>image/vinyl_spinny_background.svg</PathBackground>
-                <PathForeground>image/vinyl_spinny_foreground.svg</PathForeground>
-                <PathGhost>image/vinyl_spinny_foreground_ghost.svg</PathGhost>
-                <PathMask>image/vinyl_spinny_cover_mask.svg</PathMask>
-                <!--
-                 If you want to have cover art beneath the spinning vinyl images,
-                 set <ShowCover> to "true" AND make the <PathMask> image semi-transparent.
-                -->
-                <ShowCover>true</ShowCover>
-              </Spinny>
-            </Children>
-            <Connection>
-              <ConfigKey>[Deere],show_coverart</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-
-        </Children>
-        <Connection>
-          <ConfigKey><Variable name="control_show_spinny"/></ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup> <!--SpinnyContainer-->
-
-      <Template src="skin:vinylcontrol.xml"/>
 
     </Children>
   </WidgetGroup>

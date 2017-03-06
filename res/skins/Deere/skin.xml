@@ -13,11 +13,6 @@
       <attribute config_key="[Master],num_preview_decks">1</attribute>
       <attribute config_key="[Library],show_library">1</attribute>
 
-      <attribute persist="true" config_key="[Spinny1],show_spinny">1</attribute>
-      <attribute persist="true" config_key="[Spinny2],show_spinny">1</attribute>
-      <attribute persist="true" config_key="[Spinny3],show_spinny">1</attribute>
-      <attribute persist="true" config_key="[Spinny4],show_spinny">1</attribute>
-
       <!--Skin settings-->
       <attribute persist="true" config_key="[Deere],show_stacked_waveforms">1</attribute>
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
@@ -26,6 +21,7 @@
 
       <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Master],show_4effectunits">0</attribute>
+      <attribute persist="true" config_key="[Master],show_spinnies">1</attribute>
       <attribute persist="true" config_key="[Deere],show_coverart">1</attribute> <!-- in decks -->
       <attribute persist="true" config_key="[Deere],show_starrating">0</attribute>
       <attribute persist="true" config_key="[Deere],show_track_info">1</attribute>
@@ -132,7 +128,7 @@
           <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
           <!-- Traditional Orange -->
           <SetVariable name="DeckSignalColor">#E67A00</SetVariable>
-          <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+          <SetVariable name="DeckBackgroundColor">#3a3a4f</SetVariable>
           <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
         </Template>
       </Children>
@@ -146,7 +142,7 @@
           <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
           <!-- Lime -->
           <SetVariable name="DeckSignalColor">#AABD00</SetVariable>
-          <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+          <SetVariable name="DeckBackgroundColor">#3a3a4f</SetVariable>
           <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
         </Template>
       </Children>
