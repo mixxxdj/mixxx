@@ -155,15 +155,46 @@
               <Template src="skin:auxiliary.xml">
                 <SetVariable name="i">1</SetVariable>
               </Template>
-              <Template src="skin:auxiliary.xml">
-                <SetVariable name="i">2</SetVariable>
-              </Template>
-              <Template src="skin:auxiliary.xml">
-                <SetVariable name="i">3</SetVariable>
-              </Template>
-              <Template src="skin:auxiliary.xml">
-                <SetVariable name="i">4</SetVariable>
-              </Template>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:auxiliary.xml">
+                    <SetVariable name="i">2</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Auxiliary2],enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:auxiliary.xml">
+                    <SetVariable name="i">3</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Auxiliary3],enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:auxiliary.xml">
+                    <SetVariable name="i">4</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Auxiliary4],enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
             </Children>
           </WidgetGroup>
 

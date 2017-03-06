@@ -17,7 +17,7 @@
         <TooltipId>waveform_overview</TooltipId>
         <Group><Variable name="group"/></Group>
         <SizePolicy>me,me</SizePolicy>
-        <BgColor></BgColor>
+        <BgColor><Variable name="DeckBackgroundColor"/></BgColor>
         <SignalHighColor></SignalHighColor>
         <SignalMidColor></SignalMidColor>
         <SignalLowColor></SignalLowColor>

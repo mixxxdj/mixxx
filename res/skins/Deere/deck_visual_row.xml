@@ -35,7 +35,6 @@
         <Children>
           <WidgetGroup>
             <Layout>horizontal</Layout>
-            <SizePolicy>max,max</SizePolicy>
             <Children>
               <SingletonContainer>
                  <ObjectName>SpinnySingleton<Variable name="group"/></ObjectName>
@@ -53,7 +52,6 @@
 
           <WidgetGroup>
             <Layout>horizontal</Layout>
-            <SizePolicy>max,max</SizePolicy>
             <Children>
               <SingletonContainer>
                  <ObjectName>SpinnySingleton<Variable name="group"/></ObjectName>

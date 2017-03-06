@@ -24,7 +24,7 @@
             <SetVariable name="i">3</SetVariable>
             <!-- Violet -->
             <SetVariable name="DeckSignalColor">#B500B5</SetVariable>
-            <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+            <SetVariable name="DeckBackgroundColor">#3a3a4f</SetVariable>
           </Template>
         </Children>
         <Connection>

@@ -1133,32 +1133,28 @@ WStarRating {
 }
 
 #MicLabelContainer,
-#MicLabel,
 #DuckingLabelContainer {
   qproperty-layoutAlignment: 'AlignHCenter';
 }
 
-#MicrophoneContainer, #MicDuckingContainer {
+#MicrophoneContainer, #MicDuckingContainer, #AuxiliaryContainer {
   padding: 2px 5px;
   margin: 2px 0px;
   border: 3px solid #222222;
 }
 
-#MicrophoneContainer,
-#MicrophoneControlButtons,
+#MicrophoneContainer, #AuxiliaryContainer,
+#MicrophoneControlButtons, #AuxiliaryControlButtons,
 #MicDuckingControls {
   qproperty-layoutSpacing: 3;
 }
 
-#MicrophoneControls {
+#MicrophoneControls, #AuxiliaryControls {
   qproperty-layoutSpacing: 4;
 }
 
-#MicrophoneButtonsAndMeter {
+#MicrophoneButtonsAndMeter, #AuxiliaryButtonsAndMeter {
   qproperty-layoutSpacing: 5;
-}
-
-#AuxiliaryContainer {
 }
 
 #LibraryContainer {
