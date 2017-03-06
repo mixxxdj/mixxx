@@ -32,7 +32,7 @@ EncoderMp3Settings::EncoderMp3Settings(UserSettingsPointer pConfig) :
     vbrmodes.append("CBR");
     vbrmodes.append("ABR");
     vbrmodes.append("VBR");
-    m_radioList.append(OptionsGroup("Bitrate Mode", ENCODING_MODE_GROUP, vbrmodes));
+    m_radioList.append(OptionsGroup(QObject::tr("Bitrate Mode"), ENCODING_MODE_GROUP, vbrmodes));
 }
 EncoderMp3Settings::~EncoderMp3Settings()
 {

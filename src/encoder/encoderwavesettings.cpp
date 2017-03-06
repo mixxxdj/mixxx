@@ -19,10 +19,10 @@ EncoderWaveSettings::EncoderWaveSettings(UserSettingsPointer pConfig, Encoder::F
         qWarning() << "EncoderWaveSettings setup with " << format.internalName << ". This is an error!";
     }
     QList<QString> names;
-    names.append("16 bits");
-    names.append("24 bits");
-    names.append("32 bits float");
-    m_radioList.append(OptionsGroup("Bit depth", BITS_GROUP, names));
+    names.append(QObject::tr("16 bits"));
+    names.append(QObject::tr("24 bits"));
+    names.append(QObject::tr("32 bits float"));
+    m_radioList.append(OptionsGroup(QObject::tr("Bit depth"), BITS_GROUP, names));
 }
 EncoderWaveSettings::~EncoderWaveSettings()
 {

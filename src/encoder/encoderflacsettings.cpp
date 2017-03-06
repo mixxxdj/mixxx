@@ -20,9 +20,9 @@ EncoderFlacSettings::EncoderFlacSettings(UserSettingsPointer pConfig)
     m_pConfig = pConfig;
 
     QList<QString> names;
-    names.append("16 bits");
-    names.append("24 bits");
-    m_radioList.append(OptionsGroup("Bits", BITS_GROUP, names));
+    names.append(QObject::tr("16 bits"));
+    names.append(QObject::tr("24 bits"));
+    m_radioList.append(OptionsGroup(QObject::tr("Bit depth"), BITS_GROUP, names));
     
     m_qualList.append(0);
     m_qualList.append(1);

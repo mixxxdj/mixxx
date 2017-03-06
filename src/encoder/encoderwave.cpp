@@ -182,8 +182,14 @@ void EncoderWave::initStream() {
     if (ret != 0) {
         qWarning("libsndfile error: %s", sf_error_number(ret));
     }
-
-    ret = sf_set_string(m_pSndfile, SF_STR_ALBUM, m_metaDataAlbum.toAscii().constData());
+    
+    int strType = SF_STR_ALBUM;
+    if (m_sfInfo.format == SF_FORMAT_AIFF) {
+        // There is no AIFF text chunk for "Album". But libsndfile is able to
+        // write the SF_STR_COMMENT string into the text chunk with id "ANNO".
+        strType = SF_STR_COMMENT;
+    }
+    ret = sf_set_string(m_pSndfile, strType, m_metaDataAlbum.toAscii().constData());
     if (ret != 0) {
         qWarning("libsndfile error: %s", sf_error_number(ret));
     }
