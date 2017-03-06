@@ -11,19 +11,6 @@
         <SizePolicy>me,min</SizePolicy>
         <Children>
 
-          <WidgetGroup><Size>1me,1min</Size><Children/></WidgetGroup>
-
-          <Template src="skin:button_3state_display.xml">
-            <SetVariable name="ToolTipID">toggle_recording</SetVariable>
-            <SetVariable name="ObjectName">RecordingButton</SetVariable>
-            <SetVariable name="Size">60f,20f</SetVariable>
-            <SetVariable name="state_0_text">REC</SetVariable>
-            <SetVariable name="state_1_text">...</SetVariable>
-            <SetVariable name="state_2_text">REC!</SetVariable>
-            <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
-            <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
-          </Template>
-
           <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml"><!-- 4 Decks -->
@@ -132,32 +119,38 @@
         </Children>
       </WidgetGroup>
 
-      <SliderComposed>
-        <ObjectName>Crossfader</ObjectName>
-        <TooltipId>crossfader</TooltipId>
-        <Handle>skin:/knobs_sliders/slider_crossfader_handle.svg</Handle>
-        <Slider>skin:/knobs_sliders/slider_crossfader_scale.svg</Slider>
-        <Horizontal>true</Horizontal>
-        <Connection>
-          <ConfigKey>[Master],crossfader</ConfigKey>
-        </Connection>
+      <WidgetGroup>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
+          <SliderComposed>
+            <ObjectName>Crossfader</ObjectName>
+            <TooltipId>crossfader</TooltipId>
+            <Handle>skin:/knobs_sliders/slider_crossfader_handle.svg</Handle>
+            <Slider>skin:/knobs_sliders/slider_crossfader_scale.svg</Slider>
+            <Horizontal>true</Horizontal>
+            <Connection>
+              <ConfigKey>[Master],crossfader</ConfigKey>
+            </Connection>
+          </SliderComposed>
+          <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
+        </Children>
         <Connection>
           <ConfigKey persist="true">[Tango],crossfader</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </SliderComposed>
+      </WidgetGroup>
       
       <WidgetGroup><!-- Skin Controls -->
         <Layout>horizontal</Layout>
         <ObjectName>SkinControlsBarRight</ObjectName>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-
-          <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
           
           <Template src="skin:button_2state_persist.xml">
             <SetVariable name="ObjectName">LogoMaxi</SetVariable>
-            <SetVariable name="Size">102f,20f</SetVariable>
+            <SetVariable name="Size">81f,20f</SetVariable>
             <SetVariable name="state_0_pressed">logo_104x26_grey.svg</SetVariable>
             <SetVariable name="state_0_unpressed">logo_104x26_grey.svg</SetVariable>
             <SetVariable name="state_1_pressed">logo_104x26.svg</SetVariable>
@@ -165,7 +158,20 @@
             <SetVariable name="ConfigKeyPerm">[Tango],colorLogo</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>1me,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
+
+          <Template src="skin:button_3state_display.xml">
+            <SetVariable name="ToolTipID">toggle_recording</SetVariable>
+            <SetVariable name="ObjectName">RecordingButton</SetVariable>
+            <SetVariable name="Size">60f,20f</SetVariable>
+            <SetVariable name="state_0_text">REC</SetVariable>
+            <SetVariable name="state_1_text">...</SetVariable>
+            <SetVariable name="state_2_text">REC!</SetVariable>
+            <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
+            <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
 
           <Template src="skin:button_4state_display.xml"><!-- Recording -->
             <SetVariable name="ToolTipID">broadcast_enabled</SetVariable>

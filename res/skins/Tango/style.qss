@@ -844,11 +844,10 @@ WPushButton {
   }
 
 #SkinControlsBarLeft {
-  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
 }
 #SkinControlsBarRight {
-  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
 }
 
 #GuiToggleButton, #GuiToggleButton2, #RecordingButton {
