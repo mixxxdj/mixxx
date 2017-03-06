@@ -40,3 +40,10 @@ void DlgCoverArtFullSize::init(QPixmap pixmap) {
     raise();
     activateWindow();
 }
+
+void DlgCoverArtFullSize::mousePressEvent(QMouseEvent* event) {
+    Q_UNUSED(event);
+    if (isVisible()) {
+        close();
+    }
+}

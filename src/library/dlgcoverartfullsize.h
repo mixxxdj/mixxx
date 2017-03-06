@@ -15,6 +15,7 @@ class DlgCoverArtFullSize
     virtual ~DlgCoverArtFullSize();
 
     void init(QPixmap pixmap);
+    void mousePressEvent(QMouseEvent* /* unused */) override;
 };
 
 #endif // DLGCOVERARTFULLSIZE_H
