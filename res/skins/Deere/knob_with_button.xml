@@ -17,7 +17,7 @@
         <Children>
           <PushButton>
             <TooltipId><Variable name="button_TooltipId"/></TooltipId>
-            <ObjectName>KillButtons</ObjectName>
+            <ObjectName>SmallCircleButton</ObjectName>
             <Size>10f,10f</Size>
             <NumberStates>2</NumberStates>
             <State>

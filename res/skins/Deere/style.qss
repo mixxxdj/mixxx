@@ -653,11 +653,6 @@ WWidget, QLabel {
   qproperty-layoutSpacing: 2;
 }
 
-#ControlsRow WPushButton, #VinylControlsContainer WPushButton {
-  font-size: 12px;
-  font-weight: bold;
-}
-
 WBeatSpinBox {
   color: #c1cabe;
   background-color: #1f1e1e;
@@ -1017,6 +1012,7 @@ WEffectSelector {
 WWidget, WLabel {
   /* All labels should default to a grey that is readable on black. */
   color: #D2D2D2;
+  font-size: 12px;
 }
 
 /* Track text, etc. should be in the deck color. */
@@ -1042,6 +1038,11 @@ WNumberRate {
 #CircleButton {
   border: 3px solid #333333;
   border-radius: 2px;
+}
+
+#SmallCircleButton {
+  border: 2px solid #333333;
+  border-radius: 1px;
 }
 
 #DeckControlsSplitWaveforms4Decks #channel_VuMeter_Group,
@@ -1128,9 +1129,33 @@ WStarRating {
   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                     stop: 0 #333333,
                                     stop: 1.0 #333333);
+  qproperty-layoutSpacing: 6;
 }
 
-#MicrophoneContainer {
+#MicLabelContainer,
+#MicLabel,
+#DuckingLabelContainer {
+  qproperty-layoutAlignment: 'AlignHCenter';
+}
+
+#MicrophoneContainer, #MicDuckingContainer {
+  padding: 2px 5px;
+  margin: 2px 0px;
+  border: 3px solid #222222;
+}
+
+#MicrophoneContainer,
+#MicrophoneControlButtons,
+#MicDuckingControls {
+  qproperty-layoutSpacing: 3;
+}
+
+#MicrophoneControls {
+  qproperty-layoutSpacing: 4;
+}
+
+#MicrophoneButtonsAndMeter {
+  qproperty-layoutSpacing: 5;
 }
 
 #AuxiliaryContainer {
@@ -1171,7 +1196,9 @@ WStarRating {
   qproperty-layoutSpacing: 2;
 }
 
-#EffectUnitGroupControlsLeft, #EffectUnitGroupControlsRight {
+#EffectUnitGroupControlsLeft,
+#EffectUnitGroupControlsRight,
+#EffectUnitGroupControlsInputs {
   qproperty-layoutSpacing: 2;
 }
 
@@ -1224,6 +1251,8 @@ WPushButton {
     border: 1px solid #4B4B4B;
     border-radius: 2px;
     outline: none;
+    font-size: 12px;
+    font-weight: bold;
 }
 
 WPushButton:hover {
