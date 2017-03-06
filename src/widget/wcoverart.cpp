@@ -228,10 +228,6 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
     }
 }
 
-void WCoverArt::leaveEvent(QEvent* /*unused*/) {
-    m_pDlgFullSize->close();
-}
-
 void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
     if ((event->buttons() & Qt::LeftButton) && m_loadedTrack) {
         DragAndDropHelper::dragTrack(m_loadedTrack, this, m_group);

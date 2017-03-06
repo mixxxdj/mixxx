@@ -44,7 +44,6 @@ class WCoverArt : public QWidget, public WBaseWidget {
     void paintEvent(QPaintEvent* /*unused*/) override;
     void resizeEvent(QResizeEvent* /*unused*/) override;
     void mousePressEvent(QMouseEvent* /*unused*/) override;
-    void leaveEvent(QEvent* /*unused*/) override;
 
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
