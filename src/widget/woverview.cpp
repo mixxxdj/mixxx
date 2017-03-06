@@ -286,7 +286,8 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
     ScopedTimer t("WOverview::paintEvent");
 
     QPainter painter(this);
-    // Fill with transparent pixels
+    painter.fillRect(rect(), m_qColorBackground);
+
     if (!m_backgroundPixmap.isNull()) {
         painter.drawPixmap(rect(), m_backgroundPixmap);
     }
