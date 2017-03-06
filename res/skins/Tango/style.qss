@@ -1471,6 +1471,9 @@ WPushButton {
 #AlignCenter {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
 }
+#AlignTop {
+  qproperty-layoutAlignment: 'AlignTop';
+}
 #AlignTopLeft {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }

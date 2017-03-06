@@ -37,6 +37,8 @@
             <SetVariable name="ConfigKeyPerm">[Master],show_4decks</SetVariable>
           </Template>
 
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
+
           <Template src="skin:button_2state_persist.xml"><!-- Waveforms -->
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">20f,20f</SetVariable>

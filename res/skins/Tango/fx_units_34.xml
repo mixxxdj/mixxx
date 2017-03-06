@@ -126,8 +126,12 @@ Variables:
           <Template src="skin:button_2state_persist.xml">
             <SetVariable name="ObjectName">MiniMaxiButton</SetVariable>
             <SetVariable name="Size">22f,17f</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[Tango],fx_units_12_miniMAXI</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Tango],fx_units_34_miniMAXI</SetVariable>
           </Template>
+          <!-- For the almost identical toggler in 'normal' mode this would be enough
+              to bring MiniMaxiButton to top. Here, 'AlignTop' for parent or grand-parent
+              WidgetGroup have no effect, only this expanding spacer helps. -->
+          <WidgetGroup><Size>1min,1me</Size><Children/></WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey>[Tango],netbook_mode</ConfigKey>
