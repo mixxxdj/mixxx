@@ -7,6 +7,7 @@
 #include <QHideEvent>
 #include <QEvent>
 
+#include "library/dlgcoverartfullsize.h"
 #include "preferences/usersettings.h"
 #include "skin/skincontext.h"
 #include "track/track.h"
@@ -119,6 +120,8 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     bool m_bClampFailedWarning;
     bool m_bGhostPlayback;
     bool m_bWidgetDirty;
+
+    DlgCoverArtFullSize* m_pDlgCoverArt;
 };
 
 #endif //_WSPINNY_H
