@@ -173,25 +173,31 @@ void EncoderWave::initStream() {
     // However, while formats like Ogg/Vorbis and FLAC fully support utf-8, others like WAV and
     // AIFF officially only support ASCII. Writing utf-8 strings to WAV and AIF files with
     // libsndfile will work when read back with libsndfile, but may not work with other programs.
-    int ret = sf_set_string(m_pSndfile, SF_STR_TITLE, m_metaDataTitle.toAscii().constData());
-    if (ret != 0) {
-        qWarning("libsndfile error: %s", sf_error_number(ret));
+    int ret;
+    if (!m_metaDataTitle.isEmpty()) {
+        ret = sf_set_string(m_pSndfile, SF_STR_TITLE, m_metaDataTitle.toAscii().constData());
+        if (ret != 0) {
+            qWarning("libsndfile error: %s", sf_error_number(ret));
+        }
     }
 
-    ret = sf_set_string(m_pSndfile, SF_STR_ARTIST, m_metaDataArtist.toAscii().constData());
-    if (ret != 0) {
-        qWarning("libsndfile error: %s", sf_error_number(ret));
+    if (!m_metaDataArtist.isEmpty()) {
+        ret = sf_set_string(m_pSndfile, SF_STR_ARTIST, m_metaDataArtist.toAscii().constData());
+        if (ret != 0) {
+            qWarning("libsndfile error: %s", sf_error_number(ret));
+        }
     }
-    
-    int strType = SF_STR_ALBUM;
-    if (m_sfInfo.format == SF_FORMAT_AIFF) {
-        // There is no AIFF text chunk for "Album". But libsndfile is able to
-        // write the SF_STR_COMMENT string into the text chunk with id "ANNO".
-        strType = SF_STR_COMMENT;
-    }
-    ret = sf_set_string(m_pSndfile, strType, m_metaDataAlbum.toAscii().constData());
-    if (ret != 0) {
-        qWarning("libsndfile error: %s", sf_error_number(ret));
+    if (!m_metaDataAlbum.isEmpty()) {
+        int strType = SF_STR_ALBUM;
+        if (m_sfInfo.format == SF_FORMAT_AIFF) {
+            // There is no AIFF text chunk for "Album". But libsndfile is able to
+            // write the SF_STR_COMMENT string into the text chunk with id "ANNO".
+            strType = SF_STR_COMMENT;
+        }
+        ret = sf_set_string(m_pSndfile, strType, m_metaDataAlbum.toAscii().constData());
+        if (ret != 0) {
+            qWarning("libsndfile error: %s", sf_error_number(ret));
+        }
     }
 }
 
