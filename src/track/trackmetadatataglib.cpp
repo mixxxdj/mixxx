@@ -24,6 +24,10 @@
 #define TAGLIB_HAS_TAG_CHECK \
     (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
 
+// TagLib has support for hasID3v2Tag() for AIFF files since version 1.10
+#define TAGLIB_HAS_AIFF_HAS_ID3V2TAG \
+    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 10))
+
 // TagLib has support for length in milliseconds since version 1.10
 #define TAGLIB_HAS_LENGTH_IN_MILLISECONDS \
     (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 10))
@@ -321,6 +325,28 @@ bool readAudioProperties(TrackMetadata* pTrackMetadata,
     }
     readAudioProperties(pTrackMetadata, *pAudioProperties);
     return true;
+}
+
+void readTrackMetadataFromRIFFTag(TrackMetadata* pTrackMetadata, const TagLib::RIFF::Info::Tag& tag) {
+    if (!pTrackMetadata) {
+        return; // nothing to do
+    }
+
+    pTrackMetadata->setTitle(toQString(tag.title()));
+    pTrackMetadata->setArtist(toQString(tag.artist()));
+    pTrackMetadata->setAlbum(toQString(tag.album()));
+    pTrackMetadata->setComment(toQString(tag.comment()));
+    pTrackMetadata->setGenre(toQString(tag.genre()));
+
+    int iYear = tag.year();
+    if (iYear > 0) {
+        pTrackMetadata->setYear(QString::number(iYear));
+    }
+
+    int iTrack = tag.track();
+    if (iTrack > 0) {
+        pTrackMetadata->setTrackNumber(QString::number(iTrack));
+    }
 }
 
 void readTrackMetadataFromTag(TrackMetadata* pTrackMetadata, const TagLib::Tag& tag) {
@@ -622,8 +648,10 @@ TagLib::ID3v2::CommentsFrame* findFirstCommentsFrame(
         const TagLib::ID3v2::Tag& tag,
         const QString& description = QString(),
         bool preferNotEmpty = true) {
-    TagLib::ID3v2::FrameList commentsFrames(tag.frameListMap()["COMM"]);
     TagLib::ID3v2::CommentsFrame* pFirstFrame = nullptr;
+    // Bind the const-ref result to avoid a local copy
+    const TagLib::ID3v2::FrameList& commentsFrames =
+            tag.frameListMap()["COMM"];
     for (TagLib::ID3v2::FrameList::ConstIterator it(commentsFrames.begin());
             it != commentsFrames.end(); ++it) {
         auto pFrame =
@@ -650,16 +678,18 @@ TagLib::ID3v2::CommentsFrame* findFirstCommentsFrame(
     return pFirstFrame;
 }
 
-// Finds the first text frame that with a matching description.
-// If multiple comments frames with matching descriptions exist
-// prefer the first with a non-empty content if requested.
+// Finds the first text frame that with a matching description (case-insensitive).
+// If multiple comments frames with matching descriptions exist prefer the first
+// with a non-empty content if requested.
 TagLib::ID3v2::UserTextIdentificationFrame* findFirstUserTextIdentificationFrame(
         const TagLib::ID3v2::Tag& tag,
         const QString& description,
         bool preferNotEmpty = true) {
     DEBUG_ASSERT(!description.isEmpty());
-    TagLib::ID3v2::FrameList textFrames(tag.frameListMap()["TXXX"]);
     TagLib::ID3v2::UserTextIdentificationFrame* pFirstFrame = nullptr;
+    // Bind the const-ref result to avoid a local copy
+    const TagLib::ID3v2::FrameList& textFrames =
+            tag.frameListMap()["TXXX"];
     for (TagLib::ID3v2::FrameList::ConstIterator it(textFrames.begin());
             it != textFrames.end(); ++it) {
         auto pFrame =
@@ -684,6 +714,43 @@ TagLib::ID3v2::UserTextIdentificationFrame* findFirstUserTextIdentificationFrame
     }
     // simply return the first matching frame
     return pFirstFrame;
+}
+
+// Deletes all TXXX frame with the given description (case-insensitive).
+int removeUserTextIdentificationFrames(
+        TagLib::ID3v2::Tag* pTag,
+        const QString& description) {
+    DEBUG_ASSERT(pTag != nullptr);
+    DEBUG_ASSERT(!description.isEmpty());
+    int count = 0;
+    bool repeat;
+    do {
+        repeat = false;
+        // Bind the const-ref result to avoid a local copy
+        const TagLib::ID3v2::FrameList& textFrames =
+                pTag->frameListMap()["TXXX"];
+        for (TagLib::ID3v2::FrameList::ConstIterator it(textFrames.begin());
+                it != textFrames.end(); ++it) {
+            auto pFrame =
+                    dynamic_cast<TagLib::ID3v2::UserTextIdentificationFrame*>(*it);
+            if (pFrame != nullptr) {
+                const QString frameDescription(
+                        toQString(pFrame->description()));
+                if (0 == frameDescription.compare(
+                        description, Qt::CaseInsensitive)) {
+                    qDebug() << "Removing ID3v2 TXXX frame:" << toQString(pFrame->description());
+                    // After removing a frame the result of frameListMap()
+                    // is no longer valid!!
+                    pTag->removeFrame(pFrame, false); // remove an unowned frame
+                    ++count;
+                    // Exit and restart loop
+                    repeat = true;
+                    break;
+                }
+            }
+        }
+    } while (repeat);
+    return count;
 }
 
 void writeID3v2TextIdentificationFrame(
@@ -739,6 +806,15 @@ void writeID3v2CommentsFrame(
             // pTag we need to release the ownership to avoid double deletion!
             pFrame.release();
         }
+    }
+    // Cleanup: Remove non-standard comment frames to avoid redundant and
+    // inconsistent tags.
+    // See also: Compatibility workaround when reading ID3v2 comment tags.
+    int numberOfRemovedCommentFrames =
+            removeUserTextIdentificationFrames(pTag, "COMMENT");
+    if (numberOfRemovedCommentFrames > 0) {
+        qWarning() << "Removed" << numberOfRemovedCommentFrames
+                << "non-standard ID3v2 TXXX comment frames";
     }
 }
 
@@ -960,6 +1036,22 @@ void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
             findFirstCommentsFrame(tag);
     if (nullptr != pCommentsFrame) {
         pTrackMetadata->setComment(toQString(*pCommentsFrame));
+    } else {
+        // Compatibility workaround: ffmpeg 3.1.x maps DESCRIPTION fields of
+        // FLAC files with Vorbis Tags into TXXX frames labeled "comment"
+        // upon conversion to MP3. This might also happen when transcoding
+        // other file types to MP3 if ffmpeg is writing comments into this
+        // non-standard ID3v2 text frame.
+        // Note: The description string that identifies certain text frames
+        // is case-insensitive. We do the lookup with an upper-case string
+        // like for all other frames.
+        TagLib::ID3v2::UserTextIdentificationFrame* pCommentFrame =
+                findFirstUserTextIdentificationFrame(tag, "COMMENT");
+        if (pCommentFrame != nullptr) {
+            // The value is stored in the 2nd field
+            pTrackMetadata->setComment(
+                    toQString(pCommentFrame->fieldList()[1]));
+        }
     }
 
     const TagLib::ID3v2::FrameList albumArtistFrame(tag.frameListMap()["TPE2"]);
@@ -1517,6 +1609,63 @@ bool writeTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& t
     return true;
 }
 
+bool writeTrackMetadataIntoRIFFTag(TagLib::RIFF::Info::Tag* pTag, const TrackMetadata& trackMetadata) {
+    if (!pTag) {
+        return false;
+    }
+
+    writeTrackMetadataIntoTag(pTag, trackMetadata,
+            WRITE_TAG_OMIT_NONE);
+
+    return true;
+}
+
+namespace {
+
+// Workaround for missing functionality in TagLib 1.11.x that
+// doesn't support to read text chunks from AIFF files.
+// See also:
+// http://www-mmsp.ece.mcgill.ca/Documents/AudioFormats/AIFF/AIFF.html
+// http://paulbourke.net/dataformats/audio/
+//
+//
+class AiffFile: public TagLib::RIFF::AIFF::File {
+  public:
+    explicit AiffFile(TagLib::FileName fileName)
+        : TagLib::RIFF::AIFF::File(fileName) {
+    }
+
+    void readTrackMetadataFromTextChunks(TrackMetadata* pTrackMetadata) /*non-const*/ {
+        if (pTrackMetadata == nullptr) {
+            return; // nothing to do
+        }
+        for(unsigned int i = 0; i < chunkCount(); ++i) {
+            const TagLib::ByteVector chunkId(TagLib::RIFF::AIFF::File::chunkName(i));
+            if (chunkId == "NAME") {
+                pTrackMetadata->setTitle(decodeChunkText(
+                        TagLib::RIFF::AIFF::File::chunkData(i)));
+            } else if (chunkId == "AUTH") {
+                pTrackMetadata->setArtist(decodeChunkText(
+                        TagLib::RIFF::AIFF::File::chunkData(i)));
+            } else if (chunkId == "ANNO") {
+                pTrackMetadata->setComment(decodeChunkText(
+                        TagLib::RIFF::AIFF::File::chunkData(i)));
+            }
+        }
+    }
+
+  private:
+    // From the specs: 13. TEXT CHUNKS - NAME, AUTHOR, COPYRIGHT, ANNOTATION
+    // "text: contains pure ASCII characters"
+    // NOTE(uklotzde): In order to be independent of the currently defined
+    // codec we use QString::fromLatin1() instead of QString::fromAscii()
+    static QString decodeChunkText(const TagLib::ByteVector& chunkData) {
+        return QString::fromLatin1(chunkData.data(), chunkData.size());
+    }
+};
+
+} // anonymous namespace
+
 Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImage* pCoverArt, QString fileName, FileType fileType) {
     if (fileType == FileType::UNKNOWN) {
         fileType = getFileTypeFromFileName(fileName);
@@ -1696,9 +1845,9 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
                 return OK;
             } else {
                 // fallback
-                const TagLib::Tag* pTag(file.tag());
+                const TagLib::RIFF::Info::Tag* pTag = file.InfoTag();
                 if (pTag) {
-                    readTrackMetadataFromTag(pTrackMetadata, *pTag);
+                    readTrackMetadataFromRIFFTag(pTrackMetadata, *pTag);
                     return OK;
                 }
             }
@@ -1707,21 +1856,21 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
     }
     case FileType::AIFF:
     {
-        TagLib::RIFF::AIFF::File file(TAGLIB_FILENAME_FROM_QSTRING(fileName));
+        AiffFile file(TAGLIB_FILENAME_FROM_QSTRING(fileName));
         if (readAudioProperties(pTrackMetadata, file)) {
+#if (TAGLIB_HAS_AIFF_HAS_ID3V2TAG)
+            const TagLib::ID3v2::Tag* pID3v2Tag = file.hasID3v2Tag() ? file.tag() : nullptr;
+#else
             const TagLib::ID3v2::Tag* pID3v2Tag = file.tag();
+#endif
             if (pID3v2Tag) {
                 readTrackMetadataFromID3v2Tag(pTrackMetadata, *pID3v2Tag);
                 readCoverArtFromID3v2Tag(pCoverArt, *pID3v2Tag);
-                return OK;
             } else {
                 // fallback
-                const TagLib::Tag* pTag(file.tag());
-                if (pTag) {
-                    readTrackMetadataFromTag(pTrackMetadata, *pTag);
-                    return OK;
-                }
+                file.readTrackMetadataFromTextChunks(pTrackMetadata);
             }
+            return OK;
         }
         break;
     }
@@ -1957,12 +2106,17 @@ public:
 
 private:
     static bool writeTrackMetadata(TagLib::RIFF::WAV::File* pFile, const TrackMetadata& trackMetadata) {
-        return pFile->isOpen()
+        bool modifiedTags = false;
+        if (pFile->isOpen()) {
+            // Write into all available tags
 #if (TAGLIB_HAS_WAV_ID3V2TAG)
-                && writeTrackMetadataIntoID3v2Tag(pFile->ID3v2Tag(), trackMetadata);
+            modifiedTags |= writeTrackMetadataIntoID3v2Tag(pFile->ID3v2Tag(), trackMetadata);
 #else
-                && writeTrackMetadataIntoID3v2Tag(pFile->tag(), trackMetadata);
+            modifiedTags |= writeTrackMetadataIntoID3v2Tag(pFile->tag(), trackMetadata);
 #endif
+            modifiedTags |= writeTrackMetadataIntoRIFFTag(pFile->InfoTag(), trackMetadata);
+        }
+        return modifiedTags;
     }
 
     TagLib::RIFF::WAV::File m_file;
