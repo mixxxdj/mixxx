@@ -49,8 +49,6 @@ private slots:
         m_waveformWidget = nullptr;
     }
 
-    void slotWaveformUpdated();
-
 private:
     void setWaveformWidget(WaveformWidgetAbstract* waveformWidget);
     WaveformWidgetAbstract* getWaveformWidget() {

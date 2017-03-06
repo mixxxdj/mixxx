@@ -219,12 +219,24 @@ void GLSLWaveformRendererSignal::onSetup(const QDomNode& node) {
 }
 
 void GLSLWaveformRendererSignal::onSetTrack() {
-    m_loadedWaveform = 0;
-    loadTexture();
+    slotWaveformUpdated();
+
+    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+    if (!pTrack) {
+        return;
+    }
+
+    connect(pTrack.get(), SIGNAL(waveformUpdated()),
+            this, SLOT(slotWaveformUpdated()));
 }
 
 void GLSLWaveformRendererSignal::onResize() {
     createFrameBuffers();
+}
+
+void GLSLWaveformRendererSignal::slotWaveformUpdated() {
+    m_loadedWaveform = 0;
+    loadTexture();
 }
 
 void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
