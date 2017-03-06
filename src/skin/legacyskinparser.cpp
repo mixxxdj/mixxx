@@ -1006,6 +1006,10 @@ QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
             p, SLOT(slotTrackLoaded(TrackPointer)));
     connect(pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
             p, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
+
+    // Sending a null TrackPointer to slotLoadTrackToPlayer ejects the loaded track.
+    connect(p, SIGNAL(ejectTrack(TrackPointer, QString)),
+            m_pPlayerManager, SLOT(slotLoadTrackToPlayer(TrackPointer, QString)));
     connect(p, SIGNAL(trackDropped(QString,QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString,QString)));
 

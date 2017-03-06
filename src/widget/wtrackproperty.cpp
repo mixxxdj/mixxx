@@ -49,6 +49,12 @@ void WTrackProperty::updateLabel(Track* /*unused*/) {
     }
 }
 
+void WTrackProperty::mousePressEvent(QMouseEvent *event) {
+    if (event->button() != Qt::LeftButton) {
+        emit(ejectTrack(TrackPointer(), QString(m_pGroup)));
+    }
+}
+
 void WTrackProperty::mouseMoveEvent(QMouseEvent *event) {
     if ((event->buttons() & Qt::LeftButton) && m_pCurrentTrack) {
         DragAndDropHelper::dragTrack(m_pCurrentTrack, this, m_pGroup);
