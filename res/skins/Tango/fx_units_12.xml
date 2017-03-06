@@ -19,7 +19,7 @@ Variables:
 
       <WidgetGroup><!-- EffectUnits 1 & 2 -->
         <ObjectName>EffectUnits12</ObjectName>
-        <SizePolicy>me,min</SizePolicy>
+        <SizePolicy>me,max</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
 
