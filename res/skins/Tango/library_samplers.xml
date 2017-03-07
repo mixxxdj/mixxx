@@ -9,7 +9,6 @@ Modes:
 -->
 <Template>
   <SizeAwareStack>
-    <ObjectName>AlignTop</ObjectName>
     <Children>
 
       <WidgetGroup><!-- 0   Library only -->

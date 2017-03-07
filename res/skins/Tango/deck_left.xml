@@ -160,7 +160,7 @@
         </Children>
       </WidgetGroup><!-- Mixer / [ [Spinny / Cover] + VUMeter ] + Pitch + spacer -->
 
-      <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
+      <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
 
     </Children>
   </WidgetGroup>

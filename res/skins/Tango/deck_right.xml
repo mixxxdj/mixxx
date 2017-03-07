@@ -5,7 +5,7 @@
     <Size>507me,136min</Size>
     <Children>
 
-      <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
+      <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
 
       <WidgetGroup><!-- Mixer / [ [Spinny / Cover] + VUMeter ] + Pitch + spacer -->
         <Layout>vertical</Layout>

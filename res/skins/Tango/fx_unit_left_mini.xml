@@ -10,7 +10,7 @@
   <WidgetGroup><!-- EffectUnit -->
     <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,min</SizePolicy>
+    <SizePolicy>me,max</SizePolicy>
     <Children>
 
       <WidgetGroup><!-- Effect togglers * highlightable -->
@@ -177,12 +177,25 @@
 
       <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
-      <Template src="skin:button_2state.xml">
-        <SetVariable name="ToolTipId">EffectUnit_enabled</SetVariable>
-        <SetVariable name="ObjectName">EffectUnitToggleButton</SetVariable>
-        <SetVariable name="Size">30f,1min</SetVariable>
-        <SetVariable name="ConfigKey"><Variable name="group"/>,enabled</SetVariable>
-      </Template>
+      <WidgetGroup><!-- FX Unit toggler & miniMaxi button -->
+        <ObjectName>AlignTopLeft</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="ObjectName">MiniMaxiButton</SetVariable>
+            <SetVariable name="Size">22f,13f</SetVariable>
+            <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,show_parameters</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1min,1f</Size><Children/></WidgetGroup>
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="ToolTipId">EffectUnit_enabled</SetVariable>
+            <SetVariable name="ObjectName">EffectUnitToggleButton</SetVariable>
+            <SetVariable name="Size">22f,1me</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,enabled</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup><!-- /FX Unit toggler & miniMaxi button -->
 
     </Children>
   </WidgetGroup><!-- /EffectUnit -->

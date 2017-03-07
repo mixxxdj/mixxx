@@ -1286,7 +1286,11 @@ WPushButton {
     background-color: #0f0f0f;
   }
 
-#SamplersLoadButton, #SamplersSaveButton, #MiniMaxiButton {
+#SamplersLoadButton, #SamplersSaveButton {
+}
+
+#MiniMaxiButton {
+	background-color: #333333;
 }
 
 #MiniMaxiButton[displayValue="0"] {
