@@ -865,8 +865,7 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
     QList<int> newPositions = positions;
     QList<int> tablePositionList, tableIDList;
     const int searchDistance = math_max(trackPositionIds.count() / 4, 1);
-    createTablePositionList(tablePositionList, playlistId);
-    createTableIDList(tableIDList, playlistId);
+    createTablePositionList(tablePositionList, tableIDList, playlistId);
 
     qDebug() << "Shuffling Tracks";
     qDebug() << "*** Search Distance: " << searchDistance;
@@ -1050,32 +1049,19 @@ void PlaylistDAO::sendToAutoDJ(const QList<TrackId>& trackIds, AutoDJSendLoc loc
     }
 }
 
-void PlaylistDAO::createTablePositionList(QList<int> &positionsTable, const int playList_ID) {
+void PlaylistDAO::createTablePositionList(QList<int> &positionsTable,
+        QList<int> &idTable, const int playList_ID) {
     QSqlQuery query(m_database);
-    QString getPositionQuery = "SELECT position from PlaylistTracks \
+    QString getPositionQuery = "SELECT position, id FROM PlaylistTracks \
         WHERE playlist_id == %1";
     query.prepare(getPositionQuery.arg(QString::number(playList_ID)));
     query.exec();
     while(query.next())
     {
         int position = query.value(0).toInt();
+        int id = query.value(1).toInt();
         positionsTable.append(position);
-
+        idTable.append(id);
     }
-}
-
-void PlaylistDAO::createTableIDList(QList<int> &idList, const int playList_ID) {
-    QSqlQuery query(m_database);
-    QString getPositionQuery = "SELECT id from PlaylistTracks \
-        WHERE playlist_id == %1";
-    query.prepare(getPositionQuery.arg(QString::number(playList_ID)));
-    query.exec();
-    while(query.next())
-    {
-        int position = query.value(0).toInt();
-        idList.append(position);
-
-    }
-
 }
 
