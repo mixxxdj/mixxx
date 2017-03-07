@@ -7,6 +7,7 @@
 #include "skin/skincontext.h"
 #include "skin/svgparser.h"
 #include "util/cmdlineargs.h"
+#include "util/math.h"
 
 SkinContext::SkinContext(UserSettingsPointer pConfig,
                          const QString& xmlPath)
