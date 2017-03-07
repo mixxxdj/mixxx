@@ -12,31 +12,143 @@
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
-      <WidgetGroup><!-- EffectSlot 1 -->
-        <ObjectName>EffectSlotLeft</ObjectName>
+
+      <WidgetGroup><!-- Effect togglers * highlightable -->
+        <ObjectName>AlignRightCenter</ObjectName>
         <SizePolicy>me,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
 
-          <Template src="skin:fx_toggler.xml">
-            <SetVariable name="Effect">1</SetVariable>
-          </Template>
+          <WidgetGroup><ObjectName>Spacer33</ObjectName><Size>0me,1min</Size></WidgetGroup>
 
-          <WidgetGroup><Size>9f,1min</Size><Children/></WidgetGroup>
-          <Template src="skin:fx_toggler.xml">
-            <SetVariable name="Effect">2</SetVariable>
-          </Template>
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
-          <WidgetGroup><Size>9f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup>
+            <ObjectName>EffectSlotLeftHighlight</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+              <Template src="skin:fx_toggler_left.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="fxSelectorSize">74f,20f</SetVariable>
+                <SetVariable name="fxFocusSize">12f,32f</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],focused_effect</ConfigKey>
+              <BindProperty>highlight</BindProperty>
+              <Transform><IsEqual>1</IsEqual></Transform>
+            </Connection>
+          </WidgetGroup>
 
-          <Template src="skin:fx_toggler.xml">
-            <SetVariable name="Effect">3</SetVariable>
-          </Template>
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
-          <WidgetGroup><Size>9f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup>
+            <ObjectName>EffectSlotLeftHighlight</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+              <Template src="skin:fx_toggler_left.xml">
+                <SetVariable name="Effect">2</SetVariable>
+                <SetVariable name="fxSelectorSize">74f,20f</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],focused_effect</ConfigKey>
+              <BindProperty>highlight</BindProperty>
+              <Transform><IsEqual>2</IsEqual></Transform>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>EffectSlotLeftHighlight</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+              <Template src="skin:fx_toggler_left.xml">
+                <SetVariable name="Effect">3</SetVariable>
+                <SetVariable name="fxSelectorSize">74f,20f</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],focused_effect</ConfigKey>
+              <BindProperty>highlight</BindProperty>
+              <Transform><IsEqual>3</IsEqual></Transform>
+            </Connection>
+          </WidgetGroup>
 
         </Children>
-      </WidgetGroup><!-- /EffectSlots -->
+        <Connection>
+          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_focus</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Effect togglers * highlightable -->
+
+      <WidgetGroup><!-- Effect togglers * no highlight -->
+        <ObjectName>AlignRightCenter</ObjectName>
+        <SizePolicy>me,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+
+          <WidgetGroup><ObjectName>Spacer33</ObjectName><Size>0me,1min</Size></WidgetGroup>
+
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>EffectSlotLeft</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+              <Template src="skin:fx_toggler_left.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="fxSelectorSize">74f,20f</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>EffectSlotLeft</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+              <Template src="skin:fx_toggler_left.xml">
+                <SetVariable name="Effect">2</SetVariable>
+                <SetVariable name="fxSelectorSize">74f,20f</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>EffectSlotLeft</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+              <Template src="skin:fx_toggler_left.xml">
+                <SetVariable name="Effect">3</SetVariable>
+                <SetVariable name="fxSelectorSize">74f,20f</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_focus</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform><Not/></Transform>
+        </Connection>
+      </WidgetGroup><!-- /Effect togglers * no highlight -->
 
       <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 

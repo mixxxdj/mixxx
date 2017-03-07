@@ -13,7 +13,7 @@ Variables:
 <Template>
   <WidgetGroup>
     <Layout>vertical</Layout>
-    <Size>36f,32f</Size>
+    <Size>32f,32f</Size>
     <Children>
       <Template src="skin:knob_textless.xml">
         <TooltipId><Variable name="ToolTipID"/></TooltipId>

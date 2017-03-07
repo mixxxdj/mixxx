@@ -1,0 +1,50 @@
+<!--
+Description:
+	An effect parameter button.
+	Stacked layout of invisible button, parameter name
+	and button display underneath.
+Variables:
+	EffectRack: the rack
+	EffectUnit: the unit
+	Effect: the effect
+	EffectButtonParameter: the parameter
+	
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Size>11f,32me</Size>
+    <Children>
+	    <PushButton>
+		    <TooltipId></TooltipId>
+		    <ObjectName>EffectFocusButton</ObjectName>
+		    <Size>11f,32me</Size>
+		    <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text></Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text></Text>
+        </State>
+        <Connection>
+          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],focused_effect</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+          <EmitOnDownPress>true</EmitOnDownPress>
+          <Transform><IsEqual><Variable name="Effect"/></IsEqual></Transform>
+        </Connection>
+        <Connection>
+          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],focused_effect</ConfigKey>
+          <ButtonState>RightButton</ButtonState>
+          <EmitOnDownPress>true</EmitOnDownPress>
+          <Transform><IsEqual><Variable name="Effect"/></IsEqual><Not/></Transform>
+        </Connection>
+	    </PushButton>
+	  </Children>
+    <Connection>
+      <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_focus</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

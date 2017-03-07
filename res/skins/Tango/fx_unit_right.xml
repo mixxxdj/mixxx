@@ -191,19 +191,108 @@
         </Children>
       </WidgetGroup><!-- /SuperKnob + Wet/Dry + GroupButtons -->
 
-      <WidgetGroup><!-- EffectSlots 1-3 -->
+      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+
+      <WidgetGroup><!-- EffectSlots 1-3 * highlightable -->
         <ObjectName>EffectSlots</ObjectName>
-        <SizePolicy>min,min</SizePolicy>
         <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup><!-- EffectSlot 1 * highlightable -->
+            <ObjectName>EffectSlotRightHighlight</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:fx_toggler_right.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="fxSelectorSize">89f,20f</SetVariable>
+              </Template>
+              <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
+              <Template src="skin:fx_parameter_row.xml">
+                <SetVariable name="Effect">1</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],focused_effect</ConfigKey>
+              <BindProperty>highlight</BindProperty>
+              <Transform>
+                <IsEqual>1</IsEqual>
+              </Transform>
+            </Connection>
+          </WidgetGroup><!-- /EffectSlot 1 * highlightable -->
+
+          <WidgetGroup><Size>1me,1f</Size><Children/></WidgetGroup>
+
+          <WidgetGroup><!-- EffectSlot 2 * highlightable -->
+            <ObjectName>EffectSlotRightHighlight</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:fx_toggler_right.xml">
+                <SetVariable name="Effect">2</SetVariable>
+                <SetVariable name="fxSelectorSize">89f,20f</SetVariable>
+              </Template>
+              <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
+              <Template src="skin:fx_parameter_row.xml">
+                <SetVariable name="Effect">2</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],focused_effect</ConfigKey>
+              <BindProperty>highlight</BindProperty>
+              <Transform>
+                <IsEqual>2</IsEqual>
+              </Transform>
+            </Connection>
+          </WidgetGroup><!-- /EffectSlot 2 * highlightable -->
+
+          <WidgetGroup><Size>1me,1f</Size><Children/></WidgetGroup>
+
+          <WidgetGroup><!-- EffectSlot 3 * highlightable -->
+            <ObjectName>EffectSlotRightHighlight</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:fx_toggler_right.xml">
+                <SetVariable name="Effect">3</SetVariable>
+                <SetVariable name="fxSelectorSize">89f,20f</SetVariable>
+              </Template>
+              <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
+              <Template src="skin:fx_parameter_row.xml">
+                <SetVariable name="Effect">3</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],focused_effect</ConfigKey>
+              <BindProperty>highlight</BindProperty>
+              <Transform>
+                <IsEqual>3</IsEqual>
+              </Transform>
+            </Connection>
+          </WidgetGroup><!-- /EffectSlot 3 * highlightable -->
+
+        </Children>
+        <Connection>
+          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_focus</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /EffectSlots 1-3 * highlightable -->
+
+      <WidgetGroup><!-- EffectSlots 1-3 * no highlight -->
+        <ObjectName>EffectSlots</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
           <WidgetGroup><!-- EffectSlot 1 -->
             <ObjectName>EffectSlotRight</ObjectName>
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:fx_selector_buttons.xml">
+              <Template src="skin:fx_toggler_right.xml">
                 <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="fxSelectorSize">89f,20f</SetVariable>
               </Template>
+              <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
               <Template src="skin:fx_parameter_row.xml">
                 <SetVariable name="Effect">1</SetVariable>
               </Template>
@@ -217,9 +306,11 @@
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:fx_selector_buttons.xml">
+              <Template src="skin:fx_toggler_right.xml">
                 <SetVariable name="Effect">2</SetVariable>
+                <SetVariable name="fxSelectorSize">89f,20f</SetVariable>
               </Template>
+              <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
               <Template src="skin:fx_parameter_row.xml">
                 <SetVariable name="Effect">2</SetVariable>
               </Template>
@@ -233,16 +324,23 @@
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:fx_selector_buttons.xml">
+              <Template src="skin:fx_toggler_right.xml">
                 <SetVariable name="Effect">3</SetVariable>
+                <SetVariable name="fxSelectorSize">89f,20f</SetVariable>
               </Template>
+              <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
               <Template src="skin:fx_parameter_row.xml">
                 <SetVariable name="Effect">3</SetVariable>
               </Template>
             </Children>
           </WidgetGroup><!-- /EffectSlot 3 -->
         </Children>
-      </WidgetGroup><!-- /[EffectSlot 1-3] -->
+        <Connection>
+          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_focus</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform><Not/></Transform>
+        </Connection>
+      </WidgetGroup><!-- /EffectSlots 1-3 * no highlight -->
     </Children>
   </WidgetGroup><!-- /EffectUnit -->
 </Template>

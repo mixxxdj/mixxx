@@ -1,0 +1,77 @@
+<!--
+Description:
+	Effect selector buttons
+	- previous effect
+	- effect name with toggle button over/underlay
+	- next effect
+Variables:
+	EffectRack: the rack
+	EffectUnit: the chain
+	Effect: the effect
+-->
+<Template>
+	<SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>EffectTogglerMetaKnob</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup><!-- Effect toggler + Effect selector -->
+        <ObjectName>EffectToggler</ObjectName>
+        <Layout>stacked</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+
+          <!-- invisible, clickable Overlay to toggle Effect -->
+          <Template src="skin:button_2state.xml"><!-- EffectToggleButton -->
+            <SetVariable name="ObjectName">EffectToggleButton</SetVariable>
+            <SetVariable name="Size">74f,20f</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,enabled</SetVariable>
+          </Template>
+
+          <WidgetGroup>
+            <ObjectName>fxNameContainer</ObjectName>
+            <Size>74f,20f</Size>
+            <Layout>horizontal</Layout>
+            <Children>					
+              <EffectName>
+                <ObjectName>fxName</ObjectName>
+                <EffectRack><Variable name="EffectRack"/></EffectRack>
+                <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+                <Effect><Variable name="Effect"/></Effect>
+              </EffectName>
+            </Children>
+          </WidgetGroup>
+          <!-- Colored background to communicate the Effect's ON/OFF status -->
+          <Template src="skin:button_2state.xml"><!-- EffectToggleButton -->
+            <SetVariable name="ObjectName">EffectToggleButtonUnderlay</SetVariable>
+            <SetVariable name="Size">74f,20f</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,enabled</SetVariable>
+          </Template>
+
+          <EffectSelector>
+            <Size><Variable name="fxSelectorSize"/></Size>
+            <EffectRack><Variable name="EffectRack"/></EffectRack>
+            <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+            <Effect><Variable name="Effect"/></Effect>
+          </EffectSelector>
+
+        </Children>
+      </WidgetGroup><!-- /Effect toggler + Effect selector -->
+      
+      <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
+
+      <Template src="skin:knob_textless.xml">
+        <SetVariable name="ConfigKey">meta</SetVariable>
+        <SetVariable name="Size">30f,30f</SetVariable>
+        <SetVariable name="Color">blue</SetVariable>
+      </Template>
+      
+      <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
+
+      <Template src="skin:fx_focus_button.xml"/>
+
+    </Children>
+  </WidgetGroup>
+</Template>
