@@ -396,7 +396,7 @@
 	QTableView::item:hover, QTextBrowser::item:hover, QTreeView::item:hover { color: #ffffff; }				
 
 	/* File Browser ROWS: */
-	QTableView, QTextBrowser, QTreeView { border: 1px solid #656565; font: "Arial"; font-family: "Arial"; background: transparent; color: #707070; alternate-background-color: #0c0c0c; }
+	QTableView, QTextBrowser, QTreeView { border: 1px solid #656565; background: transparent; color: #707070; alternate-background-color: #0c0c0c; }
 	/* we use "background: transparent" as workaround, else "alternate-background-color" wont work, QT 4.7.x bug? */				
 				
 	/* checkbox in library "Played" column */
