@@ -614,6 +614,7 @@
                 this.send((value > 0) ? this.on : this.off);
                 if (value === 0) {
                     engine.setValue(this.group, "show_focus", 0);
+                    engine.setValue(this.group, "focused_effect", 0);
                     // NOTE: calling eu.reconnectComponents() here would cause an infinite loop when
                     // calling EffectUnit.reconnectComponents().
                     eu.forEachComponent(function (c) {
