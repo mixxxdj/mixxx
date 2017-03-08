@@ -12,7 +12,7 @@ Variables:
   Button graphics
 -->
 <Template>
-  <WidgetGroup>
+  <WidgetGroup><!-- Netbook mode -->
     <ObjectName>WaveformContainer<Variable name="channum"/></ObjectName>
     <Layout>horizontal</Layout>
     <Children>
@@ -77,14 +77,6 @@ Variables:
           <TextColor>#FFFFFF</TextColor>
         </Mark>
       </Visual><!-- /Visual- Waveform -->
-
-      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1me</Size></WidgetGroup>
-
-      <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
-        <SetVariable name="ObjectName">BeatgridButtonToggler</SetVariable>
-        <SetVariable name="Size">11f,22f</SetVariable>
-        <SetVariable name="ConfigKeyPerm">[Tango],beatgrid_buttons</SetVariable>
-      </Template>
 
       <WidgetGroup><!-- Container for beatgrid buttons -->
         <ObjectName>BeatgridButtonGridBox</ObjectName>
@@ -156,23 +148,31 @@ Variables:
               </WidgetGroup>
 
             </Children>
-          </WidgetGroup><!-- Beatgrid buttons -->
+          </WidgetGroup><!-- /Beatgrid buttons -->
 
         </Children>
         <Connection>
           <ConfigKey persist="true">[Tango],beatgrid_buttons</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- Beatgrid buttons -->
+      </WidgetGroup><!-- /Container for beatgrid buttons -->
+
+      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1me</Size></WidgetGroup>
+
+      <Template src="skin:button_2state_persist.xml">
+        <SetVariable name="ObjectName">BeatgridButtonToggler</SetVariable>
+        <SetVariable name="Size">11f,22f</SetVariable>
+        <SetVariable name="ConfigKeyPerm">[Tango],beatgrid_buttons</SetVariable>
+      </Template>
 
     </Children>
     <Connection>
       <ConfigKey>[Tango],netbook_mode</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
-  </WidgetGroup>
+  </WidgetGroup><!-- /Netbook mode -->
 
-  <WidgetGroup>
+  <WidgetGroup><!-- Normal mode -->
     <ObjectName>WaveformContainer<Variable name="channum"/></ObjectName>
     <Layout>horizontal</Layout>
     <Children>
@@ -239,14 +239,6 @@ Variables:
         </Mark>
       </Visual><!-- /Visual- Waveform -->
 
-      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1me</Size></WidgetGroup>
-
-      <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
-        <SetVariable name="ObjectName">BeatgridButtonToggler</SetVariable>
-        <SetVariable name="Size">11f,50f</SetVariable>
-        <SetVariable name="ConfigKeyPerm">[Tango],beatgrid_buttons</SetVariable>
-      </Template>
-
       <WidgetGroup><!-- Container for beatgrid buttons -->
         <ObjectName>BeatgridButtonGridBox</ObjectName>
         <Layout>vertical</Layout>
@@ -317,19 +309,27 @@ Variables:
               </WidgetGroup>
 
             </Children>
-          </WidgetGroup><!-- Beatgrid buttons -->
+          </WidgetGroup><!-- /Beatgrid buttons -->
 
         </Children>
         <Connection>
           <ConfigKey persist="true">[Tango],beatgrid_buttons</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- Beatgrid buttons -->
+      </WidgetGroup><!-- /Container for beatgrid buttons -->
+
+      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1me</Size></WidgetGroup>
+
+      <Template src="skin:button_2state_persist.xml">
+        <SetVariable name="ObjectName">BeatgridButtonToggler</SetVariable>
+        <SetVariable name="Size">11f,50f</SetVariable>
+        <SetVariable name="ConfigKeyPerm">[Tango],beatgrid_buttons</SetVariable>
+      </Template>
 
     </Children>
     <Connection>
       <ConfigKey>[Tango],normal_mode</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
-  </WidgetGroup>
+  </WidgetGroup><!-- /Normal mode -->
 </Template>

@@ -561,7 +561,6 @@ WPushButton {
   #HotcueButton {
     font-size: 13px/15px;
     font-weight: bold;
-    margin-right: 1px;
     }
   #HotcueButton[displayValue="0"] {
     color: #888888;
