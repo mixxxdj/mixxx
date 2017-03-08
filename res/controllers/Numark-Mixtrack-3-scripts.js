@@ -106,6 +106,7 @@ var loopsize = [2, 4, 8, 16, 0.125, 0.25, 0.5, 1];
 /* global engine                                                      */
 /* global print                                                       */
 /* global midi                                                        */
+/* global script                                                      */
 /* jshint sub:true                                                    */
 /* jshint shadow:true                                                 */
 ////////////////////////////////////////////////////////////////////////
@@ -205,10 +206,6 @@ Math.sign = Math.sign || function(x) {
     }
     return x > 0 ? 1 : -1;
 };
-
-function toggleValue(group, key) {
-    engine.setValue(group, key, !engine.getValue(group, key));
-}
 
 function sendShortMsg(control, midino, value) {
     midi.sendShortMsg(control, midino, value);
@@ -1173,7 +1170,7 @@ NumarkMixtrack3.PlayButton = function(channel, control, value, status, group) {
                 engine.setValue(deck.group, "LoadSelectedTrackAndPlay", true);
             } else {
                 // else play/pause
-                toggleValue(deck.group, "play");
+                script.toggleControl(deck.group, "play");
             }
         } else {
             // shifted: stutter
@@ -1201,7 +1198,7 @@ NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) 
     } else {
         // Browse push : maximize/minimize library view
         if (value === ON) {
-            toggleValue("[Master]", "maximize_library");
+            script.toggleControl("[Master]", "maximize_library");
         }
     }
 };
@@ -1238,7 +1235,7 @@ NumarkMixtrack3.BrowseKnob = function(channel, control, value, status, group) {
                 engine.setValue(group, "SelectPrevPlaylist", 1);
             }
         }
-    } 
+    }
     
     if (startingSampler) {
         for (var i = startingSampler; i <= startingSampler + 3; i++) {
@@ -1397,7 +1394,7 @@ NumarkMixtrack3.SyncButton = function(channel, control, value, status, group) {
         }
     } else {
         if (value === DOWN) {
-            toggleValue(deck.group, "keylock");
+            script.toggleControl(deck.group, "keylock");
         }
     }
 };
@@ -1482,7 +1479,7 @@ NumarkMixtrack3.toggleJogMode = function(channel, control, value, status, group)
 
     if (value === DOWN) {
         if (deck.shiftKey) {
-            toggleValue(group, "slip_enabled");
+            script.toggleControl(group, "slip_enabled");
         } else {
             deck.jogWheelsInScratchMode = !deck.jogWheelsInScratchMode;
             deck.LEDs.jogWheelsInScratchMode.onOff(deck.jogWheelsInScratchMode ? ON : OFF);
@@ -1839,7 +1836,7 @@ NumarkMixtrack3.FXButton = function(channel, control, value, status, group) {
     } else if (value === DOWN) {
         // toggle effect if InstantFX is not active
         if (deck.InstantFX.indexOf(effectNum) === -1) {
-            toggleValue(effectGroup, "enabled");
+            script.toggleControl(effectGroup, "enabled");
         }
     }
 
@@ -1874,9 +1871,9 @@ NumarkMixtrack3.PFLButton = function(channel, control, value, status, group) {
     
     if (value === DOWN) {
         if (deck.shiftKey) {
-            toggleValue(group, "quantize");
+            script.toggleControl(group, "quantize");
         } else {
-            toggleValue(deck.group, "pfl");
+            script.toggleControl(deck.group, "pfl");
             for (var i = 1; i <= 4 ; i++) {
                 if (i !== deck.decknum) {
                     engine.setValue("[Channel" + i + "]", "pfl", false);
