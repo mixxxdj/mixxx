@@ -980,11 +980,16 @@ void LoopingControl::slotLoopAutoToggle(double pressed) {
 void LoopingControl::slotLoopManualToggle(double pressed) {
     if (m_bLoopingEnabled) {
         slotReloopToggle(1.0);
+        m_bManualLoopTogglePressedToExitLoop = true;
     } else {
         if (pressed > 0.0) {
             slotLoopIn(1.0);
         } else {
-            slotLoopOut(1.0);
+            if (m_bManualLoopTogglePressedToExitLoop) {
+                m_bManualLoopTogglePressedToExitLoop = false;
+            } else {
+                slotLoopOut(1.0);
+            }
         }
     }
 }
