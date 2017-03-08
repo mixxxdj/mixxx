@@ -73,7 +73,7 @@ Variables:
           <!-- Load + Save + mini/MAXI button
           Only visible when there's enough space for MAXI -->
           <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="ObjectName">MiniMaxiButton</SetVariable>
+            <SetVariable name="ObjectName">SamplersMiniMaxiButton</SetVariable>
             <SetVariable name="Size"><Variable name="MaxiButtonSize"/></SetVariable>
             <SetVariable name="ConfigKeyPerm">[Tango],Samplers_miniMAXI</SetVariable>
           </Template>
@@ -120,7 +120,7 @@ Variables:
           <!-- Load + Save + mini/MAXI button
           Only visible when there's enough space for MAXI -->
           <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="ObjectName">MiniMaxiButton</SetVariable>
+            <SetVariable name="ObjectName">SamplersMiniMaxiButton</SetVariable>
             <SetVariable name="Size"><Variable name="MaxiButtonSize"/></SetVariable>
             <SetVariable name="ConfigKeyPerm">[Tango],Samplers_miniMAXI</SetVariable>
           </Template>

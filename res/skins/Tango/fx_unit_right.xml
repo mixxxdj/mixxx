@@ -29,7 +29,7 @@
                 <Size>80f,20f</Size>
                 <Children>
                   <Template src="skin:button_2state_persist.xml">
-                    <SetVariable name="ObjectName">MiniMaxiButton</SetVariable>
+                    <SetVariable name="ObjectName">FxMiniMaxiButton</SetVariable>
                     <SetVariable name="Size">22f,20f</SetVariable>
                     <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,show_parameters</SetVariable>
                   </Template>

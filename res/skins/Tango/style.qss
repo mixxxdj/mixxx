@@ -1289,20 +1289,22 @@ WPushButton {
 #SamplersLoadButton, #SamplersSaveButton {
 }
 
-#MiniMaxiButton {
+#FxMiniMaxiButton {
 	background-color: #333333;
 }
+#SamplersMiniMaxiButton {
+}
 
-#MiniMaxiButton[displayValue="0"] {
+#SamplersMiniMaxiButton[displayValue="0"], #FxMiniMaxiButton[displayValue="0"] {
   image: url(skin:/buttons/btn_arrow_down_thin.svg) no-repeat top;
   }
-  #MiniMaxiButton[displayValue="0"]:hover {
+  #SamplersMiniMaxiButton[displayValue="0"]:hover, #FxMiniMaxiButton[displayValue="0"]:hover {
     image: url(skin:/buttons/btn_arrow_down_thin_hover.svg) no-repeat top;
   }
-#MiniMaxiButton[displayValue="1"] {
+#SamplersMiniMaxiButton[displayValue="1"], #FxMiniMaxiButton[displayValue="1"] {
   image: url(skin:/buttons/btn_arrow_up_thin.svg) no-repeat top;
   }
-  #MiniMaxiButton[displayValue="1"]:hover {
+  #SamplersMiniMaxiButton[displayValue="1"]:hover, #FxMiniMaxiButton[displayValue="1"]:hover {
     image: url(skin:/buttons/btn_arrow_up_thin_hover.svg) no-repeat top;
   }
 
