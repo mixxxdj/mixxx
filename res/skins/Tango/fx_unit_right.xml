@@ -165,8 +165,8 @@
                     <Layout>horizontal</Layout>
                     <Children>
                       <Template src="skin:fx_unit_group_button.xml">
-                        <SetVariable name="LabelOff">fx_aux2_off</SetVariable>
-                        <SetVariable name="LabelOn">fx_aux2_on</SetVariable>
+                        <SetVariable name="LabelOff">fx_aux3_off</SetVariable>
+                        <SetVariable name="LabelOn">fx_aux3_on</SetVariable>
                         <SetVariable name="GroupName">[Auxiliary3]</SetVariable>
                       </Template>
                     </Children>
@@ -180,8 +180,8 @@
                     <Layout>horizontal</Layout>
                     <Children>
                       <Template src="skin:fx_unit_group_button.xml">
-                        <SetVariable name="LabelOff">fx_aux2_off</SetVariable>
-                        <SetVariable name="LabelOn">fx_aux2_on</SetVariable>
+                        <SetVariable name="LabelOff">fx_aux4_off</SetVariable>
+                        <SetVariable name="LabelOn">fx_aux4_on</SetVariable>
                         <SetVariable name="GroupName">[Auxiliary4]</SetVariable>
                       </Template>
                     </Children>
@@ -235,8 +235,8 @@
                     <Layout>horizontal</Layout>
                     <Children>
                       <Template src="skin:fx_unit_group_button.xml">
-                        <SetVariable name="LabelOff">fx_mic2_off</SetVariable>
-                        <SetVariable name="LabelOn">fx_mic2_on</SetVariable>
+                        <SetVariable name="LabelOff">fx_mic3_off</SetVariable>
+                        <SetVariable name="LabelOn">fx_mic3_on</SetVariable>
                         <SetVariable name="Align">center</SetVariable>
                         <SetVariable name="GroupName">[Microphone3]</SetVariable>
                       </Template>
@@ -251,8 +251,8 @@
                     <Layout>horizontal</Layout>
                     <Children>
                       <Template src="skin:fx_unit_group_button.xml">
-                        <SetVariable name="LabelOff">fx_mic2_off</SetVariable>
-                        <SetVariable name="LabelOn">fx_mic2_on</SetVariable>
+                        <SetVariable name="LabelOff">fx_mic4_off</SetVariable>
+                        <SetVariable name="LabelOn">fx_mic4_on</SetVariable>
                         <SetVariable name="Align">center</SetVariable>
                         <SetVariable name="GroupName">[Microphone4]</SetVariable>
                       </Template>
