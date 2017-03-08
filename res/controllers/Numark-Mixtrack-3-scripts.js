@@ -1378,7 +1378,7 @@ NumarkMixtrack3.OnLoadSelectedTrack = function(value, group, control) {
  *                 for this deck. Decks with sync locked will all play at
  *                 the same tempo, and decks that also have quantize
  *                 enabled will always have their beats lined up.
- * If the Sync Loack was previously activated, it just desactivate it,
+ * If Sync Lock was previously activated, it just desactivate it,
  * regardless of the Short press/Double Press
  *
  * - SHIFT + Press : Toggle Key Lock
@@ -1595,7 +1595,7 @@ NumarkMixtrack3.OnHotcueChange = function(value, group, control) {
 };
 
 NumarkMixtrack3.SamplerButton = function(channel, control, value, status, group) {
-    var isplaying = engine.getValue(group, "play");
+    var isPlaying = engine.getValue(group, "play");
     var isLoaded = engine.getValue(group, "track_loaded");
     var padIndex = parseInt(group.substring(8, 9));
     var sampler = NumarkMixtrack3.samplers["S" + padIndex];
@@ -1613,7 +1613,7 @@ NumarkMixtrack3.SamplerButton = function(channel, control, value, status, group)
     if (value === DOWN) {
         sampler.PADSampleButtonHold.ButtonDown(channel, control, value, status, group);
 
-        if (!isplaying) {
+        if (!isPlaying) {
             if (deck.shiftKey) {
                 // shift is on, play sampler with no Sync
                 engine.setValue(group, "beatsync", 0);
@@ -1624,15 +1624,18 @@ NumarkMixtrack3.SamplerButton = function(channel, control, value, status, group)
                 engine.setValue(group, "eject", 1);
                 engine.setValue(group, "eject", 0);
             } else {
-                // play sampler with Sync
                 engine.setValue(group, "cue_gotoandplay", 1);
                 engine.setValue(group, "beatsync", 1);
             }
 
             sampler.LEDs["PADsampler" + padIndex].flashOn(300, PADcolors.purple, 300);
         } else {
-            engine.setValue(group, "stop", 1);
-            sampler.LEDs["PADsampler" + padIndex].onOff(ON);
+            if (deck.shiftKey) {
+                engine.setValue(group, "stop", 1);
+                sampler.LEDs["PADsampler" + padIndex].onOff(ON);
+            } else {
+                engine.setValue(group, "cue_gotoandplay", 1);
+            }
         }
     }
 
