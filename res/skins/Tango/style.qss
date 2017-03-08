@@ -97,32 +97,27 @@ WPushButton {
 }
 #SkinSettingsHeader {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding: 0px 0px 0px 0px;	/*
-  background-color: #451232;	*/
+  padding: 0px;
   }
   #SkinSettingsHeader WLabel {
     font-size: 14px/18px;
     text-align: left;
     text-transform: uppercase;
     padding-top: 1px;
-    color: #eeeeee;	/*
-    color: #d2d2d2;
-    background-color: #951753;	*/
+    color: #eeeeee;
   }
   #SkinSettingsClose {
     font-size: 16px/16px;
     padding-top: 3px;
     margin-right: 3px;
-    color: #d2d2d2;	/*
-    background-color: #123777;	*/
+    color: #d2d2d2;
     }
     #SkinSettingsClose:hover {
       border: 1px solid #666666;
       border-radius:2px;
     }
 
-#SkinSettingsCategory {	/*
-  background-color: #451232;	*/
+#SkinSettingsCategory {
   margin: 0 10px 5px 10px;
   padding: 5px 5px 0px 2px;
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
@@ -130,25 +125,20 @@ WPushButton {
   border-right: 1px solid #000000;
 }
   #CategoryLabel {
-    font-size: 16px/18px;
+    font-size: 16px/16px;
     text-align: left;
-    margin: 10px 20px 0px 10px;
-    padding: 0 10px 2px 13px;
+    margin: 5px 20px 0px 10px;
+    padding: 0 10px 0px 13px;
     color: #eeeeee;
     background-color: none;
-    border-top: none;	/*
-    color: #d2d2d2;
-    font: 14px/16px;
-    font-weight: bold;
-    border-bottom: 1px solid #000000;
-    background-color: #456129;	*/
+    border-top: none;
   }
   #SubmenuCover {
     background-color: rgba(51, 51, 51, 127);
   }
   #SkinSettingsButton {
-    padding: 4px 0px 0px 2px;
-    margin-bottom: 4px;	/*	*/
+    padding: 2px 0px 0px 2px;
+    margin-bottom: 2px;
     font-size: 12px/14px;
     text-align: left;
     color: #d2d2d2;
