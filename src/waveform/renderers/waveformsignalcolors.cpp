@@ -55,11 +55,12 @@ bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& contex
         m_playPosColor = m_axesColor;
     }
 
-    m_playedOverlayColor = rgbaColorFromString(context.selectString(node, "PlayedOverlayColor"));
-    if (!m_playedOverlayColor.isValid()) {
-        m_playedOverlayColor = QColor(0,0,0,200);
-    }
+    // This color is used to draw an overlay over the played part the overview-waveforms
+    m_playedOverlayColor = context.selectColor(node, "PlayedOverlayColor");
     m_playedOverlayColor = WSkinColor::getCorrectColor(m_playedOverlayColor).toRgb();
+    if (!m_playedOverlayColor.isValid()) {
+        m_playedOverlayColor = Qt::transparent;
+    }
 
     m_bgColor.setNamedColor(context.selectString(node, "BgColor"));
     if (!m_bgColor.isValid()) {
@@ -138,30 +139,6 @@ void WaveformSignalColors::fallBackDefaultColor() {
     m_signalColor = Qt::green;
     m_signalColor = m_signalColor.toRgb();
     fallBackFromSignalColor();
-}
-
-QColor WaveformSignalColors::rgbaColorFromString(QString sColorString) {
-    // Takes a string with format #AARRGGBBAA and returns the corresponding QColor with alpha-channel set
-    // QT5.2 parses such strings by default in QColor::setNamedColor()
-    // TODO(MK): remove that logic once QT > 5.2 is the default
-    QColor rgbaColor;
-    if (sColorString.startsWith('#') && sColorString.length() == 9){
-        // first extract the #RRGGBB part and parse the color from that
-        QString sRgbHex = sColorString.mid(3, 6);
-        sRgbHex.prepend("#");
-        rgbaColor.setNamedColor(sRgbHex);
-
-        QString sAlphaHex = sColorString.mid(1, 2);
-        bool bAlphaValueTransformed;
-        int iAlpha = sAlphaHex.toUInt(&bAlphaValueTransformed, 16);
-        if (bAlphaValueTransformed){
-            rgbaColor.setAlpha(iAlpha);
-        }
-    } else {
-        // if the given string is not in #AARRGGBB format, fall back to default QT behaviour
-        rgbaColor.setNamedColor(sColorString);
-    }
-    return rgbaColor;
 }
 
 //NOTE(vRince) this sabilise hue between -1.0 and 2.0 but not more !

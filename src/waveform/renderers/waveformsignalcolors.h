@@ -28,7 +28,6 @@ class WaveformSignalColors {
   protected:
     void fallBackFromSignalColor();
     void fallBackDefaultColor();
-    QColor rgbaColorFromString(QString sColorString);
 
     float stableHue(float hue) const;
 
