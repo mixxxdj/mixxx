@@ -43,13 +43,13 @@ bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& contex
     }
     m_rgbHighColor = WSkinColor::getCorrectColor(m_rgbHighColor).toRgb();
 
-    m_axesColor.setNamedColor(context.selectString(node, "AxesColor"));
+    m_axesColor = context.selectColor(node, "AxesColor");
     if (!m_axesColor.isValid()) {
         m_axesColor = QColor(245,245,245);
     }
     m_axesColor = WSkinColor::getCorrectColor(m_axesColor).toRgb();
 
-    m_playPosColor.setNamedColor(context.selectString(node, "PlayPosColor"));
+    m_playPosColor = context.selectColor(node, "PlayPosColor");
     m_playPosColor = WSkinColor::getCorrectColor(m_playPosColor).toRgb();
     if (!m_playPosColor.isValid()) {
         m_playPosColor = m_axesColor;
@@ -62,7 +62,7 @@ bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& contex
         m_playedOverlayColor = Qt::transparent;
     }
 
-    m_bgColor.setNamedColor(context.selectString(node, "BgColor"));
+    m_bgColor = context.selectColor(node, "BgColor");
     if (!m_bgColor.isValid()) {
         m_bgColor = QColor(0, 0, 0);
     }
