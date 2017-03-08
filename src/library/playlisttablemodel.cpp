@@ -23,6 +23,15 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     }
 
     m_iPlaylistId = playlistId;
+
+    if (!m_showAll) {
+        // From Mixxx 2.1 we drop tracks that have been explicitly deleted
+        // in the library (mixxx_deleted = 0) from playlists.
+        // These invisible tracks, consuming a playlist position number where
+        // a source user of confusion in the past.
+    	m_pTrackCollection->getPlaylistDAO().removeHiddenTracks(m_iPlaylistId);
+    }
+
     QString playlistTableName = "playlist_" + QString::number(m_iPlaylistId);
     QSqlQuery query(m_database);
     FieldEscaper escaper(m_database);
@@ -36,10 +45,6 @@ void PlaylistTableModel::setTableModel(int playlistId) {
             // the same value as the cover hash.
             << LIBRARYTABLE_COVERART_HASH + " AS " + LIBRARYTABLE_COVERART;
 
-    // We drop files that have been explicitly deleted from mixxx
-    // (mixxx_deleted=0) from the view. There was a bug in <= 1.9.0 where
-    // removed files were not removed from playlists, so some users will have
-    // libraries where this is the case.
     QString queryString = QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
                                   "SELECT %2 FROM PlaylistTracks "
                                   "INNER JOIN library ON library.id = PlaylistTracks.track_id "
@@ -47,9 +52,6 @@ void PlaylistTableModel::setTableModel(int playlistId) {
                           .arg(escaper.escapeString(playlistTableName),
                                columns.join(","),
                                QString::number(playlistId));
-    if (!m_showAll) {
-        queryString.append(" AND library.mixxx_deleted = 0");
-    }
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -135,7 +137,7 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
         trackPositions.append(trackPosition);
     }
 
-    m_pTrackCollection->getPlaylistDAO().removeTracksFromPlaylist(m_iPlaylistId,trackPositions);
+    m_pTrackCollection->getPlaylistDAO().removeTracksFromPlaylist(m_iPlaylistId, trackPositions);
 }
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,

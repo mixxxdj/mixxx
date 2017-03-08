@@ -363,20 +363,31 @@ bool EngineRecord::openFile() {
             // Ensure CPU_CLIPS_NEGATIVE and CPU_CLIPS_POSITIVE is setup properly in the build.
             sf_command(m_pSndfile, SFC_SET_CLIPPING, NULL, SF_TRUE) ;
 
-            // Set meta data
-            int ret = sf_set_string(m_pSndfile, SF_STR_TITLE, m_baTitle.constData());
-            if (ret != 0) {
-                qWarning("libsndfile error: %s", sf_error_number(ret));
+            if (!m_baTitle.isEmpty()) {
+                int ret = sf_set_string(m_pSndfile, SF_STR_TITLE, m_baTitle.constData());
+                if (ret != 0) {
+                    qWarning("libsndfile error: %s", sf_error_number(ret));
+                }
             }
 
-            ret = sf_set_string(m_pSndfile, SF_STR_ARTIST, m_baAuthor.constData());
-            if (ret != 0) {
-                qWarning("libsndfile error: %s", sf_error_number(ret));
+            if (!m_baAuthor.isEmpty()) {
+                int ret = sf_set_string(m_pSndfile, SF_STR_ARTIST, m_baAuthor.constData());
+                if (ret != 0) {
+                    qWarning("libsndfile error: %s", sf_error_number(ret));
+                }
             }
 
-            ret = sf_set_string(m_pSndfile, SF_STR_COMMENT, m_baAlbum.constData());
-            if (ret != 0) {
-                qWarning("libsndfile error: %s", sf_error_number(ret));
+            if (!m_baAlbum.isEmpty()) {
+                int strType = SF_STR_ALBUM;
+                if (ENCODING_AIFF) {
+                    // There is no AIFF text chunk for "Album". But libsndfile is able to
+                    // write the SF_STR_COMMENT string into the text chunk with id "ANNO".
+                    strType = SF_STR_COMMENT;
+                }
+                int ret = sf_set_string(m_pSndfile, strType, m_baAlbum.constData());
+                if (ret != 0) {
+                    qWarning("libsndfile error: %s", sf_error_number(ret));
+                }
             }
         }
     } else {
