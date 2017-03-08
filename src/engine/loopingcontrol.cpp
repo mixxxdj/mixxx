@@ -994,6 +994,10 @@ void LoopingControl::slotBeatJump(double beats) {
         return;
     }
 
+    if (m_pCOBeatJumpSize->get() != abs(beats)) {
+        m_pCOBeatJumpSize->set(abs(beats));
+    }
+
     double dPosition = getCurrentSample();
     double dBeatLength;
     if (BpmControl::getBeatContext(m_pBeats, dPosition,
