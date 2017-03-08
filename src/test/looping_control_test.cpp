@@ -46,7 +46,6 @@ class LoopingControlTest : public MockedEngineBackendTest {
         m_pBeatLoop = std::make_unique<ControlProxy>(m_sGroup1, "beatloop");
         m_pBeatLoopSize = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_size");
         m_pButtonBeatLoopToggle = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_toggle");
-        m_pBeatLoopEnabled = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_enabled");
     }
 
     bool isLoopEnabled() {
@@ -80,7 +79,6 @@ class LoopingControlTest : public MockedEngineBackendTest {
     std::unique_ptr<ControlProxy> m_pBeatLoop;
     std::unique_ptr<ControlProxy> m_pBeatLoopSize;
     std::unique_ptr<ControlProxy> m_pButtonBeatLoopToggle;
-    std::unique_ptr<ControlProxy> m_pBeatLoopEnabled;
 };
 
 TEST_F(LoopingControlTest, LoopSet) {
@@ -459,18 +457,15 @@ TEST_F(LoopingControlTest, BeatLoopSize_SetAndToggle) {
     // Setting beatloop_size should not activate a loop
     m_pBeatLoopSize->set(2.0);
     EXPECT_FALSE(m_pLoopEnabled->toBool());
-    EXPECT_FALSE(m_pBeatLoopEnabled->toBool());
 
     m_pButtonBeatLoopToggle->set(1.0);
     m_pButtonBeatLoopToggle->set(0.0);
     EXPECT_TRUE(m_pLoopEnabled->toBool());
-    EXPECT_TRUE(m_pBeatLoopEnabled->toBool());
     EXPECT_TRUE(m_pBeatLoop2Enabled->toBool());
 
     m_pButtonBeatLoopToggle->set(1.0);
     m_pButtonBeatLoopToggle->set(0.0);
     EXPECT_FALSE(m_pLoopEnabled->toBool());
-    EXPECT_FALSE(m_pBeatLoopEnabled->toBool());
     EXPECT_FALSE(m_pBeatLoop2Enabled->toBool());
 }
 
@@ -480,14 +475,12 @@ TEST_F(LoopingControlTest, BeatLoopSize_IsSetByNumberedControl) {
     m_pButtonBeatLoop2Activate->set(1.0);
     m_pButtonBeatLoop2Activate->set(0.0);
     EXPECT_TRUE(m_pBeatLoop2Enabled->toBool());
-    EXPECT_TRUE(m_pBeatLoopEnabled->toBool());
     EXPECT_TRUE(m_pLoopEnabled->toBool());
     EXPECT_EQ(2.0, m_pBeatLoopSize->get());
 
     m_pButtonBeatLoopToggle->set(1.0);
     m_pButtonBeatLoopToggle->set(0.0);
     EXPECT_FALSE(m_pBeatLoop2Enabled->toBool());
-    EXPECT_FALSE(m_pBeatLoopEnabled->toBool());
     EXPECT_FALSE(m_pLoopEnabled->toBool());
     EXPECT_EQ(2.0, m_pBeatLoopSize->get());
 }
@@ -510,7 +503,6 @@ TEST_F(LoopingControlTest, BeatLoopSize_ResizeKeepsStartPosition) {
 
     m_pBeatLoopSize->set(1.0);
     EXPECT_TRUE(m_pLoopEnabled->toBool());
-    EXPECT_TRUE(m_pBeatLoopEnabled->toBool());
     double newStart = m_pLoopStartPoint->get();
     EXPECT_TRUE(oldStart == newStart);
 }
@@ -518,14 +510,12 @@ TEST_F(LoopingControlTest, BeatLoopSize_ResizeKeepsStartPosition) {
 TEST_F(LoopingControlTest, BeatLoopControl) {
     m_pTrack1->setBpm(120.0);
     m_pBeatLoop->set(2.0);
-    EXPECT_TRUE(m_pBeatLoopEnabled->toBool());
     EXPECT_TRUE(m_pBeatLoop2Enabled->toBool());
     EXPECT_TRUE(m_pLoopEnabled->toBool());
     EXPECT_EQ(2.0, m_pBeatLoopSize->get());
 
     m_pButtonReloopToggle->set(1.0);
     m_pButtonReloopToggle->set(0.0);
-    EXPECT_FALSE(m_pBeatLoopEnabled->toBool());
     EXPECT_FALSE(m_pBeatLoop2Enabled->toBool());
     EXPECT_FALSE(m_pLoopEnabled->toBool());
     EXPECT_EQ(2.0, m_pBeatLoopSize->get());
@@ -533,7 +523,6 @@ TEST_F(LoopingControlTest, BeatLoopControl) {
     ProcessBuffer();
 
     m_pBeatLoop->set(6.0);
-    EXPECT_TRUE(m_pBeatLoopEnabled->toBool());
     EXPECT_TRUE(m_pLoopEnabled->toBool());
     EXPECT_EQ(6.0, m_pBeatLoopSize->get());
 }
