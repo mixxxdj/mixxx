@@ -38,7 +38,8 @@ QList<double> LoopingControl::getBeatSizes() {
 
 LoopingControl::LoopingControl(QString group,
                                UserSettingsPointer pConfig)
-        : EngineControl(group, pConfig) {
+        : EngineControl(group, pConfig),
+          m_mutex(QMutex::Recursive) {
     m_bLoopingEnabled = false;
     m_bLoopRollActive = false;
     LoopSamples loopSamples = { kNoTrigger, kNoTrigger };
@@ -82,6 +83,11 @@ LoopingControl::LoopingControl(QString group,
     // The old reloop_exit name was confusing. This CO does both entering and exiting.
     ControlDoublePrivate::insertAlias(ConfigKey(group, "reloop_exit"),
                                       ConfigKey(group, "reloop_toggle"));
+
+    m_pReloopCueButton = new ControlPushButton(ConfigKey(group, "reloop_cue"));
+    connect(m_pReloopCueButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotReloopCue(double)),
+            Qt::DirectConnection);
 
     m_pCOLoopEnabled = new ControlObject(ConfigKey(group, "loop_enabled"));
     m_pCOLoopEnabled->set(0.0);
@@ -200,6 +206,8 @@ LoopingControl::LoopingControl(QString group,
     m_pLoopDoubleButton = new ControlPushButton(ConfigKey(group, "loop_double"));
     connect(m_pLoopDoubleButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoopDouble(double)));
+
+    m_pPlayButton = ControlObject::getControl(ConfigKey(group, "play"));
 }
 
 LoopingControl::~LoopingControl() {
@@ -578,6 +586,19 @@ void LoopingControl::slotReloopToggle(double val) {
             setLoopingEnabled(true);
         }
         //qDebug() << "reloop_exit looping on";
+    }
+}
+
+void LoopingControl::slotReloopCue(double pressed) {
+    if (pressed > 0) {
+        QMutexLocker lock(&m_mutex);
+
+        m_pPlayButton->set(0.0);
+        seekAbs(static_cast<double>(
+            m_loopSamples.getValue().start));
+        setLoopingEnabled(true);
+
+        lock.unlock();
     }
 }
 

@@ -65,6 +65,7 @@ class LoopingControl : public EngineControl {
     void slotLoopOutSeek(double);
     void slotLoopExit(double);
     void slotReloopToggle(double);
+    void slotReloopCue(double);
     void slotLoopStartPos(double);
     void slotLoopEndPos(double);
     virtual void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
@@ -127,10 +128,12 @@ class LoopingControl : public EngineControl {
     ControlPushButton* m_pLoopOutSeekButton;
     ControlPushButton* m_pLoopExitButton;
     ControlPushButton* m_pReloopToggleButton;
+    ControlPushButton* m_pReloopCueButton;
     ControlObject* m_pCOLoopScale;
     ControlPushButton* m_pLoopHalveButton;
     ControlPushButton* m_pLoopDoubleButton;
     ControlObject* m_pSlipEnabled;
+    ControlObject* m_pPlayButton;
 
     bool m_bLoopingEnabled;
     bool m_bLoopRollActive;
@@ -165,6 +168,8 @@ class LoopingControl : public EngineControl {
 
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
+
+    QMutex m_mutex;
 };
 
 // Class for handling loop moves of a set size. This allows easy access from
