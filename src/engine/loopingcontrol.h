@@ -72,7 +72,7 @@ class LoopingControl : public EngineControl {
 
     // Generate a loop of 'beats' length. It can also do fractions for a
     // beatslicing effect.
-    void slotBeatLoop(double loopSize, bool keepStartPoint=false);
+    void slotBeatLoop(double loopSize, bool keepStartPoint=false, bool enable=true);
     void slotBeatLoopSizeChanged(double beats);
     void slotBeatLoopToggle(double pressed);
     void slotBeatLoopRollToggle(double pressed);
@@ -107,6 +107,7 @@ class LoopingControl : public EngineControl {
 
     void setLoopingEnabled(bool enabled);
     void clearActiveBeatLoop();
+    bool currentLoopMatchesBeatloopSize();
     // When a loop changes size such that the playposition is outside of the loop,
     // we can figure out the best place in the new loop to seek to maintain
     // the beat.  It will even keep multi-bar phrasing correct with 4/4 tracks.
