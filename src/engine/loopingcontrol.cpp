@@ -247,7 +247,7 @@ LoopingControl::~LoopingControl() {
     delete m_pCOLoopMoveBackward;
 }
 
-void LoopingControl::slotLoopScale(double scale) {
+void LoopingControl::slotLoopScale(double scaleFactor) {
     LoopSamples loopSamples = m_loopSamples.getValue();
     if (loopSamples.start == kNoTrigger || loopSamples.end == kNoTrigger) {
         return;
@@ -255,7 +255,7 @@ void LoopingControl::slotLoopScale(double scale) {
     int loop_length = loopSamples.end - loopSamples.start;
     int old_loop_end = loopSamples.end;
     int samples = m_pTrackSamples->get();
-    loop_length *= scale;
+    loop_length *= scaleFactor;
 
     // Abandon loops that are too short of extend beyond the end of the file.
     if (loop_length < MINIMUM_AUDIBLE_LOOP_SIZE ||
@@ -292,15 +292,15 @@ void LoopingControl::slotLoopScale(double scale) {
     m_pCOLoopEndPosition->set(loopSamples.end);
 
     // Reseek if the loop shrank out from under the playposition.
-    if (m_bLoopingEnabled && scale < 1.0) {
+    if (m_bLoopingEnabled && scaleFactor < 1.0) {
         seekInsideAdjustedLoop(
                 loopSamples.start, old_loop_end,
                 loopSamples.start, loopSamples.end);
     }
 }
 
-void LoopingControl::slotLoopHalve(double v) {
-    if (v <= 0.0) {
+void LoopingControl::slotLoopHalve(double pressed) {
+    if (pressed <= 0.0) {
         return;
     }
 
@@ -339,8 +339,8 @@ void LoopingControl::slotLoopHalve(double v) {
     }
 }
 
-void LoopingControl::slotLoopDouble(double v) {
-    if (v <= 0.0) {
+void LoopingControl::slotLoopDouble(double pressed) {
+    if (pressed <= 0.0) {
         return;
     }
 
@@ -946,8 +946,8 @@ void LoopingControl::slotBeatLoopSizeChanged(double beats) {
     }
 }
 
-void LoopingControl::slotBeatLoopToggle(double value) {
-    if (value > 0) {
+void LoopingControl::slotBeatLoopToggle(double pressed) {
+    if (pressed > 0) {
         if (m_bLoopingEnabled) {
             setLoopingEnabled(false);
         } else {
@@ -956,8 +956,8 @@ void LoopingControl::slotBeatLoopToggle(double value) {
     }
 }
 
-void LoopingControl::slotBeatLoopRollToggle(double value) {
-    if (value > 0.0) {
+void LoopingControl::slotBeatLoopRollToggle(double pressed) {
+    if (pressed > 0.0) {
         m_pSlipEnabled->set(1.0);
         slotBeatLoop(m_pCOBeatLoopSize->get());
         m_bLoopRollActive = true;
@@ -968,25 +968,23 @@ void LoopingControl::slotBeatLoopRollToggle(double value) {
     }
 }
 
-void LoopingControl::slotLoopAutoToggle(double value) {
+void LoopingControl::slotLoopAutoToggle(double pressed) {
     double beatloop_size = m_pCOBeatLoopSize->get();
     if (beatloop_size > 1.0) {
-        slotBeatLoopToggle(value);
+        slotBeatLoopToggle(pressed);
     } else {
-        slotBeatLoopRollToggle(value);
+        slotBeatLoopRollToggle(pressed);
     }
 }
 
-void LoopingControl::slotLoopManualToggle(double value) {
+void LoopingControl::slotLoopManualToggle(double pressed) {
     if (m_bLoopingEnabled) {
         slotReloopToggle(1.0);
     } else {
-        if (value > 0.0) {
+        if (pressed > 0.0) {
             slotLoopIn(1.0);
-            slotLoopIn(0.0);
         } else {
             slotLoopOut(1.0);
-            slotLoopOut(0.0);
         }
     }
 }
@@ -1141,14 +1139,14 @@ BeatJumpControl::~BeatJumpControl() {
     delete m_pJumpBackward;
 }
 
-void BeatJumpControl::slotJumpBackward(double v) {
-    if (v > 0) {
+void BeatJumpControl::slotJumpBackward(double pressed) {
+    if (pressed > 0) {
         emit(beatJump(-m_dBeatJumpSize));
     }
 }
 
-void BeatJumpControl::slotJumpForward(double v) {
-    if (v > 0) {
+void BeatJumpControl::slotJumpForward(double pressed) {
+    if (pressed > 0) {
         emit(beatJump(m_dBeatJumpSize));
     }
 }

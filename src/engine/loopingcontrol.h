@@ -74,15 +74,15 @@ class LoopingControl : public EngineControl {
     // beatslicing effect.
     void slotBeatLoop(double loopSize, bool keepStartPoint=false);
     void slotBeatLoopSizeChanged(double beats);
-    void slotBeatLoopToggle(double value);
-    void slotBeatLoopRollToggle(double value);
+    void slotBeatLoopToggle(double pressed);
+    void slotBeatLoopRollToggle(double pressed);
     void slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl);
     void slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopControl);
     void slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl);
     void slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopControl);
 
-    void slotLoopAutoToggle(double value);
-    void slotLoopManualToggle(double value);
+    void slotLoopAutoToggle(double pressed);
+    void slotLoopManualToggle(double pressed);
 
     // Jump forward or backward by beats.
     void slotBeatJump(double beats);
@@ -94,9 +94,9 @@ class LoopingControl : public EngineControl {
     void slotLoopMoveForward(double pressed);
     void slotLoopMoveBackward(double pressed);
 
-    void slotLoopScale(double);
-    void slotLoopDouble(double);
-    void slotLoopHalve(double);
+    void slotLoopScale(double scaleFactor);
+    void slotLoopDouble(double pressed);
+    void slotLoopHalve(double pressed);
 
   private:
 
@@ -198,8 +198,8 @@ class BeatJumpControl : public QObject {
     void beatJump(double beats);
 
   public slots:
-    void slotJumpForward(double value);
-    void slotJumpBackward(double value);
+    void slotJumpForward(double pressed);
+    void slotJumpBackward(double pressed);
 
   private:
     double m_dBeatJumpSize;
