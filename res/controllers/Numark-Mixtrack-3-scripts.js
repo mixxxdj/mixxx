@@ -1782,14 +1782,10 @@ NumarkMixtrack3.StripTouchEffect = function(channel, control, value, status, gro
                 engine.setValue(fxGroup, "enabled", true);
                 engine.setValue(fxGroup, "meta", value / 127);
             }
-        }
-
-        if (focusedEffect) {
+        } else if (focusedEffect) {
             var focusedGroup = "[EffectRack1_EffectUnit" + deck.decknum + "_Effect" + focusedEffect + "]";
             engine.setValue(focusedGroup, "meta", value / 127);
-        }
-
-        if (!focusedEffect && !deck.InstantFX.length) {
+        } else {
             engine.setValue("[EffectRack1_EffectUnit" + deck.decknum + "]", "super1", value / 127);
         }
     }
