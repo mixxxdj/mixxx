@@ -59,7 +59,7 @@
                 <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
                 <SetVariable name="state_0_pressed">icon/ic_loop_move_backward_48px.svg</SetVariable>
                 <SetVariable name="state_0_unpressed">icon/ic_loop_move_backward_48px.svg</SetVariable>
-                <SetVariable name="left_connection_control"><Variable name="group"/>,loop_move_1_backward</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,loop_move_backward</SetVariable>
               </Template>
 
               <Template src="skin:left_1state_button.xml">
@@ -70,7 +70,7 @@
                 <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
                 <SetVariable name="state_0_pressed">icon/ic_loop_move_forward_48px.svg</SetVariable>
                 <SetVariable name="state_0_unpressed">icon/ic_loop_move_forward_48px.svg</SetVariable>
-                <SetVariable name="left_connection_control"><Variable name="group"/>,loop_move_1_forward</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,loop_move_forward</SetVariable>
               </Template>
 
             </Children>
