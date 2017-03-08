@@ -751,8 +751,12 @@ void LoopingControl::slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl
 void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopControl) {
     Q_UNUSED(pBeatLoopControl);
     setLoopingEnabled(false);
-    m_pSlipEnabled->set(0);
-    m_bLoopRollActive = false;
+    // Make sure slip mode is not turned off if it was turned on
+    // by something that was not a rolling beatloop.
+    if (m_bLoopRollActive) {
+        m_pSlipEnabled->set(0);
+        m_bLoopRollActive = false;
+    }
 }
 
 void LoopingControl::clearActiveBeatLoop() {
@@ -936,13 +940,27 @@ void LoopingControl::slotBeatLoopToggle(double pressed) {
 
 void LoopingControl::slotBeatLoopRollToggle(double pressed) {
     if (pressed > 0.0) {
-        m_pSlipEnabled->set(1.0);
-        slotBeatLoop(m_pCOBeatLoopSize->get());
-        m_bLoopRollActive = true;
+        if (m_bLoopingEnabled) {
+            setLoopingEnabled(false);
+            // Make sure slip mode is not turned off if it was turned on
+            // by something that was not a rolling beatloop.
+            if (m_bLoopRollActive) {
+                m_pSlipEnabled->set(0.0);
+                m_bLoopRollActive = false;
+            }
+        } else {
+            m_pSlipEnabled->set(1.0);
+            slotBeatLoop(m_pCOBeatLoopSize->get());
+            m_bLoopRollActive = true;
+        }
     } else {
         setLoopingEnabled(false);
-        m_pSlipEnabled->set(0);
-        m_bLoopRollActive = false;
+        // Make sure slip mode is not turned off if it was turned on
+        // by something that was not a rolling beatloop.
+        if (m_bLoopRollActive) {
+            m_pSlipEnabled->set(0.0);
+            m_bLoopRollActive = false;
+        }
     }
 }
 
