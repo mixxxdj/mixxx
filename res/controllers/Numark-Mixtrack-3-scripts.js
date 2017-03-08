@@ -1378,7 +1378,7 @@ NumarkMixtrack3.OnLoadSelectedTrack = function(value, group, control) {
  *                 for this deck. Decks with sync locked will all play at
  *                 the same tempo, and decks that also have quantize
  *                 enabled will always have their beats lined up.
- * If Sync Lock was previously activated, it just desactivate it,
+ * If Sync Lock was previously activated, it just deactivates it,
  * regardless of the Short press/Double Press
  *
  * - SHIFT + Press : Toggle Key Lock
@@ -1496,14 +1496,14 @@ NumarkMixtrack3.WheelTouch = function(channel, control, value, status, group) {
     - Scratching = deck.touch = true
     */
     var deck = NumarkMixtrack3.deckFromGroup(group);
-    var isplaying = engine.getValue(deck.group, "play");
-    
+    var isPlaying = engine.getValue(deck.group, "play");
+
     deck.touch = false;
     deck.iCutStatus = false;
     deck.seekingfast = false;
 
     if (value === DOWN) {
-        if (deck.jogWheelsInScratchMode || !isplaying) {
+        if (deck.jogWheelsInScratchMode || !isPlaying) {
             engine.scratchEnable(deck.decknum, intervalsPerRev, rpm, alpha, beta);
 
             // Wheel is On - test for Shift Key");
