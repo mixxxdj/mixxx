@@ -14,7 +14,7 @@ Variables:
   <WidgetGroup>
     <ObjectName><Variable name="ObjectName"/></ObjectName>
     <Layout>stacked</Layout>
-    <Size>40f,39f</Size>
+    <Size>40f,32f</Size>
     <Children>
 
       <WidgetGroup>
@@ -32,12 +32,12 @@ Variables:
         </Children>
       </WidgetGroup>
 
-      <Label>
+    <!--  <Label>
         <ObjectName><Variable name="ObjectName"/>Label</ObjectName>
-        <Size>40f,39f</Size><!-- margin-top + disp.size -->
+        <Size>40f,39f</Size>
         <Text><Variable name="Label"/></Text>
         <Alignment>center</Alignment>
-      </Label>
+      </Label>  -->
     </Children>
   </WidgetGroup>
 </Template>

@@ -170,7 +170,7 @@
           <WidgetGroup><!-- EffectUnitMixer -->
             <ObjectName>EffectUnitMixer</ObjectName>
             <Layout>vertical</Layout>
-            <Size>81f,60f</Size>
+            <Size>81f,53f</Size>
             <Children>
 
               <WidgetGroup><!-- Clear FX unit + ON/OFF -->
@@ -206,7 +206,7 @@
               <WidgetGroup>
                 <ObjectName>SuperWetDryContainer</ObjectName>
                 <Layout>horizontal</Layout>
-                <Size>80f,39f</Size>
+                <SizePolicy>f,f</SizePolicy>
                 <Children>
 
                   <Template src="skin:fx_superwetdry_knob.xml">
