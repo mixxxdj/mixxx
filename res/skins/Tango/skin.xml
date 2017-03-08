@@ -89,9 +89,12 @@
       <attribute persist="true" config_key="[Tango],vinylControlsDeck3">0</attribute>
       <attribute persist="true" config_key="[Tango],vinylControlsDeck4">0</attribute>
       <attribute persist="true" config_key="[Tango],vumeter">1</attribute>
-      <attribute persist="true" config_key="[Tango],netbook_mode">1</attribute>
-      <attribute persist="true" config_key="[Tango],netboo_normal_size0">0</attribute>
-      <attribute persist="true" config_key="[Tango],netboo_normal_size1">1</attribute>
+      <!-- These two are preset and must never be changed manually, otherwise
+            SizeAwareStack in netbook_trigger.xml won't work properly.
+            netbook_normal_stack0 = 0 means netbook mode with < 1260px width
+            netbook_normal_stack1 = 1 means normal mode with >= 1260px width -->
+      <attribute persist="true" config_key="[Tango],netbook_normal_stack0">0</attribute>
+      <attribute persist="true" config_key="[Tango],netbook_normal_stack1">1</attribute>
     </attributes>
   </manifest>
 
@@ -100,7 +103,7 @@
 
 <!--MinimumSize should not be an exact monitor resolution. There needs
   to be space for the title bar or other chrome at full screen -->
-  <MinimumSize>1014,570</MinimumSize>
+  <MinimumSize>1008,500</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
 
@@ -109,7 +112,9 @@
       ###############################################################
 -->
   <LaunchImageStyle>
-    LaunchImage { background-color: #0f0f0f; }
+    LaunchImage {
+      background-color: #0f0f0f;
+    }
     QLabel {
       image: url(skin:/graphics/mixxx_logo_104x26.svg);
       padding: 0;
@@ -129,8 +134,6 @@
       max-height: 3px;
     }
     QProgressBar::chunk {
-    <!--	background-color: #2293EC;
-      background-color: #d2d2d2;	-->
       background-color: #FF6100;
     }
   </LaunchImageStyle>
@@ -139,12 +142,13 @@
 <!--  ################################################################
       Variables #####################################################
      ###############################################################
-      Put these defs at the beginning so SingletonDefinitions have
-      all Variables available -->
+      Put these variable definitions at the beginning so SingletonDefinitions
+      have all Variables available. -->
         
-<!--  Trying to match 'active angle' on Reloop TerminalMix 2.
-      Change to your liking. Though, values beyond -150/150 might
-      interfere with some knob labels. -->
+<!--  Initially I was trying to match 'active angle' on Reloop TerminalMix 2.
+      Though, it didn't matter for the screen/controller connection,
+      but it feels good on screen :) Change to your liking.
+      Values beyond -150/150 might interfere with some knob labels. -->
     <SetVariable name="PotiMinAngle">-130</SetVariable>
     <SetVariable name="PotiMaxAngle">130</SetVariable>
 
@@ -153,9 +157,8 @@
     <SetVariable name="SignalBgColor_1">#001D33</SetVariable>
     <SetVariable name="SignalBgColor_2">#2F290a</SetVariable>
     <SetVariable name="SignalBgColor_3">#032603</SetVariable>
-    <SetVariable name="SignalBgColor_4">#3A0440</SetVariable><!-- -->
+    <SetVariable name="SignalBgColor_4">#3A0440</SetVariable>
 
-    <!-- <SetVariable name="SignalColor_1">#26A2FF</SetVariable> -->
     <SetVariable name="SignalColor_1">#5EBAFF</SetVariable>
     <SetVariable name="SignalColor_2">#8A750C</SetVariable>
     <SetVariable name="SignalColor_3">#366E00</SetVariable>
@@ -203,8 +206,8 @@
       </Children>
     </SingletonDefinition>
 
-<!--    Decks appear multiple times due to [2/4 FX Units] switch, so make them
-        Singletons to save memory. TEST! -->
+<!-- Decks appear multiple times due to [2/4 FX Units] switch, so make them
+     Singletons to save memory. TEST! -->
     <SingletonDefinition><!-- Decks 12 -->
       <ObjectName>Decks12_Singleton</ObjectName>
       <Children>
@@ -222,7 +225,7 @@
               </Connection>
             </WidgetGroup>
 
-            <WidgetGroup><!-- LEFT decks + ToolbarTop + RIGHT decks -->
+            <WidgetGroup><!-- LEFT decks + Skin Controls + RIGHT decks -->
               <ObjectName>DecksMixer12</ObjectName>
               <Layout>horizontal</Layout>
               <Size>1014me,136min</Size>
@@ -247,7 +250,7 @@
                   <SetVariable name="SignalRGBLowColor"><Variable name="SignalRGBLowColor"/></SetVariable>
                 </Template>
               </Children>
-            </WidgetGroup><!-- LEFT decks + ToolbarTop + RIGHT decks -->
+            </WidgetGroup><!-- LEFT decks + Skin Controls + RIGHT decks -->
 
           </Children>
         </WidgetGroup>
@@ -305,7 +308,7 @@
 <!--    ################################################################
         SkinContainer #################################################
       ############################################################### -->
-    <WidgetGroup><!-- extra wrapper, may help with Skin Settings on Mac -->
+    <WidgetGroup><!-- extra wrapper, may help with Skin Settings on Mac. TEST! -->
       <Layout>vertical</Layout>
       <SizePolicy>me,me</SizePolicy>
       <Children>
@@ -452,7 +455,7 @@
                             <Template src="skin:netbook_trigger.xml"/>
 
                           </Children>
-                        </WidgetGroup><!-- Decks + size-aware triggers in the back -->
+                        </WidgetGroup><!-- /Decks + size-aware triggers in the back -->
                       </Children>
                     </Splitter>
                   </Children>

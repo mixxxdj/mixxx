@@ -11,11 +11,11 @@ Modes:
         <Layout>vertical</Layout>
         <SizePolicy>me,max</SizePolicy>
         <MinimumSize>1,1</MinimumSize>
-        <MaximumSize>1127,1</MaximumSize>
+        <MaximumSize>1259,1</MaximumSize>
         <Children>
-          <WidgetStack currentpage="[Tango],netboo_normal_size0" persist="true">
+          <WidgetStack currentpage="[Tango],netbook_normal_stack0" persist="true">
             <Children>
-              <WidgetGroup trigger="[Tango],netbook_mode" persist="true">
+              <WidgetGroup trigger="[Tango],netbook_mode">
                 <Size>2f,2f</Size>
                 <Children>
                 </Children>
@@ -24,7 +24,7 @@ Modes:
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
-              <WidgetGroup trigger="[Tango],normal_mode" persist="true">
+              <WidgetGroup trigger="[Tango],normal_mode">
                 <Size>2f,2f</Size>
                 <Children>
                 </Children>
@@ -41,12 +41,12 @@ Modes:
       <WidgetGroup><!-- 1  show skin controls in the top center  -->
         <Layout>vertical</Layout>
         <SizePolicy>me,me</SizePolicy>
-        <MinimumSize>1128,-1</MinimumSize>
+        <MinimumSize>1260,-1</MinimumSize>
         <MaximumSize>-1,-1</MaximumSize>
         <Children>
-          <WidgetStack currentpage="[Tango],netboo_normal_size1" persist="true">
+          <WidgetStack currentpage="[Tango],netbook_normal_stack1" persist="true">
             <Children>
-              <WidgetGroup trigger="[Tango],netbook_mode" persist="true">
+              <WidgetGroup trigger="[Tango],netbook_mode">
                 <Size>2f,2f</Size>
                 <Children>
                 </Children>
@@ -55,7 +55,7 @@ Modes:
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
-              <WidgetGroup trigger="[Tango],normal_mode" persist="true">
+              <WidgetGroup trigger="[Tango],normal_mode">
                 <Size>2f,2f</Size>
                 <Children>
                 </Children>
