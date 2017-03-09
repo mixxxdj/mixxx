@@ -149,8 +149,8 @@ var leds = {
     "jogWheelsInScratchMode": 0x06,
     "loopin": 0x13,
     "loopout": 0x14,
-    "reloop_exit": 0x15,
-    "loop_halve": 0x16,
+    "reloopExit": 0x15,
+    "loopHalve": 0x16,
     "hotCue1": 0x1b,
     "hotCue2": 0x1c,
     "hotCue3": 0x1d,
@@ -830,13 +830,13 @@ NumarkMixtrack3.initLEDsObjects = function() {
         decks["D" + i].LEDs.jogWheelsInScratchMode = new LED(0x90 + j, leds.jogWheelsInScratchMode);
         decks["D" + i].LEDs.loopin = new LED(0x90 + j, leds.loopin);
         decks["D" + i].LEDs.loopout = new LED(0x90 + j, leds.loopout);
-        decks["D" + i].LEDs.reloop_exit = new LED(0x90 + j, leds.reloop_exit);
-        decks["D" + i].LEDs.loop_halve = new LED(0x90 + j, leds.loop_halve);
+        decks["D" + i].LEDs.reloopExit = new LED(0x90 + j, leds.reloopExit);
+        decks["D" + i].LEDs.loopHalve = new LED(0x90 + j, leds.loopHalve);
         decks["D" + i].LEDs.hotCue1 = new LED(0x90 + j, leds.hotCue1);
         decks["D" + i].LEDs.hotCue2 = new LED(0x90 + j, leds.hotCue2);
         decks["D" + i].LEDs.hotCue3 = new LED(0x90 + j, leds.hotCue3);
         decks["D" + i].LEDs.hotCue4 = new LED(0x90 + j, leds.hotCue4);
-        decks["D" + i].LEDs.Cue = new LED(0x90 + j, leds.Cue);
+        decks["D" + i].LEDs.cue = new LED(0x90 + j, leds.Cue);
         decks["D" + i].LEDs.sync = new LED(0x90 + j, leds.sync);
         decks["D" + i].LEDs.play = new LED(0x90 + j, leds.play);
         decks["D" + i].LEDs.fx1 = new LED(0x90 + j, leds.fx1);
@@ -1451,7 +1451,7 @@ NumarkMixtrack3.CueButton = function(channel, control, value, status, group) {
 
 NumarkMixtrack3.OnCuePointChange = function(value, group, control) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
-    deck.LEDs.Cue.onOff((value) ? ON : OFF);
+    deck.LEDs.cue.onOff((value) ? ON : OFF);
 };
 
 // Pitch faders send 2*7bits
@@ -2075,27 +2075,27 @@ NumarkMixtrack3.OnLoopInOutChange = function(value, group, control) {
         }
 
         deck.LEDs.loopout.onOff(OFF);
-        deck.LEDs.reloop_exit.onOff(OFF);
-        deck.LEDs.loop_halve.onOff(OFF);
+        deck.LEDs.reloopExit.onOff(OFF);
+        deck.LEDs.loopHalve.onOff(OFF);
     } else if (valOut == -1 && deck.loaded) {
         deck.LEDs.loopin.onOff(PADcolors.blue);
         if (deck.LEDs.loopout.getFlashDuration() !== 300) {
             deck.LEDs.loopout.flashOn(300, PADcolors.blue, 300);
         }
-        deck.LEDs.reloop_exit.onOff(OFF);
-        deck.LEDs.loop_halve.onOff(OFF);
+        deck.LEDs.reloopExit.onOff(OFF);
+        deck.LEDs.loopHalve.onOff(OFF);
     } else if (!valEnabled) {
         deck.LEDs.loopin.onOff(PADcolors.blue);
         deck.LEDs.loopout.onOff(PADcolors.blue);
-        if (deck.LEDs.reloop_exit.getFlashDuration() !== 300) {
-            deck.LEDs.reloop_exit.flashOn(300, PADcolors.blue, 300);
+        if (deck.LEDs.reloopExit.getFlashDuration() !== 300) {
+            deck.LEDs.reloopExit.flashOn(300, PADcolors.blue, 300);
         }
-        deck.LEDs.loop_halve.onOff(PADcolors.blue);
+        deck.LEDs.loopHalve.onOff(PADcolors.blue);
     } else {
         deck.LEDs.loopin.onOff(PADcolors.blue);
         deck.LEDs.loopout.onOff(PADcolors.blue);
-        deck.LEDs.reloop_exit.onOff(PADcolors.blue);
-        deck.LEDs.loop_halve.onOff(PADcolors.blue);
+        deck.LEDs.reloopExit.onOff(PADcolors.blue);
+        deck.LEDs.loopHalve.onOff(PADcolors.blue);
     }
 };
 
