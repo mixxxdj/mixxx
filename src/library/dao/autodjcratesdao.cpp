@@ -12,14 +12,24 @@
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 
-#define AUTODJCRATES_TABLE "temp_autodj_crates"
-#define AUTODJACTIVETRACKS_TABLE "temp_autodj_activetracks"
-
 #define AUTODJCRATESTABLE_TRACKID "track_id"
 #define AUTODJCRATESTABLE_CRATEREFS "craterefs"
 #define AUTODJCRATESTABLE_TIMESPLAYED "timesplayed"
 #define AUTODJCRATESTABLE_AUTODJREFS "autodjrefs"
 #define AUTODJCRATESTABLE_LASTPLAYED "lastplayed"
+
+#define AUTODJCRATES_TABLE "temp_autodj_crates"
+// A table of all tracks that are assigned to the AutoDJ via a crate
+// Columns:
+// INTEGER AUTODJCRATESTABLE_TRACKID -> Tracks that are member of crate assigned to AutoDj
+// INTEGER AUTODJCRATESTABLE_CRATEREFS -> counts the occurrences of track in auto dj crates
+// INTEGER AUTODJCRATESTABLE_TIMESPLAYED -> library played counter
+// INTEGER AUTODJCRATESTABLE_AUTODJREFS -> counts the occurrences of the track in the AutoDj queue
+// DATETIME AUTODJCRATESTABLE_LASTPLAYED -> from the history feature
+
+#define AUTODJACTIVETRACKS_TABLE "temp_autodj_activetracks"
+// The same table like above, but of all tracks that not already queued into Auto DJ
+// ordered by TimesPlayed.
 
 namespace {
 // Percentage of most and least played tracks to ignore [0,50)
@@ -33,7 +43,7 @@ AutoDJCratesDAO::AutoDJCratesDAO(
         UserSettingsPointer a_pConfig)
         : m_pTrackCollection(pTrackCollection),
           m_pConfig (a_pConfig),
-          // The database has been created yet.
+          // The database has not been created yet.
           m_bAutoDjCratesDbCreated(false),
           m_iAutoDjPlaylistId(-1),
           // By default, active tracks are not tracks that haven't been played in
@@ -46,7 +56,8 @@ AutoDJCratesDAO::~AutoDJCratesDAO() {
 
 void AutoDJCratesDAO::initialize() {
     // Save the ID of the auto-DJ playlist.
-    m_iAutoDjPlaylistId = m_pTrackCollection->getPlaylistDAO().getPlaylistIdFromName(AUTODJ_TABLE);
+    m_iAutoDjPlaylistId =
+            m_pTrackCollection->getPlaylistDAO().getPlaylistIdFromName(AUTODJ_TABLE);
     VERIFY_OR_DEBUG_ASSERT(m_iAutoDjPlaylistId >= 0) {
         qWarning() << "Auto DJ playlist not found!";
     }
@@ -55,7 +66,7 @@ void AutoDJCratesDAO::initialize() {
 // Create the temporary auto-DJ-crates table.
 // Done the first time it's used, since the user might not even make
 // use of this feature.
-void AutoDJCratesDAO::createAutoDjCratesDatabase() {
+void AutoDJCratesDAO::createAndConnectAutoDjCratesDatabase() {
     // If the use of tracks that haven't been played in a while has changed,
     // then the active-tracks view must be recreated.
     bool bUseIgnoreTime = m_pConfig->getValue(
@@ -120,7 +131,17 @@ void AutoDJCratesDAO::createAutoDjCratesDatabase() {
 
     // Fill out the first three columns.
     // Supply default values for the last two.
-    // INSERT INTO temp_autodj_crates (track_id, craterefs, timesplayed, autodjrefs, lastplayed) SELECT crate_tracks.track_id, COUNT (*), library.timesplayed, 0, "" FROM crate_tracks, library WHERE crate_tracks.crate_id IN (SELECT id FROM crates WHERE autodj = 1) AND crate_tracks.track_id = library.id AND library.mixxx_deleted = 0 GROUP BY crate_tracks.track_id, library.timesplayed;
+    // INSERT INTO temp_autodj_crates (
+    //     track_id, craterefs, timesplayed, autodjrefs, lastplayed)
+    // SELECT crate_tracks.track_id, COUNT (*), library.timesplayed, 0, ""
+    // FROM crate_tracks, library
+    // WHERE crate_tracks.crate_id IN (
+    //     SELECT id
+    //     FROM crates
+    //     WHERE autodj = 1)
+    // AND crate_tracks.track_id = library.id
+    // AND library.mixxx_deleted = 0
+    // GROUP BY crate_tracks.track_id, library.timesplayed;
     strQuery = QString("INSERT INTO " AUTODJCRATES_TABLE
             " (" AUTODJCRATESTABLE_TRACKID ", " AUTODJCRATESTABLE_CRATEREFS ", "
             AUTODJCRATESTABLE_TIMESPLAYED ", " AUTODJCRATESTABLE_AUTODJREFS ", "
@@ -234,15 +255,29 @@ bool AutoDJCratesDAO::createActiveTracksView (bool a_bUseIgnoreTime) {
     // clause is only evaluated once.  For posterity, though, here's the monster
     // SQL query that attempted to create that version:
     //
-    // CREATE TEMP VIEW temp_autodj_activetracks
-    //  AS SELECT * FROM temp_autodj_crates WHERE autodjrefs = 0
-    //  ORDER BY timesplayed, lastplayed LIMIT (SELECT MAX(count) FROM
-    //  (SELECT COUNT(*) AS count FROM temp_autodj_crates WHERE timesplayed = 0
-    //  UNION ALL SELECT (count * (SELECT value FROM settings WHERE
-    //  name="mixxx.db.model.autodjcrates.active_percentage") / 100) AS count
-    //  FROM (SELECT COUNT(*) AS count FROM temp_autodj_crates)));
+    // CREATE TEMP VIEW temp_autodj_activetracks AS
+    //     SELECT * FROM temp_autodj_crates
+    //     WHERE autodjrefs = 0
+    //     ORDER BY timesplayed, lastplayed LIMIT (
+    //         SELECT MAX(count)
+    //         FROM (
+    //             SELECT COUNT(*) AS count
+    //             FROM temp_autodj_crates WHERE timesplayed = 0
+    //             UNION ALL SELECT (
+    //                 count * (
+    //                     SELECT value
+    //                     FROM settings WHERE
+    //                     name="mixxx.db.model.autodjcrates.active_percentage")
+    //                 / 100) AS count
+    //                 FROM (
+    //                     SELECT COUNT(*) AS count
+    //                     FROM temp_autodj_crates)));
 
-    // CREATE TEMP VIEW temp_autodj_activetracks AS SELECT * FROM temp_autodj_crates WHERE autodjrefs = 0 ORDER BY timesplayed, lastplayed;
+    // CREATE TEMP VIEW temp_autodj_activetracks AS
+    // SELECT *
+    // FROM temp_autodj_crates
+    // WHERE autodjrefs = 0
+    // ORDER BY timesplayed, lastplayed;
     QSqlQuery oQuery(m_database);
     QString strTimesPlayed;
     if (!a_bUseIgnoreTime) {
@@ -266,7 +301,17 @@ bool AutoDJCratesDAO::updateAutoDjPlaylistReferences() {
     QSqlQuery oQuery(m_database);
 
     // Rebuild the auto-DJ-playlist reference count.
-    // INSERT OR REPLACE INTO temp_autodj_crates (track_id, craterefs, timesplayed, autodjrefs) SELECT * FROM (SELECT PlaylistTracks.track_id, craterefs, timesplayed, COUNT (*) AS newautodjrefs FROM PlaylistTracks, temp_autodj_crates WHERE PlaylistTracks.playlist_id IN (SELECT id FROM Playlists WHERE hidden = 1) AND PlaylistTracks.track_id = temp_autodj_crates.track_id GROUP BY PlaylistTracks.track_id) WHERE newautodjrefs > 0;
+    // INSERT OR REPLACE INTO temp_autodj_crates (
+    //     track_id, craterefs, timesplayed, autodjrefs)
+    // SELECT *
+    // FROM (
+    //     SELECT PlaylistTracks.track_id, craterefs, timesplayed, COUNT (*) AS newautodjrefs
+    //     FROM PlaylistTracks, temp_autodj_crates
+    //     WHERE PlaylistTracks.playlist_id IN (
+    //         SELECT id FROM Playlists WHERE hidden = PLHT_AUTO_DJ)
+    //     AND PlaylistTracks.track_id = temp_autodj_crates.track_id
+    //     GROUP BY PlaylistTracks.track_id)
+    // WHERE newautodjrefs > 0;
     QString strHidden;
     strHidden.setNum(PlaylistDAO::PLHT_AUTO_DJ);
     QString strQuery(QString ("INSERT OR REPLACE INTO " AUTODJCRATES_TABLE
@@ -320,7 +365,20 @@ bool AutoDJCratesDAO::updateAutoDjPlaylistReferences() {
 bool AutoDJCratesDAO::updateAutoDjPlaylistReferencesForTrack(TrackId trackId) {
     QSqlQuery oQuery(m_database);
 
-    // INSERT OR REPLACE INTO temp_autodj_crates (track_id, craterefs, timesplayed, autodjrefs) SELECT * FROM (SELECT :track_id AS new_track_id, craterefs, timesplayed, COUNT (*) AS newautodjrefs FROM PlaylistTracks, temp_autodj_crates WHERE PlaylistTracks.playlist_id IN (SELECT id FROM Playlists WHERE hidden = 1) AND PlaylistTracks.track_id = :track_id AND temp_autodj_crates.track_id = :track_id GROUP BY new_track_id) WHERE newautodjrefs > 0;
+    // INSERT OR REPLACE INTO temp_autodj_crates (
+    //     track_id, craterefs, timesplayed, autodjrefs)
+    // SELECT *
+    // FROM (
+    //     SELECT :track_id AS new_track_id, craterefs, timesplayed, COUNT (*) AS newautodjrefs
+    //     FROM PlaylistTracks, temp_autodj_crates
+    //     WHERE PlaylistTracks.playlist_id IN (
+    //         SELECT id
+    //         FROM Playlists
+    //         WHERE hidden = 1)
+    //     AND PlaylistTracks.track_id = :track_id
+    //     AND temp_autodj_crates.track_id = :track_id
+    //     GROUP BY new_track_id)
+    // WHERE newautodjrefs > 0;
     QString strHidden;
     strHidden.setNum(PlaylistDAO::PLHT_AUTO_DJ);
     oQuery.prepare(QString("INSERT OR REPLACE INTO " AUTODJCRATES_TABLE " ("
@@ -358,7 +416,17 @@ bool AutoDJCratesDAO::updateLastPlayedDateTime() {
     QSqlQuery oQuery(m_database);
 
     // Rebuild the auto-DJ-playlist last-played date/time.
-    // INSERT OR REPLACE INTO temp_autodj_crates (track_id, craterefs, timesplayed, autodjrefs, lastplayed) SELECT * FROM (SELECT PlaylistTracks.track_id, craterefs, timesplayed, autodjrefs, MAX(pl_datetime_added) AS newlastplayed FROM PlaylistTracks, temp_autodj_crates WHERE PlaylistTracks.playlist_id IN (SELECT id FROM Playlists WHERE hidden = 2) AND PlaylistTracks.track_id = temp_autodj_crates.track_id GROUP BY PlaylistTracks.track_id) WHERE newlastplayed != "";
+    // INSERT OR REPLACE INTO temp_autodj_crates (
+    //     track_id, craterefs, timesplayed, autodjrefs, lastplayed)
+    // SELECT *
+    // FROM (
+    //     SELECT PlaylistTracks.track_id, craterefs, timesplayed, autodjrefs, MAX(pl_datetime_added) AS newlastplayed
+    //     FROM PlaylistTracks, temp_autodj_crates
+    //     WHERE PlaylistTracks.playlist_id IN (
+    //         SELECT id FROM Playlists WHERE hidden = PLHT_SET_LOG)
+    //     AND PlaylistTracks.track_id = temp_autodj_crates.track_id
+    //     GROUP BY PlaylistTracks.track_id)
+    // WHERE newlastplayed != "";
     QString strSetLog;
     strSetLog.setNum(PlaylistDAO::PLHT_SET_LOG);
     QString strQuery(QString ("INSERT OR REPLACE INTO " AUTODJCRATES_TABLE
@@ -395,7 +463,18 @@ bool AutoDJCratesDAO::updateLastPlayedDateTimeForTrack(TrackId trackId) {
     QSqlQuery oQuery(m_database);
 
     // Update the last-played date/time for this track.
-    // INSERT OR REPLACE INTO temp_autodj_crates (track_id, craterefs, timesplayed, autodjrefs, lastplayed) SELECT * FROM (SELECT PlaylistTracks.track_id, craterefs, timesplayed, autodjrefs, MAX(pl_datetime_added) AS newlastplayed FROM PlaylistTracks, temp_autodj_crates WHERE PlaylistTracks.playlist_id IN (SELECT id FROM Playlists WHERE hidden = 2) AND PlaylistTracks.track_id = :track_id AND PlaylistTracks.track_id = temp_autodj_crates.track_id GROUP BY PlaylistTracks.track_id) WHERE newlastplayed != "";
+    // INSERT OR REPLACE INTO temp_autodj_crates (
+    //     track_id, craterefs, timesplayed, autodjrefs, lastplayed)
+    // SELECT *
+    // FROM (
+    //     SELECT PlaylistTracks.track_id, craterefs, timesplayed, autodjrefs, MAX(pl_datetime_added) AS newlastplayed
+    //     FROM PlaylistTracks, temp_autodj_crates
+    //     WHERE PlaylistTracks.playlist_id IN (
+    //         SELECT id FROM Playlists WHERE hidden = PLHT_SET_LOG)
+    //     AND PlaylistTracks.track_id = :track_id
+    //     AND PlaylistTracks.track_id = temp_autodj_crates.track_id
+    //     GROUP BY PlaylistTracks.track_id)
+    // WHERE newlastplayed != "";
     QString strSetLog;
     strSetLog.setNum(PlaylistDAO::PLHT_SET_LOG);
     oQuery.prepare(QString ("INSERT OR REPLACE INTO " AUTODJCRATES_TABLE
@@ -432,7 +511,7 @@ bool AutoDJCratesDAO::updateLastPlayedDateTimeForTrack(TrackId trackId) {
 // Returns an invalid track id if there was an error.
 TrackId AutoDJCratesDAO::getRandomTrackId() {
     // If necessary, create the temporary auto-DJ-crates database.
-    createAutoDjCratesDatabase();
+    createAndConnectAutoDjCratesDatabase();
 
     // Calculate the number of active-tracks that have never been played, and
     // the total number of active-tracks.
@@ -541,7 +620,10 @@ void AutoDJCratesDAO::slotTrackDirty(TrackId trackId) {
     }
 
     // Update our record of how many times this track has been played.
-    // UPDATE temp_autodj_crates SET timesplayed = :newplayed WHERE track_id = :track_id AND timesplayed = :oldplayed;
+    // UPDATE temp_autodj_crates
+    // SET timesplayed = :newplayed
+    // WHERE track_id = :track_id
+    // AND timesplayed = :oldplayed;
     QSqlQuery oQuery(m_database);
     oQuery.prepare("UPDATE " AUTODJCRATES_TABLE " SET "
             AUTODJCRATESTABLE_TIMESPLAYED " = :newplayed WHERE "
@@ -591,7 +673,12 @@ void AutoDJCratesDAO::updateAutoDjCrate(CrateId crateId) {
     // Add a crate-reference to every track in this crate, if that track is
     // already in the auto-DJ-crates table.
     QSqlQuery oQuery(m_database);
-    // UPDATE temp_autodj_crates SET craterefs = craterefs + 1 WHERE track_id IN (SELECT temp_autodj_crates.track_id FROM crate_tracks, temp_autodj_crates WHERE crate_tracks.crate_id = :crate_id AND crate_tracks.track_id = temp_autodj_crates.track_id);
+    // UPDATE temp_autodj_crates SET craterefs = craterefs + 1
+    // WHERE track_id IN (
+    //     SELECT temp_autodj_crates.track_id
+    //     FROM crate_tracks, temp_autodj_crates
+    //     WHERE crate_tracks.crate_id = :crate_id
+    //     AND crate_tracks.track_id = temp_autodj_crates.track_id);
     oQuery.prepare(QString ("UPDATE " AUTODJCRATES_TABLE " SET "
             AUTODJCRATESTABLE_CRATEREFS " = " AUTODJCRATESTABLE_CRATEREFS
             " + 1 WHERE " AUTODJCRATESTABLE_TRACKID " IN (SELECT "
@@ -614,7 +701,16 @@ void AutoDJCratesDAO::updateAutoDjCrate(CrateId crateId) {
     // set yet; it defaults to zero.
     // If no records were modified by this query, then there's no reason to
     // update the number of auto-DJ-playlist references to each track.
-    // INSERT INTO temp_autodj_crates (track_id, craterefs, timesplayed, autodjrefs) SELECT crate_tracks.track_id, 1, library.timesplayed, 0 FROM crate_tracks, library WHERE crate_tracks.crate_id = :crate_id AND crate_tracks.track_id NOT IN (SELECT track_id FROM temp_autodj_crates) AND crate_tracks.track_id = library.id AND library.mixxx_deleted = 0;
+
+    // INSERT INTO temp_autodj_crates (
+    //     track_id, craterefs, timesplayed, autodjrefs)
+    // SELECT crate_tracks.track_id, 1, library.timesplayed, 0
+    // FROM crate_tracks, library
+    // WHERE crate_tracks.crate_id = :crate_id
+    // AND crate_tracks.track_id NOT IN (
+    //     SELECT track_id FROM temp_autodj_crates)
+    // AND crate_tracks.track_id = library.id
+    // AND library.mixxx_deleted = 0;
     oQuery.prepare(QString("INSERT INTO " AUTODJCRATES_TABLE " ("
             AUTODJCRATESTABLE_TRACKID ", " AUTODJCRATESTABLE_CRATEREFS ", "
             AUTODJCRATESTABLE_TIMESPLAYED ", " AUTODJCRATESTABLE_AUTODJREFS
@@ -665,7 +761,11 @@ void AutoDJCratesDAO::deleteAutoDjCrate(CrateId crateId) {
 
     // Remove a crate-reference from every track in this crate.
     QSqlQuery oQuery(m_database);
-    // UPDATE temp_autodj_crates SET craterefs = craterefs - 1 WHERE track_id IN (SELECT track_id FROM crate_tracks WHERE crate_tracks.crate_id = :crate_id);
+    // UPDATE temp_autodj_crates SET craterefs = craterefs - 1
+    // WHERE track_id IN (
+    //     SELECT track_id
+    //     FROM crate_tracks
+    //     WHERE crate_tracks.crate_id = :crate_id);
     oQuery.prepare(QString("UPDATE " AUTODJCRATES_TABLE " SET "
             AUTODJCRATESTABLE_CRATEREFS " = " AUTODJCRATESTABLE_CRATEREFS
             " - 1 WHERE " AUTODJCRATESTABLE_TRACKID " IN (SELECT %1 FROM "
@@ -691,10 +791,13 @@ void AutoDJCratesDAO::deleteAutoDjCrate(CrateId crateId) {
     oTransaction.commit();
 }
 
-void AutoDJCratesDAO::slotCrateTracksChanged(CrateId crateId, const QList<TrackId>& addedTrackIds, const QList<TrackId>& removedTrackIds) {
+void AutoDJCratesDAO::slotCrateTracksChanged(
+        CrateId crateId, const QList<TrackId>& addedTrackIds,
+        const QList<TrackId>& removedTrackIds) {
     // Skip this if it's not an auto-DJ crate.
     Crate crate;
-    if (!m_pTrackCollection->crates().readCrateById(crateId, &crate) || !crate.isAutoDjSource()) {
+    if (!m_pTrackCollection->crates().readCrateById(crateId, &crate)
+            || !crate.isAutoDjSource()) {
         return;
     }
 
@@ -807,7 +910,8 @@ void AutoDJCratesDAO::slotPlaylistTrackAdded(int playlistId, TrackId trackId,
     // Deal with changes to the auto-DJ playlist.
     if (playlistId == m_iAutoDjPlaylistId) {
         QSqlQuery oQuery(m_database);
-        // UPDATE temp_autodj_crates SET autodjrefs = autodjrefs + 1 WHERE track_id = :track_id;
+        // UPDATE temp_autodj_crates SET autodjrefs = autodjrefs + 1
+        // WHERE track_id = :track_id;
         oQuery.prepare("UPDATE " AUTODJCRATES_TABLE " SET "
             AUTODJCRATESTABLE_AUTODJREFS " = " AUTODJCRATESTABLE_AUTODJREFS
             " + 1 WHERE " AUTODJCRATESTABLE_TRACKID " = :track_id");
@@ -866,7 +970,8 @@ void AutoDJCratesDAO::slotPlayerInfoTrackLoaded(QString a_strGroup,
         if (a_strGroup == PlayerManager::groupForDeck(i)) {
             // Update the number of auto-DJ-playlist references to this track.
             QSqlQuery oQuery(m_database);
-            // UPDATE temp_autodj_crates SET autodjrefs = autodjrefs + 1 WHERE track_id = :track_id;
+            // UPDATE temp_autodj_crates SET autodjrefs = autodjrefs + 1
+            // WHERE track_id = :track_id;
             oQuery.prepare("UPDATE " AUTODJCRATES_TABLE " SET "
                 AUTODJCRATESTABLE_AUTODJREFS " = " AUTODJCRATESTABLE_AUTODJREFS
                 " + 1 WHERE " AUTODJCRATESTABLE_TRACKID " = :track_id");
@@ -891,7 +996,8 @@ void AutoDJCratesDAO::slotPlayerInfoTrackUnloaded(QString group,
         if (group == PlayerManager::groupForDeck(i)) {
             // Get rid of the ID of the track in this deck.
             QSqlQuery oQuery(m_database);
-            // UPDATE temp_autodj_crates SET autodjrefs = autodjrefs - 1 WHERE track_id = :track_id;
+            // UPDATE temp_autodj_crates SET autodjrefs = autodjrefs - 1
+            // WHERE track_id = :track_id;
             oQuery.prepare("UPDATE " AUTODJCRATES_TABLE " SET "
                 AUTODJCRATESTABLE_AUTODJREFS " = " AUTODJCRATESTABLE_AUTODJREFS
                 " - 1 WHERE " AUTODJCRATESTABLE_TRACKID " = :track_id");
@@ -928,13 +1034,13 @@ TrackId AutoDJCratesDAO::getRandomTrackIdFromLibrary(int iPlaylistId) {
     QSqlQuery oQuery(m_database);
     oQuery.prepare(" SELECT COUNT(*)"
                    " FROM library"
-                   " WHERE id NOT IN"
-                   " ( SELECT track_id "
-                   " FROM PlaylistTracks"
-                   " WHERE playlist_id = :id )"
-                   " AND location NOT IN"
-                   " ( SELECT id FROM track_locations"
-                   " WHERE fs_deleted == 1 )"
+                   " WHERE id NOT IN ("
+                   "     SELECT track_id "
+                   "     FROM PlaylistTracks"
+                   "     WHERE playlist_id = :id )"
+                   " AND location NOT IN ("
+                   "     SELECT id FROM track_locations"
+                   "     WHERE fs_deleted == 1 )"
                    " AND mixxx_deleted != 1" );
     oQuery.bindValue(":id",iPlaylistId);
     VERIFY_OR_DEBUG_ASSERT(oQuery.exec()) {
@@ -947,7 +1053,9 @@ TrackId AutoDJCratesDAO::getRandomTrackIdFromLibrary(int iPlaylistId) {
     }
     DEBUG_ASSERT(iTotalTracks >= 0);
     if (iTotalTracks == 0) {
-        qDebug() << "No tracks available in playlist" << iPlaylistId << "for Auto DJ";
+        qDebug() << "No tracks available not already in" <<
+                (m_iAutoDjPlaylistId == iPlaylistId ? "Auto DJ queue" :
+                QString("Playlist %1").arg(iPlaylistId));
         return TrackId();
     }
 

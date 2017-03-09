@@ -215,8 +215,7 @@ void AutoDJFeature::slotAddRandomTrack() {
     if (m_iAutoDJPlaylistId >= 0) {
         TrackPointer pRandomTrack;
         for (int failedRetrieveAttempts = 0;
-                !pRandomTrack &&
-                (failedRetrieveAttempts < 2 * kMaxRetrieveAttempts); // 2 rounds
+                !pRandomTrack && (failedRetrieveAttempts < 2 * kMaxRetrieveAttempts); // 2 rounds
                 ++failedRetrieveAttempts) {
             TrackId randomTrackId;
             if (failedRetrieveAttempts < kMaxRetrieveAttempts) {
