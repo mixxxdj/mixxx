@@ -13,9 +13,6 @@ var iCutEnabled = true;
 //activate PFL of deck on track load
 var smartPFL = true;
 
-// use beatlooproll instead of beatloop
-var beatlooprollActivate = false;
-
 //Disable Play on Sync button Double Press
 var noPlayOnSyncDoublePress = false;
 
@@ -1660,29 +1657,12 @@ NumarkMixtrack3.OnSamplePlayStop = function(value, group, control) {
 NumarkMixtrack3.PADLoopButton = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
     var padindex = control - leds.padLoop1 + 1;
-    var trueFalse;
     var loopsizeNew;
 
     if (deck.shiftKey) {
         loopsizeNew = loopsize[padindex + 3];
     } else {
         loopsizeNew = loopsize[padindex - 1];
-    }
-
-    var loopCommand1; //verify if loop is active
-    var loopCommand2; //enable loop
-    var loopCommand3; //stop loop
-
-    if (beatlooprollActivate) {
-        loopCommand1 = "beatlooproll_" + loopsizeNew + "_activate";
-        loopCommand2 = "beatlooproll_" + loopsizeNew + "_activate";
-        loopCommand3 = "beatlooproll_" + loopsizeNew + "_activate";
-        trueFalse = false;
-    } else {
-        loopCommand1 = "beatloop_" + loopsizeNew + "_enabled";
-        loopCommand2 = "beatloop_" + loopsizeNew + "_toggle";
-        loopCommand3 = "reloop_exit";
-        trueFalse = true;
     }
 
     if (value === DOWN && deck.duration !== 0) {
@@ -1692,15 +1672,14 @@ NumarkMixtrack3.PADLoopButton = function(channel, control, value, status, group)
         deck.LEDs.padLoop3.onOff(PADcolors.yellow);
         deck.LEDs.padLoop4.onOff(PADcolors.yellow);
 
-        if (engine.getValue(group, loopCommand1)) {
+        if (engine.getValue(group, 'beatloop_' + loopsizeNew + '_enabled')) {
             // Loop is active, turn it off
-            engine.setValue(deck.group, loopCommand3, trueFalse);
+            engine.setValue(deck.group, 'reloop_exit', true);
             deck.LEDs["padLoop" + padindex].onOff(PADcolors.yellow);
-
         } else {
             // Loop is not active, turn it on
             deck.LEDs["padLoop" + padindex].flashOn(250, PADcolors.yellow, 250);
-            engine.setValue(deck.group, loopCommand2, true);
+            engine.setValue(deck.group, 'beatloop_' + loopsizeNew + '_toggle', true);
         }
 
         // Event if long press
@@ -1724,11 +1703,7 @@ NumarkMixtrack3.onPADLoopButtonHold = function(channel, control, value, status, 
     }
     
     if (eventkind === LONG_PRESS) {
-        if (beatlooprollActivate) {
-            engine.setValue(deck.group, "reloop_exit", true);
-        } else {
-            engine.setValue(deck.group, "beatlooproll_" + loopsizeNew + "_activate", false);
-        }
+        engine.setValue(deck.group, 'reloop_exit', true);
     }
 };
 
