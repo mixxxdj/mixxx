@@ -186,6 +186,12 @@ LoopingControl::LoopingControl(QString group,
     m_pCOLoopMoveBackward = new ControlPushButton(ConfigKey(group, "loop_move_backward"));
     connect(m_pCOLoopMoveBackward, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoopMoveBackward(double)));
+    m_pCOLoopMoveForwardBeatloopSize = new ControlPushButton(ConfigKey(group, "loop_move_forward_beatloop_size"));
+    connect(m_pCOLoopMoveForwardBeatloopSize, SIGNAL(valueChanged(double)),
+            this, SLOT(slotLoopMoveForwardBeatloopSize(double)));
+    m_pCOLoopMoveBackwardBeatloopSize = new ControlPushButton(ConfigKey(group, "loop_move_backward_beatloop_size"));
+    connect(m_pCOLoopMoveBackwardBeatloopSize, SIGNAL(valueChanged(double)),
+            this, SLOT(slotLoopMoveBackwardBeatloopSize(double)));
 
     // Create loop_move_(SIZE) CO's which all call loop_move, but with a set
     // value.
@@ -1077,6 +1083,18 @@ void LoopingControl::slotLoopMoveBackward(double pressed) {
         } else {
             slotLoopMove(-beatloop_size);
         }
+    }
+}
+
+void LoopingControl::slotLoopMoveForwardBeatloopSize(double pressed) {
+    if (pressed > 0.0) {
+        slotLoopMove(m_pCOBeatLoopSize->get());
+    }
+}
+
+void LoopingControl::slotLoopMoveBackwardBeatloopSize(double pressed) {
+    if (pressed > 0.0) {
+        slotLoopMove(-m_pCOBeatLoopSize->get());
     }
 }
 
