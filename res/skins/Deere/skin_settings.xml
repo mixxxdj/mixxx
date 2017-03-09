@@ -346,7 +346,7 @@
       <!-- Effects Settings -->
       <Label>
         <ObjectName>h2</ObjectName>
-        <Text>Effect Rack</Text>
+        <Text>Effects</Text>
       </Label>
 
       <WidgetGroup>
@@ -395,7 +395,7 @@
       <!-- Microphone Settings -->
       <Label>
         <ObjectName>h2</ObjectName>
-        <Text>Microphone</Text>
+        <Text>Mic &amp; Aux</Text>
       </Label>
 
       <WidgetGroup>
