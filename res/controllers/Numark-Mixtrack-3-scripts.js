@@ -1158,10 +1158,8 @@ NumarkMixtrack3.PlayButton = function(channel, control, value, status, group) {
         if (!deck.shiftKey) {
             // play/pause
             if (!deck.TrackIsLoaded()) {
-                // if a track is not loaded, load the selected track (if any) and play
                 engine.setValue(deck.group, "LoadSelectedTrackAndPlay", true);
             } else {
-                // else play/pause
                 script.toggleControl(deck.group, "play");
             }
         } else {
