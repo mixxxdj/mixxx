@@ -155,25 +155,25 @@ var leds = {
     "hotCue2": 0x1c,
     "hotCue3": 0x1d,
     "hotCue4": 0x1e,
-    "Cue": 0x03,
+    "cue": 0x03,
     "sync": 0x02,
     "play": 0x01,
     "fx1": 0x07,
     "fx2": 0x08,
     "fx3": 0x09,
     "tap": 0x0a,
-    "PADloop1": 0x17,
-    "PADloop2": 0x18,
-    "PADloop3": 0x19,
-    "PADloop4": 0x1A,
-    "PADsampler1": 0x20,
-    "PADsampler2": 0x21,
-    "PADsampler3": 0x22,
-    "PADsampler4": 0x23,
-    "PADsampler5": 0x20,
-    "PADsampler6": 0x21,
-    "PADsampler7": 0x22,
-    "PADsampler8": 0x23,
+    "padLoop1": 0x17,
+    "padLoop2": 0x18,
+    "padLoop3": 0x19,
+    "padLoop4": 0x1A,
+    "padSampler1": 0x20,
+    "padSampler2": 0x21,
+    "padSampler3": 0x22,
+    "padSampler4": 0x23,
+    "padSampler5": 0x20,
+    "padSampler6": 0x21,
+    "padSampler7": 0x22,
+    "padSampler8": 0x23,
 
     // Meters: first byte 0xb0 ( = 0x90+ledcatecories.meters )
     "meter1": 0x02,
@@ -816,8 +816,8 @@ NumarkMixtrack3.initLEDsObjects = function() {
 
     // sampler LEDs, first 4 are 0x91, next 4 are 0x92
     for (var i = 1; i <= 8; i++) {
-        NumarkMixtrack3.samplers["S" + i].LEDs["PADsampler" + i] = new LED(
-            0x91 + Math.round(i / 9), leds["PADsampler" + i]
+        NumarkMixtrack3.samplers["S" + i].LEDs["padSampler" + i] = new LED(
+            0x91 + Math.round(i / 9), leds["padSampler" + i]
         );
     }
 
@@ -843,10 +843,10 @@ NumarkMixtrack3.initLEDsObjects = function() {
         decks["D" + i].LEDs.fx2 = new LED(0x90 + j, leds.fx2);
         decks["D" + i].LEDs.fx3 = new LED(0x90 + j, leds.fx3);
         decks["D" + i].LEDs.tap = new LED(0x90 + j, leds.tap);
-        decks["D" + i].LEDs.PADloop1 = new LED(0x90 + j, leds.PADloop1);
-        decks["D" + i].LEDs.PADloop2 = new LED(0x90 + j, leds.PADloop2);
-        decks["D" + i].LEDs.PADloop3 = new LED(0x90 + j, leds.PADloop3);
-        decks["D" + i].LEDs.PADloop4 = new LED(0x90 + j, leds.PADloop4);
+        decks["D" + i].LEDs.padLoop1 = new LED(0x90 + j, leds.padLoop1);
+        decks["D" + i].LEDs.padLoop2 = new LED(0x90 + j, leds.padLoop2);
+        decks["D" + i].LEDs.padLoop3 = new LED(0x90 + j, leds.padLoop3);
+        decks["D" + i].LEDs.padLoop4 = new LED(0x90 + j, leds.padLoop4);
         decks["D" + i].LEDs.meter = new LED(0x90 + ledCategories.meters, leds.meter1 - 1 + j);
     }
 };
@@ -940,7 +940,7 @@ NumarkMixtrack3.init = function(id, debug) {
 
     // Initialise some others (PAD LEDs)
     for (var i = 1; i <= 8; i++) {
-        NumarkMixtrack3.samplers["S" + i].LEDs["PADsampler" + i].onOff(PADcolors.black);
+        NumarkMixtrack3.samplers["S" + i].LEDs["padSampler" + i].onOff(PADcolors.black);
     }
 
     for (var i = 1; i <= 4; i++) {
@@ -951,7 +951,7 @@ NumarkMixtrack3.init = function(id, debug) {
         }
 
         for (var j = 1; j <= 4; j++) {
-            NumarkMixtrack3.decks["D" + i].LEDs["PADloop" + j].onOff(PADcolors.black);
+            NumarkMixtrack3.decks["D" + i].LEDs["padLoop" + j].onOff(PADcolors.black);
         }
         print("   LEDs state set for deck " + "D" + i);
     }
@@ -1042,7 +1042,7 @@ NumarkMixtrack3.connectDeckControls = function(group, remove) {
         }
 
         for (var i = 1; i <= 4; i++) {
-            onDeck.LEDs["PADloop" + i].onOff(PADcolors.yellow);
+            onDeck.LEDs["padLoop" + i].onOff(PADcolors.yellow);
         }
     } 
 
@@ -1265,13 +1265,13 @@ NumarkMixtrack3.PadModeButton = function(channel, control, value, status, group)
         deck.PADMode = true;
         //ensure all LEDs are ON (default)
         for (var i = 1; i <= 8; i++) {
-            NumarkMixtrack3.samplers["S" + i].LEDs["PADsampler" + i].onOff(PADcolors.purple);
+            NumarkMixtrack3.samplers["S" + i].LEDs["padSampler" + i].onOff(PADcolors.purple);
         }
 
-        deck.LEDs["PADloop1"].onOff(PADcolors.yellow);
-        deck.LEDs["PADloop2"].onOff(PADcolors.yellow);
-        deck.LEDs["PADloop3"].onOff(PADcolors.yellow);
-        deck.LEDs["PADloop4"].onOff(PADcolors.yellow);
+        deck.LEDs["padLoop1"].onOff(PADcolors.yellow);
+        deck.LEDs["padLoop2"].onOff(PADcolors.yellow);
+        deck.LEDs["padLoop3"].onOff(PADcolors.yellow);
+        deck.LEDs["padLoop4"].onOff(PADcolors.yellow);
     }
 
     // Now check which one should be blinking
@@ -1285,7 +1285,7 @@ NumarkMixtrack3.PadModeButton = function(channel, control, value, status, group)
             }
 
             if (engine.getValue(deck.group, "beatloop_" + loopsize[i] + "_enabled")) {
-                deck.LEDs["PADloop" + index].flashOn(300, PADcolors.yellow, 300);
+                deck.LEDs["padLoop" + index].flashOn(300, PADcolors.yellow, 300);
             }
         }
 
@@ -1620,11 +1620,11 @@ NumarkMixtrack3.SamplerButton = function(channel, control, value, status, group)
                 engine.setValue(group, "beatsync", 1);
             }
 
-            sampler.LEDs["PADsampler" + padIndex].flashOn(300, PADcolors.purple, 300);
+            sampler.LEDs["padSampler" + padIndex].flashOn(300, PADcolors.purple, 300);
         } else {
             if (deck.shiftKey) {
                 engine.setValue(group, "stop", 1);
-                sampler.LEDs["PADsampler" + padIndex].onOff(ON);
+                sampler.LEDs["padSampler" + padIndex].onOff(ON);
             } else {
                 engine.setValue(group, "cue_gotoandplay", 1);
             }
@@ -1644,7 +1644,7 @@ NumarkMixtrack3.onPADSampleButtonHold = function(channel, control, value, status
     // pad button is lifted, the Sampler stops
     if (eventkind === LONG_PRESS) {
         engine.setValue(group, "stop", 1);
-        sampler.LEDs["PADsampler" + padIndex].onOff(ON);
+        sampler.LEDs["padSampler" + padIndex].onOff(ON);
     }
 };
 
@@ -1653,15 +1653,15 @@ NumarkMixtrack3.OnSamplePlayStop = function(value, group, control) {
     var sampler = NumarkMixtrack3.samplers["S" + padIndex];
 
     if (value === 1) {
-        sampler.LEDs["PADsampler" + padIndex].flashOn(300, PADcolors.purple, 300);
+        sampler.LEDs["padSampler" + padIndex].flashOn(300, PADcolors.purple, 300);
     } else {
-        sampler.LEDs["PADsampler" + padIndex].onOff(ON);
+        sampler.LEDs["padSampler" + padIndex].onOff(ON);
     }
 };
 
 NumarkMixtrack3.PADLoopButton = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
-    var padindex = control - leds.PADloop1 + 1;
+    var padindex = control - leds.padLoop1 + 1;
     var trueFalse;
     var loopsizeNew;
 
@@ -1689,19 +1689,19 @@ NumarkMixtrack3.PADLoopButton = function(channel, control, value, status, group)
 
     if (value === DOWN && deck.duration !== 0) {
         // make sure all LED are ON
-        deck.LEDs["PADloop1"].onOff(PADcolors.yellow);
-        deck.LEDs["PADloop2"].onOff(PADcolors.yellow);
-        deck.LEDs["PADloop3"].onOff(PADcolors.yellow);
-        deck.LEDs["PADloop4"].onOff(PADcolors.yellow);
+        deck.LEDs.padLoop1.onOff(PADcolors.yellow);
+        deck.LEDs.padLoop2.onOff(PADcolors.yellow);
+        deck.LEDs.padLoop3.onOff(PADcolors.yellow);
+        deck.LEDs.padLoop4.onOff(PADcolors.yellow);
 
         if (engine.getValue(group, loopCommand1)) {
             // Loop is active, turn it off
             engine.setValue(deck.group, loopCommand3, trueFalse);
-            deck.LEDs["PADloop" + padindex].onOff(PADcolors.yellow);
+            deck.LEDs["padLoop" + padindex].onOff(PADcolors.yellow);
 
         } else {
             // Loop is not active, turn it on
-            deck.LEDs["PADloop" + padindex].flashOn(250, PADcolors.yellow, 250);
+            deck.LEDs["padLoop" + padindex].flashOn(250, PADcolors.yellow, 250);
             engine.setValue(deck.group, loopCommand2, true);
         }
 
@@ -1716,7 +1716,7 @@ NumarkMixtrack3.PADLoopButton = function(channel, control, value, status, group)
 
 NumarkMixtrack3.onPADLoopButtonHold = function(channel, control, value, status, group, eventkind) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
-    var padindex = control - leds.PADloop1 + 1;
+    var padindex = control - leds.padLoop1 + 1;
     var loopsizeNew;
 
     if (deck.shiftKey) {
@@ -1739,9 +1739,9 @@ NumarkMixtrack3.OnPADLoopButtonChange = function(value, group, control) {
     var padindex = NumarkMixtrack3.Autoloop[control];
 
     if (value === 1) {
-        deck.LEDs["PADloop" + padindex].flashOn(300, PADcolors.yellow, 300);
+        deck.LEDs["padLoop" + padindex].flashOn(300, PADcolors.yellow, 300);
     } else {
-        deck.LEDs["PADloop" + padindex].onOff(PADcolors.yellow);
+        deck.LEDs["padLoop" + padindex].onOff(PADcolors.yellow);
     }
     
     // on initialization of deck, the value "0" would cause the pad LED to stop blinking on the 2nd pass
@@ -1756,7 +1756,7 @@ NumarkMixtrack3.OnPADLoopButtonChange = function(value, group, control) {
         var test = engine.getValue(deck.group, "beatloop_" + loopsize[i] + "_enabled");
 
         if (test) {
-            deck.LEDs["PADloop" + index].flashOn(300, PADcolors.yellow, 300);
+            deck.LEDs["padLoop" + index].flashOn(300, PADcolors.yellow, 300);
         }
     }
 };
