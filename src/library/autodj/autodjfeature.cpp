@@ -218,13 +218,17 @@ void AutoDJFeature::slotAddRandomTrack() {
                 !pRandomTrack && (failedRetrieveAttempts < 2 * kMaxRetrieveAttempts); // 2 rounds
                 ++failedRetrieveAttempts) {
             TrackId randomTrackId;
-            if (failedRetrieveAttempts < kMaxRetrieveAttempts) {
-                // 1st round: from crates
-                randomTrackId = m_autoDjCratesDao.getRandomTrackId();
+            if (m_crateList.isEmpty()) {
+                // Fetch Track from Library since we have no assigned crates
+                randomTrackId = m_autoDjCratesDao.getRandomTrackIdFromLibrary(
+                        m_iAutoDJPlaylistId);
             } else {
-                // 2nd round: from whole library
-                randomTrackId = m_autoDjCratesDao.getRandomTrackIdFromLibrary(m_iAutoDJPlaylistId);
+                // Fetch track from crates.
+                // We do not fall back to Library if this fails because this
+                // may add banned tracks
+                randomTrackId = m_autoDjCratesDao.getRandomTrackId();
             }
+
             if (randomTrackId.isValid()) {
                 pRandomTrack = m_pTrackCollection->getTrackDAO().getTrack(randomTrackId);
                 VERIFY_OR_DEBUG_ASSERT(pRandomTrack) {
