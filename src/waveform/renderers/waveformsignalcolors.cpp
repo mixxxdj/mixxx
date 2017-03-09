@@ -64,7 +64,7 @@ bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& contex
 
     m_bgColor = context.selectColor(node, "BgColor");
     if (!m_bgColor.isValid()) {
-        m_bgColor = QColor(0, 0, 0);
+        m_bgColor = Qt::transparent;
     }
     m_bgColor = WSkinColor::getCorrectColor(m_bgColor).toRgb();
 
