@@ -20,7 +20,7 @@
             <Children>
 
               <Template src="skin:deck_overview_left.xml">
-              <!-- <SetVariable name="SignalBgColor"><Variable name="SignalBgColor"/></SetVariable> -->
+                <SetVariable name="SignalBgColor"><Variable name="SignalBgColor"/></SetVariable>
                 <SetVariable name="SignalColor"><Variable name="SignalColor"/></SetVariable>
               </Template>
 

@@ -85,8 +85,7 @@
             <Style></Style>
             <Channel><Variable name="channum"/></Channel>
             <Size>1me,50f</Size>
-            <!-- doesn't work, have to use qss
-            <BgColor><Variable name="BgColor"/></BgColor>	-->
+            <BgColor><Variable name="SignalBgColor"/></BgColor>
             <SignalColor><Variable name="SignalColor"/></SignalColor>
             <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
             <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>

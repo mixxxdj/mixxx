@@ -14,8 +14,7 @@
             <TooltipId>waveform_overview</TooltipId>
             <Channel><Variable name="channum"/></Channel>
             <Size>1me,50f</Size>
-            <!-- doesn't work, use qss
-            <BgColor><Variable name="SignalBgColor"/></BgColor>	-->
+            <BgColor><Variable name="SignalBgColor"/></BgColor>
             <SignalColor><Variable name="SignalColor"/></SignalColor>
             <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
             <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
