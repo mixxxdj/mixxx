@@ -1913,7 +1913,7 @@ NumarkMixtrack3.PitchBendPlusButton = function(channel, control, value, status, 
 NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
     // beat knobs sends 1 or 127 as value. If value = 127, turn is counterclockwise
-    var increase = (value !== 127);
+    var increase = (value === 127);
 
 
     // direct interaction with knob, without any button combination
@@ -2132,14 +2132,14 @@ NumarkMixtrack3.OnPlaypositionChange = function(value, group, control) {
     var duration = engine.getValue(group, "duration");
 
     if (deck.loaded && TrackEndWarning) {
-        var timeremaining = duration * (1 - value);
+        var timeRemaining = duration * (1 - value);
 
-        if (timeremaining <= 30) {
+        if (timeRemaining <= 30) {
             // flashing slowly
             if (deck.LEDs.jogWheelsInScratchMode.getFlashDuration() !== 1000) {
                 deck.LEDs.jogWheelsInScratchMode.flashOn(1000, ON, 1000);
             }
-        } else if (timeremaining <= 10) {
+        } else if (timeRemaining <= 10) {
             // flashing fast
             if (deck.LEDs.jogWheelsInScratchMode.getFlashDuration() !== 300) {
                 deck.LEDs.jogWheelsInScratchMode.flashOn(300, ON, 300);
