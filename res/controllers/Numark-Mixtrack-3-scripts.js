@@ -1576,9 +1576,9 @@ NumarkMixtrack3.HotCueButton = function(channel, control, value, status, group) 
 
 NumarkMixtrack3.OnHotcueChange = function(value, group, control) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
-    var padindex = parseInt(NumarkMixtrack3.channelRegEx.exec(control)[1]);
+    var padIndex = parseInt(NumarkMixtrack3.channelRegEx.exec(control)[1]);
 
-    deck.LEDs["hotCue" + padindex].onOff((value) ? ON : OFF);
+    deck.LEDs["hotCue" + padIndex].onOff((value) ? ON : OFF);
 };
 
 NumarkMixtrack3.SamplerButton = function(channel, control, value, status, group) {
@@ -1656,13 +1656,13 @@ NumarkMixtrack3.OnSamplePlayStop = function(value, group, control) {
 
 NumarkMixtrack3.PADLoopButton = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
-    var padindex = control - leds.padLoop1 + 1;
+    var padIndex = control - leds.padLoop1 + 1;
     var loopsizeNew;
 
     if (deck.shiftKey) {
-        loopsizeNew = loopsize[padindex + 3];
+        loopsizeNew = loopsize[padIndex + 3];
     } else {
-        loopsizeNew = loopsize[padindex - 1];
+        loopsizeNew = loopsize[padIndex - 1];
     }
 
     if (value === DOWN && deck.duration !== 0) {
@@ -1675,10 +1675,10 @@ NumarkMixtrack3.PADLoopButton = function(channel, control, value, status, group)
         if (engine.getValue(group, 'beatloop_' + loopsizeNew + '_enabled')) {
             // Loop is active, turn it off
             engine.setValue(deck.group, 'reloop_exit', true);
-            deck.LEDs["padLoop" + padindex].onOff(PADcolors.yellow);
+            deck.LEDs["padLoop" + padIndex].onOff(PADcolors.yellow);
         } else {
             // Loop is not active, turn it on
-            deck.LEDs["padLoop" + padindex].flashOn(250, PADcolors.yellow, 250);
+            deck.LEDs["padLoop" + padIndex].flashOn(250, PADcolors.yellow, 250);
             engine.setValue(deck.group, 'beatloop_' + loopsizeNew + '_toggle', true);
         }
 
@@ -1693,13 +1693,13 @@ NumarkMixtrack3.PADLoopButton = function(channel, control, value, status, group)
 
 NumarkMixtrack3.onPADLoopButtonHold = function(channel, control, value, status, group, eventkind) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
-    var padindex = control - leds.padLoop1 + 1;
+    var padIndex = control - leds.padLoop1 + 1;
     var loopsizeNew;
 
     if (deck.shiftKey) {
-        loopsizeNew = loopsize[padindex + 3];
+        loopsizeNew = loopsize[padIndex + 3];
     } else {
-        loopsizeNew = loopsize[padindex - 1];
+        loopsizeNew = loopsize[padIndex - 1];
     }
     
     if (eventkind === LONG_PRESS) {
@@ -1709,12 +1709,12 @@ NumarkMixtrack3.onPADLoopButtonHold = function(channel, control, value, status, 
 
 NumarkMixtrack3.OnPADLoopButtonChange = function(value, group, control) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
-    var padindex = NumarkMixtrack3.Autoloop[control];
+    var padIndex = NumarkMixtrack3.Autoloop[control];
 
     if (value === 1) {
-        deck.LEDs["padLoop" + padindex].flashOn(300, PADcolors.yellow, 300);
+        deck.LEDs["padLoop" + padIndex].flashOn(300, PADcolors.yellow, 300);
     } else {
-        deck.LEDs["padLoop" + padindex].onOff(PADcolors.yellow);
+        deck.LEDs["padLoop" + padIndex].onOff(PADcolors.yellow);
     }
     
     // on initialization of deck, the value "0" would cause the pad LED to stop blinking on the 2nd pass
