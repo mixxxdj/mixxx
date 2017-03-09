@@ -55,16 +55,31 @@
         <ObjectName>OptionGrid</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,me</SizePolicy>
-        <MinimumSize>30,40</MinimumSize>
-        <MaximumSize>60,60</MaximumSize>
+        <MinimumSize>60,40</MinimumSize>
+        <MaximumSize>90,60</MaximumSize>
         <Children>
           <WidgetGroup>
             <ObjectName>OptionGridRow1</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>p,me</SizePolicy>
-            <MinimumSize>30,20</MinimumSize>
-            <MaximumSize>60,30</MaximumSize>
+            <MinimumSize>60,20</MinimumSize>
+            <MaximumSize>90,30</MaximumSize>
             <Children>
+
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="TooltipId">slip_mode</SetVariable>
+                <SetVariable name="ObjectName">SlipModeButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_slip_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_slip_48px.svg</SetVariable>
+                <SetVariable name="state_1_text"></SetVariable>
+                <SetVariable name="state_1_pressed">icon/ic_slip_48px.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">icon/ic_slip_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,slip_enabled</SetVariable>
+              </Template>
 
               <Template src="skin:left_2state_button.xml">
                 <SetVariable name="TooltipId">repeat</SetVariable>
@@ -82,18 +97,18 @@
               </Template>
 
               <Template src="skin:left_2state_button.xml">
-                <SetVariable name="TooltipId">slip_mode</SetVariable>
-                <SetVariable name="ObjectName">SlipModeButton</SetVariable>
+                <SetVariable name="TooltipId">eject</SetVariable>
+                <SetVariable name="ObjectName">EjectButton</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
                 <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
                 <SetVariable name="state_0_text"></SetVariable>
-                <SetVariable name="state_0_pressed">icon/ic_slip_48px.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">icon/ic_slip_48px.svg</SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_eject_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_eject_48px.svg</SetVariable>
                 <SetVariable name="state_1_text"></SetVariable>
-                <SetVariable name="state_1_pressed">icon/ic_slip_48px.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">icon/ic_slip_48px.svg</SetVariable>
-                <SetVariable name="left_connection_control"><Variable name="group"/>,slip_enabled</SetVariable>
+                <SetVariable name="state_1_pressed">icon/ic_eject_48px.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">icon/ic_eject_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,eject</SetVariable>
               </Template>
 
             </Children>
@@ -103,9 +118,22 @@
             <ObjectName>OptionGridRow2</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>p,me</SizePolicy>
-            <MinimumSize>30,20</MinimumSize>
-            <MaximumSize>60,30</MaximumSize>
+            <MinimumSize>60,20</MinimumSize>
+            <MaximumSize>90,30</MaximumSize>
             <Children>
+              <Template src="skin:left_right_1state_button.xml">
+                <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
+                <SetVariable name="ObjectName">BeatsTranslateCurposButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_beats_translate_curpos_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_beats_translate_curpos_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_curpos</SetVariable>
+                <SetVariable name="right_connection_control"><Variable name="group"/>,beats_translate_match_alignment</SetVariable>
+              </Template>
+
               <Template src="skin:left_2state_button.xml">
                 <SetVariable name="TooltipId">quantize</SetVariable>
                 <SetVariable name="ObjectName">QuantizeButton</SetVariable>
