@@ -50,6 +50,7 @@ var loopsize = [2, 4, 8, 16, 0.125, 0.25, 0.5, 1];
 /************************  GPL v2 licence  *****************************
  * Numark Mixtrack Pro 3 controller script
  * Author: Stéphane Morin
+ * Modified by: Radu Suciu
  *
  * Key features
  * ------------
@@ -302,8 +303,6 @@ LED.prototype.onOff = function(value) {
 // valueoff : like "value". That permits for instance with two colors (once red(on), once blue(off), once red(on), etc...)
 
 LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relight, valueoff) {
-    var myself = this;
-
     // stop pending timers
     this.flashOff();
 
@@ -328,7 +327,7 @@ LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relig
 
         // permanent timer
         this.flashTimer = engine.beginTimer(num_ms_on + num_ms_off, function() {
-            myself.flashOnceOn(false);
+            this.flashOnceOn(false);
         });
     }
 
@@ -338,7 +337,7 @@ LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relig
         // temporary timer. The end of this timer stops the permanent flashing
 
         this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, function() {
-            myself.Stopflash(relight);
+            this.Stopflash(relight);
         }, true);
     }
 };
@@ -392,12 +391,11 @@ LED.prototype.Stopflash = function(relight) {
 
 // private : call back function (called in flashon() )
 LED.prototype.flashOnceOn = function(relight) {
-    var myself = this;
     sendShortMsg(this.control, this.midino, this.valueon);
     pauseScript(scriptpause);
     this.flashOnceDuration = this.num_ms_on;
     this.flashOnceTimer = engine.beginTimer(this.num_ms_on - scriptpause, function() {
-        myself.flashOnceOff(relight);
+        this.flashOnceOff(relight);
     }, true);
 };
 
@@ -446,8 +444,6 @@ var SingleDoubleBtn = function(Callback, DoublePressTimeOut) {
 
 // Button pressed
 SingleDoubleBtn.prototype.ButtonDown = function(channel, control, value, status, group) {
-    var myself = this;
-
     this.channel = channel;
     this.control = control;
     this.value = value;
@@ -455,9 +451,7 @@ SingleDoubleBtn.prototype.ButtonDown = function(channel, control, value, status,
     this.group = group;
 
     if (this.ButtonTimer === 0) { // first press
-        this.ButtonTimer = engine.beginTimer(this.DoublePressTimeOut, function() {
-            myself.ButtonDecide();
-        }, true);
+        this.ButtonTimer = engine.beginTimer(this.DoublePressTimeOut, this.ButtonDecide, true);
         this.ButtonCount = 1;
     } else { // 2nd press (before timer's out)
         engine.stopTimer(this.ButtonTimer);
@@ -515,16 +509,13 @@ LongShortBtn.prototype.ButtonAssertLongPress = function() {
 };
 
 LongShortBtn.prototype.ButtonDown = function(channel, control, value, status, group) {
-    var myself = this;
     this.channel = channel;
     this.control = control;
     this.value = value;
     this.status = status;
     this.group = group;
     this.ButtonLongPress = false;
-    this.ButtonLongPressTimer = engine.beginTimer(this.LongPressThreshold, function() {
-        myself.ButtonAssertLongPress();
-    }, true);
+    this.ButtonLongPressTimer = engine.beginTimer(this.LongPressThreshold, this.ButtonAssertLongPress, true);
 };
 
 LongShortBtn.prototype.ButtonUp = function() {
@@ -601,8 +592,6 @@ LongShortDoubleBtn.prototype.ButtonAssert1Press = function() {
 
 // Button pressed (function called by mapper's code)
 LongShortDoubleBtn.prototype.ButtonDown = function(channel, control, value, status, group) {
-    var myself = this;
-
     this.channel = channel;
     this.control = control;
     this.value = value;
@@ -614,12 +603,15 @@ LongShortDoubleBtn.prototype.ButtonDown = function(channel, control, value, stat
         this.ButtonCount = 1;
         // and short press
         this.ButtonLongPress = false;
-        this.ButtonLongPressTimer = engine.beginTimer(this.LongPressThreshold, function() {
-            myself.ButtonAssertLongPress();
-        }, true);
-        this.ButtonTimer = engine.beginTimer(this.DoublePressTimeOut, function() {
-            myself.ButtonAssert1Press();
-        }, true);
+
+        this.ButtonLongPressTimer = engine.beginTimer(
+            this.LongPressThreshold, this.ButtonAssertLongPress, true
+        );
+
+        this.ButtonTimer = engine.beginTimer(
+            this.DoublePressTimeOut, this.ButtonAssert1Press, true
+        );
+
     } else if (this.ButtonCount === 1) { // 2nd press (before short timer's out)
         // stop timers...           
         if (this.ButtonLongPressTimer !== 0) {
