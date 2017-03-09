@@ -1817,7 +1817,6 @@ NumarkMixtrack3.FXButton = function(channel, control, value, status, group) {
     } else if (deck.shiftKey && value === DOWN) {
         // load next effect and make sure the unit is enabled
         engine.setValue(effectGroup, "next_effect", true);
-        engine.setValue("[EffectRack1_EffectUnit" + decknum + "]", "group_[Channel" + decknum + "]_enable", true);
     } else if (deck.TapDown && value === DOWN) {
         if (deck.getFocusedEffect() === effectNum) {
             deck.focusEffect(0);
