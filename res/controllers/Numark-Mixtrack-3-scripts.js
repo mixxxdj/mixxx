@@ -337,7 +337,7 @@ LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relig
         // temporary timer. The end of this timer stops the permanent flashing
 
         this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, function() {
-            this.Stopflash(relight);
+            this.stopflash(relight);
         }, true);
     }
 };
@@ -377,7 +377,7 @@ LED.prototype.flashOff = function(relight) {
 
 // private : relight=true : restore light state before it was flashing
 // this is a call back function (called in flashon() )
-LED.prototype.Stopflash = function(relight) {
+LED.prototype.stopflash = function(relight) {
     // stop permanent timer
     if (this.flashTimer !== 0) {
         engine.stopTimer(this.flashTimer);
@@ -416,7 +416,7 @@ LED.prototype.flashOnceOff = function(relight) {
 
 // ********* special buttons handlers (SHIFT ,LOAD, PFL and SYNC buttons)
 // =======================  SingleDoubleBtn
-// Callback           : Callback function you have to provide (see end of
+// callback           : Callback function you have to provide (see end of
 //                      the code), that will return the original event
 //                      parameters (channel, control, value, status, group)
 //                      and the kind of press event affecting your button
@@ -427,112 +427,112 @@ LED.prototype.flashOnceOff = function(relight) {
 //                      (value = DOWN because you are still holding down
 //                      the button or value=UP because you have realeased
 //                      the button only once before it becomes a long press).
-// DoublePressTimeOut : delay in ms above wich a second press on the
+// doublePressTimeOut : delay in ms above wich a second press on the
 //                      button will not be considered as a potential double
 //                      but as a new press cycle event (default = 400ms).   
-var SingleDoubleBtn = function(Callback, DoublePressTimeOut) {
+var SingleDoubleBtn = function(callback, doublePressTimeOut) {
     this.channel = 0;
     this.control = 0;
     this.value = 0;
     this.status = 0;
     this.group = "";
-    this.Callback = Callback;
-    this.DoublePressTimeOut = DoublePressTimeOut || 400;
-    this.ButtonCount = 0;
-    this.ButtonTimer = 0;
+    this.callback = callback;
+    this.doublePressTimeOut = doublePressTimeOut || 400;
+    this.buttonCount = 0;
+    this.buttonTimer = 0;
 };
 
 // Button pressed
-SingleDoubleBtn.prototype.ButtonDown = function(channel, control, value, status, group) {
+SingleDoubleBtn.prototype.buttonDown = function(channel, control, value, status, group) {
     this.channel = channel;
     this.control = control;
     this.value = value;
     this.status = status;
     this.group = group;
 
-    if (this.ButtonTimer === 0) { // first press
-        this.ButtonTimer = engine.beginTimer(this.DoublePressTimeOut, this.ButtonDecide, true);
-        this.ButtonCount = 1;
+    if (this.buttonTimer === 0) { // first press
+        this.buttonTimer = engine.beginTimer(this.doublePressTimeOut, this.buttonDecide, true);
+        this.buttonCount = 1;
     } else { // 2nd press (before timer's out)
-        engine.stopTimer(this.ButtonTimer);
-        this.ButtonTimer = 0;
-        this.ButtonCount = 2;
-        this.ButtonDecide();
+        engine.stopTimer(this.buttonTimer);
+        this.buttonTimer = 0;
+        this.buttonCount = 2;
+        this.buttonDecide();
     }
 };
 
 // Take action
-SingleDoubleBtn.prototype.ButtonDecide = function() {
-    this.ButtonTimer = 0;
-    this.Callback(this.channel, this.control, this.value, this.status, this.group, this.ButtonCount);
-    this.ButtonCount = 0;
+SingleDoubleBtn.prototype.buttonDecide = function() {
+    this.buttonTimer = 0;
+    this.callback(this.channel, this.control, this.value, this.status, this.group, this.buttonCount);
+    this.buttonCount = 0;
 };
 
 // =======================  LongShortBtn    
-// Callback           : Callback function you have to provide (see end of the code), that will return
+// callback           : callback function you have to provide (see end of the code), that will return
 //                      the original event parameters (channel, control, value, status, group)
 //                      and the kind of press event affecting your button (eventkind)
 //                      This callback will be called once you release the button
 //                      (Value will be equal to UP). You must provide this parameter.
-// LongPressThreshold : delay in ms above which a firts press on the
+// longPressThreshold : delay in ms above which a firts press on the
 //                      button will be considered as a Long press (default = 500ms).
 //                      This parameter is optional.
-// CallBackOKLongPress : This callback will give you the same values than the first one
+// callBackOKLongPress : This callback will give you the same values than the first one
 //                       but it will be triggered as soon as the Long press is taken
 //                       into account ( at this moment, value = DOWN because you are still
 //                       holding down the button). This permits for instance to lit up a light indicating
 //                       the user that he/she can release the button. This callback occurs before the first one.
 //                       This parameter is optional.
 // Like that, you can decide to put the code for the long press in either callback function
-var LongShortBtn = function(Callback, LongPressThreshold, CallBackOKLongPress) {
-    this.Callback = Callback;
+var LongShortBtn = function(callback, longPressThreshold, callBackOKLongPress) {
+    this.callback = callback;
     this.channel = 0;
     this.control = 0;
     this.value = 0;
     this.status = 0;
     this.group = "";
-    this.CallBackOKLongPress = CallBackOKLongPress;
-    this.LongPressThreshold = LongPressThreshold || 500;
-    this.ButtonLongPress = false;
-    this.ButtonLongPressTimer = 0;
+    this.callBackOKLongPress = callBackOKLongPress;
+    this.longPressThreshold = longPressThreshold || 500;
+    this.buttonLongPress = false;
+    this.buttonLongPressTimer = 0;
 };
 
 // Timer's call back for long press
-LongShortBtn.prototype.ButtonAssertLongPress = function() {
-    this.ButtonLongPress = true;
+LongShortBtn.prototype.buttonAssertLongPress = function() {
+    this.buttonLongPress = true;
     //the timer was stopped, we set it to zero
-    this.ButtonLongPressTimer = 0;
+    this.buttonLongPressTimer = 0;
 
-    if (typeof this.CallBackOKLongPress === "function") {
-        this.CallBackOKLongPress(this.channel, this.control, this.value, this.status, this.group, LONG_PRESS);
+    if (typeof this.callBackOKLongPress === "function") {
+        this.callBackOKLongPress(this.channel, this.control, this.value, this.status, this.group, LONG_PRESS);
     }
 };
 
-LongShortBtn.prototype.ButtonDown = function(channel, control, value, status, group) {
+LongShortBtn.prototype.buttonDown = function(channel, control, value, status, group) {
     this.channel = channel;
     this.control = control;
     this.value = value;
     this.status = status;
     this.group = group;
-    this.ButtonLongPress = false;
-    this.ButtonLongPressTimer = engine.beginTimer(this.LongPressThreshold, this.ButtonAssertLongPress, true);
+    this.buttonLongPress = false;
+    this.buttonLongPressTimer = engine.beginTimer(this.longPressThreshold, this.buttonAssertLongPress, true);
 };
 
-LongShortBtn.prototype.ButtonUp = function() {
-    if (this.ButtonLongPressTimer !== 0) {
-        engine.stopTimer(this.ButtonLongPressTimer);
-        this.ButtonLongPressTimer = 0;
+LongShortBtn.prototype.buttonUp = function() {
+    if (this.buttonLongPressTimer !== 0) {
+        engine.stopTimer(this.buttonLongPressTimer);
+        this.buttonLongPressTimer = 0;
     }
 
-    if (this.ButtonLongPress) {
-        this.Callback(this.channel, this.control, this.value, this.status, this.group, LONG_PRESS);
+    if (this.buttonLongPress) {
+        this.callback(this.channel, this.control, this.value, this.status, this.group, LONG_PRESS);
     } else {
-        this.Callback(this.channel, this.control, this.value, this.status, this.group, QUICK_PRESS);
+        this.callback(this.channel, this.control, this.value, this.status, this.group, QUICK_PRESS);
     }
 };
 
 // =======================  LongShortDoubleBtn
-// Callback           : Callback function you have to provide (see end of
+// callback           : Callback function you have to provide (see end of
 //                      the code), that will return the original event
 //                      parameters (channel, control, value, status, group)
 //                      and the kind of press event affecting your button
@@ -543,80 +543,80 @@ LongShortBtn.prototype.ButtonUp = function() {
 //                      (value = DOWN because you are still holding down
 //                      the button or value=UP because you have realeased
 //                      the button only once before it becomes a long press).
-// LongPressThreshold : delay in ms above which a firts press on the
+// longPressThreshold : delay in ms above which a firts press on the
 //                      button will be considered as a Long press (default = 500ms).
-// DoublePressTimeOut : delay in ms above wich a second press on the
+// doublePressTimeOut : delay in ms above wich a second press on the
 //                      button will not be considered as a potential double
 //                      but as a new press cycle event (default = 400ms).
 
-var LongShortDoubleBtn = function(Callback, LongPressThreshold, DoublePressTimeOut) {
-    this.Callback = Callback;
+var LongShortDoubleBtn = function(callback, longPressThreshold, doublePressTimeOut) {
+    this.callback = callback;
     this.channel = 0;
     this.control = 0;
     this.value = 0;
     this.status = 0;
     this.group = "";
-    this.LongPressThreshold = LongPressThreshold || 500;
-    this.DoublePressTimeOut = DoublePressTimeOut || 400;
-    this.ButtonTimer = 0;
-    this.ButtonLongPress = false;
-    this.ButtonLongPressTimer = 0;
-    this.ButtonCount = 0;
+    this.longPressThreshold = longPressThreshold || 500;
+    this.doublePressTimeOut = doublePressTimeOut || 400;
+    this.buttonTimer = 0;
+    this.buttonLongPress = false;
+    this.buttonLongPressTimer = 0;
+    this.buttonCount = 0;
 };
 
 // Timer's call back for long press
-LongShortDoubleBtn.prototype.ButtonAssertLongPress = function() {
-    this.ButtonLongPress = true;
+LongShortDoubleBtn.prototype.buttonAssertLongPress = function() {
+    this.buttonLongPress = true;
     // the timer was stopped, we set it to zero
-    this.ButtonLongPressTimer = 0;
+    this.buttonLongPressTimer = 0;
     // let's take action of the long press
-    this.ButtonDecide();
+    this.buttonDecide();
 };
 
 // Timer's callback for single press/double press
-LongShortDoubleBtn.prototype.ButtonAssert1Press = function() {
+LongShortDoubleBtn.prototype.buttonAssert1Press = function() {
     // Short Timer ran out before it was manually stopped by release
-    // of the button (ButtonUp):
+    // of the button (buttonUp):
     // for sure it is a single click (short or long), we will know
     // when button will be released or when longtimer will stop by itself
 
     // the timer was stopped, we set it to zero
-    this.ButtonTimer = 0;
-    this.ButtonCount = 1;
-    if (this.ButtonLongPressTimer === 0) {
+    this.buttonTimer = 0;
+    this.buttonCount = 1;
+    if (this.buttonLongPressTimer === 0) {
         // long press timer was stopped (short press)
         //take action
-        this.ButtonDecide();
+        this.buttonDecide();
     }
 };
 
 // Button pressed (function called by mapper's code)
-LongShortDoubleBtn.prototype.ButtonDown = function(channel, control, value, status, group) {
+LongShortDoubleBtn.prototype.buttonDown = function(channel, control, value, status, group) {
     this.channel = channel;
     this.control = control;
     this.value = value;
     this.status = status;
     this.group = group;
 
-    if (this.ButtonCount === 0) { //first press (inits)
+    if (this.buttonCount === 0) { //first press (inits)
         // 1st press
-        this.ButtonCount = 1;
+        this.buttonCount = 1;
         // and short press
-        this.ButtonLongPress = false;
+        this.buttonLongPress = false;
 
-        this.ButtonLongPressTimer = engine.beginTimer(
-            this.LongPressThreshold, this.ButtonAssertLongPress, true
+        this.buttonLongPressTimer = engine.beginTimer(
+            this.longPressThreshold, this.buttonAssertLongPress, true
         );
 
-        this.ButtonTimer = engine.beginTimer(
-            this.DoublePressTimeOut, this.ButtonAssert1Press, true
+        this.buttonTimer = engine.beginTimer(
+            this.doublePressTimeOut, this.buttonAssert1Press, true
         );
 
-    } else if (this.ButtonCount === 1) { // 2nd press (before short timer's out)
+    } else if (this.buttonCount === 1) { // 2nd press (before short timer's out)
         // stop timers...           
-        if (this.ButtonLongPressTimer !== 0) {
-            engine.stopTimer(this.ButtonLongPressTimer);
-            this.ButtonLongPressTimer = 0;
+        if (this.buttonLongPressTimer !== 0) {
+            engine.stopTimer(this.buttonLongPressTimer);
+            this.buttonLongPressTimer = 0;
         }
         // we stopped the timer, we have to set it to zero.
         // You must have this reflex : "stopTimer(timer)/timer=0" in mind
@@ -624,60 +624,60 @@ LongShortDoubleBtn.prototype.ButtonDown = function(channel, control, value, stat
         // it's value stays with the one given by engine.beginTimer
 
         // "stopTimer(timer)/timer=0"
-        if (this.ButtonTimer !== 0) {
-            engine.stopTimer(this.ButtonTimer);
-            this.ButtonTimer = 0;
+        if (this.buttonTimer !== 0) {
+            engine.stopTimer(this.buttonTimer);
+            this.buttonTimer = 0;
         }
 
         // 2nd press
-        this.ButtonCount = 2;
+        this.buttonCount = 2;
 
         // ...and take action immediatly
-        this.ButtonDecide();
+        this.buttonDecide();
     } // else :
     // 2nd press after short timer's out, this cannot happen,
     // do nothing
 };
 
 // Button released  (function called by mapper's code)
-LongShortDoubleBtn.prototype.ButtonUp = function() {
+LongShortDoubleBtn.prototype.buttonUp = function() {
     // button released
-    if (this.ButtonLongPress === false) {
-        // long press was not asserted by timer (ButtonAssertLongPress)
+    if (this.buttonLongPress === false) {
+        // long press was not asserted by timer (buttonAssertLongPress)
         // Button is released before timer's out
 
         // If first Buttun up, long timer is still running
         // stop long timer if it is still running, keep short timer,
         // longpress will never happen
-        if (this.ButtonLongPressTimer !== 0) {
-            engine.stopTimer(this.ButtonLongPressTimer);
-            this.ButtonLongPressTimer = 0;
+        if (this.buttonLongPressTimer !== 0) {
+            engine.stopTimer(this.buttonLongPressTimer);
+            this.buttonLongPressTimer = 0;
         }
     } // else :
-    // longpressed is confirmed, we already took action in ButtonAssertLongPress
+    // longpressed is confirmed, we already took action in buttonAssertLongPress
 };
 
 // Take actions and call callback
-LongShortDoubleBtn.prototype.ButtonDecide = function() {
-    if (this.ButtonLongPressTimer !== 0) {
-        engine.stopTimer(this.ButtonLongPressTimer);
+LongShortDoubleBtn.prototype.buttonDecide = function() {
+    if (this.buttonLongPressTimer !== 0) {
+        engine.stopTimer(this.buttonLongPressTimer);
     }
 
-    this.ButtonLongPressTimer = 0;
-    this.ButtonTimer = 0;
+    this.buttonLongPressTimer = 0;
+    this.buttonTimer = 0;
 
-    if (this.ButtonLongPress) {
-        this.Callback(this.channel, this.control, this.value, this.status, this.group, LONG_PRESS);
+    if (this.buttonLongPress) {
+        this.callback(this.channel, this.control, this.value, this.status, this.group, LONG_PRESS);
     } else {
-        if (this.ButtonCount === 2) {
-            this.Callback(this.channel, this.control, this.value, this.status, this.group, DOUBLE_PRESS);
+        if (this.buttonCount === 2) {
+            this.callback(this.channel, this.control, this.value, this.status, this.group, DOUBLE_PRESS);
         } else { // We pressed sync only once
-            this.Callback(this.channel, this.control, this.value, this.status, this.group, QUICK_PRESS);
+            this.callback(this.channel, this.control, this.value, this.status, this.group, QUICK_PRESS);
         }
     }
     // re-init
-    this.ButtonCount = 0;
-    this.ButtonLongPress = false;
+    this.buttonCount = 0;
+    this.buttonLongPress = false;
 };
 
 // *************************************************
@@ -1327,9 +1327,9 @@ NumarkMixtrack3.LoadButton = function(channel, control, value, status, group) {
             }
         }
 
-        deck.LoadButtonControl.ButtonDown(channel, control, value, status, deck.group);
+        deck.LoadButtonControl.buttonDown(channel, control, value, status, deck.group);
     } else {
-        deck.LoadButtonControl.ButtonUp();
+        deck.LoadButtonControl.buttonUp();
     }
 };
 
@@ -1380,9 +1380,9 @@ NumarkMixtrack3.SyncButton = function(channel, control, value, status, group) {
 
     if (!deck.shiftKey) {
         if (value === DOWN) {
-            deck.SyncButtonControl.ButtonDown(channel, control, value, status, deck.group);
+            deck.SyncButtonControl.buttonDown(channel, control, value, status, deck.group);
         } else {
-            deck.SyncButtonControl.ButtonUp();
+            deck.SyncButtonControl.buttonUp();
         }
     } else {
         if (value === DOWN) {
@@ -1603,7 +1603,7 @@ NumarkMixtrack3.SamplerButton = function(channel, control, value, status, group)
     var deck = NumarkMixtrack3.deckFromGroup("[Channel" + decknum + "]");
 
     if (value === DOWN) {
-        sampler.PADSampleButtonHold.ButtonDown(channel, control, value, status, group);
+        sampler.PADSampleButtonHold.buttonDown(channel, control, value, status, group);
 
         if (!isPlaying) {
             if (deck.shiftKey) {
@@ -1632,7 +1632,7 @@ NumarkMixtrack3.SamplerButton = function(channel, control, value, status, group)
     }
 
     if (value === OFF) {
-       sampler.PADSampleButtonHold.ButtonUp();
+       sampler.PADSampleButtonHold.buttonUp();
     }
 };
 
@@ -1706,11 +1706,11 @@ NumarkMixtrack3.PADLoopButton = function(channel, control, value, status, group)
         }
 
         // Event if long press
-        deck.PADLoopButtonHold.ButtonDown(channel, control, value, status, deck.group);
+        deck.PADLoopButtonHold.buttonDown(channel, control, value, status, deck.group);
     }
 
     if (value === OFF && deck.duration !== 0) { //This triggers the callback function for "PADLoopButtonHold"
-        deck.PADLoopButtonHold.ButtonUp();
+        deck.PADLoopButtonHold.buttonUp();
     }
 };
 
