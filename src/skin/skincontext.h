@@ -105,7 +105,7 @@ class SkinContext {
 
         QColor color;
         QString sColorString = nodeToString(selectElement(node, nodeName));
-        if (sColorString.startsWith('#') && sColorString.length() == 9){
+        if (sColorString.startsWith('#') && sColorString.length() == 9) {
             // first extract the #RRGGBB part and parse the color from that
             QString sRgbHex = sColorString.mid(3, 6).prepend("#");
             color.setNamedColor(sRgbHex);
@@ -114,7 +114,7 @@ class SkinContext {
             QString sAlphaHex = sColorString.mid(1, 2);
             bool bAlphaValueTransformed;
             int iAlpha = sAlphaHex.toUInt(&bAlphaValueTransformed, 16);
-            if (bAlphaValueTransformed){
+            if (bAlphaValueTransformed) {
                 color.setAlpha(iAlpha);
             }
         } else {
