@@ -13,44 +13,6 @@
     <MinimumSize>-1,40</MinimumSize>
     <MaximumSize>-1,65</MaximumSize>
     <Children>
-      <Overview>
-        <TooltipId>waveform_overview</TooltipId>
-        <Group><Variable name="group"/></Group>
-        <SizePolicy>me,me</SizePolicy>
-        <BgColor><Variable name="DeckBackgroundColor"/></BgColor>
-        <SignalHighColor></SignalHighColor>
-        <SignalMidColor></SignalMidColor>
-        <SignalLowColor></SignalLowColor>
-        <SignalRGBHighColor></SignalRGBHighColor>
-        <SignalRGBMidColor></SignalRGBMidColor>
-        <SignalRGBLowColor></SignalRGBLowColor>
-        <SignalColor><Variable name="DeckSignalColor"/></SignalColor>
-        <PlayPosColor>#00FF00</PlayPosColor>
-        <DefaultMark>
-          <Align>bottom|right</Align>
-          <Color>#619dea</Color>
-          <TextColor>#FFFFFF</TextColor>
-          <Text> %1 </Text>
-        </DefaultMark>
-        <MarkRange>
-          <StartControl>loop_start_position</StartControl>
-          <EndControl>loop_end_position</EndControl>
-          <EnabledControl>loop_enabled</EnabledControl>
-          <Color>#00FF00</Color>
-          <DisabledColor>#FFFFFF</DisabledColor>
-        </MarkRange>
-        <Mark>
-          <Control>cue_point</Control>
-          <Align>top|right</Align>
-          <Color>#FF001C</Color>
-          <TextColor>#FFFFFF</TextColor>
-          <Text>C</Text>
-        </Mark>
-        <Connection>
-          <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
-          <EmitOnDownPress>false</EmitOnDownPress>
-        </Connection>
-      </Overview>
       <WidgetGroup>
         <ObjectName>OptionGrid</ObjectName>
         <Layout>vertical</Layout>
@@ -175,6 +137,86 @@
           </Transform>
         </Connection>
       </WidgetGroup>
+
+      <Overview>
+        <TooltipId>waveform_overview</TooltipId>
+        <Group><Variable name="group"/></Group>
+        <SizePolicy>me,me</SizePolicy>
+        <BgColor><Variable name="DeckBackgroundColor"/></BgColor>
+        <SignalHighColor></SignalHighColor>
+        <SignalMidColor></SignalMidColor>
+        <SignalLowColor></SignalLowColor>
+        <SignalRGBHighColor></SignalRGBHighColor>
+        <SignalRGBMidColor></SignalRGBMidColor>
+        <SignalRGBLowColor></SignalRGBLowColor>
+        <SignalColor><Variable name="DeckSignalColor"/></SignalColor>
+        <PlayPosColor>#00FF00</PlayPosColor>
+        <DefaultMark>
+          <Align>bottom|right</Align>
+          <Color>#619dea</Color>
+          <TextColor>#FFFFFF</TextColor>
+          <Text> %1 </Text>
+        </DefaultMark>
+        <MarkRange>
+          <StartControl>loop_start_position</StartControl>
+          <EndControl>loop_end_position</EndControl>
+          <EnabledControl>loop_enabled</EnabledControl>
+          <Color>#00FF00</Color>
+          <DisabledColor>#FFFFFF</DisabledColor>
+        </MarkRange>
+        <Mark>
+          <Control>cue_point</Control>
+          <Align>top|right</Align>
+          <Color>#FF001C</Color>
+          <TextColor>#FFFFFF</TextColor>
+          <Text>C</Text>
+        </Mark>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+          <EmitOnDownPress>false</EmitOnDownPress>
+        </Connection>
+      </Overview>
+
+      <WidgetGroup>
+        <ObjectName>ButtonGrid</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>ButtonGrid</ObjectName>
+            <Layout>vertical</Layout>
+            <Children>
+              <Template src="skin:fx_unit_group_assignment_button.xml">
+                <SetVariable name="EffectUnit">1</SetVariable>
+              </Template>
+
+              <Template src="skin:fx_unit_group_assignment_button.xml">
+                <SetVariable name="EffectUnit">2</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>ButtonGrid</ObjectName>
+            <Layout>vertical</Layout>
+            <Children>
+              <Template src="skin:fx_unit_group_assignment_button.xml">
+                <SetVariable name="EffectUnit">3</SetVariable>
+              </Template>
+
+              <Template src="skin:fx_unit_group_assignment_button.xml">
+                <SetVariable name="EffectUnit">4</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[Master],show_4effectunits</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup>
+
     </Children>
   </WidgetGroup>
 </Template>

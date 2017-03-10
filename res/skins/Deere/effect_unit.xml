@@ -63,26 +63,6 @@
                 <SetVariable name="group_group">[Master]</SetVariable>
               </Template>
 
-              <Template src="skin:effect_unit_group_control_button.xml">
-                <SetVariable name="group_name">CH1</SetVariable>
-                <SetVariable name="group_group">[Channel1]</SetVariable>
-              </Template>
-
-              <Template src="skin:effect_unit_group_control_button.xml">
-                <SetVariable name="group_name">CH2</SetVariable>
-                <SetVariable name="group_group">[Channel2]</SetVariable>
-              </Template>
-
-              <Template src="skin:effect_unit_group_control_button.xml">
-                <SetVariable name="group_name">CH3</SetVariable>
-                <SetVariable name="group_group">[Channel3]</SetVariable>
-              </Template>
-
-              <Template src="skin:effect_unit_group_control_button.xml">
-                <SetVariable name="group_name">CH4</SetVariable>
-                <SetVariable name="group_group">[Channel4]</SetVariable>
-              </Template>
-
             </Children>
           </WidgetGroup>
 
