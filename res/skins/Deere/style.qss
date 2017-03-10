@@ -56,14 +56,9 @@
   qproperty-layoutSpacing: 2;
 }
 
-#Deck1InnerColumn, #Deck3InnerColumn {
+#DeckRateSliderColumn {
   border: 0px solid #222;
-  border-left: 1px solid #222;
-}
-
-#Deck2InnerColumn, #Deck4InnerColumn {
-  border: 0px solid #222;
-  border-right: 1px solid #222;
+  border-right: 2px solid #222;
 }
 
 #VisualRow {
@@ -623,7 +618,7 @@ WWidget, QLabel {
 }
 
 /* Start spacing for Deck inner column (tempo slider, rate change) */
-#Deck1InnerColumn, #Deck2InnerColumn, #Deck3InnerColumn, #Deck4InnerColumn {
+#DeckRateSliderColumn {
   background-color: #333333;
   padding: 4px;
   qproperty-layoutSpacing: 2;

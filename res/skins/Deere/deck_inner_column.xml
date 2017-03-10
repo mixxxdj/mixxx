@@ -1,13 +1,13 @@
 <!DOCTYPE template>
 <!--
   Description:
-    Deck inner column.
+    Deck rate slider column.
   Variables:
     group: The deck group.
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>Deck<Variable name="i"/>InnerColumn</ObjectName>
+    <ObjectName>DeckRateSliderColumn</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>max,min</SizePolicy>
     <Children>

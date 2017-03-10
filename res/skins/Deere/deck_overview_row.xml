@@ -14,18 +14,12 @@
     <MaximumSize>-1,65</MaximumSize>
     <Children>
       <WidgetGroup>
-        <ObjectName>OptionGrid</ObjectName>
+        <ObjectName>ButtonGrid</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>min,me</SizePolicy>
-        <MinimumSize>60,40</MinimumSize>
-        <MaximumSize>90,60</MaximumSize>
         <Children>
           <WidgetGroup>
-            <ObjectName>OptionGridRow1</ObjectName>
+            <ObjectName>ButtonGrid</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>p,me</SizePolicy>
-            <MinimumSize>60,20</MinimumSize>
-            <MaximumSize>90,30</MaximumSize>
             <Children>
 
               <Template src="skin:left_2state_button.xml">
@@ -77,11 +71,8 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>OptionGridRow2</ObjectName>
+            <ObjectName>ButtonGrid</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>p,me</SizePolicy>
-            <MinimumSize>60,20</MinimumSize>
-            <MaximumSize>90,30</MaximumSize>
             <Children>
               <Template src="skin:left_right_1state_button.xml">
                 <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
@@ -179,22 +170,15 @@
 
       <WidgetGroup>
         <ObjectName>ButtonGrid</ObjectName>
-        <Layout>horizontal</Layout>
+        <Layout>vertical</Layout>
         <Children>
+          <Template src="skin:fx_unit_group_assignment_button.xml">
+            <SetVariable name="EffectUnit">1</SetVariable>
+          </Template>
 
-          <WidgetGroup>
-            <ObjectName>ButtonGrid</ObjectName>
-            <Layout>vertical</Layout>
-            <Children>
-              <Template src="skin:fx_unit_group_assignment_button.xml">
-                <SetVariable name="EffectUnit">1</SetVariable>
-              </Template>
-
-              <Template src="skin:fx_unit_group_assignment_button.xml">
-                <SetVariable name="EffectUnit">2</SetVariable>
-              </Template>
-            </Children>
-          </WidgetGroup>
+          <Template src="skin:fx_unit_group_assignment_button.xml">
+            <SetVariable name="EffectUnit">2</SetVariable>
+          </Template>
 
           <WidgetGroup>
             <ObjectName>ButtonGrid</ObjectName>
@@ -216,7 +200,6 @@
 
         </Children>
       </WidgetGroup>
-
     </Children>
   </WidgetGroup>
 </Template>
