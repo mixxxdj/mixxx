@@ -170,15 +170,21 @@
 
       <WidgetGroup>
         <ObjectName>ButtonGrid</ObjectName>
-        <Layout>vertical</Layout>
+        <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:fx_unit_group_assignment_button.xml">
-            <SetVariable name="EffectUnit">1</SetVariable>
-          </Template>
+          <WidgetGroup>
+            <ObjectName>ButtonGrid</ObjectName>
+            <Layout>vertical</Layout>
+            <Children>
+              <Template src="skin:fx_unit_group_assignment_button.xml">
+                <SetVariable name="EffectUnit">1</SetVariable>
+              </Template>
 
-          <Template src="skin:fx_unit_group_assignment_button.xml">
-            <SetVariable name="EffectUnit">2</SetVariable>
-          </Template>
+              <Template src="skin:fx_unit_group_assignment_button.xml">
+                <SetVariable name="EffectUnit">2</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
 
           <WidgetGroup>
             <ObjectName>ButtonGrid</ObjectName>
