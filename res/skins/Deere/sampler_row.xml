@@ -9,13 +9,17 @@
         <Layout>vertical</Layout>
         <Size>20f,-1me</Size>
         <Children>
+          <Template src="skin:spacer_vx.xml">
+            <SetVariable name="height">4</SetVariable>
+          </Template>
+
           <Template src="skin:hide_show_button.xml">
             <SetVariable name="object_name">SamplerRowExpandButton</SetVariable>
             <SetVariable name="control">[SamplerRow<Variable name="row"/>],expanded</SetVariable>
           </Template>
 
-          <!-- Try to push the button up to the top. -->
-          <Template src="spacer_v.xml"/>
+          <!-- Push the button up to the top. -->
+          <Template src="skin:spacer_v.xml"/>
         </Children>
       </WidgetGroup>
 

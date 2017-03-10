@@ -76,6 +76,10 @@
     <SetVariable name="SquareButtonMaximumSize">22,22</SetVariable>
     <SetVariable name="SquareButtonSizePolicy">f,f</SetVariable>
 
+    <SetVariable name="FXAssignmentButtonMinimumSize">26,22</SetVariable>
+    <SetVariable name="FXAssignmentButtonMaximumSize">26,22</SetVariable>
+    <SetVariable name="FXAssignmentButtonSizePolicy">f,f</SetVariable>
+
     <SetVariable name="WideButtonMinimumSize">40,22</SetVariable>
     <SetVariable name="WideButtonMaximumSize">40,22</SetVariable>
     <SetVariable name="WideButtonSizePolicy">f,f</SetVariable>

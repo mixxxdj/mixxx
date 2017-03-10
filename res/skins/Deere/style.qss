@@ -597,9 +597,13 @@ WWidget, QLabel {
 }
 
 /* Start spacing for Deck overview row (small waveform, option grid) */
-#OptionGrid {
+#OptionGrid, #ButtonGrid {
   background-color: #333333;
   padding: 1px;
+  qproperty-layoutSpacing: 2;
+}
+
+#ButtonGrid {
   qproperty-layoutSpacing: 2;
 }
 
