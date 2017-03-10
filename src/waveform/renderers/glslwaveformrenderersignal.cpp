@@ -226,6 +226,9 @@ void GLSLWaveformRendererSignal::onSetTrack() {
         return;
     }
 
+    // When the track's waveform has been changed (or cleared), it is necessary
+    // to update (or delete) the texture containing the waveform which was
+    // uploaded to GPU. Otherwise, previous waveform will be shown.
     connect(pTrack.get(), SIGNAL(waveformUpdated()),
             this, SLOT(slotWaveformUpdated()));
 }
