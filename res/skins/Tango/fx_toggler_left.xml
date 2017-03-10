@@ -14,8 +14,8 @@ Variables:
   <WidgetGroup>
     <ObjectName>EffectTogglerMetaKnob</ObjectName>
     <Layout>horizontal</Layout>
-    <MinimunSize>121,32</MinimunSize>
-    <MaximumSize>132,39</MaximumSize>
+    <MinimunSize>115,32</MinimunSize>
+    <MaximumSize>130,39</MaximumSize>
     <SizePolicy>min,min</SizePolicy>
     <Children>
 
@@ -53,7 +53,9 @@ Variables:
           </Template>
 
           <EffectSelector>
-            <Size>72me,20f</Size>
+            <MinimunSize>72,20</MinimunSize>
+            <MaximumSize>87,20</MaximumSize>
+            <SizePolicy>me,f</SizePolicy>
             <EffectRack><Variable name="EffectRack"/></EffectRack>
             <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
             <Effect><Variable name="Effect"/></Effect>
