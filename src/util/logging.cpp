@@ -143,7 +143,7 @@ void MessageHandler(QtMsgType type,
 #endif
             if (debugAssert) {
                 if (CmdlineArgs::Instance().getDebugAssertBreak()) {
-                    fprintf(stderr, ba.constData());
+                    fputs(ba.constData(), stderr);
                     if (Logfile.isOpen()) {
                         Logfile.write(ba);
                     }
@@ -159,7 +159,7 @@ void MessageHandler(QtMsgType type,
 #endif
                     return;
 #else
-                    fprintf(stderr, ba.constData());
+                    fputs(ba.constData(), stderr);
                     if (Logfile.isOpen()) {
                         Logfile.write(ba);
                     }
