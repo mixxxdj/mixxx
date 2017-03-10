@@ -370,45 +370,13 @@ Description:
             <Children>
 
               <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ToolTipID">show_effects</SetVariable>
                 <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
                 <SetVariable name="Size">172f,17f</SetVariable>
                 <SetVariable name="Align">left</SetVariable>
-                <SetVariable name="state_0_text">      Effect Rack</SetVariable>
-                <SetVariable name="state_1_text"> &#10003; Effect Rack</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[EffectRack1],show</SetVariable>
+                <SetVariable name="state_0_text">      2&#9668; 4  Effect Units</SetVariable>
+                <SetVariable name="state_1_text">      2 &#9658;4  Effect Units</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Tango],2or4_fxUnits</SetVariable>
               </Template>
-
-              <WidgetGroup><!-- EffectRack submenu -->
-                <Layout>stacked</Layout>
-                <Size>172f,17f</Size>
-                <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
-                  <WidgetGroup><!-- translucent cover when EffectRack1 is hidden -->
-                    <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>vertical</Layout>
-                    <SizePolicy>me,me</SizePolicy>
-                    <Children/>
-                    <Connection>
-                      <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                      <Transform><Not/></Transform>
-                    </Connection>
-                  </WidgetGroup>
-
-                  <Template src="skin:button_2state_persist.xml">
-                    <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                    <SetVariable name="Size">172f,17f</SetVariable>
-                    <SetVariable name="Align">left</SetVariable>
-                    <SetVariable name="state_0_text">      2&#9668; 4  Effect Units</SetVariable>
-                    <SetVariable name="state_1_text">      2 &#9658;4  Effect Units</SetVariable>
-                    <SetVariable name="ConfigKeyPerm">[Tango],2or4_fxUnits</SetVariable>
-                  </Template>
-
-                </Children>
-              </WidgetGroup><!-- EffectRack submenu -->
 
               <Template src="skin:button_2state_persist.xml">
                 <SetVariable name="ToolTipID">show_previewdeck</SetVariable>
