@@ -1152,7 +1152,7 @@ WStarRating {
 }
 
 #MicrophoneButtonsAndMeter, #AuxiliaryButtonsAndMeter {
-  qproperty-layoutSpacing: 5;
+  qproperty-layoutSpacing: 3;
 }
 
 #LibraryContainer {
