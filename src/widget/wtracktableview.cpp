@@ -127,6 +127,7 @@ WTrackTableView::~WTrackTableView() {
     delete m_pPropertiesAct;
     delete m_pMenu;
     delete m_pPlaylistMenu;
+    delete m_pCoverMenu;
     delete m_pCrateMenu;
     delete m_pBpmLockAction;
     delete m_pBpmUnlockAction;
@@ -137,6 +138,8 @@ WTrackTableView::~WTrackTableView() {
     delete m_pBpmFourThirdsAction;
     delete m_pBpmThreeHalvesAction;
     delete m_pBPMMenu;
+    delete m_pClearBeatsAction;
+    delete m_pClearWaveformAction;
     delete m_pReplayGainResetAction;
     delete m_pPurgeAct;
     delete m_pFileBrowserAct;
