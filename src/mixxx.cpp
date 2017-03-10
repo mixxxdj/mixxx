@@ -434,6 +434,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         }
     }
 
+    m_pPlayerManager->loadSamplers();
+
     connect(&PlayerInfo::instance(),
             SIGNAL(currentPlayingTrackChanged(TrackPointer)),
             this, SLOT(slotUpdateWindowTitle(TrackPointer)));
