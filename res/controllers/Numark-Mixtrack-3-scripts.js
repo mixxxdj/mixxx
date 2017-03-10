@@ -1562,12 +1562,19 @@ NumarkMixtrack3.WheelMove = function(channel, control, value, status, group) {
 
 NumarkMixtrack3.HotCueButton = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
-    var hotCue = control - leds.hotCue1 + 1;
+    var hotCue = parseInt(control - leds.hotCue1 + 1);
 
     if (deck.shiftKey) {
         if (value === DOWN) {
             engine.setValue(deck.group, "hotcue_" + hotCue + "_clear", true);
             deck.LEDs["hotCue" + hotCue].onOff(OFF);
+        }
+    } else if (deck.TapDown) {
+        // special effects with tap + hot cues
+        if (hotCue === 1) {
+            engine.brake(deck.decknum, value === DOWN);
+        } else if (hotCue === 2) {
+            engine.spinback(deck.decknum, value === DOWN);
         }
     } else {
         engine.setValue(deck.group, "hotcue_" + hotCue + "_activate", value === DOWN);
@@ -1801,15 +1808,6 @@ NumarkMixtrack3.FXButton = function(channel, control, value, status, group) {
         if (deck.InstantFX.indexOf(effectNum) === -1) {
             script.toggleControl(effectGroup, "enabled");
         }
-    }
-
-    // Standard FX Control done, now deal with extra features
-    if (deck.PADMode && effectNum === 1) {
-        engine.brake(deck.decknum, value === DOWN);
-    }
-
-    if (deck.PADMode && effectNum === 2) {
-        engine.spinback(deck.decknum, value === DOWN);
     }
 };
 
