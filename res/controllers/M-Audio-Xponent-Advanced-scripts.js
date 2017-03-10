@@ -77,20 +77,6 @@ MaudioXponent.buttons = {
     "shift": 0x2C
 };
 
-MaudioXponent.binleds = {
-    8: "button_parameter1",
-    9: "button_parameter2",
-    10: "button_parameter3",
-    16: (MaudioXponent.config.nudgeButtonMode ? "rate_temp_up" : "rate_temp_down"),
-    17: (MaudioXponent.config.nudgeButtonMode ? "rate_temp_down" : "rate_temp_up"),
-    18: "keylock",
-    19: "reverse",
-    20: "pfl",
-    33: "back",
-    34: "fwd",
-    36: "play"
-};
-
 // ----------   Functions    ----------
 MaudioXponent.logParams = function(functionName, a, b, c, d, e, f) {
     print("***");
