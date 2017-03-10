@@ -2095,7 +2095,7 @@ NumarkMixtrack3.OnVolumeChange = function(value, group, control) {
 
 NumarkMixtrack3.OnVuMeterChange = function(value, group, control) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
-    deck.LEDs.meter.onOff(120 * value);
+    deck.LEDs.meter.onOff(82 * value);
 };
 
 NumarkMixtrack3.OnPlaypositionChange = function(value, group, control) {
