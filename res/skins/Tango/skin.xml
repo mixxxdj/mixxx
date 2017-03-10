@@ -228,7 +228,7 @@
             <WidgetGroup><!-- LEFT decks + Skin Controls + RIGHT decks -->
               <ObjectName>DecksMixer12</ObjectName>
               <Layout>horizontal</Layout>
-              <Size>1014me,136min</Size>
+              <Size>1008me,136min</Size>
               <Children>
                 <Template src="skin:deck_left.xml">
                   <SetVariable name="channum">1</SetVariable>
@@ -270,7 +270,7 @@
             <WidgetGroup><!-- LEFT decks + ToolbarTop + RIGHT decks -->
               <ObjectName>DecksMixer34</ObjectName>
               <Layout>horizontal</Layout>
-              <Size>1014me,136min</Size>
+              <Size>1008me,136min</Size>
               <Children>
 
                 <Template src="skin:deck_left.xml">

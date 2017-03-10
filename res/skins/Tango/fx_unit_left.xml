@@ -8,7 +8,7 @@
 <Template>
   <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>]</SetVariable>
   <WidgetGroup><!-- EffectUnit -->
-    <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
+    <ObjectName>EffectUnitLeft</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
@@ -244,9 +244,9 @@
                     <Layout>horizontal</Layout>
                     <Children>
                       <Template src="skin:fx_unit_group_button.xml">
+                        <SetVariable name="Size">1me,1me</SetVariable>
                         <SetVariable name="LabelOff">fx_mic1_off</SetVariable>
                         <SetVariable name="LabelOn">fx_mic1_on</SetVariable>
-                        <SetVariable name="Align">center</SetVariable>
                         <SetVariable name="GroupName">[Microphone]</SetVariable>
                       </Template>
                     </Children>
@@ -260,9 +260,9 @@
                     <Layout>horizontal</Layout>
                     <Children>
                       <Template src="skin:fx_unit_group_button.xml">
+                        <SetVariable name="Size">1me,1me</SetVariable>
                         <SetVariable name="LabelOff">fx_mic2_off</SetVariable>
                         <SetVariable name="LabelOn">fx_mic2_on</SetVariable>
-                        <SetVariable name="Align">center</SetVariable>
                         <SetVariable name="GroupName">[Microphone2]</SetVariable>
                       </Template>
                     </Children>
@@ -276,9 +276,9 @@
                     <Layout>horizontal</Layout>
                     <Children>
                       <Template src="skin:fx_unit_group_button.xml">
+                        <SetVariable name="Size">1me,1me</SetVariable>
                         <SetVariable name="LabelOff">fx_mic3_off</SetVariable>
                         <SetVariable name="LabelOn">fx_mic3_on</SetVariable>
-                        <SetVariable name="Align">center</SetVariable>
                         <SetVariable name="GroupName">[Microphone3]</SetVariable>
                       </Template>
                     </Children>
@@ -292,9 +292,9 @@
                     <Layout>horizontal</Layout>
                     <Children>
                       <Template src="skin:fx_unit_group_button.xml">
+                        <SetVariable name="Size">1me,1me</SetVariable>
                         <SetVariable name="LabelOff">fx_mic4_off</SetVariable>
                         <SetVariable name="LabelOn">fx_mic4_on</SetVariable>
-                        <SetVariable name="Align">center</SetVariable>
                         <SetVariable name="GroupName">[Microphone4]</SetVariable>
                       </Template>
                     </Children>
@@ -316,6 +316,7 @@
                     <Layout>horizontal</Layout>
                     <Children>
                       <Template src="skin:fx_unit_group_button.xml">
+                        <SetVariable name="Size">1me,1me</SetVariable>
                         <SetVariable name="LabelOff">fx_aux1_off</SetVariable>
                         <SetVariable name="LabelOn">fx_aux1_on</SetVariable>
                         <SetVariable name="GroupName">[Auxiliary1]</SetVariable>
@@ -331,6 +332,7 @@
                     <Layout>horizontal</Layout>
                     <Children>
                       <Template src="skin:fx_unit_group_button.xml">
+                        <SetVariable name="Size">1me,1me</SetVariable>
                         <SetVariable name="LabelOff">fx_aux2_off</SetVariable>
                         <SetVariable name="LabelOn">fx_aux2_on</SetVariable>
                         <SetVariable name="GroupName">[Auxiliary2]</SetVariable>
@@ -346,6 +348,7 @@
                     <Layout>horizontal</Layout>
                     <Children>
                       <Template src="skin:fx_unit_group_button.xml">
+                        <SetVariable name="Size">1me,1me</SetVariable>
                         <SetVariable name="LabelOff">fx_aux3_off</SetVariable>
                         <SetVariable name="LabelOn">fx_aux3_on</SetVariable>
                         <SetVariable name="GroupName">[Auxiliary3]</SetVariable>
@@ -361,6 +364,7 @@
                     <Layout>horizontal</Layout>
                     <Children>
                       <Template src="skin:fx_unit_group_button.xml">
+                        <SetVariable name="Size">1me,1me</SetVariable>
                         <SetVariable name="LabelOff">fx_aux4_off</SetVariable>
                         <SetVariable name="LabelOn">fx_aux4_on</SetVariable>
                         <SetVariable name="GroupName">[Auxiliary4]</SetVariable>
@@ -379,17 +383,19 @@
                 <Layout>vertical</Layout>
                 <Children>
                   <Template src="skin:fx_unit_group_button.xml">
+                    <SetVariable name="Size">1me,1me</SetVariable>
                     <SetVariable name="LabelText">1</SetVariable>
                     <SetVariable name="GroupName">[Channel1]</SetVariable>
                   </Template>
                   <Template src="skin:fx_unit_group_button.xml">
+                    <SetVariable name="Size">1me,1me</SetVariable>
                     <SetVariable name="LabelText">3</SetVariable>
                     <SetVariable name="GroupName">[Channel3]</SetVariable>
                   </Template>
                   <Template src="skin:fx_unit_group_button.xml">
+                    <SetVariable name="Size">1me,1me</SetVariable>
                     <SetVariable name="LabelOff">fx_master_off</SetVariable>
                     <SetVariable name="LabelOn">fx_master_on</SetVariable>
-                    <SetVariable name="Align">center</SetVariable>
                     <SetVariable name="GroupName">[Master]</SetVariable>
                   </Template>
                 </Children>
@@ -400,17 +406,19 @@
                 <Layout>vertical</Layout>
                 <Children>
                   <Template src="skin:fx_unit_group_button.xml">
+                    <SetVariable name="Size">1me,1me</SetVariable>
                     <SetVariable name="LabelText">2</SetVariable>
                     <SetVariable name="GroupName">[Channel2]</SetVariable>
                   </Template>
                   <Template src="skin:fx_unit_group_button.xml">
+                    <SetVariable name="Size">1me,1me</SetVariable>
                     <SetVariable name="LabelText">4</SetVariable>
                     <SetVariable name="GroupName">[Channel4]</SetVariable>
                   </Template>
                   <Template src="skin:fx_unit_group_button.xml">
+                    <SetVariable name="Size">1me,1me</SetVariable>
                     <SetVariable name="LabelOff">fx_head_off</SetVariable>
                     <SetVariable name="LabelOn">fx_head_on</SetVariable>
-                    <SetVariable name="Align">center</SetVariable>
                     <SetVariable name="GroupName">[Headphone]</SetVariable>
                   </Template>
                 </Children>
@@ -419,6 +427,9 @@
           </WidgetGroup><!-- /Group Button Columns  -->
         </Children>
       </WidgetGroup><!-- /SuperKnob + Wet/Dry + GroupButtons -->
+
+      <!-- This is necessary to compensate 1px left offset of right FX unit -->
+      <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
     </Children>
   </WidgetGroup><!-- /EffectUnit -->
 </Template>

@@ -8,7 +8,7 @@
 <Template>
   <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>]</SetVariable>
   <WidgetGroup><!-- EffectUnit -->
-    <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
+    <ObjectName>EffectUnitLeftMini</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
@@ -150,6 +150,46 @@
         </Connection>
       </WidgetGroup><!-- /Effect togglers * no highlight -->
 
+      <WidgetGroup><!-- GroupButtons -->
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup><!-- Group buttons CH1, CH3, Master -->
+            <ObjectName>EffectUnitGroupColumnMini</ObjectName>
+            <Layout>vertical</Layout>
+            <Children>
+              <Template src="skin:fx_unit_group_button.xml">
+                <SetVariable name="Size">16f,1me</SetVariable>
+                <SetVariable name="LabelText">1</SetVariable>
+                <SetVariable name="GroupName">[Channel1]</SetVariable>
+              </Template>
+              <Template src="skin:fx_unit_group_button.xml">
+                <SetVariable name="Size">16f,1me</SetVariable>
+                <SetVariable name="LabelText">3</SetVariable>
+                <SetVariable name="GroupName">[Channel3]</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- /Group buttons CH1, CH3, Master -->
+
+          <WidgetGroup><!-- Group buttons CH2, CH4, Headphone -->
+            <ObjectName>EffectUnitGroupColumnMini</ObjectName>
+            <Layout>vertical</Layout>
+            <Children>
+              <Template src="skin:fx_unit_group_button.xml">
+                <SetVariable name="Size">16f,1me</SetVariable>
+                <SetVariable name="LabelText">2</SetVariable>
+                <SetVariable name="GroupName">[Channel2]</SetVariable>
+              </Template>
+              <Template src="skin:fx_unit_group_button.xml">
+                <SetVariable name="Size">16f,1me</SetVariable>
+                <SetVariable name="LabelText">4</SetVariable>
+                <SetVariable name="GroupName">[Channel4]</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- /Group buttons CH2, CH4, Headphone -->
+        </Children>
+      </WidgetGroup><!-- /GroupButtons -->
+
       <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
       <WidgetGroup>
@@ -196,6 +236,9 @@
           </Template>
         </Children>
       </WidgetGroup><!-- /FX Unit toggler & miniMaxi button -->
+
+      <!-- This is necessary to compensate 1px left offset of right FX unit -->
+      <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
 
     </Children>
   </WidgetGroup><!-- /EffectUnit -->

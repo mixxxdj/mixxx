@@ -2,7 +2,7 @@
   <WidgetGroup>
     <ObjectName>DeckContainer</ObjectName>
     <Layout>horizontal</Layout>
-    <Size>507me,136min</Size>
+    <Size>504me,136min</Size>
     <Children>
 
       <WidgetGroup><!-- / [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->

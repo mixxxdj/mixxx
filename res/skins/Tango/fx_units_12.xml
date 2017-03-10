@@ -108,7 +108,7 @@ Variables:
           </WidgetGroup><!-- /Spacers for normal width -->
 
           <WidgetGroup><!-- Spacer for netbook mode -->
-            <Size>6f,1min</Size>
+            <Size>4f,1min</Size>
             <Children/>
             <Connection>
               <ConfigKey>[Tango],normal_mode</ConfigKey>

@@ -905,7 +905,7 @@ WPushButton {
         background-color: #0f0f0f;
         border: 1px solid #666666;
       }
-/*	*/
+
   #SkinSettingsToggler[displayValue="0"] {
     background: transparent url(skin:/buttons/btn_skinsettings_off.svg) no-repeat center center; 
     }
@@ -924,8 +924,7 @@ WPushButton {
 }
 
 #CrossfaderBox {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';		/*
-  background-color: #717981;	*/
+  qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
   }
 
 /*################################################################
@@ -934,36 +933,43 @@ WPushButton {
 
 #EffectUnits12 {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  margin-top: 3px;
+}
+#EffectUnits34 {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  margin-top: 3px;
 }
 
 #EffectRack {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
-  background-color: #ffffff;	*/
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   }
-  #EffectUnit1, #EffectUnit3 {
-    qproperty-layoutAlignment: 'AlignRight | AlignTop';
-    margin: 3px 1px 0px 0px;
-    
-    }
-  #EffectUnit2, #EffectUnit4 {
+  #EffectUnitLeft {
     qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-    margin-top: 3px;
+    background-color: #0f0f0f;
     }
-
-#EffectSlots {
-  background-color: #0f0f0f;
-}
+  #EffectUnitRight {
+    qproperty-layoutAlignment: 'AlignRight | AlignTop';
+    background-color: #0f0f0f;
+    }
+  #EffectUnitLeftMini {
+    qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+    background-color: #0f0f0f;
+    }
+  #EffectUnitRightMini {
+    qproperty-layoutAlignment: 'AlignRight | AlignTop';
+    background-color: #0f0f0f;
+    }
 
 #EffectUnitControlsLeft {
-  qproperty-layoutAlignment: 'AlignRight | AlignBottom';	/*
-  background-color: #197355;	*/
-  background-color: #0f0f0f;
+  qproperty-layoutAlignment: 'AlignRight | AlignBottom';
 }
 #EffectUnitControlsRight {
   qproperty-layoutAlignment: 'AlignRight | AlignBottom';	/*
-  background-color: #197355;	*/
+  This eliminates 1 black px left...	*/
+  border-left: 1px solid #1e1e1e; /*
+  ...but works only if we define background-color
+  (the same as whole EffectUnit) */
   background-color: #0f0f0f;
-  border-left: 1px solid #1e1e1e;
 }
 
 #EffectSlotLeft {
@@ -1228,6 +1234,10 @@ WPushButton {
 
 #EffectUnitGroupColumn {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
+}
+#EffectUnitGroupColumnMini {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  margin-top: -1px;
 }
   #EffectUnitGroupButton {
     font-size: 13px/13px;
