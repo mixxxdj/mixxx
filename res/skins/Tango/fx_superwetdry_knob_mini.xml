@@ -13,12 +13,12 @@ Variables:
 <Template>
   <WidgetGroup>
     <Layout>vertical</Layout>
-    <Size>32f,32f</Size>
+    <Size>30f,30f</Size>
     <Children>
       <Template src="skin:knob_textless.xml">
         <TooltipId><Variable name="ToolTipID"/></TooltipId>
         <SetVariable name="ObjectName"><Variable name="ObjectName"/>Knob</SetVariable>
-        <SetVariable name="Size">32f,32f</SetVariable>
+        <SetVariable name="Size">30f,30f</SetVariable>
         <SetVariable name="group"><Variable name="group"/></SetVariable>
         <SetVariable name="ConfigKey"><Variable name="ConfigKey"/></SetVariable>
         <SetVariable name="Color"><Variable name="Color"/></SetVariable>

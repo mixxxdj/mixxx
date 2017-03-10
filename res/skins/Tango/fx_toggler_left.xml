@@ -14,6 +14,8 @@ Variables:
   <WidgetGroup>
     <ObjectName>EffectTogglerMetaKnob</ObjectName>
     <Layout>horizontal</Layout>
+    <MinimunSize>121,32</MinimunSize>
+    <MaximumSize>132,39</MaximumSize>
     <SizePolicy>min,min</SizePolicy>
     <Children>
 
@@ -26,13 +28,13 @@ Variables:
           <!-- invisible, clickable Overlay to toggle Effect -->
           <Template src="skin:button_2state.xml"><!-- EffectToggleButton -->
             <SetVariable name="ObjectName">EffectToggleButton</SetVariable>
-            <SetVariable name="Size">74f,20f</SetVariable>
+            <SetVariable name="Size">72f,20f</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,enabled</SetVariable>
           </Template>
 
           <WidgetGroup>
             <ObjectName>fxNameContainer</ObjectName>
-            <Size>74f,20f</Size>
+            <Size>72f,20f</Size>
             <Layout>horizontal</Layout>
             <Children>					
               <EffectName>
@@ -46,12 +48,12 @@ Variables:
           <!-- Colored background to communicate the Effect's ON/OFF status -->
           <Template src="skin:button_2state.xml"><!-- EffectToggleButton -->
             <SetVariable name="ObjectName">EffectToggleButtonUnderlay</SetVariable>
-            <SetVariable name="Size">74f,20f</SetVariable>
+            <SetVariable name="Size">72f,20f</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,enabled</SetVariable>
           </Template>
 
           <EffectSelector>
-            <Size><Variable name="fxSelectorSize"/></Size>
+            <Size>72me,20f</Size>
             <EffectRack><Variable name="EffectRack"/></EffectRack>
             <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
             <Effect><Variable name="Effect"/></Effect>
@@ -60,7 +62,7 @@ Variables:
         </Children>
       </WidgetGroup><!-- /Effect toggler + Effect selector -->
       
-      <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
+      <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
       <Template src="skin:knob_textless.xml">
         <SetVariable name="ConfigKey">meta</SetVariable>
@@ -68,7 +70,7 @@ Variables:
         <SetVariable name="Color">blue</SetVariable>
       </Template>
       
-      <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
+      <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
       <Template src="skin:fx_focus_button.xml"/>
 

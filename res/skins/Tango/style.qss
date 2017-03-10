@@ -110,7 +110,7 @@ WPushButton {
   #SkinSettingsClose {
     font-size: 16px/16px;
     padding-top: 3px;
-    margin-right: 3px;
+    margin-right: 6px;
     color: #d2d2d2;
     }
     #SkinSettingsClose:hover {
@@ -1024,18 +1024,6 @@ WPushButton {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
 }
 
-#fxNameContainer {
-  padding: 1px;
-  qproperty-layoutAlignment: 'AlignCenter';	/*
-  background-color: #453267;	*/
-  }
-  #fxName {
-    qproperty-alignment: 'AlignHCenter | AlignVCenter';
-    color: #000000;
-    text-align: center;	/*
-    background-color: #773267;	*/
-  }
-
 #EffectToggleButton {
   }
   #EffectToggleButton[displayValue="0"]:hover {	/*		*/
@@ -1049,6 +1037,17 @@ WPushButton {
     }
   #EffectToggleButtonUnderlay[displayValue="1"] {
     background-color: #ffb401;	/* yellow2 	*/
+    }
+  #fxNameContainer {
+    padding: 1px;
+    qproperty-layoutAlignment: 'AlignCenter';	/*
+    background-color: #453267;	*/
+    }
+    #fxName {
+      qproperty-alignment: 'AlignHCenter | AlignVCenter';
+      color: #000000;
+      text-align: center;	/*
+      background-color: #773267;	*/
     }
   /* TODO: copied from Deere */
   WEffectSelector {

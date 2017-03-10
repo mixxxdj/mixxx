@@ -21,7 +21,7 @@
 
           <WidgetGroup><ObjectName>Spacer33</ObjectName><Size>0me,1min</Size></WidgetGroup>
 
-          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1max,1min</Size></WidgetGroup>
 
           <WidgetGroup>
             <ObjectName>EffectSlotLeftHighlight</ObjectName>
@@ -31,8 +31,6 @@
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
               <Template src="skin:fx_toggler_left.xml">
                 <SetVariable name="Effect">1</SetVariable>
-                <SetVariable name="fxSelectorSize">74f,20f</SetVariable>
-                <SetVariable name="fxFocusSize">12f,32f</SetVariable>
               </Template>
             </Children>
             <Connection>
@@ -52,7 +50,6 @@
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
               <Template src="skin:fx_toggler_left.xml">
                 <SetVariable name="Effect">2</SetVariable>
-                <SetVariable name="fxSelectorSize">74f,20f</SetVariable>
               </Template>
             </Children>
             <Connection>
@@ -72,7 +69,6 @@
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
               <Template src="skin:fx_toggler_left.xml">
                 <SetVariable name="Effect">3</SetVariable>
-                <SetVariable name="fxSelectorSize">74f,20f</SetVariable>
               </Template>
             </Children>
             <Connection>
@@ -107,7 +103,6 @@
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
               <Template src="skin:fx_toggler_left.xml">
                 <SetVariable name="Effect">1</SetVariable>
-                <SetVariable name="fxSelectorSize">74f,20f</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
@@ -122,7 +117,6 @@
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
               <Template src="skin:fx_toggler_left.xml">
                 <SetVariable name="Effect">2</SetVariable>
-                <SetVariable name="fxSelectorSize">74f,20f</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
@@ -137,7 +131,6 @@
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
               <Template src="skin:fx_toggler_left.xml">
                 <SetVariable name="Effect">3</SetVariable>
-                <SetVariable name="fxSelectorSize">74f,20f</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
