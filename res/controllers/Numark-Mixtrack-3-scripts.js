@@ -235,7 +235,7 @@ var nextJumpSize = function(currentSize) {
 
 var prevJumpSize = function(currentSize) {
     var index = jumpSize.indexOf(currentSize);
-    return jumpSize[(index - 1) % (jumpSize.length)];
+    return jumpSize.slice(index - 1)[0];
 };
 
 // =====================================================================
@@ -1886,7 +1886,7 @@ NumarkMixtrack3.PitchBendPlusButton = function(channel, control, value, status, 
 NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
     // beat knobs sends 1 or 127 as value. If value = 127, turn is counterclockwise
-    var increase = (value === 127);
+    var increase = (value === 1);
 
 
     // direct interaction with knob, without any button combination
@@ -1938,12 +1938,12 @@ NumarkMixtrack3.OnLoopMove = function(value, group, control) {
 // when the script is reset but the UI is not.
 NumarkMixtrack3.OnBeatJumpX = function(value, group, control) {
     if (!value) return;
-    beatJumpSize = parseInt(control.match(/\d/)[0]);        
+    beatJumpSize = parseInt(control.match(/\d+/)[0]);
 };
 
 NumarkMixtrack3.OnLoopMoveX = function(value, group, control) {
     if (!value) return;
-    loopMoveSize = parseInt(control.match(/\d/)[0]);        
+    loopMoveSize = parseInt(control.match(/\d+/)[0]);
 };
 
 NumarkMixtrack3.bpmTap = function(channel, control, value, status, group) {
