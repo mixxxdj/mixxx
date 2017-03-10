@@ -16,7 +16,7 @@
           <StatusLight>
             <ObjectName>PeakIndicator</ObjectName>
             <TooltipId><Variable name="tooltip_clip"/></TooltipId>
-            <Size>8,8</Size>
+            <Size>8f,8f</Size>
             <PathStatusLight scalemode="STRETCH">vumeter_clip.svg</PathStatusLight>
             <Connection>
                 <ConfigKey><Variable name="group"/>,PeakIndicator<Variable name="side"/></ConfigKey>

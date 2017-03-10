@@ -792,12 +792,6 @@ WBeatSpinBox {
   text-transform: none;
 }
 
-#SamplerTextRow #ArtistGutter WLabel, #SamplerTextRow #BPMGutter WLabel, #SamplerTextRow #PositionGutter WLabel {
-  font-weight: bold;
-  font-size: 11px;
-  text-transform: none;
-}
-
 #BPMGutter WLabel, #PositionGutter WLabel {
   qproperty-alignment: 'AlignRight | AlignVCenter';
 }
@@ -809,7 +803,7 @@ WBeatSpinBox {
   text-align: left;
 }
 
-#SamplerTextRow #TitleGutter WLabel {
+#SamplerTopRowInner WLabel {
   font-weight: bold;
   font-size: 15px;
   text-transform: none;
@@ -1214,7 +1208,20 @@ WStarRating {
   qproperty-layoutSpacing: 2;
 }
 
+#SamplerTopRowOuter {
+  padding: 2px;
+}
+
+#SamplerTopRowInner {
+  qproperty-layoutSpacing: 2;
+}
+
 #SamplerBankGrid {
+  qproperty-layoutSpacing: 2;
+}
+
+#SamplerExpansion {
+  padding: 2px;
   qproperty-layoutSpacing: 2;
 }
 
@@ -1241,9 +1248,7 @@ WWidgetGroup {
 
 WPushButton {
     color: #D2D2D2;
-    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                      stop: 0 #4B4B4B,
-                                      stop: 1 #4B4B4B);
+    background-color: #4B4B4B;
     border: 1px solid #4B4B4B;
     border-radius: 2px;
     outline: none;
@@ -1253,9 +1258,7 @@ WPushButton {
 
 WPushButton:hover {
     color: #D2D2D2;
-    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                      stop: 0 #5F5F5F,
-                                      stop: 1 #5F5F5F);
+    background-color: #5F5F5F;
     border: 0px solid #5F5F5F;
 }
 
@@ -1263,17 +1266,13 @@ WPushButton:hover {
 WPushButton[value="1"] {
     /*color: #FDFDFD;*/
     color: #FDFDFD;
-    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                      stop: 0 #006596,
-                                      stop: 1 #006596);
+    background-color: #006596;
     border: 0px solid #006596;
 }
 
 WPushButton[value="1"]:hover {
     color: #FDFDFD;
-    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                      stop: 0 #0080bE,
-                                      stop: 1 #0080BE);
+    background-color: #0080BE;
     border: 0px solid #0080BE;
 }
 
@@ -1284,17 +1283,13 @@ WPushButton[value="1"]:hover {
 */
 WPushButton[value="2"] {
     color: #FDFDFD;
-    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                      stop: 0 #006596,
-                                      stop: 1 #006596);
+    background-color: #006596;
     border: 0px solid #006596;
 }
 
 WPushButton[value="2"]:hover {
     color: #FDFDFD;
-    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                      stop: 0 #0080BE,
-                                      stop: 1 #0080BE);
+    background-color: #0080BE;
     border: 0px solid #0080BE;
 }
 
@@ -1305,9 +1300,7 @@ WPushButton[value="2"]:hover {
 */
 #OrientationButton[value="1"] {
     color: #D2D2D2;
-    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                      stop: 0 #4B4B4B,
-                                      stop: 1 #4B4B4B);
+    background-color: #4B4B4B;
     border: 1px solid #4B4B4B;
     border-radius: 2px;
     outline: none;
@@ -1315,42 +1308,49 @@ WPushButton[value="2"]:hover {
 
 #OrientationButton:hover {
     color: #D2D2D2;
-    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                      stop: 0 #5F5F5F,
-                                      stop: 1 #5F5F5F);
+    background-color: #5F5F5F;
     border: 0px solid #5F5F5F;
 }
 
 #OrientationButton[value="2"] {
     color: #FDFDFD;
-    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                      stop: 0 #006596,
-                                      stop: 1 #006596);
+    background-color: #006596;
     border: 0px solid #006596;
 }
 
 #OrientationButton[value="2"]:hover {
     color: #FDFDFD;
-    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                      stop: 0 #0080BE,
-                                      stop: 1 #0080BE);
+    background-color: #0080BE;
     border: 0px solid #0080BE;
 }
 
 #OrientationButton[value="0"] {
     color: #FDFDFD;
-    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                      stop: 0 #006596,
-                                      stop: 1 #006596);
+    background-color: #006596;
     border: 0px solid #006596;
 }
 
 #OrientationButton[value="0"]:hover {
     color: #FDFDFD;
-    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                      stop: 0 #0080BE,
-                                      stop: 1 #0080BE);
+    background-color: #0080BE;
     border: 0px solid #0080BE;
+}
+
+/* Special case SamplerPlayButtonRepeating controls
+  When sampler is playing, displays same play icon as normal, but
+  background is red instead of blue.
+*/
+
+#SamplerPlayButtonRepeating[value="1"] {
+    color: #711ada;
+    background-color: #711ada;
+    border: 0px solid #711ada;
+}
+
+#SamplerPlayButtonRepeating[value="1"]:hover {
+    color: #8b32ff;
+    background-color: #8b32ff;
+    border: 0px solid #8b32ff;
 }
 
 /* Special case link_type button for effect parameters

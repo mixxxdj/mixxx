@@ -3,10 +3,21 @@
     <ObjectName>SamplerRow</ObjectName>
     <Layout>horizontal</Layout>
     <Children>
-      <Template src="skin:hide_show_button.xml">
-        <SetVariable name="object_name">SamplerRowExpand</SetVariable>
-        <SetVariable name="control">[SamplerRow<Variable name="row"/>],expanded</SetVariable>
-      </Template>
+
+      <WidgetGroup>
+        <ObjectName>SamplerExpandButtonContainer</ObjectName>
+        <Layout>vertical</Layout>
+        <Size>20f,-1me</Size>
+        <Children>
+          <Template src="skin:hide_show_button.xml">
+            <SetVariable name="object_name">SamplerRowExpandButton</SetVariable>
+            <SetVariable name="control">[SamplerRow<Variable name="row"/>],expanded</SetVariable>
+          </Template>
+
+          <!-- Try to push the button up to the top. -->
+          <Template src="spacer_v.xml"/>
+        </Children>
+      </WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>SamplerRowCollapsed</ObjectName>
