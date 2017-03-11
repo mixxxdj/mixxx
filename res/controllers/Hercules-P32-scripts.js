@@ -1,8 +1,4 @@
 // USER CONFIGURABLE OPTIONS
-// loop size (in beats) when Mixxx starts
-var defaultLoopSize = 8;
-// beat jump size when Mixxx starts
-var defaultBeatJumpSize = 4;
 // Set to "true" to use the dot on the loop size LED display to indicate
 // that a loop is active. This restricts loop sizes to 2-32 beats and
 // may be helpful if you never use loops less than 2 beats long.
