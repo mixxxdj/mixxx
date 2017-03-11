@@ -31,7 +31,7 @@ QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& colum
     } else if (column == LIBRARYTABLE_TRACKNUMBER) {
         return pTrack->getTrackNumber();
     } else if (column == LIBRARYTABLE_LOCATION) {
-        return pTrack->getLocation();
+        return QDir::toNativeSeparators(pTrack->getLocation());
     } else if (column == LIBRARYTABLE_COMMENT) {
         return pTrack->getComment();
     } else if (column == LIBRARYTABLE_DURATION) {

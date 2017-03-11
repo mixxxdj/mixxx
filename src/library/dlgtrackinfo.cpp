@@ -170,7 +170,7 @@ void DlgTrackInfo::populateFields(const Track& track) {
 
     // Non-editable fields
     txtDuration->setText(track.getDurationText(mixxx::Duration::Precision::SECONDS));
-    txtLocation->setPlainText(track.getLocation());
+    txtLocation->setPlainText(QDir::toNativeSeparators(track.getLocation()));
     txtType->setText(track.getType());
     txtBitrate->setText(QString(track.getBitrateText()) + (" ") + tr("kbps"));
     txtBpm->setText(track.getBpmText());
