@@ -22,6 +22,8 @@ Variables:
         <Layout>vertical</Layout>
         <SizePolicy>min,max</SizePolicy>
         <Children>
+          <!-- margin not respected, workaround -->
+          <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
           <Template src="skin:fx_unit_left.xml">
             <SetVariable name="EffectRack">1</SetVariable>
             <SetVariable name="EffectUnit">3</SetVariable>
@@ -38,6 +40,8 @@ Variables:
         <Layout>vertical</Layout>
         <SizePolicy>min,me</SizePolicy>
         <Children>
+          <!-- margin not respected, workaround -->
+          <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
           <Template src="skin:fx_unit_left_mini.xml">
             <SetVariable name="EffectRack">1</SetVariable>
             <SetVariable name="EffectUnit">3</SetVariable>
@@ -116,6 +120,8 @@ Variables:
         <Layout>vertical</Layout>
         <SizePolicy>min,max</SizePolicy>
         <Children>
+          <!-- margin not respected, workaround -->
+          <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
           <Template src="skin:fx_unit_right.xml">
             <SetVariable name="EffectRack">1</SetVariable>
             <SetVariable name="EffectUnit">4</SetVariable>
@@ -132,6 +138,8 @@ Variables:
         <Layout>vertical</Layout>
         <SizePolicy>min,me</SizePolicy>
         <Children>
+          <!-- margin not respected, workaround -->
+          <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
           <Template src="skin:fx_unit_right_mini.xml">
             <SetVariable name="EffectRack">1</SetVariable>
             <SetVariable name="EffectUnit">4</SetVariable>
