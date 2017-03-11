@@ -202,7 +202,11 @@ P32.Deck = function (deckNumbers, channel) {
             number: i,
             on: P32.padColors.red
         });
-        var samplerNumber = i + (channel - 1) * 16;
+        var row = Math.ceil(i/4);
+        var column = ((i-1) % 4) + 1;
+        var padGrid = channel - 1;
+        var samplerNumber = (8 * (row-1)) + (column) + (padGrid * 4);
+        // Math.ceil(i/4) + (i + (channel - 1) * 4
         this.samplerButton[samplerNumber] = new components.SamplerButton({
             midi: [0x90 + channel, P32.PadNumToMIDIControl(i, 0)],
             number: samplerNumber,

@@ -1872,7 +1872,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.samplerButton[5].input</key>
+                <key>P32.leftDeck.samplerButton[9].input</key>
                 <status>0x91</status>
                 <midino>0x2C</midino>
                 <options>
@@ -1881,7 +1881,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.samplerButton[6].input</key>
+                <key>P32.leftDeck.samplerButton[10].input</key>
                 <status>0x91</status>
                 <midino>0x2D</midino>
                 <options>
@@ -1890,7 +1890,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.samplerButton[7].input</key>
+                <key>P32.leftDeck.samplerButton[11].input</key>
                 <status>0x91</status>
                 <midino>0x2E</midino>
                 <options>
@@ -1899,7 +1899,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.samplerButton[8].input</key>
+                <key>P32.leftDeck.samplerButton[12].input</key>
                 <status>0x91</status>
                 <midino>0x2F</midino>
                 <options>
@@ -1908,7 +1908,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.samplerButton[9].input</key>
+                <key>P32.leftDeck.samplerButton[17].input</key>
                 <status>0x91</status>
                 <midino>0x28</midino>
                 <options>
@@ -1917,7 +1917,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.samplerButton[10].input</key>
+                <key>P32.leftDeck.samplerButton[18].input</key>
                 <status>0x91</status>
                 <midino>0x29</midino>
                 <options>
@@ -1926,7 +1926,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.samplerButton[11].input</key>
+                <key>P32.leftDeck.samplerButton[19].input</key>
                 <status>0x91</status>
                 <midino>0x2A</midino>
                 <options>
@@ -1935,7 +1935,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.samplerButton[12].input</key>
+                <key>P32.leftDeck.samplerButton[20].input</key>
                 <status>0x91</status>
                 <midino>0x2B</midino>
                 <options>
@@ -1944,7 +1944,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.samplerButton[13].input</key>
+                <key>P32.leftDeck.samplerButton[25].input</key>
                 <status>0x91</status>
                 <midino>0x24</midino>
                 <options>
@@ -1953,7 +1953,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.samplerButton[14].input</key>
+                <key>P32.leftDeck.samplerButton[26].input</key>
                 <status>0x91</status>
                 <midino>0x25</midino>
                 <options>
@@ -1962,7 +1962,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.samplerButton[15].input</key>
+                <key>P32.leftDeck.samplerButton[27].input</key>
                 <status>0x91</status>
                 <midino>0x26</midino>
                 <options>
@@ -1971,7 +1971,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.samplerButton[16].input</key>
+                <key>P32.leftDeck.samplerButton[28].input</key>
                 <status>0x91</status>
                 <midino>0x27</midino>
                 <options>
@@ -2016,45 +2016,9 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.samplerButton[5].input</key>
-                <status>0x94</status>
-                <midino>0x2C</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.samplerButton[6].input</key>
-                <status>0x94</status>
-                <midino>0x2D</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.samplerButton[7].input</key>
-                <status>0x94</status>
-                <midino>0x2E</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.samplerButton[8].input</key>
-                <status>0x94</status>
-                <midino>0x2F</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
                 <key>P32.leftDeck.samplerButton[9].input</key>
                 <status>0x94</status>
-                <midino>0x28</midino>
+                <midino>0x2C</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -2063,7 +2027,7 @@
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.samplerButton[10].input</key>
                 <status>0x94</status>
-                <midino>0x29</midino>
+                <midino>0x2D</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -2072,7 +2036,7 @@
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.samplerButton[11].input</key>
                 <status>0x94</status>
-                <midino>0x2A</midino>
+                <midino>0x2E</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -2081,6 +2045,42 @@
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.samplerButton[12].input</key>
                 <status>0x94</status>
+                <midino>0x2F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.samplerButton[17].input</key>
+                <status>0x94</status>
+                <midino>0x28</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.samplerButton[18].input</key>
+                <status>0x94</status>
+                <midino>0x29</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.samplerButton[19].input</key>
+                <status>0x94</status>
+                <midino>0x2A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.samplerButton[20].input</key>
+                <status>0x94</status>
                 <midino>0x2B</midino>
                 <options>
                     <script-binding/>
@@ -2088,7 +2088,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.samplerButton[13].input</key>
+                <key>P32.leftDeck.samplerButton[25].input</key>
                 <status>0x94</status>
                 <midino>0x24</midino>
                 <options>
@@ -2097,7 +2097,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.samplerButton[14].input</key>
+                <key>P32.leftDeck.samplerButton[26].input</key>
                 <status>0x94</status>
                 <midino>0x25</midino>
                 <options>
@@ -2106,7 +2106,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.samplerButton[15].input</key>
+                <key>P32.leftDeck.samplerButton[27].input</key>
                 <status>0x94</status>
                 <midino>0x26</midino>
                 <options>
@@ -2115,7 +2115,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.samplerButton[16].input</key>
+                <key>P32.leftDeck.samplerButton[28].input</key>
                 <status>0x94</status>
                 <midino>0x27</midino>
                 <options>
@@ -2124,7 +2124,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.samplerButton[17].input</key>
+                <key>P32.rightDeck.samplerButton[5].input</key>
                 <status>0x92</status>
                 <midino>0x30</midino>
                 <options>
@@ -2133,7 +2133,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.samplerButton[18].input</key>
+                <key>P32.rightDeck.samplerButton[6].input</key>
                 <status>0x92</status>
                 <midino>0x31</midino>
                 <options>
@@ -2142,7 +2142,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.samplerButton[19].input</key>
+                <key>P32.rightDeck.samplerButton[7].input</key>
                 <status>0x92</status>
                 <midino>0x32</midino>
                 <options>
@@ -2151,7 +2151,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.samplerButton[20].input</key>
+                <key>P32.rightDeck.samplerButton[8].input</key>
                 <status>0x92</status>
                 <midino>0x33</midino>
                 <options>
@@ -2160,7 +2160,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.samplerButton[21].input</key>
+                <key>P32.rightDeck.samplerButton[13].input</key>
                 <status>0x92</status>
                 <midino>0x2C</midino>
                 <options>
@@ -2169,7 +2169,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.samplerButton[22].input</key>
+                <key>P32.rightDeck.samplerButton[14].input</key>
                 <status>0x92</status>
                 <midino>0x2D</midino>
                 <options>
@@ -2178,7 +2178,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.samplerButton[23].input</key>
+                <key>P32.rightDeck.samplerButton[15].input</key>
                 <status>0x92</status>
                 <midino>0x2E</midino>
                 <options>
@@ -2187,7 +2187,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.samplerButton[24].input</key>
+                <key>P32.rightDeck.samplerButton[16].input</key>
                 <status>0x92</status>
                 <midino>0x2F</midino>
                 <options>
@@ -2196,7 +2196,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.samplerButton[25].input</key>
+                <key>P32.rightDeck.samplerButton[21].input</key>
                 <status>0x92</status>
                 <midino>0x28</midino>
                 <options>
@@ -2205,7 +2205,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.samplerButton[26].input</key>
+                <key>P32.rightDeck.samplerButton[22].input</key>
                 <status>0x92</status>
                 <midino>0x29</midino>
                 <options>
@@ -2214,7 +2214,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.samplerButton[27].input</key>
+                <key>P32.rightDeck.samplerButton[23].input</key>
                 <status>0x92</status>
                 <midino>0x2A</midino>
                 <options>
@@ -2223,7 +2223,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.samplerButton[28].input</key>
+                <key>P32.rightDeck.samplerButton[24].input</key>
                 <status>0x92</status>
                 <midino>0x2B</midino>
                 <options>
@@ -2268,7 +2268,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.samplerButton[17].input</key>
+                <key>P32.rightDeck.samplerButton[5].input</key>
                 <status>0x95</status>
                 <midino>0x30</midino>
                 <options>
@@ -2277,7 +2277,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.samplerButton[18].input</key>
+                <key>P32.rightDeck.samplerButton[6].input</key>
                 <status>0x95</status>
                 <midino>0x31</midino>
                 <options>
@@ -2286,7 +2286,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.samplerButton[19].input</key>
+                <key>P32.rightDeck.samplerButton[7].input</key>
                 <status>0x95</status>
                 <midino>0x32</midino>
                 <options>
@@ -2295,7 +2295,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.samplerButton[20].input</key>
+                <key>P32.rightDeck.samplerButton[8].input</key>
                 <status>0x95</status>
                 <midino>0x33</midino>
                 <options>
@@ -2304,7 +2304,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.samplerButton[21].input</key>
+                <key>P32.rightDeck.samplerButton[13].input</key>
                 <status>0x95</status>
                 <midino>0x2C</midino>
                 <options>
@@ -2313,7 +2313,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.samplerButton[22].input</key>
+                <key>P32.rightDeck.samplerButton[14].input</key>
                 <status>0x95</status>
                 <midino>0x2D</midino>
                 <options>
@@ -2322,7 +2322,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.samplerButton[23].input</key>
+                <key>P32.rightDeck.samplerButton[15].input</key>
                 <status>0x95</status>
                 <midino>0x2E</midino>
                 <options>
@@ -2331,7 +2331,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.samplerButton[24].input</key>
+                <key>P32.rightDeck.samplerButton[16].input</key>
                 <status>0x95</status>
                 <midino>0x2F</midino>
                 <options>
@@ -2340,7 +2340,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.samplerButton[25].input</key>
+                <key>P32.rightDeck.samplerButton[21].input</key>
                 <status>0x95</status>
                 <midino>0x28</midino>
                 <options>
@@ -2349,7 +2349,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.samplerButton[26].input</key>
+                <key>P32.rightDeck.samplerButton[22].input</key>
                 <status>0x95</status>
                 <midino>0x29</midino>
                 <options>
@@ -2358,7 +2358,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.samplerButton[27].input</key>
+                <key>P32.rightDeck.samplerButton[23].input</key>
                 <status>0x95</status>
                 <midino>0x2A</midino>
                 <options>
@@ -2367,7 +2367,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.samplerButton[28].input</key>
+                <key>P32.rightDeck.samplerButton[24].input</key>
                 <status>0x95</status>
                 <midino>0x2B</midino>
                 <options>
