@@ -516,7 +516,11 @@ TrackId AutoDJCratesDAO::getRandomTrackId() {
     // Calculate the number of active-tracks that have never been played, and
     // the total number of active-tracks.
     QSqlQuery oQuery(m_database);
-    // SELECT COUNT(*) AS count FROM temp_autodj_activetracks WHERE timesplayed = 0 UNION ALL SELECT COUNT(*) AS count FROM temp_autodj_activetracks;
+    // SELECT COUNT(*) AS count
+    // FROM temp_autodj_activetracks
+    // WHERE timesplayed = 0
+    // UNION ALL SELECT COUNT(*) AS count
+    // FROM temp_autodj_activetracks;
     oQuery.prepare("SELECT COUNT(*) AS count FROM " AUTODJACTIVETRACKS_TABLE
         " WHERE " AUTODJCRATESTABLE_TIMESPLAYED
         " = 0 UNION ALL SELECT COUNT(*) AS count FROM "
@@ -535,16 +539,23 @@ TrackId AutoDJCratesDAO::getRandomTrackId() {
     }
 
     // Get the active percentage (default 20%).
-    int iMinimumAvailable = m_pConfig->getValue(
+    int minimumAvailablePercentage = m_pConfig->getValue(
             ConfigKey("[Auto DJ]", "MinimumAvailable"), 20);
+
+    // If there are no tracks availabe not already in AutoDJ
+    // state readding tracks to AutoSJs
+    if (iTotalTracks == 0) {
+        return getRandomTrackIdFromAutoDj(minimumAvailablePercentage);
+    }
 
     // Calculate the number of active-tracks.  This is either the number of
     // auto-DJ-crate tracks that have never been played, or the active
     // percentage of the total number of tracks, whichever is larger.
     int iMinAvailable = 0;
-    if (iMinimumAvailable) {
-        // if minimum is not disabled (= 0), have a min of one at least
-        iMinAvailable = qMax((iTotalTracks * iMinimumAvailable / 100), 1);
+    if (minimumAvailablePercentage) {
+        // if minimumAvailablePercentage not 0 % (disabled),
+        // have a minimum of one at least
+        iMinAvailable = qMax((iTotalTracks * minimumAvailablePercentage / 100), 1);
     }
     int iActiveTracks = qMax(iUnplayedTracks, iMinAvailable);
 
@@ -581,6 +592,8 @@ TrackId AutoDJCratesDAO::getRandomTrackId() {
 
         // Allow that to be a new maximum.
         iActiveTracks = qMax(iActiveTracks, iIgnoreTimeTracks);
+
+        qDebug() << iActiveTracks << iIgnoreTimeTracks;
     }
 
     // If there are no tracks, let our caller know.
@@ -590,7 +603,8 @@ TrackId AutoDJCratesDAO::getRandomTrackId() {
     }
 
     // Pick a random track.
-    // SELECT track_id FROM temp_autodj_activetracks LIMIT 1 OFFSET ABS (RANDOM() % :active);
+    // SELECT track_id
+    // FROM temp_autodj_activetracks LIMIT 1 OFFSET ABS (RANDOM() % :active);
     oQuery.prepare("SELECT " AUTODJCRATESTABLE_TRACKID " FROM "
         AUTODJACTIVETRACKS_TABLE " LIMIT 1 OFFSET ABS (RANDOM() % :active)");
     oQuery.bindValue (":active", iActiveTracks);
@@ -602,10 +616,82 @@ TrackId AutoDJCratesDAO::getRandomTrackId() {
         // Give our caller the randomly-selected track.
         return TrackId(oQuery.value(0));
     } else {
+        DEBUG_ASSERT(false); // We should have exit earlier
         qDebug() << "No random track available for Auto DJ";
         return TrackId();
     }
 }
+
+TrackId AutoDJCratesDAO::getRandomTrackIdFromAutoDj(int percentActive) {
+    // This function is called when all crate tracks are already in AutoDJ.
+    // So now the percentage applies to the AutoDJ tracks as well.
+    if (percentActive == 0 || m_bUseIgnoreTime) {
+        qDebug() << "All crate Tracks already added to Auto DJ";
+        return TrackId();
+    }
+
+    // Calculate the number of tracks in the AutoDJ playlist
+    // that are already queued up from the crates
+    QSqlQuery oQuery(m_database);
+    // SELECT COUNT(*) AS count
+    // FROM temp_autodj_crates
+    // WHERE autodjrefs > 0;
+    oQuery.prepare("SELECT COUNT(*) AS count FROM " AUTODJCRATES_TABLE
+        " WHERE " AUTODJCRATESTABLE_AUTODJREFS " > 0" );
+    VERIFY_OR_DEBUG_ASSERT(oQuery.exec()) {
+        LOG_FAILED_QUERY(oQuery);
+        return TrackId();
+    }
+    VERIFY_OR_DEBUG_ASSERT(oQuery.next()) {
+        return TrackId();
+    }
+    int queuedTracks = oQuery.value(0).toInt();
+
+    // If there are no tracks, let our caller know.
+    if (queuedTracks == 0) {
+        qDebug() << "No tracks for re-add to Auto DJ";
+        return TrackId();
+    }
+
+    // Use the top percentage of the AutoDJ to re-add
+    int iActiveTracks = qMax((queuedTracks * percentActive / 100), 1);
+
+    // Pick a random track.
+    // SELECT DISTINCT track_id
+    // FROM temp_autodj_crates INNER JOIN Playlists
+    // ON temp_autodj_crates.track_id = PlaylistsTracks.track_id
+    // AND PlaylistsTracks.playlist_id = m_iAutoDjPlaylistId
+    // ORDER BY temp_autodj_crates.autodjrefs, PlaylistsTracks.position
+    // LIMIT 1 OFFSET ABS (RANDOM() % :active);
+    oQuery.prepare(QString("SELECT DISTINCT " AUTODJCRATES_TABLE "."
+            AUTODJCRATESTABLE_TRACKID " FROM "
+            AUTODJCRATES_TABLE " INNER JOIN " PLAYLIST_TRACKS_TABLE
+            " ON " AUTODJCRATES_TABLE "." AUTODJCRATESTABLE_TRACKID
+            " = " PLAYLIST_TRACKS_TABLE ".%1"
+            " AND " PLAYLIST_TRACKS_TABLE ".%2 = %3"
+            " ORDER BY " AUTODJCRATES_TABLE "." AUTODJCRATESTABLE_AUTODJREFS ", "
+            PLAYLIST_TRACKS_TABLE ".%4"
+            " LIMIT 1 OFFSET ABS (RANDOM() % :active)")
+            .arg(PLAYLISTTRACKSTABLE_TRACKID, // %1
+                 PLAYLISTTRACKSTABLE_PLAYLISTID, // %2
+                 QString::number(m_iAutoDjPlaylistId), // %3
+                 PLAYLISTTABLE_POSITION)); // %4
+    oQuery.bindValue (":active", iActiveTracks);
+    VERIFY_OR_DEBUG_ASSERT(oQuery.exec()) {
+        LOG_FAILED_QUERY(oQuery);
+        return TrackId();
+    }
+    if (oQuery.next()) {
+        // Give our caller the randomly-selected track.
+        return TrackId(oQuery.value(0));
+    } else {
+        DEBUG_ASSERT(false); // We should have exit earlier
+        qDebug() << "No random track available for Auto DJ";
+        return TrackId();
+    }
+}
+
+
 
 // Signaled by the track DAO when a track's information is updated.
 void AutoDJCratesDAO::slotTrackDirty(TrackId trackId) {

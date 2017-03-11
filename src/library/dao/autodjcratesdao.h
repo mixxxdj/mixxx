@@ -62,6 +62,10 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
     // auto-DJ-crates database.  Returns true if successful.
     bool updateLastPlayedDateTimeForTrack(TrackId trackId);
 
+    // Calculates a random Track from AutoDJ,
+    // This is used when all active tracks are already queued up.
+    TrackId getRandomTrackIdFromAutoDj(int percentActive);
+
   private slots:
     // Signaled by the track DAO when a track's information is updated.
     void slotTrackDirty(TrackId trackId);
