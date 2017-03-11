@@ -204,7 +204,7 @@ Variables:
             <Size>1min,24f</Size>
             <Children>
 
-              <Template src="skin:hotcues.xml"/>
+              <Template src="skin:hotcues_sampler_preview.xml"/>
 
               <WidgetGroup>
                 <ObjectName>SamplerSyncGainPfl</ObjectName>

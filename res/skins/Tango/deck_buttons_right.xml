@@ -28,7 +28,7 @@
 
       <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
 
-      <Template src="skin:hotcues.xml"/>
+      <Template src="skin:hotcues_deck.xml"/>
 
       <WidgetGroup><!-- Deck Buttons -->
         <ObjectName>DeckButtonsRight</ObjectName>
