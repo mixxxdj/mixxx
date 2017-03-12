@@ -297,19 +297,24 @@ Variables:
                   </WidgetGroup><!-- /Duck strength, hidden when Auto-Duck is OFF -->
                   <!-- /MIC Duck controls -->
 
+                  <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
+
                   <Template src="skin:mixerbar_mic.xml">
-                    <SetVariable name="MicNumber"></SetVariable>
+                    <SetVariable name="Label">1</SetVariable>
                   </Template>
 
                   <Template src="skin:mixerbar_mic.xml">
+                    <SetVariable name="Label">2</SetVariable>
                     <SetVariable name="MicNumber">2</SetVariable>
                   </Template>
 
                   <Template src="skin:mixerbar_mic.xml">
+                    <SetVariable name="Label">3</SetVariable>
                     <SetVariable name="MicNumber">3</SetVariable>
                   </Template>
 
                   <Template src="skin:mixerbar_mic.xml">
+                    <SetVariable name="Label">4</SetVariable>
                     <SetVariable name="MicNumber">4</SetVariable>
                   </Template>
                 </Children>

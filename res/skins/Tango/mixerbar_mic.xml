@@ -5,25 +5,26 @@
     <Children>
 
       <WidgetGroup>
-        <ObjectName>Mic<Variable name="MicNumber"/>Label</ObjectName>
-        <Size>28f,32f</Size>
-      </WidgetGroup>
-
-      <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
-
-      <WidgetGroup>
-        <SizePolicy>max,max</SizePolicy>
-        <Layout>vertical</Layout>
+        <Layout>stacked</Layout>
+        <Size>20f,32f</Size>
         <Children>
+          <!-- This I left here in order to add an overlay (X) later on -->
           <Template src="skin:button_2state.xml">
-            <SetVariable name="ToolTipID">headSplit</SetVariable>
-            <SetVariable name="ObjectName">MixerBarButton</SetVariable>
-            <SetVariable name="Size">24f,24f</SetVariable>
-            <SetVariable name="state_0_text">TALK</SetVariable>
-            <SetVariable name="state_1_text">TALK</SetVariable>
+            <SetVariable name="ToolTipID">microphone_talkover</SetVariable>
+            <SetVariable name="ObjectName">MixerBar_MicAuxMuteButton</SetVariable>
+            <SetVariable name="Size">20f,32f</SetVariable>
             <SetVariable name="ConfigKey">[Microphone<Variable name="MicNumber"/>],talkover</SetVariable>
           </Template>
-          <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
+          <!-- Using a Label here would be eaier, but there were problems
+              centering its text. So I added a button just as display. -->
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="ToolTipID">microphone_talkover</SetVariable>
+            <SetVariable name="ObjectName">MixerBar_MicAuxMuteButtonUnderlay</SetVariable>
+            <SetVariable name="Size">20f,32f</SetVariable>
+            <SetVariable name="state_0_text"><Variable name="Label"/></SetVariable>
+            <SetVariable name="state_1_text"><Variable name="Label"/></SetVariable>
+            <SetVariable name="ConfigKey">[Microphone<Variable name="MicNumber"/>],talkover</SetVariable>
+          </Template>
         </Children>
       </WidgetGroup>
 

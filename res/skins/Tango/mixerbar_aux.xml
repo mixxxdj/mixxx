@@ -5,8 +5,27 @@
     <Children>
 
       <WidgetGroup>
-        <ObjectName>Aux<Variable name="AuxNumber"/>Label</ObjectName>
-        <Size>28f,32f</Size>
+        <Layout>stacked</Layout>
+        <Size>20f,32f</Size>
+        <Children>
+          <!-- This I left here in order to add an overlay (X) later on -->
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="ToolTipID">headSplit</SetVariable>
+            <SetVariable name="ObjectName">MixerBar_MicAuxMuteButton</SetVariable>
+            <SetVariable name="Size">20f,32f</SetVariable>
+            <SetVariable name="ConfigKey">[Auxiliary<Variable name="AuxNumber"/>],mute</SetVariable>
+          </Template>
+          <!-- Using a Label here would be eaier, but there were problems
+              centering its text. So I added a button just as display. -->
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="ToolTipID">microphone_talkover</SetVariable>
+            <SetVariable name="ObjectName">MixerBar_MicAuxMuteButtonUnderlay</SetVariable>
+            <SetVariable name="Size">20f,32f</SetVariable>
+            <SetVariable name="state_0_text"><Variable name="AuxNumber"/></SetVariable>
+            <SetVariable name="state_1_text"><Variable name="AuxNumber"/></SetVariable>
+            <SetVariable name="ConfigKey">[Auxiliary<Variable name="AuxNumber"/>],mute</SetVariable>
+          </Template>
+        </Children>
       </WidgetGroup>
 
       <Template src="skin:knob_textless.xml">

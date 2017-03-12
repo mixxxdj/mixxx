@@ -62,7 +62,7 @@ Variables:
             <SizePolicy>min,min</SizePolicy>
             <Children>
 
-              <WidgetGroup><!-- Overview + Title -->
+              <WidgetGroup><!-- Overview + Title when track is loaded -->
                 <ObjectName>SamplerOverviewRow_mini</ObjectName>
                 <Layout>stacked</Layout>
                 <Size>1min,34f</Size>
@@ -112,7 +112,22 @@ Variables:
                   </Overview>
 
                 </Children>
-              </WidgetGroup><!-- /Overview + Title -->
+                <Connection>
+                  <ConfigKey>[Sampler<Variable name="samplernum"/>],track_loaded</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- /Overview + Title when track is loaded -->
+
+              <WidgetGroup><!-- Neutral spacer when no track is loaded -->
+                <ObjectName>Spacer33</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <Children/>
+                <Connection>
+                  <ConfigKey>[Sampler<Variable name="samplernum"/>],track_loaded</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- /Neutral spacer when no track is loaded -->
 
               <WidgetGroup><Size>2f,1min</Size><Children/></WidgetGroup>
 
