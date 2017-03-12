@@ -1126,6 +1126,7 @@ class MixxxCore(Feature):
                    "util/logging.cpp",
                    "util/cmdlineargs.cpp",
                    "util/audiosignal.cpp",
+                   "util/widgethider.cpp",
 
                    '#res/mixxx.qrc'
                    ]

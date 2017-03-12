@@ -16,10 +16,13 @@
 #include "control/controlproxy.h"
 #include "util/sandbox.h"
 
+
 DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
+          m_hider(parent),
           m_selFormat("","",false),
-          m_pConfig(pConfig) {
+          m_pConfig(pConfig)
+          {
     setupUi(this);
 
     // Setting recordings path.
@@ -35,6 +38,14 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     connect(PushButtonBrowseRecordings, SIGNAL(clicked()),
             this, SLOT(slotBrowseRecordingsDir()));
 
+    m_hider.retainSizeFor(LabelQuality);
+    m_hider.retainSizeFor(SliderQuality);
+    m_hider.retainSizeFor(TextQuality);
+    m_hider.retainSizeFor(LabelCompression);
+    m_hider.retainSizeFor(SliderCompression);
+    m_hider.retainSizeFor(TextCompression);
+    m_hider.retainSizeFor(labelOptionGroup);
+            
     // Setting Encoder
     bool found = false;
     QString prefformat = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Encoding"));
@@ -149,8 +160,6 @@ void DlgPrefRecord::slotUpdate() {
     QString recordingsPath = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Directory"));
     LineEditRecordings->setText(recordingsPath);
 
-   m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), 
-        ConfigValue(m_selFormat.internalName));
 
 //    setupEncoderUI(m_selFormat);
  
@@ -204,24 +213,30 @@ void DlgPrefRecord::setupEncoderUI(Encoder::Format selformat)
 {
     EncoderSettingsPointer settings = EncoderFactory::getFactory().getEncoderSettings(selformat, m_pConfig);
     if (settings->usesQualitySlider()) {
-        SliderQuality->setEnabled(true);
+        m_hider.showWidget(LabelQuality);
+        m_hider.showWidget(SliderQuality);
+        m_hider.showWidget(TextQuality);
         SliderQuality->setMinimum(0);
         SliderQuality->setMaximum(settings->getQualityValues().size()-1);
         SliderQuality->setValue(settings->getQualityIndex());
         updateTextQuality();
     } else {
-        SliderQuality->setEnabled(false);
-        TextQuality->setText("");
+        m_hider.hideWidget(LabelQuality);
+        m_hider.hideWidget(SliderQuality);
+        m_hider.hideWidget(TextQuality);
     }
     if (settings->usesCompressionSlider()) {
-        SliderCompression->setEnabled(true);
+        m_hider.showWidget(LabelCompression);
+        m_hider.showWidget(SliderCompression);
+        m_hider.showWidget(TextCompression);
         SliderCompression->setMinimum(0);
         SliderCompression->setMaximum(settings->getCompressionValues().size()-1);
         SliderCompression->setValue(settings->getCompression());
         updateTextCompression();
     } else {
-        SliderCompression->setEnabled(false);
-        TextCompression->setText("");
+        m_hider.hideWidget(LabelCompression);
+        m_hider.hideWidget(SliderCompression);
+        m_hider.hideWidget(TextCompression);
     }
 
     foreach(QAbstractButton* widget, m_optionWidgets) {
@@ -232,7 +247,7 @@ void DlgPrefRecord::setupEncoderUI(Encoder::Format selformat)
     }
     m_optionWidgets.clear();
     if (settings->usesOptionGroups()) {
-        labelOptionGroup->setVisible(true);
+        m_hider.showWidget(labelOptionGroup);
         // TODO: Right now i am supporting just one optiongroup.
         // The concept is already there for multiple groups
         // It will require to generate the buttongroup dynamically like:
@@ -263,7 +278,7 @@ void DlgPrefRecord::setupEncoderUI(Encoder::Format selformat)
             controlIdx--;
         }
     } else {
-        labelOptionGroup->setVisible(false);
+        m_hider.hideWidget(labelOptionGroup);
     }
 }
 
