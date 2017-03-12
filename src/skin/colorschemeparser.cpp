@@ -15,11 +15,11 @@ void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
                                                 UserSettingsPointer pConfig) {
     QDomNode colsch = docElem.namedItem("Schemes");
 
+    bool found = false;
+
     if (!colsch.isNull() && colsch.isElement()) {
         QString schname = pConfig->getValueString(ConfigKey("[Config]","Scheme"));
         QDomNode sch = colsch.firstChild();
-
-        bool found = false;
 
         if (schname.isEmpty()) {
             // If no scheme stored, accept the first one in the file
@@ -42,6 +42,13 @@ void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
             WImageStore::setLoader(imsrc);
             WSkinColor::setLoader(imsrc);
         }
+    }
+    if (!found) {
+        QSharedPointer<ImgSource> imsrc =
+                QSharedPointer<ImgSource>(new ImgLoader());
+        WPixmapStore::setLoader(imsrc);
+        WImageStore::setLoader(imsrc);
+        WSkinColor::setLoader(imsrc);
     }
 }
 
