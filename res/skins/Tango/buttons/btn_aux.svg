@@ -9,12 +9,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="22"
+   width="18"
    height="32"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_mic.svg">
+   sodipodi:docname="btn_aux.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="7.9999996"
-     inkscape:cx="-14.367699"
-     inkscape:cy="14.244237"
+     inkscape:zoom="11.313708"
+     inkscape:cx="10.509768"
+     inkscape:cy="20.843284"
      inkscape:document-units="px"
      inkscape:current-layer="g3923"
      showgrid="false"
@@ -66,23 +66,10 @@
      inkscape:groupmode="layer"
      inkscape:label="OFF"
      style="display:inline">
-    <g
-       id="g2989"
-       transform="translate(-88.571429,8.1332715)" />
-    <g
-       id="g3785"
-       transform="matrix(0.51582577,0.23602201,-0.23602201,0.51582577,242.67325,503.6991)"
-       style="fill:#d2d2d2;fill-opacity:1">
-      <path
-         inkscape:connector-curvature="0"
-         id="path2994"
-         d="m 18,1000.1524 c -4.336479,0 -7.84375,3.5072 -7.84375,7.8437 0,1.8238 0.613137,3.5109 1.65625,4.8438 l 12.375,0 c 1.043113,-1.3329 1.65625,-3.02 1.65625,-4.8438 0,-4.3365 -3.507271,-7.8437 -7.84375,-7.8437 z"
-         style="fill:#d2d2d2;fill-opacity:1;fill-rule:nonzero;stroke:none" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path3024"
-         d="m 12.53125,1013.9247 2.21875,33.7813 6.5,0 2.21875,-33.7813 -10.9375,0 z M 18,1017.5497 c 0.829921,0 1.5,0.669 1.5,1.5 l 0,5.0313 c 0,0.831 -0.670079,1.5 -1.5,1.5 -0.829921,0 -1.5,-0.669 -1.5,-1.5 l 0,-5.0313 c 0,-0.831 0.670079,-1.5 1.5,-1.5 z"
-         style="fill:#d2d2d2;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline" />
-    </g>
+    <path
+       inkscape:connector-curvature="0"
+       id="rect3835-6"
+       d="m 8.160303,1022.9654 c -0.390055,0 -0.70407,0.314 -0.70407,0.704 l 0,6.6667 -2.948297,0 0,9.3068 2.112213,4.2247 0,5.7644 4.224425,0 0,-5.7644 2.112213,-4.2247 0,-9.3068 -2.948296,0 0,-6.6667 c 0,-0.39 -0.314017,-0.704 -0.704072,-0.704 l -1.144116,0 z"
+       style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#d2d2d2;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Ubuntu;-inkscape-font-specification:Ubuntu" />
   </g>
 </svg>

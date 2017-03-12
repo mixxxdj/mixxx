@@ -14,7 +14,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_mic1.svg">
+   sodipodi:docname="btn_aux4.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="31.999999"
-     inkscape:cx="17.56009"
-     inkscape:cy="9.131454"
+     inkscape:zoom="11.313708"
+     inkscape:cx="-12.083326"
+     inkscape:cy="12.967121"
      inkscape:document-units="px"
      inkscape:current-layer="g3923"
      showgrid="false"
@@ -69,32 +69,18 @@
     <g
        id="g2989"
        transform="translate(-88.571429,8.1332715)" />
-    <g
-       id="g3785"
-       transform="matrix(0.51582577,0.23602201,-0.23602201,0.51582577,242.67325,503.6991)"
-       style="fill:#939393;fill-opacity:1">
-      <path
-         inkscape:connector-curvature="0"
-         id="path2994"
-         d="m 18,1000.1524 c -4.336479,0 -7.84375,3.5072 -7.84375,7.8437 0,1.8238 0.613137,3.5109 1.65625,4.8438 l 12.375,0 c 1.043113,-1.3329 1.65625,-3.02 1.65625,-4.8438 0,-4.3365 -3.507271,-7.8437 -7.84375,-7.8437 z"
-         style="fill:#939393;fill-opacity:1;fill-rule:nonzero;stroke:none" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path3024"
-         d="m 12.53125,1013.9247 2.21875,33.7813 6.5,0 2.21875,-33.7813 -10.9375,0 z M 18,1017.5497 c 0.829921,0 1.5,0.669 1.5,1.5 l 0,5.0313 c 0,0.831 -0.670079,1.5 -1.5,1.5 -0.829921,0 -1.5,-0.669 -1.5,-1.5 l 0,-5.0313 c 0,-0.831 0.670079,-1.5 1.5,-1.5 z"
-         style="fill:#939393;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline" />
-    </g>
+    <path
+       style="fill:#939393;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       d="m 8.1603034,1022.9654 c -0.3900552,0 -0.7040705,0.314 -0.7040705,0.704 l 0,6.6667 -2.9482965,0 0,9.3068 2.1122125,4.2247 0,5.7644 4.2244251,0 0,-5.7644 2.112213,-4.2247 0,-9.3068 -2.948296,0 0,-6.6667 c 0,-0.39 -0.3140174,-0.704 -0.7040725,-0.704 l -1.1441151,0 z"
+       id="rect3835-6"
+       inkscape:connector-curvature="0" />
     <g
        style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#d2d2d2;fill-opacity:1;stroke:none;display:inline;font-family:Ubuntu;-inkscape-font-specification:Ubuntu"
        id="text3030">
-      <g
-         style="line-height:125%;fill:#d2d2d2;font-family:Ubuntu;-inkscape-font-specification:Ubuntu"
-         id="text3999">
-        <path
-           d="m 20.408,1047.9142 0,-8.304 c -0.448005,0.32 -0.960005,0.608 -1.536,0.864 -0.576003,0.24 -1.064003,0.432 -1.464,0.576 l -0.96,-2.448 c 0.383998,-0.144 0.799998,-0.328 1.248,-0.552 0.447997,-0.224 0.895996,-0.472 1.344,-0.744 0.447995,-0.272 0.871995,-0.56 1.272,-0.864 0.399994,-0.304 0.743994,-0.616 1.032,-0.936 l 2.016,0 0,12.408 2.952,0 0,2.448 -9.024,0 0,-2.448 3.12,0"
-           style="font-size:24px;font-weight:bold;fill:#d2d2d2;font-family:Ubuntu Mono;-inkscape-font-specification:Ubuntu Mono Bold"
-           id="path4524" />
-      </g>
+      <path
+         d="m 21.752,1039.2022 c -0.288007,0.368 -0.584007,0.76 -0.888,1.176 -0.304006,0.416 -0.608006,0.856 -0.912,1.32 -0.288005,0.448 -0.568005,0.904 -0.84,1.368 -0.272004,0.464 -0.512004,0.92 -0.72,1.368 l 3.36,0 0,-5.232 m 2.952,-3.696 0,8.928 1.608,0 0,2.424 -1.608,0 0,3.504 -2.952,0 0,-3.504 -6.192,0 0,-2.16 c 0.303999,-0.624 0.695998,-1.328 1.176,-2.112 0.479997,-0.8 1.007997,-1.616 1.584,-2.448 0.575996,-0.832 1.183995,-1.648 1.824,-2.448 0.639994,-0.816 1.279993,-1.544 1.92,-2.184 l 2.64,0"
+         style="font-size:24px;font-weight:bold;fill:#d2d2d2;font-family:Ubuntu Mono;-inkscape-font-specification:Ubuntu Mono Bold"
+         id="path3910" />
     </g>
   </g>
 </svg>

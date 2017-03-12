@@ -215,81 +215,58 @@ WPushButton {
 
 #MixerBarSection {
   qproperty-layoutAlignment: 'AlignTop';
-  margin: 2px 8px 1px 0px;	/*
-  padding: 2px 2px 1px 0px;
-  border-top: 2px solid #151515;
-  border-bottom: 2px solid #151515;
-  border-right: 1px solid #585858;
-  background-color: #331299;	*/
+  margin: 2px 0px 1px 0px;
 }
 
-#MasterLabel, #HeadLabel, #MicLabel, #Mic1Label, #Mic2Label, #Aux1Label, #Aux2Label { /*
-  border-radius: 2px;
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 0.5, y2: 0,
-                                    stop: 0 #666666,
-                                    stop: 1 #1e1e1e); */
+#MasterLabel, #HeadLabel, #MicSectionLabel, #AuxSectionLabel {
   border: 1px solid #585858;
   border-right: 0px;
   border-bottom: 0px;
 }
+#MicLabel, #Mic2Label, #Mic3Label, #Mic4Label,
+#Aux1Label, #Aux2Label, #Aux3Label, #Aux4Label {  /*
+  border-left: 1px solid #585858; */
+}
 
 #MasterLabel {
   image: url(skin:/buttons/btn_master.svg) no-repeat center center;
-  }
+}
 
 #HeadLabel {
   image: url(skin:/buttons/btn_head.svg) no-repeat center center;
-  } /*
-  #HeadLabel[displayValue="0"]:hover {
-    image: url(skin:/buttons/btn_head_mute_hover.svg) no-repeat center center;
-  }
-  #HeadLabel[displayValue="1"] {
-    image: url(skin:/buttons/btn_head_mute.svg) no-repeat center center;
-  } */
+}
 
-#MicLabel {
+#MicSectionLabel {
   image: url(skin:/buttons/btn_mic.svg) no-repeat center center;
   }
+  #MicLabel {
+    image: url(skin:/buttons/btn_mic1.svg) no-repeat center center;
+    }
+  #Mic2Label {
+    image: url(skin:/buttons/btn_mic2.svg) no-repeat center center;
+    }
+  #Mic3Label {
+    image: url(skin:/buttons/btn_mic3.svg) no-repeat center center;
+    }
+  #Mic4Label {
+    image: url(skin:/buttons/btn_mic4.svg) no-repeat center center;
+    }
 
-#Mic1Label {
-  image: url(skin:/buttons/btn_mic1.svg) no-repeat center center;
-  } /*
-  #Mic1Label[displayValue="0"]:hover {
-    image: url(skin:/buttons/btn_mic1_mute_hover.svg) no-repeat center center;
+#AuxSectionLabel {
+  image: url(skin:/buttons/btn_aux.svg) no-repeat center center;
   }
-  #Mic1Label[displayValue="1"] {
-    image: url(skin:/buttons/btn_mic1_mute.svg) no-repeat center center;
-  } */
-
-#Mic2Label {
-  image: url(skin:/buttons/btn_mic2.svg) no-repeat center center;
-  } /*
-  #Mic2Label[displayValue="0"]:hover {
-    image: url(skin:/buttons/btn_mic2_mute_hover.svg) no-repeat center center;
-  }
-  #Mic2Label[displayValue="1"] {
-    image: url(skin:/buttons/btn_mic2_mute.svg) no-repeat center center;
-  } */
-
-#Aux1Label {
-  image: url(skin:/buttons/btn_aux1.svg) no-repeat center center;
-  } /*
-  #Aux1Label[displayValue="0"]:hover {
-    image: url(skin:/buttons/btn_aux1_mute_hover.svg) no-repeat center center;
-  }
-  #Aux1Label[displayValue="1"] {
-    image: url(skin:/buttons/btn_aux1_mute.svg) no-repeat center center;
-  } */
-
-#Aux2Label {
-  image: url(skin:/buttons/btn_aux2.svg) no-repeat center center;
-  } /*
-  #Aux2Label[displayValue="0"]:hover {
-    image: url(skin:/buttons/btn_aux2_mute_hover.svg) no-repeat center center;
-  }
-  #Aux2Label[displayValue="1"] {
-    image: url(skin:/buttons/btn_aux2_mute.svg) no-repeat center center;
-  } */
+  #Aux1Label {
+    image: url(skin:/buttons/btn_aux1.svg) no-repeat center center;
+    }
+  #Aux2Label {
+    image: url(skin:/buttons/btn_aux2.svg) no-repeat center center;
+    }
+  #Aux3Label {
+    image: url(skin:/buttons/btn_aux3.svg) no-repeat center center;
+    }
+  #Aux4Label {
+    image: url(skin:/buttons/btn_aux4.svg) no-repeat center center;
+    }
 
 #MixerBarButton {
   font-weight: bold; /*

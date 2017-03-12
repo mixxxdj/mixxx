@@ -43,12 +43,6 @@ Variables:
             <Size>32f,32f</Size>
           </WidgetGroup>
 
-          <!-- All spacers left of MixerBarSliders are necessary
-          because margin/padding won't give a proper offset to neighbours,
-          just a shift of border/background while maintaining hover area.
-          This looks odd. -->
-          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-
           <WidgetGroup><!-- Volume fader + VU Meter -->
             <SizePolicy>max,max</SizePolicy>
             <Layout>vertical</Layout>
@@ -93,6 +87,10 @@ Variables:
             </Children>
           </WidgetGroup><!-- /Volume fader + VU Meter -->
 
+          <!-- All spacers left of MixerBarSliders are necessary
+          because margin/padding won't give a proper offset to neighbours,
+          just a shift of border/background while maintaining hover area.
+          This looks odd. -->
           <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 
           <WidgetGroup><!-- Balance fader + V-Spacer -->
@@ -228,289 +226,101 @@ Variables:
         <Layout>horizontal</Layout>
         <Size>-1min,35f</Size>
         <Children>
-
-          <WidgetGroup><!-- MIC Auto-Duck controls -->
+          <WidgetGroup>
+            <ObjectName>MixerBarSection</ObjectName>
             <Layout>horizontal</Layout>
-            <ObjectName>AlignBottomLeft</ObjectName>
             <Size>-1min,35f</Size>
             <Children>
-              <WidgetGroup>
-                <ObjectName>MixerBarSection</ObjectName>
-                <Layout>horizontal</Layout>
-                <Size>-1min,35f</Size>
-                <Children>
 
+              <WidgetGroup>
+                <ObjectName>MicSectionLabel</ObjectName>
+                <Size>22f,32f</Size>
+              </WidgetGroup>
+
+              <Template src="skin:button_2state_persist.xml">
+                <SetVariable name="ObjectName">MixerBarToggler</SetVariable>
+                <SetVariable name="Size">11f,32f</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Tango],mixerbar_mic_expanded</SetVariable>
+              </Template>
+
+              <WidgetGroup><!-- MICs expanded/collapsed -->
+                <SizePolicy>max,max</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                <!-- MIC Duck controls -->
+                  <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
                   <WidgetGroup>
-                    <ObjectName>MicLabel</ObjectName>
-                    <Size>32f,32f</Size>
+                    <SizePolicy>max,max</SizePolicy>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <Template src="skin:button_3state_persist.xml">
+                        <SetVariable name="ObjectName">MixerBarButton</SetVariable>
+                        <SetVariable name="Size">42f,24f</SetVariable>
+                        <SetVariable name="state_0_text">DUCK</SetVariable>
+                        <SetVariable name="state_1_text">AUTO</SetVariable>
+                        <SetVariable name="state_2_text">MAN</SetVariable>
+                        <SetVariable name="ConfigKeyPerm">[Master],talkoverDucking</SetVariable>
+                      </Template>
+                      <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
+                    </Children>
                   </WidgetGroup>
 
-                  <Template src="skin:button_2state_persist.xml">
-                    <SetVariable name="ObjectName">MixerBarToggler</SetVariable>
-                    <SetVariable name="Size">11f,32f</SetVariable>
-                    <SetVariable name="ConfigKeyPerm">[Tango],mixerbar_mic_extras</SetVariable>
-                  </Template>
+                  <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
-                  <WidgetGroup><!-- Extra controls -->
-                    <SizePolicy>max,max</SizePolicy>
-                    <Layout>horizontal</Layout>
+                  <WidgetGroup><!-- Duck strength, hidden when Auto-Duck is OFF -->
+                    <Layout>stacked</Layout>
+                    <Size>28f,28f</Size>
                     <Children>
-                        <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-                      <WidgetGroup>
-                        <SizePolicy>max,max</SizePolicy>
+                      <!-- index 0 due to bug -->
+                      <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+                      <WidgetGroup><!-- translucent cover when Spinny/Cover is hidden -->
+                        <ObjectName>MixerBarCover</ObjectName>
                         <Layout>vertical</Layout>
-                        <Children>
-                          <Template src="skin:button_3state_persist.xml">
-                            <SetVariable name="ObjectName">MixerBarButton</SetVariable>
-                            <SetVariable name="Size">42f,24f</SetVariable>
-                            <SetVariable name="state_0_text">DUCK</SetVariable>
-                            <SetVariable name="state_1_text">AUTO</SetVariable>
-                            <SetVariable name="state_2_text">MAN</SetVariable>
-                            <SetVariable name="ConfigKeyPerm">[Master],talkoverDucking</SetVariable>
-                          </Template>
-                          <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
-                        </Children>
+                        <SizePolicy>me,me</SizePolicy>
+                        <Children/>
+                        <Connection>
+                          <ConfigKey persist="true">[Master],talkoverDucking</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                          <Transform><Not/></Transform>
+                        </Connection>
                       </WidgetGroup>
 
-                        <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-
-                      <WidgetGroup><!-- Duck strength, hidden when Auto-Duck is OFF -->
-                        <Layout>stacked</Layout>
-                        <Size>28f,28f</Size>
-                        <Children>
-                          <!-- index 0 due to bug -->
-                          <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-                          <WidgetGroup><!-- translucent cover when Spinny/Cover is hidden -->
-                            <ObjectName>MixerBarCover</ObjectName>
-                            <Layout>vertical</Layout>
-                            <SizePolicy>me,me</SizePolicy>
-                            <Children/>
-                            <Connection>
-                              <ConfigKey persist="true">[Master],talkoverDucking</ConfigKey>
-                              <BindProperty>visible</BindProperty>
-                              <Transform><Not/></Transform>
-                            </Connection>
-                          </WidgetGroup>
-                          <Template src="skin:knob_textless.xml">
-                            <SetVariable name="ToolTipID"></SetVariable>
-                            <SetVariable name="ObjectName">MixerBarKnob</SetVariable>
-                            <SetVariable name="Size">28f,28f</SetVariable>
-                            <SetVariable name="group">[Master]</SetVariable>
-                            <SetVariable name="ConfigKey">duckStrength</SetVariable>
-                            <SetVariable name="Color">blue</SetVariable>
-                          </Template>
-                        </Children>
-                      </WidgetGroup><!-- /Duck strength, hidden when Auto-Duck is OFF -->
-
-                    </Children>
-                    <Connection>
-                      <ConfigKey persist="true">[Tango],mixerbar_mic_extras</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup><!-- /Extra controls -->
-
-                </Children>
-              </WidgetGroup>
-            </Children>
-          </WidgetGroup><!-- /MIC Auto-Duck controls -->
-
-          <WidgetGroup><!-- MIC 1 -->
-            <Layout>horizontal</Layout>
-            <ObjectName>AlignBottomLeft</ObjectName>
-            <Size>-1min,35f</Size>
-            <Children>
-              <WidgetGroup>
-                <ObjectName>MixerBarSection</ObjectName>
-                <Layout>horizontal</Layout>
-                <Size>-1min,35f</Size>
-                <Children>
-
-                  <WidgetGroup>
-                    <ObjectName>Mic1Label</ObjectName>
-                    <Size>32f,32f</Size>
-                  </WidgetGroup>
-
-                  <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
-
-                  <WidgetGroup>
-                    <SizePolicy>max,max</SizePolicy>
-                    <Layout>vertical</Layout>
-                    <Children>
-                      <Template src="skin:button_2state.xml">
-                        <SetVariable name="ToolTipID">headSplit</SetVariable>
-                        <SetVariable name="ObjectName">MixerBarButton</SetVariable>
-                        <SetVariable name="Size">38f,24f</SetVariable>
-                        <SetVariable name="state_0_text">TALK</SetVariable>
-                        <SetVariable name="state_1_text">TALK</SetVariable>
-                        <SetVariable name="ConfigKey">[Microphone],talkover</SetVariable>
+                      <Template src="skin:knob_textless.xml">
+                        <SetVariable name="ToolTipID"></SetVariable>
+                        <SetVariable name="ObjectName">MixerBarKnob</SetVariable>
+                        <SetVariable name="Size">28f,28f</SetVariable>
+                        <SetVariable name="group">[Master]</SetVariable>
+                        <SetVariable name="ConfigKey">duckStrength</SetVariable>
+                        <SetVariable name="Color">blue</SetVariable>
                       </Template>
-                      <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
                     </Children>
-                  </WidgetGroup>
+                  </WidgetGroup><!-- /Duck strength, hidden when Auto-Duck is OFF -->
+                  <!-- /MIC Duck controls -->
 
-                  <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-
-                  <Template src="skin:knob_textless.xml">
-                    <SetVariable name="ToolTipID"></SetVariable>
-                    <SetVariable name="ObjectName">MixerBarKnob</SetVariable>
-                    <SetVariable name="Size">28f,28f</SetVariable>
-                    <SetVariable name="group">[Microphone]</SetVariable>
-                    <SetVariable name="ConfigKey">pregain</SetVariable>
-                    <SetVariable name="Color">yellow</SetVariable>
+                  <Template src="skin:mixerbar_mic.xml">
+                    <SetVariable name="MicNumber"></SetVariable>
                   </Template>
 
-                  <WidgetGroup><!-- Volume fader + VU Meter -->
-                    <SizePolicy>max,max</SizePolicy>
-                    <Layout>vertical</Layout>
-                    <Children>
-
-                      <SliderComposed>
-                        <TooltipId></TooltipId>
-                        <ObjectName>MixerBarSlider</ObjectName>
-                        <SizePolicy>min,min</SizePolicy>
-                        <Handle>skin:/knobs_sliders/slider_volume_h_handle.svg</Handle>
-                        <Slider>skin:/knobs_sliders/slider_volume_h_scale.svg</Slider>
-                        <Horizontal>true</Horizontal>
-                        <Connection>
-                          <ConfigKey>[Microphone],volume</ConfigKey>
-                        </Connection>
-                      </SliderComposed>
-
-                      <WidgetGroup><!-- VU Meter -->
-                        <ObjectName>VUMeterFloating_h</ObjectName>
-                        <SizePolicy>max,max</SizePolicy>
-                        <Layout>stacked</Layout>
-                        <Children>
-                          <StatusLight>
-                            <PathStatusLight>skin:/graphics/vumeter_h_floating_clipping_over.png</PathStatusLight>
-                            <PathBack>skin:/graphics/vumeter_h_floating_clipping.png</PathBack>
-                            <Connection>
-                              <ConfigKey>[Microphone],PeakIndicator</ConfigKey>
-                            </Connection>
-                          </StatusLight>
-                          <VuMeter>
-                            <PathVu>skin:/graphics/vumeter_h_floating_over.png</PathVu>
-                            <PathBack>skin:/graphics/vumeter_h_floating.png</PathBack>
-                            <Horizontal>true</Horizontal>
-                            <PeakHoldSize>5</PeakHoldSize>
-                            <PeakHoldTime>500</PeakHoldTime>
-                            <PeakFallTime>50</PeakFallTime>
-                            <PeakFallStep>2</PeakFallStep>
-                            <Connection>
-                              <ConfigKey>[Microphone],VuMeter</ConfigKey>
-                            </Connection>
-                          </VuMeter>
-                        </Children>
-                      </WidgetGroup><!-- /VU Meter -->
-                    </Children>
-                  </WidgetGroup><!-- /Volume fader + VU Meter -->
-
-                </Children>
-              </WidgetGroup>
-            </Children>
-            <Connection>
-              <ConfigKey>[Microphone],enabled</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup><!-- /MIC 1 -->
-
-          <WidgetGroup><!-- MIC 2 -->
-            <Layout>horizontal</Layout>
-            <ObjectName>AlignBottomLeft</ObjectName>
-            <Size>-1min,35f</Size>
-            <Children>
-              <WidgetGroup>
-                <ObjectName>MixerBarSection</ObjectName>
-                <Layout>horizontal</Layout>
-                <Size>-1min,35f</Size>
-                <Children>
-
-                  <WidgetGroup>
-                    <ObjectName>Mic2Label</ObjectName>
-                    <Size>32f,32f</Size>
-                  </WidgetGroup>
-
-                  <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
-
-                  <WidgetGroup>
-                    <SizePolicy>max,max</SizePolicy>
-                    <Layout>vertical</Layout>
-                    <Children>
-                      <Template src="skin:button_2state.xml">
-                        <SetVariable name="ToolTipID">headSplit</SetVariable>
-                        <SetVariable name="ObjectName">MixerBarButton</SetVariable>
-                        <SetVariable name="Size">38f,24f</SetVariable>
-                        <SetVariable name="state_0_text">TALK</SetVariable>
-                        <SetVariable name="state_1_text">TALK</SetVariable>
-                        <SetVariable name="ConfigKey">[Microphone2],talkover</SetVariable>
-                      </Template>
-                      <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
-                    </Children>
-                  </WidgetGroup>
-
-                  <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-
-                  <Template src="skin:knob_textless.xml">
-                    <SetVariable name="ToolTipID"></SetVariable>
-                    <SetVariable name="ObjectName">MixerBarKnob</SetVariable>
-                    <SetVariable name="Size">28f,28f</SetVariable>
-                    <SetVariable name="group">[Microphone2]</SetVariable>
-                    <SetVariable name="ConfigKey">pregain</SetVariable>
-                    <SetVariable name="Color">yellow</SetVariable>
+                  <Template src="skin:mixerbar_mic.xml">
+                    <SetVariable name="MicNumber">2</SetVariable>
                   </Template>
 
-                  <WidgetGroup><!-- Volume fader + VU Meter -->
-                    <SizePolicy>max,max</SizePolicy>
-                    <Layout>vertical</Layout>
-                    <Children>
-                      <SliderComposed><!-- Volume fader -->
-                        <TooltipId></TooltipId>
-                        <ObjectName>MixerBarSlider</ObjectName>
-                        <SizePolicy>min,min</SizePolicy>
-                        <Handle>skin:/knobs_sliders/slider_volume_h_handle.svg</Handle>
-                        <Slider>skin:/knobs_sliders/slider_volume_h_scale.svg</Slider>
-                        <Horizontal>true</Horizontal>
-                        <Connection>
-                          <ConfigKey>[Microphone2],volume</ConfigKey>
-                        </Connection>
-                      </SliderComposed>
-                      <WidgetGroup><!-- VU Meter -->
-                        <ObjectName>VUMeterFloating_h</ObjectName>
-                        <SizePolicy>max,max</SizePolicy>
-                        <Layout>stacked</Layout>
-                        <Children>
-                          <StatusLight>
-                            <PathStatusLight>skin:/graphics/vumeter_h_floating_clipping_over.png</PathStatusLight>
-                            <PathBack>skin:/graphics/vumeter_h_floating_clipping.png</PathBack>
-                            <Connection>
-                              <ConfigKey>[Microphone2],PeakIndicator</ConfigKey>
-                            </Connection>
-                          </StatusLight>
-                          <VuMeter>
-                            <PathVu>skin:/graphics/vumeter_h_floating_over.png</PathVu>
-                            <PathBack>skin:/graphics/vumeter_h_floating.png</PathBack>
-                            <Horizontal>true</Horizontal>
-                            <PeakHoldSize>5</PeakHoldSize>
-                            <PeakHoldTime>500</PeakHoldTime>
-                            <PeakFallTime>50</PeakFallTime>
-                            <PeakFallStep>2</PeakFallStep>
-                            <Connection>
-                              <ConfigKey>[Microphone2],VuMeter</ConfigKey>
-                            </Connection>
-                          </VuMeter>
-                        </Children>
-                      </WidgetGroup><!-- /VU Meter -->
-                    </Children>
-                  </WidgetGroup><!-- /Volume fader + VU Meter -->
+                  <Template src="skin:mixerbar_mic.xml">
+                    <SetVariable name="MicNumber">3</SetVariable>
+                  </Template>
 
+                  <Template src="skin:mixerbar_mic.xml">
+                    <SetVariable name="MicNumber">4</SetVariable>
+                  </Template>
                 </Children>
-              </WidgetGroup>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],mixerbar_mic_expanded</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- /MICs expanded/collapsed -->
+
             </Children>
-            <Connection>
-              <ConfigKey>[Microphone2],enabled</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup><!-- /MIC 2 -->
+          </WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey persist="true">[Tango],mixerbar_mic</ConfigKey>
@@ -519,170 +329,56 @@ Variables:
       </WidgetGroup><!-- /Microphone Mixer -->
 
       <WidgetGroup><!-- Auxiliary Mixer -->
-        <ObjectName>AlignBottomLeft</ObjectName>
+        <ObjectName>MixerBarSection</ObjectName>
         <Layout>horizontal</Layout>
         <Size>-1min,35f</Size>
         <Children>
-
-          <WidgetGroup><!-- AUX 1 -->
-            <ObjectName>AlignBottomLeft</ObjectName>
+          <WidgetGroup>
+            <ObjectName>MixerBarSection</ObjectName>
             <Layout>horizontal</Layout>
             <Size>-1min,35f</Size>
             <Children>
+
               <WidgetGroup>
-                <ObjectName>MixerBarSection</ObjectName>
+                <ObjectName>AuxSectionLabel</ObjectName>
+                <Size>18f,32f</Size>
+              </WidgetGroup>
+
+              <Template src="skin:button_2state_persist.xml">
+                <SetVariable name="ObjectName">MixerBarToggler</SetVariable>
+                <SetVariable name="Size">11f,32f</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Tango],mixerbar_aux_expanded</SetVariable>
+              </Template>
+
+              <WidgetGroup><!-- AUX expanded/collapsed -->
+                <SizePolicy>max,max</SizePolicy>
                 <Layout>horizontal</Layout>
-                <Size>-1min,35f</Size>
                 <Children>
 
-                  <WidgetGroup>
-                    <ObjectName>Aux1Label</ObjectName>
-                    <Size>28f,32f</Size>
-                  </WidgetGroup>
-
-                  <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-
-                  <Template src="skin:knob_textless.xml">
-                    <SetVariable name="ToolTipID"></SetVariable>
-                    <SetVariable name="ObjectName">MixerBarKnob</SetVariable>
-                    <SetVariable name="Size">28f,28f</SetVariable>
-                    <SetVariable name="group">[Auxiliary1]</SetVariable>
-                    <SetVariable name="ConfigKey">pregain</SetVariable>
-                    <SetVariable name="Color">yellow</SetVariable>
+                  <Template src="skin:mixerbar_aux.xml">
+                    <SetVariable name="AuxNumber">1</SetVariable>
                   </Template>
 
-                  <WidgetGroup><!-- Volume fader + VU Meter -->
-                    <SizePolicy>max,max</SizePolicy>
-                    <Layout>vertical</Layout>
-                    <Children>
-                      <SliderComposed><!-- Volume fader -->
-                        <TooltipId></TooltipId>
-                        <ObjectName>MixerBarSlider</ObjectName>
-                        <SizePolicy>min,min</SizePolicy>
-                        <Handle>skin:/knobs_sliders/slider_volume_h_handle.svg</Handle>
-                        <Slider>skin:/knobs_sliders/slider_volume_h_scale.svg</Slider>
-                        <Horizontal>true</Horizontal>
-                        <Connection>
-                          <ConfigKey>[Auxiliary1],volume</ConfigKey>
-                        </Connection>
-                      </SliderComposed>
-                      <WidgetGroup><!-- VU Meter -->
-                        <ObjectName>VUMeterFloating_h</ObjectName>
-                        <SizePolicy>max,max</SizePolicy>
-                        <Layout>stacked</Layout>
-                        <Children>
-                          <StatusLight>
-                            <PathStatusLight>skin:/graphics/vumeter_h_floating_clipping_over.png</PathStatusLight>
-                            <PathBack>skin:/graphics/vumeter_h_floating_clipping.png</PathBack>
-                            <Connection>
-                              <ConfigKey>[Auxiliary1],PeakIndicator</ConfigKey>
-                            </Connection>
-                          </StatusLight>
-                          <VuMeter>
-                            <PathVu>skin:/graphics/vumeter_h_floating_over.png</PathVu>
-                            <PathBack>skin:/graphics/vumeter_h_floating.png</PathBack>
-                            <Horizontal>true</Horizontal>
-                            <PeakHoldSize>5</PeakHoldSize>
-                            <PeakHoldTime>500</PeakHoldTime>
-                            <PeakFallTime>50</PeakFallTime>
-                            <PeakFallStep>2</PeakFallStep>
-                            <Connection>
-                              <ConfigKey>[Auxiliary1],VuMeter</ConfigKey>
-                            </Connection>
-                          </VuMeter>
-                        </Children>
-                      </WidgetGroup><!-- /VU Meter -->
-                    </Children>
-                  </WidgetGroup><!-- /Volume fader + VU Meter -->
-
-                </Children>
-              </WidgetGroup>
-            </Children>
-            <Connection>
-              <ConfigKey>[Auxiliary1],enabled</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup><!-- /AUX 1 -->
-
-          <WidgetGroup><!-- AUX 2 -->
-            <ObjectName>AlignBottomLeft</ObjectName>
-            <Layout>horizontal</Layout>
-            <Size>-1min,35f</Size>
-            <Children>
-              <WidgetGroup>
-                <ObjectName>MixerBarSection</ObjectName>
-                <Layout>horizontal</Layout>
-                <Size>-1min,35f</Size>
-                <Children>
-
-                  <WidgetGroup>
-                    <ObjectName>Aux2Label</ObjectName>
-                    <Size>28f,32f</Size>
-                  </WidgetGroup>
-
-                  <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-
-                  <Template src="skin:knob_textless.xml">
-                    <SetVariable name="ToolTipID"></SetVariable>
-                    <SetVariable name="ObjectName">MixerBarKnob</SetVariable>
-                    <SetVariable name="Size">28f,28f</SetVariable>
-                    <SetVariable name="group">[Auxiliary2]</SetVariable>
-                    <SetVariable name="ConfigKey">pregain</SetVariable>
-                    <SetVariable name="Color">yellow</SetVariable>
+                  <Template src="skin:mixerbar_aux.xml">
+                    <SetVariable name="AuxNumber">2</SetVariable>
                   </Template>
 
-                  <WidgetGroup><!-- Volume fader + VU Meter -->
-                    <SizePolicy>max,max</SizePolicy>
-                    <Layout>vertical</Layout>
-                    <Children>
-                      <SliderComposed><!-- Volume fader -->
-                        <TooltipId></TooltipId>
-                        <ObjectName>MixerBarSlider</ObjectName>
-                        <SizePolicy>min,min</SizePolicy>
-                        <Handle>skin:/knobs_sliders/slider_volume_h_handle.svg</Handle>
-                        <Slider>skin:/knobs_sliders/slider_volume_h_scale.svg</Slider>
-                        <Horizontal>true</Horizontal>
-                        <Connection>
-                          <ConfigKey>[Auxiliary2],volume</ConfigKey>
-                        </Connection>
-                      </SliderComposed>
-                      <WidgetGroup><!-- VU Meter -->
-                        <ObjectName>VUMeterFloating_h</ObjectName>
-                        <SizePolicy>max,max</SizePolicy>
-                        <Layout>stacked</Layout>
-                        <Children>
-                          <StatusLight>
-                            <PathStatusLight>skin:/graphics/vumeter_h_floating_clipping_over.png</PathStatusLight>
-                            <PathBack>skin:/graphics/vumeter_h_floating_clipping.png</PathBack>
-                            <Connection>
-                              <ConfigKey>[Auxiliary2],PeakIndicator</ConfigKey>
-                            </Connection>
-                          </StatusLight>
-                          <VuMeter>
-                            <PathVu>skin:/graphics/vumeter_h_floating_over.png</PathVu>
-                            <PathBack>skin:/graphics/vumeter_h_floating.png</PathBack>
-                            <Horizontal>true</Horizontal>
-                            <PeakHoldSize>5</PeakHoldSize>
-                            <PeakHoldTime>500</PeakHoldTime>
-                            <PeakFallTime>50</PeakFallTime>
-                            <PeakFallStep>2</PeakFallStep>
-                            <Connection>
-                              <ConfigKey>[Auxiliary2],VuMeter</ConfigKey>
-                            </Connection>
-                          </VuMeter>
-                        </Children>
-                      </WidgetGroup><!-- /VU Meter -->
-                    </Children>
-                  </WidgetGroup><!-- /Volume fader + VU Meter -->
+                  <Template src="skin:mixerbar_aux.xml">
+                    <SetVariable name="AuxNumber">3</SetVariable>
+                  </Template>
+
+                  <Template src="skin:mixerbar_aux.xml">
+                    <SetVariable name="AuxNumber">4</SetVariable>
+                  </Template>
 
                 </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],mixerbar_aux_expanded</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
               </WidgetGroup>
             </Children>
-            <Connection>
-              <ConfigKey>[Auxiliary2],enabled</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup><!-- /AUX 2 -->
+          </WidgetGroup>
 
         </Children>
         <Connection>
