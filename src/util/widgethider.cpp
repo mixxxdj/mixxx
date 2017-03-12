@@ -27,6 +27,7 @@ void WidgetHider::showWidget(QWidget * w) {
     w->update();
 }
 #else
+bool WidgetHider::eventFilter(QObject *, QEvent *) {}
 void WidgetHider::retainSizeFor(QWidget* widget)
 {
     QSizePolicy sp_retain = widget->sizePolicy();
@@ -35,10 +36,10 @@ void WidgetHider::retainSizeFor(QWidget* widget)
 }
 void WidgetHider::hideWidget(QWidget* widget)
 {
-    widtget->setVisible(false);
+    widget->setVisible(false);
 }
 void WidgetHider::showWidget(QWidget* widget)
 {
-    widtget->setVisible(true);
+    widget->setVisible(true);
 }
 #endif
