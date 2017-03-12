@@ -303,7 +303,7 @@
       <WidgetGroup>
         <ObjectName>h3</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>me,min</SizePolicy>
+        <SizePolicy>me,max</SizePolicy>
         <Children>
           <PushButton>
             <Size>80me,20f</Size>
