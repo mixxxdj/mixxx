@@ -12,7 +12,7 @@ Variables:
       Found this in Deere-2.1 -->
     <ObjectName>Library</ObjectName>
     <SizePolicy>me,i</SizePolicy>
-    <Layout>horizontal</Layout>
+    <Layout>vertical</Layout>
     <Children>
       <Splitter>
         <ObjectName>LibrarySplitter</ObjectName>
@@ -60,6 +60,16 @@ Variables:
                         </Children>
                       </WidgetGroup>
                       <LibrarySidebar></LibrarySidebar>
+                      <!-- Draw a 1px line if Mixerbar is displayed below Library -->
+                      <WidgetGroup>
+                        <ObjectName>Spacer58</ObjectName>
+                        <Size>1me,1f</Size>
+                        <Connection>
+                          <ConfigKey>[Tango],mixerbar_below_library</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
+
                     </Children>
                   </WidgetGroup>
                 </Children>
@@ -74,11 +84,37 @@ Variables:
                 <BgColor>#585858</BgColor>
                 <FgColor>#eece33</FgColor>
               </Library>
-              <Template src="skin:mixerbar.xml"/>
+          <!-- Display Mixerbar here if it fits.
+              If not, display it below Library -->
+              <WidgetGroup>
+                <SizePolicy>min,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:mixerbar.xml"/>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Tango],mixerbar_below_library</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
             </Children>
           </WidgetGroup><!-- /Library Table -->
         </Children>
       </Splitter>
+  <!-- Display Mixerbar here if it needs more h-space.
+      If not, display it next to TreeView -->
+      <WidgetGroup>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skin:mixerbar.xml"/>
+        </Children>
+        <Connection>
+          <ConfigKey>[Tango],mixerbar_below_library</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
     </Children>
   </WidgetGroup>
 </Template>

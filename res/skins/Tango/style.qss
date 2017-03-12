@@ -213,6 +213,19 @@ WPushButton {
   qproperty-layoutSpacing: 0px;
 }
 
+#MixerBar_BelowLibrary[displayValue="0"] {
+	background: transparent url(skin:/buttons/btn_arrow_left_thin.svg) no-repeat center top;
+	}
+	#MixerBar_BelowLibrary[displayValue="0"]:hover {
+		background: transparent url(skin:/buttons/btn_arrow_left_thin_hover.svg) no-repeat center top;
+	}
+	#MixerBar_BelowLibrary[displayValue="1"] {
+		background: transparent url(skin:/buttons/btn_arrow_upright_thin.svg) no-repeat center top;
+	}
+	#MixerBar_BelowLibrary[displayValue="1"]:hover {
+		background: transparent url(skin:/buttons/btn_arrow_upright_thin_hover.svg) no-repeat center top;
+	}
+
 #MixerBarSection {
   qproperty-layoutAlignment: 'AlignTop';
   margin: 2px 0px 1px 0px;
@@ -1576,6 +1589,9 @@ WPushButton {
 }
 #Spacer33 {
   background-color: #333333;
+}
+#Spacer58 {
+  background-color: #585858;
 }
 #FadeRight {
   background: none url(skin:/graphics/fadeRight.png) repeat-y;

@@ -32,6 +32,21 @@ Variables:
         </Connection>
       </WidgetGroup>
 
+      <WidgetGroup><!-- Toggler to shift Mixerbar below Library -->
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
+            <SetVariable name="ObjectName">MixerBar_BelowLibrary</SetVariable>
+            <SetVariable name="Size">12f,32f</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Tango],mixerbar_below_library</SetVariable>
+          </Template>
+        </Children>
+        <Connection>
+          <ConfigKey>[Library],show_library</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Toggler to shift Mixerbar below Library -->
+
       <WidgetGroup><!-- Master Mixer -->
         <ObjectName>MixerBarSection</ObjectName>
         <Layout>horizontal</Layout>
@@ -391,8 +406,6 @@ Variables:
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /Auxiliary Mixer -->
-
-      <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
 
     </Children>
     <Connection>
