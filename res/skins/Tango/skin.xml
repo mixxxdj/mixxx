@@ -69,6 +69,7 @@
       <attribute persist="true" config_key="[Tango],key_controls">1</attribute>
       <attribute persist="true" config_key="[Tango],loop_beatjump_controls">0</attribute>
       <attribute persist="true" config_key="[Tango],mixerbar">0</attribute>
+      <attribute persist="true" config_key="[Tango],mixerbar_below_library">0</attribute>
       <attribute persist="true" config_key="[Tango],mixerbar_aux">1</attribute>
       <attribute persist="true" config_key="[Tango],mixerbar_headphone">1</attribute>
       <attribute persist="true" config_key="[Tango],mixerbar_mic">1</attribute>

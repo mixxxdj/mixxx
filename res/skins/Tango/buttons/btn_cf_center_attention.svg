@@ -16,7 +16,7 @@
    inkscape:version="0.48.4 r9939"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90"
-   sodipodi:docname="btn_cf_right_white.svg">
+   sodipodi:docname="btn_cf_center_attention.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -26,9 +26,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="11.313708"
-     inkscape:cx="-1.8782409"
-     inkscape:cy="-1.8661398"
+     inkscape:zoom="22.627416"
+     inkscape:cx="-6.1816801"
+     inkscape:cy="8.1956914"
      inkscape:document-units="px"
      inkscape:current-layer="g3989"
      showgrid="false"
@@ -55,7 +55,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -68,9 +68,17 @@
        id="g3989"
        style="fill:#888888;fill-opacity:1">
       <rect
+         style="fill:#ffb401;fill-opacity:1;fill-rule:nonzero;stroke:none"
+         id="rect4046"
+         width="14"
+         height="2"
+         x="-1049.3622"
+         y="9"
+         transform="matrix(0,-1,1,0,0,0)" />
+      <rect
          style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none"
          id="rect4046-7"
-         width="5"
+         width="7"
          height="2"
          x="11"
          y="1041.3622" />
@@ -81,14 +89,6 @@
          height="2"
          x="2"
          y="1041.3622" />
-      <rect
-         style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
-         id="rect4046"
-         width="14"
-         height="2"
-         x="-1049.3622"
-         y="16"
-         transform="matrix(0,-1,1,0,0,0)" />
     </g>
   </g>
 </svg>

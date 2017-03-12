@@ -334,7 +334,7 @@ WPushButton {
   }
 
 #VUMeterFloating_h {
-  margin: 0px 2px 0px 2px;
+  margin: 0px 3px 0px 1px;
 }
 
 #MixerBarToggler[displayValue="0"] {
