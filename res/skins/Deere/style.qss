@@ -102,7 +102,30 @@
 }
 
 #Sampler {
-  border: 1px solid #222;
+  border-style: solid;
+  border-color: #222;
+  border-width: 0px 1px;
+}
+
+#SamplerMiddleSpacer {
+  /* FIXME */
+  border-style: solid;
+  border-color: #222;
+  border-width: 1px 0px;
+}
+
+#SamplerRow1,
+#SamplerRow2,
+#SamplerRow3,
+#SamplerRow4,
+#SamplerRow6,
+#SamplerRow7,
+#SamplerRow8 {
+  border-top: 1px solid #222;
+}
+
+#SamplerRow5 {
+  border-top: 2px solid #222;
 }
 
 /*******************************************************************************

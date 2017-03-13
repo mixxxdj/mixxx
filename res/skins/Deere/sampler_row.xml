@@ -41,7 +41,11 @@
             <SetVariable name="i"><Variable name="4"/></SetVariable>
           </Template>
 
-          <Template src="skin:spacer_h.xml"/>
+          <WidgetGroup>
+            <ObjectName>SamplerMiddleSpacer</ObjectName>
+            <Size>-1me,-1max</Size>
+            <Children/>
+          </WidgetGroup>
 
           <Template src="skin:sampler_simple.xml">
             <SetVariable name="i"><Variable name="5"/></SetVariable>
@@ -84,7 +88,10 @@
             <SetVariable name="i"><Variable name="4"/></SetVariable>
           </Template>
 
-          <Template src="skin:spacer_h.xml"/>
+          <WidgetGroup>
+            <ObjectName>SamplerMiddleSpacer</ObjectName>
+            <Size>-1me,-1max</Size>
+          </WidgetGroup>
 
           <Template src="skin:sampler.xml">
             <SetVariable name="i"><Variable name="5"/></SetVariable>
