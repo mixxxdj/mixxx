@@ -48,6 +48,7 @@ class DlgPrefShoutcast;
 class DlgPrefReplayGain;
 class DlgPrefLV2;
 class ControllerManager;
+class EffectsManager;
 class SkinLoader;
 class PlayerManager;
 class Library;
@@ -63,6 +64,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman,
                    PlayerManager* pPlayerManager, ControllerManager* controllers,
                    VinylControlManager* pVCManager, LV2Backend* pLV2Backend,
+                   EffectsManager* pEffectsManager,
                    ConfigObject<ConfigValue>* pConfig, Library *pLibrary);
     virtual ~DlgPreferences();
 

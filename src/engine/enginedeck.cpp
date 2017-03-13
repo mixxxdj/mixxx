@@ -22,7 +22,6 @@
 #include "engine/enginevinylsoundemu.h"
 #include "engine/enginedeck.h"
 #include "engine/enginepregain.h"
-#include "engine/enginefilterblock.h"
 #include "engine/enginevumeter.h"
 #include "engine/enginefilterbessel4.h"
 
@@ -58,7 +57,6 @@ EngineDeck::EngineDeck(QString group,
 
     // Set up additional engines
     m_pPregain = new EnginePregain(group);
-    m_pFilter = new EngineFilterBlock(group);
     m_pVUMeter = new EngineVuMeter(group);
     m_pBuffer = new EngineBuffer(group, pConfig, this, pMixingEngine);
     m_pVinylSoundEmu = new EngineVinylSoundEmu(group);
@@ -68,7 +66,6 @@ EngineDeck::~EngineDeck() {
     delete m_pPassing;
 
     delete m_pBuffer;
-    delete m_pFilter;
     delete m_pPregain;
     delete m_pVinylSoundEmu;
     delete m_pVUMeter;
@@ -101,8 +98,6 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
 
     // Apply pregain
     m_pPregain->process(pOut, iBufferSize);
-    // Filter the channel with EQs
-    m_pFilter->process(pOut, iBufferSize);
     // Process effects enabled for this channel
     if (m_pEngineEffectsManager != NULL) {
         // This is out of date by a callback but some effects will want the RMS

@@ -9,7 +9,7 @@
 EffectChainSlot::EffectChainSlot(EffectRack* pRack, unsigned int iRackNumber,
                                  unsigned int iChainNumber)
         : m_iRackNumber(iRackNumber),
-          m_iChainNumber(iChainNumber),
+          m_iChainSlotNumber(iChainNumber),
           // The control group names are 1-indexed while internally everything
           // is 0-indexed.
           m_group(formatGroupString(iRackNumber, iChainNumber)),
@@ -166,7 +166,7 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
     if (pEffectChain) {
         m_pEffectChain = pEffectChain;
         m_pEffectChain->addToEngine(m_pEffectRack->getEngineEffectRack(),
-                                    m_iChainNumber);
+                                    m_iChainSlotNumber);
         m_pEffectChain->updateEngineState();
 
         connect(m_pEffectChain.data(), SIGNAL(effectsChanged()),
@@ -215,7 +215,7 @@ void EffectChainSlot::clear() {
     // Stop listening to signals from any loaded effect
     if (m_pEffectChain) {
         m_pEffectChain->removeFromEngine(m_pEffectRack->getEngineEffectRack(),
-                                         m_iChainNumber);
+                                         m_iChainSlotNumber);
         foreach (EffectSlotPointer pSlot, m_slots) {
             pSlot->clear();
         }
@@ -236,7 +236,7 @@ unsigned int EffectChainSlot::numSlots() const {
 EffectSlotPointer EffectChainSlot::addEffectSlot() {
     //qDebug() << debugString() << "addEffectSlot";
 
-    EffectSlot* pEffectSlot = new EffectSlot(m_iRackNumber, m_iChainNumber,
+    EffectSlot* pEffectSlot = new EffectSlot(m_iRackNumber, m_iChainSlotNumber,
                                              m_slots.size());
     // Rebroadcast effectLoaded signals
     connect(pEffectSlot, SIGNAL(effectLoaded(EffectPointer, unsigned int)),
@@ -272,7 +272,7 @@ void EffectChainSlot::registerGroup(const QString& group) {
 
 void EffectChainSlot::slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber) {
     // const int is a safe read... don't bother locking
-    emit(effectLoaded(pEffect, m_iChainNumber, slotNumber));
+    emit(effectLoaded(pEffect, m_iChainSlotNumber, slotNumber));
 }
 
 void EffectChainSlot::slotClearEffect(unsigned int iEffectSlotNumber) {
@@ -365,9 +365,9 @@ void EffectChainSlot::slotControlChainInsertionType(double v) {
 void EffectChainSlot::slotControlChainSelector(double v) {
     //qDebug() << debugString() << "slotControlChainSelector" << v;
     if (v > 0) {
-        emit(nextChain(m_iChainNumber, m_pEffectChain));
+        emit(nextChain(m_iChainSlotNumber, m_pEffectChain));
     } else if (v < 0) {
-        emit(prevChain(m_iChainNumber, m_pEffectChain));
+        emit(prevChain(m_iChainSlotNumber, m_pEffectChain));
     }
 }
 
@@ -397,4 +397,8 @@ void EffectChainSlot::slotGroupStatusChanged(const QString& group) {
             }
         }
     }
+}
+
+unsigned int EffectChainSlot::getChainSlotNumber() const {
+    return m_iChainSlotNumber;
 }

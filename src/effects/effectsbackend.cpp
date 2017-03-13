@@ -31,7 +31,7 @@ void EffectsBackend::registerEffect(const QString& id,
     emit(effectRegistered());
 }
 
-const QList<QString>& EffectsBackend::getEffectIds() const {
+const QList<QString> EffectsBackend::getEffectIds() const {
     return m_effectIds;
 }
 

@@ -274,7 +274,6 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
     return true;
 }
 
-
 template <class ValueType> void ConfigObject<ValueType>::clear()
 {
     //Delete the pointers, because that's what we did before we
@@ -397,7 +396,6 @@ QString ConfigObject<ValueType>::getResourcePath() {
 
     return qResourcePath;
 }
-
 
 template <class ValueType> ConfigObject<ValueType>::ConfigObject(QDomNode node) {
 

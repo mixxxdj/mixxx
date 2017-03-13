@@ -38,11 +38,11 @@ void LV2Backend::initializeProperties() {
     m_properties["enumeration_port"] = lilv_new_uri(m_pWorld, LV2_CORE__enumeration);
 }
 
-const QSet<QString> LV2Backend::getEffectIds() const {
-    QSet<QString> availableEffects;
+const QList<QString> LV2Backend::getEffectIds() const {
+    QList<QString> availableEffects;
     foreach (LV2Manifest* lv2Manifest, m_registeredEffects) {
         if (lv2Manifest->isValid()) {
-            availableEffects.insert(lv2Manifest->getEffectManifest().id());
+            availableEffects.append(lv2Manifest->getEffectManifest().id());
         }
     }
     return availableEffects;
@@ -83,10 +83,13 @@ EffectPointer LV2Backend::instantiateEffect(EffectsManager* pEffectsManager,
     }
     LV2Manifest* lv2manifest = m_registeredEffects[effectId];
 
-    return EffectPointer(new Effect(this, pEffectsManager,
-                         lv2manifest->getEffectManifest(),
-                         EffectInstantiatorPointer(new
-                         LV2EffectProcessorInstantiator(lv2manifest->getPlugin(),
-                                                        lv2manifest->getAudioPortIndices(),
-                                                        lv2manifest->getControlPortIndices()))));
+    return EffectPointer(
+    		new Effect(
+					pEffectsManager,
+					lv2manifest->getEffectManifest(),
+					EffectInstantiatorPointer(
+							new LV2EffectProcessorInstantiator(
+									lv2manifest->getPlugin(),
+									lv2manifest->getAudioPortIndices(),
+									lv2manifest->getControlPortIndices()))));
 }

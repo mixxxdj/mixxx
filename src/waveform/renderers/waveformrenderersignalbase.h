@@ -6,7 +6,7 @@
 #include "skin/skincontext.h"
 
 class ControlObject;
-class ControlObjectThread;
+class ControlObjectSlave;
 
 class WaveformRendererSignalBase : public WaveformRendererAbstract {
 public:
@@ -26,13 +26,13 @@ public:
                   float* highGain);
 
   protected:
-    ControlObjectThread* m_pEQEnabled;
-    ControlObjectThread* m_pLowFilterControlObject;
-    ControlObjectThread* m_pMidFilterControlObject;
-    ControlObjectThread* m_pHighFilterControlObject;
-    ControlObjectThread* m_pLowKillControlObject;
-    ControlObjectThread* m_pMidKillControlObject;
-    ControlObjectThread* m_pHighKillControlObject;
+    ControlObjectSlave* m_pEQEnabled;
+    ControlObjectSlave* m_pLowFilterControlObject;
+    ControlObjectSlave* m_pMidFilterControlObject;
+    ControlObjectSlave* m_pHighFilterControlObject;
+    ControlObjectSlave* m_pLowKillControlObject;
+    ControlObjectSlave* m_pMidKillControlObject;
+    ControlObjectSlave* m_pHighKillControlObject;
 
     Qt::Alignment m_alignment;
 

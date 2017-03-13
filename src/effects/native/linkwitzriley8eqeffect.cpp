@@ -20,6 +20,7 @@ EffectManifest LinkwitzRiley8EQEffect::getManifest() {
     manifest.setDescription(QObject::tr(
         "A Linkwitz-Riley 8th order filter equalizer (optimized crossover, constant phase shift, roll-off -48 db/Oct). "
         "To adjust frequency shelves see the Equalizer preferences."));
+    manifest.setIsMixingEQ(true); 
 
     EffectManifestParameter* low = manifest.addParameter();
     low->setId("low");

@@ -28,6 +28,7 @@ class EffectChainManager : public QObject {
 
     EffectRackPointer addEffectRack();
     EffectRackPointer getEffectRack(int i);
+    int getEffectRacksSize();
 
     void addEffectChain(EffectChainPointer pEffectChain);
     void removeEffectChain(EffectChainPointer pEffectChain);

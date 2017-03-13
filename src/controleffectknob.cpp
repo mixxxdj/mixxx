@@ -9,7 +9,7 @@ ControlEffectKnob::ControlEffectKnob(ConfigKey key, double dMinValue, double dMa
 
 void ControlEffectKnob::setBehaviour(EffectManifestParameter::ControlHint type,
                                      double dMinValue, double dMaxValue) {
-    if ( m_pControl == NULL) {
+    if (m_pControl == NULL) {
         return;
     }
 
