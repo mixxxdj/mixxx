@@ -210,9 +210,10 @@ P32.Deck = function (deckNumbers, channel) {
         this.samplerButton[samplerNumber] = new components.SamplerButton({
             midi: [0x90 + channel, P32.PadNumToMIDIControl(i, 0)],
             number: samplerNumber,
-            on: P32.padColors.red,
-            off: P32.padColors.off,
-            playing: P32.padColors.blue
+            empty: P32.padColors.off,
+            loaded: P32.padColors.red,
+            playing: P32.padColors.blue,
+            looping: P32.padColors.purple,
         });
         if (samplerCrossfaderAssign) {
             engine.setValue('[Sampler' + samplerNumber + ']',
