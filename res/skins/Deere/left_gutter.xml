@@ -15,6 +15,7 @@
         <!-- Traditional Blue -->
         <SetVariable name="DeckSignalColor">#007BCD</SetVariable>
         <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+        <SetVariable name="PlayedOverlayColor">#88000000</SetVariable>
       </Template>
 
       <WidgetGroup>
@@ -24,7 +25,8 @@
             <SetVariable name="i">3</SetVariable>
             <!-- Violet -->
             <SetVariable name="DeckSignalColor">#B500B5</SetVariable>
-            <SetVariable name="DeckBackgroundColor">#3a3a4f</SetVariable>
+            <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
+            <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
           </Template>
         </Children>
         <Connection>

@@ -132,7 +132,7 @@
           <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
           <!-- Traditional Orange -->
           <SetVariable name="DeckSignalColor">#E67A00</SetVariable>
-          <SetVariable name="DeckBackgroundColor">#3a3a4f</SetVariable>
+          <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
           <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
         </Template>
       </Children>
@@ -146,7 +146,7 @@
           <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
           <!-- Lime -->
           <SetVariable name="DeckSignalColor">#AABD00</SetVariable>
-          <SetVariable name="DeckBackgroundColor">#3a3a4f</SetVariable>
+          <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
           <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
         </Template>
       </Children>

@@ -134,6 +134,7 @@
         <Group><Variable name="group"/></Group>
         <SizePolicy>me,me</SizePolicy>
         <BgColor><Variable name="DeckBackgroundColor"/></BgColor>
+        <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
         <SignalHighColor></SignalHighColor>
         <SignalMidColor></SignalMidColor>
         <SignalLowColor></SignalLowColor>
