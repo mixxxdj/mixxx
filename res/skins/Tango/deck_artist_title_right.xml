@@ -45,7 +45,7 @@
                       <Channel><Variable name="channum"/></Channel>
                       <NumberOfDigits>1</NumberOfDigits>
                       <Connection>
-                        <ConfigKey>[Channel<Variable name="channum"/>],playposition</ConfigKey>
+                        <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
                       </Connection>
                     </NumberPos>
                   </Children>
@@ -97,7 +97,7 @@
           </Children>
 <!--      Deactivated. See deck_artist_title_left.xml for reason.
         <Connection>
-          <ConfigKey persist="true">[Channel<Variable name="channum"/>],passthrough</ConfigKey>
+          <ConfigKey persist="true"><Variable name="group"/>,passthrough</ConfigKey>
           <BindProperty>visible</BindProperty>
           <Transform><Not/></Transform>
         </Connection> -->
@@ -110,7 +110,7 @@
         <Size>100me,40me</Size>
         <Children/>
         <Connection>
-          <ConfigKey persist="true">[Channel<Variable name="channum"/>],passthrough</ConfigKey>
+          <ConfigKey persist="true"><Variable name="group"/>,passthrough</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup> -->

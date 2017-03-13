@@ -42,7 +42,7 @@
               <TextColor>#FFFFFF</TextColor>
             </Mark>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],playposition</ConfigKey>
+              <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
             </Connection>
           </Overview><!-- /Overview -->
 

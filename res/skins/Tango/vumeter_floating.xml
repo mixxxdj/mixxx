@@ -21,7 +21,7 @@ Variables:
             <PathStatusLight>skin:/graphics/vumeter_floating_clipping_over.png</PathStatusLight>
             <PathBack>skin:/graphics/vumeter_floating_clipping.png</PathBack>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],PeakIndicatorL</ConfigKey>
+              <ConfigKey><Variable name="group"/>,PeakIndicatorL</ConfigKey>
             </Connection>
           </StatusLight>
           <VuMeter>
@@ -33,7 +33,7 @@ Variables:
             <PeakFallTime>50</PeakFallTime>
             <PeakFallStep>2</PeakFallStep>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],VuMeterL</ConfigKey>
+              <ConfigKey><Variable name="group"/>,VuMeterL</ConfigKey>
             </Connection>
           </VuMeter>
         </Children>
@@ -48,7 +48,7 @@ Variables:
             <PathStatusLight>skin:/graphics/vumeter_floating_clipping_over.png</PathStatusLight>
             <PathBack>skin:/graphics/vumeter_floating_clipping.png</PathBack>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],PeakIndicatorR</ConfigKey>
+              <ConfigKey><Variable name="group"/>,PeakIndicatorR</ConfigKey>
             </Connection>
           </StatusLight>
           <VuMeter>
@@ -60,7 +60,7 @@ Variables:
             <PeakFallTime>50</PeakFallTime>
             <PeakFallStep>2</PeakFallStep>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],VuMeterR</ConfigKey>
+              <ConfigKey><Variable name="group"/>,VuMeterR</ConfigKey>
             </Connection>
           </VuMeter>
         </Children>

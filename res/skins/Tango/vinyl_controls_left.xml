@@ -27,7 +27,7 @@ Variables:
             <SetVariable name="Size">40f,24f</SetVariable>
             <SetVariable name="state_0_text">VINYL</SetVariable>
             <SetVariable name="state_1_text">VINYL</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[Channel<Variable name="channum" />],vinylcontrol_enabled</SetVariable>
+            <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,vinylcontrol_enabled</SetVariable>
           </Template>
 
           <Template src="skin:button_2state_persist.xml">
@@ -36,7 +36,7 @@ Variables:
             <SetVariable name="Size">40f,24f</SetVariable>
             <SetVariable name="state_0_text">PASS</SetVariable>
             <SetVariable name="state_1_text">PASS</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[Channel<Variable name="channum" />],passthrough</SetVariable>
+            <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,passthrough</SetVariable>
           </Template>
 
         </Children>
@@ -58,7 +58,7 @@ Variables:
             <SetVariable name="state_0_text">ABS</SetVariable>
             <SetVariable name="state_1_text">REL</SetVariable>
             <SetVariable name="state_2_text">CONST</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[Channel<Variable name="channum" />],vinylcontrol_mode</SetVariable>
+            <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,vinylcontrol_mode</SetVariable>
           </Template>
 
           <WidgetGroup><!-- Cue mode button with translucent covers -->
@@ -74,7 +74,7 @@ Variables:
                 <SizePolicy>me,me</SizePolicy>
                 <Children/>
                 <Connection>
-                  <ConfigKey persist="true">[Channel<Variable name="channum" />],vinylcontrol_mode</ConfigKey>
+                  <ConfigKey persist="true"><Variable name="group"/>,vinylcontrol_mode</ConfigKey>
                   <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
@@ -86,7 +86,7 @@ Variables:
                 <SizePolicy>me,me</SizePolicy>
                 <Children/>
                 <Connection>
-                  <ConfigKey persist="true">[Channel<Variable name="channum" />],vinylcontrol_mode</ConfigKey>
+                  <ConfigKey persist="true"><Variable name="group"/>,vinylcontrol_mode</ConfigKey>
                   <Transform><Add>-1</Add></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
@@ -99,7 +99,7 @@ Variables:
                 <SetVariable name="state_0_text">CUE</SetVariable>
                 <SetVariable name="state_1_text">CUE</SetVariable>
                 <SetVariable name="state_2_text">HOT</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Channel<Variable name="channum" />],vinylcontrol_cueing</SetVariable>
+                <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,vinylcontrol_cueing</SetVariable>
               </Template>
             </Children>
           </WidgetGroup><!-- /Cue mode button with translucent covers -->

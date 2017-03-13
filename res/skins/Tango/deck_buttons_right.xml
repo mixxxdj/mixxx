@@ -1,5 +1,4 @@
 <Template>
-  <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
   <WidgetGroup>
     <ObjectName>DeckButtonsPlay</ObjectName>
     <SizePolicy>1me,24f</SizePolicy>
@@ -12,16 +11,16 @@
           <Template src="skin:button_2state_right_display.xml"><!-- Play -->
             <SetVariable name="ObjectName">PlayCue</SetVariable>
             <SetVariable name="Size">50f,24f</SetVariable>
-            <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],play</SetVariable>
-            <SetVariable name="ConfigKeyRight">[Channel<Variable name="channum"/>],cue_default</SetVariable>
-            <SetVariable name="ConfigKeyDisp">[Channel<Variable name="channum"/>],play_indicator</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
+            <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
+            <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
           </Template>
       <!--	Turns Orange when playing from Cue/HotCue position.
           Only visible when play_indicator above is zero0, otherwise it's covered. -->
           <Template src="skin:button_2state.xml"><!-- PlayUnderlay -->
             <SetVariable name="ObjectName">PlayCueUnderlay</SetVariable>
             <SetVariable name="Size">50f,24f</SetVariable>
-            <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],play</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>
@@ -75,17 +74,6 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <!-- Disabled because it's not supported, yet.
-                  Long-pressing BPM locks tempo, enable 'quantize' to also aync/lock phase
-              <Template src="skin:button_3state.xml">
-                <SetVariable name="ObjectName">SyncModeButton</SetVariable>
-                <SetVariable name="Size">40f,22f</SetVariable>
-                <SetVariable name="ToolTipID">quantize</SetVariable>
-                <SetVariable name="state_0_text">SYNC</SetVariable>
-                <SetVariable name="state_1_text">FLW</SetVariable>
-                <SetVariable name="state_2_text">MST</SetVariable>
-                <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],sync_mode</SetVariable>
-              </Template> -->
                 <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
               <Template src="skin:button_2state_persist.xml">
                 <SetVariable name="ObjectName">DeckButton</SetVariable>
@@ -95,7 +83,7 @@
                 <SetVariable name="state_0_unpressed">quantize_off.svg</SetVariable>
                 <SetVariable name="state_1_pressed">quantize_on.svg</SetVariable>
                 <SetVariable name="state_1_unpressed">quantize_on.svg</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Channel<Variable name="channum"/>],quantize</SetVariable>
+                <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,quantize</SetVariable>
               </Template>
               <Template src="skin:button_3state.xml">
                 <SetVariable name="ObjectName">DeckButton</SetVariable>
@@ -107,7 +95,7 @@
                 <SetVariable name="state_1_unpressed">cf_center_attention.svg</SetVariable>
                 <SetVariable name="state_2_pressed">cf_right.svg</SetVariable>
                 <SetVariable name="state_2_unpressed">cf_right.svg</SetVariable>
-                <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],orientation</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
               </Template>
               <Template src="skin:button_2state.xml">
                 <SetVariable name="ObjectName">DeckButton</SetVariable>
@@ -117,7 +105,7 @@
                 <SetVariable name="state_0_unpressed">repeat_off.svg</SetVariable>
                 <SetVariable name="state_1_pressed">repeat_on.svg</SetVariable>
                 <SetVariable name="state_1_unpressed">repeat_on.svg</SetVariable>
-                <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],repeat</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,repeat</SetVariable>
               </Template>
               <Template src="skin:button_2state.xml">
                 <SetVariable name="ObjectName">DeckButton</SetVariable>
@@ -127,7 +115,7 @@
                 <SetVariable name="state_0_unpressed">slipmode_off.svg</SetVariable>
                 <SetVariable name="state_1_pressed">slipmode_on.svg</SetVariable>
                 <SetVariable name="state_1_unpressed">slipmode_on.svg</SetVariable>
-                <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],slip_enabled</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,slip_enabled</SetVariable>
               </Template>
               <Template src="skin:button_1state.xml">
                 <SetVariable name="ObjectName">DeckButton</SetVariable>
@@ -135,7 +123,7 @@
                 <SetVariable name="ToolTipID">eject</SetVariable>
                 <SetVariable name="state_0_pressed">eject_pressed.svg</SetVariable>
                 <SetVariable name="state_0_unpressed">eject.svg</SetVariable>
-                <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],eject</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,eject</SetVariable>
               </Template>
             </Children>
             <Connection>
@@ -158,7 +146,7 @@
             <SetVariable name="state_0_unpressed">keylock_off.svg</SetVariable>
             <SetVariable name="state_1_pressed">keylock_on.svg</SetVariable>
             <SetVariable name="state_1_unpressed">keylock_on.svg</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[Channel<Variable name="channum"/>],keylock</SetVariable>
+            <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,keylock</SetVariable>
           </Template>
 
         </Children>

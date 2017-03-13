@@ -36,7 +36,7 @@
                     <Channel><Variable name="channum"/></Channel>
                     <NumberOfDigits>1</NumberOfDigits>
                     <Connection>
-                      <ConfigKey>[Channel<Variable name="channum"/>],playposition</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
                     </Connection>
                   </NumberPos>
                 </Children>
@@ -103,7 +103,7 @@
         WidgetStack could be worth a try.
         
         <Connection>
-          <ConfigKey>[Channel<Variable name="channum"/>],passthrough</ConfigKey>
+          <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
           <BindProperty>visible</BindProperty>
           <Transform><Not/></Transform>
         </Connection>   -->
@@ -116,7 +116,7 @@
         <Size>100me,40me</Size>
         <Children/>
         <Connection>
-          <ConfigKey>[Channel<Variable name="channum"/>],passthrough</ConfigKey>
+          <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup> -->

@@ -35,7 +35,7 @@ Variables:
               <Text>
                 <TooltipId>text</TooltipId>
                 <Size>1me,18f</Size>
-                <Group>[Sampler<Variable name="samplernum"/>]</Group>
+                <Group><Variable name="group"/></Group>
                 <Elide>right</Elide>
               </Text>
             </Children>
@@ -219,8 +219,8 @@ Variables:
                     <SetVariable name="ObjectName">SamplerSyncButton</SetVariable>
                     <SetVariable name="Size">35f,22f</SetVariable>
                     <SetVariable name="state_0_text">SYNC</SetVariable>
-                    <SetVariable name="ConfigKey">[Sampler<Variable name="samplernum"/>],beatsync</SetVariable>
-                    <SetVariable name="ConfigKeyRight">[Sampler<Variable name="samplernum"/>],beatsync_tempo</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,beatsync</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatsync_tempo</SetVariable>
                   </Template>
 
                   <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
@@ -233,7 +233,7 @@ Variables:
                     <SetVariable name="state_0_unpressed">pfl_off.svg</SetVariable>
                     <SetVariable name="state_1_pressed">pfl_on.svg</SetVariable>
                     <SetVariable name="state_1_unpressed">pfl_on.svg</SetVariable>
-                    <SetVariable name="ConfigKey">[Sampler<Variable name="samplernum"/>],pfl</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
                   </Template>
 
                   <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
@@ -242,7 +242,6 @@ Variables:
                     <SetVariable name="ToolTipID">pregain</SetVariable>
                     <SetVariable name="ObjectName">SamplerGainKnob</SetVariable>
                     <SetVariable name="Size">22f,22f</SetVariable>
-                    <SetVariable name="group">[Sampler<Variable name="samplernum"/>]</SetVariable>
                     <SetVariable name="ConfigKey">volume</SetVariable>
                     <SetVariable name="Color">tiny_red</SetVariable>
                   </Template>
@@ -266,7 +265,7 @@ Variables:
             <PathStatusLight>skin:/graphics/vumeter_sampler_clipping_over.png</PathStatusLight>
             <PathBack>skin:/graphics/vumeter_sampler_clipping.png</PathBack>
             <Connection>
-              <ConfigKey>[Sampler<Variable name="samplernum"/>],PeakIndicator</ConfigKey>
+              <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
             </Connection>
           </StatusLight>
           <VuMeter>
@@ -280,7 +279,7 @@ Variables:
             <PeakFallTime>50</PeakFallTime>
             <PeakFallStep>2</PeakFallStep>
             <Connection>
-              <ConfigKey>[Sampler<Variable name="samplernum"/>],VuMeter</ConfigKey>
+              <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
             </Connection>
           </VuMeter>
         </Children>
@@ -297,7 +296,7 @@ Variables:
             <Slider>skin:/knobs_sliders/slider_pitch_sampler_scale.svg</Slider>
             <Horizontal>false</Horizontal>
             <Connection>
-              <ConfigKey>[Sampler<Variable name="samplernum"/>],rate</ConfigKey>
+              <ConfigKey><Variable name="group"/>,rate</ConfigKey>
             </Connection>
           </SliderComposed>
         </Children>

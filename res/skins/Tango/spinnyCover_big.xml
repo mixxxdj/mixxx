@@ -18,7 +18,7 @@ Variables:
           <Spinny>
             <TooltipId>spinny</TooltipId>
             <Size>111f,111f</Size>
-            <Group>[Channel<Variable name="channum"/>]</Group>
+            <Group><Variable name="group"/></Group>
             <PathBackground scalemode="STRETCH_ASPECT">skin:/graphics/spinnyBig_bg.svg</PathBackground>
             <PathMask scalemode="STRETCH_ASPECT">skin:/graphics/spinnyBig_mask.svg</PathMask>
             <PathForeground scalemode="STRETCH_ASPECT">skin:/graphics/spinnyBig_indicator.svg</PathForeground>
@@ -28,7 +28,7 @@ Variables:
           <Spinny trigger="[Tango],spinnyWithCoverArt" persist="true" on-hide-select="0">
             <TooltipId>spinny</TooltipId>
             <Size>111f,111f</Size>
-            <Group>[Channel<Variable name="channum"/>]</Group>
+            <Group><Variable name="group"/></Group>
             <PathBackground scalemode="STRETCH_ASPECT">skin:/graphics/spinnyBig_bg.svg</PathBackground>
             <PathMask scalemode="STRETCH_ASPECT">skin:/graphics/spinnyBig_mask.svg</PathMask>
             <PathForeground scalemode="STRETCH_ASPECT">skin:/graphics/spinnyBig_indicator.svg</PathForeground>
@@ -48,7 +48,7 @@ Variables:
 
       <CoverArt>
         <Size>111f,111f</Size>
-        <Group>[Channel<Variable name="channum" />]</Group>
+        <Group><Variable name="group"/></Group>
         <DefaultCover>skin:/graphics/cover_default_big_NEW.svg</DefaultCover>
         <Connection>
           <ConfigKey persist="true">[Tango],empty_spinny_cover</ConfigKey>

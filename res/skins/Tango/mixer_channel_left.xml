@@ -20,7 +20,6 @@ Variables:
   [EqualizerRack1_[Channel1]_Effect1],button_parameter{1,2,3}
 -->
 <Template>
-  <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
   <WidgetGroup>
     <ObjectName>MixerChannelLeft</ObjectName>
     <Layout>horizontal</Layout>
@@ -79,7 +78,7 @@ Variables:
                     <SetVariable name="state_0_unpressed">pfl_off.svg</SetVariable>
                     <SetVariable name="state_1_pressed">pfl_on.svg</SetVariable>
                     <SetVariable name="state_1_unpressed">pfl_on.svg</SetVariable>
-                    <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],pfl</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
                   </Template>
 
                   <WidgetGroup><Size>25f,1min</Size></WidgetGroup>
@@ -99,7 +98,7 @@ Variables:
                     <SetVariable name="ToolTipID"></SetVariable>
                     <SetVariable name="Size">30f,30f</SetVariable>
                     <SetVariable name="Color">blue</SetVariable>
-                    <SetVariable name="group">[QuickEffectRack1_[Channel<Variable name="channum"/>]]</SetVariable>
+                    <SetVariable name="group">[QuickEffectRack1_<Variable name="group"/>]</SetVariable>
                     <SetVariable name="ConfigKey">super1</SetVariable>
                   </Template>
 
@@ -113,7 +112,7 @@ Variables:
                     <SetVariable name="state_0_unpressed">pfl_off.svg</SetVariable>
                     <SetVariable name="state_1_pressed">pfl_on.svg</SetVariable>
                     <SetVariable name="state_1_unpressed">pfl_on.svg</SetVariable>
-                    <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],pfl</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
                   </Template>
 
                   <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
@@ -147,7 +146,7 @@ Variables:
             <Handle>skin:/knobs_sliders/slider_volume_v_handle.svg</Handle>
             <Horizontal>false</Horizontal>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],volume</ConfigKey>
+              <ConfigKey><Variable name="group"/>,volume</ConfigKey>
             </Connection>
           </SliderComposed><!-- /Volume slider -->
 
@@ -163,7 +162,7 @@ Variables:
                 <SetVariable name="ToolTipID">pregain</SetVariable>
                 <SetVariable name="Size">30f,30f</SetVariable>
                 <SetVariable name="Color">yellow</SetVariable>
-                <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
+                <SetVariable name="group"><Variable name="group"/></SetVariable>
                 <SetVariable name="ConfigKey">pregain</SetVariable>
               </Template>
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>

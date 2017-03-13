@@ -5,7 +5,6 @@ Variables:
     group: The group for the controls.
 -->
 <Template>
-  <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
   <WidgetStack>
     <SizePolicy>max,min</SizePolicy>
     <NextControl>[BeatJump],next</NextControl>

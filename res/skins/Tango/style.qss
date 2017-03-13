@@ -214,10 +214,10 @@ WPushButton {
 }
 
 #MixerBar_BelowLibrary[displayValue="0"] {
-	background: transparent url(skin:/buttons/btn_arrow_left_thin.svg) no-repeat center top;
+	background: transparent url(skin:/buttons/btn_arrow_downleft_thin.svg) no-repeat center top;
 	}
 	#MixerBar_BelowLibrary[displayValue="0"]:hover {
-		background: transparent url(skin:/buttons/btn_arrow_left_thin_hover.svg) no-repeat center top;
+		background: transparent url(skin:/buttons/btn_arrow_downleft_thin_hover.svg) no-repeat center top;
 	}
 	#MixerBar_BelowLibrary[displayValue="1"] {
 		background: transparent url(skin:/buttons/btn_arrow_upright_thin.svg) no-repeat center top;

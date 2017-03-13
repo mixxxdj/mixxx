@@ -29,8 +29,8 @@ Variables:
             <SetVariable name="ToolTipID">sync_enabled</SetVariable>
             <SetVariable name="ObjectName">SyncButtonOverlay</SetVariable>
             <SetVariable name="Size">50f,16me</SetVariable>
-            <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],sync_enabled</SetVariable>
-            <SetVariable name="ConfigKeyRight">[Channel<Variable name="channum"/>],rate_set_default</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,sync_enabled</SetVariable>
+            <SetVariable name="ConfigKeyRight"><Variable name="group"/>,rate_set_default</SetVariable>
           </Template>
           <NumberBpm>
             <ObjectName>Bpm</ObjectName>
@@ -39,7 +39,7 @@ Variables:
             <Channel><Variable name="channum" /></Channel>
             <NumberOfDigits>1</NumberOfDigits>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum" />],visual_bpm</ConfigKey>
+              <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
             </Connection>
           </NumberBpm>
         </Children>
@@ -60,22 +60,22 @@ Variables:
                 <SetVariable name="ToolTipID">pitch_down</SetVariable>
                 <SetVariable name="ObjectName">KeyDown</SetVariable>
                 <SetVariable name="Size">12f,13f</SetVariable>
-                <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],pitch_down</SetVariable>
-                <SetVariable name="ConfigKeyRight">[Channel<Variable name="channum"/>],pitch_down_small</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,pitch_down</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,pitch_down_small</SetVariable>
               </Template>
               <Template src="skin:button_1state_right.xml">
                 <SetVariable name="ToolTipID">sync_reset_key</SetVariable>
                 <SetVariable name="ObjectName">KeyReset</SetVariable>
                 <SetVariable name="Size">26f,13f</SetVariable>
-                <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],sync_key</SetVariable>
-                <SetVariable name="ConfigKeyRight">[Channel<Variable name="channum"/>],pitch_set_default</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,sync_key</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,pitch_set_default</SetVariable>
               </Template>
               <Template src="skin:button_1state_right.xml"><!-- key_up/_small -->
                 <SetVariable name="ToolTipID">pitch_up</SetVariable>
                 <SetVariable name="ObjectName">KeyUp</SetVariable>
                 <SetVariable name="Size">12f,13f</SetVariable>
-                <SetVariable name="ConfigKey">[Channel<Variable name="channum"/>],pitch_up</SetVariable>
-                <SetVariable name="ConfigKeyRight">[Channel<Variable name="channum"/>],pitch_up_small</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,pitch_up</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,pitch_up_small</SetVariable>
               </Template>
             </Children>
           </WidgetGroup><!-- /Overlay buttons: down, reset, up -->
@@ -89,7 +89,7 @@ Variables:
             <Alignment>center</Alignment>
             <Elide>right</Elide>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],visual_key</ConfigKey>
+              <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
             </Connection>
           </Key>
         
@@ -114,7 +114,7 @@ Variables:
             <Slider>skin:/knobs_sliders/slider_pitch_scale.svg</Slider>
             <Horizontal>false</Horizontal>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum" />],rate</ConfigKey>
+              <ConfigKey><Variable name="group"/>,rate</ConfigKey>
             </Connection>
           </SliderComposed>
         </Children>
