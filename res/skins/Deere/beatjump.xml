@@ -159,6 +159,34 @@
          <Layout>horizontal</Layout>
          <Children>
            <Template src="skin:beatjump_button.xml">
+             <SetVariable name="control_length">0.03125</SetVariable>
+             <SetVariable name="text_length">&lt;|</SetVariable>
+             <SetVariable name="direction">backward</SetVariable>
+           </Template>
+
+         <Template src="skin:left_1state_button.xml">
+             <SetVariable name="ObjectName">BeatJumpNext</SetVariable>
+             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+             <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+             <SetVariable name="state_0_text">1/32</SetVariable>
+             <SetVariable name="state_0_pressed"></SetVariable>
+             <SetVariable name="state_0_unpressed"></SetVariable>
+             <SetVariable name="left_connection_control">[BeatJump],next</SetVariable>
+           </Template>
+
+         <Template src="skin:beatjump_button.xml">
+             <SetVariable name="control_length">0.03125</SetVariable>
+             <SetVariable name="text_length">|&gt;</SetVariable>
+             <SetVariable name="direction">forward</SetVariable>
+           </Template>
+         </Children>
+       </WidgetGroup>
+
+       <WidgetGroup>
+         <Layout>horizontal</Layout>
+         <Children>
+           <Template src="skin:beatjump_button.xml">
              <SetVariable name="control_length">0.0625</SetVariable>
              <SetVariable name="text_length">&lt;|</SetVariable>
              <SetVariable name="direction">backward</SetVariable>

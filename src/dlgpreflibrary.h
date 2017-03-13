@@ -20,6 +20,7 @@
 
 #include <QStandardItemModel>
 #include <QWidget>
+#include <QFont>
 
 #include "ui_dlgpreflibrarydlg.h"
 #include "configobject.h"
@@ -50,6 +51,7 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     void slotHide();
     void slotResetToDefaults();
     void slotApply();
+    void slotCancel();
 
     // Dialog to browse for music file directory
     void slotAddDir();
@@ -63,13 +65,23 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     void requestAddDir(QString dir);
     void requestRemoveDir(QString dir, Library::RemovalType removalType);
     void requestRelocateDir(QString currentDir, QString newDir);
+    void setTrackTableFont(const QFont& font);
+    void setTrackTableRowHeight(int rowHeight);
+
+  private slots:
+    void slotRowHeightValueChanged(int);
+    void slotSelectFont();
 
   private:
     void initialiseDirList();
+    void setLibraryFont(const QFont& font);
+
     QStandardItemModel m_dirListModel;
     ConfigObject<ConfigValue>* m_pconfig;
-    Library *m_pLibrary;
+    Library* m_pLibrary;
     bool m_baddedDirectory;
+    QFont m_originalTrackTableFont;
+    int m_iOriginalTrackTableRowHeight;
 };
 
 #endif

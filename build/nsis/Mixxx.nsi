@@ -196,9 +196,6 @@ Section "Mixxx (required)" SecMixxx
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\mixxx.exe"
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.dll"
 
-  ; Put other files there
-  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.xml"
-
   ; And documentation, licence etc.
   File "${BASE_BUILD_DIR}\Mixxx-Manual.pdf"
   File "${BASE_BUILD_DIR}\LICENSE"
@@ -210,6 +207,9 @@ Section "Mixxx (required)" SecMixxx
 
   SetOutPath $INSTDIR\sqldrivers
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\sqldrivers\*"
+
+  SetOutPath $INSTDIR\fonts
+  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\fonts\*"
 
   SetOutPath $INSTDIR\plugins
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\*.dll"
@@ -307,7 +307,6 @@ Section "Uninstall"
   Delete $INSTDIR\mixxx.exe
   Delete $INSTDIR\mixxx.log
   Delete $INSTDIR\*.dll
-  Delete $INSTDIR\schema.xml
   Delete $INSTDIR\*.manifest
   Delete $INSTDIR\UninstallMixxx.exe
   Delete $INSTDIR\Mixxx-Manual.pdf
@@ -316,6 +315,8 @@ Section "Uninstall"
   Delete $INSTDIR\COPYING
   Delete $INSTDIR\sqldrivers\*.dll
   RMDir "$INSTDIR\sqldrivers"
+  Delete $INSTDIR\fonts\*
+  RMDir "$INSTDIR\fonts"
   Delete $INSTDIR\plugins\soundsource\*
   RMDir "$INSTDIR\plugins\soundsource"
   Delete $INSTDIR\plugins\vamp\*

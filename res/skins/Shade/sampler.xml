@@ -214,16 +214,16 @@
 									</State>
 									<Pos>11,32</Pos>
 									<Connection>
-										<ConfigKey>[Sampler<Variable name="samplernum"/>],play</ConfigKey>
-										<EmitOnDownPress>true</EmitOnDownPress>
-										<ButtonState>LeftButton</ButtonState>
-									</Connection>
-									<Connection>
-										<ConfigKey>[Sampler<Variable name="samplernum"/>],start</ConfigKey>
-										<EmitOnDownPress>true</EmitOnDownPress>
-										<ButtonState>RightButton</ButtonState>
-										<ConnectValueToWidget>false</ConnectValueToWidget>
-									</Connection>
+                                        <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
+                                        <ButtonState>LeftButton</ButtonState>
+                                    </Connection>
+                                    <Connection>
+                                        <ConfigKey>[Sampler<Variable name="samplernum"/>],start_stop</ConfigKey>
+                                        <ButtonState>RightButton</ButtonState>
+                                    </Connection>
+                                    <Connection>
+                                        <ConfigKey>[Sampler<Variable name="samplernum"/>],play_indicator</ConfigKey>
+                                    </Connection>
 								</PushButton>
 	
 								<!--

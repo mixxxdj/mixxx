@@ -4,6 +4,127 @@
 		<Layout>vertical</Layout>
 		<SizePolicy>e,e</SizePolicy>
 		<Children>
+            <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <ObjectName>ToolbarTop</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+                    <WidgetGroup>
+                        <ObjectName>GuiToggleContainer</ObjectName>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Children>
+                            <PushButton>
+                                <Size>50f,20f</Size>
+                                <TooltipId>toggle_4decks</TooltipId>
+                                <ObjectName>GuiToggleButton</ObjectName>
+                                <NumberStates>2</NumberStates>
+                                <State>
+                                  <Number>0</Number>
+                                  <Text>4 DECKS</Text>
+                                </State>
+                                <State>
+                                  <Number>1</Number>
+                                  <Text>4 DECKS</Text>
+                                </State>
+                                <Connection>
+                                  <ConfigKey>[Master],show_4decks</ConfigKey>
+                                  <ButtonState>LeftButton</ButtonState>
+                                </Connection>
+                                <Connection>
+                                  <ConfigKey>[Master],show_4decks</ConfigKey>
+                                </Connection>
+                            </PushButton>
+                        </Children>
+                    </WidgetGroup>
+                    <WidgetGroup>
+                        <ObjectName>GuiToggleContainer</ObjectName>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Children>
+                            <PushButton>
+                                <Size>40f,20f</Size>
+                                <TooltipId>show_mixer</TooltipId>
+                                <ObjectName>GuiToggleButton</ObjectName>
+                                <NumberStates>2</NumberStates>
+                                <State>
+                                  <Number>0</Number>
+                                  <Text>MIXER</Text>
+                                </State>
+                                <State>
+                                  <Number>1</Number>
+                                  <Text>MIXER</Text>
+                                </State>
+                                <Connection>
+                                  <ConfigKey>[Master],show_mixer</ConfigKey>
+                                  <ButtonState>LeftButton</ButtonState>
+                                </Connection>
+                                <Connection>
+                                  <ConfigKey>[Master],show_mixer</ConfigKey>
+                                </Connection>
+                            </PushButton>
+                        </Children>
+                    </WidgetGroup>
+                    <WidgetGroup>
+                        <ObjectName>GuiToggleContainer</ObjectName>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Children>
+                            <PushButton>
+                                <Size>55f,20f</Size>
+                                <ObjectName>GuiToggleButton</ObjectName>
+                                <NumberStates>2</NumberStates>
+                                <State>
+                                  <Number>0</Number>
+                                  <Text>SPINNIES</Text>
+                                </State>
+                                <State>
+                                  <Number>1</Number>
+                                  <Text>SPINNIES</Text>
+                                </State>
+                                <Connection>
+                                  <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
+                                  <ButtonState>LeftButton</ButtonState>
+                                </Connection>
+                                <Connection>
+                                  <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
+                                </Connection>
+                            </PushButton>
+                        </Children>
+                    </WidgetGroup>
+                    <WidgetGroup>  <!-- spacer -->
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Children></Children>
+                    </WidgetGroup>
+                    <WidgetGroup>
+                      <Layout>vertical</Layout>
+                      <SizePolicy>min,min</SizePolicy>
+                      <Children>
+                        <WidgetGroup>
+                          <ObjectName>ClockWidget</ObjectName>
+                          <Layout>horizontal</Layout>
+                          <SizePolicy>min,min</SizePolicy>
+                          <Children>
+                            <WidgetGroup>
+                              <Layout>horizontal</Layout>
+                              <SizePolicy>max,max</SizePolicy>
+                              <Children>
+                                <Time>
+                                  <TooltipId>time</TooltipId>
+                                  <Style>QLabel { font: bold 16px/19px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+                                            background-color: transparent; color: #EECE33;}
+                                  </Style>
+                                  <ShowSeconds>false</ShowSeconds>
+                                </Time>
+                              </Children>
+                            </WidgetGroup>
+                          </Children>
+                        </WidgetGroup>
+                      </Children>
+                    </WidgetGroup>
+                </Children>
+            </WidgetGroup>
 			<WidgetGroup>
 				<Layout>horizontal</Layout>
 				<SizePolicy>me,f</SizePolicy>
@@ -15,6 +136,10 @@
 					<Template src="skin:waveform.xml">
 						<SetVariable name="channum">3</SetVariable>
                         <SetVariable name="deck_color">#09B2AE</SetVariable>
+                        <SetVariable name="SignalBgColor">#012322</SetVariable>
+                        <SetVariable name="SignalRGBLowColor">#cb3433</SetVariable>
+                        <SetVariable name="SignalRGBMidColor">#00ff33</SetVariable>
+                        <SetVariable name="SignalRGBHighColor">#0034fe</SetVariable>
 					</Template>
 				</Children>
 				<Connection>
@@ -33,6 +158,10 @@
 					<Template src="skin:waveform.xml">
 						<SetVariable name="channum">1</SetVariable>
                         <SetVariable name="deck_color">#EECE33</SetVariable>
+                        <SetVariable name="SignalBgColor">#2f290a</SetVariable>
+                        <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
+                        <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
+                        <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
 					</Template>
 				</Children>
 			</WidgetGroup>
@@ -47,6 +176,10 @@
 					<Template src="skin:waveform.xml">
 						<SetVariable name="channum">2</SetVariable>
                         <SetVariable name="deck_color">#EECE33</SetVariable>
+                        <SetVariable name="SignalBgColor">#2f290a</SetVariable>
+                        <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
+                        <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
+                        <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
 					</Template>
 				</Children>
 			</WidgetGroup>
@@ -61,6 +194,10 @@
 					<Template src="skin:waveform.xml">
 						<SetVariable name="channum">4</SetVariable>
                         <SetVariable name="deck_color">#09B2AE</SetVariable>
+                        <SetVariable name="SignalBgColor">#012322</SetVariable>
+                        <SetVariable name="SignalRGBLowColor">#cb3433</SetVariable>
+                        <SetVariable name="SignalRGBMidColor">#00ff33</SetVariable>
+                        <SetVariable name="SignalRGBHighColor">#0034fe</SetVariable>
 					</Template>
 				</Children>
 				<Connection>
@@ -89,6 +226,7 @@
                 <ObjectName>AlignRightBottom</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,f</SizePolicy>
+                <MinimumSize>450,</MinimumSize>
                 <Children>
                     <WidgetGroup> <!-- spacer to push logo to the right -->
                         <Layout>horizontal</Layout>

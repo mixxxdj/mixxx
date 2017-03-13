@@ -15,6 +15,7 @@
 #include "mixxxkeyboard.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
+#include "util/assert.h"
 
 BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
                                          ConfigObject<ConfigValue>* pConfig,
@@ -298,7 +299,9 @@ void BasePlaylistFeature::slotDeletePlaylist() {
     }
 
     if (m_lastRightClickedIndex.isValid()) {
-        Q_ASSERT(playlistId >= 0);
+        DEBUG_ASSERT_AND_HANDLE(playlistId >= 0) {
+            return;
+        }
 
         m_playlistDao.deletePlaylist(playlistId);
         activate();
@@ -378,20 +381,28 @@ void BasePlaylistFeature::slotExportPlaylist() {
     // Open a dialog to let the user choose the file location for playlist export.
     // The location is set to the last used directory for import/export and the file
     // name to the playlist name.
-    QString playlist_filename = playlistName;
+    QString filefilter = tr("M3U Playlist (*.m3u)");
     QString file_location = QFileDialog::getSaveFileName(
             NULL,
             tr("Export Playlist"),
-            lastPlaylistDirectory.append("/").append(playlist_filename),
+            lastPlaylistDirectory.append("/").append(playlistName),
             tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;"
-            "PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"));
+            "PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"),
+            &filefilter);
     // Exit method if user cancelled the open dialog.
     if (file_location.isNull() || file_location.isEmpty()) {
         return;
     }
-
-    // Update the import/export playlist directory
+    // Manually add extension due to bug in QFileDialog
+    // via https://bugreports.qt-project.org/browse/QTBUG-27186
     QFileInfo fileName(file_location);
+    if (fileName.suffix().isNull() || fileName.suffix().isEmpty()) {
+    	QString ext = filefilter.section(".",1,1);
+    	ext.chop(1);
+    	file_location.append(".").append(ext);
+    }
+    // Update the import/export playlist directory
+    //QFileInfo fileName(file_location);
     m_pConfig->set(ConfigKey("[Library]","LastImportExportPlaylistDirectory"),
                 ConfigValue(fileName.dir().absolutePath()));
 

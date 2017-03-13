@@ -46,6 +46,16 @@ void Tooltips::addStandardTooltips() {
             << QString("%1: %2").arg(scrollWheel, tr("Scroll to change the waveform zoom level."))
             << dropTracksHere;
 
+    add("waveform_zoom_up")
+            << tr("Waveform Zoom Out");
+
+    add("waveform_zoom_down")
+            << tr("Waveform Zoom In");
+
+    add("waveform_zoom_set_default")
+            << tr("Waveform Zoom")
+            << QString("%1").arg(resetToDefault);
+    
     add("spinny")
             << tr("Spinning Vinyl")
             << tr("Rotates during playback and shows the position of a track.")
@@ -128,6 +138,12 @@ void Tooltips::addStandardTooltips() {
             << tr("Controls what you hear on the headphone output.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
+    add("headSplit")
+            << tr("Headphone Split Cue")
+            << tr("If activated, the master signal plays in the right channel, while the cueing signal "
+                  "plays in the left channel.")
+            << tr("Adjust the Headphone Mix so in the left channel is not the pure cueing signal.");
+    
     // Note, this is used for samplers and microphone only currently (that's why
     // center is the default).
     add("orientation")
@@ -155,6 +171,26 @@ void Tooltips::addStandardTooltips() {
     add("show_coverart")
             << tr("Cover Art")
             << tr("Show/hide Cover Art.");
+
+    add("toggle_4decks")
+            << tr("Toggle 4 Decks")
+            << tr("Switches between showing 2 decks and 4 decks.");
+
+    add("show_library")
+            << tr("Show Library")
+            << tr("Show or hide the track library.");
+
+    add("show_effects")
+            << tr("Show Effects Rack")
+            << tr("Show or hide the effects rack.");
+
+    add("toggle_expanded_library")
+            << tr("Toggle Big Library")
+            << tr("Makes the library fill the screen.");
+
+    add("show_mixer")
+            << tr("Toggle Mixer")
+            << tr("Show or hide the mixer.");
 
     add("microphone_volume")
             << tr("Microphone Volume")
@@ -337,10 +373,10 @@ void Tooltips::addStandardTooltips() {
     add("beatsync_beatsync_tempo")
             << tr("Old Synchronize")
             << tr("(This skin should be updated to use Master Sync!)")
-            << QString("%1: %2").arg(leftClick, tr("Syncs the tempo (BPM) and phase to that of the other track, "))
-            << tr("if BPM is detected on both.")
-            << QString("%1: %2").arg(rightClick, tr("Syncs the tempo (BPM) to that of the other track,"))
-            << tr("if BPM is detected on both.")
+            << QString("%1: %2").arg(leftClick, tr("Syncs the tempo (BPM) and phase to that of the other track, "
+                                                   "if BPM is detected on both."))
+            << QString("%1: %2").arg(rightClick, tr("Syncs the tempo (BPM) to that of the other track, "
+                                                    "if BPM is detected on both."))
             << tr("Syncs to the first deck (in numerical order) that is playing a track and has a BPM.")
             << tr("If no deck is playing, syncs to the first deck that has a BPM.")
             << tr("Decks can't sync to samplers and samplers can only sync to decks.");
@@ -352,6 +388,13 @@ void Tooltips::addStandardTooltips() {
             << tr("Hold for at least a second to enable sync lock for this deck.")
             << tr("Decks with sync locked will all play at the same tempo, and decks that also have "
                   "quantize enabled will always have their beats lined up.");
+
+    // TODO(owen): find a better phrase for "the other deck"
+    add("sync_reset_key")
+            << tr("Sync and Reset Key")
+            << QString("%1: %2").arg(leftClick, tr("Sets the key to a compatible key with the other track key, "
+                                                   "if a key is detected on both."))
+            << QString("%1: %2").arg(rightClick, tr("Resets the key to the original track key."));
 
     add("sync_master")
             << tr("Enable Sync Clock Master")
@@ -366,6 +409,24 @@ void Tooltips::addStandardTooltips() {
             << tr("Pitch Control")
             << tr("Changes the track pitch independent of the tempo.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
+
+    add("pitch_up")
+            << tr("Pitch Control")
+            << tr("Changes the track pitch independent of the tempo.")
+            << QString("%1: %2").arg(leftClick, tr("Increases the pitch by one semitone."))
+            << QString("%1: %2").arg(rightClick, tr("Increases the pitch by 10 cents."));
+
+    add("pitch_down")
+            << tr("Pitch Control")
+            << tr("Changes the track pitch independent of the tempo.")
+            << QString("%1: %2").arg(leftClick, tr("Decreases the pitch by one semitone."))
+            << QString("%1: %2").arg(rightClick, tr("Decreases the pitch by 10 cents."));
+
+    add("pitch_adjust")
+            << tr("Pitch Adjust")
+            << tr("Adjust the pitch in addition to the speed slider pitch.")
+            << QString("%1: %2").arg(rightClick, resetToDefault);
+
 
     add("rate_display")
             << tr("Pitch Rate")

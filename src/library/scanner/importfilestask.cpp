@@ -1,6 +1,6 @@
 #include "library/scanner/importfilestask.h"
 
-#include "library/libraryscanner.h"
+#include "library/scanner/libraryscanner.h"
 #include "library/coverartutils.h"
 #include "util/timer.h"
 

@@ -22,7 +22,6 @@ class BansheePlaylistModel : public BaseSqlTableModel {
     virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual bool isColumnInternal(int column);
-    virtual bool isColumnHiddenByDefault(int column);
 
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
     TrackModel::CapabilitiesFlags getCapabilities() const;

@@ -67,9 +67,10 @@ class VisualPlayPosition : public QObject {
   private:
     ControlValueAtomic<VisualPlayPositionData> m_data;
     ControlObjectSlave* m_audioBufferSize;
-    double m_dAudioBufferSize;
+    double m_dAudioBufferSize; // Audio buffer size in ms
     bool m_valid;
     QString m_key;
+    bool m_invalidTimeInfoWarned;
 
     static QMap<QString, QWeakPointer<VisualPlayPosition> > m_listVisualPlayPosition;
     // Time info from the Sound device, updated just after audio callback is called

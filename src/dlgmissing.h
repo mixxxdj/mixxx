@@ -3,6 +3,7 @@
 
 #include "ui_dlgmissing.h"
 #include "configobject.h"
+#include "library/library.h"
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
 #include "mixxxkeyboard.h"
@@ -13,8 +14,9 @@ class MissingTableModel;
 class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
     Q_OBJECT
   public:
-    DlgMissing(QWidget *parent, ConfigObject<ConfigValue>* pConfig,
-              TrackCollection* pTrackCollection, MixxxKeyboard* pKeyboard);
+    DlgMissing(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
+               Library* pLibrary, TrackCollection* pTrackCollection,
+               MixxxKeyboard* pKeyboard);
     virtual ~DlgMissing();
 
     void onShow();
@@ -24,6 +26,8 @@ class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
     void clicked();
     void selectAll();
     void selectionChanged(const QItemSelection&, const QItemSelection&);
+    void setTrackTableFont(const QFont& font);
+    void setTrackTableRowHeight(int rowHeight);
 
   signals:
     void trackSelected(TrackPointer pTrack);

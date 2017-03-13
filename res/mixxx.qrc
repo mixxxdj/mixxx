@@ -1,8 +1,29 @@
 <RCC>
     <qresource prefix="/">
-        <file>images/mixxx-icon.png</file>
         <file>images/ic_mixxx_window.png</file>
-        <file>images/templates/logo_mixxx.png</file>
+        <file>images/library/cover_default.png</file>
+        <file>images/library/crates_art.png</file>
+        <file>images/library/ic_library_autodj.png</file>
+        <file>images/library/ic_library_banshee.png</file>
+        <file>images/library/ic_library_browse.png</file>
+        <file>images/library/ic_library_checked.png</file>
+        <file>images/library/ic_library_crates.png</file>
+        <file>images/library/ic_library_drag_and_drop.png</file>
+        <file>images/library/ic_library_history.png</file>
+        <file>images/library/ic_library_history_current.png</file>
+        <file>images/library/ic_library_itunes.png</file>
+        <file>images/library/ic_library_library.png</file>
+        <file>images/library/ic_library_locked.png</file>
+        <file>images/library/ic_library_playlist.png</file>
+        <file>images/library/ic_library_prepare.png</file>
+        <file>images/library/ic_library_preview_pause.png</file>
+        <file>images/library/ic_library_preview_play.png</file>
+        <file>images/library/ic_library_promotracks.png</file>
+        <file>images/library/ic_library_recordings.png</file>
+        <file>images/library/ic_library_rhythmbox.png</file>
+        <file>images/library/ic_library_traktor.png</file>
+        <file>images/library/ic_library_unchecked.png</file>
+        <file>images/mixxx-icon.png</file>
         <file>images/preferences/ic_preferences_autodj.png</file>
         <file>images/preferences/ic_preferences_bpmdetect.png</file>
         <file>images/preferences/ic_preferences_broadcast.png</file>
@@ -23,30 +44,12 @@
         <file>images/preferences/ic_preferences_vinyl.png</file>
         <file>images/preferences/ic_preferences_warning.png</file>
         <file>images/preferences/ic_preferences_waveforms.png</file>
-        <file>images/library/crates_art.png</file>
-        <file>images/library/ic_library_autodj.png</file>
-        <file>images/library/ic_library_banshee.png</file>
-        <file>images/library/ic_library_browse.png</file>
-        <file>images/library/ic_library_crates.png</file>
-        <file>images/library/ic_library_drag_and_drop.png</file>
-        <file>images/library/ic_library_history_current.png</file>
-        <file>images/library/ic_library_history.png</file>
-        <file>images/library/ic_library_itunes.png</file>
-        <file>images/library/ic_library_library.png</file>
-        <file>images/library/ic_library_locked.png</file>
-        <file>images/library/ic_library_playlist.png</file>
-        <file>images/library/ic_library_prepare.png</file>
-        <file>images/library/ic_library_preview_pause.png</file>
-        <file>images/library/ic_library_preview_play.png</file>
-        <file>images/library/ic_library_promotracks.png</file>
-        <file>images/library/ic_library_recordings.png</file>
-        <file>images/library/ic_library_rhythmbox.png</file>
-        <file>images/library/ic_library_traktor.png</file>
-        <file>images/library/ic_library_checked.png</file>
-        <file>images/library/ic_library_unchecked.png</file>
-        <file>skins/cross.png</file>
+        <file>images/templates/logo_mixxx.png</file>
+        <file>schema.xml</file>
         <file>shaders/filteredsignal.frag</file>
         <file>shaders/passthrough.vert</file>
+        <file>shaders/rgbsignal.frag</file>
+        <file>skins/cross.png</file>
         <file>translations/mixxx_ar.qm</file>
         <file>translations/mixxx_ast.qm</file>
         <file>translations/mixxx_bg.qm</file>
@@ -91,8 +94,8 @@
         <file>translations/mixxx_nn.qm</file>
         <file>translations/mixxx_oc.qm</file>
         <file>translations/mixxx_pl.qm</file>
-        <file>translations/mixxx_pt_BR.qm</file>
         <file>translations/mixxx_pt.qm</file>
+        <file>translations/mixxx_pt_BR.qm</file>
         <file>translations/mixxx_ro.qm</file>
         <file>translations/mixxx_ru.qm</file>
         <file>translations/mixxx_sl.qm</file>
@@ -104,6 +107,5 @@
         <file>translations/mixxx_uz.qm</file>
         <file>translations/mixxx_zh_CN.qm</file>
         <file>translations/mixxx_zh_TW.qm</file>
-        <file>images/library/default_cover.png</file>
     </qresource>
 </RCC>

@@ -1024,8 +1024,12 @@ class Optimize(Feature):
                 self.status = "Disabled (Overriden by tuned=1)"
                 return
 
-            # Common flags to all optimizations. Consider dropping -O3 to -O2
-            # and getting rid of -fomit-frame-pointer, -ffast-math, and
+            # Common flags to all optimizations. 
+            # -ffast-math will pevent a performance penalty by denormals 
+            # (floating point values almost Zero are treated as Zero) 
+            # unfortunately that work only on 64 bit CPUs or with sse2 enabled  
+            # Consider dropping -O3 to -O2
+            # and getting rid of -fomit-frame-pointer and
             # -funroll-loops. We need to justify our use of these aggressive
             # optimizations with data.
             build.env.Append(
@@ -1077,9 +1081,9 @@ class Optimize(Feature):
             elif optimize_level == 9:
                 self.status = "Enabled (Tuned Generic)"
                 # This option is for release builds packaged for 64-bit. We
-                # don't know what kind of 64-bit CPU they'll have, so let
-                # -mtune=generic pick the best options. Used by the debian rules
-                # script.
+                # don't know what kind of CPU they'll have, so let
+                # -mtune=generic pick the most common, but compatible options. 
+                # Used by the debian rules script.
 
                 # It's a little sketchy, but I'm turning on SSE and MMX by
                 # default. opt=9 is a distribution mode, we don't really support
@@ -1087,9 +1091,14 @@ class Optimize(Feature):
                 # decision affects. The downside of this is that we aren't truly
                 # i386 compatible, so builds that claim 'i386' will crash.
                 # -- rryan 2/2011
-
-                # TODO(XXX) check the soundtouch package in Ubuntu to see what
-                # they do about this.
+                
+                # what others do: 
+                # soundtouch uses just -O3 in Ubuntu Trusty
+                # rubberband uses just -O2 in Ubuntu Trusty 
+                # fftw3 (used by rubberband) in Ubuntu Trusty 
+                # -O3 -fomit-frame-pointer -mtune=native -malign-double 
+                # -fstrict-aliasing -fno-schedule-insns -ffast-math 
+                       
                 build.env.Append(
                     CCFLAGS='-mtune=generic -mmmx -msse -mfpmath=sse')
                 build.env.Append(CPPDEFINES='__SSE__')

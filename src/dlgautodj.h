@@ -8,6 +8,7 @@
 #include "configobject.h"
 #include "trackinfoobject.h"
 #include "library/libraryview.h"
+#include "library/library.h"
 #include "library/trackcollection.h"
 #include "library/autodj/autodjprocessor.h"
 #include "mixxxkeyboard.h"
@@ -19,6 +20,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     Q_OBJECT
   public:
     DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
+              Library* pLibrary,
               AutoDJProcessor* pProcessor, TrackCollection* pTrackCollection,
               MixxxKeyboard* pKeyboard);
     virtual ~DlgAutoDJ();
@@ -38,6 +40,8 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void transitionSliderChanged(int value);
     void enableRandomButton(bool enabled);
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
+    void setTrackTableFont(const QFont& font);
+    void setTrackTableRowHeight(int rowHeight);
 
   signals:
     void addRandomButton(bool buttonChecked);

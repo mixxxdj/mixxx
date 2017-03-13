@@ -12,7 +12,6 @@
         <WidgetGroup>
             <ObjectName>KillButton<Variable name="reversed"/></ObjectName>
             <Layout>horizontal</Layout>
-            <ObjectName>debugbg</ObjectName>
             <SizePolicy>min,min</SizePolicy>
             <MinimumSize>26,30</MinimumSize>
             <Children>
@@ -43,13 +42,10 @@
             <Layout>horizontal</Layout>
             <SizePolicy>me, min</SizePolicy>
             <Children>
-                <Knob>
-                    <NumberStates>64</NumberStates>
-                    <Path>knobs/knob_rotary_s%1.png</Path>
-                    <Connection>
-                        <ConfigKey><Variable name="EqualizerEffectGroup"/>,parameter<Variable name="parameter"/></ConfigKey>
-                    </Connection>
-                </Knob>
+                <Template src="skin:knob_textless.xml">
+                   <SetVariable name="group"><Variable name="EqualizerEffectGroup"/></SetVariable>
+                   <SetVariable name="control">parameter<Variable name="parameter"/></SetVariable>
+                </Template>
             </Children>
         </WidgetGroup>
     </Children>

@@ -5,6 +5,7 @@
 #include "library/browse/browsetablemodel.h"
 #include "library/libraryview.h"
 #include "library/proxytrackmodel.h"
+#include "library/library.h"
 #include "library/trackcollection.h"
 #include "mixxxkeyboard.h"
 #include "recording/recordingmanager.h"
@@ -20,7 +21,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     Q_OBJECT
   public:
     DlgRecording(QWidget *parent, ConfigObject<ConfigValue>* pConfig,
-                 TrackCollection* pTrackCollection,
+                 Library* pLibrary, TrackCollection* pTrackCollection,
                  RecordingManager* pRecManager, MixxxKeyboard* pKeyboard);
     virtual ~DlgRecording();
 
@@ -38,6 +39,8 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     void refreshBrowseModel();
     void slotRestoreSearch();
     void slotDurationRecorded(QString durationRecorded);
+    void setTrackTableFont(const QFont& font);
+    void setTrackTableRowHeight(int rowHeight);
 
   signals:
     void loadTrack(TrackPointer tio);

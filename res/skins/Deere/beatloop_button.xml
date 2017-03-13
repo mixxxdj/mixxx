@@ -10,6 +10,7 @@
 -->
 <Template>
   <Template src="skin:left_right_display_2state_button.xml">
+    <SetVariable name="TooltipId">beatloop</SetVariable>
     <SetVariable name="ObjectName">BeatLoopButton</SetVariable>
     <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
     <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>

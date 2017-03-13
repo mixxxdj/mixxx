@@ -12,16 +12,10 @@
   <WidgetGroup>
     <Layout>vertical</Layout>
     <Children>
-      <KnobComposed>
-        <Size>40f,40f</Size>
-        <ObjectName>EffectKnob</ObjectName>
-        <Knob>knob.svg</Knob>
-        <MinAngle>-230</MinAngle>
-        <MaxAngle>50</MaxAngle>
-        <Connection>
-          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/></ConfigKey>
-        </Connection>
-      </KnobComposed>
+      <Template src="skin:knob.xml">
+        <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>]</SetVariable>
+        <SetVariable name="control">parameter<Variable name="EffectParameter"/></SetVariable>
+      </Template>
       <EffectParameterName>
         <Size>40f,10f</Size>
         <ObjectName>EffectKnobLabel</ObjectName>

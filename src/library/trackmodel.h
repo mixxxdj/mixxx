@@ -13,6 +13,9 @@
     display track lists. */
 class TrackModel {
   public:
+    static const int kHeaderWidthRole = Qt::UserRole + 0;
+    static const int kHeaderNameRole = Qt::UserRole + 1;
+
     TrackModel(QSqlDatabase db,
                const char* settingsNamespace)
             : m_db(db),

@@ -86,10 +86,6 @@ bool HiddenTableModel::isColumnInternal(int column) {
     }
     return false;
 }
-bool HiddenTableModel::isColumnHiddenByDefault(int column) {
-    Q_UNUSED(column);
-    return false;
-}
 
 // Override flags from BaseSqlModel since we don't want edit this model
 Qt::ItemFlags HiddenTableModel::flags(const QModelIndex &index) const {

@@ -10,7 +10,22 @@
 				<ObjectName>PreviewDeckContainer</ObjectName>
 				<SizePolicy>min,min</SizePolicy>
 				<Children>
-					<WidgetGroup trigger="[PreviewDeck],show_previewdeck">
+					<!-- Collapsed Previewdeck must be listed first so that
+                    show_previewdeck = True matches with current = 1. -->
+					<WidgetGroup>
+						<ObjectName>AlignLeftBottom</ObjectName>
+						<Layout>horizontal</Layout>
+						<SizePolicy>min,min</SizePolicy>
+						<Children>
+							<Template src="skin:hide_show_button.xml">
+								<SetVariable name="object_name">HideShowButton</SetVariable>
+								<SetVariable name="control">[PreviewDeck],show_previewdeck</SetVariable>
+								<SetVariable name="button_text">Preview Deck</SetVariable>
+							</Template>
+						</Children>
+					</WidgetGroup>
+
+					<WidgetGroup trigger="[PreviewDeck],show_previewdeck" persist="true" default="false">
 						<ObjectName>PreviewDeckExpanded</ObjectName>
 						<Layout>vertical</Layout>
 						<SizePolicy>min,min</SizePolicy>
@@ -27,20 +42,6 @@
 									<Template src="skin:preview_deck.xml" />
 								</Children>
 							</WidgetGroup>
-						</Children>
-					</WidgetGroup>
-
-					<!-- Collapsed Library  -->
-					<WidgetGroup>
-						<ObjectName>AlignLeftBottom</ObjectName>
-						<Layout>horizontal</Layout>
-						<SizePolicy>min,min</SizePolicy>
-						<Children>
-							<Template src="skin:hide_show_button.xml">
-								<SetVariable name="object_name">HideShowButton</SetVariable>
-								<SetVariable name="control">[PreviewDeck],show_previewdeck</SetVariable>
-								<SetVariable name="button_text">Preview Deck</SetVariable>
-							</Template>
 						</Children>
 					</WidgetGroup>
 				</Children>

@@ -82,7 +82,6 @@ RateControl::RateControl(QString group,
     m_pVCEnabled = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_enabled"));
     m_pVCScratching = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_scratching"));
     m_pVCMode = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_mode"));
-    m_pVCRate = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_rate"));
 
     // Permanent rate-change buttons
     buttonRatePermDown =
@@ -411,7 +410,7 @@ SyncMode RateControl::getSyncMode() const {
     return syncModeFromDouble(m_pSyncMode->get());
 }
 
-double RateControl::calculateSpeed(double baserate, bool paused,
+double RateControl::calculateSpeed(double baserate, double speed, bool paused,
                                   int iSamplesPerBuffer,
                                   bool* reportScratching) {
     *reportScratching = false;
@@ -423,7 +422,7 @@ double RateControl::calculateSpeed(double baserate, bool paused,
     } else {
         double wheelFactor = getWheelFactor();
         double jogFactor = getJogFactor();
-        bool bVinylControlEnabled = m_pVCEnabled && m_pVCEnabled->get() > 0.0;
+        bool bVinylControlEnabled = m_pVCEnabled && m_pVCEnabled->toBool();
         bool useScratch2Value = m_pScratch2Enable->get() != 0;
 
         // By default scratch2_enable is enough to determine if the user is
@@ -435,10 +434,10 @@ double RateControl::calculateSpeed(double baserate, bool paused,
         }
 
         if (bVinylControlEnabled) {
-            if (m_pVCScratching && m_pVCScratching->get() > 0.0) {
+            if (m_pVCScratching->toBool()) {
                 *reportScratching = true;
             }
-            rate = m_pVCRate->get();
+            rate = speed;
         } else {
             double scratchFactor = m_pScratch2->get();
             // Don't trust values from m_pScratch2
@@ -465,10 +464,8 @@ double RateControl::calculateSpeed(double baserate, bool paused,
                 if (useScratch2Value) {
                     rate = scratchFactor;
                 } else {
-
-                    rate = 1. + getRawRate() + getTempRate();
+                    rate = speed + getTempRate();
                     rate += wheelFactor;
-
                 }
                 rate += jogFactor;
             }
@@ -500,6 +497,8 @@ double RateControl::calculateSpeed(double baserate, bool paused,
             // If we are reversing (and not scratching,) flip the rate.  This is ok even when syncing.
             // Reverse with vinyl is only ok if absolute mode isn't on.
             int vcmode = m_pVCMode ? m_pVCMode->get() : MIXXX_VCMODE_ABSOLUTE;
+            // TODO(owen): Instead of just ignoring reverse mode, should we
+            // disable absolute mode instead?
             if (m_pReverseButton->get()
                     && !m_pScratch2Enable->get()
                     && (!bVinylControlEnabled || vcmode != MIXXX_VCMODE_ABSOLUTE)) {
@@ -562,9 +561,8 @@ double RateControl::process(const double rate,
                 addRateTemp(csmall);
             else if (buttonRateTempDownSmall->get())
                 subRateTemp(csmall);
-        }
-        else
-        {
+        } else {
+            // m_eRateRampMode == RATERAMP_LINEAR
             m_dTempRateChange = ((double)latrate / ((double)m_iRateRampSensitivity / 100.));
 
             if (m_eRampBackMode == RATERAMP_RAMPBACK_PERIOD)
@@ -611,9 +609,9 @@ double RateControl::process(const double rate,
                 } else {
                     addRateTemp(m_dRateTempRampbackChange);
                 }
-            }
-            else
+            } else {
                 resetRateTemp();
+            }
         }
     }
     else if ((m_eRateRampMode == RATERAMP_STEP) && (m_bTempStarted))

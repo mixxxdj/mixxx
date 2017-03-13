@@ -21,9 +21,8 @@
 EngineBufferScale::EngineBufferScale()
         : m_iSampleRate(44100),
           m_dBaseRate(1.0),
-          m_bSpeedAffectsPitch(true),
-          m_dSpeedAdjust(1.0),
-          m_dPitchAdjust(1.0),
+          m_dTempo(1.0),
+          m_dPitch(1.0),
           m_buffer(new CSAMPLE[MAX_BUFFER_LEN]),
           m_samplesRead(0) {
 }

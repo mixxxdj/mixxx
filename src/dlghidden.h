@@ -3,6 +3,7 @@
 
 #include "ui_dlghidden.h"
 #include "configobject.h"
+#include "library/library.h"
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
 #include "mixxxkeyboard.h"
@@ -14,8 +15,9 @@ class QItemSelection;
 class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
     Q_OBJECT
   public:
-    DlgHidden(QWidget *parent, ConfigObject<ConfigValue>* pConfig,
-              TrackCollection* pTrackCollection, MixxxKeyboard* pKeyboard);
+    DlgHidden(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
+              Library* pLibrary, TrackCollection* pTrackCollection,
+              MixxxKeyboard* pKeyboard);
     virtual ~DlgHidden();
 
     void onShow();
@@ -25,6 +27,8 @@ class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
     void clicked();
     void selectAll();
     void selectionChanged(const QItemSelection&, const QItemSelection&);
+    void setTrackTableFont(const QFont& font);
+    void setTrackTableRowHeight(int rowHeight);
 
   signals:
     void trackSelected(TrackPointer pTrack);

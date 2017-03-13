@@ -34,14 +34,10 @@
 				<Layout>vertical</Layout>
 				<SizePolicy>min,min</SizePolicy>
 				<Children>
-					<Knob>
-						<TooltipId>microphone_pregain</TooltipId>
-						<NumberStates>64</NumberStates>
-						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Connection>
-							<ConfigKey>[Microphone],pregain</ConfigKey>
-						</Connection>
-					</Knob>
+                    <Template src="skin:knob_textless.xml">
+                       <SetVariable name="group">[Microphone]</SetVariable>
+                       <SetVariable name="control">pregain</SetVariable>
+                    </Template>
 				</Children>
 			</WidgetGroup>
 			<WidgetGroup>

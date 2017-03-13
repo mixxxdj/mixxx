@@ -1,0 +1,37 @@
+<Template>
+    <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,max</SizePolicy>
+        <MinimumSize>0,0</MinimumSize>
+        <Children>
+            <WidgetStack currentpage="[Master],med_view_curpage" persist="true">
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+                    <!-- Need a blank page for when the user just wants the
+                    library.
+                    TODO(owilliams): This doesn't quite work.  Deselecting a button
+                    doesn't always switch to the first tab. -->
+                    <WidgetGroup>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Children/>
+                    </WidgetGroup>
+                    <WidgetGroup trigger="[EffectRack1],show_tab" persist="true">
+                        <Layout>vertical</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Children>
+                            <Template src="skin:effect_rack.xml"/>
+                        </Children>
+                    </WidgetGroup>
+                    <WidgetGroup trigger="[Samplers],show_samplers_tab" persist="true">
+                        <Layout>vertical</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Children>
+                            <Template src="skin:sampler_decks.xml"/>
+                        </Children>
+                    </WidgetGroup>
+                </Children>
+            </WidgetStack>
+        </Children>
+    </WidgetGroup>
+</Template>

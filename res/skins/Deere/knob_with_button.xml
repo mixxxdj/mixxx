@@ -11,19 +11,12 @@
   <WidgetGroup>
     <Layout>vertical</Layout>
     <Children>
-      <KnobComposed>
-        <Size>40f,40f</Size>
-        <Knob>knob.svg</Knob>
-        <MinAngle>-230</MinAngle>
-        <MaxAngle>50</MaxAngle>
-        <Connection>
-          <ConfigKey><Variable name="group"/>,<Variable name="control"/></ConfigKey>
-        </Connection>
-      </KnobComposed>
+      <Template src="skin:knob.xml"/>
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
           <PushButton>
+            <TooltipId><Variable name="button_TooltipId"/></TooltipId>
             <ObjectName>KillButtons</ObjectName>
             <Size>10f,10f</Size>
             <NumberStates>2</NumberStates>

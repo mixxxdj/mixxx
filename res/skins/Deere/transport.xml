@@ -15,6 +15,7 @@
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:left_right_1state_button.xml">
+            <SetVariable name="TooltipId">back_start</SetVariable>
             <SetVariable name="ObjectName">FastBack</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
@@ -27,6 +28,7 @@
           </Template>
 
           <Template src="skin:left_right_1state_button.xml">
+            <SetVariable name="TooltipId">fwd_end</SetVariable>
             <SetVariable name="ObjectName">FastFwd</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
@@ -44,6 +46,7 @@
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:left_right_1state_button.xml">
+            <SetVariable name="TooltipId">reverse</SetVariable>
             <SetVariable name="ObjectName">ReverseButton</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SmallHorizontalStretchButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SmallHorizontalStretchButtonMaximumSize"/></SetVariable>

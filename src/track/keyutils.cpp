@@ -242,9 +242,8 @@ QPair<ChromaticKey, double> KeyUtils::scaleKeyOctaves(ChromaticKey key, double o
     int key_changes = static_cast<int>(key_changes_scaled +
                           (key_changes_scaled > 0 ? 0.5 : -0.5));
 
-    // Distance to the nearest key
-    double diff_to_key = key_changes_scaled - key_changes;
-    return QPair<ChromaticKey, double>(scaleKeySteps(key, key_changes), diff_to_key);
+    double diff_to_nearest_full_key = key_changes_scaled - key_changes;
+    return QPair<ChromaticKey, double>(scaleKeySteps(key, key_changes), diff_to_nearest_full_key);
 }
 
 // static
@@ -313,9 +312,9 @@ int KeyUtils::shortestStepsToKey(
     mixxx::track::io::key::ChromaticKey target_key) {
     // For invalid keys just return zero steps.
     if (!ChromaticKey_IsValid(key) ||
-        key == mixxx::track::io::key::INVALID ||
-        !ChromaticKey_IsValid(target_key) ||
-        target_key == mixxx::track::io::key::INVALID) {
+            key == mixxx::track::io::key::INVALID ||
+            !ChromaticKey_IsValid(target_key) ||
+            target_key == mixxx::track::io::key::INVALID) {
         return 0;
     }
 
@@ -327,14 +326,10 @@ int KeyUtils::shortestStepsToKey(
     int targetTonic = keyToTonic(target_key);
     int steps = targetTonic - tonic;
 
-    int upSteps = targetTonic - tonic + 12;
-    if (abs(upSteps) < abs(steps)) {
-        steps = upSteps;
-    }
-
-    int downSteps = targetTonic - tonic - 12;
-    if (abs(downSteps) < abs(steps)) {
-        steps = downSteps;
+    if (steps > 6) {
+        steps -= 12;
+    } else if (steps < -6) {
+        steps += 12;
     }
 
     return steps;
@@ -342,34 +337,58 @@ int KeyUtils::shortestStepsToKey(
 
 // static
 int KeyUtils::shortestStepsToCompatibleKey(
-    mixxx::track::io::key::ChromaticKey key,
-    mixxx::track::io::key::ChromaticKey target_key) {
-    // For invalid keys just return zero steps.
+        mixxx::track::io::key::ChromaticKey key,
+        mixxx::track::io::key::ChromaticKey target_key) {
+
     if (!ChromaticKey_IsValid(key) ||
-        key == mixxx::track::io::key::INVALID ||
-        !ChromaticKey_IsValid(target_key) ||
-        target_key == mixxx::track::io::key::INVALID) {
+            key == mixxx::track::io::key::INVALID ||
+            !ChromaticKey_IsValid(target_key) ||
+            target_key == mixxx::track::io::key::INVALID ||
+            key == target_key) {
+        // For invalid keys just return zero steps.
+        return 0;
+    }
+
+
+    if (key == target_key) {
+        // Already matching
         return 0;
     }
 
     // We know the key is in the set of valid values. Save whether or not the
-    // value is minor.
+    // value is major.
     bool major = keyIsMajor(key);
     bool targetMajor = keyIsMajor(target_key);
 
-    // If both keys are major/minor, then we just want to take the shortest
-    // number of steps to match the key.
-    if (major == targetMajor) {
-        return shortestStepsToKey(key, target_key);
+    // If we have a mode missmatch, matching to a the Relative mode
+    // will produce a pitch up to +-6 semitones, which may sounds
+    // too much chipmunked than expected.
+    // Since the the relative major/minor key shares the same notes
+    // we can convert the target mode
+    if (major != targetMajor) {
+        int openKeyNumber = KeyUtils::keyToOpenKeyNumber(target_key);
+        target_key = openKeyNumberToKey(openKeyNumber, !targetMajor);
     }
 
-    int targetOpenKeyNumber = KeyUtils::keyToOpenKeyNumber(target_key);
+    // Now both keys at the same mode
+    // The Compatible Key is +-5 or 0 semitone steps away
+    // 0(+-12) Tonic match
+    // +5 Perfect 4th (Sub-Dominant)
+    // -5 Perfect 5th (Dominant)
 
-    // Get the key that matches target_key on the Circle of Fifths but is the
-    // same major/minor as key.
-    target_key = openKeyNumberToKey(targetOpenKeyNumber, major);
-
-    return shortestStepsToKey(key, target_key);
+    // first we need the current step distance to decide
+    // which case we choose
+    int shortestDistance = shortestStepsToKey(key, target_key);
+    // shortestDistance is in the range of -6 ..  +6
+    if (shortestDistance < -2) {
+        // Perfect 4th (Sub-Dominant)
+        return 5 + shortestDistance;
+    } if (shortestDistance > 2) {
+        // Perfect 5th (Dominant)
+        return -5 + shortestDistance;
+    }
+    // tonic match
+    return shortestDistance; // in the range of -2 .. +2
 }
 
 QList<mixxx::track::io::key::ChromaticKey> KeyUtils::getCompatibleKeys(

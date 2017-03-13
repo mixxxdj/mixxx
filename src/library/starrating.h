@@ -32,16 +32,13 @@
  * The myStarCount member variable stores the current rating, and myMaxStarCount stores
  * the highest possible rating (typically 5).
  */
-class StarRating
-{
- public:
+class StarRating {
+  public:
     enum EditMode { Editable, ReadOnly };
-
 
     StarRating(int starCount = 1, int maxStarCount = 5);
 
-    void paint(QPainter *painter, const QRect &rect, const QPalette &palette, EditMode mode,
-                bool isSelected) const;
+    void paint(QPainter* painter, const QRect& rect) const;
     QSize sizeHint() const;
 
     int starCount() const { return m_myStarCount; }
@@ -49,13 +46,11 @@ class StarRating
     void setStarCount(int starCount) { m_myStarCount = starCount; }
     void setMaxStarCount(int maxStarCount) { m_myMaxStarCount = maxStarCount; }
 
-
-private:
+  private:
     QPolygonF m_starPolygon;
     QPolygonF m_diamondPolygon;
     int m_myStarCount;
     int m_myMaxStarCount;
-
 };
 
 Q_DECLARE_METATYPE(StarRating)

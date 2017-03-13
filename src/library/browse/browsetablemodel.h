@@ -8,6 +8,7 @@
 #include "library/trackcollection.h"
 #include "recording/recordingmanager.h"
 #include "util/file.h"
+#include "library/browse/browsethread.h"
 
 //constants
 const int COLUMN_FILENAME = 0;
@@ -75,6 +76,7 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     MDir m_current_directory;
     TrackCollection* m_pTrackCollection;
     RecordingManager* m_pRecordingManager;
+    BrowseThreadPointer m_pBrowseThread;
 };
 
 #endif

@@ -72,7 +72,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_actualFrameRate(0),
         m_vSyncType(0) {
 
-    m_visualGain[All] = 1.5;
+    m_visualGain[All] = 1.0;
     m_visualGain[Low] = 1.0;
     m_visualGain[Mid] = 1.0;
     m_visualGain[High] = 1.0;
@@ -275,7 +275,7 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
 }
 
 void WaveformWidgetFactory::setFrameRate(int frameRate) {
-    m_frameRate = math_clamp_unsafe(frameRate, 1, 120);
+    m_frameRate = math_clamp(frameRate, 1, 120);
     if (m_config) {
         m_config->set(ConfigKey("[Waveform]","FrameRate"), ConfigValue(m_frameRate));
     }
@@ -511,11 +511,9 @@ WaveformWidgetType::Type WaveformWidgetFactory::autoChooseWidgetType() const {
     //default selection
     if (m_openGLAvailable) {
         if (m_openGLShaderAvailable) {
-            //TODO: (vrince) enable when ready
-            //return = WaveformWidgetType::GLSLWaveform;
-            return WaveformWidgetType::GLWaveform;
+            return WaveformWidgetType::GLSLRGBWaveform;
         } else {
-            return WaveformWidgetType::GLWaveform;
+            return WaveformWidgetType::GLRGBWaveform;
         }
     }
     return WaveformWidgetType::SoftwareWaveform;
@@ -574,17 +572,23 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGLShaders = GLSimpleWaveformWidget::useOpenGLShaders();
             developerOnly = GLSimpleWaveformWidget::developerOnly();
             break;
-        case WaveformWidgetType::GLWaveform:
+        case WaveformWidgetType::GLFilteredWaveform:
             widgetName = GLWaveformWidget::getWaveformWidgetName();
             useOpenGl = GLWaveformWidget::useOpenGl();
             useOpenGLShaders = GLWaveformWidget::useOpenGLShaders();
             developerOnly = GLWaveformWidget::developerOnly();
             break;
-        case WaveformWidgetType::GLSLWaveform:
-            widgetName = GLSLWaveformWidget::getWaveformWidgetName();
-            useOpenGl = GLSLWaveformWidget::useOpenGl();
-            useOpenGLShaders = GLSLWaveformWidget::useOpenGLShaders();
-            developerOnly = GLSLWaveformWidget::developerOnly();
+        case WaveformWidgetType::GLSLFilteredWaveform:
+            widgetName = GLSLFilteredWaveformWidget::getWaveformWidgetName();
+            useOpenGl = GLSLFilteredWaveformWidget::useOpenGl();
+            useOpenGLShaders = GLSLFilteredWaveformWidget::useOpenGLShaders();
+            developerOnly = GLSLFilteredWaveformWidget::developerOnly();
+            break;
+        case WaveformWidgetType::GLSLRGBWaveform:
+            widgetName = GLSLRGBWaveformWidget::getWaveformWidgetName();
+            useOpenGl = GLSLRGBWaveformWidget::useOpenGl();
+            useOpenGLShaders = GLSLRGBWaveformWidget::useOpenGLShaders();
+            developerOnly = GLSLRGBWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::GLVSyncTest:
             widgetName = GLVSyncTestWidget::getWaveformWidgetName();
@@ -657,14 +661,17 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
         case WaveformWidgetType::GLSimpleWaveform:
             widget = new GLSimpleWaveformWidget(viewer->getGroup(), viewer);
             break;
-        case WaveformWidgetType::GLWaveform:
+        case WaveformWidgetType::GLFilteredWaveform:
             widget = new GLWaveformWidget(viewer->getGroup(), viewer);
             break;
         case WaveformWidgetType::GLRGBWaveform:
             widget = new GLRGBWaveformWidget(viewer->getGroup(), viewer);
             break;
-        case WaveformWidgetType::GLSLWaveform:
-            widget = new GLSLWaveformWidget(viewer->getGroup(), viewer);
+        case WaveformWidgetType::GLSLFilteredWaveform:
+            widget = new GLSLFilteredWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::GLSLRGBWaveform:
+            widget = new GLSLRGBWaveformWidget(viewer->getGroup(), viewer);
             break;
         case WaveformWidgetType::GLVSyncTest:
             widget = new GLVSyncTestWidget(viewer->getGroup(), viewer);

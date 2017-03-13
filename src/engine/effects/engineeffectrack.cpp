@@ -10,6 +10,7 @@ EngineEffectRack::EngineEffectRack(int iRackNumber)
 }
 
 EngineEffectRack::~EngineEffectRack() {
+    //qDebug() << "EngineEffectRack::~EngineEffectRack()";
 }
 
 bool EngineEffectRack::processEffectsRequest(const EffectsRequest& message,

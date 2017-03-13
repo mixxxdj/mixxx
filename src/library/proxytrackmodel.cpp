@@ -4,16 +4,19 @@
 #include <QVariant>
 
 #include "library/proxytrackmodel.h"
+#include "util/assert.h"
 
 ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
                                  bool bHandleSearches)
         // ProxyTrackModel proxies settings requests to the composed TrackModel,
         // don't initialize its TrackModel with valid parameters.
         : TrackModel(QSqlDatabase(), ""),
+          m_pTrackModel(dynamic_cast<TrackModel*>(pTrackModel)),
           m_currentSearch(""),
           m_bHandleSearches(bHandleSearches) {
-    m_pTrackModel = dynamic_cast<TrackModel*>(pTrackModel);
-    Q_ASSERT(m_pTrackModel && pTrackModel);
+    DEBUG_ASSERT_AND_HANDLE(m_pTrackModel && pTrackModel) {
+        return;
+    }
     setSourceModel(pTrackModel);
 }
 
@@ -22,21 +25,21 @@ ProxyTrackModel::~ProxyTrackModel() {
 
 int ProxyTrackModel::getTrackId(const QModelIndex& index) const {
     QModelIndex indexSource = mapToSource(index);
-    return m_pTrackModel->getTrackId(indexSource);
+    return m_pTrackModel ? m_pTrackModel->getTrackId(indexSource) : -1;
 }
 
 const QLinkedList<int> ProxyTrackModel::getTrackRows(int trackId) const {
-    return m_pTrackModel->getTrackRows(trackId);
+    return m_pTrackModel ? m_pTrackModel->getTrackRows(trackId) : QLinkedList<int>();
 }
 
 TrackPointer ProxyTrackModel::getTrack(const QModelIndex& index) const {
     QModelIndex indexSource = mapToSource(index);
-    return m_pTrackModel->getTrack(indexSource);
+    return m_pTrackModel ? m_pTrackModel->getTrack(indexSource) : TrackPointer();
 }
 
 QString ProxyTrackModel::getTrackLocation(const QModelIndex& index) const {
     QModelIndex indexSource = mapToSource(index);
-    return m_pTrackModel->getTrackLocation(indexSource);
+    return m_pTrackModel ? m_pTrackModel->getTrackLocation(indexSource) : QString();
 }
 
 void ProxyTrackModel::search(const QString& searchText, const QString& extraFilter) {
@@ -44,7 +47,7 @@ void ProxyTrackModel::search(const QString& searchText, const QString& extraFilt
     if (m_bHandleSearches) {
         m_currentSearch = searchText;
         setFilterFixedString(searchText);
-    } else {
+    } else if (m_pTrackModel) {
         m_pTrackModel->search(searchText);
     }
 }
@@ -53,17 +56,16 @@ const QString ProxyTrackModel::currentSearch() const {
     if (m_bHandleSearches) {
         return m_currentSearch;
     }
-    return m_pTrackModel->currentSearch();
+    return m_pTrackModel ? m_pTrackModel->currentSearch() : QString();
 }
 
 bool ProxyTrackModel::isColumnInternal(int column) {
-    return m_pTrackModel->isColumnInternal(column);
+    return m_pTrackModel ? m_pTrackModel->isColumnInternal(column) : false;
 }
 
 bool ProxyTrackModel::isColumnHiddenByDefault(int column) {
-    return m_pTrackModel->isColumnHiddenByDefault(column);
+    return m_pTrackModel ? m_pTrackModel->isColumnHiddenByDefault(column) : false;
 }
-
 
 void ProxyTrackModel::removeTracks(const QModelIndexList& indices) {
     QModelIndexList translatedList;
@@ -71,28 +73,36 @@ void ProxyTrackModel::removeTracks(const QModelIndexList& indices) {
         QModelIndex indexSource = mapToSource(index);
         translatedList.append(indexSource);
     }
-    m_pTrackModel->removeTracks(translatedList);
+    if (m_pTrackModel) {
+        m_pTrackModel->removeTracks(translatedList);
+    }
 }
 
 void ProxyTrackModel::moveTrack(const QModelIndex& sourceIndex,
                                 const QModelIndex& destIndex) {
     QModelIndex sourceIndexSource = mapToSource(sourceIndex);
     QModelIndex destIndexSource = mapToSource(destIndex);
-    m_pTrackModel->moveTrack(sourceIndexSource, destIndexSource);
+    if (m_pTrackModel) {
+        m_pTrackModel->moveTrack(sourceIndexSource, destIndexSource);
+    }
 }
 
 QAbstractItemDelegate* ProxyTrackModel::delegateForColumn(const int i, QObject* pParent) {
-    return m_pTrackModel->delegateForColumn(i, pParent);
+    return m_pTrackModel ? m_pTrackModel->delegateForColumn(i, pParent) : NULL;
 }
 
 TrackModel::CapabilitiesFlags ProxyTrackModel::getCapabilities() const {
-    return m_pTrackModel->getCapabilities();
+    return m_pTrackModel ? m_pTrackModel->getCapabilities() : TrackModel::TRACKMODELCAPS_NONE;
 }
 
 bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
                                        const QModelIndex& sourceParent) const {
     if (!m_bHandleSearches)
         return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
+
+    if (m_pTrackModel == NULL) {
+        return false;
+    }
 
     const QList<int>& filterColumns = m_pTrackModel->searchColumns();
     QAbstractItemModel* itemModel =
@@ -116,13 +126,15 @@ bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
 }
 
 QString ProxyTrackModel::getModelSetting(QString name) {
-    if (!m_pTrackModel)
+    if (m_pTrackModel == NULL) {
         return QString();
+    }
     return m_pTrackModel->getModelSetting(name);
 }
 
 bool ProxyTrackModel::setModelSetting(QString name, QVariant value) {
-    if (!m_pTrackModel)
+    if (m_pTrackModel == NULL) {
         return false;
+    }
     return m_pTrackModel->setModelSetting(name, value);
 }

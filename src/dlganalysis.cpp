@@ -6,7 +6,7 @@
 #include "widget/wanalysislibrarytableview.h"
 #include "library/trackcollection.h"
 #include "dlganalysis.h"
-
+#include "util/assert.h"
 
 DlgAnalysis::DlgAnalysis(QWidget* parent,
                        ConfigObject<ConfigValue>* pConfig,
@@ -31,10 +31,12 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
             this, SIGNAL(trackSelected(TrackPointer)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
-    Q_ASSERT(box); // Assumes the form layout is a QVBox/QHBoxLayout!
-    box->removeWidget(m_pTrackTablePlaceholder);
-    m_pTrackTablePlaceholder->hide();
-    box->insertWidget(1, m_pAnalysisLibraryTableView);
+    DEBUG_ASSERT_AND_HANDLE(box) { // Assumes the form layout is a QVBox/QHBoxLayout!
+    } else {
+        box->removeWidget(m_pTrackTablePlaceholder);
+        m_pTrackTablePlaceholder->hide();
+        box->insertWidget(1, m_pAnalysisLibraryTableView);
+    }
 
     m_pAnalysisLibraryTableModel = new AnalysisLibraryTableModel(this, pTrackCollection);
     m_pAnalysisLibraryTableView->loadTrackModel(m_pAnalysisLibraryTableModel);

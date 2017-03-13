@@ -51,6 +51,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
 
     void slotSetRateRange(int pos);
     void slotSetRateDir(int pos);
+    void slotKeylockMode(int pos);
     void slotSetRateTempLeft(double);
     void slotSetRateTempRight(double);
     void slotSetRatePermLeft(double);
@@ -71,8 +72,8 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
 
     void slotNumDecksChanged(double);
     void slotNumSamplersChanged(double);
-
-    void slotRowHeightValueChanged(int);
+    
+    void slotUpdateSpeedAutoReset(int);
 
   private:
     void notifyRebootNecessary();
@@ -86,14 +87,16 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     QList<ControlObjectThread*> m_rateControls;
     QList<ControlObjectThread*> m_rateDirControls;
     QList<ControlObjectThread*> m_rateRangeControls;
+    QList<ControlObjectThread*> m_keylockModeControls;
     MixxxMainWindow *m_mixxx;
     SkinLoader* m_pSkinLoader;
     PlayerManager* m_pPlayerManager;
 
     int m_iNumConfiguredDecks;
     int m_iNumConfiguredSamplers;
-
-    bool m_rebootNotifiedRowHeight;
+    
+    int m_speedAutoReset;
+    int m_keylockMode;
 };
 
 #endif

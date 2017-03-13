@@ -17,6 +17,7 @@
 #include "soundsourcem4a.h"
 #include "soundsourcetaglib.h"
 #include "sampleutil.h"
+#include "util/assert.h"
 
 #include <taglib/mp4file.h>
 #include <neaacdec.h>
@@ -91,7 +92,11 @@ int SoundSourceM4A::initializeDecoder()
 
     // mp4_open succeeded -> populate variables
     mp4_private* mp = (struct mp4_private*)ipd.private_ipd;
-    Q_ASSERT(mp);
+    DEBUG_ASSERT_AND_HANDLE(mp) {
+        mp4_close(&ipd);
+        return ERR;
+    }
+
     mp4file = mp->mp4.handle;
     filelength = mp4_total_samples(&ipd);
     setSampleRate(mp->sample_rate);

@@ -21,6 +21,7 @@
 #include "sampleutil.h"
 #include "track/keyutils.h"
 #include "util/math.h"
+#include "util/assert.h"
 
 EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadManager)
     : EngineBufferScale(),
@@ -53,21 +54,13 @@ EngineBufferScaleLinear::~EngineBufferScaleLinear()
 
 void EngineBufferScaleLinear::setScaleParameters(int iSampleRate,
                                                  double base_rate,
-                                                 bool speed_affects_pitch,
-                                                 double* speed_adjust,
-                                                 double* pitch_adjust) {
+                                                 double* pTempoRatio,
+                                                 double* pPitchRatio) {
+    Q_UNUSED(pPitchRatio);
     m_iSampleRate = iSampleRate;
 
-    // EBSL doesn't support pitch-independent tempo adjustment.
-    if (!speed_affects_pitch) {
-        qWarning() << "WARNING: EngineBufferScaleLinear requested to adjust"
-                   << "tempo independent of pitch. Ignoring.";
-    }
-
     m_dOldRate = m_dRate;
-    // pitch_adjust is measured in octave change. Convert it to a rate using
-    // octaveChangeToPowerOf2.
-    m_dRate = base_rate * *speed_adjust * KeyUtils::octaveChangeToPowerOf2(*pitch_adjust);
+    m_dRate = base_rate * *pTempoRatio;
 
     // Determine playback direction
     m_bBackwards = m_dRate < 0.0;
@@ -316,7 +309,6 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         while (static_cast<int>(ceil(m_dCurSampleIndex)) * 2 + 1 >=
                buffer_int_size) {
             int old_bufsize = buffer_int_size;
-            //Q_ASSERT(unscaled_samples_needed > 0);
             if (unscaled_samples_needed == 0) {
                 unscaled_samples_needed = 2;
                 screwups++;

@@ -142,12 +142,12 @@
             <Layout>horizontal</Layout>
             <SizePolicy>me,max</SizePolicy>
             <Children>
-              <Template src="skin:knob.xml">
-                <SetVariable name="control">parameter</SetVariable>
-                <SetVariable name="label">Parameter</SetVariable>
+              <Template src="skin:knob_with_label.xml">
+                <SetVariable name="control">super1</SetVariable>
+                <SetVariable name="label">SuperKnob</SetVariable>
               </Template>
 
-              <Template src="skin:knob.xml">
+              <Template src="skin:knob_with_label.xml">
                 <SetVariable name="control">mix</SetVariable>
                 <SetVariable name="label">Mix</SetVariable>
               </Template>

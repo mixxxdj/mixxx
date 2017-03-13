@@ -17,17 +17,14 @@
         <SizePolicy>min,min</SizePolicy>
         <ObjectName>EffectKnob</ObjectName>
         <Children>
-		     <Knob>
-		         <NumberStates>64</NumberStates>
-		         <Path>knobs/knob_rotary_s%1.png</Path>
-		         <Connection>
-		             <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/></ConfigKey>
-		         </Connection>
-		     </Knob>
+           <Template src="skin:knob_textless.xml">
+             <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>]</SetVariable>
+             <SetVariable name="control">parameter<Variable name="EffectParameter"/></SetVariable>
+           </Template>
 	     </Children>
       </WidgetGroup>
       <EffectParameterName>
-        <Size>1me,12f</Size>
+        <Size>1me,18f</Size>
         <ObjectName>KnobLabel</ObjectName>
         <EffectRack><Variable name="EffectRack"/></EffectRack>
         <EffectUnit><Variable name="EffectUnit"/></EffectUnit>

@@ -9,6 +9,7 @@
 -->
 <Template>
   <Template src="skin:left_right_display_2state_button.xml">
+    <SetVariable name="TooltipId">hotcue</SetVariable>
     <SetVariable name="ObjectName">HotcueButton</SetVariable>
     <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
     <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>

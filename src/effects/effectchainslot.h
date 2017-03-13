@@ -37,9 +37,9 @@ class EffectChainSlot : public QObject {
 
     void registerGroup(const QString& group);
 
-    double getParameter() const;
-    void setParameter(double value);
-    void setParameterDefaultValue(double value);
+    double getSuperParameter() const;
+    void setSuperParameter(double value);
+    void setSuperParameterDefaultValue(double value);
 
     // Unload the loaded EffectChain.
     void clear();
@@ -94,7 +94,7 @@ class EffectChainSlot : public QObject {
   private slots:
     void slotChainEffectsChanged(bool shouldEmit=true);
     void slotChainNameChanged(const QString& name);
-    void slotChainParameterChanged(double parameter);
+    void slotChainSuperParameterChanged(double parameter);
     void slotChainEnabledChanged(bool enabled);
     void slotChainMixChanged(double mix);
     void slotChainInsertionTypeChanged(EffectChain::InsertionType type);
@@ -110,7 +110,7 @@ class EffectChainSlot : public QObject {
     void slotControlChainLoaded(double v);
     void slotControlChainEnabled(double v);
     void slotControlChainMix(double v);
-    void slotControlChainParameter(double v);
+    void slotControlChainSuperParameter(double v);
     void slotControlChainInsertionType(double v);
     void slotControlChainSelector(double v);
     void slotControlChainNextPreset(double v);
@@ -134,7 +134,7 @@ class EffectChainSlot : public QObject {
     ControlObject* m_pControlChainLoaded;
     ControlPushButton* m_pControlChainEnabled;
     ControlObject* m_pControlChainMix;
-    ControlObject* m_pControlChainParameter;
+    ControlObject* m_pControlChainSuperParameter;
     ControlPushButton* m_pControlChainInsertionType;
     ControlObject* m_pControlChainSelector;
     ControlPushButton* m_pControlChainNextPreset;

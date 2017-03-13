@@ -25,7 +25,8 @@ void WEffect::setup(QDomNode node, const SkinContext& context) {
     if (pEffectSlot) {
         setEffectSlot(pEffectSlot);
     } else {
-        qDebug() << "EffectName node could not attach to effect slot.";
+        SKIN_WARNING(node, context)
+                << "EffectName node could not attach to effect slot.";
     }
 }
 

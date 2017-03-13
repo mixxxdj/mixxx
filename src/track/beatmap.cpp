@@ -82,6 +82,12 @@ void BeatMap::initialize(TrackPointer pTrack, int iSampleRate) {
     m_iSampleRate = iSampleRate > 0 ? iSampleRate : pTrack->getSampleRate();
     m_dCachedBpm = 0;
     m_dLastFrame = 0;
+
+    if (!pTrack.isNull()) {
+        // BeatMap should live in the same thread as the track it is associated
+        // with.
+        moveToThread(pTrack->thread());
+    }
 }
 
 BeatMap::~BeatMap() {
@@ -314,6 +320,37 @@ double BeatMap::getBpmRange(double startSample, double stopSample) const {
     Beat startBeat, stopBeat;
     startBeat.set_frame_position(samplesToFrames(startSample));
     stopBeat.set_frame_position(samplesToFrames(stopSample));
+    return calculateBpm(startBeat, stopBeat);
+}
+
+double BeatMap::getBpmAroundPosition(double curSample, int n) const {
+    QMutexLocker locker(&m_mutex);
+    if (!isValid())
+        return -1;
+
+    // To make sure we are always counting n beats, iterate backward to the
+    // lower bound, then iterate forward from there to the upper bound.
+    // a value of -1 indicates we went off the map -- count from the beginning.
+    double lower_bound = findNthBeat(curSample, -n);
+    if (lower_bound == -1) {
+        lower_bound = framesToSamples(m_beats.first().frame_position());
+    }
+
+    // If we hit the end of the beat map, recalculate the lower bound.
+    double upper_bound = findNthBeat(lower_bound, n * 2);
+    if (upper_bound == -1) {
+        upper_bound = framesToSamples(m_beats.last().frame_position());
+        lower_bound = findNthBeat(upper_bound, n * -2);
+        // Super edge-case -- the track doesn't have n beats!  Do the best
+        // we can.
+        if (lower_bound == -1) {
+            lower_bound = framesToSamples(m_beats.first().frame_position());
+        }
+    }
+
+    Beat startBeat, stopBeat;
+    startBeat.set_frame_position(samplesToFrames(lower_bound));
+    stopBeat.set_frame_position(samplesToFrames(upper_bound));
     return calculateBpm(startBeat, stopBeat);
 }
 

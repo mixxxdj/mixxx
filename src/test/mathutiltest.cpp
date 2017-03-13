@@ -32,37 +32,16 @@ const int MathUtilTest::VALUE_MAX = 2  * MathUtilTest::MAX;
 
 TEST_F(MathUtilTest, MathClampUnsafe) {
     for (int i = VALUE_MIN; i <= VALUE_MAX; ++i) {
-        EXPECT_LE(MIN, math_clamp_unsafe(i, MIN, MAX));
-        EXPECT_GE(MAX, math_clamp_unsafe(i, MIN, MAX));
-        EXPECT_EQ(MIN, math_clamp_unsafe(i, MIN, MIN));
-        EXPECT_EQ(MAX, math_clamp_unsafe(i, MAX, MAX));
+        EXPECT_LE(MIN, math_clamp(i, MIN, MAX));
+        EXPECT_GE(MAX, math_clamp(i, MIN, MAX));
+        EXPECT_EQ(MIN, math_clamp(i, MIN, MIN));
+        EXPECT_EQ(MAX, math_clamp(i, MAX, MAX));
         if (MIN >= i) {
-            EXPECT_EQ(MIN, math_clamp_unsafe(i, MIN, MAX));
+            EXPECT_EQ(MIN, math_clamp(i, MIN, MAX));
         }
         if (MAX <= i) {
-            EXPECT_EQ(MAX, math_clamp_unsafe(i, MIN, MAX));
+            EXPECT_EQ(MAX, math_clamp(i, MIN, MAX));
         }
-    }
-}
-
-TEST_F(MathUtilTest, MathClampSafe) {
-    for (int i = VALUE_MIN; i <= VALUE_MAX; ++i) {
-        EXPECT_LE(MIN, math_clamp_safe(i, MIN, MAX));
-        EXPECT_GE(MAX, math_clamp_safe(i, MIN, MAX));
-        EXPECT_EQ(MIN, math_clamp_safe(i, MIN, MIN));
-        EXPECT_EQ(MAX, math_clamp_safe(i, MAX, MAX));
-        if (MIN >= i) {
-            EXPECT_EQ(MIN, math_clamp_safe(i, MIN, MAX));
-        }
-        if (MAX <= i) {
-            EXPECT_EQ(MAX, math_clamp_safe(i, MIN, MAX));
-        }
-    }
-}
-
-TEST_F(MathUtilTest, MathClampSafeInvalidBounds) {
-    for (int i = VALUE_MIN; i <= VALUE_MAX; ++i) {
-        EXPECT_EQ(i, math_clamp_safe(i, MAX, MIN));
     }
 }
 

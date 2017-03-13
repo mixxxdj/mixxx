@@ -3,6 +3,7 @@
 #include "effects/effectparameter.h"
 #include "effects/effectsmanager.h"
 #include "effects/effect.h"
+#include "util/assert.h"
 
 EffectParameter::EffectParameter(Effect* pEffect, EffectsManager* pEffectsManager,
                                  int iParameterNumber, const EffectManifestParameter& parameter)
@@ -130,8 +131,16 @@ double EffectParameter::getMinimum() const {
 }
 
 void EffectParameter::setMinimum(double minimum) {
-    m_minimum = minimum;
+    // There's a degenerate case here where the maximum could be lower
+    // than the manifest minimum. If that's the case, then the minimum
+    // value is currently below the manifest minimum. Since similar
+    // guards exist in the setMaximum call, this should not be able to
+    // happen.
+    DEBUG_ASSERT_AND_HANDLE(m_minimum >= m_parameter.getMinimum()) {
+        return;
+    }
 
+    m_minimum = minimum;
     if (m_minimum < m_parameter.getMinimum()) {
         qWarning() << debugString() << "WARNING: Minimum value is less than plugin's absolute minimum, clamping.";
         m_minimum = m_parameter.getMinimum();
@@ -142,15 +151,12 @@ void EffectParameter::setMinimum(double minimum) {
         m_minimum = m_maximum;
     }
 
-    // There's a degenerate case here where the maximum could be lower
-    // than the manifest minimum. If that's the case, then the minimum
-    // value is currently below the manifest minimum. Since similar
-    // guards exist in the setMaximum call, this should not be able to
-    // happen.
-    Q_ASSERT(m_minimum >= m_parameter.getMinimum());
-
     if (clampValue()) {
         qWarning() << debugString() << "WARNING: Value was outside of new minimum, clamped.";
+    }
+
+    if (clampDefault()) {
+        qWarning() << debugString() << "WARNING: Default was outside of new minimum, clamped.";
     }
 
     updateEngineState();
@@ -161,6 +167,15 @@ double EffectParameter::getMaximum() const {
 }
 
 void EffectParameter::setMaximum(double maximum) {
+    // There's a degenerate case here where the minimum could be larger
+    // than the manifest maximum. If that's the case, then the maximum
+    // value is currently above the manifest maximum. Since similar
+    // guards exist in the setMinimum call, this should not be able to
+    // happen.
+    DEBUG_ASSERT_AND_HANDLE(m_maximum <= m_parameter.getMaximum()) {
+        return;
+    }
+
     m_maximum = maximum;
     if (m_maximum > m_parameter.getMaximum()) {
         qWarning() << debugString() << "WARNING: Maximum value is less than plugin's absolute maximum, clamping.";
@@ -171,13 +186,6 @@ void EffectParameter::setMaximum(double maximum) {
         qWarning() << debugString() << "WARNING: New maximum was below the minimum, clamped.";
         m_maximum = m_minimum;
     }
-
-    // There's a degenerate case here where the minimum could be larger
-    // than the manifest maximum. If that's the case, then the maximum
-    // value is currently above the manifest maximum. Since similar
-    // guards exist in the setMinimum call, this should not be able to
-    // happen.
-    Q_ASSERT(m_maximum <= m_parameter.getMaximum());
 
     if (clampValue()) {
         qWarning() << debugString() << "WARNING: Value was outside of new maximum, clamped.";

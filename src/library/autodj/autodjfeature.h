@@ -19,12 +19,13 @@
 #include "library/libraryfeature.h"
 #include "configobject.h"
 #include "library/treeitemmodel.h"
-#include "dlgautodj.h"
 
 #ifdef __AUTODJCRATES__
 #include "library/dao/autodjcratesdao.h"
 #endif // __AUTODJCRATES__
 
+class DlgAutoDJ;
+class Library;
 class PlayerManagerInterface;
 class TrackCollection;
 class AutoDJProcessor;
@@ -32,7 +33,7 @@ class AutoDJProcessor;
 class AutoDJFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    AutoDJFeature(QObject* parent,
+    AutoDJFeature(Library* pLibrary,
                   ConfigObject<ConfigValue>* pConfig,
                   PlayerManagerInterface* pPlayerManager,
                   TrackCollection* pTrackCollection);
@@ -59,6 +60,7 @@ class AutoDJFeature : public LibraryFeature {
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;
+    Library* m_pLibrary;
     TrackCollection* m_pTrackCollection;
     CrateDAO& m_crateDao;
     PlaylistDAO& m_playlistDao;

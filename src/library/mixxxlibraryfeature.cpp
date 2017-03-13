@@ -6,6 +6,7 @@
 #include "library/mixxxlibraryfeature.h"
 
 #include "library/parser.h"
+#include "library/library.h"
 #include "library/basetrackcache.h"
 #include "library/librarytablemodel.h"
 #include "library/missingtablemodel.h"
@@ -16,13 +17,16 @@
 #include "soundsourceproxy.h"
 #include "widget/wlibrary.h"
 #include "util/dnd.h"
+#include "dlghidden.h"
+#include "dlgmissing.h"
 
-MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
+MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
                                          TrackCollection* pTrackCollection,
                                          ConfigObject<ConfigValue>* pConfig)
-        : LibraryFeature(parent),
+        : LibraryFeature(pLibrary),
           kMissingTitle(tr("Missing Tracks")),
           kHiddenTitle(tr("Hidden Tracks")),
+          m_pLibrary(pLibrary),
           m_pMissingView(NULL),
           m_pHiddenView(NULL),
           m_trackDao(pTrackCollection->getTrackDAO()),
@@ -33,24 +37,24 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             << "library." + LIBRARYTABLE_PLAYED
             << "library." + LIBRARYTABLE_TIMESPLAYED
             //has to be up here otherwise Played and TimesPlayed are not show
+            << "library." + LIBRARYTABLE_ALBUMARTIST
+            << "library." + LIBRARYTABLE_ALBUM
             << "library." + LIBRARYTABLE_ARTIST
             << "library." + LIBRARYTABLE_TITLE
-            << "library." + LIBRARYTABLE_ALBUM
-            << "library." + LIBRARYTABLE_ALBUMARTIST
             << "library." + LIBRARYTABLE_YEAR
-            << "library." + LIBRARYTABLE_DURATION
             << "library." + LIBRARYTABLE_RATING
             << "library." + LIBRARYTABLE_GENRE
             << "library." + LIBRARYTABLE_COMPOSER
             << "library." + LIBRARYTABLE_GROUPING
-            << "library." + LIBRARYTABLE_FILETYPE
             << "library." + LIBRARYTABLE_TRACKNUMBER
             << "library." + LIBRARYTABLE_KEY
             << "library." + LIBRARYTABLE_KEY_ID
-            << "library." + LIBRARYTABLE_DATETIMEADDED
             << "library." + LIBRARYTABLE_BPM
             << "library." + LIBRARYTABLE_BPM_LOCK
+            << "library." + LIBRARYTABLE_DURATION
             << "library." + LIBRARYTABLE_BITRATE
+            << "library." + LIBRARYTABLE_FILETYPE
+            << "library." + LIBRARYTABLE_DATETIMEADDED
             << "track_locations.location"
             << "track_locations.fs_deleted"
             << "library." + LIBRARYTABLE_COMMENT
@@ -118,19 +122,17 @@ MixxxLibraryFeature::~MixxxLibraryFeature() {
     delete m_pLibraryTableModel;
 }
 
-void MixxxLibraryFeature::bindWidget(WLibrary* pLibrary,
+void MixxxLibraryFeature::bindWidget(WLibrary* pLibraryWidget,
                                      MixxxKeyboard* pKeyboard) {
-    m_pHiddenView = new DlgHidden(pLibrary,
-                                  m_pConfig, m_pTrackCollection,
-                                  pKeyboard);
-    pLibrary->registerView(kHiddenTitle, m_pHiddenView);
+    m_pHiddenView = new DlgHidden(pLibraryWidget, m_pConfig, m_pLibrary,
+                                  m_pTrackCollection, pKeyboard);
+    pLibraryWidget->registerView(kHiddenTitle, m_pHiddenView);
     connect(m_pHiddenView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
 
-    m_pMissingView = new DlgMissing(pLibrary,
-                                  m_pConfig, m_pTrackCollection,
-                                  pKeyboard);
-    pLibrary->registerView(kMissingTitle, m_pMissingView);
+    m_pMissingView = new DlgMissing(pLibraryWidget, m_pConfig, m_pLibrary,
+                                    m_pTrackCollection, pKeyboard);
+    pLibraryWidget->registerView(kMissingTitle, m_pMissingView);
     connect(m_pMissingView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
 }

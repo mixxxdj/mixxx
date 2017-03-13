@@ -26,7 +26,7 @@ class BpmControl : public EngineControl {
     virtual ~BpmControl();
 
     double getBpm() const;
-    double getFileBpm() const { return m_pFileBpm ? m_pFileBpm->get() : 0.0; }
+    double getLocalBpm() const { return m_pLocalBpm ? m_pLocalBpm->get() : 0.0; }
     // When in master sync mode, ratecontrol calls calcSyncedRate to figure out
     // how fast the track should play back.  The returned rate is usually just
     // the correct pitch to match bpms.  The usertweak argument represents
@@ -48,6 +48,7 @@ class BpmControl : public EngineControl {
     void setTargetBeatDistance(double beatDistance);
     void setInstantaneousBpm(double instantaneousBpm);
     void resetSyncAdjustment();
+    double updateLocalBpm();
     double updateBeatDistance();
 
     void collectFeatures(GroupFeatureState* pGroupFeatures) const;
@@ -114,8 +115,12 @@ class BpmControl : public EngineControl {
     ControlObjectSlave* m_pLoopStartPosition;
     ControlObjectSlave* m_pLoopEndPosition;
 
+    ControlObjectSlave* m_pVCEnabled;
+
     // The current loaded file's detected BPM
     ControlObject* m_pFileBpm;
+    // The average bpm around the current playposition;
+    ControlObject* m_pLocalBpm;
     ControlPushButton* m_pAdjustBeatsFaster;
     ControlPushButton* m_pAdjustBeatsSlower;
     ControlPushButton* m_pTranslateBeatsEarlier;

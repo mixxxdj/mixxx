@@ -53,6 +53,7 @@ class BeatGrid : public QObject, public virtual Beats {
     virtual bool hasBeatInRange(double startSample, double stopSample) const;
     virtual double getBpm() const;
     virtual double getBpmRange(double startSample, double stopSample) const;
+    virtual double getBpmAroundPosition(double curSample, int n) const;
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat mutations

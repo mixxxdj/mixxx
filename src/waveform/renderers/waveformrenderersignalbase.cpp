@@ -20,7 +20,7 @@ WaveformRendererSignalBase::WaveformRendererSignalBase(
       m_pMidKillControlObject(NULL),
       m_pHighKillControlObject(NULL),
       m_alignment(Qt::AlignCenter),
-      m_pColors(0),
+      m_pColors(NULL),
       m_axesColor_r(0),
       m_axesColor_g(0),
       m_axesColor_b(0),
@@ -36,7 +36,16 @@ WaveformRendererSignalBase::WaveformRendererSignalBase(
       m_midColor_b(0),
       m_highColor_r(0),
       m_highColor_g(0),
-      m_highColor_b(0) {
+      m_highColor_b(0),
+      m_rgbLowColor_r(0),
+      m_rgbLowColor_g(0),
+      m_rgbLowColor_b(0),
+      m_rgbMidColor_r(0),
+      m_rgbMidColor_g(0),
+      m_rgbMidColor_b(0),
+      m_rgbHighColor_r(0),
+      m_rgbHighColor_g(0),
+      m_rgbHighColor_b(0) {
 }
 
 WaveformRendererSignalBase::~WaveformRendererSignalBase() {
@@ -66,8 +75,6 @@ bool WaveformRendererSignalBase::init() {
     //create controls
     m_pEQEnabled = new ControlObjectSlave(
             m_waveformRenderer->getGroup(), "filterWaveformEnable");
-    m_pLowFilterControlObject = new ControlObjectSlave(
-            m_waveformRenderer->getGroup(), "filterLow");
     m_pLowFilterControlObject = new ControlObjectSlave(
             m_waveformRenderer->getGroup(), "filterLow");
     m_pMidFilterControlObject = new ControlObjectSlave(
@@ -105,6 +112,15 @@ void WaveformRendererSignalBase::setup(const QDomNode& node,
 
     const QColor& h = m_pColors->getHighColor();
     h.getRgbF(&m_highColor_r, &m_highColor_g, &m_highColor_b);
+
+    const QColor& rgbLow = m_pColors->getRgbLowColor();
+    rgbLow.getRgbF(&m_rgbLowColor_r, &m_rgbLowColor_g, &m_rgbLowColor_b);
+
+    const QColor& rgbMid = m_pColors->getRgbMidColor();
+    rgbMid.getRgbF(&m_rgbMidColor_r, &m_rgbMidColor_g, &m_rgbMidColor_b);
+
+    const QColor& rgbHigh = m_pColors->getRgbHighColor();
+    rgbHigh.getRgbF(&m_rgbHighColor_r, &m_rgbHighColor_g, &m_rgbHighColor_b);
 
     const QColor& axes = m_pColors->getAxesColor();
     axes.getRgbF(&m_axesColor_r, &m_axesColor_g, &m_axesColor_b,

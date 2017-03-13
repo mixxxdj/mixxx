@@ -25,6 +25,7 @@
 #include "track/beat_preferences.h"
 #include "library/trackcollection.h"
 #include "library/library_preferences.h"
+#include "util/math.h"
 #include "configobject.h"
 #include "upgrade.h"
 
@@ -348,6 +349,17 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         // ask for library rescan to activate cover art. We can later ask for
         // this variable when the library scanner is constructed.
         m_bRescanLibrary = askReScanLibrary();
+
+        // Versions of mixxx until 1.11 had a hack that multiplied gain by 1/2,
+        // which was compensation for another hack that set replaygain to a
+        // default of 6.  We've now removed all of the hacks, so subtracting
+        // 6 from everyone's replay gain should keep things consistent for
+        // all users.
+        int oldReplayGain = config->getValueString(
+                ConfigKey("[ReplayGain]", "InitialReplayGainBoost"), "6").toInt();
+        int newReplayGain = math_max(-6, oldReplayGain - 6);
+        config->set(ConfigKey("[ReplayGain]", "InitialReplayGainBoost"),
+                    ConfigValue(newReplayGain));
 
         // if everything until here worked fine we can mark the configuration as
         // updated

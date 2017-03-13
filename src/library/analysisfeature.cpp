@@ -59,10 +59,10 @@ QIcon AnalysisFeature::getIcon() {
 }
 
 void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
-                                MixxxKeyboard* keyboard) {
+                                 MixxxKeyboard* keyboard) {
     m_pAnalysisView = new DlgAnalysis(libraryWidget,
-                                    m_pConfig,
-                                    m_pTrackCollection);
+                                      m_pConfig,
+                                      m_pTrackCollection);
     connect(m_pAnalysisView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
     connect(m_pAnalysisView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),

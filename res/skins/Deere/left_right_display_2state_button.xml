@@ -13,6 +13,7 @@
 -->
 <Template>
   <PushButton>
+    <TooltipId><Variable name="TooltipId"/></TooltipId>
     <ObjectName><Variable name="ObjectName"/></ObjectName>
     <MinimumSize><Variable name="MinimumSize"/></MinimumSize>
     <MaximumSize><Variable name="MaximumSize"/></MaximumSize>

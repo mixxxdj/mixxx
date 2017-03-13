@@ -1,0 +1,40 @@
+<Template>
+    <SizeAwareStack currentpage="[Master],lower_half_size" persist="true">
+        <Children>
+            <WidgetGroup>
+                <ObjectName>UILowerHalf</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,i</SizePolicy>
+                <MinimumSize>0,0</MinimumSize>
+                <MaximumSize>1920,249</MaximumSize>
+                <Children>
+                    <Template src="skin:fx_samplers_container_small.xml"/>
+                    <Template src="skin:toolbar_small.xml"/>
+                </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+                <ObjectName>UILowerHalf</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,i</SizePolicy>
+                <MinimumSize>0,250</MinimumSize>
+                <MaximumSize>1920,429</MaximumSize>
+                <Children>
+                    <Template src="skin:fx_samplers_container_med.xml"/>
+                    <Template src="skin:library.xml"/>
+                    <Template src="skin:toolbar_med.xml"/>
+                </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+                <ObjectName>UILowerHalf</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,i</SizePolicy>
+                <MinimumSize>0,431</MinimumSize>
+                <Children>
+                    <Template src="skin:fx_samplers_container_full.xml"/>
+                    <Template src="skin:library.xml"/>
+                    <Template src="skin:toolbar_full.xml"/>
+                </Children>
+            </WidgetGroup>
+        </Children>
+    </SizeAwareStack>
+</Template>

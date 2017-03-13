@@ -289,26 +289,14 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
         return TrackPointer();
     }
 
-    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
-    int track_id = track_dao.getTrackId(location);
-    bool track_already_in_library = track_id >= 0;
-    if (track_id < 0) {
-        // Add Track to library
-        track_id = track_dao.addTrack(location, true);
-    }
-
-    TrackPointer pTrack;
-    if (track_id < 0) {
-        // Add Track to library failed, create a transient TrackInfoObject
-        pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
-    } else {
-        pTrack = track_dao.getTrack(track_id);
-    }
+    bool track_already_in_library = false;
+    TrackPointer pTrack = m_pTrackCollection->getTrackDAO()
+            .getOrAddTrack(location, true, &track_already_in_library);
 
     // If this track was not in the Mixxx library it is now added and will be
     // saved with the metadata from Banshee. If it was already in the library
     // then we do not touch it so that we do not over-write the user's metadata.
-    if (!track_already_in_library) {
+    if (pTrack && !track_already_in_library) {
         pTrack->setArtist(getFieldString(index, CLM_ARTIST));
         pTrack->setTitle(getFieldString(index, CLM_TITLE));
         pTrack->setDuration(getFieldString(index, CLM_DURATION).toInt());
@@ -372,12 +360,6 @@ QString BansheePlaylistModel::getTrackLocation(const QModelIndex& index) const {
 }
 
 bool BansheePlaylistModel::isColumnInternal(int column) {
-    Q_UNUSED(column);
-    return false;
-}
-
-// if no header state exists, we may hide some columns so that the user can reactivate them
-bool BansheePlaylistModel::isColumnHiddenByDefault(int column) {
     Q_UNUSED(column);
     return false;
 }

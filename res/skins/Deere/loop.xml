@@ -15,6 +15,7 @@
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:left_1state_button.xml">
+            <SetVariable name="TooltipId">loop_in</SetVariable>
             <SetVariable name="ObjectName">LoopIn</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
@@ -26,6 +27,7 @@
           </Template>
 
           <Template src="skin:left_1state_button.xml">
+            <SetVariable name="TooltipId">loop_out</SetVariable>
             <SetVariable name="ObjectName">LoopOut</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
@@ -42,6 +44,7 @@
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:left_display_2state_button.xml">
+            <SetVariable name="TooltipId">reloop_exit</SetVariable>
             <SetVariable name="ObjectName">ReloopExit</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SmallHorizontalStretchButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SmallHorizontalStretchButtonMaximumSize"/></SetVariable>

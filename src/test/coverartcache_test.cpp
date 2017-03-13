@@ -20,7 +20,7 @@ class CoverArtCacheTest : public MixxxTest, public CoverArtCache {
 
 };
 
-const QString kCoverLocationTest("res/images/library/default_cover.png");
+const QString kCoverLocationTest("/src/test/id3-test-data/cover-test.jpg");
 const QString kTrackLocationTest(QDir::currentPath() %
                                  "/src/test/id3-test-data/cover-test.mp3");
 

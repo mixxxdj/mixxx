@@ -158,11 +158,6 @@ bool CrateTableModel::isColumnInternal(int column) {
     return false;
 }
 
-bool CrateTableModel::isColumnHiddenByDefault(int column) {
-    Q_UNUSED(column);
-    return false;
-}
-
 TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
     CapabilitiesFlags caps =  TRACKMODELCAPS_NONE
             | TRACKMODELCAPS_RECEIVEDROPS

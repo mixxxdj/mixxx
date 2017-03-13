@@ -76,9 +76,7 @@ void WStarRating::paintEvent(QPaintEvent *) {
     painter.setBrush(option.palette.text());
     painter.drawPrimitive(QStyle::PE_Widget, option);
 
-    m_starRating.paint(&painter, m_contentRect, option.palette,
-                       StarRating::ReadOnly,
-                       option.state & QStyle::State_Selected);
+    m_starRating.paint(&painter, m_contentRect);
 }
 
 void WStarRating::mouseMoveEvent(QMouseEvent *event) {

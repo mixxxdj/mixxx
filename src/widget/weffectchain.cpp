@@ -22,7 +22,8 @@ void WEffectChain::setup(QDomNode node, const SkinContext& context) {
     if (pChainSlot) {
         setEffectChainSlot(pChainSlot);
     } else {
-        qDebug() << "EffectChain node could not attach to effect chain slot.";
+        SKIN_WARNING(node, context)
+                << "EffectChain node could not attach to effect chain slot.";
     }
 }
 

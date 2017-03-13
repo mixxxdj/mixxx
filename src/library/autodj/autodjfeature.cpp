@@ -10,6 +10,7 @@
 
 #include "library/autodj/autodjfeature.h"
 
+#include "library/library.h"
 #include "library/parser.h"
 #include "playermanager.h"
 #include "library/autodj/autodjprocessor.h"
@@ -23,12 +24,13 @@
 
 const QString AutoDJFeature::m_sAutoDJViewName = QString("Auto DJ");
 
-AutoDJFeature::AutoDJFeature(QObject* parent,
+AutoDJFeature::AutoDJFeature(Library* pLibrary,
                              ConfigObject<ConfigValue>* pConfig,
                              PlayerManagerInterface* pPlayerManager,
                              TrackCollection* pTrackCollection)
-        : LibraryFeature(parent),
+        : LibraryFeature(pLibrary),
           m_pConfig(pConfig),
+          m_pLibrary(pLibrary),
           m_pTrackCollection(pTrackCollection),
           m_crateDao(pTrackCollection->getCrateDAO()),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
@@ -106,6 +108,7 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
                                MixxxKeyboard* keyboard) {
     m_pAutoDJView = new DlgAutoDJ(libraryWidget,
                                   m_pConfig,
+                                  m_pLibrary,
                                   m_pAutoDJProcessor,
                                   m_pTrackCollection,
                                   keyboard);

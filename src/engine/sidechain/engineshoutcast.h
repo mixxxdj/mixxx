@@ -22,11 +22,10 @@
 #include <QMessageBox>
 #include <QTextCodec>
 
-#include <shout/shout.h>
-
 #include "configobject.h"
 #include "controlobject.h"
 #include "controlobjectthread.h"
+#include "controlobjectslave.h"
 #include "encoder/encodercallback.h"
 #include "engine/sidechain/sidechainworker.h"
 #include "errordialoghandler.h"
@@ -37,6 +36,13 @@
 #define SHOUTCAST_CONNECTED 2
 
 class Encoder;
+
+// Forward declare libshout structures to prevent leaking shout.h definitions
+// beyond where they are needed.
+struct shout;
+typedef struct shout shout_t;
+struct _util_dict;
+typedef struct _util_dict shout_metadata_t;
 
 class EngineShoutcast : public QObject, public EncoderCallback, public SideChainWorker {
     Q_OBJECT
@@ -92,8 +98,8 @@ class EngineShoutcast : public QObject, public EncoderCallback, public SideChain
     ConfigObject<ConfigValue>* m_pConfig;
     Encoder *m_encoder;
     ControlObject* m_pShoutcastNeedUpdateFromPrefs;
-    ControlObjectThread* m_pUpdateShoutcastFromPrefs;
-    ControlObjectThread* m_pMasterSamplerate;
+    ControlObjectSlave* m_pUpdateShoutcastFromPrefs;
+    ControlObjectSlave* m_pMasterSamplerate;
     ControlObject* m_pShoutcastStatus;
     volatile bool m_bQuit;
     // static metadata according to prefereneces

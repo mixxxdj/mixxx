@@ -167,6 +167,7 @@ class WTrackTableView : public WLibraryTableView {
 
     // Control the delay to load a cover art.
     qint64 m_lastUserActionNanos;
+    bool m_selectionChangedSinceLastGuiTick;
     bool m_loadCachedOnly;
     ControlObjectSlave* m_pCOTGuiTick;
 };

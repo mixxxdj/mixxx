@@ -392,7 +392,7 @@ QString SoundSourceProxy::supportedFileExtensionsRegex() {
 
 // static
 bool SoundSourceProxy::isFilenameSupported(QString fileName) {
-    if (m_supportedFileRegex.isValid()) {
+    if (m_supportedFileRegex.isEmpty()) {
         QString regex = SoundSourceProxy::supportedFileExtensionsRegex();
         m_supportedFileRegex = QRegExp(regex, Qt::CaseInsensitive);
     }

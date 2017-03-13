@@ -5,6 +5,7 @@
 #include <QtDebug>
 
 #include "library/dao/cue.h"
+#include "util/assert.h"
 
 Cue::~Cue() {
     qDebug() << "~Cue()" << m_iId;
@@ -85,8 +86,10 @@ int Cue::getPosition() {
 }
 
 void Cue::setPosition(int position) {
+    DEBUG_ASSERT_AND_HANDLE(position % 2 == 0) {
+        return;
+    }
     QMutexLocker lock(&m_mutex);
-    Q_ASSERT(position % 2 == 0);
     m_iPosition = position;
     m_bDirty = true;
     lock.unlock();
@@ -100,8 +103,10 @@ int Cue::getLength() {
 }
 
 void Cue::setLength(int length) {
+    DEBUG_ASSERT_AND_HANDLE(length % 2 == 0) {
+        return;
+    }
     QMutexLocker lock(&m_mutex);
-    Q_ASSERT(length % 2 == 0);
     m_iLength = length;
     m_bDirty = true;
     lock.unlock();

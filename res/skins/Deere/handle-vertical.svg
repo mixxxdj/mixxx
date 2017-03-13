@@ -1,3 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
-  <rect width="20" height="10" style="fill:rgb(255,0,0);stroke-width:1;stroke:rgb(0,0,0)" />
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="200" height="100">
+  <rect x="2" y="1"
+        width="196" height="98"
+        rx="1" ry="1"
+        style="fill:rgb(54,54,54);stroke-width:2px;stroke:rgb(109,109,109)" />
+  <rect x="4" y="37"
+        width="192" height="25"
+        rx="0" ry="0"
+        style="fill:rgb(234,0,0);stroke-width:2px;stroke:rgb(0,0,0)" />
 </svg>

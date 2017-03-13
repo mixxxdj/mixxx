@@ -1,0 +1,36 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A standard knob.
+  Variables:
+    control: The control to connect to.
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <ObjectName>KnobCentered</ObjectName>
+        <Children>
+          <KnobComposed>
+            <TooltipId><Variable name="tooltip"/></TooltipId>
+            <Size><Variable name="width"/>f,<Variable name="height"/>f</Size>
+            <Knob>knob_indicator.svg</Knob>
+            <BackPath scalemode="STRETCH">knob_bg.svg</BackPath>
+            <MinAngle>-135</MinAngle>
+            <MaxAngle>135</MaxAngle>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,<Variable name="control"/></ConfigKey>
+            </Connection>
+          </KnobComposed>
+        </Children>
+      </WidgetGroup>
+      <Label>
+        <ObjectName>KnobLabel</ObjectName>
+        <Text><Variable name="label"/></Text>
+      </Label>
+    </Children>
+  </WidgetGroup>
+</Template>

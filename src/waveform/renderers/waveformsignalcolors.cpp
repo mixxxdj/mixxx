@@ -5,19 +5,10 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
-WaveformSignalColors::WaveformSignalColors()
-{
+WaveformSignalColors::WaveformSignalColors() {
 }
 
-bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& context)
-{
-/*
-    QString string;
-    QTextStream textStr(&string);
-    node.save(textStr,4);
-    qDebug() << string;
-*/
-
+bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& context) {
     // NOTE(rryan): It is critical that every color is converted to RGB with
     // toRgb(). Otherwise Mixxx will waste 3% of its CPU time while rendering
     // the filtered waveform doing RGB color space conversions!
@@ -33,6 +24,24 @@ bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& contex
 
     m_highColor.setNamedColor(context.selectString(node, "SignalHighColor"));
     m_highColor = WSkinColor::getCorrectColor(m_highColor).toRgb();
+
+    m_rgbLowColor.setNamedColor(context.selectString(node, "SignalRGBLowColor"));
+    if (!m_rgbLowColor.isValid()) {
+        m_rgbLowColor = Qt::red;
+    }
+    m_rgbLowColor = WSkinColor::getCorrectColor(m_rgbLowColor).toRgb();
+
+    m_rgbMidColor.setNamedColor(context.selectString(node, "SignalRGBMidColor"));
+    if (!m_rgbMidColor.isValid()) {
+        m_rgbMidColor = Qt::green;
+    }
+    m_rgbMidColor = WSkinColor::getCorrectColor(m_rgbMidColor).toRgb();
+
+    m_rgbHighColor.setNamedColor(context.selectString(node, "SignalRGBHighColor"));
+    if (!m_rgbHighColor.isValid()) {
+        m_rgbHighColor = Qt::blue;
+    }
+    m_rgbHighColor = WSkinColor::getCorrectColor(m_rgbHighColor).toRgb();
 
     m_axesColor.setNamedColor(context.selectString(node, "AxesColor"));
     if (!m_axesColor.isValid()) {
@@ -67,8 +76,7 @@ bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& contex
     return false;
 }
 
-void WaveformSignalColors::fallBackFromSignalColor()
-{
+void WaveformSignalColors::fallBackFromSignalColor() {
     // qWarning() << "WaveformSignalColors::fallBackFromSignalColor - "
     //           << "skin do not provide low/mid/high signal colors";
 
@@ -79,38 +87,28 @@ void WaveformSignalColors::fallBackFromSignalColor()
 
     const double analogousAngle = 1.0/12.0;
 
-    if (s < 0.1) // gray
-    {
+    if (s < 0.1) { // gray
         const qreal sMax = 1.0 - h;
         m_lowColor.setHslF(h,s,l);
         m_midColor.setHslF(h,s+sMax*0.2,l);
         m_highColor.setHslF(h,s+sMax*0.4,l);
-    }
-    else
-    {
-        if (l < 0.1) // ~white
-        {
+    } else {
+        if (l < 0.1) { // ~white
             const qreal lMax = 1.0 - l;
             m_lowColor.setHslF(h,s,l);
             m_midColor.setHslF(h,s,l+lMax*0.2);
             m_highColor.setHslF(h,s,l+lMax*0.4);
-        }
-        else if (l < 0.5)
-        {
+        } else if (l < 0.5) {
             const qreal lMax = 1.0 - l;
             m_lowColor.setHslF(h,s,l);
             m_midColor.setHslF(stableHue(h-analogousAngle*0.3),s,l+lMax*0.1);
             m_highColor.setHslF(stableHue(h+analogousAngle*0.3),s,l+lMax*0.4);
-        }
-        else if (l < 0.9)
-        {
+        } else if (l < 0.9) {
             const qreal lMin = l;
             m_lowColor.setHslF(h,s,l);
             m_midColor.setHslF(stableHue(h-analogousAngle*0.3),s,l-lMin*0.1);
             m_highColor.setHslF(stableHue(h+analogousAngle*0.3),s,l-lMin*0.4);
-        }
-        else // ~black
-        {
+        } else { // ~black
             const qreal lMin = l;
             m_lowColor.setHslF(h,s,l);
             m_midColor.setHslF(h,s,l-lMin*0.2);
@@ -127,8 +125,7 @@ void WaveformSignalColors::fallBackFromSignalColor()
     m_highColor = m_highColor.toRgb();
 }
 
-void WaveformSignalColors::fallBackDefaultColor()
-{
+void WaveformSignalColors::fallBackDefaultColor() {
     qWarning() << "WaveformSignalColors::fallBackDefaultColor - " \
                   "skin do not provide valid signal colors ! Default colors is use ...";
 
@@ -138,7 +135,6 @@ void WaveformSignalColors::fallBackDefaultColor()
 }
 
 //NOTE(vRince) this sabilise hue between -1.0 and 2.0 but not more !
-float WaveformSignalColors::stableHue(float hue) const
-{
+float WaveformSignalColors::stableHue(float hue) const {
     return hue < 0.0 ? hue + 1.0 : hue > 1.0 ? hue - 1.0 : hue;
 }

@@ -13,22 +13,49 @@
   <WidgetGroup>
     <Layout>vertical</Layout>
     <Children>
-      <KnobComposed>
-        <Size>40f,40f</Size>
-        <Knob>knob.svg</Knob>
-        <MinAngle>-230</MinAngle>
-        <MaxAngle>50</MaxAngle>
-        <Connection>
-          <ConfigKey><Variable name="QuickEffectUnitGroup"/>,parameter</ConfigKey>
-        </Connection>
-      </KnobComposed>
-      <EffectName>
-        <Size>40f,10f</Size>
-        <ObjectName>KnobLabel</ObjectName>
-        <EffectRackGroup><Variable name="QuickEffectRackGroup"/></EffectRackGroup>
-        <EffectUnitGroup><Variable name="QuickEffectUnitGroup"/></EffectUnitGroup>
-        <Effect>1</Effect>
-      </EffectName>
+      <Template src="skin:knob.xml">
+        <SetVariable name="group"><Variable name="QuickEffectUnitGroup"/></SetVariable>
+        <SetVariable name="control">super1</SetVariable>
+      </Template>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <EffectPushButton>
+            <TooltipId><Variable name="TooltipId"/></TooltipId>
+            <Size>10f,10f</Size>
+            <ObjectName>KillButton</ObjectName>
+            <EffectRackGroup><Variable name="QuickEffectRackGroup"/></EffectRackGroup>
+            <EffectUnitGroup><Variable name="QuickEffectUnitGroup"/></EffectUnitGroup>
+            <Effect>1</Effect>
+            <EffectButtonParameter><Variable name="QuickEffect"/></EffectButtonParameter>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>O</Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>K</Text>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="QuickEffectEffectGroup"/>,enabled</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+              <Transform>
+                <Invert/>
+                  <Add>1</Add>
+              </Transform>
+            </Connection>
+          </EffectPushButton>
+
+          <EffectName>
+            <Size>30f,10f</Size>
+            <ObjectName>KnobLabel</ObjectName>
+            <EffectRackGroup><Variable name="QuickEffectRackGroup"/></EffectRackGroup>
+            <EffectUnitGroup><Variable name="QuickEffectUnitGroup"/></EffectUnitGroup>
+            <Effect>1</Effect>
+          </EffectName>
+        </Children>
+      </WidgetGroup>
     </Children>
     <Connection>
       <ConfigKey><Variable name="QuickEffectEffectGroup"/>,loaded</ConfigKey>

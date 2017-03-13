@@ -13,12 +13,18 @@
 
 class ControlObject;
 
+// 3/128 units away from the current is enough to catch fast non-sequential moves
+//  but not cause an audibly noticeable jump.
+
 
 class SoftTakeover {
   public:
+    static const double kDefaultTakeoverThreshold;
+
     SoftTakeover();
     bool ignore(ControlObject* control, double newParameter);
     void ignoreNext();
+    void setThreshold(double threshold);
 
   private:
     // If a new value is received within this amount of time, jump to it
@@ -29,6 +35,7 @@ class SoftTakeover {
 
     uint m_time;
     double m_prevParameter;
+    double m_dThreshold;
 };
 
 class SoftTakeoverCtrl {

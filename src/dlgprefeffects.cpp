@@ -59,6 +59,9 @@ void DlgPrefEffects::clear() {
 void DlgPrefEffects::slotEffectSelected(QListWidgetItem* pCurrent,
                                         QListWidgetItem* pPrevious) {
     Q_UNUSED(pPrevious);
+    if (pCurrent == NULL) {
+        return;
+    }
     QString effectId = pCurrent->data(Qt::UserRole).toString();
     QPair<EffectManifest, EffectsBackend*> manifestAndBackend =
             m_pEffectsManager->getEffectManifestAndBackend(effectId);

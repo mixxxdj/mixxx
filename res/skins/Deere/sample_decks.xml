@@ -88,6 +88,33 @@
               <Template src="skin:sampler.xml">
                 <SetVariable name="i">8</SetVariable>
               </Template>
+
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <Template src="skin:left_1state_button.xml">
+                    <SetVariable name="ObjectName">SamplerBankLoad</SetVariable>
+                    <SetVariable name="MinimumSize">40,20</SetVariable>
+                    <SetVariable name="MaximumSize">40,20</SetVariable>
+                    <SetVariable name="SizePolicy">f,f</SetVariable>
+                    <SetVariable name="state_0_text">Load</SetVariable>
+                    <SetVariable name="state_0_pressed"></SetVariable>
+                    <SetVariable name="state_0_unpressed"></SetVariable>
+                    <SetVariable name="left_connection_control">[Sampler],LoadSamplerBank</SetVariable>
+                  </Template>
+
+                  <Template src="skin:left_1state_button.xml">
+                    <SetVariable name="ObjectName">SamplerBankSave</SetVariable>
+                    <SetVariable name="MinimumSize">40,20</SetVariable>
+                    <SetVariable name="MaximumSize">40,20</SetVariable>
+                    <SetVariable name="SizePolicy">f,f</SetVariable>
+                    <SetVariable name="state_0_text">Save</SetVariable>
+                    <SetVariable name="state_0_pressed"></SetVariable>
+                    <SetVariable name="state_0_unpressed"></SetVariable>
+                    <SetVariable name="left_connection_control">[Sampler],SaveSamplerBank</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
             </Children>
           </WidgetGroup>
         </Children>

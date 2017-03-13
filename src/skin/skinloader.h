@@ -32,7 +32,9 @@ class SkinLoader {
 
   private:
     QString getConfiguredSkinPath();
+    QString getDefaultSkinName() const;
     QString getDefaultSkinPath();
+    QString pickResizableSkin(QString oldSkin);
 
     ConfigObject<ConfigValue>* m_pConfig;
 };

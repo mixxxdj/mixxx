@@ -169,6 +169,7 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
         m_deckQuickEffectSelectors[i]->setCurrentIndex(selectedQuickEffectIndex);
     }
     applySelections();
+    slotSingleEqChecked(CheckBoxSingleEqEffect->isChecked());
 }
 
 static bool isMixingEQ(EffectManifest* pManifest) {
@@ -368,32 +369,18 @@ void DlgPrefEQ::slotEqEffectChangedOnDeck(int effectIndex) {
     // Check if qobject_cast was successful
     if (c && !m_inSlotPopulateDeckEffectSelectors) {
         int deckNumber = m_deckEqEffectSelectors.indexOf(c);
-        QString group = PlayerManager::groupForDeck(deckNumber);
         QString effectId = c->itemData(effectIndex).toString();
 
-        EffectChainSlotPointer pChainSlot =
-                m_pEQEffectRack->getGroupEffectChainSlot(group);
-        if (pChainSlot) {
-            EffectChainPointer pChain = pChainSlot->getEffectChain();
-            if (pChain.isNull()) {
-                pChain = EffectChainPointer(new EffectChain(m_pEffectsManager, QString(),
-                                                            EffectChainPointer()));
-                pChain->setName(QObject::tr("Empty Chain"));
-                pChainSlot->loadEffectChain(pChain);
+        // If we are in single-effect mode and the first effect was changed,
+        // change the others as well.
+        if (deckNumber == 0 && CheckBoxSingleEqEffect->isChecked()) {
+            for (int otherDeck = 1;
+                    otherDeck < static_cast<int>(m_pNumDecks->get());
+                    ++otherDeck) {
+                QComboBox* box = m_deckEqEffectSelectors[otherDeck];
+                box->setCurrentIndex(effectIndex);
             }
-            EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
-            pChain->replaceEffect(0, pEffect);
         }
-
-        // Update the configured effect for the current QComboBox
-        m_pConfig->set(ConfigKey(kConfigKey, "EffectForGroup_" + group),
-                ConfigValue(effectId));
-
-
-        m_filterWaveformEffectLoaded[deckNumber] = m_pEffectsManager->isEQ(effectId);
-        m_filterWaveformEnableCOs[deckNumber]->set(
-                m_filterWaveformEffectLoaded[deckNumber] &&
-                !CheckBoxBypass->checkState());
 
         // This is required to remove a previous selected effect that does not
         // fit to the current ShowAllEffects checkbox
@@ -407,14 +394,17 @@ void DlgPrefEQ::slotQuickEffectChangedOnDeck(int effectIndex) {
     if (c && !m_inSlotPopulateDeckEffectSelectors) {
         int deckNumber = m_deckQuickEffectSelectors.indexOf(c);
         QString effectId = c->itemData(effectIndex).toString();
-        QString group = PlayerManager::groupForDeck(deckNumber);
 
-        EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
-        m_pQuickEffectRack->loadEffectToGroup(group, pEffect);
-
-        // Update the configured effect for the current QComboBox
-        m_pConfig->set(ConfigKey(kConfigKey, "QuickEffectForGroup_" + group),
-                       ConfigValue(effectId));
+        // If we are in single-effect mode and the first effect was changed,
+        // change the others as well.
+        if (deckNumber == 0 && CheckBoxSingleEqEffect->isChecked()) {
+            for (int otherDeck = 1;
+                    otherDeck < static_cast<int>(m_pNumDecks->get());
+                    ++otherDeck) {
+                QComboBox* box = m_deckQuickEffectSelectors[otherDeck];
+                box->setCurrentIndex(effectIndex);
+            }
+        }
 
         // This is required to remove a previous selected effect that does not
         // fit to the current ShowAllEffects checkbox
@@ -429,23 +419,22 @@ void DlgPrefEQ::applySelections() {
 
     int deck = 0;
     QString firstEffectId;
+    int firstEffectIndex = 0;
     foreach(QComboBox* box, m_deckEqEffectSelectors) {
         QString effectId = box->itemData(box->currentIndex()).toString();
         if (deck == 0) {
             firstEffectId = effectId;
+            firstEffectIndex = box->currentIndex();
         } else if (CheckBoxSingleEqEffect->isChecked()) {
             effectId = firstEffectId;
+            box->setCurrentIndex(firstEffectIndex);
         }
-        emit(effectOnChainSlot(deck, 0, effectId));
-
         QString group = PlayerManager::groupForDeck(deck);
+        EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
+        m_pEQEffectRack->loadEffectToGroup(group, pEffect);
 
-        // Update the configured effect for the current QComboBox, unless
-        // we're reusing the first deck id.
-        if (deck == 0 || !CheckBoxSingleEqEffect->isChecked()) {
-            m_pConfig->set(ConfigKey(kConfigKey, "EffectForGroup_" + group),
-                    ConfigValue(effectId));
-        }
+        m_pConfig->set(ConfigKey(kConfigKey, "EffectForGroup_" + group),
+                ConfigValue(effectId));
 
         m_filterWaveformEnableCOs[deck]->set(m_pEffectsManager->isEQ(effectId));
 
@@ -462,20 +451,17 @@ void DlgPrefEQ::applySelections() {
 
         if (deck == 0) {
             firstEffectId = effectId;
+            firstEffectIndex = box->currentIndex();
         } else if (CheckBoxSingleEqEffect->isChecked()) {
             effectId = firstEffectId;
+            box->setCurrentIndex(firstEffectIndex);
         }
 
         EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
         m_pQuickEffectRack->loadEffectToGroup(group, pEffect);
 
-        // Update the configured effect for the current QComboBox, unless
-        // we're reusing the first deck id.
-        if (deck == 0 || !CheckBoxSingleEqEffect->isChecked()) {
-            m_pConfig->set(ConfigKey(kConfigKey, "QuickEffectForGroup_" + group),
-                    ConfigValue(effectId));
-        }
-
+        m_pConfig->set(ConfigKey(kConfigKey, "QuickEffectForGroup_" + group),
+                ConfigValue(effectId));
 
         // This is required to remove a previous selected effect that does not
         // fit to the current ShowAllEffects checkbox

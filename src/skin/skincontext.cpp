@@ -263,6 +263,14 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
     return source;
 }
 
+Paintable::DrawMode SkinContext::selectScaleMode(
+        const QDomElement& element,
+        Paintable::DrawMode defaultDrawMode) const {
+    QString drawModeStr = selectAttributeString(
+            element, "scalemode", Paintable::DrawModeToString(defaultDrawMode));
+    return Paintable::DrawModeFromString(drawModeStr);
+}
+
 /**
  * All the methods below exist to access some of the scriptEngine features
  * from the svgParser.
@@ -294,4 +302,14 @@ void SkinContext::enableDebugger(bool state) const {
             m_pScriptDebugger->detach();
         }
     }
+}
+
+QDebug SkinContext::logWarning(const char* file, const int line,
+                               const QDomNode& node) const {
+    return qWarning() << QString("%1:%2 SKIN ERROR at %3:%4 <%5>:")
+                             .arg(file, QString::number(line), m_xmlPath,
+                                  QString::number(node.lineNumber()),
+                                  node.nodeName())
+                             .toUtf8()
+                             .constData();
 }

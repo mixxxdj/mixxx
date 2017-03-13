@@ -10,6 +10,8 @@
 #include <QWaitCondition>
 #include <QStandardItem>
 #include <QList>
+#include <QSharedPointer>
+#include <QWeakPointer>
 
 #include "util/file.h"
 
@@ -21,14 +23,17 @@
 // Note: Don't call getInstance() from places
 // other than the GUI thread.
 class BrowseTableModel;
+class BrowseThread;
+
+typedef QSharedPointer<BrowseThread> BrowseThreadPointer;
 
 class BrowseThread : public QThread {
     Q_OBJECT
   public:
+    virtual ~BrowseThread();
     void executePopulation(const MDir& path, BrowseTableModel* client);
     void run();
-    static BrowseThread* getInstance();
-    static void destroyInstance();
+    static BrowseThreadPointer getInstanceRef();
 
   signals:
     void rowsAppended(const QList< QList<QStandardItem*> >&, BrowseTableModel*);
@@ -36,7 +41,6 @@ class BrowseThread : public QThread {
 
   private:
     BrowseThread(QObject *parent = 0);
-    virtual ~BrowseThread();
 
     void populateModel();
 
@@ -49,7 +53,7 @@ class BrowseThread : public QThread {
     MDir m_path;
     BrowseTableModel* m_model_observer;
 
-    static BrowseThread* m_instance;
+    static QWeakPointer<BrowseThread> m_weakInstanceRef;
 };
 
 #endif // BROWSETHREAD_H

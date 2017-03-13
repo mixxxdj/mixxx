@@ -30,7 +30,6 @@
 class EngineBuffer;
 class EnginePregain;
 class EngineBuffer;
-class EngineClipping;
 class EngineMaster;
 class EngineVuMeter;
 class EngineVinylSoundEmu;

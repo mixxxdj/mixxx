@@ -29,20 +29,20 @@
           <TextColor>#FFFFFF</TextColor>
           <Text> %1 </Text>
         </DefaultMark>
-	<MarkRange>
-	  <StartControl>loop_start_position</StartControl>
-	  <EndControl>loop_end_position</EndControl>
-	  <EnabledControl>loop_enabled</EnabledControl>
-	  <Color>#00FF00</Color>
-	  <DisabledColor>#FFFFFF</DisabledColor>
-	</MarkRange>
-	<Mark>
-	  <Control>cue_point</Control>
-	  <Align>top</Align>
-	  <Color>#FF001C</Color>
-	  <TextColor>#FFFFFF</TextColor>
-	  <Text>C</Text>
-	</Mark>
+        <MarkRange>
+          <StartControl>loop_start_position</StartControl>
+          <EndControl>loop_end_position</EndControl>
+          <EnabledControl>loop_enabled</EnabledControl>
+          <Color>#00FF00</Color>
+          <DisabledColor>#FFFFFF</DisabledColor>
+        </MarkRange>
+        <Mark>
+          <Control>cue_point</Control>
+          <Align>top</Align>
+          <Color>#FF001C</Color>
+          <TextColor>#FFFFFF</TextColor>
+          <Text>C</Text>
+        </Mark>
         <Connection>
           <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
           <EmitOnDownPress>false</EmitOnDownPress>
@@ -63,6 +63,7 @@
             <MaximumSize>90,30</MaximumSize>
             <Children>
               <PushButton>
+                <TooltipId>show_spinny</TooltipId>
                 <ObjectName>ShowSpinny</ObjectName>
                 <MinimumSize>20,20</MinimumSize>
                 <MaximumSize>30,30</MaximumSize>
@@ -82,6 +83,7 @@
                 </Connection>
               </PushButton>
               <PushButton>
+                <TooltipId>repeat</TooltipId>
                 <MinimumSize>20,20</MinimumSize>
                 <MaximumSize>30,30</MaximumSize>
                 <NumberStates>2</NumberStates>
@@ -98,6 +100,7 @@
                 </Connection>
               </PushButton>
               <PushButton>
+                <TooltipId>eject</TooltipId>
                 <NumberStates>1</NumberStates>
                 <MinimumSize>20,20</MinimumSize>
                 <MaximumSize>30,30</MaximumSize>
@@ -123,6 +126,7 @@
             <MaximumSize>90,30</MaximumSize>
             <Children>
               <PushButton>
+                <TooltipId>beats_translate_curpos</TooltipId>
                 <MinimumSize>20,20</MinimumSize>
                 <MaximumSize>30,30</MaximumSize>
                 <NumberStates>1</NumberStates>
@@ -138,6 +142,7 @@
               </PushButton>
 
               <PushButton>
+                <TooltipId>quantize</TooltipId>
                 <NumberStates>2</NumberStates>
                 <MinimumSize>20,20</MinimumSize>
                 <MaximumSize>30,30</MaximumSize>
@@ -157,6 +162,7 @@
               </PushButton>
 
               <PushButton>
+                <TooltipId>keylock</TooltipId>
                 <NumberStates>2</NumberStates>
                 <MinimumSize>20,20</MinimumSize>
                 <MaximumSize>30,30</MaximumSize>

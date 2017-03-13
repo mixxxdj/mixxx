@@ -51,7 +51,7 @@
 		                                    <Unpressed>btn_play_sampler_over.png</Unpressed>
 		                                </State>
 		                                <Connection>
-		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],start_play</ConfigKey>
+		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
 		                                    <ButtonState>LeftButton</ButtonState>
 		                                </Connection>
 		                                <Connection>
@@ -179,14 +179,10 @@
                                <SizePolicy>min,min</SizePolicy>
                                <ObjectName>SamplerVol</ObjectName>
                                <Children>
-                                    <Knob>
-                                        <TooltipId>pregain</TooltipId>
-                                        <NumberStates>64</NumberStates>
-                                        <Path>knobs/knob_rotary_s%1.png</Path>
-                                        <Connection>
-                                            <ConfigKey>[Sampler<Variable name="samplernum"/>],pregain</ConfigKey>
-                                        </Connection>
-                                    </Knob>
+                                    <Template src="skin:knob_textless.xml">
+                                       <SetVariable name="group">[Sampler<Variable name="samplernum"/>]</SetVariable>
+                                       <SetVariable name="control">pregain</SetVariable>
+                                    </Template>
                                </Children>
                            </WidgetGroup>
 	                    </Children>

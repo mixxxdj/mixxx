@@ -14,7 +14,7 @@ EffectRack::EffectRack(EffectsManager* pEffectsManager,
           m_group(group),
           m_controlNumEffectChainSlots(ConfigKey(m_group, "num_effectunits")),
           m_controlClearRack(ConfigKey(m_group, "clear")),
-          m_pEngineEffectRack(new EngineEffectRack(iRackNumber)) {
+          m_pEngineEffectRack(NULL) {
     connect(&m_controlClearRack, SIGNAL(valueChanged(double)),
             this, SLOT(slotClearRack(double)));
     m_controlNumEffectChainSlots.connectValueChangeRequest(
@@ -24,6 +24,7 @@ EffectRack::EffectRack(EffectsManager* pEffectsManager,
 
 EffectRack::~EffectRack() {
     removeFromEngine();
+    //qDebug() << "EffectRack::~EffectRack()";
 }
 
 EngineEffectRack* EffectRack::getEngineEffectRack() {
@@ -31,6 +32,7 @@ EngineEffectRack* EffectRack::getEngineEffectRack() {
 }
 
 void EffectRack::addToEngine() {
+    m_pEngineEffectRack = new EngineEffectRack(m_iRackNumber);
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::ADD_EFFECT_RACK;
     pRequest->AddEffectRack.pRack = m_pEngineEffectRack;
@@ -63,6 +65,7 @@ void EffectRack::removeFromEngine() {
     pRequest->type = EffectsRequest::REMOVE_EFFECT_RACK;
     pRequest->RemoveEffectRack.pRack = m_pEngineEffectRack;
     m_pEffectsManager->writeRequest(pRequest);
+    m_pEngineEffectRack = NULL;
 }
 
 void EffectRack::registerGroup(const QString& group) {
@@ -293,8 +296,8 @@ void QuickEffectRack::configureEffectChainSlotForGroup(EffectChainSlotPointer pS
     pChain->setMix(1.0);
 
     // Set the parameter default value to 0.5 (neutral).
-    pSlot->setParameter(0.5);
-    pSlot->setParameterDefaultValue(0.5);
+    pSlot->setSuperParameter(0.5);
+    pSlot->setSuperParameterDefaultValue(0.5);
 }
 
 bool QuickEffectRack::loadEffectToGroup(const QString& group,
@@ -318,7 +321,8 @@ bool QuickEffectRack::loadEffectToGroup(const QString& group,
     // Force update the new effect to match the current superknob position.
     EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(0);
     if (pEffectSlot) {
-        pEffectSlot->onChainParameterChanged(pChainSlot->getParameter(), true);
+        pEffectSlot->onChainSuperParameterChanged(
+                pChainSlot->getSuperParameter(), true);
     }
     return true;
 }
@@ -329,6 +333,27 @@ EqualizerRack::EqualizerRack(EffectsManager* pEffectsManager,
         : PerGroupRack(pEffectsManager, pChainManager, iRackNumber,
                        EqualizerRack::formatGroupString(iRackNumber)) {
 }
+
+bool EqualizerRack::loadEffectToGroup(const QString& group,
+                                      EffectPointer pEffect) {
+    EffectChainSlotPointer pChainSlot = getGroupEffectChainSlot(group);
+    if (pChainSlot.isNull()) {
+        qWarning() << "No chain for group" << group;
+        return false;
+    }
+
+    EffectChainPointer pChain = pChainSlot->getEffectChain();
+    if (pChain.isNull()) {
+        pChain = makeEmptyChain();
+        pChainSlot->loadEffectChain(pChain);
+        pChain->enableForGroup(group);
+        pChain->setMix(1.0);
+    }
+
+    pChain->replaceEffect(0, pEffect);
+    return true;
+}
+
 
 void EqualizerRack::configureEffectChainSlotForGroup(EffectChainSlotPointer pSlot,
                                                      const QString& group) {
