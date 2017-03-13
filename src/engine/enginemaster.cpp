@@ -57,11 +57,11 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
           m_masterGainOld(0.0),
           m_headphoneMasterGainOld(0.0),
           m_headphoneGainOld(1.0),
-          m_masterGroup("[Master]"),
-          m_headphoneGroup("[Headphone]"),
-          m_busLeftGroup("[BusLeft]"),
-          m_busCenterGroup("[BusCenter]"),
-          m_busRightGroup("[BusRight]") {
+          m_masterHandle(registerChannelGroup("[Master]")),
+          m_headphoneHandle(registerChannelGroup("[Headphone]")),
+          m_busLeftHandle(registerChannelGroup("[BusLeft]")),
+          m_busCenterHandle(registerChannelGroup("[BusCenter]")),
+          m_busRightHandle(registerChannelGroup("[BusRight]")) {
     m_bBusOutputConnected[0] = false;
     m_bBusOutputConnected[1] = false;
     m_bBusOutputConnected[2] = false;
@@ -69,11 +69,11 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pWorkerScheduler->start(QThread::HighPriority);
 
     if (pEffectsManager) {
-        pEffectsManager->registerGroup(getMasterGroup());
-        pEffectsManager->registerGroup(getHeadphoneGroup());
-        pEffectsManager->registerGroup(getBusLeftGroup());
-        pEffectsManager->registerGroup(getBusCenterGroup());
-        pEffectsManager->registerGroup(getBusRightGroup());
+        pEffectsManager->registerChannel(m_masterHandle);
+        pEffectsManager->registerChannel(m_headphoneHandle);
+        pEffectsManager->registerChannel(m_busLeftHandle);
+        pEffectsManager->registerChannel(m_busCenterHandle);
+        pEffectsManager->registerChannel(m_busRightHandle);
     }
 
     // Master sample rate
@@ -227,7 +227,7 @@ EngineMaster::~EngineMaster() {
 
     delete m_pWorkerScheduler;
 
-    for (unsigned int i = 0; i < m_channels.size(); ++i) {
+    for (int i = 0; i < m_channels.size(); ++i) {
         ChannelInfo* pChannelInfo = m_channels[i];
         SampleUtil::free(pChannelInfo->m_pBuffer);
         delete pChannelInfo->m_pChannel;
@@ -256,8 +256,8 @@ void EngineMaster::processChannels(
     // Reserve the first place for the master channel which
     // should be processed first
     activeChannels.append(NULL);
-    unsigned int activeChannelsStartIndex = 1; // Nothing at 0 yet
-    for (unsigned int i = 0; i < m_channels.size(); ++i) {
+    int activeChannelsStartIndex = 1; // Nothing at 0 yet
+    for (int i = 0; i < m_channels.size(); ++i) {
         ChannelInfo* pChannelInfo = m_channels[i];
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
 
@@ -323,7 +323,7 @@ void EngineMaster::processChannels(
     }
 
     // Now that the list is built and ordered, do the processing.
-    for (unsigned int i = activeChannelsStartIndex;
+    for (int i = activeChannelsStartIndex;
             i < activeChannels.size(); ++i) {
         ChannelInfo* pChannelInfo = activeChannels[i];
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
@@ -334,7 +334,7 @@ void EngineMaster::processChannels(
     // which ensures that all channels are updating certain values at the
     // same point in time.  This prevents sync from failing depending on
     // if the sync target was processed before or after the sync origin.
-    for (unsigned int i = activeChannelsStartIndex;
+    for (int i = activeChannelsStartIndex;
             i < activeChannels.size(); ++i) {
         activeChannels[i]->m_pChannel->postProcess(iBufferSize);
     }
@@ -451,11 +451,14 @@ void EngineMaster::process(const int iBufferSize) {
     // Process master channel effects
     if (m_pEngineEffectsManager) {
         GroupFeatureState busFeatures;
-        m_pEngineEffectsManager->process(getBusLeftGroup(), m_pOutputBusBuffers[0],
+        m_pEngineEffectsManager->process(m_busLeftHandle.handle(),
+                                         m_pOutputBusBuffers[0],
                                          iBufferSize, iSampleRate, busFeatures);
-        m_pEngineEffectsManager->process(getBusCenterGroup(), m_pOutputBusBuffers[1],
+        m_pEngineEffectsManager->process(m_busCenterHandle.handle(),
+                                         m_pOutputBusBuffers[1],
                                          iBufferSize, iSampleRate, busFeatures);
-        m_pEngineEffectsManager->process(getBusRightGroup(), m_pOutputBusBuffers[2],
+        m_pEngineEffectsManager->process(m_busRightHandle.handle(),
+                                         m_pOutputBusBuffers[2],
                                          iBufferSize, iSampleRate, busFeatures);
     }
 
@@ -486,7 +489,7 @@ void EngineMaster::process(const int iBufferSize) {
             if (m_pVumeter != NULL) {
                 m_pVumeter->collectFeatures(&masterFeatures);
             }
-            m_pEngineEffectsManager->process(getMasterGroup(), m_pMaster,
+            m_pEngineEffectsManager->process(m_masterHandle.handle(), m_pMaster,
                                              iBufferSize, iSampleRate,
                                              masterFeatures);
         }
@@ -551,8 +554,10 @@ void EngineMaster::process(const int iBufferSize) {
         // Process headphone channel effects
         if (m_pEngineEffectsManager) {
             GroupFeatureState headphoneFeatures;
-            m_pEngineEffectsManager->process(getHeadphoneGroup(), m_pHead,
-                                             iBufferSize, iSampleRate, headphoneFeatures);
+            m_pEngineEffectsManager->process(m_headphoneHandle.handle(),
+                                             m_pHead,
+                                             iBufferSize, iSampleRate,
+                                             headphoneFeatures);
         }
         // Head volume
         CSAMPLE headphoneGain = m_pHeadGain->get();
@@ -601,12 +606,14 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     }
     ChannelInfo* pChannelInfo = new ChannelInfo(m_channels.size());
     pChannelInfo->m_pChannel = pChannel;
+    const QString& group = pChannel->getGroup();
+    pChannelInfo->m_handle = m_groupHandleFactory.getOrCreateHandle(group);
     pChannelInfo->m_pVolumeControl = new ControlAudioTaperPot(
-            ConfigKey(pChannel->getGroup(), "volume"), -20, 0, 1);
+            ConfigKey(group, "volume"), -20, 0, 1);
     pChannelInfo->m_pVolumeControl->setDefaultValue(1.0);
     pChannelInfo->m_pVolumeControl->set(1.0);
     pChannelInfo->m_pMuteControl = new ControlPushButton(
-        ConfigKey(pChannel->getGroup(), "mute"));
+            ConfigKey(group, "mute"));
     pChannelInfo->m_pMuteControl->setButtonMode(ControlPushButton::POWERWINDOW);
     pChannelInfo->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     SampleUtil::clear(pChannelInfo->m_pBuffer, MAX_BUFFER_LEN);
@@ -623,7 +630,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
 }
 
 EngineChannel* EngineMaster::getChannel(const QString& group) {
-    for (unsigned int i = 0; i < m_channels.size(); ++i) {
+    for (int i = 0; i < m_channels.size(); ++i) {
         ChannelInfo* pChannelInfo = m_channels[i];
         if (pChannelInfo->m_pChannel->getGroup() == group) {
             return pChannelInfo->m_pChannel;
@@ -643,7 +650,7 @@ const CSAMPLE* EngineMaster::getOutputBusBuffer(unsigned int i) const {
 }
 
 const CSAMPLE* EngineMaster::getChannelBuffer(QString group) const {
-    for (unsigned int i = 0; i < m_channels.size(); ++i) {
+    for (int i = 0; i < m_channels.size(); ++i) {
         const ChannelInfo* pChannelInfo = m_channels[i];
         if (pChannelInfo->m_pChannel->getGroup() == group) {
             return pChannelInfo->m_pBuffer;

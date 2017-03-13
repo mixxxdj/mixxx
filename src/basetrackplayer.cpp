@@ -40,7 +40,9 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
           m_pSpeed(NULL),
           m_pPitch(NULL),
           m_replaygainPending(false) {
-    m_pChannel = new EngineDeck(getGroup(), pConfig, pMixingEngine,
+    ChannelHandleAndGroup channelGroup =
+            pMixingEngine->registerChannelGroup(group);
+    m_pChannel = new EngineDeck(channelGroup, pConfig, pMixingEngine,
                                 pEffectsManager, defaultOrientation);
 
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();

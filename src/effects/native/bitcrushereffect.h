@@ -22,7 +22,7 @@ struct BitCrusherGroupState {
     CSAMPLE accumulator;
 };
 
-class BitCrusherEffect : public GroupEffectProcessor<BitCrusherGroupState> {
+class BitCrusherEffect : public PerChannelEffectProcessor<BitCrusherGroupState> {
   public:
     BitCrusherEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~BitCrusherEffect();
@@ -31,13 +31,13 @@ class BitCrusherEffect : public GroupEffectProcessor<BitCrusherGroupState> {
     static EffectManifest getManifest();
 
     // See effectprocessor.h
-    void processGroup(const QString& group,
-                      BitCrusherGroupState* pState,
-                      const CSAMPLE* pInput, CSAMPLE *pOutput,
-                      const unsigned int numSamples,
-                      const unsigned int sampleRate,
-                      const EffectProcessor::EnableState enableState,
-                      const GroupFeatureState& groupFeatureState);
+    void processChannel(const ChannelHandle& handle,
+                        BitCrusherGroupState* pState,
+                        const CSAMPLE* pInput, CSAMPLE *pOutput,
+                        const unsigned int numSamples,
+                        const unsigned int sampleRate,
+                        const EffectProcessor::EnableState enableState,
+                        const GroupFeatureState& groupFeatureState);
 
   private:
     QString debugString() const {

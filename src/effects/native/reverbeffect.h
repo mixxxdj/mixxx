@@ -35,7 +35,7 @@ struct ReverbGroupState {
     double prev_damping;
 };
 
-class ReverbEffect : public GroupEffectProcessor<ReverbGroupState> {
+class ReverbEffect : public PerChannelEffectProcessor<ReverbGroupState> {
   public:
     ReverbEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~ReverbEffect();
@@ -44,13 +44,13 @@ class ReverbEffect : public GroupEffectProcessor<ReverbGroupState> {
     static EffectManifest getManifest();
 
     // See effectprocessor.h
-    void processGroup(const QString& group,
-                      ReverbGroupState* pState,
-                      const CSAMPLE* pInput, CSAMPLE* pOutput,
-                      const unsigned int numSamples,
-                      const unsigned int sampleRate,
-                      const EffectProcessor::EnableState enableState,
-                      const GroupFeatureState& groupFeatures);
+    void processChannel(const ChannelHandle& handle,
+                        ReverbGroupState* pState,
+                        const CSAMPLE* pInput, CSAMPLE* pOutput,
+                        const unsigned int numSamples,
+                        const unsigned int sampleRate,
+                        const EffectProcessor::EnableState enableState,
+                        const GroupFeatureState& groupFeatures);
 
   private:
     QString debugString() const {

@@ -39,7 +39,7 @@ class LinkwitzRiley8EQEffectGroupState {
     int m_hiFreq;
 };
 
-class LinkwitzRiley8EQEffect : public GroupEffectProcessor<LinkwitzRiley8EQEffectGroupState> {
+class LinkwitzRiley8EQEffect : public PerChannelEffectProcessor<LinkwitzRiley8EQEffectGroupState> {
   public:
     LinkwitzRiley8EQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~LinkwitzRiley8EQEffect();
@@ -48,13 +48,13 @@ class LinkwitzRiley8EQEffect : public GroupEffectProcessor<LinkwitzRiley8EQEffec
     static EffectManifest getManifest();
 
     // See effectprocessor.h
-    void processGroup(const QString& group,
-                      LinkwitzRiley8EQEffectGroupState* pState,
-                      const CSAMPLE* pInput, CSAMPLE *pOutput,
-                      const unsigned int numSamples,
-                      const unsigned int sampleRate,
-                      const EffectProcessor::EnableState enableState,
-                      const GroupFeatureState& groupFeatureState);
+    void processChannel(const ChannelHandle& handle,
+                        LinkwitzRiley8EQEffectGroupState* pState,
+                        const CSAMPLE* pInput, CSAMPLE *pOutput,
+                        const unsigned int numSamples,
+                        const unsigned int sampleRate,
+                        const EffectProcessor::EnableState enableState,
+                        const GroupFeatureState& groupFeatureState);
 
   private:
     QString debugString() const {

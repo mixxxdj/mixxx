@@ -15,8 +15,8 @@ class LV2EffectProcessor : public EffectProcessor {
                        QList<int> controlPortIndices);
     ~LV2EffectProcessor();
 
-    void initialize(const QSet<QString>& registeredGroups);
-    virtual void process(const QString& group,
+    void initialize(const QSet<ChannelHandleAndGroup>& registeredChannels);
+    virtual void process(const ChannelHandle& handle,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples,
                          const unsigned int sampleRate,

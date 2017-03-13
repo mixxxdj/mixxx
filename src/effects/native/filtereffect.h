@@ -28,7 +28,7 @@ struct FilterGroupState {
 
 };
 
-class FilterEffect : public GroupEffectProcessor<FilterGroupState> {
+class FilterEffect : public PerChannelEffectProcessor<FilterGroupState> {
   public:
     FilterEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~FilterEffect();
@@ -37,13 +37,13 @@ class FilterEffect : public GroupEffectProcessor<FilterGroupState> {
     static EffectManifest getManifest();
 
     // See effectprocessor.h
-    void processGroup(const QString& group,
-                      FilterGroupState* pState,
-                      const CSAMPLE* pInput, CSAMPLE *pOutput,
-                      const unsigned int numSamples,
-                      const unsigned int sampleRate,
-                      const EffectProcessor::EnableState enableState,
-                      const GroupFeatureState& groupFeatures);
+    void processChannel(const ChannelHandle& handle,
+                        FilterGroupState* pState,
+                        const CSAMPLE* pInput, CSAMPLE *pOutput,
+                        const unsigned int numSamples,
+                        const unsigned int sampleRate,
+                        const EffectProcessor::EnableState enableState,
+                        const GroupFeatureState& groupFeatures);
 
   private:
     QString debugString() const {

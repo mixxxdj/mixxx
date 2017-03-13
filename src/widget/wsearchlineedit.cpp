@@ -30,7 +30,10 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
         QKeySequence(tr("Esc", "Search|Clear")), this, 0, 0,
         Qt::WidgetShortcut);
     connect(clearTextShortcut, SIGNAL(activated()),
-            this, SLOT(clear()));
+            this, SLOT(onSearchTextCleared()));
+
+    connect(this, SIGNAL(textChanged(const QString&)),
+            this, SLOT(slotTextChanged(const QString&)));
 
     // Set up a timer to search after a few hundred milliseconds timeout.  This
     // stops us from thrashing the database if you type really fast.
@@ -46,7 +49,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
             this, SLOT(triggerSearch()));
 
     connect(m_clearButton, SIGNAL(clicked()),
-            this, SLOT(clear()));
+            this, SLOT(onSearchTextCleared()));
     // Forces immediate update of tracktable
     connect(m_clearButton, SIGNAL(clicked()),
             this, SLOT(triggerSearch()));
@@ -190,4 +193,16 @@ bool WSearchLineEdit::event(QEvent* pEvent) {
         updateTooltip();
     }
     return QLineEdit::event(pEvent);
+}
+
+void WSearchLineEdit::onSearchTextCleared() {
+    QLineEdit::clear();
+    emit(searchCleared());
+}
+
+void WSearchLineEdit::slotTextChanged(const QString& text) {
+    if (text.isEmpty()) {
+        triggerSearch();
+        emit(searchCleared());
+    }
 }

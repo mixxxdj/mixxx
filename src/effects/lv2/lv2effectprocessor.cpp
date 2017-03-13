@@ -60,11 +60,11 @@ LV2EffectProcessor::~LV2EffectProcessor() {
     delete[] m_params;
 }
 
-void LV2EffectProcessor::initialize(const QSet<QString>& registeredGroups) {
-    Q_UNUSED(registeredGroups);
+void LV2EffectProcessor::initialize(const QSet<ChannelHandleAndGroup>& registeredChannels) {
+    Q_UNUSED(registeredChannels);
 }
 
-void LV2EffectProcessor::process(const QString& group,
+void LV2EffectProcessor::process(const ChannelHandle& handle,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples,
                          const unsigned int sampleRate,
@@ -73,7 +73,7 @@ void LV2EffectProcessor::process(const QString& group,
     Q_UNUSED(groupFeatures);
     Q_UNUSED(sampleRate);
     Q_UNUSED(enableState);
-    Q_UNUSED(group);
+    Q_UNUSED(handle);
 
     if (!m_handle) {
         SampleUtil::copyWithGain(pOutput, pInput, 1.0, numSamples);

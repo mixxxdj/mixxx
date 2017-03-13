@@ -139,14 +139,14 @@ GraphicEQEffect::GraphicEQEffect(EngineEffect* pEffect,
 GraphicEQEffect::~GraphicEQEffect() {
 }
 
-void GraphicEQEffect::processGroup(const QString& group,
-                                   GraphicEQEffectGroupState* pState,
-                                   const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                   const unsigned int numSamples,
-                                   const unsigned int sampleRate,
-                                   const EffectProcessor::EnableState enableState,
-                                   const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(group);
+void GraphicEQEffect::processChannel(const ChannelHandle& handle,
+                                     GraphicEQEffectGroupState* pState,
+                                     const CSAMPLE* pInput, CSAMPLE* pOutput,
+                                     const unsigned int numSamples,
+                                     const unsigned int sampleRate,
+                                     const EffectProcessor::EnableState enableState,
+                                     const GroupFeatureState& groupFeatures) {
+    Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
 
     // If the sample rate has changed, initialize the filters using the new

@@ -12,22 +12,22 @@
 #include "controlaudiotaperpot.h"
 
 
-EngineMicrophone::EngineMicrophone(QString pGroup, EffectsManager* pEffectsManager)
-        : EngineChannel(pGroup, EngineChannel::CENTER),
+EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& handle_group,
+                                   EffectsManager* pEffectsManager)
+        : EngineChannel(handle_group, EngineChannel::CENTER),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
-          m_vuMeter(pGroup),
-          m_pEnabled(new ControlObject(ConfigKey(pGroup, "enabled"))),
-          m_pPregain(new ControlAudioTaperPot(ConfigKey(pGroup, "pregain"), -12, 12, 0.5)),
+          m_vuMeter(getGroup()),
+          m_pEnabled(new ControlObject(ConfigKey(getGroup(), "enabled"))),
+          m_pPregain(new ControlAudioTaperPot(ConfigKey(getGroup(), "pregain"), -12, 12, 0.5)),
           m_sampleBuffer(NULL),
           m_wasActive(false) {
     if (pEffectsManager != NULL) {
-        pEffectsManager->registerGroup(getGroup());
+        pEffectsManager->registerChannel(handle_group);
     }
 
     setMaster(false); // Use "talkover" button to enable microphones
 
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
-
 }
 
 EngineMicrophone::~EngineMicrophone() {
@@ -93,7 +93,7 @@ void EngineMicrophone::process(CSAMPLE* pOut, const int iBufferSize) {
         // This is out of date by a callback but some effects will want the RMS
         // volume.
         m_vuMeter.collectFeatures(&features);
-        m_pEngineEffectsManager->process(getGroup(), pOut, iBufferSize,
+        m_pEngineEffectsManager->process(getHandle(), pOut, iBufferSize,
                                          m_pSampleRate->get(), features);
     }
     // Update VU meter

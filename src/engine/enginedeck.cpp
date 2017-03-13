@@ -26,20 +26,20 @@
 
 #include "sampleutil.h"
 
-EngineDeck::EngineDeck(QString group,
+EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
                        ConfigObject<ConfigValue>* pConfig,
                        EngineMaster* pMixingEngine,
                        EffectsManager* pEffectsManager,
                        EngineChannel::ChannelOrientation defaultOrientation)
-        : EngineChannel(group, defaultOrientation),
+        : EngineChannel(handle_group, defaultOrientation),
           m_pConfig(pConfig),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
-          m_pPassing(new ControlPushButton(ConfigKey(group, "passthrough"))),
+          m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
           m_sampleBuffer(NULL) {
     if (pEffectsManager != NULL) {
-        pEffectsManager->registerGroup(getGroup());
+        pEffectsManager->registerChannel(handle_group);
     }
 
     // Set up passthrough utilities and fields
@@ -55,9 +55,9 @@ EngineDeck::EngineDeck(QString group,
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
 
     // Set up additional engines
-    m_pPregain = new EnginePregain(group);
-    m_pVUMeter = new EngineVuMeter(group);
-    m_pBuffer = new EngineBuffer(group, pConfig, this, pMixingEngine);
+    m_pPregain = new EnginePregain(getGroup());
+    m_pVUMeter = new EngineVuMeter(getGroup());
+    m_pBuffer = new EngineBuffer(getGroup(), pConfig, this, pMixingEngine);
 }
 
 EngineDeck::~EngineDeck() {
@@ -101,7 +101,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
         // volume.
         m_pVUMeter->collectFeatures(&features);
         m_pEngineEffectsManager->process(
-                getGroup(), pOut, iBufferSize,
+                getHandle(), pOut, iBufferSize,
                 static_cast<unsigned int>(m_pSampleRate->get()), features);
     }
     // Update VU meter

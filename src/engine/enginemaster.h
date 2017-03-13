@@ -25,6 +25,7 @@
 #include "controlpushbutton.h"
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
+#include "engine/channelhandle.h"
 #include "soundmanagerutil.h"
 #include "recording/recordingmanager.h"
 
@@ -45,7 +46,7 @@ class EngineSync;
 class EngineTalkoverDucking;
 class EngineDelay;
 
-static const unsigned int kMaxChannels = 32;
+static const int kMaxChannels = 32;
 
 class EngineMaster : public QObject, public AudioSource {
     Q_OBJECT
@@ -62,23 +63,28 @@ class EngineMaster : public QObject, public AudioSource {
     const CSAMPLE* buffer(AudioOutput output) const;
 
     inline const QString& getMasterGroup() const {
-        return m_masterGroup;
+        return m_masterHandle.name();
     }
 
     inline const QString& getHeadphoneGroup() const {
-        return m_headphoneGroup;
+        return m_headphoneHandle.name();
     }
 
     inline const QString& getBusLeftGroup() const {
-        return m_busLeftGroup;
+        return m_busLeftHandle.name();
     }
 
     inline const QString& getBusCenterGroup() const {
-        return m_busCenterGroup;
+        return m_busCenterHandle.name();
     }
 
     inline const QString& getBusRightGroup() const {
-        return m_busRightGroup;
+        return m_busRightHandle.name();
+    }
+
+    ChannelHandleAndGroup registerChannelGroup(const QString& group) {
+        return ChannelHandleAndGroup(
+                m_groupHandleFactory.getOrCreateHandle(group), group);
     }
 
     // WARNING: These methods are called by the main thread. They should only
@@ -134,6 +140,7 @@ class EngineMaster : public QObject, public AudioSource {
                   m_pMuteControl(NULL),
                   m_index(index) {
         }
+        ChannelHandle m_handle;
         EngineChannel* m_pChannel;
         CSAMPLE* m_pBuffer;
         ControlObject* m_pVolumeControl;
@@ -206,7 +213,7 @@ class EngineMaster : public QObject, public AudioSource {
         inline FastVector() : m_size(0), m_data((T*)((void *)m_buffer)) {};
         inline ~FastVector() {
             if (QTypeInfo<T>::isComplex) {
-                for (int i; i < m_size; ++i) {
+                for (int i = 0; i < m_size; ++i) {
                     m_data[i].~T();
                 }
             }
@@ -228,7 +235,7 @@ class EngineMaster : public QObject, public AudioSource {
             return m_data[i];
         }
         inline void replace(unsigned int i, const T& t) {
-            T copy(t);         
+            T copy(t);
             m_data[i] = copy;
         }
         inline int size () const {
@@ -257,6 +264,7 @@ class EngineMaster : public QObject, public AudioSource {
             FastVector<ChannelInfo*, kMaxChannels>* talkoverChannels,
             int iBufferSize);
 
+    ChannelHandleFactory m_groupHandleFactory;
     EngineEffectsManager* m_pEngineEffectsManager;
     bool m_bRampingGain;
     FastVector<ChannelInfo*, kMaxChannels> m_channels;
@@ -305,11 +313,11 @@ class EngineMaster : public QObject, public AudioSource {
     CSAMPLE m_headphoneMasterGainOld;
     CSAMPLE m_headphoneGainOld;
 
-    const QString m_masterGroup;
-    const QString m_headphoneGroup;
-    const QString m_busLeftGroup;
-    const QString m_busCenterGroup;
-    const QString m_busRightGroup;
+    const ChannelHandleAndGroup m_masterHandle;
+    const ChannelHandleAndGroup m_headphoneHandle;
+    const ChannelHandleAndGroup m_busLeftHandle;
+    const ChannelHandleAndGroup m_busCenterHandle;
+    const ChannelHandleAndGroup m_busRightHandle;
 
     // Produce the Master Mixxx, not Required if connected to left
     // and right Bus and no recording and broadcast active

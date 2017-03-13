@@ -7,6 +7,7 @@
 
 #include "util.h"
 #include "util/types.h"
+#include "engine/channelhandle.h"
 #include "engine/effects/message.h"
 #include "engine/effects/groupfeaturestate.h"
 #include "effects/effectchain.h"
@@ -22,7 +23,7 @@ class EngineEffectChain : public EffectsRequestHandler {
         const EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe);
 
-    void process(const QString& group,
+    void process(const ChannelHandle& handle,
                  CSAMPLE* pInOut,
                  const unsigned int numSamples,
                  const unsigned int sampleRate,
@@ -32,16 +33,14 @@ class EngineEffectChain : public EffectsRequestHandler {
         return m_id;
     }
 
-    bool enabledForGroup(const QString& group) const;
+    bool enabledForChannel(const ChannelHandle& handle) const;
 
   private:
-    struct GroupStatus {
-        GroupStatus(const QString& group)
-                : group(group),
-                  old_gain(0),
+    struct ChannelStatus {
+        ChannelStatus()
+                : old_gain(0),
                   enable_state(EffectProcessor::DISABLED) {
         }
-        QString group;
         CSAMPLE old_gain;
         EffectProcessor::EnableState enable_state;
     };
@@ -53,12 +52,12 @@ class EngineEffectChain : public EffectsRequestHandler {
     bool updateParameters(const EffectsRequest& message);
     bool addEffect(EngineEffect* pEffect, int iIndex);
     bool removeEffect(EngineEffect* pEffect, int iIndex);
-    bool enableForGroup(const QString& group);
-    bool disableForGroup(const QString& group);
+    bool enableForChannel(const ChannelHandle& handle);
+    bool disableForChannel(const ChannelHandle& handle);
 
-    // Gets or creates a GroupStatus entry in m_groupStatus for the provided
-    // group.
-    GroupStatus& getGroupStatus(const QString& group);
+    // Gets or creates a ChannelStatus entry in m_channelStatus for the provided
+    // handle.
+    ChannelStatus& getChannelStatus(const ChannelHandle& handle);
 
     QString m_id;
     EffectProcessor::EnableState m_enableState;
@@ -66,7 +65,7 @@ class EngineEffectChain : public EffectsRequestHandler {
     CSAMPLE m_dMix;
     QList<EngineEffect*> m_effects;
     CSAMPLE* m_pBuffer;
-    QLinkedList<GroupStatus> m_groupStatus;
+    ChannelHandleMap<ChannelStatus> m_channelStatus;
 
     DISALLOW_COPY_AND_ASSIGN(EngineEffectChain);
 };

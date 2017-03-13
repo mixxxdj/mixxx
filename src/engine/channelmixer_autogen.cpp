@@ -6513,7 +6513,6 @@ void ChannelMixer::mixChannels(const EngineMaster::GainCalculator& gainCalculato
                                    pBuffer31, newGain[31],
                                    iBufferSize);
     } else {
-        DEBUG_ASSERT(kMaxChannels <= 32);
         // Set pOutput to all 0s
         SampleUtil::clear(pOutput, iBufferSize);
         for (int i = 0; i < activeChannels->size(); ++i) {
@@ -14470,7 +14469,6 @@ void ChannelMixer::mixChannelsRamping(const EngineMaster::GainCalculator& gainCa
                                               iBufferSize);
         }
     } else {
-        DEBUG_ASSERT(kMaxChannels <= 32);
         // Set pOutput to all 0s
         SampleUtil::clear(pOutput, iBufferSize);
         for (int i = 0; i < activeChannels->size(); ++i) {
