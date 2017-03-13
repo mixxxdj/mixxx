@@ -144,7 +144,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     QMultiHash<TrackId, int> m_playlistsTrackIsIn;
     AutoDJProcessor* m_pAutoDJProcessor;
     DISALLOW_COPY_AND_ASSIGN(PlaylistDAO);
-    void createTablePositionList(QList<QPair<int, int> > &, const int);
+    void createTablePositionList(QList<int> &, QList<int> &, const int);
 };
 
 #endif //PLAYLISTDAO_H
