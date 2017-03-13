@@ -559,7 +559,7 @@ int SoundDevicePortAudio::callbackProcessDrift(const unsigned int framesPerBuffe
                                           const PaStreamCallbackTimeInfo *timeInfo,
                                           PaStreamCallbackFlags statusFlags) {
     Q_UNUSED(timeInfo);
-    Trace trace("SoundDevicePortAudio::callbackProcessDrift " + getInternalName());
+    Trace trace("SoundDevicePortAudio::callbackProcessDrift %1", getInternalName());
 
     //qDebug() << "SoundDevicePortAudio::callbackProcess:" << getInternalName();
     // Turn on TimeCritical priority for the callback thread. If we are running
@@ -695,7 +695,7 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
                                           const PaStreamCallbackTimeInfo *timeInfo,
                                           PaStreamCallbackFlags statusFlags) {
     Q_UNUSED(timeInfo);
-    Trace trace("SoundDevicePortAudio::callbackProcess " + getInternalName());
+    Trace trace("SoundDevicePortAudio::callbackProcess %1", getInternalName());
 
     //qDebug() << "SoundDevicePortAudio::callbackProcess:" << getInternalName();
     // Turn on TimeCritical priority for the callback thread. If we are running
@@ -752,12 +752,13 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
 }
 
 int SoundDevicePortAudio::callbackProcessClkRef(const unsigned int framesPerBuffer,
-                                          CSAMPLE *out, const CSAMPLE *in,
-                                          const PaStreamCallbackTimeInfo *timeInfo,
-                                          PaStreamCallbackFlags statusFlags) {
+                                                CSAMPLE *out, const CSAMPLE *in,
+                                                const PaStreamCallbackTimeInfo *timeInfo,
+                                                PaStreamCallbackFlags statusFlags) {
     PerformanceTimer timer;
     timer.start();
-    Trace trace("SoundDevicePortAudio::callbackProcessClkRef " + getInternalName());
+
+    Trace trace("SoundDevicePortAudio::callbackProcessClkRef %1", getInternalName());
 
     //qDebug() << "SoundDevicePortAudio::callbackProcess:" << getInternalName();
     // Turn on TimeCritical priority for the callback thread. If we are running
@@ -832,7 +833,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(const unsigned int framesPerBuff
 
     m_pSoundManager->writeProcess();
 
-    m_nsInAudioCb += (int)timer.elapsed();
+    m_nsInAudioCb += timer.elapsed();
     return paContinue;
 }
 

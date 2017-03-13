@@ -107,10 +107,7 @@ CueControl::~CueControl() {
     delete m_pPlayStutter;
     delete m_pCueIndicator;
     delete m_pPlayIndicator;
-    while (m_hotcueControl.size() > 0) {
-        HotcueControl* pControl = m_hotcueControl.takeLast();
-        delete pControl;
-    }
+    qDeleteAll(m_hotcueControl);
 }
 
 void CueControl::createControls() {
@@ -147,10 +144,10 @@ void CueControl::createControls() {
 }
 
 void CueControl::attachCue(Cue* pCue, int hotCue) {
-    if (hotCue < 0 || hotCue >= m_iNumHotCues) {
+    HotcueControl* pControl = m_hotcueControl.value(hotCue, NULL);
+    if (pControl == NULL) {
         return;
     }
-    HotcueControl* pControl = m_hotcueControl[hotCue];
     if (pControl->getCue() != NULL) {
         detachCue(pControl->getHotcueNumber());
     }
@@ -164,10 +161,10 @@ void CueControl::attachCue(Cue* pCue, int hotCue) {
 }
 
 void CueControl::detachCue(int hotCue) {
-    if (hotCue < 0 || hotCue >= m_iNumHotCues) {
+    HotcueControl* pControl = m_hotcueControl.value(hotCue, NULL);
+    if (pControl == NULL) {
         return;
     }
-    HotcueControl* pControl = m_hotcueControl[hotCue];
     Cue* pCue = pControl->getCue();
     if (!pCue)
         return;
@@ -282,7 +279,13 @@ void CueControl::trackCuesUpdated() {
 
         int hotcue = pCue->getHotCue();
         if (hotcue != -1) {
-            HotcueControl* pControl = m_hotcueControl[hotcue];
+            HotcueControl* pControl = m_hotcueControl.value(hotcue, NULL);
+
+            // Cue's hotcue doesn't have a hotcue control.
+            if (pControl == NULL) {
+                continue;
+            }
+
             Cue* pOldCue = pControl->getCue();
 
             // If the old hotcue is different than this one.
@@ -551,7 +554,7 @@ void CueControl::hotcuePositionChanged(HotcueControl* pControl, double newPositi
     }
 }
 
-void CueControl::hintReader(QVector<Hint>* pHintList) {
+void CueControl::hintReader(HintVector* pHintList) {
     QMutexLocker lock(&m_mutex);
 
     Hint cue_hint;
@@ -563,8 +566,9 @@ void CueControl::hintReader(QVector<Hint>* pHintList) {
         pHintList->append(cue_hint);
     }
 
-    for (int i = 0; i < m_iNumHotCues; ++i) {
-        HotcueControl* pControl = m_hotcueControl[i];
+    for (QList<HotcueControl*>::const_iterator it = m_hotcueControl.constBegin();
+         it != m_hotcueControl.constEnd(); ++it) {
+        HotcueControl* pControl = *it;
         Cue *pCue = pControl->getCue();
         if (pCue != NULL) {
             double position = pControl->getPosition()->get();
@@ -574,7 +578,7 @@ void CueControl::hintReader(QVector<Hint>* pHintList) {
                     cue_hint.sample--;
                 cue_hint.length = 0;
                 cue_hint.priority = 10;
-                pHintList->push_back(cue_hint);
+                pHintList->append(cue_hint);
             }
         }
     }

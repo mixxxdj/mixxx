@@ -12,9 +12,9 @@ void Timer::start() {
     m_time.start();
 }
 
-int Timer::restart(bool report) {
+qint64 Timer::restart(bool report) {
     if (m_running) {
-        int nsec = m_time.restart();
+        qint64 nsec = m_time.restart();
         if (report) {
             // Ignore the report if it crosses the experiment boundary.
             Experiment::Mode oldMode = Stat::modeFromFlags(m_compute);
@@ -29,8 +29,8 @@ int Timer::restart(bool report) {
     }
 }
 
-int Timer::elapsed(bool report) {
-    int nsec = m_time.elapsed();
+qint64 Timer::elapsed(bool report) {
+    qint64 nsec = m_time.elapsed();
     if (report) {
         // Ignore the report if it crosses the experiment boundary.
         Experiment::Mode oldMode = Stat::modeFromFlags(m_compute);
@@ -53,7 +53,7 @@ void SuspendableTimer::start() {
     Timer::start();
 }
 
-int SuspendableTimer::suspend() {
+qint64 SuspendableTimer::suspend() {
     m_leapTime += m_time.elapsed();
     m_running = false;
     return m_leapTime;
@@ -63,7 +63,7 @@ void SuspendableTimer::go() {
     Timer::start();
 }
 
-int SuspendableTimer::elapsed(bool report) {
+qint64 SuspendableTimer::elapsed(bool report) {
     m_leapTime += m_time.elapsed();
     if (report) {
         // Ignore the report if it crosses the experiment boundary.

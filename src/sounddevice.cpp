@@ -40,14 +40,6 @@ SoundDevice::SoundDevice(ConfigObject<ConfigValue> * config, SoundManager * sm)
 SoundDevice::~SoundDevice() {
 }
 
-QString SoundDevice::getDisplayName() const {
-    return m_strDisplayName;
-}
-
-QString SoundDevice::getHostAPI() const {
-    return m_hostAPI;
-}
-
 int SoundDevice::getNumInputChannels() const {
     return m_iNumInputChannels;
 }

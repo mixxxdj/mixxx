@@ -136,7 +136,7 @@ bool AnalyserBeats::loadStored(TrackPointer tio) const {
     if (library.isEmpty() || library.isNull())
         library = "libmixxxminimal";
     if (pluginID.isEmpty() || pluginID.isNull())
-        pluginID="qm-tempotracker:0";
+        pluginID = "qm-tempotracker:0";
 
     // If the track already has a Beats object then we need to decide whether to
     // analyze this track or not.
@@ -187,8 +187,7 @@ void AnalyserBeats::process(const CSAMPLE *pIn, const int iLen) {
     }
 }
 
-void AnalyserBeats::cleanup(TrackPointer tio)
-{
+void AnalyserBeats::cleanup(TrackPointer tio) {
     Q_UNUSED(tio);
     delete m_pVamp;
     m_pVamp = NULL;

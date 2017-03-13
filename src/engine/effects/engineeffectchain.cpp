@@ -129,7 +129,7 @@ bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
 }
 
 bool EngineEffectChain::enableForGroup(const QString& group) {
-    GroupStatus& status = m_groupStatus[group];
+    GroupStatus& status = getGroupStatus(group);
     if (status.enable_state != EffectProcessor::ENABLED) {
         status.enable_state = EffectProcessor::ENABLING;
     }
@@ -137,11 +137,24 @@ bool EngineEffectChain::enableForGroup(const QString& group) {
 }
 
 bool EngineEffectChain::disableForGroup(const QString& group) {
-    GroupStatus& status = m_groupStatus[group];
+    GroupStatus& status = getGroupStatus(group);
     if (status.enable_state != EffectProcessor::DISABLED) {
         status.enable_state = EffectProcessor::DISABLING;
     }
     return true;
+}
+
+EngineEffectChain::GroupStatus& EngineEffectChain::getGroupStatus(const QString& group) {
+    for (QLinkedList<GroupStatus>::iterator it = m_groupStatus.begin(),
+                 end = m_groupStatus.end(); it != end; ++it) {
+        GroupStatus& status = *it;
+        if (status.group == group) {
+            return status;
+        }
+    }
+    GroupStatus status(group);
+    m_groupStatus.append(status);
+    return m_groupStatus.last();
 }
 
 void EngineEffectChain::process(const QString& group,
@@ -149,7 +162,7 @@ void EngineEffectChain::process(const QString& group,
                                 const unsigned int numSamples,
                                 const unsigned int sampleRate,
                                 const GroupFeatureState& groupFeatures) {
-    GroupStatus& group_info = m_groupStatus[group];
+    GroupStatus& group_info = getGroupStatus(group);
 
     if (m_enableState == EffectProcessor::DISABLED
             || group_info.enable_state == EffectProcessor::DISABLED) {

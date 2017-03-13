@@ -9,6 +9,7 @@
 #include <QVector>
 #include <QLinkedList>
 #include <QHash>
+#include <QVarLengthArray>
 
 #include "util/types.h"
 #include "configobject.h"
@@ -34,13 +35,37 @@ typedef struct Hint {
     int priority;
 } Hint;
 
+// Note that we use a QVarLengthArray here instead of a QVector. Since this list
+// is cleared on every callback and potentially referenced multiples times it's
+// nicer to use a QVarLengthArray over a QVector because of two things:
+//
+// 1) No copy-on-write / implicit sharing behavior. If the reference count rises
+//    above 1 then every non-const operation on a QVector clones it. We'd like
+//    to avoid unnecessary memory allocation in the callback thread so this is
+//    undesirable.
+// 2) QVector::clear deletes the backing store (even if you call reserve) so we
+//    reallocate on every callback. resize(0) should work but a future developer
+//    may see a resize(0) and say "that's a silly way of writing clear()!" and
+//    replace it without realizing.
+typedef QVarLengthArray<Hint, 512> HintVector;
+
 // CachingReader provides a layer on top of a SoundSource for reading samples
-// from a file. A cache is provided so that repeated reads to a certain section
-// of a song do not cause disk seeks or unnecessary SoundSource
-// calls. CachingReader provides a worker thread that can be used to prepare the
-// cache so that areas of a file that will soon be read are present in memory
-// once they are needed. This can be accomplished by issueing 'hints' to the
-// reader of areas of a SoundSource that will be read soon.
+// from a file. Since we cannot do file I/O in the audio callback thread
+// CachingReader and CachingReaderWorker (a worker thread) work in concert to
+// read and decode relevant sections of a track in a background thread. The
+// decoded chunks are kept in a cache by CachingReader with a
+// least-recently-used (LRU) eviction policy. CachingReader exposes a method for
+// indicating which chunks should be kept fresh in the cache (see
+// hintAndMaybeWake). For example, the chunks around the playhead, the hotcue
+// positions, and loop points are all portions of the track that the user is
+// likely to dynamically jump to so we should keep them ready.
+//
+// The least recently used policy is implemented by keeping a linked list of the
+// least recently used chunks. When a chunk is "freshened" (i.e. accessed via
+// read or hinted via hintAndMaybeWake) then it is moved to the back of the
+// least-recently-used list. When a chunk needs to be allocated and there are no
+// free chunks then the least recently used chunk is free'd (see
+// allocateChunkExpireLRU).
 class CachingReader : public QObject {
     Q_OBJECT
 
@@ -60,7 +85,7 @@ class CachingReader : public QObject {
     // that is not in the cache. If any hints do request a chunk not in cache,
     // then wake the reader so that it can process them. Must only be called
     // from the engine callback.
-    virtual void hintAndMaybeWake(const QVector<Hint>& hintList);
+    virtual void hintAndMaybeWake(const HintVector& hintList);
 
     // Request that the CachingReader load a new track. These requests are
     // processed in the work thread, so the reader must be woken up via wake()
@@ -97,9 +122,17 @@ class CachingReader : public QObject {
     FIFO<ChunkReadRequest> m_chunkReadRequestFIFO;
     FIFO<ReaderStatusUpdate> m_readerStatusFIFO;
 
-     // Looks for the provided chunk number in the index of in-memory chunks and
+    // Looks for the provided chunk number in the index of in-memory chunks and
+    // returns it if it is present. If not, returns NULL. If it is present then
+    // freshenChunk is called on the chunk to make it the MRU chunk.
+    Chunk* lookupChunkAndFreshen(int chunk_number);
+
+    // Looks for the provided chunk number in the index of in-memory chunks and
     // returns it if it is present. If not, returns NULL.
     Chunk* lookupChunk(int chunk_number);
+
+    // Moves the provided chunk to the MRU position.
+    void freshenChunk(Chunk* pChunk);
 
     // Returns a Chunk to the free list
     void freeChunk(Chunk* pChunk);
@@ -108,19 +141,19 @@ class CachingReader : public QObject {
     void freeAllChunks();
 
     // Gets a chunk from the free list. Returns NULL if none available.
-    Chunk* allocateChunk();
+    Chunk* allocateChunk(int chunk);
 
     // Gets a chunk from the free list, frees the LRU Chunk if none available.
-    Chunk* allocateChunkExpireLRU();
+    Chunk* allocateChunkExpireLRU(int chunk);
 
     ReaderStatus m_readerStatus;
 
-    // Keeps track of free Chunks we've allocated
+    // Keeps track of all Chunks we've allocated.
     QVector<Chunk*> m_chunks;
-    // List of free chunks available for use.
-    QList<Chunk*> m_freeChunks;
-    // List of reserved chunks with reads in progress
-    QHash<int, Chunk*> m_chunksBeingRead;
+
+    // List of free chunks. Linked list so that we have constant time insertions
+    // and deletions. Iteration is not necessary.
+    QLinkedList<Chunk*> m_freeChunks;
 
     // Keeps track of what Chunks we've allocated and indexes them based on what
     // chunk number they are allocated to.

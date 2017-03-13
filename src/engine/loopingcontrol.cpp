@@ -358,7 +358,7 @@ double LoopingControl::getTrigger(const double dRate,
     return kNoTrigger;
 }
 
-void LoopingControl::hintReader(QVector<Hint>* pHintList) {
+void LoopingControl::hintReader(HintVector* pHintList) {
     Hint loop_hint;
     // If the loop is enabled, then this is high priority because we will loop
     // sometime potentially very soon! The current audio itself is priority 1,

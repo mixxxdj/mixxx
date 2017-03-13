@@ -53,7 +53,7 @@ class LoopingControl : public EngineControl {
 
     // hintReader will add to hintList hints both the loop in and loop out
     // sample, if set.
-    void hintReader(QVector<Hint>* pHintList);
+    void hintReader(HintVector* pHintList);
 
     void notifySeek(double dNewPlaypos);
 

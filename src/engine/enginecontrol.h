@@ -12,10 +12,10 @@
 #include "trackinfoobject.h"
 #include "control/controlvalue.h"
 #include "engine/effects/groupfeaturestate.h"
+#include "cachingreader.h"
 
 class EngineMaster;
 class EngineBuffer;
-struct Hint;
 
 const double kNoTrigger = -1;
 
@@ -63,7 +63,7 @@ class EngineControl : public QObject {
     // hintReader allows the EngineControl to provide hints to the reader to
     // indicate that the given portion of a song is a potential imminent seek
     // target.
-    virtual void hintReader(QVector<Hint>* pHintList);
+    virtual void hintReader(HintVector* pHintList);
 
     virtual void setEngineMaster(EngineMaster* pEngineMaster);
     void setEngineBuffer(EngineBuffer* pEngineBuffer);

@@ -3,7 +3,7 @@
 
 #include <QString>
 #include <QList>
-#include <QSet>
+#include <QLinkedList>
 
 #include "util.h"
 #include "util/types.h"
@@ -35,6 +35,17 @@ class EngineEffectChain : public EffectsRequestHandler {
     bool enabledForGroup(const QString& group) const;
 
   private:
+    struct GroupStatus {
+        GroupStatus(const QString& group)
+                : group(group),
+                  old_gain(0),
+                  enable_state(EffectProcessor::DISABLED) {
+        }
+        QString group;
+        CSAMPLE old_gain;
+        EffectProcessor::EnableState enable_state;
+    };
+
     QString debugString() const {
         return QString("EngineEffectChain(%1)").arg(m_id);
     }
@@ -45,21 +56,17 @@ class EngineEffectChain : public EffectsRequestHandler {
     bool enableForGroup(const QString& group);
     bool disableForGroup(const QString& group);
 
+    // Gets or creates a GroupStatus entry in m_groupStatus for the provided
+    // group.
+    GroupStatus& getGroupStatus(const QString& group);
+
     QString m_id;
     EffectProcessor::EnableState m_enableState;
     EffectChain::InsertionType m_insertionType;
     CSAMPLE m_dMix;
     QList<EngineEffect*> m_effects;
     CSAMPLE* m_pBuffer;
-    struct GroupStatus {
-        GroupStatus()
-                : old_gain(0),
-                  enable_state(EffectProcessor::DISABLED) {
-        }
-        CSAMPLE old_gain;
-        EffectProcessor::EnableState enable_state;
-    };
-    QMap<QString, GroupStatus> m_groupStatus;
+    QLinkedList<GroupStatus> m_groupStatus;
 
     DISALLOW_COPY_AND_ASSIGN(EngineEffectChain);
 };

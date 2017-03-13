@@ -54,7 +54,12 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
           m_bRampingGain(bRampingGain),
           m_masterVolumeOld(0.0),
           m_headphoneMasterGainOld(0.0),
-          m_headphoneVolumeOld(1.0) {
+          m_headphoneVolumeOld(1.0),
+          m_masterGroup("[Master]"),
+          m_headphoneGroup("[Headphone]"),
+          m_busLeftGroup("[BusLeft]"),
+          m_busCenterGroup("[BusCenter]"),
+          m_busRightGroup("[BusRight]") {
     m_bBusOutputConnected[0] = false;
     m_bBusOutputConnected[1] = false;
     m_bBusOutputConnected[2] = false;
@@ -244,10 +249,9 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
 
     EngineChannel* pMasterChannel = m_pMasterSync->getMaster();
     m_activeChannels.clear();
-    m_activeChannels.reserve(m_channels.size());
-    QList<ChannelInfo*>::iterator it = m_channels.begin();
-    for (unsigned int channel_number = 0;
-         it != m_channels.end(); ++it, ++channel_number) {
+    QList<ChannelInfo*>::const_iterator it = m_channels.constBegin();
+    QList<ChannelInfo*>::const_iterator end = m_channels.constEnd();
+    for (unsigned int channel_number = 0; it != end; ++it, ++channel_number) {
         ChannelInfo* pChannelInfo = *it;
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
 
@@ -541,8 +545,8 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
 }
 
 EngineChannel* EngineMaster::getChannel(QString group) {
-    for (QList<ChannelInfo*>::const_iterator i = m_channels.begin();
-         i != m_channels.end(); ++i) {
+    for (QList<ChannelInfo*>::const_iterator i = m_channels.constBegin();
+         i != m_channels.constEnd(); ++i) {
         ChannelInfo* pChannelInfo = *i;
         if (pChannelInfo->m_pChannel->getGroup() == group) {
             return pChannelInfo->m_pChannel;
