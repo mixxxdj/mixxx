@@ -23,8 +23,8 @@ class EffectManifest {
   public:
     EffectManifest()
           : m_effectRampsFromDry(false) {
-
     }
+
     virtual ~EffectManifest() {
         //qDebug() << debugString() << "deleted";
     }

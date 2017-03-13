@@ -135,14 +135,24 @@ EffectParameter* Effect::getParameterById(const QString& id) const {
     return pParameter;
 }
 
-EffectParameter* Effect::getKnobParameterForSlot(unsigned int slotNumber) {
+// static
+bool Effect::isButtonParameter(EffectParameter* parameter) {
+    return  parameter->manifest().controlHint() ==
+            EffectManifestParameter::CONTROL_TOGGLE_STEPPING;
+}
+
+// static
+bool Effect::isKnobParameter(EffectParameter* parameter) {
+    return !isButtonParameter(parameter);
+}
+
+EffectParameter* Effect::getFilteredParameterForSlot(ParameterFilterFnc filterFnc,
+                                                     unsigned int slotNumber) {
     // It's normal to ask for a parameter that doesn't exist. Callers must check
     // for NULL.
     unsigned int num = 0;
     foreach(EffectParameter* parameter, m_parameters) {
-        if (parameter->manifest().showInParameterSlot() &&
-                parameter->manifest().controlHint() !=
-                        EffectManifestParameter::CONTROL_TOGGLE_STEPPING) {
+        if (parameter->manifest().showInParameterSlot() && filterFnc(parameter)) {
             if(num == slotNumber) {
                 return parameter;
             }
@@ -152,21 +162,12 @@ EffectParameter* Effect::getKnobParameterForSlot(unsigned int slotNumber) {
     return NULL;
 }
 
+EffectParameter* Effect::getKnobParameterForSlot(unsigned int slotNumber) {
+    return getFilteredParameterForSlot(isKnobParameter, slotNumber);
+}
+
 EffectParameter* Effect::getButtonParameterForSlot(unsigned int slotNumber) {
-    // It's normal to ask for a parameter that doesn't exist. Callers must check
-    // for NULL.
-    unsigned int num = 0;
-    foreach(EffectParameter* parameter, m_parameters) {
-        if (parameter->manifest().showInParameterSlot() &&
-                parameter->manifest().controlHint() ==
-                        EffectManifestParameter::CONTROL_TOGGLE_STEPPING) {
-            if(num == slotNumber) {
-                return parameter;
-            }
-            ++num;
-        }
-    }
-    return NULL;
+    return getFilteredParameterForSlot(isButtonParameter, slotNumber);
 }
 
 QDomElement Effect::toXML(QDomDocument* doc) const {

@@ -127,9 +127,21 @@ void Bessel4LVMixEQEffect::processGroup(const QString& group,
         fMid = 1.0;
         fHigh = 1.0;
     } else {
-        fLow = m_pPotLow->value();
-        fMid = m_pPotMid->value();
-        fHigh = m_pPotHigh->value();
+        if (!m_pKillLow->toBool()) {
+            fLow = m_pPotLow->value();
+        } else {
+            fLow = 0;
+        }
+        if (!m_pKillMid->toBool()) {
+            fMid = m_pPotMid->value();
+        } else {
+            fMid = 0;
+        }
+        if (!m_pKillHigh->toBool()) {
+            fHigh = m_pPotHigh->value();
+        } else {
+            fHigh = 0;
+        }
     }
 
     if (pState->m_oldSampleRate != sampleRate ||
