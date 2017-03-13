@@ -51,6 +51,7 @@
 #include "dlgprefrecord.h"
 #include "dlgprefreplaygain.h"
 #include "dlgpreflv2.h"
+#include "dlgprefeffects.h"
 #include "mixxx.h"
 #include "controllers/controllermanager.h"
 #include "skin/skinloader.h"
@@ -106,6 +107,8 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_wautodj);
     m_weq = new DlgPrefEQ(this, pEffectsManager, m_pConfig);
     addPageWidget(m_weq);
+    m_weffects = new DlgPrefEffects(this, m_pConfig, pEffectsManager);
+    addPageWidget(m_weffects);
     m_wlv2 = new DlgPrefLV2(this, pLV2Backend, m_pConfig);
     addPageWidget(m_wlv2);
     m_wcrossfader = new DlgPrefCrossfader(this, m_pConfig);
@@ -193,6 +196,12 @@ void DlgPreferences::createIcons() {
     m_pEqButton->setText(0, tr("Equalizers"));
     m_pEqButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pEqButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+    m_pEffectsButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pEffectsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_effects.png"));
+    m_pEffectsButton->setText(0, tr("Effects"));
+    m_pEffectsButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pEffectsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     m_pLV2Button = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pLV2Button->setIcon(0, QIcon(":/images/preferences/ic_preferences_lv2.png"));
@@ -287,6 +296,8 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
         switchToPage(m_wautodj);
     } else if (current == m_pEqButton) {
         switchToPage(m_weq);
+    } else if (current == m_pEffectsButton) {
+        switchToPage(m_weffects);
     } else if (current == m_pLV2Button) {
         switchToPage(m_wlv2);
     } else if (current == m_pCrossfaderButton) {

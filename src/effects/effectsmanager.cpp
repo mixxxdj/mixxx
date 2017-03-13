@@ -139,14 +139,22 @@ QString EffectsManager::getPrevEffectId(const QString& effectId) {
 
 }
 
-EffectManifest EffectsManager::getEffectManifest(const QString& effectId) const {
+QPair<EffectManifest, EffectsBackend*> EffectsManager::getEffectManifestAndBackend(
+        const QString& effectId) const {
     foreach (EffectsBackend* pBackend, m_effectsBackends) {
         if (pBackend->canInstantiateEffect(effectId)) {
-            return pBackend->getManifest(effectId);
+            return qMakePair(pBackend->getManifest(effectId), pBackend);
         }
     }
 
-    return EffectManifest();
+    EffectsBackend* pBackend = NULL;
+    return qMakePair(EffectManifest(), pBackend);
+}
+
+EffectManifest EffectsManager::getEffectManifest(const QString& effectId) const {
+    QPair<EffectManifest, EffectsBackend*> manifestAndBackend =
+            getEffectManifestAndBackend(effectId);
+    return manifestAndBackend.first;
 }
 
 EffectPointer EffectsManager::instantiateEffect(const QString& effectId) {
