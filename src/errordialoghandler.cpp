@@ -29,7 +29,9 @@ ErrorDialogProperties::ErrorDialogProperties()
           m_modal(true),
           m_shouldQuit(false),
           m_type(DLG_NONE),
-          m_icon(QMessageBox::NoIcon) {
+          m_icon(QMessageBox::NoIcon),
+          m_defaultButton(QMessageBox::NoButton),
+          m_escapeButton(QMessageBox::NoButton) {
 }
 
 void ErrorDialogProperties::setTitle(QString title) {

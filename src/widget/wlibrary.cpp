@@ -48,6 +48,10 @@ void WLibrary::search(const QString& name) {
     QMutexLocker lock(&m_mutex);
     QWidget* current = currentWidget();
     LibraryView* view = dynamic_cast<LibraryView*>(current);
+    if (view == NULL) {
+        qDebug() << "WARNING: Attempted to register a view with WLibrary that does not implement the LibraryView interface. Ignoring.";
+        return;
+    }
     lock.unlock();
     view->onSearch(name);
 }

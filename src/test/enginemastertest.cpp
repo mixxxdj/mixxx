@@ -29,8 +29,8 @@ class EngineChannelMock : public EngineChannel {
     }
 
     MOCK_METHOD0(isActive, bool());
-    MOCK_CONST_METHOD0(isMaster, bool());
-    MOCK_CONST_METHOD0(isPFL, bool());
+    MOCK_CONST_METHOD0(isMasterEnabled, bool());
+    MOCK_CONST_METHOD0(isPflEnabled, bool());
     MOCK_METHOD2(process, void(CSAMPLE* pInOut, const int iBufferSize));
     MOCK_METHOD1(postProcess, void(const int iBufferSize));
 };
@@ -85,10 +85,10 @@ TEST_F(EngineMasterTest, SingleChannelOutputWorks) {
     EXPECT_CALL(*pChannel, isActive())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel, isMaster())
+    EXPECT_CALL(*pChannel, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel, isPFL())
+    EXPECT_CALL(*pChannel, isPflEnabled())
             .Times(1)
             .WillOnce(Return(false));
 
@@ -126,10 +126,10 @@ TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
     EXPECT_CALL(*pChannel1, isActive())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, isMaster())
+    EXPECT_CALL(*pChannel1, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, isPFL())
+    EXPECT_CALL(*pChannel1, isPflEnabled())
             .Times(1)
             .WillOnce(Return(false));
 
@@ -137,10 +137,10 @@ TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
     EXPECT_CALL(*pChannel2, isActive())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, isMaster())
+    EXPECT_CALL(*pChannel2, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, isPFL())
+    EXPECT_CALL(*pChannel2, isPflEnabled())
             .Times(1)
             .WillOnce(Return(false));
 
@@ -181,10 +181,10 @@ TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
     EXPECT_CALL(*pChannel1, isActive())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, isMaster())
+    EXPECT_CALL(*pChannel1, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, isPFL())
+    EXPECT_CALL(*pChannel1, isPflEnabled())
             .Times(1)
             .WillOnce(Return(true));
 
@@ -192,10 +192,10 @@ TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
     EXPECT_CALL(*pChannel2, isActive())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, isMaster())
+    EXPECT_CALL(*pChannel2, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, isPFL())
+    EXPECT_CALL(*pChannel2, isPflEnabled())
             .Times(1)
             .WillOnce(Return(true));
 
@@ -240,10 +240,10 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
     EXPECT_CALL(*pChannel1, isActive())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, isMaster())
+    EXPECT_CALL(*pChannel1, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, isPFL())
+    EXPECT_CALL(*pChannel1, isPflEnabled())
             .Times(1)
             .WillOnce(Return(false));
 
@@ -251,10 +251,10 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
     EXPECT_CALL(*pChannel2, isActive())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, isMaster())
+    EXPECT_CALL(*pChannel2, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, isPFL())
+    EXPECT_CALL(*pChannel2, isPflEnabled())
             .Times(1)
             .WillOnce(Return(false));
 
@@ -262,10 +262,10 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
     EXPECT_CALL(*pChannel3, isActive())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel3, isMaster())
+    EXPECT_CALL(*pChannel3, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel3, isPFL())
+    EXPECT_CALL(*pChannel3, isPflEnabled())
             .Times(1)
             .WillOnce(Return(false));
 
@@ -313,10 +313,10 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
     EXPECT_CALL(*pChannel1, isActive())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, isMaster())
+    EXPECT_CALL(*pChannel1, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, isPFL())
+    EXPECT_CALL(*pChannel1, isPflEnabled())
             .Times(1)
             .WillOnce(Return(true));
 
@@ -324,10 +324,10 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
     EXPECT_CALL(*pChannel2, isActive())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, isMaster())
+    EXPECT_CALL(*pChannel2, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, isPFL())
+    EXPECT_CALL(*pChannel2, isPflEnabled())
             .Times(1)
             .WillOnce(Return(true));
 
@@ -335,10 +335,10 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
     EXPECT_CALL(*pChannel3, isActive())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel3, isMaster())
+    EXPECT_CALL(*pChannel3, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel3, isPFL())
+    EXPECT_CALL(*pChannel3, isPflEnabled())
             .Times(1)
             .WillOnce(Return(true));
 
@@ -377,10 +377,10 @@ TEST_F(EngineMasterTest, SingleChannelPFLOutputWorks) {
     EXPECT_CALL(*pChannel, isActive())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel, isMaster())
+    EXPECT_CALL(*pChannel, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(false));
-    EXPECT_CALL(*pChannel, isPFL())
+    EXPECT_CALL(*pChannel, isPflEnabled())
             .Times(1)
             .WillOnce(Return(true));
 

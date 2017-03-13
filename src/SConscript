@@ -736,7 +736,7 @@ def BuildUbuntuPackage(target, source, env):
 
                 # Add a changelog record for this package
                 if build.build_is_debug:
-                        description = "  * Experimental build of branch '%s' at Bazaar revision %s" % (branch_name, vcs_revision)
+                        description = "  * Experimental build of branch '%s' at revision %s" % (branch_name, vcs_revision)
                         ubuntu_append_changelog('debian', package_name, package_version,
                                                 description, distro=ubuntu_distro)
                 else:

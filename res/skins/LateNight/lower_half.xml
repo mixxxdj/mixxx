@@ -20,7 +20,25 @@
                 <MaximumSize>1920,429</MaximumSize>
                 <Children>
                     <Template src="skin:fx_samplers_container_med.xml"/>
-                    <Template src="skin:library.xml"/>
+                    <SingletonContainer>
+                        <ObjectName>LibrarySingleton</ObjectName>
+                        <Connection>
+                            <ConfigKey persist="true" default="true">[Library],show_library</ConfigKey>
+                            <BindProperty>visible</BindProperty>
+                        </Connection>
+                    </SingletonContainer>
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,me</SizePolicy>
+                        <Children/>
+                        <Connection>
+                            <ConfigKey persist="true" default="true">[Library],show_library</ConfigKey>
+                            <BindProperty>visible</BindProperty>
+                            <Transform>
+                              <Not/>
+                            </Transform>
+                        </Connection>
+                    </WidgetGroup>
                     <Template src="skin:toolbar_med.xml"/>
                 </Children>
             </WidgetGroup>
@@ -31,7 +49,25 @@
                 <MinimumSize>0,431</MinimumSize>
                 <Children>
                     <Template src="skin:fx_samplers_container_full.xml"/>
-                    <Template src="skin:library.xml"/>
+                    <SingletonContainer>
+                        <ObjectName>LibrarySingleton</ObjectName>
+                        <Connection>
+                            <ConfigKey persist="true" default="true">[Library],show_library</ConfigKey>
+                            <BindProperty>visible</BindProperty>
+                        </Connection>
+                    </SingletonContainer>
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,me</SizePolicy>
+                        <Children/>
+                        <Connection>
+                            <ConfigKey persist="true" default="true">[Library],show_library</ConfigKey>
+                            <BindProperty>visible</BindProperty>
+                            <Transform>
+                              <Not/>
+                            </Transform>
+                        </Connection>
+                    </WidgetGroup>
                     <Template src="skin:toolbar_full.xml"/>
                 </Children>
             </WidgetGroup>

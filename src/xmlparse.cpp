@@ -133,6 +133,7 @@ QList<long> * XmlParse::selectNodeLongList(const QDomNode &nodeHeader, const QSt
     QList<long> *data = new QList<long>;
     for (int i=0; i<p->size(); ++i)
         data->append(p->at(i));
+    delete p;
     return data;
 }
 

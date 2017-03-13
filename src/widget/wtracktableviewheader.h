@@ -38,6 +38,19 @@ public:
     // changed if the header format has changed.
     void restoreState(QHeaderView* headers);
 
+    // returns false if no headers are listed to be shown.
+    bool healthy() const {
+        if (m_view_state.header_state_size() == 0) {
+            return false;
+        }
+        for (int i = 0; i < m_view_state.header_state_size(); ++i) {
+            if (!m_view_state.header_state(i).hidden()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 private:
     mixxx::library::HeaderViewState m_view_state;
 };

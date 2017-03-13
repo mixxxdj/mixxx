@@ -49,3 +49,23 @@ TEST_F(HeaderViewStateTest, RoundTrip) {
     // Ensure that the serialization is not bullshit.
     ASSERT_NE("", saved_state);
 }
+
+TEST_F(HeaderViewStateTest, GoodHeaderState) {
+    const QString kGoodSerializedProto("ChEIARAAGAEgACoHcHJldmlldwoICAAQSxgEIAE"
+            "KEggBEAAYAiACKghjb3ZlcmFydAoICAEQABgDIAMKCAgBEAAYBSAECggIABBaGBYgB"
+            "QoICAEQABgGIAYKCQgAEPwBGBcgBwoJCAAQvAEYByAICgkIABDmARgIIAkKCAgBEAA"
+            "YCSAKCggIARAAGAogCwoJCAAQkwQYGSAMCggIARAAGAwgDQoICAEQABgNIA4KCAgBE"
+            "AAYDiAPCggIARAAGBAgEAoICAAQVxgRIBEKCAgBEAAYEiASCggIABBGGBMgEwoICAA"
+            "QMhgPIBQKCAgAEHUYCyAVCggIARAAGBQgFgoICAAQNxgVIBcKCAgBEAAYGCAYCggIA"
+            "RAAGBogGQoICAEQABgbIBoKCAgBEAAYHCAbCggIARAAGAAgHAoICAEQABgdIB0KCAg"
+            "BEAAYHiAeEAEYFiAB");
+
+    HeaderViewState view_state(kGoodSerializedProto);
+    ASSERT_TRUE(view_state.healthy());
+    ASSERT_EQ(kGoodSerializedProto, view_state.saveState());
+}
+
+TEST_F(HeaderViewStateTest, BadHeaderState) {
+    HeaderViewState view_state("BLAHBLAHBLAHBAD");
+    ASSERT_FALSE(view_state.healthy());
+}

@@ -134,7 +134,7 @@ void Waveform::readByteArray(const QByteArray& data) {
     io::Waveform waveform;
 
     if (!waveform.ParseFromArray(data.constData(), data.size())) {
-        qDebug() << "ERROR: Could not parse Waveform from QByteArray of size"
+        qDebug() << "ERROR: Could not parse Waveform from QByteArray of size "
                  << data.size();
         return;
     }

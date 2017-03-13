@@ -136,7 +136,16 @@ bool BrowseTableModel::isColumnInternal(int) {
     return false;
 }
 
-bool BrowseTableModel::isColumnHiddenByDefault(int) {
+bool BrowseTableModel::isColumnHiddenByDefault(int column) {
+    if (column == COLUMN_COMPOSER ||
+            column == COLUMN_TRACK_NUMBER ||
+            column == COLUMN_YEAR ||
+            column == COLUMN_GROUPING ||
+            column == COLUMN_LOCATION ||
+            column == COLUMN_ALBUMARTIST ||
+            column == COLUMN_FILE_CREATION_TIME) {
+        return true;
+    }
     return false;
 }
 

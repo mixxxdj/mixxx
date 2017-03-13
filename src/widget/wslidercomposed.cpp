@@ -28,7 +28,10 @@
 
 WSliderComposed::WSliderComposed(QWidget * parent)
     : WWidget(parent),
-      m_dHandleLength(0),
+      m_bRightButtonPressed(false),
+      m_dHandleLength(0.0),
+      m_dSliderLength(0.0),
+      m_bHorizontal(false),
       m_pSlider(NULL),
       m_pHandle(NULL) {
 }

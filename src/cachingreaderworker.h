@@ -56,6 +56,7 @@ typedef struct ReaderStatusUpdate {
     ReaderStatusUpdate() {
         status = INVALID;
         chunk = NULL;
+        trackNumSamples = 0;
     }
 } ReaderStatusUpdate;
 

@@ -5,6 +5,7 @@
 #include <QStylePainter>
 #include <QStackedLayout>
 
+#include "skin/skincontext.h"
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
 #include "util/debug.h"

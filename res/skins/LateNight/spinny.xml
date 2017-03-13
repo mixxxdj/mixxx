@@ -1,7 +1,21 @@
 <Template>
   <WidgetGroup>
     <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
     <Children>
+      <SingletonDefinition>
+        <ObjectName>SpinnySingleton<Variable name="channum"/></ObjectName>
+        <Children>
+          <Spinny>
+            <Group>[Channel<Variable name="channum"/>]</Group>
+            <PathBackground scalemode="STRETCH">spinny_bg.svg</PathBackground>
+            <PathMask>spinny<Variable name="color"/>_mask.svg</PathMask>
+            <PathForeground>spinny_indicator.svg</PathForeground>
+            <PathGhost>spinny_indicator_ghost.svg</PathGhost>
+            <ShowCover>true</ShowCover>
+          </Spinny>
+        </Children>
+      </SingletonDefinition>
       <WidgetStack currentpage="[Master],spinny_size" persist="true">
         <SizePolicy>max,min</SizePolicy>
         <Children>
@@ -10,14 +24,10 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Spinny>
-                <Group>[Channel<Variable name="channum"/>]</Group>
-                <PathBackground>spinny_bg.svg</PathBackground>
-                <PathMask>spinny<Variable name="color"/>_mask.svg</PathMask>
-                <PathForeground>spinny_indicator.svg</PathForeground>
-                <PathGhost>spinny_indicator_ghost.svg</PathGhost>
-                <ShowCover>true</ShowCover>
-              </Spinny>
+                <SingletonContainer>
+                    <Size>96f,96f</Size>
+                    <ObjectName>SpinnySingleton<Variable name="channum"/></ObjectName>
+                </SingletonContainer>
             </Children>
           </WidgetGroup>
           <WidgetGroup trigger="[Master],show_mixer">
@@ -25,15 +35,10 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Spinny>
-                <Size>50f,50f</Size>
-                <Group>[Channel<Variable name="channum"/>]</Group>
-                <PathBackground scalemode="STRETCH">spinny_bg.svg</PathBackground>
-                <PathMask>spinny<Variable name="color"/>_mask.svg</PathMask>
-                <PathForeground>spinny_indicator.svg</PathForeground>
-                <PathGhost>spinny_indicator_ghost.svg</PathGhost>
-                <ShowCover>true</ShowCover>
-              </Spinny>
+              <SingletonContainer>
+                  <Size>50f,50f</Size>
+                  <ObjectName>SpinnySingleton<Variable name="channum"/></ObjectName>
+              </SingletonContainer>
             </Children>
           </WidgetGroup>
         </Children>
@@ -54,7 +59,7 @@
             <Transform>
               <Not/>
             </Transform>
-        </Connection>    
+        </Connection>
       </WidgetGroup>
     </Children>
   </WidgetGroup>

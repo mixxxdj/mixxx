@@ -164,6 +164,7 @@ class TrackDAO : public QObject, public virtual DAO {
     void dbTrackAdded(TrackPointer pTrack);
     void progressVerifyTracksOutside(QString path);
     void progressCoverArt(QString file);
+    void forceModelUpdate();
 
   public slots:
     // The public interface to the TrackDAO requires a TrackPointer so that we

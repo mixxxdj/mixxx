@@ -156,7 +156,7 @@ bool PlayerManager::isPreviewDeckGroup(const QString& group, int* number) {
     }
 
     bool ok = false;
-    int deckNum = group.mid(8,group.lastIndexOf("]")-8).toInt(&ok);
+    int deckNum = group.mid(12,group.lastIndexOf("]")-12).toInt(&ok);
     if (!ok || deckNum <= 0) {
         return false;
     }

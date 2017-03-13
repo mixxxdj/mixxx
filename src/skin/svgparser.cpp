@@ -17,7 +17,9 @@ QDomNode SvgParser::parseSvgFile(const QString& svgFileName) const {
     QDomNode svgNode;
     if (file.open(QIODevice::ReadOnly|QIODevice::Text)) {
         QDomDocument document;
-        document.setContent(&file);
+        if (!document.setContent(&file)) {
+            qDebug() << "ERROR: Failed to set content on QDomDocument";
+        }
         svgNode = document.elementsByTagName("svg").item(0);
         scanTree(&svgNode);
         file.close();
@@ -100,7 +102,9 @@ void SvgParser::parseElement(QDomNode* node) const {
         QString scriptPath = element.attribute("src");
         if (!scriptPath.isNull()) {
             QFile scriptFile(m_context.getSkinPath(scriptPath));
-            scriptFile.open(QIODevice::ReadOnly|QIODevice::Text);
+            if (!scriptFile.open(QIODevice::ReadOnly|QIODevice::Text)) {
+                qDebug() << "ERROR: Failed to open script file";
+            }
             QTextStream in(&scriptFile);
             QScriptValue result = m_context.evaluateScript(in.readAll(),
                                                            scriptPath);

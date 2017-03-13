@@ -184,18 +184,27 @@ Result SoundSourceSndFile::parseHeader()
         if (!readFileHeader(this, f)) {
             return ERR;
         }
-        TagLib::ID3v2::Tag *id3v2(f.ID3v2Tag());
+
+        // Taglib provides the ID3v2Tag method for WAV files since Version 1.9
+#if (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
+        TagLib::ID3v2::Tag* id3v2(f.ID3v2Tag());
         if (id3v2) {
             readID3v2Tag(this, *id3v2);
         } else {
             // fallback
-            const TagLib::Tag *tag(f.tag());
+            const TagLib::Tag* tag(f.tag());
             if (tag) {
                 readTag(this, *tag);
             } else {
                 return ERR;
             }
         }
+#else
+        TagLib::ID3v2::Tag* id3v2(f.tag());
+        if (id3v2) {
+            readID3v2Tag(this, *id3v2);
+        }
+#endif
 
         if (getDuration() <= 0) {
             // we're using a taglib version which doesn't know how to do wav

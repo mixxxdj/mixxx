@@ -7,19 +7,15 @@
 class ChannelMixer {
   public:
     static void mixChannels(
-        const QList<EngineMaster::ChannelInfo*>& channels,
         const EngineMaster::GainCalculator& gainCalculator,
-        unsigned int channelBitvector,
-        unsigned int maxChannels,
-        QList<CSAMPLE>* channelGainCache,
+        EngineMaster::FastVector<EngineMaster::ChannelInfo*, kMaxChannels>* activeChannels,
+        EngineMaster::FastVector<EngineMaster::GainCache, kMaxChannels>* channelGainCache,
         CSAMPLE* pOutput,
         unsigned int iBufferSize);
     static void mixChannelsRamping(
-        const QList<EngineMaster::ChannelInfo*>& channels,
         const EngineMaster::GainCalculator& gainCalculator,
-        unsigned int channelBitvector,
-        unsigned int maxChannels,
-        QList<CSAMPLE>* channelGainCache,
+        EngineMaster::FastVector<EngineMaster::ChannelInfo*, kMaxChannels>* activeChannels,
+        EngineMaster::FastVector<EngineMaster::GainCache, kMaxChannels>* channelGainCache,
         CSAMPLE* pOutput,
         unsigned int iBufferSize);
 };

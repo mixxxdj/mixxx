@@ -534,7 +534,7 @@ p, li { white-space: pre-wrap; }
       <item>
        <widget class="QLineEdit" name="metadata_format">
         <property name="text">
-         <string>$artist - $title</string>
+         <string notr="true">$artist - $title</string>
         </property>
        </widget>
       </item>

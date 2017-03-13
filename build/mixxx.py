@@ -17,7 +17,7 @@ import util
 
 class MixxxBuild(object):
 
-    def __init__(self, target, machine, build, toolchain, available_features=[]):
+    def __init__(self, target, machine, build, toolchain, available_features):
         self.available_features = available_features
         self.host_platform = self.detect_platform()
         self.host_machine = self.detect_machine()

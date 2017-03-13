@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>686</width>
-    <height>563</height>
+    <height>584</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,10 +16,7 @@
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="1">
-      <widget class="QComboBox" name="apiComboBox"/>
-     </item>
-     <item row="7" column="0">
+     <item row="8" column="0">
       <widget class="QLabel" name="headDelayLabel">
        <property name="text">
         <string>Headphone Delay</string>
@@ -36,7 +33,7 @@
        </property>
       </widget>
      </item>
-     <item row="8" column="1">
+     <item row="9" column="1">
       <widget class="QDoubleSpinBox" name="masterDelaySpinBox">
        <property name="suffix">
         <string extracomment="milliseconds"> ms</string>
@@ -49,7 +46,10 @@
        </property>
       </widget>
      </item>
-     <item row="9" column="1">
+     <item row="0" column="1">
+      <widget class="QComboBox" name="apiComboBox"/>
+     </item>
+     <item row="10" column="1">
       <widget class="QLabel" name="currentLatency">
        <property name="text">
         <string>20 ms</string>
@@ -66,7 +66,7 @@
        </property>
       </widget>
      </item>
-     <item row="11" column="0">
+     <item row="12" column="0">
       <spacer name="outputVSpacer_3">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -85,7 +85,7 @@
      <item row="1" column="1">
       <widget class="QComboBox" name="sampleRateComboBox"/>
      </item>
-     <item row="9" column="0">
+     <item row="10" column="0">
       <widget class="QLabel" name="latencyLabel">
        <property name="text">
         <string>Known Latency</string>
@@ -95,7 +95,7 @@
        </property>
       </widget>
      </item>
-     <item row="10" column="0">
+     <item row="11" column="0">
       <widget class="QLabel" name="underflowLabel">
        <property name="text">
         <string>Buffer Underflow Count</string>
@@ -118,14 +118,14 @@
        </property>
       </widget>
      </item>
-     <item row="10" column="1">
+     <item row="11" column="1">
       <widget class="QLabel" name="bufferUnderflowCount">
        <property name="text">
         <string>0</string>
        </property>
       </widget>
      </item>
-     <item row="7" column="1">
+     <item row="8" column="1">
       <widget class="QDoubleSpinBox" name="headDelaySpinBox">
        <property name="suffix">
         <string extracomment="milliseconds"> ms</string>
@@ -138,7 +138,7 @@
        </property>
       </widget>
      </item>
-     <item row="8" column="0">
+     <item row="9" column="0">
       <widget class="QLabel" name="masterDelayLabel">
        <property name="text">
         <string>Master Delay</string>
@@ -187,6 +187,16 @@
      </item>
      <item row="6" column="1">
       <widget class="QComboBox" name="masterOutputModeComboBox"/>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="micMixLabel">
+       <property name="text">
+        <string>Microphone/Talkover Mix</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QComboBox" name="micMixComboBox"/>
      </item>
     </layout>
    </item>

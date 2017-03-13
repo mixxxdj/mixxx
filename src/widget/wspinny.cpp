@@ -144,6 +144,8 @@ void WSpinny::setup(QDomNode node, const SkinContext& context) {
                                                          Paintable::FIXED);
     if (m_pBgImage && !m_pBgImage->isNull() && bgmode == Paintable::FIXED) {
         setFixedSize(m_pBgImage->size());
+    } else {
+        setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     }
     m_pMaskImage = WImageStore::getImage(context.getPixmapSource(
                         context.selectNode(node, "PathMask")));

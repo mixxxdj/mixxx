@@ -32,7 +32,6 @@ class EnginePregain;
 class EngineBuffer;
 class EngineMaster;
 class EngineVuMeter;
-class EngineVinylSoundEmu;
 class EffectsManager;
 class EngineEffectsManager;
 class ControlPushButton;
@@ -79,7 +78,6 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     ConfigObject<ConfigValue>* m_pConfig;
     EngineBuffer* m_pBuffer;
     EnginePregain* m_pPregain;
-    EngineVinylSoundEmu* m_pVinylSoundEmu;
     EngineVuMeter* m_pVUMeter;
     EngineEffectsManager* m_pEngineEffectsManager;
     ControlObjectSlave* m_pSampleRate;

@@ -1,5 +1,5 @@
 /***************************************************************************
-                  engineshoutcast.cpp  -  class to shoutcast the mix
+                  engineshoutcast.cpp  -  class to live stream the mix
                              -------------------
     copyright            : (C) 2007 by Wesley Stessens
                            (C) 2007 by Albert Santoni
@@ -292,7 +292,7 @@ void EngineShoutcast::updateFromPreferences() {
     }
 
     if (shout_set_format(m_pShout, format) != SHOUTERR_SUCCESS) {
-        errorDialog("Error setting soutcast format!", shout_get_error(m_pShout));
+        errorDialog("Error setting streaming format!", shout_get_error(m_pShout));
         return;
     }
 
@@ -413,7 +413,7 @@ bool EngineShoutcast::serverConnect() {
             break;
 
         m_iShoutFailures++;
-        qDebug() << "Shoutcast failed connect. Failures:" << m_iShoutFailures;
+        qDebug() << "Streaming server failed connect. Failures:" << m_iShoutFailures;
         sleep(1);
     }
     if (m_iShoutFailures == iMaxTries) {
@@ -439,7 +439,7 @@ bool EngineShoutcast::serverConnect() {
         ++ timeout;
     }
     if (m_iShoutStatus == SHOUTERR_CONNECTED) {
-        qDebug() << "***********Connected to Shoutcast server...";
+        qDebug() << "***********Connected to streaming server...";
         m_pShoutcastStatus->set(SHOUTCAST_CONNECTED);
         return true;
     }
@@ -499,7 +499,7 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
             qDebug() << "DEBUG: queue length:" << (int)shout_queuelen(m_pShout);
         }
     } else {
-        qDebug() << "Error connecting to Shoutcast server:" << shout_get_error(m_pShout);
+        qDebug() << "Error connecting to streaming server:" << shout_get_error(m_pShout);
         // errorDialog(tr("Shoutcast aborted connect after 3 tries"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
     }
 }
@@ -512,7 +512,7 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         if (isConnected()) {
             // We are conneced but shoutcast is disabled. Disconnect.
             serverDisconnect();
-            infoDialog(tr("Mixxx has successfully disconnected from the shoutcast server"), "");
+            infoDialog(tr("Mixxx has successfully disconnected from the streaming server"), "");
         }
         return;
     }
@@ -533,7 +533,7 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         updateFromPreferences();
 
         if (serverConnect()) {
-            infoDialog(tr("Mixxx has successfully connected to the shoutcast server"), "");
+            infoDialog(tr("Mixxx has successfully connected to the streaming server"), "");
         } else {
             errorDialog(tr("Mixxx could not connect to streaming server"),
                         tr("Please check your connection to the Internet and verify that your username and password are correct."));
@@ -683,7 +683,7 @@ void EngineShoutcast::updateMetaData() {
 }
 
 void EngineShoutcast::errorDialog(QString text, QString detailedError) {
-    qWarning() << "Shoutcast error: " << detailedError;
+    qWarning() << "Streaming error: " << detailedError;
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
     props->setTitle(tr("Live broadcasting"));

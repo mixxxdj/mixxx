@@ -13,6 +13,7 @@
 #include "engine/enginechannel.h"
 #include "engine/enginemaster.h"
 #include "controlobjectslave.h"
+#include "util/assert.h"
 #include "util/math.h"
 
 const int minBpm = 30;
@@ -43,6 +44,10 @@ BpmControl::BpmControl(QString group,
     m_pRateRange->connectValueChanged(SLOT(slotAdjustRateSlider()), Qt::DirectConnection);
     m_pRateDir = new ControlObjectSlave(group, "rate_dir", this);
     m_pRateDir->connectValueChanged(SLOT(slotAdjustRateSlider()), Qt::DirectConnection);
+
+    m_pPrevBeat.reset(new ControlObjectSlave(group, "beat_prev"));
+    m_pNextBeat.reset(new ControlObjectSlave(group, "beat_next"));
+    m_pClosestBeat.reset(new ControlObjectSlave(group, "beat_closest"));
 
     m_pLoopEnabled = new ControlObjectSlave(group, "loop_enabled", this);
     m_pLoopStartPosition = new ControlObjectSlave(group, "loop_start_position", this);
@@ -409,10 +414,9 @@ double BpmControl::calcSyncedRate(double userTweak) {
     double dThisPosition = getCurrentSample();
     double dBeatLength;
     double my_percentage;
-
-    if (!BpmControl::getBeatContext(m_pBeats, dThisPosition,
-                                    NULL, NULL,
-                                    &dBeatLength, &my_percentage, 0.01)) {
+    if (!BpmControl::getBeatContextNoLookup(dThisPosition,
+                                            m_pPrevBeat->get(), m_pNextBeat->get(),
+                                            &dBeatLength, &my_percentage)) {
         m_resetSyncAdjustment = true;
         return rate + userTweak;
     }
@@ -506,21 +510,27 @@ double BpmControl::calcSyncAdjustment(double my_percentage, bool userTweakingSyn
 }
 
 double BpmControl::getBeatDistance(double dThisPosition) const {
-    double dBeatPercentage;
     // We have to adjust our reported beat distance by the user offset to
     // preserve comparisons of beat distances.  Specifically, this beat distance
     // is used in synccontrol to update the internal clock beat distance, and if
     // we don't adjust the reported distance the track will try to adjust
     // sync against itself.
-    if (BpmControl::getBeatContext(m_pBeats, dThisPosition, NULL, NULL, NULL,
-                                   &dBeatPercentage, 0.01)) {
-        return dBeatPercentage - m_dUserOffset;
+    double dPrevBeat = m_pPrevBeat->get();
+    double dNextBeat = m_pNextBeat->get();
+
+    if (dPrevBeat == -1 || dNextBeat == -1) {
+        return 0.0 - m_dUserOffset;
     }
 
-    // if (getSyncMode() != SYNC_NONE && m_pQuantize->get()) {
-    //     qWarning() << getGroup() << "No beatgrid but sync and quantize enabled.";
-    // }
-    return 0.0 - m_dUserOffset;
+    double dBeatLength = dNextBeat - dPrevBeat;
+    double dBeatPercentage = dBeatLength == 0.0 ? 0.0 :
+            (dThisPosition - dPrevBeat) / dBeatLength;
+    // Because findNext and findPrev have an epsilon built in, sometimes
+    // the beat percentage is out of range.  Fix it.
+    if (dBeatPercentage < 0) ++dBeatPercentage;
+    if (dBeatPercentage > 1) --dBeatPercentage;
+
+    return dBeatPercentage - m_dUserOffset;
 }
 
 // static
@@ -529,24 +539,14 @@ bool BpmControl::getBeatContext(const BeatsPointer& pBeats,
                                 double* dpPrevBeat,
                                 double* dpNextBeat,
                                 double* dpBeatLength,
-                                double* dpBeatPercentage,
-                                const double beatEpsilon) {
+                                double* dpBeatPercentage) {
     if (!pBeats) {
         return false;
     }
 
-    double dPrevBeat = pBeats->findPrevBeat(dPosition);
-    double dNextBeat = pBeats->findNextBeat(dPosition);
-
-    if (dPrevBeat == -1 || dNextBeat == -1) {
-        return false;
-    }
-
-    if (fabs(dPrevBeat - dNextBeat) <= beatEpsilon) {
-        dNextBeat = pBeats->findNthBeat(dPosition, 2);
-    }
-
-    if (dNextBeat == -1) {
+    double dPrevBeat;
+    double dNextBeat;
+    if (!pBeats->findPrevNextBeats(dPosition, &dPrevBeat, &dNextBeat)) {
         return false;
     }
 
@@ -556,6 +556,21 @@ bool BpmControl::getBeatContext(const BeatsPointer& pBeats,
 
     if (dpNextBeat != NULL) {
         *dpNextBeat = dNextBeat;
+    }
+
+    return getBeatContextNoLookup(dPosition, dPrevBeat, dNextBeat,
+                                  dpBeatLength, dpBeatPercentage);
+}
+
+// static
+bool BpmControl::getBeatContextNoLookup(
+                                const double dPosition,
+                                const double dPrevBeat,
+                                const double dNextBeat,
+                                double* dpBeatLength,
+                                double* dpBeatPercentage) {
+    if (dPrevBeat == -1 || dNextBeat == -1) {
+        return false;
     }
 
     double dBeatLength = dNextBeat - dPrevBeat;
@@ -586,13 +601,24 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
     }
 
     // Get the current position of this deck.
-    double dThisPrevBeat;
-    double dThisNextBeat;
+    double dThisPrevBeat = m_pPrevBeat->get();
+    double dThisNextBeat = m_pNextBeat->get();
     double dThisBeatLength;
-    if (!getBeatContext(m_pBeats, dThisPosition,
-                        &dThisPrevBeat, &dThisNextBeat,
-                        &dThisBeatLength, NULL)) {
-        return 0;
+    if (dThisPosition > dThisNextBeat || dThisPosition < dThisPrevBeat) {
+        // There's a chance the COs might be out of date, so do a lookup.
+        // TODO: figure out a way so that quantized control can take care of
+        // this so this call isn't necessary.
+        if (!getBeatContext(m_pBeats, dThisPosition,
+                            &dThisPrevBeat, &dThisNextBeat,
+                            &dThisBeatLength, NULL)) {
+            return 0;
+        }
+    } else {
+        if (!getBeatContextNoLookup(dThisPosition,
+                                    dThisPrevBeat, dThisNextBeat,
+                                    &dThisBeatLength, NULL)) {
+            return 0;
+        }
     }
 
     double dOtherBeatFraction;
@@ -845,12 +871,12 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
 
     // Get the current position of this deck.
     double dThisPosition = getCurrentSample();
-    double dThisPrevBeat;
-    double dThisNextBeat;
+    double dThisPrevBeat = m_pPrevBeat->get();
+    double dThisNextBeat = m_pNextBeat->get();
     double dThisBeatLength;
     double dThisBeatFraction;
-    if (getBeatContext(m_pBeats, dThisPosition,
-                       &dThisPrevBeat, &dThisNextBeat,
+    if (getBeatContextNoLookup(dThisPosition,
+                       dThisPrevBeat, dThisNextBeat,
                        &dThisBeatLength, &dThisBeatFraction)) {
         pGroupFeatures->has_prev_beat = true;
         pGroupFeatures->prev_beat = dThisPrevBeat;

@@ -22,29 +22,37 @@
 			</control>
 			<!-- left filter efx (deck 1+3) -->
 			<control>
-				<group>[EffectRack1_EffectUnit2]</group>
 				<midino>0x16</midino>
 				<status>0x90</status>
-				<key>enabled</key>
+				<key>DenonMC6000MK2.leftSide.onFilterButton</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit2]</group>
 				<midino>0x66</midino>
 				<status>0xB0</status>
-				<key>parameter</key>
+				<key>DenonMC6000MK2.leftSide.onFilterParam</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<!-- right filter efx (deck 2+4) -->
 			<control>
-				<group>[EffectRack1_EffectUnit3]</group>
 				<midino>0x1E</midino>
 				<status>0x90</status>
-				<key>enabled</key>
+				<key>DenonMC6000MK2.rightSide.onFilterButton</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit3]</group>
 				<midino>0x67</midino>
 				<status>0xB0</status>
-				<key>parameter</key>
+				<key>DenonMC6000MK2.rightSide.onFilterParam</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<!-- left efx unit -->
 			<control>
@@ -66,7 +74,7 @@
 			<control>
 				<midino>0x55</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.leftSide.onEfx1Knob</key>
+				<key>DenonMC6000MK2.leftSide.onEfx1Param</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -90,7 +98,7 @@
 			<control>
 				<midino>0x56</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.leftSide.onEfx2Knob</key>
+				<key>DenonMC6000MK2.leftSide.onEfx2Param</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -106,7 +114,7 @@
 			<control>
 				<midino>0x57</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.leftSide.onEfx3Knob</key>
+				<key>DenonMC6000MK2.leftSide.onEfx3Param</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -115,6 +123,14 @@
 				<midino>0x58</midino>
 				<status>0xB0</status>
 				<key>DenonMC6000MK2.leftSide.onEfxBeatsKnob</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<midino>0x40</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.leftSide.onEfxBeatsButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -139,7 +155,7 @@
 			<control>
 				<midino>0x59</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.rightSide.onEfx1Knob</key>
+				<key>DenonMC6000MK2.rightSide.onEfx1Param</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -155,7 +171,7 @@
 			<control>
 				<midino>0x5A</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.rightSide.onEfx2Knob</key>
+				<key>DenonMC6000MK2.rightSide.onEfx2Param</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -171,7 +187,7 @@
 			<control>
 				<midino>0x5B</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.rightSide.onEfx3Knob</key>
+				<key>DenonMC6000MK2.rightSide.onEfx3Param</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -180,6 +196,14 @@
 				<midino>0x5C</midino>
 				<status>0xB0</status>
 				<key>DenonMC6000MK2.rightSide.onEfxBeatsKnob</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<midino>0x41</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.rightSide.onEfxBeatsButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -420,22 +444,22 @@
 				<key>pregain</key>
 			</control>
 			<control>
-				<group>[Channel1]</group>
-				<midino>0x02</midino>
-				<status>0xB0</status>
-				<key>filterHigh</key>
-			</control>
-			<control>
-				<group>[Channel1]</group>
-				<midino>0x03</midino>
-				<status>0xB0</status>
-				<key>filterMid</key>
-			</control>
-			<control>
-				<group>[Channel1]</group>
+				<group>[EqualizerRack1_[Channel1]_Effect1]</group>
 				<midino>0x04</midino>
 				<status>0xB0</status>
-				<key>filterLow</key>
+				<key>parameter1</key>
+			</control>
+			<control>
+				<group>[EqualizerRack1_[Channel1]_Effect1]</group>
+				<midino>0x03</midino>
+				<status>0xB0</status>
+				<key>parameter2</key>
+			</control>
+			<control>
+				<group>[EqualizerRack1_[Channel1]_Effect1]</group>
+				<midino>0x02</midino>
+				<status>0xB0</status>
+				<key>parameter3</key>
 			</control>
 			<control>
 				<group>[Channel1]</group>
@@ -450,7 +474,7 @@
 				<key>group_[Channel1]_enable</key>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit4]</group>
+				<group>[EffectRack1_EffectUnit2]</group>
 				<midino>0x5C</midino>
 				<status>0x90</status>
 				<key>group_[Channel1]_enable</key>
@@ -484,6 +508,15 @@
 			</control>
 
 			<!-- [Channel1] - MIDI Ch0 Controls -->
+			<control>
+				<group>[Channel1]</group>
+				<midino>0x03</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.leftSide.onDeckButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
 			<control>
 				<group>[Channel1]</group>
 				<midino>0x04</midino>
@@ -834,22 +867,22 @@
 				<key>pregain</key>
 			</control>
 			<control>
-				<group>[Channel2]</group>
-				<midino>0x08</midino>
-				<status>0xB0</status>
-				<key>filterHigh</key>
-			</control>
-			<control>
-				<group>[Channel2]</group>
-				<midino>0x09</midino>
-				<status>0xB0</status>
-				<key>filterMid</key>
-			</control>
-			<control>
-				<group>[Channel2]</group>
+				<group>[EqualizerRack1_[Channel2]_Effect1]</group>
 				<midino>0x0A</midino>
 				<status>0xB0</status>
-				<key>filterLow</key>
+				<key>parameter1</key>
+			</control>
+			<control>
+				<group>[EqualizerRack1_[Channel2]_Effect1]</group>
+				<midino>0x09</midino>
+				<status>0xB0</status>
+				<key>parameter2</key>
+			</control>
+			<control>
+				<group>[EqualizerRack1_[Channel2]_Effect1]</group>
+				<midino>0x08</midino>
+				<status>0xB0</status>
+				<key>parameter3</key>
 			</control>
 			<control>
 				<group>[Channel2]</group>
@@ -864,7 +897,7 @@
 				<key>group_[Channel2]_enable</key>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit4]</group>
+				<group>[EffectRack1_EffectUnit2]</group>
 				<midino>0x5D</midino>
 				<status>0x90</status>
 				<key>group_[Channel2]_enable</key>
@@ -898,6 +931,15 @@
 			</control>
 
 			<!-- [Channel2] - MIDI Ch2 Controls -->
+			<control>
+				<group>[Channel2]</group>
+				<midino>0x08</midino>
+				<status>0x92</status>
+				<key>DenonMC6000MK2.rightSide.onDeckButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
 			<control>
 				<group>[Channel2]</group>
 				<midino>0x04</midino>
@@ -1248,22 +1290,22 @@
 				<key>pregain</key>
 			</control>
 			<control>
-				<group>[Channel3]</group>
-				<midino>0x0D</midino>
-				<status>0xB0</status>
-				<key>filterHigh</key>
-			</control>
-			<control>
-				<group>[Channel3]</group>
-				<midino>0x0E</midino>
-				<status>0xB0</status>
-				<key>filterMid</key>
-			</control>
-			<control>
-				<group>[Channel3]</group>
+				<group>[EqualizerRack1_[Channel3]_Effect1]</group>
 				<midino>0x0F</midino>
 				<status>0xB0</status>
-				<key>filterLow</key>
+				<key>parameter1</key>
+			</control>
+			<control>
+				<group>[EqualizerRack1_[Channel3]_Effect1]</group>
+				<midino>0x0E</midino>
+				<status>0xB0</status>
+				<key>parameter2</key>
+			</control>
+			<control>
+				<group>[EqualizerRack1_[Channel3]_Effect1]</group>
+				<midino>0x0D</midino>
+				<status>0xB0</status>
+				<key>parameter3</key>
 			</control>
 			<control>
 				<group>[Channel3]</group>
@@ -1278,7 +1320,7 @@
 				<key>group_[Channel3]_enable</key>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit4]</group>
+				<group>[EffectRack1_EffectUnit2]</group>
 				<midino>0x5E</midino>
 				<status>0x90</status>
 				<key>group_[Channel3]_enable</key>
@@ -1312,6 +1354,15 @@
 			</control>
 
 			<!-- [Channel3] - MIDI Ch1 Controls -->
+			<control>
+				<group>[Channel3]</group>
+				<midino>0x09</midino>
+				<status>0x91</status>
+				<key>DenonMC6000MK2.leftSide.onDeckButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
 			<control>
 				<group>[Channel3]</group>
 				<midino>0x04</midino>
@@ -1662,22 +1713,22 @@
 				<key>pregain</key>
 			</control>
 			<control>
-				<group>[Channel4]</group>
-				<midino>0x12</midino>
-				<status>0xB0</status>
-				<key>filterHigh</key>
-			</control>
-			<control>
-				<group>[Channel4]</group>
-				<midino>0x13</midino>
-				<status>0xB0</status>
-				<key>filterMid</key>
-			</control>
-			<control>
-				<group>[Channel4]</group>
+				<group>[EqualizerRack1_[Channel4]_Effect1]</group>
 				<midino>0x14</midino>
 				<status>0xB0</status>
-				<key>filterLow</key>
+				<key>parameter1</key>
+			</control>
+			<control>
+				<group>[EqualizerRack1_[Channel4]_Effect1]</group>
+				<midino>0x13</midino>
+				<status>0xB0</status>
+				<key>parameter2</key>
+			</control>
+			<control>
+				<group>[EqualizerRack1_[Channel4]_Effect1]</group>
+				<midino>0x12</midino>
+				<status>0xB0</status>
+				<key>parameter3</key>
 			</control>
 			<control>
 				<group>[Channel4]</group>
@@ -1692,7 +1743,7 @@
 				<key>group_[Channel4]_enable</key>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit4]</group>
+				<group>[EffectRack1_EffectUnit2]</group>
 				<midino>0x5F</midino>
 				<status>0x90</status>
 				<key>group_[Channel4]_enable</key>
@@ -1726,6 +1777,15 @@
 			</control>
 
 			<!-- [Channel4] - MIDI Ch3 Controls -->
+			<control>
+				<group>[Channel4]</group>
+				<midino>0x0A</midino>
+				<status>0x93</status>
+				<key>DenonMC6000MK2.rightSide.onDeckButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
 			<control>
 				<group>[Channel4]</group>
 				<midino>0x04</midino>

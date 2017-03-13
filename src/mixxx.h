@@ -116,6 +116,7 @@ class MixxxMainWindow : public QMainWindow {
     void slotViewShowVinylControl(bool);
     void slotViewShowMicrophone(bool);
     void slotViewShowPreviewDeck(bool);
+    void slotViewShowEffects(bool);
     void slotViewShowCoverArt(bool);
     // toogle full screen mode
     void slotViewFullScreen(bool toggle);
@@ -144,6 +145,9 @@ class MixxxMainWindow : public QMainWindow {
     void newSkinLoaded();
     void libraryScanStarted();
     void libraryScanFinished();
+    // used to uncheck the menu when the dialog of develeoper tools is closed
+    void developerToolsDlgClosed(int r);
+    void closeDeveloperToolsDlgChecked(int r);
 
   protected:
     // Event filter to block certain events (eg. tooltips if tooltips are disabled)
@@ -235,6 +239,7 @@ class MixxxMainWindow : public QMainWindow {
     QAction* m_pViewVinylControl;
     QAction* m_pViewShowMicrophone;
     QAction* m_pViewShowPreviewDeck;
+    QAction* m_pViewShowEffects;
     QAction* m_pViewShowCoverArt;
     QAction* m_pViewFullScreen;
     QAction* m_pHelpAboutApp;

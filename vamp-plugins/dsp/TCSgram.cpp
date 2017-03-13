@@ -23,8 +23,13 @@
 #include "MathUtilities.h"
 
 TCSGram::TCSGram() :
-	m_uNumBins(6)
+	m_uNumBins(6),
+	m_dFrameDurationMS(0.0)
 {
+	for (size_t k = 0; k < m_VectorList.size(); ++k) {
+		m_VectorList[k].first = 0;
+		m_VectorList[k].second = TCSVector();
+	}
 }
 
 TCSGram::~TCSGram()

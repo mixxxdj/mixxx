@@ -2,7 +2,8 @@
 
 #include "skin/pixmapsource.h"
 
-PixmapSource::PixmapSource() {
+PixmapSource::PixmapSource():
+    m_eType(SVG) {
 }
 
 PixmapSource::PixmapSource(const QString& filepath) {

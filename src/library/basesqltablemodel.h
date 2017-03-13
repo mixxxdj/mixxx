@@ -57,7 +57,6 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     int fieldIndex(ColumnCache::Column column) const;
     int fieldIndex(const QString& fieldName) const;
 
-    void select();
     QString getTrackLocation(const QModelIndex& index) const;
     QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
 
@@ -72,6 +71,9 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     QVariant headerData(int section, Qt::Orientation orientation,
                         int role=Qt::DisplayRole) const;
     virtual QMimeData* mimeData(const QModelIndexList &indexes) const;
+
+  public slots:
+    void select();
 
   protected:
     // Returns the row of trackId in this result set. If trackId is not present,

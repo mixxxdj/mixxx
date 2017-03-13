@@ -729,7 +729,9 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
             // closest beat might be ahead of play position which would cause a seek.
             // TODO: If in reverse, should probably choose nextBeat.
             double cur_pos = getCurrentSample();
-            double prevBeat = floor(m_pBeats->findPrevBeat(cur_pos));
+            double prevBeat;
+            double nextBeat;
+            m_pBeats->findPrevNextBeats(cur_pos, &prevBeat, &nextBeat);
 
             if (m_pQuantizeEnabled->get() > 0.0 && prevBeat != -1) {
                 if (beats >= 1.0) {
@@ -742,7 +744,6 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
                     //
                     // If we press 1/2 beatloop we want loop from 50% to 100%,
                     // If I press 1/4 beatloop, we want loop from 50% to 75% etc
-                    double nextBeat = floor(m_pBeats->findNextBeat(cur_pos));
                     double beat_len = nextBeat - prevBeat;
                     double loops_per_beat = 1.0 / beats;
                     double beat_pos = cur_pos - prevBeat;
@@ -773,6 +774,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
         if (fullbeats > 0) {
             // Add the length between this beat and the fullbeats'th beat to the
             // loop_out position;
+            // TODO: figure out how to convert this to a findPrevNext call.
             double this_beat = m_pBeats->findNthBeat(loop_in, 1);
             double nth_beat = m_pBeats->findNthBeat(loop_in, 1 + fullbeats);
             loop_out += (nth_beat - this_beat);
@@ -781,6 +783,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
         if (fracbeats > 0) {
             // Add the fraction of the beat following the current loop_out
             // position to loop out.
+            // TODO: figure out how to convert this to a findPrevNext call.
             double loop_out_beat = m_pBeats->findNthBeat(loop_out, 1);
             double loop_out_next_beat = m_pBeats->findNthBeat(loop_out, 2);
             loop_out += (loop_out_next_beat - loop_out_beat) * fracbeats;
@@ -842,10 +845,11 @@ void LoopingControl::slotLoopMove(double beats) {
         int old_loop_out = m_iLoopEndSample;
         int new_loop_in = old_loop_in + (beats * dBeatLength);
         int new_loop_out = old_loop_out + (beats * dBeatLength);
-
-        // Reject any shift that goes out of bounds
-        if (new_loop_in < 0 || new_loop_out >= m_pTrackSamples->get()) {
-            return;
+        if (!even(new_loop_in)) {
+            --new_loop_in;
+        }
+        if (!even(new_loop_out)) {
+            --new_loop_out;
         }
 
         m_iLoopStartSample = new_loop_in;

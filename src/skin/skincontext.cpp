@@ -13,7 +13,8 @@ SkinContext::SkinContext(ConfigObject<ConfigValue>* pConfig,
         : m_xmlPath(xmlPath),
           m_pConfig(pConfig),
           m_pScriptEngine(new QScriptEngine()),
-          m_pScriptDebugger(new QScriptEngineDebugger()) {
+          m_pScriptDebugger(new QScriptEngineDebugger()),
+          m_pSingletons(new SingletonMap) {
     enableDebugger(true);
     // the extensions are imported once and will be passed to the children
     // global object as properties of the parent's global object.
@@ -29,7 +30,8 @@ SkinContext::SkinContext(const SkinContext& parent)
           m_variables(parent.variables()),
           m_pScriptEngine(parent.m_pScriptEngine),
           m_pScriptDebugger(parent.m_pScriptDebugger),
-          m_parentGlobal(m_pScriptEngine->globalObject()) {
+          m_parentGlobal(m_pScriptEngine->globalObject()),
+          m_pSingletons(parent.m_pSingletons) {
 
     // we generate a new global object to preserve the scope between
     // a context and its children

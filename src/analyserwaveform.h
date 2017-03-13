@@ -32,13 +32,14 @@ inline CSAMPLE scaleSignal(CSAMPLE invalue, FilterIndex index = FilterCount) {
 }
 
 struct WaveformStride {
-    inline void init(double samples, double averageSamples) {
-        m_length = samples;
-        m_averageLength = averageSamples;
-        m_postScaleConversion = (float)std::numeric_limits<unsigned char>::max();
-        m_position = 0;
-        m_averagePosition = 0;
-        m_averageDivisor = 0;
+    WaveformStride(double samples, double averageSamples)
+            : m_position(0),
+              m_length(samples),
+              m_averageLength(averageSamples),
+              m_averagePosition(0),
+              m_averageDivisor(0),
+              m_postScaleConversion(static_cast<float>(
+                      std::numeric_limits<unsigned char>::max())) {
         for (int i = 0; i < ChannelCount; ++i) {
             m_overallData[i] = 0.0f;
             m_averageOverallData[i] = 0.0f;
