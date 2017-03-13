@@ -36,6 +36,7 @@ class Bessel8LVMixEQEffect : public GroupEffectProcessor<Bessel8LVMixEQEffectGro
                       const CSAMPLE* pInput, CSAMPLE* pOutput,
                       const unsigned int numSamples,
                       const unsigned int sampleRate,
+                      const EffectProcessor::EnableState enableState,
                       const GroupFeatureState& groupFeatureState);
 
   private:

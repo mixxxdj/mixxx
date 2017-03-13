@@ -49,6 +49,7 @@ class ReverbEffect : public GroupEffectProcessor<ReverbGroupState> {
                       const CSAMPLE* pInput, CSAMPLE* pOutput,
                       const unsigned int numSamples,
                       const unsigned int sampleRate,
+                      const EffectProcessor::EnableState enableState,
                       const GroupFeatureState& groupFeatures);
 
   private:

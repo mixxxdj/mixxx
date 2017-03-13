@@ -23,6 +23,7 @@ EffectManifest Bessel8LVMixEQEffect::getManifest() {
     manifest.setDescription(QObject::tr(
         "A Bessel 8th order filter equalizer with Lipshitz and Vanderkooy mix (bit perfect unity, roll-off -48 db/Oct). "
         "To adjust frequency shelves see the Equalizer preferences."));
+    manifest.setEffectRampsFromDry(true);
 
     EffectManifestParameter* low = manifest.addParameter();
     low->setId("low");
@@ -119,18 +120,22 @@ void Bessel8LVMixEQEffect::processGroup(const QString& group,
                                         const CSAMPLE* pInput, CSAMPLE* pOutput,
                                         const unsigned int numSamples,
                                         const unsigned int sampleRate,
+                                        const EffectProcessor::EnableState enableState,
                                         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
 
-    float fLow = 0.f, fMid = 0.f, fHigh = 0.f;
-    if (!m_pKillLow->toBool()) {
+    double fLow;
+    double fMid;
+    double fHigh;
+    if (enableState == EffectProcessor::DISABLING) {
+        // Ramp to dry, when disabling, this will ramp from dry when enabling as well
+        fLow = 1.0;
+        fMid = 1.0;
+        fHigh = 1.0;
+    } else {
         fLow = m_pPotLow->value();
-    }
-    if (!m_pKillMid->toBool()) {
         fMid = m_pPotMid->value();
-    }
-    if (!m_pKillHigh->toBool()) {
         fHigh = m_pPotHigh->value();
     }
 
@@ -195,4 +200,10 @@ void Bessel8LVMixEQEffect::processGroup(const QString& group,
     pState->old_low = fLow;
     pState->old_mid = fMid;
     pState->old_high = fHigh;
+
+    if (enableState == EffectProcessor::DISABLING) {
+        pState->m_delay3->pauseFilter();
+        pState->m_low2->pauseFilter();
+        pState->m_low1->pauseFilter();
+    }
 }

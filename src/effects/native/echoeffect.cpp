@@ -102,8 +102,10 @@ void EchoEffect::processGroup(const QString& group, EchoGroupState* pGroupState,
                               const CSAMPLE* pInput,
                               CSAMPLE* pOutput, const unsigned int numSamples,
                               const unsigned int sampleRate,
+                              const EffectProcessor::EnableState enableState,
                               const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
+    Q_UNUSED(enableState);
     Q_UNUSED(groupFeatures);
     EchoGroupState& gs = *pGroupState;
     double delay_time = m_pDelayParameter->value();

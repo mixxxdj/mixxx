@@ -14,7 +14,7 @@ LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
  
     m_handle = lilv_plugin_instantiate(plugin, m_sampleRate, NULL); 
     if (!m_handle) {
-	return;  
+        return;
     } 
 
     m_inputL = new float[MAX_BUFFER_LEN];
@@ -49,7 +49,7 @@ LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
 
 LV2EffectProcessor::~LV2EffectProcessor() {
     if (!m_handle) {
-	return;
+        return;
     } 
     lilv_instance_deactivate(m_handle);
     lilv_instance_free(m_handle);
@@ -62,21 +62,22 @@ LV2EffectProcessor::~LV2EffectProcessor() {
 
 void LV2EffectProcessor::initialize(const QSet<QString>& registeredGroups) {
     Q_UNUSED(registeredGroups);
-
 }
 
 void LV2EffectProcessor::process(const QString& group,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples,
                          const unsigned int sampleRate,
+                         const enum EnableState enableState,
                          const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
     Q_UNUSED(sampleRate);
+    Q_UNUSED(enableState);
     Q_UNUSED(group);
 
     if (!m_handle) {
-	SampleUtil::copyWithGain(pOutput, pInput, 1.0, numSamples);
-	return;  
+        SampleUtil::copyWithGain(pOutput, pInput, 1.0, numSamples);
+        return;
     } 
 
     for (int i = 0; i < m_parameters.size(); i++) {
