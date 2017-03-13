@@ -284,29 +284,44 @@
                         engine.setValue(this.group, 'play', 0);
                     } else {
                         engine.setValue(this.group, 'eject', 1);
+                        engine.beginTimer(225, function () {
+                          engine.setValue(this.group, 'eject', 0);
+                        }, true);
                     }
                 }
             };
         },
         output: function (value, group, control) {
             if (engine.getValue(this.group, 'track_loaded') === 1) {
-                if (this.playing === undefined) {
+                if (this.loaded === undefined) {
                     this.send(this.on);
                 } else {
                     if (engine.getValue(this.group, 'play') === 1) {
-                        this.send(this.on);
+                        if (this.looping !== undefined &&
+                            engine.getValue(this.group, 'repeat') === 1) {
+                            this.send(this.looping);
+                        } else {
+                            this.send(this.playing);
+                        }
                     } else {
-                        this.send(this.playing);
+                        this.send(this.loaded);
                     }
                 }
             } else {
-                this.send(this.off);
+                if (this.empty === undefined) {
+                    this.send(this.off);
+                } else {
+                    this.send(this.empty);
+                }
             }
         },
         connect: function() {
             this.connections[0] = engine.connectControl(this.group, 'track_loaded', this.output);
             if (this.playing !== undefined) {
                 this.connections[1] = engine.connectControl(this.group, 'play', this.output);
+            }
+            if (this.looping !== undefined) {
+                this.connections[2] = engine.connectControl(this.group, 'repeat', this.output);
             }
         },
         outKey: null, // hack to get Component constructor to call connect()
