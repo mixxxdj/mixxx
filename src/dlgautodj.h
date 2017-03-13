@@ -6,9 +6,9 @@
 #include "configobject.h"
 #include "controlpushbutton.h"
 #include "trackinfoobject.h"
-#include "library/dao/playlistdao.h"
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
+#include "library/dao/playlistdao.h"
 #include "mixxxkeyboard.h"
 
 class PlaylistTableModel;
@@ -51,6 +51,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void addRandomButton(bool buttonChecked);
     void loadTrack(TrackPointer tio);
     void loadTrackToPlayer(TrackPointer tio, QString group, bool);
+    void trackSelected(TrackPointer pTrack);
 
   private:
     enum ADJstates {

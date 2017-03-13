@@ -5,7 +5,7 @@
 
 
 // static
-double GuiTick::m_cpuTime = 0.0;
+double GuiTick::m_cpuTimeLastTick = 0.0;
 
 GuiTick::GuiTick(QObject* pParent)
         : QObject(pParent),
@@ -25,16 +25,16 @@ GuiTick::~GuiTick() {
 void GuiTick::process() {
     qint64 elapsedNs = m_cpuTimer.restart();
     double elapsedS = elapsedNs / 1000000000.0;
-    m_cpuTime += elapsedS;
-    m_pCOGuiTickTime->set(m_cpuTime);
+    m_cpuTimeLastTick += elapsedS;
+    m_pCOGuiTickTime->set(m_cpuTimeLastTick);
 
-    if (m_lastUpdateTime + 0.05 < m_cpuTime) {
-        m_lastUpdateTime = m_cpuTime;
-        m_pCOGuiTick50ms->set(m_cpuTime);
+    if (m_lastUpdateTime + 0.05 < m_cpuTimeLastTick) {
+        m_lastUpdateTime = m_cpuTimeLastTick;
+        m_pCOGuiTick50ms->set(m_cpuTimeLastTick);
     }
 }
 
 // static
-double GuiTick::cpuTime() {
-    return m_cpuTime;
+double GuiTick::cpuTimeLastTick() {
+     return m_cpuTimeLastTick;
 }

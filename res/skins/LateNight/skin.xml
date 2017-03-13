@@ -49,6 +49,7 @@
       <attribute config_key="[Library],show_library">1</attribute>
       <attribute config_key="[Master],mixer_4decks_status">1</attribute>
       <attribute config_key="[Master],show_mixer">1</attribute>
+      <attribute config_key="[Library],show_coverart">0</attribute>
     </attributes>
   </manifest>
 

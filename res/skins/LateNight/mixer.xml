@@ -1,12 +1,12 @@
 <Template>
-	<WidgetGroup>
-	    <ObjectName>Mixer</ObjectName>
-		<SizePolicy>e,max</SizePolicy>
+    <WidgetGroup>
+        <ObjectName>Mixer</ObjectName>
+        <SizePolicy>e,max</SizePolicy>
         <MinimumSize>450,</MinimumSize>
-		<MaximumSize>1000,</MaximumSize>
-		<Layout>horizontal</Layout>
-		<Children>
-		    <WidgetGroup>
+        <MaximumSize>1000,</MaximumSize>
+        <Layout>horizontal</Layout>
+        <Children>
+            <WidgetGroup>
                 <ObjectName>MicContainer</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>max,min</SizePolicy>
@@ -14,15 +14,15 @@
                     <Template src="skin:microphone.xml"/>
                 </Children>
             </WidgetGroup>
-			<WidgetGroup>
-			    <ObjectName>PrimaryMixer</ObjectName>
-				<Layout>vertical</Layout>
-				<SizePolicy>me,max</SizePolicy>
-				<Children>
-					<WidgetGroup>
-					    <Layout>horizontal</Layout>
-					    <SizePolicy>me,max</SizePolicy>
-					    <Children>
+            <WidgetGroup>
+                <ObjectName>PrimaryMixer</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,max</SizePolicy>
+                <Children>
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,max</SizePolicy>
+                        <Children>
                            <WidgetGroup>
                               <Layout>vertical</Layout>
                               <Children>
@@ -84,7 +84,6 @@
                                                         background-color: transparent; color: #EECE33; }
                                               </Style>
                                               <ShowSeconds>false</ShowSeconds>
-                                              <ClockFormat>12</ClockFormat>
                                           </Time>
                                         </Children>
                                       </WidgetGroup>

@@ -168,6 +168,26 @@ Result SoundSourceFLAC::parseHeader() {
     return result ? OK : ERR;
 }
 
+QImage SoundSourceFLAC::parseCoverArt() {
+    QImage coverArt;
+    setType("flac");
+    TagLib::FLAC::File f(m_qFilename.toLocal8Bit().constData());
+    coverArt = getCoverInID3v2Tag(f.ID3v2Tag());
+    if (coverArt.isNull()) {
+        coverArt = getCoverInXiphComment(f.xiphComment());
+    }
+    if (coverArt.isNull()) {
+        TagLib::List<TagLib::FLAC::Picture*> covers = f.pictureList();
+        if (!covers.isEmpty()) {
+            std::list<TagLib::FLAC::Picture*>::iterator it = covers.begin();
+            TagLib::FLAC::Picture* cover = *it;
+            coverArt = QImage::fromData(
+                QByteArray(cover->data().data(), cover->data().size()));
+        }
+    }
+    return coverArt;
+}
+
 /**
  * Shift needed to take our FLAC sample size to Mixxx's 16-bit samples.
  * Shift right on negative, left on positive.

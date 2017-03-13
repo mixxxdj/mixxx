@@ -804,6 +804,9 @@ QSpinBox { min-height: 20px; max-height: 20px;min-width: 40px; max-width: 40px;}
 WSearchLineEdit { padding: 2px; border: 1px solid #656565; font: 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: #181818; color: #cfb32c; }
 WSearchLineEdit:focus { padding: 2px; border: 2px solid #FF6600; font: bold 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: #0f0f0f; color: #eece33;}
 
+/* cover art */
+WCoverArt { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #ACACAC; }
+
 /* splitter between treeview and library */
 QSplitter::handle { image: url(skin:/style/style_handle_unchecked.png); background-color: #1e1e1e; }
 QSplitter::handle:pressed { image: url(skin:/style/style_handle_checked.png); background-color: #1e1e1e; }

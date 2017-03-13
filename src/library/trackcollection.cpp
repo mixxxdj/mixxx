@@ -9,7 +9,6 @@
 
 #include "library/librarytablemodel.h"
 #include "library/schemamanager.h"
-#include "soundsourceproxy.h"
 #include "trackinfoobject.h"
 #include "xmlparse.h"
 
@@ -22,10 +21,7 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
           m_directoryDao(m_db),
           m_analysisDao(m_db, pConfig),
           m_trackDao(m_db, m_cueDao, m_playlistDao, m_crateDao,
-                     m_analysisDao, m_directoryDao, pConfig),
-          m_supportedFileExtensionsRegex(
-              SoundSourceProxy::supportedFileExtensionsRegex(),
-              Qt::CaseInsensitive) {
+                     m_analysisDao, m_directoryDao, pConfig) {
     qDebug() << "Available QtSQL drivers:" << QSqlDatabase::drivers();
 
     m_db.setHostName("localhost");
@@ -78,7 +74,7 @@ bool TrackCollection::checkForTables() {
     installSorting(m_db);
 #endif
 
-    int requiredSchemaVersion = 23;
+    int requiredSchemaVersion = 24;
     QString schemaFilename = m_pConfig->getResourcePath();
     schemaFilename.append("schema.xml");
     QString okToExit = tr("Click OK to exit.");

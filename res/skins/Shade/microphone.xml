@@ -118,7 +118,7 @@
 				</PushButton>
 			</Children>
 			<Connection>
-				<ConfigKey>[Microphone],show_microphone</ConfigKey>
+				<ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
 				<BindProperty>visible</BindProperty>
 			</Connection>
 		</WidgetGroup>

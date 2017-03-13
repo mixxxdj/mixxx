@@ -8,80 +8,92 @@
 <Template>
   <WidgetGroup>
     <ObjectName>DeckTextRow</ObjectName>
-    <Layout>vertical</Layout>
+    <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
+      <CoverArt>
+        <ObjectName>DeckCoverArt</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <MinimumSize>58,58</MinimumSize>
+        <Group><Variable name="group"/></Group>
+      </CoverArt>
       <WidgetGroup>
-        <ObjectName>UpperTextRow</ObjectName>
-        <Layout>horizontal</Layout>
-        <!-- When TextRow is laid out, we need to ignore our children. Otherwise
-             decks might end up with different widths based on the size of the
-             labels in this row -->
-        <SizePolicy>i,max</SizePolicy>
+        <ObjectName>DeckTextColumn</ObjectName>
+        <Layout>vertical</Layout>
         <Children>
           <WidgetGroup>
-            <ObjectName>TitleGutter</ObjectName>
+            <ObjectName>UpperTextRow</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>min,max</SizePolicy>
+            <!-- When TextRow is laid out, we need to ignore our children. Otherwise
+                 decks might end up with different widths based on the size of the
+                 labels in this row -->
+            <SizePolicy>i,max</SizePolicy>
             <Children>
-              <TrackProperty>
-                <TooltipId>track_title</TooltipId>
-                <SizePolicy>me,min</SizePolicy>
-                <Property>title</Property>
-                <Group><Variable name="group"/></Group>
-              </TrackProperty>
               <WidgetGroup>
-                <ObjectName>BPMGutter</ObjectName>
+                <ObjectName>TitleGutter</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,max</SizePolicy>
                 <Children>
-                  <Key>
+                  <TrackProperty>
+                    <TooltipId>track_title</TooltipId>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Property>title</Property>
                     <Group><Variable name="group"/></Group>
-                    <SizePolicy>min,</SizePolicy>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
-                    </Connection>
-                  </Key>
-                  <NumberBpm>
-                    <Group><Variable name="group"/></Group>
-                    <SizePolicy>min,</SizePolicy>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
-                    </Connection>
-                  </NumberBpm>
+                  </TrackProperty>
+                  <WidgetGroup>
+                    <ObjectName>BPMGutter</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,max</SizePolicy>
+                    <Children>
+                      <Key>
+                        <Group><Variable name="group"/></Group>
+                        <SizePolicy>min,</SizePolicy>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+                        </Connection>
+                      </Key>
+                      <NumberBpm>
+                        <Group><Variable name="group"/></Group>
+                        <SizePolicy>min,</SizePolicy>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+                        </Connection>
+                      </NumberBpm>
+                    </Children>
+                  </WidgetGroup>
                 </Children>
               </WidgetGroup>
             </Children>
           </WidgetGroup>
-        </Children>
-      </WidgetGroup>
-      <WidgetGroup>
-        <ObjectName>LowerTextRow</ObjectName>
-        <Layout>horizontal</Layout>
-        <!-- When TextRow is laid out, we need to ignore our children. Otherwise
-             decks might end up with different widths based on the size of the
-             labels in this row -->
-        <SizePolicy>i,max</SizePolicy>
-        <Children>
           <WidgetGroup>
-            <ObjectName>ArtistGutter</ObjectName>
+            <ObjectName>LowerTextRow</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>me,max</SizePolicy>
+            <!-- When TextRow is laid out, we need to ignore our children. Otherwise
+                 decks might end up with different widths based on the size of the
+                 labels in this row -->
+            <SizePolicy>i,max</SizePolicy>
             <Children>
-              <TrackProperty>
-                <TooltipId>track_artist</TooltipId>
-                <Property>artist</Property>
-                <SizePolicy>me,min</SizePolicy>
-                <Group><Variable name="group"/></Group>
-              </TrackProperty>
               <WidgetGroup>
-                <ObjectName>PositionGutter</ObjectName>
+                <ObjectName>ArtistGutter</ObjectName>
                 <Layout>horizontal</Layout>
-                <SizePolicy>min,max</SizePolicy>
+                <SizePolicy>me,max</SizePolicy>
                 <Children>
-                  <NumberPos>
+                  <TrackProperty>
+                    <TooltipId>track_artist</TooltipId>
+                    <Property>artist</Property>
+                    <SizePolicy>me,min</SizePolicy>
                     <Group><Variable name="group"/></Group>
-                  </NumberPos>
+                  </TrackProperty>
+                  <WidgetGroup>
+                    <ObjectName>PositionGutter</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,max</SizePolicy>
+                    <Children>
+                      <NumberPos>
+                        <Group><Variable name="group"/></Group>
+                      </NumberPos>
+                    </Children>
+                  </WidgetGroup>
                 </Children>
               </WidgetGroup>
             </Children>

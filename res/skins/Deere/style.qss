@@ -8,8 +8,13 @@
   border: 1px solid #555;
 }
 
-#UpperTextRow {
+#DeckTextRow {
   border-top: 1px solid #555;
+}
+
+#UpperTextRow {
+  /* top 0px seems required for bottom 1px to work O_o */
+  border-top: 0px solid #555;
   border-bottom: 1px solid #555;
 }
 

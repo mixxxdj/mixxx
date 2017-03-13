@@ -88,7 +88,7 @@ TEST_F(DirectoryDAOTest, addDirTest) {
     }
 
     // the test db should be always empty when tests are started.
-    ASSERT_EQ(1, dirs.size());
+    EXPECT_EQ(1, dirs.size());
     EXPECT_QSTRING_EQ(testParent, dirs.at(0));
 }
 
@@ -125,7 +125,7 @@ TEST_F(DirectoryDAOTest, getDirTest) {
 
     QStringList dirs = m_DirectoryDao.getDirs();
 
-    ASSERT_EQ(2, dirs.size());
+    EXPECT_EQ(2, dirs.size());
     EXPECT_QSTRING_EQ(testdir, dirs.at(0));
     EXPECT_QSTRING_EQ(testdir2, dirs.at(1));
 }
@@ -140,6 +140,7 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
 
     directoryDao.addDirectory(testdir);
     directoryDao.addDirectory(test2);
+
     TrackDAO &trackDAO = m_pTrackCollection->getTrackDAO();
     // ok now lets create some tracks here
     trackDAO.addTracksPrepare();
@@ -157,7 +158,7 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
     EXPECT_EQ(2, ids.size());
 
     QStringList dirs = directoryDao.getDirs();
-    ASSERT_EQ(2, dirs.size());
+    EXPECT_EQ(2, dirs.size());
     qSort(dirs);
     EXPECT_THAT(dirs, ElementsAre(test2, testnew));
 }

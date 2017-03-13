@@ -59,7 +59,7 @@ QList<struct BansheeDbConnection::Playlist> BansheeDbConnection::getPlaylists() 
     struct BansheeDbConnection::Playlist playlist;
 
     QSqlQuery query(m_database);
-    query.prepare("SELECT PlaylistID, Name FROM CorePlaylists");
+    query.prepare("SELECT PlaylistID, Name FROM CorePlaylists ORDER By Name");
 
     if (query.exec()) {
         while (query.next()) {

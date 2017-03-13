@@ -37,7 +37,7 @@
 								<ConfigKey>[Microphone],show_microphone</ConfigKey>
 							</Connection>
 						</PushButton>
-	
+
 						<!--
 						**********************************************
 						Tab- Show/hide Sampler widget group
@@ -62,7 +62,7 @@
 								<ConfigKey>[Samplers],show_samplers</ConfigKey>
 							</Connection>
 						</PushButton>
-	
+
 						<!--
 						**********************************************
 						Tab- Show/hide Vinyl Control widget group
@@ -90,7 +90,7 @@
 								<ConfigKey>[EffectRack1],show</ConfigKey>
 							</Connection>
 						</PushButton>
-	
+
 						<!--
 						**********************************************
 						Slider- Channel Volume
@@ -120,7 +120,7 @@
 								<EmitOnDownPress>false</EmitOnDownPress>
 							</Connection>
 						</SliderComposed>
-	
+
 						<!--
 						**********************************************
 						Slider- Crossfader
@@ -138,7 +138,7 @@
 								<EmitOnDownPress>false</EmitOnDownPress>
 							</Connection>
 						</SliderComposed>
-	
+
 						<!--
 						****************************************
 						 Button- Play
@@ -198,7 +198,7 @@
 								<ConfigKey>[Channel2],play_indicator</ConfigKey>
 							</Connection>
 						</PushButton>
-	
+
 						<!--
 						**********************************************
 						Button- Cue
@@ -261,7 +261,7 @@
 								<ConfigKey>[Channel2],cue_indicator</ConfigKey>
 							</Connection>
 						</PushButton>
-	
+
 						<!--
 						**********************************************
 						Button- Prelisten / Monitoring
@@ -305,7 +305,7 @@
 								<ConfigKey>[Channel2],pfl</ConfigKey>
 							</Connection>
 						</PushButton>
-	
+
 						<!--
 						**********************************************
 						FX Button
@@ -331,7 +331,7 @@
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 						</PushButton>
-					    
+
 						<PushButton>
 							<TooltipId></TooltipId>
 							<Style></Style>
@@ -352,7 +352,7 @@
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 						</PushButton>
-					    
+
 						<!--
 						**********************************************
 						PLF FX Button
@@ -378,7 +378,7 @@
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 						</PushButton>
-					    
+
 						<PushButton>
 							<TooltipId></TooltipId>
 							<Style></Style>
@@ -400,7 +400,7 @@
 							</Connection>
 						</PushButton>
 
-	
+
 						<!--
 						**********************************************
 						Button- Frequency Kill
@@ -469,7 +469,7 @@
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 						</PushButton>
-	
+
 						<PushButton>
 							<TooltipId>filterHighKill</TooltipId>
 							<Style></Style>
@@ -533,7 +533,7 @@
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 						</PushButton>
-	
+
 						<!--
 						**********************************************
 						Text- Clock display
@@ -542,16 +542,15 @@
 						<Time>
 							<TooltipId>time</TooltipId>
 							<Style>
-								QLabel { 
+								QLabel {
 									font: bold 10px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-									background-color: transparent; color: #191F24; text-align:center; 
+									background-color: transparent; color: #191F24; text-align:center;
 								}
 							</Style>
 							<Pos>113,15</Pos>
 							<ShowSeconds>false</ShowSeconds>
-							<ClockFormat>24</ClockFormat>
 						</Time>
-	
+
 						<!--
 						**********************************************
 						RotaryFader- Master volume & balance
@@ -577,7 +576,7 @@
 								<ConfigKey>[Master],balance</ConfigKey>
 							</Connection>
 						</Knob>
-	
+
 						<!--
 						**********************************************
 						RotaryFader- Headphone volume and mix
@@ -603,7 +602,7 @@
 								<ConfigKey>[Master],headMix</ConfigKey>
 							</Connection>
 						</Knob>
-	
+
 						<Knob>
 							<TooltipId></TooltipId>
 							<Style></Style>
@@ -644,7 +643,7 @@
 								<ConfigKey>[EffectRack1_EffectUnit2],mix</ConfigKey>
 							</Connection>
 						</Knob>
-	
+
 						<!--
 						**********************************************
 						RotaryFader- Channel filter and gain
@@ -690,7 +689,7 @@
 								<ConfigKey>[Channel1],filterLow</ConfigKey>
 							</Connection>
 						</Knob>
-	
+
 						<Knob>
 							<TooltipId>pregain</TooltipId>
 							<Style></Style>
@@ -731,7 +730,7 @@
 								<ConfigKey>[Channel2],filterLow</ConfigKey>
 							</Connection>
 						</Knob>
-	
+
 						<!--
 						**********************************************
 						Visual - Volume level display
@@ -767,7 +766,7 @@
 								<ConfigKey>[Channel2],VuMeter</ConfigKey>
 							</Connection>
 						</VuMeter>
-	
+
 						<VuMeter>
 							<TooltipId>master_VuMeterL</TooltipId>
 							<Style></Style>
@@ -796,7 +795,7 @@
 								<ConfigKey>[Master],VuMeterR</ConfigKey>
 							</Connection>
 						</VuMeter>
-	
+
 						<!--
 						**********************************************
 						Visual- Volume peak indicator
@@ -834,8 +833,8 @@
 						</StatusLight>
 					</Children>
 				</WidgetGroup>
-	
+
 			</Children>
 		</WidgetGroup>
-		
+
 </Template>

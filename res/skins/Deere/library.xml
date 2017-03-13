@@ -41,6 +41,10 @@
                   </WidgetGroup>
                   <LibrarySidebar>
                   </LibrarySidebar>
+                  <CoverArt>
+                    <SizePolicy>me,me</SizePolicy>
+                    <MinimumSize>100,100</MinimumSize>
+                  </CoverArt>
                 </Children>
               </WidgetGroup>
               <Library>

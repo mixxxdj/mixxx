@@ -46,6 +46,7 @@ class SoundSourceMediaFoundation : public Mixxx::SoundSource {
     unsigned read(unsigned long size, const SAMPLE *buffer);
     inline long unsigned length();
     Result parseHeader();
+    QImage parseCoverArt();
     static QList<QString> supportedFileExtensions();
 
   private:

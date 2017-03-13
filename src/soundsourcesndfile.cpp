@@ -225,6 +225,38 @@ Result SoundSourceSndFile::parseHeader()
     return result ? OK : ERR;
 }
 
+QImage SoundSourceSndFile::parseCoverArt() {
+    QImage coverArt;
+    QString location = getFilename();
+    setType(location.section(".",-1).toLower());
+    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+
+    if (getType() == "flac") {
+        TagLib::FLAC::File f(qBAFilename.constData());
+        coverArt = getCoverInID3v2Tag(f.ID3v2Tag());
+        if (coverArt.isNull()) {
+            coverArt = getCoverInXiphComment(f.xiphComment());
+        }
+        if (coverArt.isNull()) {
+            TagLib::List<TagLib::FLAC::Picture*> covers = f.pictureList();
+            if (!covers.isEmpty()) {
+                std::list<TagLib::FLAC::Picture*>::iterator it = covers.begin();
+                TagLib::FLAC::Picture* cover = *it;
+                coverArt = QImage::fromData(
+                    QByteArray(cover->data().data(), cover->data().size()));
+            }
+        }
+    } else if (getType() == "wav") {
+        TagLib::RIFF::WAV::File f(qBAFilename.constData());
+        coverArt = getCoverInID3v2Tag(f.tag());
+    } else {
+        // Try AIFF
+        TagLib::RIFF::AIFF::File f(qBAFilename.constData());
+        coverArt = getCoverInID3v2Tag(f.tag());
+    }
+    return coverArt;
+}
+
 /*
    Return the length of the file in samples.
  */

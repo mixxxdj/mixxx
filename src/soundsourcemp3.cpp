@@ -580,6 +580,17 @@ Result SoundSourceMp3::parseHeader() {
     return result ? OK : ERR;
 }
 
+QImage SoundSourceMp3::parseCoverArt() {
+    QImage coverArt;
+    setType("mp3");
+    TagLib::MPEG::File f(m_qFilename.toLocal8Bit().constData());
+    coverArt = getCoverInID3v2Tag(f.ID3v2Tag());
+    if (coverArt.isNull()) {
+        coverArt = getCoverInAPETag(f.APETag());
+    }
+    return coverArt;
+}
+
 int SoundSourceMp3::findFrame(int pos)
 {
     // Guess position of frame in m_qSeekList based on average frame size
