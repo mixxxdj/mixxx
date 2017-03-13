@@ -76,19 +76,18 @@ Variables:
                       <Text>
                         <TooltipId>text</TooltipId>
                         <Size>1me,16f</Size>
-                        <Group>[Sampler<Variable name="samplernum"/>]</Group>
+                        <Group><Variable name="group"/></Group>
                         <Elide>right</Elide>
                       </Text>
                     </Children>
                   </WidgetGroup><!-- /SamplerTitle -->
 
-                  <Overview>
+                  <Overview><!-- Overview playing -->
                     <ObjectName>SamplerOverview_mini</ObjectName>
                     <TooltipId>waveform_overview</TooltipId>
                     <SizePolicy>me,min</SizePolicy>
                     <Group><Variable name="group"/></Group>
-                    <!-- BgColor has no effect here
-                    <BgColor>#1a1a1a</BgColor> -->
+                    <BgColor>#888888</BgColor>
                     <AxesColor>#0f0f0f</AxesColor>
                     <SignalColor>#0f0f0f</SignalColor>
                     <PlayPosColor>#FF4300</PlayPosColor>
@@ -109,25 +108,63 @@ Variables:
                     <Connection>
                       <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
                     </Connection>
-                  </Overview>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </Overview><!-- /Overview playing -->
+
+                  <Overview><!-- Overview stopped -->
+                    <ObjectName>SamplerOverview_mini</ObjectName>
+                    <TooltipId>waveform_overview</TooltipId>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Group><Variable name="group"/></Group>
+                    <BgColor>#333333</BgColor>
+                    <AxesColor>#0f0f0f</AxesColor>
+                    <SignalColor>#0f0f0f</SignalColor>
+                    <PlayPosColor>#FF4300</PlayPosColor>
+                    <MarkerColor>#00FF00</MarkerColor>
+                    <DefaultMark>
+                      <Align>bottom|right</Align>
+                      <Color>#00FF00</Color>
+                      <TextColor>#FFFFFF</TextColor>
+                      <Text> %1 </Text>
+                    </DefaultMark>
+                    <Mark>
+                      <Control>cue_point</Control>
+                      <Text>C</Text>
+                      <Align>bottom|right</Align>
+                      <Color>#FF0080</Color>
+                      <TextColor>#FFFFFF</TextColor>
+                    </Mark>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </Overview><!-- /Overview stopped -->
 
                 </Children>
                 <Connection>
-                  <ConfigKey>[Sampler<Variable name="samplernum"/>],track_loaded</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,track_loaded</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- /Overview + Title when track is loaded -->
 
-              <WidgetGroup><!-- Neutral spacer when no track is loaded -->
-                <ObjectName>Spacer33</ObjectName>
-                <SizePolicy>me,min</SizePolicy>
-                <Children/>
+              <Text><!-- empty Sampler -->
+                <TooltipId>text</TooltipId>
+                <ObjectName>Sampler_mini_empty</ObjectName>
+                <Size>1me,34f</Size>
+                <Group><Variable name="group"/></Group>
                 <Connection>
-                  <ConfigKey>[Sampler<Variable name="samplernum"/>],track_loaded</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,track_loaded</ConfigKey>
                   <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup><!-- /Neutral spacer when no track is loaded -->
+              </Text><!-- /empty Sampler -->
 
               <WidgetGroup><Size>2f,1min</Size><Children/></WidgetGroup>
 
@@ -136,8 +173,8 @@ Variables:
                 <SetVariable name="ObjectName">SamplerSyncButton</SetVariable>
                 <SetVariable name="Size">35f,22f</SetVariable>
                 <SetVariable name="state_0_text">SYNC</SetVariable>
-                <SetVariable name="ConfigKey">[Sampler<Variable name="samplernum"/>],beatsync</SetVariable>
-                <SetVariable name="ConfigKeyRight">[Sampler<Variable name="samplernum"/>],beatsync_tempo</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,beatsync</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatsync_tempo</SetVariable>
               </Template>
 
               <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
@@ -155,17 +192,21 @@ Variables:
               <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
 
               <Template src="skin:knob_textless.xml">
-                <SetVariable name="ToolTipID">pregain</SetVariable>
+                <SetVariable name="ToolTipID">volume</SetVariable>
                 <SetVariable name="ObjectName">SamplerGainKnob_mini</SetVariable>
                 <SetVariable name="Size">22f,22f</SetVariable>
-                <SetVariable name="group">[Sampler<Variable name="samplernum"/>]</SetVariable>
+                <SetVariable name="group"><Variable name="group"/></SetVariable>
                 <SetVariable name="ConfigKey">volume</SetVariable>
                 <SetVariable name="Color">tiny_red</SetVariable>
               </Template>
 
+              <WidgetGroup><Size>2f,1min</Size><Children/></WidgetGroup>
+
             </Children>
           </WidgetGroup><!-- /SamplerMain_mini -->
-          
+
+          <!-- Theoretically, the same <Connection> could be attached to SamplerMain_mini
+              but it doesn't affect appearnce -->
           <Template src="skin:button_2state.xml">
             <SetVariable name="ObjectName">SamplerMain_miniUnderlay</SetVariable>
             <SetVariable name="Size">1me,1me</SetVariable>

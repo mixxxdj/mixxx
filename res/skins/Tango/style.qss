@@ -1364,11 +1364,11 @@ WPushButton {
     background: #a90000;
     }
 
-#SamplerMain_mini {
+#SamplerMain_mini[displayValue="0"] {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding-right: 2px;
   }
-  #SamplerMain_miniUnderlay[displayValue="0"] {
+  #SamplerMain_miniUnderlay,
+  #Sampler_mini_empty {
     background-color: #333333;
   }
   #SamplerMain_miniUnderlay[displayValue="1"] {
