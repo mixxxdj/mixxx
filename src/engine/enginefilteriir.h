@@ -16,7 +16,9 @@
 enum IIRPass {
     IIR_LP,
     IIR_BP,
-    IIR_HP
+    IIR_HP,
+    IIR_LPMO,
+    IIR_HPMO,
 };
 
 // length of the 3rd argument to fid_design_coef
@@ -480,4 +482,54 @@ inline double EngineFilterIIR<5, IIR_BP>::processSample(double* coef,
     return val;
 }
 
+template<>
+inline double EngineFilterIIR<4, IIR_LPMO>::processSample(double* coef,
+                                                        double* buf,
+                                                        register double val) {
+   register double tmp, fir, iir;
+   tmp= buf[0]; buf[0] = buf[1]; buf[1] = buf[2]; buf[2] = buf[3];
+   iir= val * coef[0];
+   iir -= coef[1]*tmp; fir= tmp;
+   fir += iir;
+   tmp= buf[0]; buf[0]= iir; val= fir;
+   iir= val;
+   iir -= coef[2]*tmp; fir= tmp;
+   fir += iir;
+   tmp= buf[1]; buf[1]= iir; val= fir;
+   iir= val;
+   iir -= coef[3]*tmp; fir= tmp;
+   fir += iir;
+   tmp= buf[2]; buf[2]= iir; val= fir;
+   iir= val;
+   iir -= coef[4]*tmp; fir= tmp;
+   fir += iir;
+   buf[3]= iir; val= fir;
+   return val;
+}
+
+
+template<>
+inline double EngineFilterIIR<4, IIR_HPMO>::processSample(double* coef,
+                                                        double* buf,
+                                                        register double val) {
+   register double tmp, fir, iir;
+   tmp= buf[0]; buf[0] = buf[1]; buf[1] = buf[2]; buf[2] = buf[3];
+   iir= val * coef[0];
+   iir -= coef[1]*tmp; fir= -tmp;
+   fir += iir;
+   tmp= buf[0]; buf[0]= iir; val= fir;
+   iir= val;
+   iir -= coef[2]*tmp; fir= -tmp;
+   fir += iir;
+   tmp= buf[1]; buf[1]= iir; val= fir;
+   iir= val;
+   iir -= coef[3]*tmp; fir= -tmp;
+   fir += iir;
+   tmp= buf[2]; buf[2]= iir; val= fir;
+   iir= val;
+   iir -= coef[4]*tmp; fir= -tmp;
+   fir += iir;
+   buf[3]= iir; val= fir;
+   return val;
+}
 #endif // ENGINEFILTERIIR_H
