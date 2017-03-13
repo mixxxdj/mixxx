@@ -60,9 +60,9 @@ class LoopingControl : public EngineControl {
 
   public slots:
     void slotLoopIn(double);
-    void slotLoopInSeek(double);
+    void slotLoopInGoto(double);
     void slotLoopOut(double);
-    void slotLoopOutSeek(double);
+    void slotLoopOutGoto(double);
     void slotLoopExit(double);
     void slotReloopToggle(double);
     void slotReloopCue(double);
@@ -125,8 +125,8 @@ class LoopingControl : public EngineControl {
     ControlObject* m_pCOLoopEndPosition;
     ControlObject* m_pCOLoopEnabled;
     ControlPushButton* m_pLoopInButton;
-    ControlPushButton* m_pLoopInSeekButton;
-    ControlPushButton* m_pLoopOutButton;
+    ControlPushButton* m_pLoopInGotoButton;
+    ControlPushButton* m_pLoopOutGotoButton;
     ControlPushButton* m_pLoopOutSeekButton;
     ControlPushButton* m_pLoopExitButton;
     ControlPushButton* m_pReloopToggleButton;

@@ -54,19 +54,19 @@ LoopingControl::LoopingControl(QString group,
             Qt::DirectConnection);
     m_pLoopInButton->set(0);
 
-    m_pLoopInSeekButton = new ControlPushButton(ConfigKey(group, "seek_loop_in"));
-    connect(m_pLoopInSeekButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotLoopInSeek(double)));
+    m_pLoopInGotoButton = new ControlPushButton(ConfigKey(group, "loop_in_goto"));
+    connect(m_pLoopInGotoButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotLoopInGoto(double)));
 
-    m_pLoopOutButton = new ControlPushButton(ConfigKey(group, "loop_out"));
-    connect(m_pLoopOutButton, SIGNAL(valueChanged(double)),
+    m_pLoopOutGotoButton = new ControlPushButton(ConfigKey(group, "loop_out"));
+    connect(m_pLoopOutGotoButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoopOut(double)),
             Qt::DirectConnection);
-    m_pLoopOutButton->set(0);
+    m_pLoopOutGotoButton->set(0);
 
-    m_pLoopOutSeekButton = new ControlPushButton(ConfigKey(group, "seek_loop_out"));
+    m_pLoopOutSeekButton = new ControlPushButton(ConfigKey(group, "loop_out_goto"));
     connect(m_pLoopOutSeekButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotLoopOutSeek(double)));
+            this, SLOT(slotLoopOutGoto(double)));
 
 
     m_pLoopExitButton = new ControlPushButton(ConfigKey(group, "loop_exit"));
@@ -217,10 +217,10 @@ LoopingControl::LoopingControl(QString group,
 }
 
 LoopingControl::~LoopingControl() {
-    delete m_pLoopOutButton;
+    delete m_pLoopOutGotoButton;
     delete m_pLoopOutSeekButton;
     delete m_pLoopInButton;
-    delete m_pLoopInSeekButton;
+    delete m_pLoopInGotoButton;
     delete m_pLoopExitButton;
     delete m_pReloopToggleButton;
     delete m_pCOLoopEnabled;
@@ -491,7 +491,7 @@ void LoopingControl::slotLoopIn(double val) {
     //qDebug() << "set loop_in to " << loopSamples.start;
 }
 
-void LoopingControl::slotLoopInSeek(double pressed) {
+void LoopingControl::slotLoopInGoto(double pressed) {
     if (pressed > 0.0) {
         seekAbs(static_cast<double>(
             m_loopSamples.getValue().start));
@@ -552,7 +552,7 @@ void LoopingControl::slotLoopOut(double val) {
     //qDebug() << "set loop_out to " << loopSamples.end;
 }
 
-void LoopingControl::slotLoopOutSeek(double pressed) {
+void LoopingControl::slotLoopOutGoto(double pressed) {
     if (pressed > 0.0) {
         seekAbs(static_cast<double>(
             m_loopSamples.getValue().end));
