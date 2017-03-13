@@ -2,11 +2,12 @@
 
 const char* MockedEngineBackendTest::m_sMasterGroup = "[Master]";
 const char* MockedEngineBackendTest::m_sInternalClockGroup = "[InternalClock]";
-const char* MockedEngineBackendTest::m_sGroup1 = "[Test1]";
-const char* MockedEngineBackendTest::m_sGroup2 = "[Test2]";
-const char* MockedEngineBackendTest::m_sGroup3 = "[Test3]";
-const char* MockedEngineBackendTest::m_sPreviewGroup = "[PreviewTest1]";
-const char* MockedEngineBackendTest::m_sSamplerGroup = "[SamplerTest1]";
+// these names need to match PlayerManager::groupForDeck and friends
+const char* MockedEngineBackendTest::m_sGroup1 = "[Channel1]";
+const char* MockedEngineBackendTest::m_sGroup2 = "[Channel2]";
+const char* MockedEngineBackendTest::m_sGroup3 = "[Channel3]";
+const char* MockedEngineBackendTest::m_sPreviewGroup = "[PreviewDeck1]";
+const char* MockedEngineBackendTest::m_sSamplerGroup = "[Sampler1]";
 const double MockedEngineBackendTest::kDefaultRateRange = 4.0;
 const double MockedEngineBackendTest::kDefaultRateDir = 1.0;
 const double MockedEngineBackendTest::kRateRangeDivisor = kDefaultRateDir * kDefaultRateRange;

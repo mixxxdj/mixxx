@@ -14,6 +14,12 @@
 *                                                                         *
 ***************************************************************************/
 
+#include "soundsourcesndfile.h"
+#include "soundsourcetaglib.h"
+
+#include "sampleutil.h"
+#include "util/math.h"
+
 #include <taglib/flacfile.h>
 #include <taglib/aifffile.h>
 #include <taglib/rifffile.h>
@@ -22,34 +28,24 @@
 #include <QString>
 #include <QtDebug>
 
-#include "soundsourcesndfile.h"
-#include "trackinfoobject.h"
-#include "util/math.h"
 
 /*
    Class for reading files using libsndfile
  */
 SoundSourceSndFile::SoundSourceSndFile(QString qFilename)
     : Mixxx::SoundSource(qFilename),
+      fh(NULL),
       channels(0),
-      fh(NULL)
-{
-    m_bOpened = false;
-    info = new SF_INFO;
-    info->format = 0;   // Must be set to 0 per the API for reading (non-RAW files)
-    filelength = 0;
+      filelength(0) {
+    // Must be set to 0 per the API for reading (non-RAW files)
+    memset(&info, 0, sizeof(info));
 }
 
-SoundSourceSndFile::~SoundSourceSndFile()
-{
-    if (m_bOpened) {
-        sf_close(fh);
-    }
-    delete info;
+SoundSourceSndFile::~SoundSourceSndFile() {
+    sf_close(fh);
 }
 
-QList<QString> SoundSourceSndFile::supportedFileExtensions()
-{
+QList<QString> SoundSourceSndFile::supportedFileExtensions() {
     QList<QString> list;
     list.push_back("aiff");
     list.push_back("aif");
@@ -61,30 +57,29 @@ QList<QString> SoundSourceSndFile::supportedFileExtensions()
 Result SoundSourceSndFile::open() {
 #ifdef __WINDOWS__
     // Pointer valid until string changed
-    LPCWSTR lpcwFilename = (LPCWSTR)m_qFilename.utf16();
-    fh = sf_wchar_open(lpcwFilename, SFM_READ, info);
+    LPCWSTR lpcwFilename = (LPCWSTR)getFilename().utf16();
+    fh = sf_wchar_open(lpcwFilename, SFM_READ, &info);
 #else
-    QByteArray qbaFilename = m_qFilename.toLocal8Bit();
-    fh = sf_open(qbaFilename.constData(), SFM_READ, info);
+    const QByteArray qbaFilename(getFilename().toLocal8Bit());
+    fh = sf_open(qbaFilename.constData(), SFM_READ, &info);
 #endif
 
     if (fh == NULL) {   // sf_format_check is only for writes
-        qWarning() << "libsndfile: Error opening file" << m_qFilename << sf_strerror(fh);
+        qWarning() << "libsndfile: Error opening file" << getFilename() << sf_strerror(fh);
         return ERR;
     }
 
     if (sf_error(fh)>0) {
-        qWarning() << "libsndfile: Error opening file" << m_qFilename << sf_strerror(fh);
+        qWarning() << "libsndfile: Error opening file" << getFilename() << sf_strerror(fh);
         return ERR;
     }
 
-    channels = info->channels;
-
+    channels = info.channels;
+    setSampleRate(info.samplerate);
     // This is the 'virtual' filelength. No matter how many channels the file
     // actually has, we pretend it has 2.
-    filelength = 2*info->frames; // File length with two interleaved channels
-    m_iSampleRate =  info->samplerate;
-    m_bOpened = true;
+    filelength = info.frames * 2; // File length with two interleaved channels
+
     return OK;
 }
 
@@ -135,20 +130,8 @@ unsigned SoundSourceSndFile::read(unsigned long size, const SAMPLE * destination
             // pretend to every reader that all files are in stereo.
             int readNo = sf_read_short(fh, dest, size/2);
 
-            // readNo*2 is strictly less than available buffer space
-
-            // rryan 2/2009
-            // Mini-proof of the below:
-            // size = 20, destination is a 20 element array 0-19
-            // readNo = 10 (or less, but 10 in this case)
-            // i = 10-1 = 9, so dest[9*2] and dest[9*2+1],
-            // so the first iteration touches the very ends of destination
-            // on the last iteration, dest[0] and dest[1] are assigned to dest[0]
-
-            for(int i=(readNo-1); i>=0; i--) {
-                dest[i*2]     = dest[i];
-                dest[(i*2)+1] = dest[i];
-            }
+            // dest has enough capacity for (readNo * 2) samples
+            SampleUtil::doubleMonoToDualMono(dest, readNo);
 
             // We doubled the readNo bytes we read into stereo.
             return readNo * 2;
@@ -159,7 +142,7 @@ unsigned SoundSourceSndFile::read(unsigned long size, const SAMPLE * destination
     }
 
     // The file has errors or is not open. Tell the truth and return 0.
-    qDebug() << "The file has errors or is not open: " << m_qFilename;
+    qDebug() << "The file has errors or is not open: " << getFilename();
     return 0;
 }
 
@@ -168,29 +151,49 @@ Result SoundSourceSndFile::parseHeader()
     QString location = getFilename();
     setType(location.section(".",-1).toLower());
 
-    bool result;
     bool is_flac = location.endsWith("flac", Qt::CaseInsensitive);
     bool is_wav = location.endsWith("wav", Qt::CaseInsensitive);
-    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+    QByteArray qBAFilename = getFilename().toLocal8Bit();
 
     if (is_flac) {
         TagLib::FLAC::File f(qBAFilename.constData());
-        result = processTaglibFile(f);
-        TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
-        TagLib::Ogg::XiphComment* xiph = f.xiphComment();
-        if (id3v2) {
-            processID3v2Tag(id3v2);
+        if (!readFileHeader(this, f)) {
+            return ERR;
         }
+        TagLib::Ogg::XiphComment* xiph = f.xiphComment();
         if (xiph) {
-            processXiphComment(xiph);
+            readXiphComment(this, *xiph);
+        }
+        else {
+            TagLib::ID3v2::Tag *id3v2(f.ID3v2Tag());
+            if (id3v2) {
+                readID3v2Tag(this, *id3v2);
+            } else {
+                // fallback
+                const TagLib::Tag *tag(f.tag());
+                if (tag) {
+                    readTag(this, *tag);
+                } else {
+                    return ERR;
+                }
+            }
         }
     } else if (is_wav) {
         TagLib::RIFF::WAV::File f(qBAFilename.constData());
-        result = processTaglibFile(f);
-
-        TagLib::ID3v2::Tag* id3v2 = f.tag();
+        if (!readFileHeader(this, f)) {
+            return ERR;
+        }
+        TagLib::ID3v2::Tag *id3v2(f.ID3v2Tag());
         if (id3v2) {
-            processID3v2Tag(id3v2);
+            readID3v2Tag(this, *id3v2);
+        } else {
+            // fallback
+            const TagLib::Tag *tag(f.tag());
+            if (tag) {
+                readTag(this, *tag);
+            } else {
+                return ERR;
+            }
         }
 
         if (getDuration() <= 0) {
@@ -200,12 +203,12 @@ Result SoundSourceSndFile::parseHeader()
             // intelligent version of taglib, should happen in 11.10
 
             // Have to open the file for info to be valid.
-            if (!m_bOpened) {
+            if (fh == NULL) {
                 open();
             }
 
-            if (info->samplerate > 0) {
-                setDuration(info->frames / info->samplerate);
+            if (info.samplerate > 0) {
+                setDuration(info.frames / info.samplerate);
             } else {
                 qDebug() << "WARNING: WAV file with invalid samplerate."
                          << "Can't get duration using libsndfile.";
@@ -214,28 +217,37 @@ Result SoundSourceSndFile::parseHeader()
     } else {
         // Try AIFF
         TagLib::RIFF::AIFF::File f(qBAFilename.constData());
-        result = processTaglibFile(f);
-
-        TagLib::ID3v2::Tag* id3v2 = f.tag();
+        if (!readFileHeader(this, f)) {
+            return ERR;
+        }
+        TagLib::ID3v2::Tag *id3v2(f.tag());
         if (id3v2) {
-            processID3v2Tag(id3v2);
+            readID3v2Tag(this, *id3v2);
+        } else {
+            return ERR;
         }
     }
 
-    return result ? OK : ERR;
+    return OK;
 }
 
 QImage SoundSourceSndFile::parseCoverArt() {
     QImage coverArt;
     QString location = getFilename();
     setType(location.section(".",-1).toLower());
-    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+    const QByteArray qBAFilename(getFilename().toLocal8Bit());
 
     if (getType() == "flac") {
         TagLib::FLAC::File f(qBAFilename.constData());
-        coverArt = getCoverInID3v2Tag(f.ID3v2Tag());
+        TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
+        if (id3v2) {
+            coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
+        }
         if (coverArt.isNull()) {
-            coverArt = getCoverInXiphComment(f.xiphComment());
+            TagLib::Ogg::XiphComment *xiph = f.xiphComment();
+            if (xiph) {
+                coverArt = Mixxx::getCoverInXiphComment(*xiph);
+            }
         }
         if (coverArt.isNull()) {
             TagLib::List<TagLib::FLAC::Picture*> covers = f.pictureList();
@@ -248,11 +260,17 @@ QImage SoundSourceSndFile::parseCoverArt() {
         }
     } else if (getType() == "wav") {
         TagLib::RIFF::WAV::File f(qBAFilename.constData());
-        coverArt = getCoverInID3v2Tag(f.tag());
+        TagLib::ID3v2::Tag* id3v2 = f.tag();
+        if (id3v2) {
+            coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
+        }
     } else {
         // Try AIFF
         TagLib::RIFF::AIFF::File f(qBAFilename.constData());
-        coverArt = getCoverInID3v2Tag(f.tag());
+        TagLib::ID3v2::Tag* id3v2 = f.tag();
+        if (id3v2) {
+            coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
+        }
     }
     return coverArt;
 }

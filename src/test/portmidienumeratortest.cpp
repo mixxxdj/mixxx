@@ -1,4 +1,4 @@
-        #include <gtest/gtest.h>
+#include <gtest/gtest.h>
 #include <QtDebug>
 
 #include "controllers/midi/portmidienumerator.h"

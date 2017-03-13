@@ -659,6 +659,7 @@ class MixxxCore(Feature):
                    "upgrade.cpp",
 
                    "soundsource.cpp",
+                   "soundsourcetaglib.cpp",
 
                    "sharedglcontext.cpp",
                    "widget/controlwidgetconnection.cpp",
@@ -692,6 +693,7 @@ class MixxxCore(Feature):
                    "widget/wimagestore.cpp",
                    "widget/hexspinbox.cpp",
                    "widget/wtrackproperty.cpp",
+                   "widget/wstarrating.cpp",
                    "widget/weffectchain.cpp",
                    "widget/weffect.cpp",
                    "widget/weffectparameter.cpp",
@@ -912,6 +914,8 @@ class MixxxCore(Feature):
                    "util/sandbox.cpp",
                    "util/file.cpp",
                    "util/mac.cpp",
+                   "util/task.cpp",
+                   "util/experiment.cpp",
 
                    '#res/mixxx.qrc'
                    ]

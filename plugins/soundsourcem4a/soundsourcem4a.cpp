@@ -14,6 +14,10 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "soundsourcem4a.h"
+#include "soundsourcetaglib.h"
+#include "sampleutil.h"
+
 #include <taglib/mp4file.h>
 #include <neaacdec.h>
 
@@ -28,8 +32,6 @@
 #include <fcntl.h>
 #endif
 
-#include <QtDebug>
-#include "soundsourcem4a.h"
 #include "m4a/mp4-mixxx.cpp"
 
 namespace Mixxx {
@@ -40,7 +42,8 @@ SoundSourceM4A::SoundSourceM4A(QString qFileName)
     // Initialize variables to invalid values in case loading fails.
     mp4file = MP4_INVALID_FILE_HANDLE;
     filelength = 0;
-    memset(&ipd, 0, sizeof(ipd));
+    setType("m4a");
+    mp4_init(&ipd);
 }
 
 SoundSourceM4A::~SoundSourceM4A() {
@@ -60,7 +63,7 @@ Result SoundSourceM4A::open()
     //Initialize the FAAD2 decoder...
     initializeDecoder();
 
-    //qDebug() << "SSM4A: channels:" << m_iChannels
+    //qDebug() << "SSM4A: channels:" << getChannels()
     //         << "filelength:" << filelength
     //         << "Sample Rate:" << m_iSampleRate;
     return OK;
@@ -69,8 +72,7 @@ Result SoundSourceM4A::open()
 int SoundSourceM4A::initializeDecoder()
 {
     // Copy QString to char[] buffer for mp4_open to read from later
-    QByteArray qbaFileName;
-    qbaFileName = m_qFilename.toLocal8Bit();
+    const QByteArray qbaFileName(getFilename().toLocal8Bit());
     int bytes = qbaFileName.length() + 1;
     ipd.filename = new char[bytes];
     strncpy(ipd.filename, qbaFileName.constData(), bytes);
@@ -83,7 +85,7 @@ int SoundSourceM4A::initializeDecoder()
     int mp4_open_status = mp4_open(&ipd);
     if (mp4_open_status != 0) {
         qWarning() << "SSM4A::initializeDecoder failed"
-                 << m_qFilename << " with status:" << mp4_open_status;
+                 << getFilename() << " with status:" << mp4_open_status;
         return ERR;
     }
 
@@ -92,8 +94,8 @@ int SoundSourceM4A::initializeDecoder()
     Q_ASSERT(mp);
     mp4file = mp->mp4.handle;
     filelength = mp4_total_samples(&ipd);
-    m_iSampleRate = mp->sample_rate;
-    m_iChannels = mp->channels;
+    setSampleRate(mp->sample_rate);
+    setChannels(mp->channels);
 
     return OK;
 }
@@ -105,10 +107,10 @@ long SoundSourceM4A::seek(long filepos){
 
     //qDebug() << "SSM4A::seek()" << filepos;
 
-    // qDebug() << "MP4SEEK: seek time:" << filepos / (m_iChannels * m_iSampleRate) ;
+    // qDebug() << "MP4SEEK: seek time:" << filepos / (getChannels() * m_iSampleRate) ;
 
     int position = mp4_seek_sample(&ipd, filepos);
-    //int position = mp4_seek(&ipd, filepos / (m_iChannels * m_iSampleRate));
+    //int position = mp4_seek(&ipd, filepos / (getChannels() * m_iSampleRate));
     return position;
 }
 
@@ -124,7 +126,7 @@ unsigned SoundSourceM4A::read(volatile unsigned long size, const SAMPLE* destina
     // sample is 16-bits = 2 bytes here, so we multiply size by channels to
     // get the number of bytes we want to decode.
 
-    int total_bytes_to_decode = size * m_iChannels;
+    int total_bytes_to_decode = size * getChannels();
     int total_bytes_decoded = 0;
     int num_bytes_req = 4096;
     char* buffer = (char*)destination;
@@ -147,13 +149,8 @@ unsigned SoundSourceM4A::read(volatile unsigned long size, const SAMPLE* destina
 
     // At this point *destination should be filled. If mono : double all samples
     // (L => R)
-    if (m_iChannels == 1) {
-        for (int i = total_bytes_decoded/2-1; i >= 0; --i) {
-            // as_buffer[i] is an audio sample (s16)
-            //scroll through , copying L->R & expanding buffer
-            as_buffer[i*2+1] = as_buffer[i];
-            as_buffer[i*2] = as_buffer[i];
-        }
+    if (getChannels() == 1) {
+        SampleUtil::doubleMonoToDualMono(as_buffer, total_bytes_decoded / 2);
     }
 
     // Tell us about it only if we end up decoding a different value
@@ -172,30 +169,40 @@ unsigned SoundSourceM4A::read(volatile unsigned long size, const SAMPLE* destina
 
 inline long unsigned SoundSourceM4A::length(){
     return filelength;
-    //return m_iChannels * mp4_duration(&ipd) * m_iSampleRate;
+    //return getChannels() * mp4_duration(&ipd) * m_iSampleRate;
 }
 
 Result SoundSourceM4A::parseHeader(){
-    setType("m4a");
-
     TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
 
-    bool result = processTaglibFile(f);
-    TagLib::MP4::Tag* tag = f.tag();
-
-    if (tag) {
-        processMP4Tag(tag);
+    if (!readFileHeader(this, f)) {
+        return ERR;
     }
 
-    if (result)
-        return OK;
-    return ERR;
+    TagLib::MP4::Tag *mp4(f.tag());
+    if (mp4) {
+        readMP4Tag(this, *mp4);
+    } else {
+        // fallback
+        const TagLib::Tag *tag(f.tag());
+        if (tag) {
+            readTag(this, *tag);
+        } else {
+            return ERR;
+        }
+    }
+
+    return OK;
 }
 
 QImage SoundSourceM4A::parseCoverArt() {
-    setType("m4a");
     TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
-    return getCoverInMP4Tag(f.tag());
+    TagLib::MP4::Tag *mp4(f.tag());
+    if (mp4) {
+        return getCoverInMP4Tag(*mp4);
+    } else {
+        return QImage();
+    }
 }
 
 QList<QString> SoundSourceM4A::supportedFileExtensions()

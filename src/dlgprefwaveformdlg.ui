@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>501</width>
-    <height>348</height>
+    <width>536</width>
+    <height>390</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,6 +29,26 @@
    </item>
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="1" colspan="3">
+      <widget class="QComboBox" name="waveformTypeComboBox">
+       <property name="toolTip">
+        <string>Select from different types of displays for the waveform, which differ primarily in the level of detail shown in the waveform.</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="frameRateLabel">
+       <property name="text">
+        <string>Frame rate</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+       <property name="buddy">
+        <cstring>frameRateSlider</cstring>
+       </property>
+      </widget>
+     </item>
      <item row="2" column="3">
       <widget class="QSpinBox" name="frameRateSpinBox">
        <property name="toolTip">
@@ -45,16 +65,57 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="frameRateLabel">
+     <item row="3" column="1" colspan="2">
+      <widget class="QSlider" name="endOfTrackWarningTimeSlider">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="minimum">
+        <number>0</number>
+       </property>
+       <property name="maximum">
+        <number>60</number>
+       </property>
+       <property name="value">
+        <number>30</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="0">
+      <widget class="QLabel" name="openGlStatusLabel_2">
+       <property name="toolTip">
+        <string/>
+       </property>
        <property name="text">
-        <string>Frame rate</string>
+        <string>Average frame rate</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="endOfTrackWarningTimeLabel">
+       <property name="text">
+        <string>End of track warning</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
        </property>
        <property name="buddy">
-        <cstring>frameRateSlider</cstring>
+        <cstring>endOfTrackWarningTimeSlider</cstring>
        </property>
       </widget>
      </item>
@@ -80,13 +141,16 @@
        </property>
       </widget>
      </item>
-     <item row="8" column="1">
-      <widget class="QLabel" name="openGlStatusIcon">
+     <item row="9" column="0">
+      <widget class="QLabel" name="openGlStatusLabel">
        <property name="toolTip">
-        <string>Displays which OpenGL version is supported by the current platform.</string>
+        <string/>
        </property>
        <property name="text">
-        <string/>
+        <string>OpenGl status</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
@@ -100,46 +164,16 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="0" colspan="4">
-      <widget class="Line" name="line">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1" colspan="3">
-      <widget class="QComboBox" name="waveformTypeComboBox">
+     <item row="3" column="3">
+      <widget class="QSpinBox" name="endOfTrackWarningTimeSpinBox">
        <property name="toolTip">
-        <string>Select from different types of displays for the waveform, which differ primarily in the level of detail shown in the waveform.</string>
+        <string>Highlight the waveforms when the last seconds of a track remains.</string>
        </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
-      <widget class="QCheckBox" name="normalizeOverviewCheckBox">
-       <property name="text">
-        <string>Normalize waveform overview</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1" colspan="3">
-      <widget class="QComboBox" name="defaultZoomComboBox"/>
-     </item>
-     <item row="2" column="1" colspan="2">
-      <widget class="QSlider" name="frameRateSlider">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>16777215</height>
-        </size>
+       <property name="suffix">
+        <string> seconds</string>
        </property>
        <property name="minimum">
-        <number>10</number>
+        <number>0</number>
        </property>
        <property name="maximum">
         <number>60</number>
@@ -147,74 +181,9 @@
        <property name="value">
         <number>30</number>
        </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
       </widget>
      </item>
-     <item row="8" column="0">
-      <widget class="QLabel" name="openGlStatusLabel">
-       <property name="toolTip">
-        <string/>
-       </property>
-       <property name="text">
-        <string>OpenGl status</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="0">
-      <widget class="QLabel" name="openGlStatusLabel_2">
-       <property name="toolTip">
-        <string/>
-       </property>
-       <property name="text">
-        <string>Average frame rate</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="0">
-      <widget class="QLabel" name="visualGainLabel">
-       <property name="text">
-        <string>Visual gain</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-       </property>
-       <property name="buddy">
-        <cstring>allVisualGain</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="defaultZoomLabel">
-       <property name="text">
-        <string extracomment="Waveform zoom">Default zoom level</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-       </property>
-       <property name="buddy">
-        <cstring>defaultZoomComboBox</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="1">
-      <widget class="QLabel" name="frameRateAverage">
-       <property name="toolTip">
-        <string>Displays the actual frame rate.</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="1" colspan="3">
+     <item row="7" column="1" colspan="3">
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="1" column="2">
         <widget class="QDoubleSpinBox" name="midVisualGain">
@@ -346,6 +315,74 @@
        </item>
       </layout>
      </item>
+     <item row="6" column="1">
+      <widget class="QCheckBox" name="normalizeOverviewCheckBox">
+       <property name="text">
+        <string>Normalize waveform overview</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="0" colspan="4">
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1" colspan="3">
+      <widget class="QCheckBox" name="synchronizeZoomCheckBox">
+       <property name="toolTip">
+        <string>Synchronize zoom level across all waveform displays.</string>
+       </property>
+       <property name="text">
+        <string>Synchronize zoom level across all waveforms</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1" colspan="2">
+      <widget class="QSlider" name="frameRateSlider">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="minimum">
+        <number>10</number>
+       </property>
+       <property name="maximum">
+        <number>60</number>
+       </property>
+       <property name="value">
+        <number>30</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="visualGainLabel">
+       <property name="text">
+        <string>Visual gain</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+       <property name="buddy">
+        <cstring>allVisualGain</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1" colspan="3">
+      <widget class="QComboBox" name="defaultZoomComboBox"/>
+     </item>
      <item row="1" column="1" colspan="3">
       <widget class="QComboBox" name="waveformOverviewComboBox">
        <property name="toolTip">
@@ -353,13 +390,36 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="1" colspan="3">
-      <widget class="QCheckBox" name="synchronizeZoomCheckBox">
+     <item row="4" column="0">
+      <widget class="QLabel" name="defaultZoomLabel">
+       <property name="text">
+        <string extracomment="Waveform zoom">Default zoom level</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+       <property name="buddy">
+        <cstring>defaultZoomComboBox</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="1">
+      <widget class="QLabel" name="frameRateAverage">
        <property name="toolTip">
-        <string>Synchronize zoom level across all waveform displays.</string>
+        <string>Displays the actual frame rate.</string>
        </property>
        <property name="text">
-        <string>Synchronize zoom level across all waveforms</string>
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="1">
+      <widget class="QLabel" name="openGlStatusIcon">
+       <property name="toolTip">
+        <string>Displays which OpenGL version is supported by the current platform.</string>
+       </property>
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>

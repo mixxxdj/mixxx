@@ -26,7 +26,7 @@ struct ReverbGroupState {
     }
 
     ~ReverbGroupState() {
-        delete crossfade_buffer;
+        SampleUtil::free(crossfade_buffer);
     }
 
     MixxxPlateX2 reverb;

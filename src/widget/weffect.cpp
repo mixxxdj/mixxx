@@ -62,8 +62,8 @@ void WEffect::setEffectSlot(EffectSlotPointer pEffectSlot) {
 }
 
 void WEffect::effectUpdated() {
-    QString name = tr("None");
-    QString description = tr("No effect loaded.");
+    QString name;
+    QString description;
     if (m_pEffectSlot) {
         EffectPointer pEffect = m_pEffectSlot->getEffect();
         if (pEffect) {
@@ -71,6 +71,9 @@ void WEffect::effectUpdated() {
             name = manifest.name();
             description = manifest.description();
         }
+    } else {
+        name = tr("None");
+        description = tr("No effect loaded.");
     }
     setText(name);
     setBaseTooltip(description);

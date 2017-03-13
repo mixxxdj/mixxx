@@ -29,7 +29,6 @@
 
 class SoundSourceFLAC : public Mixxx::SoundSource {
 public:
-    SoundSourceFLAC(QString filename);
     ~SoundSourceFLAC();
     Result open();
     long seek(long filepos);
@@ -38,6 +37,7 @@ public:
     Result parseHeader();
     QImage parseCoverArt();
     static QList<QString> supportedFileExtensions();
+    explicit SoundSourceFLAC(QString filename);
     // callback methods
     FLAC__StreamDecoderReadStatus flacRead(FLAC__byte buffer[], size_t *bytes);
     FLAC__StreamDecoderSeekStatus flacSeek(FLAC__uint64 offset);

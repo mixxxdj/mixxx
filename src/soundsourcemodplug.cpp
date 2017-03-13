@@ -22,10 +22,10 @@ SoundSourceModPlug::SoundSourceModPlug(QString qFilename) :
     m_fileLength = 0;
     m_pModFile = 0;
 
-    qDebug() << "[ModPlug] Loading ModPlug module " << m_qFilename;
+    qDebug() << "[ModPlug] Loading ModPlug module " << getFilename();
 
     // read module file to byte array
-    QFile modFile(m_qFilename);
+    QFile modFile(getFilename());
     modFile.open(QIODevice::ReadOnly);
     m_fileBuf = modFile.readAll();
     modFile.close();
@@ -76,7 +76,7 @@ Result SoundSourceModPlug::open() {
         // an error occured
         t.cancel();
         qDebug() << "[ModPlug] Could not load module file: "
-                 << m_qFilename;
+                 << getFilename();
         return ERR;
     }
 
@@ -122,7 +122,7 @@ Result SoundSourceModPlug::open() {
     // We count the number of samples by dividing number of
     // bytes in m_sampleBuf by 2 (bytes per sample).
     m_fileLength = m_sampleBuf.length() >> 1;
-    m_iSampleRate = 44100; // ModPlug always uses 44.1kHz
+    setSampleRate(44100); // ModPlug always uses 44.1kHz
     m_opened = true;
     m_seekPos = 0;
     return OK;
@@ -153,7 +153,7 @@ unsigned SoundSourceModPlug::read(unsigned long size,
 Result SoundSourceModPlug::parseHeader() {
     if (m_pModFile == NULL) {
         // an error occured
-        qDebug() << "Could not parse module header of " << m_qFilename;
+        qDebug() << "Could not parse module header of " << getFilename();
         return ERR;
     }
 

@@ -24,11 +24,12 @@ class EffectsBackend : public QObject {
 
     virtual const QString getName() const;
 
-    virtual const QSet<QString> getEffectIds() const;
+    // returns a list sorted like it should be displayed in the GUI 
+    virtual const QList<QString>& getEffectIds() const;
     virtual EffectManifest getManifest(const QString& effectId) const;
     virtual bool canInstantiateEffect(const QString& effectId) const;
     virtual EffectPointer instantiateEffect(
-        EffectsManager* pEffectsManager, const QString& effectId);
+            EffectsManager* pEffectsManager, const QString& effectId);
 
   signals:
     void effectRegistered();
@@ -50,6 +51,7 @@ class EffectsBackend : public QObject {
   private:
     QString m_name;
     QMap<QString, QPair<EffectManifest, EffectInstantiatorPointer> > m_registeredEffects;
+    QList<QString> m_effectIds;
 };
 
 #endif /* EFFECTSBACKEND_H */

@@ -222,8 +222,7 @@ void SoundDevice::composeInputBuffer(const CSAMPLE* inputBuffer,
         const AudioInputBuffer& in = m_audioInputs.at(0);
         CSAMPLE* pInputBuffer = in.getBuffer(); // Always Stereo
         pInputBuffer = &pInputBuffer[framesWriteOffset * 2];
-        memcpy(pInputBuffer, inputBuffer,
-               sizeof(*inputBuffer) * framesToPush * 2);
+        SampleUtil::copy(pInputBuffer, inputBuffer, framesToPush * 2);
     } else {
         // Non Stereo input (iFrameSize != 2)
         // Do crazy deinterleaving of the audio into the correct m_inputBuffers.

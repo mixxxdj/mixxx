@@ -18,6 +18,8 @@
 #ifndef SOUNDSOURCEMP3_H
 #define SOUNDSOURCEMP3_H
 
+#include "soundsource.h"
+
 #include <errno.h>
 #include <id3tag.h>
 #ifdef _MSC_VER
@@ -34,10 +36,6 @@
 #include <QObject>
 #include <QFile>
 
-#include "util/defs.h"
-#include "util/types.h"
-#include "soundsource.h"
-
 #define READLENGTH 5000
 
 /** Struct used to store mad frames for seeking */
@@ -53,7 +51,6 @@ typedef struct MadSeekFrameType {
 
 class SoundSourceMp3 : public Mixxx::SoundSource {
 public:
-    SoundSourceMp3(QString qFilename);
     ~SoundSourceMp3();
     Result open();
     long seek(long);
@@ -65,6 +62,7 @@ public:
     QImage parseCoverArt();
     static QList<QString> supportedFileExtensions();
 
+    explicit SoundSourceMp3(QString qFilename);
 private:
     /** Returns the position of the frame which was found. The found frame is set to
       * the current element in m_qSeekList */

@@ -10,6 +10,7 @@ EffectsBackend::EffectsBackend(QObject* pParent, QString name)
 
 EffectsBackend::~EffectsBackend() {
     m_registeredEffects.clear();
+    m_effectIds.clear();
 }
 
 const QString EffectsBackend::getName() const {
@@ -25,12 +26,13 @@ void EffectsBackend::registerEffect(const QString& id,
     }
 
     m_registeredEffects[id] = QPair<EffectManifest, EffectInstantiatorPointer>(
-        manifest, pInstantiator);
+            manifest, pInstantiator);
+    m_effectIds.append(id);
     emit(effectRegistered());
 }
 
-const QSet<QString> EffectsBackend::getEffectIds() const {
-    return QSet<QString>::fromList(m_registeredEffects.keys());
+const QList<QString>& EffectsBackend::getEffectIds() const {
+    return m_effectIds;
 }
 
 EffectManifest EffectsBackend::getManifest(const QString& effectId) const {
@@ -54,6 +56,6 @@ EffectPointer EffectsBackend::instantiateEffect(EffectsManager* pEffectsManager,
     QPair<EffectManifest, EffectInstantiatorPointer>& effectInfo =
             m_registeredEffects[effectId];
 
-    return EffectPointer(new Effect(this, pEffectsManager,
+    return EffectPointer(new Effect(pEffectsManager,
                                     effectInfo.first, effectInfo.second));
 }

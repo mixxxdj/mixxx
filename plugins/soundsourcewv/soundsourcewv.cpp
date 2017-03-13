@@ -5,16 +5,19 @@
 
 #include <QtDebug>
 
-#include <taglib/wavpackfile.h>
-
 #include "soundsourcewv.h"
+#include "soundsourcetaglib.h"
+#include "sampleutil.h"
 
+#include <taglib/wavpackfile.h>
 namespace Mixxx {
 
-SoundSourceWV::SoundSourceWV(QString qFilename) : SoundSource(qFilename)
-{
-    // Initialize variables to invalid values in case loading fails.
-    filewvc=NULL;
+SoundSourceWV::SoundSourceWV(QString qFilename)
+    : SoundSource(qFilename),
+    filewvc(NULL),
+    Bps(0),
+    filelength(0) {
+    setType("wv");
 }
 
 
@@ -35,12 +38,12 @@ QList<QString> SoundSourceWV::supportedFileExtensions()
 
 Result SoundSourceWV::open()
 {
-    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
-    char msg[80];   //hold posible error message
+    QByteArray qBAFilename(getFilename().toLocal8Bit());
+    char msg[80];   //hold possible error message
 
-    filewvc = WavpackOpenFileInput(qBAFilename.constData(), msg,OPEN_2CH_MAX | OPEN_WVC,0);
+    filewvc = WavpackOpenFileInput(qBAFilename.constData(), msg, OPEN_2CH_MAX | OPEN_WVC,0);
     if (!filewvc) {
-        qDebug() << "SSWV::open: failed to open file : "<<msg;
+        qDebug() << "SSWV::open: failed to open file : "<< msg;
         return ERR;
     }
     if (WavpackGetMode(filewvc) & MODE_FLOAT) {
@@ -51,11 +54,11 @@ Result SoundSourceWV::open()
     }
     // wavpack_open succeeded -> populate variables
     filelength = WavpackGetNumSamples(filewvc);
-    m_iSampleRate=WavpackGetSampleRate(filewvc);
-    m_iChannels=WavpackGetReducedChannels(filewvc);
+    setSampleRate(WavpackGetSampleRate(filewvc));
+    setChannels(WavpackGetReducedChannels(filewvc));
     Bps=WavpackGetBytesPerSample(filewvc);
-    qDebug () << "SSWV::open: opened filewvc with filelength: "<<filelength<<" SampleRate: " << m_iSampleRate
-        << " channels: " << m_iChannels << " bytes per samp: "<<Bps;
+    qDebug () << "SSWV::open: opened filewvc with filelength: "<<filelength<<" SampleRate: " << getSampleRate()
+        << " channels: " << getChannels() << " bytes per samp: "<<Bps;
     if (Bps>2) {
         qDebug() << "SSWV::open: warning: input file has > 2 bytes per sample, will be truncated to 16bits";
     }
@@ -81,15 +84,15 @@ unsigned SoundSourceWV::read(volatile unsigned long size, const SAMPLE* destinat
     //tempbuffer is fixed size : WV_BUF_LENGTH of uint32
     while (sampsread != size) {
         timesamps=(size-sampsread)>>1;      //timesamps still remaining
-        if (timesamps > (WV_BUF_LENGTH/m_iChannels)) {  //if requested size requires more than one buffer filling
-            timesamps=(WV_BUF_LENGTH/m_iChannels);      //tempbuffer must hold (timesamps * channels) samples
+        if (timesamps > (WV_BUF_LENGTH / getChannels())) {  //if requested size requires more than one buffer filling
+            timesamps=(WV_BUF_LENGTH / getChannels());      //tempbuffer must hold (timesamps * channels) samples
             qDebug() << "SSWV::read : performance warning, size requested > buffer size !";
         }
 
         tsdone=WavpackUnpackSamples(filewvc, tempbuffer, timesamps);    //fill temp buffer with timesamps*4bytes*channels
                 //data is right justified, format_samples() fixes that.
 
-        SoundSourceWV::format_samples(Bps, (char *) (dest + (sampsread>>1)*m_iChannels), tempbuffer, tsdone*m_iChannels);
+        SoundSourceWV::format_samples(Bps, (char *) (dest + (sampsread>>1) * getChannels()), tempbuffer, tsdone*getChannels());
                                 //this will unpack the 4byte/sample
                                 //output of wUnpackSamples(), sign-extending or truncating to output 16bit / sample.
                                 //specifying dest+sampsread should resume the conversion where it was left if size requested
@@ -103,11 +106,8 @@ unsigned SoundSourceWV::read(volatile unsigned long size, const SAMPLE* destinat
 
     }
 
-    if (m_iChannels==1) {       //if MONO : expand array to double it's size; see ssov.cpp
-        for(int i=(sampsread/2-1); i>=0; i--) { //algo courtesy of rryan !
-            dest[i*2]     = dest[i];    //go through array backwards, expanding and copying L -> R
-            dest[(i*2)+1] = dest[i];
-        }
+    if (getChannels() == 1) { //if MONO : expand array to double it's size; see ssov.cpp
+        SampleUtil::doubleMonoToDualMono(dest, sampsread / 2);
     }
 
     return sampsread;
@@ -121,29 +121,37 @@ inline long unsigned SoundSourceWV::length(){
 
 
 Result SoundSourceWV::parseHeader() {
-    setType("wv");
-
-    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+    const QByteArray qBAFilename(getFilename().toLocal8Bit());
     TagLib::WavPack::File f(qBAFilename.constData());
 
-    // Takes care of all the default metadata
-    bool result = processTaglibFile(f);
+    if (!readFileHeader(this, f)) {
+        return ERR;
+    }
 
     TagLib::APE::Tag *ape = f.APETag();
     if (ape) {
-        processAPETag(ape);
+        readAPETag(this, *ape);
+    } else {
+        // fallback
+        const TagLib::Tag *tag(f.tag());
+        if (tag) {
+            readTag(this, *tag);
+        } else {
+            return ERR;
+        }
     }
 
-    if (result)
-        return OK;
-    return ERR;
+    return OK;
 }
 
 QImage SoundSourceWV::parseCoverArt() {
-    setType("wv");
-    TagLib::WavPack::File f(m_qFilename.toLocal8Bit().constData());
+    TagLib::WavPack::File f(getFilename().toLocal8Bit().constData());
     TagLib::APE::Tag *ape = f.APETag();
-    return getCoverInAPETag(ape);
+    if (ape) {
+        return Mixxx::getCoverInAPETag(*ape);
+    } else {
+        return QImage();
+    }
 }
 
 void SoundSourceWV::format_samples(int Bps, char *dst, int32_t *src, uint32_t count)

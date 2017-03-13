@@ -6,7 +6,10 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <algorithm>
-#include <QDebug>
+
+#include <QtDebug>
+
+#include "util/cmdlineargs.h"
 
 // If we don't do this then we get the C90 fabs from the global namespace which
 // is only defined for double.
@@ -17,27 +20,21 @@ using std::fabs;
 #define math_max3(a, b, c) math_max(math_max((a), (b)), (c))
 
 template <typename T>
-inline T math_clamp(const T& value, const T& min, const T& max) {
+inline T math_clamp(T value, T min, T max) {
     // XXX: If max < min, behavior is undefined, and has been causing problems.
     // if debugging is on, assert when this happens.
-    if (max < min) {
+    if (CmdlineArgs::Instance().getDeveloper() && max < min) {
         qWarning() << "PROGRAMMING ERROR: math_clamp called with max < min! "
                    << max << " " << min;
     }
-    if (value > max) {
-        return max;
-    }
-    if (value < min) {
-        return min;
-    }
-    return value;
+    return math_max(min, math_min(max, value));
 }
 
 // NOTE(rryan): It is an error to call even() on a floating point number. Do not
 // hack this to support floating point values! The programmer should be required
 // to manually convert so they are aware of the conversion.
 template <typename T>
-inline bool even(const T& value) {
+inline bool even(T value) {
     return value % 2 == 0;
 }
 

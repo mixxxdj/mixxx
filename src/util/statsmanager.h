@@ -62,6 +62,8 @@ class StatsManager : public QThread, public Singleton<StatsManager> {
     QAtomicInt m_emitAllStats;
     QAtomicInt m_quit;
     QMap<QString, Stat> m_stats;
+    QMap<QString, Stat> m_baseStats;
+    QMap<QString, Stat> m_experimentStats;
     QList<Event> m_events;
 
     QWaitCondition m_statsPipeCondition;

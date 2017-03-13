@@ -18,10 +18,11 @@
 #include <taglib/mp4file.h>
 
 #include "soundsourcecoreaudio.h"
+#include "soundsourcetaglib.h"
 #include "util/math.h"
 
 SoundSourceCoreAudio::SoundSourceCoreAudio(QString filename)
-        : Mixxx::SoundSource(filename),
+        : SoundSource(filename),
           m_samples(0),
           m_headerFrames(0) {
 }
@@ -37,7 +38,7 @@ Result SoundSourceCoreAudio::open() {
 
     /** This code blocks works with OS X 10.5+ only. DO NOT DELETE IT for now. */
     CFStringRef urlStr = CFStringCreateWithCharacters(
-        0, reinterpret_cast<const UniChar *>(m_qFilename.unicode()), m_qFilename.size());
+        0, reinterpret_cast<const UniChar *>(getFilename().unicode()), getFilename().size());
     CFURLRef urlRef = CFURLCreateWithFileSystemPath(NULL, urlStr, kCFURLPOSIXPathStyle, false);
     err = ExtAudioFileOpenURL(urlRef, &m_audioFile);
     CFRelease(urlStr);
@@ -52,7 +53,7 @@ Result SoundSourceCoreAudio::open() {
     */
 
     if (err != noErr) {
-        qDebug() << "SSCA: Error opening file " << m_qFilename;
+        qDebug() << "SSCA: Error opening file " << getFilename();
         return ERR;
     }
 
@@ -62,7 +63,7 @@ Result SoundSourceCoreAudio::open() {
     m_inputFormat = inputFormat;
     err = ExtAudioFileGetProperty(m_audioFile, kExtAudioFileProperty_FileDataFormat, &size, &inputFormat);
     if (err != noErr) {
-        qDebug() << "SSCA: Error getting file format (" << m_qFilename << ")";
+        qDebug() << "SSCA: Error getting file format (" << getFilename() << ")";
         return ERR;
     }
 
@@ -83,8 +84,7 @@ Result SoundSourceCoreAudio::open() {
         return ERR;
     }
 
-    // Set m_iChannels and m_samples.
-    m_iChannels = m_outputFormat.NumberChannels();
+    setChannels(m_outputFormat.NumberChannels());
 
     //get the total length in frames of the audio file - copypasta: http://discussions.apple.com/thread.jspa?threadID=2364583&tstart=47
     UInt32        dataSize;
@@ -114,10 +114,10 @@ Result SoundSourceCoreAudio::open() {
         m_headerFrames=primeInfo.leadingFrames;
     }
 
-    m_samples = (totalFrameCount/*-m_headerFrames*/)*m_iChannels;
-    m_iDuration = m_samples / (inputFormat.mSampleRate * m_iChannels);
-    m_iSampleRate = inputFormat.mSampleRate;
-    qDebug() << m_samples << totalFrameCount << m_iChannels;
+    m_samples = (totalFrameCount/* - m_headerFrames*/) * getChannels();
+    setDuration(m_samples / (inputFormat.mSampleRate * getChannels()));
+    setSampleRate(inputFormat.mSampleRate);
+    qDebug() << m_samples << totalFrameCount << getChannels();
 
     //Seek to position 0, which forces us to skip over all the header frames.
     //This makes sure we're ready to just let the Analyser rip and it'll
@@ -141,7 +141,7 @@ long SoundSourceCoreAudio::seek(long filepos) {
 
     //err = ExtAudioFileSeek(m_audioFile, filepos / 2);
     if (err != noErr) {
-        qDebug() << "SSCA: Error seeking to" << filepos << " (file " << m_qFilename << ")";// << GetMacOSStatusErrorString(err) << GetMacOSStatusCommentString(err);
+        qDebug() << "SSCA: Error seeking to" << filepos << " (file " << getFilename() << ")";// << GetMacOSStatusErrorString(err) << GetMacOSStatusCommentString(err);
     }
     return filepos;
 }
@@ -185,45 +185,55 @@ inline unsigned long SoundSourceCoreAudio::length() {
 }
 
 Result SoundSourceCoreAudio::parseHeader() {
-    if (getFilename().endsWith(".m4a"))
+    if (getFilename().endsWith(".m4a")) {
         setType("m4a");
-    else if (getFilename().endsWith(".mp3"))
-        setType("mp3");
-    else if (getFilename().endsWith(".mp2"))
-        setType("mp2");
-
-    bool result = false;
-
-    if (getType() == "m4a") {
         TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
-        result = processTaglibFile(f);
-        TagLib::MP4::Tag* tag = f.tag();
-        if (tag) {
-            processMP4Tag(tag);
+        if (!readFileHeader(this, f)) {
+            return ERR;
         }
-    } else if (getType() == "mp3") {
-        // No need for toLocal8Bit on Windows since CoreAudio is OS X only.
+        TagLib::MP4::Tag *mp4(f.tag());
+        if (mp4) {
+            readMP4Tag(this, *mp4);
+        } else {
+            // fallback
+            const TagLib::Tag *tag(f.tag());
+            if (tag) {
+                readTag(this, *tag);
+            } else {
+                return ERR;
+            }
+        }
+    } else if (getFilename().endsWith(".mp3")) {
+        setType("mp3");
         TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
-
-        // Takes care of all the default metadata
-        result = processTaglibFile(f);
-
-        // Now look for MP3 specific metadata (e.g. BPM)
+        if (!readFileHeader(this, f)) {
+            return ERR;
+        }
         TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
         if (id3v2) {
-            processID3v2Tag(id3v2);
+            readID3v2Tag(this, *id3v2);
+        } else {
+            TagLib::APE::Tag *ape = f.APETag();
+            if (ape) {
+                readAPETag(this, *ape);
+            } else {
+                // fallback
+                const TagLib::Tag *tag(f.tag());
+                if (tag) {
+                    readTag(this, *tag);
+                } else {
+                    return ERR;
+                }
+            }
         }
-
-        TagLib::APE::Tag *ape = f.APETag();
-        if (ape) {
-            processAPETag(ape);
-        }
-    } else if (getType() == "mp2") {
+    } else if (getFilename().endsWith(".mp2")) {
+        setType("mp2");
         //TODO: MP2 metadata. Does anyone use mp2 files anymore?
         //      Feels like 1995 again...
+        return ERR;
     }
 
-    return result ? OK : ERR;
+    return OK;
 }
 
 QImage SoundSourceCoreAudio::parseCoverArt() {
@@ -231,14 +241,26 @@ QImage SoundSourceCoreAudio::parseCoverArt() {
     if (getFilename().endsWith(".m4a")) {
         setType("m4a");
         TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
-        coverArt = getCoverInMP4Tag(f.tag());
+        TagLib::MP4::Tag *mp4(f.tag());
+        if (mp4) {
+            return Mixxx::getCoverInMP4Tag(*mp4);
+        } else {
+            return QImage();
+        }
     } else if (getFilename().endsWith(".mp3")) {
         setType("mp3");
         TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
-        coverArt = getCoverInID3v2Tag(f.ID3v2Tag());
-        if (coverArt.isNull()) {
-            coverArt = getCoverInAPETag(f.APETag());
+        TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
+        if (id3v2) {
+            coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
         }
+        if (coverArt.isNull()) {
+            TagLib::APE::Tag *ape = f.APETag();
+            if (ape) {
+                coverArt = Mixxx::getCoverInAPETag(*ape);
+            }
+        }
+        return coverArt;
     }
     return coverArt;
 }

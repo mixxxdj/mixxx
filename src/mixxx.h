@@ -124,6 +124,8 @@ class MixxxMainWindow : public QMainWindow {
     // Open the developer tools dialog.
     void slotDeveloperTools();
     void slotDeveloperToolsClosed();
+    void slotDeveloperStatsExperiment();
+    void slotDeveloperStatsBase();
 
     void slotToCenterOfPrimaryScreen();
 
@@ -241,6 +243,8 @@ class MixxxMainWindow : public QMainWindow {
 
     QAction* m_pDeveloperReloadSkin;
     QAction* m_pDeveloperTools;
+    QAction* m_pDeveloperStatsExperiment;
+    QAction* m_pDeveloperStatsBase;
     DlgDeveloperTools* m_pDeveloperToolsDlg;
 
     int m_iNoPlaylists;

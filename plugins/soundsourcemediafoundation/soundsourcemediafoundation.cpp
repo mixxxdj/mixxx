@@ -30,6 +30,7 @@
 #include <propvarutil.h>
 
 #include "soundsourcemediafoundation.h"
+#include "soundsourcetaglib.h"
 
 const int kBitsPerSample = 16;
 const int kNumChannels = 2;
@@ -50,7 +51,6 @@ template<class T> static void safeRelease(T **ppT)
 
 SoundSourceMediaFoundation::SoundSourceMediaFoundation(QString filename)
     : SoundSource(filename)
-    , m_file(filename)
     , m_pReader(NULL)
     , m_pAudioType(NULL)
     , m_wcFilename(NULL)
@@ -66,8 +66,9 @@ SoundSourceMediaFoundation::SoundSourceMediaFoundation(QString filename)
 {
     // these are always the same, might as well just stick them here
     // -bkgood
-    m_iChannels = kNumChannels;
-    m_iSampleRate = kSampleRate;
+    setType("m4a");
+    setChannels(kNumChannels);
+    setSampleRate(kSampleRate);
 
     // http://social.msdn.microsoft.com/Forums/en/netfxbcl/thread/35c6a451-3507-40c8-9d1c-8d4edde7c0cc
     // gives maximum path + file length as 248 + 260, using that -bkgood
@@ -88,11 +89,11 @@ SoundSourceMediaFoundation::~SoundSourceMediaFoundation()
 Result SoundSourceMediaFoundation::open()
 {
     if (sDebug) {
-        qDebug() << "open()" << m_qFilename;
+        qDebug() << "open()" << getFilename();
     }
 
-    QString qurlStr(m_qFilename);
-    int wcFilenameLength(m_qFilename.toWCharArray(m_wcFilename));
+    QString qurlStr(getFilename());
+    int wcFilenameLength(getFilename().toWCharArray(m_wcFilename));
     // toWCharArray does not append a null terminator to the string!
     m_wcFilename[wcFilenameLength] = '\0';
 
@@ -114,7 +115,7 @@ Result SoundSourceMediaFoundation::open()
     // Create the source reader to read the input file.
     hr = MFCreateSourceReaderFromURL(m_wcFilename, NULL, &m_pReader);
     if (FAILED(hr)) {
-        qWarning() << "SSMF: Error opening input file:" << m_qFilename;
+        qWarning() << "SSMF: Error opening input file:" << getFilename();
         return ERR;
     }
 
@@ -375,26 +376,38 @@ inline unsigned long SoundSourceMediaFoundation::length()
 
 Result SoundSourceMediaFoundation::parseHeader()
 {
-    setType("m4a");
-
     // Must be toLocal8Bit since Windows fopen does not do UTF-8
     TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
-    bool result = processTaglibFile(f);
-    TagLib::MP4::Tag* tag = f.tag();
 
-    if (tag) {
-        processMP4Tag(tag);
+    if (!readFileHeader(this, f)) {
+        return ERR;
     }
 
-    if (result)
-        return OK;
-    return ERR;
+    TagLib::MP4::Tag *mp4(f.tag());
+    if (mp4) {
+        readMP4Tag(this, *mp4);
+    } else {
+        // fallback
+        const TagLib::Tag *tag(f.tag());
+        if (tag) {
+            readTag(this, *tag);
+        } else {
+            return ERR;
+        }
+    }
+
+    return OK;
 }
 
 QImage SoundSourceMediaFoundation::parseCoverArt() {
     setType("m4a");
     TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
-    return getCoverInMP4Tag(f.tag());
+    TagLib::MP4::Tag *mp4(f.tag());
+    if (mp4) {
+        return Mixxx::getCoverInMP4Tag(*mp4);
+    } else {
+        return QImage();
+    }
 }
 
 // static
@@ -567,15 +580,15 @@ bool SoundSourceMediaFoundation::readProperties()
     // QuadPart isn't available on compilers that don't support _int64. Visual
     // Studio 6.0 introduced the type in 1998, so I think we're safe here
     // -bkgood
-    m_iDuration = secondsFromMF(prop.hVal.QuadPart);
+    setDuration(secondsFromMF(prop.hVal.QuadPart));
     m_mfDuration = prop.hVal.QuadPart;
-    qDebug() << "SSMF: Duration:" << m_iDuration;
+    qDebug() << "SSMF: Duration:" << getDuration();
     PropVariantClear(&prop);
 
     // presentation attribute MF_PD_AUDIO_ENCODING_BITRATE only exists for
     // presentation descriptors, one of which MFSourceReader is not.
     // Therefore, we calculate it ourselves.
-    m_iBitrate = kBitsPerSample * kSampleRate * kNumChannels;
+    setBitrate(kBitsPerSample * kSampleRate * kNumChannels);
 
     return true;
 }

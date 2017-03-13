@@ -39,7 +39,7 @@ class IMFMediaSource;
 
 class SoundSourceMediaFoundation : public Mixxx::SoundSource {
   public:
-    SoundSourceMediaFoundation(QString filename);
+    explicit SoundSourceMediaFoundation(QString filename);
     ~SoundSourceMediaFoundation();
     Result open();
     long seek(long filepos);
@@ -58,7 +58,6 @@ class SoundSourceMediaFoundation : public Mixxx::SoundSource {
     static inline qint64 mfFromSeconds(qreal sec);
     static inline qint64 frameFromMF(qint64 mf);
     static inline qint64 mfFromFrame(qint64 frame);
-    QFile m_file;
     IMFSourceReader *m_pReader;
     IMFMediaType *m_pAudioType;
     wchar_t *m_wcFilename;

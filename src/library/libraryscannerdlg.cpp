@@ -23,10 +23,9 @@
 
 #include "library/libraryscannerdlg.h"
 
-LibraryScannerDlg::LibraryScannerDlg(QWidget * parent, Qt::WindowFlags f)
+LibraryScannerDlg::LibraryScannerDlg(QWidget* parent, Qt::WindowFlags f)
         : QWidget(parent, f),
           m_bCancelled(false) {
-
     setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
 
     QVBoxLayout* pLayout = new QVBoxLayout(this);

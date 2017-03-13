@@ -44,6 +44,10 @@
                   <CoverArt>
                     <SizePolicy>me,me</SizePolicy>
                     <MinimumSize>100,100</MinimumSize>
+                    <Connection>
+                      <ConfigKey>[Library],show_coverart</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
                   </CoverArt>
                 </Children>
               </WidgetGroup>

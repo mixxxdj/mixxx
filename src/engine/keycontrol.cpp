@@ -9,14 +9,14 @@
 #include "engine/enginebuffer.h"
 #include "track/keyutils.h"
 
-KeyControl::KeyControl(const char* pGroup,
+KeyControl::KeyControl(QString group,
                        ConfigObject<ConfigValue>* pConfig)
-        : EngineControl(pGroup, pConfig),
+        : EngineControl(group, pConfig),
           m_dOldRate(0.0),
           m_bOldKeylock(false),
           m_dPitchCompensation(0.0),
           m_dPitchCompensationOldPitch(0.0) {
-    m_pPitch = new ControlPotmeter(ConfigKey(pGroup, "pitch"), -1.f, 1.f);
+    m_pPitch = new ControlPotmeter(ConfigKey(group, "pitch"), -1.f, 1.f);
     // Course adjust by full step.
     m_pPitch->setStepCount(24);
     // Fine adjust by half-step / semitone.
@@ -29,25 +29,25 @@ KeyControl::KeyControl(const char* pGroup,
             this, SLOT(slotPitchChanged(double)),
             Qt::DirectConnection);
 
-    m_pButtonSyncKey = new ControlPushButton(ConfigKey(pGroup, "sync_key"));
+    m_pButtonSyncKey = new ControlPushButton(ConfigKey(group, "sync_key"));
     connect(m_pButtonSyncKey, SIGNAL(valueChanged(double)),
             this, SLOT(slotSyncKey(double)),
             Qt::DirectConnection);
 
-    m_pFileKey = new ControlObject(ConfigKey(pGroup, "file_key"));
+    m_pFileKey = new ControlObject(ConfigKey(group, "file_key"));
     connect(m_pFileKey, SIGNAL(valueChanged(double)),
             this, SLOT(slotFileKeyChanged(double)),
             Qt::DirectConnection);
 
-    m_pEngineKey = new ControlObject(ConfigKey(pGroup, "key"));
+    m_pEngineKey = new ControlObject(ConfigKey(group, "key"));
     connect(m_pEngineKey, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetEngineKey(double)),
             Qt::DirectConnection);
 
-    m_pEngineKeyDistance = new ControlPotmeter(ConfigKey(pGroup, "visual_key_distance"),
+    m_pEngineKeyDistance = new ControlPotmeter(ConfigKey(group, "visual_key_distance"),
                                                -0.5, 0.5);
 
-    m_pRateSlider = ControlObject::getControl(ConfigKey(pGroup, "rate"));
+    m_pRateSlider = ControlObject::getControl(ConfigKey(group, "rate"));
     connect(m_pRateSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotRateChanged()),
             Qt::DirectConnection);
@@ -55,7 +55,7 @@ KeyControl::KeyControl(const char* pGroup,
             this, SLOT(slotRateChanged()),
             Qt::DirectConnection);
 
-    m_pRateRange = ControlObject::getControl(ConfigKey(pGroup, "rateRange"));
+    m_pRateRange = ControlObject::getControl(ConfigKey(group, "rateRange"));
     connect(m_pRateRange, SIGNAL(valueChanged(double)),
             this, SLOT(slotRateChanged()),
             Qt::DirectConnection);
@@ -63,7 +63,7 @@ KeyControl::KeyControl(const char* pGroup,
             this, SLOT(slotRateChanged()),
             Qt::DirectConnection);
 
-    m_pRateDir = ControlObject::getControl(ConfigKey(pGroup, "rate_dir"));
+    m_pRateDir = ControlObject::getControl(ConfigKey(group, "rate_dir"));
     connect(m_pRateDir, SIGNAL(valueChanged(double)),
             this, SLOT(slotRateChanged()),
             Qt::DirectConnection);
@@ -71,7 +71,7 @@ KeyControl::KeyControl(const char* pGroup,
             this, SLOT(slotRateChanged()),
             Qt::DirectConnection);
 
-    m_pKeylock = ControlObject::getControl(ConfigKey(pGroup, "keylock"));
+    m_pKeylock = ControlObject::getControl(ConfigKey(group, "keylock"));
     connect(m_pKeylock, SIGNAL(valueChanged(double)),
             this, SLOT(slotRateChanged()),
             Qt::DirectConnection);

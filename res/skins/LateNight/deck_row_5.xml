@@ -121,6 +121,10 @@
 				          <ConfigKey>[Channel<Variable name="channum"/>],beats_translate_curpos</ConfigKey>
 				          <ButtonState>LeftButton</ButtonState>
 			          </Connection>
+			          <Connection>
+				          <ConfigKey>[Channel<Variable name="channum"/>],beats_translate_match_alignment</ConfigKey>
+				          <ButtonState>RightButton</ButtonState>
+			          </Connection>
 		          </PushButton>
 		          <PushButton>
 			          <TooltipId>quantize</TooltipId>

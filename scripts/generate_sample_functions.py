@@ -78,8 +78,8 @@ def write_channelmixer_autogen(output, num_channels):
                 write('const int pChannelIndex%(j)d = activeChannels[%(j)d];' % {'j': j}, depth=2)
                 write('EngineMaster::ChannelInfo* pChannel%(j)d = channels[pChannelIndex%(j)d];' % {'j': j}, depth=2)
                 if ramping:
-                    write('CSAMPLE oldGain%(j)d = (*channelGainCache)[pChannelIndex%(j)d];' % {'j': j}, depth=2)
-                write('CSAMPLE newGain%(j)d = gainCalculator.getGain(pChannel%(j)d);' % {'j': j}, depth=2)
+                    write('CSAMPLE_GAIN oldGain%(j)d = (*channelGainCache)[pChannelIndex%(j)d];' % {'j': j}, depth=2)
+                write('CSAMPLE_GAIN newGain%(j)d = gainCalculator.getGain(pChannel%(j)d);' % {'j': j}, depth=2)
                 write('(*channelGainCache)[pChannelIndex%(j)d] = newGain%(j)d;' % {'j': j}, depth=2)
                 write('CSAMPLE* pBuffer%(j)d = pChannel%(j)d->m_pBuffer;' % {'j': j}, depth=2)
 
@@ -128,8 +128,8 @@ def copy_with_gain(output, base_indent_depth, num_channels):
 
     header = "static inline void %s(" % copy_with_gain_method_name(num_channels)
     arg_groups = ['CSAMPLE* pDest'] + [
-        "const CSAMPLE* pSrc%(i)d, CSAMPLE gain%(i)d" % {'i': i}
-        for i in xrange(num_channels)] + ['int iNumSamples']
+        "const CSAMPLE* pSrc%(i)d, CSAMPLE_GAIN gain%(i)d" % {'i': i}
+        for i in xrange(num_channels)] + ['unsigned int iNumSamples']
 
     output.extend(hanging_indent(header, arg_groups, ',', ') {',
                                  depth=base_indent_depth))
@@ -141,13 +141,13 @@ def copy_with_gain(output, base_indent_depth, num_channels):
         return
 
     for i in xrange(num_channels):
-        write('if (gain%(i)d == 0.0) {' % {'i': i}, depth=1)
+        write('if (gain%(i)d == CSAMPLE_GAIN_ZERO) {' % {'i': i}, depth=1)
         args = ['pDest',] + ['pSrc%(i)d, gain%(i)d' % {'i': j} for j in xrange(num_channels) if i != j] + ['iNumSamples',]
         write('%s;' %method_call(copy_with_gain_method_name(num_channels - 1), args), depth=2)
         write('return;', depth=2)
         write('}', depth=1)
 
-    write('for (int i = 0; i < iNumSamples; ++i) {', depth=1)
+    write('for (unsigned int i = 0; i < iNumSamples; ++i) {', depth=1)
     terms = ['pSrc%(i)d[i] * gain%(i)d' % {'i': i} for i in xrange(num_channels)]
     assign = 'pDest[i] = '
     output.extend(hanging_indent(assign, terms, ' +', ';', depth=2))
@@ -162,8 +162,8 @@ def copy_with_ramping_gain(output, base_indent_depth, num_channels):
 
     header = "static inline void %s(" % copy_with_ramping_gain_method_name(num_channels)
     arg_groups = ['CSAMPLE* pDest'] + [
-        "const CSAMPLE* pSrc%(i)d, CSAMPLE gain%(i)din, CSAMPLE gain%(i)dout" % {'i': i}
-        for i in xrange(num_channels)] + ['int iNumSamples']
+        "const CSAMPLE* pSrc%(i)d, CSAMPLE_GAIN gain%(i)din, CSAMPLE_GAIN gain%(i)dout" % {'i': i}
+        for i in xrange(num_channels)] + ['unsigned int iNumSamples']
 
     output.extend(hanging_indent(header, arg_groups, ',', ') {',
                                  depth=base_indent_depth))
@@ -176,7 +176,7 @@ def copy_with_ramping_gain(output, base_indent_depth, num_channels):
 
 
     for i in xrange(num_channels):
-        write('if (gain%(i)din == 0.0 && gain%(i)dout == 0.0) {' % {'i': i}, depth=1)
+        write('if (gain%(i)din == CSAMPLE_GAIN_ZERO && gain%(i)dout == CSAMPLE_GAIN_ZERO) {' % {'i': i}, depth=1)
         args = ['pDest',] + ['pSrc%(i)d, gain%(i)din, gain%(i)dout' % {'i': j} for j in xrange(num_channels) if i != j] + ['iNumSamples',]
         write('%s;' % method_call(copy_with_ramping_gain_method_name(num_channels - 1), args),
               depth=2)
@@ -184,12 +184,12 @@ def copy_with_ramping_gain(output, base_indent_depth, num_channels):
         write('}', depth=1)
 
     for i in xrange(num_channels):
-        write('const CSAMPLE delta%(i)d = 2.0 * (gain%(i)dout - gain%(i)din) / iNumSamples;' % {'i': i}, depth=1)
-        write('CSAMPLE gain%(i)d = gain%(i)din;' % {'i': i}, depth=1)
+        write('const CSAMPLE_GAIN gain_delta%(i)d = (gain%(i)dout - gain%(i)din) / (iNumSamples / 2);' % {'i': i}, depth=1)
+        write('CSAMPLE_GAIN gain%(i)d = gain%(i)din;' % {'i': i}, depth=1)
 
-    increments = ['i += 2',] + ['gain%(i)d += delta%(i)d' % {'i': i} for i in xrange(num_channels)]
+    increments = ['i += 2',] + ['gain%(i)d += gain_delta%(i)d' % {'i': i} for i in xrange(num_channels)]
 
-    write('for (int i = 0; i < iNumSamples; %s) {' % ', '.join(increments), depth=1)
+    write('for (unsigned int i = 0; i < iNumSamples; %s) {' % ', '.join(increments), depth=1)
 
     terms1 = []
     terms2 = []

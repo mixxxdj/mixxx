@@ -20,7 +20,7 @@ class Event {
     qint64 m_time;
 
     static bool event(const QString& tag, Event::EventType type = Stat::EVENT) {
-        return Stat::track(tag, type, Stat::COUNT, 0.0);
+        return Stat::track(tag, type, Stat::experimentFlags(Stat::COUNT), 0.0);
     }
 
     static bool start(const QString& tag) {

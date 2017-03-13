@@ -68,6 +68,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setFrameRate(int frameRate);
     int getFrameRate() const { return m_frameRate;}
 //    bool getVSync() const { return m_vSyncType;}
+    void setEndOfTrackWarningTime(int endTime);
+    int getEndOfTrackWarningTime() const { return m_endOfTrackWarningTime;}
 
     bool isOpenGLAvailable() const { return m_openGLAvailable;}
     QString getOpenGLVersion() const { return m_openGLVersion;}
@@ -136,6 +138,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     bool m_skipRender;
     int m_frameRate;
+    int m_endOfTrackWarningTime;
     int m_defaultZoom;
     bool m_zoomSync;
     double m_visualGain[FilterCount];

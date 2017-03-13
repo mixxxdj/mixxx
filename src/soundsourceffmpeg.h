@@ -65,7 +65,7 @@ struct ffmpegCacheObject {
 
 class SoundSourceFFmpeg : public Mixxx::SoundSource {
 public:
-    SoundSourceFFmpeg(QString qFilename);
+    explicit SoundSourceFFmpeg(QString qFilename);
     ~SoundSourceFFmpeg();
     Result open();
     long seek(long);
@@ -91,16 +91,15 @@ protected:
 
 private:
     int m_iAudioStream;
-    quint64 filelength;
-    QString m_qFilename;
+    quint64 m_filelength;
     AVFormatContext *m_pFormatCtx;
     AVInputFormat *m_pIformat;
     AVCodecContext *m_pCodecCtx;
     AVCodec *m_pCodec;
 
-    qint64 m_iCurrentMixxTs;
-
     EncoderFfmpegResample *m_pResample;
+
+    qint64 m_iCurrentMixxTs;
 
     bool m_bIsSeeked;
 

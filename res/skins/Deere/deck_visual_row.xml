@@ -41,7 +41,7 @@
         </MarkRange>
         <Mark>
           <Control>loop_start_position</Control>
-          <Pixmap>marker_loop_in1.png</Pixmap>
+          <Pixmap>image/marker_loop_in.png</Pixmap>
           <Text>IN</Text>
           <Align>bottom</Align>
           <Color>#00FF00</Color>
@@ -49,7 +49,7 @@
         </Mark>
         <Mark>
           <Control>loop_end_position</Control>
-          <Pixmap>marker_loop_out1.png</Pixmap>
+          <Pixmap>image/marker_loop_out.png</Pixmap>
           <Text>OUT</Text>
           <Align>bottom</Align>
           <Color>#00FF00</Color>
@@ -62,7 +62,7 @@
         -->
         <Mark>
           <Control>hotcue_1_position</Control>
-          <Pixmap>marker_hotcue1_1.png</Pixmap>
+          <Pixmap>image/marker_hotcue_1.png</Pixmap>
           <Text>1</Text>
           <Align>bottom</Align>
           <Color>#00FF00</Color>
@@ -70,7 +70,7 @@
         </Mark>
         <Mark>
           <Control>hotcue_2_position</Control>
-          <Pixmap>marker_hotcue1_2.png</Pixmap>
+          <Pixmap>image/marker_hotcue_2.png</Pixmap>
           <Text>2</Text>
           <Align>bottom</Align>
           <Color>#00FF00</Color>
@@ -78,7 +78,7 @@
         </Mark>
         <Mark>
           <Control>hotcue_3_position</Control>
-          <Pixmap>marker_hotcue1_3.png</Pixmap>
+          <Pixmap>image/marker_hotcue_3.png</Pixmap>
           <Text>3</Text>
           <Align>bottom</Align>
           <Color>#00FF00</Color>
@@ -86,7 +86,7 @@
         </Mark>
         <Mark>
           <Control>hotcue_4_position</Control>
-          <Pixmap>marker_hotcue1_4.png</Pixmap>
+          <Pixmap>image/marker_hotcue_4.png</Pixmap>
           <Text>4</Text>
           <Align>bottom</Align>
           <Color>#00FF00</Color>
@@ -94,7 +94,7 @@
         </Mark>
         <Mark>
           <Control>cue_point</Control>
-          <Pixmap>marker_cue1.png</Pixmap>
+          <Pixmap>image/marker_cue.png</Pixmap>
           <Text>CUE</Text>
           <Align>bottom</Align>
           <Color>#FF001C</Color>
@@ -109,9 +109,9 @@
         <Children>
           <Spinny>
             <Group><Variable name="group"/></Group>
-            <PathBackground>vinyl_spinny1_background.png</PathBackground>
-            <PathForeground>vinyl_spinny1_foreground.png</PathForeground>
-            <PathGhost>vinyl_spinny1_foreground_ghost.png</PathGhost>
+            <PathBackground>image/vinyl_spinny_background.png</PathBackground>
+            <PathForeground>image/vinyl_spinny<Variable name="i"/>_foreground.png</PathForeground>
+            <PathGhost>image/vinyl_spinny_foreground_ghost.png</PathGhost>
           </Spinny>
         </Children>
         <Connection>
