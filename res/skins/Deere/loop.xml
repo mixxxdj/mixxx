@@ -106,7 +106,7 @@
                 <SetVariable name="state_0_pressed">icon/ic_loop_in_48px.svg</SetVariable>
                 <SetVariable name="state_0_unpressed">icon/ic_loop_in_48px.svg</SetVariable>
                 <SetVariable name="left_connection_control"><Variable name="group"/>,loop_in</SetVariable>
-                <SetVariable name="right_connection_control"><Variable name="group"/>,seek_loop_in</SetVariable>
+                <SetVariable name="right_connection_control"><Variable name="group"/>,loop_in_goto</SetVariable>
               </Template>
 
               <Template src="skin:left_right_1state_button.xml">
@@ -119,7 +119,7 @@
                 <SetVariable name="state_0_pressed">icon/ic_loop_out_48px.svg</SetVariable>
                 <SetVariable name="state_0_unpressed">icon/ic_loop_out_48px.svg</SetVariable>
                 <SetVariable name="left_connection_control"><Variable name="group"/>,loop_out</SetVariable>
-                <SetVariable name="right_connection_control"><Variable name="group"/>,seek_loop_out</SetVariable>
+                <SetVariable name="right_connection_control"><Variable name="group"/>,loop_out_goto</SetVariable>
               </Template>
 
             </Children>
