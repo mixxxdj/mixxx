@@ -98,7 +98,7 @@ void SongDownloader::slotError(QNetworkReply::NetworkError error) {
     emit(downloadError());
 }
 
-void SongDownloader::slotProgress( qint64 bytesReceived, qint64 bytesTotal ) {
+void SongDownloader::slotProgress(qint64 bytesReceived, qint64 bytesTotal) {
     qDebug() << bytesReceived << "/" << bytesTotal;
     emit(downloadProgress(bytesReceived, bytesTotal));
 }

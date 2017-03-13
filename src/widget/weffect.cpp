@@ -3,6 +3,7 @@
 #include "widget/weffect.h"
 
 #include "effects/effectsmanager.h"
+#include "widget/effectwidgetutils.h"
 
 WEffect::WEffect(QWidget* pParent, EffectsManager* pEffectsManager)
         : WLabel(pParent),
@@ -14,41 +15,17 @@ WEffect::~WEffect() {
 }
 
 void WEffect::setup(QDomNode node, const SkinContext& context) {
-    bool rackOk = false;
-    int rackNumber = context.selectInt(node, "EffectRack", &rackOk) - 1;
-    bool chainOk = false;
-    int chainNumber = context.selectInt(node, "EffectUnit", &chainOk) - 1;
-    bool effectOk = false;
-    int effectNumber = context.selectInt(node, "Effect", &effectOk) - 1;
-
-    // Tolerate no <EffectRack>. Use the default one.
-    if (!rackOk) {
-        rackNumber = 0;
-    }
-
-    if (!chainOk) {
-        qDebug() << "EffectName node had invalid EffectUnit number:" << chainNumber;
-    }
-
-    if (!effectOk) {
-        qDebug() << "EffectName node had invalid Effect number:" << effectNumber;
-    }
-
-    EffectRackPointer pRack = m_pEffectsManager->getEffectRack(rackNumber);
-    if (pRack) {
-        EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(chainNumber);
-        if (pChainSlot) {
-            EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(effectNumber);
-            if (pEffectSlot) {
-                setEffectSlot(pEffectSlot);
-            } else {
-                qDebug() << "EffectName node had invalid Effect number:" << effectNumber;
-            }
-        } else {
-            qDebug() << "EffectName node had invalid EffectUnit number:" << chainNumber;
-        }
+    // EffectWidgetUtils propagates NULLs so this is all safe.
+    EffectRackPointer pRack = EffectWidgetUtils::getEffectRackFromNode(
+            node, context, m_pEffectsManager);
+    EffectChainSlotPointer pChainSlot = EffectWidgetUtils::getEffectChainSlotFromNode(
+            node, context, pRack);
+    EffectSlotPointer pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(
+            node, context, pChainSlot);
+    if (pEffectSlot) {
+        setEffectSlot(pEffectSlot);
     } else {
-        qDebug() << "EffectName node had invalid EffectRack number:" << rackNumber;
+        qDebug() << "EffectName node could not attach to effect slot.";
     }
 }
 

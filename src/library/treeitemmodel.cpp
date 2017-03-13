@@ -132,7 +132,7 @@ int TreeItemModel::rowCount(const QModelIndex &parent) const {
 
     TreeItem *parentItem = NULL;
     //qDebug() << "parent data: " << parent.data();
-    if (!parent.isValid()){
+    if (!parent.isValid()) {
         parentItem = m_pRootItem;
     }
     else{

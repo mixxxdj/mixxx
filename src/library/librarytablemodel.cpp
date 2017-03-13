@@ -9,7 +9,7 @@ const QString LibraryTableModel::DEFAULT_LIBRARYFILTER =
 LibraryTableModel::LibraryTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection,
                                      const char* settingsNamespace)
-        : BaseSqlTableModel(parent, pTrackCollection, settingsNamespace){
+        : BaseSqlTableModel(parent, pTrackCollection, settingsNamespace) {
     setTableModel();
 }
 

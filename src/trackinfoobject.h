@@ -36,9 +36,9 @@
 #include "track/beats.h"
 #include "track/keys.h"
 #include "util/sandbox.h"
+#include "waveform/waveform.h"
 
 class Cue;
-class Waveform;
 
 class TrackInfoObject;
 typedef QSharedPointer<TrackInfoObject> TrackPointer;
@@ -223,12 +223,11 @@ class TrackInfoObject : public QObject {
     // Set URL for track
     void setURL(const QString& url);
 
-    Waveform* getWaveform();
-    void waveformNew();
+    ConstWaveformPointer getWaveform();
+    void setWaveform(ConstWaveformPointer pWaveform);
 
-    Waveform* getWaveformSummary();
-    const Waveform* getWaveformSummary() const;
-    void waveformSummaryNew();
+    ConstWaveformPointer getWaveformSummary() const;
+    void setWaveformSummary(ConstWaveformPointer pWaveform);
 
     void setAnalyserProgress(int progress);
     int getAnalyserProgress() const;
@@ -396,14 +395,15 @@ class TrackInfoObject : public QObject {
     BeatsPointer m_pBeats;
 
     //Visual waveform data
-    Waveform* const m_waveform;
-    Waveform* const m_waveformSummary;
+    ConstWaveformPointer m_waveform;
+    ConstWaveformPointer m_waveformSummary;
 
     QAtomicInt m_analyserProgress; // in 0.1%
 
     CoverArt m_coverArt;
 
     friend class TrackDAO;
+    friend class AutoDJProcessorTest;
 };
 
 #endif

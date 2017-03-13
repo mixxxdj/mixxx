@@ -31,10 +31,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     // Master Controls
     QMenu* mixerMenu = addSubmenu(tr("Mixer"));
     addControl("[Master]", "crossfader", tr("Crossfader"), tr("Master crossfader"), mixerMenu, true);
-    addControl("[Master]", "volume", tr("Master Volume"), tr("Master volume"), mixerMenu, true);
+    addControl("[Master]", "gain", tr("Master Gain"), tr("Master gain"), mixerMenu, true);
     addControl("[Master]", "balance", tr("Master Balance"), tr("Master balance"), mixerMenu, true);
     addControl("[Master]", "delay", tr("Master Delay"), tr("Master delay"), mixerMenu, true);
-    addControl("[Master]", "headVolume", tr("Headphone Volume"), tr("Headphone volume"), mixerMenu, true);
+    addControl("[Master]", "headGain", tr("Headphone Gain"), tr("Headphone gain"), mixerMenu, true);
     addControl("[Master]", "headMix", tr("Headphone Mix"), tr("Headphone mix (pre/main)"), mixerMenu, true);
     addControl("[Master]", "headSplit", tr("Headphone Split Cue"), tr("Toggle headphone split cueing"), mixerMenu);
     addControl("[Master]", "headDelay", tr("Headphone Delay"), tr("Headphone delay"), mixerMenu, true);
@@ -120,29 +120,31 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("beatsync_phase", tr("Sync Phase One-Shot"),
                              tr("One-time beat sync (phase only)"), syncMenu);
 
-    // Rate
-    QMenu* rateMenu = addSubmenu(tr("Pitch and Rate"));
+    // Speed
+    QMenu* speedMenu = addSubmenu(tr("Speed (Pitch/Tempo)"));
     addDeckAndSamplerControl("keylock", tr("Keylock Mode"),
-                             tr("Toggle keylock mode"), rateMenu);
-    addDeckAndSamplerControl("rate", tr("Playback Speed Slider"),
-                             tr("Playback speed control slider"), rateMenu, true);
-    addDeckAndSamplerControl("pitch", tr("Pitch Slider (Musical)"),
-                             tr("Pitch control slider (does not affect speed)"), rateMenu, true);
-    addDeckAndSamplerControl("sync_key", tr("Sync Key"), tr("Match musical key"), rateMenu, true);
-    addDeckAndSamplerControl("rate_perm_up", tr("Rate Up"), tr("Adjust rate up (coarse)"), rateMenu);
-    addDeckAndSamplerControl("rate_perm_up_small", tr("Rate Up (Fine)"),
-                             tr("Adjust rate up (fine)"), rateMenu);
-    addDeckAndSamplerControl("rate_perm_down", tr("Rate Down"), tr("Adjust rate down (coarse)"), rateMenu);
-    addDeckAndSamplerControl("rate_perm_down_small", tr("Rate Down (Fine)"),
-                             tr("Adjust rate down (fine)"), rateMenu);
-    addDeckAndSamplerControl("rate_temp_up", tr("Pitch-Bend Rate Up"),
-                             tr("Pitch-bend rate up (coarse)"), rateMenu);
-    addDeckAndSamplerControl("rate_temp_up_small", tr("Pitch-Bend Rate Up (Fine)"),
-                             tr("Pitch-bend rate up (fine)"), rateMenu);
-    addDeckAndSamplerControl("rate_temp_down", tr("Pitch-Bend Rate Down"),
-                             tr("Pitch-bend rate down (coarse)"), rateMenu);
-    addDeckAndSamplerControl("rate_temp_down_small", tr("Pitch-Bend Rate Down (Fine)"),
-                             tr("Pitch-bend rate down (fine)"), rateMenu);
+                             tr("Toggle keylock mode"), speedMenu);
+    addDeckAndSamplerControl("rate", tr("Playback Speed"),
+                             tr("Playback speed control (Vinyl \"Pitch\" slider)"), speedMenu, true);
+    addDeckAndSamplerControl("pitch", tr("Pitch (Musical key)"),
+                             tr("Pitch control (does not affect tempo)"), speedMenu, true);
+    addDeckAndSamplerControl("sync_key", tr("Sync Key"), tr("Match musical key"), speedMenu, true);
+    addDeckAndSamplerControl("rate_perm_up", tr("Increase Speed"),
+                             tr("Adjust speed faster (coarse)"), speedMenu);
+    addDeckAndSamplerControl("rate_perm_up_small", tr("Increase Speed (Fine)"),
+                             tr("Adjust speed faster (fine)"), speedMenu);
+    addDeckAndSamplerControl("rate_perm_down", tr("Decrease Speed"),
+                             tr("Adjust speed slower (coarse)"), speedMenu);
+    addDeckAndSamplerControl("rate_perm_down_small", tr("Increase Speed (Fine)"),
+                             tr("Adjust speed slower (fine)"), speedMenu);
+    addDeckAndSamplerControl("rate_temp_up", tr("Temporarily Increase Speed"),
+                             tr("Temporarily increase speed (coarse)"), speedMenu);
+    addDeckAndSamplerControl("rate_temp_up_small", tr("Temporarily Increase Speed (Fine)"),
+                             tr("Temporarily increase speed (fine)"), speedMenu);
+    addDeckAndSamplerControl("rate_temp_down", tr("Temporarily Decrease Speed"),
+                             tr("Temporarily decrease speed (coarse)"), speedMenu);
+    addDeckAndSamplerControl("rate_temp_down_small", tr("Temporarily Decrease Speed (Fine)"),
+                             tr("Temporarily decrease speed (fine)"), speedMenu);
 
     // EQs
     QMenu* eqMenu = addSubmenu(tr("Equalizers"));
@@ -369,7 +371,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     const int kNumEffectRacks = 1;
     for (int iRackNumber = 1; iRackNumber <= kNumEffectRacks; ++iRackNumber) {
-        const QString rackGroup = EffectRack::formatGroupString(
+        const QString rackGroup = StandardEffectRack::formatGroupString(
                 iRackNumber - 1);
         QMenu* rackMenu = addSubmenu(m_effectRackStr.arg(iRackNumber), effectsMenu);
         QString descriptionPrefix = m_effectRackStr.arg(iRackNumber);
@@ -382,8 +384,9 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             ConfigKey(rackGroup, "num_effectunits"));
         for (int iEffectUnitNumber = 1; iEffectUnitNumber <= numEffectUnits;
              ++iEffectUnitNumber) {
-            const QString effectUnitGroup = EffectChainSlot::formatGroupString(
-                    iRackNumber - 1, iEffectUnitNumber - 1);
+            const QString effectUnitGroup =
+                    StandardEffectRack::formatEffectChainSlotGroupString(
+                        iRackNumber - 1, iEffectUnitNumber - 1);
 
             descriptionPrefix = QString("%1, %2").arg(m_effectRackStr.arg(iRackNumber),
                                                       m_effectUnitStr.arg(iEffectUnitNumber));
@@ -509,9 +512,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                     ConfigKey(effectUnitGroup, "num_effectslots"));
             for (int iEffectSlotNumber = 1; iEffectSlotNumber <= numEffectSlots;
                      ++iEffectSlotNumber) {
-                const QString effectSlotGroup = EffectSlot::formatGroupString(
-                        iRackNumber - 1, iEffectUnitNumber - 1,
-                        iEffectSlotNumber - 1);
+                const QString effectSlotGroup =
+                        StandardEffectRack::formatEffectSlotGroupString(
+                            iRackNumber - 1, iEffectUnitNumber - 1,
+                            iEffectSlotNumber - 1);
 
                 QMenu* effectSlotMenu = addSubmenu(m_effectStr.arg(iEffectSlotNumber),
                                                    effectUnitMenu);
@@ -546,9 +550,12 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                         ConfigKey(effectSlotGroup, "num_parameterslots"));
                 for (int iParameterSlotNumber = 1; iParameterSlotNumber <= numParameterSlots;
                      ++iParameterSlotNumber) {
-                    const QString parameterSlotGroup = EffectParameterSlot::formatGroupString(
-                            iRackNumber - 1, iEffectUnitNumber - 1,
-                            iEffectSlotNumber - 1);
+                    // The parameter slot group is the same as the effect slot
+                    // group on a standard effect rack.
+                    const QString parameterSlotGroup =
+                            StandardEffectRack::formatEffectSlotGroupString(
+                                iRackNumber - 1, iEffectUnitNumber - 1,
+                                iEffectSlotNumber - 1);
                     const QString parameterSlotItemPrefix = EffectParameterSlot::formatItemPrefix(
                             iParameterSlotNumber - 1);
                     QMenu* parameterSlotMenu = addSubmenu(
@@ -577,28 +584,6 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         }
     }
 
-    /* DEPRECATED EFFECTS
-    addDeckControl("flanger",
-                   tr("Flange Toggle"),
-                   tr("Toggle flange effect"),
-                   effectsMenu);
-    addControl("[Flanger]", "lfoPeriod",
-               tr("Flange Wavelength/Period"),
-               tr("Flange effect: Wavelength/period"), effectsMenu, true);
-    addControl("[Flanger]", "lfoDepth",
-               tr("Flange Intensity"),
-               tr("Flange effect: Intensity"), effectsMenu, true);
-    addControl("[Flanger]", "lfoDelay",
-               tr("Flange Phase Delay"),
-               tr("Flange effect: Phase delay"), effectsMenu, true);
-    addDeckControl("filter",
-                   tr("Filter Toggle"),
-                   tr("Toggle filter effect"), effectsMenu);
-    addDeckControl("filterDepth",
-                   tr("Filter Intensity"),
-                   tr("Filter effect: Intensity"), effectsMenu, true);
-    */
-
     // Microphone Controls
     QMenu* microphoneMenu = addSubmenu(tr("Microphone / Auxiliary"));
 
@@ -619,6 +604,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                tr("Auxiliary on/off"),
                                microphoneMenu,
                                false, true);
+    addMicrophoneAndAuxControl("pregain",
+                               tr("Gain"),
+                               tr("Gain knob"), microphoneMenu,
+                               true, true, true);
     addMicrophoneAndAuxControl("volume",
                                tr("Volume Fader"),
                                tr("Volume Fader"), microphoneMenu,

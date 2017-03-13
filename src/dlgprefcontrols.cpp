@@ -37,6 +37,8 @@
 #include "mixxx.h"
 #include "defs_urls.h"
 
+const int kDefaultRowHeight = 20;
+
 DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
                                  SkinLoader* pSkinLoader,
                                  PlayerManager* pPlayerManager,
@@ -47,7 +49,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
            m_pSkinLoader(pSkinLoader),
            m_pPlayerManager(pPlayerManager),
            m_iNumConfiguredDecks(0),
-           m_iNumConfiguredSamplers(0) {
+           m_iNumConfiguredSamplers(0),
+           m_rebootNotifiedRowHeight(false) {
     setupUi(this);
 
     m_pNumDecks = new ControlObjectSlave("[Master]", "num_decks", this);
@@ -77,6 +80,14 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     }
     connect(ComboBoxPosition, SIGNAL(activated(int)),
             this, SLOT(slotSetPositionDisplay(int)));
+
+    // Set default direction as stored in config file
+    int rowHeight = m_pConfig->getValueString(ConfigKey("[Library]","RowHeight"),
+            QString::number(kDefaultRowHeight)).toInt();
+    spinBoxRowHeight->setValue(rowHeight);
+    connect(spinBoxRowHeight, SIGNAL(valueChanged(int)),
+            this, SLOT(slotRowHeightValueChanged(int)));
+
 
     // Set default direction as stored in config file
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).length() == 0)
@@ -239,44 +250,34 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
 
     ComboBoxSkinconf->clear();
 
-    QDir skinsDir(m_pConfig->getResourcePath() + "skins/");
-    skinsDir.setFilter(QDir::Dirs);
-
-    QList<QFileInfo> list = skinsDir.entryInfoList();
-
-    if (CmdlineArgs::Instance().getDeveloper()) {
-        // Show developer skins
-        QDir developerSkinsDir(m_pConfig->getResourcePath() + "developer_skins/");
-        developerSkinsDir.setFilter(QDir::Dirs);
-        list += developerSkinsDir.entryInfoList();
+    QList<QDir> skinSearchPaths = m_pSkinLoader->getSkinSearchPaths();
+    QList<QFileInfo> skins;
+    foreach (QDir dir, skinSearchPaths) {
+        dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
+        skins.append(dir.entryInfoList());
     }
 
-    QString configuredSkinPath = m_pSkinLoader->getConfiguredSkinPath();
-
-    int j=0;
-    for (int i=0; i<list.size(); ++i)
-    {
-        if (list.at(i).fileName()!="." && list.at(i).fileName()!="..")
-        {
-            bool size_ok = checkSkinResolution(list.at(i).filePath());
-            if (size_ok) {
-                ComboBoxSkinconf->insertItem(i, list.at(i).fileName());
-            } else {
-                ComboBoxSkinconf->insertItem(i, QIcon(":/images/preferences/ic_preferences_warning.png"), list.at(i).fileName());
-            }
-
-            if (list.at(i).filePath() == configuredSkinPath) {
-                ComboBoxSkinconf->setCurrentIndex(j);
-                if (size_ok) {
-                    warningLabel->hide();
-                } else {
-                    warningLabel->show();
-                }
-            }
-            ++j;
+    QString configuredSkinPath = m_pSkinLoader->getSkinPath();
+    QIcon sizeWarningIcon(":/images/preferences/ic_preferences_warning.png");
+    int index = 0;
+    foreach (QFileInfo skinInfo, skins) {
+        bool size_ok = checkSkinResolution(skinInfo.absoluteFilePath());
+        if (size_ok) {
+            ComboBoxSkinconf->insertItem(index, skinInfo.fileName());
+        } else {
+            ComboBoxSkinconf->insertItem(index, sizeWarningIcon, skinInfo.fileName());
         }
-    }
 
+        if (skinInfo.absoluteFilePath() == configuredSkinPath) {
+            ComboBoxSkinconf->setCurrentIndex(index);
+            if (size_ok) {
+                warningLabel->hide();
+            } else {
+                warningLabel->show();
+            }
+        }
+        index++;
+    }
 
     connect(ComboBoxSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
     connect(ComboBoxSchemeconf, SIGNAL(activated(int)), this, SLOT(slotSetScheme(int)));
@@ -335,11 +336,10 @@ DlgPrefControls::~DlgPrefControls() {
     qDeleteAll(m_rateRangeControls);
 }
 
-void DlgPrefControls::slotUpdateSchemes()
-{
+void DlgPrefControls::slotUpdateSchemes() {
     // Since this involves opening a file we won't do this as part of regular slotUpdate
     QList<QString> schlist = LegacySkinParser::getSchemeList(
-                m_pSkinLoader->getConfiguredSkinPath());
+                m_pSkinLoader->getSkinPath());
 
     ComboBoxSchemeconf->clear();
 
@@ -349,10 +349,11 @@ void DlgPrefControls::slotUpdateSchemes()
         ComboBoxSchemeconf->setCurrentIndex(0);
     } else {
         ComboBoxSchemeconf->setEnabled(true);
+        QString selectedScheme = m_pConfig->getValueString(ConfigKey("[Config]","Scheme"));
         for (int i = 0; i < schlist.size(); i++) {
             ComboBoxSchemeconf->addItem(schlist[i]);
 
-            if (schlist[i] == m_pConfig->getValueString(ConfigKey("[Config]","Scheme"))) {
+            if (schlist[i] == selectedScheme) {
                 ComboBoxSchemeconf->setCurrentIndex(i);
             }
         }
@@ -375,6 +376,10 @@ void DlgPrefControls::slotUpdate() {
         ComboBoxRateDir->setCurrentIndex(0);
     else
         ComboBoxRateDir->setCurrentIndex(1);
+
+    int rowHeight = m_pConfig->getValueString(ConfigKey("[Library]","RowHeight"),
+            QString::number(kDefaultRowHeight)).toInt();
+    spinBoxRowHeight->setValue(rowHeight);
 }
 
 void DlgPrefControls::slotResetToDefaults() {
@@ -416,6 +421,8 @@ void DlgPrefControls::slotResetToDefaults() {
     spinBoxTempRateRight->setValue(2.0);
     spinBoxPermRateLeft->setValue(0.50);
     spinBoxPermRateRight->setValue(0.05);
+
+    spinBoxRowHeight->setValue(kDefaultRowHeight);
 }
 
 void DlgPrefControls::slotSetLocale(int pos) {
@@ -587,10 +594,15 @@ void DlgPrefControls::slotApply() {
     m_pConfig->set(ConfigKey("[Controls]","RateRange"), ConfigValue((int)idx));
 
     // Write rate direction to config file
-    if (deck1RateDir == 1)
+    if (deck1RateDir == 1) {
         m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(0));
-    else
+    } else {
         m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(1));
+    }
+
+    int rowHeight = spinBoxRowHeight->value();
+    m_pConfig->set(ConfigKey("[Library]","RowHeight"),
+            ConfigValue(rowHeight));
 
 }
 
@@ -671,4 +683,12 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
     m_iNumConfiguredSamplers = numsamplers;
     slotSetRateDir(m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).toInt());
     slotSetRateRange(m_pConfig->getValueString(ConfigKey("[Controls]","RateRange")).toInt());
+}
+
+void DlgPrefControls::slotRowHeightValueChanged(int height) {
+    Q_UNUSED(height);
+    if(!m_rebootNotifiedRowHeight) {
+        notifyRebootNecessary();
+        m_rebootNotifiedRowHeight = true;
+    }
 }

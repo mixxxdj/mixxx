@@ -31,8 +31,8 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
         return;
     }
 
-    const Waveform* waveform = pTrack->getWaveform();
-    if (waveform == NULL) {
+    ConstWaveformPointer waveform = pTrack->getWaveform();
+    if (waveform.isNull()) {
         return;
     }
 

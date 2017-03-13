@@ -126,6 +126,8 @@ class MixxxMainWindow : public QMainWindow {
     void slotDeveloperToolsClosed();
     void slotDeveloperStatsExperiment();
     void slotDeveloperStatsBase();
+    // toogle the script debugger
+    void slotDeveloperDebugger(bool toggle);
 
     void slotToCenterOfPrimaryScreen();
 
@@ -157,7 +159,6 @@ class MixxxMainWindow : public QMainWindow {
     bool loadTranslations(const QLocale& systemLocale, QString userLocale,
                           const QString& translation, const QString& prefix,
                           const QString& translationPath, QTranslator* pTranslator);
-    void createCOAliases();
     void checkDirectRendering();
     bool confirmExit();
 
@@ -246,6 +247,7 @@ class MixxxMainWindow : public QMainWindow {
     QAction* m_pDeveloperStatsExperiment;
     QAction* m_pDeveloperStatsBase;
     DlgDeveloperTools* m_pDeveloperToolsDlg;
+    QAction* m_pDeveloperDebugger;
 
     int m_iNoPlaylists;
 

@@ -2,7 +2,7 @@
     <WidgetGroup>
         <ObjectName>DecksSizer</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>me,me</SizePolicy>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
             <WidgetGroup>
                 <ObjectName>DecksLeftContainer</ObjectName>

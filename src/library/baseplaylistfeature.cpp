@@ -349,7 +349,7 @@ void BasePlaylistFeature::slotImportPlaylist() {
     } else {
         return;
     }
-    QList<QString> entries = playlist_parser->parse(playlist_file);
+    QStringList entries = playlist_parser->parse(playlist_file);
 
     // Iterate over the List that holds URLs of playlist entires
     m_pPlaylistTableModel->addTracks(QModelIndex(), entries);
@@ -495,8 +495,8 @@ void BasePlaylistFeature::bindWidget(WLibrary* libraryWidget,
     libraryWidget->registerView(m_rootViewName, edit);
 }
 
-void BasePlaylistFeature::htmlLinkClicked(const QUrl & link) {
-    if (QString(link.path())=="create") {
+void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {
+    if (QString(link.path()) == "create") {
         slotCreatePlaylist();
     } else {
         qDebug() << "Unknonw playlist link clicked" << link.path();

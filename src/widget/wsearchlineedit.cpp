@@ -10,6 +10,7 @@
 WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
         : QLineEdit(pParent),
           WBaseWidget(this) {
+    setAcceptDrops(false);
     m_clearButton = new QToolButton(this);
     QPixmap pixmap(":/skins/cross.png");
     m_clearButton->setIcon(QIcon(pixmap));

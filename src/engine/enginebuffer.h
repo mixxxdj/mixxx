@@ -121,7 +121,6 @@ class EngineBuffer : public EngineObject {
     EngineBuffer(QString _group, ConfigObject<ConfigValue>* _config,
                  EngineChannel* pChannel, EngineMaster* pMixingEngine);
     virtual ~EngineBuffer();
-    bool getPitchIndpTimeStretch(void);
 
     void bindWorkers(EngineWorkerScheduler* pWorkerScheduler);
 
@@ -162,8 +161,8 @@ class EngineBuffer : public EngineObject {
     // For dependency injection of scalers.
     void setScalerForTest(EngineBufferScale* pScale);
 
-    // For dependency injection of fake tracks.
-    TrackPointer loadFakeTrack();
+    // For dependency injection of fake tracks, with an optional filebpm value.
+    TrackPointer loadFakeTrack(double filebpm = 0);
 
     static QString getKeylockEngineName(KeylockEngine engine) {
         switch (engine) {
@@ -211,7 +210,7 @@ class EngineBuffer : public EngineObject {
     void slotPassthroughChanged(double v);
 
   private:
-    void enablePitchAndTimeScaling(bool bEnable);
+    void enableIndependentPitchTempoScaling(bool bEnable);
 
     void updateIndicators(double rate, int iBufferSize);
 
@@ -248,6 +247,7 @@ class EngineBuffer : public EngineObject {
     FRIEND_TEST(SyncControlTest, TestDetermineBpmMultiplier);
     FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
     FRIEND_TEST(EngineSyncTest, HalfDoubleThenPlay);
+    FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
     EngineSync* m_pEngineSync;
     SyncControl* m_pSyncControl;
     VinylControlControl* m_pVinylControlControl;

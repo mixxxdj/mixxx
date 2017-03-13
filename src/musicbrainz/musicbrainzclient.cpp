@@ -23,7 +23,7 @@ const int MusicBrainzClient::m_DefaultTimeout = 5000; // msec
 MusicBrainzClient::MusicBrainzClient(QObject* parent)
                  : QObject(parent),
                    m_network(this),
-                   m_timeouts(m_DefaultTimeout, this){
+                   m_timeouts(m_DefaultTimeout, this) {
 }
 
 void MusicBrainzClient::start(int id, const QString& mbid) {

@@ -4,6 +4,8 @@
 #ifndef BPMCONTROL_H
 #define BPMCONTROL_H
 
+#include <gtest/gtest_prod.h>
+
 #include "controlobject.h"
 #include "engine/enginecontrol.h"
 #include "engine/sync/syncable.h"
@@ -45,6 +47,7 @@ class BpmControl : public EngineControl {
                    const int iBufferSize);
     void setTargetBeatDistance(double beatDistance);
     void setInstantaneousBpm(double instantaneousBpm);
+    void resetSyncAdjustment();
     double updateBeatDistance();
 
     void collectFeatures(GroupFeatureState* pGroupFeatures) const;
@@ -144,6 +147,7 @@ class BpmControl : public EngineControl {
     double m_dSyncInstantaneousBpm;
     double m_dLastSyncAdjustment;
     bool m_resetSyncAdjustment;
+    FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
     double m_dUserOffset;
 
     TapFilter m_tapFilter;

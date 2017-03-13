@@ -17,8 +17,7 @@ RecordingFeature::RecordingFeature(QObject* parent, ConfigObject<ConfigValue>* p
         : LibraryFeature(parent),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
-          m_pRecordingManager(pRecordingManager){
-
+          m_pRecordingManager(pRecordingManager) {
 }
 
 RecordingFeature::~RecordingFeature() {

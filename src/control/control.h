@@ -25,6 +25,9 @@ class ControlDoublePrivate : public QObject {
         s_pUserConfig = pConfig;
     }
 
+    // Adds a ConfigKey for 'alias' to the control for 'key'. Can be used for
+    // supporting a legacy / deprecated control. The 'key' control must exist
+    // for this to work.
     static void insertAlias(const ConfigKey& alias, const ConfigKey& key);
 
     // Gets the ControlDoublePrivate matching the given ConfigKey. If pCreatorCO
@@ -37,6 +40,8 @@ class ControlDoublePrivate : public QObject {
 
     // Adds all ControlDoublePrivate that currently exist to pControlList
     static void getControls(QList<QSharedPointer<ControlDoublePrivate> >* pControlsList);
+
+    static QHash<ConfigKey, ConfigKey> getControlAliases();
 
     const QString& name() const {
         return m_name;
@@ -167,12 +172,12 @@ class ControlDoublePrivate : public QObject {
 
     // Hash of ControlDoublePrivate instantiations.
     static QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > s_qCOHash;
-    static QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > s_qCOAliasHash;
+    // Hash of aliases between ConfigKeys. Solely used for looking up the first
+    // alias associated with a key.
+    static QHash<ConfigKey, ConfigKey> s_qCOAliasHash;
 
-    // Mutex guarding access to the ControlDoublePrivate hash.
+    // Mutex guarding access to s_qCOHash and s_qCOAliasHash.
     static QMutex s_qCOHashMutex;
-    // Mutex guarding access to the ControlDoublePrivate aliases hash.
-    static QMutex s_qCOAliasHashMutex;
 };
 
 

@@ -21,12 +21,13 @@ bool WOverviewLMH::drawNextPixmapPart() {
 
     int currentCompletion;
 
-    if (!m_pWaveform) {
+    ConstWaveformPointer pWaveform = getWaveform();
+    if (!pWaveform) {
         return false;
     }
 
-    const int dataSize = m_pWaveform->getDataSize();
-    if (dataSize == 0 ) {
+    const int dataSize = pWaveform->getDataSize();
+    if (dataSize == 0) {
         return false;
     }
 
@@ -40,16 +41,12 @@ bool WOverviewLMH::drawNextPixmapPart() {
     }
 
     // Always multiple of 2
-    const int waveformCompletion = m_pWaveform->getCompletion();
+    const int waveformCompletion = pWaveform->getCompletion();
     // Test if there is some new to draw (at least of pixel width)
     const int completionIncrement = waveformCompletion - m_actualCompletion;
 
     int visiblePixelIncrement = completionIncrement * width() / dataSize;
     if (completionIncrement < 2 || visiblePixelIncrement == 0) {
-        return false;
-    }
-
-    if (!m_pWaveform->getMutex()->tryLock()) {
         return false;
     }
 
@@ -76,8 +73,8 @@ bool WOverviewLMH::drawNextPixmapPart() {
 
     for (currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion; currentCompletion += 2) {
-        unsigned char lowNeg = m_pWaveform->getLow(currentCompletion);
-        unsigned char lowPos = m_pWaveform->getLow(currentCompletion+1);
+        unsigned char lowNeg = pWaveform->getLow(currentCompletion);
+        unsigned char lowPos = pWaveform->getLow(currentCompletion+1);
         if (lowPos || lowNeg) {
             painter.setPen(lowColorPen);
             painter.drawLine(QPoint(currentCompletion / 2, -lowNeg),
@@ -89,28 +86,28 @@ bool WOverviewLMH::drawNextPixmapPart() {
             currentCompletion < nextCompletion; currentCompletion += 2) {
         painter.setPen(midColorPen);
         painter.drawLine(QPoint(currentCompletion / 2,
-                -m_pWaveform->getMid(currentCompletion)),
+                -pWaveform->getMid(currentCompletion)),
                 QPoint(currentCompletion / 2,
-                m_pWaveform->getMid(currentCompletion+1)));
+                pWaveform->getMid(currentCompletion+1)));
     }
 
     for (currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion; currentCompletion += 2) {
         painter.setPen(highColorPen);
         painter.drawLine(QPoint(currentCompletion / 2,
-                -m_pWaveform->getHigh(currentCompletion)),
+                -pWaveform->getHigh(currentCompletion)),
                 QPoint(currentCompletion / 2,
-                m_pWaveform->getHigh(currentCompletion+1)));
+                pWaveform->getHigh(currentCompletion+1)));
     }
 
     // Evaluate waveform ratio peak
 
     for (currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion; currentCompletion += 2) {
-        m_waveformPeak = math_max(m_waveformPeak,
-                (float)m_pWaveform->getAll(currentCompletion));
-        m_waveformPeak = math_max(m_waveformPeak,
-                (float)m_pWaveform->getAll(currentCompletion+1));
+        m_waveformPeak = math_max3(
+                m_waveformPeak,
+                static_cast<float>(pWaveform->getAll(currentCompletion)),
+                static_cast<float>(pWaveform->getAll(currentCompletion + 1)));
     }
 
     m_actualCompletion = nextCompletion;
@@ -123,6 +120,5 @@ bool WOverviewLMH::drawNextPixmapPart() {
         //qDebug() << "m_waveformPeakRatio" << m_waveformPeak;
     }
 
-    m_pWaveform->getMutex()->unlock();
     return true;
 }

@@ -6,11 +6,12 @@
 
 EffectRack::EffectRack(EffectsManager* pEffectsManager,
                        EffectChainManager* pEffectChainManager,
-                       const unsigned int iRackNumber)
-        : m_iRackNumber(iRackNumber),
-          m_group(formatGroupString(m_iRackNumber)),
-          m_pEffectsManager(pEffectsManager),
+                       const unsigned int iRackNumber,
+                       const QString& group)
+        : m_pEffectsManager(pEffectsManager),
           m_pEffectChainManager(pEffectChainManager),
+          m_iRackNumber(iRackNumber),
+          m_group(group),
           m_controlNumEffectChainSlots(ConfigKey(m_group, "num_effectunits")),
           m_controlClearRack(ConfigKey(m_group, "clear")),
           m_pEngineEffectRack(new EngineEffectRack(iRackNumber)) {
@@ -77,25 +78,6 @@ void EffectRack::slotNumEffectChainSlots(double v) {
     qWarning() << "WARNING: num_effectchain_slots is a read-only control.";
 }
 
-void EffectRack::slotLoadEffectOnChainSlot(const unsigned int iChainSlotNumber,
-                                           const unsigned int iEffectSlotNumber,
-                                           QString effectId) {
-    if (iChainSlotNumber >= static_cast<unsigned int>(m_effectChainSlots.size())) {
-        return;
-    }
-    EffectPointer pNextEffect = m_pEffectsManager->instantiateEffect(effectId);
-
-    EffectChainSlotPointer pChainSlot = m_effectChainSlots[iChainSlotNumber];
-    EffectChainPointer pChain = pChainSlot->getEffectChain();
-    if (!pChain) {
-        pChain = EffectChainPointer(new EffectChain(m_pEffectsManager, QString(),
-                                                    EffectChainPointer()));
-        pChain->setName(QObject::tr("Empty Chain"));
-        pChainSlot->loadEffectChain(pChain);
-    }
-    pChain->replaceEffect(iEffectSlotNumber, pNextEffect);
-}
-
 void EffectRack::slotClearRack(double v) {
     if (v > 0) {
         foreach (EffectChainSlotPointer pChainSlot, m_effectChainSlots) {
@@ -104,84 +86,21 @@ void EffectRack::slotClearRack(double v) {
     }
 }
 
+EffectChainPointer EffectRack::makeEmptyChain() {
+    EffectChainPointer pChain(new EffectChain(m_pEffectsManager, QString(),
+                                              EffectChainPointer()));
+    pChain->setName("Empty Chain");
+    return pChain;
+}
+
 int EffectRack::numEffectChainSlots() const {
     return m_effectChainSlots.size();
 }
 
-
-EffectChainSlotPointer EffectRack::addEffectChainSlotForEQ() {
-    int iChainSlotNumber = m_effectChainSlots.size();
-    EffectChainSlot* pChainSlot =
-            new EffectChainSlot(this, m_iRackNumber, iChainSlotNumber);
-
-    // Add a single EffectSlot for EQDefault
-    pChainSlot->addEffectSlot();
-
-    const QSet<QString>& registeredGroups =
-            m_pEffectChainManager->registeredGroups();
-    foreach (const QString& group, registeredGroups) {
-        pChainSlot->registerGroup(group);
-    }
-
-    EffectChainSlotPointer pChainSlotPointer = EffectChainSlotPointer(pChainSlot);
-    m_effectChainSlots.append(pChainSlotPointer);
+void EffectRack::addEffectChainSlotInternal(EffectChainSlotPointer pChainSlot) {
+    m_effectChainSlots.append(pChainSlot);
     m_controlNumEffectChainSlots.setAndConfirm(
-            m_controlNumEffectChainSlots.get() + 1);
-
-    // Now load an empty effect chain into the slot so that users can edit
-    // effect slots on the fly without having to load a chain.
-    EffectChainPointer pChain(new EffectChain(m_pEffectsManager, QString(),
-                                              EffectChainPointer()));
-    pChain->setName(QObject::tr("Empty Chain"));
-    pChainSlotPointer->loadEffectChain(pChain);
-
-    return pChainSlotPointer;
-}
-
-EffectChainSlotPointer EffectRack::addEffectChainSlot() {
-    int iChainSlotNumber = m_effectChainSlots.size();
-    EffectChainSlot* pChainSlot =
-            new EffectChainSlot(this, m_iRackNumber, iChainSlotNumber);
-
-    // TODO(rryan) How many should we make default? They create controls that
-    // the GUI may rely on, so the choice is important to communicate to skin
-    // designers.
-    // TODO(rryan): This should not be done here.
-    pChainSlot->addEffectSlot();
-    pChainSlot->addEffectSlot();
-    pChainSlot->addEffectSlot();
-    pChainSlot->addEffectSlot();
-
-    connect(pChainSlot, SIGNAL(nextChain(unsigned int, EffectChainPointer)),
-            this, SLOT(loadNextChain(unsigned int, EffectChainPointer)));
-    connect(pChainSlot, SIGNAL(prevChain(unsigned int, EffectChainPointer)),
-            this, SLOT(loadPrevChain(unsigned int, EffectChainPointer)));
-
-    connect(pChainSlot, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)),
-            this, SLOT(loadNextEffect(unsigned int, unsigned int, EffectPointer)));
-    connect(pChainSlot, SIGNAL(prevEffect(unsigned int, unsigned int, EffectPointer)),
-            this, SLOT(loadPrevEffect(unsigned int, unsigned int, EffectPointer)));
-
-    // Register all the existing channels with the new EffectChain
-    const QSet<QString>& registeredGroups =
-            m_pEffectChainManager->registeredGroups();
-    foreach (const QString& group, registeredGroups) {
-        pChainSlot->registerGroup(group);
-    }
-
-    EffectChainSlotPointer pChainSlotPointer = EffectChainSlotPointer(pChainSlot);
-    m_effectChainSlots.append(pChainSlotPointer);
-    m_controlNumEffectChainSlots.setAndConfirm(
-            m_controlNumEffectChainSlots.get() + 1);
-
-    // Now load an empty effect chain into the slot so that users can edit
-    // effect slots on the fly without having to load a chain.
-    EffectChainPointer pChain(new EffectChain(m_pEffectsManager, QString(),
-                                              EffectChainPointer()));
-    pChain->setName("Empty Chain");
-    pChainSlotPointer->loadEffectChain(pChain);
-
-    return pChainSlotPointer;
+        m_controlNumEffectChainSlots.get() + 1);
 }
 
 EffectChainSlotPointer EffectRack::getEffectChainSlot(int i) {
@@ -190,10 +109,6 @@ EffectChainSlotPointer EffectRack::getEffectChainSlot(int i) {
         return EffectChainSlotPointer();
     }
     return m_effectChainSlots[i];
-}
-
-int EffectRack::getRackNumber() {
-    return m_iRackNumber;
 }
 
 void EffectRack::loadNextChain(const unsigned int iChainSlotNumber,
@@ -237,9 +152,7 @@ void EffectRack::loadNextEffect(const unsigned int iChainSlotNumber,
     EffectChainSlotPointer pChainSlot = m_effectChainSlots[iChainSlotNumber];
     EffectChainPointer pChain = pChainSlot->getEffectChain();
     if (!pChain) {
-        pChain = EffectChainPointer(new EffectChain(m_pEffectsManager, QString(),
-                                                    EffectChainPointer()));
-        pChain->setName("Empty Chain");
+        pChain = makeEmptyChain();
         pChainSlot->loadEffectChain(pChain);
     }
     pChain->replaceEffect(iEffectSlotNumber, pNextEffect);
@@ -260,11 +173,225 @@ void EffectRack::loadPrevEffect(const unsigned int iChainSlotNumber,
     EffectChainSlotPointer pChainSlot = m_effectChainSlots[iChainSlotNumber];
     EffectChainPointer pChain = pChainSlot->getEffectChain();
     if (!pChain) {
-        pChain = EffectChainPointer(new EffectChain(m_pEffectsManager, QString(),
-                                                    EffectChainPointer()));
-        pChain->setName("Empty Chain");
+        pChain = makeEmptyChain();
         pChainSlot->loadEffectChain(pChain);
     }
 
     pChain->replaceEffect(iEffectSlotNumber, pPrevEffect);
+}
+
+StandardEffectRack::StandardEffectRack(EffectsManager* pEffectsManager,
+                                       EffectChainManager* pChainManager,
+                                       const unsigned int iRackNumber)
+        : EffectRack(pEffectsManager, pChainManager, iRackNumber,
+                     formatGroupString(iRackNumber)) {
+}
+
+EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
+    int iChainSlotNumber = numEffectChainSlots();
+
+    QString group = formatEffectChainSlotGroupString(getRackNumber(),
+                                                     iChainSlotNumber);
+    EffectChainSlot* pChainSlot =
+            new EffectChainSlot(this, group, iChainSlotNumber);
+
+    // TODO(rryan) How many should we make default? They create controls that
+    // the GUI may rely on, so the choice is important to communicate to skin
+    // designers.
+    for (int i = 0; i < 4; ++i) {
+        pChainSlot->addEffectSlot(
+            StandardEffectRack::formatEffectSlotGroupString(
+                getRackNumber(), iChainSlotNumber, i));
+    }
+
+    connect(pChainSlot, SIGNAL(nextChain(unsigned int, EffectChainPointer)),
+            this, SLOT(loadNextChain(unsigned int, EffectChainPointer)));
+    connect(pChainSlot, SIGNAL(prevChain(unsigned int, EffectChainPointer)),
+            this, SLOT(loadPrevChain(unsigned int, EffectChainPointer)));
+
+    connect(pChainSlot, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)),
+            this, SLOT(loadNextEffect(unsigned int, unsigned int, EffectPointer)));
+    connect(pChainSlot, SIGNAL(prevEffect(unsigned int, unsigned int, EffectPointer)),
+            this, SLOT(loadPrevEffect(unsigned int, unsigned int, EffectPointer)));
+
+    // Register all the existing channels with the new EffectChain
+    const QSet<QString>& registeredGroups =
+            m_pEffectChainManager->registeredGroups();
+    foreach (const QString& group, registeredGroups) {
+        pChainSlot->registerGroup(group);
+    }
+
+    EffectChainSlotPointer pChainSlotPointer = EffectChainSlotPointer(pChainSlot);
+    addEffectChainSlotInternal(pChainSlotPointer);
+
+    // Now load an empty effect chain into the slot so that users can edit
+    // effect slots on the fly without having to load a chain.
+    EffectChainPointer pChain = makeEmptyChain();
+    pChainSlotPointer->loadEffectChain(pChain);
+
+    return pChainSlotPointer;
+}
+
+PerGroupRack::PerGroupRack(EffectsManager* pEffectsManager,
+                           EffectChainManager* pChainManager,
+                           const unsigned int iRackNumber,
+                           const QString& group)
+        : EffectRack(pEffectsManager, pChainManager, iRackNumber, group) {
+}
+
+EffectChainSlotPointer PerGroupRack::addEffectChainSlotForGroup(const QString& group) {
+    if (m_groupToChainSlot.contains(group)) {
+        qWarning() << "PerGroupRack" << getGroup()
+                   << "group is already registered" << group;
+        return getGroupEffectChainSlot(group);
+    }
+
+    int iChainSlotNumber = m_groupToChainSlot.size();
+    QString chainSlotGroup = formatEffectChainSlotGroupForGroup(
+        getRackNumber(), iChainSlotNumber, group);
+    EffectChainSlot* pChainSlot = new EffectChainSlot(this, chainSlotGroup,
+                                                      iChainSlotNumber);
+    EffectChainSlotPointer pChainSlotPointer(pChainSlot);
+    addEffectChainSlotInternal(pChainSlotPointer);
+    m_groupToChainSlot[group] = pChainSlotPointer;
+
+    configureEffectChainSlotForGroup(pChainSlotPointer, group);
+    return pChainSlotPointer;
+}
+
+EffectChainSlotPointer PerGroupRack::getGroupEffectChainSlot(const QString& group) {
+    return m_groupToChainSlot[group];
+}
+
+QuickEffectRack::QuickEffectRack(EffectsManager* pEffectsManager,
+                                 EffectChainManager* pChainManager,
+                                 const unsigned int iRackNumber)
+        : PerGroupRack(pEffectsManager, pChainManager, iRackNumber,
+                       QuickEffectRack::formatGroupString(iRackNumber)) {
+}
+
+void QuickEffectRack::configureEffectChainSlotForGroup(EffectChainSlotPointer pSlot,
+                                                       const QString& group) {
+    // Register this group alone with the chain slot.
+    pSlot->registerGroup(group);
+
+    // Add a single EffectSlot for the quick effect.
+    pSlot->addEffectSlot(QuickEffectRack::formatEffectSlotGroupString(
+        getRackNumber(), group));
+
+    // TODO(rryan): Set up next/prev signals.
+
+    // Now load an empty effect chain into the slot so that users can edit
+    // effect slots on the fly without having to load a chain.
+    EffectChainPointer pChain = makeEmptyChain();
+    pSlot->loadEffectChain(pChain);
+
+    // Enable the chain for the group by default.
+    pChain->enableForGroup(group);
+
+    // Set the chain to be fully wet.
+    pChain->setMix(1.0);
+
+    // Set the parameter default value to 0.5 (neutral).
+    pSlot->setParameter(0.5);
+    pSlot->setParameterDefaultValue(0.5);
+}
+
+bool QuickEffectRack::loadEffectToGroup(const QString& group,
+                                        EffectPointer pEffect) {
+    EffectChainSlotPointer pChainSlot = getGroupEffectChainSlot(group);
+    if (pChainSlot.isNull()) {
+        qWarning() << "No chain for group" << group;
+        return false;
+    }
+
+    EffectChainPointer pChain = pChainSlot->getEffectChain();
+    if (pChain.isNull()) {
+        pChain = makeEmptyChain();
+        pChainSlot->loadEffectChain(pChain);
+        pChain->enableForGroup(group);
+        pChain->setMix(1.0);
+    }
+
+    pChain->replaceEffect(0, pEffect);
+
+    // Force update the new effect to match the current superknob position.
+    EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(0);
+    if (pEffectSlot) {
+        pEffectSlot->onChainParameterChanged(pChainSlot->getParameter(), true);
+    }
+    return true;
+}
+
+EqualizerRack::EqualizerRack(EffectsManager* pEffectsManager,
+                             EffectChainManager* pChainManager,
+                             const unsigned int iRackNumber)
+        : PerGroupRack(pEffectsManager, pChainManager, iRackNumber,
+                       EqualizerRack::formatGroupString(iRackNumber)) {
+}
+
+void EqualizerRack::configureEffectChainSlotForGroup(EffectChainSlotPointer pSlot,
+                                                     const QString& group) {
+    // Register this group alone with the chain slot.
+    pSlot->registerGroup(group);
+
+    // Add a single EffectSlot for the equalizer effect.
+    pSlot->addEffectSlot(EqualizerRack::formatEffectSlotGroupString(
+        getRackNumber(), group));
+
+    // TODO(rryan): Set up next/prev signals.
+
+    // Now load an empty effect chain into the slot so that users can edit
+    // effect slots on the fly without having to load a chain.
+    EffectChainPointer pChain = makeEmptyChain();
+    pSlot->loadEffectChain(pChain);
+
+    // Enable the chain for the group by default.
+    pChain->enableForGroup(group);
+
+    // Set the chain to be fully wet.
+    pChain->setMix(1.0);
+
+    // Create aliases for legacy EQ controls.
+    // NOTE(rryan): If we ever add a second EqualizerRack then we need to make
+    // these only apply to the first.
+    EffectSlotPointer pEffectSlot = pSlot->getEffectSlot(0);
+    if (pEffectSlot) {
+        const QString& effectSlotGroup = pEffectSlot->getGroup();
+        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterLow"),
+                                          ConfigKey(effectSlotGroup, "parameter1"));
+
+        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterMid"),
+                                          ConfigKey(effectSlotGroup, "parameter2"));
+
+        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterHigh"),
+                                          ConfigKey(effectSlotGroup, "parameter3"));
+
+        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterLowKill"),
+                                          ConfigKey(effectSlotGroup, "button_parameter1"));
+
+        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterMidKill"),
+                                          ConfigKey(effectSlotGroup, "button_parameter2"));
+
+        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterHighKill"),
+                                          ConfigKey(effectSlotGroup, "button_parameter3"));
+
+        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterLow_loaded"),
+                                          ConfigKey(effectSlotGroup, "parameter1_loaded"));
+
+        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterMid_loaded"),
+                                          ConfigKey(effectSlotGroup, "parameter2_loaded"));
+
+        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterHigh_loaded"),
+                                          ConfigKey(effectSlotGroup, "parameter3_loaded"));
+
+        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterLowKill_loaded"),
+                                          ConfigKey(effectSlotGroup, "button_parameter1_loaded"));
+
+        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterMidKill_loaded"),
+                                          ConfigKey(effectSlotGroup, "button_parameter2_loaded"));
+
+        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterHighKill_loaded"),
+                                          ConfigKey(effectSlotGroup, "button_parameter3_loaded"));
+    }
 }

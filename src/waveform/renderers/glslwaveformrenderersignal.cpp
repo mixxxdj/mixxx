@@ -79,13 +79,13 @@ bool GLSLWaveformRendererSignal::loadShaders() {
 
 bool GLSLWaveformRendererSignal::loadTexture() {
     TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
-    Waveform* waveform = NULL;
+    ConstWaveformPointer waveform;
     int dataSize = 0;
-    WaveformData* data = NULL;
+    const WaveformData* data = NULL;
 
     if (trackInfo) {
         waveform = trackInfo->getWaveform();
-        if (waveform != NULL) {
+        if (waveform) {
             dataSize = waveform->getDataSize();
             if (dataSize > 1) {
                 data = waveform->data();
@@ -189,7 +189,7 @@ void GLSLWaveformRendererSignal::createFrameBuffers()
     //qDebug() << bufferWidth;
 }
 
-bool GLSLWaveformRendererSignal::onInit(){
+bool GLSLWaveformRendererSignal::onInit() {
     m_loadedWaveform = 0;
 
     if (!m_frameShaderProgram)
@@ -210,12 +210,12 @@ void GLSLWaveformRendererSignal::onSetup(const QDomNode& /*node*/) {
 
 }
 
-void GLSLWaveformRendererSignal::onSetTrack(){
+void GLSLWaveformRendererSignal::onSetTrack() {
     m_loadedWaveform = 0;
     loadTexture();
 }
 
-void GLSLWaveformRendererSignal::onResize(){
+void GLSLWaveformRendererSignal::onResize() {
     createFrameBuffers();
 }
 
@@ -229,8 +229,8 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         return;
     }
 
-    const Waveform* waveform = trackInfo->getWaveform();
-    if (waveform == NULL) {
+    ConstWaveformPointer waveform = trackInfo->getWaveform();
+    if (waveform.isNull()) {
         return;
     }
 

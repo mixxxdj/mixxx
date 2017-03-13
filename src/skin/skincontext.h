@@ -7,17 +7,19 @@
 #include <QDomElement>
 #include <QScriptEngine>
 #include <QDir>
+#include <QScriptEngineDebugger>
+
+#include "configobject.h"
+#include "skin/pixmapsource.h"
 
 // A class for managing the current context/environment when processing a
 // skin. Used hierarchically by LegacySkinParser to create new contexts and
 // evaluate skin XML nodes while loading the skin.
 class SkinContext {
   public:
-    SkinContext();
+    SkinContext(ConfigObject<ConfigValue>* pConfig, const QString& xmlPath);
     SkinContext(const SkinContext& parent);
     virtual ~SkinContext();
-
-    SkinContext& operator=(const SkinContext& other);
 
     // Gets a path relative to the skin path.
     QString getSkinPath(const QString& relativePath) const {
@@ -35,7 +37,7 @@ class SkinContext {
         return m_variables;
     }
     void setVariable(const QString& name, const QString& value);
-
+    void setXmlPath(const QString& xmlPath);
 
     // Updates the SkinContext with all the <SetVariable> children of node.
     void updateVariables(const QDomNode& node);
@@ -60,17 +62,26 @@ class SkinContext {
                                   const QString& attributeName,
                                   QString defaultValue) const;
     QString nodeToString(const QDomNode& node) const;
-    QDomDocument getDocument(const QDomNode& node) const;
-    QString setVariablesInSvg(const QDomNode& svgNode) const;
-    QString getPixmapPath(const QDomNode& pixmapNode) const;
+    PixmapSource getPixmapSource(const QDomNode& pixmapNode) const;
+
+    QScriptValue evaluateScript(const QString& expression,
+                                const QString& filename=QString(),
+                                int lineNumber=1);
+    QScriptValue importScriptExtension(const QString& extensionName);
+    const QSharedPointer<QScriptEngine> getScriptEngine() const;
+    void enableDebugger(bool state) const;
 
   private:
     QString variableNodeToText(const QDomElement& element) const;
 
-    mutable QScriptEngine m_scriptEngine;
-    QHash<QString, QString> m_variables;
+    QString m_xmlPath;
     QString m_skinBasePath;
-    
+    ConfigObject<ConfigValue>* m_pConfig;
+
+    QHash<QString, QString> m_variables;
+    QSharedPointer<QScriptEngine> m_pScriptEngine;
+    QSharedPointer<QScriptEngineDebugger> m_pScriptDebugger;
+    QScriptValue m_parentGlobal;
 };
 
 #endif /* SKINCONTEXT_H */

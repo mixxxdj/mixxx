@@ -49,7 +49,7 @@ class MixxxTest : public testing::Test {
     QScopedPointer<ConfigObject<ConfigValue> > m_pConfig;
 
   private:
-    bool removeDir(const QString & dirName);
+    bool removeDir(const QString& dirName);
     QString testDataDir;
 };
 

@@ -18,6 +18,7 @@ EffectManifest FilterEffect::getManifest() {
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr("Allows to fade a song out by sweeping a low or high pass filter"));
     manifest.setEffectRampsFromDry(true);
+    manifest.setIsForFilterKnob(true);
 
     EffectManifestParameter* lpf = manifest.addParameter();
     lpf->setId("lpf");
@@ -69,7 +70,7 @@ FilterGroupState::FilterGroupState()
 }
 
 FilterGroupState::~FilterGroupState() {
-    SampleUtil::free(m_pBuf );
+    SampleUtil::free(m_pBuf);
     delete m_pLowFilter;
     delete m_pHighFilter;
 }

@@ -30,6 +30,7 @@ class SyncControl : public EngineControl, public Syncable {
 
     SyncMode getSyncMode() const;
     void notifySyncModeChanged(SyncMode mode);
+    void notifyOnlyPlayingSyncable();
     void requestSyncPhase();
     bool isPlaying() const;
 

@@ -1,0 +1,87 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Microphones container widget.
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <!-- I don't now why this works but a WidgetGroup wrapper around a
+         WidgetStack with a 'fixed' size policy makes the group track the
+         minimum size of the current stack widget. -->
+    <SizePolicy>me,f</SizePolicy>
+
+    <Children>
+      <WidgetStack>
+        <ObjectName>MicrophonesContainer</ObjectName>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>MicrophoneRackExpanded</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+
+              <Template src="skin:microphone.xml">
+                <SetVariable name="i"></SetVariable>
+              </Template>
+
+              <Template src="skin:microphone.xml">
+                <SetVariable name="i">2</SetVariable>
+              </Template>
+
+              <Template src="skin:microphone.xml">
+                <SetVariable name="i">3</SetVariable>
+              </Template>
+
+              <Template src="skin:microphone.xml">
+                <SetVariable name="i">4</SetVariable>
+              </Template>
+
+              <PushButton>
+                <Size>70f,20f</Size>
+                <NumberStates>3</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Text>Ducking Off</Text>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Text>Auto Ducking</Text>
+                </State>
+                <State>
+                  <Number>2</Number>
+                  <Text>Manual Ducking</Text>
+                </State>
+                <Connection>
+                  <ConfigKey>[Master],talkoverDucking</ConfigKey>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                </Connection>
+              </PushButton>
+
+              <Template src="skin:knob.xml">
+                <SetVariable name="group">[Master]</SetVariable>
+                <SetVariable name="control">duckStrength</SetVariable>
+                <SetVariable name="label">Strength</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetStack>
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Master],show_library</ConfigKey>
+      <BindProperty>visible</BindProperty>
+      <Transform>
+        <Not/>
+      </Transform>
+    </Connection>
+  </WidgetGroup>
+</Template>

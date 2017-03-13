@@ -1,0 +1,38 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The QuickEffect rack superknob.
+  Variables:
+    QuickEffect: the quick effect rack
+    group: the group
+-->
+<Template>
+  <SetVariable name="QuickEffectRackGroup">[QuickEffectRack<Variable name="QuickEffect"/>]</SetVariable>
+  <SetVariable name="QuickEffectUnitGroup">[QuickEffectRack<Variable name="QuickEffect"/>_<Variable name="group"/>]</SetVariable>
+  <SetVariable name="QuickEffectEffectGroup">[QuickEffectRack<Variable name="QuickEffect"/>_<Variable name="group"/>_Effect1]</SetVariable>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <Children>
+      <KnobComposed>
+        <Size>40f,40f</Size>
+        <Knob>knob.svg</Knob>
+        <MinAngle>-230</MinAngle>
+        <MaxAngle>50</MaxAngle>
+        <Connection>
+          <ConfigKey><Variable name="QuickEffectUnitGroup"/>,parameter</ConfigKey>
+        </Connection>
+      </KnobComposed>
+      <EffectName>
+        <Size>40f,10f</Size>
+        <ObjectName>KnobLabel</ObjectName>
+        <EffectRackGroup><Variable name="QuickEffectRackGroup"/></EffectRackGroup>
+        <EffectUnitGroup><Variable name="QuickEffectUnitGroup"/></EffectUnitGroup>
+        <Effect>1</Effect>
+      </EffectName>
+    </Children>
+    <Connection>
+      <ConfigKey><Variable name="QuickEffectEffectGroup"/>,loaded</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

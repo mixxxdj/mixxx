@@ -213,6 +213,9 @@ docs_files += Glob('#./Mixxx-Manual.pdf')
 #.desktop file for KDE/GNOME menu
 dotdesktop_files = Glob('#src/mixxx.desktop')
 
+#.appdata.xml file for KDE/GNOME AppStream iniative
+dotappstream_files = Glob('#src/mixxx.appdata.xml')
+
 #Icon file for menu entry
 icon_files = Glob('#res/images/mixxx-icon.png')
 
@@ -294,6 +297,7 @@ if build.platform_is_linux or build.platform_is_bsd:
                 translations = env.Install(os.path.join(unix_share_path, 'mixxx', 'translations'), translation_files)
                 keyboardmappings = env.Install(os.path.join(unix_share_path, 'mixxx', 'keyboard'), keyboardmappings_files)
                 dotdesktop = env.Install(os.path.join(unix_share_path, 'applications'), dotdesktop_files)
+                dotappstream = env.Install(os.path.join(unix_share_path, 'appdata'), dotappstream_files)
                 docs = env.Install(os.path.join(unix_share_path, 'doc', 'mixxx'), docs_files)
                 icon = env.Install(os.path.join(unix_share_path, 'pixmaps'), icon_files)
                 promotracks = env.Install(os.path.join(unix_share_path, 'mixxx', 'promo'), promotracks_files)
@@ -308,6 +312,7 @@ if build.platform_is_linux or build.platform_is_bsd:
                 env.Alias('install', keyboardmappings)
                 env.Alias('install', docs)
                 env.Alias('install', dotdesktop)
+                env.Alias('install', dotappstream)
                 env.Alias('install', icon)
                 env.Alias('install', promotracks)
                 env.Alias('install', vamp_plugin)

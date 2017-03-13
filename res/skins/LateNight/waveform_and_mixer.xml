@@ -84,7 +84,32 @@
                     <ConfigKey>[Master],show_mixer</ConfigKey>
                     <BindProperty>visible</BindProperty>
                 </Connection>
-            </WidgetGroup> 
+            </WidgetGroup>
+            <WidgetGroup>
+                <ObjectName>AlignRightBottom</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,f</SizePolicy>
+                <Children>
+                    <WidgetGroup> <!-- spacer to push logo to the right -->
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>e,min</SizePolicy>
+                        <Children/>
+                    </WidgetGroup>
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>f,f</SizePolicy>
+                        <Size>103,40</Size>
+                        <BackPath>style/mixxx_logo.png</BackPath>
+                    </WidgetGroup>
+                </Children>
+                <Connection>
+                    <ConfigKey>[Master],show_mixer</ConfigKey>
+                    <BindProperty>visible</BindProperty>
+                    <Transform>
+                        <Not/>
+                    </Transform>
+                </Connection>
+            </WidgetGroup>
 		</Children>
 	</WidgetGroup>
 </Template>

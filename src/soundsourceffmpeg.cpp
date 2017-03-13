@@ -277,7 +277,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, qint64 offset) {
 
     }
 
-    if( l_iFrameCount > 0 ) {
+    if (l_iFrameCount > 0) {
        qDebug() << "SoundSourceFFmpeg::readFramesToCache(): Frame balance is not 0 it is: " << l_iFrameCount;
     }
 
@@ -383,19 +383,19 @@ Result SoundSourceFFmpeg::open() {
         qDebug() << "av_open_input_file: cannot open" << qBAFilename;
         return ERR;
     }
-    
+
 
 #if LIBAVCODEC_VERSION_INT > 3544932
     av_dict_free(&l_iFormatOpts);
 #endif
 
-    
+
     // Retrieve stream information
     if (avformat_find_stream_info(m_pFormatCtx, NULL)<0) {
         qDebug() << "av_find_stream_info: cannot open" << qBAFilename;
         return ERR;
     }
-    
+
 
     //debug only (Enable if needed)
     //av_dump_format(m_pFormatCtx, 0, qBAFilename.constData(), false);

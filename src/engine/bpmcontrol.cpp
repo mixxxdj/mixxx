@@ -150,8 +150,7 @@ void BpmControl::slotFileBpmChanged(double bpm) {
     if (getSyncMode() == SYNC_NONE) {
         slotAdjustRateSlider();
     }
-    m_dUserOffset = 0.0;
-    m_resetSyncAdjustment = true;
+    resetSyncAdjustment();
 }
 
 void BpmControl::slotAdjustBeatsFaster(double v) {
@@ -445,7 +444,8 @@ double BpmControl::calcSyncAdjustment(double my_percentage, bool userTweakingSyn
     /*qDebug() << m_sGroup << m_dUserOffset;
     qDebug() << "master beat distance:" << master_percentage;
     qDebug() << "my     beat distance:" << my_percentage;
-    qDebug() << "error               :" << (shortest_distance - m_dUserOffset);*/
+    qDebug() << "error               :" << (shortest_distance - m_dUserOffset);
+    qDebug() << "user offset         :" << m_dUserOffset;*/
 
     double adjustment = 1.0;
 
@@ -468,7 +468,7 @@ double BpmControl::calcSyncAdjustment(double my_percentage, bool userTweakingSyn
         } else if (fabs(error) > kErrorThreshold) {
             // Proportional control constant. The higher this is, the more we
             // influence sync.
-            const double kSyncAdjustmentProportional = 0.3;
+            const double kSyncAdjustmentProportional = 0.7;
             const double kSyncDeltaCap = 0.02;
 
             // TODO(owilliams): There are a lot of "1.0"s in this code -- can we eliminate them?
@@ -503,9 +503,7 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
     }
 
     if (getSyncMode() != SYNC_NONE && m_pQuantize->get()) {
-        qWarning() << getGroup() << "No beatgrid but sync and quantize enabled. "
-                                    "Disabling quantize mode";
-        m_pQuantize->set(0.0);
+        qWarning() << getGroup() << "No beatgrid but sync and quantize enabled.";
     }
     return 0.0 - m_dUserOffset;
 }
@@ -702,8 +700,7 @@ void BpmControl::trackLoaded(TrackPointer pTrack) {
     }
 
     // reset for new track
-    m_dUserOffset = 0.0;
-    m_resetSyncAdjustment = true;
+    resetSyncAdjustment();
 
     if (pTrack) {
         m_pTrack = pTrack;
@@ -728,8 +725,7 @@ void BpmControl::trackUnloaded(TrackPointer pTrack) {
 void BpmControl::slotUpdatedTrackBeats()
 {
     if (m_pTrack) {
-        m_dUserOffset = 0.0;
-        m_resetSyncAdjustment = true;
+        resetSyncAdjustment();
         m_pBeats = m_pTrack->getBeats();
     }
 }
@@ -788,6 +784,14 @@ void BpmControl::setTargetBeatDistance(double beatDistance) {
 
 void BpmControl::setInstantaneousBpm(double instantaneousBpm) {
     m_dSyncInstantaneousBpm = instantaneousBpm;
+}
+
+void BpmControl::resetSyncAdjustment() {
+    // Immediately edit the beat distance to reflect the new reality.
+    double new_distance = m_pThisBeatDistance->get() + m_dUserOffset;
+    m_pThisBeatDistance->set(new_distance);
+    m_dUserOffset = 0.0;
+    m_resetSyncAdjustment = true;
 }
 
 void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {

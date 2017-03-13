@@ -84,6 +84,7 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
             deactivateSync(pSyncable);
         }
     }
+    checkUniquePlayingSyncable();
 }
 
 void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
@@ -162,6 +163,7 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
     } else {
         deactivateSync(pSyncable);
     }
+    checkUniquePlayingSyncable();
 }
 
 void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
@@ -176,11 +178,11 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
         // If there is only one deck playing, set internal clock beat distance
         // to match it, unless there is a single other playing deck, in which
         // case we should match that.
-        const Syncable* uniqueSyncEnabled = NULL;
+        Syncable* uniqueSyncEnabled = NULL;
         const Syncable* uniqueSyncDisabled = NULL;
         int playing_sync_decks = 0;
         int playing_nonsync_decks = 0;
-        foreach (const Syncable* pOtherSyncable, m_syncables) {
+        foreach (Syncable* pOtherSyncable, m_syncables) {
             if (pOtherSyncable->isPlaying()) {
                 if (pOtherSyncable->getSyncMode() != SYNC_NONE) {
                     uniqueSyncEnabled = pOtherSyncable;
@@ -192,12 +194,40 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
             }
         }
         if (playing_sync_decks == 1) {
+            uniqueSyncEnabled->notifyOnlyPlayingSyncable();
             if (playing_nonsync_decks == 1) {
                 m_pInternalClock->setMasterBeatDistance(uniqueSyncDisabled->getBeatDistance());
             } else {
                 m_pInternalClock->setMasterBeatDistance(uniqueSyncEnabled->getBeatDistance());
             }
         }
+    }
+}
+
+void EngineSync::notifyTrackLoaded(Syncable* pSyncable) {
+    // If there are no other sync decks, initialize master based on this.
+    // If there is, make sure to set our rate based on that.
+
+    // TODO(owilliams): Check this logic with an explicit master
+    if (pSyncable->getSyncMode() != SYNC_FOLLOWER) {
+        return;
+    }
+
+    bool sync_deck_exists = false;
+    foreach (const Syncable* pOtherSyncable, m_syncables) {
+        if (pOtherSyncable == pSyncable) {
+            continue;
+        }
+        if (pOtherSyncable->getSyncMode() != SYNC_NONE && pOtherSyncable->getBpm() != 0) {
+            sync_deck_exists = true;
+            break;
+        }
+    }
+
+    if (!sync_deck_exists) {
+        setMasterBpm(pSyncable, pSyncable->getBpm());
+    } else {
+        pSyncable->setMasterBpm(masterBpm());
     }
 }
 
@@ -219,9 +249,16 @@ void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChan
     // but it is required when the file BPM changes because it's not a true BPM
     // change, so we set the follower back to the master BPM.
     if (syncMode == SYNC_FOLLOWER && fileChanged) {
-        pSyncable->setMasterBaseBpm(masterBaseBpm());
-        pSyncable->setMasterBpm(masterBpm());
-        return;
+        double mbaseBpm = masterBaseBpm();
+        double mbpm = masterBpm();
+        // TODO(owilliams): Figure out why the master bpm is getting set to
+        // zero in the first place, that's the real bug that's being worked
+        // around.
+        if (mbaseBpm != 0.0 && mbpm != 0.0) {
+            pSyncable->setMasterBaseBpm(mbaseBpm);
+            pSyncable->setMasterBpm(mbpm);
+            return;
+        }
     }
 
     // Master Base BPM shouldn't be updated for every random deck that twiddles

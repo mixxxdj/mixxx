@@ -1,5 +1,5 @@
 	<!--
-	LateNight Stacked, Resizable skin for Mixxx 1.12
+	LateNight, Resizable skin for Mixxx 1.12
 	www.mixxx.org
 	Copyright (C) 2010-2013 jus <s.brandt@mixxx.org>, 2014 Owen Williams <owilliams@mixxx.org>
 	"LateNight" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
@@ -27,7 +27,7 @@
 <!DOCTYPE skin>
 <skin>
   <manifest>
-    <title>LateNight-Stacked</title>
+    <title>LateNight</title>
     <author>owilliams</author>
     <version>1.12.0.01</version>
     <description>A nighttime-compatible skin</description>
@@ -46,10 +46,11 @@
       <attribute config_key="[Microphone],show_microphone">0</attribute>
       <attribute config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
       <attribute config_key="[PreviewDeck],show_previewdeck">0</attribute>
-      <attribute config_key="[Library],show_library">1</attribute>
       <attribute config_key="[Master],mixer_4decks_status">1</attribute>
       <attribute config_key="[Master],show_mixer">1</attribute>
-      <attribute config_key="[Library],show_coverart">0</attribute>
+      <attribute config_key="[Library],show_coverart">1</attribute>
+      <attribute config_key="[Library],show_library">1</attribute>
+      <attribute config_key="[Library],show_current">1</attribute>
     </attributes>
   </manifest>
 
@@ -63,20 +64,41 @@
   <Layout>vertical</Layout>
 
   <Children>
-    <SetVariable name="SquareButtonSize">20f,20f</SetVariable>
-    <SetVariable name="TallButtonSize">20f,40f</SetVariable>
-    <SetVariable name="WideButtonSize">40f,20f</SetVariable>
     <WidgetGroup>
         <ObjectName>SkinContainer</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>me,max</SizePolicy>
-        <!-- <MinimumSize>1280,525</MinimumSize>-->
-        <!-- <MinimumSize>0,525</MinimumSize>-->
-        <MaximumSize>1920,525</MaximumSize>
+        <MinimumSize>0,0</MinimumSize>
         <Children>
-            <Template src="skin:decks_left.xml"/>
-            <Template src="skin:waveform_and_mixer.xml"/>
-            <Template src="skin:decks_right.xml"/>
+            <WidgetStack currentpage="[Library],show_big_current" persist="true">
+                <Children>
+                    <WidgetGroup trigger="[Library],unshow_big">
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>i,max</SizePolicy>
+                        <!-- <MinimumSize>1280,525</MinimumSize>-->
+                        <!--  <MinimumSize>0,525</MinimumSize>-->
+                        <!--  <MaximumSize>1920,525</MaximumSize>-->
+                        <Children>
+                            <Template src="skin:decks_left.xml"/>
+                            <Template src="skin:waveform_and_mixer.xml"/>
+                            <Template src="skin:decks_right.xml"/>
+                        </Children>
+                    </WidgetGroup>
+
+                    <!-- Collapsed UI == big library.
+                    To get this to work, I had to wrap the stack in a group
+                    with sizepolicy max, max (which means the group can shrink
+                    as much as necessary) and then set the min size to 0, which
+                    means it can shrink to nothing.
+                     -->
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>f,f</SizePolicy>
+                        <Size>0,0</Size>
+                        <Children/>
+                    </WidgetGroup>
+                </Children>
+            </WidgetStack>
         </Children>
     </WidgetGroup>
     <WidgetGroup>
@@ -85,40 +107,40 @@
         <SizePolicy>e,min</SizePolicy>
         <Children>
             <WidgetGroup>
-                <ObjectName>FourDeckButton</ObjectName>
+                <ObjectName>GuiToggleContainer</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                     <PushButton>
-                        <Size>40f,20f</Size>
-                        <ObjectName>FourDeckToggleButton</ObjectName>
+                        <Size>50f,20f</Size>
+                        <ObjectName>GuiToggleButton</ObjectName>
                         <NumberStates>2</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Text>2DECK</Text>
+                          <Text>LIBRARY</Text>
                         </State>
                         <State>
                           <Number>1</Number>
-                          <Text>4DECK</Text>
+                          <Text>LIBRARY</Text>
                         </State>
                         <Connection>
-                          <ConfigKey>[Master],show_4decks</ConfigKey>
+                          <ConfigKey persist="true">[Library],show_library</ConfigKey>
                           <ButtonState>LeftButton</ButtonState>
                         </Connection>
                         <Connection>
-                          <ConfigKey>[Master],show_4decks</ConfigKey>
+                          <ConfigKey persist="true">[Library],show_library</ConfigKey>
                         </Connection>
                     </PushButton>
                 </Children>
             </WidgetGroup>
             <WidgetGroup>
-                <ObjectName>FourDeckButton</ObjectName>
+                <ObjectName>GuiToggleContainer</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                     <PushButton>
                         <Size>40f,20f</Size>
-                        <ObjectName>FourDeckToggleButton</ObjectName>
+                        <ObjectName>GuiToggleButton</ObjectName>
                         <NumberStates>2</NumberStates>
                         <State>
                           <Number>0</Number>
@@ -139,13 +161,94 @@
                 </Children>
             </WidgetGroup>
             <WidgetGroup>
-                <ObjectName>FourDeckButton</ObjectName>
+                <ObjectName>GuiToggleContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                    <PushButton>
+                        <Size>64f,20f</Size>
+                        <ObjectName>GuiToggleButton</ObjectName>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>DECKS 3&amp;4</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>DECKS 3&amp;4</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey>[Master],show_4decks</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey>[Master],show_4decks</ConfigKey>
+                        </Connection>
+                    </PushButton>
+                </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+                <ObjectName>GuiToggleContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                    <PushButton>
+                        <Size>62f,20f</Size>
+                        <ObjectName>GuiToggleButton</ObjectName>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>SAMPLERS</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>SAMPLERS</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+                        </Connection>
+                    </PushButton>
+                </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+                <ObjectName>GuiToggleContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                    <PushButton>
+                        <Size>55f,20f</Size>
+                        <ObjectName>GuiToggleButton</ObjectName>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>EFFECTS</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>EFFECTS</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+                        </Connection>
+                    </PushButton>
+                </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+                <ObjectName>GuiToggleContainer</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                     <PushButton>
                         <Size>40f,20f</Size>
-                        <ObjectName>FourDeckToggleButton</ObjectName>
+                        <ObjectName>GuiToggleButton</ObjectName>
                         <NumberStates>2</NumberStates>
                         <State>
                           <Number>0</Number>
@@ -165,22 +268,71 @@
                     </PushButton>
                 </Children>
             </WidgetGroup>
-            <WidgetGroup>
+            <WidgetGroup>  <!-- spacer -->
                 <ObjectName>UIButtonMargin</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,min</SizePolicy>
                 <Children></Children>
+            </WidgetGroup>
+            <WidgetGroup>
+                <ObjectName>GuiToggleContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                    <PushButton>
+                        <!-- This is all weird because the default state for a widgetstack
+                        is the pushed state.  So we have to invert everything so the
+                        default is 'don't make the library huge' -->
+                        <Size>80f,20f</Size>
+                        <ObjectName>GuiToggleButtonInverted</ObjectName>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>BIG LIBRARY</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>BIG LIBRARY</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey persist="true">[Library],unshow_big</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey persist="true">[Library],unshow_big</ConfigKey>
+                        </Connection>
+                    </PushButton>
+                </Children>
             </WidgetGroup>
         </Children>
     </WidgetGroup>
     <WidgetGroup>
         <ObjectName>UILowerHalf</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>min,e</SizePolicy>
-        <MaximumSize>1920,800</MaximumSize>
+        <SizePolicy>min,i</SizePolicy>
         <Children>
-            <Template src="skin:sample_decks_container.xml"/>
-            <Template src="skin:effect_rack.xml"/>
+            <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,max</SizePolicy>
+                <MinimumSize>0,0</MinimumSize>
+                <Children>
+                    <WidgetStack currentpage="[Library],show_big_current" persist="true">
+                        <Children>
+                            <WidgetGroup trigger="[Library],unshow_big">
+                                <Layout>vertical</Layout>
+                                <Children>
+                                    <Template src="skin:sample_decks_container.xml"/>
+                                    <Template src="skin:effect_rack.xml"/>
+                                </Children>
+                            </WidgetGroup>
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <Children/>
+                            </WidgetGroup>
+                        </Children>
+                    </WidgetStack>
+                </Children>
+            </WidgetGroup>
             <Template src="skin:library.xml"/>
         </Children>
     </WidgetGroup>

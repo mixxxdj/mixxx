@@ -37,21 +37,21 @@ BPMEditor::BPMEditor(EditMode mode, QWidget *parent)
     connect(m_pLock, SIGNAL(clicked(bool)), this, SIGNAL(finishedEditing()));
 }
 
-BPMEditor::~BPMEditor(){
+BPMEditor::~BPMEditor() {
     delete m_pLock;
     delete m_pBPMSpinBox;
     delete m_pLayout;
 }
 
-bool BPMEditor::getLock(){
+bool BPMEditor::getLock() {
     return m_pLock->isChecked();
 }
 
-double BPMEditor::getBPM(){
+double BPMEditor::getBPM() {
     return m_pBPMSpinBox->value();
 }
 
-void BPMEditor::setData(const QModelIndex &index, int lockColumn){
+void BPMEditor::setData(const QModelIndex& index, int lockColumn) {
     if (m_pBPMSpinBox) {
         m_pBPMSpinBox->setValue(index.data().toDouble());
     } else {

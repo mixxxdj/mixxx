@@ -165,7 +165,7 @@ void SoundSourceProxy::loadPlugins() {
 // static
 Mixxx::SoundSourcePointer SoundSourceProxy::initialize(const QString& qFilename) {
     QString extension(qFilename);
-    extension.remove(0, (qFilename.lastIndexOf(".") + 1)).toLower();
+    extension = extension.remove(0, (qFilename.lastIndexOf(".") + 1)).toLower();
 
 #ifdef __FFMPEGFILE__
     return Mixxx::SoundSourcePointer(new SoundSourceFFmpeg(qFilename));

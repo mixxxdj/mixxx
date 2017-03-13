@@ -6,7 +6,7 @@
 
 EffectParameter::EffectParameter(Effect* pEffect, EffectsManager* pEffectsManager,
                                  int iParameterNumber, const EffectManifestParameter& parameter)
-        : QObject(pEffect),
+        : QObject(), // no parent
           m_pEffect(pEffect),
           m_pEffectsManager(pEffectsManager),
           m_iParameterNumber(iParameterNumber),
@@ -200,7 +200,7 @@ void EffectParameter::updateEngineState() {
         return;
     }
     EffectsRequest* pRequest = new EffectsRequest();
-    pRequest->type = EffectsRequest::SET_PARAMETER_PARAMETERS;    
+    pRequest->type = EffectsRequest::SET_PARAMETER_PARAMETERS;
     pRequest->pTargetEffect = pEngineEffect;
     pRequest->SetParameterParameters.iParameter = m_iParameterNumber;
     pRequest->value = m_value;

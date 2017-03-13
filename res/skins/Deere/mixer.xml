@@ -70,8 +70,7 @@
       <ConfigKey>[Master],hide_mixer</ConfigKey>
       <BindProperty>visible</BindProperty>
       <Transform>
-        <Invert/>
-        <Add>1</Add>
+        <Not/>
       </Transform>
     </Connection>
   </WidgetGroup>

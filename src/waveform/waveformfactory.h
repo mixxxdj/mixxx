@@ -31,8 +31,8 @@ class WaveformFactory {
         VC_REMOVE
     };
 
-    static bool updateWaveformFromAnalysis(
-            Waveform* pWaveform, const AnalysisDao::AnalysisInfo& analysis);
+    static Waveform* loadWaveformFromAnalysis(
+            const AnalysisDao::AnalysisInfo& analysis);
     static VersionClass waveformVersionToVersionClass(const QString& version);
     static VersionClass waveformSummaryVersionToVersionClass(const QString& version);
     static QString currentWaveformVersion();

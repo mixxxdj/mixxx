@@ -70,8 +70,7 @@ Result SoundSourceFLAC::open() {
         FLAC__stream_decoder_init_stream(
             m_decoder, FLAC_read_cb, FLAC_seek_cb, FLAC_tell_cb, FLAC_length_cb,
             FLAC_eof_cb, FLAC_write_cb, FLAC_metadata_cb, FLAC_error_cb,
-            (void*) this)
-    );
+            (void*) this));
     if (initStatus != FLAC__STREAM_DECODER_INIT_STATUS_OK) {
         qWarning() << "SSFLAC: decoder init failed!";
         goto decoderError;

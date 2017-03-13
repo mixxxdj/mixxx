@@ -231,43 +231,30 @@ void WCoverArt::leaveEvent(QEvent*) {
 
 void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
     if ((event->buttons() & Qt::LeftButton) && m_loadedTrack) {
-        DragAndDropHelper::dragTrack(m_loadedTrack, this);
+        DragAndDropHelper::dragTrack(m_loadedTrack, this, m_group);
     }
 }
 
 void WCoverArt::dragEnterEvent(QDragEnterEvent* event) {
-    // We don't have a group to load the track into.
-    if (m_group.isEmpty()) {
+    // If group is empty then we are a library cover art widget and we don't
+    // accept track drops.
+    if (!m_group.isEmpty() &&
+            DragAndDropHelper::allowLoadToPlayer(m_group, m_pConfig) &&
+            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_group,
+                                               true, false)) {
+        event->acceptProposedAction();
+    } else {
         event->ignore();
-        return;
     }
-
-    if (event->mimeData()->hasUrls() &&
-            event->mimeData()->urls().size() > 0) {
-        // Accept if the Deck isn't playing or the settings allow to interrupt a playing deck
-        if ((!ControlObject::get(ConfigKey(m_group, "play")) ||
-             m_pConfig->getValueString(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt())) {
-            QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
-                event->mimeData()->urls(), true, false);
-            if (!files.isEmpty()) {
-                event->acceptProposedAction();
-                return;
-            }
-        }
-    }
-    event->ignore();
 }
 
 void WCoverArt::dropEvent(QDropEvent *event) {
-    // We don't have a group to load the track into.
-    if (m_group.isEmpty()) {
-        event->ignore();
-        return;
-    }
-
-    if (event->mimeData()->hasUrls()) {
-        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
-                event->mimeData()->urls(), true, false);
+    // If group is empty then we are a library cover art widget and we don't
+    // accept track drops.
+    if (!m_group.isEmpty() &&
+            DragAndDropHelper::allowLoadToPlayer(m_group, m_pConfig)) {
+        QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
+                *event->mimeData(), m_group, true, false);
         if (!files.isEmpty()) {
             event->accept();
             emit(trackDropped(files.at(0).canonicalFilePath(), m_group));

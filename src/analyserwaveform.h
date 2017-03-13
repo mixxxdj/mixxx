@@ -31,7 +31,7 @@ inline CSAMPLE scaleSignal(CSAMPLE invalue, FilterIndex index = FilterCount) {
     }
 }
 
-class WaveformStride {
+struct WaveformStride {
     inline void init(double samples, double averageSamples) {
         m_length = samples;
         m_averageLength = averageSamples;
@@ -39,10 +39,10 @@ class WaveformStride {
         m_position = 0;
         m_averagePosition = 0;
         m_averageDivisor = 0;
-        for( int i = 0; i < ChannelCount; i++) {
+        for (int i = 0; i < ChannelCount; ++i) {
             m_overallData[i] = 0.0f;
             m_averageOverallData[i] = 0.0f;
-            for( int f = 0; f < FilterCount; f++) {
+            for (int f = 0; f < FilterCount; ++f) {
                 m_filteredData[i][f] = 0.0f;
                 m_averageFilteredData[i][f] = 0.0f;
             }
@@ -52,10 +52,10 @@ class WaveformStride {
     inline void reset() {
         m_position = 0;
         m_averageDivisor = 0;
-        for( int i = 0; i < ChannelCount; i++) {
+        for (int i = 0; i < ChannelCount; ++i) {
             m_overallData[i] = 0.0f;
             m_averageOverallData[i] = 0.0f;
-            for( int f = 0; f < FilterCount; f++) {
+            for (int f = 0; f < FilterCount; ++f) {
                 m_filteredData[i][f] = 0.0f;
                 m_averageFilteredData[i][f] = 0.0f;
             }
@@ -63,7 +63,7 @@ class WaveformStride {
     }
 
     inline void store(WaveformData* data) {
-        for( int i = 0; i < ChannelCount; i++) {
+        for (int i = 0; i < ChannelCount; ++i) {
             WaveformData& datum = *(data + i);
             datum.filtered.all = static_cast<unsigned char>(math_min(255.0,
                     m_postScaleConversion * scaleSignal(m_overallData[i]) + 0.5));
@@ -75,10 +75,10 @@ class WaveformStride {
                     m_postScaleConversion * scaleSignal(m_filteredData[i][High], High) + 0.5));
         }
         m_averageDivisor++;
-        for( int i = 0; i < ChannelCount; i++) {
+        for (int i = 0; i < ChannelCount; ++i) {
             m_averageOverallData[i] += m_overallData[i];
             m_overallData[i] = 0.0f;
-            for( int f = 0; f < FilterCount; f++) {
+            for (int f = 0; f < FilterCount; ++f) {
                 m_averageFilteredData[i][f] += m_filteredData[i][f];
                 m_filteredData[i][f] = 0.0f;
             }
@@ -87,7 +87,7 @@ class WaveformStride {
 
     inline void averageStore(WaveformData* data) {
         if (m_averageDivisor) {
-            for( int i = 0; i < ChannelCount; i++) {
+            for (int i = 0; i < ChannelCount; ++i) {
                 WaveformData& datum = *(data + i);
                 datum.filtered.all = static_cast<unsigned char>(math_min(255.0,
                         m_postScaleConversion * scaleSignal(m_averageOverallData[i] / m_averageDivisor) + 0.5));
@@ -100,7 +100,7 @@ class WaveformStride {
             }
         } else {
             // This is the case if The Overview Waveform has more samples than the detailed waveform
-            for( int i = 0; i < ChannelCount; i++) {
+            for (int i = 0; i < ChannelCount; ++i) {
                 WaveformData& datum = *(data + i);
                 datum.filtered.all = static_cast<unsigned char>(math_min(255.0,
                         m_postScaleConversion * scaleSignal(m_overallData[i]) + 0.5));
@@ -114,15 +114,14 @@ class WaveformStride {
         }
 
         m_averageDivisor = 0;
-        for( int i = 0; i < ChannelCount; i++) {
+        for (int i = 0; i < ChannelCount; ++i) {
             m_averageOverallData[i] = 0.0f;
-            for( int f = 0; f < FilterCount; f++) {
+            for (int f = 0; f < FilterCount; ++f) {
                 m_averageFilteredData[i][f] = 0.0f;
             }
         }
     }
 
-  private:
     int m_position;
     double m_length;
     double m_averageLength;
@@ -136,9 +135,6 @@ class WaveformStride {
     float m_averageFilteredData[ChannelCount][FilterCount];
 
     float m_postScaleConversion;
-
-  private:
-    friend class AnalyserWaveform;
 };
 
 class AnalyserWaveform : public Analyser {
@@ -163,10 +159,8 @@ class AnalyserWaveform : public Analyser {
   private:
     bool m_skipProcessing;
 
-    Waveform* m_waveform;
-    Waveform* m_waveformSummary;
-    int m_waveformDataSize;
-    int m_waveformSummaryDataSize;
+    WaveformPointer m_waveform;
+    WaveformPointer m_waveformSummary;
     WaveformData* m_waveformData;
     WaveformData* m_waveformSummaryData;
 

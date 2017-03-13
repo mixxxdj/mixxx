@@ -24,6 +24,8 @@
             <ObjectName>LibrarySplitter</ObjectName>
             <Orientation>horizontal</Orientation>
             <SizePolicy>me,me</SizePolicy>
+            <SplitSizesConfigKey>[Deere],LibrarySidebarSplitSize</SplitSizesConfigKey>
+            <SplitSizes>2,8</SplitSizes>
             <Children>
               <WidgetGroup>
                 <Layout>vertical</Layout>
@@ -39,13 +41,109 @@
                       </SearchBox>
                     </Children>
                   </WidgetGroup>
+                  <WidgetGroup>
+                    <ObjectName>PreviewDeckContainer</ObjectName>
+                    <Layout>vertical</Layout>
+                    <!-- When TextRow is laid out, we need to ignore our children.
+                         Otherwise decks might end up with different widths based
+                         on the size of the labels in this row -->
+                    <SizePolicy>i,max</SizePolicy>
+                    <Children>
+                      <Template src="skin:vumeter.xml">
+                        <TooltipId>channel_VuMeter</TooltipId>
+                        <SetVariable name="group">[PreviewDeck1]</SetVariable>
+                        <SetVariable name="control">VuMeter</SetVariable>
+                      </Template>
+
+                      <WidgetGroup>
+                        <ObjectName>PreviewDeckTextRow</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <Children>
+                          <Text>
+                          <TooltipId>text</TooltipId>
+                            <SizePolicy>me,min</SizePolicy>
+                            <Group>[PreviewDeck1]</Group>
+                          </Text>
+                          <PushButton>
+                            <NumberStates>1</NumberStates>
+                            <MinimumSize>20,20</MinimumSize>
+                            <MaximumSize>30,30</MaximumSize>
+                            <State>
+                              <Number>0</Number>
+                              <Text>⏏</Text>
+                            </State>
+                            <Connection>
+                              <ConfigKey>[PreviewDeck1],eject</ConfigKey>
+                            </Connection>
+                          </PushButton>
+                        </Children>
+                      </WidgetGroup>
+
+                      <WidgetGroup>
+                        <ObjectName>PreviewDeckVisualRow</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <Children>
+                          <Template src="skin:left_right_2state_button.xml">
+                            <SetVariable name="ObjectName">PlayToggle</SetVariable>
+                            <SetVariable name="MinimumSize">20,20</SetVariable>
+                            <SetVariable name="MaximumSize">20,20</SetVariable>
+                            <SetVariable name="SizePolicy">f,f</SetVariable>
+                            <SetVariable name="state_0_text">▶</SetVariable>
+                            <SetVariable name="state_0_pressed"></SetVariable>
+                            <SetVariable name="state_0_unpressed"></SetVariable>
+                            <SetVariable name="state_1_text">||</SetVariable>
+                            <SetVariable name="state_1_pressed"></SetVariable>
+                            <SetVariable name="state_1_unpressed"></SetVariable>
+                            <SetVariable name="left_connection_control">[PreviewDeck1],play</SetVariable>
+                            <SetVariable name="right_connection_control">[PreviewDeck1],start</SetVariable>
+                          </Template>
+
+                          <Overview>
+                            <TooltipId>waveform_overview</TooltipId>
+                            <Style></Style>
+                            <Group>[PreviewDeck1]</Group>
+                            <Size>me,30f</Size>
+                            <BgColor></BgColor>
+                            <SignalHighColor>#FFE300</SignalHighColor>
+                            <SignalMidColor>#0099FF</SignalMidColor>
+                            <SignalLowColor>#FF0035</SignalLowColor>
+                            <SignalColor>#FF8000</SignalColor>
+                            <PlayPosColor>#00FF00</PlayPosColor>
+                            <DefaultMark>
+                              <Align>bottom</Align>
+                              <Color>#FFFFFF</Color>
+                              <TextColor>#00FF00</TextColor>
+                              <Text> %1 </Text>
+                            </DefaultMark>
+                            <Mark>
+                              <Control>cue_point</Control>
+                              <Text> C </Text>
+                              <Align>top</Align>
+                              <Color>#FF001C</Color>
+                              <TextColor>#00FF00</TextColor>
+                            </Mark>
+                            <Connection>
+                              <ConfigKey>[PreviewDeck1],playposition</ConfigKey>
+                              <EmitOnDownPress>false</EmitOnDownPress>
+                            </Connection>
+                          </Overview>
+                        </Children>
+                      </WidgetGroup>
+                    </Children>
+                    <Connection>
+                      <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
                   <LibrarySidebar>
                   </LibrarySidebar>
+
                   <CoverArt>
                     <SizePolicy>me,me</SizePolicy>
                     <MinimumSize>100,100</MinimumSize>
                     <Connection>
-                      <ConfigKey>[Library],show_coverart</ConfigKey>
+                      <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </CoverArt>

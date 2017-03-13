@@ -57,8 +57,8 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
         return;
     }
 
-    const Waveform* waveform = pTrack->getWaveform();
-    if (waveform == NULL) {
+    ConstWaveformPointer waveform = pTrack->getWaveform();
+    if (waveform.isNull()) {
         return;
     }
 
@@ -118,15 +118,17 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
         glEnable(GL_LINE_SMOOTH);
 
         glBegin(GL_LINES); {
-            for( int visualIndex = firstVisualIndex;
+            for (int visualIndex = firstVisualIndex;
                  visualIndex < lastVisualIndex;
                  visualIndex += 2) {
 
-                if( visualIndex < 0)
+                if (visualIndex < 0) {
                     continue;
+                }
 
-                if( visualIndex > dataSize - 1)
+                if (visualIndex > dataSize - 1) {
                     break;
+                }
 
                 float left_low    = lowGain  * (float) data[visualIndex].filtered.low;
                 float left_mid    = midGain  * (float) data[visualIndex].filtered.mid;
@@ -164,10 +166,11 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
         glLoadIdentity();
-        if( m_alignment == Qt::AlignBottom)
+        if (m_alignment == Qt::AlignBottom) {
             glOrtho(firstVisualIndex, lastVisualIndex, 0.0, 255.0, -10.0, 10.0);
-        else
+        } else {
             glOrtho(firstVisualIndex, lastVisualIndex, 255.0, 0.0, -10.0, 10.0);
+        }
 
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
@@ -179,15 +182,17 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
         glEnable(GL_LINE_SMOOTH);
 
         glBegin(GL_LINES); {
-            for( int visualIndex = firstVisualIndex;
+            for (int visualIndex = firstVisualIndex;
                  visualIndex < lastVisualIndex;
                  visualIndex += 2) {
 
-                if( visualIndex < 0)
+                if (visualIndex < 0) {
                     continue;
+                }
 
-                if( visualIndex > dataSize - 1)
+                if (visualIndex > dataSize - 1) {
                     break;
+                }
 
                 float low  = lowGain  * (float) math_max(data[visualIndex].filtered.low,  data[visualIndex+1].filtered.low);
                 float mid  = midGain  * (float) math_max(data[visualIndex].filtered.mid,  data[visualIndex+1].filtered.mid);

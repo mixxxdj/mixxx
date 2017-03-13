@@ -39,6 +39,7 @@ class BaseSyncableListener : public SyncableListener {
     virtual void notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) = 0;
     virtual void notifyBeatDistanceChanged(Syncable* pSyncable, double beatDistance) = 0;
     virtual void notifyPlaying(Syncable* pSyncable, bool playing) = 0;
+    virtual void notifyTrackLoaded(Syncable* pSyncable) = 0;
 
   protected:
     // Choices about master selection can hinge on if any decks have sync
@@ -80,6 +81,9 @@ class BaseSyncableListener : public SyncableListener {
 
     void setMasterParams(Syncable* pSource, double beat_distance,
                          double base_bpm, double bpm);
+
+    // Check if there is only one playing syncable deck, and notify it if so.
+    void checkUniquePlayingSyncable();
 
     ConfigObject<ConfigValue>* m_pConfig;
     // The InternalClock syncable.

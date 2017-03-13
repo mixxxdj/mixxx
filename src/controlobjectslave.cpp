@@ -26,7 +26,10 @@ ControlObjectSlave::ControlObjectSlave(const ConfigKey& key, QObject* pParent)
 
 void ControlObjectSlave::initialize(const ConfigKey& key) {
     m_key = key;
-    m_pControl = ControlDoublePrivate::getControl(key);
+    // Don't bother looking up the control if key is NULL. Prevents log spew.
+    if (!key.isNull()) {
+        m_pControl = ControlDoublePrivate::getControl(key);
+    }
 }
 
 ControlObjectSlave::~ControlObjectSlave() {

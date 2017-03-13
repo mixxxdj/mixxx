@@ -16,6 +16,76 @@
                        <Layout>vertical</Layout>
                        <SizePolicy>min,min</SizePolicy>
 	                   <Children>
+                           <WidgetGroup>
+                               <Layout>horizontal</Layout>
+                               <SizePolicy>min,min</SizePolicy>
+                               <Children>
+                                   <PushButton>
+                                      <Size>18f,18f</Size>
+                                      <ObjectName>PitchTweakButton</ObjectName>
+                                      <NumberStates>2</NumberStates>
+                                      <State>
+                                        <Number>0</Number>
+                                        <Text>&#9664;</Text>
+                                      </State>
+                                      <State>
+                                        <Number>1</Number>
+                                        <Text>&#9664;</Text>
+                                      </State>
+                                      <Connection>
+                                        <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_down_small</ConfigKey>
+                                        <ButtonState>LeftButton</ButtonState>
+                                      </Connection>
+                                      <Connection>
+                                        <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_down_small</ConfigKey>
+                                      </Connection>
+                                   </PushButton>
+                                   <PushButton>
+                                      <Size>30f,18f</Size>
+                                      <ObjectName>PitchTweakButton</ObjectName>
+                                      <NumberStates>2</NumberStates>
+                                      <State>
+                                        <Number>0</Number>
+                                        <Text>KEY</Text>
+                                      </State>
+                                      <State>
+                                        <Number>1</Number>
+                                        <Text>KEY</Text>
+                                      </State>
+                                      <Connection>
+                                        <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_set_default</ConfigKey>
+                                        <ButtonState>LeftButton</ButtonState>
+                                      </Connection>
+                                      <Connection>
+                                        <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_set_default</ConfigKey>
+                                      </Connection>
+                                   </PushButton>
+                                   <PushButton>
+                                      <Size>18f,18f</Size>
+                                      <ObjectName>PitchTweakButton</ObjectName>
+                                      <NumberStates>2</NumberStates>
+                                      <State>
+                                        <Number>0</Number>
+                                        <Text>&#9654;</Text>
+                                      </State>
+                                      <State>
+                                        <Number>1</Number>
+                                        <Text>&#9654;</Text>
+                                      </State>
+                                      <Connection>
+                                        <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_up_small</ConfigKey>
+                                        <ButtonState>LeftButton</ButtonState>
+                                      </Connection>
+                                      <Connection>
+                                        <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_up_small</ConfigKey>
+                                      </Connection>
+                                  </PushButton>
+                                  <Connection>
+                                      <ConfigKey>[Channel<Variable name="channum"/>],visual_key</ConfigKey>
+                                      <BindProperty>visible</BindProperty>
+                                  </Connection>
+                               </Children>
+                           </WidgetGroup>
                            <Key>
                               <ObjectName>TextColor<Variable name="channum" /></ObjectName>
                               <Style>QLabel { qproperty-alignment: 'AlignCenter';
@@ -29,22 +99,45 @@
                                 <ConfigKey>[Channel<Variable name="channum"/>],visual_key</ConfigKey>
                               </Connection>
                            </Key>
-                           <NumberBpm>
-                              <ObjectName>TextColor<Variable name="channum" /></ObjectName>
-                              <TooltipId>visual_bpm</TooltipId>
-                              <Style>QLabel { qproperty-alignment: 'AlignCenter';
-                                  font: bold 16px/18px Lucida Grande, Lucida Sans
-                                  Unicode, Arial, Verdana, sans-serif;
-                                  background-color: transparent; padding: 0px; margin: 0px;}
-                              </Style>
-                              <Channel>
-                                  <Variable name="channum" />
-                              </Channel>
-                              <NumberOfDigits>2</NumberOfDigits>
-                              <Connection>
-                                  <ConfigKey>[Channel<Variable name="channum" />],visual_bpm</ConfigKey>
-                              </Connection>
-                          </NumberBpm>
+                           <!-- In order to make the bpm display tappable, we use an old-style
+                           widget group and put the bpm pushbutton on top of the display. -->
+                           <WidgetGroup>
+                               <ObjectName>BpmContainer</ObjectName>
+                               <Size>60,16</Size>
+                               <Children>
+                                   <NumberBpm>
+                                      <ObjectName>BpmTextColor<Variable name="channum" /></ObjectName>
+                                      <TooltipId>visual_bpm</TooltipId>
+                                      <Pos>0,0</Pos>
+                                      <Size>60,16</Size>
+                                      <Channel>
+                                          <Variable name="channum" />
+                                      </Channel>
+                                      <NumberOfDigits>2</NumberOfDigits>
+                                      <Connection>
+                                          <ConfigKey>[Channel<Variable name="channum" />],visual_bpm</ConfigKey>
+                                      </Connection>
+                                  </NumberBpm>
+                                  <PushButton>
+                                      <TooltipId>bpm_tap_visual_bpm</TooltipId>
+                                      <NumberStates>1</NumberStates>
+                                      <State>
+                                        <Number>0</Number>
+                                        <Text></Text>
+                                      </State>
+                                      <State>
+                                        <Number>1</Number>
+                                        <Text></Text>
+                                      </State>
+                                      <Pos>0,0</Pos>
+                                      <Size>60,16</Size>
+                                      <Connection>
+                                          <ConfigKey>[Channel<Variable name="channum" />],bpm_tap</ConfigKey>
+                                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                      </Connection>
+                                  </PushButton>
+                              </Children>
+                          </WidgetGroup>
 				           <!-- <NumberRate>
 				                <TooltipId>rate_display</TooltipId>
 				                <Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans
@@ -58,19 +151,26 @@
 				            </NumberRate>-->
 			            </Children>
 		            </WidgetGroup>
-  		            <SliderComposed>
-  		                <TooltipId>rate</TooltipId>
-  		                <Handle>knob_pitch1.png</Handle>
-  		                <Slider>slider_pitch1.png</Slider>
-  		                <Horizontal>false</Horizontal>
-  		                <Connection>
-  		                    <ConfigKey>[Channel<Variable name="channum" />],rate</ConfigKey>
-  		                </Connection>
-  		            </SliderComposed>
+                    <WidgetGroup>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Layout>horizontal</Layout>
+                        <ObjectName>RateSlider</ObjectName>
+                        <Children>
+        		            <SliderComposed>
+        		                <TooltipId>rate</TooltipId>
+        		                <Handle>knob_pitch1.png</Handle>
+        		                <Slider>slider_pitch1.png</Slider>
+        		                <Horizontal>false</Horizontal>
+        		                <Connection>
+        		                    <ConfigKey>[Channel<Variable name="channum" />],rate</ConfigKey>
+        		                </Connection>
+        		            </SliderComposed>
+                        </Children>
+                    </WidgetGroup>
 		            <WidgetGroup>
 		                <ObjectName>RateButtons</ObjectName>
 		                <Layout>vertical</Layout>
-		                <SizePolicy>min,me</SizePolicy>
+		                <SizePolicy>min,min</SizePolicy>
 		                <Children>
 		                    <WidgetGroup>
 		                        <ObjectName>RatePermButtons</ObjectName>

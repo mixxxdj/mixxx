@@ -50,6 +50,10 @@ void InternalClock::notifySyncModeChanged(SyncMode mode) {
     m_pSyncMasterEnabled->setAndConfirm(mode == SYNC_MASTER);
 }
 
+void InternalClock::notifyOnlyPlayingSyncable() {
+    // No action necessary.
+}
+
 void InternalClock::requestSyncPhase() {
     // TODO(owilliams): This should probably be how we reset the internal beat distance.
 }
@@ -103,6 +107,9 @@ double InternalClock::getBpm() const {
 
 void InternalClock::setMasterBpm(double bpm) {
     //qDebug() << "InternalClock::setBpm" << bpm;
+    if (bpm == 0) {
+        return;
+    }
     m_pClockBpm->set(bpm);
     updateBeatLength(m_iOldSampleRate, bpm);
 }
@@ -115,6 +122,9 @@ void InternalClock::setInstantaneousBpm(double bpm) {
 
 void InternalClock::setMasterParams(double beatDistance, double baseBpm, double bpm) {
     Q_UNUSED(baseBpm)
+    if (bpm == 0) {
+        return;
+    }
     setMasterBpm(bpm);
     setMasterBeatDistance(beatDistance);
 }
@@ -149,9 +159,11 @@ void InternalClock::updateBeatLength(int sampleRate, double bpm) {
     // that last term is 1 over bpm.
 
     if (qFuzzyCompare(bpm, 0)) {
-        qDebug() << "WARNING: Master bpm reported to be zero, internal clock guessing 60bpm";
-        m_dBeatLength = sampleRate;
+        qDebug() << "WARNING: Master bpm reported to be zero, internal clock guessing 124bpm";
+        m_dBeatLength = (sampleRate * 60.0) / 124.0;
+        m_dOldBpm = 124.0;
     } else {
+        m_dOldBpm = bpm;
         m_dBeatLength = (sampleRate * 60.0) / bpm;
         if (m_dBeatLength <= 0) {
             qDebug() << "WARNING: Tried to set samples per beat <=0";
@@ -159,7 +171,6 @@ void InternalClock::updateBeatLength(int sampleRate, double bpm) {
         }
     }
 
-    m_dOldBpm = bpm;
     m_iOldSampleRate = sampleRate;
 
     // Restore the old beat distance.

@@ -18,29 +18,18 @@
                                 <SizePolicy>me,min</SizePolicy>
                                 <Layout>vertical</Layout>
                                 <Children>
-                                     <Template src="skin:hide_show_button.xml">
-                                        <SetVariable name="object_name">HideShowButton</SetVariable>
-                                        <SetVariable name="control">[Samplers],show_samplers</SetVariable>
-                                        <SetVariable name="button_text">Samplers</SetVariable>
-                                    </Template>
                                     <Template src="skin:sampler_decks.xml" />
                                 </Children>
                             </WidgetGroup>
                         </Children>
                     </WidgetGroup>
 
-                    <!-- Collapsed Library  -->
+                    <!-- Collapsed samplers  -->
                     <WidgetGroup>
                         <ObjectName>AlignLeftBottom</ObjectName>
                         <Layout>horizontal</Layout>
                         <SizePolicy>me,min</SizePolicy>
-                        <Children>
-                            <Template src="skin:hide_show_button.xml">
-                                <SetVariable name="object_name">HideShowButton</SetVariable>
-                                <SetVariable name="control">[Samplers],show_samplers</SetVariable>
-                                <SetVariable name="button_text">Samplers</SetVariable>
-                            </Template>
-                        </Children>
+                        <Children/>
                     </WidgetGroup>
                 </Children>
             </WidgetStack>

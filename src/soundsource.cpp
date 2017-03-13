@@ -38,7 +38,7 @@ namespace
     }
 
     float parseReplayGainString(QString sReplayGain) {
-        QString ReplayGainstring = sReplayGain.remove( " dB" );
+        QString ReplayGainstring = sReplayGain.remove(" dB");
         float fReplayGain = db2ratio(ReplayGainstring.toFloat());
         // I found some mp3s of mine with replaygain tag set to 0dB even if not normalized.
         // This is because of Rapid Evolution 3, I suppose. I prefer to rescan them by setting value to 0 (i.e. rescan via analyserrg)

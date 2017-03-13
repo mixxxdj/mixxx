@@ -122,10 +122,10 @@ bool EngineRecord::metaDataHasChanged()
     m_iMetaDataLife = 0;
 
     TrackPointer pTrack = PlayerInfo::instance().getCurrentPlayingTrack();
-    if ( !pTrack )
+    if (!pTrack)
         return false;
 
-    if ( m_pCurrentTrack ) {
+    if (m_pCurrentTrack) {
         if ((pTrack->getId() == -1) || (m_pCurrentTrack->getId() == -1)) {
             if ((pTrack->getArtist() == m_pCurrentTrack->getArtist()) &&
                 (pTrack->getTitle() == m_pCurrentTrack->getArtist())) {
@@ -232,9 +232,8 @@ void EngineRecord::writeCueLine() {
                                     % 75);
 
     m_cueFile.write(QString("  TRACK %1 AUDIO\n")
-            .arg((double)m_cueTrack, 2, 'f', 0, '0')
-        .toLatin1()
-    );
+                    .arg((double)m_cueTrack, 2, 'f', 0, '0')
+                    .toLatin1());
 
     m_cueFile.write(QString("    TITLE \"%1\"\n")
         .arg(m_pCurrentTrack->getTitle()).toLatin1());
@@ -276,7 +275,7 @@ bool EngineRecord::fileOpen() {
 
 bool EngineRecord::openFile() {
     // Unfortunately, we cannot use QFile for writing WAV and AIFF audio.
-    if (m_encoding == ENCODING_WAVE || m_encoding == ENCODING_AIFF){
+    if (m_encoding == ENCODING_WAVE || m_encoding == ENCODING_AIFF) {
         // set sfInfo
         m_sfInfo.samplerate = m_sampleRate;
         m_sfInfo.channels = 2;

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>461</width>
+    <width>538</width>
     <height>690</height>
    </rect>
   </property>
@@ -14,81 +14,6 @@
    <string>Interface Preferences</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
-   <item row="2" column="0">
-    <widget class="QGroupBox" name="groupBoxRateRamp">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string>Makes temporary pitch/rate buttons change the pitch gradually, instead of all at once.</string>
-     </property>
-     <property name="title">
-      <string>Ramping Pitchbend</string>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-     <property name="checked">
-      <bool>false</bool>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_5">
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Pitchbend sensitivity</string>
-        </property>
-        <property name="buddy">
-         <cstring>SliderRateRampSensitivity</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QSlider" name="SliderRateRampSensitivity">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="minimum">
-         <number>100</number>
-        </property>
-        <property name="maximum">
-         <number>2500</number>
-        </property>
-        <property name="singleStep">
-         <number>50</number>
-        </property>
-        <property name="value">
-         <number>250</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QSpinBox" name="SpinBoxRateRampSensitivity">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="toolTip">
-         <string>Value in milliseconds</string>
-        </property>
-        <property name="minimum">
-         <number>100</number>
-        </property>
-        <property name="maximum">
-         <number>2500</number>
-        </property>
-        <property name="singleStep">
-         <number>1</number>
-        </property>
-        <property name="value">
-         <number>250</number>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
    <item row="1" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
@@ -96,7 +21,7 @@
        <item row="0" column="1">
         <widget class="QGroupBox" name="groupBox_2">
          <property name="title">
-          <string>Temporary Pitch/Rate Buttons</string>
+          <string>Temporary Speed Adjustment Buttons</string>
          </property>
          <layout class="QGridLayout" name="gridLayout">
           <item row="0" column="0">
@@ -205,7 +130,7 @@
        <item row="0" column="0">
         <widget class="QGroupBox" name="groupBox">
          <property name="title">
-          <string>Permanent Pitch/Rate Buttons</string>
+          <string>Permanent Speed Adjustment Buttons</string>
          </property>
          <property name="checkable">
           <bool>false</bool>
@@ -320,7 +245,7 @@
    </item>
    <item row="0" column="0">
     <layout class="QGridLayout" name="GridLayout1">
-     <item row="8" column="1" colspan="2">
+     <item row="9" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxRateDir">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -333,7 +258,7 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="1" colspan="2">
+     <item row="7" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxPosition">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -346,7 +271,17 @@
        </property>
       </widget>
      </item>
-     <item row="10" column="1" colspan="2">
+     <item row="1" column="1" colspan="2">
+      <widget class="QLabel" name="warningLabel">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxCueDefault">
        <property name="toolTip">
         <string>Mixxx mode: 
@@ -372,7 +307,7 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="6" column="0">
+     <item row="7" column="0">
       <widget class="QLabel" name="labelPositionDisplay">
        <property name="enabled">
         <bool>true</bool>
@@ -410,7 +345,7 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="7" column="0">
+     <item row="8" column="0">
       <widget class="QLabel" name="TextLabel6">
        <property name="enabled">
         <bool>true</bool>
@@ -419,7 +354,7 @@ Numark mode:
         <font/>
        </property>
        <property name="text">
-        <string>Pitch/Rate slider range</string>
+        <string>Speed slider range</string>
        </property>
        <property name="wordWrap">
         <bool>false</bool>
@@ -429,7 +364,7 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="5" column="1" colspan="2">
+     <item row="6" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxTooltips">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -461,7 +396,7 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="11" column="0">
+     <item row="12" column="0">
       <widget class="QLabel" name="textLabelAllowTrackLoadToPlayingDeck">
        <property name="text">
         <string>Track load behavior</string>
@@ -471,7 +406,7 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="10" column="0">
+     <item row="11" column="0">
       <widget class="QLabel" name="labelCueMode">
        <property name="text">
         <string>Cue mode</string>
@@ -484,7 +419,7 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="7" column="1" colspan="2">
+     <item row="8" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxRateRange">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -496,11 +431,11 @@ Numark mode:
         <font/>
        </property>
        <property name="toolTip">
-        <string>Adjust the available range for the pitch (tempo) change controls.</string>
+        <string>Adjusts the range of the speed (Vinyl &quot;Pitch&quot;) slider.</string>
        </property>
       </widget>
      </item>
-     <item row="12" column="0">
+     <item row="13" column="0">
       <widget class="QLabel" name="textLabelLocale">
        <property name="text">
         <string>Locale</string>
@@ -510,14 +445,14 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="12" column="1" colspan="2">
+     <item row="13" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxLocale">
        <property name="toolTip">
         <string>Locales determine country and language specific settings.</string>
        </property>
       </widget>
      </item>
-     <item row="8" column="0">
+     <item row="9" column="0">
       <widget class="QLabel" name="TextLabel6_2">
        <property name="enabled">
         <bool>true</bool>
@@ -526,7 +461,7 @@ Numark mode:
         <font/>
        </property>
        <property name="text">
-        <string>Pitch/Rate slider direction</string>
+        <string>Speed slider direction</string>
        </property>
        <property name="wordWrap">
         <bool>false</bool>
@@ -568,7 +503,7 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="9" column="0">
+     <item row="10" column="0">
       <widget class="QLabel" name="textLabelCueRecall">
        <property name="text">
         <string>Auto Recall Cue</string>
@@ -578,13 +513,13 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="11" column="1" colspan="2">
+     <item row="12" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxAllowTrackLoadToPlayingDeck"/>
      </item>
-     <item row="9" column="1" colspan="2">
+     <item row="10" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxCueRecall"/>
      </item>
-     <item row="5" column="0">
+     <item row="6" column="0">
       <widget class="QLabel" name="labelTooltips">
        <property name="enabled">
         <bool>true</bool>
@@ -613,13 +548,26 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="1" column="1" colspan="2">
-      <widget class="QLabel" name="warningLabel">
+     <item row="5" column="0">
+      <widget class="QLabel" name="labelRowHeight">
        <property name="text">
-        <string/>
+        <string>Library Row Height</string>
        </property>
-       <property name="alignment">
-        <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+      </widget>
+     </item>
+     <item row="5" column="1" colspan="2">
+      <widget class="QSpinBox" name="spinBoxRowHeight">
+       <property name="suffix">
+        <string> px</string>
+       </property>
+       <property name="minimum">
+        <number>10</number>
+       </property>
+       <property name="maximum">
+        <number>50</number>
+       </property>
+       <property name="value">
+        <number>20</number>
        </property>
       </widget>
      </item>
@@ -637,6 +585,81 @@ Numark mode:
       </size>
      </property>
     </spacer>
+   </item>
+   <item row="2" column="0">
+    <widget class="QGroupBox" name="groupBoxRateRamp">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string>Makes temporary speed buttons change the pitch gradually, instead of all at once.</string>
+     </property>
+     <property name="title">
+      <string>Ramping Pitchbend</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_5">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Pitchbend sensitivity</string>
+        </property>
+        <property name="buddy">
+         <cstring>SliderRateRampSensitivity</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QSlider" name="SliderRateRampSensitivity">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="minimum">
+         <number>100</number>
+        </property>
+        <property name="maximum">
+         <number>2500</number>
+        </property>
+        <property name="singleStep">
+         <number>50</number>
+        </property>
+        <property name="value">
+         <number>250</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QSpinBox" name="SpinBoxRateRampSensitivity">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="toolTip">
+         <string>Value in milliseconds</string>
+        </property>
+        <property name="minimum">
+         <number>100</number>
+        </property>
+        <property name="maximum">
+         <number>2500</number>
+        </property>
+        <property name="singleStep">
+         <number>1</number>
+        </property>
+        <property name="value">
+         <number>250</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </item>
   </layout>
  </widget>

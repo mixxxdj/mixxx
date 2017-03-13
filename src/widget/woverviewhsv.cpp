@@ -19,12 +19,13 @@ bool WOverviewHSV::drawNextPixmapPart() {
 
     int currentCompletion;
 
-    if (!m_pWaveform) {
+    ConstWaveformPointer pWaveform = getWaveform();
+    if (!pWaveform) {
         return false;
     }
 
-    const int dataSize = m_pWaveform->getDataSize();
-    if (dataSize == 0 ) {
+    const int dataSize = pWaveform->getDataSize();
+    if (dataSize == 0) {
         return false;
     }
 
@@ -38,16 +39,12 @@ bool WOverviewHSV::drawNextPixmapPart() {
     }
 
     // Always multiple of 2
-    const int waveformCompletion = m_pWaveform->getCompletion();
+    const int waveformCompletion = pWaveform->getCompletion();
     // Test if there is some new to draw (at least of pixel width)
     const int completionIncrement = waveformCompletion - m_actualCompletion;
 
     int visiblePixelIncrement = completionIncrement * width() / dataSize;
     if (completionIncrement < 2 || visiblePixelIncrement == 0) {
-        return false;
-    }
-
-    if (!m_pWaveform->getMutex()->tryLock()) {
         return false;
     }
 
@@ -79,29 +76,28 @@ bool WOverviewHSV::drawNextPixmapPart() {
 
     for (currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion; currentCompletion += 2) {
-        maxAll[0] = m_pWaveform->getAll(currentCompletion);
-        maxAll[1] = m_pWaveform->getAll(currentCompletion+1);
+        maxAll[0] = pWaveform->getAll(currentCompletion);
+        maxAll[1] = pWaveform->getAll(currentCompletion+1);
         if (maxAll[0] || maxAll[1]) {
-            maxLow[0] = m_pWaveform->getLow(currentCompletion);
-            maxLow[1] = m_pWaveform->getLow(currentCompletion+1);
-            maxMid[0] = m_pWaveform->getMid(currentCompletion);
-            maxMid[1] = m_pWaveform->getMid(currentCompletion+1);
-            maxHigh[0] = m_pWaveform->getHigh(currentCompletion);
-            maxHigh[1] = m_pWaveform->getHigh(currentCompletion+1);
+            maxLow[0] = pWaveform->getLow(currentCompletion);
+            maxLow[1] = pWaveform->getLow(currentCompletion+1);
+            maxMid[0] = pWaveform->getMid(currentCompletion);
+            maxMid[1] = pWaveform->getMid(currentCompletion+1);
+            maxHigh[0] = pWaveform->getHigh(currentCompletion);
+            maxHigh[1] = pWaveform->getHigh(currentCompletion+1);
 
             total = (maxLow[0] + maxLow[1] + maxMid[0] + maxMid[1] +
                      maxHigh[0] + maxHigh[1]) * 1.2;
 
             // Prevent division by zero
-            if( total > 0 )
-            {
+            if (total > 0) {
                 // Normalize low and high
                 // (mid not need, because it not change the color)
                 lo = (maxLow[0] + maxLow[1]) / total;
                 hi = (maxHigh[0] + maxHigh[1]) / total;
-            }
-            else
+            } else {
                 lo = hi = 0.0;
+            }
 
             // Set color
             color.setHsvF(h, 1.0-hi, 1.0-lo);
@@ -116,10 +112,10 @@ bool WOverviewHSV::drawNextPixmapPart() {
 
     for (currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion; currentCompletion += 2) {
-        m_waveformPeak = math_max(m_waveformPeak,
-                (float)m_pWaveform->getAll(currentCompletion));
-        m_waveformPeak = math_max(m_waveformPeak,
-                (float)m_pWaveform->getAll(currentCompletion+1));
+        m_waveformPeak = math_max3(
+                m_waveformPeak,
+                static_cast<float>(pWaveform->getAll(currentCompletion)),
+                static_cast<float>(pWaveform->getAll(currentCompletion + 1)));
     }
 
     m_actualCompletion = nextCompletion;
@@ -132,6 +128,5 @@ bool WOverviewHSV::drawNextPixmapPart() {
         //qDebug() << "m_waveformPeakRatio" << m_waveformPeak;
     }
 
-    m_pWaveform->getMutex()->unlock();
     return true;
 }

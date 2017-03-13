@@ -10,7 +10,7 @@
 Effect::Effect(EffectsManager* pEffectsManager,
                const EffectManifest& manifest,
                EffectInstantiatorPointer pInstantiator)
-        : QObject(),
+        : QObject(), // no parent
           m_pEffectsManager(pEffectsManager),
           m_manifest(manifest),
           m_pInstantiator(pInstantiator),

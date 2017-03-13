@@ -94,8 +94,7 @@ void AcoustidClient::requestFinished() {
     emit(finished(id, ID));
 }
 
-QString AcoustidClient::parseResult(QXmlStreamReader& reader){
-
+QString AcoustidClient::parseResult(QXmlStreamReader& reader) {
     while (!reader.atEnd()) {
         QXmlStreamReader::TokenType type = reader.readNext();
         if (type== QXmlStreamReader::StartElement) {

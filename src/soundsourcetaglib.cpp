@@ -150,19 +150,18 @@ void readID3v2Tag(SoundSource* pSoundSource, const TagLib::ID3v2::Tag& id3v2) {
     // Foobar2000-style ID3v2.3.0 tags
     // TODO: Check if everything is ok.
     TagLib::ID3v2::FrameList frames = id3v2.frameListMap()["TXXX"];
-    for ( TagLib::ID3v2::FrameList::Iterator it = frames.begin(); it != frames.end(); ++it ) {
+    for (TagLib::ID3v2::FrameList::Iterator it = frames.begin(); it != frames.end(); ++it) {
         TagLib::ID3v2::UserTextIdentificationFrame* ReplayGainframe =
-                dynamic_cast<TagLib::ID3v2::UserTextIdentificationFrame*>( *it );
-        if ( ReplayGainframe && ReplayGainframe->fieldList().size() >= 2 )
-        {
-            QString desc = toQString( ReplayGainframe->description() ).toLower();
-            if ( desc == "replaygain_album_gain" ){
-                QString sReplayGain = toQString( ReplayGainframe->fieldList()[1]);
+                dynamic_cast<TagLib::ID3v2::UserTextIdentificationFrame*>(*it);
+        if (ReplayGainframe && ReplayGainframe->fieldList().size() >= 2) {
+            QString desc = toQString(ReplayGainframe->description()).toLower();
+            if (desc == "replaygain_album_gain") {
+                QString sReplayGain = toQString(ReplayGainframe->fieldList()[1]);
                 pSoundSource->setReplayGainString(sReplayGain);
             }
             //Prefer track gain over album gain.
-            if ( desc == "replaygain_track_gain" ){
-                QString sReplayGain = toQString( ReplayGainframe->fieldList()[1]);
+            if (desc == "replaygain_track_gain") {
+                QString sReplayGain = toQString(ReplayGainframe->fieldList()[1]);
                 pSoundSource->setReplayGainString(sReplayGain);
             }
         }

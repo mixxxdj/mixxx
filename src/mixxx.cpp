@@ -283,6 +283,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     CoverArtCache::create();
 
     m_pLibrary = new Library(this, m_pConfig,
+                             m_pPlayerManager,
                              m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
 
@@ -393,10 +394,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     pContextWidget->hide();
     SharedGLContext::setWidget(pContextWidget);
 
-    // Create Control aliases before loading the default skin and
-    // initializing controllers
-    createCOAliases();
-
     // Load skin to a QWidget that we set as the central widget. Assignment
     // intentional in next line.
     if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(this, m_pKeyboard,
@@ -458,7 +455,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 
     // Scan the library directory. Initialize this after the skinloader has
     // loaded a skin, see Bug #1047435
-    m_pLibraryScanner = new LibraryScanner(m_pLibrary->getTrackCollection());
+    m_pLibraryScanner = new LibraryScanner(this, m_pLibrary->getTrackCollection());
     connect(m_pLibraryScanner, SIGNAL(scanFinished()),
             this, SLOT(slotEnableRescanLibraryAction()));
 
@@ -467,7 +464,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
             m_pLibrary, SLOT(slotRefreshLibraryModels()));
 
     if (rescan || hasChanged_MusicDir || upgrader.rescanLibrary()) {
-        m_pLibraryScanner->scan(this);
+        m_pLibraryScanner->scan();
     }
     slotNumDecksChanged(m_pNumDecks->get());
 
@@ -513,9 +510,6 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_PassthroughMapper;
     delete m_AuxiliaryMapper;
     delete m_TalkoverMapper;
-    // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
-    qDebug() << "delete playerManager " << qTime.elapsed();
-    delete m_pPlayerManager;
 
     // LibraryScanner depends on Library
     qDebug() << "delete library scanner " <<  qTime.elapsed();
@@ -525,10 +519,14 @@ MixxxMainWindow::~MixxxMainWindow() {
     CoverArtCache::destroy();
 
     // Delete the library after the view so there are no dangling pointers to
-    // Depends on RecordingManager
     // the data models.
+    // Depends on RecordingManager and PlayerManager
     qDebug() << "delete library " << qTime.elapsed();
     delete m_pLibrary;
+
+    // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
+    qDebug() << "delete playerManager " << qTime.elapsed();
+    delete m_pPlayerManager;
 
     // RecordingManager depends on config, engine
     qDebug() << "delete RecordingManager " << qTime.elapsed();
@@ -550,11 +548,12 @@ MixxxMainWindow::~MixxxMainWindow() {
     qDebug() << "delete m_pEngine " << qTime.elapsed();
     delete m_pEngine;
 
-    // Must delete after EngineMaster.
+    qDebug() << "deleting preferences, " << qTime.elapsed();
+    delete m_pPrefDlg;
+
+    // Must delete after EngineMaster and DlgPrefEq.
     qDebug() << "deleting effects manager, " << qTime.elapsed();
     delete m_pEffectsManager;
-
-    delete m_pPrefDlg;
 
     delete m_pTouchShift;
 
@@ -636,15 +635,6 @@ bool MixxxMainWindow::loadTranslations(const QLocale& systemLocale, QString user
 #endif  // QT_VERSION
     }
     return pTranslator->load(translation + prefix + userLocale, translationPath);
-}
-
-void MixxxMainWindow::createCOAliases() {
-    // Add aliases using
-    // ControlDoublePrivate::insertAlias(aliasConfigKey, originalConfigKey)
-
-    // Example:
-    // ControlDoublePrivate::insertAlias(ConfigKey("[Microphone]", "volume"),
-    //                                   ConfigKey("[Microphone1]", "volume"));
 }
 
 void MixxxMainWindow::logBuildDetails() {
@@ -892,8 +882,7 @@ int MixxxMainWindow::noSoundDlg(void)
         } else if (msgBox.clickedButton() == wikiButton) {
             QDesktopServices::openUrl(QUrl(
                 "http://mixxx.org/wiki/doku.php/troubleshooting"
-                "#no_or_too_few_sound_cards_appear_in_the_preferences_dialog")
-            );
+                "#no_or_too_few_sound_cards_appear_in_the_preferences_dialog"));
             wikiButton->setEnabled(false);
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();
@@ -953,7 +942,7 @@ int MixxxMainWindow::noOutputDlg(bool *continueClicked)
             // This way of opening the dialog allows us to use it synchronously
             m_pPrefDlg->setWindowModality(Qt::ApplicationModal);
             m_pPrefDlg->exec();
-            if ( m_pPrefDlg->result() == QDialog::Accepted) {
+            if (m_pPrefDlg->result() == QDialog::Accepted) {
                 m_pSoundManager->queryDevices();
                 return 0;
             }
@@ -1331,7 +1320,7 @@ void MixxxMainWindow::initActions()
     m_pDeveloperTools->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "OptionsMenu_DeveloperTools"),
-                                                  tr("Ctrl+Shift+D"))));
+                                                  tr("Ctrl+Shift+T"))));
     m_pDeveloperTools->setShortcutContext(Qt::ApplicationShortcut);
     m_pDeveloperTools->setStatusTip(developerToolsText);
     m_pDeveloperTools->setWhatsThis(buildWhatsThis(developerToolsTitle, developerToolsText));
@@ -1371,6 +1360,29 @@ void MixxxMainWindow::initActions()
     m_pDeveloperStatsBase->setChecked(Experiment::isBase());
     connect(m_pDeveloperStatsBase, SIGNAL(triggered()),
             this, SLOT(slotDeveloperStatsBase()));
+
+
+
+
+    QString scriptDebuggerTitle = tr("Debugger Enabled");
+    QString scriptDebuggerText = tr("Enables the debugger during skin parsing");
+    bool scriptDebuggerEnabled = m_pConfig->getValueString(
+        ConfigKey("[ScriptDebugger]", "Enabled")) == "1";
+    m_pDeveloperDebugger = new QAction(scriptDebuggerTitle, this);
+
+    m_pDeveloperDebugger->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "DeveloperMenu_EnableDebugger"),
+                                                  tr("Ctrl+Shift+D"))));
+    m_pDeveloperDebugger->setShortcutContext(Qt::ApplicationShortcut);
+    m_pDeveloperDebugger->setWhatsThis(buildWhatsThis(keyboardShortcutTitle, keyboardShortcutText));
+    m_pDeveloperDebugger->setCheckable(true);
+    m_pDeveloperDebugger->setStatusTip(scriptDebuggerText);
+    m_pDeveloperDebugger->setChecked(scriptDebuggerEnabled);
+    connect(m_pDeveloperDebugger, SIGNAL(toggled(bool)),
+            this, SLOT(slotDeveloperDebugger(bool)));
+
+
 
     // TODO: This code should live in a separate class.
     m_TalkoverMapper = new QSignalMapper(this);
@@ -1449,6 +1461,7 @@ void MixxxMainWindow::initMenuBar()
     m_pDeveloperMenu->addAction(m_pDeveloperTools);
     m_pDeveloperMenu->addAction(m_pDeveloperStatsExperiment);
     m_pDeveloperMenu->addAction(m_pDeveloperStatsBase);
+    m_pDeveloperMenu->addAction(m_pDeveloperDebugger);
 
     // menuBar entry helpMenu
     m_pHelpMenu->addAction(m_pHelpSupport);
@@ -1555,6 +1568,11 @@ void MixxxMainWindow::slotDeveloperTools() {
     m_pDeveloperToolsDlg->activateWindow();
 }
 
+void MixxxMainWindow::slotDeveloperDebugger(bool toggle) {
+    m_pConfig->set(ConfigKey("[ScriptDebugger]","Enabled"),
+                   ConfigValue(toggle ? 1 : 0));
+}
+
 void MixxxMainWindow::slotDeveloperToolsClosed() {
     m_pDeveloperToolsDlg = NULL;
 }
@@ -1576,6 +1594,8 @@ void MixxxMainWindow::slotDeveloperStatsBase() {
         Experiment::disable();
     }
 }
+
+
 
 void MixxxMainWindow::slotViewFullScreen(bool toggle)
 {
@@ -1958,7 +1978,7 @@ void MixxxMainWindow::closeEvent(QCloseEvent *event) {
 void MixxxMainWindow::slotScanLibrary() {
     emit(libraryScanStarted());
     m_pLibraryRescan->setEnabled(false);
-    m_pLibraryScanner->scan(this);
+    m_pLibraryScanner->scan();
 }
 
 void MixxxMainWindow::slotEnableRescanLibraryAction() {

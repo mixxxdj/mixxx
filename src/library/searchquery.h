@@ -54,6 +54,17 @@ class AndNode : public GroupNode {
     QString toSql() const;
 };
 
+class NotNode : public QueryNode {
+  public:
+    explicit NotNode(QueryNode* pNode);
+
+    bool match(const TrackPointer& pTrack) const;
+    QString toSql() const;
+
+  private:
+    QueryNode* m_pNode;
+};
+
 class TextFilterNode : public QueryNode {
   public:
     TextFilterNode(const QSqlDatabase& database,
@@ -113,7 +124,7 @@ class KeyFilterNode : public QueryNode {
 
 class SqlNode : public QueryNode {
   public:
-    SqlNode(const QString& sqlExpression)
+    explicit SqlNode(const QString& sqlExpression)
             // Need to wrap it since we don't know if the caller wrapped it.
             : m_sql(QString("(%1)").arg(sqlExpression)) {
     }

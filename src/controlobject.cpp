@@ -28,8 +28,8 @@
 ControlObject::ControlObject() {
 }
 
-ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack, bool bPersist)
-        : m_pControl(NULL) {
+ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack,
+                             bool bPersist) {
     initialize(key, bIgnoreNops, bTrack, bPersist);
 }
 
@@ -42,12 +42,20 @@ ControlObject::~ControlObject() {
 void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack,
                                bool bPersist) {
     m_key = key;
-    m_pControl = ControlDoublePrivate::getControl(m_key, true, this,
-                                                  bIgnoreNops, bTrack,
-                                                  bPersist);
-    connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
-            this, SLOT(privateValueChanged(double, QObject*)),
-            Qt::DirectConnection);
+
+    // Don't bother looking up the control if key is NULL. Prevents log spew.
+    if (!m_key.isNull()) {
+        m_pControl = ControlDoublePrivate::getControl(m_key, true, this,
+                                                      bIgnoreNops, bTrack,
+                                                      bPersist);
+    }
+
+    // getControl can fail and return a NULL control even with the create flag.
+    if (m_pControl) {
+        connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
+                this, SLOT(privateValueChanged(double, QObject*)),
+                Qt::DirectConnection);
+    }
 }
 
 // slot

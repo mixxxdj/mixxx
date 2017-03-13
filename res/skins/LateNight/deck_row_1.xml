@@ -64,10 +64,37 @@
                     <BindProperty>visible</BindProperty>
                 </Connection>
 			</WidgetGroup>
-            <WidgetGroup>
+            <WidgetGroup>  <!-- spacer -->
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,min</SizePolicy>
                 <Children></Children>
+            </WidgetGroup>
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <ObjectName>EffectKnob</ObjectName>
+                <Children>
+                     <WidgetGroup>
+                         <ObjectName>AlignCenterTop</ObjectName>
+                         <Layout>horizontal</Layout>
+                         <SizePolicy>min,min</SizePolicy>
+                         <Children>
+                             <Knob>
+                                 <NumberStates>64</NumberStates>
+                                 <Path>knobs/knob_rotary_s%1.png</Path>
+                                 <Connection>
+                                     <ConfigKey>[QuickEffectRack1_[Channel<Variable name="channum"/>]],parameter</ConfigKey>
+                                 </Connection>
+                             </Knob>
+                         </Children>
+                     </WidgetGroup>
+                     <EffectName>
+                         <ObjectName>KnobLabel</ObjectName>
+                         <EffectRackGroup>[QuickEffectRack1]</EffectRackGroup>
+                         <EffectUnitGroup>[QuickEffectRack1_[Channel<Variable name="channum"/>]]</EffectUnitGroup>
+                         <Effect>1</Effect>
+                     </EffectName>
+                 </Children>
             </WidgetGroup>
 			<WidgetGroup>
                 <ObjectName>Hotcues</ObjectName>

@@ -18,12 +18,13 @@ bool WOverviewRGB::drawNextPixmapPart() {
 
     int currentCompletion;
 
-    if (!m_pWaveform) {
+    ConstWaveformPointer pWaveform = getWaveform();
+    if (!pWaveform) {
         return false;
     }
 
-    const int dataSize = m_pWaveform->getDataSize();
-    if (dataSize == 0 ) {
+    const int dataSize = pWaveform->getDataSize();
+    if (dataSize == 0) {
         return false;
     }
 
@@ -37,16 +38,12 @@ bool WOverviewRGB::drawNextPixmapPart() {
     }
 
     // Always multiple of 2
-    const int waveformCompletion = m_pWaveform->getCompletion();
+    const int waveformCompletion = pWaveform->getCompletion();
     // Test if there is some new to draw (at least of pixel width)
     const int completionIncrement = waveformCompletion - m_actualCompletion;
 
     int visiblePixelIncrement = completionIncrement * width() / dataSize;
     if (completionIncrement < 2 || visiblePixelIncrement == 0) {
-        return false;
-    }
-
-    if (!m_pWaveform->getMutex()->tryLock()) {
         return false;
     }
 
@@ -71,12 +68,12 @@ bool WOverviewRGB::drawNextPixmapPart() {
     for (currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion; currentCompletion += 2) {
 
-        unsigned char left = m_pWaveform->getAll(currentCompletion);
-        unsigned char right = m_pWaveform->getAll(currentCompletion + 1);
+        unsigned char left = pWaveform->getAll(currentCompletion);
+        unsigned char right = pWaveform->getAll(currentCompletion + 1);
 
-        low = m_pWaveform->getLow(currentCompletion);
-        mid = m_pWaveform->getMid(currentCompletion);
-        high = m_pWaveform->getHigh(currentCompletion);
+        low = pWaveform->getLow(currentCompletion);
+        mid = pWaveform->getMid(currentCompletion);
+        high = pWaveform->getHigh(currentCompletion);
 
         max = (float) math_max3(low, mid, high);
         if (max > 0.0f) {
@@ -85,9 +82,9 @@ bool WOverviewRGB::drawNextPixmapPart() {
             painter.drawLine(currentCompletion / 2, -left, currentCompletion / 2, 0);
         }
 
-        low = m_pWaveform->getLow(currentCompletion + 1);
-        mid = m_pWaveform->getMid(currentCompletion + 1);
-        high = m_pWaveform->getHigh(currentCompletion + 1);
+        low = pWaveform->getLow(currentCompletion + 1);
+        mid = pWaveform->getMid(currentCompletion + 1);
+        high = pWaveform->getHigh(currentCompletion + 1);
 
         max = (float) math_max3(low, mid, high);
         if (max > 0.0f) {
@@ -100,10 +97,10 @@ bool WOverviewRGB::drawNextPixmapPart() {
     // Evaluate waveform ratio peak
     for (currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion; currentCompletion += 2) {
-        m_waveformPeak = math_max(m_waveformPeak,
-                (float)m_pWaveform->getAll(currentCompletion));
-        m_waveformPeak = math_max(m_waveformPeak,
-                (float)m_pWaveform->getAll(currentCompletion+1));
+        m_waveformPeak = math_max3(
+                m_waveformPeak,
+                static_cast<float>(pWaveform->getAll(currentCompletion)),
+                static_cast<float>(pWaveform->getAll(currentCompletion + 1)));
     }
 
     m_actualCompletion = nextCompletion;
@@ -116,6 +113,5 @@ bool WOverviewRGB::drawNextPixmapPart() {
         //qDebug() << "m_waveformPeakRatio" << m_waveformPeak;
     }
 
-    m_pWaveform->getMutex()->unlock();
     return true;
 }

@@ -21,21 +21,15 @@ class EffectChainSlot : public QObject {
     Q_OBJECT
   public:
     EffectChainSlot(EffectRack* pRack,
-                    const unsigned int iRackNumber,
+                    const QString& group,
                     const unsigned int iChainNumber);
     virtual ~EffectChainSlot();
-
-    static QString formatGroupString(const unsigned int iRackNumber,
-                                     const unsigned int iChainNumber) {
-        return QString("[EffectRack%1_EffectUnit%2]").arg(
-            QString::number(iRackNumber+1), QString::number(iChainNumber+1));
-    }
 
     // Get the ID of the loaded EffectChain
     QString id() const;
 
     unsigned int numSlots() const;
-    EffectSlotPointer addEffectSlot();
+    EffectSlotPointer addEffectSlot(const QString& group);
     EffectSlotPointer getEffectSlot(unsigned int slotNumber);
 
     void loadEffectChain(EffectChainPointer pEffectChain);
@@ -43,10 +37,18 @@ class EffectChainSlot : public QObject {
 
     void registerGroup(const QString& group);
 
+    double getParameter() const;
+    void setParameter(double value);
+    void setParameterDefaultValue(double value);
+
     // Unload the loaded EffectChain.
     void clear();
 
     unsigned int getChainSlotNumber() const;
+
+    const QString& getGroup() const {
+        return m_group;
+    }
 
   signals:
     // Indicates that the effect pEffect has been loaded into slotNumber of
@@ -117,10 +119,9 @@ class EffectChainSlot : public QObject {
 
   private:
     QString debugString() const {
-        return QString("EffectChainSlot(%1)").arg(m_iChainSlotNumber);
+        return QString("EffectChainSlot(%1)").arg(m_group);
     }
 
-    const unsigned int m_iRackNumber;
     const unsigned int m_iChainSlotNumber;
     const QString m_group;
     EffectRack* m_pEffectRack;

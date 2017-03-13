@@ -194,7 +194,7 @@ class Qt(Dependence):
         qt_modules = [
             'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSvg',
             'QtSql', 'QtScript', 'QtXmlPatterns', 'QtNetwork',
-            'QtTest'
+            'QtTest', 'QtScriptTools'
         ]
         if qt5:
             qt_modules.extend(['QtWidgets', 'QtConcurrent'])
@@ -739,7 +739,8 @@ class MixxxCore(Feature):
                    "library/playlisttablemodel.cpp",
                    "library/libraryfeature.cpp",
                    "library/analysisfeature.cpp",
-                   "library/autodjfeature.cpp",
+                   "library/autodj/autodjfeature.cpp",
+                   "library/autodj/autodjprocessor.cpp",
                    "library/dao/directorydao.cpp",
                    "library/mixxxlibraryfeature.cpp",
                    "library/baseplaylistfeature.cpp",
@@ -775,6 +776,10 @@ class MixxxCore(Feature):
                    "library/libraryscannerdlg.cpp",
                    "library/legacylibraryimporter.cpp",
                    "library/library.cpp",
+
+                   "library/scanner/scannertask.cpp",
+                   "library/scanner/importfilestask.cpp",
+                   "library/scanner/recursivescandirectorytask.cpp",
 
                    "library/dao/cratedao.cpp",
                    "library/cratetablemodel.cpp",
@@ -866,6 +871,8 @@ class MixxxCore(Feature):
                    "skin/colorschemeparser.cpp",
                    "skin/tooltips.cpp",
                    "skin/skincontext.cpp",
+                   "skin/svgparser.cpp",
+                   "skin/pixmapsource.cpp",
 
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",

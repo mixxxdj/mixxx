@@ -44,6 +44,26 @@ class BeatMapTest : public testing::Test {
     int m_iFrameSize;
 };
 
+TEST_F(BeatMapTest, Scale) {
+    const double bpm = 60.0;
+    m_pTrack->setBpm(bpm);
+    m_pTrack->setSampleRate(m_iSampleRate);
+    double beatLengthFrames = getBeatLengthFrames(bpm);
+    double startOffsetFrames = 7;
+    const int numBeats = 100;
+    // Note beats must be in frames, not samples.
+    QVector<double> beats = createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
+    BeatMap* pMap = new BeatMap(m_pTrack, 0, beats);
+
+    EXPECT_DOUBLE_EQ(bpm, pMap->getBpm());
+    pMap->scale(2);
+    EXPECT_DOUBLE_EQ(2 * bpm, pMap->getBpm());
+    pMap->scale(0.5);
+    EXPECT_DOUBLE_EQ(bpm, pMap->getBpm());
+    pMap->scale(0.25);
+    EXPECT_DOUBLE_EQ(0.25 * bpm, pMap->getBpm());
+}
+
 TEST_F(BeatMapTest, TestNthBeat) {
     const double bpm = 60.0;
     m_pTrack->setBpm(bpm);

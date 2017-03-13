@@ -9,8 +9,6 @@
 
 #include <QtDebug>
 
-#include "util/cmdlineargs.h"
-
 // If we don't do this then we get the C90 fabs from the global namespace which
 // is only defined for double.
 using std::fabs;
@@ -19,15 +17,32 @@ using std::fabs;
 #define math_min std::min
 #define math_max3(a, b, c) math_max(math_max((a), (b)), (c))
 
+// Restrict value to the range [min, max]. Undefined behavior
+// if min > max.
+template <typename T>
+inline T math_clamp_unsafe(T value, T min, T max) {
+    return math_max(min, math_min(max, value));
+}
+
+// Clamp with bounds checking to avoid undefined behavior
+// on invalid min/max parameters.
+template <typename T>
+inline T math_clamp_safe(T value, T min, T max) {
+    if (min <= max) {
+        // valid bounds
+        return math_clamp_unsafe(value, min, max);
+    } else {
+        // invalid bounds
+        qWarning() << "PROGRAMMING ERROR: math_clamp_safe() called with min > max!"
+                   << min << ">" << max;
+        // simply return the value unchanged
+        return value;
+    }
+}
+
 template <typename T>
 inline T math_clamp(T value, T min, T max) {
-    // XXX: If max < min, behavior is undefined, and has been causing problems.
-    // if debugging is on, assert when this happens.
-    if (CmdlineArgs::Instance().getDeveloper() && max < min) {
-        qWarning() << "PROGRAMMING ERROR: math_clamp called with max < min! "
-                   << max << " " << min;
-    }
-    return math_max(min, math_min(max, value));
+    return math_clamp_safe(value, min, max);
 }
 
 // NOTE(rryan): It is an error to call even() on a floating point number. Do not
@@ -56,20 +71,21 @@ inline bool even(T value) {
 #endif
 
 inline int roundUpToPowerOf2(int v) {
-    // From http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
-    v--;
-    v |= v >> 1;
-    v |= v >> 2;
-    v |= v >> 4;
-    v |= v >> 8;
-    v |= v >> 16;
-    v++;
-    return v;
+    int power = 1;
+    while (power < v && power > 0) {
+        power *= 2;
+    }
+    // There is not a power of 2 higher than v representable by our
+    // architecture's integer size.
+    if (power < 0) {
+        return -1;
+    }
+    return power;
 }
 
 // MSVS 2013 (_MSC_VER 1800) introduced C99 support.
 #if defined(__WINDOWS__) &&  _MSC_VER < 1800
-inline int round(double x){
+inline int round(double x) {
     return x < 0.0 ? ceil(x - 0.5) : floor(x + 0.5);
 }
 #endif

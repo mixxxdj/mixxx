@@ -42,31 +42,24 @@ void WTrackText::updateLabel(TrackInfoObject*) {
 
 void WTrackText::mouseMoveEvent(QMouseEvent *event) {
     if ((event->buttons() & Qt::LeftButton) && m_pCurrentTrack) {
-        DragAndDropHelper::dragTrack(m_pCurrentTrack, this);
+        DragAndDropHelper::dragTrack(m_pCurrentTrack, this, m_pGroup);
     }
 }
 
 void WTrackText::dragEnterEvent(QDragEnterEvent *event) {
-    if (event->mimeData()->hasUrls() &&
-            event->mimeData()->urls().size() > 0) {
-        // Accept if the Deck isn't playing or the settings allow to interrupt a playing deck
-        if ((!ControlObject::get(ConfigKey(m_pGroup, "play")) ||
-             m_pConfig->getValueString(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt())) {
-            QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
-                event->mimeData()->urls(), true, false);
-            if (!files.isEmpty()) {
-                event->acceptProposedAction();
-                return;
-            }
-        }
+    if (DragAndDropHelper::allowLoadToPlayer(m_pGroup, m_pConfig) &&
+            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_pGroup,
+                                               true, false)) {
+        event->acceptProposedAction();
+    } else {
+        event->ignore();
     }
-    event->ignore();
 }
 
 void WTrackText::dropEvent(QDropEvent *event) {
-    if (event->mimeData()->hasUrls()) {
-        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
-                event->mimeData()->urls(), true, false);
+    if (DragAndDropHelper::allowLoadToPlayer(m_pGroup, m_pConfig)) {
+        QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
+                *event->mimeData(), m_pGroup, true, false);
         if (!files.isEmpty()) {
             event->accept();
             emit(trackDropped(files.at(0).canonicalFilePath(), m_pGroup));

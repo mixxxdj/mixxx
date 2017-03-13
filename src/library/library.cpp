@@ -6,6 +6,7 @@
 #include <QTranslator>
 #include <QDir>
 
+#include "playermanager.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
 #include "library/libraryfeature.h"
@@ -20,7 +21,7 @@
 #include "library/recording/recordingfeature.h"
 #include "library/itunes/itunesfeature.h"
 #include "library/mixxxlibraryfeature.h"
-#include "library/autodjfeature.h"
+#include "library/autodj/autodjfeature.h"
 #include "library/playlistfeature.h"
 #include "library/traktor/traktorfeature.h"
 #include "library/librarycontrol.h"
@@ -38,6 +39,7 @@
 const QString Library::m_sTrackViewName = QString("WTrackTableView");
 
 Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
+                 PlayerManagerInterface* pPlayerManager,
                  RecordingManager* pRecordingManager) :
         m_pConfig(pConfig),
         m_pSidebarModel(new SidebarModel(parent)),
@@ -51,7 +53,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
     m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection,m_pConfig);
     addFeature(m_pMixxxLibraryFeature);
 
-    addFeature(new AutoDJFeature(this, pConfig, m_pTrackCollection));
+    addFeature(new AutoDJFeature(this, pConfig, pPlayerManager, m_pTrackCollection));
     m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection, m_pConfig);
     addFeature(m_pPlaylistFeature);
     m_pCrateFeature = new CrateFeature(this, m_pTrackCollection, m_pConfig);
@@ -273,7 +275,7 @@ void Library::slotRequestAddDir(QString dir) {
     }
     // set at least one directory in the config file so that it will be possible
     // to downgrade from 1.12
-    if (m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR).length() < 1){
+    if (m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR).length() < 1) {
         m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, dir);
     }
 }
@@ -337,6 +339,6 @@ void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
     }
 }
 
-QStringList Library::getDirs(){
+QStringList Library::getDirs() {
     return m_pTrackCollection->getDirectoryDAO().getDirs();
 }

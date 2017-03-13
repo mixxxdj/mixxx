@@ -50,6 +50,8 @@ BrowseFeature::BrowseFeature(QObject* parent,
     // BrowseThread sets the Qt::UserRole of every QStandardItem to the sort key
     // of the item.
     m_proxyModel.setSortRole(Qt::UserRole);
+    // Dynamically re-sort contents as we add items to the source model.
+    m_proxyModel.setDynamicSortFilter(true);
 
     // The invisible root item of the child model
     TreeItem* rootItem = new TreeItem();
@@ -271,7 +273,7 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 
 // This is called whenever you double click or use the triangle symbol to expand
 // the subtree. The method will read the subfolders.
-void BrowseFeature::onLazyChildExpandation(const QModelIndex &index){
+void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
     if (!item) {
         return;

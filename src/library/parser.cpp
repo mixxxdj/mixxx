@@ -34,8 +34,7 @@ Parser::~Parser()
 
 void Parser::clearLocations()
 {
-    while(!m_sLocations.isEmpty())
-        m_sLocations.removeFirst();
+    m_sLocations.clear();
 }
 
 long Parser::countParsed()
@@ -43,17 +42,17 @@ long Parser::countParsed()
     return (long)m_sLocations.count();
 }
 
-bool Parser::isFilepath(QString sFilepath){
+bool Parser::isFilepath(QString sFilepath) {
     QFile file(sFilepath);
     bool exists = file.exists();
     file.close();
     return exists;
 }
 
-bool Parser::isBinary(QString filename){
+bool Parser::isBinary(QString filename) {
     QFile file(filename);
 
-    if(file.open(QIODevice::ReadOnly)){
+    if (file.open(QIODevice::ReadOnly)) {
         char c;
         unsigned char uc;
 

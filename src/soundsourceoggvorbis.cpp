@@ -59,7 +59,7 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
 
 SoundSourceOggVorbis::~SoundSourceOggVorbis()
 {
-    if (filelength > 0){
+    if (filelength > 0) {
         ov_clear(&vf);
     }
 }
@@ -93,7 +93,7 @@ Result SoundSourceOggVorbis::open() {
     channels = vi->channels;
     setSampleRate(vi->rate);
 
-    if(channels > 2){
+    if (channels > 2) {
         qDebug() << "oggvorbis: No support for more than 2 channels!";
         ov_clear(&vf);
         filelength = 0;

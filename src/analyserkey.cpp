@@ -19,7 +19,7 @@ AnalyserKey::AnalyserKey(ConfigObject<ConfigValue>* pConfig)
           m_bPreferencesReanalyzeEnabled(false) {
 }
 
-AnalyserKey::~AnalyserKey(){
+AnalyserKey::~AnalyserKey() {
     delete m_pVamp;
 }
 
@@ -56,7 +56,7 @@ bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples)
     bool bShouldAnalyze = !loadStored(tio);
 
     if (bShouldAnalyze) {
-        m_pVamp = new VampAnalyser(m_pConfig);
+        m_pVamp = new VampAnalyser();
         bShouldAnalyze = m_pVamp->Init(
             library, m_pluginId, sampleRate, totalSamples,
             m_bPreferencesFastAnalysisEnabled);

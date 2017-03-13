@@ -23,11 +23,6 @@
             <SizePolicy>me,min</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
-              <Template src="skin:hide_show_button.xml">
-                <SetVariable name="object_name">HideShowButton</SetVariable>
-                <SetVariable name="control">[EffectRack1],show</SetVariable>
-                <SetVariable name="button_text">Effects</SetVariable>
-              </Template>
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,min</SizePolicy>
@@ -63,13 +58,7 @@
             <MinimumSize>-1,20</MinimumSize>
             <MaximumSize>-1,20</MaximumSize>
             <SizePolicy>me,min</SizePolicy>
-            <Children>
-              <Template src="skin:hide_show_button.xml">
-                <SetVariable name="object_name">HideShowButton</SetVariable>
-                <SetVariable name="control">[EffectRack1],show</SetVariable>
-                <SetVariable name="button_text">Effects</SetVariable>
-              </Template>
-            </Children>
+            <Children/>
           </WidgetGroup>
         </Children>
       </WidgetStack>

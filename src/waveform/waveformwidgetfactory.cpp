@@ -40,7 +40,8 @@ WaveformWidgetAbstractHandle::WaveformWidgetAbstractHandle()
 
 WaveformWidgetHolder::WaveformWidgetHolder()
     : m_waveformWidget(NULL),
-      m_waveformViewer(NULL) {
+      m_waveformViewer(NULL),
+      m_skinContextCache(NULL, QString()) {
 }
 
 WaveformWidgetHolder::WaveformWidgetHolder(WaveformWidgetAbstract* waveformWidget,
@@ -168,7 +169,7 @@ bool WaveformWidgetFactory::setConfig(ConfigObject<ConfigValue> *config) {
     } else {
         m_config->set(ConfigKey("[Waveform]","FrameRate"), ConfigValue(m_frameRate));
     }
-    
+
     int endTime = m_config->getValueString(ConfigKey("[Waveform]","EndOfTrackWarningTime")).toInt(&ok);
     if (ok) {
         setEndOfTrackWarningTime(endTime);
@@ -274,7 +275,7 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
 }
 
 void WaveformWidgetFactory::setFrameRate(int frameRate) {
-    m_frameRate = math_clamp(frameRate, 1, 120);
+    m_frameRate = math_clamp_unsafe(frameRate, 1, 120);
     if (m_config) {
         m_config->set(ConfigKey("[Waveform]","FrameRate"), ConfigValue(m_frameRate));
     }
@@ -285,7 +286,7 @@ void WaveformWidgetFactory::setEndOfTrackWarningTime(int endTime) {
     m_endOfTrackWarningTime = endTime;
     if (m_config) {
         m_config->set(ConfigKey("[Waveform]","EndOfTrackWarningTime"), ConfigValue(m_endOfTrackWarningTime));
-    }  
+    }
 }
 
 void WaveformWidgetFactory::setVSyncType(int type) {

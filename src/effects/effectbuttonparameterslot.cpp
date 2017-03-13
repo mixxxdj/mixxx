@@ -6,11 +6,9 @@
 #include "controlpushbutton.h"
 #include "util/math.h"
 
-EffectButtonParameterSlot::EffectButtonParameterSlot(const unsigned int iRackNumber,
-                                         const unsigned int iChainNumber,
-                                         const unsigned int iSlotNumber,
-                                         const unsigned int iParameterSlotNumber)
-        : EffectParameterSlotBase(iRackNumber, iChainNumber, iSlotNumber,
+EffectButtonParameterSlot::EffectButtonParameterSlot(const QString& group,
+                                                     const unsigned int iParameterSlotNumber)
+        : EffectParameterSlotBase(group,
                                   iParameterSlotNumber) {
     QString itemPrefix = formatItemPrefix(iParameterSlotNumber);
     m_pControlLoaded = new ControlObject(

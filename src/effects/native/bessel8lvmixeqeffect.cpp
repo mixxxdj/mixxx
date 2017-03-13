@@ -1,13 +1,6 @@
 #include "effects/native/bessel8lvmixeqeffect.h"
 #include "util/math.h"
 
-// constant to calculate the group delay from the low pass corner
-// mean value of a set of fid_calc_delay() calls for different corners
-static const double kGroupDelay1Hz = 0.5067964223;
-// kDelayOffset is required to match short delays.
-static const double kDelayOffset = 0.2;
-static const double kMaxCornerFreq = 14212;
-
 // static
 QString Bessel8LVMixEQEffect::getId() {
     return "org.mixxx.effects.bessel8lvmixeq";
@@ -23,7 +16,7 @@ EffectManifest Bessel8LVMixEQEffect::getManifest() {
     manifest.setDescription(QObject::tr(
         "A Bessel 8th order filter equalizer with Lipshitz and Vanderkooy mix (bit perfect unity, roll-off -48 db/Oct). "
         "To adjust frequency shelves see the Equalizer preferences."));
-    manifest.setIsMixingEQ(true); 
+    manifest.setIsMixingEQ(true);
     manifest.setEffectRampsFromDry(true);
 
     EffectManifestParameter* low = manifest.addParameter();

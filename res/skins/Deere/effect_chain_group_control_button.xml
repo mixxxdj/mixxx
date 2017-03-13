@@ -7,7 +7,7 @@
     group_group: The group to enable the effect chain for.
 -->
 <Template>
-  <Template src="skin:left_right_2state_button.xml">
+  <Template src="skin:left_2state_button.xml">
     <SetVariable name="ObjectName">EffectChainGroupControlButton</SetVariable>
     <SetVariable name="MinimumSize"><Variable name="SmallWideButtonMinimumSize"/></SetVariable>
     <SetVariable name="MaximumSize"><Variable name="SmallWideButtonMaximumSize"/></SetVariable>

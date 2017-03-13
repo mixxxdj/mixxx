@@ -1,0 +1,51 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An effect parameter button.
+  Variables:
+    EffectRack: the rack
+    EffectUnit: the chain
+    Effect: the effect
+    EffectButtonParameter: the button parameter
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <Children>
+      <EffectPushButton>
+        <Size>40f,10f</Size>
+        <ObjectName>EffectButton</ObjectName>
+	<EffectRack><Variable name="EffectRack"/></EffectRack>
+	<EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+	<Effect><Variable name="Effect"/></Effect>
+	<EffectButtonParameter><Variable name="EffectButtonParameter"/></EffectButtonParameter>
+	<NumberStates>2</NumberStates>
+	<State>
+	  <Number>0</Number>
+          <Text>OFF</Text>
+	</State>
+	<State>
+	  <Number>1</Number>
+          <Text>ON</Text>
+	</State>
+	<Connection>
+          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],button_parameter<Variable name="EffectButtonParameter"/></ConfigKey>
+	  <ButtonState>LeftButton</ButtonState>
+	</Connection>
+      </EffectPushButton>
+      <EffectButtonParameterName>
+        <Size>40f,10f</Size>
+	<ObjectName>EffectButtonLabel</ObjectName>
+	<EffectRack><Variable name="EffectRack"/></EffectRack>
+	<EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+	<Effect><Variable name="Effect"/></Effect>
+	<EffectButtonParameter><Variable name="EffectButtonParameter"/></EffectButtonParameter>
+      </EffectButtonParameterName>
+    </Children>
+
+    <Connection>
+      <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],button_parameter<Variable name="EffectButtonParameter"/>_loaded</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

@@ -35,11 +35,11 @@
 				<SizePolicy>min,min</SizePolicy>
 				<Children>
 					<Knob>
-						<TooltipId>microphone_volume</TooltipId>
+						<TooltipId>microphone_pregain</TooltipId>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
 						<Connection>
-							<ConfigKey>[Microphone],volume</ConfigKey>
+							<ConfigKey>[Microphone],pregain</ConfigKey>
 						</Connection>
 					</Knob>
 				</Children>
@@ -104,7 +104,7 @@
 			</WidgetGroup>
 		</Children>
 		<Connection>
-            <ConfigKey>[Microphone],configured</ConfigKey>
+            <ConfigKey>[Microphone],enabled</ConfigKey>
             <BindProperty>visible</BindProperty>
         </Connection>
 	</WidgetGroup>

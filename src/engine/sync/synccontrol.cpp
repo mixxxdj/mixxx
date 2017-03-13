@@ -143,6 +143,12 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
     }
 }
 
+void SyncControl::notifyOnlyPlayingSyncable() {
+    // If we are the only remaining playing sync deck, we can reset the user
+    // tweak info.
+    m_pBpmControl->resetSyncAdjustment();
+}
+
 void SyncControl::requestSyncPhase() {
     m_pChannel->getEngineBuffer()->requestSyncPhase();
 }
@@ -294,6 +300,15 @@ void SyncControl::trackLoaded(TrackPointer pTrack) {
         // If we loaded a new track while master, hand off.
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_NONE);
     }
+
+    if (getSyncMode() != SYNC_NONE) {
+        // Because of the order signals get processed, the file_bpm CO and
+        // rate slider are not updated as soon as we need them, so do that now.
+        m_pFileBpm->set(pTrack->getBpm());
+        double dRate = 1.0 + m_pRateDirection->get() * m_pRateRange->get() * m_pRateSlider->get();
+        m_pBpm->set(m_pFileBpm->get() * dRate);
+        m_pEngineSync->notifyTrackLoaded(this);
+    }
 }
 
 void SyncControl::trackUnloaded(TrackPointer pTrack) {
@@ -391,6 +406,7 @@ void SyncControl::slotFileBpmChanged() {
 
     const double rate = 1.0 + m_pRateSlider->get() * m_pRateRange->get() * m_pRateDirection->get();
     double bpm = file_bpm * rate;
+    m_pBpm->set(bpm);
     m_pEngineSync->notifyBpmChanged(this, bpm, true);
 }
 

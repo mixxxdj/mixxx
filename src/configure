@@ -1,9 +1,0 @@
-#!/bin/sh
-echo "**********"
-echo "Mixxx uses SCONS for building."
-if [ `which scons` ]; then
-    echo "Please run \"scons\" in the directory above this to compile."
-else
-   echo "Please install the scons package for your distribution and run \"scons\" in the directory above this to compile."
-fi
-echo "**********"

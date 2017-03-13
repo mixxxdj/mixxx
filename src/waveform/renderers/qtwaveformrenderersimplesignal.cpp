@@ -15,10 +15,10 @@ QtWaveformRendererSimpleSignal::QtWaveformRendererSimpleSignal(WaveformWidgetRen
 
 }
 
-QtWaveformRendererSimpleSignal::~QtWaveformRendererSimpleSignal(){
+QtWaveformRendererSimpleSignal::~QtWaveformRendererSimpleSignal() {
 }
 
-void QtWaveformRendererSimpleSignal::onSetup(const QDomNode &node){
+void QtWaveformRendererSimpleSignal::onSetup(const QDomNode& node) {
     Q_UNUSED(node);
 
     QColor borderColor = m_pColors->getSignalColor().lighter(125);
@@ -36,15 +36,15 @@ inline void setPoint(QPointF& point, qreal x, qreal y) {
     point.setY(y);
 }
 
-void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*event*/){
+void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack) {
         return;
     }
 
-    const Waveform* waveform = pTrack->getWaveform();
-    if (waveform == NULL) {
+    ConstWaveformPointer waveform = pTrack->getWaveform();
+    if (waveform.isNull()) {
         return;
     }
 

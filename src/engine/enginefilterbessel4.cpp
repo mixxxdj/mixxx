@@ -49,12 +49,10 @@ int EngineFilterBessel4Low::setFrequencyCornersForIntDelay(
         quantizedRatio = (-(iDelay / kDelayFactor2 / 2)) +
                 sqrt((iDelay / kDelayFactor2 / 2)*(iDelay / kDelayFactor2 / 2)
                                        + kDelayFactor1 / kDelayFactor2);
-        qDebug() << "sqrt()";
     } else {
         quantizedRatio = delayRatioTable[iDelay];
     }
 
-    qDebug() << "setFrequencyCornersForIntDelay" << quantizedRatio << iDelay << desiredCorner1Ratio;
     setCoefs("LpBe4", 1, quantizedRatio);
     return iDelay;
 }

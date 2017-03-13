@@ -5,21 +5,66 @@
 
 using namespace mixxx::track;
 
+const int kNumChannels = 2;
+
+// Return the smallest power of 2 which is greater than the desired size when
+// squared.
+int computeTextureStride(int size) {
+    int stride = 256;
+    while (stride * stride < size) {
+        stride *= 2;
+    }
+    return stride;
+}
+
 Waveform::Waveform(const QByteArray data)
         : m_id(-1),
           m_bDirty(true),
-          m_numChannels(2),
           m_dataSize(0),
           m_visualSampleRate(0),
-          m_audioVisualRatio(0.),
-          m_textureStride(1024),
-          m_completion(-1),
-          m_mutex(new QMutex()) {
+          m_audioVisualRatio(0),
+          m_textureStride(computeTextureStride(0)),
+          m_completion(-1) {
     readByteArray(data);
 }
 
+Waveform::Waveform(int audioSampleRate, int audioSamples,
+                   int desiredVisualSampleRate, int maxVisualSamples)
+        : m_id(-1),
+          m_bDirty(true),
+          m_dataSize(0),
+          m_visualSampleRate(0),
+          m_audioVisualRatio(0),
+          m_textureStride(1024),
+          m_completion(-1) {
+    int numberOfVisualSamples = 0;
+    if (audioSampleRate > 0) {
+        if (maxVisualSamples == -1) {
+            // Waveform
+            if (desiredVisualSampleRate < audioSampleRate) {
+                m_visualSampleRate =
+                        static_cast<double>(desiredVisualSampleRate);
+            } else {
+                m_visualSampleRate = static_cast<double>(audioSampleRate);
+            }
+        } else {
+            // Waveform Summary (Overview)
+            if (audioSamples > maxVisualSamples) {
+                m_visualSampleRate = (double)maxVisualSamples *
+                        (double)audioSampleRate / (double)audioSamples;
+            } else {
+                m_visualSampleRate = audioSampleRate;
+            }
+        }
+        m_audioVisualRatio = (double)audioSampleRate / (double)m_visualSampleRate;
+        numberOfVisualSamples = (audioSamples / m_audioVisualRatio) + 1;
+        numberOfVisualSamples += numberOfVisualSamples%2;
+    }
+    assign(numberOfVisualSamples, 0);
+    setCompletion(0);
+}
+
 Waveform::~Waveform() {
-    delete m_mutex;
 }
 
 QByteArray Waveform::toByteArray() const {
@@ -51,7 +96,7 @@ QByteArray Waveform::toByteArray() const {
     io::Waveform::Signal* high = filtered->mutable_high();
 
     // TODO(vrince) set max/min for each signal
-    int numChannels = getNumChannels();
+    int numChannels = kNumChannels;
     all->set_units(io::Waveform::RMS);
     all->set_channels(numChannels);
     low->set_units(io::Waveform::RMS);
@@ -81,7 +126,7 @@ QByteArray Waveform::toByteArray() const {
     return QByteArray(output.data(), output.length());
 }
 
-void Waveform::readByteArray(const QByteArray data) {
+void Waveform::readByteArray(const QByteArray& data) {
     if (data.isNull()) {
         return;
     }
@@ -151,87 +196,18 @@ void Waveform::readByteArray(const QByteArray data) {
     m_bDirty = false;
 }
 
-void Waveform::reset() {
-    m_dataSize = 0;
-    m_textureStride = 1024;
-    m_completion = -1;
-    m_visualSampleRate = 0;
-    m_audioVisualRatio = 0;
-    m_data.clear();
-    m_bDirty = true;
-}
-
-void Waveform::initalise(int audioSampleRate, int audioSamples,
-                         int desiredVisualSampleRate, int maxVisualSamples) {
-    int numberOfVisualSamples;
-
-    if (audioSampleRate) {
-        if (maxVisualSamples == -1) {
-            // Waveform
-            if (desiredVisualSampleRate < audioSampleRate) {
-                m_visualSampleRate = (double)desiredVisualSampleRate;
-            } else {
-                m_visualSampleRate = (double)audioSampleRate;
-            }
-        } else {
-            // Waveform Summary (Overview)
-            if (audioSamples > maxVisualSamples) {
-                m_visualSampleRate = (double)maxVisualSamples *
-                        (double)audioSampleRate / (double)audioSamples;
-            } else {
-                m_visualSampleRate = audioSampleRate;
-            }
-        }
-        m_audioVisualRatio = (double)audioSampleRate / (double)m_visualSampleRate;
-        numberOfVisualSamples = (audioSamples / m_audioVisualRatio) + 1;
-        numberOfVisualSamples += numberOfVisualSamples%2;
-    } else {
-        numberOfVisualSamples = 0;
-    }
-    assign(numberOfVisualSamples, 0);
-    setCompletion(0);
-    m_bDirty = true;
-}
-
 void Waveform::resize(int size) {
     m_dataSize = size;
-    int textureSize = computeTextureSize(size);
-    m_data.resize(textureSize);
+    m_textureStride = computeTextureStride(size);
+    m_data.resize(m_textureStride * m_textureStride);
     m_bDirty = true;
 }
 
 void Waveform::assign(int size, int value) {
     m_dataSize = size;
-    int textureSize = computeTextureSize(size);
-    m_data.assign(textureSize, value);
+    m_textureStride = computeTextureStride(size);
+    m_data.assign(m_textureStride * m_textureStride, value);
     m_bDirty = true;
-}
-
-int Waveform::computeTextureSize(int size) {
-
-    //find the best match
-    //NOTE vRince : I know 'what about actual coding ? ...'
-
-    if (size <= 256*256) { //~1min @441Hz stereo
-        m_textureStride = 256;
-        return 256*256;
-    } else if (size <= 512*512) { //~9min @441Hz stereo
-        m_textureStride = 512;
-        return 512*512;
-    } else if (size <= 1024*1024) { //~19min @441Hz stereo
-        m_textureStride = 1024;
-        return 1024*1024;
-    } else if (size <= 2048*2048) { //~79min @441Hz stereo
-        m_textureStride = 2048;
-        return 2048*2048;
-    } else {  //~317min @441Hz stereo
-
-        if (size > 4096*4096)
-            qDebug() << "Waveform::computeTextureSize - this look like a really big song ...";
-
-        m_textureStride = 4096;
-        return 4096*4096;
-    }
 }
 
 void Waveform::dump() const {

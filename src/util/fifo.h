@@ -14,8 +14,13 @@
 template <class DataType>
 class FIFO {
   public:
-    explicit FIFO(int size) {
+    explicit FIFO(int size)
+            : m_data(NULL) {
         size = roundUpToPowerOf2(size);
+        // If we can't represent the next higher power of 2 then bail.
+        if (size < 0) {
+            return;
+        }
         m_data = new DataType[size];
         memset(m_data, 0, sizeof(DataType) * size);
         PaUtil_InitializeRingBuffer(

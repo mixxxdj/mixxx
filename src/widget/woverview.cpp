@@ -35,7 +35,6 @@
 
 WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWidget* parent) :
         WWidget(parent),
-        m_pWaveform(NULL),
         m_pWaveformSourceImage(NULL),
         m_actualCompletion(0),
         m_pixmapDone(false),
@@ -97,8 +96,10 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
 
     for (int i = 0; i < m_marks.size(); ++i) {
         WaveformMark& mark = m_marks[i];
-        connect(mark.m_pointControl, SIGNAL(valueChanged(double)),
-                this, SLOT(onMarkChanged(double)));
+        if (mark.m_pointControl) {
+            connect(mark.m_pointControl, SIGNAL(valueChanged(double)),
+                    this, SLOT(onMarkChanged(double)));
+        }
     }
 
     QDomNode child = node.firstChild();
@@ -108,12 +109,18 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
             WaveformMarkRange& markRange = m_markRanges.back();
             markRange.setup(m_group, child, context, m_signalColors);
 
-            connect(markRange.m_markEnabledControl, SIGNAL(valueChanged(double)),
-                     this, SLOT(onMarkRangeChange(double)));
-            connect(markRange.m_markStartPointControl, SIGNAL(valueChanged(double)),
-                     this, SLOT(onMarkRangeChange(double)));
-            connect(markRange.m_markEndPointControl, SIGNAL(valueChanged(double)),
-                     this, SLOT(onMarkRangeChange(double)));
+            if (markRange.m_markEnabledControl) {
+                connect(markRange.m_markEnabledControl, SIGNAL(valueChanged(double)),
+                        this, SLOT(onMarkRangeChange(double)));
+            }
+            if (markRange.m_markStartPointControl) {
+                connect(markRange.m_markStartPointControl, SIGNAL(valueChanged(double)),
+                        this, SLOT(onMarkRangeChange(double)));
+            }
+            if (markRange.m_markEndPointControl) {
+                connect(markRange.m_markEndPointControl, SIGNAL(valueChanged(double)),
+                        this, SLOT(onMarkRangeChange(double)));
+            }
         }
         child = child.nextSibling();
     }
@@ -138,7 +145,7 @@ void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
     if (!m_bDrag) {
         // Calculate handle position. Clamp the value within 0-1 because that's
         // all we represent with this widget.
-        dParameter = math_clamp(dParameter, 0.0, 1.0);
+        dParameter = math_clamp_unsafe(dParameter, 0.0, 1.0);
 
         int iPos = valueToPosition(dParameter);
         if (iPos != m_iPos) {
@@ -150,10 +157,11 @@ void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
 }
 
 void WOverview::slotWaveformSummaryUpdated() {
-    if (!m_pCurrentTrack) {
+    TrackPointer pTrack(m_pCurrentTrack);
+    if (!pTrack) {
         return;
     }
-    m_pWaveform = m_pCurrentTrack->getWaveformSummary();
+    m_pWaveform = pTrack->getWaveformSummary();
     // If the waveform is already complete, just draw it.
     if (m_pWaveform && m_pWaveform->getCompletion() == m_pWaveform->getDataSize()) {
         m_actualCompletion = 0;
@@ -228,7 +236,7 @@ void WOverview::slotUnloadTrack(TrackPointer /*pTrack*/) {
                    this, SLOT(slotAnalyserProgress(int)));
     }
     m_pCurrentTrack.clear();
-    m_pWaveform = NULL;
+    m_pWaveform.clear();
     m_actualCompletion = 0;
     m_waveformPeak = -1.0;
     m_pixmapDone = false;
@@ -312,7 +320,7 @@ void WOverview::paintEvent(QPaintEvent *) {
                 diffGain = 255.0 - 255.0 / visualGain;
             }
 
-            if (m_diffGain != diffGain || m_waveformImageScaled.isNull() ) {
+            if (m_diffGain != diffGain || m_waveformImageScaled.isNull()) {
                 QRect sourceRect(0, diffGain, m_pWaveformSourceImage->width(),
                     m_pWaveformSourceImage->height() - 2 * diffGain);
                 m_waveformImageScaled = m_pWaveformSourceImage->copy(
@@ -350,7 +358,7 @@ void WOverview::paintEvent(QPaintEvent *) {
         const float gain = (float)(width()-2) / trackSamples;
 
         // Draw range (loop)
-        for( unsigned int i = 0; i < m_markRanges.size(); i++) {
+        for (unsigned int i = 0; i < m_markRanges.size(); ++i) {
             WaveformMarkRange& currentMarkRange = m_markRanges[i];
 
             // If the mark range is not active we should not draw it.
@@ -397,7 +405,7 @@ void WOverview::paintEvent(QPaintEvent *) {
 
         painter.setOpacity(0.9);
 
-        for( int i = 0; i < m_marks.size(); i++) {
+        for (int i = 0; i < m_marks.size(); ++i) {
             WaveformMark& currentMark = m_marks[i];
             if (currentMark.m_pointControl && currentMark.m_pointControl->get() >= 0.0) {
                 //const float markPosition = 1.0 +
@@ -415,7 +423,7 @@ void WOverview::paintEvent(QPaintEvent *) {
                     QPointF textPoint;
                     textPoint.setX(markPosition+0.5f);
 
-                    if( currentMark.m_align == Qt::AlignTop) {
+                    if (currentMark.m_align == Qt::AlignTop) {
                         QFontMetricsF metric(markerFont);
                         textPoint.setY(metric.tightBoundingRect(currentMark.m_text).height()+0.5f);
                     } else {
@@ -494,26 +502,22 @@ void WOverview::resizeEvent(QResizeEvent *) {
 }
 
 void WOverview::dragEnterEvent(QDragEnterEvent* event) {
-    // Accept the enter event if the thing is a filepath and nothing's playing
-    // in this deck or the settings allow to interrupt the playing deck.
-    if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
-        if ((m_playControl->get() == 0.0 ||
-            m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt()) || (m_group=="[PreviewDeck1]")) {
-            QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
-                event->mimeData()->urls(), true, false);
-            if (!files.isEmpty()) {
-                event->acceptProposedAction();
-                return;
-            }
-        }
+    if (DragAndDropHelper::allowLoadToPlayer(m_group,
+                                             m_playControl->get() > 0.0,
+                                             m_pConfig) &&
+            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_group,
+                                               true, false)) {
+        event->acceptProposedAction();
+    } else {
+        event->ignore();
     }
-    event->ignore();
 }
 
 void WOverview::dropEvent(QDropEvent* event) {
-    if (event->mimeData()->hasUrls()) {
-        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
-                event->mimeData()->urls(), true, false);
+    if (DragAndDropHelper::allowLoadToPlayer(m_group, m_playControl->get() > 0.0,
+                                             m_pConfig)) {
+        QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
+                *event->mimeData(), m_group, true, false);
         if (!files.isEmpty()) {
             event->accept();
             emit(trackDropped(files.at(0).canonicalFilePath(), m_group));

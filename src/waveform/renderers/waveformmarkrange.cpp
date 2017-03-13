@@ -52,7 +52,7 @@ void WaveformMarkRange::setup(const QString& group, const QDomNode& node,
                               const SkinContext& context,
                               const WaveformSignalColors& signalColors) {
     m_activeColor = context.selectString(node, "Color");
-    if (m_activeColor == "") {
+    if (!m_activeColor.isValid()) {
         //vRince kind of legacy fallback ...
         // As a fallback, grab the mark color from the parent's MarkerColor
         m_activeColor = signalColors.getAxesColor();
@@ -62,19 +62,27 @@ void WaveformMarkRange::setup(const QString& group, const QDomNode& node,
     }
 
     m_disabledColor = context.selectString(node, "DisabledColor");
-    if (m_disabledColor == "") {
+    if (!m_disabledColor.isValid()) {
         //vRince kind of legacy fallback ...
         // Read the text color, otherwise use the parent's SignalColor.
         m_disabledColor = signalColors.getSignalColor();
         qDebug() << "Didn't get mark TextColor, using parent's <SignalColor>:" << m_disabledColor;
     }
 
-    m_markStartPointControl = new ControlObjectThread(
-            group, context.selectString(node, "StartControl"));
-    m_markEndPointControl = new ControlObjectThread(
-            group, context.selectString(node, "EndControl"));
-    m_markEnabledControl = new ControlObjectThread(
-            group, context.selectString(node, "EnabledControl"));
+    QString startControl = context.selectString(node, "StartControl");
+    if (!startControl.isEmpty()) {
+        m_markStartPointControl = new ControlObjectThread(group, startControl);
+    }
+    QString endControl = context.selectString(node, "EndControl");
+    if (!endControl.isEmpty()) {
+        m_markEndPointControl = new ControlObjectThread(
+                group, endControl);
+    }
+    QString enabledControl = context.selectString(node, "EnabledControl");
+    if (!enabledControl.isEmpty()) {
+        m_markEnabledControl = new ControlObjectThread(
+                group, enabledControl);
+    }
 }
 
 void WaveformMarkRange::generateImage(int weidth, int height) {

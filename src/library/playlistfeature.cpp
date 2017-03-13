@@ -12,6 +12,7 @@
 #include "library/playlisttablemodel.h"
 #include "library/treeitem.h"
 #include "library/queryutil.h"
+#include "library/parser.h"
 #include "mixxxkeyboard.h"
 #include "soundsourceproxy.h"
 #include "util/dnd.h"
@@ -82,8 +83,7 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
 }
 
 bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
-                                      QObject* pSource){
-    //TODO: Filter by supported formats regex and reject anything that doesn't match.
+                                      QObject* pSource) {
     int playlistId = playlistIdFromIndex(index);
     //m_playlistDao.appendTrackToPlaylist(url.toLocalFile(), playlistId);
 
@@ -102,7 +102,7 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
     }
 
     // remove tracks that could not be added
-    for (int trackId =0; trackId<trackIds.size() ; trackId++) {
+    for (int trackId = 0; trackId < trackIds.size(); ++trackId) {
         if (trackIds.at(trackId) < 0) {
             trackIds.removeAt(trackId--);
         }
@@ -113,14 +113,12 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
 }
 
 bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
-    //TODO: Filter by supported formats regex and reject anything that doesn't match.
     int playlistId = playlistIdFromIndex(index);
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
     QFileInfo file(url.toLocalFile());
     bool formatSupported = SoundSourceProxy::isFilenameSupported(file.fileName()) ||
-            file.fileName().endsWith(".m3u") || file.fileName().endsWith(".m3u8") ||
-            file.fileName().endsWith(".pls");
+            Parser::isPlaylistFilenameSupported(file.fileName());
     return !locked && formatSupported;
 }
 
@@ -219,10 +217,8 @@ QString PlaylistFeature::getRootViewHtml() const {
     html.append(QString("<p>%1 %2</p>").arg(playlistsSummary3,
                                             playlistsSummary4));
     html.append("</td></tr>");
-    html.append(
-        QString("<tr><td><a href=\"create\">%1</a>")
-        .arg(createPlaylistLink)
-    );
+    html.append(QString("<tr><td><a href=\"create\">%1</a>")
+                .arg(createPlaylistLink));
     html.append("</td></tr></table>");
     return html;
 }

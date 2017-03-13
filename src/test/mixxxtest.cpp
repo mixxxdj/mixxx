@@ -47,7 +47,7 @@ MixxxTest::~MixxxTest() {
     removeDir(testDataDir);
 }
 
-bool MixxxTest::removeDir(const QString & dirName) {
+bool MixxxTest::removeDir(const QString& dirName) {
     bool result = true;
     QDir dir(dirName);
 

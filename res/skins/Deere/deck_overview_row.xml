@@ -44,8 +44,7 @@
 	  <Text>C</Text>
 	</Mark>
         <Connection>
-          <ConfigKey>
-            <Variable name="group"/>,playposition</ConfigKey>
+          <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
           <EmitOnDownPress>false</EmitOnDownPress>
         </Connection>
       </Overview>
@@ -132,8 +131,7 @@
                   <Text>T</Text>
                 </State>
                 <Connection>
-                  <ConfigKey>
-                    <Variable name="group"/>,beats_translate_curpos</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,beats_translate_curpos</ConfigKey>
                   <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
@@ -152,8 +150,7 @@
                   <Text>Q</Text>
                 </State>
                 <Connection>
-                  <ConfigKey>
-                    <Variable name="group"/>,quantize</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,quantize</ConfigKey>
                   <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
@@ -172,8 +169,7 @@
                   <Text>K</Text>
                 </State>
                 <Connection>
-                  <ConfigKey>
-                    <Variable name="group"/>,keylock</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,keylock</ConfigKey>
                 </Connection>
               </PushButton>
             </Children>

@@ -216,7 +216,7 @@ void AnalysisDao::deleteAnalysises(const QList<int>& ids) {
         LOG_FAILED_QUERY(query) << "couldn't delete analysis";
     }
     const int idColumn = query.record().indexOf("id");
-    while(query.next()){
+    while (query.next()) {
         int id = query.value(idColumn).toInt();
         QString dataPath = getAnalysisStoragePath().absoluteFilePath(
                             QString::number(id));
@@ -320,8 +320,8 @@ void AnalysisDao::saveTrackAnalyses(TrackInfoObject* pTrack) {
         return;
     }
     const int trackId = pTrack->getId();
-    Waveform* pWaveform = pTrack->getWaveform();
-    Waveform* pWaveSummary = pTrack->getWaveformSummary();
+    ConstWaveformPointer pWaveform = pTrack->getWaveform();
+    ConstWaveformPointer pWaveSummary = pTrack->getWaveformSummary();
 
     // Don't try to save invalid or non-dirty waveforms.
     if (!pWaveform || pWaveform->getDataSize() == 0 || !pWaveform->isDirty() ||

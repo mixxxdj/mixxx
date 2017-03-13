@@ -38,7 +38,10 @@ ControlObjectThread::ControlObjectThread(const ConfigKey& key, QObject* pParent)
 
 void ControlObjectThread::initialize(const ConfigKey& key) {
     m_key = key;
-    m_pControl = ControlDoublePrivate::getControl(key);
+    // Don't bother looking up the control if key is NULL. Prevents log spew.
+    if (!key.isNull()) {
+        m_pControl = ControlDoublePrivate::getControl(key);
+    }
     if (m_pControl) {
         connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
                 this, SLOT(slotValueChanged(double, QObject*)),
