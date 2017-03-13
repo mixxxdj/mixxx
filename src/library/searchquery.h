@@ -1,6 +1,8 @@
 #ifndef SEARCHQUERY_H
 #define SEARCHQUERY_H
 
+#include <vector>
+
 #include <QList>
 #include <QSqlDatabase>
 #include <QRegExp>
@@ -9,60 +11,63 @@
 
 #include "trackinfoobject.h"
 #include "proto/keys.pb.h"
+#include "util/assert.h"
+#include "util/memory.h"
 
 QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column);
 
 class QueryNode {
   public:
-    QueryNode() {}
+    QueryNode(const QueryNode&) = delete; // prevent copying
     virtual ~QueryNode() {}
 
     virtual bool match(const TrackPointer& pTrack) const = 0;
     virtual QString toSql() const = 0;
+
+  protected:
+    QueryNode() {}
+
+    static QString concatSqlClauses(const QStringList& sqlClauses, const QString& sqlConcatOp);
 };
 
 class GroupNode : public QueryNode {
   public:
-    GroupNode() {}
-    virtual ~GroupNode() {
-        while (!m_nodes.empty()) {
-            delete m_nodes.takeLast();
-        }
-    }
-
-    void addNode(QueryNode* pNode) {
-        m_nodes.append(pNode);
+    void addNode(std::unique_ptr<QueryNode> pNode) {
+        DEBUG_ASSERT(pNode);
+        m_nodes.push_back(std::move(pNode));
     }
 
   protected:
-    QList<QueryNode*> m_nodes;
+    // NOTE(uklotzde): std::vector is more suitable (efficiency)
+    // than a QList for a private member. And QList from Qt 4
+    // does not support std::unique_ptr yet.
+    std::vector<std::unique_ptr<QueryNode>> m_nodes;
 };
 
 class OrNode : public GroupNode {
   public:
-    OrNode() {}
-
-    bool match(const TrackPointer& pTrack) const;
-    QString toSql() const;
+    bool match(const TrackPointer& pTrack) const override;
+    QString toSql() const override;
 };
 
 class AndNode : public GroupNode {
   public:
-    AndNode() {}
-
-    bool match(const TrackPointer& pTrack) const;
-    QString toSql() const;
+    bool match(const TrackPointer& pTrack) const override;
+    QString toSql() const override;
 };
 
 class NotNode : public QueryNode {
   public:
-    explicit NotNode(QueryNode* pNode);
+    explicit NotNode(std::unique_ptr<QueryNode> pNode)
+        : m_pNode(std::move(pNode)) {
+        DEBUG_ASSERT(m_pNode);
+    }
 
-    bool match(const TrackPointer& pTrack) const;
-    QString toSql() const;
+    bool match(const TrackPointer& pTrack) const override;
+    QString toSql() const override;
 
   private:
-    QueryNode* m_pNode;
+    std::unique_ptr<QueryNode> m_pNode;
 };
 
 class TextFilterNode : public QueryNode {
@@ -75,8 +80,8 @@ class TextFilterNode : public QueryNode {
               m_argument(argument) {
     }
 
-    bool match(const TrackPointer& pTrack) const;
-    QString toSql() const;
+    bool match(const TrackPointer& pTrack) const override;
+    QString toSql() const override;
 
   private:
     QSqlDatabase m_database;
@@ -86,14 +91,24 @@ class TextFilterNode : public QueryNode {
 
 class NumericFilterNode : public QueryNode {
   public:
-    NumericFilterNode(const QStringList& sqlColumns, QString argument);
-    NumericFilterNode(const QStringList& sqlColumns);
-    bool match(const TrackPointer& pTrack) const;
-    QString toSql() const;
+    NumericFilterNode(const QStringList& sqlColumns, const QString& argument);
+
+    bool match(const TrackPointer& pTrack) const override;
+    QString toSql() const override;
 
   protected:
-    virtual void init(QString argument);
+    // Single argument constructor for that does not call init()
+    explicit NumericFilterNode(const QStringList& sqlColumns);
+
+    // init() must always be called in the constructor of the
+    // most derived class directly, because internally it calls
+    // the virtual function parse() that will be overridden by
+    // derived classes.
+    void init(QString argument);
+
+  private:
     virtual double parse(const QString& arg, bool *ok);
+
     QStringList m_sqlColumns;
     bool m_bOperatorQuery;
     QString m_operator;
@@ -105,18 +120,18 @@ class NumericFilterNode : public QueryNode {
 
 class DurationFilterNode : public NumericFilterNode {
   public:
-    DurationFilterNode(const QStringList& sqlColumns, QString argument);
+    DurationFilterNode(const QStringList& sqlColumns, const QString& argument);
 
   private:
-    virtual double parse(const QString& arg, bool* ok);
+    double parse(const QString& arg, bool* ok) override;
 };
 
 class KeyFilterNode : public QueryNode {
   public:
     KeyFilterNode(mixxx::track::io::key::ChromaticKey key, bool fuzzy);
 
-    bool match(const TrackPointer& pTrack) const;
-    QString toSql() const;
+    bool match(const TrackPointer& pTrack) const override;
+    QString toSql() const override;
 
   private:
     QList<mixxx::track::io::key::ChromaticKey> m_matchKeys;
@@ -125,19 +140,20 @@ class KeyFilterNode : public QueryNode {
 class SqlNode : public QueryNode {
   public:
     explicit SqlNode(const QString& sqlExpression)
-            // Need to wrap it since we don't know if the caller wrapped it.
-            : m_sql(QString("(%1)").arg(sqlExpression)) {
+            // No need to wrap into parantheses here! This will be done
+            // later in toSql() if this node is a component of another
+            // composite node.
+            : m_sql(sqlExpression) {
     }
-    virtual ~SqlNode() {}
 
-    bool match(const TrackPointer& pTrack) const {
+    bool match(const TrackPointer& pTrack) const override {
         // We are usually embedded in an AND node so if we don't match
         // everything then we block everything.
         Q_UNUSED(pTrack);
         return true;
     }
 
-    QString toSql() const {
+    QString toSql() const override {
         return m_sql;
     }
 

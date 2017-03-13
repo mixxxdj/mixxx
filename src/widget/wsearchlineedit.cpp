@@ -16,6 +16,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     m_clearButton->setIcon(QIcon(pixmap));
     m_clearButton->setIconSize(pixmap.size());
     m_clearButton->setCursor(Qt::ArrowCursor);
+    m_clearButton->setToolTip(tr("Clear input" , "Clear the search bar input field"));
     m_clearButton->setStyleSheet("QToolButton { border: none; padding: 0px; }");
     m_clearButton->hide();
 
@@ -26,11 +27,6 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
         QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
     connect(setFocusShortcut, SIGNAL(activated()),
             this, SLOT(setFocus()));
-    QShortcut *clearTextShortcut = new QShortcut(
-        QKeySequence(tr("Esc", "Search|Clear")), this, 0, 0,
-        Qt::WidgetShortcut);
-    connect(clearTextShortcut, SIGNAL(activated()),
-            this, SLOT(onSearchTextCleared()));
 
     connect(this, SIGNAL(textChanged(const QString&)),
             this, SLOT(slotTextChanged(const QString&)));
@@ -176,7 +172,13 @@ void WSearchLineEdit::showPlaceholder() {
     //Must block signals here so that we don't emit a search() signal via
     //textChanged().
     blockSignals(true);
-    setText(tr("Search..."));
+    setText(tr("Search..." , "noun"));
+    setToolTip(tr("Search" , "noun") + "\n" + tr("Enter a string to search for") + "\n\n"
+                  + tr("Shortcut")+ ": \n"
+                  + tr("Ctrl+F") + "  " + tr("Focus" , "Give search bar input focus") + "\n"
+                  + tr("Ctrl+Backspace") + "  "+ tr("Clear input" , "Clear the search bar input field") + "\n"
+                  + tr("Esc") + "  " + tr("Exit search" , "Exit search bar and leave focus")
+                  );
     blockSignals(false);
     QPalette pal = palette();
     pal.setColor(foregroundRole(), Qt::lightGray);

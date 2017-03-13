@@ -163,12 +163,6 @@ void DlgAutoDJ::transitionSliderChanged(int value) {
     m_pAutoDJProcessor->setTransitionTime(value);
 }
 
-void DlgAutoDJ::enableRandomButton(bool enabled) {
-#ifdef __AUTODJCRATES__
-    pushButtonAddRandom->setEnabled(enabled);
-#endif // __AUTODJCRATES__
-}
-
 void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
     if (state == AutoDJProcessor::ADJ_DISABLED) {
         pushButtonAutoDJ->setChecked(false);

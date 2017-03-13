@@ -157,6 +157,7 @@ void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
 }
 
 void WOverview::slotWaveformSummaryUpdated() {
+    //qDebug() << "WOverview::slotWaveformSummaryUpdated()";
     TrackPointer pTrack(m_pCurrentTrack);
     if (!pTrack) {
         return;
@@ -189,7 +190,7 @@ void WOverview::slotAnalyserProgress(int progress) {
 }
 
 void WOverview::slotLoadNewTrack(TrackPointer pTrack) {
-    //qDebug() << "WOverview::slotLoadNewTrack(TrackPointer pTrack)";
+    // qDebug() << "WOverview::slotLoadNewTrack(TrackPointer pTrack)";
     if (m_pCurrentTrack) {
         disconnect(m_pCurrentTrack.data(), SIGNAL(waveformSummaryUpdated()),
                    this, SLOT(slotWaveformSummaryUpdated()));
@@ -228,21 +229,24 @@ void WOverview::slotTrackLoaded(TrackPointer pTrack) {
     }
 }
 
-void WOverview::slotUnloadTrack(TrackPointer /*pTrack*/) {
-    if (m_pCurrentTrack) {
+void WOverview::slotUnloadTrack(TrackPointer pTrack) {
+    // it may happen that this call is a delayed call
+    // of a track that was already replaced
+    //qDebug() << "WOverview::slotUnloadTrack(TrackPointer pTrack)";
+    if (pTrack != NULL && pTrack == m_pCurrentTrack) {
         disconnect(m_pCurrentTrack.data(), SIGNAL(waveformSummaryUpdated()),
                    this, SLOT(slotWaveformSummaryUpdated()));
         disconnect(m_pCurrentTrack.data(), SIGNAL(analyserProgress(int)),
                    this, SLOT(slotAnalyserProgress(int)));
-    }
-    m_pCurrentTrack.clear();
-    m_pWaveform.clear();
-    m_actualCompletion = 0;
-    m_waveformPeak = -1.0;
-    m_pixmapDone = false;
-    m_trackLoaded = false;
 
-    update();
+        m_pCurrentTrack.clear();
+        m_pWaveform.clear();
+        m_actualCompletion = 0;
+        m_waveformPeak = -1.0;
+        m_pixmapDone = false;
+        m_trackLoaded = false;
+        update();
+    }
 }
 
 void WOverview::onEndOfTrackChange(double v) {
@@ -520,7 +524,7 @@ void WOverview::dropEvent(QDropEvent* event) {
                 *event->mimeData(), m_group, true, false);
         if (!files.isEmpty()) {
             event->accept();
-            emit(trackDropped(files.at(0).canonicalFilePath(), m_group));
+            emit(trackDropped(files.at(0).absoluteFilePath(), m_group));
             return;
         }
     }

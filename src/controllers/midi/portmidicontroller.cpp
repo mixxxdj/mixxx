@@ -150,8 +150,9 @@ bool PortMidiController::poll() {
     if (!m_pInputStream)
         return false;
 
+    // Returns true if events are available or an error code.
     PmError gotEvents = Pm_Poll(m_pInputStream);
-    if (gotEvents == FALSE) {
+    if (gotEvents == pmNoError) {
         return false;
     }
     if (gotEvents < 0) {

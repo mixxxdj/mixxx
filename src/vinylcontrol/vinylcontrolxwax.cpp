@@ -27,7 +27,6 @@
 #include "controlobjectthread.h"
 #include "controlobjectslave.h"
 #include "controlobject.h"
-#include "sampleutil.h"
 #include "util/math.h"
 #include "util/defs.h"
 
@@ -67,8 +66,8 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString g
           m_iPitchRingPos(0),
           m_iPitchRingFilled(0),
           m_dDisplayPitch(0.0),
-          m_pSteadySubtle(new SteadyPitch(0.12)),
-          m_pSteadyGross(new SteadyPitch(0.5)),
+          m_pSteadySubtle(NULL),
+          m_pSteadyGross(NULL),
           m_bCDControl(false),
           m_bTrackSelectMode(false),
           m_pControlTrackSelector(NULL),
@@ -101,6 +100,9 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString g
     } else if (strVinylType == MIXXX_VINYL_SERATOCD) {
         timecode = (char*)"serato_cd";
         m_bCDControl = true;
+        // Set up very sensitive steady monitors for CDJs.
+        m_pSteadySubtle = new SteadyPitch(0.06, true);
+        m_pSteadyGross = new SteadyPitch(0.25, true);
     } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEA) {
         timecode = (char*)"traktor_a";
     } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEB) {
@@ -111,6 +113,15 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString g
         qDebug() << "Unknown vinyl type, defaulting to serato_2a";
         timecode = (char*)"serato_2a";
     }
+
+    // If we didn't set up the steady monitors already (not CDJ), do it now.
+    if (m_pSteadySubtle == NULL) {
+        m_pSteadySubtle = new SteadyPitch(0.12, false);
+    }
+    if (m_pSteadyGross == NULL) {
+        m_pSteadyGross = new SteadyPitch(0.5, false);
+    }
+
 
     timecode_def* tc_def = timecoder_find_definition(timecode);
     if (tc_def == NULL) {
@@ -584,7 +595,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         }
 
         m_pVCRate->set(averagePitch + dDriftControl);
-        if (m_iPosition != -1 && reportedPlayButton && uiUpdateTime(filePosition)) {
+        if (uiUpdateTime(filePosition)) {
             double true_pitch = averagePitch + dDriftControl;
             double pitch_difference = true_pitch - m_dDisplayPitch;
 
@@ -604,7 +615,14 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 // For extremely small changes, converge very slowly.
                 m_dDisplayPitch += pitch_difference * .01;
             }
-            m_pRateSlider->slotSet(rateDir->get() * (m_dDisplayPitch - 1.0) / rateRange->get());
+            // Don't show extremely high or low speeds in the UI.
+            if (reportedPlayButton && !scratching->get() &&
+                    m_dDisplayPitch < 1.9 && m_dDisplayPitch > 0.2) {
+                m_pRateSlider->set(rateDir->get() *
+                                   (m_dDisplayPitch - 1.0) / rateRange->get());
+            } else {
+                m_pRateSlider->set(0.0);
+            }
             m_dUiUpdateTime = filePosition;
         }
 
@@ -743,14 +761,12 @@ double VinylControlXwax::checkSteadyPitch(double pitch, double time) {
     if (m_bWasReversed) {
         return 0;
     }
-    if (m_pSteadyGross->check(pitch, time,
-                              static_cast<bool>(loopEnabled->get())) < 0.5) {
+    if (m_pSteadyGross->check(pitch, time) < 0.5) {
         scratching->slotSet(1.0);
     } else {
         scratching->slotSet(0.0);
     }
-    return m_pSteadySubtle->check(pitch, time,
-                                  static_cast<bool>(loopEnabled->get()));
+    return m_pSteadySubtle->check(pitch, time);
 }
 
 //Synchronize Mixxx's position to the position of the timecoded vinyl.
@@ -820,13 +836,13 @@ void VinylControlXwax::establishQuality(bool quality_sample) {
 }
 
 float VinylControlXwax::getAngle() {
-    double when;
-    float pos = timecoder_get_position(&timecoder, &when);
+    float pos = timecoder_get_position(&timecoder, NULL);
 
-    if (pos == -1)
+    if (pos == -1) {
         return -1.0;
+    }
 
     float rps = timecoder_revs_per_sec(&timecoder);
-    //invert angle to make vinyl spin direction correct
-    return 360 - ((int)(when * 360.0 * rps) % 360);
+    // Invert angle to make vinyl spin direction correct.
+    return 360 - (static_cast<int>(pos / 1000.0 * 360.0 * rps) % 360);
 }

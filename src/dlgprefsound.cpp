@@ -77,7 +77,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
                 EngineBuffer::getKeylockEngineName(
                         static_cast<EngineBuffer::KeylockEngine>(i)));
     }
-    keylockComboBox->setCurrentIndex(EngineBuffer::RUBBERBAND);
 
     initializePaths();
     loadSettings();
@@ -193,6 +192,8 @@ void DlgPrefSound::slotApply() {
     }
 
     m_pKeylockEngine->set(keylockComboBox->currentIndex());
+    m_pConfig->set(ConfigKey("[Master]", "keylock_engine"),
+                   ConfigValue(keylockComboBox->currentIndex()));
 
     m_config.clearInputs();
     m_config.clearOutputs();
@@ -238,7 +239,6 @@ void DlgPrefSound::initializePaths() {
 }
 
 void DlgPrefSound::addPath(AudioOutput output) {
-    DlgPrefSoundItem *toInsert;
     // if we already know about this output, don't make a new entry
     foreach (QObject *obj, outputTab->children()) {
         DlgPrefSoundItem *item = qobject_cast<DlgPrefSoundItem*>(obj);
@@ -254,6 +254,8 @@ void DlgPrefSound::addPath(AudioOutput output) {
             }
         }
     }
+
+    DlgPrefSoundItem *toInsert;
     AudioPathType type = output.getType();
     if (AudioPath::isIndexed(type)) {
         toInsert = new DlgPrefSoundItem(outputTab, type,
@@ -373,6 +375,11 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
         // "Default (long delay)" = 2 buffer
         deviceSyncComboBox->setCurrentIndex(0);
     }
+
+    // Default keylock is Rubberband.
+    int keylock_engine = m_pConfig->getValueString(
+            ConfigKey("[Master]", "keylock_engine"), "1").toInt();
+    keylockComboBox->setCurrentIndex(keylock_engine);
 
     emit(loadPaths(m_config));
     m_loading = false;

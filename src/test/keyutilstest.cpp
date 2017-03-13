@@ -23,6 +23,13 @@ TEST_F(KeyUtilsTest, OpenKeyNotation) {
               KeyUtils::guessKeyFromText("6d"));
     EXPECT_EQ(mixxx::track::io::key::B_MINOR,
               KeyUtils::guessKeyFromText("3m"));
+
+    // whitespace is ok
+    EXPECT_EQ(mixxx::track::io::key::B_MINOR,
+              KeyUtils::guessKeyFromText(" 3m\t\t"));
+    // but other stuff is not
+    EXPECT_EQ(mixxx::track::io::key::INVALID,
+              KeyUtils::guessKeyFromText(" 33m\t\t"));
 }
 
 TEST_F(KeyUtilsTest, LancelotNotation) {
@@ -36,18 +43,44 @@ TEST_F(KeyUtilsTest, LancelotNotation) {
               KeyUtils::guessKeyFromText("1b"));
     EXPECT_EQ(mixxx::track::io::key::B_MINOR,
               KeyUtils::guessKeyFromText("10a"));
+
+    // whitespace is ok
+    EXPECT_EQ(mixxx::track::io::key::B_MINOR,
+              KeyUtils::guessKeyFromText("\t10a  "));
+    // but other stuff is not
+    EXPECT_EQ(mixxx::track::io::key::INVALID,
+              KeyUtils::guessKeyFromText("\t10aa  "));
 }
 
 TEST_F(KeyUtilsTest, KeyNameNotation) {
-    // Invalid letter.
+    // Invalid letter
+    // (actually valid in traditional german notation where B is H and Bb is B -
+    //  everyone confused?)
     EXPECT_EQ(mixxx::track::io::key::INVALID,
               KeyUtils::guessKeyFromText("H"));
+
+    // whitespace is ok
+    EXPECT_EQ(mixxx::track::io::key::C_MAJOR,
+              KeyUtils::guessKeyFromText(" \tC   \t  "));
+    // but other crap is not
+    EXPECT_EQ(mixxx::track::io::key::INVALID,
+              KeyUtils::guessKeyFromText(" c\tC   c\t  "));
 
     // Major is upper-case, minor is lower-case.
     EXPECT_EQ(mixxx::track::io::key::C_MAJOR,
               KeyUtils::guessKeyFromText("C"));
     EXPECT_EQ(mixxx::track::io::key::C_MINOR,
               KeyUtils::guessKeyFromText("c"));
+
+    // ... or explicitly written out
+    EXPECT_EQ(mixxx::track::io::key::C_MAJOR,
+              KeyUtils::guessKeyFromText("cmaj"));
+    EXPECT_EQ(mixxx::track::io::key::C_MINOR,
+              KeyUtils::guessKeyFromText("Cmin"));
+    EXPECT_EQ(mixxx::track::io::key::C_MAJOR,
+              KeyUtils::guessKeyFromText("cmajor"));
+    EXPECT_EQ(mixxx::track::io::key::C_MINOR,
+              KeyUtils::guessKeyFromText("Cminor"));
 
     // Sharps
     EXPECT_EQ(mixxx::track::io::key::D_FLAT_MAJOR,
@@ -72,6 +105,30 @@ TEST_F(KeyUtilsTest, KeyNameNotation) {
               KeyUtils::guessKeyFromText("Dbm"));
     EXPECT_EQ(mixxx::track::io::key::C_MINOR,
               KeyUtils::guessKeyFromText("C#bb#m"));
+
+    // ... as is min
+    EXPECT_EQ(mixxx::track::io::key::C_MINOR,
+              KeyUtils::guessKeyFromText("CMiN"));
+    EXPECT_EQ(mixxx::track::io::key::C_MINOR,
+              KeyUtils::guessKeyFromText("cmIn"));
+    EXPECT_EQ(mixxx::track::io::key::C_SHARP_MINOR,
+              KeyUtils::guessKeyFromText("C#mIN"));
+    EXPECT_EQ(mixxx::track::io::key::C_SHARP_MINOR,
+              KeyUtils::guessKeyFromText("Dbmin"));
+    EXPECT_EQ(mixxx::track::io::key::C_MINOR,
+              KeyUtils::guessKeyFromText("C#bb#miN"));
+
+    // but maj is major
+    EXPECT_EQ(mixxx::track::io::key::C_MAJOR,
+              KeyUtils::guessKeyFromText("CMaJ"));
+    EXPECT_EQ(mixxx::track::io::key::C_MAJOR,
+              KeyUtils::guessKeyFromText("cmAj"));
+    EXPECT_EQ(mixxx::track::io::key::D_FLAT_MAJOR,
+              KeyUtils::guessKeyFromText("C#mAJ"));
+    EXPECT_EQ(mixxx::track::io::key::D_FLAT_MAJOR,
+              KeyUtils::guessKeyFromText("Dbmaj"));
+    EXPECT_EQ(mixxx::track::io::key::C_MAJOR,
+              KeyUtils::guessKeyFromText("C#bb#maJ"));
 
     // Test going across the edges.
     EXPECT_EQ(mixxx::track::io::key::B_MAJOR,

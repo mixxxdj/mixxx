@@ -138,3 +138,10 @@ bool ProxyTrackModel::setModelSetting(QString name, QVariant value) {
     }
     return m_pTrackModel->setModelSetting(name, value);
 }
+
+void ProxyTrackModel::sort(int column, Qt::SortOrder order) {
+    if (m_pTrackModel->isColumnSortable(column)) {
+        QSortFilterProxyModel::sort(column, order);
+    }
+}
+

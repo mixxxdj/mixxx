@@ -161,7 +161,10 @@ void MoogLadder4FilterEffect::processChannel(
                 pOutput, numSamples);
     } else if (pLpfInput == pInput) {
         // Both disabled
-        SampleUtil::copyWithGain(pOutput, pInput, 1.0, numSamples);
+        if (pOutput != pInput) {
+            // We need to copy pInput pOutput
+            SampleUtil::copy(pOutput, pInput, numSamples);
+        }
     }
 
     pState->m_loFreq = lpf;

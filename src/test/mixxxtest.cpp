@@ -1,29 +1,71 @@
 #include "test/mixxxtest.h"
-#include "util/singleton.h"
 
+#include "soundsourceproxy.h"
 
-// Specialize the Singleton template for QApplication because it doesn't have a
-// 0-args constructor.
-template <>
-QApplication* Singleton<QApplication>::create() {
-    if (!m_instance) {
-        static int argc = 1;
-        static char* argv[1] = { strdup("test") };
-        m_instance = new QApplication(argc, argv);
-    }
-    return m_instance;
+#ifdef __FFMPEGFILE__
+extern "C" {
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+}
+#endif
+
+// Static initialization
+QScopedPointer<MixxxApplication> MixxxTest::s_pApplication;
+
+MixxxTest::ApplicationScope::ApplicationScope(int argc, char** argv) {
+    DEBUG_ASSERT(!s_pApplication);
+
+    testing::InitGoogleTest(&argc, argv);
+
+#ifdef __FFMPEGFILE__
+    av_register_all();
+    avcodec_register_all();
+#endif
+
+    s_pApplication.reset(new MixxxApplication(argc, argv));
+
+    SoundSourceProxy::loadPlugins();
 }
 
-MixxxTest::MixxxTest() {
-    // Create QApplication as a singleton. This prevents issues with creating
-    // and destroying the QApplication multiple times in the same process.
-    // http://stackoverflow.com/questions/14243858/qapplication-segfaults-in-googletest
+MixxxTest::ApplicationScope::~ApplicationScope() {
+    DEBUG_ASSERT(s_pApplication);
 
+    s_pApplication.reset();
+}
+
+MixxxTest::MixxxTest()
     // This directory has to be deleted later to clean up the test env.
-    testDataDir = QDir::currentPath().append("/src/test/test_data/");
+    : m_testDataDir(QDir::current().absoluteFilePath("src/test/test_data")),
+      m_testDataCfg(m_testDataDir.filePath("test.cfg")),
+      m_pConfig(new ConfigObject<ConfigValue>(m_testDataCfg)) {
+}
 
-    m_pApplication = Singleton<QApplication>::create();
-    m_pConfig.reset(new ConfigObject<ConfigValue>(testDataDir + "test.cfg"));
+namespace {
+
+bool QDir_removeRecursively(const QDir& dir) {
+    bool result = true;
+    if (dir.exists()) {
+        qDebug() << "dir exists" << dir;
+        foreach (QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot |
+                                                   QDir::System |
+                                                   QDir::Hidden  |
+                                                   QDir::AllDirs |
+                                                   QDir::Files,
+                                                   QDir::DirsFirst)) {
+            if (info.isDir()) {
+                // recursively
+                result = QDir_removeRecursively(QDir(info.absoluteFilePath()));
+            } else {
+                result = QFile::remove(info.absoluteFilePath());
+            }
+            if (!result) {
+                return result;
+            }
+        }
+        result = dir.rmdir(dir.absolutePath());
+    }
+    return result;
+}
 
 }
 
@@ -43,32 +85,7 @@ MixxxTest::~MixxxTest() {
 
     // recursivly delete all config files used for the test.
     // TODO(kain88) --
-    //     switch to use QDir::removeRecursivly() once we switched to Qt5.
-    removeDir(testDataDir);
+    //     switch to use QDir::removeRecursively() once we switched to Qt5.
+    QDir_removeRecursively(m_testDataDir);
 }
 
-bool MixxxTest::removeDir(const QString& dirName) {
-    bool result = true;
-    QDir dir(dirName);
-
-    if (dir.exists()) {
-        qDebug() << "dir exists";
-        foreach (QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot |
-                                                   QDir::System |
-                                                   QDir::Hidden  |
-                                                   QDir::AllDirs |
-                                                   QDir::Files,
-                                                   QDir::DirsFirst)) {
-            if (info.isDir()) {
-                result = removeDir(info.absoluteFilePath());
-            } else {
-                result = QFile::remove(info.absoluteFilePath());
-            }
-            if (!result) {
-                return result;
-            }
-        }
-        result = dir.rmdir(dirName);
-    }
-    return result;
-}

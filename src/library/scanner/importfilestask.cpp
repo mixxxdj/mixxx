@@ -6,10 +6,14 @@
 
 ImportFilesTask::ImportFilesTask(LibraryScanner* pScanner,
                                  const ScannerGlobalPointer scannerGlobal,
+                                 const QString& dirPath,
+                                 const bool prevHashExists,
+                                 const int newHash,
                                  const QLinkedList<QFileInfo>& filesToImport,
                                  const QLinkedList<QFileInfo>& possibleCovers,
                                  SecurityTokenPointer pToken)
-        : ScannerTask(pScanner, scannerGlobal),
+        : ScannerTask(pScanner, scannerGlobal), m_dirPath(dirPath),
+          m_prevHashExists(prevHashExists), m_newHash(newHash),
           m_filesToImport(filesToImport),
           m_possibleCovers(possibleCovers),
           m_pToken(pToken) {
@@ -58,5 +62,7 @@ void ImportFilesTask::run() {
             emit(addNewTrack(pTrack));
         }
     }
+    // Insert or update the hash in the database.
+    emit(directoryHashedAndScanned(m_dirPath, !m_prevHashExists, m_newHash));
     setSuccess(true);
 }

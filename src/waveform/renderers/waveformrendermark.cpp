@@ -52,7 +52,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
             // NOTE: vRince I guess image width is odd to display the center on the exact line !
             //external image should respect that ...
-            const int markHalfWidth = mark.m_image.width()/2.0;
+            const int markHalfWidth = mark.m_image.width() / 2.0;
 
             //check if the current point need to be displayed
             if (currentMarkPoint > -markHalfWidth && currentMarkPoint < m_waveformRenderer->getWidth() + markHalfWidth) {
@@ -126,7 +126,6 @@ void WaveformRenderMark::generateMarkImage(WaveformMark& mark) {
         //draw the label rect
         QColor rectColor = mark.m_color;
         rectColor.setAlpha(150);
-        rectColor.darker(200);
         painter.setPen(mark.m_color);
         painter.setBrush(QBrush(rectColor));
         painter.drawRoundedRect(labelRect, 2.0, 2.0);
@@ -144,7 +143,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMark& mark) {
         lineColor.setAlpha(200);
         painter.setPen(lineColor);
 
-        float middle = mark.m_image.width()/2;
+        float middle = mark.m_image.width() / 2.0;
         //Default line align top
         float lineTop = labelRectHeight + 1;
         float lineBottom = mark.m_image.height();
@@ -202,10 +201,10 @@ void WaveformRenderMark::generateMarkImage(WaveformMark& mark) {
         QColor lineColor = mark.m_color;
         lineColor.setAlpha(140);
         painter.setPen(lineColor);
-        float middle = mark.m_image.width()/2;
+        float middle = mark.m_image.width() / 2.0;
 
-        float lineTop = triangleSize*0.5 + 1;
-        float lineBottom = mark.m_image.height() - triangleSize*0.5 - 1;
+        float lineTop = triangleSize * 0.5 + 1;
+        float lineBottom = mark.m_image.height() - triangleSize * 0.5 - 1;
 
         painter.drawLine(middle, lineTop, middle, lineBottom);
 

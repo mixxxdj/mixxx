@@ -17,14 +17,12 @@ EngineAux::EngineAux(const ChannelHandleAndGroup& handle_group, EffectsManager* 
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
           m_vuMeter(getGroup()),
           m_pEnabled(new ControlObject(ConfigKey(getGroup(), "enabled"))),
-          m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))),
           m_pPregain(new ControlAudioTaperPot(ConfigKey(getGroup(), "pregain"), -12, 12, 0.5)),
           m_sampleBuffer(NULL),
           m_wasActive(false) {
     if (pEffectsManager != NULL) {
         pEffectsManager->registerChannel(handle_group);
     }
-    m_pPassing->setButtonMode(ControlPushButton::POWERWINDOW);
 
     // by default Aux is enabled on the master and disabled on PFL. User
     // can over-ride by setting the "pfl" or "master" controls.
@@ -36,7 +34,6 @@ EngineAux::EngineAux(const ChannelHandleAndGroup& handle_group, EffectsManager* 
 EngineAux::~EngineAux() {
     qDebug() << "~EngineAux()";
     delete m_pEnabled;
-    delete m_pPassing;
     delete m_pPregain;
     delete m_pSampleRate;
 }
@@ -76,11 +73,7 @@ void EngineAux::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
                               unsigned int nFrames) {
     Q_UNUSED(input);
     Q_UNUSED(nFrames);
-    if (m_pPassing->get() <= 0.0) {
-        m_sampleBuffer = NULL;
-    } else {
-        m_sampleBuffer = pBuffer;
-    }
+    m_sampleBuffer = pBuffer;
 }
 
 void EngineAux::process(CSAMPLE* pOut, const int iBufferSize) {

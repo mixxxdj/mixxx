@@ -28,7 +28,6 @@
 #include <QSharedPointer>
 #include <QString>
 #include <QWeakPointer>
-#include <taglib/tfile.h>
 
 #include "library/dao/cue.h"
 #include "library/coverart.h"
@@ -43,6 +42,10 @@ class Cue;
 class TrackInfoObject;
 typedef QSharedPointer<TrackInfoObject> TrackPointer;
 typedef QWeakPointer<TrackInfoObject> TrackWeakPointer;
+
+namespace Mixxx {
+    class TrackMetadata;
+}
 
 class TrackInfoObject : public QObject {
     Q_OBJECT
@@ -308,11 +311,8 @@ class TrackInfoObject : public QObject {
     // Common initialization function between all TIO constructors.
     void initialize(bool parseHeader, bool parseCoverArt);
 
-    // Methods for parsing information from knowing only the file name.  It
-    // assumes that the filename is written like: "artist - trackname.xxx"
-    void parseFilename();
-    void parseArtist();
-    void parseTitle();
+    void setMetadata(const Mixxx::TrackMetadata& trackMetadata);
+    void getMetadata(Mixxx::TrackMetadata* pTrackMetadata);
 
     // Set whether the TIO is dirty not. This should never be called except by
     // TIO local methods or the TrackDAO.

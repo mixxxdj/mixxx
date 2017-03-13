@@ -247,10 +247,10 @@
 			</control>
 <!-- Deck Filter Controls -->
 			<control>
-				<group>[Channel1]</group>
+				<group>[EqualizerRack1_[Channel1]_Effect1]</group>
 				<midino>0x0F</midino>
 				<status>0xB0</status>
-				<key>filterHigh</key>
+				<key>parameter3</key>
 			</control>
 			<control>
 				<group>[Channel1]</group>
@@ -262,16 +262,16 @@
 				</options>
 			</control>
 			<control>
-				<group>[Channel1]</group>
+				<group>[EqualizerRack1_[Channel1]_Effect1]</group>
 				<midino>0x11</midino>
 				<status>0xB0</status>
-				<key>filterLow</key>
+				<key>parameter1</key>
 			</control>
 			<control>
-				<group>[Channel2]</group>
+				<group>[EqualizerRack1_[Channel2]_Effect1]</group>
 				<midino>0x15</midino>
 				<status>0xB0</status>
-				<key>filterHigh</key>
+				<key>parameter3</key>
 			</control>
 			<control>
 				<group>[Channel2]</group>
@@ -283,14 +283,10 @@
 				</options>
 			</control>
 			<control>
-				<group>[Channel2]</group>
+				<group>[EqualizerRack1_[Channel2]_Effect1]</group>
 				<midino>0x17</midino>
 				<status>0xB0</status>
-				<key>filterLow</key>
-				<options>
-					<normal/>
-					<soft-takeover/>
-				</options>
+				<key>parameter1</key>
 			</control>
 <!-- Deck Pitch/Sync Controls -->
 			<control>

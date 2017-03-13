@@ -17,6 +17,7 @@
 #include "recording/recordingmanager.h"
 #include "analysisfeature.h"
 #include "library/coverartcache.h"
+#include "library/setlogfeature.h"
 
 class TrackModel;
 class TrackCollection;

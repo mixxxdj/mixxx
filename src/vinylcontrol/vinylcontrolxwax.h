@@ -103,7 +103,9 @@ class VinylControlXwax : public VinylControl {
     // A smoothed pitch value to show to the user.
     double m_dDisplayPitch;
 
-    // Steady pitch trackers.
+    // Steady pitch trackers.  "Subtle" will be more likely to return true,
+    // so it is used to set the play button.  "Gross" is more likely to return
+    // false, so it is used to trigger the "scratching" CO.
     SteadyPitch* m_pSteadySubtle;
     SteadyPitch* m_pSteadyGross;
 

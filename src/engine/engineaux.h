@@ -50,7 +50,6 @@ class EngineAux : public EngineChannel, public AudioDestination {
     EngineEffectsManager* m_pEngineEffectsManager;
     EngineVuMeter m_vuMeter;
     ControlObject* m_pEnabled;
-    ControlPushButton* m_pPassing;
     ControlAudioTaperPot* m_pPregain;
     ControlObjectSlave* m_pSampleRate;
     const CSAMPLE* volatile m_sampleBuffer;

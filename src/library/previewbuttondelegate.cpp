@@ -6,7 +6,7 @@
 #include "playerinfo.h"
 #include "playermanager.h"
 #include "trackinfoobject.h"
-#include "controlobject.h"
+#include "controlobjectslave.h"
 
 PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)
         : QStyledItemDelegate(parent),
@@ -14,10 +14,9 @@ PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)
           m_pButton(NULL),
           m_isOneCellInEditMode(false),
           m_column(column) {
-    m_pPreviewDeckPlay = new ControlObjectThread(
-            PlayerManager::groupForPreviewDeck(0), "play");
-    connect(m_pPreviewDeckPlay, SIGNAL(valueChanged(double)),
-            this, SLOT(previewDeckPlayChanged(double)));
+    m_pPreviewDeckPlay = new ControlObjectSlave(
+            PlayerManager::groupForPreviewDeck(0), "play", this);
+    m_pPreviewDeckPlay->connectValueChanged(SLOT(previewDeckPlayChanged(double)));
 
     // This assumes that the parent is wtracktableview
     connect(this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
@@ -36,7 +35,6 @@ PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)
 }
 
 PreviewButtonDelegate::~PreviewButtonDelegate() {
-    delete m_pPreviewDeckPlay;
 }
 
 QWidget* PreviewButtonDelegate::createEditor(QWidget *parent,
@@ -46,7 +44,7 @@ QWidget* PreviewButtonDelegate::createEditor(QWidget *parent,
     QPushButton* btn = new QPushButton(parent);
     btn->setObjectName("LibraryPreviewButton");
     btn->setCheckable(true);
-    bool playing = m_pPreviewDeckPlay->get() > 0.0;
+    bool playing = m_pPreviewDeckPlay->toBool();
     // Check-state is whether the track is loaded (index.data()) and whether
     // it's playing.
     btn->setChecked(index.data().toBool() && playing);
@@ -84,7 +82,7 @@ void PreviewButtonDelegate::paint(QPainter *painter,
     }
 
     m_pButton->setGeometry(option.rect);
-    bool playing = m_pPreviewDeckPlay->get() > 0.0;
+    bool playing = m_pPreviewDeckPlay->toBool();
     // Check-state is whether the track is loaded (index.data()) and whether
     // it's playing.
     m_pButton->setChecked(index.data().toBool() && playing);
@@ -149,15 +147,15 @@ void PreviewButtonDelegate::buttonClicked() {
 
     QString group = PlayerManager::groupForPreviewDeck(0);
     TrackPointer pOldTrack = PlayerInfo::instance().getTrackInfo(group);
-    bool playing = m_pPreviewDeckPlay->get() > 0.0;
+    bool playing = m_pPreviewDeckPlay->toBool();
 
     TrackPointer pTrack = pTrackModel->getTrack(m_currentEditedCellIndex);
     if (pTrack && pTrack != pOldTrack) {
         emit(loadTrackToPlayer(pTrack, group, true));
     } else if (pTrack == pOldTrack && !playing) {
-        m_pPreviewDeckPlay->slotSet(1.0);
+        m_pPreviewDeckPlay->set(1.0);
     } else {
-        m_pPreviewDeckPlay->slotSet(0.0);
+        m_pPreviewDeckPlay->set(0.0);
     }
 }
 

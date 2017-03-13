@@ -16,6 +16,8 @@ typedef qint32 int32_t;
 // registers as tested with gcc 4.6 and the -ftree-vectorizer-verbose=2 flag on
 // an Intel i5 CPU. When changing, be careful to not disturb the vectorization.
 // https://gcc.gnu.org/projects/tree-ssa/vectorization.html
+// This also utilizes AVX registers wehn compiled for a recent 64 bit CPU 
+// using scons optimize=native.  
 
 // TODO() Check if uintptr_t is available on all our build targets and use that
 // instead of size_t, we can remove the sizeof(size_t) check than
@@ -44,6 +46,7 @@ CSAMPLE* SampleUtil::alloc(int size) {
     // true start of the buffer in the slack space as well so that we can free
     // it correctly.
     // TODO(XXX): Replace with C++11 aligned_alloc.
+    // TODO(XXX): consider 32 byte alignement to optimize for AVX builds 
     if (useAlignedAlloc()) {
 #ifdef _MSC_VER
         return static_cast<CSAMPLE*>(_aligned_malloc(sizeof(CSAMPLE)*size, 16));
@@ -65,8 +68,8 @@ CSAMPLE* SampleUtil::alloc(int size) {
         return static_cast<CSAMPLE*>(pAligned);
 #endif
     } else {
-        // We assume that our platform produces 16-byte aligned pointers
-        // here. We should be explicit about what we want from the system.
+        // Our platform already produces 16-byte aligned pointers (or is an exotic target) 
+        // We should be explicit about what we want from the system.
         // TODO(XXX): Use posix_memalign, memalign, or aligned_alloc.
         return new CSAMPLE[size];
     }
@@ -246,8 +249,7 @@ void SampleUtil::copyWithGain(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RESTRICT
 
 // static
 void SampleUtil::copyWithRampingGain(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RESTRICT pSrc,
-        CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain,
-        int iNumSamples) {
+        CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain, int iNumSamples) {
     if (old_gain == CSAMPLE_GAIN_ONE && new_gain == CSAMPLE_GAIN_ONE) {
         copy(pDest, pSrc, iNumSamples);
         return;
@@ -282,13 +284,24 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _R
 // static
 void SampleUtil::convertS16ToFloat32(CSAMPLE* _RESTRICT pDest, const SAMPLE* _RESTRICT pSrc,
         int iNumSamples) {
-    // -32768 is a valid low sample, whereas 32767 is the highest valid sample.
-    // Note that this means that although some sample values convert to -1.0,
-    // none will convert to +1.0.
-    const CSAMPLE kConversionFactor = 0x8000;
+    // SAMPLE_MIN = -32768 is a valid low sample, whereas SAMPLE_MAX = 32767
+    // is the highest valid sample. Note that this means that although some
+    // sample values convert to -1.0, none will convert to +1.0.
+    DEBUG_ASSERT(-SAMPLE_MIN >= SAMPLE_MAX);
+    const CSAMPLE kConversionFactor = -SAMPLE_MIN;
     // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = CSAMPLE(pSrc[i]) / kConversionFactor;
+    }
+}
+
+//static
+void SampleUtil::convertFloat32ToS16(SAMPLE* pDest, const CSAMPLE* pSrc,
+        unsigned int iNumSamples) {
+    DEBUG_ASSERT(-SAMPLE_MIN >= SAMPLE_MAX);
+    const CSAMPLE kConversionFactor = -SAMPLE_MIN;
+    for (unsigned int i = 0; i < iNumSamples; ++i) {
+        pDest[i] = SAMPLE(pSrc[i] * kConversionFactor);
     }
 }
 
@@ -374,12 +387,12 @@ void SampleUtil::mixStereoToMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
 }
 
 // static
-void SampleUtil::doubleMonoToDualMono(SAMPLE* pBuffer, int numFrames) {
+void SampleUtil::doubleMonoToDualMono(CSAMPLE* pBuffer, int numFrames) {
     // backward loop
     int i = numFrames;
     // Unvectorizable Loop
     while (0 < i--) {
-        CSAMPLE s = pBuffer[i];
+        const CSAMPLE s = pBuffer[i];
         pBuffer[i * 2] = s;
         pBuffer[i * 2 + 1] = s;
     }
@@ -391,7 +404,7 @@ void SampleUtil::copyMonoToDualMono(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RE
     // forward loop
     // note: LOOP VECTORIZED
     for (int i = 0; i < numFrames; ++i) {
-        CSAMPLE s = pSrc[i];
+        const CSAMPLE s = pSrc[i];
         pDest[i * 2] = s;
         pDest[i * 2 + 1] = s;
     }
@@ -416,3 +429,18 @@ void SampleUtil::copyMultiToStereo(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RES
         pDest[i * 2 + 1] = pSrc[i * numChannels + 1];
     }
 }
+
+
+// static
+void SampleUtil::reverse(CSAMPLE* pBuffer, int iNumSamples) {
+    for (int j = 0; j < iNumSamples / 4; ++j) {
+        const int endpos = (iNumSamples - 1) - j * 2 ;
+        CSAMPLE temp1 = pBuffer[j * 2];
+        CSAMPLE temp2 = pBuffer[j * 2 + 1];
+        pBuffer[j * 2] = pBuffer[endpos - 1];
+        pBuffer[j * 2 + 1] = pBuffer[endpos];
+        pBuffer[endpos - 1] = temp1;
+        pBuffer[endpos] = temp2;
+    }
+}
+

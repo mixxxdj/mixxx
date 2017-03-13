@@ -62,7 +62,7 @@ void CrateTableModel::setTableModel(int crateId) {
     columns[0] = LIBRARYTABLE_ID;
     columns[1] = LIBRARYTABLE_PREVIEW;
     columns[2] = LIBRARYTABLE_COVERART;
-    setTable(tableName, columns[0], columns,
+    setTable(tableName, LIBRARYTABLE_ID, columns,
              m_pTrackCollection->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);

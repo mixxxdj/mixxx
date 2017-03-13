@@ -358,6 +358,14 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                        tr("Load Track Into Stopped Deck"),
                        tr("Load selected track into first stopped deck"),
                        m_libraryStr, libraryMenu);
+    addPrefixedControl("[Playlist]", "AutoDjAddBottom",
+                       tr("Add to Auto DJ Queue (bottom)"),
+                       tr("Append the selected track to the Auto DJ Queue"),
+                       m_libraryStr, libraryMenu);
+    addPrefixedControl("[Playlist]", "AutoDjAddTop",
+                       tr("Add to Auto DJ Queue (top)"),
+                       tr("Prepend selected track to the Auto DJ Queue"),
+                       m_libraryStr, libraryMenu);
     addDeckAndSamplerControl("LoadSelectedTrack",
                              tr("Load Track"),
                              tr("Load selected track"), libraryMenu);
@@ -477,7 +485,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             }
 
             const int iNumSamplers = ControlObject::get(
-                ConfigKey("[Master]", "num_samplers"));
+                    ConfigKey("[Master]", "num_samplers"));
             for (int iSamplerNumber = 1; iSamplerNumber <= iNumSamplers;
                  ++iSamplerNumber) {
                 // PlayerManager::groupForSampler is 0-indexed.
@@ -510,7 +518,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             }
 
             const int iNumAuxiliaries = ControlObject::get(
-                ConfigKey("[Master]", "num_auxiliaries"));
+                    ConfigKey("[Master]", "num_auxiliaries"));
             for (int iAuxiliaryNumber = 1; iAuxiliaryNumber <= iNumAuxiliaries;
                  ++iAuxiliaryNumber) {
                 QString auxGroup = QString("[Auxiliary%1]").arg(iAuxiliaryNumber);
@@ -691,6 +699,9 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addControl("[PreviewDeck]", "show_previewdeck",
                tr("Preview Deck Show/Hide"),
                tr("Show/hide the preview deck"), guiMenu);
+    addControl("[Master]", "maximize_library",
+               tr("Library Maximize/Restore"),
+               tr("Maximize the track library to take up all the available screen space."), guiMenu);
     addControl("[EffectRack1]", "show",
                tr("Effect Rack Show/Hide"),
                tr("Show/hide the effect rack"), guiMenu);

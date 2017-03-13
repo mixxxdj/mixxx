@@ -131,6 +131,11 @@ class TrackModel {
         m_eDefaultSortOrder = sortOrder;
     }
 
+    virtual bool isColumnSortable(int column) {
+        Q_UNUSED(column);
+        return true;
+    }
+
     virtual int fieldIndex(const QString& fieldName) const {
         Q_UNUSED(fieldName);
         return -1;

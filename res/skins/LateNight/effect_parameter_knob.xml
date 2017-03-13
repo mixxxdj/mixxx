@@ -16,6 +16,7 @@
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <ObjectName>EffectKnob</ObjectName>
+        <MinimumSize>0,50</MinimumSize>
         <Children>
            <Template src="skin:knob_textless.xml">
              <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>]</SetVariable>

@@ -21,7 +21,7 @@
 #include <QMessageBox>
 
 #include "track/key_preferences.h"
-#include "xmlparse.h"
+#include "util/xml.h"
 #include "controlobject.h"
 #include "vamp/vampanalyser.h"
 #include "vamp/vamppluginloader.h"

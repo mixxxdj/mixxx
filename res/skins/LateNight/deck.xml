@@ -3,7 +3,7 @@
         <ObjectName>Deck</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>me, min</SizePolicy>
-        <MaximumSize>680, 300</MaximumSize>
+        <MinimumSize>-1, 220</MinimumSize>
         <Children>
             <WidgetGroup>
                 <ObjectName>RateContainer<Variable name="channum" /></ObjectName>
@@ -53,11 +53,11 @@
                                         <Text>KEY</Text>
                                       </State>
                                       <Connection>
-                                        <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_set_default</ConfigKey>
+                                        <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_adjust_set_default</ConfigKey>
                                         <ButtonState>LeftButton</ButtonState>
                                       </Connection>
                                       <Connection>
-                                        <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_set_default</ConfigKey>
+                                        <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_adjust_set_default</ConfigKey>
                                       </Connection>
                                    </PushButton>
                                    <PushButton>
@@ -81,10 +81,10 @@
                                       </Connection>
                                   </PushButton>
                                </Children>
-                               <Connection>
+                               <!-- <Connection>
                                    <ConfigKey>[Channel<Variable name="channum"/>],visual_key</ConfigKey>
                                    <BindProperty>visible</BindProperty>
-                               </Connection>
+                               </Connection> -->
                            </WidgetGroup>
                            <Key>
                               <ObjectName>TextColor<Variable name="channum" /></ObjectName>
@@ -94,7 +94,7 @@
                                   background-color: transparent; padding: 0px; margin: 0px;}
                               </Style>
                               <Group>[Channel<Variable name="channum"/>]</Group>
-                              <SizePolicy>min,fx</SizePolicy>
+                              <SizePolicy>min,f</SizePolicy>
                               <Size>-1,17</Size>
                               <Connection>
                                 <ConfigKey>[Channel<Variable name="channum"/>],visual_key</ConfigKey>
@@ -139,17 +139,14 @@
                                   </PushButton>
                               </Children>
                           </WidgetGroup>
-				           <!-- <NumberRate>
-				                <TooltipId>rate_display</TooltipId>
-				                <Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans
-				                    Unicode, Arial, Verdana, sans-serif;
-				                    background-color: transparent; color: <Variable name="deck_color" />; text-align:center;}
-				                </Style>
-				                <Channel>
-				                    <Variable name="channum" />
-				                </Channel>
-				                <NumberOfDigits>2</NumberOfDigits>
-				            </NumberRate>-->
+                          <NumberRate>
+                              <TooltipId>rate_display</TooltipId>
+                              <ObjectName>RateTextColor<Variable name="channum" /></ObjectName>
+                              <Channel>
+                                  <Variable name="channum" />
+                              </Channel>
+                              <NumberOfDigits>2</NumberOfDigits>
+                          </NumberRate>
 			            </Children>
 		            </WidgetGroup>
                     <WidgetGroup>
@@ -259,20 +256,20 @@
                         <ObjectName>SyncControls</ObjectName>
                         <Layout>vertical</Layout>
                         <SizePolicy>min,min</SizePolicy>
-                        <MinimumSize>48,</MinimumSize>
+                        <MinimumSize>52,</MinimumSize>
                         <Children>
                             <PushButton>
-                                <TooltipId>beatsync_beatsync_tempo</TooltipId>
+                                <Size>52,17</Size>
+                                <ObjectName>SyncToggleButton</ObjectName>
+                                <TooltipId>sync_enabled</TooltipId>
                                 <NumberStates>2</NumberStates>
                                 <State>
                                     <Number>0</Number>
-                                    <Pressed>btn_sync1_overdown.png</Pressed>
-                                    <Unpressed>btn_sync1.png</Unpressed>
+                                    <Text>SYNC</Text>
                                 </State>
                                 <State>
                                     <Number>1</Number>
-                                    <Pressed>btn_sync1_overdown.png</Pressed>
-                                    <Unpressed>btn_sync1_overdown.png</Unpressed>
+                                    <Text>SYNC</Text>
                                 </State>
                                 <Connection>
                                     <ConfigKey>[Channel<Variable name="channum" />],sync_enabled</ConfigKey>
@@ -334,7 +331,7 @@
 		            </WidgetGroup>
 					<Template src="skin:deck_row_1.xml" />
 					<Template src="skin:deck_row_2_3_4.xml" />
-		            <Template src="skin:deck_row_5.xml" />
+					<Template src="skin:deck_row_5.xml" />
 					<Template src="skin:deck_buttons.xml" />
 				</Children>
 			</WidgetGroup> <!-- /Deck Channel1 -->

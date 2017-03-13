@@ -74,9 +74,6 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
     autoDjIgnoreTimeEdit->setVisible(false);
     GridLayout1->removeWidget(autoDjIgnoreTimeEdit);
 #endif // __AUTODJCRATES__
-    // Connect the global cancell signal
-       connect(this,SIGNAL(cancelPreferences()),this,
-               SLOT(slotCancel()));
 }
 
 DlgPrefAutoDJ::~DlgPrefAutoDJ() {

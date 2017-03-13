@@ -57,8 +57,8 @@ void SetlogFeature::bindWidget(WLibrary* libraryWidget,
                                MixxxKeyboard* keyboard) {
     BasePlaylistFeature::bindWidget(libraryWidget,
                                     keyboard);
-    connect(&PlayerInfo::instance(), SIGNAL(currentPlayingDeckChanged(int)),
-            this, SLOT(slotPlayingDeckChanged(int)));
+    connect(&PlayerInfo::instance(), SIGNAL(currentPlayingTrackChanged(TrackPointer)),
+            this, SLOT(slotPlayingTrackChanged(TrackPointer)));
 }
 
 void SetlogFeature::onRightClick(const QPoint& globalPos) {
@@ -228,54 +228,49 @@ void SetlogFeature::slotJoinWithPrevious() {
     }
 }
 
-void SetlogFeature::slotPlayingDeckChanged(int deck) {
-    if (deck > -1) {
-        QString chan = PlayerManager::groupForDeck(deck);
-        TrackPointer currentPlayingTrack =
-                PlayerInfo::instance().getTrackInfo(chan);
-        if (!currentPlayingTrack) {
-            return;
+void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
+    if (!currentPlayingTrack) {
+        return;
+    }
+
+    int currentPlayingTrackId = currentPlayingTrack->getId();
+    bool track_played_recently = false;
+    if (currentPlayingTrackId >= 0) {
+        // Remove the track from the recent tracks list if it's present and put
+        // at the front of the list.
+        track_played_recently = m_recentTracks.removeOne(currentPlayingTrackId);
+        m_recentTracks.push_front(currentPlayingTrackId);
+
+        // Keep a window of 6 tracks (inspired by 2 decks, 4 samplers)
+        const int kRecentTrackWindow = 6;
+        while (m_recentTracks.size() > kRecentTrackWindow) {
+            m_recentTracks.pop_back();
         }
+    }
 
-        int currentPlayingTrackId = currentPlayingTrack->getId();
-        bool track_played_recently = false;
-        if (currentPlayingTrackId >= 0) {
-            // Remove the track from the recent tracks list if it's present and put
-            // at the front of the list.
-            track_played_recently = m_recentTracks.removeOne(currentPlayingTrackId);
-            m_recentTracks.push_front(currentPlayingTrackId);
+    // If the track was recently played, don't increment the playcount or
+    // add it to the history.
+    if (track_played_recently) {
+        return;
+    }
 
-            // Keep a window of 6 tracks (inspired by 2 decks, 4 samplers)
-            const int kRecentTrackWindow = 6;
-            while (m_recentTracks.size() > kRecentTrackWindow) {
-                m_recentTracks.pop_back();
-            }
-        }
+    // If the track is not present in the recent tracks list, mark it
+    // played and update its playcount.
+    currentPlayingTrack->setPlayedAndUpdatePlaycount(true);
 
-        // If the track was recently played, don't increment the playcount or
-        // add it to the history.
-        if (track_played_recently) {
-            return;
-        }
+    // We can only add tracks that are Mixxx library tracks, not external
+    // sources.
+    if (currentPlayingTrackId < 0) {
+        return;
+    }
 
-        // If the track is not present in the recent tracks list, mark it
-        // played and update its playcount.
-        currentPlayingTrack->setPlayedAndUpdatePlaycount(true);
-
-        // We can only add tracks that are Mixxx library tracks, not external
-        // sources.
-        if (currentPlayingTrackId < 0) {
-            return;
-        }
-
-        if (m_pPlaylistTableModel->getPlaylist() == m_playlistId) {
-            // View needs a refresh
-            m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
-        } else {
-            // TODO(XXX): Care whether the append succeeded.
-            m_playlistDao.appendTrackToPlaylist(currentPlayingTrackId,
-                                                m_playlistId);
-        }
+    if (m_pPlaylistTableModel->getPlaylist() == m_playlistId) {
+        // View needs a refresh
+        m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
+    } else {
+        // TODO(XXX): Care whether the append succeeded.
+        m_playlistDao.appendTrackToPlaylist(currentPlayingTrackId,
+                                            m_playlistId);
     }
 }
 
@@ -293,6 +288,23 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
     }
 }
 
+void SetlogFeature::slotPlaylistTableRenamed(int playlistId,
+                                             QString /* a_strName */) {
+    if (!m_pPlaylistTableModel) {
+        return;
+    }
+
+    //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
+    enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
+    if (type == PlaylistDAO::PLHT_SET_LOG ||
+        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+        clearChildModel();
+        m_lastRightClickedIndex = constructChildModel(playlistId);
+        if (type != PlaylistDAO::PLHT_UNKNOWN) {
+            activatePlaylist(playlistId);
+        }
+    }
+}
 
 QString SetlogFeature::getRootViewHtml() const {
     QString playlistsTitle = tr("History");

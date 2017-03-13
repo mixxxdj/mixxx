@@ -111,8 +111,8 @@ class CachingReader : public QObject {
     static Chunk* insertIntoLRUList(Chunk* chunk, Chunk* head);
 
     // Given a sample number, return the chunk number corresponding to it.
-    inline static int chunkForSample(int sample_number) {
-        return sample_number / CachingReaderWorker::kSamplesPerChunk;
+    inline static int chunkForFrame(int frame_number) {
+        return frame_number / CachingReaderWorker::kFramesPerChunk;
     }
 
     const ConfigObject<ConfigValue>* m_pConfig;
@@ -164,9 +164,9 @@ class CachingReader : public QObject {
     Chunk* m_lruChunk;
 
     // The raw memory buffer which is divided up into chunks.
-    CSAMPLE* m_pRawMemoryBuffer;
+    SampleBuffer m_sampleBuffer;
 
-    int m_iTrackNumSamplesCallbackSafe;
+    int m_iTrackNumFramesCallbackSafe;
 
     CachingReaderWorker* m_pWorker;
 };

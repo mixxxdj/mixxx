@@ -45,6 +45,8 @@ class ProxyTrackModel : public QSortFilterProxyModel, public TrackModel {
     virtual QString getModelSetting(QString name);
     virtual bool setModelSetting(QString name, QVariant value);
 
+    void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
+
   private:
     TrackModel* m_pTrackModel;
     QString m_currentSearch;

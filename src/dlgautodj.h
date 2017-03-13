@@ -38,7 +38,6 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void toggleAutoDJButton(bool enable);
     void transitionTimeChanged(int time);
     void transitionSliderChanged(int value);
-    void enableRandomButton(bool enabled);
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
     void setTrackTableFont(const QFont& font);
     void setTrackTableRowHeight(int rowHeight);

@@ -347,9 +347,6 @@ void AnalysisDao::saveTrackAnalyses(TrackInfoObject* pTrack) {
                  << "waveform analysis for trackId" << trackId
                  << "analysisId" << analysis.analysisId;
 
-    if (pWaveSummary->getId() != -1) {
-        analysis.analysisId = pWaveSummary->getId();
-    }
     // Clear analysisId since we are re-using the AnalysisInfo
     analysis.analysisId = -1;
     analysis.type = AnalysisDao::TYPE_WAVESUMMARY;

@@ -336,7 +336,7 @@
      <item row="10" column="0">
       <widget class="QLabel" name="labelResetSpeedAndPitch">
        <property name="text">
-        <string>Reset speed and pitch </string>
+        <string>Reset speed and pitch</string>
        </property>
       </widget>
      </item>
@@ -592,7 +592,11 @@
       </widget>
      </item>
      <item row="9" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxSeekToCue"/>
+      <widget class="QComboBox" name="ComboBoxSeekToCue">
+       <property name="toolTip">
+        <string>Automatically seeks to the first saved cue point on track load. If none exists, seeks to the beginning of the track.</string>
+       </property>
+      </widget>
      </item>
      <item row="5" column="0">
       <widget class="QLabel" name="textLabelLocale">
@@ -607,7 +611,7 @@
      <item row="8" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxCueDefault">
        <property name="toolTip">
-        <string>Mixxx mode: 
+        <string>Mixxx mode:
 - Cue button while pause at cue point = preview
 - Cue button while pause not at cue point = set cue point
 - Cue button while playing = pause at cue point
@@ -619,7 +623,7 @@ Denon mode:
 - Play = set cue point
 Numark mode:
 - Same as Denon mode, but without a flashing play button
-        </string>
+</string>
        </property>
       </widget>
      </item>

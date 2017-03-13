@@ -49,6 +49,8 @@ class WTrackTableView : public WLibraryTableView {
     void slotPurge();
     void onSearchStarting();
     void onSearchCleared();
+    void slotSendToAutoDJ();
+    void slotSendToAutoDJTop();
 
   private slots:
     void slotRemove();
@@ -60,8 +62,6 @@ class WTrackTableView : public WLibraryTableView {
     void slotNextDlgTagFetcher();
     void slotPrevTrackInfo();
     void slotPrevDlgTagFetcher();
-    void slotSendToAutoDJ();
-    void slotSendToAutoDJTop();
     void slotReloadTrackMetadata();
     void slotResetPlayed();
     void addSelectionToPlaylist(int iPlaylistId);

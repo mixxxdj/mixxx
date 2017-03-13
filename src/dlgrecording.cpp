@@ -84,6 +84,14 @@ void DlgRecording::loadSelectedTrack() {
     m_pTrackTableView->loadSelectedTrack();
 }
 
+void DlgRecording::slotSendToAutoDJ() {
+    m_pTrackTableView->slotSendToAutoDJ();
+}
+
+void DlgRecording::slotSendToAutoDJTop() {
+    m_pTrackTableView->slotSendToAutoDJTop();
+}
+
 void DlgRecording::loadSelectedTrackToGroup(QString group, bool play) {
     m_pTrackTableView->loadSelectedTrackToGroup(group, play);
 }

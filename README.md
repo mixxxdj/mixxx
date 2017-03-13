@@ -76,7 +76,7 @@ license.
 
 [mixxx]: http://www.mixxx.org
 [download]: http://www.mixxx.org/download
-[builds]: http://downloads.mixxx.org/builds/master/
+[builds]: http://downloads.mixxx.org/builds/
 [launchpad]: http://bugs.launchpad.net/mixxx
 [fileabug]: http://bugs.launchpad.net/mixxx/+filebug
 [twitter]: http://twitter.com/mixxxdj

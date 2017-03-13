@@ -139,6 +139,11 @@
                   <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,beats_translate_match_alignment</ConfigKey>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                  <ButtonState>RightButton</ButtonState>
+                </Connection>
               </PushButton>
 
               <PushButton>

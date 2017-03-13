@@ -15,6 +15,36 @@ PlaylistDAO::~PlaylistDAO() {
 }
 
 void PlaylistDAO::initialize() {
+    populatePlaylistMembershipCache();
+}
+
+void PlaylistDAO::populatePlaylistMembershipCache() {
+    // get the count to allocate HashMap
+    int tracksInPlaylistsCount = 0;
+    QSqlQuery query(m_database);
+    query.prepare("SELECT COUNT(*) from " PLAYLIST_TRACKS_TABLE);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    tracksInPlaylistsCount = query.value(0).toInt();
+
+    m_playlistsTrackIsIn.reserve(tracksInPlaylistsCount);
+
+    // now fetch all Tracks from all playlists and insert them into the hashmap
+    query.prepare("SELECT track_id, playlist_id from " PLAYLIST_TRACKS_TABLE);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    const int trackIdColumn = query.record().indexOf(PLAYLISTTRACKSTABLE_TRACKID);
+    const int playlistIdColumn = query.record().indexOf(PLAYLISTTRACKSTABLE_PLAYLISTID);
+    while (query.next()) {
+        m_playlistsTrackIsIn.insert(query.value(trackIdColumn).toInt(),
+                                    query.value(playlistIdColumn).toInt());
+
+    }
 }
 
 int PlaylistDAO::createPlaylist(const QString& name, const HiddenType hidden) {
@@ -162,6 +192,15 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
     transaction.commit();
     //TODO: Crap, we need to shuffle the positions of all the playlists?
 
+    for (QMultiHash<int, int>::iterator it = m_playlistsTrackIsIn.begin();
+         it != m_playlistsTrackIsIn.end();) {
+        if (it.value() == playlistId) {
+            it = m_playlistsTrackIsIn.erase(it);
+        } else {
+            it++;
+        }
+    }
+
     emit(deleted(playlistId));
 }
 
@@ -243,6 +282,7 @@ bool PlaylistDAO::appendTracksToPlaylist(const QList<int>& trackIds, const int p
 
     insertPosition = position;
     foreach (int trackId, trackIds) {
+        m_playlistsTrackIsIn.insert(trackId, playlistId);
         // TODO(XXX) don't emit if the track didn't add successfully.
         emit(trackAdded(playlistId, trackId, insertPosition++));
     }
@@ -370,8 +410,11 @@ void PlaylistDAO::removeTrackFromPlaylist(const int playlistId, const int positi
     }
     transaction.commit();
 
+    m_playlistsTrackIsIn.remove(trackId, playlistId);
+
     emit(trackRemoved(playlistId, trackId, position));
     emit(changed(playlistId));
+
 }
 
 void PlaylistDAO::removeTracksFromPlaylist(const int playlistId, QList<int>& positions) {
@@ -420,6 +463,7 @@ void PlaylistDAO::removeTracksFromPlaylist(const int playlistId, QList<int>& pos
             LOG_FAILED_QUERY(query);
         }
 
+        m_playlistsTrackIsIn.remove(trackId, playlistId);
         emit(trackRemoved(playlistId, trackId, position));
     }
     transaction.commit();
@@ -465,6 +509,7 @@ bool PlaylistDAO::insertTrackIntoPlaylist(const int trackId, const int playlistI
     }
     transaction.commit();
 
+    m_playlistsTrackIsIn.insert(trackId, playlistId);
     emit(trackAdded(playlistId, trackId, position));
     emit(changed(playlistId));
     return true;
@@ -523,6 +568,7 @@ int PlaylistDAO::insertTracksIntoPlaylist(const QList<int>& trackIds,
 
     insertPositon = position;
     foreach (int trackId, trackIds) {
+        m_playlistsTrackIsIn.insert(trackId, playlistId);
         // TODO(XXX) The position is wrong if any track failed to insert.
         emit(trackAdded(playlistId, trackId, insertPositon++));
     }
@@ -636,6 +682,7 @@ bool PlaylistDAO::copyPlaylistTracks(const int sourcePlaylistID, const int targe
     while (query.next()) {
         int copiedTrackId = query.value(0).toInt();
         int copiedPosition = query.value(1).toInt();
+        m_playlistsTrackIsIn.insert(copiedTrackId, targetPlaylistID);
         emit(trackAdded(targetPlaylistID, copiedTrackId, copiedPosition));
     }
     emit(changed(targetPlaylistID));
@@ -675,6 +722,13 @@ void PlaylistDAO::removeTracksFromPlaylists(const QList<int>& trackIds) {
         trackIdList << QString::number(id);
     }
     removeTracksFromPlaylistsInner(trackIdList);
+
+    // Update the in-memory hash. TODO(XXX) this assumes all the removes
+    // succeeded.
+    foreach (int trackId, trackIds) {
+        m_playlistsTrackIsIn.remove(trackId);
+    }
+
 }
 
 void PlaylistDAO::removeTracksFromPlaylistsInner(const QStringList& trackIdList) {
@@ -941,4 +995,17 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
 
     transaction.commit();
     emit(changed(playlistId));
+}
+
+bool PlaylistDAO::isTrackInPlaylist(const int trackId, const int playlistId) const {
+    return m_playlistsTrackIsIn.contains(trackId, playlistId);
+}
+
+void PlaylistDAO::getPlaylistsTrackIsIn(const int trackId,
+                                        QSet<int>* playlistSet) const {
+    playlistSet->clear();
+    for (QHash<int, int>::const_iterator it = m_playlistsTrackIsIn.find(trackId);
+         it != m_playlistsTrackIsIn.end() && it.key() == trackId; ++it) {
+        playlistSet->insert(it.value());
+    }
 }

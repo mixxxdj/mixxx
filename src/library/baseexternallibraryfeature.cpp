@@ -114,6 +114,8 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(QList<int>* t
         return;
     }
 
+    pPlaylistModelToAdd->setSort(pPlaylistModelToAdd->fieldIndex(
+            ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     pPlaylistModelToAdd->select();
 
     // Copy Tracks

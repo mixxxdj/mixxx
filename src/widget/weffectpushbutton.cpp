@@ -93,11 +93,11 @@ void WEffectPushButton::parameterUpdated() {
     const QList<QPair<QString, double> >& options = m_pEffectParameterSlot->getManifest().getSteps();
     // qDebug() << " HERE IS THE OPTIONS SIZE: " << options.size() << m_pEffectParameterSlot->getManifest().name();
     m_iNoStates = options.size();
-	if (m_iNoStates == 0) {
-		// Toggle button without a menu
-		m_iNoStates = 2;
-		return;
-	}
+    if (m_iNoStates == 0) {
+        // Toggle button without a menu
+        m_iNoStates = 2;
+        return;
+    }
     double value = getControlParameterLeft();
 
     QActionGroup* actionGroup = new QActionGroup(m_pButtonMenu);

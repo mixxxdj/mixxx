@@ -24,7 +24,7 @@
 
 #include "widget/wwidget.h"
 #include "util/cmdlineargs.h"
-#include "xmlparse.h"
+#include "util/xml.h"
 
 ConfigKey::ConfigKey() {
 }

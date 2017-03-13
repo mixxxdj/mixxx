@@ -20,7 +20,7 @@ class SyncControl : public EngineControl, public Syncable {
     static const double kBpmUnity;
     static const double kBpmHalve;
     static const double kBpmDouble;
-    SyncControl(QString group, ConfigObject<ConfigValue>* pConfig,
+    SyncControl(const QString& group, ConfigObject<ConfigValue>* pConfig,
                 EngineChannel* pChannel, SyncableListener* pEngineSync);
     virtual ~SyncControl();
 

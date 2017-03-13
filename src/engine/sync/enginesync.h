@@ -47,6 +47,9 @@ class EngineSync : public BaseSyncableListener {
     void notifyScratching(Syncable* pSyncable, bool scratching);
     void notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm);
 
+    // Used to pick a sync target for non-master-sync mode.
+    EngineChannel* pickNonSyncSyncTarget(EngineChannel* pDontPick) const;
+
   private:
     // Activate a specific syncable as master.
     void activateMaster(Syncable* pSyncable);

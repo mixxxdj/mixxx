@@ -9,6 +9,7 @@
 
 #include "library/browse/browsetablemodel.h"
 #include "soundsourceproxy.h"
+#include "metadata/trackmetadata.h"
 #include "util/time.h"
 #include "util/trace.h"
 
@@ -89,6 +90,29 @@ void BrowseThread::run() {
     m_mutex.unlock();
 }
 
+namespace {
+
+class YearItem: public QStandardItem {
+public:
+    explicit YearItem(QString year):
+        QStandardItem(year) {
+    }
+
+    QVariant data(int role) const {
+        switch (role) {
+        case Qt::DisplayRole:
+        {
+            const QString year(QStandardItem::data(role).toString());
+            return Mixxx::TrackMetadata::formatCalendarYear(year);
+        }
+        default:
+            return QStandardItem::data(role);
+        }
+    }
+};
+
+}
+
 void BrowseThread::populateModel() {
     m_path_mutex.lock();
     MDir thisPath = m_path;
@@ -96,9 +120,9 @@ void BrowseThread::populateModel() {
     m_path_mutex.unlock();
 
     // Refresh the name filters in case we loaded new SoundSource plugins.
-    QStringList nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" "));
+    QStringList nameFilters(SoundSourceProxy::getSupportedFileNamePatterns());
 
-    QDirIterator fileIt(thisPath.dir().canonicalPath(), nameFilters,
+    QDirIterator fileIt(thisPath.dir().absolutePath(), nameFilters,
                         QDir::Files | QDir::NoDotAndDotDot);
 
     // remove all rows
@@ -126,7 +150,11 @@ void BrowseThread::populateModel() {
         TrackInfoObject tio(filepath, thisPath.token());
         QList<QStandardItem*> row_data;
 
-        QStandardItem* item = new QStandardItem(tio.getFilename());
+        QStandardItem* item = new QStandardItem("0");
+        item->setData("0", Qt::UserRole);
+        row_data.insert(COLUMN_PREVIEW, item);
+
+        item = new QStandardItem(tio.getFilename());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_FILENAME, item);
@@ -156,9 +184,11 @@ void BrowseThread::populateModel() {
         item->setData(item->text().toInt(), Qt::UserRole);
         row_data.insert(COLUMN_TRACK_NUMBER, item);
 
-        item = new QStandardItem(tio.getYear());
-        item->setToolTip(item->text());
-        item->setData(item->text().toInt(), Qt::UserRole);
+        const QString year(tio.getYear());
+        item = new YearItem(year);
+        item->setToolTip(year);
+        // The year column is sorted according to the numeric calendar year
+        item->setData(Mixxx::TrackMetadata::parseCalendarYear(year), Qt::UserRole);
         row_data.insert(COLUMN_YEAR, item);
 
         item = new QStandardItem(tio.getGenre());
@@ -232,12 +262,12 @@ void BrowseThread::populateModel() {
         if (row % 10 == 0) {
             // this is a blocking operation
             emit(rowsAppended(rows, thisModelObserver));
-            //qDebug() << "Append " << rows.count() << " from " << filepath;
+            qDebug() << "Append " << rows.count() << " from " << filepath;
             rows.clear();
         }
         // Sleep additionally for 10ms which prevents us from GUI freezes
         msleep(20);
     }
     emit(rowsAppended(rows, thisModelObserver));
-    //qDebug() << "Append last " << rows.count() << " from " << thisPath;
+    qDebug() << "Append last " << rows.count();
 }

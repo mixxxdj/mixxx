@@ -1,6 +1,10 @@
-#include <gtest/gtest.h>
+#include "mixxxtest.h"
+#include "util/console.h"
 
 int main(int argc, char **argv) {
-    testing::InitGoogleTest(&argc, argv);
+    Console console();
+
+    MixxxTest::ApplicationScope applicationScope(argc, argv);
+
     return RUN_ALL_TESTS();
 }

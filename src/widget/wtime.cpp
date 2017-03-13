@@ -3,6 +3,7 @@
 #include <QLocale>
 
 #include "widget/wtime.h"
+#include "util/cmdlineargs.h"
 
 WTime::WTime(QWidget *parent)
         : WLabel(parent),
@@ -50,5 +51,8 @@ void WTime::refreshTime() {
     QString timeString = time.toString(m_sTimeFormat);
     if (text() != timeString) {
         setText(timeString);
+        if (CmdlineArgs::Instance().getDeveloper()) {
+            qDebug() << "WTime::refreshTime" << timeString << font().family();
+        }
     }
 }

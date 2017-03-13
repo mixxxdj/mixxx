@@ -52,6 +52,8 @@ class LibraryControl : public QObject {
     void slotSelectPrevSidebarItem(double v);
     void slotToggleSelectedSidebarItem(double v);
     void slotLoadSelectedIntoFirstStopped(double v);
+    void slotAutoDjAddTop(double v);
+    void slotAutoDjAddBottom(double v);
 
     void maybeCreateGroupController(const QString& group);
     void slotNumDecksChanged(double v);
@@ -75,6 +77,8 @@ class LibraryControl : public QObject {
 
     ControlObject* m_pToggleSidebarItem;
     ControlObject* m_pLoadSelectedIntoFirstStopped;
+    ControlObject* m_pAutoDjAddTop;
+    ControlObject* m_pAutoDjAddBottom;
 
     ControlObject* m_pFontSizeKnob;
     ControlPushButton* m_pFontSizeIncrement;

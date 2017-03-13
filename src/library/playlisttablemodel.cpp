@@ -56,9 +56,11 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     }
 
     columns[0] = LIBRARYTABLE_ID;
+    // columns[1] = PLAYLISTTRACKSTABLE_POSITION from above
+    // columns[2] = PLAYLISTTRACKSTABLE_DATETIMEADDED from above
     columns[3] = LIBRARYTABLE_PREVIEW;
     columns[4] = LIBRARYTABLE_COVERART;
-    setTable(playlistTableName, columns[0], columns,
+    setTable(playlistTableName, LIBRARYTABLE_ID, columns,
             m_pTrackCollection->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);

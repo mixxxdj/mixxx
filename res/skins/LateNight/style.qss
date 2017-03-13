@@ -16,6 +16,10 @@
   background-color: #1e1e1e;
 }
 
+#Deck {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
 #DecksSizer {
   background-color: #0f0f0f;
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
@@ -36,7 +40,12 @@
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
+#SpinnyBorder {
+  border: 1px solid #585858;
+}
+
 #SpinnyContainer {
+  border: 0px;
   background-color: #0f0f0f;
 }
 
@@ -133,13 +142,15 @@
   background-color: #1e1e1e;
   qproperty-layoutAlignment: 'AlignCenter';
   border: 1px solid #585858;
-  border-left: 0px;
-  border-right: 0px;
   border-top: 0px;
 }
 
 #ClockWidget {
-  qproperty-layoutAlignment: 'AlignVCenter | AlignRight';
+  qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
+}
+
+#LatencyMeter {
+  margin: 1px;
 }
 
 #PrimaryMixer {
@@ -170,19 +181,19 @@
 #MixerContainer {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   background-color: #1e1e1e;
-  padding-top: 5px;
+  padding-top: 3px;
 }
 
 #MixerChannel {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  padding-left: 5px;
-  padding-right: 5px;
+  padding-left: 2px;
+  padding-right: 2px;
 }
 
 #MixerChannelReversed {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  padding-left: 5px;
-  padding-right: 5px;
+  padding-left: 2px;
+  padding-right: 2px;
 }
 
 #MixerChannelHoriz {
@@ -195,6 +206,13 @@
 
 #MixerRightMargin {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+}
+
+#NoMixerLogo {
+  qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+  border: 1px solid #585858;
+  border-top: 0px;
+  background-color: #1e1e1e;
 }
 
 #MasterKnobs {
@@ -338,12 +356,14 @@
 }
 
 #KnobLabel {
-  font: bold 10px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font: bold 10px/12px;
+  text-transform: uppercase;
   color: #585858;
   text-align: center;
   qproperty-alignment: 'AlignCenter | AlignBottom';
-  padding-bottom: 2px;
-  padding-top: -4px;
+  padding-bottom: 1px;
+  padding-top: -3px;
 }
 
 #SyncControls {
@@ -355,9 +375,8 @@
 #GuiToggleButton[displayValue="0"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
     color: #ddd;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
 }
@@ -365,9 +384,17 @@
 #GuiToggleButton[displayValue="1"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
+    color: #0e0e0e;
+    background-color: #eece33;
+}
+
+#GuiToggleButton[displayValue="2"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
     color: #0e0e0e;
     background-color: #eece33;
 }
@@ -375,9 +402,8 @@
 #GuiToggleButtonInverted[displayValue="0"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
     color: #0e0e0e;
     background-color: #eece33;
 }
@@ -385,9 +411,8 @@
 #GuiToggleButtonInverted[displayValue="1"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
     color: #ddd;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
 }
@@ -396,9 +421,8 @@
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
     color: #ddd;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
 }
@@ -407,9 +431,8 @@
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
     color: #0e0e0e;
     background-color: #eece33;
 }
@@ -418,9 +441,8 @@
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
     color: #ddd;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
 }
@@ -429,9 +451,8 @@
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
     color: #0e0e0e;
     background-color: #eece33;
 }
@@ -440,9 +461,8 @@
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
     color: #eece33;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
 }
@@ -451,9 +471,8 @@
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
     color: #ddd;
     background-color: #0e0e0e;
 }
@@ -462,9 +481,8 @@
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
     color: #0e0e0e;
     background-color: #eece33;
 }
@@ -473,9 +491,8 @@
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
     color: #0e0e0e;
     background-color: #eece33;
 }
@@ -483,9 +500,8 @@
 #PitchTweakButton[displayValue="0"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font: bold 10px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px;
     color: #ddd;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
     margin: 1px;
@@ -494,21 +510,83 @@
 #PitchTweakButton[displayValue="1"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font: bold 10px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px;
     color: #ddd;
     background-color: #c00a09;
     margin: 1px;
 }
 
 #PitchLabel {
-  font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font: bold 12px/14px;
   color: #585858;
   text-align: center;
   qproperty-alignment: 'AlignHCenter | AlignBottom';
   padding: 2px;
   margin: 2px;
+}
+
+#SyncToggleButton[displayValue="0"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
+    color: #ddd;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+    margin-right: 3px;
+}
+
+#SyncToggleButton[displayValue="1"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
+    color: #c0c0c0;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #d80000, stop:1 #910000);
+    margin-right: 3px;
+}
+
+#LoopToggleButton[displayValue="0"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
+    color: #ddd;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+    margin-right: 2px;
+}
+
+#LoopToggleButton[displayValue="1"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
+    color: #c0c0c0;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #d80000, stop:1 #910000);
+    margin-right: 2px;
+}
+
+#CueToggleButton[displayValue="0"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
+    color: #ddd;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+    margin-right: 2px;
+    margin-bottom: 2px;
+}
+
+#CueToggleButton[displayValue="1"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
+    color: #c0c0c0;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #d80000, stop:1 #910000);
+    margin-right: 2px;
+    margin-bottom: 2px;
 }
 
 #BpmContainer {
@@ -517,7 +595,8 @@
 
 #BpmTextColor1, #BpmTextColor2 {
   qproperty-alignment: 'AlignCenter';
-  font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font: bold 16px/18px;
   background-color: transparent;
   text-align: center;
   padding: 0px;
@@ -527,13 +606,37 @@
 
 #BpmTextColor3, #BpmTextColor4 {
   qproperty-alignment: 'AlignCenter';
-  font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font: bold 16px/18px;
   background-color: transparent;
   text-align: center;
   padding: 0px;
   margin: 0px;
   color: #09B2AE;
 }
+
+#RateTextColor1, #RateTextColor2 {
+  qproperty-alignment: 'AlignCenter';
+  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font: bold 12px/13px;
+  background-color: transparent;
+  text-align: center;
+  padding: 0px;
+  margin: 0px;
+  color: #eece33;
+}
+
+#RateTextColor3, #RateTextColor4 {
+  qproperty-alignment: 'AlignCenter';
+  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font: bold 12px/13px;
+  background-color: transparent;
+  text-align: center;
+  padding: 0px;
+  margin: 0px;
+  color: #09B2AE;
+}
+
 
 #CrossFadeContainer {
  qproperty-layoutAlignment: 'AlignCenter';
@@ -557,13 +660,45 @@
 }
 
 #PreviewDeck {
+  qproperty-layoutAlignment: 'AlignTop';
   border: 1px solid #585858;
   padding: 0px;
-  margin-bottom: 10px;
+  margin: 0px;
+  margin-top: 3px;
+  margin-right: 3px;
+}
+
+#PreviewDeckText {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font-size: 10px/11px;
+  padding: 0px;
+  color: #cfb32c;
+  text-align: left;
+}
+
+#PreviewLabel {
+  qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
+  font: 13px/14px "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  background-color: #1e1e1e;
+  font-weight:bold;
+  text-transform: uppercase;
+  border-right: 1px solid #585858;
+  color: #eece33;
+  text-align: center;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+#PreviewDeckMargin {
 }
 
 #PreviewPlayOverview {
   padding: 3px;
+}
+
+#NoBorder {
+ border: 0px;
 }
 
 #PreviewColumnOne {
@@ -571,6 +706,8 @@
   border-top: 0px;
   border-left: 0px;
   border-bottom: 0px;
+  padding: 0px;
+  margin: 0px;
 }
 
 #PreviewTitleEject {
@@ -578,7 +715,6 @@
   border-top: 0px;
   border-left: 0px;
   border-right: 0px;
-  padding: 3px;
 }
 
 #PreviewPlayOverview {
@@ -590,7 +726,8 @@
 }
 
 #HideShowButton {
-  font: 14px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font: 14px/18px;
   padding:0px;
   margin:0px;
   text-align:left;
@@ -650,16 +787,19 @@
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   border: 1px solid #585858;
   border-top: 0px;
-  border-left: 0px;
-  border-right: 0px;
   padding: 0px;
   background-color: #1e1e1e;
 }
 
 #WaveformMixerContainer {
-  border: 1px solid #585858;
-  border-bottom: 0px;
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
+#Waveform {
+  border: 1px solid #585858;
+  border-top: 0px;
+  border-left: 0px;
+  border-bottom: 0px;
 }
 
 #RateSlider {
@@ -704,15 +844,48 @@
 }
 
 #MicContainer {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  border: 1px solid #585858;
+  padding: 5px;
+  margin: 2px;
+  background-color: #1e1e1e;
 }
 
 #MicBorder {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
-  padding: 5px;
-  margin: 5px;
+  padding: 2px;
+  padding-left:0px;
+  padding-right:0px;
+  margin-left: 3px;
+  margin-right: 3px;
 }
+
+#MicInterior {
+  padding-left:10px;
+  padding-right:10px;
+}
+
+#MicButtonContainer {
+  padding: 2px;
+  padding-bottom: 5px;
+}
+
+#MicTitle {
+  qproperty-alignment: 'AlignLeft | AlignTop';
+  text-transform: uppercase;
+  font-size: 15px/17px;
+  font-weight: bold;
+  color: #eece33;
+}
+
+#MicSubTitle {
+  qproperty-alignment: 'AlignLeft | AlignTop';
+  font-size: 12px/13px;
+  font-weight: bold;
+  color: #eece33;
+}
+
 
 #SamplerDecksContainer {
   background-color: #0e0e0e;
@@ -820,7 +993,8 @@
 }
 
 #TitleGutter WLabel, #EffectUnitNameContainer WLabel {
-  font: bold 16px/19px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font: bold 16px/19px;
   text-transform: none;
   text-align: left;
 }
@@ -848,6 +1022,13 @@
 
 #EffectUnitNextPrevContainer {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+}
+
+#EffectUnitButton {
+  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font: bold 16px/19px;
+  text-transform: none;
+  color: #eece33;
 }
 
 #EffectUnitNextPrevContainer WPushButton {
@@ -895,7 +1076,7 @@
 }
 
 #EffectKnob {
-  qproperty-layoutAlignment: 'AlignCenter';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   padding-left: 5px;
   padding-right: 5px;
 }
@@ -907,7 +1088,9 @@
 
 /* this is now inline in the pushbutton so we can change styles */
 /*#EffectUnitGroupControlButton {
-  font: bold 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font: bold 11px/13px;
+  text-transform: uppercase;
   color: #eece33;
   text-transform: none;
   text-align: center;
@@ -916,8 +1099,9 @@
 }*/
 
 #EffectUnitGroupControlButton[displayValue="0"] {
-    font: bold 11px/13px Lucida Grande, Lucida Sans Unicode,
-          Arial, Verdana, sans-serif;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 9px/11px;
+    text-transform: uppercase;
     color: #585858;
     background-color: #0e0e0e;
     text-transform: none;
@@ -927,8 +1111,9 @@
 }
 
 #EffectUnitGroupControlButton[displayValue="1"] {
-    font: bold 11px/13px Lucida Grande, Lucida Sans Unicode,
-          Arial, Verdana, sans-serif;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 9px/11px;
+    text-transform: uppercase;
     color: #0e0e0e;
     background-color: #eece33;
     text-transform: none;
@@ -939,9 +1124,8 @@
 
 #EffectToggleButton[displayValue="0"] {
     border: 1px solid #585858;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
     color: #585858;
     background-color: #0e0e0e;
     margin-right: 1px;
@@ -949,9 +1133,8 @@
 
 #EffectToggleButton[displayValue="1"] {
     border: 1px solid #585858;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
     color: #0e0e0e;
     background-color: #eece33;
     margin-right: 1px;
@@ -961,7 +1144,7 @@
 
 QTableView, QTextBrowser, QTreeView {
   border: 1px solid #585858;
-  /*font: 15px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;*/
+  /*font: 15px/18px;*/
   color: #cfb32c;
   background-color: #0f0f0f;
   alternate-background-color: #1a1a1a;
@@ -1002,7 +1185,7 @@ QPushButton#LibraryPreviewButton:!checked{ image: url(skin:/style/style_library_
 QPushButton#LibraryPreviewButton:checked{ image: url(skin:/style/style_library_preview_pause.png); }
 
 QHeaderView {
-  font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font: 13px/15px;
   color: #cfb32c;
   background-color: #0f0f0f;
 }

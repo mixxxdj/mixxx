@@ -126,8 +126,6 @@ class AutoDJFeature : public LibraryFeature {
     // of tracks in the playlist
     void slotRandomQueue(int);
 
-  signals:
-    void enableAddRandom(bool enabled);
 };
 
 

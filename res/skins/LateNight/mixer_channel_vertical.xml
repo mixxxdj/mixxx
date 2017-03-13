@@ -4,7 +4,6 @@
         <ObjectName>MixerChannel</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
-        <MinimumSize>0,150</MinimumSize>
         <Children>
             <WidgetGroup>
                 <Layout>horizontal</Layout>

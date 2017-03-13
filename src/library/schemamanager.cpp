@@ -5,7 +5,7 @@
 
 #include "library/schemamanager.h"
 #include "library/queryutil.h"
-#include "xmlparse.h"
+#include "util/xml.h"
 #include "util/assert.h"
 
 const QString SchemaManager::SETTINGS_VERSION_STRING = "mixxx.schema.version";

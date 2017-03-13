@@ -70,6 +70,7 @@ class EngineControl : public QObject {
     virtual void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
     double getCurrentSample() const;
     double getTotalSamples() const;
+    bool atEndPosition() const;
     QString getGroup() const;
 
     // Called to collect player features for effects processing.
@@ -99,8 +100,12 @@ class EngineControl : public QObject {
     ConfigObject<ConfigValue>* m_pConfig;
 
   private:
-    ControlValueAtomic<double> m_dCurrentSample;
-    double m_dTotalSamples;
+    struct SampleOfTrack {
+        double current;
+        double total;
+    };
+
+    ControlValueAtomic<SampleOfTrack> m_sampleOfTrack;
     EngineMaster* m_pEngineMaster;
     EngineBuffer* m_pEngineBuffer;
     ControlObjectThread m_numDecks;

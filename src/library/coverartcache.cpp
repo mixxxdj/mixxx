@@ -6,7 +6,6 @@
 
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
-#include "soundsourceproxy.h"
 
 // Large cover art wastes space in our cache when we typicaly won't show them at
 // their full size. If no width is specified, this is the maximum width cap.

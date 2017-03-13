@@ -258,6 +258,7 @@ void BansheePlaylistModel::trackLoaded(QString group, TrackPointer pTrack) {
         if (m_iPreviewDeckTrackId > -1) {
             const int numColumns = columnCount();
             QLinkedList<int> rows = getTrackRows(m_iPreviewDeckTrackId);
+            m_iPreviewDeckTrackId = -1;
             foreach (int row, rows) {
                 QModelIndex left = index(row, 0);
                 QModelIndex right = index(row, numColumns);
@@ -268,7 +269,8 @@ void BansheePlaylistModel::trackLoaded(QString group, TrackPointer pTrack) {
             for (int row = 0; row < rowCount(); ++row) {
                 QUrl rowUrl(getFieldString(index(row, 0), CLM_URI));
                 if (rowUrl.toLocalFile() == pTrack->getLocation()) {
-                    m_iPreviewDeckTrackId = getFieldString(index(row, 0), CLM_VIEW_ORDER).toInt();
+                    m_iPreviewDeckTrackId =
+                            getFieldString(index(row, 0), CLM_VIEW_ORDER).toInt();
                     break;
                 }
             }
