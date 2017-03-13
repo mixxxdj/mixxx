@@ -70,18 +70,17 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     if (!m_pConfig->exists(ConfigKey("[Controls]","PositionDisplay")))
         m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"),ConfigValue(0));
 
-    if (m_pConfig->getValueString(
-            ConfigKey("[Controls]", "PositionDisplay")).toInt() == 0) {
-        radioButtonElapsed->setChecked(true);
-        m_pControlTrackTimeDisplay->set(0.0);
-    } else if (m_pConfig->getValueString(
-                  ConfigKey("[Controls]", "PositionDisplay")).toInt() == 1) {
+    int positionDisplayType = m_pConfig->getValueString(
+            ConfigKey("[Controls]", "PositionDisplay")).toInt();
+    if (positionDisplayType == 1) {
         radioButtonRemaining->setChecked(true);
         m_pControlTrackTimeDisplay->set(1.0);
-    } else if (m_pConfig->getValueString(
-                    ConfigKey("[Controls]", "PositionDisplay")).toInt() == 2) {
+    } else if (positionDisplayType == 2) {
         radioButtonElapsedAndRemaining->setChecked(true);
         m_pControlTrackTimeDisplay->set(2.0);
+    } else {
+        radioButtonElapsed->setChecked(true);
+        m_pControlTrackTimeDisplay->set(0.0);
     }
     connect(buttonGroupTrackTime, SIGNAL(buttonClicked(QAbstractButton*)),
             this, SLOT(slotSetTrackTimeDisplay(QAbstractButton *)));
@@ -622,11 +621,7 @@ void DlgPrefControls::slotSetTrackTimeDisplay(QAbstractButton* b) {
 }
 
 void DlgPrefControls::slotSetTrackTimeDisplay(double v) {
-    if (v == 0.0) {
-        // Elapsed
-        radioButtonElapsed->setChecked(true);
-        m_pConfig->set(ConfigKey("[Controls]", "PositionDisplay"), ConfigValue(0));
-    } else if (v == 1.0) {
+    if (v == 1.0) {
         // Remaining
         radioButtonRemaining->setChecked(true);
         m_pConfig->set(ConfigKey("[Controls]", "PositionDisplay"), ConfigValue(1));
@@ -634,6 +629,10 @@ void DlgPrefControls::slotSetTrackTimeDisplay(double v) {
         // Elapsed and remaining
         radioButtonElapsedAndRemaining->setChecked(true);
         m_pConfig->set(ConfigKey("[Controls]", "PositionDisplay"), ConfigValue(2));
+    } else {
+        // Elapsed
+        radioButtonElapsed->setChecked(true);
+        m_pConfig->set(ConfigKey("[Controls]", "PositionDisplay"), ConfigValue(0));
     }
 }
 

@@ -129,12 +129,13 @@ void WNumberPos::slotSetPosition(double dPosition) {
 }
 
 void WNumberPos::slotSetDisplayMode(double remain) {
-    if (remain <= 0.0) {
-        m_displayMode = DisplayMode::Elapsed;
-    } else if (remain == 1.0) {
+    if (remain == 1.0) {
         m_displayMode = DisplayMode::Remaining;
     } else if (remain == 2.0) {
         m_displayMode = DisplayMode::ElapsedAndRemaining;
+    } else {
+        m_displayMode = DisplayMode::Elapsed;
     }
+
     slotSetPosition(m_dOldPosition);
 }
