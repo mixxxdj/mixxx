@@ -390,12 +390,12 @@
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="148"/>
-        <source>Added Directory</source>
+        <source>Music Directory Added</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="149"/>
-        <source>You added one or more library directories. These files won&apos;t be available until you rescan. Would you like to rescan now?</source>
+        <source>You added one or more music directories. The tracks in these directories won&apos;t be available until you rescan your library. Would you like to rescan now?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4089,12 +4089,12 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <name>DlgPrefLibrary</name>
     <message>
         <location filename="../../src/dlgpreflibrary.cpp" line="79"/>
-        <source>Added Directory</source>
+        <source>Music Directory Added</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/dlgpreflibrary.cpp" line="80"/>
-        <source>You added one or more library directories. These files won&apos;t be available until you rescan. Would you like to rescan now?</source>
+        <source>You added one or more music directories. The tracks in these directories won&apos;t be available until you rescan your library. Would you like to rescan now?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6341,7 +6341,7 @@ milliseconds</extracomment>
     <name>ITunesFeature</name>
     <message>
         <location filename="../../src/library/itunes/itunesfeature.cpp" line="69"/>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="751"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="750"/>
         <source>iTunes</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6367,12 +6367,12 @@ milliseconds</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="746"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="745"/>
         <source>Error Loading iTunes Library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="747"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="746"/>
         <source>There was an error loading your iTunes library. Some of your iTunes tracks or playlists may not have loaded.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6380,13 +6380,13 @@ milliseconds</extracomment>
 <context>
     <name>LegacySkinParser</name>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="915"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="967"/>
         <source>Safe Mode Enabled</source>
         <extracomment>Shown when Mixxx is running in safe mode.</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="923"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="975"/>
         <source>No OpenGL
 support.</source>
         <extracomment>Shown when Spinny can not be displayed. Please keep 
@@ -6394,57 +6394,57 @@ support.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1692"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1742"/>
         <source>activate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1697"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1747"/>
         <source>toggle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1707"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1757"/>
         <source>right</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1712"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1762"/>
         <source>left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1717"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1767"/>
         <source>right small</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1722"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1772"/>
         <source>left small</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1727"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1777"/>
         <source>up</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1732"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1782"/>
         <source>down</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1737"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1787"/>
         <source>up small</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1742"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1792"/>
         <source>down small</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1774"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1824"/>
         <source>Shortcut</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7112,7 +7112,7 @@ Please select an input device in the sound hardware preferences first.</source>
 <context>
     <name>NativeBackend</name>
     <message>
-        <location filename="../../src/effects/native/nativebackend.cpp" line="17"/>
+        <location filename="../../src/effects/native/nativebackend.cpp" line="18"/>
         <source>Native</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7469,12 +7469,12 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="20"/>
+        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="21"/>
         <source>Bit Depth</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="36"/>
+        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="37"/>
         <source>Downsampling</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7530,24 +7530,52 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/filtereffect.cpp" line="13"/>
+        <location filename="../../src/effects/native/filtereffect.cpp" line="16"/>
         <source>Filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/filtereffect.cpp" line="20"/>
+        <location filename="../../src/effects/native/filtereffect.cpp" line="19"/>
+        <source>Allows to fade a song out by sweeping a low or high pass filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/filtereffect.cpp" line="23"/>
+        <location filename="../../src/effects/native/moogladder4filtereffect.cpp" line="26"/>
+        <source>LPF</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/filtereffect.cpp" line="24"/>
+        <location filename="../../src/effects/native/moogladder4filtereffect.cpp" line="27"/>
+        <source>Corner frequency ratio of the low pass filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/filtereffect.cpp" line="37"/>
+        <source>Q</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/filtereffect.cpp" line="38"/>
+        <source>Resonance of the filters, 0.707 = Flat top</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/filtereffect.cpp" line="49"/>
+        <location filename="../../src/effects/native/moogladder4filtereffect.cpp" line="52"/>
+        <source>HPF</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/filtereffect.cpp" line="50"/>
+        <location filename="../../src/effects/native/moogladder4filtereffect.cpp" line="53"/>
+        <source>Corner frequency ratio of the high pass filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../src/effects/native/flangereffect.cpp" line="28"/>
         <source>Depth</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/effects/native/filtereffect.cpp" line="34"/>
-        <source>Bandpass Width</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/effects/native/filtereffect.cpp" line="46"/>
-        <source>Bandpass Gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -7596,45 +7624,45 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="22"/>
-        <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="29"/>
+        <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="23"/>
+        <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="30"/>
         <location filename="../../src/effects/native/linkwitzriley8eqeffect.cpp" line="26"/>
         <location filename="../../src/test/super_link_test.cpp" line="44"/>
         <source>Low</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="23"/>
-        <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="30"/>
+        <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="24"/>
+        <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="31"/>
         <location filename="../../src/effects/native/linkwitzriley8eqeffect.cpp" line="27"/>
         <location filename="../../src/test/super_link_test.cpp" line="45"/>
         <source>Gain for Low Filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="35"/>
-        <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="42"/>
+        <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="36"/>
+        <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="43"/>
         <location filename="../../src/effects/native/linkwitzriley8eqeffect.cpp" line="39"/>
         <source>Mid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="36"/>
-        <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="43"/>
+        <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="37"/>
+        <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="44"/>
         <location filename="../../src/effects/native/linkwitzriley8eqeffect.cpp" line="40"/>
         <source>Gain for Band Filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="48"/>
-        <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="55"/>
+        <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="49"/>
+        <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="56"/>
         <location filename="../../src/effects/native/linkwitzriley8eqeffect.cpp" line="52"/>
         <source>High</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="49"/>
-        <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="56"/>
+        <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="50"/>
+        <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="57"/>
         <location filename="../../src/effects/native/linkwitzriley8eqeffect.cpp" line="53"/>
         <source>Gain for High Filter</source>
         <translation type="unfinished"></translation>
@@ -7666,7 +7694,27 @@ To abort this action, press Cancel on the file dialog.</source>
     </message>
     <message>
         <location filename="../../src/effects/native/linkwitzriley8eqeffect.cpp" line="20"/>
-        <source>A Linkwitz-Riley 8th order filter equalizer (optimized crossover, constant phase shift, roll-off -48 db/Oct)To adjust frequency shelves see the Equalizer preferences.</source>
+        <source>A Linkwitz-Riley 8th order filter equalizer (optimized crossover, constant phase shift, roll-off -48 db/Oct). To adjust frequency shelves see the Equalizer preferences.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/moogladder4filtereffect.cpp" line="18"/>
+        <source>Moog Ladder 4 Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/moogladder4filtereffect.cpp" line="21"/>
+        <source>A 4-pole Moog ladder filter, based on Antti Houvilainen&apos;s non linear digital implementation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/moogladder4filtereffect.cpp" line="40"/>
+        <source>Resonance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/moogladder4filtereffect.cpp" line="41"/>
+        <source>Resonance of the filters. 4 = self oscillating</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

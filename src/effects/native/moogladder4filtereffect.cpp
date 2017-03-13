@@ -20,6 +20,7 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
             "A 4-pole Moog ladder filter, based on Antti Houvilainen's non linear digital implementation"));
+    manifest.setEffectRampsFromDry(true);
 
     EffectManifestParameter* lpf = manifest.addParameter();
     lpf->setId("lpf");
@@ -96,16 +97,24 @@ void MoogLadder4FilterEffect::processGroup(const QString& group,
         const CSAMPLE* pInput, CSAMPLE* pOutput,
         const unsigned int numSamples,
         const unsigned int sampleRate,
-		const EffectProcessor::EnableState enableState,
+        const EffectProcessor::EnableState enableState,
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
-    Q_UNUSED(enableState);
     Q_UNUSED(sampleRate);
 
-    double hpf = m_pHPF->value();
+
     double resonance = m_pResonance->value();
-    double lpf = m_pLPF->value();
+    double hpf;
+    double lpf;
+    if (enableState == EffectProcessor::DISABLING) {
+        // Ramp to dry, when disabling, this will ramp from dry when enabling as well
+        hpf = kMinCorner;
+        lpf = kMaxCorner;
+    } else {
+        hpf = m_pHPF->value();
+        lpf = m_pLPF->value();
+    }
 
     if (pState->m_loFreq != lpf ||
             pState->m_resonance != resonance ||

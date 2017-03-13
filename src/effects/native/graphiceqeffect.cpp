@@ -59,7 +59,7 @@ EffectManifest GraphicEQEffect::getManifest() {
     EffectManifestParameter* high = manifest.addParameter();
     high->setId(QString("high"));
     high->setName(QString("%1 kHz").arg(centerFrequencies[7] / 1000));
-    high->setDescription(QString("Gain for Hight Filter"));
+    high->setDescription(QString("Gain for High Filter"));
     high->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     high->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     high->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
