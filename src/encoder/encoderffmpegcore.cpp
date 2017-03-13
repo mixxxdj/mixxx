@@ -109,10 +109,6 @@ EncoderFfmpegCore::~EncoderFfmpegCore() {
     delete m_pResample;
 }
 
-unsigned int EncoderFfmpegCore::reSample(AVFrame *inframe) {
-    return m_pResample->reSample(inframe);
-}
-
 //call sendPackages() or write() after 'flush()' as outlined in engineshoutcast.cpp
 void EncoderFfmpegCore::flush() {
 }
@@ -298,6 +294,7 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx,
     AVFrame *l_SFrame = avcodec_alloc_frame();
     int l_iGotPacket;
     int l_iRet;
+    uint8_t *l_iOut = NULL;
 #ifdef av_make_error_string
     char l_strErrorBuff[256];
 #endif // av_make_error_string
@@ -344,7 +341,7 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx,
     // to something that fits..
     if (l_SCodecCtx->sample_fmt != AV_SAMPLE_FMT_FLT) {
 
-        reSample(l_SFrame);
+        m_pResample->reSample(l_SFrame, &l_iOut);
         // After we have turned our samples to destination
         // Format we must re-alloc l_SFrame.. it easier like this..
 #if LIBAVCODEC_VERSION_INT > 3544932
@@ -362,9 +359,12 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx,
 
         l_iRet = avcodec_fill_audio_frame(l_SFrame, l_SCodecCtx->channels,
                                           l_SCodecCtx->sample_fmt,
-                                          (const uint8_t *)m_pResample->getBuffer(),
+                                          l_iOut,
                                           m_iAudioCpyLen,
                                           1);
+
+        free(l_iOut);
+        l_iOut = NULL;
 
         if (l_iRet != 0) {
 #ifdef av_make_error_string

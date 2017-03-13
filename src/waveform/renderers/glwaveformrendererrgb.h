@@ -18,6 +18,9 @@ private:
     QColor m_lowColor;
     QColor m_midColor;
     QColor m_highColor;
+    qreal m_lowColor_r, m_lowColor_g, m_lowColor_b;
+    qreal m_midColor_r, m_midColor_g, m_midColor_b;
+    qreal m_highColor_r, m_highColor_g, m_highColor_b;
 };
 
 #endif // GLWAVEFORMRENDERERRGB_H

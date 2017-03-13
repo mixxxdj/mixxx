@@ -145,11 +145,10 @@ void BrowseFeature::slotAddToLibrary() {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
     // strings are dupes from DlgPrefLibrary
-    msgBox.setWindowTitle(tr("Added Directory"));
-    msgBox.setText(tr("Music Directory Added.\n"
-                      "You added one or more music directories. Contained files"
-                      "won't be available until you rescan your library. Would"
-                      "you like to rescan now?"));
+    msgBox.setWindowTitle(tr("Music Directory Added"));
+    msgBox.setText(tr("You added one or more music directories. The tracks in "
+                      "these directories won't be available until you rescan "
+                      "your library. Would you like to rescan now?"));
     QPushButton* scanButton = msgBox.addButton(
         tr("Scan"), QMessageBox::AcceptRole);
     msgBox.addButton(QMessageBox::Cancel);
