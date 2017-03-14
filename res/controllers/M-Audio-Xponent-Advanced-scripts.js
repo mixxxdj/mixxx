@@ -683,7 +683,12 @@ MaudioXponent.brake = function(channel, control, value, status, group) {
     //script.midiDebug(channel, control, value, status, group);
     var deck = MaudioXponent.getDeck(group);
     var activate = (status == deck.on);
-    engine.brake(deck.id, activate);
+
+    if (deck.shift) {
+        engine.spinback(deck.id, activate);
+    } else {
+        engine.brake(deck.id, activate);
+    }
 };
 
 MaudioXponent.cue = function(channel, control, value, status, group) {
@@ -818,7 +823,7 @@ MaudioXponent.onReverse = function(value, group, control) {
 };
 
 MaudioXponent.seek = function(channel, control, value, status, group) {
-    script.midiDebug(channel, control, value, status, group);
+    // script.midiDebug(channel, control, value, status, group);
     var deck = MaudioXponent.getDeck(group);
     var activate = (status == deck.on);
     engine.setValue(group, MaudioXponent.controls[control], activate);
