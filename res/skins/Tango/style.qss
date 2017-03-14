@@ -1234,13 +1234,17 @@ WPushButton {
   background-position: center center;
   }
   #EffectUnitToggleButton[displayValue="0"] {
-    background-image: url(skin:/buttons/btn_off.svg);
+    background: #333333 url(skin:/buttons/btn_off.svg) no-repeat center center;
     }
     #EffectUnitToggleButton[displayValue="0"]:hover {
-      background-image: url(skin:/buttons/btn_on.svg);
+			background: #333333 url(skin:/buttons/btn_on.svg) no-repeat center center;
+			border: 1px solid #888888;
     }
   #EffectUnitToggleButton[displayValue="1"] {
-    background-image: url(skin:/buttons/btn_on.svg);
+			background: #666666 url(skin:/buttons/btn_on.svg) no-repeat center center;
+    }
+  #EffectUnitToggleButton[displayValue="1"]:hover {
+			border: 1px solid #eeeeee;
     }
 
 #EffectUnitGroupColumn {
@@ -1258,28 +1262,22 @@ WPushButton {
     margin-left: 1px;
     /* this has no effect on Backpath <Pressed>/<Unpressed> */
     background-position: center;
-  }
-    #EffectUnitGroupButton:hover, #EffectUnitToggleButton:hover {
-    }
+  	}
     #EffectUnitGroupButton[displayValue="0"],
-    #EffectUnitToggleButton[displayValue="0"],
     #EffectEject {
       background-color: #333333;
       color: #888888;
       }
       #EffectUnitGroupButton[displayValue="0"]:hover,
-      #EffectUnitToggleButton[displayValue="0"]:hover,
       #EffectEject:hover {
-        border: 1px solid #888888;
+				border: 1px solid #ffb401;
       }
-    #EffectUnitGroupButton[displayValue="1"],
-    #EffectUnitToggleButton[displayValue="1"] {
-      background-color: #666666;
-      color: #eeeeee;
+    #EffectUnitGroupButton[displayValue="1"] {
+      background-color: #ffb401;	/* yellow2 	*/
+      color: #000000;
       }
-      #EffectUnitGroupButton[displayValue="1"]:hover,
-      #EffectUnitToggleButton[displayValue="1"]:hover {
-        border: 1px solid #eeeeee;
+      #EffectUnitGroupButton[displayValue="1"]:hover {
+				border: 1px solid #FFFFFF;
       }
     #EffectEject {
       }
