@@ -18,6 +18,7 @@ MaudioXponent.config = {
     pflMode : 0,            // 0 = Independent, 1 = Toggle
     syncFlashMode : 0,      // 0 = Off, 1 = Pulse, 2 = Toggle
     vuMeterMode : 1,        // 0 = Master, 1 = Channel
+    tapDuration : 250,      // Maximum touch duration for wheel tap (in milliseconds)
 }
 
 MaudioXponent.decks =
@@ -75,6 +76,11 @@ MaudioXponent.buttons = {
     "button_parameter3": 0x0A,
     "gain": 0x0B,
     "shift": 0x2C
+};
+
+MaudioXponent.controls = {
+    33 : "back",
+    34 : "fwd",
 };
 
 // ----------   Functions    ----------
@@ -489,18 +495,15 @@ MaudioXponent.wheelTouch = function(channel, control, value, status, group) {
         if (deck.scratchEnabled) {
             engine.scratchEnable(deck.id, 3 * 128, 33 + 1/3, 1.0/8, (1.0/8)/32);
             deck.scratching = true;
-        } else {
+        } else if (deck.shift) {
             deck.lastTouch = new Date();
         }
     } else {
         if (deck.scratchEnabled) {
             engine.scratchDisable (deck.id);
             deck.scratching = false;
-        } else {
-            if (deck.lastTouch && (new Date() - deck.lastTouch < 1000))
-            {
-                engine.setValue(deck.group, "LoadSelectedTrack", 1);
-            }
+        } else if (deck.shift && deck.lastTouch && (new Date() - deck.lastTouch < MaudioXponent.config.tapDuration)) {
+            engine.setValue(deck.group, "LoadSelectedTrack", 1);
         }
     }
 };
@@ -815,9 +818,10 @@ MaudioXponent.onReverse = function(value, group, control) {
 };
 
 MaudioXponent.seek = function(channel, control, value, status, group) {
+    script.midiDebug(channel, control, value, status, group);
     var deck = MaudioXponent.getDeck(group);
     var activate = (status == deck.on);
-    engine.setValue(group, MaudioXponent.buttons[control], activate);
+    engine.setValue(group, MaudioXponent.controls[control], activate);
 };
 
 MaudioXponent.sampler = function(channel, control, value, status, group) {
