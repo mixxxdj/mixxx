@@ -106,10 +106,10 @@
         </Children>
       </WidgetGroup><!-- /Mixer / [ [Spinny / Cover] + VUMeter ] + Pitch + spacer -->
 
-      <WidgetGroup><!-- / [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
+      <WidgetGroup><!-- [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
         <ObjectName>Deck<Variable name="channum"/></ObjectName>
-        <Size>250me,136min</Size><!--  -->
-        <Layout>vertical</Layout><!--  -->
+        <Size>250me,136min</Size>
+        <Layout>vertical</Layout>
         <Children>
         
           <!-- Packed Waveform & ArtistTitle into a fixed-size container,
@@ -129,22 +129,23 @@
                 <SetVariable name="SignalColor"><Variable name="SignalColor"/></SetVariable>
               </Template>
 
-              <!--	Additional line to display comments from file tag/library column. 
+              <!--	Additional line to display comments from file tag/library column.
               Useful to explain hotcues, loop, Ins & Outs for live sets etc.
               Deprecated as soon as HotCue labels are easily editable -->
               <WidgetGroup>
                 <ObjectName>TrackComment</ObjectName>
                 <Layout>vertical</Layout>
+                <Size>1me,17f</Size>
                 <Children>
                   <TrackProperty>
-                    <Size>0me,16f</Size>
+                    <SizePolicy>i,p</SizePolicy>
                     <Property>comment</Property>
                     <Elide>right</Elide>
-                    <Channel><Variable name="channum" /></Channel>
+                    <Channel><Variable name="channum"/></Channel>
                   </TrackProperty>
                   <WidgetGroup>
                     <ObjectName>Spacer0f</ObjectName>
-                    <Size>1min,1f</Size>
+                    <Size>1me,1f</Size>
                     <Children/>
                   </WidgetGroup>
                 </Children>
@@ -176,16 +177,22 @@
                 <SetVariable name="SignalColor"><Variable name="SignalColor"/></SetVariable>
               </Template>
 
-              <WidgetGroup><!-- Track Comment -->
+              <!--	Additional line to display comments from file tag/library column.
+              Useful to explain hotcues, loop, Ins & Outs for live sets etc.
+              Deprecated as soon as HotCue labels are easily editable -->
+              <WidgetGroup>
                 <ObjectName>TrackComment</ObjectName>
                 <Layout>vertical</Layout>
+                <Size>1me,16f</Size>
                 <Children>
                   <TrackProperty>
-                    <Size>0me,16f</Size>
+                    <SizePolicy>i,p</SizePolicy>
                     <Property>comment</Property>
                     <Elide>right</Elide>
-                    <Channel><Variable name="channum" /></Channel>
+                    <Channel><Variable name="channum"/></Channel>
                   </TrackProperty>
+                  <!-- This has to be here so that Comment expands as well -->
+                  <WidgetGroup><Size>1me,0f</Size></WidgetGroup>
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Tango],trackComment</ConfigKey>
