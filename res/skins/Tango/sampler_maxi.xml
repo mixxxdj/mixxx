@@ -91,10 +91,10 @@ Variables:
                         <TooltipId>waveform_overview</TooltipId>
                         <SizePolicy>me,min</SizePolicy>
                         <Group><Variable name="group"/></Group>
-                        <!-- BgColor has no effect here -->
                         <BgColor>#1a1a1a</BgColor>
                         <SignalColor>#bababa</SignalColor>
                         <PlayPosColor>#FF4300</PlayPosColor>
+                        <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
                         <MarkerColor>#00FF00</MarkerColor>
                         <DefaultMark>
                           <Align>bottom|right</Align>

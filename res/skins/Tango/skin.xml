@@ -170,6 +170,8 @@
     <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
     <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
 
+    <SetVariable name="PlayedOverlayColor">#AA000000</SetVariable>
+
     <!-- I was trying to center button backpath when defined via <Pressed>
     and <Unpressed> by setting SCALE_MODE to FIXED.
     FAILED: (some internal default?) backpath would expand actual button size
