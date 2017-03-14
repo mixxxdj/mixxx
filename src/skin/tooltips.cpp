@@ -598,8 +598,8 @@ void Tooltips::addStandardTooltips() {
 
     add("track_time")
             << tr("Track Time")
-            << tr("Displays the elapsed or remaining time of the track loaded.")
-            << tr("Click to toggle between time elapsed/remaining time.");
+            << tr("Displays the elapsed and/or remaining time of the track loaded.")
+            << tr("Click to toggle between time elapsed/remaining time/both.");
 
     add("track_duration")
             << tr("Track Duration")
