@@ -1055,13 +1055,13 @@ WPushButton {
     }
   #fxNameContainer {
     padding: 1px;
-    qproperty-layoutAlignment: 'AlignCenter';	/*
+    qproperty-layoutAlignment: 'AlignLeft';	/*
     background-color: #453267;	*/
     }
     #fxName {
-      qproperty-alignment: 'AlignHCenter | AlignVCenter';
+      qproperty-alignment: 'AlignLeft | AlignVCenter';
       color: #000000;
-      text-align: center;	/*
+      text-align: left;	/*
       background-color: #773267;	*/
     }
   /* TODO: copied from Deere */
@@ -1132,7 +1132,7 @@ WPushButton {
   font-size: 10px/10px;
   font-weight: bold;
   color: #999999;
-  text-align: center;
+  text-align: left;
   margin-top: 23px;	/*
   background-color: #124578;	*/
 }
@@ -1810,13 +1810,11 @@ QPushButton {
   /* 'Enable AutoDJ' button	*/
   QPushButton#pushButtonAutoDJ:unchecked:hover {
     min-width: 112px;
-    max-width: 140px;
     background-color: #FF7B00;
   }
   /* 'Start/Stop Recording' button	*/
   QPushButton#pushButtonRecording {
     min-width: 126px;
-    max-width: 140px;
   }
   QPushButton#pushButtonRecording:unchecked {
     color: #888888;
