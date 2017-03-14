@@ -489,10 +489,19 @@ MaudioXponent.wheelTouch = function(channel, control, value, status, group) {
         if (deck.scratchEnabled) {
             engine.scratchEnable(deck.id, 3 * 128, 33 + 1/3, 1.0/8, (1.0/8)/32);
             deck.scratching = true;
+        } else {
+            deck.lastTouch = new Date();
         }
     } else {
-        engine.scratchDisable (deck.id);
-        deck.scratching = false;
+        if (deck.scratchEnabled) {
+            engine.scratchDisable (deck.id);
+            deck.scratching = false;
+        } else {
+            if (deck.lastTouch && (new Date() - deck.lastTouch < 1000))
+            {
+                engine.setValue(deck.group, "LoadSelectedTrack", 1);
+            }
+        }
     }
 };
 
@@ -678,7 +687,14 @@ MaudioXponent.cue = function(channel, control, value, status, group) {
     //script.midiDebug(channel, control, value, status);
     var deck = MaudioXponent.getDeck(group);
     var activate = (status == deck.on);
-    engine.setValue(deck.group, "cue_default", activate);
+
+    if (deck.shift) {
+        if (activate) {
+            engine.setValue(deck.group, "LoadSelectedTrack", 1);
+        }
+    } else {
+        engine.setValue(deck.group, "cue_default", activate);
+    }
 };
 
 MaudioXponent.play = function(channel, control, value, status, group) {
