@@ -223,7 +223,7 @@ TEST_F(ControllerEngineTest, trigger) {
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
 
-TEST_F(ControllerEngineTest, connectControl_ByName) {
+TEST_F(ControllerEngineTest, connectControl_ByString) {
     // Test that connecting and disconnecting by function name works.
     auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
     auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
@@ -244,6 +244,30 @@ TEST_F(ControllerEngineTest, connectControl_ByName) {
     // processEvents() to cause Qt to deliver them.
     application()->processEvents();
     EXPECT_TRUE(execute("disconnect"));
+    application()->processEvents();
+    // The counter should have been incremented exactly once.
+    EXPECT_DOUBLE_EQ(1.0, pass->get());
+}
+
+TEST_F(ControllerEngineTest, connectControl_ByStringForbidDuplicateConnections) {
+    // Test that connecting a control to a callback specified by a string
+    // does not make duplicate connections. This behavior is inconsistent
+    // with the behavior when specifying a callback as a function, but
+    // this is how it has been done, so keep the behavior to ensure old scripts
+    // do not break.
+    auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
+    auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
+
+    ScopedTemporaryFile script(makeTemporaryFile(
+        "var reaction = function(value) { "
+        "  var pass = engine.getValue('[Test]', 'passed');"
+        "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
+        "engine.connectControl('[Test]', 'co', 'reaction');"
+        "engine.connectControl('[Test]', 'co', 'reaction');"
+        "engine.trigger('[Test]', 'co');"));
+
+    cEngine->evaluate(script->fileName());
+    EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
     application()->processEvents();
@@ -261,6 +285,53 @@ TEST_F(ControllerEngineTest, connectControl_ByFunction) {
         "  var pass = engine.getValue('[Test]', 'passed');"
         "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
         "engine.connectControl('[Test]', 'co', reaction);"
+        "engine.trigger('[Test]', 'co');"));
+
+    cEngine->evaluate(script->fileName());
+    EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
+    // ControlObjectScript connections are processed via QueuedConnection. Use
+    // processEvents() to cause Qt to deliver them.
+    application()->processEvents();
+    // The counter should have been incremented exactly once.
+    EXPECT_DOUBLE_EQ(1.0, pass->get());
+}
+
+TEST_F(ControllerEngineTest, connectControl_ByFunctionAllowDuplicateConnections) {
+    // Test that duplicate connections are allowed when passing callbacks as functions.
+    auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
+    auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
+
+    ScopedTemporaryFile script(makeTemporaryFile(
+        "var reaction = function(value) { "
+        "  var pass = engine.getValue('[Test]', 'passed');"
+        "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
+        "engine.connectControl('[Test]', 'co', reaction);"
+        "engine.connectControl('[Test]', 'co', reaction);"
+        "engine.trigger('[Test]', 'co');"));
+
+    cEngine->evaluate(script->fileName());
+    EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
+    // ControlObjectScript connections are processed via QueuedConnection. Use
+    // processEvents() to cause Qt to deliver them.
+    application()->processEvents();
+    // The counter should have been incremented exactly twice.
+    EXPECT_DOUBLE_EQ(2.0, pass->get());
+}
+
+TEST_F(ControllerEngineTest, connectControl_toDisconnectRemovesAllConnections) {
+    // Test that every connection to a ControlObject is disconnected
+    // by calling engine.connectControl(..., true). Individual connections
+    // can only be connected by storing the connection object returned by
+    // engine.connectControl and calling that object's 'disconnect' method.
+    auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
+    auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
+
+    ScopedTemporaryFile script(makeTemporaryFile(
+        "var reaction = function(value) { "
+        "  var pass = engine.getValue('[Test]', 'passed');"
+        "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
+        "engine.connectControl('[Test]', 'co', reaction);"
+        "engine.connectControl('[Test]', 'co', reaction);"
         "engine.trigger('[Test]', 'co');"
         "function disconnect() { "
         "  engine.connectControl('[Test]', 'co', reaction, 1);"
@@ -272,11 +343,9 @@ TEST_F(ControllerEngineTest, connectControl_ByFunction) {
     // processEvents() to cause Qt to deliver them.
     application()->processEvents();
     EXPECT_TRUE(execute("disconnect"));
-    // ControlObjectScript connections are processed via QueuedConnection. Use
-    // processEvents() to cause Qt to deliver them.
     application()->processEvents();
-    // The counter should have been incremented exactly once.
-    EXPECT_DOUBLE_EQ(1.0, pass->get());
+    // The counter should have been incremented exactly twice.
+    EXPECT_DOUBLE_EQ(2.0, pass->get());
 }
 
 TEST_F(ControllerEngineTest, connectControl_ByLambda) {
@@ -300,14 +369,12 @@ TEST_F(ControllerEngineTest, connectControl_ByLambda) {
     // processEvents() to cause Qt to deliver them.
     application()->processEvents();
     EXPECT_TRUE(execute("disconnect"));
-    // ControlObjectScript connections are processed via QueuedConnection. Use
-    // processEvents() to cause Qt to deliver them.
     application()->processEvents();
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
 
-TEST_F(ControllerEngineTest, connectControl_DisconnectByConnectionObject) {
+TEST_F(ControllerEngineTest, connectionObjectDisconnect) {
     // Test that disconnecting using the 'disconnect' method on the connection
     // object returned from connectControl works.
     auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
@@ -329,14 +396,56 @@ TEST_F(ControllerEngineTest, connectControl_DisconnectByConnectionObject) {
     // processEvents() to cause Qt to deliver them.
     application()->processEvents();
     EXPECT_TRUE(execute("disconnect"));
-    // ControlObjectScript connections are processed via QueuedConnection. Use
-    // processEvents() to cause Qt to deliver them.
     application()->processEvents();
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
 
-TEST_F(ControllerEngineTest, connectControl_TriggerByConnectionObject) {
+TEST_F(ControllerEngineTest, connectionObjectsAreIndependent) {
+    // Test that multiple connections can be made to the same CO with
+    // the same callback function and that calling their 'disconnect' method
+    // only disconnects the callback for that object.
+    auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
+    auto counter = std::make_unique<ControlObject>(ConfigKey("[Test]", "counter"));
+
+    ScopedTemporaryFile script(makeTemporaryFile(
+        "var incrementCounterCO = function () {"
+        "  var counter = engine.getValue('[Test]', 'counter');"
+        "  engine.setValue('[Test]', 'counter', counter + 1);"
+        "};"
+        "var connection1 = engine.connectControl('[Test]', 'co', incrementCounterCO);"
+        // Make a second connection with the same ControlObject
+        // to check that disconnecting one does not disconnect both.
+        "var connection2 = engine.connectControl('[Test]', 'co', incrementCounterCO);"
+        "function changeTestCoValue() {"
+        "  var testCoValue = engine.getValue('[Test]', 'co');"
+        "  engine.setValue('[Test]', 'co', testCoValue + 1);"
+        "}"
+        "function disconnectConnection1() {"
+        "  connection1.disconnect();"
+        "}"
+    ));
+
+    cEngine->evaluate(script->fileName());
+    EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
+    execute("changeTestCoValue");
+    // ControlObjectScript connections are processed via QueuedConnection. Use
+    // processEvents() to cause Qt to deliver them.
+    application()->processEvents();
+    EXPECT_EQ(2.0, counter->get());
+
+    execute("disconnectConnection1");
+    // Only the callback for connection1 should have disconnected;
+    // the callback for connection2 should still be connected, so
+    // changing the CO they were both connected to should
+    // increment the counter once.
+    execute("changeTestCoValue");
+    application()->processEvents();
+    EXPECT_EQ(3.0, counter->get());
+}
+
+
+TEST_F(ControllerEngineTest, connectionObjectTrigger) {
     // Test that triggering using the 'trigger' method on the connection
     // object returned from connectControl works.
     auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
@@ -359,4 +468,30 @@ TEST_F(ControllerEngineTest, connectControl_TriggerByConnectionObject) {
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, counter->get());
+}
+
+TEST_F(ControllerEngineTest, connectionExecutesWithCorrectThisObject) {
+    // Test that connecting and disconnecting with a function value works.
+    auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
+    auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
+
+    ScopedTemporaryFile script(makeTemporaryFile(
+        "var TestObject = function () {"
+        "  this.executeTheCallback = true;"
+        "  this.connection = engine.connectControl('[Test]', 'co', function () {"
+        "    if (this.executeTheCallback) {"
+        "      engine.setValue('[Test]', 'passed', 1);"
+        "    }"
+        "  });"
+        "};"
+        "var someObject = new TestObject();"
+        "someObject.connection.trigger();"));
+
+    cEngine->evaluate(script->fileName());
+    EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
+    // ControlObjectScript connections are processed via QueuedConnection. Use
+    // processEvents() to cause Qt to deliver them.
+    application()->processEvents();
+    // The counter should have been incremented exactly once.
+    EXPECT_DOUBLE_EQ(1.0, pass->get());
 }

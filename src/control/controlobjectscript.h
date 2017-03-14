@@ -2,7 +2,7 @@
 #define CONTROLOBJECTSCRIPT_H
 
 #include "controllers/controllerengine.h"
-
+#include "controllers/controllerdebug.h"
 #include "control/controlproxy.h"
 
 // this is used for communicate with controller scripts
@@ -11,11 +11,15 @@ class ControlObjectScript : public ControlProxy {
   public:
     explicit ControlObjectScript(const ConfigKey& key, QObject* pParent = nullptr);
 
-    void connectScriptFunction(
+    bool addConnection(
             const ControllerEngineConnection& conn);
 
-    bool disconnectScriptFunction(
+    bool removeConnection(
             const ControllerEngineConnection& conn);
+
+    inline int countConnections() {
+            return m_controllerEngineConnections.size(); };
+    void disconnectAllConnectionsToFunction(const QScriptValue& function);
 
     // Called from update();
     void emitValueChanged() override {
@@ -31,7 +35,7 @@ class ControlObjectScript : public ControlProxy {
     void slotValueChanged(double v, QObject*);
 
   private:
-    QList<ControllerEngineConnection> m_connectedScriptFunctions;
+    QList<ControllerEngineConnection> m_controllerEngineConnections;
 };
 
 #endif // CONTROLOBJECTSCRIPT_H

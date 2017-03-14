@@ -29,12 +29,20 @@ class ControllerEngine;
 class ControllerEngineConnection {
   public:
     ConfigKey key;
-    QString id;
+    QUuid id;
     QScriptValue function;
     ControllerEngine *ce;
     QScriptValue context;
 
     void executeCallback(double value) const;
+
+    // Required for various QList methods and iteration to work.
+    inline bool operator==(const ControllerEngineConnection& other) const {
+        return id == other.id;
+    }
+    inline bool operator!=(const ControllerEngineConnection& other) const {
+        return !(*this == other);
+    }
 };
 
 class ControllerEngineConnectionScriptValue : public QObject {
@@ -48,21 +56,16 @@ class ControllerEngineConnectionScriptValue : public QObject {
   public:
     ControllerEngineConnectionScriptValue(ControllerEngineConnection conn) {
         m_conn = conn;
+        m_idString = conn.id.toString();
     }
-    const QString& readId() const { return m_conn.id; }
+    const QString& readId() const { return m_idString; }
     Q_INVOKABLE void disconnect();
     Q_INVOKABLE void trigger();
 
   private:
     ControllerEngineConnection m_conn;
+    QString m_idString;
 };
-
-/* comparison function for ControllerEngineConnection */
-inline bool operator==(const ControllerEngineConnection &c1, const ControllerEngineConnection &c2) {
-    return (c1.id == c2.id ||
-            (c1.function.isFunction() && c2.function.isFunction() && c1.function.strictlyEquals(c2.function))) &&
-            c1.key.group == c2.key.group && c1.key.item == c2.key.item;
-}
 
 class ControllerEngine : public QObject {
     Q_OBJECT
@@ -103,7 +106,7 @@ class ControllerEngine : public QObject {
     Q_INVOKABLE double getDefaultValue(QString group, QString name);
     Q_INVOKABLE double getDefaultParameter(QString group, QString name);
     Q_INVOKABLE QScriptValue connectControl(QString group, QString name,
-                                            QScriptValue function, bool disconnect = false);
+                                            const QScriptValue function, bool disconnect = false);
     // Called indirectly by the objects returned by connectControl
     Q_INVOKABLE void trigger(QString group, QString name);
     Q_INVOKABLE void log(QString message);
@@ -182,7 +185,6 @@ class ControllerEngine : public QObject {
 
     Controller* m_pController;
     bool m_bPopups;
-    QMultiHash<ConfigKey, ControllerEngineConnection> m_connectedControls;
     QList<QString> m_scriptFunctionPrefixes;
     QMap<QString, QStringList> m_scriptErrors;
     QHash<ConfigKey, ControlObjectScript*> m_controlCache;
