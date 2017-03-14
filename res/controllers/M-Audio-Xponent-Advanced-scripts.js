@@ -323,23 +323,24 @@ MaudioXponent.bankSwitch = function(channel, control, value, status, group) {
 };
 
 MaudioXponent.beatsync = function(channel, control, value, status, group) {
-    //script.midiDebug(channel, control, value, status, group);
+    // script.midiDebug(channel, control, value, status, group);
     var deck = MaudioXponent.getDeck(group);
     var activate = (status == deck.on);
 
     if (activate) {
         if (MaudioXponent.leftDeck.shift && MaudioXponent.rightDeck.shift) {
-            // Double-shift = cycle modes
+            // Double-shift = cycle flash modes
             var mode = MaudioXponent.config.syncFlashMode + 1;
-            if(mode===3){
+            if (mode === 3) {
                 mode = 0;
             }
             MaudioXponent.config.syncFlashMode = mode;
         } else {
-            if (!deck.shift) {
-                engine.setValue(deck.group, "beatsync", 0x04);
+            if (deck.shift) {
+                var currentValue = engine.getValue(deck.group, "sync_enabled");
+                engine.setValue(deck.group, "sync_enabled", !currentValue);
             } else {
-                engine.setValue(deck.group, "bpm_tap", 0x01);
+                engine.setValue(deck.group, "beatsync", activate);
             }
         }
     }
