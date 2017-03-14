@@ -6,7 +6,7 @@
     <Size>504me,136min</Size>
     <Children>
 
-      <WidgetGroup><!-- / [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
+      <WidgetGroup><!-- [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
         <ObjectName>Deck<Variable name="channum"/></ObjectName>
         <Size>250me,136min</Size>
         <Layout>vertical</Layout>
@@ -31,17 +31,17 @@
               <WidgetGroup>
                 <ObjectName>TrackComment</ObjectName>
                 <Layout>vertical</Layout>
-                <SizePolicy>min,min</SizePolicy>
+                <Size>1me,17f</Size>
                 <Children>
                   <TrackProperty>
-                    <Size>0me,16f</Size>
+                    <SizePolicy>i,p</SizePolicy>
                     <Property>comment</Property>
                     <Elide>right</Elide>
-                    <Channel><Variable name="channum" /></Channel>
+                    <Channel><Variable name="channum"/></Channel>
                   </TrackProperty>
                   <WidgetGroup>
                     <ObjectName>Spacer0f</ObjectName>
-                    <Size>1min,1f</Size>
+                    <Size>1me,1f</Size>
                     <Children/>
                   </WidgetGroup>
                 </Children>

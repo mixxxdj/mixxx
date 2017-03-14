@@ -433,7 +433,10 @@ WPushButton {
   }
   #TrackComment WLabel {
   /* defining font-size here breaks top alignment	*/
-    padding-left: 2px;
+    padding-left: 1px;
+  /* this is necessary to display multi-line comments correctly.
+		Without it, first line would be cut off at the top. */
+		padding-top: 1px;
     color: #888888;
     text-align: left;
     }
