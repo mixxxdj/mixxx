@@ -301,15 +301,42 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     double scaleFactor = m_pConfig->getValue(
             ConfigKey("[Config]", "ScaleFactor"), 1.0);
 
-    if (scaleFactor == 1.0) {
-        checkBoxDoubleWidgetSize->setCheckState(Qt::Unchecked);
-    } else if (scaleFactor == 2.0) {
-        checkBoxDoubleWidgetSize->setCheckState(Qt::Checked);
-    } else {
-        checkBoxDoubleWidgetSize->setCheckState(Qt::PartiallyChecked);
+    //: Entry of the HiDPI scale combo box. %1 is the scale factor-
+    comboBoxScaleFactor->addItem(QString(tr("x %1")).arg(0.5), 0.5);
+    comboBoxScaleFactor->addItem(QString(tr("x %1")).arg(1), 1);
+    comboBoxScaleFactor->addItem(QString(tr("x %1")).arg(2), 2);
+    comboBoxScaleFactor->addItem(QString(tr("x %1")).arg(3), 3);
+    comboBoxScaleFactor->addItem(QString(tr("x %1")).arg(4), 4);
+    int i;
+    for (i = 0; i < comboBoxScaleFactor->count(); ++i) {
+        if (scaleFactor == comboBoxScaleFactor->itemData(i)) {
+            comboBoxScaleFactor->setCurrentIndex(i);
+            break;
+        }
     }
-    connect(checkBoxDoubleWidgetSize, SIGNAL(stateChanged(int)),
-            this, SLOT(slotSetDoubleWidgetSize(int)));
+    if (i == comboBoxScaleFactor->count()) {
+        // no default scale, add custom scale
+        comboBoxScaleFactor->addItem(
+                QString(tr("x %1")).arg(scaleFactor), scaleFactor);
+        comboBoxScaleFactor->setCurrentIndex(i);
+    }
+    connect(comboBoxScaleFactor, SIGNAL(activated(int)),
+            this, SLOT(slotSetScaleFactor(int)));
+
+
+    bool autoValueAvalable = false;
+    if (autoValueAvalable) {
+        bool scaleFactorAuto = m_pConfig->getValue(
+                ConfigKey("[Config]", "ScaleFactorAuto"), true);
+        checkBoxScaleFactorAuto->setChecked(scaleFactorAuto);
+        if (scaleFactorAuto) {
+            comboBoxScaleFactor->setEnabled(false);
+        }
+        connect(checkBoxScaleFactorAuto, SIGNAL(toggled(bool)),
+                this, SLOT(slotSetScaleFactorAuto(bool)));
+    } else {
+        checkBoxScaleFactorAuto->setEnabled(false);
+    }
 
     //
     // Start in fullscreen mode
@@ -467,7 +494,8 @@ void DlgPrefControls::slotResetToDefaults() {
     checkBoxSeekToCue->setChecked(true);
 
     // Default to normal size widgets
-    checkBoxDoubleWidgetSize->setChecked(false);
+    comboBoxScaleFactor->setCurrentIndex(1);
+    checkBoxScaleFactorAuto->setChecked(true);
 
     // Don't start in full screen.
     checkBoxStartFullScreen->setChecked(false);
@@ -580,13 +608,17 @@ void DlgPrefControls::slotSetCueRecall(bool b)
     m_pConfig->set(ConfigKey("[Controls]", "CueRecall"), ConfigValue(b?0:1));
 }
 
-void DlgPrefControls::slotSetDoubleWidgetSize(int state) {
-    Q_UNUSED(state);
-    checkBoxDoubleWidgetSize->setTristate(false);
-    bool b = checkBoxDoubleWidgetSize->isChecked();
-    m_pConfig->setValue(ConfigKey("[Config]", "ScaleFactor"), b ? 2.0 : 1.0);
+
+void DlgPrefControls::slotSetScaleFactor(int index) {
+    double scaleFactor = comboBoxScaleFactor->itemData(index).toDouble();
+    m_pConfig->setValue(ConfigKey("[Config]", "ScaleFactor"), scaleFactor);
     // reload the skin when the button is toggled
     m_mixxx->rebootMixxxView();
+}
+
+void DlgPrefControls::slotSetScaleFactorAuto(bool checked) {
+    Q_UNUSED(checked);
+   // DODO
 }
 
 void DlgPrefControls::slotSetStartInFullScreen(bool b) {
