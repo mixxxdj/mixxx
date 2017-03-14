@@ -115,13 +115,13 @@ void WNumberPos::slotSetPosition(double dPosition) {
         if (dPosSecondsElapsed >= 0.0) {
             setText(mixxx::Duration::formatSeconds(
                         dPosSecondsElapsed, mixxx::Duration::Precision::CENTISECONDS)
-                    % QLatin1String(" / -") %
+                    % QLatin1String("  -") %
                     mixxx::Duration::formatSeconds(
                         dPosSecondsRemaining, mixxx::Duration::Precision::CENTISECONDS));
         } else {
             setText(QLatin1String("-") % mixxx::Duration::formatSeconds(
                         -dPosSecondsElapsed, mixxx::Duration::Precision::CENTISECONDS)
-                    % QLatin1String(" / -") %
+                    % QLatin1String("  -") %
                     mixxx::Duration::formatSeconds(
                         dPosSecondsRemaining, mixxx::Duration::Precision::CENTISECONDS));
         }
