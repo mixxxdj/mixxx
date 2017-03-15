@@ -9,7 +9,7 @@
 
 #include "mixxxapplication.h"
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlobject.h"
 #include "controlobjectslave.h"
 
@@ -40,8 +40,8 @@ class MixxxTest : public testing::Test {
         return s_pApplication.data();
     }
 
-    ConfigObject<ConfigValue>* config() {
-        return m_pConfig.data();
+    UserSettingsPointer config() {
+        return m_pConfig;
     }
 
     ControlObjectSlave* getControlObjectSlave(const ConfigKey& key) {
@@ -64,8 +64,7 @@ class MixxxTest : public testing::Test {
     const QString m_testDataCfg;
 
   protected:
-    const QScopedPointer<ConfigObject<ConfigValue> > m_pConfig;
-
+    const UserSettingsPointer m_pConfig;
 };
 
 

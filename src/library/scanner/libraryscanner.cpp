@@ -35,7 +35,7 @@ const int kScannerThreadPoolSize = 1;
 
 LibraryScanner::LibraryScanner(QWidget* pParentWidget,
                                TrackCollection* collection,
-                               ConfigObject<ConfigValue>* pConfig)
+                               UserSettingsPointer pConfig)
               : m_pCollection(collection),
                 m_libraryHashDao(m_database),
                 m_cueDao(m_database),

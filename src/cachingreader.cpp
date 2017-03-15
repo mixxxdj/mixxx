@@ -32,7 +32,7 @@ const SINT kDefaultHintSamples = 1024 * CachingReaderChunk::kChannels;
 const int CachingReader::maximumCachingReaderChunksInMemory = 80;
 
 CachingReader::CachingReader(QString group,
-                             ConfigObject<ConfigValue>* config)
+                             UserSettingsPointer config)
         : m_pConfig(config),
           m_chunkReadRequestFIFO(1024),
           m_readerStatusFIFO(1024),

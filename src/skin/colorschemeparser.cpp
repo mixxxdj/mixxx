@@ -12,7 +12,7 @@
 #include "skin/imginvert.h"
 
 void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
-                                                ConfigObject<ConfigValue>* pConfig) {
+                                                UserSettingsPointer pConfig) {
     QDomNode colsch = docElem.namedItem("Schemes");
 
     if (!colsch.isNull() && colsch.isElement()) {

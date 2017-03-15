@@ -14,7 +14,7 @@
 *   (at your option) any later version.                                   *
 *                                                                         *
 ***************************************************************************/
-#include "configobject.h"
+#include "preferences/usersettings.h"
 
 #include <QIODevice>
 #include <QTextStream>

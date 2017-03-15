@@ -1,13 +1,13 @@
 #ifndef COLORSCHEMEPARSER_H
 #define COLORSCHEMEPARSER_H
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 
 class ImgSource;
 
 class ColorSchemeParser {
   public:
-    static void setupLegacyColorSchemes(QDomElement docElem, ConfigObject<ConfigValue>* pConfig);
+    static void setupLegacyColorSchemes(QDomElement docElem, UserSettingsPointer pConfig);
   private:
     static ImgSource* parseFilters(QDomNode filter);
     ColorSchemeParser() { }

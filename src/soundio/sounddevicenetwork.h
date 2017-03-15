@@ -13,7 +13,7 @@ class EngineNetworkStream;
 
 class SoundDeviceNetwork : public SoundDevice {
   public:
-    SoundDeviceNetwork(ConfigObject<ConfigValue> *config,
+    SoundDeviceNetwork(UserSettingsPointer config,
                        SoundManager *sm,
                        QSharedPointer<EngineNetworkStream> pNetworkStream);
     virtual ~SoundDeviceNetwork();

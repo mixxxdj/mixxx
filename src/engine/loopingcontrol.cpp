@@ -5,7 +5,7 @@
 #include <QtDebug>
 
 #include "controlobject.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlpushbutton.h"
 #include "cachingreader.h"
 #include "engine/loopingcontrol.h"
@@ -38,7 +38,7 @@ QList<double> LoopingControl::getBeatSizes() {
 }
 
 LoopingControl::LoopingControl(QString group,
-                               ConfigObject<ConfigValue>* _config)
+                               UserSettingsPointer _config)
         : EngineControl(group, _config) {
     m_bLoopingEnabled = false;
     m_bLoopRollActive = false;

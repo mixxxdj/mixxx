@@ -16,7 +16,7 @@
 #include "library/library.h"
 
 #include "treeitemmodel.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "trackinfoobject.h"
 
 class TrackCollection;
@@ -26,7 +26,7 @@ class CrateFeature : public LibraryFeature {
   public:
     CrateFeature(Library* pLibrary,
                  TrackCollection* pTrackCollection,
-                 ConfigObject<ConfigValue>* pConfig);
+                 UserSettingsPointer pConfig);
     virtual ~CrateFeature();
 
     QVariant title();
@@ -100,7 +100,7 @@ class CrateFeature : public LibraryFeature {
     CrateTableModel m_crateTableModel;
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     TrackPointer m_pSelectedTrack;
     QSet<int> m_cratesSelectedTrackIsIn;
 };

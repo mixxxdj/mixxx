@@ -12,7 +12,7 @@
 #include "controlobjectslave.h"
 #include "engine/enginemaster.h"
 
-RecordingManager::RecordingManager(ConfigObject<ConfigValue>* pConfig, EngineMaster* pEngine)
+RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pEngine)
         : m_pConfig(pConfig),
           m_recordingDir(""),
           m_recording_base_file(""),

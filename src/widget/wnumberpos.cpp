@@ -1,6 +1,6 @@
 // Tue Haste Andersen <haste@diku.dk>, (C) 2003
 
-#include <QTime>
+#include <QStringBuilder>
 
 #include "widget/wnumberpos.h"
 #include "controlobject.h"

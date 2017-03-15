@@ -12,7 +12,7 @@
 #include "mixer/playermanager.h"
 
 SetlogFeature::SetlogFeature(QObject* parent,
-                             ConfigObject<ConfigValue>* pConfig,
+                             UserSettingsPointer pConfig,
                              TrackCollection* pTrackCollection)
         : BasePlaylistFeature(parent, pConfig, pTrackCollection, "SETLOGHOME"),
           m_playlistId(-1) {

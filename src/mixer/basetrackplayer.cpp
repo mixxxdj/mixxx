@@ -21,7 +21,7 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent, const QString& group)
 }
 
 BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
-                                         ConfigObject<ConfigValue>* pConfig,
+                                         UserSettingsPointer pConfig,
                                          EngineMaster* pMixingEngine,
                                          EffectsManager* pEffectsManager,
                                          EngineChannel::ChannelOrientation defaultOrientation,

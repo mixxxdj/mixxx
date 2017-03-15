@@ -22,7 +22,7 @@
 #include <QList>
 #include <QHash>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "soundio/soundmanagerconfig.h"
 #include "util/result.h"
@@ -50,7 +50,7 @@ class ControlObject;
 class SoundManager : public QObject {
     Q_OBJECT
   public:
-    SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *_master);
+    SoundManager(UserSettingsPointer pConfig, EngineMaster *_master);
     virtual ~SoundManager();
 
     // Returns a list of all devices we've enumerated that match the provided
@@ -125,7 +125,7 @@ class SoundManager : public QObject {
     void setJACKName() const;
 
     EngineMaster *m_pMaster;
-    ConfigObject<ConfigValue> *m_pConfig;
+    UserSettingsPointer m_pConfig;
 #ifdef __PORTAUDIO__
     bool m_paInitialized;
     unsigned int m_jackSampleRate;

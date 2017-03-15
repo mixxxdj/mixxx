@@ -25,7 +25,7 @@ class Upgrade {
     Upgrade();
     ~Upgrade();
 
-    UserSettings* versionUpgrade(const QString& settingsPath);
+    UserSettingsPointer versionUpgrade(const QString& settingsPath);
     bool isFirstRun() { return m_bFirstRun; };
     bool isUpgraded() { return m_bUpgraded; };
     bool rescanLibrary() {return m_bRescanLibrary; };

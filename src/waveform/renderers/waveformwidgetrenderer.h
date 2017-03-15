@@ -10,6 +10,7 @@
 #include "util/class.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/renderers/waveformsignalcolors.h"
+#include "util/performancetimer.h"
 
 //#define WAVEFORMWIDGETRENDERER_DEBUG
 
@@ -117,7 +118,7 @@ class WaveformWidgetRenderer {
     int m_trackSamples;
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
-    QTime* m_timer;
+    PerformanceTimer* m_timer;
     int m_lastFrameTime;
     int m_lastFramesTime[100];
     int m_lastSystemFrameTime;

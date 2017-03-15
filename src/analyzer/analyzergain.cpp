@@ -6,7 +6,7 @@
 #include "util/math.h"
 #include "util/sample.h"
 
-AnalyzerGain::AnalyzerGain(ConfigObject<ConfigValue> *_config) {
+AnalyzerGain::AnalyzerGain(UserSettingsPointer _config) {
     m_pConfigReplayGain = _config;
     m_bStepControl = false;
     m_pLeftTempBuffer = NULL;

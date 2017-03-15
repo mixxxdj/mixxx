@@ -15,7 +15,7 @@
 class StubReader : public CachingReader {
   public:
     StubReader()
-        : CachingReader("[test]", NULL) { }
+            : CachingReader("[test]", UserSettingsPointer()) { }
 
     virtual int read(int sample, int num_samples, CSAMPLE* buffer) {
         Q_UNUSED(sample);
@@ -27,7 +27,7 @@ class StubReader : public CachingReader {
 class StubLoopControl : public LoopingControl {
   public:
     StubLoopControl()
-        : LoopingControl("[test]", NULL) { }
+            : LoopingControl("[test]", UserSettingsPointer()) { }
 
     void pushTriggerReturnValue(double value) {
         m_triggerReturnValues.push_back(value);

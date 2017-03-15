@@ -72,7 +72,7 @@ TrackDAO::TrackDAO(QSqlDatabase& database,
                    CrateDAO& crateDao,
                    AnalysisDao& analysisDao,
                    LibraryHashDAO& libraryHashDao,
-                   ConfigObject<ConfigValue> * pConfig)
+                   UserSettingsPointer pConfig)
         : m_database(database),
           m_cueDao(cueDao),
           m_playlistDao(playlistDao),
@@ -1441,7 +1441,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     }
 
     ScopedTransaction transaction(m_database);
-    // QTime time;
+    // PerformanceTimer time;
     // time.start();
     //qDebug() << "TrackDAO::updateTrackInDatabase" << QThread::currentThread() << m_database.connectionName();
 
@@ -1562,16 +1562,16 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
         return;
     }
 
-    //qDebug() << "Update track took : " << time.elapsed() << "ms. Now updating cues";
+    //qDebug() << "Update track took : " << time.elapsed().formatMillisWithUnit() << "Now updating cues";
     //time.start();
     m_analysisDao.saveTrackAnalyses(pTrack);
     m_cueDao.saveTrackCues(trackId, pTrack);
     transaction.commit();
 
-    //qDebug() << "Update track in database took: " << time.elapsed() << "ms";
+    //qDebug() << "Update track in database took: " << time.elapsed().formatMillisWithUnit();
     //time.start();
     pTrack->resetDirty();
-    //qDebug() << "Dirtying track took: " << time.elapsed() << "ms";
+    //qDebug() << "Dirtying track took: " << time.elapsed().formatMillisWithUnit();
 }
 
 // Mark all the tracks in the library as invalid.

@@ -137,7 +137,7 @@ LegacySkinParser::LegacySkinParser()
           m_pContext(NULL) {
 }
 
-LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
+LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
                                    MixxxKeyboard* pKeyboard,
                                    PlayerManager* pPlayerManager,
                                    ControllerManager* pControllerManager,

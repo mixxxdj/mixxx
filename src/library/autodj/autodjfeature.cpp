@@ -15,7 +15,7 @@
 #include "mixer/playermanager.h"
 #include "library/autodj/autodjprocessor.h"
 #include "library/trackcollection.h"
-#include "dlgautodj.h"
+#include "library/autodj/dlgautodj.h"
 #include "library/treeitem.h"
 #include "widget/wlibrary.h"
 #include "mixxxkeyboard.h"
@@ -26,7 +26,7 @@ const QString AutoDJFeature::m_sAutoDJViewName = QString("Auto DJ");
 static const int kMaxRetrieveAttempts = 3;
 
 AutoDJFeature::AutoDJFeature(Library* pLibrary,
-                             ConfigObject<ConfigValue>* pConfig,
+                             UserSettingsPointer pConfig,
                              PlayerManagerInterface* pPlayerManager,
                              TrackCollection* pTrackCollection)
         : LibraryFeature(pLibrary),

@@ -7,13 +7,13 @@
 #include <QString>
 #include <QtDebug>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 
 namespace mixxx {
 
 class Translations {
   public:
-    static void initializeTranslations(ConfigObject<ConfigValue>* pConfig,
+    static void initializeTranslations(UserSettingsPointer pConfig,
                                        QCoreApplication* pApp,
                                        const QString& forcedLocale) {
         QString resourcePath = pConfig->getResourcePath();
