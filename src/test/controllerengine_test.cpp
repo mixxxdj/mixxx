@@ -321,7 +321,7 @@ TEST_F(ControllerEngineTest, connectControl_ByFunctionAllowDuplicateConnections)
 TEST_F(ControllerEngineTest, connectControl_toDisconnectRemovesAllConnections) {
     // Test that every connection to a ControlObject is disconnected
     // by calling engine.connectControl(..., true). Individual connections
-    // can only be connected by storing the connection object returned by
+    // can only be disconnected by storing the connection object returned by
     // engine.connectControl and calling that object's 'disconnect' method.
     auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
     auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
@@ -471,7 +471,9 @@ TEST_F(ControllerEngineTest, connectionObjectTrigger) {
 }
 
 TEST_F(ControllerEngineTest, connectionExecutesWithCorrectThisObject) {
-    // Test that connecting and disconnecting with a function value works.
+    // Test that callback functions are executed with JavaScript's
+    // 'this' keyword referring to the object in which the connection
+    // was created.
     auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
     auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
 

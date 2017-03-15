@@ -47,7 +47,7 @@ class ScriptConnection {
     }
 };
 
-// ScriptConnectionInvokableWrapper is an class providing scripts
+// ScriptConnectionInvokableWrapper is a class providing scripts
 // with an interface to ScriptConnection.
 class ScriptConnectionInvokableWrapper : public QObject {
     Q_OBJECT
