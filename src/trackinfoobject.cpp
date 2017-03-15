@@ -7,7 +7,6 @@
 #include "trackinfoobject.h"
 
 #include "controlobject.h"
-#include "soundsourceproxy.h"
 #include "library/coverartutils.h"
 #include "track/trackmetadata.h"
 #include "track/beatfactory.h"
@@ -35,9 +34,9 @@ inline bool compareAndSet(T* pField, const T& value) {
 
 } // anonymous namespace
 
-TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
-                                 SecurityTokenPointer pToken,
-                                 bool parseHeader, bool parseCoverArt)
+TrackInfoObject::TrackInfoObject(
+        const QFileInfo& fileInfo,
+        SecurityTokenPointer pToken)
         : m_fileInfo(fileInfo),
           m_pSecurityToken(pToken.isNull() ? Sandbox::openSecurityToken(
                   m_fileInfo, true) : pToken),
@@ -57,11 +56,6 @@ TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
     m_iChannels = 0;
     m_fCuePoint = 0.0f;
     m_dateAdded = QDateTime::currentDateTime();
-
-    // Parse the metadata from file. This is not a quick operation!
-    if (parseHeader) {
-        parse(parseCoverArt);
-    }
 }
 
 // static
@@ -80,29 +74,6 @@ void TrackInfoObject::onTrackReferenceExpired(TrackInfoObject* pTrack) {
 
 void TrackInfoObject::setDeleteOnReferenceExpiration(bool deleteOnReferenceExpiration) {
     m_bDeleteOnReferenceExpiration = deleteOnReferenceExpiration;
-}
-
-namespace {
-    // Parses artist/title from the file name and returns the file type.
-    // Assumes that the file name is written like: "artist - title.xxx"
-    // or "artist_-_title.xxx",
-    void parseMetadataFromFileName(Mixxx::TrackMetadata& trackMetadata, QString fileName) {
-        fileName.replace("_", " ");
-        QString titleWithFileType;
-        if (fileName.count('-') == 1) {
-            const QString artist(fileName.section('-', 0, 0).trimmed());
-            if (!artist.isEmpty()) {
-                trackMetadata.setArtist(artist);
-            }
-            titleWithFileType = fileName.section('-', 1, 1).trimmed();
-        } else {
-            titleWithFileType = fileName.trimmed();
-        }
-        const QString title(titleWithFileType.section('.', 0, -2).trimmed());
-        if (!title.isEmpty()) {
-            trackMetadata.setTitle(title);
-        }
-    }
 }
 
 void TrackInfoObject::setMetadata(const Mixxx::TrackMetadata& trackMetadata) {
@@ -142,7 +113,7 @@ void TrackInfoObject::setMetadata(const Mixxx::TrackMetadata& trackMetadata) {
     }
 }
 
-void TrackInfoObject::getMetadata(Mixxx::TrackMetadata* pTrackMetadata) {
+void TrackInfoObject::getMetadata(Mixxx::TrackMetadata* pTrackMetadata) const {
     // TODO(XXX): This involves locking the mutex for every setXXX
     // method. We should figure out an optimization where there are private
     // getters that don't lock the mutex.
@@ -164,68 +135,6 @@ void TrackInfoObject::getMetadata(Mixxx::TrackMetadata* pTrackMetadata) {
     pTrackMetadata->setReplayGain(getReplayGain());
     pTrackMetadata->setBpm(Mixxx::Bpm(getBpm()));
     pTrackMetadata->setKey(getKeyText());
-}
-
-void TrackInfoObject::parse(bool parseCoverArt) {
-    // Log parsing of header information in developer mode. This is useful for
-    // tracking down corrupt files.
-    const QString canonicalLocation(getCanonicalLocation());
-    if (CmdlineArgs::Instance().getDeveloper()) {
-        qDebug() << "TrackInfoObject::parse()" << canonicalLocation;
-    }
-
-    SoundSourceProxy proxy(canonicalLocation, m_pSecurityToken);
-    if (!proxy.getType().isEmpty()) {
-        setType(proxy.getType());
-
-        // Parse the information stored in the sound file.
-        Mixxx::TrackMetadata trackMetadata;
-        QImage coverArt;
-        // If parsing of the cover art image should be omitted the
-        // 2nd output parameter must be set to NULL.
-        QImage* pCoverArt = parseCoverArt ? &coverArt : NULL;
-        if (proxy.parseTrackMetadataAndCoverArt(&trackMetadata, pCoverArt) == OK) {
-            // If Artist, Title and Type fields are not blank, modify them.
-            // Otherwise, keep their current values.
-            // TODO(rryan): Should we re-visit this decision?
-            if (trackMetadata.getArtist().isEmpty() || trackMetadata.getTitle().isEmpty()) {
-                Mixxx::TrackMetadata fileNameMetadata;
-                parseMetadataFromFileName(fileNameMetadata, getFileName());
-                if (trackMetadata.getArtist().isEmpty()) {
-                    trackMetadata.setArtist(fileNameMetadata.getArtist());
-                }
-                if (trackMetadata.getTitle().isEmpty()) {
-                    trackMetadata.setTitle(fileNameMetadata.getTitle());
-                }
-            }
-
-            if (pCoverArt && !pCoverArt->isNull()) {
-                QMutexLocker lock(&m_qMutex);
-                m_coverArt.image = *pCoverArt;
-                m_coverArt.info.hash = CoverArtUtils::calculateHash(
-                    m_coverArt.image);
-                m_coverArt.info.coverLocation = QString();
-                m_coverArt.info.type = CoverInfo::METADATA;
-                m_coverArt.info.source = CoverInfo::GUESSED;
-            }
-
-            setHeaderParsed(true);
-        } else {
-            qDebug() << "TrackInfoObject::parse() error at file"
-                     << canonicalLocation;
-
-            // Add basic information derived from the filename
-            parseMetadataFromFileName(trackMetadata, getFileName());
-
-            setHeaderParsed(false);
-        }
-        // Dump the metadata extracted from the file into the track.
-        setMetadata(trackMetadata);
-    } else {
-        qDebug() << "TrackInfoObject::parse() error at file"
-                 << canonicalLocation;
-        setHeaderParsed(false);
-    }
 }
 
 QString TrackInfoObject::getLocation() const {

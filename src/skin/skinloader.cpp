@@ -17,6 +17,7 @@
 #include "mixer/playermanager.h"
 #include "util/debug.h"
 #include "skin/launchimage.h"
+#include "util/timer.h"
 
 SkinLoader::SkinLoader(ConfigObject<ConfigValue>* pConfig) :
         m_pConfig(pConfig) {
@@ -115,6 +116,7 @@ QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
                                      Library* pLibrary,
                                      VinylControlManager* pVCMan,
                                      EffectsManager* pEffectsManager) {
+    ScopedTimer timer("SkinLoader::loadDefaultSkin");
     QString skinPath = getSkinPath();
 
     // If we don't have a skin path then fail.

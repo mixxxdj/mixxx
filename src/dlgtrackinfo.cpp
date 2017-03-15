@@ -3,6 +3,7 @@
 
 #include "dlgtrackinfo.h"
 #include "trackinfoobject.h"
+#include "soundsourceproxy.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 
@@ -26,7 +27,6 @@ DlgTrackInfo::DlgTrackInfo(QWidget* parent,
 
 DlgTrackInfo::~DlgTrackInfo() {
     unloadTrack(false);
-    qDebug() << "~DlgTrackInfo()";
 }
 
 void DlgTrackInfo::init() {
@@ -476,8 +476,13 @@ void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
 
 void DlgTrackInfo::reloadTrackMetadata() {
     if (m_pLoadedTrack) {
+        // Allocate a temporary track object for reading the metadata.
+        // We cannot reuse m_pLoadedTrack, because it might already been
+        // modified and we want to read fresh metadata directly from the
+        // file. Otherwise the changes in m_pLoadedTrack would be lost.
         TrackPointer pTrack(new TrackInfoObject(m_pLoadedTrack->getLocation(),
                                                 m_pLoadedTrack->getSecurityToken()));
+        SoundSourceProxy(pTrack).loadTrackMetadata();
         populateFields(pTrack);
     }
 }

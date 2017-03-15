@@ -4,7 +4,7 @@
 #include <QLabel>
 
 #include "widget/wlabel.h"
-#include "controlobjectthread.h"
+#include "controlobjectslave.h"
 
 class WKey : public WLabel  {
     Q_OBJECT
@@ -23,8 +23,8 @@ class WKey : public WLabel  {
   private:
     double m_dOldValue;
     bool m_displayCents;
-    ControlObjectThread m_preferencesUpdated;
-    ControlObjectThread m_engineKeyDistance;
+    ControlObjectSlave m_preferencesUpdated;
+    ControlObjectSlave m_engineKeyDistance;
 };
 
 #endif /* WKEY_H */

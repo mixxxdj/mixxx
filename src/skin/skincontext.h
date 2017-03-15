@@ -89,6 +89,10 @@ class SkinContext {
     }
 
   private:
+    // If our parent global isValid() then we were constructed with a
+    // parent. Otherwise we are a root SkinContext.
+    bool isRoot() const { return !m_parentGlobal.isValid(); }
+
     QString variableNodeToText(const QDomElement& element) const;
 
     QString m_xmlPath;

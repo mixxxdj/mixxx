@@ -176,12 +176,12 @@ typedef QList<MidiInputMapping> MidiInputMappings;
 
 struct MidiOutputMapping {
     bool operator==(const MidiOutputMapping& other) const {
-        return output == other.output && control == other.control &&
+        return output == other.output && controlKey == other.controlKey &&
                 description == other.description;
     }
 
     MidiOutput output;
-    ConfigKey control;
+    ConfigKey controlKey;
     QString description;
 };
 typedef QList<MidiOutputMapping> MidiOutputMappings;

@@ -13,7 +13,6 @@
 class EngineMaster;
 class ControlObject;
 class ControlPotmeter;
-class ControlObjectThread;
 class ControlObjectSlave;
 class EffectsManager;
 
@@ -22,11 +21,11 @@ class EffectsManager;
 class BaseTrackPlayer : public BasePlayer {
     Q_OBJECT
   public:
-    // The ordering here corresponds to the ordering of the preferences combo box.
     enum TrackLoadReset {
         RESET_NONE,
         RESET_PITCH,
         RESET_PITCH_AND_SPEED,
+        RESET_SPEED
     };
 
     BaseTrackPlayer(QObject* pParent, const QString& group);
@@ -87,8 +86,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
     // TODO() these COs are reconnected during runtime
     // This may lock the engine
-    ControlObjectThread* m_pBPM;
-    ControlObjectThread* m_pKey;
+    ControlObjectSlave* m_pBPM;
+    ControlObjectSlave* m_pKey;
 
     ControlObjectSlave* m_pReplayGain;
     ControlObjectSlave* m_pPlay;

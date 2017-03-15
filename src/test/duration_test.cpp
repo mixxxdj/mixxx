@@ -99,6 +99,26 @@ TEST(DurationTest, AssignSubtract) {
     EXPECT_EQ(10, d2.toSeconds());
 }
 
+TEST(DurationTest, ScalarMultiply) {
+    Duration d = Duration::fromNanos(0);
+    Duration d2 = Duration::fromNanos(-2);
+    Duration d3 = Duration::fromNanos(2);
+
+    EXPECT_EQ(d, d2 * 0);
+    EXPECT_EQ(d3, d2 * -1);
+    EXPECT_EQ(d2, d3 * -1);
+    EXPECT_EQ(d3, -1 * d2);
+}
+
+TEST(DurationTest, AssignScalarMultiply) {
+    Duration d2 = Duration::fromNanos(-2);
+    Duration d3 = Duration::fromNanos(2);
+
+    d2 *= 2;
+    d3 *= -2;
+    EXPECT_EQ(d2, d3);
+}
+
 TEST(DurationTest, Equals) {
     Duration d = Duration::fromSeconds(5);
     Duration d2 = Duration::fromSeconds(2);
@@ -107,6 +127,32 @@ TEST(DurationTest, Equals) {
     EXPECT_EQ(d, d);
     EXPECT_EQ(d, d3);
     EXPECT_NE(d, d2);
+}
+
+TEST(DurationTest, LessThan) {
+    Duration d = Duration::fromNanos(0);
+    Duration d2 = Duration::fromNanos(1);
+
+    EXPECT_LE(d, d);
+    EXPECT_FALSE(d < d);
+
+    EXPECT_LT(d, d2);
+    EXPECT_LE(d, d2);
+    EXPECT_FALSE(d2 < d);
+    EXPECT_FALSE(d2 <= d);
+}
+
+TEST(DurationTest, GreaterThan) {
+    Duration d = Duration::fromNanos(1);
+    Duration d2 = Duration::fromNanos(0);
+
+    EXPECT_GE(d, d);
+    EXPECT_FALSE(d > d);
+
+    EXPECT_GT(d, d2);
+    EXPECT_GE(d, d2);
+    EXPECT_FALSE(d2 > d);
+    EXPECT_FALSE(d2 >= d);
 }
 
 TEST(DurationTest, Format) {

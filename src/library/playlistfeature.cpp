@@ -79,6 +79,7 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     menu.addSeparator();
     menu.addAction(m_pImportPlaylistAction);
     menu.addAction(m_pExportPlaylistAction);
+    menu.addAction(m_pExportTrackFilesAction);
     menu.exec(globalPos);
 }
 
