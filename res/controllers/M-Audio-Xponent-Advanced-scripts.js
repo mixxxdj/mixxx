@@ -79,8 +79,17 @@ MaudioXponent.buttons = {
 };
 
 MaudioXponent.controls = {
-    33 : "back",
-    34 : "fwd",
+    8: "button_parameter1",
+    9: "button_parameter2",
+    10: "button_parameter3",
+    16: (MaudioXponent.config.nudgeButtonMode ? "rate_temp_up" : "rate_temp_down"),
+    17: (MaudioXponent.config.nudgeButtonMode ? "rate_temp_down" : "rate_temp_up"),
+    18: "keylock",
+    19: "reverse",
+    20: "pfl",
+    33: "back",
+    34: "fwd",
+    36: "play",
 };
 
 // ----------   Functions    ----------
@@ -401,7 +410,7 @@ MaudioXponent.filterKill = function(channel, control, value, status, group) {
     } else {
         // Low/Mid/High Buttons, momentary kill
         var group = "[EqualizerRack1_" + deck.group + "_Effect1]";
-        engine.setValue(group, MaudioXponent.buttons[control], activate);
+        engine.setValue(group, MaudioXponent.controls[control], activate);
     }
 };
 
@@ -765,7 +774,7 @@ MaudioXponent.nudge = function(channel, control, value, status, group) {
     //script.midiDebug(channel, control, value, status, group);
     var deck = MaudioXponent.getDeck(group);
     var activate = (status === deck.on);
-    engine.setValue(group, MaudioXponent.buttons[control], activate);
+    engine.setValue(group, MaudioXponent.controls[control], activate);
 };
 
 MaudioXponent.onNudge = function(value, group, control) {
