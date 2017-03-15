@@ -8,6 +8,7 @@
 #define VINYLCONTROLMANAGER_H
 
 #include <QObject>
+#include <QSignalMapper>
 #include <QString>
 #include <QTimerEvent>
 
@@ -55,9 +56,14 @@ class VinylControlManager : public QObject {
 
   public slots:
     void requestReloadConfig();
+    void toggleVinylControl(int deck);
+
+  signals:
+    void vinylControlDeckEnabled(int deck, bool enabled);
 
   private slots:
     void slotNumDecksChanged(double);
+    void slotVinylControlEnabledChanged(int deck);
 
   private:
     UserSettingsPointer m_pConfig;
@@ -67,6 +73,7 @@ class VinylControlManager : public QObject {
     QList<ControlObjectSlave*> m_pVcEnabled;
     ControlObjectSlave* m_pNumDecks;
     int m_iNumConfiguredDecks;
+    QSignalMapper m_vinylControlEnabledMapper;
 };
 
 #endif // VINYLCONTROLMANAGER_H

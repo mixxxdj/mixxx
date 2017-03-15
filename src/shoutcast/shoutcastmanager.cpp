@@ -18,6 +18,7 @@ ShoutcastManager::ShoutcastManager(UserSettingsPointer pConfig,
     }
     m_pShoutcastEnabled = new ControlObjectSlave(
             SHOUTCAST_PREF_KEY, "enabled", this);
+    m_pShoutcastEnabled->connectValueChanged(SLOT(slotControlEnabled(double)));
 }
 
 ShoutcastManager::~ShoutcastManager() {
@@ -31,4 +32,8 @@ void ShoutcastManager::setEnabled(bool value) {
 
 bool ShoutcastManager::isEnabled() {
     return m_pShoutcastEnabled->toBool();
+}
+
+void ShoutcastManager::slotControlEnabled(double v) {
+    emit(shoutcastEnabled(v > 0.0));
 }

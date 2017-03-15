@@ -2,6 +2,7 @@
 #define MIXER_BASETRACKPLAYER_H
 
 #include <QObject>
+#include <QScopedPointer>
 #include <QString>
 
 #include "preferences/usersettings.h"
@@ -41,6 +42,8 @@ class BaseTrackPlayer : public BasePlayer {
     void loadTrackFailed(TrackPointer pTrack);
     void newTrackLoaded(TrackPointer pLoadedTrack);
     void unloadingTrack(TrackPointer pAboutToBeUnloaded);
+    void noPassthroughInputConfigured();
+    void noVinylControlInputConfigured();
 };
 
 class BaseTrackPlayerImpl : public BaseTrackPlayer {
@@ -51,7 +54,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
                         EngineMaster* pMixingEngine,
                         EffectsManager* pEffectsManager,
                         EngineChannel::ChannelOrientation defaultOrientation,
-                        QString group,
+                        const QString& group,
                         bool defaultMaster,
                         bool defaultHeadphones);
     virtual ~BaseTrackPlayerImpl();
@@ -71,6 +74,10 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotUnloadTrack(TrackPointer track);
     void slotSetReplayGain(Mixxx::ReplayGain replayGain);
     void slotPlayToggled(double);
+
+  private slots:
+    void slotPassthroughEnabled(double v);
+    void slotVinylControlEnabled(double v);
 
   private:
     UserSettingsPointer m_pConfig;
@@ -100,6 +107,10 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     ControlObjectSlave* m_pPreGain;
     ControlObjectSlave* m_pSpeed;
     ControlObjectSlave* m_pPitchAdjust;
+    QScopedPointer<ControlObjectSlave> m_pInputConfigured;
+    QScopedPointer<ControlObjectSlave> m_pPassthroughEnabled;
+    QScopedPointer<ControlObjectSlave> m_pVinylControlEnabled;
+    QScopedPointer<ControlObjectSlave> m_pVinylControlStatus;
     EngineDeck* m_pChannel;
 
     bool m_replaygainPending;

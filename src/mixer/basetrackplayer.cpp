@@ -15,6 +15,7 @@
 #include "analyzer/analyzerqueue.h"
 #include "util/sandbox.h"
 #include "effects/effectsmanager.h"
+#include "vinylcontrol/defs_vinylcontrol.h"
 
 BaseTrackPlayer::BaseTrackPlayer(QObject* pParent, const QString& group)
         : BasePlayer(pParent, group) {
@@ -25,7 +26,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
                                          EngineMaster* pMixingEngine,
                                          EffectsManager* pEffectsManager,
                                          EngineChannel::ChannelOrientation defaultOrientation,
-                                         QString group,
+                                         const QString& group,
                                          bool defaultMaster,
                                          bool defaultHeadphones)
         : BaseTrackPlayer(pParent, group),
@@ -44,6 +45,15 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
             pMixingEngine->registerChannelGroup(group);
     m_pChannel = new EngineDeck(channelGroup, pConfig, pMixingEngine,
                                 pEffectsManager, defaultOrientation);
+
+    m_pInputConfigured.reset(new ControlObjectSlave(group, "input_configured", this));
+    m_pPassthroughEnabled.reset(new ControlObjectSlave(group, "passthrough", this));
+    m_pPassthroughEnabled->connectValueChanged(SLOT(slotPassthroughEnabled(double)));
+#ifdef __VINYLCONTROL__
+    m_pVinylControlEnabled.reset(new ControlObjectSlave(group, "vinylcontrol_enabled", this));
+    m_pVinylControlEnabled->connectValueChanged(SLOT(slotVinylControlEnabled(double)));
+    m_pVinylControlStatus.reset(new ControlObjectSlave(group, "vinylcontrol_status", this));
+#endif
 
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
     pMixingEngine->addChannel(m_pChannel);
@@ -334,4 +344,31 @@ void BaseTrackPlayerImpl::setupEqControls() {
     m_pHighFilterKill = new ControlObjectSlave(group, "filterHighKill", this);
     m_pSpeed = new ControlObjectSlave(group, "rate", this);
     m_pPitchAdjust = new ControlObjectSlave(group, "pitch_adjust", this);
+}
+
+void BaseTrackPlayerImpl::slotPassthroughEnabled(double v) {
+    bool configured = m_pInputConfigured->toBool();
+    bool passthrough = v > 0.0;
+
+    // Warn the user if they try to enable passthrough on a player with no
+    // configured input.
+    if (!configured && passthrough) {
+        m_pPassthroughEnabled->set(0.0);
+        emit(noPassthroughInputConfigured());
+    }
+}
+
+void BaseTrackPlayerImpl::slotVinylControlEnabled(double v) {
+#ifdef __VINYLCONTROL__
+    bool configured = m_pInputConfigured->toBool();
+    bool vinylcontrol_enabled = v > 0.0;
+
+    // Warn the user if they try to enable vinyl control on a player with no
+    // configured input.
+    if (!configured && vinylcontrol_enabled) {
+        m_pVinylControlEnabled->set(0.0);
+        m_pVinylControlStatus->set(VINYL_STATUS_DISABLED);
+        emit(noVinylControlInputConfigured());
+    }
+#endif
 }
