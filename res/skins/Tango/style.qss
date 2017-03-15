@@ -26,8 +26,7 @@ WPushButton {
 
 #Library_Samplers_0, #Library_Samplers_1, #Library_Samplers_2, #Library_Samplers_3 {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  margin-top: 3px;	/*
-  background-color: #415263;	*/
+  margin-top: 3px;
 }
 
 #WaveformSplitter::handle:vertical {
@@ -162,13 +161,11 @@ WPushButton {
   qproperty-layoutAlignment: 'AlignVCenter';
 }
 
-#Waveform {  /*  */
+#Waveform {
   border-right: 1px solid #0f0f0f;
 }
 
-#BeatgridButtonToggler {  /*
-  border-left: 1px solid #0f0f0f;
-  margin-left: 1px; */
+#BeatgridButtonToggler {
 }
   #BeatgridButtonToggler[displayValue="0"] {
     background: transparent url(skin:/buttons/btn_arrow_left_thin.svg) no-repeat top center;
@@ -205,8 +202,7 @@ WPushButton {
 ################################################################ */
 
 #MixerBar {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop'; /*
-  background-color: #A900FF;  */
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   margin: 0px;
   padding: 0px;
   border: 0px;
@@ -237,8 +233,7 @@ WPushButton {
   border-bottom: 0px;
 }
 #MicLabel, #Mic2Label, #Mic3Label, #Mic4Label,
-#Aux1Label, #Aux2Label, #Aux3Label, #Aux4Label {  /*
-  border-left: 1px solid #585858; */
+#Aux1Label, #Aux2Label, #Aux3Label, #Aux4Label {
 }
 
 #MasterLabel {
@@ -282,8 +277,7 @@ WPushButton {
     }
 
 #MixerBarButton {
-  font-weight: bold; /*
-  margin: 2px 0px 6px 0px;  */
+  font-weight: bold;
   }
   #MixerBarButton[displayValue="0"] {
     background-color: #333333;
@@ -359,34 +353,26 @@ WPushButton {
 ################################################################ */
 
 #Decks12 {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
-  background-color: #313499;	*/
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 #Decks34 {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*	*/
-  background-color: #313499;
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
 #DeckContainer {
-    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
-    margin-top: 3px;
-    background-color: #951212;	*/
+    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   }
   #Deck1, #Deck3, #Deck2, #Deck4 {
     background-color: #0f0f0f
     }
   #Deck1, #Deck3 {
-    qproperty-layoutAlignment: 'AlignLeft | AlignTop';	/*
-    background-color: #321654;	*/
+    qproperty-layoutAlignment: 'AlignLeft | AlignTop';
     }
   #Deck2, #Deck4 {
-    qproperty-layoutAlignment: 'AlignRight | AlignTop';	/*
-    background-color: #321654;	*/
+    qproperty-layoutAlignment: 'AlignRight | AlignTop';
     }
 
-#DeckOverview {	/*
-    background-color: #123456;
-    margin-bottom: 1px;	*/
+#DeckOverview {
     background-color: #0f0f0f;
   }
   #VinylTogglerLeft {
@@ -443,14 +429,11 @@ WPushButton {
 
 #DeckArtistTitleLoop, #DeckTitlePassthrough {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-  background-color: #333333;	/*
-  border-top: 1px solid #0f0f0f;
-  margin-top: 1px;	*/
+  background-color: #333333;
 }
   #TitleTimeRow {
     qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-    padding: 0px 3px 0px 3px;	/*
-    background-color: #797912;	*/
+    padding: 0px 3px 0px 3px;
     }
     #TitleTimeRow WLabel {
     font-size: 18px/18px;
@@ -460,8 +443,7 @@ WPushButton {
   #ArtistDurationRow {
     qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
     padding: 0px 2px 0px 2px;
-    font-size: 16px/16px;		/*
-    background-color: #664422;	*/
+    font-size: 16px/16px;
     }
     #TrackBy {
       }
@@ -491,16 +473,13 @@ WPushButton {
       background: #FF8F00 url(skin:/buttons/btn_loop_indicator_on.svg) no-repeat center center;
     }
     
-#DeckButtonsPlay {  /*
-  border-top: 1px solid #0f0f0f;
-  background-color: #0f0f0f;  */
+#DeckButtonsPlay {
   margin-top: 1px;
 }
 #DeckButtonsLeft {
   qproperty-layoutAlignment: 'Alignleft | AlignVCenter';
   padding: 1px 0px 1px 1px;
-  background-color: #333333;	/*
-  background-color: #667712;	*/
+  background-color: #333333;
 }
 #DeckButtonsRight {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
@@ -524,8 +503,7 @@ WPushButton {
     background: transparent url(skin:/buttons/btn_arrow_left_thin_hover.svg) no-repeat center center;
   }
   #DeckButton:hover {
-    background-color: #151515;	/*
-    border: 1px solid #cccccc;	*/
+    background-color: #151515;
   }
   #SyncModeButton {
     font-weight: bold;
@@ -533,8 +511,7 @@ WPushButton {
     }
     #SyncModeButton:hover {
       color: #888888;
-      background-color: #151515;	/*
-      border: 1px solid #cccccc;	*/
+      background-color: #151515;
     }
     #SyncModeButton[displayValue="1"], #SyncModeButton[displayValue="2"] {
       background-color: #151515;
@@ -618,8 +595,7 @@ WPushButton {
     color: #888888;
     background-color: #333333;
   }
-  #LoopBeatJumpButton:hover, #LoopSizeButton:hover, #LoopRollButton:hover {  /*
-    background-color: #151515;  */
+  #LoopBeatJumpButton:hover, #LoopSizeButton:hover, #LoopRollButton:hover {
     border: 1px solid #888888;
   }
   #LoopBeatJumpButton[displayValue="1"], #LoopBeatJumpButton[displayValue="1"]:hover {
@@ -635,9 +611,7 @@ WPushButton {
   
 #SpinnyCoverSmall {
 }
-#SpinnyCoverBig {	/*
-  margin: 0px 3px 25px 3px;
-  background-color: #451278;	*/
+#SpinnyCoverBig {
 }
 
 /*################################################################
@@ -646,12 +620,10 @@ WPushButton {
 
 
 #RateContainer1, #RateContainer2, #RateContainer3, #RateContainer4, #BpmContainer {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
-  background-color: #451212;	*/
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
-#BpmContainer {	/*
-  background-color: #451212;	*/
+#BpmContainer {
 }
 
 #Bpm {
@@ -659,9 +631,7 @@ WPushButton {
   font-size: 16px/16px;
   font-weight: bold;
   text-align: center;
-  padding-top: 1px;	/*
-  border: 1px solid #666666;
-  background-color: #999111;	*/
+  padding-top: 1px;
   }
   #SyncButtonOverlay, #KeyReset,
   #KeyUp, #KeyDown {
@@ -677,8 +647,7 @@ WPushButton {
     border: 1px solid #eeeeee;
   }
   #KeyDisplay {
-    font-size: 14px/14px; /*
-    margin-top: 1px;  */
+    font-size: 14px/14px;
   }
   #KeyDown, #KeyUp, #KeyReset {
     font-size: 16px/13px;
@@ -701,15 +670,12 @@ WPushButton {
       border-left: none;
       border-right: none;
       }
-      #KeyReset:hover {	/* wrong. Left-click = Sync, right-click = reset
-        background: transparent url(skin:/buttons/btn_reset.svg) no-repeat center center;	*/
+      #KeyReset:hover {
         }
 
   
 #PitchSliderContainer {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
-  margin: 0 9px 0 9px;
-  background-color: #987111;	*/
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   }
   #PitchSlider:hover, #Crossfader:hover {
     background-color: #0f0f0f;
@@ -729,33 +695,24 @@ WPushButton {
 #MixerChannelLeft {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   border-left: 1px solid #0f0f0f;
-  background-color: #333333;		/*
-  padding: 0px 0px 0px 4px;
-  background-color: #546981;	*/
+  background-color: #333333;
 }
 #MixerChannelRight {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   border-right: 1px solid #0f0f0f;
-  background-color: #333333;		/*
-  padding: 0px 4px 0px 0px;
-  background-color: #546981;		*/
+  background-color: #333333;
 }
 
 #EQKnobs {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
-  has no effect:
-  padding: 4px;
-  background-color: #411223;	*/
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   }
   #EQKnobLeft {
     qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-    margin: 4px 12px 0px 0px;	/*
-    background-color: #976939;	*/
+    margin: 4px 12px 0px 0px;
     }
   #EQKnobRight {
     qproperty-layoutAlignment: 'AlignRight | AlignTop';
-    margin: 4px 0px 0px 12px;	/*
-    background-color: #976939;	*/
+    margin: 4px 0px 0px 12px;
     }
   #EQKillButton {
     border-radius: 1px;
@@ -807,14 +764,11 @@ WPushButton {
         
 #VolumeSliderGain {
   qproperty-layoutAlignment: 'AlignHCenter';
-  margin-top: 2px;	/*
-  background-color: #774512;	*/
+  margin-top: 2px;
 }
-#VolumeSlider {	/*
-  background-color: #977451;	*/
+#VolumeSlider {
 }
-#GainKnob {	/*
-  background-color: #411223;	*/
+#GainKnob {
 }
 
 #VUMeterFloating {
@@ -824,12 +778,10 @@ WPushButton {
 #VUMeterMixer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
   margin not respected!
-  margin-top: 4px;
-  background-color: #411223;	*/
+  margin-top: 4px;	*/
 }
 #VUMeter {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
-  background-color: #134112;	*/
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
 /*################################################################
@@ -838,14 +790,11 @@ WPushButton {
 
 #SkinControls {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding: 0px;	/*
-  margin: 0px 5px 0px 5px;
-  background-color: #321679;	*/
+  padding: 0px;
   }
   #SkinControlsRow {
     qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-    background-color:  #0f0f0f;	/*
-    background-color: #921679;	*/
+    background-color:  #0f0f0f;
   }
 
 #SkinControlsBarLeft {
@@ -861,8 +810,7 @@ WPushButton {
   font-weight: bold;
   }
   #GuiToggleButton[displayValue="0"]:hover, #GuiToggleButton2:hover {
-    border: 1px solid #888888;	/*
-    background-color: #333333;	*/
+    border: 1px solid #888888;
     }
   #GuiToggleButton[displayValue="1"]:hover, #GuiToggleButton[displayValue="2"]:hover {
     border: 1px solid #eeeeee;
@@ -1041,7 +989,7 @@ WPushButton {
 
 #EffectToggleButton {
   }
-  #EffectToggleButton[displayValue="0"]:hover {	/*		*/
+  #EffectToggleButton[displayValue="0"]:hover {
     border: 1px solid #ffb401;
     }
   #EffectToggleButton[displayValue="1"]:hover {
@@ -1055,14 +1003,12 @@ WPushButton {
     }
   #fxNameContainer {
     padding: 1px;
-    qproperty-layoutAlignment: 'AlignLeft';	/*
-    background-color: #453267;	*/
+    qproperty-layoutAlignment: 'AlignLeft';
     }
     #fxName {
       qproperty-alignment: 'AlignLeft | AlignVCenter';
       color: #000000;
-      text-align: left;	/*
-      background-color: #773267;	*/
+      text-align: left;
     }
   /* TODO: copied from Deere */
   WEffectSelector {
@@ -1101,8 +1047,7 @@ WPushButton {
   WEffectSelector::checked {
     /* not applied
     padding-left: 5px;
-    font-weight: bold;
-    background-color: #616718;	*/
+    font-weight: bold;	*/
     color: #00B4FF;
   }
   /* hovered items */
@@ -1119,49 +1064,42 @@ WPushButton {
   }
 
 #EffectSlotParameters {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';	/*
-  background-color: #313539;			*/
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
-#EffectParameterKnob {
+
+#EffectKnobParameter {
   qproperty-layoutAlignment: 'AlignCenter';
-  margin-right: 1px;		/*
-  background-color: #457812;	*/
-}
-#EffectParameterName {
-  qproperty-alignment: 'AlignHCenter | AlignTop';
-  font-size: 10px/10px;
-  font-weight: bold;
-  color: #999999;
-  text-align: left;
-  margin-top: 23px;	/*
-  background-color: #124578;	*/
-}
-#EffectParameterButton {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  margin-right: 1px;		/*
-  margin-top: 6px;
-  background-color: #457812;	*/
+  margin-right: 1px;
   }
-  #EffectParameterButtonOverlay:hover {
-    border: 1px solid #eeeeee;
-    }
-  #EffectParameterButtonUnderlay {
-    }
-  #EffectParameterButtonUnderlay[displayValue="0"] {
-    background-color: #4B4B4B;
-    }
-  #EffectParameterButtonUnderlay[displayValue="1"] {
-    background-color: #006596;
-    }
-  #EffectParameterButtonName {
+  #EffectKnobParameterName {
+    qproperty-alignment: 'AlignLeft | AlignTop';
     font-size: 10px/10px;
     font-weight: bold;
     color: #999999;
-    text-align: center;
-    qproperty-alignment: 'AlignHCenter | AlignTop';
-    margin-top: 1px;	/*
-    background-color: #124578;	*/
+    margin-top: 23px;
+  }
+
+#EffectButtonParameter {
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+  margin-right: 1px;
+  }
+  #EffectButtonParameterOverlay:hover {
+    border: 1px solid #eeeeee;
     }
+  #EffectButtonParameterUnderlay[displayValue="0"] {
+    background-color: #4B4B4B;
+    }
+  #EffectButtonParameterUnderlay[displayValue="1"] {
+    background-color: #006596;
+    }
+  #EffectButtonParameterName {
+    font-size: 10px/10px;
+    font-weight: bold;
+    color: #999999;
+    qproperty-alignment: 'AlignLeft | AlignVCenter';
+    margin-left: 1px;
+    }
+    
 #EffectLinkTypeButton, #EffectLinkTypeButtonUnderlay {
   margin-top: 26px;
   }
@@ -1209,19 +1147,16 @@ WPushButton {
   margin-left: 1px;
   }
   #SuperWetDryContainer {
-    qproperty-layoutAlignment: 'AlignRight | AlignTop';	/*
-    background-color: #123987;	*/
+    qproperty-layoutAlignment: 'AlignRight | AlignTop';
     background-color: #333333;
     }
     #SuperWetDry {
-      qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
-      background-color: #654987;	*/
+      qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
       }
     #SuperWetDryKnob WKnobComposed {
-      qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
-      background-color: #167913;	*/
+      qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
       }
-    #SuperWetDryLabel {	/*	*/
+    #SuperWetDryLabel {
       margin-top: 27px;
       font-size: 11px/13px;
       font-weight: bold;
@@ -1416,10 +1351,7 @@ WPushButton {
   padding: 1px;	
 }
 
-#SamplerButtonGrid {	/*
-  border-left: 1px solid #151515;
-  margin-left: 1px;
-  background-color: #334679;	*/
+#SamplerButtonGrid {
 }
 
 #SamplerButton, #SamplerButton_mini {
@@ -1443,12 +1375,9 @@ WPushButton {
   padding: 4px 3px 4px 3px;
 }
 #SamplerPitchSlider {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';	/*
-  background-color: #876818;
-  margin-left: 1px;	*/
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   }
-  #SamplerPitchSlider:hover { /*
-    background-color: #1a1a1a;  */
+  #SamplerPitchSlider:hover {
   }
 
 #SamplerPlay {
@@ -1474,10 +1403,9 @@ WPushButton {
 ####### Spinnies ###############################################
 ################################################################ */
 
-#SpinnyContainer {	/* single spinny	*/
+#SpinnyContainer {
   margin: 0px;
-  padding: 0px;		/*
-  background-color: #784548;	*/
+  padding: 0px;
 }
 
 #SpinnyMini {
@@ -1493,8 +1421,7 @@ WPushButton {
   background-color: #0f0f0f;
   border-bottom: 5px solid #1e1e1e;
 }
-#PreviewTitle, #PreviewEject, #PreviewGainKnob {	/*
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';	*/
+#PreviewTitle, #PreviewEject, #PreviewGainKnob {
   background-color: #333333;
 }
 #PreviewTitleEject, #PreviewPlayOverview {
@@ -1529,8 +1456,7 @@ WPushButton {
 ################################################################ */
 
 #KnobTextless {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';	/*
-  background-color: #129999;	*/
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
 }
 #KnobLabel {
   qproperty-alignment: 'AlignCenter | AlignBottom';
@@ -1538,8 +1464,7 @@ WPushButton {
   font-weight: bold;
   color: #585858;
   text-align: center;
-  padding-top: -1px;	/*
-  background-color: #124578;	*/	
+  padding-top: -1px;
 }
 
 #TEST {
@@ -1627,8 +1552,7 @@ WPushButton {
     }
 
 QTableView, QTextBrowser, QTreeView {
-  border: 1px solid #585858;	/*
-  font-size: 15px/18px;	*/
+  border: 1px solid #585858;
   color: #9E9E9E;
   background-color: #0f0f0f;
   alternate-background-color: #1a1a1a;
@@ -1641,7 +1565,6 @@ QTreeView {
   border-style: solid;
   border-color: #585858;
   show-decoration-selected: 1;	/*
-  background-color: #151515;
   Don't define top margin here, it won't shift ScrollBar.
   Defined by SearchBox	*/ 
   margin: 0px;
@@ -1671,18 +1594,14 @@ QTreeView::branch:open:has-children:has-siblings {
   QTreeView::branch:open:has-children:has-siblings:selected {
     border-image: none;
     image: url(skin:/graphics/branch_open.png);
-    background-color: #333333;	/*
-    border-top: 1px solid #333333;
-    border-bottom:  1px solid #2d2d2d;	*/
+    background-color: #333333;
   }
 
 QTreeView::item:selected {
   border-image: none;
   background-image: none;
   background-color: #333333;
-  color: #cfcfcf;	/*
-  border-top: 1px solid #333333;
-  border-bottom:  1px solid #2d2d2d;	*/
+  color: #cfcfcf;
   }
   QTreeView::QScrollBar:vertical {
     min-height: 12px;
@@ -1786,8 +1705,7 @@ QPushButton {
   min-height: 22px;
   max-height: 22px;
   margin: 3px 2px 5px 1px;
-  padding: 1px 6px -1px 6px;	/*
-  padding-top: 2px;	*/
+  padding: 1px 6px -1px 6px;
   background-color: #333333;
   background-position: center;
   }
@@ -1852,10 +1770,7 @@ QPushButton {
     height: 12px;
     background: transparent;
     border: 0px;
-    }		/*
-    QPushButton#LibraryPreviewButton:focus {
-      background-color: #725309;
-    }*/
+    }
 
     QPushButton#LibraryPreviewButton:!checked{
       image: url(skin:/graphics/library_preview_play.png);

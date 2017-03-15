@@ -36,13 +36,15 @@ Variables:
             <ObjectName>fxNameContainer</ObjectName>
             <Size>72f,20f</Size>
             <Layout>horizontal</Layout>
-            <Children>					
+            <Children>
+              <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
               <EffectName>
                 <ObjectName>fxName</ObjectName>
                 <EffectRack><Variable name="EffectRack"/></EffectRack>
                 <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
                 <Effect><Variable name="Effect"/></Effect>
               </EffectName>
+              <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
             </Children>
           </WidgetGroup>
           <!-- Colored background to communicate the Effect's ON/OFF status -->
