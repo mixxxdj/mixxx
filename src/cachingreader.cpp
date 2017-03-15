@@ -78,8 +78,8 @@ CachingReader::~CachingReader() {
     qDeleteAll(m_chunks);
 }
 
-
 void CachingReader::freeChunk(CachingReaderChunkForOwner* pChunk) {
+    DEBUG_ASSERT(pChunk != nullptr);
     DEBUG_ASSERT(pChunk->getState() != CachingReaderChunkForOwner::READ_PENDING);
 
     const int removed = m_allocatedCachingReaderChunks.remove(pChunk->getIndex());
@@ -123,18 +123,6 @@ CachingReaderChunkForOwner* CachingReader::allocateChunk(SINT chunkIndex) {
     //qDebug() << "Allocating chunk" << pChunk << pChunk->getIndex();
     m_allocatedCachingReaderChunks.insert(chunkIndex, pChunk);
 
-    // Adjust the least-recently-used item before inserting the
-    // chunk as the new most-recently-used item.
-    if (nullptr == m_lruCachingReaderChunk) {
-        if (nullptr == m_mruCachingReaderChunk) {
-            m_lruCachingReaderChunk = pChunk;
-        } else {
-            m_lruCachingReaderChunk = m_mruCachingReaderChunk;
-        }
-    }
-    // Insert the chunk as the new most-recently-used item.
-    pChunk->insertIntoListBefore(m_mruCachingReaderChunk);
-
     return pChunk;
 }
 
@@ -142,7 +130,7 @@ CachingReaderChunkForOwner* CachingReader::allocateChunkExpireLRU(SINT chunkInde
     CachingReaderChunkForOwner* pChunk = allocateChunk(chunkIndex);
     if (pChunk == nullptr) {
         if (m_lruCachingReaderChunk == nullptr) {
-            qDebug() << "ERROR: No LRU chunk to free in allocateChunkExpireLRU.";
+            qWarning() << "ERROR: No LRU chunk to free in allocateChunkExpireLRU.";
             return nullptr;
         }
         freeChunk(m_lruCachingReaderChunk);
@@ -163,14 +151,31 @@ CachingReaderChunkForOwner* CachingReader::lookupChunk(SINT chunkIndex) {
 }
 
 void CachingReader::freshenChunk(CachingReaderChunkForOwner* pChunk) {
+    DEBUG_ASSERT(pChunk != nullptr);
+    DEBUG_ASSERT(pChunk->getState() != CachingReaderChunkForOwner::READ_PENDING);
+
+    // Remove the chunk from the LRU list
     pChunk->removeFromList(&m_mruCachingReaderChunk, &m_lruCachingReaderChunk);
+
+    // Adjust the least-recently-used item before inserting the
+    // chunk as the new most-recently-used item.
+    if (m_lruCachingReaderChunk == nullptr) {
+        if (m_mruCachingReaderChunk == nullptr) {
+            m_lruCachingReaderChunk = pChunk;
+        } else {
+            m_lruCachingReaderChunk = m_mruCachingReaderChunk;
+        }
+    }
+
+    // Insert the chunk as the new most-recently-used item.
     pChunk->insertIntoListBefore(m_mruCachingReaderChunk);
     m_mruCachingReaderChunk = pChunk;
 }
 
 CachingReaderChunkForOwner* CachingReader::lookupChunkAndFreshen(SINT chunkIndex) {
     CachingReaderChunkForOwner* pChunk = lookupChunk(chunkIndex);
-    if (pChunk != nullptr) {
+    if ((pChunk != nullptr) &&
+            (pChunk->getState() != CachingReaderChunkForOwner::READ_PENDING)) {
         freshenChunk(pChunk);
     }
     return pChunk;
@@ -193,6 +198,10 @@ void CachingReader::process() {
             if (status.status != CHUNK_READ_SUCCESS) {
                 // Discard chunks that are empty (EOF) or invalid
                 freeChunk(pChunk);
+            } else {
+                // Insert or freshen the chunk in the MRU/LRU list after
+                // obtaining ownership from the worker.
+                freshenChunk(pChunk);
             }
         }
         if (status.status == TRACK_NOT_LOADED) {
@@ -213,7 +222,7 @@ void CachingReader::process() {
     }
 }
 
-int CachingReader::read(int sample, int numSamples, CSAMPLE* buffer) {
+int CachingReader::read(int sample, bool reverse, int numSamples, CSAMPLE* buffer) {
     // Check for bad inputs
     DEBUG_ASSERT_AND_HANDLE(sample % CachingReaderChunk::kChannels == 0) {
         // This problem is easy to fix, but this type of call should be
@@ -253,8 +262,13 @@ int CachingReader::read(int sample, int numSamples, CSAMPLE* buffer) {
         const SINT prerollFrames = math_min(numFrames,
                 Mixxx::AudioSource::getMinFrameIndex() - frameIndex);
         const SINT prerollSamples = CachingReaderChunk::frames2samples(prerollFrames);
-        SampleUtil::clear(buffer, prerollSamples);
-        buffer += prerollSamples;
+        if (reverse) {
+            SampleUtil::clear(&buffer[numSamples - prerollSamples], prerollSamples);
+        } else {
+            SampleUtil::clear(buffer, prerollSamples);
+            buffer += prerollSamples;
+        }
+
         samplesRead += prerollSamples;
         frameIndex += prerollFrames;
         numFrames -= prerollFrames;
@@ -320,8 +334,13 @@ int CachingReader::read(int sample, int numSamples, CSAMPLE* buffer) {
                 DEBUG_ASSERT(framesToCopy >= 0);
                 const SINT chunkSampleOffset = CachingReaderChunk::frames2samples(chunkFrameOffset);
                 const SINT samplesToCopy = CachingReaderChunk::frames2samples(framesToCopy);
-                pChunk->copySamples(buffer, chunkSampleOffset, samplesToCopy);
-                buffer += samplesToCopy;
+                
+                if (reverse) {
+                    pChunk->copySamplesReverse(&buffer[numSamples - samplesRead - samplesToCopy], chunkSampleOffset, samplesToCopy);
+                } else {
+                    pChunk->copySamples(buffer, chunkSampleOffset, samplesToCopy);
+                    buffer += samplesToCopy;
+                }
                 samplesRead += samplesToCopy;
                 frameIndex += framesToCopy;
             }
@@ -387,6 +406,8 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
                     qDebug() << "ERROR: Couldn't allocate spare CachingReaderChunk to make CachingReaderChunkReadRequest.";
                     continue;
                 }
+                // Do not insert the allocated chunk into the MRU/LRU list,
+                // because it will be handed over to the worker immediately
                 CachingReaderChunkReadRequest request(pChunk);
                 pChunk->giveToWorker();
                 // qDebug() << "Requesting read of chunk" << current << "into" << pChunk;
@@ -394,6 +415,7 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
                 if (m_chunkReadRequestFIFO.write(&request, 1) != 1) {
                     qWarning() << "ERROR: Could not submit read request for "
                              << chunkIndex;
+                    // Revoke the chunk from the worker and free it
                     pChunk->takeFromWorker();
                     freeChunk(pChunk);
                 }

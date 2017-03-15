@@ -31,8 +31,7 @@ public:
     static bool isFileNameSupported(const QString& fileName);
     static bool isFileExtensionSupported(const QString& fileExtension);
 
-    explicit SoundSourceProxy(
-            const TrackPointer& pTrack);
+    explicit SoundSourceProxy(const TrackPointer& pTrack);
 
     const TrackPointer& getTrack() const {
         return m_pTrack;

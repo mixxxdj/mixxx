@@ -117,6 +117,14 @@ void CachingReaderChunk::copySamples(
     SampleUtil::copy(sampleBuffer, m_sampleBuffer + sampleOffset, sampleCount);
 }
 
+void CachingReaderChunk::copySamplesReverse(
+        CSAMPLE* sampleBuffer, SINT sampleOffset, SINT sampleCount) const {
+    DEBUG_ASSERT(0 <= sampleOffset);
+    DEBUG_ASSERT(0 <= sampleCount);
+    DEBUG_ASSERT((sampleOffset + sampleCount) <= frames2samples(m_frameCount));
+    SampleUtil::copyReverse(sampleBuffer, m_sampleBuffer + sampleOffset, sampleCount);
+}
+
 CachingReaderChunkForOwner::CachingReaderChunkForOwner(
         CSAMPLE* sampleBuffer)
         : CachingReaderChunk(sampleBuffer),
@@ -142,8 +150,9 @@ void CachingReaderChunkForOwner::free() {
 
 void CachingReaderChunkForOwner::insertIntoListBefore(
         CachingReaderChunkForOwner* pBefore) {
-    DEBUG_ASSERT(nullptr == m_pNext);
-    DEBUG_ASSERT(nullptr == m_pPrev);
+    DEBUG_ASSERT(m_pNext == nullptr);
+    DEBUG_ASSERT(m_pPrev == nullptr);
+    DEBUG_ASSERT(m_state != READ_PENDING); // Must not be accessed by a worker!
 
     m_pNext = pBefore;
     if (pBefore) {

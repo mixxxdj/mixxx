@@ -336,7 +336,12 @@ bool ControllerEngine::internalExecute(QScriptValue thisObject,
     QScriptValue scriptFunction = m_pEngine->evaluate(scriptCode);
 
     if (checkException()) {
-        qDebug() << "Exception";
+        qDebug() << "Exception evaluating:" << scriptCode;
+        return false;
+    }
+
+    if (!scriptFunction.isFunction()) {
+        // scriptCode was plain code called in evaluate above
         return false;
     }
 
@@ -357,7 +362,9 @@ bool ControllerEngine::internalExecute(QScriptValue thisObject, QScriptValue fun
 
     // If it's not a function, we're done.
     if (!functionObject.isFunction()) {
-        qDebug() << "ControllerEngine::internalExecute: Not a function";
+        qDebug() << "ControllerEngine::internalExecute:" 
+                 << functionObject.toVariant() 
+                 << "Not a function";
         return false;
     }
 

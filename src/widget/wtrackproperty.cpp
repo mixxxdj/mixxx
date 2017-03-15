@@ -33,8 +33,9 @@ void WTrackProperty::slotTrackLoaded(TrackPointer track) {
     }
 }
 
-void WTrackProperty::slotTrackUnloaded(TrackPointer track) {
-    Q_UNUSED(track);
+void WTrackProperty::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pNewTrack);
+    Q_UNUSED(pOldTrack);
     if (m_pCurrentTrack) {
         disconnect(m_pCurrentTrack.data(), 0, this, 0);
     }

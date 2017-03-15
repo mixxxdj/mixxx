@@ -70,9 +70,6 @@ EngineMaster::EngineMaster(UserSettingsPointer _config,
     m_pAudioLatencyUsage = new ControlPotmeter(ConfigKey(group, "audio_latency_usage"), 0.0, 0.25);
     m_pAudioLatencyOverload  = new ControlPotmeter(ConfigKey(group, "audio_latency_overload"), 0.0, 1.0);
 
-    // Master rate
-    m_pMasterRate = new ControlPotmeter(ConfigKey(group, "rate"), -1.0, 1.0);
-
     // Master sync controller
     m_pMasterSync = new EngineSync(_config);
 
@@ -148,7 +145,7 @@ EngineMaster::EngineMaster(UserSettingsPointer _config,
             EngineXfader::kTransformMin, EngineXfader::kTransformMax);
     m_pXFaderCalibration = new ControlPotmeter(
             ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCalibration"),
-            0.5, 1.);
+            0.3, 1., true);
     m_pXFaderReverse = new ControlPushButton(
             ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse"));
     m_pXFaderReverse->setButtonMode(ControlPushButton::TOGGLE);
@@ -194,7 +191,6 @@ EngineMaster::~EngineMaster() {
     delete m_pMasterSampleRate;
     delete m_pMasterLatency;
     delete m_pMasterAudioBufferSize;
-    delete m_pMasterRate;
     delete m_pAudioLatencyOverloadCount;
     delete m_pAudioLatencyUsage;
     delete m_pAudioLatencyOverload;
@@ -405,7 +401,7 @@ void EngineMaster::process(const int iBufferSize) {
     double c1_gain, c2_gain;
     EngineXfader::getXfadeGains(m_pCrossfader->get(), m_pXFaderCurve->get(),
                                 m_pXFaderCalibration->get(),
-                                m_pXFaderMode->get() == MIXXX_XFADER_CONSTPWR,
+                                m_pXFaderMode->get(),
                                 m_pXFaderReverse->toBool(),
                                 &c1_gain, &c2_gain);
 

@@ -26,6 +26,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
 
   public slots:
     void slotLoadTrack(TrackPointer);
+    void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotReset();
     void slotEnable(bool);
 

@@ -40,10 +40,9 @@ double EngineControl::getTrigger(const double,
     return kNoTrigger;
 }
 
-void EngineControl::trackLoaded(TrackPointer) {
-}
-
-void EngineControl::trackUnloaded(TrackPointer) {
+void EngineControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pNewTrack);
+    Q_UNUSED(pOldTrack);
 }
 
 void EngineControl::hintReader(HintVector*) {

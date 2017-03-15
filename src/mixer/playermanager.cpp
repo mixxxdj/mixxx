@@ -22,6 +22,7 @@
 #include "trackinfoobject.h"
 #include "util/assert.h"
 #include "util/stat.h"
+#include "util/sleepableqthread.h"
 
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                              SoundManager* pSoundManager,
@@ -81,15 +82,15 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
     Q_UNUSED(pSamplerBank);
 
     // register the engine's outputs
-    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER),
+    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER, 0, 2),
                                     m_pEngine);
-    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::HEADPHONES),
+    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::HEADPHONES, 0, 2),
                                     m_pEngine);
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        m_pSoundManager->registerOutput(AudioOutput(AudioOutput::BUS, 0, 0, o),
+        m_pSoundManager->registerOutput(AudioOutput(AudioOutput::BUS, 0, 2, o),
                                         m_pEngine);
     }
-    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::SIDECHAIN),
+    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::SIDECHAIN, 0, 2),
                                     m_pEngine);
 }
 
@@ -353,12 +354,12 @@ void PlayerManager::addDeckInner() {
 
     // Register the deck output with SoundManager (deck is 0-indexed to SoundManager)
     m_pSoundManager->registerOutput(
-        AudioOutput(AudioOutput::DECK, 0, 0, number - 1), m_pEngine);
+            AudioOutput(AudioOutput::DECK, 0, 2, number - 1), m_pEngine);
 
     // Register vinyl input signal with deck for passthrough support.
     EngineDeck* pEngineDeck = pDeck->getEngineDeck();
     m_pSoundManager->registerInput(
-        AudioInput(AudioInput::VINYLCONTROL, 0, 0, number - 1), pEngineDeck);
+            AudioInput(AudioInput::VINYLCONTROL, 0, 2, number - 1), pEngineDeck);
 
     // Setup equalizer rack for this deck.
     EqualizerRackPointer pEqRack = m_pEffectsManager->getEqualizerRack(0);
@@ -525,11 +526,6 @@ Auxiliary* PlayerManager::getAuxiliary(unsigned int auxiliary) const {
     return m_auxiliaries[auxiliary - 1];
 }
 
-bool PlayerManager::hasVinylInput(int inputnum) const {
-    AudioInput vinyl_input(AudioInput::VINYLCONTROL, 0, 0, inputnum);
-    return m_pSoundManager->getConfig().getInputs().values().contains(vinyl_input);
-}
-
 void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
     // Do not lock mutex in this method unless it is changed to access
     // PlayerManager state.
@@ -571,6 +567,9 @@ void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
         if (playControl && playControl->get() != 1.) {
             locker.unlock();
             pDeck->slotLoadTrack(pTrack, false);
+            // Test for a fixed race condition with fast loads
+            //SleepableQThread::sleep(1);
+            //pDeck->slotLoadTrack(TrackPointer(), false);
             return;
         }
         ++it;

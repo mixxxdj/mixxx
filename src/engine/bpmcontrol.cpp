@@ -174,14 +174,14 @@ void BpmControl::slotFileBpmChanged(double bpm) {
 }
 
 void BpmControl::slotAdjustBeatsFaster(double v) {
-    if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & Beats::BEATSCAP_SET)) {
+    if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & Beats::BEATSCAP_SETBPM)) {
         double new_bpm = math_min(200.0, m_pBeats->getBpm() + .01);
         m_pBeats->setBpm(new_bpm);
     }
 }
 
 void BpmControl::slotAdjustBeatsSlower(double v) {
-    if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & Beats::BEATSCAP_SET)) {
+    if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & Beats::BEATSCAP_SETBPM)) {
         double new_bpm = math_max(10.0, m_pBeats->getBpm() - .01);
         m_pBeats->setBpm(new_bpm);
     }
@@ -212,8 +212,8 @@ void BpmControl::slotSetEngineBpm(double bpm) {
     double raterange = m_pRateRange->get();
 
     if (localbpm && ratedir && raterange) {
-        double newRate = bpm / localbpm;
-        m_pRateSlider->set((newRate - 1.0) / ratedir / raterange);
+        double newRateRatio = bpm / localbpm;
+        m_pRateSlider->set((newRateRatio - 1.0) / ratedir / raterange);
     }
 }
 
@@ -236,7 +236,7 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     // (60 seconds per minute) * (1000 milliseconds per second) / (X millis per
     // beat) = Y beats/minute
     double averageBpm = 60.0 * 1000.0 / averageLength;
-    double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
+    double dRate = calcRateRatio();
     m_pFileBpm->set(averageBpm / dRate);
     slotAdjustRateSlider();
 }
@@ -642,7 +642,7 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
         }
 
         double dOtherLength = ControlObject::getControl(
-            ConfigKey(pOtherEngineBuffer->getGroup(), "track_samples"))->get();
+                ConfigKey(pOtherEngineBuffer->getGroup(), "track_samples"))->get();
         double dOtherEnginePlayPos = pOtherEngineBuffer->getVisualPlayPos();
         double dOtherPosition = dOtherLength * dOtherEnginePlayPos;
 
@@ -732,40 +732,32 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
 
 void BpmControl::slotAdjustRateSlider() {
     // Adjust playback bpm in response to a change in the rate slider.
-    double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
+    double dRate = calcRateRatio();
     m_pEngineBpm->set(m_pLocalBpm->get() * dRate);
 }
 
-void BpmControl::trackLoaded(TrackPointer pTrack) {
-    if (m_pTrack) {
-        trackUnloaded(m_pTrack);
-    }
-
-    // reset for new track
-    resetSyncAdjustment();
-
-    if (pTrack) {
-        m_pTrack = pTrack;
-        m_pBeats = m_pTrack->getBeats();
-        connect(m_pTrack.data(), SIGNAL(beatsUpdated()),
-                this, SLOT(slotUpdatedTrackBeats()));
-    }
-}
-
-void BpmControl::trackUnloaded(TrackPointer pTrack) {
-    Q_UNUSED(pTrack);
+void BpmControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pOldTrack);
     if (m_pTrack) {
         disconnect(m_pTrack.data(), SIGNAL(beatsUpdated()),
                    this, SLOT(slotUpdatedTrackBeats()));
+    }
+
+    // reset for a new track
+    resetSyncAdjustment();
+
+    if (pNewTrack) {
+        m_pTrack = pNewTrack;
+        m_pBeats = m_pTrack->getBeats();
+        connect(m_pTrack.data(), SIGNAL(beatsUpdated()),
+                this, SLOT(slotUpdatedTrackBeats()));
+    } else {
         m_pTrack.clear();
         m_pBeats.clear();
     }
-    m_dUserOffset = 0.0;
-    m_dLastSyncAdjustment = 1.0;
 }
 
-void BpmControl::slotUpdatedTrackBeats()
-{
+void BpmControl::slotUpdatedTrackBeats() {
     if (m_pTrack) {
         resetSyncAdjustment();
         m_pBeats = m_pTrack->getBeats();
@@ -894,4 +886,10 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
         pGroupFeatures->has_beat_fraction = true;
         pGroupFeatures->beat_fraction = dThisBeatFraction;
     }
+}
+
+double BpmControl::calcRateRatio() const {
+    double rateRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() *
+            m_pRateSlider->get();
+    return rateRatio;
 }

@@ -64,8 +64,7 @@ class LoopingControl : public EngineControl {
     void slotReloopExit(double);
     void slotLoopStartPos(double);
     void slotLoopEndPos(double);
-    virtual void trackLoaded(TrackPointer pTrack);
-    virtual void trackUnloaded(TrackPointer pTrack);
+    virtual void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
     void slotUpdatedTrackBeats();
 
     // Generate a loop of 'beats' length. It can also do fractions for a

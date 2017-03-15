@@ -36,13 +36,6 @@ class WTrackTableView : public WLibraryTableView {
     virtual void loadSelectedTrack();
     virtual void loadSelectedTrackToGroup(QString group, bool play);
 
-    enum BPMScale {
-        DOUBLE,
-        HALVE,
-        TWOTHIRDS,
-        THREEFOURTHS,
-    };
-
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
     void slotMouseDoubleClicked(const QModelIndex &);

@@ -49,7 +49,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     //          << "firstDisplayedPosition" << firstDisplayedPosition
     //          << "lastDisplayedPosition" << lastDisplayedPosition;
 
-    QScopedPointer<BeatIterator> it(trackBeats->findBeats(
+    std::unique_ptr<BeatIterator> it(trackBeats->findBeats(
             firstDisplayedPosition * trackSamples, lastDisplayedPosition * trackSamples));
 
     // if no beat do not waste time saving/restoring painter

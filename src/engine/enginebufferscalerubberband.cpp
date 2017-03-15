@@ -154,16 +154,14 @@ void EngineBufferScaleRubberBand::deinterleaveAndProcess(
                            frames, flush);
 }
 
-
-CSAMPLE* EngineBufferScaleRubberBand::getScaled(unsigned long buf_size) {
+double EngineBufferScaleRubberBand::getScaled(CSAMPLE* pOutput, const int buf_size) {
     // qDebug() << "EngineBufferScaleRubberBand::getScaled" << buf_size
     //          << "m_dSpeedAdjust" << m_dSpeedAdjust;
-    m_samplesRead = 0.0;
+    double samplesRead = 0.0;
 
     if (m_dBaseRate == 0 || m_dTempoRatio == 0) {
-        SampleUtil::clear(m_buffer, buf_size);
-        m_samplesRead = buf_size;
-        return m_buffer;
+        SampleUtil::clear(pOutput, buf_size);
+        return samplesRead;
     }
 
     const int iNumChannels = 2;
@@ -171,7 +169,7 @@ CSAMPLE* EngineBufferScaleRubberBand::getScaled(unsigned long buf_size) {
     unsigned long total_read_frames = 0;
 
     unsigned long remaining_frames = buf_size/iNumChannels;
-    CSAMPLE* read = m_buffer;
+    CSAMPLE* read = pOutput;
     bool last_read_failed = false;
     bool break_out_after_retrieve_and_reset_rubberband = false;
     while (remaining_frames > 0) {
@@ -208,8 +206,7 @@ CSAMPLE* EngineBufferScaleRubberBand::getScaled(unsigned long buf_size) {
         //qDebug() << "iLenFramesRequired" << iLenFramesRequired;
 
         if (remaining_frames > 0 && iLenFramesRequired > 0) {
-            unsigned long iAvailSamples = m_pReadAheadManager
-                    ->getNextSamples(
+            unsigned long iAvailSamples = m_pReadAheadManager->getNextSamples(
                         // The value doesn't matter here. All that matters is we
                         // are going forward or backward.
                         (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempoRatio,
@@ -245,11 +242,11 @@ CSAMPLE* EngineBufferScaleRubberBand::getScaled(unsigned long buf_size) {
     // account directionality or starting point.
     // NOTE(rryan): Why no m_dPitchAdjust here? Pitch does not change the time
     // ratio. m_dSpeedAdjust is the ratio of unstretched time to stretched
-    // time. So, if we used total_received_frames*iNumChannels in stretched
+    // time. So, if we used total_received_frames * iNumChannels in stretched
     // time, then multiplying that by the ratio of unstretched time to stretched
     // time will get us the unstretched samples read.
-    m_samplesRead = m_dBaseRate * m_dTempoRatio *
+    samplesRead = m_dBaseRate * m_dTempoRatio *
             total_received_frames * iNumChannels;
 
-    return m_buffer;
+    return samplesRead;
 }

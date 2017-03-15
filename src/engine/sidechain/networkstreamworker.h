@@ -41,29 +41,33 @@ enum NetworkStreamWorkerStates {
 
 class NetworkStreamWorker {
   public:
-    NetworkStreamWorker()
-          : m_networkStreamWorkerState(NETWORKSTREAMWORKER_STATE_NEW) {
-    }
-    virtual ~NetworkStreamWorker() { }
+    NetworkStreamWorker();
+    virtual ~NetworkStreamWorker();
+
     virtual void process(const CSAMPLE* pBuffer, const int iBufferSize) = 0;
     virtual void shutdown() = 0;
-    virtual void outputAvailable() {
-    };
-    virtual void setOutputFifo(FIFO<CSAMPLE>* pOutputFifo) {
-        Q_UNUSED(pOutputFifo);
-    };
-    virtual bool threadWaiting() {
-        return false;
-    }
-    virtual int getState() {
-        return m_networkStreamWorkerState;
-    }
+
+    virtual void outputAvailable();
+    virtual void setOutputFifo(FIFO<CSAMPLE>* pOutputFifo);
+
+    virtual bool threadWaiting();
+
+    static int getState();
+    static int getFunctionCode();
+    static int getRunCount();
+
+    static void debugState();
+
 protected:
-    virtual void setState(int state) {
-        m_networkStreamWorkerState = state;
-    }
+    void setState(int state);
+    void setFunctionCode(int code);
+    void incRunCount();
+    
 private:
-    int m_networkStreamWorkerState;
+    static int s_networkStreamWorkerState;
+    static int s_functionCode;
+    static int s_runCount;
 };
+
 
 #endif /* NETWORKSTREAMWORKER_H */
