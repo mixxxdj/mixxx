@@ -313,6 +313,8 @@ int main(int argc, char * argv[])
 
         qDebug() << "Running Mixxx";
         result = a.exec();
+    } else {
+        mixxx->finalize();
     }
 
     delete mixxx;

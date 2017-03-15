@@ -44,6 +44,8 @@ class DlgPreferences;
 class SoundManager;
 class ControlPushButton;
 class DlgDeveloperTools;
+class Upgrade;
+class LaunchImage;
 
 #include "configobject.h"
 #include "trackinfoobject.h"
@@ -65,6 +67,10 @@ class MixxxMainWindow : public QMainWindow {
     // Construtor. files is a list of command line arguments
     MixxxMainWindow(QApplication *app, const CmdlineArgs& args);
     virtual ~MixxxMainWindow();
+
+    void initalize(QApplication *app, const CmdlineArgs& args);
+    void finalize();
+
     // initializes all QActions of the application
     void initActions();
     // initMenuBar creates the menu_bar and inserts the menuitems
@@ -75,6 +81,10 @@ class MixxxMainWindow : public QMainWindow {
     void rebootMixxxView();
 
     inline GuiTick* getGuiTick() { return m_pGuiTick; };
+
+    // progresses the launch image progress bar
+    // this must be called from the GUi thread only
+    void launchProgress(int progress);
 
   public slots:
 
@@ -185,6 +195,7 @@ class MixxxMainWindow : public QMainWindow {
 
     // Pointer to the root GUI widget
     QWidget* m_pWidgetParent;
+    LaunchImage* m_pLaunchImage;
 
     // The effects processing system
     EffectsManager* m_pEffectsManager;
@@ -218,6 +229,8 @@ class MixxxMainWindow : public QMainWindow {
     LibraryScanner* m_pLibraryScanner;
     // The library management object
     Library* m_pLibrary;
+
+    Upgrade* m_pUpgrader;
 
     // file_menu contains all items of the menubar entry "File"
     QMenu* m_pFileMenu;
