@@ -863,9 +863,9 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
     qsrand(seed);
     QHash<int,TrackId> trackPositionIds = allIds;
     QList<int> newPositions = positions;
-    QList<int> tableIDList;
+    QList<int> playListTrackIds;
     const int searchDistance = math_max(trackPositionIds.count() / 4, 1);
-    createTableIDList(&tableIDList, playlistId);
+    playListTrackIds = getPlaylistTrackIds(playlistId);
 
     qDebug() << "Shuffling Tracks";
     qDebug() << "*** Search Distance: " << searchDistance;
@@ -983,14 +983,15 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
         newPositions.swap(newPositions.indexOf(trackAPosition),
                           newPositions.indexOf(trackBPosition));
 
-        qSwap(tableIDList[trackAPosition - 1], tableIDList[trackBPosition - 1]);
+        qSwap(playListTrackIds[trackAPosition - 1],
+              playListTrackIds[trackBPosition - 1]);
     }
     
     QString changePositionQuery = "UPDATE PlaylistTracks SET position=%1 "
         "WHERE id=%2";
-    for(int i = 0; i < tableIDList.size(); i++) {
+    for(int i = 0; i < playListTrackIds.size(); i++) {
         query.exec(changePositionQuery.arg(QString::number(i + 1),
-                                           QString::number(tableIDList[i])));
+                                           QString::number(playListTrackIds[i])));
         if (query.lastError().isValid())
             qDebug() << query.lastError();
     }
@@ -1043,13 +1044,12 @@ void PlaylistDAO::sendToAutoDJ(const QList<TrackId>& trackIds, AutoDJSendLoc loc
 }
 
 
-void PlaylistDAO::createTableIDList(QList<int>* pIdList, int playlistID) {
+QList<int> PlaylistDAO::getPlaylistTrackIds(int playlistID) {
+    QList<int> idList;
     QSqlQuery query(m_database);
-    QString getIdsQuery = "SELECT %1 FROM PlaylistTracks WHERE playlist_id=%2 "
-        "ORDER BY %3 ASC";
-    query.prepare(getIdsQuery.arg(QString("id"),
-                                  QString::number(playlistID),
-                                  QString("position")));
+    QString getIdsQuery = "SELECT id FROM PlaylistTracks WHERE playlist_id=%1 "
+        "ORDER BY position ASC";
+    query.prepare(getIdsQuery.arg(QString::number(playlistID)));
     query.exec();
 
     if (query.lastError().isValid())
@@ -1057,7 +1057,8 @@ void PlaylistDAO::createTableIDList(QList<int>* pIdList, int playlistID) {
 
     while(query.next()) {
         int id = query.value(0).toInt();
-        pIdList->append(id);
+        idList.append(id);
     }
+    return idList;
 }
 
