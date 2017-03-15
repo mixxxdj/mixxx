@@ -13,7 +13,7 @@ class ControlObjectScript : public ControlProxy {
 
     bool addScriptConnection(const ScriptConnection& conn);
 
-    bool removeScriptConnection(const ScriptConnection& conn);
+    void removeScriptConnection(const ScriptConnection& conn);
 
     inline int countConnections() {
             return m_scriptConnections.size(); };

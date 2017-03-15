@@ -831,10 +831,7 @@ void ControllerEngine::removeScriptConnection(const ScriptConnection connection)
         return;
     }
 
-    if (!coScript->removeScriptConnection(connection)) {
-        qWarning() << "Could not disconnect script connection " << connection.id.toString()
-                   << "from (" + connection.key.group + ", " + connection.key.item + ")";
-    }
+    coScript->removeScriptConnection(connection);
 }
 
 void ScriptConnectionInvokableWrapper::disconnect() {
