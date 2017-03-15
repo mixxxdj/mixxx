@@ -6,7 +6,7 @@
 #include "library/library.h"
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
-#include "mixxxkeyboard.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 
 class WTrackTableView;
 class HiddenTableModel;
@@ -17,11 +17,12 @@ class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
   public:
     DlgHidden(QWidget* parent, UserSettingsPointer pConfig,
               Library* pLibrary, TrackCollection* pTrackCollection,
-              MixxxKeyboard* pKeyboard);
-    virtual ~DlgHidden();
+              KeyboardEventFilter* pKeyboard);
+    ~DlgHidden() override;
 
-    void onShow();
-    void onSearch(const QString& text);
+    void onShow() override;
+    bool hasFocus() const override;
+    void onSearch(const QString& text) override;
 
   public slots:
     void clicked();

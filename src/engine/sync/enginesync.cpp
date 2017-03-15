@@ -35,7 +35,7 @@ EngineSync::~EngineSync() {
 void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     //qDebug() << "EngineSync::requestSyncMode" << pSyncable->getGroup() << mode;
     // Based on the call hierarchy I don't think this is possible. (Famous last words.)
-    DEBUG_ASSERT_AND_HANDLE(pSyncable) {
+    VERIFY_OR_DEBUG_ASSERT(pSyncable) {
         return;
     }
 
@@ -260,7 +260,7 @@ void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChan
         return;
     }
 
-    // EngineSyncTest.SlaveRateChange dictates this must not happen in general,
+    // EngineSyncTest.FollowerRateChange dictates this must not happen in general,
     // but it is required when the file BPM changes because it's not a true BPM
     // change, so we set the follower back to the master BPM.
     if (syncMode == SYNC_FOLLOWER && fileChanged) {
@@ -396,4 +396,20 @@ EngineChannel* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const
     // No playing decks have a BPM. Go with the first deck that was stopped but
     // had a BPM.
     return pFirstNonplayingDeck;
+}
+
+bool EngineSync::otherSyncedPlaying(const QString& group) {
+    bool othersInSync = false;
+    for (Syncable* theSyncable : m_syncables) {
+        if (theSyncable->getGroup() == group) {
+            if (theSyncable->getSyncMode() == SYNC_NONE) {
+                return false;
+            }
+            continue;
+        }
+        if (theSyncable->isPlaying() && (theSyncable->getSyncMode() != SYNC_NONE)) {
+            othersInSync = true;
+        }
+    }
+    return othersInSync;
 }

@@ -1,6 +1,6 @@
 #include "effects/lv2/lv2effectprocessor.h"
 #include "engine/effects/engineeffect.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "util/sample.h"
 
 #define MAX_BUFFER_LEN 160000

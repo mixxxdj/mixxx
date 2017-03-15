@@ -1,11 +1,13 @@
 # 
 # Translators:
+# Laur Pärn <parnlaur@gmail.com>, 2016
 # S.Brandt <s.brandt@mixxx.org>, 2016
+# Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2016-01-09 20:21+0000\n"
-"Last-Translator: Sébastien BLAISOT <sebastien@blaisot.org>\n"
+"PO-Revision-Date: 2017-01-22 20:14+0000\n"
+"Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
 "Language-Team: Estonian (Estonia) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/et_EE/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -16,56 +18,56 @@ msgstr ""
 #.  Programm informations
 msgctxt "ApplicationName"
 msgid "Mixxx"
-msgstr ""
+msgstr "Mixxx"
 
 msgctxt "ManufacturerName"
 msgid "Mixxx"
-msgstr ""
+msgstr "Mixxx"
 
 msgctxt "ManufacturerFullName"
 msgid "The Mixxx Development Team"
-msgstr ""
+msgstr "Mixxx Arendusmeeskond"
 
 msgctxt "ProductDescription"
 msgid "Open-source Digital DJ software"
-msgstr ""
+msgstr "Avatud lähtekoodiga digitaalne DJ tarkvara"
 
 msgctxt "Comments"
 msgid "Installs Mixxx"
-msgstr ""
+msgstr "Paigaldab Mixxxi"
 
 #.  Error messages
 #.  DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE
 msgctxt "OS2Old"
 msgid "This product requires Windows XP or above."
-msgstr ""
+msgstr "See toode nõuab Windows XP-d või uuemat op. süsteemi."
 
 msgctxt "NewerInstalled"
 msgid "The same or a newer version of this product is already installed."
-msgstr ""
+msgstr "Sama või uuem versioon sellest tootest on juba paigaldatud."
 
 msgctxt "x64VersionRequired"
 msgid ""
 "You need to install the 64-bit version of this product on 64-bit Windows."
-msgstr ""
+msgstr "Sul tuleb paigaldada 64-bitine versioon sellest tootest 64-bitisele Windowsile."
 
 msgctxt "x86VersionRequired"
 msgid ""
 "You need to install the 32-bit version of this product on 32-bit Windows."
-msgstr ""
+msgstr "Sul tuleb paigaldada 32-bitine versioon sellest tootest 32-bitisele Windowsile."
 
 msgctxt "x86VersionWarning"
 msgid ""
 "You are about to install the 32-bit version on a 64-bit operating system.\r\n"
 "We recommend using the 64-bit version for better performance.\r\n"
 "You can download the 64-bit installation package from http://mixxx.org/download/"
-msgstr ""
+msgstr "Sa soovid paigaldada 32-bitist versiooni 64-bitisele operatsioonisüsteemile.\nSoovitame kasutada 64-bitist versiooni parema jõudluse jaoks.\nSaate 64-bitise paigalduspaketi alla laadida aadressilt http://mixxx.org/download/"
 
 msgctxt "XPWarning"
 msgid ""
 "You are installing Mixxx on an outdated operating system. Some functions may"
 " not work well or at all. We recommend upgrading your operating system."
-msgstr ""
+msgstr "Te paigaldate Mixxxi vananenud operatsioonisüsteemile. Mõned funktsioonid ei pruugi normaalselt või üldse töödata. Soovitame teil uuendada oma operatsioonisüsteem."
 
 msgctxt "bitWidthMismatch32"
 msgid ""
@@ -73,7 +75,7 @@ msgid ""
 "installed. This can lead to undesired behavior. Please un-install the "
 "existing Mixxx first, or download the 64-bit installation package to upgrade"
 " (unless you know exactly what you are doing.)"
-msgstr ""
+msgstr "Sa proovid paigaldada 32-bitist versiooni, kuid 64-bitine on juba paigaldatud. See võib viia soovimatu käitumiseni. Palun eemaldage olemasolev Mixxx kõigepealt või laadige 64-bitine paigalduspakett uuendamiseks alla (kui sa just ei tea mida sa täpselt teed)"
 
 msgctxt "bitWidthMismatch64"
 msgid ""
@@ -81,57 +83,72 @@ msgid ""
 "installed. This can lead to undesired behavior. Please un-install the "
 "existing Mixxx first, or download the 32-bit installation package to upgrade"
 " (unless you know exactly what you are doing.)"
-msgstr ""
+msgstr "Sa proovid paigaldada 64-bitist versiooni aga 32-bitine on juba paigaldatud. See võib viia soovimatu käitumiseni. Palun eemaldage olemasolev Mixxx kõigepealt või laadige 32-bitine paigalduspakett uuendamiseks alla (kui sa just ei tea mida sa täpselt teed)"
 
 msgctxt "OlderVersionFound"
 msgid ""
 "An older version of Mixxx has been detected. As we changed installer, we can"
 " not smoothly upgrade. Please uninstall older version before installing this"
 " one."
-msgstr ""
+msgstr "Tuvastati vanem versioo Mixxxist. Kuna me vahetasime paigaldajat, ei saa me tõrgeteta uuendada. Palun eemaldage vanem versioon enne selle paigaldamist."
 
 #.  Custom Warning Dialog
 msgctxt "WarningDlgTitle"
 msgid "{\\WixUI_Font_Title}Warning"
+msgstr "{\\WixUI_Font_Title}Hoiatus"
+
+#.  Custom exit dialog
+msgctxt "StartOnExit"
+msgid "Launch Mixxx when setup exits."
 msgstr ""
 
 #.  Features translations
 msgctxt "FeatureCompleteDescription"
 msgid "The complete package."
-msgstr ""
+msgstr "Kogu pakett."
 
 msgctxt "FeatureMainProgramTitle"
 msgid "Core application"
-msgstr ""
+msgstr "Põhi rakendus"
 
 msgctxt "FeatureMainProgramDescription"
 msgid "The core Mixxx application including controller presets."
+msgstr "Põhirakendus Mixxx koos kontrollerite eelseadistustega."
+
+msgctxt "FeaturePDBTitle"
+msgid "PDB debug files"
+msgstr ""
+
+msgctxt "FeaturePDBDescription"
+msgid ""
+"Install Mixxx PDB files to use with a debugger. This is useful to debug "
+"Mixxx and provide readable backtraces to the development team."
 msgstr ""
 
 msgctxt "FeatureDesktopShortcutTitle"
 msgid "Desktop Shortcut"
-msgstr ""
+msgstr "Töölaua otsetee"
 
 msgctxt "FeatureDesktopShortcutDescription"
 msgid "Add a shortcut to Mixxx on your desktop"
-msgstr ""
+msgstr "Lisa Mixxxi otsetee oma töölauale"
 
 msgctxt "FeatureManualTitle"
 msgid "User Manual"
-msgstr ""
+msgstr "Kasutusjuhend"
 
 msgctxt "FeatureManualDescription"
 msgid ""
 "The Mixxx user manual in PDF form, also available at "
 "http://mixxx.org/manual/"
-msgstr ""
+msgstr "Mixxxi kasutusjuhend on PDF failis, lisaks saadaval http://mixxx.org/manual/"
 
 msgctxt "FeatureTranslationsTitle"
 msgid "Translations"
-msgstr ""
+msgstr "Tõlked"
 
 msgctxt "FeatureTranslationsDescription"
 msgid ""
 "Resource files that allow Mixxx to display in alternate languages, other "
 "than US english"
-msgstr ""
+msgstr "Ressursifailid mis lubavad Mixxxil kuvada teisi alternatiivkeeli peale Ameerika Ühendriikide inglise keele"

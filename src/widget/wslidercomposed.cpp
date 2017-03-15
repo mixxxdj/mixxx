@@ -21,8 +21,8 @@
 #include <QStylePainter>
 #include <QStyleOption>
 
-#include "widget/wpixmapstore.h"
 #include "widget/controlwidgetconnection.h"
+#include "widget/wpixmapstore.h"
 #include "util/debug.h"
 #include "util/math.h"
 
@@ -32,20 +32,20 @@ WSliderComposed::WSliderComposed(QWidget * parent)
       m_dHandleLength(0.0),
       m_dSliderLength(0.0),
       m_bHorizontal(false),
-      m_pSlider(NULL),
-      m_pHandle(NULL) {
+      m_pSlider(nullptr),
+      m_pHandle(nullptr) {
 }
 
 WSliderComposed::~WSliderComposed() {
     unsetPixmaps();
 }
 
-void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
+void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
     // Setup pixmaps
     unsetPixmaps();
 
-    if (context.hasNode(node, "Slider")) {
-        QDomElement slider = context.selectElement(node, "Slider");
+    QDomElement slider = context.selectElement(node, "Slider");
+    if (!slider.isNull()) {
         // The implicit default in <1.12.0 was FIXED so we keep it for backwards
         // compatibility.
         PixmapSource sourceSlider = context.getPixmapSource(slider);
@@ -63,8 +63,9 @@ void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
     setHandlePixmap(h, sourceHandle,
                     context.selectScaleMode(handle, Paintable::FIXED));
 
-    if (context.hasNode(node, "EventWhileDrag")) {
-        if (context.selectString(node, "EventWhileDrag").contains("no")) {
+    QString eventWhileDrag;
+    if (context.hasNodeSelectString(node, "EventWhileDrag", &eventWhileDrag)) {
+        if (eventWhileDrag.contains("no")) {
             m_handler.setEventWhileDrag(false);
         }
     }
@@ -130,7 +131,7 @@ void WSliderComposed::mousePressEvent(QMouseEvent * e) {
     m_handler.mousePressEvent(this, e);
 }
 
-void WSliderComposed::paintEvent(QPaintEvent *) {
+void WSliderComposed::paintEvent(QPaintEvent * /*unused*/) {
     QStyleOption option;
     option.initFrom(this);
     QStylePainter p(this);
@@ -168,7 +169,7 @@ void WSliderComposed::resizeEvent(QResizeEvent* pEvent) {
     onConnectedControlChanged(getControlParameter(), 0);
 }
 
-void WSliderComposed::onConnectedControlChanged(double dParameter, double) {
+void WSliderComposed::onConnectedControlChanged(double dParameter, double /*dValue*/) {
     m_handler.onConnectedControlChanged(this, dParameter);
 }
 

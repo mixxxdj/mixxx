@@ -4,9 +4,9 @@
 #include <QScopedPointer>
 
 #include "mixxxtest.h"
-#include "controlobject.h"
-#include "controlobjectslave.h"
-#include "controlpushbutton.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
 #include "widget/wpushbutton.h"
 #include "widget/controlwidgetconnection.h"
 
@@ -17,7 +17,7 @@ class WPushButtonTest : public MixxxTest {
     }
 
   protected:
-    virtual void SetUp() {
+    void SetUp() override {
         m_pButton.reset(new WPushButton());
         m_pButton->setStates(2);
     }

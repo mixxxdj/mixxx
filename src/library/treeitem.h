@@ -1,8 +1,5 @@
-// treeitem.h
-// Created 10/02/2010 by Tobias Rafreider
-
-#ifndef TREEITEM_H
-#define TREEITEM_H
+#ifndef MIXXX_TREEITEM_H
+#define MIXXX_TREEITEM_H
 
 #include <QList>
 #include <QString>
@@ -10,44 +7,100 @@
 
 #include "library/libraryfeature.h"
 
-class TreeItem {
+#include "util/memory.h"
+
+
+class TreeItem final {
   public:
-    TreeItem(); //creates an invisible root item for the tree
-    TreeItem(const QString &data,
-             const QString &data_path,
-             LibraryFeature* feature,
-             TreeItem* parent);
+    static const int kInvalidRow = -1;
+
+    TreeItem();
+    explicit TreeItem(
+            LibraryFeature* pFeature,
+            const QString& label = QString(),
+            const QVariant& data = QVariant());
     ~TreeItem();
-    /** appends a child item to this object **/
-    void appendChild(TreeItem *child);
-    /** remove a child item at the given index **/
-    void removeChild(int index);
-    /** returns the tree item at position 'row' in the childlist **/
-    TreeItem *child(int row);
-    /** returns the number of childs of this tree item **/
-    int childCount() const;
-    /** Returns the position of this object within its parent **/
-    int row() const;
-    /** returns the parent **/
-    TreeItem *parent();
 
-    /** for dynamic resizing models **/
-    bool insertChildren(QList<TreeItem*> &data, int position, int count);
-    /** Removes <count> children from the child list starting at index <position> **/
-    bool removeChildren(int position, int count);
 
-    /** sets data **/
-    bool setData(const QVariant &data, const QVariant &data_path);
-    /** simple name of the playlist **/
-    QVariant data() const;
-    /** Full path of the playlist **/
-    QVariant dataPath() const;
-    /** Returns true if we have a leaf node **/
-    bool isPlaylist() const;
-    /** returns true if we have an inner node **/
-    bool isFolder() const;
-    /* Returns the Library feature object to which an item belongs to */
-    LibraryFeature* getFeature();
+    /////////////////////////////////////////////////////////////////////////
+    // Feature
+    /////////////////////////////////////////////////////////////////////////
+
+    LibraryFeature* feature() const {
+        return m_pFeature;
+    }
+
+
+    /////////////////////////////////////////////////////////////////////////
+    // Parent
+    /////////////////////////////////////////////////////////////////////////
+
+    TreeItem* parent() const {
+        return m_pParent;
+    }
+    bool hasParent() const {
+        return m_pParent != nullptr;
+    }
+    bool isRoot() const {
+        return !hasParent();
+    }
+    // Returns the position of this object within its parent
+    // or kInvalidRow if this is a root item without a parent.
+    int parentRow() const;
+
+
+    /////////////////////////////////////////////////////////////////////////
+    // Children
+    /////////////////////////////////////////////////////////////////////////
+
+    bool hasChildren() const {
+        return !m_children.empty();
+    }
+    int childRows() const {
+        return m_children.size();
+    }
+    TreeItem* child(int row) const;
+    const QList<TreeItem*>& children() const {
+        return m_children;
+    }
+
+    // single child items
+    TreeItem* appendChild(
+            std::unique_ptr<TreeItem> pChild);
+    TreeItem* appendChild(
+            const QString& label,
+            const QVariant& data = QVariant());
+    void removeChild(int row);
+
+    // multiple child items
+    void insertChildren(QList<TreeItem*>& children, int row, int count); // take ownership
+    void removeChildren(int row, int count);
+
+
+    /////////////////////////////////////////////////////////////////////////
+    // Payload
+    /////////////////////////////////////////////////////////////////////////
+
+    void setLabel(const QString& label) {
+        m_label = label;
+    }
+    const QString& getLabel() const {
+        return m_label;
+    }
+
+    void setData(const QVariant& data) {
+        m_data = data;
+    }
+    const QVariant& getData() const {
+        return m_data;
+    }
+
+    void setIcon(const QIcon& icon) {
+        m_icon = icon;
+    }
+    const QIcon& getIcon() {
+        return m_icon;
+    }
 
     void setBold(bool bold) {
         m_bold = bold;
@@ -56,19 +109,18 @@ class TreeItem {
         return m_bold;
     }
 
-
-    void setIcon(const QIcon& icon);
-    QIcon getIcon();
-
   private:
-    QList<TreeItem*> m_childItems;
-    QString m_dataPath;
-    QString m_data;
-    LibraryFeature* m_feature;
-    bool m_bold;
+    void appendChild(TreeItem* pChild);
 
-    TreeItem *m_parentItem;
+    LibraryFeature* m_pFeature;
+
+    TreeItem* m_pParent;
+    QList<TreeItem*> m_children; // owned child items
+
+    QString m_label;
+    QVariant m_data;
     QIcon m_icon;
+    bool m_bold;
 };
 
-#endif
+#endif // MIXXX_TREEITEM_H

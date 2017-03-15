@@ -46,7 +46,7 @@ VinylControlControl::VinylControlControl(QString group, UserSettingsPointer pCon
     m_pControlVinylSignalEnabled->set(1);
     m_pControlVinylSignalEnabled->setButtonMode(ControlPushButton::TOGGLE);
 
-    m_pPlayEnabled = new ControlObjectSlave(group, "play", this);
+    m_pPlayEnabled = new ControlProxy(group, "play", this);
 }
 
 VinylControlControl::~VinylControlControl() {
@@ -129,7 +129,7 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
             }
 
             int cue_position = pCue->getPosition();
-            //pick cues closest to new_playpos
+            // pick cues closest to new_playpos
             if ((nearest_playpos == -1) ||
                 (fabs(new_playpos - cue_position) < shortest_distance)) {
                 nearest_playpos = cue_position;

@@ -4,7 +4,7 @@
 
 #include "sources/soundsourceproviderregistry.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 namespace {
 
@@ -55,9 +55,6 @@ class SoundSourceProviderRegistryTest : public testing::Test {
     void SetUp() override {
         m_supportedFileExtensions.append(FILE_EXT1);
         m_supportedFileExtensions.append(FILE_EXT2);
-    }
-
-    void TearDown() override {
     }
 
     SoundSourceProviderPointer createProvider(
@@ -161,4 +158,4 @@ TEST_F(SoundSourceProviderRegistryTest, registerProviders) {
 
 }  // anonymous namespace
 
-}  // namespace Mixxx
+}  // namespace mixxx

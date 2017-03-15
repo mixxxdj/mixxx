@@ -3,14 +3,14 @@
 
 #include <gtest/gtest_prod.h>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "engine/enginecontrol.h"
 #include "engine/sync/syncable.h"
 #include "util/tapfilter.h"
 
 class ControlObject;
 class ControlLinPotmeter;
-class ControlObjectSlave;
+class ControlProxy;
 class ControlPushButton;
 class EngineBuffer;
 class SyncControl;
@@ -19,7 +19,7 @@ class BpmControl : public EngineControl {
     Q_OBJECT
 
   public:
-    BpmControl(QString group, UserSettingsPointer _config);
+    BpmControl(QString group, UserSettingsPointer pConfig);
     virtual ~BpmControl();
 
     double getBpm() const;
@@ -80,19 +80,18 @@ class BpmControl : public EngineControl {
     void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
 
   private slots:
-    void slotSetEngineBpm(double);
     void slotFileBpmChanged(double);
     void slotAdjustBeatsFaster(double);
     void slotAdjustBeatsSlower(double);
     void slotTranslateBeatsEarlier(double);
     void slotTranslateBeatsLater(double);
-    void slotControlPlay(double);
     void slotControlBeatSync(double);
     void slotControlBeatSyncPhase(double);
     void slotControlBeatSyncTempo(double);
     void slotTapFilter(double,int);
     void slotBpmTap(double);
-    void slotAdjustRateSlider();
+    void slotUpdateRateSlider();
+    void slotUpdateEngineBpm();
     void slotUpdatedTrackBeats();
     void slotBeatsTranslate(double);
     void slotBeatsTranslateMatchAlignment(double);
@@ -108,24 +107,23 @@ class BpmControl : public EngineControl {
     friend class SyncControl;
 
     // ControlObjects that come from EngineBuffer
-    ControlObjectSlave* m_pPlayButton;
-    ControlObjectSlave* m_pReverseButton;
-    ControlObjectSlave* m_pRateSlider;
+    ControlProxy* m_pPlayButton;
+    QAtomicInt m_oldPlayButton;
+    ControlProxy* m_pReverseButton;
+    ControlProxy* m_pRateSlider;
     ControlObject* m_pQuantize;
-    ControlObjectSlave* m_pRateRange;
-    ControlObjectSlave* m_pRateDir;
+    ControlProxy* m_pRateRange;
+    ControlProxy* m_pRateDir;
 
     // ControlObjects that come from QuantizeControl
-    QScopedPointer<ControlObjectSlave> m_pNextBeat;
-    QScopedPointer<ControlObjectSlave> m_pPrevBeat;
-    QScopedPointer<ControlObjectSlave> m_pClosestBeat;
+    QScopedPointer<ControlProxy> m_pNextBeat;
+    QScopedPointer<ControlProxy> m_pPrevBeat;
+    QScopedPointer<ControlProxy> m_pClosestBeat;
 
     // ControlObjects that come from LoopingControl
-    ControlObjectSlave* m_pLoopEnabled;
-    ControlObjectSlave* m_pLoopStartPosition;
-    ControlObjectSlave* m_pLoopEndPosition;
-
-    ControlObjectSlave* m_pVCEnabled;
+    ControlProxy* m_pLoopEnabled;
+    ControlProxy* m_pLoopStartPosition;
+    ControlProxy* m_pLoopEndPosition;
 
     // The current loaded file's detected BPM
     ControlObject* m_pFileBpm;
@@ -157,7 +155,7 @@ class BpmControl : public EngineControl {
 
     // Master Sync objects and values.
     ControlObject* m_pSyncMode;
-    ControlObjectSlave* m_pThisBeatDistance;
+    ControlProxy* m_pThisBeatDistance;
     double m_dSyncTargetBeatDistance;
     double m_dSyncInstantaneousBpm;
     double m_dLastSyncAdjustment;

@@ -27,23 +27,22 @@
 class WLabel : public QLabel, public WBaseWidget {
     Q_OBJECT
   public:
-    WLabel(QWidget* pParent=NULL);
-    virtual ~WLabel();
+    explicit WLabel(QWidget* pParent=nullptr);
 
-    virtual void setup(QDomNode node, const SkinContext& context);
+    virtual void setup(const QDomNode& node, const SkinContext& context);
 
     QString text() const;
     void setText(const QString& text);
 
   protected:
-    virtual bool event(QEvent* pEvent);
-    virtual void resizeEvent(QResizeEvent* event);
-    void fillDebugTooltip(QStringList* debug);
+    bool event(QEvent* pEvent) override;
+    void resizeEvent(QResizeEvent* event) override;
+    void fillDebugTooltip(QStringList* debug) override;
     QString m_skinText;
     // Foreground and background colors.
     QColor m_qFgColor;
     QColor m_qBgColor;
-  private: 
+  private:
     QString m_longText;
     Qt::TextElideMode m_elideMode;
 };

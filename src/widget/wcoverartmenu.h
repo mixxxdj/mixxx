@@ -6,7 +6,7 @@
 #include <QWidget>
 #include <QPixmap>
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "library/coverart.h"
 
 // This class implements a context-menu with all CoverArt user actions. Callers
@@ -17,13 +17,13 @@
 class WCoverArtMenu : public QMenu {
     Q_OBJECT
   public:
-    WCoverArtMenu(QWidget *parent = 0);
-    virtual ~WCoverArtMenu();
+    explicit WCoverArtMenu(QWidget *parent = nullptr);
+    ~WCoverArtMenu() override;
 
-    void setCoverArt(const QString& trackLocation, const CoverInfo& coverInfo);
+    void setCoverArt(const CoverInfo& coverInfo);
 
   signals:
-    void coverArtSelected(const CoverArt& art);
+    void coverInfoSelected(const CoverInfo& coverInfo);
     void reloadCoverArt();
 
   private slots:
@@ -37,7 +37,6 @@ class WCoverArtMenu : public QMenu {
     QAction* m_pReload;
     QAction* m_pUnset;
 
-    QString m_trackLocation;
     CoverInfo m_coverInfo;
 };
 

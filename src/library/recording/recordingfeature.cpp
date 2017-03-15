@@ -2,13 +2,13 @@
 // Created 03/26/2010 by Tobias Rafreider
 
 #include "library/recording/dlgrecording.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "library/treeitem.h"
 #include "library/recording/recordingfeature.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
 #include "widget/wlibrary.h"
-#include "mixxxkeyboard.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 
 const QString RecordingFeature::m_sRecordingViewName = QString("Recording");
 
@@ -39,7 +39,7 @@ TreeItemModel* RecordingFeature::getChildModel() {
     return &m_childModel;
 }
 void RecordingFeature::bindWidget(WLibrary* pLibraryWidget,
-                                  MixxxKeyboard *keyboard) {
+                                  KeyboardEventFilter *keyboard) {
     //The view will be deleted by LibraryWidget
     DlgRecording* pRecordingView = new DlgRecording(pLibraryWidget,
                                                     m_pConfig,

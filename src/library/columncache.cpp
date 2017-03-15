@@ -1,8 +1,21 @@
 #include "library/columncache.h"
 
-#include "library/dao/trackdao.h"
+#include "library/dao/trackschema.h"
 #include "library/dao/playlistdao.h"
-#include "library/dao/cratedao.h"
+#include "track/keyutils.h"
+#include "track/key_preferences.h"
+#include "control/controlproxy.h"
+
+ ColumnCache::ColumnCache(const QStringList& columns) {
+    m_pKeyNotationCP = new ControlProxy("[Library]", "key_notation", this);
+    m_pKeyNotationCP->connectValueChanged(SLOT(slotSetKeySortOrder(double)));
+
+    // ColumnCache is initialized before the preferences, so slotSetKeySortOrder is called
+    // for again if DlgPrefKey sets the [Library]. key_notation CO to a value other than
+    // KeyUtils::CUSTOM as Mixxx is starting.
+
+    setColumns(columns);
+}
 
 void ColumnCache::setColumns(const QStringList& columns) {
     m_columnsByIndex.clear();
@@ -66,11 +79,9 @@ void ColumnCache::setColumns(const QStringList& columns) {
     m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_TITLE] = fieldIndex(PLAYLISTTRACKSTABLE_TITLE);
     m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED] = fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED);
 
-    m_columnIndexByEnum[COLUMN_CRATETRACKSTABLE_TRACKID] = fieldIndex(CRATETRACKSTABLE_TRACKID);
-    m_columnIndexByEnum[COLUMN_CRATETRACKSTABLE_CRATEID] = fieldIndex(CRATETRACKSTABLE_CRATEID);
-
     const QString sortInt("cast(%1 as integer)");
     const QString sortNoCase("lower(%1)");
+
     m_columnSortByIndex.clear();
     // Add the columns that requires a special sort
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_ARTIST], sortNoCase);
@@ -89,4 +100,27 @@ void ColumnCache::setColumns(const QStringList& columns) {
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_LOCATION], sortNoCase);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_ARTIST], sortNoCase);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_TITLE], sortNoCase);
+
+    slotSetKeySortOrder(m_pKeyNotationCP->get());
+}
+
+void ColumnCache::slotSetKeySortOrder(double notationValue) {
+    if (m_columnIndexByEnum[COLUMN_LIBRARYTABLE_KEY] < 0) return;
+
+    // A custom COLLATE function was tested, but using CASE ... WHEN was found to be faster
+    // see GitHub PR#649
+    // https://github.com/mixxxdj/mixxx/pull/649#discussion_r34863809
+    KeyUtils::KeyNotation notation =
+            KeyUtils::keyNotationFromNumericValue(notationValue);
+    QString keySortSQL("CASE %1_id WHEN NULL THEN 0 ");
+    for (int i = 0; i <= 24; ++i) {
+        keySortSQL.append(QString("WHEN %1 THEN %2 ")
+            .arg(QString::number(i),
+                 QString::number(KeyUtils::keyToCircleOfFifthsOrder(
+                                     static_cast<mixxx::track::io::key::ChromaticKey>(i),
+                                     notation))));
+    }
+    keySortSQL.append("END");
+
+    m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_KEY], keySortSQL);
 }

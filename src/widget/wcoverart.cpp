@@ -6,14 +6,14 @@
 #include <QStylePainter>
 #include <QStyleOption>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "widget/wcoverart.h"
 #include "widget/wskincolor.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dlgcoverartfullsize.h"
-#include "util/math.h"
 #include "util/dnd.h"
+#include "util/math.h"
 
 WCoverArt::WCoverArt(QWidget* parent,
                      UserSettingsPointer pConfig,
@@ -29,14 +29,14 @@ WCoverArt::WCoverArt(QWidget* parent,
     setAcceptDrops(!m_group.isEmpty());
 
     CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != NULL) {
-        connect(pCache, SIGNAL(coverFound(const QObject*, const int,
+    if (pCache != nullptr) {
+        connect(pCache, SIGNAL(coverFound(const QObject*,
                                           const CoverInfo&, QPixmap, bool)),
-                this, SLOT(slotCoverFound(const QObject*, const int,
+                this, SLOT(slotCoverFound(const QObject*,
                                           const CoverInfo&, QPixmap, bool)));
     }
-    connect(m_pMenu, SIGNAL(coverArtSelected(const CoverArt&)),
-            this, SLOT(slotCoverArtSelected(const CoverArt&)));
+    connect(m_pMenu, SIGNAL(coverInfoSelected(const CoverInfo&)),
+            this, SLOT(slotCoverInfoSelected(const CoverInfo&)));
     connect(m_pMenu, SIGNAL(reloadCoverArt()),
             this, SLOT(slotReloadCoverArt()));
 }
@@ -46,14 +46,15 @@ WCoverArt::~WCoverArt() {
     delete m_pDlgFullSize;
 }
 
-void WCoverArt::setup(QDomNode node, const SkinContext& context) {
+void WCoverArt::setup(const QDomNode& node, const SkinContext& context) {
     Q_UNUSED(node);
     setMouseTracking(true);
 
     // Background color
     QColor bgc(255,255,255);
-    if (context.hasNode(node, "BgColor")) {
-        bgc.setNamedColor(context.selectString(node, "BgColor"));
+    QString bgColorStr;
+    if (context.hasNodeSelectString(node, "BgColor", &bgColorStr)) {
+        bgc.setNamedColor(bgColorStr);
         setAutoFillBackground(true);
     }
     QPalette pal = palette();
@@ -61,16 +62,18 @@ void WCoverArt::setup(QDomNode node, const SkinContext& context) {
 
     // Foreground color
     QColor m_fgc(0,0,0);
-    if (context.hasNode(node, "FgColor")) {
-        m_fgc.setNamedColor(context.selectString(node, "FgColor"));
+    QString fgColorStr;
+    if (context.hasNodeSelectString(node, "FgColor", &fgColorStr)) {
+        m_fgc.setNamedColor(fgColorStr);
     }
     bgc = WSkinColor::getCorrectColor(bgc);
     m_fgc = QColor(255 - bgc.red(), 255 - bgc.green(), 255 - bgc.blue());
     pal.setBrush(foregroundRole(), m_fgc);
     setPalette(pal);
 
-    if (context.hasNode(node, "DefaultCover")) {
-        m_defaultCover = QPixmap(context.selectString(node, "DefaultCover"));
+    QString defaultCoverStr;
+    if (context.hasNodeSelectString(node, "DefaultCover", &defaultCoverStr)) {
+        m_defaultCover = QPixmap(defaultCoverStr);
     }
 
     // If no default cover is specified or we failed to load it, fall back on
@@ -90,10 +93,10 @@ void WCoverArt::slotReloadCoverArt() {
     }
 }
 
-void WCoverArt::slotCoverArtSelected(const CoverArt& art) {
+void WCoverArt::slotCoverInfoSelected(const CoverInfo& coverInfo) {
     if (m_loadedTrack) {
         // Will trigger slotTrackCoverArtUpdated().
-        m_loadedTrack->setCoverArt(art);
+        m_loadedTrack->setCoverInfo(coverInfo);
     }
 }
 
@@ -115,17 +118,23 @@ void WCoverArt::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
 
 void WCoverArt::slotReset() {
     if (m_loadedTrack) {
-        disconnect(m_loadedTrack.data(), SIGNAL(coverArtUpdated()),
+        disconnect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
                    this, SLOT(slotTrackCoverArtUpdated()));
     }
-    m_loadedTrack = TrackPointer();
+    m_loadedTrack.reset();
     m_lastRequestedCover = CoverInfo();
     m_loadedCover = QPixmap();
     m_loadedCoverScaled = QPixmap();
     update();
 }
 
-void WCoverArt::slotCoverFound(const QObject* pRequestor, int requestReference,
+void WCoverArt::slotTrackCoverArtUpdated() {
+    if (m_loadedTrack) {
+        CoverArtCache::requestCover(*m_loadedTrack, this);
+    }
+}
+
+void WCoverArt::slotCoverFound(const QObject* pRequestor,
                                const CoverInfo& info, QPixmap pixmap,
                                bool fromCache) {
     Q_UNUSED(info);
@@ -135,7 +144,7 @@ void WCoverArt::slotCoverFound(const QObject* pRequestor, int requestReference,
     }
 
     if (pRequestor == this && m_loadedTrack &&
-            m_loadedTrack->getId().toInt() == requestReference) {
+            m_loadedTrack->getCoverHash() == info.hash) {
         qDebug() << "WCoverArt::slotCoverFound" << pRequestor << info
                  << pixmap.size();
         m_loadedCover = pixmap;
@@ -144,21 +153,9 @@ void WCoverArt::slotCoverFound(const QObject* pRequestor, int requestReference,
     }
 }
 
-void WCoverArt::slotTrackCoverArtUpdated() {
-    if (m_loadedTrack) {
-        m_lastRequestedCover = m_loadedTrack->getCoverInfo();
-        m_lastRequestedCover.trackLocation = m_loadedTrack->getLocation();
-        CoverArtCache* pCache = CoverArtCache::instance();
-        if (pCache != NULL) {
-            // TODO(rryan): Don't use track id.
-            pCache->requestCover(m_lastRequestedCover, this, m_loadedTrack->getId().toInt());
-        }
-    }
-}
-
 void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
     if (m_loadedTrack) {
-        disconnect(m_loadedTrack.data(), SIGNAL(coverArtUpdated()),
+        disconnect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
                    this, SLOT(slotTrackCoverArtUpdated()));
     }
     m_lastRequestedCover = CoverInfo();
@@ -166,7 +163,7 @@ void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
     m_loadedCoverScaled = QPixmap();
     m_loadedTrack = pTrack;
     if (m_loadedTrack) {
-        connect(m_loadedTrack.data(), SIGNAL(coverArtUpdated()),
+        connect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
                 this, SLOT(slotTrackCoverArtUpdated()));
     }
 
@@ -184,7 +181,7 @@ QPixmap WCoverArt::scaledCoverArt(const QPixmap& normal) {
     return normal.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
-void WCoverArt::paintEvent(QPaintEvent*) {
+void WCoverArt::paintEvent(QPaintEvent* /*unused*/) {
     QStyleOption option;
     option.initFrom(this);
     QStylePainter painter(this);
@@ -209,7 +206,7 @@ void WCoverArt::paintEvent(QPaintEvent*) {
     }
 }
 
-void WCoverArt::resizeEvent(QResizeEvent*) {
+void WCoverArt::resizeEvent(QResizeEvent* /*unused*/) {
     m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
     m_defaultCoverScaled = scaledCoverArt(m_defaultCover);
 }
@@ -220,18 +217,18 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
     }
 
     if (event->button() == Qt::RightButton && m_loadedTrack) { // show context-menu
-        m_pMenu->setCoverArt(m_loadedTrack->getLocation(), m_lastRequestedCover);
+        m_pMenu->setCoverArt(m_lastRequestedCover);
         m_pMenu->popup(event->globalPos());
     } else if (event->button() == Qt::LeftButton) { // init/close fullsize cover
         if (m_pDlgFullSize->isVisible()) {
             m_pDlgFullSize->close();
         } else {
-            m_pDlgFullSize->init(m_lastRequestedCover);
+            m_pDlgFullSize->init(m_loadedCover);
         }
     }
 }
 
-void WCoverArt::leaveEvent(QEvent*) {
+void WCoverArt::leaveEvent(QEvent* /*unused*/) {
     m_pDlgFullSize->close();
 }
 

@@ -7,7 +7,7 @@
 
 #include "preferences/usersettings.h"
 #include "control/control.h"
-#include "controlaudiotaperpot.h"
+#include "control/controlaudiotaperpot.h"
 #include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
 #include "util/sample.h"
@@ -26,15 +26,13 @@ EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& handle_group,
     }
 
     // Make input_configured read-only.
-    m_pInputConfigured->connectValueChangeRequest(
-        this, SLOT(slotInputConfiguredChangeRequest(double)),
-        Qt::DirectConnection);
+    m_pInputConfigured->setReadOnly();
     ControlDoublePrivate::insertAlias(ConfigKey(getGroup(), "enabled"),
                                       ConfigKey(getGroup(), "input_configured"));
 
     setMaster(false); // Use "talkover" button to enable microphones
 
-    m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
+    m_pSampleRate = new ControlProxy("[Master]", "samplerate");
 }
 
 EngineMicrophone::~EngineMicrophone() {
@@ -60,7 +58,7 @@ void EngineMicrophone::onInputConfigured(AudioInput input) {
         return;
     }
     m_sampleBuffer = NULL;
-    m_pInputConfigured->setAndConfirm(1.0);
+    m_pInputConfigured->forceSet(1.0);
 }
 
 void EngineMicrophone::onInputUnconfigured(AudioInput input) {
@@ -70,7 +68,7 @@ void EngineMicrophone::onInputUnconfigured(AudioInput input) {
         return;
     }
     m_sampleBuffer = NULL;
-    m_pInputConfigured->setAndConfirm(0.0);
+    m_pInputConfigured->forceSet(0.0);
 }
 
 void EngineMicrophone::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,

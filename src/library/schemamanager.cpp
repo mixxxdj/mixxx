@@ -17,7 +17,7 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
         QSqlDatabase& db, const int targetVersion) {
     SettingsDAO settings(db);
     int currentVersion = getCurrentSchemaVersion(settings);
-    DEBUG_ASSERT_AND_HANDLE(currentVersion >= 0) {
+    VERIFY_OR_DEBUG_ASSERT(currentVersion >= 0) {
         return RESULT_UPGRADE_FAILED;
     }
 
@@ -58,7 +58,7 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
     for (int i = 0; i < revisions.count(); i++) {
         QDomElement revision = revisions.at(i).toElement();
         QString version = revision.attribute("version");
-        DEBUG_ASSERT_AND_HANDLE(!version.isNull()) {
+        VERIFY_OR_DEBUG_ASSERT(!version.isNull()) {
             // xml file is not valid
             return RESULT_SCHEMA_ERROR;
         }
@@ -92,7 +92,7 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
             minCompatibleVersion = QString::number(thisTarget);
         }
 
-        DEBUG_ASSERT_AND_HANDLE(!eSql.isNull()) {
+        VERIFY_OR_DEBUG_ASSERT(!eSql.isNull()) {
             // xml file is not valid
             return RESULT_SCHEMA_ERROR;
         }

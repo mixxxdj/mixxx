@@ -4,10 +4,10 @@
 #include "preferences/usersettings.h"
 #include "engine/enginecontrol.h"
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "track/beats.h"
 
-class ControlObjectSlave;
+class ControlProxy;
 class ControlObject;
 
 class ClockControl: public EngineControl {
@@ -27,7 +27,7 @@ class ClockControl: public EngineControl {
 
   private:
     ControlObject* m_pCOBeatActive;
-    ControlObjectSlave* m_pCOSampleRate;
+    ControlProxy* m_pCOSampleRate;
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
 };

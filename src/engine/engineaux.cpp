@@ -8,7 +8,7 @@
 
 #include "control/control.h"
 #include "preferences/usersettings.h"
-#include "controlaudiotaperpot.h"
+#include "control/controlaudiotaperpot.h"
 #include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
 #include "util/sample.h"
@@ -26,9 +26,7 @@ EngineAux::EngineAux(const ChannelHandleAndGroup& handle_group, EffectsManager* 
     }
 
     // Make input_configured read-only.
-    m_pInputConfigured->connectValueChangeRequest(
-        this, SLOT(slotInputConfiguredChangeRequest(double)),
-        Qt::DirectConnection);
+    m_pInputConfigured->setReadOnly();
     ControlDoublePrivate::insertAlias(ConfigKey(getGroup(), "enabled"),
                                       ConfigKey(getGroup(), "input_configured"));
 
@@ -36,7 +34,7 @@ EngineAux::EngineAux(const ChannelHandleAndGroup& handle_group, EffectsManager* 
     // can over-ride by setting the "pfl" or "master" controls.
     setMaster(true);
 
-    m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
+    m_pSampleRate = new ControlProxy("[Master]", "samplerate");
 }
 
 EngineAux::~EngineAux() {
@@ -62,7 +60,7 @@ void EngineAux::onInputConfigured(AudioInput input) {
         return;
     }
     m_sampleBuffer = NULL;
-    m_pInputConfigured->setAndConfirm(1.0);
+    m_pInputConfigured->forceSet(1.0);
 }
 
 void EngineAux::onInputUnconfigured(AudioInput input) {
@@ -72,7 +70,7 @@ void EngineAux::onInputUnconfigured(AudioInput input) {
         return;
     }
     m_sampleBuffer = NULL;
-    m_pInputConfigured->setAndConfirm(0.0);
+    m_pInputConfigured->forceSet(0.0);
 }
 
 void EngineAux::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,

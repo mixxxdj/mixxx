@@ -15,19 +15,18 @@
 class WKnobComposed : public WWidget {
     Q_OBJECT
   public:
-    WKnobComposed(QWidget* pParent=NULL);
-    virtual ~WKnobComposed();
+    explicit WKnobComposed(QWidget* pParent=nullptr);
 
-    void setup(QDomNode node, const SkinContext& context);
+    void setup(const QDomNode& node, const SkinContext& context);
 
-    void onConnectedControlChanged(double dParameter, double dValue);
+    void onConnectedControlChanged(double dParameter, double dValue) override;
 
   protected:
-    void wheelEvent(QWheelEvent *e);
-    void mouseMoveEvent(QMouseEvent *e);
-    void mousePressEvent(QMouseEvent *e);
-    void mouseReleaseEvent(QMouseEvent *e);
-    void paintEvent(QPaintEvent*);
+    void wheelEvent(QWheelEvent *e) override;
+    void mouseMoveEvent(QMouseEvent *e) override;
+    void mousePressEvent(QMouseEvent *e) override;
+    void mouseReleaseEvent(QMouseEvent *e) override;
+    void paintEvent(QPaintEvent* /*unused*/) override;
 
   private:
     void clear();

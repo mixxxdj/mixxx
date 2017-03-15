@@ -16,8 +16,8 @@
 
 #include "engine/enginevumeter.h"
 
-#include "controlobjectslave.h"
-#include "controlpotmeter.h"
+#include "control/controlproxy.h"
+#include "control/controlpotmeter.h"
 #include "util/math.h"
 #include "util/sample.h"
 
@@ -39,7 +39,7 @@ EngineVuMeter::EngineVuMeter(QString group) {
     m_ctrlPeakIndicatorR = new ControlPotmeter(ConfigKey(group, "PeakIndicatorR"),
                                               0., 1.);
 
-    m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate", this);
+    m_pSampleRate = new ControlProxy("[Master]", "samplerate", this);
 
     // Initialize the calculation:
     reset();

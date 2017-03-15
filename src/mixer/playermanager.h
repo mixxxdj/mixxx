@@ -10,7 +10,7 @@
 #include <QMutex>
 
 #include "preferences/usersettings.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 class AnalyzerQueue;
 class Auxiliary;

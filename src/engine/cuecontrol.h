@@ -9,8 +9,8 @@
 
 #include "engine/enginecontrol.h"
 #include "preferences/usersettings.h"
-#include "controlobjectslave.h"
-#include "trackinfoobject.h"
+#include "control/controlproxy.h"
+#include "track/track.h"
 
 #define NUM_HOT_CUES 37
 
@@ -26,9 +26,10 @@ class HotcueControl : public QObject {
 
     inline int getHotcueNumber() { return m_iHotcueNumber; }
     inline CuePointer getCue() { return m_pCue; }
-    inline void setCue(CuePointer pCue) { m_pCue = pCue; }
-    inline ControlObject* getPosition() { return m_hotcuePosition; }
-    inline ControlObject* getEnabled() { return m_hotcueEnabled; }
+    double getPosition() const;
+    void setCue(CuePointer pCue);
+    void resetCue();
+    void setPosition(double position);
 
     // Used for caching the preview state of this hotcue control.
     inline bool isPreviewing() { return m_bPreviewing; }
@@ -58,7 +59,7 @@ class HotcueControl : public QObject {
     void hotcuePlay(double v);
 
   private:
-    ConfigKey keyForControl(int hotcue, QString name);
+    ConfigKey keyForControl(int hotcue, const char* name);
 
     QString m_group;
     int m_iHotcueNumber;
@@ -84,13 +85,14 @@ class CueControl : public EngineControl {
     Q_OBJECT
   public:
     CueControl(QString group,
-               UserSettingsPointer _config);
+               UserSettingsPointer pConfig);
     virtual ~CueControl();
 
     virtual void hintReader(HintVector* pHintList);
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible);
     void updateIndicators();
     bool isTrackAtCue();
+    bool isPlayingByPlayButton();
     bool getPlayFlashingAtPause();
 
   public slots:
@@ -115,6 +117,7 @@ class CueControl : public EngineControl {
     void cuePreview(double v);
     void cueCDJ(double v);
     void cueDenon(double v);
+    void cuePlay(double v);
     void cueDefault(double v);
     void pause(double v);
     void playStutter(double v);
@@ -124,10 +127,9 @@ class CueControl : public EngineControl {
     void createControls();
     void attachCue(CuePointer pCue, int hotcueNumber);
     void detachCue(int hotcueNumber);
-    void saveCuePoint(double cuePoint);
 
     bool m_bPreviewing;
-    ControlObject* m_pPlayButton;
+    ControlObject* m_pPlay;
     ControlObject* m_pStopButton;
     int m_iCurrentlyPreviewingHotcues;
     ControlObject* m_pQuantizeEnabled;
@@ -136,7 +138,7 @@ class CueControl : public EngineControl {
     bool m_bypassCueSetByPlay;
 
     const int m_iNumHotCues;
-    QList<HotcueControl*> m_hotcueControl;
+    QList<HotcueControl*> m_hotcueControls;
 
     ControlObject* m_pTrackSamples;
     ControlObject* m_pCuePoint;
@@ -149,10 +151,11 @@ class CueControl : public EngineControl {
     ControlIndicator* m_pPlayIndicator;
     ControlPushButton* m_pCueGoto;
     ControlPushButton* m_pCueGotoAndPlay;
+    ControlPushButton* m_pCuePlay;
     ControlPushButton* m_pCueGotoAndStop;
     ControlPushButton* m_pCuePreview;
-    ControlObjectSlave* m_pVinylControlEnabled;
-    ControlObjectSlave* m_pVinylControlMode;
+    ControlProxy* m_pVinylControlEnabled;
+    ControlProxy* m_pVinylControlMode;
 
     TrackPointer m_pLoadedTrack;
 

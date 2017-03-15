@@ -6,10 +6,10 @@
 #include <QModelIndexList>
 
 #include "preferences/usersettings.h"
-#include "controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "engine/enginechannel.h"
 #include "library/playlisttablemodel.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/class.h"
 
 class ControlPushButton;
@@ -85,9 +85,9 @@ class DeckAttributes : public QObject {
 
   private:
     EngineChannel::ChannelOrientation m_orientation;
-    ControlObjectSlave m_playPos;
-    ControlObjectSlave m_play;
-    ControlObjectSlave m_repeat;
+    ControlProxy m_playPos;
+    ControlProxy m_play;
+    ControlProxy m_repeat;
     BaseTrackPlayer* m_pPlayer;
 };
 
@@ -123,20 +123,22 @@ class AutoDJProcessor : public QObject {
         return m_eState;
     }
 
-    int getTransitionTime() const {
-        return m_iTransitionTime;
+    double getTransitionTime() const {
+        return m_transitionTime;
     }
 
     PlaylistTableModel* getTableModel() const {
         return m_pAutoDJTableModel;
     }
 
+    bool nextTrackLoaded();
+
   public slots:
     void setTransitionTime(int seconds);
 
     AutoDJError shufflePlaylist(const QModelIndexList& selectedIndices);
     AutoDJError skipNext();
-    AutoDJError fadeNow();
+    void fadeNow();
     AutoDJError toggleAutoDJ(bool enable);
 
     // The following virtual signal wrappers are used for testing
@@ -195,13 +197,13 @@ class AutoDJProcessor : public QObject {
     PlaylistTableModel* m_pAutoDJTableModel;
 
     AutoDJState m_eState;
-    int m_iTransitionTime; // the desired value set by the user
-    int m_nextTransitionTime; // the tweaked value actually used
+    double m_transitionTime; // the desired value set by the user
+    double m_nextTransitionTime; // the tweaked value actually used
 
     QList<DeckAttributes*> m_decks;
 
-    ControlObjectSlave* m_pCOCrossfader;
-    ControlObjectSlave* m_pCOCrossfaderReverse;
+    ControlProxy* m_pCOCrossfader;
+    ControlProxy* m_pCOCrossfaderReverse;
 
     ControlPushButton* m_pSkipNext;
     ControlPushButton* m_pFadeNow;

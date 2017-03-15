@@ -6,7 +6,7 @@
 #include <vamp-hostsdk/vamp-hostsdk.h>
 
 #include "analyzer/vamp/vampanalyzer.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "preferences/dialog/dlgprefbeats.h"
 #include "track/beat_preferences.h"
 
@@ -58,7 +58,7 @@ DlgPrefBeats::~DlgPrefBeats() {
 
 void DlgPrefBeats::loadSettings() {
     if(m_pconfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_PLUGIN_ID))==QString("")) {
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_PLUGIN_ID)).isEmpty()) {
         slotResetToDefaults();
         slotApply();    // Write to config file so AnalyzerBeats can get the data
         return;

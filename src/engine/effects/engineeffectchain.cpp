@@ -9,13 +9,13 @@ EngineEffectChain::EngineEffectChain(const QString& id)
           m_enableState(EffectProcessor::ENABLED),
           m_insertionType(EffectChain::INSERT),
           m_dMix(0),
-          m_pBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
+          m_buffer1(MAX_BUFFER_LEN),
+          m_buffer2(MAX_BUFFER_LEN) {
     // Try to prevent memory allocation.
     m_effects.reserve(256);
 }
 
 EngineEffectChain::~EngineEffectChain() {
-    SampleUtil::free(m_pBuffer);
 }
 
 bool EngineEffectChain::addEffect(EngineEffect* pEffect, int iIndex) {
@@ -165,10 +165,18 @@ void EngineEffectChain::process(const ChannelHandle& handle,
 
     EffectProcessor::EnableState effectiveEnableState = channel_info.enable_state;
 
+    if (channel_info.enable_state == EffectProcessor::DISABLING) {
+        channel_info.enable_state = EffectProcessor::DISABLED;
+    } else if (channel_info.enable_state == EffectProcessor::ENABLING) {
+        channel_info.enable_state = EffectProcessor::ENABLED;
+    }
+
     if (m_enableState == EffectProcessor::DISABLING) {
         effectiveEnableState = EffectProcessor::DISABLING;
+        m_enableState = EffectProcessor::DISABLED;
     } else if (m_enableState == EffectProcessor::ENABLING) {
         effectiveEnableState = EffectProcessor::ENABLING;
+        m_enableState = EffectProcessor::ENABLED;
     }
 
     // At this point either the chain and channel are enabled or we are ramping
@@ -176,87 +184,58 @@ void EngineEffectChain::process(const ChannelHandle& handle,
     CSAMPLE wet_gain = m_dMix;
     CSAMPLE wet_gain_old = channel_info.old_gain;
 
-    // INSERT mode: output = input * (1-wet) + effect(input) * wet
-    if (m_insertionType == EffectChain::INSERT) {
-        if (wet_gain_old == 1.0 && wet_gain == 1.0) {
-            // Fully wet, no ramp, insert optimization. No temporary buffer needed.
-            for (int i = 0; i < m_effects.size(); ++i) {
-                EngineEffect* pEffect = m_effects[i];
-                if (pEffect == NULL || !pEffect->enabled()) {
-                    continue;
-                }
-                pEffect->process(handle, pInOut, pInOut,
-                                 numSamples, sampleRate,
-                                 effectiveEnableState, groupFeatures);
-            }
-        } else if (wet_gain_old == 0.0 && wet_gain == 0.0) {
-            // Fully dry, no ramp, insert optimization. No action is needed
+    if (wet_gain_old == 0.0 && wet_gain == 0.0) {
+        // Fully dry, no ramp, insert optimization. No action is needed
+        return;
+    } else if (wet_gain_old != 0.0 && wet_gain == 0.0) {
+        // Tell the effect that this is the last call before disabling
+        effectiveEnableState = EffectProcessor::DISABLING;
+    }
+
+    // Ramping code inside the effects need to access the original samples
+    // after writing to the output buffer. This requires not to use the same buffer
+    // for in and output:
+    int enabledEffectCount = 0;
+    CSAMPLE* pIntermediateInput = pInOut;
+    CSAMPLE* pIntermediateOutput = m_buffer1.data();
+
+    for (EngineEffect* pEffect: m_effects) {
+        if (pEffect == NULL || !pEffect->enabled()) {
+            continue;
+        }
+        pEffect->process(
+                handle,
+                pIntermediateInput, pIntermediateOutput,
+                numSamples, sampleRate,
+                effectiveEnableState, groupFeatures);
+
+        ++enabledEffectCount;
+        if (enabledEffectCount % 2) {
+            pIntermediateInput = m_buffer1.data();
+            pIntermediateOutput = m_buffer2.data();
         } else {
-            // Clear scratch buffer.
-            SampleUtil::clear(m_pBuffer, numSamples);
-
-            // Chain each effect
-            bool anyProcessed = false;
-            for (int i = 0; i < m_effects.size(); ++i) {
-                EngineEffect* pEffect = m_effects[i];
-                if (pEffect == NULL || !pEffect->enabled()) {
-                    continue;
-                }
-                const CSAMPLE* pIntermediateInput = (i == 0) ? pInOut : m_pBuffer;
-                CSAMPLE* pIntermediateOutput = m_pBuffer;
-                pEffect->process(handle, pIntermediateInput, pIntermediateOutput,
-                                 numSamples, sampleRate,
-                                 effectiveEnableState, groupFeatures);
-                anyProcessed = true;
-            }
-
-            if (anyProcessed) {
-                // m_pBuffer now contains the fully wet output.
-                // TODO(rryan): benchmark applyGain followed by addWithGain versus
-                // copy2WithGain.
-                SampleUtil::copy2WithRampingGain(
-                    pInOut, pInOut, 1.0 - wet_gain_old, 1.0 - wet_gain,
-                    m_pBuffer, wet_gain_old, wet_gain, numSamples);
-            }
+            pIntermediateInput = m_buffer2.data();
+            pIntermediateOutput = m_buffer1.data();
         }
-    } else { // SEND mode: output = input + effect(input) * wet
-        // Clear scratch buffer.
-        SampleUtil::applyGain(m_pBuffer, 0.0, numSamples);
+    }
 
-        // Chain each effect
-        bool anyProcessed = false;
-        for (int i = 0; i < m_effects.size(); ++i) {
-            EngineEffect* pEffect = m_effects[i];
-            if (pEffect == NULL || !pEffect->enabled()) {
-                continue;
-            }
-            const CSAMPLE* pIntermediateInput = (i == 0) ? pInOut : m_pBuffer;
-            CSAMPLE* pIntermediateOutput = m_pBuffer;
-            pEffect->process(handle, pIntermediateInput,
-                             pIntermediateOutput, numSamples, sampleRate,
-                             effectiveEnableState, groupFeatures);
-            anyProcessed = true;
-        }
-
-        if (anyProcessed) {
-            // m_pBuffer now contains the fully wet output.
-            SampleUtil::addWithRampingGain(pInOut, m_pBuffer,
-                                           wet_gain_old, wet_gain, numSamples);
+    if (enabledEffectCount > 0) {
+        if (m_insertionType == EffectChain::INSERT) {
+            // INSERT mode: output = input * (1-wet) + effect(input) * wet
+            SampleUtil::copy2WithRampingGain(
+                    pInOut,
+                    pInOut, 1.0 - wet_gain_old, 1.0 - wet_gain,
+                    pIntermediateInput, wet_gain_old, wet_gain,
+                    numSamples);
+        } else {
+            // SEND mode: output = input + effect(input) * wet
+            SampleUtil::addWithRampingGain(
+                    pInOut,
+                    pIntermediateInput, wet_gain_old, wet_gain,
+                    numSamples);
         }
     }
 
     // Update ChannelStatus with the latest values.
     channel_info.old_gain = wet_gain;
-
-    if (m_enableState == EffectProcessor::DISABLING) {
-        m_enableState = EffectProcessor::DISABLED;
-    } else if (m_enableState == EffectProcessor::ENABLING) {
-        m_enableState = EffectProcessor::ENABLED;
-    }
-
-    if (channel_info.enable_state == EffectProcessor::DISABLING) {
-        channel_info.enable_state = EffectProcessor::DISABLED;
-    } else if (channel_info.enable_state == EffectProcessor::ENABLING) {
-        channel_info.enable_state = EffectProcessor::ENABLED;
-    }
 }

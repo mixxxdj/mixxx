@@ -22,7 +22,7 @@ class MockPortMidiController : public PortMidiController {
                                inputDeviceInfo, outputDeviceInfo,
                                inputDeviceIndex, outputDeviceIndex) {
     }
-    virtual ~MockPortMidiController() {
+    ~MockPortMidiController() override {
     }
 
     void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2) {

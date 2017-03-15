@@ -45,8 +45,6 @@ class DlgPrefController : public DlgPreferencePage {
     void slotLoadPreset(int index);
     // Mark that we need to apply the settings.
     void slotDirty();
-    // Reload the mappings in the dropdown dialog
-    void enumeratePresets();
 
   signals:
     void controllerEnabled(DlgPrefController*, bool);
@@ -87,6 +85,9 @@ class DlgPrefController : public DlgPreferencePage {
     QString presetWikiLink(const ControllerPresetPointer pPreset) const;
     void savePreset(QString path);
     void initTableView(QTableView* pTable);
+
+    // Reload the mappings in the dropdown dialog
+    void enumeratePresets();
 
     void enableDevice();
     void disableDevice();

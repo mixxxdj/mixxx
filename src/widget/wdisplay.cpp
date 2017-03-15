@@ -28,7 +28,7 @@
 WDisplay::WDisplay(QWidget * parent)
         : WWidget(parent),
           m_iCurrentPixmap(0),
-          m_pPixmapBack(NULL),
+          m_pPixmapBack(nullptr),
           m_bDisabledLoaded(false) {
     setPositions(0);
 }
@@ -37,10 +37,11 @@ WDisplay::~WDisplay() {
     resetPositions();
 }
 
-void WDisplay::setup(QDomNode node, const SkinContext& context) {
+void WDisplay::setup(const QDomNode& node, const SkinContext& context) {
     // Set background pixmap if available
-    if (context.hasNode(node, "BackPath")) {
-        QDomElement backPathNode = context.selectElement(node, "BackPath");
+
+    QDomElement backPathNode = context.selectElement(node, "BackPath");
+    if (!backPathNode.isNull()) {
         setPixmapBackground(context.getPixmapSource(backPathNode),
                             context.selectScaleMode(backPathNode, Paintable::TILE));
     }
@@ -60,8 +61,8 @@ void WDisplay::setup(QDomNode node, const SkinContext& context) {
     }
 
     // See if disabled images is defined, and load them...
-    if (context.hasNode(node, "DisabledPath")) {
-        QDomElement disabledNode = context.selectElement(node, "DisabledPath");
+    QDomElement disabledNode = context.selectElement(node, "DisabledPath");
+    if (!disabledNode.isNull()) {
         QString disabledPath = context.nodeToString(disabledNode);
         // The implicit default in <1.12.0 was FIXED so we keep it for
         // backwards compatibility.
@@ -171,7 +172,7 @@ void WDisplay::onConnectedControlChanged(double dParameter, double dValue) {
     }
 }
 
-void WDisplay::paintEvent(QPaintEvent*) {
+void WDisplay::paintEvent(QPaintEvent* /*unused*/) {
     QStyleOption option;
     option.initFrom(this);
     QStylePainter p(this);

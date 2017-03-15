@@ -34,16 +34,15 @@
 class WStatusLight : public WWidget  {
    Q_OBJECT
   public:
-    WStatusLight(QWidget *parent=0);
-    virtual ~WStatusLight();
+    explicit WStatusLight(QWidget *parent=nullptr);
 
-    void setup(QDomNode node, const SkinContext& context);
+    void setup(const QDomNode& node, const SkinContext& context);
 
   public slots:
-    void onConnectedControlChanged(double dParameter, double dValue);
+    void onConnectedControlChanged(double dParameter, double dValue) override;
 
   protected:
-    void paintEvent(QPaintEvent *);
+    void paintEvent(QPaintEvent * /*unused*/) override;
 
   private:
     void setPixmap(int iState, PixmapSource source, Paintable::DrawMode mode);

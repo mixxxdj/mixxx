@@ -24,7 +24,7 @@
 #include "soundio/sounddevice.h"
 #include "util/rlimit.h"
 #include "util/scopedoverridecursor.h"
-#include "controlobjectslave.h"
+#include "control/controlproxy.h"
 
 /**
  * Construct a new sound preferences pane. Initializes and populates all the
@@ -107,20 +107,20 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(loadSettings()));
 
     m_pMasterAudioLatencyOverloadCount =
-            new ControlObjectSlave("[Master]", "audio_latency_overload_count", this);
+            new ControlProxy("[Master]", "audio_latency_overload_count", this);
     m_pMasterAudioLatencyOverloadCount->connectValueChanged(SLOT(bufferUnderflow(double)));
 
-    m_pMasterLatency = new ControlObjectSlave("[Master]", "latency", this);
+    m_pMasterLatency = new ControlProxy("[Master]", "latency", this);
     m_pMasterLatency->connectValueChanged(SLOT(masterLatencyChanged(double)));
 
 
-    m_pHeadDelay = new ControlObjectSlave("[Master]", "headDelay", this);
-    m_pMasterDelay = new ControlObjectSlave("[Master]", "delay", this);
+    m_pHeadDelay = new ControlProxy("[Master]", "headDelay", this);
+    m_pMasterDelay = new ControlProxy("[Master]", "delay", this);
 
     headDelaySpinBox->setValue(m_pHeadDelay->get());
     masterDelaySpinBox->setValue(m_pMasterDelay->get());
 
-    m_pMasterEnabled = new ControlObjectSlave("[Master]", "enabled", this);
+    m_pMasterEnabled = new ControlProxy("[Master]", "enabled", this);
     masterMixComboBox->addItem(tr("Disabled"));
     masterMixComboBox->addItem(tr("Enabled"));
     masterMixComboBox->setCurrentIndex(m_pMasterEnabled->get() ? 1 : 0);
@@ -128,7 +128,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(masterMixChanged(int)));
     m_pMasterEnabled->connectValueChanged(SLOT(masterEnabledChanged(double)));
 
-    m_pMasterMonoMixdown = new ControlObjectSlave("[Master]", "mono_mixdown", this);
+    m_pMasterMonoMixdown = new ControlProxy("[Master]", "mono_mixdown", this);
     masterOutputModeComboBox->addItem(tr("Stereo"));
     masterOutputModeComboBox->addItem(tr("Mono"));
     masterOutputModeComboBox->setCurrentIndex(m_pMasterMonoMixdown->get() ? 1 : 0);
@@ -136,7 +136,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(masterOutputModeComboBoxChanged(int)));
     m_pMasterMonoMixdown->connectValueChanged(SLOT(masterMonoMixdownChanged(double)));
 
-    m_pMasterTalkoverMix = new ControlObjectSlave("[Master]", "talkover_mix", this);
+    m_pMasterTalkoverMix = new ControlProxy("[Master]", "talkover_mix", this);
     micMixComboBox->addItem(tr("Master output"));
     micMixComboBox->addItem(tr("Broadcast and Recording only"));
     micMixComboBox->setCurrentIndex((int)m_pMasterTalkoverMix->get());
@@ -146,7 +146,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
 
 
     m_pKeylockEngine =
-            new ControlObjectSlave("[Master]", "keylock_engine", this);
+            new ControlProxy("[Master]", "keylock_engine", this);
 
     connect(headDelaySpinBox, SIGNAL(valueChanged(double)),
             this, SLOT(headDelayChanged(double)));
@@ -159,7 +159,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     qDebug() << "RLimit Max " << RLimit::getMaxRtPrio();
 
     if (RLimit::isRtPrioAllowed()) {
-        limitsHint->hide();
+        limitsHint->setText(tr("Realtime scheduling is enabled."));
     }
 #else
     // the limits warning is a Linux only thing
@@ -178,10 +178,11 @@ DlgPrefSound::~DlgPrefSound() {
 void DlgPrefSound::slotUpdate() {
     // this is unfortunate, because slotUpdate is called every time
     // we change to this pane, we lose changed and unapplied settings
-    // every time. There's no real way around this, just anothe argument
+    // every time. There's no real way around this, just another argument
     // for a prefs rewrite -- bkgood
-    loadSettings();
     m_settingsModified = false;
+    loadSettings();
+
 }
 
 /**
@@ -192,7 +193,7 @@ void DlgPrefSound::slotApply() {
         return;
     }
 
-    int err = OK;
+    SoundDeviceError err = SOUNDDEVICE_ERROR_OK;
     {
         ScopedWaitCursor cursor;
         m_pKeylockEngine->set(keylockComboBox->currentIndex());
@@ -204,26 +205,12 @@ void DlgPrefSound::slotApply() {
         emit(writePaths(&m_config));
         err = m_pSoundManager->setConfig(m_config);
     }
-    if (err != OK) {
-        QString error;
-        QString deviceName(tr("a device"));
-        QString detailedError(tr("An unknown error occurred"));
-        SoundDevice *device = m_pSoundManager->getErrorDevice();
-        if (device != NULL) {
-            deviceName = tr("sound device \"%1\"").arg(device->getDisplayName());
-            detailedError = device->getError();
-        }
-        switch (err) {
-        case SOUNDDEVICE_ERROR_DUPLICATE_OUTPUT_CHANNEL:
-            error = tr("Two outputs cannot share channels on %1").arg(deviceName);
-            break;
-        default:
-            error = tr("Error opening %1\n%2").arg(deviceName, detailedError);
-            break;
-        }
+    if (err != SOUNDDEVICE_ERROR_OK) {
+        QString error = m_pSoundManager->getLastErrorMessage(err);
         QMessageBox::warning(NULL, tr("Configuration error"), error);
+    } else {
+        m_settingsModified = false;
     }
-    m_settingsModified = false;
     loadSettings(); // in case SM decided to change anything it didn't like
 }
 
@@ -384,12 +371,13 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
     }
 
     // Default keylock is Rubberband.
-    int keylock_engine = m_pConfig->getValueString(
-            ConfigKey("[Master]", "keylock_engine"), "1").toInt();
+    int keylock_engine = m_pConfig->getValue(
+            ConfigKey("[Master]", "keylock_engine"), 1);
     keylockComboBox->setCurrentIndex(keylock_engine);
 
-    emit(loadPaths(m_config));
     m_loading = false;
+    // DlgPrefSoundItem has it's own inhibit flag 
+    emit(loadPaths(m_config));
 }
 
 /**

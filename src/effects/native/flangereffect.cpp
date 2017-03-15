@@ -24,17 +24,6 @@ EffectManifest FlangerEffect::getManifest() {
         "A simple modulation effect, created by taking the input signal "
         "and mixing it with a delayed, pitch modulated copy of itself."));
 
-    EffectManifestParameter* depth = manifest.addParameter();
-    depth->setId("depth");
-    depth->setName(QObject::tr("Depth"));
-    depth->setDescription(QObject::tr("Controls the intensity of the effect."));
-    depth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    depth->setDefault(0.0);
-    depth->setMinimum(0.0);
-    depth->setMaximum(1.0);
-
     EffectManifestParameter* delay = manifest.addParameter();
     delay->setId("delay");
     delay->setName(QObject::tr("Delay"));
@@ -42,7 +31,7 @@ EffectManifest FlangerEffect::getManifest() {
     delay->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     delay->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     delay->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    delay->setDefault(50.0);
+    delay->setDefault(3333.3);
     delay->setMinimum(50.0);
     delay->setMaximum(10000.0);
 
@@ -53,9 +42,22 @@ EffectManifest FlangerEffect::getManifest() {
     period->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     period->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    period->setDefault(50000.0);
+    period->setDefault(666666.6);
     period->setMinimum(50000.0);
     period->setMaximum(2000000.0);
+
+    EffectManifestParameter* depth = manifest.addParameter();
+    depth->setId("depth");
+    depth->setName(QObject::tr("Depth"));
+    depth->setDescription(QObject::tr("Controls the intensity of the effect."));
+    depth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    depth->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    depth->setDefault(0.0);
+    depth->setMinimum(0.0);
+    depth->setMaximum(1.0);
+
 
     return manifest;
 }

@@ -20,6 +20,10 @@ print = function(string) {
     engine.log(string);
 }
 
+var printObject = function (object) {
+    print(JSON.stringify(object, null, 2));
+};
+
 // ----------------- Generic functions ---------------------
 
 function secondstominutes(secs)
@@ -265,9 +269,9 @@ script.loopMove = function (group,direction,numberOfBeats) {
     if (!numberOfBeats || numberOfBeats==0) numberOfBeats = 0.5;
 
     if (direction < 0) {
-        engine.setValue(group, "loop_move", -number_of_beats);
+        engine.setValue(group, "loop_move", -numberOfBeats);
     } else {
-        engine.setValue(group, "loop_move", number_of_beats);
+        engine.setValue(group, "loop_move", numberOfBeats);
     }
 }
 
@@ -282,7 +286,7 @@ script.loopMove = function (group,direction,numberOfBeats) {
    -------- ------------------------------------------------------ */
 // TODO: Is this still useful now that MidiController.cpp properly handles these?
 script.midiPitch = function (LSB, MSB, status) {
-    if ((status & 0xF0) != 0xE0) {  // Mask the upper nybble so we can check the opcode regardless of the channel
+    if ((status & 0xF0) !== 0xE0) {  // Mask the upper nybble so we can check the opcode regardless of the channel
         print("Script.midiPitch: Error, not a MIDI pitch (0xEn) message: "+status);
         return false;
     }
@@ -303,7 +307,7 @@ script.midiPitch = function (LSB, MSB, status) {
    -------- ------------------------------------------------------ */
 script.spinback = function(channel, control, value, status, group) {
     // disable on note-off or zero value note/cc
-    engine.spinback(parseInt(group.substring(8,9)), ((status & 0xF0) != 0x80 && value > 0));
+    engine.spinback(parseInt(group.substring(8,9)), ((status & 0xF0) !== 0x80 && value > 0));
 }
 
 /* -------- ------------------------------------------------------
@@ -311,12 +315,32 @@ script.spinback = function(channel, control, value, status, group) {
    Purpose: wrapper around engine.brake() that can be directly mapped
             from xml for a brake effect
             e.g: <key>script.brake</key>
-   Input:   channel, control, value, status, group
+   Input:   channel, control, value, status, group, factor (optional)
    Output:  none
    -------- ------------------------------------------------------ */
-script.brake = function(channel, control, value, status, group) {
-    // disable on note-off or zero value note/cc
-    engine.brake(parseInt(group.substring(8,9)), ((status & 0xF0) != 0x80 && value > 0));
+script.brake = function(channel, control, value, status, group, factor) {
+    // set default factor
+    if (factor === undefined) {
+        factor = 1;
+    }
+    // disable on note-off or zero value note/cc, use default decay rate '1'
+    engine.brake(parseInt(group.substring(8,9)), ((status & 0xF0) !== 0x80 && value > 0), factor);
+}
+
+/* -------- ------------------------------------------------------
+     script.softStart
+   Purpose: wrapper around engine.brake() that can be directly mapped
+            from xml for a brake effect
+            e.g: <key>script.brake</key>
+   Input:   channel, control, value, status, group, acceleration factor (optional)
+   Output:  none
+   -------- ------------------------------------------------------ */
+script.softStart = function(channel, control, value, status, group, factor) {
+    if (factor === undefined) {
+        factor = 1;
+    }
+    // disable on note-off or zero value note/cc, use default increase rate '1'
+    engine.softStart(parseInt(group.substring(8,9)), ((status & 0xF0) !== 0x80 && value > 0), factor);
 }
 
 // bpm - Used for tapping the desired BPM for a deck
@@ -358,6 +382,12 @@ bpm.tapButton = function(deck) {
     engine.setValue("[Channel"+deck+"]","rate",fRateScale * engine.getValue("[Channel"+deck+"]","rate_dir"));
 //     print("Script: BPM="+average+" setting to "+fRateScale);
 }
+
+// ----------------- Common regular expressions --------------------------
+script.samplerRegEx = /^\[Sampler(\d+)\]$/ ;
+script.channelRegEx = /^\[Channel(\d+)\]$/ ;
+script.eqRegEx = /^\[EqualizerRack1_(\[.*\])_Effect1\]$/ ;
+script.quickEffectRegEx = /^\[QuickEffectRack1_(\[.*\])\]$/ ;
 
 // ----------------- Object definitions --------------------------
 

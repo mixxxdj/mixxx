@@ -85,7 +85,7 @@ void TagFetcher::fingerprintFound(int index) {
 
     emit(fetchProgress(tr("Identifying track")));
     // qDebug() << "start to look up the MBID";
-    m_AcoustidClient.start(index, fingerprint, ptrack->getDuration());
+    m_AcoustidClient.start(index, fingerprint, ptrack->getDurationInt());
 }
 
 void TagFetcher::mbidFound(int index, const QString& mbid) {
@@ -114,7 +114,7 @@ void TagFetcher::tagsFetched(int index, const MusicBrainzClient::ResultList& res
     QList<TrackPointer> tracksGuessed;
     foreach (const MusicBrainzClient::Result& result, results) {
         TrackPointer track(
-                TrackInfoObject::newTemporary(
+                Track::newTemporary(
                         originalTrack->getFileInfo(),
                         originalTrack->getSecurityToken()));
         track->setTitle(result.m_title);

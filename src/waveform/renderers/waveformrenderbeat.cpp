@@ -4,9 +4,9 @@
 
 #include "waveform/renderers/waveformrenderbeat.h"
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "track/beats.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
@@ -64,22 +64,29 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     beatPen.setWidthF(1);
     painter->setPen(beatPen);
 
+    const Qt::Orientation orientation = m_waveformRenderer->getOrientation();
+    const float rendererWidth = m_waveformRenderer->getWidth();
     const float rendererHeight = m_waveformRenderer->getHeight();
 
     int beatCount = 0;
 
     while (it->hasNext()) {
-        int beatPosition = it->next();
-        double xBeatPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(beatPosition);
+        double beatPosition = it->next();
+        double xBeatPoint =
+                m_waveformRenderer->transformSamplePositionInRendererWorld(beatPosition);
 
         xBeatPoint = qRound(xBeatPoint);
-        
+
         // If we don't have enough space, double the size.
         if (beatCount >= m_beats.size()) {
             m_beats.resize(m_beats.size() * 2);
         }
 
-        m_beats[beatCount++].setLine(xBeatPoint, 0.0f, xBeatPoint, rendererHeight);
+        if (orientation == Qt::Horizontal) {
+            m_beats[beatCount++].setLine(xBeatPoint, 0.0f, xBeatPoint, rendererHeight);
+        } else {
+            m_beats[beatCount++].setLine(0.0f, xBeatPoint, rendererWidth, xBeatPoint);
+        }
     }
 
     // Make sure to use constData to prevent detaches!

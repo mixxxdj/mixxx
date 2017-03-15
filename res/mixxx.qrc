@@ -3,16 +3,17 @@
         <file>images/ic_mixxx_window.png</file>
         <file>images/library/cover_default.png</file>
         <file>images/library/crates_art.png</file>
+        <file>images/library/cross.png</file>
         <file>images/library/ic_library_autodj.png</file>
         <file>images/library/ic_library_banshee.png</file>
-        <file>images/library/ic_library_browse.png</file>
+        <file>images/library/ic_library_computer.png</file> <!-- from Gnome high contrast icons LGPL 2.1 -->
         <file>images/library/ic_library_checked.png</file>
         <file>images/library/ic_library_crates.png</file>
         <file>images/library/ic_library_drag_and_drop.png</file>
         <file>images/library/ic_library_history.png</file>
         <file>images/library/ic_library_history_current.png</file>
         <file>images/library/ic_library_itunes.png</file>
-        <file>images/library/ic_library_library.png</file>
+        <file>images/library/ic_library_tracks.png</file> <!-- from Gnome high contrast icons LGPL 2.1 -->
         <file>images/library/ic_library_locked.png</file>
         <file>images/library/ic_library_playlist.png</file>
         <file>images/library/ic_library_prepare.png</file>
@@ -50,7 +51,6 @@
         <file>shaders/filteredsignal.frag</file>
         <file>shaders/passthrough.vert</file>
         <file>shaders/rgbsignal.frag</file>
-        <file>skins/cross.png</file>
         <file>translations/mixxx_ar.qm</file>
         <file>translations/mixxx_ast.qm</file>
         <file>translations/mixxx_bg.qm</file>

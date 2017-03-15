@@ -42,7 +42,7 @@ bool WOverviewRGB::drawNextPixmapPart() {
     // Test if there is some new to draw (at least of pixel width)
     const int completionIncrement = waveformCompletion - m_actualCompletion;
 
-    int visiblePixelIncrement = completionIncrement * width() / dataSize;
+    int visiblePixelIncrement = completionIncrement * length() / dataSize;
     if (completionIncrement < 2 || visiblePixelIncrement == 0) {
         return false;
     }
@@ -56,7 +56,7 @@ bool WOverviewRGB::drawNextPixmapPart() {
     //         << "completionIncrement:" << completionIncrement;
 
     QPainter painter(m_pWaveformSourceImage);
-    painter.translate(0.0,(double)m_pWaveformSourceImage->height()/2.0);
+    painter.translate(0.0,static_cast<double>(m_pWaveformSourceImage->height())/2.0);
 
     QColor color;
 

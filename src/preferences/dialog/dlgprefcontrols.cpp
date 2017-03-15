@@ -27,15 +27,15 @@
 #include "preferences/dialog/dlgprefcontrols.h"
 #include "preferences/constants.h"
 #include "preferences/usersettings.h"
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "widget/wnumberpos.h"
 #include "engine/enginebuffer.h"
 #include "engine/ratecontrol.h"
 #include "skin/skinloader.h"
 #include "skin/legacyskinparser.h"
 #include "mixer/playermanager.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "mixxx.h"
 #include "defs_urls.h"
 
@@ -52,11 +52,11 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
            m_iNumConfiguredSamplers(0) {
     setupUi(this);
 
-    m_pNumDecks = new ControlObjectSlave("[Master]", "num_decks", this);
+    m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
     m_pNumDecks->connectValueChanged(SLOT(slotNumDecksChanged(double)));
     slotNumDecksChanged(m_pNumDecks->get());
 
-    m_pNumSamplers = new ControlObjectSlave("[Master]", "num_samplers", this);
+    m_pNumSamplers = new ControlProxy("[Master]", "num_samplers", this);
     m_pNumSamplers->connectValueChanged(SLOT(slotNumSamplersChanged(double)));
     slotNumSamplersChanged(m_pNumSamplers->get());
 
@@ -125,9 +125,9 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     connect(buttonGroupKeyLockMode, SIGNAL(buttonClicked(QAbstractButton*)),
             this, SLOT(slotKeyLockMode(QAbstractButton *)));
 
-    m_keylockMode = m_pConfig->getValueString(
-        ConfigKey("[Controls]", "keylockMode"), "0").toInt();
-    foreach (ControlObjectSlave* pControl, m_keylockModeControls) {
+    m_keylockMode = m_pConfig->getValue(
+        ConfigKey("[Controls]", "keylockMode"), 0);
+    foreach (ControlProxy* pControl, m_keylockModeControls) {
         pControl->set(m_keylockMode);
     }
 
@@ -231,8 +231,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
 
     // Set default value in config file and control objects, if not present
     // Default is "0" = Mixxx Mode
-    QString cueDefault = m_pConfig->getValueString(ConfigKey("[Controls]", "CueDefault"), "0");
-    int cueDefaultValue = cueDefault.toInt();
+    int cueDefaultValue = m_pConfig->getValue(
+            ConfigKey("[Controls]", "CueDefault"), 0);
 
     // Update combo box
     // The itemData values are out of order to avoid breaking configurations
@@ -242,6 +242,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     ComboBoxCueDefault->addItem(tr("Pioneer mode"), 1);
     ComboBoxCueDefault->addItem(tr("Denon mode"), 2);
     ComboBoxCueDefault->addItem(tr("Numark mode"), 3);
+    ComboBoxCueDefault->addItem(tr("CUP mode"), 5);
     const int cueDefaultIndex = cueDefaultIndexByData(cueDefaultValue);
     ComboBoxCueDefault->setCurrentIndex(cueDefaultIndex);
     slotSetCueDefault(cueDefaultIndex);
@@ -349,9 +350,9 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
 
     // Update "reset speed" and "reset pitch" check boxes
     // TODO: All defaults should only be set in slotResetToDefaults.
-    int configSPAutoReset = m_pConfig->getValueString(
+    int configSPAutoReset = m_pConfig->getValue<int>(
                     ConfigKey("[Controls]", "SpeedAutoReset"),
-                    QString("%1").arg(BaseTrackPlayer::RESET_PITCH)).toInt();
+                    BaseTrackPlayer::RESET_PITCH);
 
     m_speedAutoReset = (configSPAutoReset==BaseTrackPlayer::RESET_SPEED ||
                         configSPAutoReset==BaseTrackPlayer::RESET_PITCH_AND_SPEED);
@@ -497,12 +498,12 @@ void DlgPrefControls::slotSetRateRangePercent (int rateRangePercent) {
     double rateRange = rateRangePercent / 100.;
 
     // Set rate range for every group
-    foreach (ControlObjectSlave* pControl, m_rateRangeControls) {
+    foreach (ControlProxy* pControl, m_rateRangeControls) {
         pControl->set(rateRange);
     }
 
     // Reset rate for every group
-    foreach (ControlObjectSlave* pControl, m_rateControls) {
+    foreach (ControlProxy* pControl, m_rateControls) {
         pControl->set(0);
     }
 }
@@ -520,14 +521,14 @@ void DlgPrefControls::slotSetRateDir(int index) {
     float oldDir = m_rateDirControls[0]->get();
 
     // Set rate direction for every group
-    foreach (ControlObjectSlave* pControl, m_rateDirControls) {
+    foreach (ControlProxy* pControl, m_rateDirControls) {
         pControl->set(dir);
     }
 
     // If the setting was changed, ie the old direction is not equal to the new one,
     // multiply the rate by -1 so the current sound does not change.
     if(fabs(dir - oldDir) > 0.1) {
-        foreach (ControlObjectSlave* pControl, m_rateControls) {
+        foreach (ControlProxy* pControl, m_rateControls) {
             pControl->set(-1 * pControl->get());
         }
     }
@@ -553,7 +554,7 @@ void DlgPrefControls::slotSetCueDefault(int index)
     m_pConfig->set(ConfigKey("[Controls]", "CueDefault"), ConfigValue(cueMode));
 
     // Set cue behavior for every group
-    foreach (ControlObjectSlave* pControl, m_cueControls) {
+    foreach (ControlProxy* pControl, m_cueControls) {
         pControl->set(cueMode);
     }
 }
@@ -692,7 +693,7 @@ void DlgPrefControls::slotApply() {
     m_pConfig->set(ConfigKey("[Controls]", "keylockMode"),
             ConfigValue(m_keylockMode));
     // Set key lock behavior for every group
-    foreach (ControlObjectSlave* pControl, m_keylockModeControls) {
+    foreach (ControlProxy* pControl, m_keylockModeControls) {
         pControl->set(m_keylockMode);
     }
 }
@@ -738,15 +739,15 @@ void DlgPrefControls::slotNumDecksChanged(double new_count) {
 
     for (int i = m_iNumConfiguredDecks; i < numdecks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
-        m_rateControls.push_back(new ControlObjectSlave(
+        m_rateControls.push_back(new ControlProxy(
                 group, "rate"));
-        m_rateRangeControls.push_back(new ControlObjectSlave(
+        m_rateRangeControls.push_back(new ControlProxy(
                 group, "rateRange"));
-        m_rateDirControls.push_back(new ControlObjectSlave(
+        m_rateDirControls.push_back(new ControlProxy(
                 group, "rate_dir"));
-        m_cueControls.push_back(new ControlObjectSlave(
+        m_cueControls.push_back(new ControlProxy(
                 group, "cue_mode"));
-        m_keylockModeControls.push_back(new ControlObjectSlave(
+        m_keylockModeControls.push_back(new ControlProxy(
                         group, "keylockMode"));
         m_keylockModeControls.last()->set(m_keylockMode);
     }
@@ -764,15 +765,15 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
 
     for (int i = m_iNumConfiguredSamplers; i < numsamplers; ++i) {
         QString group = PlayerManager::groupForSampler(i);
-        m_rateControls.push_back(new ControlObjectSlave(
+        m_rateControls.push_back(new ControlProxy(
                 group, "rate"));
-        m_rateRangeControls.push_back(new ControlObjectSlave(
+        m_rateRangeControls.push_back(new ControlProxy(
                 group, "rateRange"));
-        m_rateDirControls.push_back(new ControlObjectSlave(
+        m_rateDirControls.push_back(new ControlProxy(
                 group, "rate_dir"));
-        m_cueControls.push_back(new ControlObjectSlave(
+        m_cueControls.push_back(new ControlProxy(
                 group, "cue_mode"));
-        m_keylockModeControls.push_back(new ControlObjectSlave(
+        m_keylockModeControls.push_back(new ControlProxy(
                         group, "keylockMode"));
         m_keylockModeControls.last()->set(m_keylockMode);
     }

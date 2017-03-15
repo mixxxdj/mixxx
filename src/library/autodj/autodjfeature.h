@@ -19,10 +19,8 @@
 #include "library/libraryfeature.h"
 #include "preferences/usersettings.h"
 #include "library/treeitemmodel.h"
-
-#ifdef __AUTODJCRATES__
+#include "library/crate/crate.h"
 #include "library/dao/autodjcratesdao.h"
-#endif // __AUTODJCRATES__
 
 class DlgAutoDJ;
 class Library;
@@ -46,7 +44,7 @@ class AutoDJFeature : public LibraryFeature {
     bool dragMoveAccept(QUrl url);
 
     void bindWidget(WLibrary* libraryWidget,
-                    MixxxKeyboard* keyboard);
+                    KeyboardEventFilter* keyboard);
 
     TreeItemModel* getChildModel();
 
@@ -54,15 +52,12 @@ class AutoDJFeature : public LibraryFeature {
     void activate();
 
     // Temporary, until WCrateTableView can be written.
-#ifdef __AUTODJCRATES__
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
-#endif // __AUTODJCRATES__
 
   private:
     UserSettingsPointer m_pConfig;
     Library* m_pLibrary;
     TrackCollection* m_pTrackCollection;
-    CrateDAO& m_crateDao;
     PlaylistDAO& m_playlistDao;
     // The id of the AutoDJ playlist.
     int m_iAutoDJPlaylistId;
@@ -70,8 +65,6 @@ class AutoDJFeature : public LibraryFeature {
     const static QString m_sAutoDJViewName;
     TreeItemModel m_childModel;
     DlgAutoDJ* m_pAutoDJView;
-
-#ifdef __AUTODJCRATES__
 
     // Initialize the list of crates loaded into the auto-DJ queue.
     void constructCrateChildModel();
@@ -82,14 +75,10 @@ class AutoDJFeature : public LibraryFeature {
     // The crate ID and name of all loaded crates.
     // Its indices correspond one-to-one with tree-items contained by the
     // "Crates" tree-item.
-    QList<QPair<int, QString> > m_crateList;
+    QList<Crate> m_crateList;
 
     // How we access the auto-DJ-crates database.
     AutoDJCratesDAO m_autoDjCratesDao;
-
-    // The model-index of the last tree-item that was right-clicked on.
-    // Only stored for tree-items contained by the "Crates" tree-item.
-    QModelIndex m_lastRightClickedIndex;
 
     // A context-menu item that allows crates to be removed from the
     // auto-DJ list.
@@ -98,34 +87,21 @@ class AutoDJFeature : public LibraryFeature {
     // Used to map menu-item signals.
     QSignalMapper m_crateMapper;
 
-#endif // __AUTODJCRATES__
-
   private slots:
     // Add a crate to the auto-DJ queue.
-    void slotAddCrateToAutoDj(int crateId);
+    void slotAddCrateToAutoDj(int iCrateId);
 
     // Implements the context-menu item.
     void slotRemoveCrateFromAutoDj();
 
-    // Signaled by the crate DAO when a crate is added.
-    void slotCrateAdded(int crateId);
-
-    // Signaled by the crate DAO when a crate is renamed.
-    void slotCrateRenamed(int crateId, QString newName);
-
-    // Signaled by the crate DAO when a crate is deleted.
-    void slotCrateDeleted(int crateId);
-
-    // Signaled by the crate DAO when a crate's auto-DJ status changes.
-    void slotCrateAutoDjChanged(int crateId, bool added);
+    void slotCrateChanged(CrateId crateId);
 
     // Adds a random track from all loaded crates to the auto-DJ queue.
-    void slotAddRandomTrack(bool);
+    void slotAddRandomTrack();
 
     // Adds a random track from the queue upon hitting minimum number
     // of tracks in the playlist
-    void slotRandomQueue(int);
-
+    void slotRandomQueue(int numTracksToAdd);
 };
 
 

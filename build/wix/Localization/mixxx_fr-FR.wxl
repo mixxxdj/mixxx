@@ -2,11 +2,11 @@
 <WixLocalization Culture="fr-fr" Codepage="1252"
                  xmlns="http://schemas.microsoft.com/wix/2006/localization">
 
-  <!-- .................................................... -->
-  <!-- This wxl file has been auto generated from a po file -->
-  <!-- using https://github.com/sblaisot/wxl-po-tools       -->
-  <!-- Source File: po/fr-FR.po                             -->
-  <!-- .................................................... -->
+  <!-- ..................................................... -->
+  <!-- This wxl file has been auto generated from a po file  -->
+  <!-- using https://github.com/sblaisot/wxl-po-tools        -->
+  <!-- Source File: po/fr-FR.po                              -->
+  <!-- ..................................................... -->
 
   <!-- This contains the LangID and should be translated to reflect the correct LangID. -->
   <!-- Supported language and codepage codes can be found here: https://msdn.microsoft.com/en-us/goglobal/bb964664.aspx -->
@@ -35,10 +35,15 @@
   <!-- Custom Warning Dialog -->
   <String Id="WarningDlgTitle">{\WixUI_Font_Title}Attention</String>
 
+  <!-- Custom exit dialog -->
+  <String Id="StartOnExit">Démarrer Mixxx en quittant l'installeur.</String>
+
   <!-- Features translations -->
   <String Id="FeatureCompleteDescription">Installation complète.</String>
   <String Id="FeatureMainProgramTitle">Programme principal</String>
   <String Id="FeatureMainProgramDescription">Le programme et l'ensemble de ses dépendances.</String>
+  <String Id="FeaturePDBTitle">Fichiers PDB de debug </String>
+  <String Id="FeaturePDBDescription">Installe les fichiers PDB de Mixxx, à utiliser avec un debuggueur. Utile pour débugguer Mixxx et fournir à l'équipe de développement des backtraces exploitables.</String>
   <String Id="FeatureDesktopShortcutTitle">Raccourci sur le bureau</String>
   <String Id="FeatureDesktopShortcutDescription">Ajoute un raccourci "Mixxx" sur le bureau</String>
   <String Id="FeatureManualTitle">Manuel Mixxx</String>

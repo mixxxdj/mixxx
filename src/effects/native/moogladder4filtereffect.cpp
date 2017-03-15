@@ -16,12 +16,12 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
     manifest.setName(QObject::tr("Moog Ladder 4 Filter"));
+    manifest.setShortName(QObject::tr("Moog Filter"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
             "A 4-pole Moog ladder filter, based on Antti Houvilainen's non linear digital implementation"));
     manifest.setEffectRampsFromDry(true);
-    manifest.setIsForFilterKnob(true);
 
     EffectManifestParameter* lpf = manifest.addParameter();
     lpf->setId("lpf");
@@ -39,13 +39,14 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     EffectManifestParameter* q = manifest.addParameter();
     q->setId("resonance");
     q->setName(QObject::tr("Resonance"));
+    q->setShortName(QObject::tr("Res"));
     q->setDescription(QObject::tr("Resonance of the filters. 4 = self oscillating"));
     q->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     q->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     q->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
-    q->setDefault(0);
     q->setMinimum(0.0);
     q->setMaximum(4.0);
+    q->setDefault(1.0);
 
     EffectManifestParameter* hpf = manifest.addParameter();
     hpf->setId("hpf");
@@ -103,7 +104,6 @@ void MoogLadder4FilterEffect::processChannel(
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
-    Q_UNUSED(sampleRate);
 
 
     double resonance = m_pResonance->value();
@@ -144,9 +144,9 @@ void MoogLadder4FilterEffect::processChannel(
         // hpf enabled, fade-in is handled in the filter when starting from pause
         pState->m_pHighFilter->process(pInput, pHpfOutput, numSamples);
     } else if (pState->m_hiFreq > kMinCorner) {
-            // hpf disabling
-            pState->m_pHighFilter->processAndPauseFilter(pInput,
-                    pHpfOutput, numSamples);
+        // hpf disabling
+        pState->m_pHighFilter->processAndPauseFilter(pInput,
+                pHpfOutput, numSamples);
     } else {
         // paused LP uses input directly
         pLpfInput = pInput;

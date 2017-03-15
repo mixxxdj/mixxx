@@ -13,7 +13,7 @@
 #include <QFont>
 
 #include "preferences/usersettings.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "recording/recordingmanager.h"
 #include "analysisfeature.h"
 #include "library/coverartcache.h"
@@ -32,7 +32,7 @@ class MixxxLibraryFeature;
 class PlaylistFeature;
 class CrateFeature;
 class LibraryControl;
-class MixxxKeyboard;
+class KeyboardEventFilter;
 class PlayerManagerInterface;
 
 class Library : public QObject {
@@ -45,7 +45,7 @@ public:
     virtual ~Library();
 
     void bindWidget(WLibrary* libraryWidget,
-                    MixxxKeyboard* pKeyboard);
+                    KeyboardEventFilter* pKeyboard);
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
 
     void addFeature(LibraryFeature* feature);
@@ -134,6 +134,7 @@ public:
     LibraryScanner m_scanner;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
+    QScopedPointer<ControlObject> m_pKeyNotation;
 };
 
 #endif /* LIBRARY_H */

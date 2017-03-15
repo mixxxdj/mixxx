@@ -7,7 +7,7 @@
 
 #include "dlgpreflv2.h"
 #include "engine/enginefilterbessel4.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "util/math.h"
 
 DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,

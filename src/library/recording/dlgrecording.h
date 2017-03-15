@@ -7,9 +7,9 @@
 #include "library/proxytrackmodel.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
-#include "mixxxkeyboard.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "recording/recordingmanager.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "library/recording/ui_dlgrecording.h"
 
 class PlaylistTableModel;
@@ -21,22 +21,24 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
   public:
     DlgRecording(QWidget *parent, UserSettingsPointer pConfig,
                  Library* pLibrary, TrackCollection* pTrackCollection,
-                 RecordingManager* pRecManager, MixxxKeyboard* pKeyboard);
-    virtual ~DlgRecording();
+                 RecordingManager* pRecManager, KeyboardEventFilter* pKeyboard);
+    ~DlgRecording() override;
 
-    virtual void onSearch(const QString& text);
-    virtual void onShow();
-    virtual void loadSelectedTrack();
-    virtual void slotSendToAutoDJ();
-    virtual void slotSendToAutoDJTop();
-    virtual void loadSelectedTrackToGroup(QString group, bool play);
-    virtual void moveSelection(int delta);
+    void onSearch(const QString& text) override;
+    void onShow() override;
+    bool hasFocus() const override;
+    void loadSelectedTrack() override;
+    void slotSendToAutoDJBottom() override;
+    void slotSendToAutoDJTop() override;
+    void slotSendToAutoDJReplace() override;
+    void loadSelectedTrackToGroup(QString group, bool play) override;
+    void moveSelection(int delta) override;
     inline const QString currentSearch() { return m_proxyModel.currentSearch(); }
 
   public slots:
     void toggleRecording(bool toggle);
     void slotRecordingEnabled(bool);
-    void slotBytesRecorded(long);
+    void slotBytesRecorded(int);
     void refreshBrowseModel();
     void slotRestoreSearch();
     void slotDurationRecorded(QString durationRecorded);

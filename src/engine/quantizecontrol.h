@@ -6,7 +6,7 @@
 #include "preferences/usersettings.h"
 #include "engine/enginecontrol.h"
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "track/beats.h"
 
 class ControlObject;

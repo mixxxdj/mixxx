@@ -4,7 +4,7 @@
 
 #include "library/setlogfeature.h"
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
@@ -19,6 +19,12 @@ SetlogFeature::SetlogFeature(QObject* parent,
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.setlog",
                                                    true); //show all tracks
+
+    //construct child model
+    auto pRootItem = std::make_unique<TreeItem>(this);
+    m_childModel.setRootItem(std::move(pRootItem));
+    constructChildModel(-1);
+
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
     connect(m_pJoinWithPreviousAction, SIGNAL(triggered()),
             this, SLOT(slotJoinWithPrevious()));
@@ -28,11 +34,6 @@ SetlogFeature::SetlogFeature(QObject* parent,
 
     // initialized in a new generic slot(get new history playlist purpose)
     emit(slotGetNewPlaylist());
-
-    //construct child model
-    TreeItem *rootItem = new TreeItem();
-    m_childModel.setRootItem(rootItem);
-    constructChildModel(-1);
 }
 
 SetlogFeature::~SetlogFeature() {
@@ -54,7 +55,7 @@ QIcon SetlogFeature::getIcon() {
 }
 
 void SetlogFeature::bindWidget(WLibrary* libraryWidget,
-                               MixxxKeyboard* keyboard) {
+                               KeyboardEventFilter* keyboard) {
     BasePlaylistFeature::bindWidget(libraryWidget,
                                     keyboard);
     connect(&PlayerInfo::instance(), SIGNAL(currentPlayingTrackChanged(TrackPointer)),
@@ -116,7 +117,7 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 void SetlogFeature::buildPlaylistList() {
     m_playlistList.clear();
     // Setup the sidebar playlist model
-    QSqlTableModel playlistTableModel(this, m_pTrackCollection->getDatabase());
+    QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
     playlistTableModel.setTable("Playlists");
     playlistTableModel.setFilter("hidden=2"); // PLHT_SET_LOG
     playlistTableModel.setSort(playlistTableModel.fieldIndex("id"),

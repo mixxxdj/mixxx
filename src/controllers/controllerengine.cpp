@@ -10,8 +10,8 @@
 
 #include "controllers/controller.h"
 #include "controllers/controllerdebug.h"
-#include "controlobject.h"
-#include "controlobjectscript.h"
+#include "control/controlobject.h"
+#include "control/controlobjectscript.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
 // to tell the msvs compiler about `isnan`
@@ -46,6 +46,7 @@ ControllerEngine::ControllerEngine(Controller* controller)
     m_scratchFilters.resize(kDecks);
     m_rampFactor.resize(kDecks);
     m_brakeActive.resize(kDecks);
+    m_softStartActive.resize(kDecks);
     // Initialize arrays used for testing and pointers
     for (int i = 0; i < kDecks; ++i) {
         m_dx[i] = 0.0;
@@ -98,30 +99,48 @@ void ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefix
     }
 }
 
-/* -------- ------------------------------------------------------
-Purpose: Resolves a function name to a QScriptValue including
-            OBJECT.Function calls
-Input:   -
-Output:  -
--------- ------------------------------------------------------ */
-QScriptValue ControllerEngine::resolveFunction(const QString& function) const {
+/* ------------------------------------------------------------------
+Purpose: Turn a snippet of JS into a QScriptValue function.
+         Wrapping it in an anonymous function allows any JS that
+         evaluates to a function to be used in MIDI mapping XML files
+         and ensures the function is executed with the correct
+         'this' object.
+Input:   QString snippet of JS that evaluates to a function,
+         int number of arguments that the function takes
+Output:  QScriptValue of JS snippet wrapped in an anonymous function
+------------------------------------------------------------------- */
+QScriptValue ControllerEngine::wrapFunctionCode(const QString& codeSnippet,
+                                                int numberOfArgs) {
+    QScriptValue wrappedFunction;
+
     QHash<QString, QScriptValue>::const_iterator i =
-            m_scriptValueCache.find(function);
-    if (i != m_scriptValueCache.end()) {
-        return i.value();
-    }
+            m_scriptWrappedFunctionCache.find(codeSnippet);
 
-    QScriptValue object = m_pEngine->globalObject();
-    QStringList parts = function.split(".");
-
-    for (int i = 0; i < parts.size(); i++) {
-        object = object.property(parts.at(i));
-        if (!object.isValid()) {
-            break;
+    if (i != m_scriptWrappedFunctionCache.end()) {
+        wrappedFunction = i.value();
+    } else {
+        QStringList wrapperArgList;
+        for (int i = 1; i <= numberOfArgs; i++) {
+            wrapperArgList << QString("arg%1").arg(i);
         }
+        QString wrapperArgs = wrapperArgList.join(",");
+        QString wrappedCode = "(function (" + wrapperArgs + ") { (" +
+                                codeSnippet + ")(" + wrapperArgs + "); })";
+        wrappedFunction = m_pEngine->evaluate(wrappedCode);
+        checkException();
+        m_scriptWrappedFunctionCache[codeSnippet] = wrappedFunction;
     }
-    m_scriptValueCache[function] = object;
-    return object;
+    return wrappedFunction;
+}
+
+QScriptValue ControllerEngine::getThisObjectInFunctionCall() {
+    QScriptContext *ctxt = m_pEngine->currentContext();
+    // Our current context is a function call. We want to grab the 'this'
+    // from the caller's context, so we walk up the stack.
+    if (ctxt) {
+        ctxt = ctxt->parentContext();
+    }
+    return ctxt ? ctxt->thisObject() : QScriptValue();
 }
 
 /* -------- ------------------------------------------------------
@@ -158,8 +177,8 @@ void ControllerEngine::gracefulShutdown() {
         }
     }
 
-    // Clear the Script Value cache
-    m_scriptValueCache.clear();
+    // Clear the cache of function wrappers
+    m_scriptWrappedFunctionCache.clear();
 
     // Free all the control object threads
     QList<ConfigKey> keys = m_controlCache.keys();
@@ -220,7 +239,7 @@ bool ControllerEngine::loadScriptFiles(const QList<QString>& scriptPaths,
         }
 
         if (m_scriptErrors.contains(script.name)) {
-            qDebug() << "Errors occurred while loading" << script.name;
+            qWarning() << "Errors occurred while loading" << script.name;
         }
     }
 
@@ -297,19 +316,11 @@ bool ControllerEngine::evaluate(const QString& filepath) {
     return ret;
 }
 
-/* -------- ------------------------------------------------------
-Purpose: Evaluate & run script code
-Input:   'this' object if applicable, Code string
-Output:  false if an exception
--------- ------------------------------------------------------ */
-bool ControllerEngine::internalExecute(QScriptValue thisObject,
-                                       const QString& scriptCode) {
-    // A special version of safeExecute since we're evaluating strings, not actual functions
-    //  (execute() would print an error that it's not a function every time a timer fires.)
-    if (m_pEngine == nullptr)
+bool ControllerEngine::syntaxIsValid(const QString& scriptCode) {
+    if (m_pEngine == nullptr) {
         return false;
+    }
 
-    // Check syntax
     QScriptSyntaxCheckResult result = m_pEngine->checkSyntax(scriptCode);
     QString error = "";
     switch (result.state()) {
@@ -330,6 +341,25 @@ bool ControllerEngine::internalExecute(QScriptValue thisObject,
                      scriptCode);
 
         scriptErrorDialog(error);
+        return false;
+    }
+    return true;
+}
+
+/* -------- ------------------------------------------------------
+Purpose: Evaluate & run script code
+Input:   'this' object if applicable, Code string
+Output:  false if an exception
+-------- ------------------------------------------------------ */
+bool ControllerEngine::internalExecute(QScriptValue thisObject,
+                                       const QString& scriptCode) {
+    // A special version of safeExecute since we're evaluating strings, not actual functions
+    //  (execute() would print an error that it's not a function every time a timer fires.)
+    if (m_pEngine == nullptr) {
+        return false;
+    }
+
+    if (!syntaxIsValid(scriptCode)) {
         return false;
     }
 
@@ -360,10 +390,16 @@ bool ControllerEngine::internalExecute(QScriptValue thisObject, QScriptValue fun
         return false;
     }
 
+    if (functionObject.isError()) {
+        qDebug() << "ControllerEngine::internalExecute:"
+                 << functionObject.toString();
+        return false;
+    }
+
     // If it's not a function, we're done.
     if (!functionObject.isFunction()) {
-        qDebug() << "ControllerEngine::internalExecute:" 
-                 << functionObject.toVariant() 
+        qDebug() << "ControllerEngine::internalExecute:"
+                 << functionObject.toVariant()
                  << "Not a function";
         return false;
     }
@@ -441,6 +477,8 @@ bool ControllerEngine::checkException() {
         scriptErrorDialog(ControllerDebug::enabled() ?
                 QString("%1\nBacktrace:\n%2")
                 .arg(errorText, backtrace.join("\n")) : errorText);
+
+        m_pEngine->clearExceptions();
         return true;
     }
     return false;
@@ -580,9 +618,11 @@ void ControllerEngine::setParameter(QString group, QString name, double newParam
 
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
-    // TODO(XXX): support soft takeover.
     if (coScript != nullptr) {
-        coScript->setParameter(newParameter);
+        ControlObject* pControl = ControlObject::getControl(coScript->getKey());
+        if (pControl && !m_st.ignore(pControl, newParameter)) {
+          coScript->setParameter(newParameter);
+        }
     }
 }
 
@@ -658,7 +698,7 @@ double ControllerEngine::getDefaultParameter(QString group, QString name) {
    Output:  -
    -------- ------------------------------------------------------ */
 void ControllerEngine::log(QString message) {
-    qDebug() << message;
+    controllerDebug(message);
 }
 
 /* -------- ------------------------------------------------------
@@ -741,21 +781,17 @@ QScriptValue ControllerEngine::connectControl(
     }
 
     if (function.isFunction()) {
-        qDebug() << "Connection:" << group << name;
-
         ControllerEngineConnection conn;
         conn.key = key;
         conn.ce = this;
         conn.function = function;
 
-        QScriptContext *ctxt = m_pEngine->currentContext();
-        // Our current context is a function call to engine.connectControl. We
-        // want to grab the 'this' from the caller's context, so we walk up the
-        // stack.
-        if (ctxt) {
-            ctxt = ctxt->parentContext();
-            conn.context = ctxt ? ctxt->thisObject() : QScriptValue();
+        if (disconnect) {
+            disconnectControl(conn);
+            return QScriptValue(true);
         }
+
+        conn.context = getThisObjectInFunctionCall();
 
         if (callback.isString()) {
             conn.id = callback.toString();
@@ -776,10 +812,25 @@ QScriptValue ControllerEngine::connectControl(
 }
 
 /* -------- ------------------------------------------------------
-   Purpose: (Dis)connects a ControlObject valueChanged() signal to/from a script function
-   Input:   Control group (e.g. [Channel1]), Key name (e.g. [filterHigh]),
-                script function name, true if you want to disconnect
-   Output:  true if successful
+   Purpose: Execute a ControllerEngineConnection's callback
+   Input:   the value of the connected ControlObject to pass to the callback
+   -------- ------------------------------------------------------ */
+void ControllerEngineConnection::executeCallback(double value) const {
+    QScriptValueList args;
+    args << QScriptValue(value);
+    args << QScriptValue(key.group);
+    args << QScriptValue(key.item);
+    QScriptValue func = function; // copy function because QScriptValue::call is not const
+    QScriptValue result = func.call(context, args);
+    if (result.isError()) {
+        qWarning() << "ControllerEngine: Invocation of callback" << id
+                   << "failed:" << result.toString();
+    }
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: (Dis)connects a ControllerEngineConnection
+   Input:   the ControllerEngineConnection to disconnect
    -------- ------------------------------------------------------ */
 void ControllerEngine::disconnectControl(const ControllerEngineConnection conn) {
     ControlObjectScript* coScript = getControlObjectScript(conn.key.group, conn.key.item);
@@ -800,6 +851,26 @@ void ControllerEngineConnectionScriptValue::disconnect() {
     m_conn.ce->disconnectControl(m_conn);
 }
 
+/* -------- ------------------------------------------------------
+   Purpose: Triggers the callback function of a ControllerEngineConnection
+   Input:   the ControllerEngineConnection to trigger
+   -------- ------------------------------------------------------ */
+void ControllerEngine::triggerControl(const ControllerEngineConnection conn) {
+    if (m_pEngine == nullptr) {
+        return;
+    }
+
+    ControlObjectScript* coScript = getControlObjectScript(conn.key.group, conn.key.item);
+    if (coScript == nullptr) {
+        return;
+    }
+
+    conn.executeCallback(coScript->get());
+}
+
+void ControllerEngineConnectionScriptValue::trigger() {
+    m_conn.ce->triggerControl(m_conn);
+}
 
 /* -------- ------------------------------------------------------
    Purpose: Evaluate a script file
@@ -939,8 +1010,7 @@ int ControllerEngine::beginTimer(int interval, QScriptValue timerCallback,
     int timerId = startTimer(interval);
     TimerInfo info;
     info.callback = timerCallback;
-    QScriptContext *ctxt = m_pEngine->currentContext();
-    info.context = ctxt ? ctxt->thisObject() : QScriptValue();
+    info.context = getThisObjectInFunctionCall();
     info.oneShot = oneShot;
     m_timers[timerId] = info;
     if (timerId == 0) {
@@ -1133,7 +1203,7 @@ void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, double rpm,
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::scratchTick(int deck, int interval) {
-    m_lastMovement[deck] = Time::elapsed();
+    m_lastMovement[deck] = mixxx::Time::elapsed();
     m_intervalAccumulator[deck] += interval;
 }
 
@@ -1158,11 +1228,14 @@ void ControllerEngine::scratchProcess(int timerId) {
 
     // If we're ramping to end scratching and the wheel hasn't been turned very
     // recently (spinback after lift-off,) feed fixed data
-    if (m_ramp[deck] &&
-        ((Time::elapsed() - m_lastMovement[deck]) >= mixxx::Duration::fromMillis(1))) {
+    if (m_ramp[deck] && !m_softStartActive[deck] &&
+        ((mixxx::Time::elapsed() - m_lastMovement[deck]) >= mixxx::Duration::fromMillis(1))) {
         filter->observation(m_rampTo[deck] * m_rampFactor[deck]);
         // Once this code path is run, latch so it always runs until reset
         //m_lastMovement[deck] += mixxx::Duration::fromSeconds(1);
+    } else if (m_softStartActive[deck]) {
+        // pretend we have moved by (finalRate*default distance)
+        filter->observation(m_rampTo[deck]*kAlphaBetaDt);
     } else {
         // This will (and should) be 0 if no net ticks have been accumulated
         // (i.e. the wheel is stopped)
@@ -1182,12 +1255,12 @@ void ControllerEngine::scratchProcess(int timerId) {
     m_intervalAccumulator[deck] = 0;
 
     // If we're ramping and the current rate is really close to the rampTo value
-    // or we're in brake mode and have crossed over the zero value, end
-    // scratching
+    // or we're in brake or softStart mode and have crossed over the desired value,
+    // end scratching
     if ((m_ramp[deck] && fabs(m_rampTo[deck] - newRate) <= 0.00001) ||
-        (m_brakeActive[deck] && (
-            (oldRate > 0.0 && newRate < 0.0) ||
-            (oldRate < 0.0 && newRate > 0.0)))) {
+        ((m_brakeActive[deck] || m_softStartActive[deck]) && (
+            (oldRate > m_rampTo[deck] && newRate < m_rampTo[deck]) ||
+            (oldRate < m_rampTo[deck] && newRate > m_rampTo[deck])))) {
         // Not ramping no mo'
         m_ramp[deck] = false;
 
@@ -1214,6 +1287,7 @@ void ControllerEngine::scratchProcess(int timerId) {
 
         m_dx[deck] = 0.0;
         m_brakeActive[deck] = false;
+        m_softStartActive[deck] = false;
     }
 }
 
@@ -1242,7 +1316,7 @@ void ControllerEngine::scratchDisable(int deck, bool ramp) {
         m_rampTo[deck] = getDeckRate(group);
     }
 
-    m_lastMovement[deck] = Time::elapsed();
+    m_lastMovement[deck] = mixxx::Time::elapsed();
     m_ramp[deck] = true;    // Activate the ramping in scratchProcess()
 }
 
@@ -1298,7 +1372,7 @@ void ControllerEngine::softTakeoverIgnoreNextValue(QString group, const QString 
 /*  -------- ------------------------------------------------------
     Purpose: [En/dis]ables spinback effect for the channel
     Input:   deck, activate/deactivate, factor (optional),
-             delay (optional), rate (optional)
+             rate (optional)
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::spinback(int deck, bool activate, double factor, double rate) {
@@ -1309,7 +1383,7 @@ void ControllerEngine::spinback(int deck, bool activate, double factor, double r
 /*  -------- ------------------------------------------------------
     Purpose: [En/dis]ables brake/spinback effect for the channel
     Input:   deck, activate/deactivate, factor (optional),
-             delay (optional), rate (optional)
+             rate (optional, necessary for spinback)
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::brake(int deck, bool activate, double factor, double rate) {
@@ -1329,25 +1403,117 @@ void ControllerEngine::brake(int deck, bool activate, double factor, double rate
 
     // used in scratchProcess for the different timer behavior we need
     m_brakeActive[deck] = activate;
+    double initRate = rate;
 
     if (activate) {
         // store the new values for this spinback/brake effect
-        m_rampFactor[deck] = rate * factor / 100000.0; // approx 1 second for a factor of 1
         m_rampTo[deck] = 0.0;
+        if (initRate == 1.0) {// then rate is really 1.0 or was set to default
+            // so check for real value taking pitch into account
+            initRate = getDeckRate(group);
+        }
+        // if softStart()ing, stop it
+        if (m_softStartActive[deck]) {
+            m_softStartActive[deck] = false;
+            AlphaBetaFilter* filter = m_scratchFilters[deck];
+            if (filter != nullptr) {
+                initRate = filter->predictedVelocity();
+            }
+        }
 
         // setup timer and set scratch2
-        int timerId = startTimer(kScratchTimerMs);
+        timerId = startTimer(kScratchTimerMs);
         m_scratchTimers[timerId] = deck;
 
         ControlObjectScript* pScratch2 = getControlObjectScript(group, "scratch2");
         if (pScratch2 != nullptr) {
-            pScratch2->slotSet(rate);
+            pScratch2->slotSet(initRate);
         }
 
-        // setup the filter using the default values of alpha and beta
+        // setup the filter with default alpha and beta*factor
+        double alphaBrake = 1.0/512;
+        // avoid decimals for fine adjusting
+        if (factor>1) {
+            factor = ((factor-1)/10)+1;
+        }
+        double betaBrake = ((1.0/512)/1024)*factor; // default*factor
         AlphaBetaFilter* filter = m_scratchFilters[deck];
         if (filter != nullptr) {
-            filter->init(kAlphaBetaDt, rate);
+            filter->init(kAlphaBetaDt, initRate, alphaBrake, betaBrake);
+        }
+
+        // activate the ramping in scratchProcess()
+        m_ramp[deck] = true;
+    }
+}
+
+/*  -------- ------------------------------------------------------
+    Purpose: [En/dis]ables softStart effect for the channel
+    Input:   deck, activate/deactivate, factor (optional),
+             rate (optiona)
+    Output:  -
+    -------- ------------------------------------------------------ */
+void ControllerEngine::softStart(int deck, bool activate, double factor, double finalRate) {
+    // PlayerManager::groupForDeck is 0-indexed.
+    QString group = PlayerManager::groupForDeck(deck - 1);
+
+    // kill timer when both enabling or disabling
+    int timerId = m_scratchTimers.key(deck);
+    killTimer(timerId);
+    m_scratchTimers.remove(timerId);
+
+    // enable/disable scratch2 mode
+    ControlObjectScript* pScratch2Enable = getControlObjectScript(group, "scratch2_enable");
+    if (pScratch2Enable != nullptr) {
+        pScratch2Enable->slotSet(activate ? 1 : 0);
+    }
+
+    // used in scratchProcess for the different timer behavior we need
+    m_softStartActive[deck] = activate;
+    double initRate = 0.0;
+
+    if (activate) {
+        // store the new values for this spinback/brake effect
+        if (finalRate == 1.0) {// then rate is really 1.0 or was set to default
+            // so check for real value taking pitch into account
+            finalRate = getDeckRate(group);
+        }
+        m_rampTo[deck] = finalRate;
+
+        // if brake()ing, get current rate from filter
+        if (m_brakeActive[deck]) {
+            m_brakeActive[deck] = false;
+
+            AlphaBetaFilter* filter = m_scratchFilters[deck];
+            if (filter != nullptr) {
+                initRate = filter->predictedVelocity();
+            }
+        }
+
+        // setup timer, start playing and set scratch2
+        timerId = startTimer(kScratchTimerMs);
+        m_scratchTimers[timerId] = deck;
+
+        ControlObjectScript* pPlay = getControlObjectScript(group, "play");
+        if (pPlay != nullptr) {
+            pPlay->slotSet(1.0);
+        }
+
+        ControlObjectScript* pScratch2 = getControlObjectScript(group, "scratch2");
+        if (pScratch2 != nullptr) {
+            pScratch2->slotSet(initRate);
+        }
+
+        // setup the filter like in brake(), with default alpha and beta*factor
+        double alphaSoft = 1.0/512;
+        // avoid decimals for fine adjusting
+        if (factor>1) {
+            factor = ((factor-1)/10)+1;
+        }
+        double betaSoft = ((1.0/512)/1024)*factor; // default: (1.0/512)/1024
+        AlphaBetaFilter* filter = m_scratchFilters[deck];
+        if (filter != nullptr) { // kAlphaBetaDt = 1/1000 seconds
+            filter->init(kAlphaBetaDt, initRate, alphaSoft, betaSoft);
         }
 
         // activate the ramping in scratchProcess()

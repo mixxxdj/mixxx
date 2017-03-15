@@ -2,16 +2,17 @@
 #include <replaygain.h>
 
 #include "analyzer/analyzergain.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/math.h"
 #include "util/sample.h"
+#include "util/timer.h"
 
-AnalyzerGain::AnalyzerGain(UserSettingsPointer _config) {
-    m_pConfigReplayGain = _config;
-    m_bStepControl = false;
-    m_pLeftTempBuffer = NULL;
-    m_pRightTempBuffer = NULL;
-    m_iBufferSize = 0;
+AnalyzerGain::AnalyzerGain(UserSettingsPointer pConfig)
+    : m_initalized(false),
+      m_rgSettings(pConfig),
+      m_pLeftTempBuffer(NULL),
+      m_pRightTempBuffer(NULL),
+      m_iBufferSize(0) {
     m_pReplayGain = new ReplayGain();
 }
 
@@ -22,32 +23,28 @@ AnalyzerGain::~AnalyzerGain() {
 }
 
 bool AnalyzerGain::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
-    if (loadStored(tio) || totalSamples == 0) {
+    if (isDisabledOrLoadStoredSuccess(tio) || totalSamples == 0) {
         return false;
     }
-    m_bStepControl = m_pReplayGain->initialise((long)sampleRate, 2);
+
+    m_initalized = m_pReplayGain->initialise((long)sampleRate, 2);
     return true;
 }
 
-bool AnalyzerGain::loadStored(TrackPointer tio) const {
-    // WARNING: Do not fix the "analyser" spelling here since user config files
-    // contain these strings.
-    bool bAnalyzerEnabled = (bool)m_pConfigReplayGain->getValueString(
-        ConfigKey("[ReplayGain]","ReplayGainAnalyserEnabled")).toInt();
-    if (tio->getReplayGain().hasRatio() || !bAnalyzerEnabled) {
-        return true;
-    }
-    return false;
+bool AnalyzerGain::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
+    return m_rgSettings.isAnalyzerDisabled(1, tio);
 }
 
 void AnalyzerGain::cleanup(TrackPointer tio) {
-    m_bStepControl = false;
+    m_initalized = false;
     Q_UNUSED(tio);
 }
 
 void AnalyzerGain::process(const CSAMPLE *pIn, const int iLen) {
-    if(!m_bStepControl)
+    if (!m_initalized) {
         return;
+    }
+    ScopedTimer t("AnalyzerGain::process()");
 
     int halfLength = static_cast<int>(iLen / 2);
     if (halfLength > m_iBufferSize) {
@@ -59,7 +56,7 @@ void AnalyzerGain::process(const CSAMPLE *pIn, const int iLen) {
     SampleUtil::deinterleaveBuffer(m_pLeftTempBuffer, m_pRightTempBuffer, pIn, halfLength);
     SampleUtil::applyGain(m_pLeftTempBuffer, 32767, halfLength);
     SampleUtil::applyGain(m_pRightTempBuffer, 32767, halfLength);
-    m_bStepControl = m_pReplayGain->process(m_pLeftTempBuffer, m_pRightTempBuffer, halfLength);
+    m_initalized = m_pReplayGain->process(m_pLeftTempBuffer, m_pRightTempBuffer, halfLength);
 }
 
 void AnalyzerGain::finalize(TrackPointer tio) {
@@ -68,19 +65,19 @@ void AnalyzerGain::finalize(TrackPointer tio) {
     // One may think to digg into replay_gain code and modify it so that
     // it directly sends results as relative peaks.
     // In that way there is no need to spend resources in calculating log10 or pow.
-    if(!m_bStepControl)
+    if(!m_initalized)
         return;
 
-    float ReplayGainOutput = m_pReplayGain->end();
-    if (ReplayGainOutput == GAIN_NOT_ENOUGH_SAMPLES) {
-        qDebug() << "ReplayGain analysis failed:" << ReplayGainOutput;
-        m_bStepControl = false;
+    float fReplayGainOutput = m_pReplayGain->end();
+    if (fReplayGainOutput == GAIN_NOT_ENOUGH_SAMPLES) {
+        qDebug() << "ReplayGain 1.0 analysis failed";
+        m_initalized = false;
         return;
     }
 
-    Mixxx::ReplayGain replayGain(tio->getReplayGain());
-    replayGain.setRatio(db2ratio(ReplayGainOutput));
+    mixxx::ReplayGain replayGain(tio->getReplayGain());
+    replayGain.setRatio(db2ratio(fReplayGainOutput));
     tio->setReplayGain(replayGain);
-
-    m_bStepControl=false;
+    qDebug() << "ReplayGain 1.0 result is" << fReplayGainOutput << "dB for" << tio->getLocation();
+    m_initalized = false;
 }

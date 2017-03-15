@@ -5,16 +5,14 @@
 
 #include "util/math.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 // DTO for storing BPM information.
 class Bpm final {
 public:
-    // TODO(uklotzde): Replace 'const' with 'constexpr'
-    // (and copy initialization from .cpp file) after switching to
-    // Visual Studio 2015 on Windows.
-    static const double kValueUndefined;
-    static const double kValueMin; // lower bound (exclusive)
+    static constexpr double kValueUndefined = 0.0;
+    static constexpr double kValueMin = 0.0; // lower bound (exclusive)
+    static constexpr double kValueMax = 300.0; // higher bound (inclusive)
 
     Bpm()
         : Bpm(kValueUndefined) {
@@ -63,6 +61,7 @@ bool operator!=(const Bpm& lhs, const Bpm& rhs) {
 
 }
 
-Q_DECLARE_METATYPE(Mixxx::Bpm)
+Q_DECLARE_TYPEINFO(mixxx::Bpm, Q_MOVABLE_TYPE);
+Q_DECLARE_METATYPE(mixxx::Bpm)
 
 #endif // MIXXX_BPM_H

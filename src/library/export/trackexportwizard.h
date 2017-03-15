@@ -15,7 +15,7 @@
 #include "preferences/usersettings.h"
 #include "library/export/trackexportdlg.h"
 #include "library/export/trackexportworker.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 // A controller class for creating the export worker and UI.
 class TrackExportWizard : public QObject {

@@ -7,7 +7,7 @@
 
 #include "sources/soundsource.h"
 
-namespace Mixxx {
+namespace mixxx {
 
 // Providers for the same file extension are selected according
 // to the priority for which they have been registered. Only
@@ -22,6 +22,9 @@ enum class SoundSourceProviderPriority {
 };
 
 // Factory interface for SoundSources
+//
+// The implementation of a SoundSourceProvider must be thread-safe, because
+// a single instance might be accessed concurrently from different threads.
 class SoundSourceProvider {
 public:
     virtual ~SoundSourceProvider() {}
@@ -46,12 +49,14 @@ public:
     }
 
     // Creates a new SoundSource for the file referenced by the URL.
-    // This function should return a NULL pointer if it is already
+    // This function should return a nullptr pointer if it is already
     // able to decide that the file is not supported even though it
     // has one of the supported file extensions.
     virtual SoundSourcePointer newSoundSource(const QUrl& url) = 0;
 };
 
-} // namespace Mixxx
+typedef std::shared_ptr<SoundSourceProvider> SoundSourceProviderPointer;
+
+} // namespace mixxx
 
 #endif // MIXXX_SOUNDSOURCEPROVIDER_H

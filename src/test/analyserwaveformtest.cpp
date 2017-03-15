@@ -2,7 +2,7 @@
 #include <QtDebug>
 #include <QDir>
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "analyzer/analyzerwaveform.h"
 #include "test/mixxxtest.h"
 
@@ -15,9 +15,9 @@ namespace {
 
 class AnalyzerWaveformTest: public MixxxTest {
   protected:
-    virtual void SetUp() {
+    void SetUp() override {
         aw = new AnalyzerWaveform(config());
-        tio = TrackInfoObject::newTemporary();
+        tio = Track::newTemporary();
         tio->setSampleRate(44100);
 
         bigbuf = new CSAMPLE[BIGBUF_SIZE];
@@ -36,7 +36,7 @@ class AnalyzerWaveformTest: public MixxxTest {
             canaryBigBuf[i] = CANARY_FLOAT;
     }
 
-    virtual void TearDown() {
+    void TearDown() override {
         delete aw;
         delete [] bigbuf;
         delete [] canaryBigBuf;

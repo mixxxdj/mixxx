@@ -14,6 +14,7 @@ SkinContext::SkinContext(UserSettingsPointer pConfig,
           m_pConfig(pConfig),
           m_pScriptEngine(new QScriptEngine()),
           m_pScriptDebugger(new QScriptEngineDebugger()),
+          m_pSvgCache(new QHash<QString, QDomElement>()),
           m_pSingletons(new SingletonMap()) {
     enableDebugger(true);
     // the extensions are imported once and will be passed to the children
@@ -21,6 +22,14 @@ SkinContext::SkinContext(UserSettingsPointer pConfig,
     importScriptExtension("console");
     importScriptExtension("svg");
     m_pScriptEngine->installTranslatorFunctions();
+
+    // Retrieving hooks pattern from script extension
+    QScriptValue global = m_pScriptEngine->globalObject();
+    QScriptValue svg = global.property("svg");
+    QScriptValue hooksPattern = svg.property("getHooksPattern").call(svg);
+    if (!hooksPattern.isNull()) {
+        m_hookRx.setPattern(hooksPattern.toString());
+    }
 }
 
 SkinContext::SkinContext(const SkinContext& parent)
@@ -31,6 +40,8 @@ SkinContext::SkinContext(const SkinContext& parent)
           m_pScriptEngine(parent.m_pScriptEngine),
           m_pScriptDebugger(parent.m_pScriptDebugger),
           m_parentGlobal(m_pScriptEngine->globalObject()),
+          m_hookRx(parent.m_hookRx),
+          m_pSvgCache(parent.m_pSvgCache),
           m_pSingletons(parent.m_pSingletons) {
     // we generate a new global object to preserve the scope between
     // a context and its children
@@ -41,12 +52,12 @@ SkinContext::SkinContext(const SkinContext& parent)
         it.next();
         newGlobal.setProperty(it.name(), it.value());
     }
-    m_pScriptEngine->setGlobalObject(newGlobal);
 
     for (QHash<QString, QString>::const_iterator it = m_variables.begin();
          it != m_variables.end(); ++it) {
-        m_pScriptEngine->globalObject().setProperty(it.key(), it.value());
+        newGlobal.setProperty(it.key(), it.value());
     }
+    m_pScriptEngine->setGlobalObject(newGlobal);
 }
 
 SkinContext::~SkinContext() {
@@ -71,6 +82,17 @@ void SkinContext::setXmlPath(const QString& xmlPath) {
     m_xmlPath = xmlPath;
 }
 
+bool SkinContext::hasVariableUpdates(const QDomNode& node) const {
+    QDomNode child = node.firstChild();
+    while (!child.isNull()) {
+        if (child.isElement() && child.nodeName() == "SetVariable") {
+            return true;
+        }
+        child = child.nextSibling();
+    }
+    return false;
+}
+
 void SkinContext::updateVariables(const QDomNode& node) {
     QDomNode child = node.firstChild();
     while (!child.isNull()) {
@@ -91,121 +113,18 @@ void SkinContext::updateVariable(const QDomElement& element) {
     setVariable(name, value);
 }
 
-bool SkinContext::hasNode(const QDomNode& node, const QString& nodeName) const {
-    return !selectNode(node, nodeName).isNull();
-}
-
-QDomNode SkinContext::selectNode(const QDomNode& node,
-                                 const QString& nodeName) const {
-    QDomNode child = node.firstChild();
-    while (!child.isNull()) {
-        if (child.nodeName() == nodeName) {
-            return child;
-        }
-        child = child.nextSibling();
-    }
-    return child;
-}
-
-QDomElement SkinContext::selectElement(const QDomNode& node,
-                                       const QString& nodeName) const {
-    QDomNode child = selectNode(node, nodeName);
-    return child.toElement();
-}
-
-QString SkinContext::selectString(const QDomNode& node,
-                                  const QString& nodeName) const {
-    QDomElement child = selectElement(node, nodeName);
-    return nodeToString(child);
-}
-
-float SkinContext::selectFloat(const QDomNode& node,
-                               const QString& nodeName) const {
-    bool ok = false;
-    float conv = nodeToString(selectElement(node, nodeName)).toFloat(&ok);
-    return ok ? conv : 0.0f;
-}
-
-double SkinContext::selectDouble(const QDomNode& node,
-                                 const QString& nodeName) const {
-    bool ok = false;
-    double conv = nodeToString(selectElement(node, nodeName)).toDouble(&ok);
-    return ok ? conv : 0.0;
-}
-
-int SkinContext::selectInt(const QDomNode& node,
-                           const QString& nodeName,
-                           bool* pOk) const {
-    bool ok = false;
-    int conv = nodeToString(selectElement(node, nodeName)).toInt(&ok);
-    if (pOk != NULL) {
-        *pOk = ok;
-    }
-    return ok ? conv : 0;
-}
-
-bool SkinContext::selectBool(const QDomNode& node,
-                             const QString& nodeName,
-                             bool defaultValue) const {
-    QDomNode child = selectNode(node, nodeName);
-    if (!child.isNull()) {
-         QString stringValue = nodeToString(child);
-        return stringValue.contains("true", Qt::CaseInsensitive);
-    }
-    return defaultValue;
-}
-
-bool SkinContext::hasNodeSelectString(const QDomNode& node,
-                                      const QString& nodeName, QString *value) const {
-    QDomNode child = selectNode(node, nodeName);
-    if (!child.isNull()) {
-        *value = nodeToString(child);
-        return true;
-    }
-    return false;
-}
-
-bool SkinContext::hasNodeSelectBool(const QDomNode& node,
-                                    const QString& nodeName, bool *value) const {
-    QDomNode child = selectNode(node, nodeName);
-    if (!child.isNull()) {
-         QString stringValue = nodeToString(child);
-        *value = stringValue.contains("true", Qt::CaseInsensitive);
-        return true;
-    }
-    return false;
-}
-
-bool SkinContext::selectAttributeBool(const QDomElement& element,
-                                      const QString& attributeName,
-                                      bool defaultValue) const {
-    if (element.hasAttribute(attributeName)) {
-        QString stringValue = element.attribute(attributeName);
-        return stringValue.contains("true", Qt::CaseInsensitive);
-    }
-    return defaultValue;
-}
-
-QString SkinContext::selectAttributeString(const QDomElement& element,
-                                           const QString& attributeName,
-                                           QString defaultValue) const {
-    if (element.hasAttribute(attributeName)) {
-        QString stringValue = element.attribute(attributeName);
-        return stringValue == "" ? defaultValue :stringValue;
-    }
-    return defaultValue;
-}
-
 QString SkinContext::variableNodeToText(const QDomElement& variableNode) const {
-    if (variableNode.hasAttribute("expression")) {
+    QString expression = variableNode.attribute("expression");
+    if (!expression.isNull()) {
         QScriptValue result = m_pScriptEngine->evaluate(
-            variableNode.attribute("expression"), m_xmlPath,
-            variableNode.lineNumber());
+            expression, m_xmlPath, variableNode.lineNumber());
         return result.toString();
-    } else if (variableNode.hasAttribute("name")) {
-        QString variableName = variableNode.attribute("name");
-        if (variableNode.hasAttribute("format")) {
-            QString formatString = variableNode.attribute("format");
+    }
+
+    QString variableName = variableNode.attribute("name");
+    if (!variableName.isNull()) {
+        QString formatString = variableNode.attribute("format");
+        if (!formatString.isNull()) {
             return formatString.arg(variable(variableName));
         } else if (variableNode.nodeName() == "SetVariable") {
             // If we are setting the variable name and we didn't get a format
@@ -220,7 +139,7 @@ QString SkinContext::variableNodeToText(const QDomElement& variableNode) const {
 }
 
 QString SkinContext::nodeToString(const QDomNode& node) const {
-    QStringList result;
+    QString result;
     QDomNode child = node.firstChild();
     while (!child.isNull()) {
         if (child.isElement()) {
@@ -235,7 +154,7 @@ QString SkinContext::nodeToString(const QDomNode& node) const {
         // Ignore all other node types.
         child = child.nextSibling();
     }
-    return result.join("");
+    return result;
 }
 
 PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
@@ -251,28 +170,48 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
                 svgParser.parseSvgTree(svgNode, m_xmlPath));
             source.setSVG(rslt);
         } else {
-            // filename
-            QString pixmapName = nodeToString(pixmapNode);
-            if (!pixmapName.isEmpty()) {
-                source.setPath(getSkinPath(pixmapName));
-                if (source.isSVG()) {
-                    const QByteArray rslt = svgParser.saveToQByteArray(
-                            svgParser.parseSvgFile(source.getPath()));
-                    source.setSVG(rslt);
-                }
-            }
+            // filename.
+            source = getPixmapSourceInner(nodeToString(pixmapNode), svgParser);
         }
     }
 
     return source;
 }
 
-Paintable::DrawMode SkinContext::selectScaleMode(
-        const QDomElement& element,
-        Paintable::DrawMode defaultDrawMode) const {
-    QString drawModeStr = selectAttributeString(
-            element, "scalemode", Paintable::DrawModeToString(defaultDrawMode));
-    return Paintable::DrawModeFromString(drawModeStr);
+PixmapSource SkinContext::getPixmapSource(const QString& filename) const {
+    const SvgParser svgParser(*this);
+    return getPixmapSourceInner(filename, svgParser);
+}
+
+QDomElement SkinContext::loadSvg(const QString& filename) const {
+    QDomElement& cachedSvg = (*m_pSvgCache)[filename];
+    if (cachedSvg.isNull()) {
+        QFile file(filename);
+        if (file.open(QIODevice::ReadOnly|QIODevice::Text)) {
+            QDomDocument document;
+            if (!document.setContent(&file)) {
+                qDebug() << "ERROR: Failed to set content on QDomDocument";
+            }
+            cachedSvg = document.elementsByTagName("svg").item(0).toElement();
+            file.close();
+        }
+    }
+    return cachedSvg;
+}
+
+PixmapSource SkinContext::getPixmapSourceInner(const QString& filename,
+                                               const SvgParser& svgParser) const {
+    PixmapSource source;
+    if (!filename.isEmpty()) {
+        source.setPath(getSkinPath(filename));
+        if (source.isSVG()) {
+            QDomElement svgElement = loadSvg(filename);
+            const QByteArray rslt = svgParser.saveToQByteArray(
+                svgParser.parseSvgTree(svgElement, filename));
+            source.setSVG(rslt);
+        }
+    }
+    return source;
 }
 
 /**

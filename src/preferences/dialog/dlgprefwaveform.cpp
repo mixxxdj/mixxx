@@ -1,13 +1,15 @@
 #include "preferences/dialog/dlgprefwaveform.h"
 
 #include "mixxx.h"
+#include "preferences/waveformsettings.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
 DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
-                                 UserSettingsPointer pConfig)
+                                 UserSettingsPointer pConfig, Library* pLibrary)
         : DlgPreferencePage(pParent),
           m_pConfig(pConfig),
+          m_pLibrary(pLibrary),
           m_pMixxx(pMixxx) {
     setupUi(this);
 
@@ -53,20 +55,22 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
             this, SLOT(slotSetDefaultZoom(int)));
     connect(synchronizeZoomCheckBox, SIGNAL(clicked(bool)),
             this, SLOT(slotSetZoomSynchronization(bool)));
-    connect(allVisualGain,SIGNAL(valueChanged(double)),
-            this,SLOT(slotSetVisualGainAll(double)));
-    connect(lowVisualGain,SIGNAL(valueChanged(double)),
-            this,SLOT(slotSetVisualGainLow(double)));
-    connect(midVisualGain,SIGNAL(valueChanged(double)),
-            this,SLOT(slotSetVisualGainMid(double)));
-    connect(highVisualGain,SIGNAL(valueChanged(double)),
-            this,SLOT(slotSetVisualGainHigh(double)));
-    connect(normalizeOverviewCheckBox,SIGNAL(toggled(bool)),
-            this,SLOT(slotSetNormalizeOverview(bool)));
+    connect(allVisualGain, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSetVisualGainAll(double)));
+    connect(lowVisualGain, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSetVisualGainLow(double)));
+    connect(midVisualGain, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSetVisualGainMid(double)));
+    connect(highVisualGain, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSetVisualGainHigh(double)));
+    connect(normalizeOverviewCheckBox, SIGNAL(toggled(bool)),
+            this, SLOT(slotSetNormalizeOverview(bool)));
     connect(factory, SIGNAL(waveformMeasured(float,int)),
             this, SLOT(slotWaveformMeasured(float,int)));
-    connect(waveformOverviewComboBox,SIGNAL(currentIndexChanged(int)),
-            this,SLOT(slotSetWaveformOverviewType(int)));
+    connect(waveformOverviewComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(slotSetWaveformOverviewType(int)));
+    connect(clearCachedWaveforms, SIGNAL(clicked()),
+            this, SLOT(slotClearCachedWaveforms()));
 }
 
 DlgPrefWaveform::~DlgPrefWaveform() {
@@ -99,15 +103,25 @@ void DlgPrefWaveform::slotUpdate() {
     normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
     defaultZoomComboBox->setCurrentIndex(factory->getDefaultZoom() - 1);
 
-    // By default we set filtered woverview = "0"
-    int overviewType = m_pConfig->getValueString(
-            ConfigKey("[Waveform]","WaveformOverviewType"), "0").toInt();
+    // By default we set RGB woverview = "2"
+    int overviewType = m_pConfig->getValue(
+            ConfigKey("[Waveform]","WaveformOverviewType"), 2);
     if (overviewType != waveformOverviewComboBox->currentIndex()) {
         waveformOverviewComboBox->setCurrentIndex(overviewType);
     }
+
+    WaveformSettings waveformSettings(m_pConfig);
+    enableWaveformCaching->setChecked(waveformSettings.waveformCachingEnabled());
+    enableWaveformGenerationWithAnalysis->setChecked(
+        waveformSettings.waveformGenerationWithAnalysisEnabled());
+    calculateCachedWaveformDiskUsage();
 }
 
 void DlgPrefWaveform::slotApply() {
+    WaveformSettings waveformSettings(m_pConfig);
+    waveformSettings.setWaveformCachingEnabled(enableWaveformCaching->isChecked());
+    waveformSettings.setWaveformGenerationWithAnalysisEnabled(
+        enableWaveformGenerationWithAnalysis->isChecked());
 }
 
 void DlgPrefWaveform::slotResetToDefaults() {
@@ -132,8 +146,8 @@ void DlgPrefWaveform::slotResetToDefaults() {
     // Don't synchronize zoom by default.
     synchronizeZoomCheckBox->setChecked(false);
 
-    // Filtered overview.
-    waveformOverviewComboBox->setCurrentIndex(0);
+    // RGB overview.
+    waveformOverviewComboBox->setCurrentIndex(2);
 
     // Don't normalize overview.
     normalizeOverviewCheckBox->setChecked(false);
@@ -141,14 +155,20 @@ void DlgPrefWaveform::slotResetToDefaults() {
     // 30FPS is the default
     frameRateSlider->setValue(30);
     endOfTrackWarningTimeSlider->setValue(30);
+
+    // Waveform caching enabled.
+    enableWaveformCaching->setChecked(true);
+    enableWaveformGenerationWithAnalysis->setChecked(false);
 }
 
 void DlgPrefWaveform::slotSetFrameRate(int frameRate) {
     WaveformWidgetFactory::instance()->setFrameRate(frameRate);
 }
+
 void DlgPrefWaveform::slotSetWaveformEndRender(int endTime) {
     WaveformWidgetFactory::instance()->setEndOfTrackWarningTime(endTime);
 }
+
 void DlgPrefWaveform::slotSetWaveformType(int index) {
     // Ignore sets for -1 since this happens when we clear the combobox.
     if (index < 0) {
@@ -194,4 +214,30 @@ void DlgPrefWaveform::slotWaveformMeasured(float frameRate, int droppedFrames) {
     frameRateAverage->setText(
             QString::number((double)frameRate, 'f', 2) + " : " +
             tr("dropped frames") + " " + QString::number(droppedFrames));
+}
+
+void DlgPrefWaveform::slotClearCachedWaveforms() {
+    TrackCollection* pTrackCollection = m_pLibrary->getTrackCollection();
+    if (pTrackCollection != nullptr) {
+        AnalysisDao& analysisDao = pTrackCollection->getAnalysisDAO();
+        analysisDao.deleteAnalysesByType(AnalysisDao::TYPE_WAVEFORM);
+        analysisDao.deleteAnalysesByType(AnalysisDao::TYPE_WAVESUMMARY);
+        calculateCachedWaveformDiskUsage();
+    }
+}
+
+void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {
+    TrackCollection* pTrackCollection = m_pLibrary->getTrackCollection();
+    if (pTrackCollection != nullptr) {
+        AnalysisDao& analysisDao = pTrackCollection->getAnalysisDAO();
+        size_t waveformBytes = analysisDao.getDiskUsageInBytes(AnalysisDao::TYPE_WAVEFORM);
+        size_t wavesummaryBytes = analysisDao.getDiskUsageInBytes(AnalysisDao::TYPE_WAVESUMMARY);
+
+        // Display total cached waveform size in mebibytes with 2 decimals.
+        QString sizeMebibytes = QString::number(
+                (waveformBytes + wavesummaryBytes) / (1024.0 * 1024.0), 'f', 2);
+
+        waveformDiskUsage->setText(
+                tr("Cached waveforms occupy %1 MiB on disk.").arg(sizeMebibytes));
+    }
 }

@@ -69,7 +69,7 @@
 			<attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
 			<attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
 			<attribute persist="true" config_key="[Library],show_coverart">0</attribute>
-			<attribute persist="true" config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
+			<attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
 		</attributes>
 	</manifest>
 
@@ -380,8 +380,6 @@
 
 					QTableView, QTextBrowser, QTreeView {
 						border: 1px solid #656565;
-						font: 12px/14px sans-serif;
-						font-family: "Open Sans";
 						background: transparent; color: #ACACAC;
 						<!--we use  "background: transparent" as workaround, else "alternate-background-color" wont work, QT 4.7.x bug?-->
 						alternate-background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(43, 43, 43, 255), stop:0.049 rgba(43, 43, 43, 255), stop:0.050 rgba(43, 43, 43, 100), stop:0.949 rgba(43, 43, 43, 100), stop:0.95 rgba(43, 43, 43, 255), stop:1 rgba(43, 43, 43, 255));}

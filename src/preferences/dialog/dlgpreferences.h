@@ -25,7 +25,7 @@
 
 #include "preferences/dialog/ui_dlgpreferencesdlg.h"
 #include "preferences/usersettings.h"
-#include "controlpushbutton.h"
+#include "control/controlpushbutton.h"
 #include "preferences/dlgpreferencepage.h"
 
 class MixxxMainWindow;
@@ -45,7 +45,7 @@ class DlgPrefKey;
 class DlgPrefBeats;
 class DlgPrefVinyl;
 class DlgPrefNoVinyl;
-class DlgPrefShoutcast;
+class DlgPrefBroadcast;
 class DlgPrefReplayGain;
 class DlgPrefLV2;
 class ControllerManager;
@@ -117,7 +117,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     DlgPrefBeats* m_wbeats;
     DlgPrefVinyl* m_wvinylcontrol;
     DlgPrefNoVinyl* m_wnovinylcontrol;
-    DlgPrefShoutcast* m_wshoutcast;
+    DlgPrefBroadcast* m_wbroadcast;
     DlgPrefReplayGain* m_wreplaygain;
     DlgPrefLV2* m_wlv2;
 #ifdef __MODPLUG__
@@ -137,7 +137,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     QTreeWidgetItem* m_pBeatDetectionButton;
     QTreeWidgetItem* m_pKeyDetectionButton;
     QTreeWidgetItem* m_pVinylControlButton;
-    QTreeWidgetItem* m_pShoutcastButton;
+    QTreeWidgetItem* m_pBroadcastButton;
     QTreeWidgetItem* m_pReplayGainButton;
 #ifdef __MODPLUG__
     QTreeWidgetItem* m_pModplugButton;
