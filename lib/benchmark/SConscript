@@ -1,0 +1,40 @@
+#!/usr/bin/python2.4
+
+Import('build')
+Import('env')
+env = env.Clone()
+
+# Add include folder.
+env.Prepend(CPPPATH = ['./include'])
+
+# Since we're using C++11 we can use std::chrono and std::regex.
+env.Append(CPPDEFINES = 'HAVE_STD_REGEX')
+env.Append(CPPDEFINES = 'HAVE_STEADY_CLOCK')
+if build.compiler_is_clang:
+  env.Append(CPPDEFINES = 'HAVE_THREAD_SAFETY_ATTRIBUTES')
+
+# Sources used by base library and library that includes main.
+sources = [
+  "src/benchmark.cc",
+  "src/colorprint.cc",
+  "src/commandlineflags.cc",
+  "src/console_reporter.cc",
+  "src/csv_reporter.cc",
+  "src/json_reporter.cc",
+  "src/log.cc",
+  "src/reporter.cc",
+  "src/sleep.cc",
+  "src/string_util.cc",
+  "src/sysinfo.cc",
+  "src/walltime.cc",
+
+  # NOTE(rryan): Since we're using C++11 we can use std::regex.
+  "src/re_std.cc"
+]
+
+benchmark_lib = env.StaticLibrary(target='benchmark',
+                                  source=[sources])
+
+# Install the libraries if needed.
+if 'LIB_OUTPUT' in env.Dictionary():
+  env.Install('$LIB_OUTPUT', source=[benchmark_lib])

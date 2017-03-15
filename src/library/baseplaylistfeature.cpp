@@ -79,7 +79,7 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
             this, SLOT(slotPlaylistTableRenamed(int,QString)));
 
     connect(&m_playlistDao, SIGNAL(changed(int)),
-            this, SLOT(slotPlaylistTableChanged(int)));
+            this, SLOT(slotPlaylistContentChanged(int)));
 
     connect(&m_playlistDao, SIGNAL(lockChanged(int)),
             this, SLOT(slotPlaylistTableChanged(int)));
@@ -503,7 +503,7 @@ void BasePlaylistFeature::slotAnalyzePlaylist() {
     if (m_lastRightClickedIndex.isValid()) {
         int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
         if (playlistId >= 0) {
-            QList<int> ids = m_playlistDao.getTrackIds(playlistId);
+            QList<TrackId> ids = m_playlistDao.getTrackIds(playlistId);
             emit(analyzeTracks(ids));
         }
     }
@@ -572,6 +572,26 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
     return m_childModel.index(selected_row, 0);
 }
 
+void BasePlaylistFeature::updateChildModel(int selected_id) {
+    buildPlaylistList();
+
+    int row = 0;
+    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
+         it != m_playlistList.end(); ++it, ++row) {
+        int playlist_id = it->first;
+        QString playlist_name = it->second;
+
+        if (selected_id == playlist_id) {
+            TreeItem* item = m_childModel.getItem(indexFromPlaylistId(playlist_id));
+            item->setData(playlist_name, QString::number(playlist_id));
+            decorateChild(item, playlist_id);
+        }
+
+    }
+}
+
+
+
 /**
   * Clears the child model dynamically, but the invisible root item remains
   */
@@ -595,7 +615,10 @@ QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
 
 void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
     m_pSelectedTrack = pTrack;
-    int trackId = pTrack.isNull() ? -1 : pTrack->getId();
+    TrackId trackId;
+    if (!pTrack.isNull()) {
+        trackId = pTrack->getId();
+    }
     m_playlistDao.getPlaylistsTrackIsIn(trackId, &m_playlistsSelectedTrackIsIn);
 
     TreeItem* rootItem = m_childModel.getItem(QModelIndex());

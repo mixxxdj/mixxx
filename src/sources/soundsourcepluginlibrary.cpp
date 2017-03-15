@@ -28,7 +28,8 @@ namespace Mixxx {
 SoundSourcePluginLibrary::SoundSourcePluginLibrary(const QString& libFilePath)
     : m_library(libFilePath),
       m_apiVersion(0),
-      m_getSoundSourceProviderFunc(NULL) {
+      m_createSoundSourceProviderFunc(nullptr),
+      m_destroySoundSourceProviderFunc(nullptr){
 }
 
 SoundSourcePluginLibrary::~SoundSourcePluginLibrary() {
@@ -55,11 +56,17 @@ bool SoundSourcePluginLibrary::init() {
     if (getVersionFunc) {
         m_apiVersion = getVersionFunc();
         if (m_apiVersion == MIXXX_SOUNDSOURCEPLUGINAPI_VERSION) {
-            m_getSoundSourceProviderFunc = (SoundSourcePluginAPI_getSoundSourceProviderFunc)
-                    m_library.resolve(SoundSourcePluginAPI_getSoundSourceProviderFuncName);
-            if (!m_getSoundSourceProviderFunc) {
+            m_createSoundSourceProviderFunc = (SoundSourcePluginAPI_createSoundSourceProviderFunc)
+                    m_library.resolve(SoundSourcePluginAPI_createSoundSourceProviderFuncName);
+            if (nullptr == m_createSoundSourceProviderFunc) {
                 qWarning() << "Failed to resolve SoundSource plugin API function"
-                        << SoundSourcePluginAPI_getSoundSourceProviderFuncName;
+                        << SoundSourcePluginAPI_createSoundSourceProviderFuncName;
+            }
+            m_destroySoundSourceProviderFunc = (SoundSourcePluginAPI_destroySoundSourceProviderFunc)
+                    m_library.resolve(SoundSourcePluginAPI_destroySoundSourceProviderFuncName);
+            if (nullptr == m_destroySoundSourceProviderFunc) {
+                qWarning() << "Failed to resolve SoundSource plugin API function"
+                        << SoundSourcePluginAPI_destroySoundSourceProviderFuncName;
             }
         } else {
             qWarning() << "Incompatible SoundSource plugin API version"
@@ -70,13 +77,21 @@ bool SoundSourcePluginLibrary::init() {
                 << SoundSourcePluginAPI_getVersionFuncName;
     }
 
-    if (getVersionFunc && m_getSoundSourceProviderFunc) {
+    if (getVersionFunc && m_createSoundSourceProviderFunc && m_destroySoundSourceProviderFunc) {
         return true;
     } else {
         qWarning() << "Incompatible SoundSource plugin"
                 << m_library.fileName();
         return false;
     }
+}
+
+SoundSourceProviderPointer SoundSourcePluginLibrary::createSoundSourceProvider() const {
+    DEBUG_ASSERT(m_createSoundSourceProviderFunc);
+    DEBUG_ASSERT(m_destroySoundSourceProviderFunc);
+    return SoundSourceProviderPointer(
+            (*m_createSoundSourceProviderFunc)(),
+            m_destroySoundSourceProviderFunc);
 }
 
 } // Mixxx

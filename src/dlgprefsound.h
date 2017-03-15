@@ -18,7 +18,7 @@
 
 #include "ui_dlgprefsounddlg.h"
 #include "configobject.h"
-#include "soundmanagerconfig.h"
+#include "soundio/soundmanagerconfig.h"
 #include "preferences/dlgpreferencepage.h"
 
 class SoundManager;

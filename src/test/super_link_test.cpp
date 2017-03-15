@@ -8,12 +8,15 @@
 #include "effects/effect.h"
 #include "mixxxtest.h"
 #include "test/baseeffecttest.h"
+#include "util/time.h"
 
 class SuperLinkTest : public BaseEffectTest {
   protected:
     SuperLinkTest()
             : m_master(m_factory.getOrCreateHandle("[Master]"), "[Master]"),
               m_headphone(m_factory.getOrCreateHandle("[Headphone]"), "[Headphone]") {
+        Time::setTestMode(true);
+        Time::setTestElapsedMsecs(0);
         m_pEffectsManager->registerChannel(m_master);
         m_pEffectsManager->registerChannel(m_headphone);
         registerTestBackend();
@@ -111,9 +114,14 @@ TEST_F(SuperLinkTest, LinkLinkedInverse) {
 
 TEST_F(SuperLinkTest, Softtakeover) {
     m_pControlLinkType->set(EffectManifestParameter::LINK_LINKED);
+    // Soft takeover always ignores the first change.
     m_pEffectSlot->onChainSuperParameterChanged(0.5);
     EXPECT_EQ(1.0, m_pControlValue->get());
     m_pControlValue->set(0.1);
+    // Let enough time pass by to exceed soft-takeover's override interval.
+    Time::setTestElapsedMsecs(SoftTakeover::TestAccess::getTimeThreshold() + 2);
+    // Ignored by SoftTakeover since it is too far from the current value of
+    // 0.1.
     m_pEffectSlot->onChainSuperParameterChanged(0.7);
     EXPECT_EQ(0.1, m_pControlValue->get());
 }

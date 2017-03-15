@@ -68,13 +68,16 @@ class MixxxMainWindow : public QMainWindow {
     MixxxMainWindow(QApplication *app, const CmdlineArgs& args);
     virtual ~MixxxMainWindow();
 
-    void initalize(QApplication *app, const CmdlineArgs& args);
+    void initialize(QApplication *app, const CmdlineArgs& args);
     void finalize();
 
     // initializes all QActions of the application
     void initActions();
-    // initMenuBar creates the menu_bar and inserts the menuitems
+    // creates the menu_bar and inserts the file Menu
     void initMenuBar();
+    // creates the menu_bar and inserts the file Menu
+    // after it was inited
+    void populateMenuBar();
 
     void setToolTipsCfg(int tt);
     inline int getToolTipsCgf() { return m_toolTipsCfg; }
@@ -232,6 +235,7 @@ class MixxxMainWindow : public QMainWindow {
 
     Upgrade* m_pUpgrader;
 
+    QMenuBar* m_pMenuBar;
     // file_menu contains all items of the menubar entry "File"
     QMenu* m_pFileMenu;
     // edit_menu contains all items of the menubar entry "Edit"

@@ -35,7 +35,7 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     virtual void activateChild(const QModelIndex& index);
 
   private:
-    virtual void appendTrackIdsFromRightClickIndex(QList<int>* trackIds, QString* pPlaylist);
+    virtual void appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist);
 
     BansheePlaylistModel* m_pBansheePlaylistModel;
     TreeItemModel m_childModel;

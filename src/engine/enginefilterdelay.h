@@ -1,10 +1,9 @@
 #ifndef ENGINEFILTERDELAY_H
 #define ENGINEFILTERDELAY_H
 
-#include <string.h>
-
 #include "engine/engineobject.h"
 #include "util/assert.h"
+#include "util/sample.h"
 
 template<unsigned int SIZE>
 class EngineFilterDelay : public EngineObjectConstIn {

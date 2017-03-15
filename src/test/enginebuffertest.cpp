@@ -340,7 +340,7 @@ TEST_F(EngineBufferE2ETest, SeekTest) {
                               kProcessBufferSize, "SeekTest");
 }
 
-TEST_F(EngineBufferE2ETest, SoundTouchRevereTest) {
+TEST_F(EngineBufferE2ETest, SoundTouchReverseTest) {
     // This test must not crash when changing to reverse while pitch is tweaked
     // Testing bug #1458263
     ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
@@ -354,7 +354,7 @@ TEST_F(EngineBufferE2ETest, SoundTouchRevereTest) {
     // on the uses library version
 }
 
-TEST_F(EngineBufferE2ETest, RubberbandRevereTest) {
+TEST_F(EngineBufferE2ETest, RubberbandReverseTest) {
     // This test must not crash when changing to reverse while pitch is tweaked
     // Testing bug #1458263
     ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
@@ -366,4 +366,52 @@ TEST_F(EngineBufferE2ETest, RubberbandRevereTest) {
     ProcessBuffer();
     // Note: we cannot compare a golden buffer here, because the result depends
     // on the uses library version
+}
+
+TEST_F(EngineBufferE2ETest, CueGotoAndStopTest) {
+    // Be sure, that the Crossfade buffer is processed only once
+    // Bug #1504838
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+    ControlObject::set(ConfigKey(m_sGroup1, "cue_gotoandstop"), 1.0);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "CueGotoAndStopTest");
+}
+
+TEST_F(EngineBufferE2ETest, CueGotoAndPlayTest) {
+    // Be sure, cue seek is not overwritten by quantization seek
+    // Bug #1504503
+    ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 1.0);
+    m_pChannel1->getEngineBuffer()->queueNewPlaypos(
+            1000, EngineBuffer::SEEK_EXACT);
+    ProcessBuffer();
+    ControlObject::set(ConfigKey(m_sGroup1, "cue_gotoandplay"), 1.0);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "CueGotoAndPlayTest");
+}
+
+TEST_F(EngineBufferE2ETest, CueStartPlayTest) {
+    // Be sure, cue seek is not overwritten by quantization seek
+    // Bug #1504851
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+    ControlObject::set(ConfigKey(m_sGroup1, "start_play"), 1.0);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "StartPlayTest");
+}
+
+TEST_F(EngineBufferE2ETest, CueGotoAndPlayDenon) {
+    // Be sure, cue point is not moved
+    // enable Denon mode Bug #1504934
+    ControlObject::set(ConfigKey(m_sGroup1, "cue_mode"), 2.0); // CUE_MODE_DENON
+    m_pChannel1->getEngineBuffer()->queueNewPlaypos(
+            1000, EngineBuffer::SEEK_EXACT);
+    ProcessBuffer();
+    double cueBefore = ControlObject::get(ConfigKey(m_sGroup1, "cue_point"));
+    ControlObject::set(ConfigKey(m_sGroup1, "cue_gotoandplay"), 1.0);
+    ProcessBuffer();
+    EXPECT_EQ(cueBefore, ControlObject::get(ConfigKey(m_sGroup1, "cue_point")));
 }

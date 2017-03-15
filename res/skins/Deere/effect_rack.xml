@@ -21,9 +21,9 @@
           <WidgetGroup>
             <ObjectName>EffectRackCollapsed</ObjectName>
             <Layout>horizontal</Layout>
-            <MinimumSize>-1,45</MinimumSize>
-            <MaximumSize>-1,45</MaximumSize>
-            <SizePolicy>me,min</SizePolicy>
+            <MinimumSize>-1,50</MinimumSize>
+            <MaximumSize>-1,50</MaximumSize>
+            <SizePolicy>me,f</SizePolicy>
             <Children>
               <WidgetGroup>
                 <Layout>vertical</Layout>

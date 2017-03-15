@@ -404,6 +404,8 @@ def emit_app(target, source, env):
                   'CFBundleVersion': bundle_version,
                   'CFBundleShortVersionString': bundle_short_version_string,
                   'NSHumanReadableCopyright': human_readable_copyright,
+                  'NSPrincipalClass': 'NSApplication',
+                  'NSHighResolutionCapable': 'True',
                   'LSApplicationCategoryType': application_category_type,
                   'LSMinimumSystemVersion': minimum_osx_version}
     if env['FOR_APP_STORE']:

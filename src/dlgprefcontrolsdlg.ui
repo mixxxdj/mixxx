@@ -615,6 +615,8 @@
 - Cue button while pause at cue point = preview
 - Cue button while pause not at cue point = set cue point
 - Cue button while playing = pause at cue point
+Mixxx mode (no blinking):
+- Same as Mixxx mode but with no blinking indicators
 Pioneer mode:
 - Same as Mixxx mode with a flashing play button
 Denon mode:

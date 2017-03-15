@@ -1,9 +1,9 @@
-<MixxxMIDIPreset mixxxVersion="1.10.1+" schemaVersion="1">
+<MixxxMIDIPreset mixxxVersion="1.12+" schemaVersion="1">
     <info>
       <name>Hercules DJ Control Instinct</name>
       <author>Mich Wyser</author>
       <description></description>
-      <wiki>https://github.com/ratte/mixxxcontrollermapping</wiki>
+      <wiki>http://mixxx.org/wiki/doku.php/hercules_dj_control_instinct</wiki>
       <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3907</forums>
     </info>
     <controller id="Hercules DJControl Instinct MID" port="">
@@ -12,14 +12,28 @@
         </scriptfiles>
         <controls>
             <control>
-                <status>0x80</status>
+                <status>0x90</status>
                 <midino>0x1</midino>
-                <group>[Channel1]</group>
-                <key>flanger</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel1]_enable</key>
+            </control>
+            <control>
+                <status>0x90</status>
+                <midino>0x2</midino>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel1]_enable</key>
+            </control>
+            <control>
+                <status>0x90</status>
+                <midino>0x3</midino>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>group_[Channel1]_enable</key>
+            </control>
+            <control>
+                <status>0x90</status>
+                <midino>0x4</midino>
+                <group>[EffectRack1_EffectUnit4]</group>
+                <key>group_[Channel1]_enable</key>
             </control>
             <control>
                 <status>0x80</status>
@@ -242,14 +256,28 @@
                 </options>
             </control>
             <control>
-                <status>0x80</status>
+                <status>0x90</status>
                 <midino>0x1b</midino>
-                <group>[Channel2]</group>
-                <key>flanger</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel2]_enable</key>
+            </control>
+            <control>
+                <status>0x90</status>
+                <midino>0x1c</midino>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel2]_enable</key>
+            </control>
+            <control>
+                <status>0x90</status>
+                <midino>0x1d</midino>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>group_[Channel2]_enable</key>
+            </control>
+            <control>
+                <status>0x90</status>
+                <midino>0x1e</midino>
+                <group>[EffectRack1_EffectUnit4]</group>
+                <key>group_[Channel2]_enable</key>
             </control>
             <control>
                 <status>0xb0</status>
@@ -346,16 +374,6 @@
                 <midino>0x23</midino>
                 <group>[Channel2]</group>
                 <key>loop_in</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x1</midino>
-                <group>[Channel1]</group>
-                <key>flanger</key>
                 <description></description>
                 <options>
                     <normal/>
@@ -772,16 +790,6 @@
                 </options>
             </control>
             <control>
-                <status>0x90</status>
-                <midino>0x1b</midino>
-                <group>[Channel2]</group>
-                <key>flanger</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
                 <status>0x80</status>
                 <midino>0x41</midino>
                 <group>[Master]</group>
@@ -1114,18 +1122,32 @@
                 <off>0x0</off>
             </output>
             <output>
-                <group>[Channel1]</group>
-                <key>flanger</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
                 <status>0x90</status>
-                <midino>0x43</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
+                <midino>0x1</midino>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel1]_enable</key>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <status>0x90</status>
+                <midino>0x2</midino>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel1]_enable</key>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <status>0x90</status>
+                <midino>0x3</midino>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>group_[Channel1]_enable</key>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <status>0x90</status>
+                <midino>0x4</midino>
+                <group>[EffectRack1_EffectUnit4]</group>
+                <key>group_[Channel1]_enable</key>
+                <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel1]</group>
@@ -1170,18 +1192,32 @@
                 <off>0x0</off>
             </output>
             <output>
-                <group>[Channel2]</group>
-                <key>flanger</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
                 <status>0x90</status>
-                <midino>0x57</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
+                <midino>0x1b</midino>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel2]_enable</key>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <status>0x90</status>
+                <midino>0x1c</midino>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel2]_enable</key>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <status>0x90</status>
+                <midino>0x1d</midino>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>group_[Channel2]_enable</key>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <status>0x90</status>
+                <midino>0x1e</midino>
+                <group>[EffectRack1_EffectUnit4]</group>
+                <key>group_[Channel2]_enable</key>
+                <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel1]</group>

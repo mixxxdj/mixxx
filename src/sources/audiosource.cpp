@@ -1,25 +1,29 @@
 #include "sources/audiosource.h"
 
-#include "sampleutil.h"
+#include "util/sample.h"
 
 namespace Mixxx {
 
+void AudioSource::clampFrameInterval(
+        SINT* pMinFrameIndexOfInterval,
+        SINT* pMaxFrameIndexOfInterval,
+        SINT maxFrameIndexOfAudioSource) {
+    if (*pMinFrameIndexOfInterval < getMinFrameIndex()) {
+        *pMinFrameIndexOfInterval = getMinFrameIndex();
+    }
+    if (*pMaxFrameIndexOfInterval > maxFrameIndexOfAudioSource) {
+        *pMaxFrameIndexOfInterval = maxFrameIndexOfAudioSource;
+    }
+    if (*pMaxFrameIndexOfInterval < *pMinFrameIndexOfInterval) {
+        *pMaxFrameIndexOfInterval = *pMinFrameIndexOfInterval;
+    }
+}
+
 AudioSource::AudioSource(const QUrl& url)
         : UrlResource(url),
-          m_channelCount(kChannelCountDefault),
-          m_frameRate(kFrameRateDefault),
+          AudioSignal(kSampleLayout),
           m_frameCount(kFrameCountDefault),
           m_bitrate(kBitrateDefault) {
-}
-
-void AudioSource::setChannelCount(SINT channelCount) {
-    DEBUG_ASSERT(isValidChannelCount(channelCount));
-    m_channelCount = channelCount;
-}
-
-void AudioSource::setFrameRate(SINT frameRate) {
-    DEBUG_ASSERT(isValidFrameRate(frameRate));
-    m_frameRate = frameRate;
 }
 
 void AudioSource::setFrameCount(SINT frameCount) {

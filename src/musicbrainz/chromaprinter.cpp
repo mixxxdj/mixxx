@@ -1,15 +1,13 @@
 #include "musicbrainz/chromaprinter.h"
 
-#include "soundsourceproxy.h"
-#include "samplebuffer.h"
-#include "sampleutil.h"
-
 #include <chromaprint.h>
+#include <vector>
 
 #include <QtDebug>
 
-#include <vector>
-
+#include "soundsourceproxy.h"
+#include "util/sample.h"
+#include "util/samplebuffer.h"
 
 namespace
 {
@@ -23,7 +21,7 @@ namespace
     QString calcFingerprint(const Mixxx::AudioSourcePointer& pAudioSource) {
 
         SINT numFrames =
-                kFingerprintDuration * pAudioSource->getFrameRate();
+                kFingerprintDuration * pAudioSource->getSamplingRate();
         // check that the song is actually longer then the amount of audio we use
         if (numFrames > pAudioSource->getFrameCount()) {
             numFrames = pAudioSource->getFrameCount();
@@ -56,7 +54,7 @@ namespace
         qDebug("reading file took: %d ms" , timerReadingFile.elapsed());
 
         ChromaprintContext* ctx = chromaprint_new(CHROMAPRINT_ALGORITHM_DEFAULT);
-        chromaprint_start(ctx, pAudioSource->getFrameRate(), kFingerprintChannels);
+        chromaprint_start(ctx, pAudioSource->getSamplingRate(), kFingerprintChannels);
 
         QTime timerGeneratingFingerprint;
         timerGeneratingFingerprint.start();
@@ -100,7 +98,7 @@ ChromaPrinter::ChromaPrinter(QObject* parent)
 QString ChromaPrinter::getFingerprint(TrackPointer pTrack) {
     SoundSourceProxy soundSourceProxy(pTrack);
     Mixxx::AudioSourceConfig audioSrcCfg;
-    audioSrcCfg.channelCountHint = kFingerprintChannels;
+    audioSrcCfg.setChannelCount(kFingerprintChannels);
     Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource(audioSrcCfg));
     if (pAudioSource.isNull()) {
         qDebug() << "Skipping invalid file:" << pTrack->getLocation();

@@ -139,11 +139,13 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
                 ControlParameterWidgetConnection::EMIT_DEFAULT) {
             switch (m_leftButtonMode) {
                 case ControlPushButton::PUSH:
-                case ControlPushButton::LONGPRESSLATCHING:
                 case ControlPushButton::POWERWINDOW:
+                case ControlPushButton::LONGPRESSLATCHING:
                     leftConnection->setEmitOption(
                             ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE);
                     break;
+                case ControlPushButton::TOGGLE:
+                case ControlPushButton::TRIGGER:
                 default:
                     leftConnection->setEmitOption(
                             ControlParameterWidgetConnection::EMIT_ON_PRESS);
@@ -186,11 +188,13 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
                 ControlParameterWidgetConnection::EMIT_DEFAULT) {
             switch (m_rightButtonMode) {
                 case ControlPushButton::PUSH:
-                case ControlPushButton::LONGPRESSLATCHING:
                 case ControlPushButton::POWERWINDOW:
+                case ControlPushButton::LONGPRESSLATCHING:
                     rightConnection->setEmitOption(
                             ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE);
                     break;
+                case ControlPushButton::TOGGLE:
+                case ControlPushButton::TRIGGER:
                 default:
                     rightConnection->setEmitOption(
                             ControlParameterWidgetConnection::EMIT_ON_PRESS);
@@ -338,10 +342,11 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
     }
 
     if (rightClick) {
-        // This is the secondary button function allways a Pushbutton
+        // This is the secondary button function always a Pushbutton
         // due the leak of visual feedback we do not allow a toggle function
-        if (m_rightButtonMode == ControlPushButton::PUSH
-                || m_iNoStates == 1) {
+        if (m_rightButtonMode == ControlPushButton::PUSH ||
+                m_rightButtonMode == ControlPushButton::TRIGGER ||
+                m_iNoStates == 1) {
             m_bPressed = true;
             setControlParameterRightDown(1.0);
             restyleAndRepaint();

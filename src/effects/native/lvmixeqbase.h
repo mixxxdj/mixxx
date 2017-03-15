@@ -1,14 +1,14 @@
 #ifndef BESSELLVMIXEQBASE_H
 #define BESSELLVMIXEQBASE_H
 
-#include "util/types.h"
+#include "engine/enginefilterdelay.h"
 #include "util/defs.h"
 #include "util/math.h"
-#include "sampleutil.h"
-#include "engine/enginefilterdelay.h"
+#include "util/sample.h"
+#include "util/types.h"
 
 static const int kMaxDelay = 3300; // allows a 30 Hz filter at 97346;
-static const int kRampDone = -1; 
+static const int kRampDone = -1;
 static const unsigned int kStartupSamplerate = 44100;
 static const double kStartupLoFreq = 246;
 static const double kStartupHiFreq = 2484;

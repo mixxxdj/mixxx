@@ -11,9 +11,8 @@ QString sourceToString(CoverInfo::Source source) {
             return "GUESSED";
         case CoverInfo::USER_SELECTED:
             return "USER_SELECTED";
-        default:
-            return "INVALID INFO VALUE";
     }
+    return "INVALID INFO VALUE";
 }
 
 QString typeToString(CoverInfo::Type type) {
@@ -24,9 +23,8 @@ QString typeToString(CoverInfo::Type type) {
             return "METADATA";
         case CoverInfo::FILE:
             return "FILE";
-        default:
-            return "INVALID TYPE VALUE";
     }
+    return "INVALID TYPE VALUE";
 }
 
 QDebug operator<<(QDebug dbg, const CoverInfo& info) {

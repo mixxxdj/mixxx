@@ -19,8 +19,10 @@
 #define ENGINEFILTER_H
 
 #define MIXXX
-#include "engine/engineobject.h"
+#include <cstdio>
 #include <fidlib.h>
+
+#include "engine/engineobject.h"
 #include "util/types.h"
 
 #define PREDEF_HP 1

@@ -1,11 +1,27 @@
 #include "soundsourcewv.h"
 
+#include <QFile>
+
 namespace Mixxx {
+
+//static
+WavpackStreamReader SoundSourceWV::s_streamReader = {
+    SoundSourceWV::ReadBytesCallback,
+    SoundSourceWV::GetPosCallback,
+    SoundSourceWV::SetPosAbsCallback,
+    SoundSourceWV::SetPosRelCallback,
+    SoundSourceWV::PushBackByteCallback,
+    SoundSourceWV::GetlengthCallback,
+    SoundSourceWV::CanSeekCallback,
+    SoundSourceWV::WriteBytesCallback
+};
 
 SoundSourceWV::SoundSourceWV(const QUrl& url)
         : SoundSourcePlugin(url, "wv"),
           m_wpc(NULL),
-          m_sampleScaleFactor(CSAMPLE_ZERO) {
+          m_sampleScaleFactor(CSAMPLE_ZERO), 
+          m_pWVFile(NULL),
+          m_pWVCFile(NULL) {
 }
 
 SoundSourceWV::~SoundSourceWV() {
@@ -16,28 +32,40 @@ Result SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     DEBUG_ASSERT(!m_wpc);
     char msg[80]; // hold possible error message
     int openFlags = OPEN_WVC | OPEN_NORMALIZE;
-    if ((kChannelCountMono == audioSrcCfg.channelCountHint) ||
-            (kChannelCountStereo == audioSrcCfg.channelCountHint)) {
+    if ((kChannelCountMono == audioSrcCfg.getChannelCount()) ||
+            (kChannelCountStereo == audioSrcCfg.getChannelCount())) {
         openFlags |= OPEN_2CH_MAX;
     }
-    m_wpc = WavpackOpenFileInput(
-            getLocalFileNameBytes().constData(), msg, openFlags, 0);
+
+    // We use WavpackOpenFileInputEx to support Unicode paths on windows
+    // http://www.wavpack.com/lib_use.txt
+    QString wavPackFileName = getLocalFileName();
+    m_pWVFile = new QFile(wavPackFileName);
+    m_pWVFile->open(QFile::ReadOnly);
+    QString correctionFileName(wavPackFileName + "c");
+    if (QFile::exists(correctionFileName)) {
+        // If there is a correction file, open it as well
+        m_pWVCFile = new QFile(correctionFileName);
+        m_pWVCFile->open(QFile::ReadOnly);
+    }
+    m_wpc = WavpackOpenFileInputEx(&s_streamReader, m_pWVFile, m_pWVCFile,
+            msg, openFlags, 0);
     if (!m_wpc) {
         qDebug() << "SSWV::open: failed to open file : " << msg;
         return ERR;
     }
 
     setChannelCount(WavpackGetReducedChannels(m_wpc));
-    setFrameRate(WavpackGetSampleRate(m_wpc));
+    setSamplingRate(WavpackGetSampleRate(m_wpc));
     setFrameCount(WavpackGetNumSamples(m_wpc));
 
     if (WavpackGetMode(m_wpc) & MODE_FLOAT) {
         m_sampleScaleFactor = CSAMPLE_PEAK;
     } else {
         const int bitsPerSample = WavpackGetBitsPerSample(m_wpc);
-        const uint32_t wavpackPeakSampleValue = uint32_t(1)
+        const uint32_t wavpackPeakSampleValue = 1u
                 << (bitsPerSample - 1);
-        m_sampleScaleFactor = CSAMPLE_PEAK / CSAMPLE(wavpackPeakSampleValue);
+        m_sampleScaleFactor = CSAMPLE_PEAK / wavpackPeakSampleValue;
     }
 
     return OK;
@@ -48,11 +76,21 @@ void SoundSourceWV::close() {
         WavpackCloseFile(m_wpc);
         m_wpc = NULL;
     }
+    if (m_pWVFile) {
+        m_pWVFile->close();
+        delete m_pWVFile;
+        m_pWVFile = NULL;
+    }
+    if (m_pWVCFile) {
+        m_pWVCFile->close();
+        delete m_pWVCFile;
+        m_pWVCFile = NULL;
+    }
 }
 
 SINT SoundSourceWV::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
-    if (WavpackSeekSample(m_wpc, frameIndex) == TRUE) {
+    if (WavpackSeekSample(m_wpc, frameIndex) == true) {
         return frameIndex;
     } else {
         qDebug() << "SSWV::seek : could not seek to frame #" << frameIndex;
@@ -91,22 +129,109 @@ SoundSourcePointer SoundSourceProviderWV::newSoundSource(const QUrl& url) {
     return exportSoundSourcePlugin(new SoundSourceWV(url));
 }
 
-} // namespace Mixxx
-
-namespace {
-
-void deleteSoundSourceProviderSingleton(Mixxx::SoundSourceProvider*) {
-    // The statically allocated instance must not be deleted!
+//static
+int32_t SoundSourceWV::ReadBytesCallback(void* id, void* data, int bcount)
+{
+    QFile* pFile = static_cast<QFile*>(id);
+    if (!pFile) {
+        return 0;
+    }
+    return pFile->read((char*)data, bcount);
 }
 
-} // anonymous namespace
+
+// static
+uint32_t SoundSourceWV::GetPosCallback(void *id)
+{
+    QFile* pFile = static_cast<QFile*>(id);
+    if (!pFile) {
+        return 0;
+    }
+    return pFile->pos();
+}
+
+//static
+int SoundSourceWV::SetPosAbsCallback(void* id, unsigned int pos)
+{
+    QFile* pFile = static_cast<QFile*>(id);
+    if (!pFile) {
+        return 0;
+    }
+    return pFile->seek(pos) ? 0 : -1;
+}
+
+//static
+int SoundSourceWV::SetPosRelCallback(void *id, int delta, int mode)
+{
+    QFile* pFile = static_cast<QFile*>(id);
+    if (!pFile) {
+        return 0;
+    }
+
+    switch(mode) {
+    case SEEK_SET:
+        return pFile->seek(delta) ? 0 : -1;
+    case SEEK_CUR:
+        return pFile->seek(pFile->pos() + delta) ? 0 : -1;
+    case SEEK_END:
+        return pFile->seek(pFile->size() + delta) ? 0 : -1;
+    default:
+        return -1;
+    }
+}
+
+//static
+int SoundSourceWV::PushBackByteCallback(void* id, int c)
+{
+    QFile* pFile = static_cast<QFile*>(id);
+    if (!pFile) {
+        return 0;
+    }
+    pFile->ungetChar((char)c);
+    return 1;
+}
+
+//static
+uint32_t SoundSourceWV::GetlengthCallback(void* id)
+{
+    QFile* pFile = static_cast<QFile*>(id);
+    if (!pFile) {
+        return 0;
+    }
+    return pFile->size();
+}
+
+//static
+int SoundSourceWV::CanSeekCallback(void *id)
+{
+    QFile* pFile = static_cast<QFile*>(id);
+    if (!pFile) {
+        return 0;
+    }
+    return pFile->isSequential() ? 0 : 1;
+}
+
+//static
+int32_t SoundSourceWV::WriteBytesCallback(void* id, void* data, int32_t bcount)
+{
+    QFile* pFile = static_cast<QFile*>(id);
+    if (!pFile) {
+        return 0;
+    }
+    return (int32_t)pFile->write((char*)data, bcount);
+}
+
+} // namespace Mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-Mixxx::SoundSourceProviderPointer Mixxx_SoundSourcePluginAPI_getSoundSourceProvider() {
+Mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
     // SoundSourceProviderWV is stateless and a single instance
     // can safely be shared
     static Mixxx::SoundSourceProviderWV singleton;
-    return Mixxx::SoundSourceProviderPointer(
-            &singleton,
-            deleteSoundSourceProviderSingleton);
+    return &singleton;
+}
+
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
+void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(Mixxx::SoundSourceProvider*) {
+    // The statically allocated instance must not be deleted!
 }

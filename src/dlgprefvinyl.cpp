@@ -345,9 +345,9 @@ void DlgPrefVinyl::VinylTypeSlotApply()
     switch (m_COSpeeds.length()) {
     case 4:
         if (ComboBoxVinylSpeed4->currentText() == MIXXX_VINYL_SPEED_33) {
-            m_COSpeeds[3]->slotSet(MIXXX_VINYL_SPEED_33_NUM);
+            m_COSpeeds[3]->set(MIXXX_VINYL_SPEED_33_NUM);
         } else if (ComboBoxVinylSpeed4->currentText() == MIXXX_VINYL_SPEED_45) {
-            m_COSpeeds[3]->slotSet(MIXXX_VINYL_SPEED_45_NUM);
+            m_COSpeeds[3]->set(MIXXX_VINYL_SPEED_45_NUM);
         }
         // fallthrough intended
     case 3:

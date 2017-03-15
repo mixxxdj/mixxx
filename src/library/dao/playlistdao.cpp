@@ -41,7 +41,7 @@ void PlaylistDAO::populatePlaylistMembershipCache() {
     const int trackIdColumn = query.record().indexOf(PLAYLISTTRACKSTABLE_TRACKID);
     const int playlistIdColumn = query.record().indexOf(PLAYLISTTRACKSTABLE_PLAYLISTID);
     while (query.next()) {
-        m_playlistsTrackIsIn.insert(query.value(trackIdColumn).toInt(),
+        m_playlistsTrackIsIn.insert(TrackId(query.value(trackIdColumn)),
                                     query.value(playlistIdColumn).toInt());
 
     }
@@ -129,23 +129,23 @@ QString PlaylistDAO::getPlaylistName(const int playlistId) const {
     return name;
 }
 
-QList<int> PlaylistDAO::getTrackIds(const int playlistId) const {
+QList<TrackId> PlaylistDAO::getTrackIds(const int playlistId) const {
+    QList<TrackId> trackIds;
+
     QSqlQuery query(m_database);
     query.prepare("SELECT DISTINCT track_id FROM PlaylistTracks "
                   "WHERE playlist_id = :id");
     query.bindValue(":id", playlistId);
-
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        return QList<int> ();
+        return trackIds;
     }
 
-    QList<int> ids;
     const int trackIdColumn = query.record().indexOf("track_id");
     while (query.next()) {
-        ids.append(query.value(trackIdColumn).toInt());
+        trackIds.append(TrackId(query.value(trackIdColumn)));
     }
-    return ids;
+    return trackIds;
 }
 
 int PlaylistDAO::getPlaylistIdFromName(const QString& name) const {
@@ -192,12 +192,12 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
     transaction.commit();
     //TODO: Crap, we need to shuffle the positions of all the playlists?
 
-    for (QMultiHash<int, int>::iterator it = m_playlistsTrackIsIn.begin();
+    for (QMultiHash<TrackId, int>::iterator it = m_playlistsTrackIsIn.begin();
          it != m_playlistsTrackIsIn.end();) {
         if (it.value() == playlistId) {
             it = m_playlistsTrackIsIn.erase(it);
         } else {
-            it++;
+            ++it;
         }
     }
 
@@ -248,7 +248,7 @@ bool PlaylistDAO::isPlaylistLocked(const int playlistId) const {
     return false;
 }
 
-bool PlaylistDAO::appendTracksToPlaylist(const QList<int>& trackIds, const int playlistId) {
+bool PlaylistDAO::appendTracksToPlaylist(const QList<TrackId>& trackIds, const int playlistId) {
     // qDebug() << "PlaylistDAO::appendTracksToPlaylist"
     //          << QThread::currentThread() << m_database.connectionName();
 
@@ -268,8 +268,8 @@ bool PlaylistDAO::appendTracksToPlaylist(const QList<int>& trackIds, const int p
 
 
     int insertPosition = position;
-    foreach (int trackId, trackIds) {
-        query.bindValue(":track_id", trackId);
+    for (const auto& trackId: trackIds) {
+        query.bindValue(":track_id", trackId.toVariant());
         query.bindValue(":position", insertPosition++);
         if (!query.exec()) {
             LOG_FAILED_QUERY(query);
@@ -281,7 +281,7 @@ bool PlaylistDAO::appendTracksToPlaylist(const QList<int>& trackIds, const int p
     transaction.commit();
 
     insertPosition = position;
-    foreach (int trackId, trackIds) {
+    for (const auto& trackId: trackIds) {
         m_playlistsTrackIsIn.insert(trackId, playlistId);
         // TODO(XXX) don't emit if the track didn't add successfully.
         emit(trackAdded(playlistId, trackId, insertPosition++));
@@ -290,10 +290,10 @@ bool PlaylistDAO::appendTracksToPlaylist(const QList<int>& trackIds, const int p
     return true;
 }
 
-bool PlaylistDAO::appendTrackToPlaylist(const int trackId, const int playlistId) {
-    QList<int> tracks;
-    tracks.append(trackId);
-    return appendTracksToPlaylist(tracks, playlistId);
+bool PlaylistDAO::appendTrackToPlaylist(TrackId trackId, const int playlistId) {
+    QList<TrackId> trackIds;
+    trackIds.append(trackId);
+    return appendTracksToPlaylist(trackIds, playlistId);
 }
 
 /** Find out how many playlists exist. */
@@ -387,7 +387,7 @@ void PlaylistDAO::removeTrackFromPlaylist(const int playlistId, const int positi
                  << position << "in playlist:" << playlistId;
         return;
     }
-    int trackId = query.value(query.record().indexOf("track_id")).toInt();
+    TrackId trackId(query.value(query.record().indexOf("track_id")));
 
     //Delete the track from the playlist.
     query.prepare("DELETE FROM PlaylistTracks "
@@ -441,7 +441,7 @@ void PlaylistDAO::removeTracksFromPlaylist(const int playlistId, QList<int>& pos
                     << position << "in playlist:" << playlistId;
             return;
         }
-        int trackId = query.value(query.record().indexOf("track_id")).toInt();
+        TrackId trackId(query.value(query.record().indexOf("track_id")));
 
         // Delete the track from the playlist.
         query.prepare("DELETE FROM PlaylistTracks "
@@ -470,8 +470,8 @@ void PlaylistDAO::removeTracksFromPlaylist(const int playlistId, QList<int>& pos
     emit(changed(playlistId));
 }
 
-bool PlaylistDAO::insertTrackIntoPlaylist(const int trackId, const int playlistId, int position) {
-    if (playlistId < 0 || trackId < 0 || position < 0)
+bool PlaylistDAO::insertTrackIntoPlaylist(TrackId trackId, const int playlistId, int position) {
+    if (playlistId < 0 || !trackId.isValid() || position < 0)
         return false;
 
     ScopedTransaction transaction(m_database);
@@ -499,9 +499,8 @@ bool PlaylistDAO::insertTrackIntoPlaylist(const int trackId, const int playlistI
     query.prepare("INSERT INTO PlaylistTracks (playlist_id, track_id, position, pl_datetime_added)"
                   "VALUES (:playlist_id, :track_id, :position, CURRENT_TIMESTAMP)");
     query.bindValue(":playlist_id", playlistId);
-    query.bindValue(":track_id", trackId);
+    query.bindValue(":track_id", trackId.toVariant());
     query.bindValue(":position", position);
-
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -515,7 +514,7 @@ bool PlaylistDAO::insertTrackIntoPlaylist(const int trackId, const int playlistI
     return true;
 }
 
-int PlaylistDAO::insertTracksIntoPlaylist(const QList<int>& trackIds,
+int PlaylistDAO::insertTracksIntoPlaylist(const QList<TrackId>& trackIds,
                                           const int playlistId, int position) {
     if (playlistId < 0 || position < 0) {
         return 0;
@@ -535,8 +534,8 @@ int PlaylistDAO::insertTracksIntoPlaylist(const QList<int>& trackIds,
                         "VALUES (:playlist_id, :track_id, :position)");
     QSqlQuery query(m_database);
     int insertPositon = position;
-    foreach (int trackId, trackIds) {
-        if (trackId < 0) {
+    for (const auto& trackId: trackIds) {
+        if (!trackId.isValid()) {
             continue;
         }
         // Move all tracks in playlist up by 1.
@@ -552,7 +551,7 @@ int PlaylistDAO::insertTracksIntoPlaylist(const QList<int>& trackIds,
 
         // Insert the track at the given position
         insertQuery.bindValue(":playlist_id", playlistId);
-        insertQuery.bindValue(":track_id", trackId);
+        insertQuery.bindValue(":track_id", trackId.toVariant());
         insertQuery.bindValue(":position", insertPositon);
         if (!insertQuery.exec()) {
             LOG_FAILED_QUERY(insertQuery);
@@ -567,7 +566,7 @@ int PlaylistDAO::insertTracksIntoPlaylist(const QList<int>& trackIds,
     transaction.commit();
 
     insertPositon = position;
-    foreach (int trackId, trackIds) {
+    for (const auto& trackId: trackIds) {
         m_playlistsTrackIsIn.insert(trackId, playlistId);
         // TODO(XXX) The position is wrong if any track failed to insert.
         emit(trackAdded(playlistId, trackId, insertPositon++));
@@ -592,14 +591,14 @@ void PlaylistDAO::addPlaylistToAutoDJQueue(const int playlistId, const bool bTop
 
     // Loop through the tracks, adding them to the Auto-DJ Queue. Start at
     // position 2 because position 1 was already loaded to the deck.
-    QList<int> ids;
+    QList<TrackId> trackIds;
     while (query.next()) {
-        ids.append(query.value(0).toInt());
+        trackIds.append(TrackId(query.value(0)));
     }
-    addTracksToAutoDJQueue(ids, bTop);
+    addTracksToAutoDJQueue(trackIds, bTop);
 }
 
-void PlaylistDAO::addTracksToAutoDJQueue(const QList<int>& trackIds, const bool bTop) {
+void PlaylistDAO::addTracksToAutoDJQueue(const QList<TrackId>& trackIds, const bool bTop) {
     // Get the ID of the Auto-DJ playlist
     int autoDJId = getPlaylistIdFromName(AUTODJ_TABLE);
 
@@ -680,7 +679,7 @@ bool PlaylistDAO::copyPlaylistTracks(const int sourcePlaylistID, const int targe
 
     // Let subscribers know about each added track.
     while (query.next()) {
-        int copiedTrackId = query.value(0).toInt();
+        TrackId copiedTrackId(query.value(0));
         int copiedPosition = query.value(1).toInt();
         m_playlistsTrackIsIn.insert(copiedTrackId, targetPlaylistID);
         emit(trackAdded(targetPlaylistID, copiedTrackId, copiedPosition));
@@ -708,9 +707,9 @@ int PlaylistDAO::getMaxPosition(const int playlistId) const {
     return position;
 }
 
-void PlaylistDAO::removeTracksFromPlaylists(const QList<int>& trackIds) {
+void PlaylistDAO::removeTracksFromPlaylists(const QList<TrackId>& trackIds) {
     QStringList trackIdList;
-    foreach (int id, trackIds) {
+    for (const auto& trackId: trackIds) {
         if (trackIdList.count() >= 255) {
             // Avoid that the resulting SQL query to exceed the maximum length
             // The maximum number of bytes in the text of an SQL statement is
@@ -719,13 +718,13 @@ void PlaylistDAO::removeTracksFromPlaylists(const QList<int>& trackIds) {
             removeTracksFromPlaylistsInner(trackIdList);
             trackIdList.clear();
         }
-        trackIdList << QString::number(id);
+        trackIdList << trackId.toString();
     }
     removeTracksFromPlaylistsInner(trackIdList);
 
     // Update the in-memory hash. TODO(XXX) this assumes all the removes
     // succeeded.
-    foreach (int trackId, trackIds) {
+    for (const auto& trackId: trackIds) {
         m_playlistsTrackIsIn.remove(trackId);
     }
 
@@ -835,10 +834,10 @@ void PlaylistDAO::moveTrack(const int playlistId, const int oldPosition, const i
 
 void PlaylistDAO::searchForDuplicateTrack(const int fromPosition,
                                           const int toPosition,
-                                          const int trackID,
+                                          TrackId trackID,
                                           const int excludePosition,
                                           const int otherTrackPosition,
-                                          const QHash<int,int>* pTrackPositionIds,
+                                          const QHash<int,TrackId>* pTrackPositionIds,
                                           int* pTrackDistance) {
     //qDebug() << "        Searching from " << fromPosition << " to " << toPosition;
     for (int pos = fromPosition; pos <= toPosition; pos++) {
@@ -852,13 +851,13 @@ void PlaylistDAO::searchForDuplicateTrack(const int fromPosition,
     }
 }
 
-void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& positions, const QHash<int,int>& allIds) {
+void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& positions, const QHash<int,TrackId>& allIds) {
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
 
     int seed = QDateTime::currentDateTime().toTime_t();
     qsrand(seed);
-    QHash<int,int> trackPositionIds = allIds;
+    QHash<int,TrackId> trackPositionIds = allIds;
     QList<int> newPositions = positions;
     const int searchDistance = math_max(trackPositionIds.count() / 4, 1);
 
@@ -892,9 +891,9 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
     for (int i = 0; i < newPositions.count(); i++) {
         bool conflictFound = true;
         int trackAPosition = newPositions.at(i);
-        int trackAId = trackPositionIds.value(trackAPosition);
+        TrackId trackAId = trackPositionIds.value(trackAPosition);
         int trackBPosition = -1;
-        int trackBId = -1;
+        TrackId trackBId;
         int bestTrackDistance = -1;
         int bestTrackBPosition = -1;
 
@@ -997,14 +996,14 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
     emit(changed(playlistId));
 }
 
-bool PlaylistDAO::isTrackInPlaylist(const int trackId, const int playlistId) const {
+bool PlaylistDAO::isTrackInPlaylist(TrackId trackId, const int playlistId) const {
     return m_playlistsTrackIsIn.contains(trackId, playlistId);
 }
 
-void PlaylistDAO::getPlaylistsTrackIsIn(const int trackId,
+void PlaylistDAO::getPlaylistsTrackIsIn(TrackId trackId,
                                         QSet<int>* playlistSet) const {
     playlistSet->clear();
-    for (QHash<int, int>::const_iterator it = m_playlistsTrackIsIn.find(trackId);
+    for (QHash<TrackId, int>::const_iterator it = m_playlistsTrackIsIn.find(trackId);
          it != m_playlistsTrackIsIn.end() && it.key() == trackId; ++it) {
         playlistSet->insert(it.value());
     }

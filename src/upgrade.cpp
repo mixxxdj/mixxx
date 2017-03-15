@@ -41,17 +41,6 @@ Upgrade::Upgrade()
 Upgrade::~Upgrade() {
 }
 
-// static 
-QString Upgrade::mixxx17HomePath() {
-#ifdef __LINUX__
-    return QDir::homePath().append("/").append(".mixxx/");
-#elif __WINDOWS__
-    return QDir::homePath().append("/").append("Local Settings/Application Data/Mixxx/");
-#elif __APPLE__
-    return QDir::homePath().append("/").append(".mixxx/");
-#endif
-}
-
 // We return the ConfigObject here because we have to make changes to the
 // configuration and the location of the file may change between releases.
 ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) {

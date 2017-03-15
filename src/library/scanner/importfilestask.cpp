@@ -12,8 +12,10 @@ ImportFilesTask::ImportFilesTask(LibraryScanner* pScanner,
                                  const QLinkedList<QFileInfo>& filesToImport,
                                  const QLinkedList<QFileInfo>& possibleCovers,
                                  SecurityTokenPointer pToken)
-        : ScannerTask(pScanner, scannerGlobal), m_dirPath(dirPath),
-          m_prevHashExists(prevHashExists), m_newHash(newHash),
+        : ScannerTask(pScanner, scannerGlobal),
+          m_dirPath(dirPath),
+          m_prevHashExists(prevHashExists),
+          m_newHash(newHash),
           m_filesToImport(filesToImport),
           m_possibleCovers(possibleCovers),
           m_pToken(pToken) {

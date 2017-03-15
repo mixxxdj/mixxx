@@ -31,6 +31,7 @@ const int COLUMN_ALBUMARTIST = 16;
 const int COLUMN_GROUPING = 17;
 const int COLUMN_FILE_MODIFIED_TIME = 18;
 const int COLUMN_FILE_CREATION_TIME = 19;
+const int COLUMN_REPLAYGAIN = 20;
 
 
 // The BrowseTable models displays tracks
@@ -48,8 +49,8 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     virtual TrackModel::CapabilitiesFlags getCapabilities() const;
 
     QString getTrackLocation(const QModelIndex& index) const;
-    int getTrackId(const QModelIndex& index) const;
-    const QLinkedList<int> getTrackRows(int trackId) const;
+    TrackId getTrackId(const QModelIndex& index) const;
+    const QLinkedList<int> getTrackRows(TrackId trackId) const;
     void search(const QString& searchText,const QString& extraFilter=QString());
     void removeTrack(const QModelIndex& index);
     void removeTracks(const QModelIndexList& indices);

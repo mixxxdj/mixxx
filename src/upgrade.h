@@ -24,7 +24,6 @@ class Upgrade
         Upgrade();
         ~Upgrade();
         ConfigObject<ConfigValue>* versionUpgrade(const QString& settingsPath);
-        static QString mixxx17HomePath();
         bool isFirstRun() { return m_bFirstRun; };
         bool isUpgraded() { return m_bUpgraded; };
         bool rescanLibrary() {return m_bRescanLibrary; };

@@ -7,10 +7,14 @@
 
 class EngineXfader {
   public:
-    static double getCalibration(double transform);
+    static double getPowerCalibration(double transform);
     static void getXfadeGains(
-        double xfadePosition, double transform, double calibration,
+        double xfadePosition, double transform, double powerCalibration,
         bool constPower, bool reverse, double* gain1, double* gain2);
+
+    static const char* kXfaderConfigKey;
+    static const double kTransformMax;
+    static const double kTransformMin;
 };
 
 #endif /* ENGINEXFADER_H */

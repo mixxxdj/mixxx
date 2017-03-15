@@ -14,7 +14,7 @@
 #include "widget/wbasewidget.h"
 #include "widget/wwidget.h"
 
-class ControlObjectThread;
+class ControlObjectSlave;
 class VisualPlayPosition;
 class VinylControlManager;
 
@@ -75,17 +75,17 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     QImage m_fgImageScaled;
     QImage* m_pGhostImage;
     QImage m_ghostImageScaled;
-    ControlObjectThread* m_pPlay;
-    ControlObjectThread* m_pPlayPos;
+    ControlObjectSlave* m_pPlay;
+    ControlObjectSlave* m_pPlayPos;
     QSharedPointer<VisualPlayPosition> m_pVisualPlayPos;
-    ControlObjectThread* m_pTrackSamples;
-    ControlObjectThread* m_pTrackSampleRate;
-    ControlObjectThread* m_pScratchToggle;
-    ControlObjectThread* m_pScratchPos;
-    ControlObjectThread* m_pVinylControlSpeedType;
-    ControlObjectThread* m_pVinylControlEnabled;
-    ControlObjectThread* m_pSignalEnabled;
-    ControlObjectThread* m_pSlipEnabled;
+    ControlObjectSlave* m_pTrackSamples;
+    ControlObjectSlave* m_pTrackSampleRate;
+    ControlObjectSlave* m_pScratchToggle;
+    ControlObjectSlave* m_pScratchPos;
+    ControlObjectSlave* m_pVinylControlSpeedType;
+    ControlObjectSlave* m_pVinylControlEnabled;
+    ControlObjectSlave* m_pSignalEnabled;
+    ControlObjectSlave* m_pSlipEnabled;
 
     TrackPointer m_loadedTrack;
     QPixmap m_loadedCover;
