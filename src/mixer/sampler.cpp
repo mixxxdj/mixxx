@@ -1,4 +1,4 @@
-#include "sampler.h"
+#include "mixer/sampler.h"
 
 #include "controlobject.h"
 

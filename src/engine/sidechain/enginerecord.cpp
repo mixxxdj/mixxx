@@ -31,7 +31,7 @@
 #endif
 
 #include "errordialoghandler.h"
-#include "playerinfo.h"
+#include "mixer/playerinfo.h"
 #include "recording/defs_recording.h"
 #include "util/event.h"
 

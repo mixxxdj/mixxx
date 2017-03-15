@@ -641,7 +641,7 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
         pTrack->setId(trackId);
         m_analysisDao.saveTrackAnalyses(pTrack);
         m_cueDao.saveTrackCues(trackId, pTrack);
-        pTrack->setDirty(false);
+        pTrack->resetDirty();
     }
     m_tracksAddedSet.insert(trackId);
     return true;
@@ -1195,6 +1195,10 @@ struct ColumnPopulator {
 #define ARRAYLENGTH(x) (sizeof(x) / sizeof(*x))
 
 TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
+    if (!trackId.isValid()) {
+        return TrackPointer();
+    }
+
     ScopedTimer t("TrackDAO::getTrackFromDB");
     QSqlQuery query(m_database);
 
@@ -1330,7 +1334,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     // Normally we will set the track as clean but sometimes when loading from
     // the database we need to perform upkeep that ought to be written back to
     // the database when the track is deleted.
-    pTrack->setDirty(shouldDirty);
+    pTrack->markDirty(shouldDirty);
 
     // Listen to dirty and changed signals
     connect(pTrack.data(), SIGNAL(dirty(TrackInfoObject*)),
@@ -1580,7 +1584,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
 
     //qDebug() << "Update track in database took: " << time.elapsed() << "ms";
     //time.start();
-    pTrack->setDirty(false);
+    pTrack->resetDirty();
     //qDebug() << "Dirtying track took: " << time.elapsed() << "ms";
 }
 

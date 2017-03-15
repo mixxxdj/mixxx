@@ -9,7 +9,7 @@
 #include "library/previewbuttondelegate.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 
 #define BANSHEE_TABLE "banshee"
 #define CLM_VIEW_ORDER "position"

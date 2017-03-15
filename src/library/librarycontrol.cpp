@@ -8,7 +8,7 @@
 
 #include "controlobject.h"
 #include "controlpushbutton.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "library/library.h"

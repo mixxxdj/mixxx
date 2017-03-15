@@ -557,6 +557,8 @@ class MixxxCore(Feature):
                    "controlttrotary.cpp",
 
                    "preferences/dlgpreferencepage.cpp",
+                   "preferences/settingsmanager.cpp",
+                   "preferences/upgrade.cpp",
                    "dlgpreferences.cpp",
                    "dlgprefsound.cpp",
                    "dlgprefsounditem.cpp",
@@ -701,7 +703,6 @@ class MixxxCore(Feature):
                    "mixxx.cpp",
                    "mixxxapplication.cpp",
                    "errordialoghandler.cpp",
-                   "upgrade.cpp",
 
                    "sources/soundsourceproviderregistry.cpp",
                    "sources/soundsourceplugin.cpp",
@@ -709,7 +710,6 @@ class MixxxCore(Feature):
                    "sources/soundsource.cpp",
                    "sources/audiosource.cpp",
 
-                   "sharedglcontext.cpp",
                    "widget/controlwidgetconnection.cpp",
                    "widget/wbasewidget.cpp",
                    "widget/wwidget.cpp",
@@ -862,6 +862,7 @@ class MixxxCore(Feature):
 
                    "widget/wwaveformviewer.cpp",
 
+                   "waveform/sharedglcontext.cpp",
                    "waveform/waveform.cpp",
                    "waveform/waveformfactory.cpp",
                    "waveform/waveformwidgetfactory.cpp",
@@ -937,13 +938,17 @@ class MixxxCore(Feature):
                    "track/trackmetadatataglib.cpp",
                    "track/audiotagger.cpp",
 
-                   "baseplayer.cpp",
-                   "basetrackplayer.cpp",
-                   "deck.cpp",
-                   "sampler.cpp",
-                   "previewdeck.cpp",
-                   "playermanager.cpp",
-                   "samplerbank.cpp",
+                   "mixer/auxiliary.cpp",
+                   "mixer/baseplayer.cpp",
+                   "mixer/basetrackplayer.cpp",
+                   "mixer/deck.cpp",
+                   "mixer/microphone.cpp",
+                   "mixer/playerinfo.cpp",
+                   "mixer/playermanager.cpp",
+                   "mixer/previewdeck.cpp",
+                   "mixer/sampler.cpp",
+                   "mixer/samplerbank.cpp",
+
                    "soundio/sounddevice.cpp",
                    "soundio/sounddevicenetwork.cpp",
                    "engine/sidechain/enginenetworkstream.cpp",
@@ -951,7 +956,6 @@ class MixxxCore(Feature):
                    "soundio/soundmanagerconfig.cpp",
                    "soundio/soundmanagerutil.cpp",
                    "dlgprefrecord.cpp",
-                   "playerinfo.cpp",
                    "visualplayposition.cpp",
 
                    "encoder/encoder.cpp",

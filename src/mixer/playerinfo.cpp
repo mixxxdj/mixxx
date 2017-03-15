@@ -14,14 +14,15 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "mixer/playerinfo.h"
+
 #include <QMutexLocker>
 
-#include "playerinfo.h"
 #include "controlobject.h"
 #include "controlobjectthread.h"
 #include "engine/enginechannel.h"
 #include "engine/enginexfader.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 
 static const int kPlayingDeckUpdateIntervalMillis = 2000;
 static PlayerInfo* m_pPlayerInfo = NULL;

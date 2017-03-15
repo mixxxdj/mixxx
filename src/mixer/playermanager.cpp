@@ -1,25 +1,27 @@
 // playermanager.cpp
 // Created 6/1/2010 by RJ Ryan (rryan@mit.edu)
+#include "mixer/playermanager.h"
+
 #include <QMutexLocker>
 
-#include "playermanager.h"
-
-#include "controlobject.h"
-#include "trackinfoobject.h"
-#include "deck.h"
-#include "sampler.h"
-#include "previewdeck.h"
 #include "analyzer/analyzerqueue.h"
 #include "controlobject.h"
-#include "samplerbank.h"
+#include "controlobject.h"
+#include "effects/effectsmanager.h"
+#include "engine/enginedeck.h"
+#include "engine/enginemaster.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
-#include "engine/enginemaster.h"
+#include "mixer/auxiliary.h"
+#include "mixer/deck.h"
+#include "mixer/microphone.h"
+#include "mixer/previewdeck.h"
+#include "mixer/sampler.h"
+#include "mixer/samplerbank.h"
 #include "soundio/soundmanager.h"
-#include "effects/effectsmanager.h"
-#include "util/stat.h"
-#include "engine/enginedeck.h"
+#include "trackinfoobject.h"
 #include "util/assert.h"
+#include "util/stat.h"
 
 PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
                              SoundManager* pSoundManager,
@@ -33,10 +35,16 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
         // NOTE(XXX) LegacySkinParser relies on these controls being COs and
         // not COTMs listening to a CO.
         m_pAnalyzerQueue(NULL),
-        m_pCONumDecks(new ControlObject(ConfigKey("[Master]", "num_decks"), true, true)),
-        m_pCONumSamplers(new ControlObject(ConfigKey("[Master]", "num_samplers"), true, true)),
-        m_pCONumPreviewDecks(new ControlObject(ConfigKey("[Master]", "num_preview_decks"), true, true)) {
-
+        m_pCONumDecks(new ControlObject(
+            ConfigKey("[Master]", "num_decks"), true, true)),
+        m_pCONumSamplers(new ControlObject(
+            ConfigKey("[Master]", "num_samplers"), true, true)),
+        m_pCONumPreviewDecks(new ControlObject(
+            ConfigKey("[Master]", "num_preview_decks"), true, true)),
+        m_pCONumMicrophones(new ControlObject(
+            ConfigKey("[Master]", "num_microphones"), true, true)),
+        m_pCONumAuxiliaries(new ControlObject(
+            ConfigKey("[Master]", "num_auxiliaries"), true, true)){
     connect(m_pCONumDecks, SIGNAL(valueChanged(double)),
             this, SLOT(slotNumDecksControlChanged(double)),
             Qt::DirectConnection);
@@ -55,15 +63,22 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
     connect(m_pCONumPreviewDecks, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotNumPreviewDecksControlChanged(double)),
             Qt::DirectConnection);
+    connect(m_pCONumMicrophones, SIGNAL(valueChanged(double)),
+            this, SLOT(slotNumMicrophonesControlChanged(double)),
+            Qt::DirectConnection);
+    connect(m_pCONumMicrophones, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotNumMicrophonesControlChanged(double)),
+            Qt::DirectConnection);
+    connect(m_pCONumAuxiliaries, SIGNAL(valueChanged(double)),
+            this, SLOT(slotNumAuxiliariesControlChanged(double)),
+            Qt::DirectConnection);
+    connect(m_pCONumAuxiliaries, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotNumAuxiliariesControlChanged(double)),
+            Qt::DirectConnection);
 
     // This is parented to the PlayerManager so does not need to be deleted
     SamplerBank* pSamplerBank = new SamplerBank(this);
     Q_UNUSED(pSamplerBank);
-
-    // Redundant
-    m_pCONumDecks->set(0);
-    m_pCONumSamplers->set(0);
-    m_pCONumPreviewDecks->set(0);
 
     // register the engine's outputs
     m_pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER),
@@ -85,10 +100,14 @@ PlayerManager::~PlayerManager() {
     m_players.clear();
     m_decks.clear();
     m_samplers.clear();
+    m_microphones.clear();
+    m_auxiliaries.clear();
 
     delete m_pCONumSamplers;
     delete m_pCONumDecks;
     delete m_pCONumPreviewDecks;
+    delete m_pCONumMicrophones;
+    delete m_pCONumAuxiliaries;
     if (m_pAnalyzerQueue) {
         delete m_pAnalyzerQueue;
     }
@@ -258,6 +277,36 @@ void PlayerManager::slotNumPreviewDecksControlChanged(double v) {
     }
 }
 
+void PlayerManager::slotNumMicrophonesControlChanged(double v) {
+    QMutexLocker locker(&m_mutex);
+    int num = (int)v;
+    if (num < m_microphones.size()) {
+        // The request was invalid -- reset the value.
+        m_pCONumMicrophones->set(m_microphones.size());
+        qDebug() << "Ignoring request to reduce the number of microphones to" << num;
+        return;
+    }
+
+    while (m_microphones.size() < num) {
+        addMicrophoneInner();
+    }
+}
+
+void PlayerManager::slotNumAuxiliariesControlChanged(double v) {
+    QMutexLocker locker(&m_mutex);
+    int num = (int)v;
+    if (num < m_auxiliaries.size()) {
+        // The request was invalid -- reset the value.
+        m_pCONumAuxiliaries->set(m_auxiliaries.size());
+        qDebug() << "Ignoring request to reduce the number of auxiliaries to" << num;
+        return;
+    }
+
+    while (m_auxiliaries.size() < num) {
+        addAuxiliaryInner();
+    }
+}
+
 void PlayerManager::addDeck() {
     QMutexLocker locker(&m_mutex);
     addDeckInner();
@@ -379,6 +428,37 @@ void PlayerManager::addPreviewDeckInner() {
     m_preview_decks.append(pPreviewDeck);
 }
 
+void PlayerManager::addMicrophone() {
+    QMutexLocker locker(&m_mutex);
+    addMicrophoneInner();
+    m_pCONumMicrophones->set(m_microphones.count());
+}
+
+void PlayerManager::addMicrophoneInner() {
+    // Do not lock m_mutex here.
+    int index = m_microphones.count();
+    QString group = groupForMicrophone(index);
+    Microphone* pMicrophone = new Microphone(this, group, index, m_pSoundManager,
+                                             m_pEngine, m_pEffectsManager);
+    m_microphones.append(pMicrophone);
+}
+
+void PlayerManager::addAuxiliary() {
+    QMutexLocker locker(&m_mutex);
+    addAuxiliaryInner();
+    m_pCONumAuxiliaries->set(m_auxiliaries.count());
+}
+
+void PlayerManager::addAuxiliaryInner() {
+    // Do not lock m_mutex here.
+    int index = m_auxiliaries.count();
+    QString group = groupForAuxiliary(index);
+
+    Auxiliary* pAuxiliary = new Auxiliary(this, group, index, m_pSoundManager,
+                                          m_pEngine, m_pEffectsManager);
+    m_auxiliaries.append(pAuxiliary);
+}
+
 BaseTrackPlayer* PlayerManager::getPlayer(QString group) const {
     QMutexLocker locker(&m_mutex);
     if (m_players.contains(group)) {
@@ -415,6 +495,26 @@ Sampler* PlayerManager::getSampler(unsigned int sampler) const {
         return NULL;
     }
     return m_samplers[sampler - 1];
+}
+
+Microphone* PlayerManager::getMicrophone(unsigned int microphone) const {
+    QMutexLocker locker(&m_mutex);
+    if (microphone < 1 || microphone >= static_cast<unsigned int>(m_microphones.size())) {
+        qWarning() << "Warning PlayerManager::getMicrophone() called with invalid index: "
+                   << microphone;
+        return NULL;
+    }
+    return m_microphones[microphone - 1];
+}
+
+Auxiliary* PlayerManager::getAuxiliary(unsigned int auxiliary) const {
+    QMutexLocker locker(&m_mutex);
+    if (auxiliary < 1 || auxiliary > static_cast<unsigned int>(m_auxiliaries.size())) {
+        qWarning() << "Warning PlayerManager::getAuxiliary() called with invalid index: "
+                   << auxiliary;
+        return NULL;
+    }
+    return m_auxiliaries[auxiliary - 1];
 }
 
 bool PlayerManager::hasVinylInput(int inputnum) const {

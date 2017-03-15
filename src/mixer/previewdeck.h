@@ -1,7 +1,7 @@
-#ifndef PREVIEWDECK_H
-#define PREVIEWDECK_H
+#ifndef MIXER_PREVIEWDECK_H
+#define MIXER_PREVIEWDECK_H
 
-#include "basetrackplayer.h"
+#include "mixer/basetrackplayer.h"
 
 class PreviewDeck : public BaseTrackPlayerImpl {
     Q_OBJECT
@@ -15,4 +15,4 @@ class PreviewDeck : public BaseTrackPlayerImpl {
     virtual ~PreviewDeck();
 };
 
-#endif /* PREVIEWDECK_H */
+#endif /* MIXER_PREVIEWDECK_H */

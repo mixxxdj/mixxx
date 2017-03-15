@@ -1,26 +1,29 @@
 // playermanager.h
 // Created 6/1/2010 by RJ Ryan (rryan@mit.edu)
 
-#ifndef PLAYERMANAGER_H
-#define PLAYERMANAGER_H
+#ifndef MIXER_PLAYERMANAGER_H
+#define MIXER_PLAYERMANAGER_H
 
+#include <QObject>
 #include <QList>
+#include <QMap>
 #include <QMutex>
 
 #include "configobject.h"
 #include "trackinfoobject.h"
 
+class AnalyzerQueue;
+class Auxiliary;
+class BaseTrackPlayer;
 class ControlObject;
 class Deck;
-class Sampler;
-class PreviewDeck;
-class BaseTrackPlayer;
-
-class Library;
-class EngineMaster;
-class AnalyzerQueue;
-class SoundManager;
 class EffectsManager;
+class EngineMaster;
+class Library;
+class Microphone;
+class PreviewDeck;
+class Sampler;
+class SoundManager;
 class TrackCollection;
 
 // For mocking PlayerManager.
@@ -70,6 +73,12 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Add a PreviewDeck to the PlayerManager
     void addPreviewDeck();
 
+    // Add a microphone to the PlayerManager
+    void addMicrophone();
+
+    // Add an auxiliary input to the PlayerManager
+    void addAuxiliary();
+
     // Return the number of players. Thread-safe.
     static unsigned int numDecks();
 
@@ -99,7 +108,8 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
         return numPreviewDecks();
     }
 
-    // Get a BaseTrackPlayer (i.e. a Deck or a Sampler) by its group
+    // Get a BaseTrackPlayer (i.e. a Deck, Sampler or PreviewDeck) by its
+    // group. Auxiliaries and microphones are not players.
     BaseTrackPlayer* getPlayer(QString group) const;
 
     // Get the deck by its deck number. Decks are numbered starting with 1.
@@ -109,6 +119,12 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     // Get the sampler by its number. Samplers are numbered starting with 1.
     Sampler* getSampler(unsigned int sampler) const;
+
+    // Get the microphone by its number. Microphones are numbered starting with 1.
+    Microphone* getMicrophone(unsigned int microphone) const;
+
+    // Get the auxiliary by its number. Auxiliaries are numbered starting with 1.
+    Auxiliary* getAuxiliary(unsigned int auxiliary) const;
 
     // Binds signals between PlayerManager and Library. Does not store a pointer
     // to the Library.
@@ -127,6 +143,23 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Returns the group for the ith PreviewDeck where i is zero indexed
     static QString groupForPreviewDeck(int i) {
         return QString("[PreviewDeck%1]").arg(i+1);
+    }
+
+    // Returns the group for the ith Microphone where i is zero indexed
+    static QString groupForMicrophone(int i) {
+        // Before Mixxx had multiple microphone support the first microphone had
+        // the group [Microphone]. For backwards compatibility we keep it that
+        // way.
+        QString group("[Microphone]");
+        if (i > 0) {
+            group = QString("[Microphone%1]").arg(i + 1);
+        }
+        return group;
+    }
+
+    // Returns the group for the ith Auxiliary where i is zero indexed
+    static QString groupForAuxiliary(int i) {
+        return QString("[Auxiliary%1]").arg(i + 1);
     }
 
     // Used to determine if the user has configured an input for the given vinyl deck.
@@ -152,6 +185,8 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     void slotNumDecksControlChanged(double v);
     void slotNumSamplersControlChanged(double v);
     void slotNumPreviewDecksControlChanged(double v);
+    void slotNumMicrophonesControlChanged(double v);
+    void slotNumAuxiliariesControlChanged(double v);
 
   signals:
     void loadLocationToPlayer(QString location, QString group);
@@ -167,6 +202,12 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Must hold m_mutex before calling this method. Internal method that
     // creates a new preview deck.
     void addPreviewDeckInner();
+    // Must hold m_mutex before calling this method. Internal method that
+    // creates a new microphone.
+    void addMicrophoneInner();
+    // Must hold m_mutex before calling this method. Internal method that
+    // creates a new auxiliary.
+    void addAuxiliaryInner();
 
     // Used to protect access to PlayerManager state across threads.
     mutable QMutex m_mutex;
@@ -179,11 +220,15 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     ControlObject* m_pCONumDecks;
     ControlObject* m_pCONumSamplers;
     ControlObject* m_pCONumPreviewDecks;
+    ControlObject* m_pCONumMicrophones;
+    ControlObject* m_pCONumAuxiliaries;
 
     QList<Deck*> m_decks;
     QList<Sampler*> m_samplers;
     QList<PreviewDeck*> m_preview_decks;
+    QList<Microphone*> m_microphones;
+    QList<Auxiliary*> m_auxiliaries;
     QMap<QString, BaseTrackPlayer*> m_players;
 };
 
-#endif // PLAYERMANAGER_H
+#endif // MIXER_PLAYERMANAGER_H

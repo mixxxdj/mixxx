@@ -11,7 +11,7 @@
 #include "waveform/renderers/waveformrendermarkrange.h"
 #include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrenderbeat.h"
-#include "sharedglcontext.h"
+#include "waveform/sharedglcontext.h"
 
 #include "util/performancetimer.h"
 

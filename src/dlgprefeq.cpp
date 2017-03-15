@@ -24,7 +24,7 @@
 #include "controlobject.h"
 #include "controlobjectslave.h"
 #include "util/math.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 #include "effects/effectrack.h"
 
 const char* kConfigKey = "[Mixer Profile]";

@@ -38,7 +38,7 @@ class ConfigKey {
     ConfigKey(); // is required for qMetaTypeConstructHelper()
     ConfigKey(const ConfigKey& key);
     ConfigKey(const QString& g, const QString& i);
-    static ConfigKey parseCommaSeparated(QString key);
+    static ConfigKey parseCommaSeparated(const QString& key);
 
     inline bool isNull() const {
         return group.isNull() && item.isNull();
@@ -83,9 +83,9 @@ inline uint qHash(const QKeySequence& key) {
 class ConfigValue {
   public:
     ConfigValue();
-    ConfigValue(QString value);
+    ConfigValue(const QString& value);
     ConfigValue(int value);
-    inline ConfigValue(QDomNode /* node */) {
+    inline ConfigValue(const QDomNode& /* node */) {
         reportFatalErrorAndQuit("ConfigValue from QDomNode not implemented here");
     }
     void valCopy(const ConfigValue& value);
@@ -101,9 +101,9 @@ inline uint qHash(const ConfigValue& key) {
 class ConfigValueKbd : public ConfigValue {
   public:
     ConfigValueKbd();
-    ConfigValueKbd(QString _value);
-    ConfigValueKbd(QKeySequence key);
-    inline ConfigValueKbd(QDomNode /* node */) {
+    ConfigValueKbd(const QString& _value);
+    ConfigValueKbd(const QKeySequence& key);
+    inline ConfigValueKbd(const QDomNode& /* node */) {
         reportFatalErrorAndQuit("ConfigValueKbd from QDomNode not implemented here");
     }
     void valCopy(const ConfigValueKbd& v);
@@ -114,32 +114,39 @@ class ConfigValueKbd : public ConfigValue {
 
 template <class ValueType> class ConfigObject {
   public:
-    ConfigObject(QString file);
-    ConfigObject(QDomNode node);
+    ConfigObject(const QString& file);
+    ConfigObject(const QDomNode& node);
     ~ConfigObject();
-    void set(const ConfigKey& k, ValueType);
+
+    void set(const ConfigKey& k, const ValueType& v);
     ValueType get(const ConfigKey& k) const;
     bool exists(const ConfigKey& key) const;
     QString getValueString(const ConfigKey& k) const;
     QString getValueString(const ConfigKey& k, const QString& default_string) const;
     QMultiHash<ValueType, ConfigKey> transpose() const;
 
-    void reopen(QString file);
-    void Save();
+    void reopen(const QString& file);
+    void save();
 
     // Returns the resource path -- the path where controller presets, skins,
     // library schema, keyboard mappings, and more are stored.
-    QString getResourcePath() const;
+    QString getResourcePath() const {
+        return m_resourcePath;
+    }
 
     // Returns the settings path -- the path where user data (config file,
     // library SQLite database, etc.) is stored.
-    QString getSettingsPath() const;
+    QString getSettingsPath() const {
+        return m_settingsPath;
+    }
 
   protected:
     // We use QMap because we want a sorted list in mixxx.cfg
     QMap<ConfigKey, ValueType> m_values;
     mutable QReadWriteLock m_valuesLock;
     QString m_filename;
+    const QString m_resourcePath;
+    const QString m_settingsPath;
 
     // Loads and parses the configuration file. Returns false if the file could
     // not be opened; otherwise true.
