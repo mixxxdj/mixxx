@@ -6,6 +6,7 @@ LV2Backend::LV2Backend(QObject* pParent)
     m_pWorld = lilv_world_new();
     initializeProperties();
     lilv_world_load_all(m_pWorld);
+    enumeratePlugins();
 }
 
 LV2Backend::~LV2Backend() {
