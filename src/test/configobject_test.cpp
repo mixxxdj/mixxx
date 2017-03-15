@@ -20,6 +20,22 @@ TEST_F(ConfigObjectTest, SetValue_QString) {
     EXPECT_QSTRING_EQ("asdf", config()->getValue<QString>(ck));
 }
 
+TEST_F(ConfigObjectTest, SetValue_QString_NullVsEmpty) {
+    auto ck = ConfigKey("[Test]", "test");
+    EXPECT_TRUE(config()->getValue<QString>(ck).isNull());
+
+    // Setting it to an empty string returns an empty, not null string. Empty
+    // strings are counted as present by the default value logic.
+    config()->setValue(ck, QString(""));
+    EXPECT_TRUE(config()->getValue<QString>(ck, QString("asdf")).isEmpty());
+    EXPECT_FALSE(config()->getValue<QString>(ck, QString("asdf")).isNull());
+
+    // And it persists across restarts.
+    saveAndReloadConfig();
+    EXPECT_TRUE(config()->getValue<QString>(ck).isEmpty());
+    EXPECT_FALSE(config()->getValue<QString>(ck).isNull());
+}
+
 TEST_F(ConfigObjectTest, GetValue_QString) {
     auto ck = ConfigKey("[Test]", "test");
     EXPECT_QSTRING_EQ("zxcv", config()->getValue<QString>(ck, "zxcv"));
@@ -103,7 +119,7 @@ TEST_F(ConfigObjectTest, GetValueString) {
     auto ck2 = ConfigKey("[Test]", "bar");
     config()->setValue(ck, 5);
     EXPECT_QSTRING_EQ("5", config()->getValueString(ck));
-    EXPECT_QSTRING_EQ("6", config()->getValueString(ck2, "6"));
+    EXPECT_QSTRING_EQ("6", config()->getValue(ck2, "6"));
 }
 
 TEST_F(ConfigObjectTest, Save) {

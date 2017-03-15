@@ -1,6 +1,7 @@
 #include "library/baseexternalplaylistmodel.h"
 
 #include "library/queryutil.h"
+#include "library/dao/trackschema.h"
 #include "mixer/playermanager.h"
 
 BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,

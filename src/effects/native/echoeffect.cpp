@@ -5,8 +5,10 @@
 #include "util/sample.h"
 
 #define INCREMENT_RING(index, increment, length) index = (index + increment) % length
-#define RAMP_LENGTH 500
-#define CHANNEL_COUNT 2
+
+constexpr int EchoGroupState::kMaxDelaySeconds;
+constexpr int EchoGroupState::kChannelCount;
+constexpr int EchoGroupState::kRampLength;
 
 // static
 QString EchoEffect::getId() {
@@ -22,18 +24,6 @@ EffectManifest EchoEffect::getManifest() {
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr("Simple Echo with pingpong"));
 
-    EffectManifestParameter* send = manifest.addParameter();
-    send->setId("send_amount");
-    send->setName(QObject::tr("Send"));
-    send->setDescription(
-            QObject::tr("How much of the signal to send into the delay buffer"));
-    send->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    send->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    send->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    send->setMinimum(0.0);
-    send->setDefault(1.0);
-    send->setMaximum(1.0);
-
     EffectManifestParameter* delay = manifest.addParameter();
     delay->setId("delay_time");
     delay->setName(QObject::tr("Delay"));
@@ -42,8 +32,8 @@ EffectManifest EchoEffect::getManifest() {
     delay->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     delay->setUnitsHint(EffectManifestParameter::UNITS_TIME);
     delay->setMinimum(0.1);
-    delay->setDefault(0.5);
-    delay->setMaximum(2.0);
+    delay->setDefault(1.0);
+    delay->setMaximum(EchoGroupState::kMaxDelaySeconds);
 
     EffectManifestParameter* feedback = manifest.addParameter();
     feedback->setId("feedback_amount");
@@ -53,9 +43,8 @@ EffectManifest EchoEffect::getManifest() {
     feedback->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     feedback->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     feedback->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    feedback->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
     feedback->setMinimum(0.00);
-    feedback->setDefault(0.40);
+    feedback->setDefault(0.5);
     feedback->setMaximum(1.0);
 
     EffectManifestParameter* pingpong = manifest.addParameter();
@@ -72,6 +61,19 @@ EffectManifest EchoEffect::getManifest() {
     pingpong->setDefault(0.0);
     pingpong->setMaximum(1.0);
 
+    EffectManifestParameter* send = manifest.addParameter();
+    send->setId("send_amount");
+    send->setName(QObject::tr("Send"));
+    send->setDescription(
+            QObject::tr("How much of the signal to send into the delay buffer"));
+    send->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    send->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    send->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    send->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    send->setMinimum(0.0);
+    send->setDefault(1.0);
+    send->setMaximum(1.0);
+
     return manifest;
 }
 
@@ -84,16 +86,6 @@ EchoEffect::EchoEffect(EngineEffect* pEffect, const EffectManifest& manifest)
 }
 
 EchoEffect::~EchoEffect() {
-    //qDebug() << debugString() << "destroyed";
-}
-
-int EchoEffect::getDelaySamples(double delay_time, const unsigned int sampleRate) const {
-    int delay_samples = CHANNEL_COUNT * delay_time * sampleRate;
-    if (delay_samples > static_cast<int>(MAX_BUFFER_LEN)) {
-        qWarning() << "Delay buffer requested is larger than max buffer!";
-        delay_samples = static_cast<int>(MAX_BUFFER_LEN);
-    }
-    return delay_samples;
 }
 
 void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGroupState,
@@ -105,27 +97,26 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     Q_UNUSED(handle);
     Q_UNUSED(enableState);
     Q_UNUSED(groupFeatures);
-    DEBUG_ASSERT(0 == (numSamples % CHANNEL_COUNT));
+    DEBUG_ASSERT(0 == (numSamples % EchoGroupState::kChannelCount));
     EchoGroupState& gs = *pGroupState;
     double delay_time = m_pDelayParameter->value();
     double send_amount = m_pSendParameter->value();
     double feedback_amount = m_pFeedbackParameter->value();
     double pingpong_frac = m_pPingPongParameter->value();
 
-    // TODO(owilliams): get actual sample rate from somewhere.
-
-    int delay_samples = gs.prev_delay_samples;
+    int delay_samples = EchoGroupState::kChannelCount * delay_time * sampleRate;
+    VERIFY_OR_DEBUG_ASSERT(delay_samples <= gs.delay_buf.size()) {
+        delay_samples = gs.delay_buf.size();
+    }
 
     if (delay_time < gs.prev_delay_time) {
         // If the delay time has shrunk, we may need to wrap the write position.
-        delay_samples = getDelaySamples(delay_time, sampleRate);
         gs.write_position = gs.write_position % delay_samples;
     } else if (delay_time > gs.prev_delay_time) {
         // If the delay time has grown, we need to zero out the new portion
         // of the buffer we are using.
-        SampleUtil::applyGain(gs.delay_buf + gs.prev_delay_samples, 0,
-                              MAX_BUFFER_LEN - gs.prev_delay_samples);
-        delay_samples = getDelaySamples(delay_time, sampleRate);
+        SampleUtil::applyGain(gs.delay_buf.data(gs.prev_delay_samples), 0,
+                              gs.delay_buf.size() - gs.prev_delay_samples);
     }
 
     int read_position = gs.write_position;
@@ -133,14 +124,14 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     gs.prev_delay_samples = delay_samples;
 
     // Feedback the delay buffer and then add the new input.
-    for (unsigned int i = 0; i < numSamples; i += CHANNEL_COUNT) {
+    for (unsigned int i = 0; i < numSamples; i += EchoGroupState::kChannelCount) {
         // Ramp the beginning and end of the delay buffer to prevent clicks.
         double write_ramper = 1.0;
-        if (gs.write_position < RAMP_LENGTH) {
-            write_ramper = static_cast<double>(gs.write_position) / RAMP_LENGTH;
-        } else if (gs.write_position > delay_samples - RAMP_LENGTH) {
+        if (gs.write_position < EchoGroupState::kRampLength) {
+            write_ramper = static_cast<double>(gs.write_position) / EchoGroupState::kRampLength;
+        } else if (gs.write_position > delay_samples - EchoGroupState::kRampLength) {
             write_ramper = static_cast<double>(delay_samples - gs.write_position)
-                    / RAMP_LENGTH;
+                    / EchoGroupState::kRampLength;
         }
         gs.delay_buf[gs.write_position] *= feedback_amount;
         gs.delay_buf[gs.write_position + 1] *= feedback_amount;
@@ -151,12 +142,12 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
                 SampleUtil::clampSample(gs.delay_buf[gs.write_position]);
         gs.delay_buf[gs.write_position + 1] =
                 SampleUtil::clampSample(gs.delay_buf[gs.write_position + 1]);
-        INCREMENT_RING(gs.write_position, CHANNEL_COUNT, delay_samples);
+        INCREMENT_RING(gs.write_position, EchoGroupState::kChannelCount, delay_samples);
     }
 
     // Pingpong the output.  If the pingpong value is zero, all of the
     // math below should result in a simple copy of delay buf to pOutput.
-    for (unsigned int i = 0; i < numSamples; i += CHANNEL_COUNT) {
+    for (unsigned int i = 0; i < numSamples; i += EchoGroupState::kChannelCount) {
         if (gs.ping_pong_left) {
             // Left sample plus a fraction of the right sample, normalized
             // by 1 + fraction.
@@ -179,7 +170,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
                     (1 + pingpong_frac)) / 2.0;
         }
 
-        INCREMENT_RING(read_position, CHANNEL_COUNT, delay_samples);
+        INCREMENT_RING(read_position, EchoGroupState::kChannelCount, delay_samples);
         // If the buffer has looped around, flip-flop the ping-pong.
         if (read_position == 0) {
             gs.ping_pong_left = !gs.ping_pong_left;

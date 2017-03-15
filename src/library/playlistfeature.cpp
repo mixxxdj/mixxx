@@ -95,7 +95,7 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
     QList<TrackId> trackIds;
     if (pSource) {
         trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
-        m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
+        m_pTrackCollection->unhideTracks(trackIds);
     } else {
         // If a track is dropped onto a playlist's name, but the track isn't in the
         // library, then add the track to the library before adding it to the
@@ -139,17 +139,17 @@ void PlaylistFeature::buildPlaylistList() {
         "LEFT JOIN PlaylistTracks ON PlaylistTracks.playlist_id = Playlists.id "
         "LEFT JOIN library ON PlaylistTracks.track_id = library.id "
         "WHERE Playlists.hidden = 0 "
-        "GROUP BY Playlists.id;");
-    QSqlQuery query(m_pTrackCollection->getDatabase());
+        "GROUP BY Playlists.id");
+    queryString.append(DbConnection::collateLexicographically(
+            " ORDER BY sort_name"));
+    QSqlQuery query(m_pTrackCollection->database());
     if (!query.exec(queryString)) {
         LOG_FAILED_QUERY(query);
     }
 
     // Setup the sidebar playlist model
-    QSqlTableModel playlistTableModel(this, m_pTrackCollection->getDatabase());
+    QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
     playlistTableModel.setTable("PlaylistsCountsDurations");
-    playlistTableModel.setSort(playlistTableModel.fieldIndex("sort_name"),
-                               Qt::AscendingOrder);
     playlistTableModel.select();
     while (playlistTableModel.canFetchMore()) {
         playlistTableModel.fetchMore();

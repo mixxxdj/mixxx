@@ -1,4 +1,3 @@
-#include <QApplication>
 #include <QtDebug>
 
 #include "control/controlobjectscript.h"
@@ -41,15 +40,7 @@ void ControlObjectScript::slotValueChanged(double value, QObject*) {
     // itself. Otherwise the this may crash since the disconnect call
     // happens during conn.function.call() in the middle of the loop below.
     QList<ControllerEngineConnection> connections = m_connectedScriptFunctions;
-    for(auto&& conn: connections) {
-        QScriptValueList args;
-        args << QScriptValue(value);
-        args << QScriptValue(getKey().group);
-        args << QScriptValue(getKey().item);
-        QScriptValue result = conn.function.call(conn.context, args);
-        if (result.isError()) {
-            qWarning() << "ControllerEngine: Invocation of callback" << conn.id
-                       << "failed:" << result.toString();
-        }
+    for (auto&& conn: connections) {
+        conn.executeCallback(value);
     }
 }

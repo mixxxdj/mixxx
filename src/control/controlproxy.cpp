@@ -1,4 +1,3 @@
-#include <QApplication>
 #include <QtDebug>
 
 #include "control/controlproxy.h"

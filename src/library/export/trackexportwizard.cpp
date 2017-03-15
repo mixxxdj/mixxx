@@ -16,7 +16,7 @@ void TrackExportWizard::exportTracks() {
 }
 
 bool TrackExportWizard::selectDestinationDirectory() {
-    QString lastExportDirectory = m_pConfig->getValueString(
+    QString lastExportDirectory = m_pConfig->getValue(
             ConfigKey("[Library]", "LastTrackCopyDirectory"),
             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
 

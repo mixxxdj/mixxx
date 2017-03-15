@@ -31,8 +31,7 @@ class TreeItemModel : public QAbstractItemModel {
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
-    using QAbstractItemModel::insertRows;
-    virtual bool insertRows(QList<TreeItem*> &data, int position, int rows, const QModelIndex &parent = QModelIndex());
+    void insertTreeItemRows(QList<TreeItem*> &rows, int position, const QModelIndex& parent = QModelIndex());
 
     TreeItem* setRootItem(std::unique_ptr<TreeItem> pRootItem);
     TreeItem* getRootItem() const {
@@ -44,6 +43,7 @@ class TreeItemModel : public QAbstractItemModel {
     TreeItem* getItem(const QModelIndex &index) const;
 
     void triggerRepaint();
+    void triggerRepaint(const QModelIndex& index);
 
   private:
     std::unique_ptr<TreeItem> m_pRootItem;

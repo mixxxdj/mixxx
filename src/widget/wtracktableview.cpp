@@ -14,7 +14,8 @@
 #include "library/coverartcache.h"
 #include "library/dlgtrackinfo.h"
 #include "library/librarytablemodel.h"
-#include "library/trackcollection.h"
+#include "library/crate/cratefeaturehelper.h"
+#include "library/dao/trackschema.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "track/track.h"
@@ -117,8 +118,9 @@ WTrackTableView::~WTrackTableView() {
     delete m_pReloadMetadataAct;
     delete m_pReloadMetadataFromMusicBrainzAct;
     delete m_pAddToPreviewDeck;
-    delete m_pAutoDJAct;
+    delete m_pAutoDJBottomAct;
     delete m_pAutoDJTopAct;
+    delete m_pAutoDJReplaceAct;
     delete m_pRemoveAct;
     delete m_pHideAct;
     delete m_pUnhideAct;
@@ -201,10 +203,10 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
 
-    DEBUG_ASSERT_AND_HANDLE(model) {
+    VERIFY_OR_DEBUG_ASSERT(model) {
         return;
     }
-    DEBUG_ASSERT_AND_HANDLE(trackModel) {
+    VERIFY_OR_DEBUG_ASSERT(trackModel) {
         return;
     }
 
@@ -383,12 +385,17 @@ void WTrackTableView::createActions() {
     connect(m_pFileBrowserAct, SIGNAL(triggered()),
             this, SLOT(slotOpenInFileBrowser()));
 
-    m_pAutoDJAct = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
-    connect(m_pAutoDJAct, SIGNAL(triggered()), this, SLOT(slotSendToAutoDJ()));
+    m_pAutoDJBottomAct = new QAction(tr("Add to Auto-DJ Queue (bottom)"), this);
+    connect(m_pAutoDJBottomAct, SIGNAL(triggered()),
+            this, SLOT(slotSendToAutoDJBottom()));
 
     m_pAutoDJTopAct = new QAction(tr("Add to Auto DJ Queue (top)"), this);
     connect(m_pAutoDJTopAct, SIGNAL(triggered()),
             this, SLOT(slotSendToAutoDJTop()));
+
+    m_pAutoDJReplaceAct = new QAction(tr("Add to Auto-DJ Queue (replace)"), this);
+    connect(m_pAutoDJReplaceAct, SIGNAL(triggered()),
+            this, SLOT(slotSendToAutoDJReplace()));
 
     m_pReloadMetadataAct = new QAction(tr("Reload Metadata from File"), this);
     connect(m_pReloadMetadataAct, SIGNAL(triggered()),
@@ -465,10 +472,10 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
     }
     switch (action) {
     case DlgPrefLibrary::ADD_TRACK_BOTTOM:
-            sendToAutoDJ(false); // add track to Auto-DJ Queue (bottom)
+            sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM); // add track to Auto-DJ Queue (bottom)
             break;
     case DlgPrefLibrary::ADD_TRACK_TOP:
-            sendToAutoDJ(true); // add track to Auto-DJ Queue (top)
+            sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP); // add track to Auto-DJ Queue (top)
             break;
     default: // load track to next available deck
             TrackModel* trackModel = getTrackModel();
@@ -726,8 +733,9 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     m_pMenu->clear();
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
-        m_pMenu->addAction(m_pAutoDJAct);
+        m_pMenu->addAction(m_pAutoDJBottomAct);
         m_pMenu->addAction(m_pAutoDJTopAct);
+        m_pMenu->addAction(m_pAutoDJReplaceAct);
         m_pMenu->addSeparator();
     }
 
@@ -739,8 +747,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 QString deckGroup = PlayerManager::groupForDeck(i - 1);
                 bool deckPlaying = ControlObject::get(
                         ConfigKey(deckGroup, "play")) > 0.0;
-                bool loadTrackIntoPlayingDeck = m_pConfig->getValueString(
-                    ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt();
+                bool loadTrackIntoPlayingDeck = m_pConfig->getValue<bool>(
+                        ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"));
                 bool deckEnabled = (!deckPlaying  || loadTrackIntoPlayingDeck)  && oneSongSelected;
                 QAction* pAction = new QAction(tr("Load to Deck %1").arg(i), m_pMenu);
                 pAction->setEnabled(deckEnabled);
@@ -812,29 +820,20 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOCRATE)) {
         m_pCrateMenu->clear();
-        CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
-        QMap<QString , int> crates;
-        int numCrates = crateDao.crateCount();
-        for (int i = 0; i < numCrates; ++i) {
-            int iCrateId = crateDao.getCrateId(i);
-            crates.insert(crateDao.crateName(iCrateId),iCrateId);
-        }
-        QMapIterator<QString, int> it(crates);
-        while (it.hasNext()) {
-            it.next();
-            // No leak because making the menu the parent means they will be
-            // auto-deleted
-            auto pAction = new QAction(it.key(), m_pCrateMenu);
-            bool locked = crateDao.isCrateLocked(it.value());
-            pAction->setEnabled(!locked);
-            m_pCrateMenu->addAction(pAction);
-            m_crateMapper.setMapping(pAction, it.value());
-            connect(pAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
+        CrateSelectResult allCrates(m_pTrackCollection->crates().selectCrates());
+        Crate crate;
+        while (allCrates.populateNext(&crate)) {
+            auto pAction = std::make_unique<QAction>(crate.getName(), m_pCrateMenu);
+            pAction->setEnabled(!crate.isLocked());
+            m_crateMapper.setMapping(pAction.get(), crate.getId().toInt());
+            connect(pAction.get(), SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
+            m_pCrateMenu->addAction(pAction.get());
+            pAction.release();
         }
         m_pCrateMenu->addSeparator();
         QAction* newCrateAction = new QAction(tr("Create New Crate"), m_pCrateMenu);
         m_pCrateMenu->addAction(newCrateAction);
-        m_crateMapper.setMapping(newCrateAction, -1);// -1 to signify new playlist
+        m_crateMapper.setMapping(newCrateAction, CrateId().toInt());// invalid crate id for new crate
         connect(newCrateAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
 
         m_pMenu->addMenu(m_pCrateMenu);
@@ -1272,12 +1271,12 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     restoreVScrollBarPos();
 }
 
-TrackModel* WTrackTableView::getTrackModel() {
+TrackModel* WTrackTableView::getTrackModel() const {
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
     return trackModel;
 }
 
-bool WTrackTableView::modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) {
+bool WTrackTableView::modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) const {
     TrackModel* trackModel = getTrackModel();
     return trackModel &&
             (trackModel->getCapabilities() & capabilities) == capabilities;
@@ -1305,45 +1304,64 @@ void WTrackTableView::loadSelectedTrackToGroup(QString group, bool play) {
     loadSelectionToGroup(group, play);
 }
 
-void WTrackTableView::slotSendToAutoDJ() {
+void WTrackTableView::slotSendToAutoDJBottom() {
     // append to auto DJ
-    sendToAutoDJ(false); // bTop = false
+    sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
 }
 
 void WTrackTableView::slotSendToAutoDJTop() {
-    sendToAutoDJ(true); // bTop = true
+    sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
 }
 
-void WTrackTableView::sendToAutoDJ(bool bTop) {
+void WTrackTableView::slotSendToAutoDJReplace() {
+    sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::REPLACE);
+}
+
+QList<TrackId> WTrackTableView::getSelectedTrackIds() const {
+    QList<TrackId> trackIds;
+
+    QItemSelectionModel* pSelectionModel = selectionModel();
+    VERIFY_OR_DEBUG_ASSERT(pSelectionModel != nullptr) {
+        qWarning() << "No selected tracks available";
+        return trackIds;
+    }
+
+    TrackModel* pTrackModel = getTrackModel();
+    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
+        qWarning() << "No selected tracks available";
+        return trackIds;
+    }
+
+    const QModelIndexList rows = selectionModel()->selectedRows();
+    trackIds.reserve(rows.size());
+    for (const QModelIndex& row: rows) {
+        const TrackId trackId = pTrackModel->getTrackId(row);
+        VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
+            qWarning() << "Skipping invalid track id @" << row;
+            continue;
+        }
+        trackIds.append(trackId);
+    }
+
+    return trackIds;
+}
+
+void WTrackTableView::sendToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
+        return;
+    }
+
+    const QList<TrackId> trackIds = getSelectedTrackIds();
+    if (trackIds.isEmpty()) {
+        qWarning() << "No tracks selected for AutoDJ";
         return;
     }
 
     PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
 
-    QModelIndexList indices = selectionModel()->selectedRows();
-    QList<TrackId> trackIds;
-
-    TrackModel* trackModel = getTrackModel();
-    if (!trackModel) {
-        return;
-    }
-
-    for (const QModelIndex& index : indices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
-        if (pTrack) {
-            TrackId trackId(pTrack->getId());
-            if (!trackId.isValid()) {
-                continue;
-            }
-            trackIds.append(trackId);
-        }
-    }
-
-    m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
-
     // TODO(XXX): Care whether the append succeeded.
-    playlistDao.sendToAutoDJ(trackIds, bTop);
+    m_pTrackCollection->unhideTracks(trackIds);
+    playlistDao.sendToAutoDJ(trackIds, loc);
 }
 
 void WTrackTableView::slotReloadTrackMetadata() {
@@ -1385,51 +1403,40 @@ void WTrackTableView::slotResetPlayed() {
 }
 
 void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
-    PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
-    TrackModel* trackModel = getTrackModel();
-
-    if (!trackModel) {
+    const QList<TrackId> trackIds = getSelectedTrackIds();
+    if (trackIds.isEmpty()) {
+        qWarning() << "No tracks selected for playlist";
         return;
     }
 
-    QModelIndexList indices = selectionModel()->selectedRows();
-    QList<TrackId> trackIds;
-    for (const QModelIndex& index : indices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
-        if (!pTrack) {
-            continue;
-        }
-        TrackId trackId(pTrack->getId());
-        if (trackId.isValid()) {
-            trackIds.append(trackId);
-        }
-    }
-   if (iPlaylistId == -1) { // i.e. a new playlist is suppose to be created
-       QString name;
-       bool validNameGiven = false;
+    PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
 
-       do {
-           bool ok = false;
-           name = QInputDialog::getText(nullptr,
-                                        tr("Create New Playlist"),
-                                        tr("Enter name for new playlist:"),
-                                        QLineEdit::Normal,
-                                        tr("New Playlist"),
-                                        &ok).trimmed();
-           if (!ok) {
-               return;
-           }
-           if (playlistDao.getPlaylistIdFromName(name) != -1) {
-               QMessageBox::warning(nullptr,
-                                    tr("Playlist Creation Failed"),
-                                    tr("A playlist by that name already exists."));
-           } else if (name.isEmpty()) {
-               QMessageBox::warning(nullptr,
-                                    tr("Playlist Creation Failed"),
-                                    tr("A playlist cannot have a blank name."));
-           } else {
-               validNameGiven = true;
-           }
+    if (iPlaylistId == -1) { // i.e. a new playlist is suppose to be created
+        QString name;
+        bool validNameGiven = false;
+
+        do {
+            bool ok = false;
+            name = QInputDialog::getText(nullptr,
+                    tr("Create New Playlist"),
+                    tr("Enter name for new playlist:"),
+                    QLineEdit::Normal,
+                    tr("New Playlist"),
+                    &ok).trimmed();
+            if (!ok) {
+                return;
+            }
+            if (playlistDao.getPlaylistIdFromName(name) != -1) {
+                QMessageBox::warning(nullptr,
+                        tr("Playlist Creation Failed"),
+                        tr("A playlist by that name already exists."));
+            } else if (name.isEmpty()) {
+                QMessageBox::warning(nullptr,
+                        tr("Playlist Creation Failed"),
+                        tr("A playlist cannot have a blank name."));
+            } else {
+                validNameGiven = true;
+            }
        } while (!validNameGiven);
        iPlaylistId = playlistDao.createPlaylist(name);//-1 is changed to the new playlist ID return from the DAO
        if (iPlaylistId == -1) {
@@ -1439,75 +1446,28 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
                                  +name);
            return;
        }
-   }
-    if (trackIds.size() > 0) {
-        // TODO(XXX): Care whether the append succeeded.
-        m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
-        playlistDao.appendTracksToPlaylist(trackIds, iPlaylistId);
     }
+
+    // TODO(XXX): Care whether the append succeeded.
+    m_pTrackCollection->unhideTracks(trackIds);
+    playlistDao.appendTracksToPlaylist(trackIds, iPlaylistId);
 }
 
 void WTrackTableView::addSelectionToCrate(int iCrateId) {
-    CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
-    TrackModel* trackModel = getTrackModel();
-
-    if (!trackModel) {
+    const QList<TrackId> trackIds = getSelectedTrackIds();
+    if (trackIds.isEmpty()) {
+        qWarning() << "No tracks selected for crate";
         return;
     }
 
-    QModelIndexList indices = selectionModel()->selectedRows();
-    QList<TrackId> trackIds;
-    for (const QModelIndex& index : indices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
-        if (!pTrack) {
-            continue;
-        }
-        TrackId trackId(pTrack->getId());
-        if (trackId.isValid()) {
-            trackIds.append(trackId);
-        }
+    CrateId crateId(iCrateId);
+    if (!crateId.isValid()) { // i.e. a new crate is suppose to be created
+        crateId = CrateFeatureHelper(
+                m_pTrackCollection, m_pConfig).createEmptyCrate();
     }
-    if (iCrateId == -1) { // i.e. a new crate is suppose to be created
-        QString name;
-        bool validNameGiven = false;
-        do {
-            bool ok = false;
-            name = QInputDialog::getText(nullptr,
-                                         tr("Create New Crate"),
-                                         tr("Enter name for new crate:"),
-                                         QLineEdit::Normal, tr("New Crate"),
-                                         &ok).trimmed();
-            if (!ok) {
-                return;
-            }
-            int existingId = crateDao.getCrateIdByName(name);
-            if (existingId != -1) {
-                QMessageBox::warning(nullptr,
-                                     tr("Creating Crate Failed"),
-                                     tr("A crate by that name already exists."));
-            }
-            else if (name.isEmpty()) {
-                QMessageBox::warning(nullptr,
-                                     tr("Creating Crate Failed"),
-                                     tr("A crate cannot have a blank name."));
-            }
-            else {
-                validNameGiven = true;
-            }
-        } while (!validNameGiven);
-        iCrateId = crateDao.createCrate(name);// -1 is changed to the new crate ID returned by the DAO
-        if (iCrateId == -1) {
-            qDebug() << "Error creating crate with name " << name;
-            QMessageBox::warning(nullptr,
-                                 tr("Creating Crate Failed"),
-                                 tr("An unknown error occurred while creating crate: ")
-                                 + name);
-            return;
-        }
-    }
-    if (trackIds.size() > 0) {
-        m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
-        crateDao.addTracksToCrate(iCrateId, &trackIds);
+    if (crateId.isValid()) {
+        m_pTrackCollection->unhideTracks(trackIds);
+        m_pTrackCollection->addCrateTracks(crateId, trackIds);
     }
 }
 
@@ -1520,11 +1480,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     }
 
     // Save the selection
-    QModelIndexList selection = selectionModel()->selectedRows();
-    QSet<TrackId> trackIds;
-    for (const auto& index: selection) {
-        trackIds.insert(trackModel->getTrackId(index));
-    }
+    const QList<TrackId> trackIds = getSelectedTrackIds();
 
     sortByColumn(headerSection);
 

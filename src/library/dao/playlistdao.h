@@ -40,6 +40,12 @@ class PlaylistDAO : public QObject, public virtual DAO {
         PLHT_UNKNOWN = -1
     };
 
+    enum class AutoDJSendLoc {
+        TOP,
+        BOTTOM,
+        REPLACE,
+    };
+
     PlaylistDAO(QSqlDatabase& database);
     virtual ~PlaylistDAO();
 
@@ -80,7 +86,10 @@ class PlaylistDAO : public QObject, public virtual DAO {
     int getMaxPosition(const int playlistId) const;
     // Remove a track from all playlists
     void removeTracksFromPlaylists(const QList<TrackId>& trackIds);
+    // removes all hidden and purged Tracks from the playlist
+    void removeHiddenTracks(const int playlistId);
     // Remove a track from a playlist
+    void removeTrackFromPlaylist(const int playlistId, const TrackId& trackId);
     void removeTrackFromPlaylist(const int playlistId, const int position);
     void removeTracksFromPlaylist(const int playlistId, QList<int>& positions);
     // Insert a track into a specific position in a playlist
@@ -108,7 +117,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void getPlaylistsTrackIsIn(TrackId trackId, QSet<int>* playlistSet) const;
 
     void setAutoDJProcessor(AutoDJProcessor* pAutoDJProcessor);
-    void sendToAutoDJ(const QList<TrackId>& trackIds, bool bTop);
+    void sendToAutoDJ(const QList<TrackId>& trackIds, AutoDJSendLoc loc);
 
   signals:
     void added(int playlistId);
@@ -120,7 +129,8 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void lockChanged(int playlistId);
 
   private:
-    void removeTracksFromPlaylistsInner(const QStringList& idList);
+    bool removeTracksFromPlaylist(const int playlistId, const int startIndex);
+    void removeTracksFromPlaylistInner(int playlistId, int position);
     void searchForDuplicateTrack(const int fromPosition,
                                  const int toPosition,
                                  TrackId trackID,

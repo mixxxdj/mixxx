@@ -229,7 +229,7 @@ class Qt(Dependence):
         qt5 = Qt.qt5_enabled(build)
         qt_modules = [
             'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSvg',
-            'QtSql', 'QtScript', 'QtXmlPatterns', 'QtNetwork',
+            'QtSql', 'QtScript', 'QtNetwork',
             'QtTest', 'QtScriptTools'
         ]
         if qt5:
@@ -381,6 +381,34 @@ class Qt(Dependence):
                 # QtOpenGL
                 build.env.Append(LIBS = 'glu32')
                 build.env.Append(LIBS = 'opengl32')
+
+                # QtNetwork openssl-linked
+                build.env.Append(LIBS = 'crypt32')
+
+                # NOTE(rryan): If you are adding a plugin here, you must also
+                # update src/mixxxapplication.cpp to define a Q_IMPORT_PLUGIN
+                # for it. Not all imageformats plugins are built as .libs when
+                # building Qt statically on Windows. Check the build environment
+                # to see exactly what's available as a standalone .lib vs linked
+                # into Qt .libs by default.
+
+                # iconengines plugins
+                build.env.Append(LIBPATH=[
+                    os.path.join(build.env['QTDIR'],'plugins/iconengines')])
+                build.env.Append(LIBS = 'qsvgicon')
+
+                # imageformats plugins
+                build.env.Append(LIBPATH=[
+                    os.path.join(build.env['QTDIR'],'plugins/imageformats')])
+                build.env.Append(LIBS = 'qico')
+                build.env.Append(LIBS = 'qsvg')
+                build.env.Append(LIBS = 'qtga')
+
+                # accessibility plugins
+                build.env.Append(LIBPATH=[
+                    os.path.join(build.env['QTDIR'],'plugins/accessible')])
+                build.env.Append(LIBS = 'qtaccessiblewidgets')
+
 
         # Set the rpath for linux/bsd/osx.
         # This is not supported on OS X before the 10.5 SDK.
@@ -647,6 +675,7 @@ class MixxxCore(Feature):
                    "preferences/dialog/dlgprefwaveform.cpp",
                    "preferences/settingsmanager.cpp",
                    "preferences/replaygainsettings.cpp",
+                   "preferences/broadcastsettings.cpp",
                    "preferences/upgrade.cpp",
                    "preferences/dlgpreferencepage.cpp",
 
@@ -674,6 +703,9 @@ class MixxxCore(Feature):
                    "effects/native/linkwitzriley8eqeffect.cpp",
                    "effects/native/bessel4lvmixeqeffect.cpp",
                    "effects/native/bessel8lvmixeqeffect.cpp",
+                   "effects/native/threebandbiquadeqeffect.cpp",
+                   "effects/native/biquadfullkilleqeffect.cpp",
+                   "effects/native/loudnesscontoureffect.cpp",
                    "effects/native/graphiceqeffect.cpp",
                    "effects/native/flangereffect.cpp",
                    "effects/native/filtereffect.cpp",
@@ -815,6 +847,7 @@ class MixxxCore(Feature):
                    "widget/wstarrating.cpp",
                    "widget/weffectchain.cpp",
                    "widget/weffect.cpp",
+                   "widget/weffectselector.cpp",
                    "widget/weffectparameter.cpp",
                    "widget/weffectbuttonparameter.cpp",
                    "widget/weffectparameterbase.cpp",
@@ -858,6 +891,11 @@ class MixxxCore(Feature):
                    "library/coverart.cpp",
                    "library/coverartcache.cpp",
                    "library/coverartutils.cpp",
+
+                   "library/crate/cratestorage.cpp",
+                   "library/crate/cratefeature.cpp",
+                   "library/crate/cratefeaturehelper.cpp",
+                   "library/crate/cratetablemodel.cpp",
 
                    "library/playlisttablemodel.cpp",
                    "library/libraryfeature.cpp",
@@ -904,7 +942,6 @@ class MixxxCore(Feature):
                    "library/itunes/itunesfeature.cpp",
                    "library/traktor/traktorfeature.cpp",
 
-                   "library/cratefeature.cpp",
                    "library/sidebarmodel.cpp",
                    "library/library.cpp",
 
@@ -914,8 +951,6 @@ class MixxxCore(Feature):
                    "library/scanner/importfilestask.cpp",
                    "library/scanner/recursivescandirectorytask.cpp",
 
-                   "library/dao/cratedao.cpp",
-                   "library/cratetablemodel.cpp",
                    "library/dao/cuedao.cpp",
                    "library/dao/cue.cpp",
                    "library/dao/trackdao.cpp",
@@ -1066,7 +1101,14 @@ class MixxxCore(Feature):
                    "util/tapfilter.cpp",
                    "util/movinginterquartilemean.cpp",
                    "util/console.cpp",
-                   "util/dbid.cpp",
+                   "util/db/dbconnection.cpp",
+                   "util/db/dbid.cpp",
+                   "util/db/fwdsqlquery.cpp",
+                   "util/db/fwdsqlqueryselectresult.cpp",
+                   "util/db/sqllikewildcardescaper.cpp",
+                   "util/db/sqlqueryfinisher.cpp",
+                   "util/db/sqlstringformatter.cpp",
+                   "util/db/sqltransaction.cpp",
                    "util/sample.cpp",
                    "util/samplebuffer.cpp",
                    "util/singularsamplebuffer.cpp",
@@ -1196,10 +1238,8 @@ class MixxxCore(Feature):
             build.env.Append(CCFLAGS='-g')
         elif build.toolchain_is_msvs:
             # Validate the specified winlib directory exists
-            mixxx_lib_path = SCons.ARGUMENTS.get(
-                'winlib', '..\\..\\..\\mixxx-win32lib-msvc100-release')
+            mixxx_lib_path = build.winlib_path
             if not os.path.exists(mixxx_lib_path):
-                print mixxx_lib_path
                 raise Exception("Winlib path does not exist! Please specify your winlib directory"
                                 "path by running 'scons winlib=[path]'")
                 Script.Exit(1)
@@ -1233,7 +1273,7 @@ class MixxxCore(Feature):
             # executables linked regardless of whether we are creating a debug
             # build. Having PDB files for our releases is helpful for debugging.
             build.env.Append(LINKFLAGS='/DEBUG')
-            build.env.Append(CCFLAGS='/Zi')
+            build.env.Append(CCFLAGS='/Zi /Fd${TARGET}.pdb')
 
             if build.build_is_debug:
                 # Important: We always build Mixxx with the Multi-Threaded DLL

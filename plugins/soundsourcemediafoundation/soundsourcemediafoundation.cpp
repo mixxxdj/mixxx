@@ -53,7 +53,7 @@ SoundSourceMediaFoundation::~SoundSourceMediaFoundation() {
 }
 
 SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(const AudioSourceConfig& audioSrcCfg) {
-    DEBUG_ASSERT_AND_HANDLE(!SUCCEEDED(m_hrCoInitialize)) {
+    VERIFY_OR_DEBUG_ASSERT(!SUCCEEDED(m_hrCoInitialize)) {
         qWarning() << kLogPreamble
                 << "Cannot reopen file"
                 << getUrlString();
@@ -132,9 +132,15 @@ void SoundSourceMediaFoundation::close() {
 
 SINT SoundSourceMediaFoundation::seekSampleFrame(
         SINT frameIndex) {
-    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
+    DEBUG_ASSERT(isValidFrameIndex(m_currentFrameIndex));
 
-    if (m_currentFrameIndex < frameIndex) {
+    if (frameIndex >= getMaxFrameIndex()) {
+        // EOF
+        m_currentFrameIndex = getMaxFrameIndex();
+        return m_currentFrameIndex;
+    }
+
+    if (frameIndex > m_currentFrameIndex) {
         // seeking forward
         SINT skipFramesCount = frameIndex - m_currentFrameIndex;
         // When to prefer skipping over seeking:
@@ -151,15 +157,8 @@ SINT SoundSourceMediaFoundation::seekSampleFrame(
             skipSampleFrames(skipFramesCount);
         }
     }
-
-    if (m_currentFrameIndex == frameIndex) {
-        // already there
+    if (frameIndex == m_currentFrameIndex) {
         return m_currentFrameIndex;
-    }
-
-    if (m_pSourceReader == nullptr) {
-        // reader is dead -> jump to end of stream
-        return getMaxFrameIndex();
     }
 
     // Discard decoded samples
@@ -167,6 +166,11 @@ SINT SoundSourceMediaFoundation::seekSampleFrame(
 
     // Invalidate current position (end of stream)
     m_currentFrameIndex = getMaxFrameIndex();
+
+    if (m_pSourceReader == nullptr) {
+        // reader is dead
+        return m_currentFrameIndex;
+    }
 
     // Jump to a position before the actual seeking position.
     // Prefetching a certain number of frames is necessary for
@@ -408,7 +412,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
                     pLockedSampleBuffer,
                     writableChunk.size());
             HRESULT hrUnlock = pMediaBuffer->Unlock();
-            DEBUG_ASSERT_AND_HANDLE(SUCCEEDED(hrUnlock)) {
+            VERIFY_OR_DEBUG_ASSERT(SUCCEEDED(hrUnlock)) {
                 qWarning() << kLogPreamble
                         << "IMFMediaBuffer::Unlock() failed"
                         << hrUnlock;
@@ -474,6 +478,19 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
                 << "failed to get current media type from stream";
         return false;
     }
+
+    //------ Get bitrate from the file, before we change it to get uncompressed audio
+    UINT32 avgBytesPerSecond;
+
+    hr = pAudioType->GetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND, &avgBytesPerSecond);
+    if (FAILED(hr)) {
+        qWarning() << kLogPreamble << hr
+                << "error getting MF_MT_AUDIO_AVG_BYTES_PER_SECOND";
+        return false;
+    }
+
+    setBitrate( (avgBytesPerSecond * 8) / 1000);
+    //------
 
     hr = pAudioType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
     if (FAILED(hr)) {
@@ -640,6 +657,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
             << "Sample buffer capacity"
             << m_sampleBuffer.getCapacity();
 
+            
     // Finally release the reference
     safeRelease(&pAudioType);
 
@@ -661,11 +679,7 @@ bool SoundSourceMediaFoundation::readProperties() {
     qDebug() << kLogPreamble << "Frame count" << getFrameCount();
     PropVariantClear(&prop);
 
-    // presentation attribute MF_PD_AUDIO_ENCODING_BITRATE only exists for
-    // presentation descriptors, one of which MFSourceReader is not.
-    // Therefore, we calculate it ourselves.
-    setBitrate(kBitsPerSample * frames2samples(getSamplingRate()));
-
+   
     return true;
 }
 
