@@ -1,7 +1,5 @@
 #include "track/trackmetadata.h"
 
-#include "util/time.h"
-
 namespace Mixxx {
 
 /*static*/ const int TrackMetadata::kCalendarYearInvalid = 0;
@@ -68,10 +66,6 @@ QString TrackMetadata::reformatYear(QString year) {
     return year.simplified();
 }
 
-QString TrackMetadata::formatDuration(int duration) {
-    return Time::formatSeconds(duration, false);
-}
-
 TrackMetadata::TrackMetadata()
     : m_bitrate(0),
       m_channels(0),
@@ -88,6 +82,7 @@ bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs) {
             (lhs.getComment() == rhs.getComment()) &&
             (lhs.getYear() == rhs.getYear()) &&
             (lhs.getTrackNumber() == rhs.getTrackNumber()) &&
+            (lhs.getTrackTotal() == rhs.getTrackTotal()) &&
             (lhs.getComposer() == rhs.getComposer()) &&
             (lhs.getGrouping() == rhs.getGrouping()) &&
             (lhs.getKey() == rhs.getKey()) &&

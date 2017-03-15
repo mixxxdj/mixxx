@@ -25,6 +25,7 @@
 #include <QMap>
 #include <QHash>
 #include <QMetaType>
+#include <QReadWriteLock>
 
 #include "util/debug.h"
 
@@ -34,23 +35,32 @@
 
 class ConfigKey {
   public:
-    ConfigKey();
+    ConfigKey(); // is required for qMetaTypeConstructHelper()
+    ConfigKey(const ConfigKey& key);
     ConfigKey(const QString& g, const QString& i);
-    ConfigKey(const char* g, const char* i);
     static ConfigKey parseCommaSeparated(QString key);
 
     inline bool isNull() const {
         return group.isNull() && item.isNull();
     }
 
+    // comparison function for ConfigKeys. Used by a QHash in ControlObject
+    inline bool operator==(const ConfigKey& other) const {
+        return group == other.group && item == other.item;
+    }
+
+    // comparison function for ConfigKeys. Used by a QMap in ControlObject
+    inline bool operator<(const ConfigKey& other) const {
+        int groupResult = group.compare(other.group);
+        if (groupResult == 0) {
+            return item < other.item;
+        }
+        return (groupResult < 0);
+    }
     QString group, item;
 };
 Q_DECLARE_METATYPE(ConfigKey);
 
-// comparison function for ConfigKeys. Used by a QHash in ControlObject
-inline bool operator==(const ConfigKey& c1, const ConfigKey& c2) {
-    return c1.group == c2.group && c1.item == c2.item;
-}
 
 // stream operator function for trivial qDebug()ing of ConfigKeys
 inline QDebug operator<<(QDebug stream, const ConfigKey& c1) {
@@ -73,16 +83,20 @@ inline uint qHash(const QKeySequence& key) {
 class ConfigValue {
   public:
     ConfigValue();
-    ConfigValue(QString _value);
-    ConfigValue(int _value);
+    ConfigValue(QString value);
+    ConfigValue(int value);
     inline ConfigValue(QDomNode /* node */) {
         reportFatalErrorAndQuit("ConfigValue from QDomNode not implemented here");
     }
-    void valCopy(const ConfigValue& _value);
+    void valCopy(const ConfigValue& value);
 
     QString value;
     friend bool operator==(const ConfigValue& s1, const ConfigValue& s2);
 };
+
+inline uint qHash(const ConfigValue& key) {
+    return qHash(key.value.toUpper());
+}
 
 class ConfigValueKbd : public ConfigValue {
   public:
@@ -98,36 +112,18 @@ class ConfigValueKbd : public ConfigValue {
     QKeySequence m_qKey;
 };
 
-template <class ValueType> class ConfigOption {
-  public:
-    ConfigOption() { val = NULL; key = NULL;};
-    ConfigOption(ConfigKey* _key, ValueType* _val) { key = _key ; val = _val; };
-    virtual ~ConfigOption() {
-        delete key;
-        delete val;
-    }
-    ValueType* val;
-    ConfigKey* key;
-};
-
 template <class ValueType> class ConfigObject {
   public:
-    ConfigKey key;
-    ValueType value;
-    ConfigOption<ValueType> option;
-
     ConfigObject(QString file);
     ConfigObject(QDomNode node);
     ~ConfigObject();
-    ConfigOption<ValueType> *set(ConfigKey, ValueType);
-    ConfigOption<ValueType> *get(ConfigKey key);
-    bool exists(ConfigKey key);
-    ConfigKey *get(ValueType v);
-    QString getValueString(ConfigKey k);
-    QString getValueString(ConfigKey k, const QString& default_string);
-    QHash<ConfigKey, ValueType> toHash() const;
+    void set(const ConfigKey& k, ValueType);
+    ValueType get(const ConfigKey& k) const;
+    bool exists(const ConfigKey& key) const;
+    QString getValueString(const ConfigKey& k) const;
+    QString getValueString(const ConfigKey& k, const QString& default_string) const;
+    QMultiHash<ValueType, ConfigKey> transpose() const;
 
-    void clear();
     void reopen(QString file);
     void Save();
 
@@ -140,12 +136,14 @@ template <class ValueType> class ConfigObject {
     QString getSettingsPath() const;
 
   protected:
-    QList<ConfigOption<ValueType>*> m_list;
+    // We use QMap because we want a sorted list in mixxx.cfg
+    QMap<ConfigKey, ValueType> m_values;
+    mutable QReadWriteLock m_valuesLock;
     QString m_filename;
 
     // Loads and parses the configuration file. Returns false if the file could
     // not be opened; otherwise true.
-    bool Parse();
+    bool parse();
 };
 
 #endif

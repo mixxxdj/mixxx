@@ -33,6 +33,7 @@ void ControlObjectSlave::initialize(const ConfigKey& key) {
 }
 
 ControlObjectSlave::~ControlObjectSlave() {
+    //qDebug() << "ControlObjectSlave::~ControlObjectSlave()";
 }
 
 bool ControlObjectSlave::connectValueChanged(const QObject* receiver,

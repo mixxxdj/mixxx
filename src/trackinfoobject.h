@@ -54,6 +54,7 @@ class TrackInfoObject : public QObject {
     Q_PROPERTY(QString grouping READ getGrouping WRITE setGrouping)
     Q_PROPERTY(QString year READ getYear WRITE setYear)
     Q_PROPERTY(QString track_number READ getTrackNumber WRITE setTrackNumber)
+    Q_PROPERTY(QString track_total READ getTrackTotal WRITE setTrackTotal)
     Q_PROPERTY(int times_played READ getTimesPlayed)
     Q_PROPERTY(QString comment READ getComment WRITE setComment)
     Q_PROPERTY(double bpm READ getBpm WRITE setBpm)
@@ -181,10 +182,12 @@ class TrackInfoObject : public QObject {
     QString getGrouping() const;
     // Set grouping
     void setGrouping(const QString&);
-    // Return Track Number
+    // Return track number/total
     QString getTrackNumber() const;
-    // Set Track Number
+    QString getTrackTotal() const;
+    // Set track number/total
     void setTrackNumber(const QString&);
+    void setTrackTotal(const QString&);
 
     PlayCounter getPlayCounter() const;
     void setPlayCounter(const PlayCounter& playCounter);
@@ -338,8 +341,9 @@ class TrackInfoObject : public QObject {
     QString m_sGrouping;
     // Year
     QString m_sYear;
-    // Track Number
+    // Track number/total
     QString m_sTrackNumber;
+    QString m_sTrackTotal;
 
     // File type
     QString m_sType;

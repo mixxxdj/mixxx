@@ -20,6 +20,7 @@
     // clean up after Xlib.h, which #defines values that conflict with QT.
     #undef Bool
     #undef Unsorted
+    #undef None
 #endif // QT_OPENGL_ES_2
 #endif // QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #endif

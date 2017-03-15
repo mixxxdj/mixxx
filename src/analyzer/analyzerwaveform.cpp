@@ -1,8 +1,5 @@
 #include "analyzer/analyzerwaveform.h"
 
-#include <QImage>
-#include <QtDebug>
-#include <QTime>
 #include <QtDebug>
 
 #include "engine/engineobject.h"
@@ -15,8 +12,8 @@
 
 AnalyzerWaveform::AnalyzerWaveform(ConfigObject<ConfigValue>* pConfig) :
         m_skipProcessing(false),
-        m_waveformData(NULL),
-        m_waveformSummaryData(NULL),
+        m_waveformData(nullptr),
+        m_waveformSummaryData(nullptr),
         m_stride(0, 0),
         m_currentStride(0),
         m_currentSummaryStride(0) {
@@ -41,22 +38,19 @@ AnalyzerWaveform::AnalyzerWaveform(ConfigObject<ConfigValue>* pConfig) :
         }
     }
 
-    m_timer = new QTime();
-    m_analysisDao = new AnalysisDao(m_database, pConfig);
+    m_pAnalysisDao = std::make_unique<AnalysisDao>(m_database, pConfig);
 }
 
 AnalyzerWaveform::~AnalyzerWaveform() {
     qDebug() << "AnalyzerWaveform::~AnalyzerWaveform()";
     destroyFilters();
     m_database.close();
-    delete m_timer;
-    delete m_analysisDao;
 }
 
 bool AnalyzerWaveform::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
     m_skipProcessing = false;
 
-    m_timer->start();
+    m_timer.start();
 
     if (totalSamples == 0) {
         qWarning() << "AnalyzerWaveform::initialize - no waveform/waveform summary";
@@ -121,7 +115,7 @@ bool AnalyzerWaveform::loadStored(TrackPointer tio) const {
 
     if (trackId.isValid() && (missingWaveform || missingWavesummary)) {
         QList<AnalysisDao::AnalysisInfo> analyses =
-                m_analysisDao->getAnalysesForTrack(trackId);
+                m_pAnalysisDao->getAnalysesForTrack(trackId);
 
         QListIterator<AnalysisDao::AnalysisInfo> it(analyses);
         while (it.hasNext()) {
@@ -136,7 +130,7 @@ bool AnalyzerWaveform::loadStored(TrackPointer tio) const {
                     missingWaveform = false;
                 } else if (vc != WaveformFactory::VC_KEEP) {
                     // remove all other Analysis except that one we should keep
-                    m_analysisDao->deleteAnalysis(analysis.analysisId);
+                    m_pAnalysisDao->deleteAnalysis(analysis.analysisId);
                 }
             } if (analysis.type == AnalysisDao::TYPE_WAVESUMMARY) {
                 vc = WaveformFactory::waveformSummaryVersionToVersionClass(analysis.version);
@@ -146,7 +140,7 @@ bool AnalyzerWaveform::loadStored(TrackPointer tio) const {
                     missingWavesummary = false;
                 } else if (vc != WaveformFactory::VC_KEEP) {
                     // remove all other Analysis except that one we should keep
-                    m_analysisDao->deleteAnalysis(analysis.analysisId);
+                    m_pAnalysisDao->deleteAnalysis(analysis.analysisId);
                 }
             }
         }
@@ -279,13 +273,13 @@ void AnalyzerWaveform::cleanup(TrackPointer tio) {
     tio->setWaveform(ConstWaveformPointer());
     // Since clear() could delete the waveform, clear our pointer to the
     // waveform's vector data first.
-    m_waveformData = NULL;
+    m_waveformData = nullptr;
     m_waveform.clear();
 
     tio->setWaveformSummary(ConstWaveformPointer());
     // Since clear() could delete the waveform, clear our pointer to the
     // waveform's vector data first.
-    m_waveformSummaryData = NULL;
+    m_waveformSummaryData = nullptr;
     m_waveformSummary.clear();
 }
 
@@ -301,7 +295,7 @@ void AnalyzerWaveform::finalize(TrackPointer tio) {
         m_waveform->setDescription(WaveformFactory::currentWaveformDescription());
         // Since clear() could delete the waveform, clear our pointer to the
         // waveform's vector data first.
-        m_waveformData = NULL;
+        m_waveformData = nullptr;
         m_waveform.clear();
     }
 
@@ -312,7 +306,7 @@ void AnalyzerWaveform::finalize(TrackPointer tio) {
         m_waveformSummary->setDescription(WaveformFactory::currentWaveformSummaryDescription());
         // Since clear() could delete the waveform, clear our pointer to the
         // waveform's vector data first.
-        m_waveformSummaryData = NULL;
+        m_waveformSummaryData = nullptr;
         m_waveformSummary.clear();
     }
 
@@ -321,7 +315,7 @@ void AnalyzerWaveform::finalize(TrackPointer tio) {
 #endif
 
     qDebug() << "Waveform generation for track" << tio->getId() << "done"
-             << m_timer->elapsed()/1000.0 << "s";
+             << m_timer.elapsed()/1000.0 << "s";
 }
 
 void AnalyzerWaveform::storeIfGreater(float* pDest, float source) {
