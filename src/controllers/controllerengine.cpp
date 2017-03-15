@@ -813,8 +813,9 @@ void ScriptConnection::executeCallback(double value) const {
     QScriptValue func = callback; // copy function because QScriptValue::call is not const
     QScriptValue result = func.call(context, args);
     if (result.isError()) {
-        qWarning() << "ControllerEngine: Invocation of callback" << id.toString()
-                   << "failed:" << result.toString();
+        qWarning() << "ControllerEngine: Invocation of connection " << id.toString()
+                   << "connected to (" + key.group + ", " + key.item + ") failed:"
+                   << result.toString();
     }
 }
 
@@ -831,7 +832,8 @@ void ControllerEngine::removeScriptConnection(const ScriptConnection connection)
     }
 
     if (!coScript->removeScriptConnection(connection)) {
-        qWarning() << "Could not disconnect connection" << connection.id.toString();
+        qWarning() << "Could not disconnect script connection " << connection.id.toString()
+                   << "from (" + connection.key.group + ", " + connection.key.item + ")";
     }
 }
 
