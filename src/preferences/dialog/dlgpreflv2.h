@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QCheckBox>
 
-#include "ui_dlgpreflv2dlg.h"
+#include "preferences/dialog/ui_dlgpreflv2dlg.h"
 #include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
 #include "effects/lv2/lv2backend.h"
