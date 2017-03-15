@@ -753,7 +753,12 @@ QScriptValue ControllerEngine::connectControl(
                        << "but this is not allowed when passing a callback as a string."
                        << "If you actually want to create duplicate connections,"
                        << "pass the callback as a JavaScript function.";
-            return QScriptValue(false);
+
+            ScriptConnection connection = coScript->firstConnection();
+
+            return m_pEngine->newQObject(
+                new ScriptConnectionInvokableWrapper(connection),
+                QScriptEngine::ScriptOwnership);
         }
     } else if (callback.isQObject()) {
         // Assume a ScriptConnection

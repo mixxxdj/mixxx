@@ -15,8 +15,11 @@ class ControlObjectScript : public ControlProxy {
 
     void removeScriptConnection(const ScriptConnection& conn);
 
+    // Required for legacy behavior of ControllerEngine::connectControl
     inline int countConnections() {
             return m_scriptConnections.size(); };
+    inline ScriptConnection firstConnection() {
+            return m_scriptConnections.first(); };
     void disconnectAllConnectionsToFunction(const QScriptValue& function);
 
     // Called from update();
