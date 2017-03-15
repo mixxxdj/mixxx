@@ -3565,46 +3565,36 @@ Apply settings and continue?</source>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="91"/>
-        <source>Mixxx uses &quot;presets&quot; to connect messages from your controller to controls in Mixxx. If you do not see a preset for your controller, you can download one online from the Mixxx Forums or Mixxx Wiki. After downloading a preset, place the XML (.xml) and Javascript (.js) file(s) in one of these preset folders:</source>
+        <source>Mixxx uses &quot;presets&quot; to connect messages from your controller to controls in Mixxx. If you do not see a preset for your controller, you can download one online from the Mixxx Forums or Mixxx Wiki. After downloading a preset, place the XML (.xml) and Javascript (.js) file(s) in the &quot;User Preset Folder&quot;:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="101"/>
-        <source>Open Local Preset Folder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="108"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="107"/>
         <source>Open User Preset Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="115"/>
-        <source>Open System Preset Folder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="125"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="117"/>
         <source>Resources</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="131"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="123"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt;Mixxx Wiki: Hardware Compatibility&lt;/a&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="141"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="133"/>
         <source>&lt;a href=&quot;http://www.mixxx.org/forums/viewforum.php?f=7&quot;&gt;Mixxx Controller Forums&lt;/a&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="151"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="143"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;MIDI Preset File Format&lt;/a&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="161"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="153"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_scripting&quot;&gt;MIDI Scripting with Javascript&lt;/a&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7582,58 +7572,58 @@ Please select an input device in the sound hardware preferences first.</source>
 <context>
     <name>QMessageBox</name>
     <message>
-        <location filename="../../src/upgrade.cpp" line="423"/>
+        <location filename="../../src/upgrade.cpp" line="429"/>
         <source>Upgrading Mixxx</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="424"/>
+        <location filename="../../src/upgrade.cpp" line="430"/>
         <source>Mixxx now supports displaying cover art.
 Do you want to scan your library for cover files now?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="427"/>
+        <location filename="../../src/upgrade.cpp" line="433"/>
         <source>Scan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="428"/>
+        <location filename="../../src/upgrade.cpp" line="434"/>
         <source>Later</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="437"/>
+        <location filename="../../src/upgrade.cpp" line="443"/>
         <source>Upgrading Mixxx from v1.9.x/1.10.x.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="439"/>
+        <location filename="../../src/upgrade.cpp" line="445"/>
         <source>Mixxx has a new and improved beat detector.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="440"/>
+        <location filename="../../src/upgrade.cpp" line="446"/>
         <source>When you load tracks, Mixxx can re-analyze them and generate new, more accurate beatgrids. This will make automatic beatsync and looping more reliable.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="444"/>
+        <location filename="../../src/upgrade.cpp" line="450"/>
         <source>This does not affect saved cues, hotcues, playlists, or crates.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="446"/>
+        <location filename="../../src/upgrade.cpp" line="452"/>
         <source>If you do not want Mixxx to re-analyze your tracks, choose &quot;Keep Current Beatgrids&quot;. You can change this setting at any time from the &quot;Beat Detection&quot; section of the Preferences.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="450"/>
+        <location filename="../../src/upgrade.cpp" line="456"/>
         <source>Keep Current Beatgrids</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="451"/>
+        <location filename="../../src/upgrade.cpp" line="457"/>
         <source>Generate New Beatgrids</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7870,53 +7860,53 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="19"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="20"/>
         <source>Echo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="22"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="23"/>
         <source>Simple Echo with pingpong</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="26"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="27"/>
         <source>Send</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="28"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="29"/>
         <source>How much of the signal to send into the delay buffer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="38"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="39"/>
         <location filename="../../src/effects/native/flangereffect.cpp" line="41"/>
         <source>Delay</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="39"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="40"/>
         <source>Delay time (seconds)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="50"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="51"/>
         <source>Feedback</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="52"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="53"/>
         <source>Amount the echo fades each time it loops</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="62"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="63"/>
         <source>PingPong</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="64"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="65"/>
         <source>As the ping-pong amount increases, increasing amounts of the echoed signal is bounced between the left and right speakers.</source>
         <translation type="unfinished"></translation>
     </message>

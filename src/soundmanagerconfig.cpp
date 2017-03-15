@@ -38,7 +38,7 @@ SoundManagerConfig::SoundManagerConfig()
       m_deckCount(kDefaultDeckCount),
       m_audioBufferSizeIndex(kDefaultAudioBufferSizeIndex),
       m_syncBuffers(2) {
-    m_configFile = QFileInfo(CmdlineArgs::Instance().getSettingsPath() + SOUNDMANAGERCONFIG_FILENAME);
+    m_configFile = QFileInfo(QDir(CmdlineArgs::Instance().getSettingsPath()).filePath(SOUNDMANAGERCONFIG_FILENAME));
 }
 
 SoundManagerConfig::~SoundManagerConfig() {

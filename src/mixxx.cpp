@@ -131,7 +131,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pConfig = upgrader.versionUpgrade(args.getSettingsPath());
     ControlDoublePrivate::setUserConfig(m_pConfig);
 
-    Sandbox::initialize(m_pConfig->getSettingsPath().append("/sandbox.cfg"));
+    Sandbox::initialize(QDir(m_pConfig->getSettingsPath()).filePath("sandbox.cfg"));
 
     // Only record stats in developer mode.
     if (m_cmdLineArgs.getDeveloper()) {
@@ -431,7 +431,9 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 
     // Scan the library directory. Initialize this after the skinloader has
     // loaded a skin, see Bug #1047435
-    m_pLibraryScanner = new LibraryScanner(this, m_pLibrary->getTrackCollection());
+    m_pLibraryScanner = new LibraryScanner(this,
+                                           m_pLibrary->getTrackCollection(),
+                                           m_pConfig);
     connect(m_pLibraryScanner, SIGNAL(scanFinished()),
             this, SLOT(slotEnableRescanLibraryAction()));
 
@@ -795,7 +797,7 @@ void MixxxMainWindow::initializeKeyboard() {
 
     // Read keyboard configuration and set kdbConfig object in WWidget
     // Check first in user's Mixxx directory
-    QString userKeyboard = m_cmdLineArgs.getSettingsPath() + "Custom.kbd.cfg";
+    QString userKeyboard = QDir(m_cmdLineArgs.getSettingsPath()).filePath("Custom.kbd.cfg");
 
     //Empty keyboard configuration
     m_pKbdConfigEmpty = new ConfigObject<ConfigValueKbd>("");
@@ -1001,7 +1003,7 @@ int MixxxMainWindow::noSoundDlg(void)
         } else if (msgBox.clickedButton() == wikiButton) {
             QDesktopServices::openUrl(QUrl(
                 "http://mixxx.org/wiki/doku.php/troubleshooting"
-                "#no_or_too_few_sound_cards_appear_in_the_preferences_dialog"));
+                "#i_can_t_select_my_sound_card_in_the_sound_hardware_preferences"));
             wikiButton->setEnabled(false);
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();
@@ -2029,8 +2031,8 @@ void MixxxMainWindow::slotHelpManual() {
     // Default to the mixxx.org hosted version of the manual.
     QUrl qManualUrl(MIXXX_MANUAL_URL);
 #if defined(__APPLE__)
-    // We don't include the PDF manual in the bundle on OSX. Default to the
-    // web-hosted version.
+    // FIXME: We don't include the PDF manual in the bundle on OSX.
+    // Default to the web-hosted version.
 #elif defined(__WINDOWS__)
     // On Windows, the manual PDF sits in the same folder as the 'skins' folder.
     if (resourceDir.exists(MIXXX_MANUAL_FILENAME)) {
@@ -2039,7 +2041,7 @@ void MixxxMainWindow::slotHelpManual() {
     }
 #elif defined(__LINUX__)
     // On GNU/Linux, the manual is installed to e.g. /usr/share/mixxx/doc/
-    if (resourceDir.cd("doc") && resourceDir.exists(MIXXX_MANUAL_FILENAME)) {
+    if (resourceDir.cd("../doc/mixxx") && resourceDir.exists(MIXXX_MANUAL_FILENAME)) {
         qManualUrl = QUrl::fromLocalFile(
                 resourceDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
     }

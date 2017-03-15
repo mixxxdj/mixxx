@@ -622,7 +622,7 @@
 													**********************************************
 													-->
 													<StatusLight>
-														<TooltipId>PeakIndicator</TooltipId>
+														<TooltipId>preview_PeakIndicator</TooltipId>
 														<Style></Style>
 														<PathStatusLight>btn_clipping_previewdeck_over.png</PathStatusLight>
 														<PathBack>btn_clipping_previewdeck.png</PathBack>

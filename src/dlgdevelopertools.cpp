@@ -48,7 +48,7 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
     m_statProxyModel.setSourceModel(&m_statModel);
     statsTable->setModel(&m_statProxyModel);
 
-    QString logFileName = CmdlineArgs::Instance().getSettingsPath() + "/mixxx.log";
+    QString logFileName = QDir(CmdlineArgs::Instance().getSettingsPath()).filePath("mixxx.log");
     m_logFile.setFileName(logFileName);
     if (!m_logFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "ERROR: Could not open log file";

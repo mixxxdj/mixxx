@@ -12,16 +12,19 @@
     <SizePolicy>me,max</SizePolicy>
     <!-- Because the spinny hides itself and throws off the size
          calculation we set our minimum size to the spinny size. -->
-    <MinimumSize>-1,118</MinimumSize>
+    <MinimumSize>-1,100</MinimumSize>
     <Children>
       <Visual>
         <TooltipId>waveform_display</TooltipId>
         <Group><Variable name="group"/></Group>
-        <BgColor><Variable name="DeckColorMuted"/></BgColor>
+        <BgColor><Variable name="DeckBackgroundColor"/></BgColor>
         <SignalHighColor></SignalHighColor>
         <SignalMidColor></SignalMidColor>
         <SignalLowColor></SignalLowColor>
-        <SignalColor><Variable name="DeckColor"/></SignalColor>
+        <SignalRGBHighColor></SignalRGBHighColor>
+        <SignalRGBMidColor></SignalRGBMidColor>
+        <SignalRGBLowColor></SignalRGBLowColor>
+        <SignalColor><Variable name="DeckSignalColor"/></SignalColor>
         <BeatColor>#ffffff</BeatColor>
         <PlayPosColor>#00FF00</PlayPosColor>
         <EndOfTrackColor>#EA0000</EndOfTrackColor>
@@ -108,86 +111,101 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <PushButton>
-            <TooltipId>waveform_zoom_down</TooltipId>
-            <MinimumSize>20,20</MinimumSize>
-            <MaximumSize>30,30</MaximumSize>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text> + </Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text> + </Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true"><Variable name="group"/>,waveform_zoom_down</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:left_1state_button.xml">
+            <SetVariable name="TooltipId">waveform_zoom_down</SetVariable>
+            <SetVariable name="ObjectName">WaveformZoomDownButton</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_add_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_add_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,waveform_zoom_down</SetVariable>
+          </Template>
 
-          <PushButton>
-            <TooltipId>waveform_zoom_set_default</TooltipId>
-            <MinimumSize>20,20</MinimumSize>
-            <MaximumSize>30,30</MaximumSize>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text> O </Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text> O </Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true"><Variable name="group"/>,waveform_zoom_set_default</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:left_1state_button.xml">
+            <SetVariable name="TooltipId">waveform_zoom_set_default</SetVariable>
+            <SetVariable name="ObjectName">WaveformZoomSetDefaultButton</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_clear_48px</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_clear_48px</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,waveform_zoom_set_default</SetVariable>
+          </Template>
 
-          <PushButton>
-            <TooltipId>waveform_zoom_up</TooltipId>
-            <MinimumSize>20,20</MinimumSize>
-            <MaximumSize>30,30</MaximumSize>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text> - </Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text> - </Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true"><Variable name="group"/>,waveform_zoom_up</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:left_1state_button.xml">
+            <SetVariable name="TooltipId">waveform_zoom_up</SetVariable>
+            <SetVariable name="ObjectName">WaveformZoomUpButton</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_remove_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_remove_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,waveform_zoom_up</SetVariable>
+          </Template>
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup>
-        <ObjectName>SpinnyHolder</ObjectName>
+      <!-- We allow for the following options in the skin settings:
+           : Show no cover
+           : Show cover on spinning vinyl images
+           : Show cover in text row of decks
+      -->
+      <WidgetStack>
+        <ObjectName>SpinnyContainer</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>max,max</SizePolicy>
+        <MinimumSize>-1,100</MinimumSize>
+        <NextControl>[Deere],show_coverart</NextControl>
+        <PrevControl></PrevControl>
         <Children>
-          <Spinny>
-            <TooltipId>spinny</TooltipId>
-            <Size>118f,118f</Size>
-            <Group><Variable name="group"/></Group>
-            <PathBackground>image/vinyl_spinny_background.png</PathBackground>
-            <PathForeground>image/vinyl_spinny_foreground.png</PathForeground>
-            <PathGhost>image/vinyl_spinny_foreground_ghost.png</PathGhost>
-            <!--
-             If you want to have cover art beneath the spnning vinyl images,
-             set <ShowCover> to "true" AND make the <PathBackground> image semi-transparent.
-            -->
-            <ShowCover>false</ShowCover>
-          </Spinny>
+          <WidgetGroup>
+            <ObjectName>SpinnyHolder</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>max,max</SizePolicy>
+            <Children>
+              <Spinny>
+                <TooltipId>spinny</TooltipId>
+                <Group><Variable name="group"/></Group>
+                <PathBackground>image/vinyl_spinny_background.svg</PathBackground>
+                <PathForeground>image/vinyl_spinny_foreground.svg</PathForeground>
+                <PathGhost>image/vinyl_spinny_foreground_ghost.svg</PathGhost>
+                <PathMask>image/vinyl_spinny_cover_mask.svg</PathMask>
+                <ShowCover>false</ShowCover>
+              </Spinny>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>SpinnyHolder</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>max,max</SizePolicy>
+            <Children>
+              <Spinny>
+                <TooltipId>spinny</TooltipId>
+                <Group><Variable name="group"/></Group>
+                <PathBackground>image/vinyl_spinny_background.svg</PathBackground>
+                <PathForeground>image/vinyl_spinny_foreground.svg</PathForeground>
+                <PathGhost>image/vinyl_spinny_foreground_ghost.svg</PathGhost>
+                <PathMask>image/vinyl_spinny_cover_mask.svg</PathMask>
+                <!--
+                 If you want to have cover art beneath the spinning vinyl images,
+                 set <ShowCover> to "true" AND make the <PathMask> image semi-transparent.
+                -->
+                <ShowCover>true</ShowCover>
+              </Spinny>
+            </Children>
+          </WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey persist="true"><Variable name="control_show_spinny"/></ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup>
+      </WidgetStack>
+
     </Children>
   </WidgetGroup>
 </Template>

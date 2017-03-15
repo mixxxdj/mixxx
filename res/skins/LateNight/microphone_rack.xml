@@ -6,7 +6,7 @@
         <ObjectName>MicContainer</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>max,me</SizePolicy>
-        <MaximumSize>510,160</MaximumSize>
+        <MaximumSize>570,160</MaximumSize>
         <Children>
           <WidgetGroup>
             <Layout>horizontal</Layout>
@@ -76,7 +76,7 @@
         <ObjectName>MicContainer</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>max,me</SizePolicy>
-        <MaximumSize>510,160</MaximumSize>
+        <MaximumSize>570,160</MaximumSize>
         <Children>
           <WidgetGroup>
             <Layout>horizontal</Layout>

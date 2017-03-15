@@ -12,6 +12,7 @@
 #include "controllers/controllerenumerator.h"
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetinfo.h"
+#include "controllers/controllerpresetinfoenumerator.h"
 
 //Forward declaration(s)
 class Controller;

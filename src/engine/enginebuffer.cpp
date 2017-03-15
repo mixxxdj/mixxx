@@ -207,9 +207,8 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     m_pTrackSamples = new ControlObject(ConfigKey(m_group, "track_samples"));
     m_pTrackSampleRate = new ControlObject(ConfigKey(m_group, "track_samplerate"));
 
-    m_pKeylock = new ControlPushButton(ConfigKey(m_group, "keylock"));
+    m_pKeylock = new ControlPushButton(ConfigKey(m_group, "keylock"), true);
     m_pKeylock->setButtonMode(ControlPushButton::TOGGLE);
-    m_pKeylock->set(false);
 
     m_pEject = new ControlPushButton(ConfigKey(m_group, "eject"));
     connect(m_pEject, SIGNAL(valueChanged(double)),
@@ -633,7 +632,7 @@ void EngineBuffer::doSeekPlayPos(double new_playpos, enum SeekRequest seekType) 
     queueNewPlaypos(new_playpos, seekType);
 }
 
-double EngineBuffer::updateIndicatorsAndModifyPlay(double v) {
+bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay) {
     // If no track is currently loaded, turn play off. If a track is loading
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
@@ -646,21 +645,21 @@ double EngineBuffer::updateIndicatorsAndModifyPlay(double v) {
         playPossible = false;
     }
 
-    return m_pCueControl->updateIndicatorsAndModifyPlay(v, playPossible);
+    return m_pCueControl->updateIndicatorsAndModifyPlay(newPlay, playPossible);
 }
 
 void EngineBuffer::verifyPlay() {
-    double play = m_playButton->get();
-    double verifiedPlay = updateIndicatorsAndModifyPlay(play);
+    bool play = m_playButton->toBool();
+    bool verifiedPlay = updateIndicatorsAndModifyPlay(play);
     if (play != verifiedPlay) {
-        m_playButton->setAndConfirm(verifiedPlay);
+        m_playButton->setAndConfirm(verifiedPlay ? 1.0 : 0.0);
     }
 }
 
 void EngineBuffer::slotControlPlayRequest(double v) {
-    double verifiedPlay = updateIndicatorsAndModifyPlay(v);
+    bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0);
     // set and confirm must be called here in any case to update the widget toggle state
-    m_playButton->setAndConfirm(verifiedPlay);
+    m_playButton->setAndConfirm(verifiedPlay ? 1.0 : 0.0);
 }
 
 void EngineBuffer::slotControlStart(double v)

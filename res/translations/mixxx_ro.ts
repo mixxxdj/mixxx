@@ -3569,46 +3569,36 @@ Se aplică configurările și se continuă?</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="91"/>
-        <source>Mixxx uses &quot;presets&quot; to connect messages from your controller to controls in Mixxx. If you do not see a preset for your controller, you can download one online from the Mixxx Forums or Mixxx Wiki. After downloading a preset, place the XML (.xml) and Javascript (.js) file(s) in one of these preset folders:</source>
+        <source>Mixxx uses &quot;presets&quot; to connect messages from your controller to controls in Mixxx. If you do not see a preset for your controller, you can download one online from the Mixxx Forums or Mixxx Wiki. After downloading a preset, place the XML (.xml) and Javascript (.js) file(s) in the &quot;User Preset Folder&quot;:</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="101"/>
-        <source>Open Local Preset Folder</source>
-        <translation>Deschide dosarul preconfigurare local</translation>
-    </message>
-    <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="108"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="107"/>
         <source>Open User Preset Folder</source>
         <translation>Deschide dosarul preconfigurare utilizator</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="115"/>
-        <source>Open System Preset Folder</source>
-        <translation>Deschide dosarul preconfigurare sistem</translation>
-    </message>
-    <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="125"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="117"/>
         <source>Resources</source>
         <translation>Resurse</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="131"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="123"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt;Mixxx Wiki: Hardware Compatibility&lt;/a&gt;</source>
         <translation>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt;Mixxx Wiki: Compatibilitate hardware&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="141"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="133"/>
         <source>&lt;a href=&quot;http://www.mixxx.org/forums/viewforum.php?f=7&quot;&gt;Mixxx Controller Forums&lt;/a&gt;</source>
         <translation>&lt;a href=&quot;http://www.mixxx.org/forums/viewforum.php?f=7&quot;&gt;Mixxx Controler Forumuri&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="151"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="143"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;MIDI Preset File Format&lt;/a&gt;</source>
         <translation>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;Format fișier preconfigurare MIDI&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="161"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="153"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_scripting&quot;&gt;MIDI Scripting with Javascript&lt;/a&gt;</source>
         <translation>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_scripting&quot;&gt;Scripturi MIDI cu Javascript&lt;/a&gt;</translation>
     </message>
@@ -7594,59 +7584,59 @@ Selectați întâi un dispozitiv de intrare din preferințele plăcii de sunet.<
 <context>
     <name>QMessageBox</name>
     <message>
-        <location filename="../../src/upgrade.cpp" line="394"/>
+        <location filename="../../src/upgrade.cpp" line="429"/>
         <source>Upgrading Mixxx</source>
         <translation>Se actualizează Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="395"/>
+        <location filename="../../src/upgrade.cpp" line="430"/>
         <source>Mixxx now supports displaying cover art.
 Do you want to scan your library for cover files now?</source>
         <translation>Mixxx suportă acum afișarea coperților.
 Doriți să scanați acum biblioteca pentru fișiere copertă?</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="398"/>
+        <location filename="../../src/upgrade.cpp" line="433"/>
         <source>Scan</source>
         <translation>Scanează</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="399"/>
+        <location filename="../../src/upgrade.cpp" line="434"/>
         <source>Later</source>
         <translation>Mai târziu</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="408"/>
+        <location filename="../../src/upgrade.cpp" line="443"/>
         <source>Upgrading Mixxx from v1.9.x/1.10.x.</source>
         <translation>Se actualizează Mixxx de la v1.9.x/1.10.x.</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="410"/>
+        <location filename="../../src/upgrade.cpp" line="445"/>
         <source>Mixxx has a new and improved beat detector.</source>
         <translation>Mixxx are un nou și îmbunătățit detector de ritm.</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="411"/>
+        <location filename="../../src/upgrade.cpp" line="446"/>
         <source>When you load tracks, Mixxx can re-analyze them and generate new, more accurate beatgrids. This will make automatic beatsync and looping more reliable.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="415"/>
+        <location filename="../../src/upgrade.cpp" line="450"/>
         <source>This does not affect saved cues, hotcues, playlists, or crates.</source>
         <translation>Aceasta nu afectează cue salvate, hotcue, liste de redare, sau colecții.</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="417"/>
+        <location filename="../../src/upgrade.cpp" line="452"/>
         <source>If you do not want Mixxx to re-analyze your tracks, choose &quot;Keep Current Beatgrids&quot;. You can change this setting at any time from the &quot;Beat Detection&quot; section of the Preferences.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="421"/>
+        <location filename="../../src/upgrade.cpp" line="456"/>
         <source>Keep Current Beatgrids</source>
         <translation>Păstrează grila-bătăi curentă</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="422"/>
+        <location filename="../../src/upgrade.cpp" line="457"/>
         <source>Generate New Beatgrids</source>
         <translation>Generează o grilă-bătăi nouă</translation>
     </message>
@@ -7868,58 +7858,68 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation>Adâncime bit</translation>
     </message>
     <message>
+        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="25"/>
+        <source>Adjusts the bit depth of the samples.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="../../src/effects/native/bitcrushereffect.cpp" line="39"/>
         <source>Downsampling</source>
         <translation>Downsampling</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="19"/>
+        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="40"/>
+        <source>Adjusts the sample rate, to which the signal is downsampled.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="20"/>
         <source>Echo</source>
         <translation>Ecou</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="22"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="23"/>
         <source>Simple Echo with pingpong</source>
         <translation>Ecou simplu cu pingpong</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="26"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="27"/>
         <source>Send</source>
         <translation>Trimite</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="28"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="29"/>
         <source>How much of the signal to send into the delay buffer</source>
         <translation>Cât de mult din semnal se trimite în tamponul de întârziere</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="38"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="39"/>
         <location filename="../../src/effects/native/flangereffect.cpp" line="41"/>
         <source>Delay</source>
         <translation>Întârziere</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="39"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="40"/>
         <source>Delay time (seconds)</source>
         <translation>Timp întârziere (secunde)</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="50"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="51"/>
         <source>Feedback</source>
         <translation>Opinie</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="52"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="53"/>
         <source>Amount the echo fades each time it loops</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="62"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="63"/>
         <source>PingPong</source>
         <translation>PingPong</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="64"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="65"/>
         <source>As the ping-pong amount increases, increasing amounts of the echoed signal is bounced between the left and right speakers.</source>
         <translation type="unfinished"/>
     </message>
@@ -7983,9 +7983,24 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation>Un efect simplu de modulație, creeat prin luarea semnalului d eintrare și mixarea sa cu o copie a sa întârziată, modulată pitch.</translation>
     </message>
     <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="31"/>
+        <source>Controls the intensity of the effect.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="42"/>
+        <source>Sets the value for the delay length.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="../../src/effects/native/flangereffect.cpp" line="52"/>
         <source>Period</source>
         <translation>Perioadă</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="53"/>
+        <source>Controls the speed of the effect.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/effects/native/reverbeffect.cpp" line="16"/>
@@ -8034,6 +8049,7 @@ To abort this action, press Cancel on the file dialog.</source>
     <message>
         <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="25"/>
         <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="25"/>
+        <location filename="../../src/effects/native/graphiceqeffect.cpp" line="30"/>
         <location filename="../../src/effects/native/linkwitzriley8eqeffect.cpp" line="28"/>
         <location filename="../../src/test/super_link_test.cpp" line="44"/>
         <source>Gain for Low Filter</source>
@@ -8091,6 +8107,7 @@ To abort this action, press Cancel on the file dialog.</source>
     <message>
         <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="71"/>
         <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="71"/>
+        <location filename="../../src/effects/native/graphiceqeffect.cpp" line="63"/>
         <location filename="../../src/effects/native/linkwitzriley8eqeffect.cpp" line="74"/>
         <source>Gain for High Filter</source>
         <translation>Câștig pentru filtrul înalte</translation>
@@ -8118,6 +8135,11 @@ To abort this action, press Cancel on the file dialog.</source>
         <location filename="../../src/effects/native/graphiceqeffect.cpp" line="18"/>
         <source>An 8 band Graphic EQ based on Biquad Filters</source>
         <translation>Un egalizator cu 8 benzi bazat pe filtre Biquad</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/graphiceqeffect.cpp" line="50"/>
+        <source>Gain for Band Filter %1</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="13"/>

@@ -30,7 +30,7 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
     qDebug() << "Available QtSQL drivers:" << QSqlDatabase::drivers();
 
     m_db.setHostName("localhost");
-    m_db.setDatabaseName(pConfig->getSettingsPath().append("/mixxxdb.sqlite"));
+    m_db.setDatabaseName(QDir(pConfig->getSettingsPath()).filePath("mixxxdb.sqlite"));
     m_db.setUserName("mixxx");
     m_db.setPassword("mixxx");
     bool ok = m_db.open();

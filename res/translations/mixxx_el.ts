@@ -26,7 +26,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="86"/>
         <source>Remove Crate as Track Source</source>
-        <translation type="unfinished"/>
+        <translation>Αφαίρεση κιβωτίου ως πηγή μουσικού κομματιού</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="101"/>
@@ -36,7 +36,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="380"/>
         <source>Add Crate as Track Source</source>
-        <translation type="unfinished"/>
+        <translation>Πρόσθεση κιβώτιου ως πηγή μουσικού κομματιού</translation>
     </message>
 </context>
 <context>
@@ -45,25 +45,27 @@
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="23"/>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="113"/>
         <source>Banshee</source>
-        <translation type="unfinished"/>
+        <translation>Banshee</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="73"/>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="82"/>
         <source>Error loading Banshee database</source>
-        <translation type="unfinished"/>
+        <translation>Σφάλμα κατά τη φόρτωση της βάσης δεδομένων Banshee</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="74"/>
         <source>Banshee database file not found at
 </source>
-        <translation type="unfinished"/>
+        <translation>Δεν βρέθηκε η βάση δεδομένων Banshee σε
+</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="83"/>
         <source>There was an error loading your Banshee database at
 </source>
-        <translation type="unfinished"/>
+        <translation>Υπήρξε κάποιο σφάλμα κατά τη φόρτωση της βάσης δεδομένων Banshee σε
+</translation>
     </message>
 </context>
 <context>
@@ -110,7 +112,7 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="31"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="261"/>
         <source>Create New Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Δημιουργία νέας σειράς αναπαραγωγής</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="39"/>
@@ -135,7 +137,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="55"/>
         <source>Duplicate</source>
-        <translation type="unfinished"/>
+        <translation>Δημιουργία διπλότυπου</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="59"/>
@@ -146,12 +148,12 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="67"/>
         <source>Analyze entire Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Ανάλυση ολόκληρης της σειράς αναπαραγωγής</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="165"/>
         <source>Enter new name for playlist:</source>
-        <translation type="unfinished"/>
+        <translation>Εισάγετε νέο όνομα για την λίστα αναπαραγωγής:</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="205"/>
@@ -2578,7 +2580,7 @@
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="59"/>
         <source>Duplicate</source>
-        <translation type="unfinished"/>
+        <translation>Δημιουργία διπλότυπου</translation>
     </message>
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="63"/>
@@ -3567,46 +3569,36 @@ Apply settings and continue?</source>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="91"/>
-        <source>Mixxx uses &quot;presets&quot; to connect messages from your controller to controls in Mixxx. If you do not see a preset for your controller, you can download one online from the Mixxx Forums or Mixxx Wiki. After downloading a preset, place the XML (.xml) and Javascript (.js) file(s) in one of these preset folders:</source>
+        <source>Mixxx uses &quot;presets&quot; to connect messages from your controller to controls in Mixxx. If you do not see a preset for your controller, you can download one online from the Mixxx Forums or Mixxx Wiki. After downloading a preset, place the XML (.xml) and Javascript (.js) file(s) in the &quot;User Preset Folder&quot;:</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="101"/>
-        <source>Open Local Preset Folder</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="108"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="107"/>
         <source>Open User Preset Folder</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="115"/>
-        <source>Open System Preset Folder</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="125"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="117"/>
         <source>Resources</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="131"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="123"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt;Mixxx Wiki: Hardware Compatibility&lt;/a&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="141"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="133"/>
         <source>&lt;a href=&quot;http://www.mixxx.org/forums/viewforum.php?f=7&quot;&gt;Mixxx Controller Forums&lt;/a&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="151"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="143"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;MIDI Preset File Format&lt;/a&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="161"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="153"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_scripting&quot;&gt;MIDI Scripting with Javascript&lt;/a&gt;</source>
         <translation type="unfinished"/>
     </message>
@@ -7578,64 +7570,64 @@ Please select an input device in the sound hardware preferences first.</source>
     <message>
         <location filename="../../src/library/playlistfeature.cpp" line="221"/>
         <source>Create New Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Δημιουργία νέας σειράς αναπαραγωγής</translation>
     </message>
 </context>
 <context>
     <name>QMessageBox</name>
     <message>
-        <location filename="../../src/upgrade.cpp" line="394"/>
+        <location filename="../../src/upgrade.cpp" line="429"/>
         <source>Upgrading Mixxx</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="395"/>
+        <location filename="../../src/upgrade.cpp" line="430"/>
         <source>Mixxx now supports displaying cover art.
 Do you want to scan your library for cover files now?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="398"/>
+        <location filename="../../src/upgrade.cpp" line="433"/>
         <source>Scan</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="399"/>
+        <location filename="../../src/upgrade.cpp" line="434"/>
         <source>Later</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="408"/>
+        <location filename="../../src/upgrade.cpp" line="443"/>
         <source>Upgrading Mixxx from v1.9.x/1.10.x.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="410"/>
+        <location filename="../../src/upgrade.cpp" line="445"/>
         <source>Mixxx has a new and improved beat detector.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="411"/>
+        <location filename="../../src/upgrade.cpp" line="446"/>
         <source>When you load tracks, Mixxx can re-analyze them and generate new, more accurate beatgrids. This will make automatic beatsync and looping more reliable.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="415"/>
+        <location filename="../../src/upgrade.cpp" line="450"/>
         <source>This does not affect saved cues, hotcues, playlists, or crates.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="417"/>
+        <location filename="../../src/upgrade.cpp" line="452"/>
         <source>If you do not want Mixxx to re-analyze your tracks, choose &quot;Keep Current Beatgrids&quot;. You can change this setting at any time from the &quot;Beat Detection&quot; section of the Preferences.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="421"/>
+        <location filename="../../src/upgrade.cpp" line="456"/>
         <source>Keep Current Beatgrids</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="422"/>
+        <location filename="../../src/upgrade.cpp" line="457"/>
         <source>Generate New Beatgrids</source>
         <translation type="unfinished"/>
     </message>
@@ -7857,58 +7849,68 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation type="unfinished"/>
     </message>
     <message>
+        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="25"/>
+        <source>Adjusts the bit depth of the samples.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="../../src/effects/native/bitcrushereffect.cpp" line="39"/>
         <source>Downsampling</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="19"/>
+        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="40"/>
+        <source>Adjusts the sample rate, to which the signal is downsampled.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="20"/>
         <source>Echo</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="22"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="23"/>
         <source>Simple Echo with pingpong</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="26"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="27"/>
         <source>Send</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="28"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="29"/>
         <source>How much of the signal to send into the delay buffer</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="38"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="39"/>
         <location filename="../../src/effects/native/flangereffect.cpp" line="41"/>
         <source>Delay</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="39"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="40"/>
         <source>Delay time (seconds)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="50"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="51"/>
         <source>Feedback</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="52"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="53"/>
         <source>Amount the echo fades each time it loops</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="62"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="63"/>
         <source>PingPong</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="64"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="65"/>
         <source>As the ping-pong amount increases, increasing amounts of the echoed signal is bounced between the left and right speakers.</source>
         <translation type="unfinished"/>
     </message>
@@ -7972,8 +7974,23 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation type="unfinished"/>
     </message>
     <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="31"/>
+        <source>Controls the intensity of the effect.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="42"/>
+        <source>Sets the value for the delay length.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="../../src/effects/native/flangereffect.cpp" line="52"/>
         <source>Period</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="53"/>
+        <source>Controls the speed of the effect.</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -8023,6 +8040,7 @@ To abort this action, press Cancel on the file dialog.</source>
     <message>
         <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="25"/>
         <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="25"/>
+        <location filename="../../src/effects/native/graphiceqeffect.cpp" line="30"/>
         <location filename="../../src/effects/native/linkwitzriley8eqeffect.cpp" line="28"/>
         <location filename="../../src/test/super_link_test.cpp" line="44"/>
         <source>Gain for Low Filter</source>
@@ -8080,6 +8098,7 @@ To abort this action, press Cancel on the file dialog.</source>
     <message>
         <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="71"/>
         <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="71"/>
+        <location filename="../../src/effects/native/graphiceqeffect.cpp" line="63"/>
         <location filename="../../src/effects/native/linkwitzriley8eqeffect.cpp" line="74"/>
         <source>Gain for High Filter</source>
         <translation type="unfinished"/>
@@ -8106,6 +8125,11 @@ To abort this action, press Cancel on the file dialog.</source>
     <message>
         <location filename="../../src/effects/native/graphiceqeffect.cpp" line="18"/>
         <source>An 8 band Graphic EQ based on Biquad Filters</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/graphiceqeffect.cpp" line="50"/>
+        <source>Gain for Band Filter %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -10153,7 +10177,7 @@ Click OK to exit.</source>
         <location filename="../../src/widget/wtracktableview.cpp" line="762"/>
         <location filename="../../src/widget/wtracktableview.cpp" line="1367"/>
         <source>Create New Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Δημιουργία νέας σειράς αναπαραγωγής</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="792"/>

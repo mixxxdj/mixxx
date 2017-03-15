@@ -653,6 +653,7 @@ class MixxxCore(Feature):
                    "controllers/controllermanager.cpp",
                    "controllers/controllerpresetfilehandler.cpp",
                    "controllers/controllerpresetinfo.cpp",
+                   "controllers/controllerpresetinfoenumerator.cpp",
                    "controllers/controlpickermenu.cpp",
                    "controllers/controllermappingtablemodel.cpp",
                    "controllers/controllerinputmappingtablemodel.cpp",
@@ -1176,6 +1177,8 @@ class MixxxCore(Feature):
         if build.platform_is_linux or \
                 build.platform_is_bsd:
             mixxx_files = [
+                # TODO(XXX) Trailing slash not needed anymore as we switches from String::append
+                # to QDir::filePath elsewhere in the code. This is candidate for removal.
                 ('SETTINGS_PATH', '.mixxx/'),
                 ('SETTINGS_FILE', 'mixxx.cfg')]
         elif build.platform_is_osx:

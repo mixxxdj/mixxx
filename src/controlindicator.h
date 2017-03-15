@@ -3,7 +3,7 @@
 
 #include "controlobject.h"
 
-class ControlObjectThread;
+class ControlObjectSlave;
 
 class ControlIndicator : public ControlObject {
     Q_OBJECT
@@ -28,7 +28,7 @@ class ControlIndicator : public ControlObject {
     void slotBlinkValueChanged();
 
   private:
-    void toggle();
+    void toggle(double duration);
     // set() is private, use setBlinkValue instead
     // it must be called from the GUI thread only to a void
     // race condition by toggle()
@@ -36,8 +36,8 @@ class ControlIndicator : public ControlObject {
 
     enum BlinkValue m_blinkValue;
     double m_nextSwitchTime;
-    ControlObjectThread* m_pCOTGuiTickTime;
-    ControlObjectThread* m_pCOTGuiTick50ms;
+    ControlObjectSlave* m_pCOTGuiTickTime;
+    ControlObjectSlave* m_pCOTGuiTick50ms;
 };
 
 #endif // CONTROLINDICATOR_H

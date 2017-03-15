@@ -29,7 +29,7 @@ AnalyserWaveform::AnalyserWaveform(ConfigObject<ConfigValue>* pConfig) :
     m_database = QSqlDatabase::addDatabase("QSQLITE", "WAVEFORM_ANALYSIS" + QString::number(i++));
     if (!m_database.isOpen()) {
         m_database.setHostName("localhost");
-        m_database.setDatabaseName(pConfig->getSettingsPath().append("/mixxxdb.sqlite"));
+        m_database.setDatabaseName(QDir(pConfig->getSettingsPath()).filePath("mixxxdb.sqlite"));
         m_database.setUserName("mixxx");
         m_database.setPassword("mixxx");
 

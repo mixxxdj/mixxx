@@ -1,0 +1,42 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A VU meter.
+  Variables:
+    group: The group for the controls.
+    side: The stereo channel to monitor: L or R
+    tooltip_meter: The tooltip id for the vu-meter.
+    tooltip_clip: The tooltip id for the clip indicator.
+-->
+<Template>
+  <WidgetGroup>
+      <ObjectName>vumeter_v</ObjectName>
+      <Layout>vertical</Layout>
+      <Children>
+          <StatusLight>
+            <ObjectName>PeakIndicator</ObjectName>
+            <TooltipId><Variable name="tooltip_clip"/></TooltipId>
+            <Size>3me,3min</Size>
+            <MaximumSize>8,8</MaximumSize>
+            <PathStatusLight scalemode="STRETCH">vumeter_clip.svg</PathStatusLight>
+            <Connection>
+                <ConfigKey><Variable name="group"/>,PeakIndicator<Variable name="side"/></ConfigKey>
+            </Connection>
+          </StatusLight>
+          <VuMeter>
+            <TooltipId><Variable name="tooltip_meter"/></TooltipId>
+            <Size>3me,9me</Size>
+            <MaximumSize>8,80</MaximumSize>
+            <PathVu scalemode="STRETCH">vumeter_v.svg</PathVu>
+            <Horizontal>false</Horizontal>
+            <PeakHoldSize>5</PeakHoldSize>
+            <PeakHoldTime>600</PeakHoldTime>
+            <PeakFallTime>100</PeakFallTime>
+            <PeakFallStep>1</PeakFallStep>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,VuMeter<Variable name="side"/></ConfigKey>
+            </Connection>
+          </VuMeter>
+    </Children>
+  </WidgetGroup>
+</Template>

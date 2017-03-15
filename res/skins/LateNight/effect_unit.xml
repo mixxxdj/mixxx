@@ -11,8 +11,8 @@
     <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>me,f</SizePolicy>
-    <MinimumSize>300,70</MinimumSize>
-    <MaximumSize>350,-1</MaximumSize>
+    <MinimumSize>300,85</MinimumSize>
+    <MaximumSize>350,85</MaximumSize>
     <Children>
       <WidgetGroup>
         <ObjectName>EffectUnitNameRow</ObjectName>

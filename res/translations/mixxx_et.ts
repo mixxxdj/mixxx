@@ -71,12 +71,12 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="11"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation type="unfinished"/>
+        <translation>Lisa auto DJ järjekorda (alla)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="15"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation type="unfinished"/>
+        <translation>Lisa auto DJ järjekorda (üles)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="19"/>
@@ -91,7 +91,7 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="93"/>
         <source>An unknown error occurred while creating playlist: </source>
-        <translation type="unfinished"/>
+        <translation>Teadmatu viga tekkis esitusloendi tegemisel:</translation>
     </message>
 </context>
 <context>
@@ -104,18 +104,18 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="35"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation type="unfinished"/>
+        <translation>Lisa auto DJ järjekorda (alla)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="31"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="261"/>
         <source>Create New Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Loo uus esitusloend</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="39"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation type="unfinished"/>
+        <translation>Lisa auto DJ järjekorda (üles)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="43"/>
@@ -135,7 +135,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="55"/>
         <source>Duplicate</source>
-        <translation type="unfinished"/>
+        <translation>duplikaat</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="59"/>
@@ -146,12 +146,12 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="67"/>
         <source>Analyze entire Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Analüüsi terve esitusloend</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="165"/>
         <source>Enter new name for playlist:</source>
-        <translation type="unfinished"/>
+        <translation>Sisesta uus nimi esitusloendile:</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="205"/>
@@ -162,7 +162,7 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="206"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="262"/>
         <source>Enter name for new playlist:</source>
-        <translation type="unfinished"/>
+        <translation>Sisesta uue esitusloendi nimi:</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="63"/>
@@ -193,7 +193,7 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="224"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="278"/>
         <source>A playlist cannot have a blank name.</source>
-        <translation type="unfinished"/>
+        <translation>Esitusloend ei saa olla nimeta.</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="209"/>
@@ -214,7 +214,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="291"/>
         <source>An unknown error occurred while creating playlist: </source>
-        <translation type="unfinished"/>
+        <translation>Teadmatu viga tekkis esitusloendi tegemisel:</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="335"/>
@@ -224,7 +224,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="394"/>
         <source>M3U Playlist (*.m3u)</source>
-        <translation type="unfinished"/>
+        <translation>M3U Esitusloend (*.m3u)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="399"/>
@@ -257,7 +257,7 @@
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="69"/>
         <source>Album Artist</source>
-        <translation type="unfinished"/>
+        <translation>Albumi esitaja</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="71"/>
@@ -272,7 +272,7 @@
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="75"/>
         <source>Grouping</source>
-        <translation type="unfinished"/>
+        <translation>Rühmitamine</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="77"/>
@@ -342,7 +342,7 @@
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="103"/>
         <source>BPM Lock</source>
-        <translation type="unfinished"/>
+        <translation>BPM Lukk</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="105"/>
@@ -352,7 +352,7 @@
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="107"/>
         <source>Cover Art</source>
-        <translation type="unfinished"/>
+        <translation>Katte kunst</translation>
     </message>
 </context>
 <context>
@@ -368,17 +368,17 @@
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="38"/>
         <source>Add to Quick Links</source>
-        <translation type="unfinished"/>
+        <translation>Lisa otselinkidesse</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="41"/>
         <source>Remove from Quick Links</source>
-        <translation type="unfinished"/>
+        <translation>Eemalda otselinkidest</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="44"/>
         <source>Add to Library</source>
-        <translation type="unfinished"/>
+        <translation>Lisa kogumikku</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="59"/>
@@ -409,12 +409,12 @@
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="155"/>
         <source>Scan</source>
-        <translation type="unfinished"/>
+        <translation>Skänni</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="346"/>
         <source>Browse lets you navigate, view, and load tracks from folders on your hard disk and external devices.</source>
-        <translation type="unfinished"/>
+        <translation>Sirvi laseb sul navigeerida, vaadata ja laadida lugusi failidest mis on Sinu arvuti mälus või välistel seadmetel</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="124"/>
@@ -508,22 +508,22 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="44"/>
         <source>Album Artist</source>
-        <translation type="unfinished"/>
+        <translation>Albumi esitaja</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="45"/>
         <source>Grouping</source>
-        <translation type="unfinished"/>
+        <translation>Rühmitamine</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="46"/>
         <source>File Modified</source>
-        <translation type="unfinished"/>
+        <translation>Kaust muudetud</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="47"/>
         <source>File Created</source>
-        <translation type="unfinished"/>
+        <translation>Kaust loodud</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="106"/>
@@ -585,7 +585,7 @@
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="6"/>
         <source>Group</source>
-        <translation type="unfinished"/>
+        <translation>Grupp</translation>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="7"/>
@@ -1856,7 +1856,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="362"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation type="unfinished"/>
+        <translation>Lisa auto DJ järjekorda (alla)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="363"/>
@@ -1866,7 +1866,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="366"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation type="unfinished"/>
+        <translation>Lisa auto DJ järjekorda (üles)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="367"/>
@@ -2578,7 +2578,7 @@
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="59"/>
         <source>Duplicate</source>
-        <translation type="unfinished"/>
+        <translation>duplikaat</translation>
     </message>
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="63"/>
@@ -3563,46 +3563,36 @@ Apply settings and continue?</source>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="91"/>
-        <source>Mixxx uses &quot;presets&quot; to connect messages from your controller to controls in Mixxx. If you do not see a preset for your controller, you can download one online from the Mixxx Forums or Mixxx Wiki. After downloading a preset, place the XML (.xml) and Javascript (.js) file(s) in one of these preset folders:</source>
+        <source>Mixxx uses &quot;presets&quot; to connect messages from your controller to controls in Mixxx. If you do not see a preset for your controller, you can download one online from the Mixxx Forums or Mixxx Wiki. After downloading a preset, place the XML (.xml) and Javascript (.js) file(s) in the &quot;User Preset Folder&quot;:</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="101"/>
-        <source>Open Local Preset Folder</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="108"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="107"/>
         <source>Open User Preset Folder</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="115"/>
-        <source>Open System Preset Folder</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="125"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="117"/>
         <source>Resources</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="131"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="123"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt;Mixxx Wiki: Hardware Compatibility&lt;/a&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="141"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="133"/>
         <source>&lt;a href=&quot;http://www.mixxx.org/forums/viewforum.php?f=7&quot;&gt;Mixxx Controller Forums&lt;/a&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="151"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="143"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;MIDI Preset File Format&lt;/a&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="161"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="153"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_scripting&quot;&gt;MIDI Scripting with Javascript&lt;/a&gt;</source>
         <translation type="unfinished"/>
     </message>
@@ -4374,7 +4364,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/dlgpreflibrary.cpp" line="100"/>
         <source>Scan</source>
-        <translation type="unfinished"/>
+        <translation>Skänni</translation>
     </message>
     <message>
         <location filename="../../src/dlgpreflibrary.cpp" line="195"/>
@@ -6074,7 +6064,7 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/dlgtrackinfo.ui" line="698"/>
         <source>3/4 BPM</source>
-        <translation type="unfinished"/>
+        <translation>3/4 BPM</translation>
     </message>
     <message>
         <location filename="../../src/dlgtrackinfo.ui" line="711"/>
@@ -6094,12 +6084,12 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/dlgtrackinfo.ui" line="746"/>
         <source>Double BPM</source>
-        <translation type="unfinished"/>
+        <translation>Topelt BPM</translation>
     </message>
     <message>
         <location filename="../../src/dlgtrackinfo.ui" line="714"/>
         <source>Halve BPM</source>
-        <translation type="unfinished"/>
+        <translation>Pool BPM</translation>
     </message>
     <message>
         <location filename="../../src/dlgtrackinfo.ui" line="843"/>
@@ -6151,7 +6141,7 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/dlgtrackinfo.ui" line="769"/>
         <source>2/3 BPM</source>
-        <translation type="unfinished"/>
+        <translation>2/3 BPM</translation>
     </message>
     <message>
         <location filename="../../src/dlgtrackinfo.ui" line="790"/>
@@ -7574,64 +7564,64 @@ Please select an input device in the sound hardware preferences first.</source>
     <message>
         <location filename="../../src/library/playlistfeature.cpp" line="221"/>
         <source>Create New Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Loo uus esitusloend</translation>
     </message>
 </context>
 <context>
     <name>QMessageBox</name>
     <message>
-        <location filename="../../src/upgrade.cpp" line="394"/>
+        <location filename="../../src/upgrade.cpp" line="429"/>
         <source>Upgrading Mixxx</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="395"/>
+        <location filename="../../src/upgrade.cpp" line="430"/>
         <source>Mixxx now supports displaying cover art.
 Do you want to scan your library for cover files now?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="398"/>
+        <location filename="../../src/upgrade.cpp" line="433"/>
         <source>Scan</source>
-        <translation type="unfinished"/>
+        <translation>Skänni</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="399"/>
+        <location filename="../../src/upgrade.cpp" line="434"/>
         <source>Later</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="408"/>
+        <location filename="../../src/upgrade.cpp" line="443"/>
         <source>Upgrading Mixxx from v1.9.x/1.10.x.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="410"/>
+        <location filename="../../src/upgrade.cpp" line="445"/>
         <source>Mixxx has a new and improved beat detector.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="411"/>
+        <location filename="../../src/upgrade.cpp" line="446"/>
         <source>When you load tracks, Mixxx can re-analyze them and generate new, more accurate beatgrids. This will make automatic beatsync and looping more reliable.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="415"/>
+        <location filename="../../src/upgrade.cpp" line="450"/>
         <source>This does not affect saved cues, hotcues, playlists, or crates.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="417"/>
+        <location filename="../../src/upgrade.cpp" line="452"/>
         <source>If you do not want Mixxx to re-analyze your tracks, choose &quot;Keep Current Beatgrids&quot;. You can change this setting at any time from the &quot;Beat Detection&quot; section of the Preferences.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="421"/>
+        <location filename="../../src/upgrade.cpp" line="456"/>
         <source>Keep Current Beatgrids</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="422"/>
+        <location filename="../../src/upgrade.cpp" line="457"/>
         <source>Generate New Beatgrids</source>
         <translation type="unfinished"/>
     </message>
@@ -7853,58 +7843,68 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation type="unfinished"/>
     </message>
     <message>
+        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="25"/>
+        <source>Adjusts the bit depth of the samples.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="../../src/effects/native/bitcrushereffect.cpp" line="39"/>
         <source>Downsampling</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="19"/>
+        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="40"/>
+        <source>Adjusts the sample rate, to which the signal is downsampled.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="20"/>
         <source>Echo</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="22"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="23"/>
         <source>Simple Echo with pingpong</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="26"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="27"/>
         <source>Send</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="28"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="29"/>
         <source>How much of the signal to send into the delay buffer</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="38"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="39"/>
         <location filename="../../src/effects/native/flangereffect.cpp" line="41"/>
         <source>Delay</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="39"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="40"/>
         <source>Delay time (seconds)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="50"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="51"/>
         <source>Feedback</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="52"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="53"/>
         <source>Amount the echo fades each time it loops</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="62"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="63"/>
         <source>PingPong</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="64"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="65"/>
         <source>As the ping-pong amount increases, increasing amounts of the echoed signal is bounced between the left and right speakers.</source>
         <translation type="unfinished"/>
     </message>
@@ -7968,8 +7968,23 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation type="unfinished"/>
     </message>
     <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="31"/>
+        <source>Controls the intensity of the effect.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="42"/>
+        <source>Sets the value for the delay length.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="../../src/effects/native/flangereffect.cpp" line="52"/>
         <source>Period</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="53"/>
+        <source>Controls the speed of the effect.</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -8019,6 +8034,7 @@ To abort this action, press Cancel on the file dialog.</source>
     <message>
         <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="25"/>
         <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="25"/>
+        <location filename="../../src/effects/native/graphiceqeffect.cpp" line="30"/>
         <location filename="../../src/effects/native/linkwitzriley8eqeffect.cpp" line="28"/>
         <location filename="../../src/test/super_link_test.cpp" line="44"/>
         <source>Gain for Low Filter</source>
@@ -8076,6 +8092,7 @@ To abort this action, press Cancel on the file dialog.</source>
     <message>
         <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="71"/>
         <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="71"/>
+        <location filename="../../src/effects/native/graphiceqeffect.cpp" line="63"/>
         <location filename="../../src/effects/native/linkwitzriley8eqeffect.cpp" line="74"/>
         <source>Gain for High Filter</source>
         <translation type="unfinished"/>
@@ -8102,6 +8119,11 @@ To abort this action, press Cancel on the file dialog.</source>
     <message>
         <location filename="../../src/effects/native/graphiceqeffect.cpp" line="18"/>
         <source>An 8 band Graphic EQ based on Biquad Filters</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/graphiceqeffect.cpp" line="50"/>
+        <source>Gain for Band Filter %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -8710,7 +8732,7 @@ To abort this action, press Cancel on the file dialog.</source>
         <location filename="../../src/skin/tooltips.cpp" line="172"/>
         <location filename="../../src/skin/tooltips.cpp" line="582"/>
         <source>Cover Art</source>
-        <translation type="unfinished"/>
+        <translation>Katte kunst</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="173"/>
@@ -10084,7 +10106,7 @@ Click OK to exit.</source>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="86"/>
         <source>Cover Art</source>
-        <translation type="unfinished"/>
+        <translation>Katte kunst</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="116"/>
@@ -10125,12 +10147,12 @@ Click OK to exit.</source>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="401"/>
         <source>Add to Auto-DJ Queue (bottom)</source>
-        <translation type="unfinished"/>
+        <translation>Lisa auto DJ järjekorda (alla)</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="404"/>
         <source>Add to Auto-DJ Queue (top)</source>
-        <translation type="unfinished"/>
+        <translation>Lisa auto DJ järjekorda (üles)</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="408"/>
@@ -10146,7 +10168,7 @@ Click OK to exit.</source>
         <location filename="../../src/widget/wtracktableview.cpp" line="762"/>
         <location filename="../../src/widget/wtracktableview.cpp" line="1367"/>
         <source>Create New Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Loo uus esitusloend</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="792"/>
@@ -10157,7 +10179,7 @@ Click OK to exit.</source>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1368"/>
         <source>Enter name for new playlist:</source>
-        <translation type="unfinished"/>
+        <translation>Sisesta uue esitusloendi nimi</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1370"/>
@@ -10179,12 +10201,12 @@ Click OK to exit.</source>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1381"/>
         <source>A playlist cannot have a blank name.</source>
-        <translation type="unfinished"/>
+        <translation>Esitusloend ei saa olla nimeta.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1390"/>
         <source>An unknown error occurred while creating playlist: </source>
-        <translation type="unfinished"/>
+        <translation>Teadmatu viga tekkis esitusloendi tegemisel</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1429"/>
@@ -10226,37 +10248,37 @@ Click OK to exit.</source>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="423"/>
         <source>Reset Play Count</source>
-        <translation type="unfinished"/>
+        <translation>Lähtesta esituskordade loend.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="427"/>
         <source>Lock BPM</source>
-        <translation type="unfinished"/>
+        <translation>Lukusta BPM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="428"/>
         <source>Unlock BPM</source>
-        <translation type="unfinished"/>
+        <translation>Eemalda BMP lukk</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="435"/>
         <source>Double BPM</source>
-        <translation type="unfinished"/>
+        <translation>Topelt BPM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="436"/>
         <source>Halve BPM</source>
-        <translation type="unfinished"/>
+        <translation>Pool BPM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="437"/>
         <source>2/3 BPM</source>
-        <translation type="unfinished"/>
+        <translation>2/3 BPM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="438"/>
         <source>3/4 BPM</source>
-        <translation type="unfinished"/>
+        <translation>3/4 BPM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="454"/>
@@ -10279,7 +10301,7 @@ Click OK to exit.</source>
     <message>
         <location filename="../../src/widget/wtracktableviewheader.cpp" line="102"/>
         <source>Show or hide columns.</source>
-        <translation type="unfinished"/>
+        <translation>Näita või peida tulpasi.</translation>
     </message>
 </context>
 <context>
@@ -10287,12 +10309,12 @@ Click OK to exit.</source>
     <message>
         <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="610"/>
         <source>(GLSL)</source>
-        <translation type="unfinished"/>
+        <translation>(GLSL)</translation>
     </message>
     <message>
         <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="612"/>
         <source>(GL)</source>
-        <translation type="unfinished"/>
+        <translation>(GL)</translation>
     </message>
 </context>
 </TS>

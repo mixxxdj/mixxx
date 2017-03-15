@@ -23,6 +23,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     m_place = true;
     showPlaceholder();
 
+    setFocusPolicy(Qt::ClickFocus);
     QShortcut *setFocusShortcut = new QShortcut(
         QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
     connect(setFocusShortcut, SIGNAL(activated()),

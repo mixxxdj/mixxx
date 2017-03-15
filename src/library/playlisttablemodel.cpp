@@ -157,8 +157,8 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
         // or no move at all
         return;
     } else if (newPosition == 0) {
-        //Dragged out of bounds, which is past the end of the rows...
-        newPosition = rowCount();
+        // Dragged out of bounds, which is past the end of the rows...
+        newPosition = m_playlistDao.getMaxPosition(m_iPlaylistId);
     }
 
     m_playlistDao.moveTrack(m_iPlaylistId, oldPosition, newPosition);

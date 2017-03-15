@@ -63,33 +63,32 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
 *   since we moved them in 1.7.0. This code takes care of moving them.
 */
 
-    QString oldLocation = QDir::homePath().append("/%1");
+    QDir oldLocation = QDir(QDir::homePath());
 #ifdef __WINDOWS__
-    QFileInfo* pre170Config = new QFileInfo(oldLocation.arg("mixxx.cfg"));
+    QFileInfo* pre170Config = new QFileInfo(oldLocation.filePath("mixxx.cfg"));
 #else
-    QFileInfo* pre170Config = new QFileInfo(oldLocation.arg(".mixxx.cfg"));
+    QFileInfo* pre170Config = new QFileInfo(oldLocation.filePath(".mixxx.cfg"));
 #endif
 
     if (pre170Config->exists()) {
 
         // Move the files to their new location
-        QString newLocation = settingsPath;
+        QDir newLocation = QDir(settingsPath);
 
-        if (!QDir(newLocation).exists()) {
-            qDebug() << "Creating new settings directory" << newLocation;
-            QDir().mkpath(newLocation);
+        if (!newLocation.exists()) {
+            qDebug() << "Creating new settings directory" << newLocation.absolutePath();
+            newLocation.mkpath(".");
         }
 
-        newLocation.append("%1");
         QString errorText = "Error moving your %1 file %2 to the new location %3: \n";
 
 #ifdef __WINDOWS__
-        QString oldFilePath = oldLocation.arg("mixxxtrack.xml");
+        QString oldFilePath = oldLocation.filePath("mixxxtrack.xml");
 #else
-        QString oldFilePath = oldLocation.arg(".mixxxtrack.xml");
+        QString oldFilePath = oldLocation.filePath(".mixxxtrack.xml");
 #endif
 
-        QString newFilePath = newLocation.arg("mixxxtrack.xml");
+        QString newFilePath = newLocation.filePath("mixxxtrack.xml");
         QFile* oldFile = new QFile(oldFilePath);
         if (oldFile->exists()) {
             if (oldFile->copy(newFilePath)) {
@@ -104,11 +103,11 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         delete oldFile;
 
 #ifdef __WINDOWS__
-        oldFilePath = oldLocation.arg("mixxxbpmschemes.xml");
+        oldFilePath = oldLocation.filePath("mixxxbpmschemes.xml");
 #else
-        oldFilePath = oldLocation.arg(".mixxxbpmscheme.xml");
+        oldFilePath = oldLocation.filePath(".mixxxbpmscheme.xml");
 #endif
-        newFilePath = newLocation.arg("mixxxbpmscheme.xml");
+        newFilePath = newLocation.filePath("mixxxbpmscheme.xml");
         oldFile = new QFile(oldFilePath);
         if (oldFile->exists()) {
             if (oldFile->copy(newFilePath))
@@ -120,11 +119,11 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         }
         delete oldFile;
 #ifdef __WINDOWS__
-        oldFilePath = oldLocation.arg("MixxxMIDIBindings.xml");
+        oldFilePath = oldLocation.filePath("MixxxMIDIBindings.xml");
 #else
-        oldFilePath = oldLocation.arg(".MixxxMIDIBindings.xml");
+        oldFilePath = oldLocation.filePath(".MixxxMIDIBindings.xml");
 #endif
-        newFilePath = newLocation.arg("MixxxMIDIBindings.xml");
+        newFilePath = newLocation.filePath("MixxxMIDIBindings.xml");
         oldFile = new QFile(oldFilePath);
         if (oldFile->exists()) {
             qWarning() << "The MIDI mapping file format has changed in this version of Mixxx. You will need to reconfigure your MIDI controller. See the Wiki for full details on the new format.";
@@ -137,15 +136,18 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         }
         // Tidy up
         delete oldFile;
-
-        QFile::remove(oldLocation.arg(".MixxxMIDIDevice.xml")); // Obsolete file, so just delete it
+#ifdef __WINDOWS__
+        QFile::remove(oldLocation.filePath("MixxxMIDIDevice.xml")); // Obsolete file, so just delete it
+#else
+        QFile::remove(oldLocation.filePath(".MixxxMIDIDevice.xml")); // Obsolete file, so just delete it
+#endif
 
 #ifdef __WINDOWS__
-        oldFilePath = oldLocation.arg("mixxx.cfg");
+        oldFilePath = oldLocation.filePath("mixxx.cfg");
 #else
-        oldFilePath = oldLocation.arg(".mixxx.cfg");
+        oldFilePath = oldLocation.filePath(".mixxx.cfg");
 #endif
-        newFilePath = newLocation.arg(SETTINGS_FILE);
+        newFilePath = newLocation.filePath(SETTINGS_FILE);
         oldFile = new QFile(oldFilePath);
         if (oldFile->copy(newFilePath))
             oldFile->remove();
@@ -170,7 +172,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
 ****************************************************************************/
 
     // Read the config file from home directory
-    ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(settingsPath + "/" + SETTINGS_FILE);
+    ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(QDir(settingsPath).filePath(SETTINGS_FILE));
 
     QString configVersion = config->getValueString(ConfigKey("[Config]","Version"));
 
@@ -183,22 +185,26 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         if (oldConfigFile->exists() && ! CmdlineArgs::Instance().getSettingsPathSet()) {
             qDebug() << "Found pre-1.9.0 config for OS X";
             // Note: We changed SETTINGS_PATH in 1.9.0 final on OS X so it must be hardcoded to ".mixxx" here for legacy.
-            config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(".mixxx/mixxx.cfg"));
+            config = new ConfigObject<ConfigValue>(QDir::homePath().append("/.mixxx/mixxx.cfg"));
             // Just to be sure all files like logs and soundconfig go with mixxx.cfg
-            CmdlineArgs::Instance().setSettingsPath(QDir::homePath().append("/").append(".mixxx/"));
+            // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
+            // to QDir::filePath elsewhere in the code. This is candidate for removal.
+            CmdlineArgs::Instance().setSettingsPath(QDir::homePath().append("/.mixxx/"));
             configVersion = config->getValueString(ConfigKey("[Config]","Version"));
         }
         else {
 #elif __WINDOWS__
         qDebug() << "Config version is empty, trying to read pre-1.12.0 config";
         // Try to read the config from the pre-1.12.0 final directory on Windows (we moved it in 1.12.0 final)
-        QScopedPointer<QFile> oldConfigFile(new QFile(QDir::homePath().append("/").append("Local Settings/Application Data/Mixxx/").append("mixxx.cfg")));
+        QScopedPointer<QFile> oldConfigFile(new QFile(QDir::homePath().append("/Local Settings/Application Data/Mixxx/mixxx.cfg")));
         if (oldConfigFile->exists() && ! CmdlineArgs::Instance().getSettingsPathSet()) {
             qDebug() << "Found pre-1.12.0 config for Windows";
             // Note: We changed SETTINGS_PATH in 1.12.0 final on Windows so it must be hardcoded to "Local Settings/Application Data/Mixxx/" here for legacy.
-            config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append("Local Settings/Application Data/Mixxx/").append("mixxx.cfg"));
+            config = new ConfigObject<ConfigValue>(QDir::homePath().append("/Local Settings/Application Data/Mixxx/mixxx.cfg"));
             // Just to be sure all files like logs and soundconfig go with mixxx.cfg
-            CmdlineArgs::Instance().setSettingsPath(QDir::homePath().append("/").append("Local Settings/Application Data/Mixxx/")); 
+            // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
+            // to QDir::filePath elsewhere in the code. This is candidate for removal.
+            CmdlineArgs::Instance().setSettingsPath(QDir::homePath().append("/Local Settings/Application Data/Mixxx/")); 
             configVersion = config->getValueString(ConfigKey("[Config]","Version"));
         }
         else {
@@ -304,7 +310,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         }
         // Reload the configuration file from the new location.
         // (We want to make sure we save to the new location...)
-        config = new ConfigObject<ConfigValue>(settingsPath + "/" + SETTINGS_FILE);
+        config = new ConfigObject<ConfigValue>(QDir(settingsPath).filePath(SETTINGS_FILE));
 #endif
         configVersion = "1.9.0";
         config->set(ConfigKey("[Config]","Version"), ConfigValue("1.9.0"));

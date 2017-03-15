@@ -1,0 +1,83 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Sampler controls row (sync, hotcue, etc.).
+  Variables:
+    group: the group to connect to
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>ControlsRow</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+      <Template src="skin:left_right_1state_button.xml">
+        <SetVariable name="TooltipId">beatsync_beatsync_tempo</SetVariable>
+        <SetVariable name="ObjectName">BeatsyncButton</SetVariable>
+        <SetVariable name="MinimumSize"><Variable name="WideButtonMinimumSize"/></SetVariable>
+        <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
+        <SetVariable name="SizePolicy"><Variable name="WideButtonSizePolicy"/></SetVariable>
+        <SetVariable name="state_0_text">Sync</SetVariable>
+        <SetVariable name="state_0_pressed"></SetVariable>
+        <SetVariable name="state_0_unpressed"></SetVariable>
+        <SetVariable name="left_connection_control"><Variable name="group"/>,beatsync</SetVariable>
+        <SetVariable name="right_connection_control"><Variable name="group"/>,beatsync_tempo</SetVariable>
+      </Template>
+
+      <WidgetGroup>
+        <ObjectName>HotcueGrid</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>max,max</SizePolicy>
+        <Children>
+          <Template src="skin:hotcue_button.xml">
+            <SetVariable name="hotcue">1</SetVariable>
+          </Template>
+          <Template src="skin:hotcue_button.xml">
+            <SetVariable name="hotcue">2</SetVariable>
+          </Template>
+          <Template src="skin:hotcue_button.xml">
+            <SetVariable name="hotcue">3</SetVariable>
+          </Template>
+          <Template src="skin:hotcue_button.xml">
+            <SetVariable name="hotcue">4</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <Template src="skin:spacer_h.xml"></Template>
+
+      <Template src="skin:left_2state_button.xml">
+        <SetVariable name="TooltipId">pfl</SetVariable>
+        <SetVariable name="ObjectName">SamplerPflButton</SetVariable>
+        <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+        <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+        <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+        <SetVariable name="state_0_text"></SetVariable>
+        <SetVariable name="state_0_pressed">icon/ic_headphones_48px.svg</SetVariable>
+        <SetVariable name="state_0_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+        <SetVariable name="state_1_text"></SetVariable>
+        <SetVariable name="state_1_pressed">icon/ic_headphones_48px.svg</SetVariable>
+        <SetVariable name="state_1_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+        <SetVariable name="left_connection_control"><Variable name="group"/>,pfl</SetVariable>
+      </Template>
+
+      <Template src="skin:knob_with_button.xml">
+        <SetVariable name="TooltipId">pregain</SetVariable>
+        <SetVariable name="group">[Sampler<Variable name="i"/>]</SetVariable>
+        <SetVariable name="control">pregain</SetVariable>
+        <SetVariable name="color">red</SetVariable>
+        <SetVariable name="button_TooltipId">mute</SetVariable>
+        <SetVariable name="button_control">mute</SetVariable>
+        <SetVariable name="label">Gain</SetVariable>
+      </Template>
+
+      <Template src="skin:vumeter_v.xml">
+        <SetVariable name="TooltipId">channel_VuMeter</SetVariable>
+        <SetVariable name="group"><Variable name="group"/></SetVariable>
+        <SetVariable name="control">VuMeter</SetVariable>
+        <SetVariable name="tooltip_meter">sampler_VuMeter</SetVariable>
+        <SetVariable name="tooltip_clip">sampler_PeakIndicator</SetVariable>
+      </Template>
+    </Children>
+  </WidgetGroup>
+</Template>

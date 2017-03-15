@@ -38,7 +38,7 @@
                       <Text>
                         <TooltipId>text</TooltipId>
                         <Style>QLabel {
-                          font: 13px/14px "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+                          font: 13px/14px "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
                           background-color: transparent;
                           font-weight:bold;
                           color: #cfb32c;
@@ -143,7 +143,7 @@
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                   <StatusLight>
-                    <TooltipId>PeakIndicator</TooltipId>
+                    <TooltipId>preview_PeakIndicator</TooltipId>
                     <PathStatusLight>btn_clipping_previewdeck_over.png</PathStatusLight>
                     <PathBack>btn_clipping_previewdeck.png</PathBack>
                     <Connection>
@@ -152,7 +152,7 @@
                   </StatusLight>
 
                   <VuMeter>
-                    <TooltipId>channel_VuMeter</TooltipId>
+                    <TooltipId>preview_VuMeter</TooltipId>
                     <PathVu>btn_volume_display_previewdeck_over.png</PathVu>
                     <PathBack>btn_volume_display_previewdeck.png</PathBack>
                     <Horizontal>false</Horizontal>

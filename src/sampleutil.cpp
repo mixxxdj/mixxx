@@ -306,26 +306,34 @@ void SampleUtil::convertFloat32ToS16(SAMPLE* pDest, const CSAMPLE* pSrc,
 }
 
 // static
-bool SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
+SampleUtil::CLIP_STATUS SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
         const CSAMPLE* pBuffer, int iNumSamples) {
     CSAMPLE fAbsL = CSAMPLE_ZERO;
     CSAMPLE fAbsR = CSAMPLE_ZERO;
-    CSAMPLE clipped = 0;
+    CSAMPLE clippedL = 0;
+    CSAMPLE clippedR = 0;
 
     // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         CSAMPLE absl = fabs(pBuffer[i * 2]);
         fAbsL += absl;
-        clipped += absl > CSAMPLE_PEAK ? 1 : 0;
+        clippedL += absl > CSAMPLE_PEAK ? 1 : 0;
         CSAMPLE absr = fabs(pBuffer[i * 2 + 1]);
         fAbsR += absr;
         // Replacing the code with a bool clipped will prevent vetorizing
-        clipped += absr > CSAMPLE_PEAK ? 1 : 0;
+        clippedR += absr > CSAMPLE_PEAK ? 1 : 0;
     }
 
     *pfAbsL = fAbsL;
     *pfAbsR = fAbsR;
-    return (clipped != 0);
+    SampleUtil::CLIP_STATUS clipping = SampleUtil::NO_CLIPPING;
+    if (clippedL > 0) {
+        clipping |= SampleUtil::CLIPPING_LEFT;
+    }
+    if (clippedR > 0) {
+        clipping |= SampleUtil::CLIPPING_RIGHT;
+    }
+    return clipping;
 }
 
 // static

@@ -21,7 +21,10 @@
         <SignalHighColor></SignalHighColor>
         <SignalMidColor></SignalMidColor>
         <SignalLowColor></SignalLowColor>
-        <SignalColor><Variable name="DeckColor"/></SignalColor>
+        <SignalRGBHighColor></SignalRGBHighColor>
+        <SignalRGBMidColor></SignalRGBMidColor>
+        <SignalRGBLowColor></SignalRGBLowColor>
+        <SignalColor><Variable name="DeckSignalColor"/></SignalColor>
         <PlayPosColor>#00FF00</PlayPosColor>
         <DefaultMark>
           <Align>bottom</Align>
@@ -56,133 +59,107 @@
         <MaximumSize>90,60</MaximumSize>
         <Children>
           <WidgetGroup>
-            <ObjectName>ObjectGridRow1</ObjectName>
+            <ObjectName>OptionGridRow1</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>p,me</SizePolicy>
             <MinimumSize>60,20</MinimumSize>
             <MaximumSize>90,30</MaximumSize>
             <Children>
-              <PushButton>
-                <TooltipId>show_spinny</TooltipId>
-                <ObjectName>ShowSpinny</ObjectName>
-                <MinimumSize>20,20</MinimumSize>
-                <MaximumSize>30,30</MaximumSize>
-                <NumberStates>2</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>S</Text>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Text>S</Text>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="control_show_spinny"/></ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-              </PushButton>
-              <PushButton>
-                <TooltipId>repeat</TooltipId>
-                <MinimumSize>20,20</MinimumSize>
-                <MaximumSize>30,30</MaximumSize>
-                <NumberStates>2</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>R</Text>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Text>R</Text>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,repeat</ConfigKey>
-                </Connection>
-              </PushButton>
-              <PushButton>
-                <TooltipId>eject</TooltipId>
-                <NumberStates>1</NumberStates>
-                <MinimumSize>20,20</MinimumSize>
-                <MaximumSize>30,30</MaximumSize>
-                <State>
-                  <Number>0</Number>
-                  <Text>⏏</Text>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,eject</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>LeftButton</ButtonState>
-                  <ConnectValueToWidget>false</ConnectValueToWidget>
-                </Connection>
-              </PushButton>
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="TooltipId">show_spinny</SetVariable>
+                <SetVariable name="ObjectName">ShowSpinnyButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_spinny_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_spinny_48px.svg</SetVariable>
+                <SetVariable name="state_1_text"></SetVariable>
+                <SetVariable name="state_1_pressed">icon/ic_spinny_48px.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">icon/ic_spinny_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="control_show_spinny"/></SetVariable>
+              </Template>
+
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="TooltipId">repeat</SetVariable>
+                <SetVariable name="ObjectName">RepeatButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_repeat_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_repeat_48px.svg</SetVariable>
+                <SetVariable name="state_1_text"></SetVariable>
+                <SetVariable name="state_1_pressed">icon/ic_repeat_48px.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">icon/ic_repeat_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,repeat</SetVariable>
+              </Template>
+
+              <Template src="skin:left_1state_button.xml">
+                <SetVariable name="TooltipId">eject</SetVariable>
+                <SetVariable name="ObjectName">EjectButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_eject_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_eject_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,eject</SetVariable>
+              </Template>
             </Children>
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>ObjectGridRow2</ObjectName>
+            <ObjectName>OptionGridRow2</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>p,me</SizePolicy>
             <MinimumSize>60,20</MinimumSize>
             <MaximumSize>90,30</MaximumSize>
             <Children>
-              <PushButton>
-                <TooltipId>beats_translate_curpos</TooltipId>
-                <MinimumSize>20,20</MinimumSize>
-                <MaximumSize>30,30</MaximumSize>
-                <NumberStates>1</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>T</Text>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beats_translate_curpos</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beats_translate_match_alignment</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>RightButton</ButtonState>
-                </Connection>
-              </PushButton>
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="TooltipId">quantize</SetVariable>
+                <SetVariable name="ObjectName">QuantizeButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_quantize_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_quantize_48px.svg</SetVariable>
+                <SetVariable name="state_1_text"></SetVariable>
+                <SetVariable name="state_1_pressed">icon/ic_quantize_48px.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">icon/ic_quantize_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,quantize</SetVariable>
+              </Template>
 
-              <PushButton>
-                <TooltipId>quantize</TooltipId>
-                <NumberStates>2</NumberStates>
-                <MinimumSize>20,20</MinimumSize>
-                <MaximumSize>30,30</MaximumSize>
-                <State>
-                  <Number>0</Number>
-                  <Text>Q</Text>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Text>Q</Text>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,quantize</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-              </PushButton>
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="TooltipId">keylock</SetVariable>
+                <SetVariable name="ObjectName">KeylockButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_key_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_key_48px.svg</SetVariable>
+                <SetVariable name="state_1_text"></SetVariable>
+                <SetVariable name="state_1_pressed">icon/ic_key_48px.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">icon/ic_key_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,keylock</SetVariable>
+              </Template>
 
-              <PushButton>
-                <TooltipId>keylock</TooltipId>
-                <NumberStates>2</NumberStates>
-                <MinimumSize>20,20</MinimumSize>
-                <MaximumSize>30,30</MaximumSize>
-                <State>
-                  <Number>0</Number>
-                  <Text>K</Text>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Text>K</Text>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,keylock</ConfigKey>
-                </Connection>
-              </PushButton>
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="TooltipId">slip_mode</SetVariable>
+                <SetVariable name="ObjectName">SlipModeButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_slip_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_slip_48px.svg</SetVariable>
+                <SetVariable name="state_1_text"></SetVariable>
+                <SetVariable name="state_1_pressed">icon/ic_slip_48px.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">icon/ic_slip_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,slip_enabled</SetVariable>
+              </Template>
             </Children>
           </WidgetGroup>
         </Children>

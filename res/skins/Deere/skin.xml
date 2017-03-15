@@ -2,14 +2,14 @@
 <skin>
   <manifest>
     <title>Deere</title>
-    <author>rryan</author>
+    <author>RJ Ryan, S.Brandt</author>
     <version>1.12.0.01</version>
-    <description>A test skin.</description>
+    <description>A flexible skin.</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
       <attribute config_key="[Master],num_decks">4</attribute>
-      <attribute config_key="[Master],num_samplers">8</attribute>
+      <attribute config_key="[Master],num_samplers">16</attribute>
       <attribute config_key="[Master],num_preview_decks">1</attribute>
       <!--Optionally, make elements visible on skin load-->
       <attribute persist="true" config_key="[Spinny1],show_spinny">1</attribute>
@@ -30,7 +30,7 @@
 
   <MinimumSize>800,-1</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
-  <Layout>vertical</Layout>
+  <Layout>horizontal</Layout>
 
   <Children>
     <SetVariable name="SmallSquareButtonMinimumSize">15,15</SetVariable>
@@ -49,11 +49,34 @@
     <SetVariable name="SmallVerticalStretchButtonMaximumSize">15,-1</SetVariable>
     <SetVariable name="SmallVerticalStretchButtonSizePolicy">f,me</SetVariable>
 
-    <Template src="skin:tool_bar.xml"/>
-    <Template src="skin:main_decks.xml"/>
-    <Template src="skin:sample_decks.xml"/>
-    <Template src="skin:effect_rack.xml"/>
-    <Template src="skin:microphone_rack.xml"/>
-    <Template src="skin:library.xml"/>
+    <SetVariable name="SquareButtonMinimumSize">20,20</SetVariable>
+    <SetVariable name="SquareButtonMaximumSize">20,20</SetVariable>
+    <SetVariable name="SquareButtonSizePolicy">f,f</SetVariable>
+
+    <SetVariable name="WideButtonMinimumSize">40,20</SetVariable>
+    <SetVariable name="WideButtonMaximumSize">40,20</SetVariable>
+    <SetVariable name="WideButtonSizePolicy">f,f</SetVariable>
+
+    <SetVariable name="HorizontalStretchButtonMinimumSize">-1,20</SetVariable>
+    <SetVariable name="HorizontalStretchButtonMaximumSize">-1,20</SetVariable>
+    <SetVariable name="HorizontalStretchButtonSizePolicy">me,f</SetVariable>
+
+    <SetVariable name="VerticalStretchButtonMinimumSize">20,-1</SetVariable>
+    <SetVariable name="VerticalStretchButtonMaximumSize">20,-1</SetVariable>
+    <SetVariable name="VerticalStretchButtonSizePolicy">f,me</SetVariable>
+
+    <WidgetGroup>
+      <SizePolicy>me,me</SizePolicy>
+      <Layout>vertical</Layout>
+      <Children>
+        <Template src="skin:tool_bar.xml"/>
+        <Template src="skin:main_decks.xml"/>
+        <Template src="skin:sample_decks.xml"/>
+        <Template src="skin:effect_rack.xml"/>
+        <Template src="skin:microphone_rack.xml"/>
+        <Template src="skin:library.xml"/>
+      </Children>
+    </WidgetGroup>
+    <Template src="skin:skin_settings.xml"/>
   </Children>
 </skin>

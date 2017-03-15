@@ -4,10 +4,12 @@
 #ifndef SAMPLEUTIL_H
 #define SAMPLEUTIL_H
 
-#include "util/types.h"
-
 #include <algorithm>
 #include <cstring> // memset
+
+#include <QFlags>
+
+#include "util/types.h"
 
 // MSVC does this
 // __declspec(align(16))
@@ -43,6 +45,15 @@
 // A group of utilities for working with samples.
 class SampleUtil {
   public:
+    // If more audio channels are added in the future, this can be used
+    // as bitflags, e.g CLIPPING_CH3 = 4
+    enum CLIP_FLAG {
+        NO_CLIPPING = 0,
+        CLIPPING_LEFT = 1,
+        CLIPPING_RIGHT = 2,
+    };
+    Q_DECLARE_FLAGS(CLIP_STATUS, CLIP_FLAG);
+
     // Allocated a buffer of CSAMPLE's with length size. Ensures that the buffer
     // is 16-byte aligned for SSE enhancement.
     static CSAMPLE* alloc(int size);
@@ -171,8 +182,8 @@ class SampleUtil {
     // For each pair of samples in pBuffer (l,r) -- stores the sum of the
     // absolute values of l in pfAbsL, and the sum of the absolute values of r
     // in pfAbsR.
-    // returns true in case of clipping > +-1
-    static bool sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
+    // The return value tells whether there is clipping in pBuffer or not.
+    static CLIP_STATUS sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
             const CSAMPLE* pBuffer, int iNumSamples);
 
     // Copies every sample in pSrc to pDest, limiting the values in pDest
@@ -247,5 +258,7 @@ class SampleUtil {
     // etc.)
 #include "sampleutil_autogen.h"
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(SampleUtil::CLIP_STATUS);
 
 #endif /* SAMPLEUTIL_H */

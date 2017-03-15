@@ -69,7 +69,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
         : m_qMutex(QMutex::Recursive),
           m_analyserProgress(-1) {
     QString filename = XmlParse::selectNodeQString(nodeHeader, "Filename");
-    QString location = XmlParse::selectNodeQString(nodeHeader, "Filepath") + "/" +  filename;
+    QString location = QDir(XmlParse::selectNodeQString(nodeHeader, "Filepath")).filePath(filename);
     m_fileInfo = QFileInfo(location);
     m_pSecurityToken = Sandbox::openSecurityToken(m_fileInfo, true);
 
@@ -832,7 +832,8 @@ void TrackInfoObject::setWaveformSummary(ConstWaveformPointer pWaveform) {
 
 void TrackInfoObject::setAnalyserProgress(int progress) {
     // progress in 0 .. 1000. QAtomicInt so no need for lock.
-    if (progress != load_atomic(m_analyserProgress)) {
+	int oldProgress = m_analyserProgress.fetchAndStoreAcquire(progress);
+    if (progress != oldProgress) {
         m_analyserProgress = progress;
         emit(analyserProgress(progress));
     }

@@ -3576,46 +3576,36 @@ Aplicar as configurações e continuar?</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="91"/>
-        <source>Mixxx uses &quot;presets&quot; to connect messages from your controller to controls in Mixxx. If you do not see a preset for your controller, you can download one online from the Mixxx Forums or Mixxx Wiki. After downloading a preset, place the XML (.xml) and Javascript (.js) file(s) in one of these preset folders:</source>
-        <translation>O Mixxx usa &quot;prédefinições&quot; para conectar mensagens do seu controlador com os controles do Mixxx. Se você não consegue ver uma prédefinição para o seu controlador, você pode baixar uma online no Fórum do Mixxx ou na Wiki do Mixxx. Depois de baixar uma prédefinição, coloque o(s) arquivo(s) XML (.xml) e Javascript (.js) em um desses diretórios de prédefinições:</translation>
+        <source>Mixxx uses &quot;presets&quot; to connect messages from your controller to controls in Mixxx. If you do not see a preset for your controller, you can download one online from the Mixxx Forums or Mixxx Wiki. After downloading a preset, place the XML (.xml) and Javascript (.js) file(s) in the &quot;User Preset Folder&quot;:</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="101"/>
-        <source>Open Local Preset Folder</source>
-        <translation>Abrir Diretório de Prédefinições Local</translation>
-    </message>
-    <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="108"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="107"/>
         <source>Open User Preset Folder</source>
         <translation>Abrir Diretório de Prédefnições do Usuário</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="115"/>
-        <source>Open System Preset Folder</source>
-        <translation>Abrir Diretório de Prédefinições do Sistema</translation>
-    </message>
-    <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="125"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="117"/>
         <source>Resources</source>
         <translation>Recursos</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="131"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="123"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt;Mixxx Wiki: Hardware Compatibility&lt;/a&gt;</source>
         <translation>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt;Wiki do Mixxx: Compatibilidade de Hardware, em inglês&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="141"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="133"/>
         <source>&lt;a href=&quot;http://www.mixxx.org/forums/viewforum.php?f=7&quot;&gt;Mixxx Controller Forums&lt;/a&gt;</source>
         <translation>&lt;a href=&quot;http://www.mixxx.org/forums/viewforum.php?f=7&quot;&gt;Fórum de Controladores do Mixxx, em inglês&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="151"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="143"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;MIDI Preset File Format&lt;/a&gt;</source>
         <translation>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;Formato do Arquivo de Prédefinições MIDI, em inglês&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="161"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="153"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_scripting&quot;&gt;MIDI Scripting with Javascript&lt;/a&gt;</source>
         <translation>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_scripting&quot;&gt;Programação MIDI com Javascript, em inglês&lt;/a&gt;</translation>
     </message>
@@ -3859,7 +3849,19 @@ Denon mode:
 Numark mode:
 - Same as Denon mode, but without a flashing play button
 </source>
-        <translation type="unfinished"/>
+        <translation>Modo Mixxx:
+- Botão cue enquanto pausada no ponto cue = visualiza
+- Botão cue enquanto pausada fora do ponto cue = define ponto cue
+- Botão cue enquanto tocando = pausa no ponto cue
+Modo Pioneer:
+- Igual ao modo Mixxx mas o botão tocar pisca
+Modo Denon:
+- Botão cue no ponto cue = visualizar
+- Botão cue fora do ponto cue = pausa no ponto cue
+- Tocar = define o ponto cue
+Modo Numark:
+- Igual ao modo Denon mas o botão tocar pisca
+</translation>
     </message>
     <message>
         <location filename="../../src/dlgprefcontrolsdlg.ui" line="633"/>
@@ -3944,7 +3946,7 @@ Numark mode:
     <message>
         <location filename="../../src/dlgprefcontrolsdlg.ui" line="339"/>
         <source>Reset speed and pitch</source>
-        <translation type="unfinished"/>
+        <translation>Redefinir velocidade e pitch</translation>
     </message>
     <message>
         <location filename="../../src/dlgprefcontrolsdlg.ui" line="500"/>
@@ -7078,12 +7080,12 @@ OpenGL.</translation>
     <message>
         <location filename="../../src/mixxx.cpp" line="1234"/>
         <source>&amp;Keyboard Shortcuts</source>
-        <translation type="unfinished"/>
+        <translation>Atalhos de &amp;Teclado</translation>
     </message>
     <message>
         <location filename="../../src/mixxx.cpp" line="1235"/>
         <source>Speed up your workflow with keyboard shortcuts.</source>
-        <translation type="unfinished"/>
+        <translation>Acelere seu fluxo de trabalho com os atalhos de teclado.</translation>
     </message>
     <message>
         <location filename="../../src/mixxx.cpp" line="1241"/>
@@ -7603,59 +7605,59 @@ Por favor, selecione um dispositivo de entrada nas preferências do hardware de 
 <context>
     <name>QMessageBox</name>
     <message>
-        <location filename="../../src/upgrade.cpp" line="394"/>
+        <location filename="../../src/upgrade.cpp" line="429"/>
         <source>Upgrading Mixxx</source>
         <translation>Atualizando o Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="395"/>
+        <location filename="../../src/upgrade.cpp" line="430"/>
         <source>Mixxx now supports displaying cover art.
 Do you want to scan your library for cover files now?</source>
         <translation>O Mixxx agora suporta mostrar a arte da capa.
 Você quer examinar a sua biblioteca procurando por arquivos de capa agora?</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="398"/>
+        <location filename="../../src/upgrade.cpp" line="433"/>
         <source>Scan</source>
         <translation>Examinar</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="399"/>
+        <location filename="../../src/upgrade.cpp" line="434"/>
         <source>Later</source>
         <translation>Depois</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="408"/>
+        <location filename="../../src/upgrade.cpp" line="443"/>
         <source>Upgrading Mixxx from v1.9.x/1.10.x.</source>
         <translation>Atualizando o Mixxx a partir de v1.9.x/1.10.x</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="410"/>
+        <location filename="../../src/upgrade.cpp" line="445"/>
         <source>Mixxx has a new and improved beat detector.</source>
         <translation>O Mixxx tem um novo e melhorado detector de batidas.</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="411"/>
+        <location filename="../../src/upgrade.cpp" line="446"/>
         <source>When you load tracks, Mixxx can re-analyze them and generate new, more accurate beatgrids. This will make automatic beatsync and looping more reliable.</source>
         <translation>Quando você carrega músicas, o Mixxx pode as re-analisar e gerar novas, mais precisas, grades de batidas. Isto vai tornar a sincronização automática e loops mais confiáveis.</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="415"/>
+        <location filename="../../src/upgrade.cpp" line="450"/>
         <source>This does not affect saved cues, hotcues, playlists, or crates.</source>
         <translation>Isto não afeta os pontos cue salvos, hotcues, listas de reprodução ou caixas.</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="417"/>
+        <location filename="../../src/upgrade.cpp" line="452"/>
         <source>If you do not want Mixxx to re-analyze your tracks, choose &quot;Keep Current Beatgrids&quot;. You can change this setting at any time from the &quot;Beat Detection&quot; section of the Preferences.</source>
         <translation>Se você não quiser que o Mixxx re-analise suas músicas, selecione &quot;Manter as Grades de Batidas Atuais&quot;. Você pode modificar esta configuração a qualquer momento na seção &quot;Detecção de de Batidas&quot; das preferências.</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="421"/>
+        <location filename="../../src/upgrade.cpp" line="456"/>
         <source>Keep Current Beatgrids</source>
         <translation>Manter as Grades de Batidas Atuais</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="422"/>
+        <location filename="../../src/upgrade.cpp" line="457"/>
         <source>Generate New Beatgrids</source>
         <translation>Gerar Novas Grades de Batidas</translation>
     </message>
@@ -7883,58 +7885,68 @@ Para abortar esta ação, pressione Cancelar no diálogo de arquivos.</translati
         <translation>Profundidade do Bit</translation>
     </message>
     <message>
+        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="25"/>
+        <source>Adjusts the bit depth of the samples.</source>
+        <translation>Ajusta a profundidade do bit das amostras.</translation>
+    </message>
+    <message>
         <location filename="../../src/effects/native/bitcrushereffect.cpp" line="39"/>
         <source>Downsampling</source>
         <translation>Decimação</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="19"/>
+        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="40"/>
+        <source>Adjusts the sample rate, to which the signal is downsampled.</source>
+        <translation>Ajusta a taxa de amostragem à qual o sinal é decimado</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="20"/>
         <source>Echo</source>
         <translation>Eco</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="22"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="23"/>
         <source>Simple Echo with pingpong</source>
         <translation>Eco Simples com Ping-Pong</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="26"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="27"/>
         <source>Send</source>
         <translation>Envio</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="28"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="29"/>
         <source>How much of the signal to send into the delay buffer</source>
         <translation>Quanto do sinal vai ser enviado para o buffer atrasado</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="38"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="39"/>
         <location filename="../../src/effects/native/flangereffect.cpp" line="41"/>
         <source>Delay</source>
         <translation>Atraso</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="39"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="40"/>
         <source>Delay time (seconds)</source>
         <translation>Tempo de atraso (segundos)</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="50"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="51"/>
         <source>Feedback</source>
         <translation>Volta</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="52"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="53"/>
         <source>Amount the echo fades each time it loops</source>
         <translation>Quantidade de eco que desaparece cada vez que loopa</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="62"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="63"/>
         <source>PingPong</source>
         <translation>Ping-Pong</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="64"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="65"/>
         <source>As the ping-pong amount increases, increasing amounts of the echoed signal is bounced between the left and right speakers.</source>
         <translation>Quanto maior a quantidade de ping-pong, maior será a quantidades de sinal ecoado que pulará entre os alto-faltantes esquerdo e direito</translation>
     </message>
@@ -7998,9 +8010,24 @@ Para abortar esta ação, pressione Cancelar no diálogo de arquivos.</translati
         <translation>Um simples efeito de modulação, criado pegando o sinal de entrada e mixando com uma cópia com um sinal atrasado e com um pitch diferente.</translation>
     </message>
     <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="31"/>
+        <source>Controls the intensity of the effect.</source>
+        <translation>Controla a intensidade do efeito.</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="42"/>
+        <source>Sets the value for the delay length.</source>
+        <translation>Define o valor para o tamanho do atraso.</translation>
+    </message>
+    <message>
         <location filename="../../src/effects/native/flangereffect.cpp" line="52"/>
         <source>Period</source>
         <translation>Período</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="53"/>
+        <source>Controls the speed of the effect.</source>
+        <translation>Controla a velocidade do efeito.</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/reverbeffect.cpp" line="16"/>
@@ -8049,6 +8076,7 @@ Para abortar esta ação, pressione Cancelar no diálogo de arquivos.</translati
     <message>
         <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="25"/>
         <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="25"/>
+        <location filename="../../src/effects/native/graphiceqeffect.cpp" line="30"/>
         <location filename="../../src/effects/native/linkwitzriley8eqeffect.cpp" line="28"/>
         <location filename="../../src/test/super_link_test.cpp" line="44"/>
         <source>Gain for Low Filter</source>
@@ -8106,6 +8134,7 @@ Para abortar esta ação, pressione Cancelar no diálogo de arquivos.</translati
     <message>
         <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="71"/>
         <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="71"/>
+        <location filename="../../src/effects/native/graphiceqeffect.cpp" line="63"/>
         <location filename="../../src/effects/native/linkwitzriley8eqeffect.cpp" line="74"/>
         <source>Gain for High Filter</source>
         <translation>Ganho para Filtro Agudo</translation>
@@ -8133,6 +8162,11 @@ Para abortar esta ação, pressione Cancelar no diálogo de arquivos.</translati
         <location filename="../../src/effects/native/graphiceqeffect.cpp" line="18"/>
         <source>An 8 band Graphic EQ based on Biquad Filters</source>
         <translation>Um EQ Gráfico de 8 bandas baseado em Filtros Biquad</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/graphiceqeffect.cpp" line="50"/>
+        <source>Gain for Band Filter %1</source>
+        <translation>Ganho para o Filtro de Banda %1</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="13"/>
@@ -10034,7 +10068,7 @@ Clique OK para sair.</translation>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="179"/>
         <source>Clear input</source>
         <comment>Clear the search bar input field</comment>
-        <translation type="unfinished"/>
+        <translation>Limpar entrada</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="27"/>
@@ -10046,50 +10080,50 @@ Clique OK para sair.</translation>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="175"/>
         <source>Search...</source>
         <comment>noun</comment>
-        <translation type="unfinished"/>
+        <translation>Pesquisar...</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="176"/>
         <source>Search</source>
         <comment>noun</comment>
-        <translation type="unfinished"/>
+        <translation>Pesquisa</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="176"/>
         <source>Enter a string to search for</source>
-        <translation type="unfinished"/>
+        <translation>Insira uma palavra para pesquisar</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="177"/>
         <source>Shortcut</source>
-        <translation type="unfinished"/>
+        <translation>Atalho</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="178"/>
         <source>Ctrl+F</source>
-        <translation type="unfinished"/>
+        <translation>Ctrl+F</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="178"/>
         <source>Focus</source>
         <comment>Give search bar input focus</comment>
-        <translation type="unfinished"/>
+        <translation>Foco</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="179"/>
         <source>Ctrl+Backspace</source>
-        <translation type="unfinished"/>
+        <translation>Ctrl+Backspace</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="180"/>
         <source>Esc</source>
-        <translation type="unfinished"/>
+        <translation>Esc</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="180"/>
         <source>Exit search</source>
         <comment>Exit search bar and leave focus</comment>
-        <translation type="unfinished"/>
+        <translation>Sair da pesquisa</translation>
     </message>
 </context>
 <context>

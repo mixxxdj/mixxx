@@ -7,8 +7,8 @@
 #include "util/timer.h"
 
 RecursiveScanDirectoryTask::RecursiveScanDirectoryTask(
-    LibraryScanner* pScanner, const ScannerGlobalPointer scannerGlobal,
-    const QDir& dir, SecurityTokenPointer pToken)
+        LibraryScanner* pScanner, const ScannerGlobalPointer scannerGlobal,
+        const QDir& dir, SecurityTokenPointer pToken)
         : ScannerTask(pScanner, scannerGlobal),
           m_dir(dir),
           m_pToken(pToken) {
@@ -20,6 +20,10 @@ void RecursiveScanDirectoryTask::run() {
         setSuccess(false);
         return;
     }
+
+    // For making the scanner slow
+    //qDebug() << "Burn CPU";
+    //for (int i = 0;i < 1000000000; i++) asm("nop");
 
     // Note, we save on filesystem operations (and random work) by initializing
     // a QDirIterator with a QDir instead of a QString -- but it inherits its
@@ -80,10 +84,10 @@ void RecursiveScanDirectoryTask::run() {
         // Rescan that mofo! If importing fails then the scan was cancelled so
         // we return immediately.
         if (!filesToImport.isEmpty()) {
-            m_pScanner->queueTask(new ImportFilesTask(m_pScanner, m_scannerGlobal,
-                                                    dirPath, newHash, prevHashExists,
-                                                    filesToImport, possibleCovers,
-                                                    m_pToken));
+            m_pScanner->queueTask(
+                    new ImportFilesTask(m_pScanner, m_scannerGlobal, dirPath,
+                                        newHash, prevHashExists, filesToImport,
+                                        possibleCovers, m_pToken));
         } else {
             emit(directoryHashed(dirPath, !prevHashExists, newHash));
         }
@@ -93,8 +97,9 @@ void RecursiveScanDirectoryTask::run() {
 
     // Process all of the sub-directories.
     foreach (const QDir& nextDir, dirsToScan) {
-        m_pScanner->queueTask(new RecursiveScanDirectoryTask(
-            m_pScanner, m_scannerGlobal, nextDir, m_pToken));
+        m_pScanner->queueTask(
+                new RecursiveScanDirectoryTask(m_pScanner, m_scannerGlobal,
+                                               nextDir, m_pToken));
     }
 
     setSuccess(true);

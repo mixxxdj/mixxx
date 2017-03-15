@@ -32,15 +32,15 @@ class PresetInfo {
         return m_valid;
     }
 
-    inline const QString getPath() const { return path; };
+    inline const QString getPath() const { return m_path; };
 
-    inline const QString getName() const { return name; } ;
-    inline const QString getDescription() const { return description; };
-    inline const QString getForumLink() const { return forumlink; };
-    inline const QString getWikiLink() const { return wikilink; };
-    inline const QString getAuthor() const { return author; };
+    inline const QString getName() const { return m_name; } ;
+    inline const QString getDescription() const { return m_description; };
+    inline const QString getForumLink() const { return m_forumlink; };
+    inline const QString getWikiLink() const { return m_wikilink; };
+    inline const QString getAuthor() const { return m_author; };
 
-    inline const QList<QHash<QString,QString> > getProducts() const { return products; };
+    inline const QList<QHash<QString,QString> > getProducts() const { return m_products; };
 
   private:
     QHash<QString,QString> parseBulkProduct(const QDomElement& element) const;
@@ -50,47 +50,13 @@ class PresetInfo {
     QHash<QString,QString> parseOSCProduct(const QDomElement& element) const;
 
     bool m_valid;
-    QString path;
-    QString name;
-    QString author;
-    QString description;
-    QString forumlink;
-    QString wikilink;
-    QList<QHash<QString,QString> > products;
-};
-
-class PresetInfoEnumerator {
-  public:
-    PresetInfoEnumerator(ConfigObject<ConfigValue> *pConfig);
-    virtual ~PresetInfoEnumerator();
-
-    bool isValidExtension(const QString extension);
-
-    bool hasPresetInfo(const QString extension, const QString name);
-    bool hasPresetInfo(const QString path);
-
-    PresetInfo getPresetInfo(const QString path);
-
-    // Return cached list of presets for this extension
-    QList<PresetInfo> getPresets(const QString extension);
-
-    // Updates presets matching given extension
-    void updatePresets(const QString extension);
-
-  protected:
-    void addExtension(QString extension);
-    void loadSupportedPresets();
-
-  private:
-    QList<QString> fileExtensions;
-
-    // List of paths for controller presets
-    QList<QString> controllerDirPaths;
-
-    // Cached presets by extension. Map format is:
-    // [extension,[preset_path,preset]]
-    QMap<QString, QMap<QString, PresetInfo> > presetsByExtension;
-    QMap<QString, ControllerPresetFileHandler*> m_presetFileHandlersByExtension;
+    QString m_path;
+    QString m_name;
+    QString m_author;
+    QString m_description;
+    QString m_forumlink;
+    QString m_wikilink;
+    QList<QHash<QString,QString> > m_products;
 };
 
 #endif

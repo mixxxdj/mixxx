@@ -3576,46 +3576,36 @@ Použít nastavení a pokračovat?</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="91"/>
-        <source>Mixxx uses &quot;presets&quot; to connect messages from your controller to controls in Mixxx. If you do not see a preset for your controller, you can download one online from the Mixxx Forums or Mixxx Wiki. After downloading a preset, place the XML (.xml) and Javascript (.js) file(s) in one of these preset folders:</source>
-        <translation>Mixxx používá přednastavení, aby propojil příkazy z vašeho řadiče s ovládacími prvky v Mixxxu. Pokud se vám neukazuje žádné přednastavení pro váš řadič, můžete jedno stáhnout z internetových fór Mixxxu. Po stažení přednastavení umístěte soubor(y) XML (.xml) a Javascript (.js) do jedné z těchto složek s přednastaveními:</translation>
+        <source>Mixxx uses &quot;presets&quot; to connect messages from your controller to controls in Mixxx. If you do not see a preset for your controller, you can download one online from the Mixxx Forums or Mixxx Wiki. After downloading a preset, place the XML (.xml) and Javascript (.js) file(s) in the &quot;User Preset Folder&quot;:</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="101"/>
-        <source>Open Local Preset Folder</source>
-        <translation>Otevřít složku s místním přednastavením</translation>
-    </message>
-    <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="108"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="107"/>
         <source>Open User Preset Folder</source>
         <translation>Otevřít složku s uživatelským přednastavením</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="115"/>
-        <source>Open System Preset Folder</source>
-        <translation>Otevřít složku se systémovým přednastavením</translation>
-    </message>
-    <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="125"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="117"/>
         <source>Resources</source>
         <translation>Zdroje</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="131"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="123"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt;Mixxx Wiki: Hardware Compatibility&lt;/a&gt;</source>
         <translation>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt;Wiki Mixxxu: Slučitelnost technického vybavení&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="141"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="133"/>
         <source>&lt;a href=&quot;http://www.mixxx.org/forums/viewforum.php?f=7&quot;&gt;Mixxx Controller Forums&lt;/a&gt;</source>
         <translation>&lt;a href=&quot;http://www.mixxx.org/forums/viewforum.php?f=7&quot;&gt;Fóra pro řadiče Mixxxu&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="151"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="143"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;MIDI Preset File Format&lt;/a&gt;</source>
         <translation>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;Formát souboru s přednastavením MIDI&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="161"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="153"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_scripting&quot;&gt;MIDI Scripting with Javascript&lt;/a&gt;</source>
         <translation>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_scripting&quot;&gt;Skriptování MIDI s Javascriptem&lt;/a&gt;</translation>
     </message>
@@ -3859,7 +3849,17 @@ Denon mode:
 Numark mode:
 - Same as Denon mode, but without a flashing play button
 </source>
-        <translation type="unfinished"/>
+        <translation>Režim Mixxx:
+- Tlačítko značky během pozastavení na bodu značky = Náhled
+- Tlačítko značky během pozastavení ne na bodu značky (jinde) = Umístit bod značky
+ - Tlačítko značky během přehrávání = Pozastavení na bodu značky v režimu Pionier:
+- Stejné s režimem Mixxx s blikajícím tlačítkem pro přehrávání
+Režim Denon: - Tlačítko značky na bodu značky = Náhled
+- Tlačítko značky ne na bodu značky (jinde) = Pozastavení na bodu značky
+- Tlačítko pro přehrávání = Umístit bod značky
+Režim Numark:
+- Stejné s režimem Denon, ale bez blikajícího tlačítka pro přehrávání
+</translation>
     </message>
     <message>
         <location filename="../../src/dlgprefcontrolsdlg.ui" line="633"/>
@@ -3944,7 +3944,7 @@ Numark mode:
     <message>
         <location filename="../../src/dlgprefcontrolsdlg.ui" line="339"/>
         <source>Reset speed and pitch</source>
-        <translation type="unfinished"/>
+        <translation>Nastavit rychlost a výšku tónu znovu </translation>
     </message>
     <message>
         <location filename="../../src/dlgprefcontrolsdlg.ui" line="500"/>
@@ -4922,7 +4922,7 @@ a umožní vám upravit tóninu pro libozvučné míchání.</translation>
     <message>
         <location filename="../../src/dlgprefreplaygaindlg.ui" line="20"/>
         <source>ReplayGain Loudness Normalization</source>
-        <translation type="unfinished"/>
+        <translation>Normalizace hlasitosti přehrávání </translation>
     </message>
     <message>
         <location filename="../../src/dlgprefreplaygaindlg.ui" line="36"/>
@@ -7080,12 +7080,12 @@ pro OpenGL.</translation>
     <message>
         <location filename="../../src/mixxx.cpp" line="1234"/>
         <source>&amp;Keyboard Shortcuts</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Klávesové zkratky</translation>
     </message>
     <message>
         <location filename="../../src/mixxx.cpp" line="1235"/>
         <source>Speed up your workflow with keyboard shortcuts.</source>
-        <translation type="unfinished"/>
+        <translation>Zrychlit pracovní postup s klávesovými zkratkami</translation>
     </message>
     <message>
         <location filename="../../src/mixxx.cpp" line="1241"/>
@@ -7605,59 +7605,59 @@ Nejprve, prosím, vyberte nějaké vstupní zařízení v nastavení zvukového 
 <context>
     <name>QMessageBox</name>
     <message>
-        <location filename="../../src/upgrade.cpp" line="394"/>
+        <location filename="../../src/upgrade.cpp" line="429"/>
         <source>Upgrading Mixxx</source>
         <translation>Aktualizuje se Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="395"/>
+        <location filename="../../src/upgrade.cpp" line="430"/>
         <source>Mixxx now supports displaying cover art.
 Do you want to scan your library for cover files now?</source>
         <translation>Mixxx nyní podporuje zobrazení obrázků obalů.
 Chcete nyní kvůli souborům s obaly prohledat knihovnu?</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="398"/>
+        <location filename="../../src/upgrade.cpp" line="433"/>
         <source>Scan</source>
         <translation>Prohledat</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="399"/>
+        <location filename="../../src/upgrade.cpp" line="434"/>
         <source>Later</source>
         <translation>Později</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="408"/>
+        <location filename="../../src/upgrade.cpp" line="443"/>
         <source>Upgrading Mixxx from v1.9.x/1.10.x.</source>
         <translation>Aktualizuje se Mixxx z verze 1.9.x/1.10.x.</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="410"/>
+        <location filename="../../src/upgrade.cpp" line="445"/>
         <source>Mixxx has a new and improved beat detector.</source>
         <translation>Mixxx má nové a vylepšené rozpoznávání rytmu.</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="411"/>
+        <location filename="../../src/upgrade.cpp" line="446"/>
         <source>When you load tracks, Mixxx can re-analyze them and generate new, more accurate beatgrids. This will make automatic beatsync and looping more reliable.</source>
         <translation>Když nahrajete skladby, Mixxx je může znovu rozebrat a vytvoři novou, přesnější rytmickou mřížku. Tím bude automatické seřízení rytmu a smyčkování pracovat spolehlivěji.</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="415"/>
+        <location filename="../../src/upgrade.cpp" line="450"/>
         <source>This does not affect saved cues, hotcues, playlists, or crates.</source>
         <translation>Toto neovlivní značky, rychlé značky, seznamy skladeb nebo přepravky.</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="417"/>
+        <location filename="../../src/upgrade.cpp" line="452"/>
         <source>If you do not want Mixxx to re-analyze your tracks, choose &quot;Keep Current Beatgrids&quot;. You can change this setting at any time from the &quot;Beat Detection&quot; section of the Preferences.</source>
         <translation>Pokud nechcete, aby Mixxx znovu rozebral vaše skladby, vyberte Zachovat nynější rytmické mřížky. Toto nastavení můžete kdykoliv změnit v nastavení v části Rozpoznávání rytmu.</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="421"/>
+        <location filename="../../src/upgrade.cpp" line="456"/>
         <source>Keep Current Beatgrids</source>
         <translation>Zachovat nynější rytmické mřížky</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="422"/>
+        <location filename="../../src/upgrade.cpp" line="457"/>
         <source>Generate New Beatgrids</source>
         <translation>Vytvořit nové rytmické mřížky</translation>
     </message>
@@ -7885,58 +7885,68 @@ Pro zrušení této činnosti, stiskněte Zrušit v souborovém dialogu.</transl
         <translation>Bitová hloubka</translation>
     </message>
     <message>
+        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="25"/>
+        <source>Adjusts the bit depth of the samples.</source>
+        <translation>Upraví bitovou hloubku vzorků.</translation>
+    </message>
+    <message>
         <location filename="../../src/effects/native/bitcrushereffect.cpp" line="39"/>
         <source>Downsampling</source>
         <translation>Zmenšení vzorkovacího kmitočtu</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="19"/>
+        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="40"/>
+        <source>Adjusts the sample rate, to which the signal is downsampled.</source>
+        <translation>Upraví vzorkovací kmitočet, na nějž je signál převzorkován.</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="20"/>
         <source>Echo</source>
         <translation>Ozvěna</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="22"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="23"/>
         <source>Simple Echo with pingpong</source>
         <translation>Jednoduché echo s odrazem</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="26"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="27"/>
         <source>Send</source>
         <translation>Poslat</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="28"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="29"/>
         <source>How much of the signal to send into the delay buffer</source>
         <translation>Podíl signálu, který se má poslat do vyrovnávací paměti pro zpoždění</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="38"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="39"/>
         <location filename="../../src/effects/native/flangereffect.cpp" line="41"/>
         <source>Delay</source>
         <translation>Zpoždění</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="39"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="40"/>
         <source>Delay time (seconds)</source>
         <translation>Doba trvání zpoždění (s)</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="50"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="51"/>
         <source>Feedback</source>
         <translation>Zpětná vazba</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="52"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="53"/>
         <source>Amount the echo fades each time it loops</source>
         <translation>Hodnota o kterou ozvěna při každé uskutečněné smyčce zmizí</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="62"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="63"/>
         <source>PingPong</source>
         <translation>Odrážení</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="64"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="65"/>
         <source>As the ping-pong amount increases, increasing amounts of the echoed signal is bounced between the left and right speakers.</source>
         <translation>Jak se hodnota odrazu zvyšuje, je zvyšující se množství signálu ozvěny (echo) odráženo mezi levým a pravým reproduktorem.</translation>
     </message>
@@ -8000,9 +8010,24 @@ Pro zrušení této činnosti, stiskněte Zrušit v souborovém dialogu.</transl
         <translation>Jednoduchý modulační efekt, vytvářený mícháním vstupního signálu se stejným časově zpožděným signálem (se svou kopií), s modulovanou výškou tónu.</translation>
     </message>
     <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="31"/>
+        <source>Controls the intensity of the effect.</source>
+        <translation>Řídí sílu efektu.</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="42"/>
+        <source>Sets the value for the delay length.</source>
+        <translation>Nastaví hodnotu délky zpoždění.</translation>
+    </message>
+    <message>
         <location filename="../../src/effects/native/flangereffect.cpp" line="52"/>
         <source>Period</source>
         <translation>Období</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="53"/>
+        <source>Controls the speed of the effect.</source>
+        <translation>Řídí rychlost efektu.</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/reverbeffect.cpp" line="16"/>
@@ -8051,6 +8076,7 @@ Pro zrušení této činnosti, stiskněte Zrušit v souborovém dialogu.</transl
     <message>
         <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="25"/>
         <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="25"/>
+        <location filename="../../src/effects/native/graphiceqeffect.cpp" line="30"/>
         <location filename="../../src/effects/native/linkwitzriley8eqeffect.cpp" line="28"/>
         <location filename="../../src/test/super_link_test.cpp" line="44"/>
         <source>Gain for Low Filter</source>
@@ -8108,6 +8134,7 @@ Pro zrušení této činnosti, stiskněte Zrušit v souborovém dialogu.</transl
     <message>
         <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="71"/>
         <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="71"/>
+        <location filename="../../src/effects/native/graphiceqeffect.cpp" line="63"/>
         <location filename="../../src/effects/native/linkwitzriley8eqeffect.cpp" line="74"/>
         <source>Gain for High Filter</source>
         <translation>Zesílení pro filtr výšek</translation>
@@ -8135,6 +8162,11 @@ Pro zrušení této činnosti, stiskněte Zrušit v souborovém dialogu.</transl
         <location filename="../../src/effects/native/graphiceqeffect.cpp" line="18"/>
         <source>An 8 band Graphic EQ based on Biquad Filters</source>
         <translation>Osmipásový názorný ekvalizér založený na filtrech Biquad</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/graphiceqeffect.cpp" line="50"/>
+        <source>Gain for Band Filter %1</source>
+        <translation>Zesílení pro pásmový filtr %1</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="13"/>
@@ -10036,7 +10068,7 @@ Stiskněte OK pro ukončení.</translation>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="179"/>
         <source>Clear input</source>
         <comment>Clear the search bar input field</comment>
-        <translation type="unfinished"/>
+        <translation>Vyčistit vstup</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="27"/>
@@ -10048,50 +10080,50 @@ Stiskněte OK pro ukončení.</translation>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="175"/>
         <source>Search...</source>
         <comment>noun</comment>
-        <translation type="unfinished"/>
+        <translation>Hledat...</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="176"/>
         <source>Search</source>
         <comment>noun</comment>
-        <translation type="unfinished"/>
+        <translation>Hledat</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="176"/>
         <source>Enter a string to search for</source>
-        <translation type="unfinished"/>
+        <translation>Zadejte řetězec k vyhledání</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="177"/>
         <source>Shortcut</source>
-        <translation type="unfinished"/>
+        <translation>Klávesová zkratka</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="178"/>
         <source>Ctrl+F</source>
-        <translation type="unfinished"/>
+        <translation>Ctrl+F</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="178"/>
         <source>Focus</source>
         <comment>Give search bar input focus</comment>
-        <translation type="unfinished"/>
+        <translation>Zaměření</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="179"/>
         <source>Ctrl+Backspace</source>
-        <translation type="unfinished"/>
+        <translation>Ctrl+Backspace</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="180"/>
         <source>Esc</source>
-        <translation type="unfinished"/>
+        <translation>Esc</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="180"/>
         <source>Exit search</source>
         <comment>Exit search bar and leave focus</comment>
-        <translation type="unfinished"/>
+        <translation>Ukončit hledání</translation>
     </message>
 </context>
 <context>
