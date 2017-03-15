@@ -6,9 +6,8 @@ ControlObjectScript::ControlObjectScript(const ConfigKey& key, QObject* pParent)
         : ControlProxy(key, pParent) {
 }
 
-bool ControlObjectScript::addConnection(
-        const ControllerEngineConnection& conn) {
-    if (m_controllerEngineConnections.isEmpty()) {
+bool ControlObjectScript::addScriptConnection(const ScriptConnection& conn) {
+    if (m_scriptConnections.isEmpty()) {
         // Only connect the slots when they are actually needed
         // by script connections.
         connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
@@ -19,7 +18,7 @@ bool ControlObjectScript::addConnection(
                 Qt::QueuedConnection);
     }
 
-    for (const auto& priorConnection: m_controllerEngineConnections) {
+    for (const auto& priorConnection: m_scriptConnections) {
         if (conn == priorConnection) {
             qWarning() << "Connection " + conn.id.toString() +
                           " already connected to (" +
@@ -29,16 +28,15 @@ bool ControlObjectScript::addConnection(
         }
     }
 
-    m_controllerEngineConnections.append(conn);
+    m_scriptConnections.append(conn);
     controllerDebug("Connected (" +
                     conn.key.group + ", " + conn.key.item +
                     ") to connection " + conn.id.toString());
     return true;
 }
 
-bool ControlObjectScript::removeConnection(
-        const ControllerEngineConnection& conn) {
-    bool success = m_controllerEngineConnections.removeOne(conn);
+bool ControlObjectScript::removeScriptConnection(const ScriptConnection& conn) {
+    bool success = m_scriptConnections.removeOne(conn);
     if (success) {
         controllerDebug("Disconnected (" +
                         conn.key.group + ", " + conn.key.item +
@@ -48,8 +46,8 @@ bool ControlObjectScript::removeConnection(
                       conn.key.group + ", " + conn.key.item +
                       ") from connection " + conn.id.toString();
     }
-    if (m_controllerEngineConnections.isEmpty()) {
-        // no script left, we can disconnected
+    if (m_scriptConnections.isEmpty()) {
+        // no ScriptConnections left, so disconnect signals
         disconnect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
                 this, SLOT(slotValueChanged(double,QObject*)));
         disconnect(this, SIGNAL(trigger(double, QObject*)),
@@ -59,22 +57,22 @@ bool ControlObjectScript::removeConnection(
 }
 
 void ControlObjectScript::disconnectAllConnectionsToFunction(const QScriptValue& function) {
-    // Make a local copy of m_controllerEngineConnections because items are removed
+    // Make a local copy of m_scriptConnections because items are removed
     // within the loop.
-    QList<ControllerEngineConnection> connections = m_controllerEngineConnections;
+    QList<ScriptConnection> connections = m_scriptConnections;
     for (const auto& conn: connections) {
-        if (conn.function.strictlyEquals(function)) {
-            m_controllerEngineConnections.removeOne(conn);
+        if (conn.callback.strictlyEquals(function)) {
+            m_scriptConnections.removeOne(conn);
         }
     }
 }
 
 void ControlObjectScript::slotValueChanged(double value, QObject*) {
     // Make a local copy of m_connectedScriptFunctions first.
-    // This allows a script to disconnect a callback from the callback
-    // itself. Otherwise the this may crash since the disconnect call
+    // This allows a script to disconnect a callback from inside the
+    // the callback. Otherwise the this may crash since the disconnect call
     // happens during conn.function.call() in the middle of the loop below.
-    QList<ControllerEngineConnection> connections = m_controllerEngineConnections;
+    QList<ScriptConnection> connections = m_scriptConnections;
     for (auto&& conn: connections) {
         conn.executeCallback(value);
     }

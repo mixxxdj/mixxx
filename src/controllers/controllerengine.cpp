@@ -756,14 +756,14 @@ QScriptValue ControllerEngine::connectControl(
             return QScriptValue(false);
         }
     } else if (callback.isQObject()) {
-        // Assume a ControllerEngineConnection
+        // Assume a ScriptConnection
         QObject *qobject = callback.toQObject();
         const QMetaObject *qmeta = qobject->metaObject();
 
         if (!strcmp(qmeta->className(),
-                "ControllerEngineConnectionScriptValue")) {
-            ControllerEngineConnectionScriptValue* proxy =
-                    (ControllerEngineConnectionScriptValue*)qobject;
+                "ScriptConnectionInvokableWrapper")) {
+            ScriptConnectionInvokableWrapper* proxy =
+                    (ScriptConnectionInvokableWrapper*)qobject;
             proxy->disconnect();
         }
     } else {
@@ -774,27 +774,27 @@ QScriptValue ControllerEngine::connectControl(
     if (function.isFunction()) {
         if (disconnect) {
             // There is no way to determine which
-            // ControllerEngineConnection to disconnect unless the script calls
-            // ControllerEngineConnectionScriptValue::disconnect(), so
-            // disconnect all ControllerEngineConnections connected
-            // to the callback function, even though there may be multiple connections.
+            // ScriptConnection to disconnect unless the script calls
+            // ScriptConnectionInvokableWrapper::disconnect(), so
+            // disconnect all ScriptConnections connected to the
+            // callback function, even though there may be multiple connections.
             coScript->disconnectAllConnectionsToFunction(function);
             return QScriptValue(true);
         }
 
-        ControllerEngineConnection conn;
-        conn.key = key;
-        conn.ce = this;
-        conn.function = function;
-        conn.context = getThisObjectInFunctionCall();
-        conn.id = QUuid::createUuid();
+        ScriptConnection connection;
+        connection.key = key;
+        connection.controllerEngine = this;
+        connection.callback = function;
+        connection.context = getThisObjectInFunctionCall();
+        connection.id = QUuid::createUuid();
 
-        if (!coScript->addConnection(conn)) {
+        if (!coScript->addScriptConnection(connection)) {
             return QScriptValue(false);
         }
 
         return m_pEngine->newQObject(
-                new ControllerEngineConnectionScriptValue(conn),
+                new ScriptConnectionInvokableWrapper(connection),
                 QScriptEngine::ScriptOwnership);
     }
 
@@ -802,15 +802,15 @@ QScriptValue ControllerEngine::connectControl(
 }
 
 /* -------- ------------------------------------------------------
-   Purpose: Execute a ControllerEngineConnection's callback
+   Purpose: Execute a ScriptConnection's callback
    Input:   the value of the connected ControlObject to pass to the callback
    -------- ------------------------------------------------------ */
-void ControllerEngineConnection::executeCallback(double value) const {
+void ScriptConnection::executeCallback(double value) const {
     QScriptValueList args;
     args << QScriptValue(value);
     args << QScriptValue(key.group);
     args << QScriptValue(key.item);
-    QScriptValue func = function; // copy function because QScriptValue::call is not const
+    QScriptValue func = callback; // copy function because QScriptValue::call is not const
     QScriptValue result = func.call(context, args);
     if (result.isError()) {
         qWarning() << "ControllerEngine: Invocation of callback" << id.toString()
@@ -819,44 +819,46 @@ void ControllerEngineConnection::executeCallback(double value) const {
 }
 
 /* -------- ------------------------------------------------------
-   Purpose: (Dis)connects a ControllerEngineConnection
-   Input:   the ControllerEngineConnection to disconnect
+   Purpose: (Dis)connects a ScriptConnection
+   Input:   the ScriptConnection to disconnect
    -------- ------------------------------------------------------ */
-void ControllerEngine::disconnectControl(const ControllerEngineConnection conn) {
-    ControlObjectScript* coScript = getControlObjectScript(conn.key.group, conn.key.item);
+void ControllerEngine::removeScriptConnection(const ScriptConnection connection) {
+    ControlObjectScript* coScript = getControlObjectScript(connection.key.group,
+                                                           connection.key.item);
 
     if (m_pEngine == nullptr || coScript == nullptr) {
         return;
     }
 
-    if (!coScript->removeConnection(conn)) {
-        qWarning() << "Could not disconnect connection" << conn.id.toString();
+    if (!coScript->removeScriptConnection(connection)) {
+        qWarning() << "Could not disconnect connection" << connection.id.toString();
     }
 }
 
-void ControllerEngineConnectionScriptValue::disconnect() {
-    m_conn.ce->disconnectControl(m_conn);
+void ScriptConnectionInvokableWrapper::disconnect() {
+    m_scriptConnection.controllerEngine->removeScriptConnection(m_scriptConnection);
 }
 
 /* -------- ------------------------------------------------------
-   Purpose: Triggers the callback function of a ControllerEngineConnection
-   Input:   the ControllerEngineConnection to trigger
+   Purpose: Triggers the callback function of a ScriptConnection
+   Input:   the ScriptConnection to trigger
    -------- ------------------------------------------------------ */
-void ControllerEngine::triggerControl(const ControllerEngineConnection conn) {
+void ControllerEngine::triggerScriptConnection(const ScriptConnection connection) {
     if (m_pEngine == nullptr) {
         return;
     }
 
-    ControlObjectScript* coScript = getControlObjectScript(conn.key.group, conn.key.item);
+    ControlObjectScript* coScript = getControlObjectScript(connection.key.group,
+                                                           connection.key.item);
     if (coScript == nullptr) {
         return;
     }
 
-    conn.executeCallback(coScript->get());
+    connection.executeCallback(coScript->get());
 }
 
-void ControllerEngineConnectionScriptValue::trigger() {
-    m_conn.ce->triggerControl(m_conn);
+void ScriptConnectionInvokableWrapper::trigger() {
+    m_scriptConnection.controllerEngine->triggerScriptConnection(m_scriptConnection);
 }
 
 /* -------- ------------------------------------------------------

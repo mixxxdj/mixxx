@@ -11,14 +11,12 @@ class ControlObjectScript : public ControlProxy {
   public:
     explicit ControlObjectScript(const ConfigKey& key, QObject* pParent = nullptr);
 
-    bool addConnection(
-            const ControllerEngineConnection& conn);
+    bool addScriptConnection(const ScriptConnection& conn);
 
-    bool removeConnection(
-            const ControllerEngineConnection& conn);
+    bool removeScriptConnection(const ScriptConnection& conn);
 
     inline int countConnections() {
-            return m_controllerEngineConnections.size(); };
+            return m_scriptConnections.size(); };
     void disconnectAllConnectionsToFunction(const QScriptValue& function);
 
     // Called from update();
@@ -35,7 +33,7 @@ class ControlObjectScript : public ControlProxy {
     void slotValueChanged(double v, QObject*);
 
   private:
-    QList<ControllerEngineConnection> m_controllerEngineConnections;
+    QList<ScriptConnection> m_scriptConnections;
 };
 
 #endif // CONTROLOBJECTSCRIPT_H
