@@ -377,7 +377,7 @@ TreeItem* ITunesFeature::importLibrary() {
 
     itunes_file.close();
 
-    // Even if an error occured, commit the transaction. The file may have been
+    // Even if an error occurred, commit the transaction. The file may have been
     // half-parsed.
     transaction.commit();
 

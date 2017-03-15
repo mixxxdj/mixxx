@@ -171,7 +171,7 @@ int VSyncThread::usToNextSync() {
     return usRest;
 }
 
-int VSyncThread::usFromTimerToNextSync(PerformanceTimer* timer) {
+int VSyncThread::usFromTimerToNextSync(const PerformanceTimer& timer) {
     int usDifference = static_cast<int>(m_timer.difference(timer).toIntegerMicros());
     // int math is fine here, because we do not expect times > 4.2 s
     return usDifference + m_usWaitToSwap;

@@ -1,8 +1,7 @@
 // TrackExportWizard handles exporting a list of tracks to an external directory
 //
 // TODO:
-//   * Dedupe the list of trackpointers
-//   * Detect duplicate filenames and munge to prevent collisions.
+//   * Offer customizable file renaming
 //   * Offer the option to transcode files to the codec of choice (e.g.,
 //     FLAC -> AIFF for CDJ
 //   * Export sidecar metadata files for import into Mixxx

@@ -209,7 +209,7 @@ bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
         }
     }
 
-    qDebug() << this << "updateIndexWithQuery took" << timer.elapsed().formatMillisWithUnit();
+    qDebug() << this << "updateIndexWithQuery took" << timer.elapsed().debugMillisWithUnit();
     return true;
 }
 

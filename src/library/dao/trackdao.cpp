@@ -274,16 +274,18 @@ void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
 
         // Write audio meta data, if enabled in the preferences.
         //
-        // TODO(DSC) Only write tag if file metadata is dirty.
+        // TODO(XXX): Only write tag if file metadata is dirty.
         // Currently metadata will also be saved if for example
         // cue points have been modified, even if this information
         // is only stored in the database.
+        // TODO(uklotzde): We need to introduce separate flag for
+        // tracking changes of track metadata regarding file tags.
+        // Instead of another flag that needs to be managed we
+        // could alternatively store a second copy of TrackMetadata
+        // in TrackInfoObject.
         if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
             SoundSourceProxy::saveTrackMetadata(pTrack);
         }
-
-        pTrack->resetDirty();
-        emit(trackClean(pTrack->getId()));
     }
 }
 
@@ -634,7 +636,7 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
         pTrack->setId(trackId);
         m_analysisDao.saveTrackAnalyses(pTrack);
         m_cueDao.saveTrackCues(trackId, pTrack);
-        pTrack->resetDirty();
+        pTrack->markClean();
     }
     m_tracksAddedSet.insert(trackId);
     return true;
@@ -1322,7 +1324,11 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     // Normally we will set the track as clean but sometimes when loading from
     // the database we need to perform upkeep that ought to be written back to
     // the database when the track is deleted.
-    pTrack->markDirty(shouldDirty);
+    if (shouldDirty) {
+        pTrack->markDirty();
+    } else {
+        pTrack->markClean();
+    }
 
     // Listen to dirty and changed signals
     connect(pTrack.data(), SIGNAL(dirty(TrackInfoObject*)),
@@ -1570,7 +1576,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
 
     //qDebug() << "Update track in database took: " << time.elapsed().formatMillisWithUnit();
     //time.start();
-    pTrack->resetDirty();
+    pTrack->markClean();
     //qDebug() << "Dirtying track took: " << time.elapsed().formatMillisWithUnit();
 }
 

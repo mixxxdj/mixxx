@@ -310,7 +310,7 @@ void BaseSqlTableModel::select() {
         endInsertRows();
     }
 
-    qDebug() << this << "select() took" << time.elapsed().formatMillisWithUnit()
+    qDebug() << this << "select() took" << time.elapsed().debugMillisWithUnit()
              << rowInfo.size();
 }
 

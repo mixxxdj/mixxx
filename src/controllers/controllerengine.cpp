@@ -206,7 +206,7 @@ void ControllerEngine::initializeScriptEngine() {
 /* -------- ------------------------------------------------------
    Purpose: Load all script files given in the supplied list
    Input:   List of script paths and file names to load
-   Output:  Returns true if no errors occured.
+   Output:  Returns true if no errors occurred.
    -------- ------------------------------------------------------ */
 bool ControllerEngine::loadScriptFiles(const QList<QString>& scriptPaths,
                                        const QList<ControllerPreset::ScriptFileInfo>& scripts) {
@@ -220,7 +220,7 @@ bool ControllerEngine::loadScriptFiles(const QList<QString>& scriptPaths,
         }
 
         if (m_scriptErrors.contains(script.name)) {
-            qDebug() << "Errors occured while loading" << script.name;
+            qDebug() << "Errors occurred while loading" << script.name;
         }
     }
 

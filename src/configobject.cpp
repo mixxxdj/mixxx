@@ -242,7 +242,9 @@ template <class ValueType> bool ConfigObject<ValueType>::parse() {
 
 template <class ValueType> void ConfigObject<ValueType>::reopen(const QString& file) {
     m_filename = file;
-    parse();
+    if (!m_filename.isEmpty()) {
+        parse();
+    }
 }
 
 template <class ValueType> void ConfigObject<ValueType>::save() {

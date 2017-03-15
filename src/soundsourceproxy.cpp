@@ -400,6 +400,13 @@ void SoundSourceProxy::loadTrackMetadataAndCoverArt(
         bool reloadFromFile) const {
     DEBUG_ASSERT(!m_pTrack.isNull());
 
+    if (m_pSoundSource.isNull()) {
+        // Silently ignore requests for unsupported files
+        qDebug() << "Unable to parse file tags without a SoundSource"
+                << getUrl();
+        return;
+    }
+
     bool parsedFromFile = m_pTrack->getHeaderParsed();
     if (parsedFromFile && !reloadFromFile) {
         qDebug() << "Skip parsing of track metadata from file"
@@ -425,7 +432,7 @@ void SoundSourceProxy::loadTrackMetadataAndCoverArt(
     if (m_pSoundSource->parseTrackMetadataAndCoverArt(&trackMetadata, pCoverImg) == OK) {
         parsedFromFile = true;
     } else {
-        qWarning() << "Failed to parse metadata from file"
+        qWarning() << "Failed to parse track metadata from file"
                  << getUrl();
         if (parsedFromFile) {
             // Don't overwrite any existing metadata that once has

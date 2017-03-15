@@ -190,7 +190,7 @@ QList<struct BansheeDbConnection::PlaylistEntry> BansheeDbConnection::getPlaylis
     }
 
     qDebug() << "BansheeDbConnection::getPlaylistEntries(), took"
-             << time.elapsed().formatMillisWithUnit();
+             << time.elapsed().debugMillisWithUnit();
 
     return list;
 }

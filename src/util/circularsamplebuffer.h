@@ -16,7 +16,6 @@
 class CircularSampleBuffer: public SingularSampleBuffer {
   public:
     CircularSampleBuffer() {}
-    CircularSampleBuffer(CircularSampleBuffer&&) = default;
     CircularSampleBuffer(const CircularSampleBuffer&) = delete;
     explicit CircularSampleBuffer(SINT capacity);
 

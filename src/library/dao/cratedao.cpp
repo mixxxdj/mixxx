@@ -23,18 +23,14 @@ void CrateDAO::initialize() {
 }
 
 void CrateDAO::populateCrateMembershipCache() {
-    // get the count to allocate HashMap
-    int tracksInCratesCount = 0;
+    // Minor optimization: reserve space in m_cratesTrackIsIn.
     QSqlQuery query(m_database);
     query.prepare("SELECT COUNT(*) from " CRATE_TRACKS_TABLE);
-
-    if (!query.exec()) {
+    if (query.exec() && query.next()) {
+        m_cratesTrackIsIn.reserve(query.value(0).toInt());
+    } else {
         LOG_FAILED_QUERY(query);
     }
-
-    tracksInCratesCount = query.value(0).toInt();
-
-    m_cratesTrackIsIn.reserve(tracksInCratesCount);
 
     // now fetch all Tracks from all crates and insert them into the hashmap
     query.prepare("SELECT track_id, crate_id from " CRATE_TRACKS_TABLE);

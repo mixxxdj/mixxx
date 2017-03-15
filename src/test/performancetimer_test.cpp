@@ -26,7 +26,7 @@ TEST_F(PerformanceTimerTest, DifferenceCanBeNegative) {
 
         PerformanceTimer late;
         late.start();
-        mixxx::Duration difference = early.difference(&late);
+        mixxx::Duration difference = early.difference(late);
 
         // If the high-res clock hasn't ticked yet, the difference should be 0.
         // If it has ticked, then the difference better be negative.

@@ -15,7 +15,6 @@ class SingularSampleBuffer {
   public:
     SingularSampleBuffer();
     explicit SingularSampleBuffer(SINT capacity);
-    SingularSampleBuffer(SingularSampleBuffer&&) = default;
     SingularSampleBuffer(const SingularSampleBuffer&) = delete;
     virtual ~SingularSampleBuffer() {}
 

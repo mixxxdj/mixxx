@@ -54,10 +54,6 @@ class LegacySkinParser : public QObject, public SkinParser {
 
     QList<QWidget*> parseNode(QDomElement node);
 
-    // Support for various legacy behavior
-    void parseColorSchemes(QDomElement node);
-    bool compareConfigKeys(QDomNode node, QString key);
-
     // Load the given template from file and return its document element.
     QDomElement loadTemplate(const QString& path);
 
@@ -123,7 +119,7 @@ class LegacySkinParser : public QObject, public SkinParser {
 
     QString lookupNodeGroup(QDomElement node);
     static const char* safeChannelString(QString channelStr);
-    ControlObject* controlFromConfigNode(QDomElement element,
+    ControlObject* controlFromConfigNode(const QDomElement& element,
                                          const QString& nodeName,
                                          bool* created);
 

@@ -487,25 +487,25 @@ void MixxxMainWindow::finalize() {
 
     qDebug() << "Destroying MixxxMainWindow";
 
-    qDebug() << t.elapsed(false).formatMillisWithUnit() << "saving configuration";
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "saving configuration";
     m_pSettingsManager->save();
 
     // SoundManager depend on Engine and Config
-    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting SoundManager";
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting SoundManager";
     delete m_pSoundManager;
 
     // GUI depends on MixxxKeyboard, PlayerManager, Library
-    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting Skin";
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting Skin";
     delete m_pWidgetParent;
 
     // ControllerManager depends on Config
-    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting ControllerManager";
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting ControllerManager";
     delete m_pControllerManager;
 
 #ifdef __VINYLCONTROL__
     // VinylControlManager depends on a CO the engine owns
     // (vinylcontrol_enabled in VinylControlControl)
-    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting VinylControlManager";
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting VinylControlManager";
     delete m_pVCManager;
     qDeleteAll(m_pVinylControlEnabled);
     delete m_VCControlMapper;
@@ -516,7 +516,7 @@ void MixxxMainWindow::finalize() {
     delete m_TalkoverMapper;
 
     // LibraryScanner depends on Library
-    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting LibraryScanner";
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting LibraryScanner";
     delete m_pLibraryScanner;
 
     // CoverArtCache is fairly independent of everything else.
@@ -525,20 +525,20 @@ void MixxxMainWindow::finalize() {
     // Delete the library after the view so there are no dangling pointers to
     // the data models.
     // Depends on RecordingManager and PlayerManager
-    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting Library";
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting Library";
     delete m_pLibrary;
 
     // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
-    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting PlayerManager";
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting PlayerManager";
     delete m_pPlayerManager;
 
     // RecordingManager depends on config, engine
-    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting RecordingManager";
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting RecordingManager";
     delete m_pRecordingManager;
 
 #ifdef __SHOUTCAST__
     // ShoutcastManager depends on config, engine
-    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting ShoutcastManager";
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting ShoutcastManager";
     delete m_pShoutcastManager;
 #endif
 
@@ -549,14 +549,14 @@ void MixxxMainWindow::finalize() {
     qDeleteAll(m_micTalkoverControls);
 
     // EngineMaster depends on Config and m_pEffectsManager.
-    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting EngineMaster";
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting EngineMaster";
     delete m_pEngine;
 
-    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting DlgPreferences";
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting DlgPreferences";
     delete m_pPrefDlg;
 
     // Must delete after EngineMaster and DlgPrefEq.
-    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting EffectsManager";
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting EffectsManager";
     delete m_pEffectsManager;
 
     delete m_pTouchShift;
@@ -618,7 +618,7 @@ void MixxxMainWindow::finalize() {
 
     Sandbox::shutdown();
 
-    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting SettingsManager";
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting SettingsManager";
     delete m_pSettingsManager;
 
     delete m_pKeyboard;
@@ -660,8 +660,8 @@ void MixxxMainWindow::initializeKeyboard() {
     // Check first in user's Mixxx directory
     QString userKeyboard = QDir(m_cmdLineArgs.getSettingsPath()).filePath("Custom.kbd.cfg");
 
-    //Empty keyboard configuration
-    m_pKbdConfigEmpty = new ConfigObject<ConfigValueKbd>("");
+    // Empty keyboard configuration
+    m_pKbdConfigEmpty = new ConfigObject<ConfigValueKbd>(QString());
 
     if (QFile::exists(userKeyboard)) {
         qDebug() << "Found and will use custom keyboard preset" << userKeyboard;
@@ -2023,11 +2023,13 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event)
                 return false;
             case mixxx::TooltipsPreference::TOOLTIPS_OFF:
                 return true;
+            default:
+                DEBUG_ASSERT(!"m_toolTipsCfg value unknown");
+                return true;
         }
-    } else {
-        // standard event processing
-        return QObject::eventFilter(obj, event);
     }
+    // standard event processing
+    return QObject::eventFilter(obj, event);
 }
 
 bool MixxxMainWindow::event(QEvent* e) {

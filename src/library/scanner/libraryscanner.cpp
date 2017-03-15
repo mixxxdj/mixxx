@@ -379,12 +379,12 @@ void LibraryScanner::slotFinishUnhashedScan() {
     }
 
     // TODO(XXX) doesn't take into account verifyRemainingTracks.
-    qDebug("Scan took: %lld ns. "
+    qDebug("Scan took: %s. "
            "%d unchanged directories. "
            "%d changed/added directories. "
            "%d tracks verified from changed/added directories. "
            "%d new tracks.",
-           m_scannerGlobal->timerElapsed(),
+           m_scannerGlobal->timerElapsed().formatNanosWithUnit().toLocal8Bit().constData(),
            m_scannerGlobal->verifiedDirectories().size(),
            m_scannerGlobal->numScannedDirectories(),
            m_scannerGlobal->verifiedTracks().size(),

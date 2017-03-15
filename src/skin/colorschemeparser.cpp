@@ -106,7 +106,7 @@ ImgSource* ColorSchemeParser::parseFilters(QDomNode filt) {
             ret = new ImgHSVTweak(ret, hmin, hmax, smin, smax, vmin, vmax, hfact, hconst,
                                   sfact, sconst, vfact, vconst);
         } else {
-            qDebug() << "Unkown image filter:" << name;
+            qDebug() << "Unknown image filter:" << name;
         }
         f = f.nextSibling();
     }
