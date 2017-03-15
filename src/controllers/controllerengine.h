@@ -109,8 +109,12 @@ class ControllerEngine : public QObject {
     Q_INVOKABLE void reset(QString group, QString name);
     Q_INVOKABLE double getDefaultValue(QString group, QString name);
     Q_INVOKABLE double getDefaultParameter(QString group, QString name);
+    Q_INVOKABLE QScriptValue makeConnection(QString group, QString name,
+                                            const QScriptValue callback);
+    // DEPRECATED: Use makeConnection instead.
     Q_INVOKABLE QScriptValue connectControl(QString group, QString name,
-                                            const QScriptValue function, bool disconnect = false);
+                                            const QScriptValue passedCallback,
+                                            bool disconnect = false);
     // Called indirectly by the objects returned by connectControl
     Q_INVOKABLE void trigger(QString group, QString name);
     Q_INVOKABLE void log(QString message);
