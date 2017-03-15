@@ -223,6 +223,10 @@ TEST_F(ControllerEngineTest, trigger) {
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
 
+// ControllerEngine::connectControl has a lot of quirky, inconsistent legacy behaviors
+// depending on how it is invoked, so we need a lot of tests to make sure old scripts
+// do not break.
+
 TEST_F(ControllerEngineTest, connectControl_ByString) {
     // Test that connecting and disconnecting by function name works.
     auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
@@ -284,8 +288,8 @@ TEST_F(ControllerEngineTest, connectControl_ByFunction) {
         "var reaction = function(value) { "
         "  var pass = engine.getValue('[Test]', 'passed');"
         "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
-        "engine.connectControl('[Test]', 'co', reaction);"
-        "engine.trigger('[Test]', 'co');"));
+        "var connection = engine.connectControl('[Test]', 'co', reaction);"
+        "connection.trigger();"));
 
     cEngine->evaluate(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
@@ -307,6 +311,8 @@ TEST_F(ControllerEngineTest, connectControl_ByFunctionAllowDuplicateConnections)
         "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
         "engine.connectControl('[Test]', 'co', reaction);"
         "engine.connectControl('[Test]', 'co', reaction);"
+        // engine.trigger() has no way to know which connection to a ControlObject
+        // to trigger, so it should trigger all of them.
         "engine.trigger('[Test]', 'co');"));
 
     cEngine->evaluate(script->fileName());
@@ -349,8 +355,7 @@ TEST_F(ControllerEngineTest, connectControl_toDisconnectRemovesAllConnections) {
 }
 
 TEST_F(ControllerEngineTest, connectControl_ByLambda) {
-    // Test that connecting with a lambda and disconnecting with the returned
-    // connection object works.
+    // Test that connecting with an anonymous function works.
     auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
     auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
 
@@ -358,9 +363,9 @@ TEST_F(ControllerEngineTest, connectControl_ByLambda) {
         "var connection = engine.connectControl('[Test]', 'co', function(value) { "
         "  var pass = engine.getValue('[Test]', 'passed');"
         "  engine.setValue('[Test]', 'passed', pass + 1.0); });"
-        "engine.trigger('[Test]', 'co');"
+        "connection.trigger();"
         "function disconnect() { "
-        "  engine.connectControl('[Test]', 'co', connection, 1);"
+        "  connection.disconnect();"
         "  engine.trigger('[Test]', 'co'); }"));
 
     cEngine->evaluate(script->fileName());
@@ -385,7 +390,7 @@ TEST_F(ControllerEngineTest, connectionObjectDisconnect) {
         "  var pass = engine.getValue('[Test]', 'passed');"
         "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
         "var connection = engine.connectControl('[Test]', 'co', 'reaction');"
-        "engine.trigger('[Test]', 'co');"
+        "connection.trigger();"
         "function disconnect() { "
         "  connection.disconnect();"
         "  engine.trigger('[Test]', 'co'); }"));
@@ -398,6 +403,50 @@ TEST_F(ControllerEngineTest, connectionObjectDisconnect) {
     EXPECT_TRUE(execute("disconnect"));
     application()->processEvents();
     // The counter should have been incremented exactly once.
+    EXPECT_DOUBLE_EQ(1.0, pass->get());
+}
+
+TEST_F(ControllerEngineTest, connectionObjectDisconnectByPassingBackToConnectControl) {
+    // Test that passing a connection object back to engine.connectControl
+    // removes the connection
+    auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
+    auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
+    // The connections should be removed from the ControlObject which they were
+    // actually connected to, regardless of the group and item arguments passed
+    // to engine.connectControl() to remove the connection. All that should matter
+    // is that a valid ControlObject is specified.
+    auto dummy = std::make_unique<ControlObject>(ConfigKey("[Test]", "dummy"));
+
+    ScopedTemporaryFile script(makeTemporaryFile(
+        "var reaction = function(value) { "
+        "  var pass = engine.getValue('[Test]', 'passed');"
+        "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
+        "var connection1 = engine.connectControl('[Test]', 'co', reaction);"
+        "var connection2 = engine.connectControl('[Test]', 'co', reaction);"
+        "function disconnectConnection1() { "
+        "  engine.connectControl('[Test]',"
+        "                        'dummy',"
+        "                        connection1);"
+        "  engine.trigger('[Test]', 'co'); }"
+        // Whether a 4th argument is passed to engine.connectControl does not matter.
+        "function disconnectConnection2() { "
+        "  engine.connectControl('[Test]',"
+        "                        'dummy',"
+        "                        connection2, true);"
+        "  engine.trigger('[Test]', 'co'); }"));
+
+    cEngine->evaluate(script->fileName());
+    EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
+    // ControlObjectScript connections are processed via QueuedConnection. Use
+    // processEvents() to cause Qt to deliver them.
+    application()->processEvents();
+    EXPECT_TRUE(execute("disconnectConnection1"));
+    application()->processEvents();
+    // The counter should have been incremented once by connection2.
+    EXPECT_DOUBLE_EQ(1.0, pass->get());
+    EXPECT_TRUE(execute("disconnectConnection2"));
+    application()->processEvents();
+    // The counter should not have changed.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
 
@@ -442,6 +491,48 @@ TEST_F(ControllerEngineTest, connectionObjectsAreIndependent) {
     execute("changeTestCoValue");
     application()->processEvents();
     EXPECT_EQ(3.0, counter->get());
+}
+
+TEST_F(ControllerEngineTest, connectionObjectsAreNotIndependentWithStringCallback) {
+    // Test that multiple connections are not allowed when passing
+    // the callback to engine.connectControl as a function name string.
+    // This is weird and inconsistent, but it is how it has been done,
+    // so keep this behavior to make sure old scripts do not break.
+    auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
+    auto counter = std::make_unique<ControlObject>(ConfigKey("[Test]", "counter"));
+
+    ScopedTemporaryFile script(makeTemporaryFile(
+        "var incrementCounterCO = function () {"
+        "  var counter = engine.getValue('[Test]', 'counter');"
+        "  engine.setValue('[Test]', 'counter', counter + 1);"
+        "};"
+        "var connection1 = engine.connectControl('[Test]', 'co', 'incrementCounterCO');"
+        // Make a second connection with the same ControlObject
+        // to check that disconnecting one does not disconnect both.
+        "var connection2 = engine.connectControl('[Test]', 'co', 'incrementCounterCO');"
+        "function changeTestCoValue() {"
+        "  var testCoValue = engine.getValue('[Test]', 'co');"
+        "  engine.setValue('[Test]', 'co', testCoValue + 1);"
+        "};"
+        "function disconnectConnection2() {"
+        "  connection2.disconnect();"
+        "};"
+    ));
+
+    cEngine->evaluate(script->fileName());
+    EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
+    execute("changeTestCoValue");
+    // ControlObjectScript connections are processed via QueuedConnection. Use
+    // processEvents() to cause Qt to deliver them.
+    application()->processEvents();
+    EXPECT_EQ(1.0, counter->get());
+
+    execute("disconnectConnection2");
+    // The connection objects should refer to the same connection,
+    // so disconnecting one should disconnect both.
+    execute("changeTestCoValue");
+    application()->processEvents();
+    EXPECT_EQ(1.0, counter->get());
 }
 
 
