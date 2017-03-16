@@ -76,6 +76,39 @@ Paintable::Paintable(QImage* pImage, DrawMode mode)
     delete pImage;
 }
 
+Paintable::Paintable(const PixmapSource& source, DrawMode mode)
+        : m_draw_mode(mode) {
+    if (source.isSVG()) {
+        QScopedPointer<QSvgRenderer> pSvgRenderer(new QSvgRenderer());
+        if (source.getData().isEmpty()) {
+            pSvgRenderer->load(source.getPath());
+        } else {
+            pSvgRenderer->load(source.getData());
+        }
+
+        if (mode == TILE) {
+            // The SVG renderer doesn't directly support tiling, so we render
+            // it to a pixmap which will then get tiled.
+            QImage copy_buffer(pSvgRenderer->defaultSize(), QImage::Format_ARGB32);
+            copy_buffer.fill(0x00000000);  // Transparent black.
+            m_pPixmap.reset(new QPixmap(pSvgRenderer->defaultSize()));
+            QPainter painter(&copy_buffer);
+            pSvgRenderer->render(&painter);
+            m_pPixmap->convertFromImage(copy_buffer);
+        } else {
+            m_pSvg.reset(pSvgRenderer.take());
+        }
+    } else {
+        auto  pPixmap = new QPixmap();
+        if (!source.getData().isEmpty()) {
+            pPixmap->loadFromData(source.getData());
+        } else {
+            pPixmap->load(source.getPath());
+        }
+        m_pPixmap.reset(pPixmap);
+    }
+}
+
 bool Paintable::isNull() const {
     if (!m_pPixmap.isNull()) {
         return m_pPixmap->isNull();
@@ -284,8 +317,12 @@ PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
     // Otherwise, construct it with the pixmap loader.
     //qDebug() << "WPixmapStore Loading pixmap from file" << source.getPath();
 
-    QImage* pImage = m_loader->getImage(source.getPath(), scaleFactor);
-    pPaintable = PaintablePointer(new Paintable(pImage, mode));
+    if (mode == Paintable::FIXED || mode == Paintable::TILE || !source.isSVG()) {
+        QImage* pImage = m_loader->getImage(source.getPath(), scaleFactor);
+        pPaintable = PaintablePointer(new Paintable(pImage, mode));
+    } else {
+        pPaintable = PaintablePointer(new Paintable(source, mode));
+    }
 
     if (pPaintable->isNull()) {
         // Only log if it looks like the user tried to specify a
