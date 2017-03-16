@@ -754,12 +754,12 @@ WPushButton {
   if it is scaled up too much (>120). Source:
   https://forum.qt.io/topic/40151/solved-scaled-background-image-using-stylesheet/6
   border-image: url(skin:/buttons/btn_pfl_off.svg) 0 0 0 0 stretch stretch; */
-#PflButton:hover {  /*
+#PflButton:hover, #PflButton[displayValue="1"] {  /*
   In conjunction with the workaround above, this would only
   draw invisible border and squeez image by [border-width] on each side.
   Though, this is a nice hover effect, even more if border is removed on hover.
   border: 1px solid #eeeeee;  */
-  background-color: #0f0f0f;
+  background-color: #000000;
   }
         
 #VolumeSliderGain {
@@ -1570,8 +1570,8 @@ QTreeView {
   margin: 0px;
 }
 QTreeView:focus { /*
-  Helps me with my current controller mapping
-  border-color: #dddddd;  */
+  Helps me with my current controller mapping  */
+  border-color: #dddddd;
 }
 
 /*  Closed branch of tree 	*/
@@ -1616,8 +1616,8 @@ QTableView {	/*
   border-top: 0px;	*/
 }
 QTableView:focus { /*
-  Helps me with my current controller mapping
-  border: 1px solid #dddddd;  */
+  Helps me with my current controller mapping  */
+  border: 1px solid #dddddd;
 }
 
 QHeaderView {
