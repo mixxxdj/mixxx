@@ -9,20 +9,13 @@
 #include "util/math.h"
 #include "util/sample.h"
 
+
 namespace {
 
-// NOTE(uklotzde): The following comment has been adopted without
-// modifications and should be rephrased.
-//
-// To prevent every bit of code having to guess how many samples
-// forward it makes sense to keep in memory, the hinter can provide
-// either 0 for a forward hint or -1 for a backward hint. We should
-// be calculating an appropriate number of samples to go backward as
-// some function of the latency, but for now just leave this as a
-// constant. 2048 is a pretty good number of samples because 25ms
-// latency corresponds to 1102.5 mono samples and we need double
-// that for stereo samples.
-const SINT kDefaultHintSamples = 1024 * CachingReaderChunk::kChannels;
+// This is the default hint frameCount that is adopted in case of Hint::kFrameCountForward and
+// Hint::kFrameCountBackward count is provided. It matches 23 ms @ 44.1 kHz
+// TODO() Do we suffer chache misses if we use an audio buffer of above 23 ms?
+const SINT kDefaultHintFrames = 1024;
 
 } // anonymous namespace
 
@@ -372,29 +365,26 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
     // any are not, then wake.
     bool shouldWake = false;
 
-    for (HintVector::const_iterator it = hintList.constBegin();
-         it != hintList.constEnd(); ++it) {
-        // Copy, don't use reference.
-        Hint hint = *it;
+    for (const auto& hint: hintList) {
+        SINT hintFrame = hint.frame;
+        SINT hintFrameCount = hint.frameCount;
 
         // Handle some special length values
-        if (hint.length == 0) {
-            hint.length = kDefaultHintSamples;
-        } else if (hint.length == -1) {
-            hint.sample -= kDefaultHintSamples;
-            hint.length = kDefaultHintSamples;
-            if (hint.sample < 0) {
-                hint.length += hint.sample;
-                hint.sample = 0;
+        if (hintFrameCount == Hint::kFrameCountForward) {
+        	hintFrameCount = kDefaultHintFrames;
+        } else if (hintFrameCount == Hint::kFrameCountBackward) {
+        	hintFrame -= kDefaultHintFrames;
+        	hintFrameCount = kDefaultHintFrames;
+            if (hintFrame < 0) {
+            	hintFrameCount += hintFrame;
+                hintFrame = 0;
             }
         }
-        if (hint.length < 0) {
-            qDebug() << "ERROR: Negative hint length. Ignoring.";
+
+        VERIFY_OR_DEBUG_ASSERT(hintFrameCount > 0) {
+            qWarning() << "ERROR: Negative hint length. Ignoring.";
             continue;
         }
-
-        const SINT hintFrame = CachingReaderChunk::samples2frames(hint.sample);
-        const SINT hintFrameCount = CachingReaderChunk::samples2frames(hint.length);
 
         SINT minReadableFrameIndex = hintFrame;
         SINT maxReadableFrameIndex = hintFrame + hintFrameCount;
