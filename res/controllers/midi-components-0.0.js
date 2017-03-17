@@ -312,6 +312,13 @@
         outKey: null, // hack to get Component constructor to call connect()
     });
 
+    var EffectAssignmentButton = function (options) {
+        options.key = 'group_' + options.group + '_enable';
+        options.group = '[EffectRack1_EffectUnit' + options.effectUnit + ']';
+        Button.call(this, options);
+    };
+    EffectAssignmentButton.prototype = new Button();
+
     var Pot = function (options) {
         Component.call(this, options);
 
@@ -446,8 +453,15 @@
                 } else if (component.group.search(script.quickEffectRegEx) !== -1) {
                     component.group = '[QuickEffectRack1_' + this.currentDeck + ']';
                 }
-                // Do not alter the Component's group if it does not match any of those RegExs because
-                // that could break effects Components.
+                // Do not alter the Component's group if it does not match any of those RegExs.
+
+                if (component instanceof EffectAssignmentButton) {
+                    // The ControlObjects for assinging decks to effect units
+                    // indicate the effect unit with the group and the deck with the key,
+                    // so change the key here instead of the group.
+                    component.inKey = 'group_' + newGroup + '_enable';
+                    component.outKey = 'group_' + newGroup + '_enable';
+                }
             });
         },
         toggle: function () {
@@ -493,14 +507,6 @@
                 outConnect: false,
             });
         };
-        this.enableOnChannelButtons.addButton('Channel1');
-        this.enableOnChannelButtons.addButton('Channel2');
-        this.enableOnChannelButtons.addButton('Channel3');
-        this.enableOnChannelButtons.addButton('Channel4');
-        this.enableOnChannelButtons.addButton('Headphone');
-        this.enableOnChannelButtons.addButton('Master');
-        this.enableOnChannelButtons.addButton('Microphone');
-        this.enableOnChannelButtons.addButton('Auxiliary1');
 
         this.EffectUnitKnob = function (number) {
             this.number = number;
@@ -670,6 +676,7 @@
     exports.LoopToggleButton = LoopToggleButton;
     exports.HotcueButton = HotcueButton;
     exports.SamplerButton = SamplerButton;
+    exports.EffectAssignmentButton = EffectAssignmentButton;
     exports.Pot = Pot;
     exports.Encoder = Encoder;
     exports.ComponentContainer = ComponentContainer;
