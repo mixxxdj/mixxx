@@ -18,15 +18,15 @@ MaudioXponent.config = {
     pflMode : 0,            // 0 = Independent, 1 = Toggle
     syncFlashMode : 0,      // 0 = Off, 1 = Pulse, 2 = Toggle
     vuMeterMode : 1,        // 0 = Master, 1 = Channel
-    tapDuration : 250,      // Maximum touch duration for wheel tap (in milliseconds)
-}
+    tapDuration : 250       // Maximum touch duration for wheel tap (in milliseconds)
+};
 
 MaudioXponent.decks =
 [
     { noteOffset : 0, on : 0x90, off : 0x80, isLeft : true, isRight : false, isBankA : true, isBankB : false },
     { noteOffset : 1, on : 0x91, off : 0x81, isLeft : false, isRight : true, isBankA : true, isBankB : false },
     { noteOffset : 5, on : 0x95, off : 0x85, isLeft : true, isRight : false, isBankA : false, isBankB : true },
-    { noteOffset : 6, on : 0x96, off : 0x86, isLeft : false, isRight : true, isBankA : false, isBankB : true },
+    { noteOffset : 6, on : 0x96, off : 0x86, isLeft : false, isRight : true, isBankA : false, isBankB : true }
 ];
 
 MaudioXponent.state = {
@@ -34,7 +34,7 @@ MaudioXponent.state = {
     faderPosition : 0,      // Temporary storage for cross-fader position during punch-ins.
     focusedEffect : 0,
     plnumberpos : 0,
-    plnumberneg : 0,
+    plnumberneg : 0
 };
 
 MaudioXponent.buttons = {
@@ -182,7 +182,7 @@ MaudioXponent.initDecks = function() {
         engine.connectControl(group, "play_indicator", "MaudioXponent.onSampler");
     }
 
-    // Effects parameters... not working in Mixxx 2.0, should work in 2.1
+    // Effects parameters... soft-takeove not working in Mixxx 2.0, should work in 2.1
     for(i = 1; i <= 4; i++) {
         engine.softTakeover("[EffectRack1_EffectUnit" + i + "_Effect1]", "parameter1", true);
         engine.softTakeover("[EffectRack1_EffectUnit" + i + "_Effect1]", "parameter2", true);
@@ -539,8 +539,10 @@ MaudioXponent.onBeatActive = function(value, group) {
 
 MaudioXponent.onBeatLoop = function(value, group, control) {
     var deck = MaudioXponent.getDeck(group);
-    var offset = Math.log(parseInt(control.substring(9))) / Math.log(2)
-    midi.sendShortMsg(deck.on, MaudioXponent.buttons.loop1, value);
+    var offset = deck.shift
+        ? Math.log(1 / parseFloat(control.substring(9))) / Math.log(2)
+        : Math.log(parseFloat(control.substring(9))) / Math.log(2);
+    midi.sendShortMsg(deck.on, MaudioXponent.buttons.loop1 + offset, value);
 };
 
 MaudioXponent.onBpmChanged = function(value, group) {
