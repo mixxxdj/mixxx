@@ -58,14 +58,14 @@ LoopingControl::LoopingControl(QString group,
     connect(m_pLoopInGotoButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoopInGoto(double)));
 
-    m_pLoopOutGotoButton = new ControlPushButton(ConfigKey(group, "loop_out"));
-    connect(m_pLoopOutGotoButton, SIGNAL(valueChanged(double)),
+    m_pLoopOutButton = new ControlPushButton(ConfigKey(group, "loop_out"));
+    connect(m_pLoopOutButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoopOut(double)),
             Qt::DirectConnection);
-    m_pLoopOutGotoButton->set(0);
+    m_pLoopOutButton->set(0);
 
-    m_pLoopOutSeekButton = new ControlPushButton(ConfigKey(group, "loop_out_goto"));
-    connect(m_pLoopOutSeekButton, SIGNAL(valueChanged(double)),
+    m_pLoopOutGotoButton = new ControlPushButton(ConfigKey(group, "loop_out_goto"));
+    connect(m_pLoopOutGotoButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoopOutGoto(double)));
 
 
@@ -217,12 +217,13 @@ LoopingControl::LoopingControl(QString group,
 }
 
 LoopingControl::~LoopingControl() {
+    delete m_pLoopOutButton;
     delete m_pLoopOutGotoButton;
-    delete m_pLoopOutSeekButton;
     delete m_pLoopInButton;
     delete m_pLoopInGotoButton;
     delete m_pLoopExitButton;
     delete m_pReloopToggleButton;
+    delete m_pReloopCueButton;
     delete m_pCOLoopEnabled;
     delete m_pCOLoopStartPosition;
     delete m_pCOLoopEndPosition;
@@ -257,7 +258,9 @@ LoopingControl::~LoopingControl() {
         delete pLoopMove;
     }
     delete m_pCOLoopMoveForward;
+    delete m_pCOLoopMoveForwardBeatloopSize;
     delete m_pCOLoopMoveBackward;
+    delete m_pCOLoopMoveBackwardBeatloopSize;
 }
 
 void LoopingControl::slotLoopScale(double scaleFactor) {
@@ -982,13 +985,13 @@ void LoopingControl::slotLoopAutoToggle(double pressed) {
 void LoopingControl::slotLoopManualToggle(double pressed) {
     if (m_bLoopingEnabled) {
         slotReloopToggle(1.0);
-        m_bManualLoopTogglePressedToExitLoop = true;
+        m_bLoopManualTogglePressedToExitLoop = true;
     } else {
         if (pressed > 0.0) {
             slotLoopIn(1.0);
         } else {
-            if (m_bManualLoopTogglePressedToExitLoop) {
-                m_bManualLoopTogglePressedToExitLoop = false;
+            if (m_bLoopManualTogglePressedToExitLoop) {
+                m_bLoopManualTogglePressedToExitLoop = false;
             } else {
                 slotLoopOut(1.0);
             }

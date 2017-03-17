@@ -126,8 +126,8 @@ class LoopingControl : public EngineControl {
     ControlObject* m_pCOLoopEnabled;
     ControlPushButton* m_pLoopInButton;
     ControlPushButton* m_pLoopInGotoButton;
+    ControlPushButton* m_pLoopOutButton;
     ControlPushButton* m_pLoopOutGotoButton;
-    ControlPushButton* m_pLoopOutSeekButton;
     ControlPushButton* m_pLoopExitButton;
     ControlPushButton* m_pReloopToggleButton;
     ControlPushButton* m_pReloopCueButton;
@@ -139,7 +139,7 @@ class LoopingControl : public EngineControl {
 
     bool m_bLoopingEnabled;
     bool m_bLoopRollActive;
-    bool m_bManualLoopTogglePressedToExitLoop;
+    bool m_bLoopManualTogglePressedToExitLoop;
     // TODO(DSC) Make the following values double
     ControlValueAtomic<LoopSamples> m_loopSamples;
     QAtomicInt m_iCurrentSample;
