@@ -452,7 +452,7 @@ P32.Deck = function (deckNumbers, channel) {
     this.effectUnit.enableButtons[1].midi = [0x90 + channel, 0x03];
     this.effectUnit.enableButtons[2].midi = [0x90 + channel, 0x04];
     this.effectUnit.enableButtons[3].midi = [0x90 + channel, 0x05];
-    this.effectUnit.showParametersButton.midi = [0x90 + channel, 0x06];
+    this.effectUnit.effectFocusButton.midi = [0x90 + channel, 0x06];
     this.effectUnit.init();
 };
 P32.Deck.prototype = new components.Deck();

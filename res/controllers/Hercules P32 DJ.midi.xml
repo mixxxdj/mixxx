@@ -485,7 +485,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.showParametersButton.input</key>
+                <key>P32.leftDeck.effectUnit.effectFocusButton.input</key>
                 <status>0x91</status>
                 <midino>0x06</midino>
                 <options>
@@ -521,7 +521,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.showParametersButton.input</key>
+                <key>P32.leftDeck.effectUnit.effectFocusButton.input</key>
                 <status>0x94</status>
                 <midino>0x06</midino>
                 <options>
@@ -1575,7 +1575,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.showParametersButton.input</key>
+                <key>P32.rightDeck.effectUnit.effectFocusButton.input</key>
                 <status>0x92</status>
                 <midino>0x06</midino>
                 <options>
@@ -1611,7 +1611,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.showParametersButton.input</key>
+                <key>P32.rightDeck.effectUnit.effectFocusButton.input</key>
                 <status>0x95</status>
                 <midino>0x06</midino>
                 <options>
