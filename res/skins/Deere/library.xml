@@ -32,18 +32,6 @@
                 <Layout>vertical</Layout>
                 <Children>
                   <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <Children>
-                      <Template src="skin:hide_show_button.xml">
-                        <SetVariable name="TooltipId">show_library</SetVariable>
-                        <SetVariable name="object_name">LibraryToggle</SetVariable>
-                        <SetVariable name="control">[Library],show_library</SetVariable>
-                      </Template>
-                      <SearchBox>
-                      </SearchBox>
-                    </Children>
-                  </WidgetGroup>
-                  <WidgetGroup>
                     <ObjectName>PreviewDeckContainer</ObjectName>
                     <Layout>vertical</Layout>
                     <!-- When TextRow is laid out, we need to ignore our children.
@@ -142,7 +130,18 @@
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
-
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <Template src="skin:hide_show_button.xml">
+                        <SetVariable name="TooltipId">show_library</SetVariable>
+                        <SetVariable name="object_name">LibraryToggle</SetVariable>
+                        <SetVariable name="control">[Library],show_library</SetVariable>
+                      </Template>
+                      <SearchBox>
+                      </SearchBox>
+                    </Children>
+                  </WidgetGroup>
                   <!-- QSplitter between LibrarySidebar and CoverArt -->
                   <Splitter>
                     <ObjectName>LibraryCoverArtSplitter</ObjectName>
