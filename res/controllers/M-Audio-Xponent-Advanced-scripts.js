@@ -104,7 +104,7 @@ MaudioXponent.init = function (id) {
     MaudioXponent.initLights();
     MaudioXponent.syncLights();
 
-    //MaudioXponent.probeLights();
+    // MaudioXponent.probeLights();
 };
 
 MaudioXponent.initDecks = function() {
@@ -134,6 +134,9 @@ MaudioXponent.initDecks = function() {
         deck.filterMid = 1;
         deck.filterHigh = 1;
         deck.pregain = 1;
+        deck.isPlaying = function() {
+            return engine.getValue(this.group, "play");
+        }
 
         engine.connectControl(group, "play_indicator", "MaudioXponent.onPlay");
         engine.connectControl(group, "playposition", "MaudioXponent.onPlayPositionChange");
@@ -187,11 +190,12 @@ MaudioXponent.initDecks = function() {
         engine.softTakeover("[EffectRack1_EffectUnit" + i + "]", "mix", true);
     }
 
-    // TODO: It would be nice to discover some way to force the Xponent to dump its current status.
+    // It would be nice to discover some way to force the Xponent to dump its current status.
     // Until then, I just have to assume that you start on Bank A
-    MaudioXponent.bankSwitch(0, 0, 0, MaudioXponent.bankA, 0);    
+    MaudioXponent.bankSwitch(0, 0, 0, MaudioXponent.bankA, 0);
 };
 
+// Debug/Test-only function
 MaudioXponent.probeLights = function() {
     var status = 0xB4;
     // for(status = 0xB0; status < 0xC0; status++) {
@@ -323,7 +327,7 @@ MaudioXponent.vuMeter = function(mode, bank, side, value) {
 }
 
 MaudioXponent.bankSwitch = function(channel, control, value, status, group) {
-    //script.midiDebug(channel, control, value, status, group);
+    // script.midiDebug(channel, control, value, status, group);
     MaudioXponent.state.bank = status;
 
     if (status === MaudioXponent.bankA) {
@@ -364,7 +368,7 @@ MaudioXponent.beatsync = function(channel, control, value, status, group) {
 };
 
 MaudioXponent.punchIn = function(channel, control, value, status, group) {
-    //script.midiDebug(channel, control, value, status, group)
+    // script.midiDebug(channel, control, value, status, group)
     var deck = MaudioXponent.getDeck(group);
     var activate = (status == deck.on);
 
@@ -389,7 +393,7 @@ MaudioXponent.filterKill = function(channel, control, value, status, group) {
     if (control === MaudioXponent.buttons.gain) {
         // Gain Buttons
         if (activate && (MaudioXponent.leftDeck.shift && MaudioXponent.rightDeck.shift)) {
-            //Double-shift = cycle modes
+            // Double-shift = cycle modes
             var mode = MaudioXponent.config.vuMeterMode + 1;
             if (mode === 2) {
                 mode = 0;
@@ -420,7 +424,7 @@ MaudioXponent.onFilterKill = function(value, group, control) {
 };
 
 MaudioXponent.effectButton = function(channel, control, value, status, group) {
-    //script.midiDebug(channel, control, value, status, group);
+    // script.midiDebug(channel, control, value, status, group);
     var deck = MaudioXponent.getDeck(group);
     var currentControl = control - 0x0B;
     var group = "[EffectRack1_EffectUnit" + currentControl + "]";
@@ -496,7 +500,7 @@ MaudioXponent.wheel = function (channel, control, value, status, group) {
 };
 
 MaudioXponent.wheelTouch = function(channel, control, value, status, group) {
-    //script.midiDebug(channel, control, value, status, group)
+    // script.midiDebug(channel, control, value, status, group)
     var deck = MaudioXponent.getDeck(group);
     var activate = (status == deck.on);
 
@@ -540,7 +544,7 @@ MaudioXponent.onBeatLoop = function(value, group, control) {
 };
 
 MaudioXponent.onBpmChanged = function(value, group) {
-    //print ("BPM Change, " + group + ", value=" + value);
+    // print ("BPM Change, " + group + ", value=" + value);
 };
 
 MaudioXponent.onPlayPositionChange = function(value, group) {
@@ -550,7 +554,7 @@ MaudioXponent.onPlayPositionChange = function(value, group) {
     value = engine.getValue(group, "playposition");
     deck.playPosition = value;
 
-    if ((value < deck.warnAt) || (!engine.getValue(group, "play")) || (value >= deck.warnAt && deck.beatState)) {
+    if ((value < deck.warnAt) || (!deck.isPlaying()) || (value >= deck.warnAt && deck.beatState)) {
         midi.sendShortMsg(deck.progressMeterStatusByte, deck.progressMeterSecondByte, MaudioXponent.convert(value));
     } else {
         midi.sendShortMsg(deck.progressMeterStatusByte, deck.progressMeterSecondByte, 0x00);
@@ -558,7 +562,7 @@ MaudioXponent.onPlayPositionChange = function(value, group) {
 };
 
 MaudioXponent.hotcue = function(channel, control, value, status, group) {
-    //script.midiDebug(channel, control, value, status, group)
+    // script.midiDebug(channel, control, value, status, group)
     var deck = MaudioXponent.getDeck(group);
     var cueNumber = control - 0x16;
 
@@ -618,68 +622,22 @@ MaudioXponent.shift = function(channel, control, value, status, group) {
 };
 
 MaudioXponent.toggleScratchMode = function(channel, control, value, status, group) {
-    //script.midiDebug(channel, control, value, status, group);
+    // script.midiDebug(channel, control, value, status, group);
     var deck = MaudioXponent.getDeck(group);
     deck.scratchEnabled = !deck.scratchEnabled;
     midi.sendShortMsg(deck.on, MaudioXponent.buttons.scratch, deck.scratchEnabled);
 };
 
-MaudioXponent.playlist = function(channel, control, value, status, group) {
-    var deck = MaudioXponent.getDeck(group);
-    switch (control) {
-    case 28:
-        engine.setValue("[Playlist]", "SelectPrevTrack", 1);
-        midi.sendShortMsg(deck.on, control, true);
-        break;
-    case 29:
-        engine.setValue("[Playlist]", "SelectNextTrack", 1);
-        midi.sendShortMsg(deck.on, control, true);
-        break;
-    case 30:
-        var activenow = engine.getValue(deck.group, "play");
-        if (activenow == 1) {    // If currently active
-            engine.setValue("[Playlist]", "LoadSelectedIntoFirstStopped", 1);
-        } else {
-            engine.setValue(deck.group, "LoadSelectedTrack", 1);
-        }
-        midi.sendShortMsg(deck.on, control, true);
-        break;
-    case 31:
-        engine.setValue("[Playlist]", "SelectPrevPlaylist", 1);
-        midi.sendShortMsg(deck.on, control, true);
-        break;
-    case 32:
-        engine.setValue("[Playlist]", "SelectNextPlaylist", 1);
-        midi.sendShortMsg(deck.on, control, true);
-        break;
-    }
-};
-
-MaudioXponent.playlistoff = function(channel, control, value, status, group) {
-    var deck = MaudioXponent.getDeck(group);
-    midi.sendShortMsg(deck.on, control, false);
-};
-
 MaudioXponent.keyLock = function(channel, control, value, status, group) {
-    //script.midiDebug(channel, control, value, status);
+    // script.midiDebug(channel, control, value, status);
     var deck = MaudioXponent.getDeck(group);
 
     if (!deck.shift) {
         // Unshifted = Keylock
-        var currentValue = engine.getParameter(deck.group, "keylock");
-        if (currentValue == 0){
-            engine.setValue(deck.group,"keylock",0x01);
-        } else {
-            engine.setValue(deck.group,"keylock", 0x00);
-        }
+        engine.setValue(deck.group, "keylock", !engine.getParameter(deck.group, "keylock"));
     } else {
         // Shifted = Quantize
-        var currentValue = engine.getParameter(deck.group, "quantize");
-        if (currentValue == 0){
-            engine.setValue(deck.group,"quantize",0x01);
-        } else {
-            engine.setValue(deck.group,"quantize", 0x00);
-        }
+        engine.setValue(deck.group, "quantize", !engine.getParameter(deck.group, "quantize"));
     }
 };
 
@@ -689,19 +647,21 @@ MaudioXponent.onkeyLock = function(value, group) {
 };
 
 MaudioXponent.brake = function(channel, control, value, status, group) {
-    //script.midiDebug(channel, control, value, status, group);
+    // script.midiDebug(channel, control, value, status, group);
     var deck = MaudioXponent.getDeck(group);
     var activate = (status == deck.on);
 
     if (deck.shift) {
         engine.spinback(deck.id, activate);
     } else {
-        engine.brake(deck.id, activate);
+        if (deck.isPlaying()) {
+            engine.brake(deck.id, activate);
+        }
     }
 };
 
 MaudioXponent.cue = function(channel, control, value, status, group) {
-    //script.midiDebug(channel, control, value, status);
+    // script.midiDebug(channel, control, value, status);
     var deck = MaudioXponent.getDeck(group);
     var activate = (status == deck.on);
 
@@ -715,22 +675,25 @@ MaudioXponent.cue = function(channel, control, value, status, group) {
 };
 
 MaudioXponent.play = function(channel, control, value, status, group) {
-    //script.midiDebug(channel, control, value, status);
+    // script.midiDebug(channel, control, value, status);
     var deck = MaudioXponent.getDeck(group);
     var activate = (status == deck.on);
     if (activate) {
-        var playing = engine.getValue(group, "play");
-        engine.setValue(deck.group, "play", !playing);
+        engine.setValue(deck.group, "play", !deck.isPlaying());
     }
 };
 
 MaudioXponent.onPlay = function(value, group, control) {
     var deck = MaudioXponent.getDeck(group);
     midi.sendShortMsg(deck.on, MaudioXponent.buttons[control], value);
+
+    if (!value) {
+        midi.sendShortMsg(deck.on, MaudioXponent.buttons.sync, 0x00);
+    }
 };
 
 MaudioXponent.beatgridAdjust = function(channel, control, value, status, group) {
-    //script.midiDebug(channel, control, value, status, group);
+    // script.midiDebug(channel, control, value, status, group);
     var deck = MaudioXponent.getDeck(group);
 
     if (deck.shift) {
@@ -771,7 +734,7 @@ MaudioXponent.onTrackLoaded = function(duration, group) {
 };
 
 MaudioXponent.nudge = function(channel, control, value, status, group) {
-    //script.midiDebug(channel, control, value, status, group);
+    // script.midiDebug(channel, control, value, status, group);
     var deck = MaudioXponent.getDeck(group);
     var activate = (status === deck.on);
     engine.setValue(group, MaudioXponent.controls[control], activate);
@@ -783,7 +746,7 @@ MaudioXponent.onNudge = function(value, group, control) {
 };
 
 MaudioXponent.pfl = function(channel, control, value, status, group) {
-    //script.midiDebug(channel, control, value, status, group);
+    // script.midiDebug(channel, control, value, status, group);
     var deck = MaudioXponent.getDeck(group);
     var activate = (status == deck.on);
 
@@ -840,8 +803,7 @@ MaudioXponent.seek = function(channel, control, value, status, group) {
 
 MaudioXponent.sampler = function(channel, control, value, status, group) {
     // script.midiDebug(channel, control, value, status, group);
-    var shifted = MaudioXponent.decks[0].shift || MaudioXponent.decks[2].shift;
-    if (shifted) {
+    if (MaudioXponent.leftDeck.shift) {
         engine.setValue(group, "cue_gotoandstop", 1);
     } else {
         engine.setValue(group, "cue_gotoandplay", 1);
