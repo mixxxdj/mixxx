@@ -7,6 +7,8 @@ var loopEnabledDot = false;
 // Assign samplers on left side of the controller to left side of the crossfader
 // and samplers on right side of the controller to the right side of the crossfader
 var samplerCrossfaderAssign = true;
+// Toggle the effect units to control effect units 3/4 when toggling decks
+var toggleEffectUnits = false;
 
 /**
  * Hercules P32 DJ controller script for Mixxx 2.1
@@ -113,10 +115,20 @@ P32.slipButton = new components.Button({
     pressedToToggleDeck: false,
     input: function (channel, control, value, status, group) {
         if (P32.leftDeck.isShifted && value === 127) {
+            // PFL button is controlling effect unit assignment to headphones while
+            // shift is pressed, so switch it back to controlling PFL so
+            // reconnecting the output works.
+            P32.leftDeck.pfl.unshift();
             P32.leftDeck.toggle();
+            P32.leftDeck.effectUnit.toggle();
             this.pressedToToggleDeck = true;
         } else if (P32.rightDeck.isShifted && value === 127) {
+            // PFL button is controlling effect unit assignment to headphones while
+            // shift is pressed, so switch it back to controlling PFL so
+            // reconnecting the output works.
+            P32.rightDeck.pfl.unshift();
             P32.rightDeck.toggle();
+            P32.rightDeck.effectUnit.toggle();
             this.pressedToToggleDeck = true;
         } else {
             if (this.pressedToToggleDeck && value === 0) {
@@ -180,8 +192,16 @@ P32.Deck = function (deckNumbers, channel) {
 
     this.pfl = new components.Button({
         midi: [0x90 + channel, 0x10],
-        key: 'pfl',
         sendShifted: false,
+        unshift: function () {
+            this.group = theDeck.currentDeck;
+            this.inKey = 'pfl';
+        },
+        outKey: 'pfl',
+        shift: function () {
+            this.group = '[EffectRack1_EffectUnit' + theDeck.effectUnit.currentUnitNumber + ']';
+            this.inKey = 'group_[Headphones]_enable';
+        },
     });
 
     this.volume = new components.Pot({
@@ -202,11 +222,11 @@ P32.Deck = function (deckNumbers, channel) {
             number: i,
             on: P32.padColors.red
         });
+
         var row = Math.ceil(i/4);
         var column = ((i-1) % 4) + 1;
         var padGrid = channel - 1;
         var samplerNumber = (8 * (row-1)) + (column) + (padGrid * 4);
-        // Math.ceil(i/4) + (i + (channel - 1) * 4
         this.samplerButton[samplerNumber] = new components.SamplerButton({
             midi: [0x90 + channel, P32.PadNumToMIDIControl(i, 0)],
             number: samplerNumber,
@@ -262,6 +282,17 @@ P32.Deck = function (deckNumbers, channel) {
     this.tempSlow.send(P32.padColors.purple);
     this.tempFast.send(P32.padColors.purple);
     this.alignBeats.send(P32.padColors.blue);
+
+    this.enableEffectUnitButtons = new components.ComponentContainer(); //fii
+    for (var u = 1; u <= 4; u++) {
+        this.enableEffectUnitButtons[u] = new components.EffectAssignmentButton({
+            midi: [0x90 + channel, 0x40 - 1 + u],
+            effectUnit: u,
+            group: this.currentDeck,
+            on: P32.padColors.red,
+            off: P32.padColors.blue,
+        });
+    }
 
     // =================================== ENCODERS ==============================================
     this.loopSizeEncoder = new components.Encoder({
@@ -406,8 +437,14 @@ P32.Deck = function (deckNumbers, channel) {
         }
     });
 
-    // ==================================== EFFECTS ==============================================
-    this.effectUnit = new components.EffectUnit(deckNumbers[0]);
+    // ================================= EFFECTS =====================================
+    var unitNumbers;
+    if (toggleEffectUnits) {
+        unitNumbers = deckNumbers;
+    } else {
+        unitNumbers = deckNumbers[0];
+    }
+    this.effectUnit = new components.EffectUnit(unitNumbers);
     this.effectUnit.knobs[1].midi = [0xB0 + channel, 0x06];
     this.effectUnit.knobs[2].midi = [0xB0 + channel, 0x07];
     this.effectUnit.knobs[3].midi = [0xB0 + channel, 0x08];
@@ -416,18 +453,6 @@ P32.Deck = function (deckNumbers, channel) {
     this.effectUnit.enableButtons[2].midi = [0x90 + channel, 0x04];
     this.effectUnit.enableButtons[3].midi = [0x90 + channel, 0x05];
     this.effectUnit.showParametersButton.midi = [0x90 + channel, 0x06];
-    this.effectUnit.enableOnChannelButtons.Channel1.midi = [0x90 + channel, 0x40];
-    this.effectUnit.enableOnChannelButtons.Channel2.midi = [0x90 + channel, 0x41];
-    this.effectUnit.enableOnChannelButtons.Channel3.midi = [0x90 + channel, 0x42];
-    this.effectUnit.enableOnChannelButtons.Channel4.midi = [0x90 + channel, 0x43];
-    this.effectUnit.enableOnChannelButtons.Headphone.midi = [0x90 + channel, 0x34];
-    this.effectUnit.enableOnChannelButtons.Master.midi = [0x90 + channel, 0x35];
-    this.effectUnit.enableOnChannelButtons.Microphone.midi = [0x90 + channel, 0x36];
-    this.effectUnit.enableOnChannelButtons.Auxiliary1.midi = [0x90 + channel, 0x37];
-    this.effectUnit.enableOnChannelButtons.forEachComponent(function (button) {
-        button.on = P32.padColors.red;
-        button.off = P32.padColors.blue;
-    });
     this.effectUnit.init();
 };
 P32.Deck.prototype = new components.Deck();
