@@ -436,10 +436,20 @@
     };
 
     var Deck = function (deckNumbers) {
-        if (deckNumbers !== undefined && Array.isArray(deckNumbers)) {
-            // These must be unique to each instance, so they cannot be in the prototype.
-            this.currentDeck = '[Channel' + deckNumbers[0] + ']';
-            this.deckNumbers = deckNumbers;
+        if (deckNumbers !== undefined) {
+            if (Array.isArray(deckNumbers)) {
+                // These must be unique to each instance,
+                // so they cannot be in the prototype.
+                this.currentDeck = '[Channel' + deckNumbers[0] + ']';
+                this.deckNumbers = deckNumbers;
+            } else if (typeof deckNumbers === 'number' &&
+                      Math.floor(deckNumbers) === deckNumbers &&
+                      isFinite(deckNumbers)) {
+                this.currentDeck = '[Channel' + deckNumbers + ']';
+                this.deckNumbers = [deckNumbers];
+            }
+        } else {
+            print('ERROR! new Deck() called without specifying any deck numbers');
         }
     };
     Deck.prototype = new ComponentContainer({
@@ -477,9 +487,52 @@
         }
     });
 
-    EffectUnit = function (unitNumber) {
+    EffectUnit = function (unitNumbers) {
         var eu = this;
-        this.group = '[EffectRack1_EffectUnit' + unitNumber + ']';
+
+        if (unitNumbers !== undefined) {
+            if (Array.isArray(unitNumbers)) {
+                this.group = '[EffectRack1_EffectUnit' + unitNumbers[0] + ']';
+                this.currentUnitNumber = unitNumbers[0];
+                this.unitNumbers = unitNumbers;
+            } else if (typeof unitNumbers === 'number' &&
+                      Math.floor(unitNumbers) === unitNumbers &&
+                      isFinite(unitNumbers)) {
+                this.group = '[EffectRack1_EffectUnit' + unitNumbers + ']';
+                this.currentUnitNumber = unitNumbers;
+                this.unitNumbers = [unitNumbers];
+            }
+        } else {
+            print('ERROR! new EffectUnit() called without specifying any unit numbers!');
+        }
+
+        this.setCurrentUnit = function (newNumber) {
+            this.currentUnitNumber = newNumber;
+            this.group = '[EffectRack1_EffectUnit' + newNumber + ']';
+            this.reconnectComponents(function (component) {
+                var unitMatch = component.group.match(script.effectUnitRegEx);
+                if (unitMatch !== null) {
+                    component.group = eu.group;
+                } else {
+                    var effectMatch = component.group.match(script.individualEffectRegEx);
+                    if (effectMatch !== null) {
+                        component.group = '[EffectRack1_EffectUnit' +
+                                          eu.currentUnitNumber +
+                                          '_Effect' + effectMatch[2] + ']';
+                    }
+                }
+            });
+        };
+
+        this.toggle = function () {
+            var index = this.unitNumbers.indexOf(this.currentUnitNumber);
+            if (index === (this.unitNumbers.length - 1)) {
+                index = 0;
+            } else {
+                index += 1;
+            }
+            this.setCurrentUnit(this.unitNumbers[index]);
+        }
 
         this.dryWetKnob = new Pot({
             group: this.group,
@@ -514,7 +567,8 @@
         };
         this.EffectUnitKnob.prototype = new Pot({
             onParametersHide: function () {
-                this.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + this.number + ']';
+                this.group = '[EffectRack1_EffectUnit' + eu.currentUnitNumber + '_Effect' +
+                              this.number + ']';
                 this.inKey = 'meta';
             },
             onParametersShow: function () {
@@ -523,7 +577,7 @@
                     // manipulate metaknobs
                     this.onParametersHide();
                 } else {
-                    this.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' +
+                    this.group = '[EffectRack1_EffectUnit' + this.unitNumber + '_Effect' +
                                   focusedEffect + ']';
                     this.inKey = 'parameter' + this.number;
                 }
@@ -532,7 +586,8 @@
 
         this.EffectEnableButton = function (number) {
             this.number = number;
-            this.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + number + ']';
+            this.group = '[EffectRack1_EffectUnit' + eu.currentUnitNumber + '_Effect' +
+                          this.number + ']';
             Button.call(this);
         };
         this.EffectEnableButton.prototype = new Button({
