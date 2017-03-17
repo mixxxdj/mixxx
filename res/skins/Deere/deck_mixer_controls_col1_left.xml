@@ -8,7 +8,7 @@
   <WidgetGroup>
     <ObjectName>DeckMixer<Variable name="i"/>_Column1</ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>min,min</SizePolicy>
+    <SizePolicy>max,min</SizePolicy>
     <Children>
 
       <!--In 4 deck mode, show the gain knob above the EQs rather than above the level meters.-->

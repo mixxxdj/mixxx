@@ -8,7 +8,7 @@
   <WidgetGroup>
     <ObjectName>DeckMixer<Variable name="i"/>_Column2</ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>me,me</SizePolicy>
+    <SizePolicy>max,me</SizePolicy>
     <Children>
 
       <!-- PFL buttons need different spacing in 2 and 4 deck mixers. -->

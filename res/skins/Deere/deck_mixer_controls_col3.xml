@@ -8,7 +8,7 @@
   <WidgetGroup>
     <ObjectName>DeckMixer<Variable name="i"/>_Column3</ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>me,min</SizePolicy>
+    <SizePolicy>min,min</SizePolicy>
     <Children>
       <!--In 4 deck mode with EQs showing, hide the gain knob here and show it above the EQs.-->
       <WidgetGroup>
@@ -61,20 +61,6 @@
           </Transform>
         </Connection>
       </WidgetGroup>
-
-<!--      <WidgetGroup>
-        <Size>-1,-1me</Size>
-        <MaximumSize>-1,25</MaximumSize>
-        <Layout>vertical</Layout>
-        <Children/>
-        <Connection>
-          <ConfigKey>[Master],show_4decks</ConfigKey>
-          <BindProperty>visible</BindProperty>
-          <Transform>
-            <Not/>
-          </Transform>
-        </Connection>
-      </WidgetGroup>-->
 
       <WidgetGroup>
         <Size>22min,-1me</Size>
