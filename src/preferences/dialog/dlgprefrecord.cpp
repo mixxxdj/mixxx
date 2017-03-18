@@ -134,7 +134,7 @@ DlgPrefRecord::~DlgPrefRecord() {
     }
     foreach(QAbstractButton* widget, m_optionWidgets) {
         OptionGroupsLayout->removeWidget(widget);
-        emit(widget->deleteLater());
+        widget->deleteLater();
     }
     m_optionWidgets.clear();
 }
@@ -236,7 +236,7 @@ void DlgPrefRecord::setupEncoderUI(Encoder::Format selformat)
         optionsgroup.removeButton(widget);
         OptionGroupsLayout->removeWidget(widget);
         disconnect(widget, SIGNAL(clicked()), this, SLOT(slotGroupChanged()));
-        widget->deleteLater();
+        emit(widget->deleteLater());
     }
     m_optionWidgets.clear();
     if (settings->usesOptionGroups()) {
