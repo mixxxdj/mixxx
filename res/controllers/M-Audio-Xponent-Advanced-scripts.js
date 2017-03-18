@@ -671,7 +671,7 @@ MaudioXponent.cue = function(channel, control, value, status, group) {
 
     if (deck.shift) {
         if (activate) {
-            engine.setValue(deck.group, "LoadSelectedTrack", 1);
+            engine.setValue(deck.group, "start_stop", 1);
         }
     } else {
         engine.setValue(deck.group, "cue_default", activate);
