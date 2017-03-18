@@ -3170,12 +3170,12 @@
 
             <control>
                 <group>[Master]</group>
-                <key>crossfader</key>
+                <key>MaudioXponent.crossfader</key>
                 <description>Crossfader</description>
                 <status>0xB2</status>
                 <midino>0x07</midino>
                 <options>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -3185,7 +3185,7 @@
                 <status>0xB7</status>
                 <midino>0x07</midino>
                 <options>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
 

@@ -1,3 +1,5 @@
+/* global engine script midi */
+
 function MaudioXponent () {}
 
 // ----------   Global variables    ----------
@@ -18,7 +20,7 @@ MaudioXponent.config = {
     pflMode : 0,            // 0 = Independent, 1 = Toggle
     syncFlashMode : 0,      // 0 = Off, 1 = Pulse, 2 = Toggle
     vuMeterMode : 1,        // 0 = Master, 1 = Channel
-    tapDuration : 250       // Maximum touch duration for wheel tap (in milliseconds)
+    tapDuration : 250,       // Maximum touch duration for wheel tap (in milliseconds)
 };
 
 MaudioXponent.decks =
@@ -26,7 +28,7 @@ MaudioXponent.decks =
     { noteOffset : 0, on : 0x90, off : 0x80, isLeft : true, isRight : false, isBankA : true, isBankB : false },
     { noteOffset : 1, on : 0x91, off : 0x81, isLeft : false, isRight : true, isBankA : true, isBankB : false },
     { noteOffset : 5, on : 0x95, off : 0x85, isLeft : true, isRight : false, isBankA : false, isBankB : true },
-    { noteOffset : 6, on : 0x96, off : 0x86, isLeft : false, isRight : true, isBankA : false, isBankB : true }
+    { noteOffset : 6, on : 0x96, off : 0x86, isLeft : false, isRight : true, isBankA : false, isBankB : true },
 ];
 
 MaudioXponent.state = {
@@ -34,7 +36,7 @@ MaudioXponent.state = {
     faderPosition : 0,      // Temporary storage for cross-fader position during punch-ins.
     focusedEffect : 0,
     plnumberpos : 0,
-    plnumberneg : 0
+    plnumberneg : 0,
 };
 
 MaudioXponent.buttons = {
@@ -75,7 +77,7 @@ MaudioXponent.buttons = {
     "button_parameter2": 0x09,
     "button_parameter3": 0x0A,
     "gain": 0x0B,
-    "shift": 0x2C
+    "shift": 0x2C,
 };
 
 MaudioXponent.controls = {
@@ -99,7 +101,7 @@ MaudioXponent.logParams = function(functionName, a, b, c, d, e, f) {
     print("***");
 };
 
-MaudioXponent.init = function (id) {
+MaudioXponent.init = function () {
     MaudioXponent.initDecks();
     MaudioXponent.initLights();
     MaudioXponent.syncLights();
@@ -116,7 +118,7 @@ MaudioXponent.initDecks = function() {
     engine.connectControl("[Channel3]", "VuMeterL", function(value) { MaudioXponent.vuMeter(1, MaudioXponent.bankB, 0, value); });
     engine.connectControl("[Channel4]", "VuMeterR", function(value) { MaudioXponent.vuMeter(1, MaudioXponent.bankB, 1, value); });
 
-    for (channel = 1; channel <= MaudioXponent.maxDecks; channel++) {
+    for (var channel = 1; channel <= MaudioXponent.maxDecks; channel++) {
         var group = "[Channel" + (channel) + "]";
         var deck = MaudioXponent.decks[channel - 1];
         deck.id = channel;
@@ -136,7 +138,7 @@ MaudioXponent.initDecks = function() {
         deck.pregain = 1;
         deck.isPlaying = function() {
             return engine.getValue(this.group, "play");
-        }
+        };
 
         engine.connectControl(group, "play_indicator", "MaudioXponent.onPlay");
         engine.connectControl(group, "playposition", "MaudioXponent.onPlayPositionChange");
@@ -144,7 +146,7 @@ MaudioXponent.initDecks = function() {
         engine.connectControl(group, "beat_active", "MaudioXponent.onBeatActive");
         engine.connectControl(group, "eject", "MaudioXponent.onEject");
 
-        for (i = 1; i <= 5; i++) {
+        for (var i = 1; i <= 5; i++) {
             engine.connectControl(group, "hotcue_" + i + "_enabled", "MaudioXponent.onHotCue");
         }
 
@@ -168,6 +170,7 @@ MaudioXponent.initDecks = function() {
         engine.connectControl("[EqualizerRack1_" + group + "_Effect1]", "button_parameter2", "MaudioXponent.onFilterKill");
         engine.connectControl("[EqualizerRack1_" + group + "_Effect1]", "button_parameter3", "MaudioXponent.onFilterKill");
 
+        engine.softTakeover("[Master]", "crossfader", true);
         engine.softTakeover(group, "rate", true);
         engine.softTakeover(group, "volume", true);
 
@@ -178,7 +181,7 @@ MaudioXponent.initDecks = function() {
     }
 
     for (i = 1; i <=4; i++) {
-        var group = "[Sampler" + i + "]";
+        group = "[Sampler" + i + "]";
         engine.connectControl(group, "play_indicator", "MaudioXponent.onSampler");
     }
 
@@ -199,14 +202,14 @@ MaudioXponent.initDecks = function() {
 MaudioXponent.probeLights = function() {
     var status = 0xB4;
     // for(status = 0xB0; status < 0xC0; status++) {
-        for (var led in MaudioXponent.buttons) {
-            var byte2 = MaudioXponent.buttons[led];
-        // for(byte2 = 0; byte2 < 128; byte2++) {
-            for(byte3 = 0; byte3 < 128; byte3++) {
-                midi.sendShortMsg(status, byte2, byte3);
-                MaudioXponent.pauseScript(5);
-            }
+    for (var led in MaudioXponent.buttons) {
+        var byte2 = MaudioXponent.buttons[led];
+    // for(byte2 = 0; byte2 < 128; byte2++) {
+        for(var byte3 = 0; byte3 < 128; byte3++) {
+            midi.sendShortMsg(status, byte2, byte3);
+            MaudioXponent.pauseScript(5);
         }
+    }
     // }
 };
 
@@ -221,7 +224,7 @@ MaudioXponent.initLights = function () {
         MaudioXponent.pauseScript(15);
     }
 
-    for(i = 0; i <= 10; i += 1) {
+    for(var i = 0; i <= 10; i += 1) {
         var value = MaudioXponent.convert(i * 0.1);
         // VU meters
         midi.sendShortMsg(MaudioXponent.leftDeck.vuMeterStatusByte, MaudioXponent.leftDeck.vuMeterSecondByte, value);
@@ -236,7 +239,7 @@ MaudioXponent.initLights = function () {
 
     MaudioXponent.pauseScript(500);
 
-    for (var led in MaudioXponent.buttons) {
+    for (led in MaudioXponent.buttons) {
         midi.sendShortMsg(MaudioXponent.on, MaudioXponent.buttons[led], 0x00);
         midi.sendShortMsg(MaudioXponent.on + 1, MaudioXponent.buttons[led], 0x00);
         MaudioXponent.pauseScript(15);
@@ -251,7 +254,7 @@ MaudioXponent.initLights = function () {
     midi.sendShortMsg(MaudioXponent.rightDeck.progressMeterStatusByte, MaudioXponent.rightDeck.progressMeterSecondByte, 0);
 };
 
-MaudioXponent.shutdown = function (id) {
+MaudioXponent.shutdown = function () {
     for (var led in MaudioXponent.buttons) {
         midi.sendShortMsg(MaudioXponent.on, MaudioXponent.buttons[led], 0x00);
         midi.sendShortMsg(MaudioXponent.on + 1,MaudioXponent.buttons[led], 0x00);
@@ -270,7 +273,7 @@ MaudioXponent.shutdown = function (id) {
 };
 
 MaudioXponent.syncLights = function() {
-    for (i = 0; i < MaudioXponent.decks.length; i++) {
+    for (var i = 0; i < MaudioXponent.decks.length; i++) {
         var deck = MaudioXponent.decks[i];
 
         engine.trigger(deck.group, "play_indicator");
@@ -307,8 +310,8 @@ MaudioXponent.getDeck = function(group) {
 };
 
 MaudioXponent.pauseScript = function(ms) {
-    startDate = new Date();
-    currentDate = null;
+    var startDate = new Date();
+    var currentDate = null;
     while(currentDate-startDate < ms) currentDate = new Date();
 };
 
@@ -324,10 +327,10 @@ MaudioXponent.vuMeter = function(mode, bank, side, value) {
             }
         }
     }
-}
+};
 
-MaudioXponent.bankSwitch = function(channel, control, value, status, group) {
-    // script.midiDebug(channel, control, value, status, group);
+MaudioXponent.bankSwitch = function(channel, control, value, status) {
+    // script.midiDebug(channel, control, value, status);
     MaudioXponent.state.bank = status;
 
     if (status === MaudioXponent.bankA) {
@@ -373,7 +376,8 @@ MaudioXponent.punchIn = function(channel, control, value, status, group) {
     var activate = (status == deck.on);
 
     if (activate) {
-        MaudioXponent.state.faderPosition = faderPosition = engine.getValue("[Master]", "crossfader");
+        var faderPosition = engine.getValue("[Master]", "crossfader");
+        MaudioXponent.state.faderPosition = faderPosition;
 
         if ((faderPosition >= 0.90 && deck.isLeft) || (faderPosition <= -0.90 && deck.isRight)) {
             engine.setValue("[Master]", "crossfader", 0);
@@ -413,7 +417,7 @@ MaudioXponent.filterKill = function(channel, control, value, status, group) {
         }
     } else {
         // Low/Mid/High Buttons, momentary kill
-        var group = "[EqualizerRack1_" + deck.group + "_Effect1]";
+        group = "[EqualizerRack1_" + deck.group + "_Effect1]";
         engine.setValue(group, MaudioXponent.controls[control], activate);
     }
 };
@@ -427,7 +431,7 @@ MaudioXponent.effectButton = function(channel, control, value, status, group) {
     // script.midiDebug(channel, control, value, status, group);
     var deck = MaudioXponent.getDeck(group);
     var currentControl = control - 0x0B;
-    var group = "[EffectRack1_EffectUnit" + currentControl + "]";
+    group = "[EffectRack1_EffectUnit" + currentControl + "]";
 
     if (deck.shift) {
         // Cycle effects
@@ -447,7 +451,7 @@ MaudioXponent.effectButton = function(channel, control, value, status, group) {
         }
 
         // Light the focused effect
-        for (i = 0; i < 4; i++) {
+        for (var i = 0; i < 4; i++) {
             var ctrl = MaudioXponent.buttons.fx1 + i;
             var fxNum = i + 1;
             var newValue = (fxNum == MaudioXponent.state.focusedEffect) ? 1 : 0;
@@ -458,11 +462,10 @@ MaudioXponent.effectButton = function(channel, control, value, status, group) {
 
 MaudioXponent.effectParameter = function(channel, control, value, status, group) {
     // script.midiDebug(channel, control, value, status, group);
-    var deck = MaudioXponent.getDeck(group);
     var currentControl = control - 0x0B;
 
     if (MaudioXponent.state.focusedEffect != 0) {
-        var group = "[EffectRack1_EffectUnit" + MaudioXponent.state.focusedEffect + "_Effect1]";
+        group = "[EffectRack1_EffectUnit" + MaudioXponent.state.focusedEffect + "_Effect1]";
         var scaledValue = value / 0x7F;
 
         if (currentControl == 4) {
@@ -545,13 +548,12 @@ MaudioXponent.onBeatLoop = function(value, group, control) {
     midi.sendShortMsg(deck.on, MaudioXponent.buttons.loop1 + offset, value);
 };
 
-MaudioXponent.onBpmChanged = function(value, group) {
+MaudioXponent.onBpmChanged = function(/*value, group*/) {
     // print ("BPM Change, " + group + ", value=" + value);
 };
 
 MaudioXponent.onPlayPositionChange = function(value, group) {
     var deck = MaudioXponent.getDeck(group);
-    var status = MaudioXponent.bank
 
     value = engine.getValue(group, "playposition");
     deck.playPosition = value;
@@ -587,7 +589,7 @@ MaudioXponent.loopin = function(channel, control, value, status, group) {
     engine.setValue(deck.group, "loop_in", !deck.shift);
 };
 
-MaudioXponent.onLoopIn = function(value, group, control) {
+MaudioXponent.onLoopIn = function(value, group) {
     var deck = MaudioXponent.getDeck(group);
     midi.sendShortMsg(deck.on, MaudioXponent.buttons.loopIn, value);
 };
@@ -597,7 +599,7 @@ MaudioXponent.loopout = function(channel, control, value, status, group) {
     engine.setValue(deck.group, "loop_out", !deck.shift);
 };
 
-MaudioXponent.onLoopOut = function(value, group, control) {
+MaudioXponent.onLoopOut = function(value, group) {
     var deck = MaudioXponent.getDeck(group);
     midi.sendShortMsg(deck.on, MaudioXponent.buttons.loopOut, value);
 };
@@ -610,7 +612,7 @@ MaudioXponent.loopexit = function(channel, control, value, status, group) {
 MaudioXponent.onLoopExit = function(value, group, control) {
     var deck = MaudioXponent.getDeck(group);
     midi.sendShortMsg(deck.on, MaudioXponent.buttons.loop, engine.getValue(group, control) == 1);
-}
+};
 
 MaudioXponent.pitch = function(channel, control, value, status, group) {
     engine.setValue(group, "rate", script.midiPitch(control, value, status));
@@ -761,7 +763,7 @@ MaudioXponent.pfl = function(channel, control, value, status, group) {
             }
             MaudioXponent.config.pflMode = mode;
         } else {
-            for (i = 1; i <= MaudioXponent.decks.length; i++) {
+            for (var i = 1; i <= MaudioXponent.decks.length; i++) {
                 var grp = "[Channel" + i + "]";
                 if (grp === group) {
                     engine.setValue(grp, "pfl", !engine.getValue(grp, "pfl"));
@@ -812,16 +814,22 @@ MaudioXponent.sampler = function(channel, control, value, status, group) {
     }
 };
 
-MaudioXponent.onSampler = function(value, group, control) {
+MaudioXponent.onSampler = function(value, group) {
     var samplerNumber = parseInt(group.substring(8));
     var led = MaudioXponent.buttons.fx1 + samplerNumber - 1;
     midi.sendShortMsg(MaudioXponent.on, led, value);
     midi.sendShortMsg(MaudioXponent.on + 5, led, value);
 };
 
-MaudioXponent.onEject = function(value, group, control) {
+MaudioXponent.onEject = function(value, group) {
     if (value) {
         engine.setValue(group, "playposition", 0);
         MaudioXponent.onPlayPositionChange(null, group);
     }
+};
+
+MaudioXponent.crossfader = function(channel, control, value, status, group) {
+    //script.midiDebug(channel, control, value, status, group);
+    MaudioXponent.state.faderPosition = (value - 64) / 64;
+    engine.setValue(group, "crossfader", MaudioXponent.state.faderPosition);
 };
