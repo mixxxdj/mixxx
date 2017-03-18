@@ -1,11 +1,3 @@
-/**
-* @file encoderflacsettings.cpp
-* @author John Sully
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief storage of setting for flac encoder
-*/
-
 #ifndef DLGPREFRECORD_H
 #define DLGPREFRECORD_H
 

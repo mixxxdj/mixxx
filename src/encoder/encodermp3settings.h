@@ -25,6 +25,7 @@ class EncoderMp3Settings : public EncoderSettings {
 
     // Returns the list of quality values that it supports, to assign them to the slider
     QList<int> getQualityValues() const override;
+    QList<int> getVBRQualityValues() const;
     // Sets the quality value by its value
     void setQualityByValue(int qualityValue) override;
     // Sets the quality value by its index
@@ -46,6 +47,7 @@ class EncoderMp3Settings : public EncoderSettings {
   private:
     QList<OptionsGroup> m_radioList;
     QList<int> m_qualList;
+    QList<int> m_qualVBRList;
     UserSettingsPointer m_pConfig;
 };
 

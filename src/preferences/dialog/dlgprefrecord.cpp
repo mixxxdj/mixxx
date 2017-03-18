@@ -1,11 +1,3 @@
-/**
-* @file encoderflacsettings.cpp
-* @author John Sully
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief storage of setting for flac encoder
-*/
-
 #include <QFileDialog>
 #include <QDesktopServices>
 
@@ -13,6 +5,7 @@
 #include "recording/defs_recording.h"
 #include "control/controlobject.h"
 #include "encoder/encoder.h"
+#include "encoder/encodermp3settings.h"
 #include "control/controlproxy.h"
 #include "util/sandbox.h"
 
@@ -20,8 +13,8 @@
 DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_hider(parent),
-          m_selFormat("","",false),
-          m_pConfig(pConfig)
+          m_pConfig(pConfig),
+          m_selFormat("","",false)
           {
     setupUi(this);
 
@@ -243,7 +236,7 @@ void DlgPrefRecord::setupEncoderUI(Encoder::Format selformat)
         optionsgroup.removeButton(widget);
         OptionGroupsLayout->removeWidget(widget);
         disconnect(widget, SIGNAL(clicked()), this, SLOT(slotGroupChanged()));
-        emit(widget->deleteLater());
+        widget->deleteLater();
     }
     m_optionWidgets.clear();
     if (settings->usesOptionGroups()) {
@@ -280,6 +273,10 @@ void DlgPrefRecord::setupEncoderUI(Encoder::Format selformat)
     } else {
         m_hider.hideWidget(labelOptionGroup);
     }
+        // small hack for VBR
+    if (m_selFormat.internalName == ENCODING_MP3) {
+        updateTextQuality();
+    }
 }
 
 void DlgPrefRecord::slotSliderQuality() {
@@ -289,8 +286,30 @@ void DlgPrefRecord::slotSliderQuality() {
 
 void DlgPrefRecord::updateTextQuality() {
     EncoderSettingsPointer settings = EncoderFactory::getFactory().getEncoderSettings(m_selFormat, m_pConfig);
-    int quality = settings->getQualityValues().at(SliderQuality->value());
-    TextQuality->setText(QString(QString::number(quality) + " kbit/s"));
+    int quality;
+    // This should be handled somehow by the EncoderSettings classes, but currently
+    // I don't have a clean way to do it
+    bool isVbr = false;
+    if (m_selFormat.internalName == ENCODING_MP3) {
+        EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
+        int i=0;
+        foreach(QAbstractButton* widget, m_optionWidgets) {
+            if (widget->objectName() == group.groupCode) {
+                if (widget->isChecked() != Qt::Unchecked && widget->text() == "VBR") {
+                    isVbr = true;
+                }
+                i++;
+            }
+        }
+    }
+    if (isVbr) {
+        EncoderMp3Settings* settingsmp3 = static_cast<EncoderMp3Settings*>(&(*settings));
+        quality = settingsmp3->getVBRQualityValues().at(SliderQuality->value());
+        TextQuality->setText(QString(QString::number(quality) + " kbit/s"));
+    } else {
+        quality = settings->getQualityValues().at(SliderQuality->value());
+        TextQuality->setText(QString(QString::number(quality) + " kbit/s"));
+    }
 }
 
 void DlgPrefRecord::slotSliderCompression() {
@@ -307,6 +326,10 @@ void DlgPrefRecord::slotGroupChanged()
 {
     // On complex scenarios, one could want to enable or disable some controls when changing
     // these, but we don't have these needs now.
+    EncoderSettingsPointer settings = EncoderFactory::getFactory().getEncoderSettings(m_selFormat, m_pConfig);
+    if (settings->usesQualitySlider()) {
+        updateTextQuality();
+    }
 }
 
 void DlgPrefRecord::loadMetaData() {

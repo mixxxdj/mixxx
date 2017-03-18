@@ -15,18 +15,31 @@ EncoderMp3Settings::EncoderMp3Settings(UserSettingsPointer pConfig) :
     m_pConfig(pConfig)
 {
     // Added "32" because older settings started at index 1 with 48.
-    m_qualList.append(32);
-    m_qualList.append(48);
-    m_qualList.append(64);
-    m_qualList.append(80);
-    m_qualList.append(96);
-    m_qualList.append(112);
-    m_qualList.append(128);
-    m_qualList.append(160);
-    m_qualList.append(192);
-    m_qualList.append(224);
-    m_qualList.append(256);
-    m_qualList.append(320);
+    m_qualList.append(32); // mono
+    m_qualList.append(48); // mono
+    m_qualList.append(64); // mono
+    m_qualList.append(80); // mono
+    m_qualList.append(96); // mono
+    m_qualList.append(112); // stereo
+    m_qualList.append(128); // stereo
+    m_qualList.append(160); // stereo
+    m_qualList.append(192); // stereo
+    m_qualList.append(224); // stereo
+    m_qualList.append(256); // stereo
+    m_qualList.append(320); // stereo
+
+    m_qualVBRList.append(55);// V7 mono
+    m_qualVBRList.append(65);// V6 mono
+    m_qualVBRList.append(75);// V5 mono
+    m_qualVBRList.append(85);// V4 mono
+    m_qualVBRList.append(110);// V7
+    m_qualVBRList.append(120);// V6
+    m_qualVBRList.append(140);// V5
+    m_qualVBRList.append(160);// V4
+    m_qualVBRList.append(190);// V3
+    m_qualVBRList.append(200);// V2
+    m_qualVBRList.append(240);// V1
+    m_qualVBRList.append(260);// V0
     
     QList<QString> vbrmodes;
     vbrmodes.append("CBR");
@@ -43,6 +56,11 @@ EncoderMp3Settings::~EncoderMp3Settings()
 QList<int> EncoderMp3Settings::getQualityValues() const
 {
     return m_qualList;
+}
+
+QList<int> EncoderMp3Settings::getVBRQualityValues() const
+{
+    return m_qualVBRList;
 }
 
 // Sets the value

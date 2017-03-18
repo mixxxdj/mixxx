@@ -147,8 +147,9 @@ class EncoderMp3 : public Encoder {
     QString m_metaDataAlbum;
 
     int m_bitrate;
-    float m_vbr_index;
+    int m_vbr_index;
     vbr_mode m_encoding_mode;
+    MPEG_mode_e m_stereo_mode;
     unsigned char *m_bufferOut;
     int m_bufferOutSize;
     float *m_bufferIn[2];

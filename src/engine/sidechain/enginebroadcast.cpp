@@ -39,6 +39,7 @@ EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig)
           m_iShoutStatus(0),
           m_iShoutFailures(0),
           m_settings(pConfig),
+          m_pConfig(pConfig),
           m_encoder(nullptr),
           m_pMasterSamplerate(new ControlProxy("[Master]", "samplerate")),
           m_custom_metadata(false),

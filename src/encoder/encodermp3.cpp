@@ -254,23 +254,21 @@ void EncoderMp3::setEncoderSettings(const EncoderSettings& settings)
     int modeoption = settings.getSelectedOption(EncoderMp3Settings::ENCODING_MODE_GROUP);
     m_encoding_mode = (modeoption==0) ? vbr_off : (modeoption==1) ? vbr_abr : vbr_default;
 
-    if (m_encoding_mode != vbr_off) {
-        if (lame_set_VBR_quality) {
-            // vbr range 0 to 9.999 (best to worst). slider range (0 to max) worse to best.
-            int val = settings.getQualityValues().size() - 1 - settings.getQualityIndex();
-            if (val < 10) {
-                m_vbr_index = val;
-            } else {
-                m_vbr_index = 9.999f;
-            }
+    if (m_encoding_mode == vbr_off) {
+        if (m_bitrate > 100 ) {
+            m_stereo_mode = JOINT_STEREO;
         } else {
-            // vbr range 0 to 9 (best to worst). slider range (0 to max) worse to best.
-            int val = settings.getQualityValues().size() - 1 - settings.getQualityIndex();
-            if (val < 10) {
-                m_vbr_index = val;
-            } else {
-                m_vbr_index = 9;
-            }
+            m_stereo_mode = MONO;
+        }
+    } else {
+        // Inverting range: vbr 0 best, 9 worst. slider 0 min to max.
+        int val = settings.getQualityValues().size() - 1 - settings.getQualityIndex();
+        if (val < 8) {
+            m_stereo_mode = JOINT_STEREO;
+            m_vbr_index = val;
+        } else {
+            m_vbr_index = val-4;
+            m_stereo_mode = MONO;
         }
     }
 }
@@ -375,8 +373,8 @@ int EncoderMp3::initEncoder(int samplerate, QString errorMessage) {
     }
 
     unsigned long samplerate_in = samplerate;
-    unsigned long samplerate_out =
-            (samplerate_in > 48000 ? 48000 : samplerate_in);
+    // samplerate_out 0 means "let LAME pick the appropiate one"
+    unsigned long samplerate_out = (samplerate_in > 48000 ? 48000 : 0);
 
     m_lameFlags = lame_init();
 
@@ -389,27 +387,24 @@ int EncoderMp3::initEncoder(int samplerate, QString errorMessage) {
     lame_set_in_samplerate(m_lameFlags, samplerate_in);
     lame_set_out_samplerate(m_lameFlags, samplerate_out);
 
+    // Input channels into the encoder
     lame_set_num_channels(m_lameFlags, 2);
+    // Output channels (on the mp3 file)
     // mode = 0,1,2,3 = stereo, jstereo, dual channel (not supported), mono
     // Note: JOINT_STEREO is not "forced joint stereo" (That is lame_set_force_ms )
-    lame_set_mode(m_lameFlags, JOINT_STEREO);
+    lame_set_mode(m_lameFlags, m_stereo_mode);
 
     if (m_encoding_mode == vbr_off) {
         qDebug() << " CBR mode with bitrate: " << m_bitrate;
         lame_set_brate(m_lameFlags, m_bitrate);
-        //ret = lame_set_bWriteVbrTag(m_lameFlags, 1);
     } else if (m_encoding_mode == vbr_abr) {
         qDebug() << " ABR mode with bitrate: " << m_bitrate;
         lame_set_VBR(m_lameFlags, vbr_abr);
         lame_set_VBR_mean_bitrate_kbps(m_lameFlags, m_bitrate);
-    } else if (lame_set_VBR_quality) {
-        qDebug() << " VBR mode with new method and value: " << m_vbr_index;
-        lame_set_VBR(m_lameFlags, vbr_default);
-        lame_set_VBR_quality(m_lameFlags, m_vbr_index);
     } else {
-        qDebug() << " VBR mode with old method and value: " << m_vbr_index;
+        qDebug() << " VBR mode with value: " << m_vbr_index;
         lame_set_VBR(m_lameFlags, vbr_default);
-        lame_set_VBR_q(m_lameFlags, static_cast<int>(m_vbr_index));
+        lame_set_VBR_q(m_lameFlags, m_vbr_index);
     }
 
     lame_set_quality(m_lameFlags, 2);
