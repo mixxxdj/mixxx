@@ -122,7 +122,7 @@ class WTrackTableView : public WLibraryTableView {
     ControlProxy* m_pNumPreviewDecks;
 
     // Context menu machinery
-    QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu, *m_pSamplerMenu, *m_pBPMMenu;
+    QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateAddMenu, *m_pSamplerMenu, *m_pBPMMenu;
     WCoverArtMenu* m_pCoverMenu;
     QSignalMapper m_playlistMapper, m_crateMapper, m_deckMapper, m_samplerMapper;
 

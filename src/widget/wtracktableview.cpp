@@ -68,8 +68,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pSamplerMenu->setTitle(tr("Load to Sampler"));
     m_pPlaylistMenu = new QMenu(this);
     m_pPlaylistMenu->setTitle(tr("Add to Playlist"));
-    m_pCrateMenu = new QMenu(this);
-    m_pCrateMenu->setTitle(tr("Add to Crate"));
+    m_pCrateAdd = new QMenu(this);
+    m_pCrateAdd->setTitle(tr("Add to Crate"));
     m_pBPMMenu = new QMenu(this);
     m_pBPMMenu->setTitle(tr("BPM Options"));
     m_pCoverMenu = new WCoverArtMenu(this);
@@ -128,7 +128,7 @@ WTrackTableView::~WTrackTableView() {
     delete m_pMenu;
     delete m_pPlaylistMenu;
     delete m_pCoverMenu;
-    delete m_pCrateMenu;
+    delete m_pCrateAdd;
     delete m_pBpmLockAction;
     delete m_pBpmUnlockAction;
     delete m_pBpmDoubleAction;
@@ -826,24 +826,24 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     }
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOCRATE)) {
-        m_pCrateMenu->clear();
+        m_pCrateAdd->clear();
         CrateSelectResult allCrates(m_pTrackCollection->crates().selectCrates());
         Crate crate;
         while (allCrates.populateNext(&crate)) {
-            auto pAction = std::make_unique<QAction>(crate.getName(), m_pCrateMenu);
+            auto pAction = std::make_unique<QAction>(crate.getName(), m_pCrateAdd);
             pAction->setEnabled(!crate.isLocked());
             m_crateMapper.setMapping(pAction.get(), crate.getId().toInt());
             connect(pAction.get(), SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
-            m_pCrateMenu->addAction(pAction.get());
+            m_pCrateAdd->addAction(pAction.get());
             pAction.release();
         }
-        m_pCrateMenu->addSeparator();
-        QAction* newCrateAction = new QAction(tr("Create New Crate"), m_pCrateMenu);
-        m_pCrateMenu->addAction(newCrateAction);
+        m_pCrateAdd->addSeparator();
+        QAction* newCrateAction = new QAction(tr("Create New Crate"), m_pCrateAdd);
+        m_pCrateAdd->addAction(newCrateAction);
         m_crateMapper.setMapping(newCrateAction, CrateId().toInt());// invalid crate id for new crate
         connect(newCrateAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
 
-        m_pMenu->addMenu(m_pCrateMenu);
+        m_pMenu->addMenu(m_pCrateAdd);
     }
     m_pMenu->addSeparator();
 
