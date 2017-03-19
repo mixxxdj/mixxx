@@ -656,41 +656,50 @@
                     button.startEffectFocusChooseMode();
                 });
             },
-            input: function (channel, control, value, status, group) {
-                var showParameters = engine.getValue(this.group, "show_parameters");
-                if (value === 127) {
-                    if (showParameters) {
-                        this.longPressTimer = engine.beginTimer(275,
-                                                  this.startEffectFocusChooseMode,
-                                                  true);
+            unshift: function () {
+                this.input = function (channel, control, value, status, group) {
+                    var showParameters = engine.getValue(this.group, "show_parameters");
+                    if (this.isPress(channel, control, value, status)) {
+                        if (showParameters) {
+                            this.longPressTimer = engine.beginTimer(275,
+                                                      this.startEffectFocusChooseMode,
+                                                      true);
+                        } else {
+                            engine.setValue(this.group, "show_parameters", 1);
+                            engine.setValue(this.group, "show_focus", 1);
+                            engine.setValue(this.group, "focused_effect",
+                                            this.previouslyFocusedEffect);
+                            this.longPressTimer = engine.beginTimer(275,
+                                                      this.startEffectFocusChooseMode,
+                                                      true);
+                            this.pressedWhenParametersHidden = true;
+                        }
                     } else {
-                        engine.setValue(this.group, "show_parameters", 1);
-                        engine.setValue(this.group, "show_focus", 1);
-                        engine.setValue(this.group, "focused_effect",
-                                        this.previouslyFocusedEffect);
-                        this.longPressTimer = engine.beginTimer(275,
-                                                  this.startEffectFocusChooseMode,
-                                                  true);
-                        this.pressedWhenParametersHidden = true;
+                        if (this.longPressTimer) {
+                            engine.stopTimer(this.longPressTimer);
+                        }
+                        if (this.focusChooseMode) {
+                            eu.enableButtons.reconnectComponents(function (button) {
+                                button.stopEffectFocusChooseMode();
+                            });
+                            this.focusChooseMode = false;
+                        } else if (showParameters && !this.pressedWhenParametersHidden) {
+                            this.previouslyFocusedEffect = engine.getValue(this.group,
+                                                                          "focused_effect");
+                            engine.setValue(this.group, "focused_effect", 0);
+                            engine.setValue(this.group, "show_focus", 0);
+                            engine.setValue(this.group, "show_parameters", 0);
+                        }
+                        this.pressedWhenParametersHidden = false;
                     }
-                } else {
-                    if (this.longPressTimer) {
-                        engine.stopTimer(this.longPressTimer);
+                };
+            },
+            shift: function () {
+                this.input = function (channel, control, value, status, group) {
+                    if (this.isPress(channel, control, value, status)) {
+                        eu.toggle();
                     }
-                    if (this.focusChooseMode) {
-                        eu.enableButtons.reconnectComponents(function (button) {
-                            button.stopEffectFocusChooseMode();
-                        });
-                        this.focusChooseMode = false;
-                    } else if (showParameters && !this.pressedWhenParametersHidden) {
-                        this.previouslyFocusedEffect = engine.getValue(this.group,
-                                                                       "focused_effect");
-                        engine.setValue(this.group, "focused_effect", 0);
-                        engine.setValue(this.group, "show_focus", 0);
-                        engine.setValue(this.group, "show_parameters", 0);
-                    }
-                    this.pressedWhenParametersHidden = false;
-                }
+                };
             },
             outKey: 'focused_effect',
             output: function (value, group, control) {
