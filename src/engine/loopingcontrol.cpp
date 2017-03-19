@@ -792,6 +792,12 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         return;
     }
 
+    if (beats > 512.0) {
+        beats = 512;
+    } else if (beats < 1.0/32.0) {
+        beats = 1.0/32.0;
+    }
+
     if (m_pCOBeatLoopSize->get() != beats) {
         m_pCOBeatLoopSize->set(beats);
     }
