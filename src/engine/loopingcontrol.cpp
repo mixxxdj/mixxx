@@ -320,7 +320,7 @@ void LoopingControl::slotLoopHalve(double pressed) {
         return;
     }
 
-    if (currentLoopMatchesBeatloopSize()) {
+    if (currentLoopMatchesBeatloopSize() || m_bBeatloopEndPointIsEndOfTrack) {
         slotBeatLoop(m_pCOBeatLoopSize->get() / 2.0, true, false);
     } else {
         slotLoopScale(0.5);
@@ -448,6 +448,7 @@ void LoopingControl::slotLoopIn(double val) {
     }
 
     clearActiveBeatLoop();
+    m_bBeatloopEndPointIsEndOfTrack = false;
 
     // set loop-in position
     LoopSamples loopSamples = m_loopSamples.getValue();
@@ -541,6 +542,7 @@ void LoopingControl::slotLoopOut(double val) {
     }
 
     clearActiveBeatLoop();
+    m_bBeatloopEndPointIsEndOfTrack = false;
 
     // set loop out position
     loopSamples.end = pos;
@@ -921,9 +923,14 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         } else {
             newloopSamples.end += 2;
         }
-    } else if (newloopSamples.end > samples) {
+    }
+    if (newloopSamples.end > samples) {
         // Do not allow beat loops to go beyond the end of the track
         newloopSamples.end = samples;
+        // Let slotLoopHalve know to adjust beatloop_size
+        m_bBeatloopEndPointIsEndOfTrack = true;
+    } else {
+        m_bBeatloopEndPointIsEndOfTrack = false;
     }
 
     if (keepStartPoint && (enable || m_bLoopingEnabled)) {
