@@ -16,6 +16,9 @@ WBeatSpinBox::WBeatSpinBox(QWidget * parent,
     setDecimals(decimals);
     setMinimum(minimum);
     setMaximum(maximum);
+    // Prevent this widget from getting focused with tab
+    // to avoid interfering with using the library via keyboard.
+    setFocusPolicy(Qt::ClickFocus);
 
     connect(this, SIGNAL(valueChanged(double)),
             this, SLOT(slotSpinboxValueChanged(double)));
