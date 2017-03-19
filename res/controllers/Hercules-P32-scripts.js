@@ -7,8 +7,6 @@ var loopEnabledDot = false;
 // Assign samplers on left side of the controller to left side of the crossfader
 // and samplers on right side of the controller to the right side of the crossfader
 var samplerCrossfaderAssign = true;
-// Toggle the effect units to control effect units 3/4 when toggling decks
-var toggleEffectUnits = false;
 
 /**
  * Hercules P32 DJ controller script for Mixxx 2.1
@@ -120,7 +118,6 @@ P32.slipButton = new components.Button({
             // reconnecting the output works.
             P32.leftDeck.pfl.unshift();
             P32.leftDeck.toggle();
-            P32.leftDeck.effectUnit.toggle();
             this.pressedToToggleDeck = true;
         } else if (P32.rightDeck.isShifted && value === 127) {
             // PFL button is controlling effect unit assignment to headphones while
@@ -128,7 +125,6 @@ P32.slipButton = new components.Button({
             // reconnecting the output works.
             P32.rightDeck.pfl.unshift();
             P32.rightDeck.toggle();
-            P32.rightDeck.effectUnit.toggle();
             this.pressedToToggleDeck = true;
         } else {
             if (this.pressedToToggleDeck && value === 0) {
@@ -284,15 +280,34 @@ P32.Deck = function (deckNumbers, channel) {
     this.alignBeats.send(P32.padColors.blue);
 
     this.enableEffectUnitButtons = new components.ComponentContainer(); //fii
-    for (var u = 1; u <= 4; u++) {
-        this.enableEffectUnitButtons[u] = new components.EffectAssignmentButton({
-            midi: [0x90 + channel, 0x40 - 1 + u],
-            effectUnit: u,
-            group: this.currentDeck,
-            on: P32.padColors.red,
-            off: P32.padColors.blue,
-        });
-    }
+    this.enableEffectUnitButtons[1] = new components.EffectAssignmentButton({
+        midi: [0x90 + channel, 0x40],
+        effectUnit: 1,
+        group: this.currentDeck,
+        on: P32.padColors.blue,
+        off: P32.padColors.red,
+    });
+    this.enableEffectUnitButtons[2] = new components.EffectAssignmentButton({
+        midi: [0x90 + channel, 0x41],
+        effectUnit: 2,
+        group: this.currentDeck,
+        on: P32.padColors.blue,
+        off: P32.padColors.red,
+    });
+    this.enableEffectUnitButtons[3] = new components.EffectAssignmentButton({
+        midi: [0x90 + channel, 0x3C],
+        effectUnit: 3,
+        group: this.currentDeck,
+        on: P32.padColors.blue,
+        off: P32.padColors.red,
+    });
+    this.enableEffectUnitButtons[4] = new components.EffectAssignmentButton({
+        midi: [0x90 + channel, 0x3D],
+        effectUnit: 4,
+        group: this.currentDeck,
+        on: P32.padColors.blue,
+        off: P32.padColors.red,
+    });
 
     // =================================== ENCODERS ==============================================
     this.loopSizeEncoder = new components.Encoder({
@@ -438,13 +453,7 @@ P32.Deck = function (deckNumbers, channel) {
     });
 
     // ================================= EFFECTS =====================================
-    var unitNumbers;
-    if (toggleEffectUnits) {
-        unitNumbers = deckNumbers;
-    } else {
-        unitNumbers = deckNumbers[0];
-    }
-    this.effectUnit = new components.EffectUnit(unitNumbers);
+    this.effectUnit = new components.EffectUnit(deckNumbers);
     this.effectUnit.knobs[1].midi = [0xB0 + channel, 0x06];
     this.effectUnit.knobs[2].midi = [0xB0 + channel, 0x07];
     this.effectUnit.knobs[3].midi = [0xB0 + channel, 0x08];

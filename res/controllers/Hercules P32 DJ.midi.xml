@@ -694,7 +694,7 @@
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.enableEffectUnitButtons[3].input</key>
                 <status>0x94</status>
-                <midino>0x42</midino>
+                <midino>0x3C</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -703,7 +703,7 @@
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.enableEffectUnitButtons[3].input</key>
                 <status>0x91</status>
-                <midino>0x42</midino>
+                <midino>0x3C</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -712,7 +712,7 @@
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.enableEffectUnitButtons[4].input</key>
                 <status>0x91</status>
-                <midino>0x43</midino>
+                <midino>0x3D</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -721,7 +721,7 @@
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.enableEffectUnitButtons[4].input</key>
                 <status>0x94</status>
-                <midino>0x43</midino>
+                <midino>0x3D</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -2360,7 +2360,7 @@
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.enableEffectUnitButtons[3].input</key>
                 <status>0x92</status>
-                <midino>0x42</midino>
+                <midino>0x3C</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -2369,7 +2369,7 @@
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.enableEffectUnitButtons[3].input</key>
                 <status>0x95</status>
-                <midino>0x42</midino>
+                <midino>0x3C</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -2378,7 +2378,7 @@
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.enableEffectUnitButtons[4].input</key>
                 <status>0x92</status>
-                <midino>0x43</midino>
+                <midino>0x3D</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -2387,7 +2387,7 @@
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.enableEffectUnitButtons[4].input</key>
                 <status>0x95</status>
-                <midino>0x43</midino>
+                <midino>0x3D</midino>
                 <options>
                     <script-binding/>
                 </options>
