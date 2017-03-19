@@ -11,9 +11,9 @@ Variables:
     <SizePolicy>max,min</SizePolicy>
     <Children>
       <Template src="skin:button_2state_display.xml">
-        <SetVariable name="ToolTipId">hotcue</SetVariable>
+        <SetVariable name="TooltipId">hotcue</SetVariable>
         <SetVariable name="ObjectName">HotcueButton</SetVariable>
-        <SetVariable name="Size">23max,24f</SetVariable>
+        <SetVariable name="Size">19max,24f</SetVariable>
         <SetVariable name="state_0_text"><Variable name="HotCue"/></SetVariable>
         <SetVariable name="state_1_text"><Variable name="HotCue"/></SetVariable>
         <SetVariable name="ConfigKey"><Variable name="group"/>,hotcue_<Variable name="HotCue"/>_activate</SetVariable>

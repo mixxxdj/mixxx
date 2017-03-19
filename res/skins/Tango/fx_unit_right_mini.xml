@@ -29,7 +29,7 @@
           </Template>
             <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1min,1f</Size><Children/></WidgetGroup>
           <Template src="skin:button_2state.xml">
-            <SetVariable name="ToolTipId">EffectUnit_enabled</SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_enabled</SetVariable>
             <SetVariable name="ObjectName">EffectUnitToggleButton</SetVariable>
             <SetVariable name="Size">22f,1me</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,enabled</SetVariable>
@@ -46,14 +46,14 @@
         <Children>
 
           <Template src="skin:fx_superwetdry_knob_mini.xml">
-            <SetVariable name="ToolTipId">EffectUnit_mix</SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
             <SetVariable name="ObjectName">SuperWetDry</SetVariable>
             <SetVariable name="ConfigKey">mix</SetVariable>
             <SetVariable name="Color">red</SetVariable>
           </Template>
 
           <Template src="skin:fx_superwetdry_knob_mini.xml">
-            <SetVariable name="ToolTipId">EffectUnit_super1</SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
             <SetVariable name="ObjectName">SuperWetDry</SetVariable>
             <SetVariable name="ConfigKey">super1</SetVariable>
             <SetVariable name="Color">blue</SetVariable>
@@ -116,7 +116,7 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
-              <Template src="skin:fx_toggler_right.xml">
+              <Template src="skin:fx_selector_meta_right.xml">
                 <SetVariable name="Effect">1</SetVariable>
               </Template>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
@@ -135,7 +135,7 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
-              <Template src="skin:fx_toggler_right.xml">
+              <Template src="skin:fx_selector_meta_right.xml">
                 <SetVariable name="Effect">2</SetVariable>
               </Template>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
@@ -154,7 +154,7 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
-              <Template src="skin:fx_toggler_right.xml">
+              <Template src="skin:fx_selector_meta_right.xml">
                 <SetVariable name="Effect">3</SetVariable>
               </Template>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
@@ -190,7 +190,7 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
-              <Template src="skin:fx_toggler_right.xml">
+              <Template src="skin:fx_selector_meta_right.xml">
                 <SetVariable name="Effect">1</SetVariable>
               </Template>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
@@ -204,7 +204,7 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
-              <Template src="skin:fx_toggler_right.xml">
+              <Template src="skin:fx_selector_meta_right.xml">
                 <SetVariable name="Effect">2</SetVariable>
               </Template>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
@@ -218,7 +218,7 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
-              <Template src="skin:fx_toggler_right.xml">
+              <Template src="skin:fx_selector_meta_right.xml">
                 <SetVariable name="Effect">3</SetVariable>
               </Template>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>

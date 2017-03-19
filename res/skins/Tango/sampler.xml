@@ -54,7 +54,7 @@ Variables:
                   <Template src="skin:button_2state_right_display.xml">
                     <SetVariable name="ObjectName">SamplerPlayCue</SetVariable>
                     <SetVariable name="Size">34f,34f</SetVariable>
-                    <SetVariable name="ToolTipID">play_cue_set</SetVariable>
+                    <SetVariable name="TooltipId">play_cue_set</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,cue_gotoandplay</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
                     <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
@@ -138,7 +138,7 @@ Variables:
                         <SizePolicy>min,min</SizePolicy>
                         <Children>
                           <Template src="skin:button_2state.xml">
-                            <SetVariable name="ToolTipId">repeat</SetVariable>
+                            <SetVariable name="TooltipId">repeat</SetVariable>
                             <SetVariable name="ObjectName">SamplerButton</SetVariable>
                             <SetVariable name="Size">18f,18f</SetVariable>
                             <SetVariable name="state_0_pressed">sampler_repeat_off.svg</SetVariable>
@@ -148,7 +148,7 @@ Variables:
                             <SetVariable name="ConfigKey"><Variable name="group"/>,repeat</SetVariable>
                           </Template>
                           <Template src="skin:button_1state.xml">
-                            <SetVariable name="ToolTipId">eject</SetVariable>
+                            <SetVariable name="TooltipId">eject</SetVariable>
                             <SetVariable name="ObjectName">SamplerButton</SetVariable>
                             <SetVariable name="Size">18f,18f</SetVariable>
                             <SetVariable name="state_0_pressed">sampler_eject_pressed.svg</SetVariable>
@@ -164,7 +164,7 @@ Variables:
                         <Children>
 
                           <Template src="skin:button_3state.xml">
-                            <SetVariable name="ToolTipId">orientation</SetVariable>
+                            <SetVariable name="TooltipId">orientation</SetVariable>
                             <SetVariable name="ObjectName">SamplerButton</SetVariable>
                             <SetVariable name="Size">18f,18f</SetVariable>
                             <SetVariable name="state_0_pressed">sampler_cf_left_white.svg</SetVariable>
@@ -177,7 +177,7 @@ Variables:
                           </Template>
 
                           <Template src="skin:button_2state.xml">
-                            <SetVariable name="ToolTipId">keylock</SetVariable>
+                            <SetVariable name="TooltipId">keylock</SetVariable>
                             <SetVariable name="ObjectName">SamplerButton</SetVariable>
                             <SetVariable name="Size">18f,18f</SetVariable>
                             <SetVariable name="state_0_pressed">keylock_off.svg</SetVariable>
@@ -215,7 +215,7 @@ Variables:
                   <WidgetGroup><Size>0me,1min</Size><Children/></WidgetGroup>
 
                   <Template src="skin:button_1state.xml">
-                    <SetVariable name="ToolTipId">beatsync_beatsync_tempo</SetVariable>
+                    <SetVariable name="TooltipId">beatsync_beatsync_tempo</SetVariable>
                     <SetVariable name="ObjectName">SamplerSyncButton</SetVariable>
                     <SetVariable name="Size">35f,22f</SetVariable>
                     <SetVariable name="state_0_text">SYNC</SetVariable>
@@ -226,7 +226,7 @@ Variables:
                   <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
 
                   <Template src="skin:button_2state.xml">
-                    <SetVariable name="ToolTipID">pfl</SetVariable>
+                    <SetVariable name="TooltipId">pfl</SetVariable>
                     <SetVariable name="ObjectName">PflButton</SetVariable>
                     <SetVariable name="Size">22f,22f</SetVariable>
                     <SetVariable name="state_0_pressed">pfl_off.svg</SetVariable>
@@ -239,7 +239,7 @@ Variables:
                   <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
 
                   <Template src="skin:knob_textless.xml">
-                    <SetVariable name="ToolTipID">pregain</SetVariable>
+                    <SetVariable name="TooltipId">pregain</SetVariable>
                     <SetVariable name="ObjectName">SamplerGainKnob</SetVariable>
                     <SetVariable name="Size">22f,22f</SetVariable>
                     <SetVariable name="ConfigKey">volume</SetVariable>

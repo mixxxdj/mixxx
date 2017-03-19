@@ -13,7 +13,7 @@
     <SizePolicy>me,max</SizePolicy>
     <Children>
 
-      <WidgetGroup><!-- Effect togglers * highlightable -->
+      <WidgetGroup><!-- Effect _selector_meta_s * highlightable -->
         <ObjectName>AlignRightCenter</ObjectName>
         <SizePolicy>me,min</SizePolicy>
         <Layout>horizontal</Layout>
@@ -29,7 +29,7 @@
             <SizePolicy>min,me</SizePolicy>
             <Children>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-              <Template src="skin:fx_toggler_left.xml">
+              <Template src="skin:fx_selector_meta_left.xml">
                 <SetVariable name="Effect">1</SetVariable>
               </Template>
             </Children>
@@ -48,7 +48,7 @@
             <SizePolicy>min,me</SizePolicy>
             <Children>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-              <Template src="skin:fx_toggler_left.xml">
+              <Template src="skin:fx_selector_meta_left.xml">
                 <SetVariable name="Effect">2</SetVariable>
               </Template>
             </Children>
@@ -67,7 +67,7 @@
             <SizePolicy>min,me</SizePolicy>
             <Children>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-              <Template src="skin:fx_toggler_left.xml">
+              <Template src="skin:fx_selector_meta_left.xml">
                 <SetVariable name="Effect">3</SetVariable>
               </Template>
             </Children>
@@ -83,9 +83,9 @@
           <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_focus</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- /Effect togglers * highlightable -->
+      </WidgetGroup><!-- /Effect _selector_meta_s * highlightable -->
 
-      <WidgetGroup><!-- Effect togglers * no highlight -->
+      <WidgetGroup><!-- Effect _selector_meta_s * no highlight -->
         <ObjectName>AlignRightCenter</ObjectName>
         <SizePolicy>me,min</SizePolicy>
         <Layout>horizontal</Layout>
@@ -101,7 +101,7 @@
             <SizePolicy>min,me</SizePolicy>
             <Children>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-              <Template src="skin:fx_toggler_left.xml">
+              <Template src="skin:fx_selector_meta_left.xml">
                 <SetVariable name="Effect">1</SetVariable>
               </Template>
             </Children>
@@ -115,7 +115,7 @@
             <SizePolicy>min,me</SizePolicy>
             <Children>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-              <Template src="skin:fx_toggler_left.xml">
+              <Template src="skin:fx_selector_meta_left.xml">
                 <SetVariable name="Effect">2</SetVariable>
               </Template>
             </Children>
@@ -129,7 +129,7 @@
             <SizePolicy>min,me</SizePolicy>
             <Children>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-              <Template src="skin:fx_toggler_left.xml">
+              <Template src="skin:fx_selector_meta_left.xml">
                 <SetVariable name="Effect">3</SetVariable>
               </Template>
             </Children>
@@ -141,7 +141,7 @@
           <BindProperty>visible</BindProperty>
           <Transform><Not/></Transform>
         </Connection>
-      </WidgetGroup><!-- /Effect togglers * no highlight -->
+      </WidgetGroup><!-- /Effect _selector_meta_s * no highlight -->
 
       <WidgetGroup><!-- GroupButtons -->
         <Layout>horizontal</Layout>
@@ -192,14 +192,14 @@
         <Children>
 
           <Template src="skin:fx_superwetdry_knob_mini.xml">
-            <SetVariable name="ToolTipId">EffectUnit_super1</SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
             <SetVariable name="ObjectName">SuperWetDry</SetVariable>
             <SetVariable name="ConfigKey">super1</SetVariable>
             <SetVariable name="Color">blue</SetVariable>
           </Template>
 
           <Template src="skin:fx_superwetdry_knob_mini.xml">
-            <SetVariable name="ToolTipId">EffectUnit_mix</SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
             <SetVariable name="ObjectName">SuperWetDry</SetVariable>
             <SetVariable name="ConfigKey">mix</SetVariable>
             <SetVariable name="Color">red</SetVariable>
@@ -210,7 +210,7 @@
 
       <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
-      <WidgetGroup><!-- FX Unit toggler & miniMaxi button -->
+      <WidgetGroup><!-- FX Unit _selector_meta_ & miniMaxi button -->
         <ObjectName>AlignTopLeft</ObjectName>
         <SizePolicy>min,min</SizePolicy>
         <Layout>vertical</Layout>
@@ -222,13 +222,13 @@
           </Template>
             <WidgetGroup><Size>1min,1f</Size><Children/></WidgetGroup>
           <Template src="skin:button_2state.xml">
-            <SetVariable name="ToolTipId">EffectUnit_enabled</SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_enabled</SetVariable>
             <SetVariable name="ObjectName">EffectUnitToggleButton</SetVariable>
             <SetVariable name="Size">22f,1me</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,enabled</SetVariable>
           </Template>
         </Children>
-      </WidgetGroup><!-- /FX Unit toggler & miniMaxi button -->
+      </WidgetGroup><!-- /FX Unit _selector_meta_ & miniMaxi button -->
 
       <!-- This is necessary to compensate 1px left offset of right FX unit -->
       <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>

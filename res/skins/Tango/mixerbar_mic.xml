@@ -10,7 +10,7 @@
         <Children>
           <!-- This I left here in order to add an overlay (X) later on -->
           <Template src="skin:button_2state.xml">
-            <SetVariable name="ToolTipID">microphone_talkover</SetVariable>
+            <SetVariable name="TooltipId">microphone_talkover</SetVariable>
             <SetVariable name="ObjectName">MixerBar_MicAuxMuteButton</SetVariable>
             <SetVariable name="Size">20f,32f</SetVariable>
             <SetVariable name="ConfigKey">[Microphone<Variable name="MicNumber"/>],talkover</SetVariable>
@@ -18,7 +18,7 @@
           <!-- Using a Label here would be eaier, but there were problems
               centering its text. So I added a button just as display. -->
           <Template src="skin:button_2state.xml">
-            <SetVariable name="ToolTipID">microphone_talkover</SetVariable>
+            <SetVariable name="TooltipId">microphone_talkover</SetVariable>
             <SetVariable name="ObjectName">MixerBar_MicAuxMuteButtonUnderlay</SetVariable>
             <SetVariable name="Size">20f,32f</SetVariable>
             <SetVariable name="state_0_text"><Variable name="Label"/></SetVariable>
@@ -31,7 +31,7 @@
       <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
       <Template src="skin:knob_textless.xml">
-        <SetVariable name="ToolTipID"></SetVariable>
+        <SetVariable name="TooltipId"></SetVariable>
         <SetVariable name="ObjectName">MixerBarKnob</SetVariable>
         <SetVariable name="Size">28f,28f</SetVariable>
         <SetVariable name="group">[Microphone<Variable name="MicNumber"/>]</SetVariable>

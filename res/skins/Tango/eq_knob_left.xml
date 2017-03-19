@@ -42,7 +42,7 @@ Variables:
 
           <Template src="skin:button_2state.xml">
             <SetVariable name="ObjectName">EQKillButton</SetVariable>
-            <SetVariable name="ToolTipID"><Variable name="ToolTipID"/>Kill</SetVariable>
+            <SetVariable name="TooltipId"><Variable name="TooltipId"/>Kill</SetVariable>
             <SetVariable name="Size">12f,30f</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="EqualizerEffectGroup"/>,button_parameter<Variable name="parameter"/></SetVariable>
           </Template><!-- Kill button -->

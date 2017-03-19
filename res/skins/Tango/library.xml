@@ -25,7 +25,8 @@ Variables:
 
           <WidgetGroup><!-- Preview Search Cover Tree -->
             <Layout>vertical</Layout>
-            <Size>183min,74me</Size>
+            <!-- minSize so that 8 Preview HotCues (23+1 each) fit nicely -->
+            <Size>159min,74me</Size>
             <Children>
               <Template src="skin:preview_deck.xml"/>
               <Splitter><!-- Splitter to make CoverArt resizeable -->

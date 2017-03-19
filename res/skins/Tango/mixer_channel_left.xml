@@ -37,15 +37,15 @@ Variables:
                Filter knob is visible -->
           <Template src="skin:eq_knob_left.xml"><!-- High EQ -->
             <SetVariable name="parameter">3</SetVariable>
-            <SetVariable name="ToolTipID">filterHigh</SetVariable>
+            <SetVariable name="TooltipId">filterHigh</SetVariable>
           </Template>
           <Template src="skin:eq_knob_left.xml"><!-- Mid EQ -->
             <SetVariable name="parameter">2</SetVariable>
-            <SetVariable name="ToolTipID">filterMid</SetVariable>
+            <SetVariable name="TooltipId">filterMid</SetVariable>
           </Template>
           <Template src="skin:eq_knob_left.xml"><!-- Low EQ -->
             <SetVariable name="parameter">1</SetVariable>
-            <SetVariable name="ToolTipID">filterLow</SetVariable>
+            <SetVariable name="TooltipId">filterLow</SetVariable>
           </Template>
 
           <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
@@ -71,7 +71,7 @@ Variables:
                   <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
                   <Template src="skin:button_2state.xml">
-                    <SetVariable name="ToolTipID">pfl</SetVariable>
+                    <SetVariable name="TooltipId">pfl</SetVariable>
                     <SetVariable name="ObjectName">PflButton</SetVariable>
                     <SetVariable name="Size">28f,28f</SetVariable>
                     <SetVariable name="state_0_pressed">pfl_off.svg</SetVariable>
@@ -95,7 +95,7 @@ Variables:
 
                   <Template src="skin:knob_textless.xml">
                     <SetVariable name="ObjectName">FilterKnob</SetVariable>
-                    <SetVariable name="ToolTipID"></SetVariable>
+                    <SetVariable name="TooltipId"></SetVariable>
                     <SetVariable name="Size">30f,30f</SetVariable>
                     <SetVariable name="Color">blue</SetVariable>
                     <SetVariable name="group">[QuickEffectRack1_<Variable name="group"/>]</SetVariable>
@@ -105,7 +105,7 @@ Variables:
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
 
                   <Template src="skin:button_2state.xml">
-                    <SetVariable name="ToolTipID">pfl</SetVariable>
+                    <SetVariable name="TooltipId">pfl</SetVariable>
                     <SetVariable name="ObjectName">PflButton</SetVariable>
                     <SetVariable name="Size">24f,24f</SetVariable>
                     <SetVariable name="state_0_pressed">pfl_off.svg</SetVariable>
@@ -159,7 +159,7 @@ Variables:
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
               <Template src="skin:knob_textless.xml">
                 <SetVariable name="ObjectName">GainKnob</SetVariable>
-                <SetVariable name="ToolTipID">pregain</SetVariable>
+                <SetVariable name="TooltipId">pregain</SetVariable>
                 <SetVariable name="Size">30f,30f</SetVariable>
                 <SetVariable name="Color">yellow</SetVariable>
                 <SetVariable name="group"><Variable name="group"/></SetVariable>

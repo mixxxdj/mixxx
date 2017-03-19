@@ -21,6 +21,7 @@ Variables:
         </Template>
           <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
         <Template src="skin:button_2state_display.xml">
+          <SetVariable name="TooltipId">reloop_exit</SetVariable>
           <SetVariable name="ObjectName">LoopIndicator</SetVariable>
           <SetVariable name="Size">45f,45f</SetVariable>
           <SetVariable name="ConfigKey"><Variable name="group"/>,reloop_exit</SetVariable>

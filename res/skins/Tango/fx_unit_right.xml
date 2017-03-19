@@ -35,7 +35,7 @@
                   </Template>
                     <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
                   <Template src="skin:button_2state.xml">
-                    <SetVariable name="ToolTipId">EffectUnit_enabled</SetVariable>
+                    <SetVariable name="TooltipId">EffectUnit_enabled</SetVariable>
                     <SetVariable name="ObjectName">EffectUnitToggleButton</SetVariable>
                     <SetVariable name="Size">1me,20f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,enabled</SetVariable>
@@ -44,9 +44,7 @@
                   <Template src="skin:button_1state.xml">
                     <SetVariable name="ObjectName">EffectEject</SetVariable>
                     <SetVariable name="Size">20f,20f</SetVariable>
-                    <SetVariable name="ToolTipID">eject</SetVariable>
-                    <SetVariable name="state_0_pressed">eject_pressed.svg</SetVariable>
-                    <SetVariable name="state_0_unpressed">eject.svg</SetVariable>
+                    <SetVariable name="TooltipId">eject</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,clear</SetVariable>
                   </Template>
                 </Children>
@@ -61,7 +59,7 @@
                 <Children>
 
                   <Template src="skin:fx_superwetdry_knob.xml">
-                    <SetVariable name="ToolTipId">EffectUnit_mix</SetVariable>
+                    <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
                     <SetVariable name="ObjectName">SuperWetDry</SetVariable>
                     <SetVariable name="ConfigKey">mix</SetVariable>
                     <SetVariable name="Color">red</SetVariable>
@@ -69,7 +67,7 @@
                   </Template>
 
                   <Template src="skin:fx_superwetdry_knob.xml">
-                    <SetVariable name="ToolTipId">EffectUnit_super1</SetVariable>
+                    <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
                     <SetVariable name="ObjectName">SuperWetDry</SetVariable>
                     <SetVariable name="ConfigKey">super1</SetVariable>
                     <SetVariable name="Color">blue</SetVariable>
@@ -291,7 +289,7 @@
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:fx_toggler_right.xml">
+              <Template src="skin:fx_selector_meta_right.xml">
                 <SetVariable name="Effect">1</SetVariable>
                 <SetVariable name="fxSelectorSize">89f,20f</SetVariable>
               </Template>
@@ -316,7 +314,7 @@
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:fx_toggler_right.xml">
+              <Template src="skin:fx_selector_meta_right.xml">
                 <SetVariable name="Effect">2</SetVariable>
                 <SetVariable name="fxSelectorSize">89f,20f</SetVariable>
               </Template>
@@ -341,7 +339,7 @@
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:fx_toggler_right.xml">
+              <Template src="skin:fx_selector_meta_right.xml">
                 <SetVariable name="Effect">3</SetVariable>
                 <SetVariable name="fxSelectorSize">89f,20f</SetVariable>
               </Template>
@@ -376,7 +374,7 @@
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:fx_toggler_right.xml">
+              <Template src="skin:fx_selector_meta_right.xml">
                 <SetVariable name="Effect">1</SetVariable>
                 <SetVariable name="fxSelectorSize">89f,20f</SetVariable>
               </Template>
@@ -394,7 +392,7 @@
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:fx_toggler_right.xml">
+              <Template src="skin:fx_selector_meta_right.xml">
                 <SetVariable name="Effect">2</SetVariable>
                 <SetVariable name="fxSelectorSize">89f,20f</SetVariable>
               </Template>
@@ -412,7 +410,7 @@
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:fx_toggler_right.xml">
+              <Template src="skin:fx_selector_meta_right.xml">
                 <SetVariable name="Effect">3</SetVariable>
                 <SetVariable name="fxSelectorSize">89f,20f</SetVariable>
               </Template>

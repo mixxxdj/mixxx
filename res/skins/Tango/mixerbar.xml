@@ -207,7 +207,7 @@ Variables:
                     <Layout>vertical</Layout>
                     <Children>
                       <Template src="skin:button_2state.xml">
-                        <SetVariable name="ToolTipID">headSplit</SetVariable>
+                        <SetVariable name="TooltipId">headSplit</SetVariable>
                         <SetVariable name="ObjectName">MixerBarButton</SetVariable>
                         <SetVariable name="Size">38f,24f</SetVariable>
                         <SetVariable name="state_0_unpressed">headSplit_off.svg</SetVariable>
@@ -301,7 +301,7 @@ Variables:
                       </WidgetGroup>
 
                       <Template src="skin:knob_textless.xml">
-                        <SetVariable name="ToolTipID"></SetVariable>
+                        <SetVariable name="TooltipId"></SetVariable>
                         <SetVariable name="ObjectName">MixerBarKnob</SetVariable>
                         <SetVariable name="Size">28f,28f</SetVariable>
                         <SetVariable name="group">[Master]</SetVariable>

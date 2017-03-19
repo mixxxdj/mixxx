@@ -24,6 +24,7 @@ Variables:
             <Size>4f,1me</Size>
             <Children>
               <StatusLight>
+                <TooltiId>channel_VuMeter</TooltiId>
                 <PathStatusLight>skin:/graphics/vumeter_mixer_clipping_over.png</PathStatusLight>
                 <PathBack>skin:/graphics/vumeter_mixer_clipping.png</PathBack>
                 <Connection>
@@ -50,6 +51,7 @@ Variables:
             <Size>4f,1me</Size>
             <Children>
               <StatusLight>
+                <TooltiId>channel_VuMeter</TooltiId>
                 <PathStatusLight>skin:/graphics/vumeter_mixer_clipping_over.png</PathStatusLight>
                 <PathBack>skin:/graphics/vumeter_mixer_clipping.png</PathBack>
                 <Connection>

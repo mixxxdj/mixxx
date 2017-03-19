@@ -49,7 +49,7 @@ Modes:
                 <SizePolicy>me,min</SizePolicy>
                 <Layout>vertical</Layout>
                 <Children>
-                  <Template src="skin:samplers_mini.xml">
+                  <Template src="skin:sampler_rows_mini.xml">
                     <SetVariable name="MaxiButtonSize">0f,0f</SetVariable>
                   </Template>
                 </Children>
@@ -96,7 +96,7 @@ Modes:
                 <SizePolicy>me,min</SizePolicy>
                 <Layout>vertical</Layout>
                 <Children>
-                  <Template src="skin:samplers_maxi.xml"/>
+                  <Template src="skin:sampler_rows.xml"/>
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
@@ -110,7 +110,7 @@ Modes:
                 <SizePolicy>me,min</SizePolicy>
                 <Layout>vertical</Layout>
                 <Children>
-                  <Template src="skin:samplers_mini.xml">
+                  <Template src="skin:sampler_rows_mini.xml">
                     <SetVariable name="MaxiButtonSize">0f,0f</SetVariable>
                   </Template>
                 </Children>
@@ -152,7 +152,7 @@ Modes:
             <SizePolicy>me,max</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:samplers_maxi.xml"/>
+              <Template src="skin:sampler_rows.xml"/>
             </Children>
             <Connection>
               <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>

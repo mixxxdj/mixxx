@@ -379,7 +379,7 @@ Description:
               </Template>
 
               <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ToolTipID">show_previewdeck</SetVariable>
+                <SetVariable name="TooltipId">show_previewdeck</SetVariable>
                 <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
                 <SetVariable name="Size">172f,17f</SetVariable>
                 <SetVariable name="Align">left</SetVariable>

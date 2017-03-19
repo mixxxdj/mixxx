@@ -34,7 +34,7 @@ Variables:
               <Template src="skin:button_2state_right_display.xml">
                 <SetVariable name="ObjectName">SamplerPlayCue</SetVariable>
                 <SetVariable name="Size">34f,34f</SetVariable>
-                <SetVariable name="ToolTipID">play_cue_set</SetVariable>
+                <SetVariable name="TooltipId">play_cue_set</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,cue_gotoandplay</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
                 <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
@@ -179,7 +179,7 @@ Variables:
                   <WidgetGroup><Size>2f,1min</Size><Children/></WidgetGroup>
 
                   <Template src="skin:button_1state.xml">
-                    <SetVariable name="ToolTipId">beatsync_beatsync_tempo</SetVariable>
+                    <SetVariable name="TooltipId">beatsync_beatsync_tempo</SetVariable>
                     <SetVariable name="ObjectName">SamplerSyncButton</SetVariable>
                     <SetVariable name="Size">35f,22f</SetVariable>
                     <SetVariable name="state_0_text">SYNC</SetVariable>
@@ -190,7 +190,7 @@ Variables:
                   <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
 
                   <Template src="skin:button_3state.xml">
-                    <SetVariable name="ToolTipId">orientation</SetVariable>
+                    <SetVariable name="TooltipId">orientation</SetVariable>
                     <SetVariable name="ObjectName">SamplerButton_mini</SetVariable>
                     <SetVariable name="Size">18f,22f</SetVariable>
                     <SetVariable name="state_0_text">|--</SetVariable>
@@ -202,7 +202,7 @@ Variables:
                   <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
 
                   <Template src="skin:knob_textless.xml">
-                    <SetVariable name="ToolTipID">pregain</SetVariable>
+                    <SetVariable name="TooltipId">pregain</SetVariable>
                     <SetVariable name="ObjectName">SamplerGainKnob_mini</SetVariable>
                     <SetVariable name="Size">22f,22f</SetVariable>
                     <SetVariable name="group"><Variable name="group"/></SetVariable>

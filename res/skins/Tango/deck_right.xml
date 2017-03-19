@@ -191,7 +191,7 @@
                     <Elide>right</Elide>
                     <Channel><Variable name="channum"/></Channel>
                   </TrackProperty>
-                  <!-- This has to be here so that Comment expands as well -->
+                  <!-- This has to be here so that Comment expands horizontally as well -->
                   <WidgetGroup><Size>1me,0f</Size></WidgetGroup>
                 </Children>
                 <Connection>

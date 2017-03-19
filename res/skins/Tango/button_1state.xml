@@ -15,7 +15,7 @@ Variables:
 -->
 <Template>
 	<PushButton>
-		<TooltipId><Variable name="ToolTipID"/></TooltipId>
+		<TooltipId><Variable name="TooltipId"/></TooltipId>
 		<ObjectName><Variable name="ObjectName"/></ObjectName>
 		<Size><Variable name="Size"/></Size>
 		<NumberStates>1</NumberStates>

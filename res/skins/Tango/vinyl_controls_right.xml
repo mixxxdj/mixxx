@@ -31,7 +31,7 @@ Variables:
         <Children>
 
           <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="ToolTipID">vinylcontrol_enabled</SetVariable>
+            <SetVariable name="TooltipId">vinylcontrol_enabled</SetVariable>
             <SetVariable name="ObjectName">VinylButton</SetVariable>
             <SetVariable name="Size">40f,24f</SetVariable>
             <SetVariable name="state_0_text">VINYL</SetVariable>
@@ -40,7 +40,7 @@ Variables:
           </Template>
 
           <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="ToolTipID">passthrough_enabled</SetVariable>
+            <SetVariable name="TooltipId">passthrough_enabled</SetVariable>
             <SetVariable name="ObjectName">VinylButton</SetVariable>
             <SetVariable name="Size">40f,24f</SetVariable>
             <SetVariable name="state_0_text">PASS</SetVariable>
@@ -60,7 +60,7 @@ Variables:
         <Children>
 
           <Template src="skin:button_3state_persist.xml">
-            <SetVariable name="ToolTipID">vinylcontrol_mode</SetVariable>
+            <SetVariable name="TooltipId">vinylcontrol_mode</SetVariable>
             <SetVariable name="ObjectName">VinylModeButton</SetVariable>
             <SetVariable name="Size">40f,23me</SetVariable>
             <SetVariable name="state_0_text">ABS</SetVariable>
@@ -101,7 +101,7 @@ Variables:
               </WidgetGroup>
 
               <Template src="skin:button_3state_persist.xml">
-                <SetVariable name="ToolTipID">vinylcontrol_cueing</SetVariable>
+                <SetVariable name="TooltipId">vinylcontrol_cueing</SetVariable>
                 <SetVariable name="ObjectName">VinylButton</SetVariable>
                 <SetVariable name="Size">40f,23me</SetVariable>
                 <SetVariable name="state_0_text">CUE</SetVariable>

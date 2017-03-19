@@ -18,13 +18,13 @@ Variables:
             <Size>770me,82f</Size>
             <Children>
 
-              <Template src="skin:sampler_maxi.xml">
+              <Template src="skin:sampler.xml">
                 <SetVariable name="samplernum">1</SetVariable>
               </Template>
 
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
-              <Template src="skin:sampler_maxi.xml">
+              <Template src="skin:sampler.xml">
                 <SetVariable name="samplernum">2</SetVariable>
               </Template>
 
@@ -62,13 +62,13 @@ Variables:
 
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
-              <Template src="skin:sampler_maxi.xml">
+              <Template src="skin:sampler.xml">
                 <SetVariable name="samplernum">3</SetVariable>
               </Template>
 
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
-              <Template src="skin:sampler_maxi.xml">
+              <Template src="skin:sampler.xml">
                 <SetVariable name="samplernum">4</SetVariable>
               </Template>
 
@@ -81,25 +81,25 @@ Variables:
             <Size>770me,82f</Size>
             <Children>
 
-              <Template src="skin:sampler_maxi.xml">
+              <Template src="skin:sampler.xml">
                 <SetVariable name="samplernum">5</SetVariable>
               </Template>
 
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
-              <Template src="skin:sampler_maxi.xml">
+              <Template src="skin:sampler.xml">
                 <SetVariable name="samplernum">6</SetVariable>
               </Template>
 
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
-              <Template src="skin:sampler_maxi.xml">
+              <Template src="skin:sampler.xml">
                 <SetVariable name="samplernum">7</SetVariable>
               </Template>
 
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
-              <Template src="skin:sampler_maxi.xml">
+              <Template src="skin:sampler.xml">
                 <SetVariable name="samplernum">8</SetVariable>
               </Template>
 
@@ -118,7 +118,7 @@ Variables:
         </Connection>
       </WidgetGroup><!-- /2  4x2 Maximized Samplers -->
 
-      <Template src="skin:samplers_mini.xml" on-hide-select="0">
+      <Template src="skin:sampler_rows_mini.xml" on-hide-select="0">
         <SetVariable name="MaxiButtonSize">22me,13f</SetVariable>
       </Template>
 

@@ -25,7 +25,7 @@ Variables:
         <Size>51f,30f</Size>
         <Children>
           <Template src="skin:knob_textless.xml">
-                <SetVariable name="ToolTipId">EffectSlot_parameter</SetVariable>
+                <SetVariable name="TooltipId">EffectSlot_parameter</SetVariable>
             <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>]</SetVariable>
             <SetVariable name="ConfigKey">parameter<Variable name="EffectParameter"/></SetVariable>
             <SetVariable name="Size">30f,30f</SetVariable>
@@ -36,7 +36,7 @@ Variables:
 
       <Template src="skin:button_5state.xml">
         <SetVariable name="ObjectName">EffectLinkTypeButton</SetVariable>
-        <SetVariable name="ToolTipID">EffectSlot_parameter_link_type</SetVariable>
+        <SetVariable name="TooltipId">EffectSlot_parameter_link_type</SetVariable>
         <SetVariable name="Size">51f,38f</SetVariable>
         <SetVariable name="ConfigKey">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/>_link_type</SetVariable>
       </Template>

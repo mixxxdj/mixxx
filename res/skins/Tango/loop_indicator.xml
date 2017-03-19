@@ -16,6 +16,7 @@ Variables:
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:button_2state_display.xml">
+            <SetVariable name="TooltipId">reloop_exit</SetVariable>
             <SetVariable name="ObjectName">LoopIndicator</SetVariable>
             <SetVariable name="Size">50f,44me</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,reloop_exit</SetVariable>

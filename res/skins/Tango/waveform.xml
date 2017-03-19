@@ -93,7 +93,7 @@ Variables:
             <Children>
 
               <Template src="skin:button_1state.xml">
-                <SetVariable name="ToolTipId">beats_translate_curpos</SetVariable>
+                <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
                 <SetVariable name="ObjectName">BeatgridButton</SetVariable>
                 <SetVariable name="Size">25f,50f</SetVariable>
                 <SetVariable name="state_0_pressed">beats_curpos.svg</SetVariable>
@@ -106,7 +106,7 @@ Variables:
                 <SizePolicy>f,f</SizePolicy>
                 <Children>
                   <Template src="skin:button_1state.xml">
-                    <SetVariable name="ToolTipId">beats_translate_earlier</SetVariable>
+                    <SetVariable name="TooltipId">beats_translate_earlier</SetVariable>
                     <SetVariable name="ObjectName">BeatgridButton</SetVariable>
                     <SetVariable name="Size">25f,25f</SetVariable>
                     <SetVariable name="state_0_pressed">beats_earlier.svg</SetVariable>
@@ -114,7 +114,7 @@ Variables:
                     <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_earlier</SetVariable>
                   </Template>
                   <Template src="skin:button_1state.xml">
-                    <SetVariable name="ToolTipId">beats_adjust_faster</SetVariable>
+                    <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
                     <SetVariable name="ObjectName">BeatgridButton</SetVariable>
                     <SetVariable name="Size">25f,25f</SetVariable>
                     <SetVariable name="state_0_pressed">beats_faster.svg</SetVariable>
@@ -129,7 +129,7 @@ Variables:
                 <SizePolicy>f,f</SizePolicy>
                 <Children>
                   <Template src="skin:button_1state.xml">
-                    <SetVariable name="ToolTipId">beats_translate_later</SetVariable>
+                    <SetVariable name="TooltipId">beats_translate_later</SetVariable>
                     <SetVariable name="ObjectName">BeatgridButton</SetVariable>
                     <SetVariable name="Size">25f,25f</SetVariable>
                     <SetVariable name="state_0_pressed">beats_later.svg</SetVariable>
@@ -137,7 +137,7 @@ Variables:
                     <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_later</SetVariable>
                   </Template>
                   <Template src="skin:button_1state.xml">
-                    <SetVariable name="ToolTipId">beats_adjust_slower</SetVariable>
+                    <SetVariable name="TooltipId">beats_adjust_slower</SetVariable>
                     <SetVariable name="ObjectName">BeatgridButton</SetVariable>
                     <SetVariable name="Size">25f,25f</SetVariable>
                     <SetVariable name="state_0_pressed">beats_slower.svg</SetVariable>
@@ -254,7 +254,7 @@ Variables:
             <Children>
 
               <Template src="skin:button_1state.xml">
-                <SetVariable name="ToolTipId">beats_translate_curpos</SetVariable>
+                <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
                 <SetVariable name="ObjectName">BeatgridButton</SetVariable>
                 <SetVariable name="Size">25f,50f</SetVariable>
                 <SetVariable name="state_0_pressed">beats_curpos.svg</SetVariable>
@@ -267,7 +267,7 @@ Variables:
                 <SizePolicy>f,f</SizePolicy>
                 <Children>
                   <Template src="skin:button_1state.xml">
-                    <SetVariable name="ToolTipId">beats_translate_earlier</SetVariable>
+                    <SetVariable name="TooltipId">beats_translate_earlier</SetVariable>
                     <SetVariable name="ObjectName">BeatgridButton</SetVariable>
                     <SetVariable name="Size">25f,25f</SetVariable>
                     <SetVariable name="state_0_pressed">beats_earlier.svg</SetVariable>
@@ -275,7 +275,7 @@ Variables:
                     <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_earlier</SetVariable>
                   </Template>
                   <Template src="skin:button_1state.xml">
-                    <SetVariable name="ToolTipId">beats_adjust_faster</SetVariable>
+                    <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
                     <SetVariable name="ObjectName">BeatgridButton</SetVariable>
                     <SetVariable name="Size">25f,25f</SetVariable>
                     <SetVariable name="state_0_pressed">beats_faster.svg</SetVariable>
@@ -290,7 +290,7 @@ Variables:
                 <SizePolicy>f,f</SizePolicy>
                 <Children>
                   <Template src="skin:button_1state.xml">
-                    <SetVariable name="ToolTipId">beats_translate_later</SetVariable>
+                    <SetVariable name="TooltipId">beats_translate_later</SetVariable>
                     <SetVariable name="ObjectName">BeatgridButton</SetVariable>
                     <SetVariable name="Size">25f,25f</SetVariable>
                     <SetVariable name="state_0_pressed">beats_later.svg</SetVariable>
@@ -298,7 +298,7 @@ Variables:
                     <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_later</SetVariable>
                   </Template>
                   <Template src="skin:button_1state.xml">
-                    <SetVariable name="ToolTipId">beats_adjust_slower</SetVariable>
+                    <SetVariable name="TooltipId">beats_adjust_slower</SetVariable>
                     <SetVariable name="ObjectName">BeatgridButton</SetVariable>
                     <SetVariable name="Size">25f,25f</SetVariable>
                     <SetVariable name="state_0_pressed">beats_slower.svg</SetVariable>

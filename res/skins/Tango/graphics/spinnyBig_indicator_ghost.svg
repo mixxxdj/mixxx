@@ -15,7 +15,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="spinny2_indicator_ghost.svg"
+   sodipodi:docname="spinnyBig_indicator_ghost.svg"
    enable-background="new">
   <defs
      id="defs4">
@@ -70,17 +70,19 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="7.919596"
-     inkscape:cx="21.573478"
-     inkscape:cy="58.389962"
+     inkscape:zoom="15.839192"
+     inkscape:cx="41.94955"
+     inkscape:cy="78.259395"
      inkscape:document-units="px"
      inkscape:current-layer="layer3"
      showgrid="false"
-     inkscape:window-width="1920"
-     inkscape:window-height="1056"
+     inkscape:window-width="1366"
+     inkscape:window-height="747"
      inkscape:window-x="0"
-     inkscape:window-y="24"
-     inkscape:window-maximized="1" />
+     inkscape:window-y="21"
+     inkscape:window-maximized="1"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-nodes="true" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -89,7 +91,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -154,11 +156,14 @@
      id="layer3"
      inkscape:label="indicator"
      style="opacity:0.95999995;display:inline">
-    <path
-       style="fill:#9c9c9c;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       d="M 46,3.7264493 C 45.96903,2.8335721 46.545072,1.949526 47.936937,1.9914377 49.328802,2.0333497 49.963562,2.675413 49.984216,3.742233 L 50,42.800846 C 50,43.482472 48.712307,43.913653 47.950679,43.9057 47.18905,43.897748 46.015784,43.447975 46,42.800846 z"
-       id="rect3776"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="czcczcc" />
+    <rect
+       style="fill:#181818;fill-opacity:1;stroke:#ffffff;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect3957"
+       width="3.0011821"
+       height="40.915802"
+       x="46.498817"
+       y="2.4900041"
+       rx="1.5"
+       ry="1.5" />
   </g>
 </svg>

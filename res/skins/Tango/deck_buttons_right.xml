@@ -10,6 +10,7 @@
         <Children>
           <Template src="skin:button_2state_right_display.xml"><!-- Play -->
             <SetVariable name="ObjectName">PlayCue</SetVariable>
+            <SetVariable name="TooltipId">play_cue_set</SetVariable>
             <SetVariable name="Size">50f,24f</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
             <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
@@ -78,7 +79,7 @@
               <Template src="skin:button_2state_persist.xml">
                 <SetVariable name="ObjectName">DeckButton</SetVariable>
                 <SetVariable name="Size">22f,22f</SetVariable>
-                <SetVariable name="ToolTipID">quantize</SetVariable>
+                <SetVariable name="TooltipId">quantize</SetVariable>
                 <SetVariable name="state_0_pressed">quantize_off.svg</SetVariable>
                 <SetVariable name="state_0_unpressed">quantize_off.svg</SetVariable>
                 <SetVariable name="state_1_pressed">quantize_on.svg</SetVariable>
@@ -88,7 +89,7 @@
               <Template src="skin:button_3state.xml">
                 <SetVariable name="ObjectName">DeckButton</SetVariable>
                 <SetVariable name="Size">20f,22f</SetVariable>
-                <SetVariable name="ToolTipID">orientation</SetVariable>
+                <SetVariable name="TooltipId">orientation</SetVariable>
                 <SetVariable name="state_0_pressed">cf_left_attention.svg</SetVariable>
                 <SetVariable name="state_0_unpressed">cf_left_attention.svg</SetVariable>
                 <SetVariable name="state_1_pressed">cf_center_attention.svg</SetVariable>
@@ -100,7 +101,7 @@
               <Template src="skin:button_2state.xml">
                 <SetVariable name="ObjectName">DeckButton</SetVariable>
                 <SetVariable name="Size">22f,22f</SetVariable>
-                <SetVariable name="ToolTipID">repeat</SetVariable>
+                <SetVariable name="TooltipId">repeat</SetVariable>
                 <SetVariable name="state_0_pressed">repeat_off.svg</SetVariable>
                 <SetVariable name="state_0_unpressed">repeat_off.svg</SetVariable>
                 <SetVariable name="state_1_pressed">repeat_on.svg</SetVariable>
@@ -110,7 +111,7 @@
               <Template src="skin:button_2state.xml">
                 <SetVariable name="ObjectName">DeckButton</SetVariable>
                 <SetVariable name="Size">22f,22f</SetVariable>
-                <SetVariable name="ToolTipID">slip_mode</SetVariable>
+                <SetVariable name="TooltipId">slip_mode</SetVariable>
                 <SetVariable name="state_0_pressed">slipmode_off.svg</SetVariable>
                 <SetVariable name="state_0_unpressed">slipmode_off.svg</SetVariable>
                 <SetVariable name="state_1_pressed">slipmode_on.svg</SetVariable>
@@ -120,7 +121,7 @@
               <Template src="skin:button_1state.xml">
                 <SetVariable name="ObjectName">DeckButton</SetVariable>
                 <SetVariable name="Size">20f,22f</SetVariable>
-                <SetVariable name="ToolTipID">eject</SetVariable>
+                <SetVariable name="TooltipId">eject</SetVariable>
                 <SetVariable name="state_0_pressed">eject_pressed.svg</SetVariable>
                 <SetVariable name="state_0_unpressed">eject.svg</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,eject</SetVariable>
@@ -141,7 +142,7 @@
           <Template src="skin:button_2state_persist.xml"><!-- Keylock -->
             <SetVariable name="ObjectName">DeckButton</SetVariable>
             <SetVariable name="Size">22f,22f</SetVariable>
-            <SetVariable name="ToolTipID">keylock</SetVariable>
+            <SetVariable name="TooltipId">keylock</SetVariable>
             <SetVariable name="state_0_pressed">keylock_off.svg</SetVariable>
             <SetVariable name="state_0_unpressed">keylock_off.svg</SetVariable>
             <SetVariable name="state_1_pressed">keylock_on.svg</SetVariable>

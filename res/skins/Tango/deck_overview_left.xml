@@ -58,7 +58,7 @@
               <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
                 <SetVariable name="ObjectName">VinylTogglerLeft</SetVariable>
                 <SetVariable name="Size">11f,50f</SetVariable>
-                <SetVariable name="ToolTipID"></SetVariable>
+                <SetVariable name="TooltipId"></SetVariable>
                 <SetVariable name="ConfigKeyPerm">[Tango],vinylControlsDeck<Variable name="channum"/></SetVariable>
               </Template>
 

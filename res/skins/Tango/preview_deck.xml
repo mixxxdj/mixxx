@@ -34,18 +34,18 @@ Variables:
               <Text>
                 <TooltipId>text</TooltipId>
                 <Size>1me,17f</Size>
-                <Group>[PreviewDeck1]</Group>
+                <Group><Variable name="group"/></Group>
                 <Elide>right</Elide>
               </Text>
             </Children>
           </WidgetGroup>
           <Template src="skin:button_1state.xml">
-            <SetVariable name="ToolTipId">eject</SetVariable>
+            <SetVariable name="TooltipId">eject</SetVariable>
             <SetVariable name="ObjectName">PreviewEject</SetVariable>
             <SetVariable name="Size">18f,18f</SetVariable>
             <SetVariable name="state_0_pressed">sampler_eject_pressed.svg</SetVariable>
             <SetVariable name="state_0_unpressed">sampler_eject.svg</SetVariable>
-            <SetVariable name="ConfigKey">[PreviewDeck1],eject</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,eject</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>
@@ -60,55 +60,49 @@ Variables:
             <Layout>stacked</Layout>
             <Size>25f,34f</Size>
             <Children>
-              <Template src="skin:button_2state_display.xml">
+              <Template src="skin:button_2state_right_display.xml">
                 <SetVariable name="ObjectName">PlayCue</SetVariable>
                 <SetVariable name="Size">24f,34f</SetVariable>
-                <SetVariable name="ConfigKey">[PreviewDeck1],play</SetVariable>
-                <SetVariable name="ConfigKeyRight">[PreviewDeck1],cue_default</SetVariable>
-                <SetVariable name="ConfigKeyDisp">[PreviewDeck1],play_indicator</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
+                <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
               </Template>
               <!--	Turns Orange when playing Cue/HotCue.
                     Only visible when play_indicator=0 -->
               <Template src="skin:button_2state.xml">
                 <SetVariable name="ObjectName">PlayCueUnderlay</SetVariable>
                 <SetVariable name="Size">24f,34f</SetVariable>
-                <SetVariable name="ConfigKey">[PreviewDeck1],play</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup>
-            <ObjectName>PreviewOverview</ObjectName>
-            <Size>1me,34f</Size><!-- appearently overview has a minimum width of 143px -->
-            <Layout>horizontal</Layout>
-            <Children>
-              <Overview>
-                <TooltipId>waveform_overview</TooltipId>
-                <Group>[PreviewDeck1]</Group>
-                <Size>1me,34f</Size>
-                <!-- has no effect here
-                <BgColor>#0f0f0f</BgColor>	-->
-                <SignalColor>#bababa</SignalColor>
-                <PlayPosColor>#FF4300</PlayPosColor>
-                <DefaultMark>
-                  <Align>bottom</Align>
-                  <Color>#00FF00</Color>
-                  <TextColor>#FFFFFF</TextColor>
-                  <Text> %1 </Text>
-                </DefaultMark>
-                <Mark>
-                  <Control>cue_point</Control>
-                  <Text>C</Text>
-                  <Align>top</Align>
-                  <Color>#FF001C</Color>
-                  <TextColor>#FFFFFF</TextColor>
-                </Mark>
-                <Connection>
-                  <ConfigKey>[PreviewDeck1],playposition</ConfigKey>
-                </Connection>
-              </Overview>
-            </Children>
-          </WidgetGroup>
+          <Overview>
+            <TooltipId>waveform_overview</TooltipId>
+            <Size>1me,34f</Size>
+            <Group><Variable name="group"/></Group>
+            <BgColor>#1a1a1a</BgColor>
+            <SignalColor>#bababa</SignalColor>
+            <PlayPosColor>#FF4300</PlayPosColor>
+            <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
+            <MarkerColor>#00FF00</MarkerColor>
+            <DefaultMark>
+              <Align>bottom|right</Align>
+              <Color>#00FF00</Color>
+              <TextColor>#FFFFFF</TextColor>
+              <Text> %1 </Text>
+            </DefaultMark>
+            <Mark>
+              <Control>cue_point</Control>
+              <Text>C</Text>
+              <Align>top|right</Align>
+              <Color>#FF0080</Color>
+              <TextColor>#FFFFFF</TextColor>
+            </Mark>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+            </Connection>
+          </Overview>
 
           <WidgetGroup>
             <ObjectName>PreviewGainKnob</ObjectName>
@@ -118,7 +112,6 @@ Variables:
               <!-- Wrapping in WidgetGroup enables padding -->
               <Template src="skin:knob_textless.xml">
                 <SetVariable name="Size">22f,22f</SetVariable>
-                <SetVariable name="group">[PreviewDeck1]</SetVariable>
                 <SetVariable name="ConfigKey">pregain</SetVariable>
                 <SetVariable name="Color">tiny_red</SetVariable>
               </Template>

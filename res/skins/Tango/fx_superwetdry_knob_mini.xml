@@ -16,7 +16,7 @@ Variables:
     <Size>30f,30f</Size>
     <Children>
       <Template src="skin:knob_textless.xml">
-        <TooltipId><Variable name="ToolTipID"/></TooltipId>
+        <TooltipId><Variable name="TooltipId"/></TooltipId>
         <SetVariable name="ObjectName"><Variable name="ObjectName"/>Knob</SetVariable>
         <SetVariable name="Size">30f,30f</SetVariable>
         <SetVariable name="group"><Variable name="group"/></SetVariable>

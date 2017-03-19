@@ -25,8 +25,11 @@ WPushButton {
 }
 
 #Library_Samplers_0, #Library_Samplers_1, #Library_Samplers_2, #Library_Samplers_3 {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   margin-top: 3px;
+}
+/* #Library_Samplers_1 is a WidgetStack, so exclude it here */
+#Library_Samplers_0, #Library_Samplers_2, #Library_Samplers_3 {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
 #WaveformSplitter::handle:vertical {
@@ -38,9 +41,9 @@ WPushButton {
   }
 
 
-/* 	################################################################
-    ####### Colors ##################################################
-    ################################################################ */
+/* ################################################################
+####### Colors ##################################################
+###############################################################*/
     
 #Deck1 WLabel, #RateContainer1 WLabel {
   color: #52b5ff;	/* SignalColor: #159bff		> decks_left.xml */
@@ -86,9 +89,9 @@ WPushButton {
 
 
 
-/* 	################################################################
-  ######## Skin Settings##########################################
-  ################################################################ */
+/*################################################################
+#######  Skin Settings  ########################################
+##############################################################*/
 
 #SkinSettings {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
@@ -151,7 +154,7 @@ WPushButton {
 
 /*################################################################
 ####### Waveforms ##############################################
-################################################################ */
+##############################################################*/
 
 /* Also, see color definition above. */
 #WaveformContainer1, #WaveformContainer2, #WaveformContainer3, #WaveformContainer4 {
@@ -199,7 +202,7 @@ WPushButton {
 
 /*################################################################
 ######## Mixer Bar #############################################
-################################################################ */
+##############################################################*/
 
 #MixerBar {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
@@ -210,17 +213,17 @@ WPushButton {
 }
 
 #MixerBar_BelowLibrary[displayValue="0"] {
-	background: transparent url(skin:/buttons/btn_arrow_downleft_thin.svg) no-repeat center top;
-	}
-	#MixerBar_BelowLibrary[displayValue="0"]:hover {
-		background: transparent url(skin:/buttons/btn_arrow_downleft_thin_hover.svg) no-repeat center top;
-	}
-	#MixerBar_BelowLibrary[displayValue="1"] {
-		background: transparent url(skin:/buttons/btn_arrow_upright_thin.svg) no-repeat center top;
-	}
-	#MixerBar_BelowLibrary[displayValue="1"]:hover {
-		background: transparent url(skin:/buttons/btn_arrow_upright_thin_hover.svg) no-repeat center top;
-	}
+  background: transparent url(skin:/buttons/btn_arrow_downleft_thin.svg) no-repeat center top;
+  }
+  #MixerBar_BelowLibrary[displayValue="0"]:hover {
+    background: transparent url(skin:/buttons/btn_arrow_downleft_thin_hover.svg) no-repeat center top;
+  }
+  #MixerBar_BelowLibrary[displayValue="1"] {
+    background: transparent url(skin:/buttons/btn_arrow_upright_thin.svg) no-repeat center top;
+  }
+  #MixerBar_BelowLibrary[displayValue="1"]:hover {
+    background: transparent url(skin:/buttons/btn_arrow_upright_thin_hover.svg) no-repeat center top;
+  }
 
 #MixerBarSection {
   qproperty-layoutAlignment: 'AlignTop';
@@ -298,28 +301,28 @@ WPushButton {
 
 #MixerBar_MicAuxMuteButton[displayValue="0"] {
   background: url(skin:/buttons/btn_micaux_off.svg) no-repeat center center;
-	}
-	#MixerBar_MicAuxMuteButton[displayValue="0"]:hover {
-		border: 1px solid #888888;
-	}
-	#MixerBar_MicAuxMuteButton[displayValue="1"]:hover {
-		border: 1px solid #eeeeee;
-		background: url(skin:/buttons/btn_micaux_off.svg) no-repeat center center;
-	}
+  }
+  #MixerBar_MicAuxMuteButton[displayValue="0"]:hover {
+    border: 1px solid #888888;
+  }
+  #MixerBar_MicAuxMuteButton[displayValue="1"]:hover {
+    border: 1px solid #eeeeee;
+    background: url(skin:/buttons/btn_micaux_off.svg) no-repeat center center;
+  }
 
 #MixerBar_MicAuxMuteButtonUnderlay {
-	font-size: 22px/22px;
-	font-weight: bold;
-	text-align: center;
-	}
-	#MixerBar_MicAuxMuteButtonUnderlay[displayValue="0"] {
-		background-color: #333333;
+  font-size: 22px/22px;
+  font-weight: bold;
+  text-align: center;
+  }
+  #MixerBar_MicAuxMuteButtonUnderlay[displayValue="0"] {
+    background-color: #333333;
     color: #888888;
-	}
-	#MixerBar_MicAuxMuteButtonUnderlay[displayValue="1"] {
-		background-color: #666666;
-		color: #d2d2d2;
-	}
+  }
+  #MixerBar_MicAuxMuteButtonUnderlay[displayValue="1"] {
+    background-color: #666666;
+    color: #d2d2d2;
+  }
 
 #MixerBarSlider:hover, #MixerBarKnob:hover {  /*
   border: 1px solid #666666;
@@ -333,24 +336,24 @@ WPushButton {
 
 #MixerBarToggler[displayValue="0"] {
   background: transparent url(skin:/buttons/btn_arrow_right_thin.svg) no-repeat center top;
-	}
-	#MixerBarToggler[displayValue="0"]:hover {
-		background: transparent url(skin:/buttons/btn_arrow_right_thin_hover.svg) no-repeat center top;
-	}
-	#MixerBarToggler[displayValue="1"] {
-		background: transparent url(skin:/buttons/btn_arrow_left_thin.svg) no-repeat center top;
-	}
-	#MixerBarToggler[displayValue="1"]:hover {
-		background: transparent url(skin:/buttons/btn_arrow_left_thin_hover.svg) no-repeat center top;
-	}
+  }
+  #MixerBarToggler[displayValue="0"]:hover {
+    background: transparent url(skin:/buttons/btn_arrow_right_thin_hover.svg) no-repeat center top;
+  }
+  #MixerBarToggler[displayValue="1"] {
+    background: transparent url(skin:/buttons/btn_arrow_left_thin.svg) no-repeat center top;
+  }
+  #MixerBarToggler[displayValue="1"]:hover {
+    background: transparent url(skin:/buttons/btn_arrow_left_thin_hover.svg) no-repeat center top;
+  }
 
 #MixerBarCover {
   background-color: rgba(30, 30, 30, 200);
 }
 
 /*################################################################
-####### Decks  #################################################
-################################################################ */
+######  Decks  #################################################
+##############################################################*/
 
 #Decks12 {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
@@ -421,8 +424,8 @@ WPushButton {
   /* defining font-size here breaks top alignment	*/
     padding-left: 1px;
   /* this is necessary to display multi-line comments correctly.
-		Without it, first line would be cut off at the top. */
-		padding-top: 1px;
+    Without it, first line would be cut off at the top. */
+    padding-top: 1px;
     color: #888888;
     text-align: left;
     }
@@ -564,6 +567,7 @@ WPushButton {
     background: none url(skin:/buttons/btn_paused.svg) no-repeat center center;
     }
   #PlayCue[displayValue="0"]:hover {
+    background: none url(skin:/buttons/btn_paused_hover.svg) no-repeat center center;
     background-color: #555555;
     border: 1px solid #888888;
     }
@@ -578,8 +582,10 @@ WPushButton {
   #PlayCueUnderlay[displayValue="0"] {
     background-color: #333333;
     }
-  #PlayCueUnderlay[displayValue="1"] {
-    background-color: #c66d00;
+  #PlayCueUnderlay[displayValue="1"] { /*
+    background-color: #c66d00; too dark
+    background-color: #ffb401; too flat*/
+    background-color: #ffa601;
     }
     
 #DeckLoopBeatjump {
@@ -615,8 +621,8 @@ WPushButton {
 }
 
 /*################################################################
-######## Rate Container  #######################################
-################################################################ */
+#######  Rate Container  #######################################
+##############################################################*/
 
 
 #RateContainer1, #RateContainer2, #RateContainer3, #RateContainer4, #BpmContainer {
@@ -636,8 +642,7 @@ WPushButton {
   #SyncButtonOverlay, #KeyReset,
   #KeyUp, #KeyDown {
   }
-  #SyncButtonOverlay[displayValue="0"]:hover, #KeyReset:hover,
-  #KeyUp:hover, #KeyDown:hover {
+  #SyncButtonOverlay[displayValue="0"]:hover, #KeyReset:hover {
     border: 1px solid #ff4800;
   }
   #SyncButtonOverlay[displayValue="1"] {
@@ -658,13 +663,15 @@ WPushButton {
       border-left: none;
       }
       #KeyUp:hover {
-        background: transparent url(skin:/buttons/btn_plus.svg) no-repeat center center;
+        background: transparent url(skin:/buttons/btn_key_up.svg) no-repeat center center;
+        border: none;
         }
     #KeyDown {
       border-right: none;
       }
       #KeyDown:hover {
-        background: transparent url(skin:/buttons/btn_minus.svg) no-repeat center center;
+        background: transparent url(skin:/buttons/btn_key_down.svg) no-repeat center center;
+        border: none;
         }
     #KeyReset {
       border-left: none;
@@ -682,8 +689,8 @@ WPushButton {
   }
 
 /*################################################################
-####### Mixer Channels #########################################
-################################################################ */
+#######  Channel Mixer  ########################################
+##############################################################*/
     
 #MixerMaster {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
@@ -785,8 +792,8 @@ WPushButton {
 }
 
 /*################################################################
-####### Skin Controls / Crossfader / Clock  ####################
-################################################################ */
+######  Skin Controls / Crossfader / Clock  ####################
+##############################################################*/
 
 #SkinControls {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
@@ -891,8 +898,8 @@ WPushButton {
   }
 
 /*################################################################
-####### Effects  ###############################################
-################################################################ */
+######  Effects  ###############################################
+##############################################################*/
 
 #EffectUnits12 {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
@@ -1175,14 +1182,14 @@ WPushButton {
     background: #333333 url(skin:/buttons/btn_off.svg) no-repeat center center;
     }
     #EffectUnitToggleButton[displayValue="0"]:hover {
-			background: #333333 url(skin:/buttons/btn_on.svg) no-repeat center center;
-			border: 1px solid #888888;
+      background: #333333 url(skin:/buttons/btn_on.svg) no-repeat center center;
+      border: 1px solid #888888;
     }
   #EffectUnitToggleButton[displayValue="1"] {
-			background: #666666 url(skin:/buttons/btn_on.svg) no-repeat center center;
+      background: #666666 url(skin:/buttons/btn_on.svg) no-repeat center center;
     }
   #EffectUnitToggleButton[displayValue="1"]:hover {
-			border: 1px solid #eeeeee;
+      border: 1px solid #eeeeee;
     }
 
 #EffectUnitGroupColumn {
@@ -1200,29 +1207,34 @@ WPushButton {
     margin-left: 1px;
     /* this has no effect on Backpath <Pressed>/<Unpressed> */
     background-position: center;
-  	}
-    #EffectUnitGroupButton[displayValue="0"],
-    #EffectEject {
+    }
+    #EffectUnitGroupButton[displayValue="0"] {
       background-color: #333333;
       color: #888888;
       }
-      #EffectUnitGroupButton[displayValue="0"]:hover,
-      #EffectEject:hover {
-				border: 1px solid #ffb401;
+      #EffectUnitGroupButton[displayValue="0"]:hover {
+        border: 1px solid #ffb401;
       }
     #EffectUnitGroupButton[displayValue="1"] {
       background-color: #ffb401;	/* yellow2 	*/
       color: #000000;
       }
       #EffectUnitGroupButton[displayValue="1"]:hover {
-				border: 1px solid #FFFFFF;
-      }
-    #EffectEject {
+        border: 1px solid #FFFFFF;
       }
 
+  #EffectEject {
+    background: #333333 url(skin:/buttons/btn_eject.svg) no-repeat center center;
+    }
+    #EffectEject:hover {
+      background: transparent url(skin:/buttons/btn_eject_hover.svg) no-repeat center center;
+      background-color: #ca0000;
+      border: 1px solid #ff0000;
+    }
+
 /*################################################################
-####### Sampler ################################################
-################################################################ */
+######  Samplers  ##############################################
+##############################################################*/
 
 #SamplerDecks {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
@@ -1237,7 +1249,7 @@ WPushButton {
 }
 
 #FxMiniMaxiButton {
-	background-color: #333333;
+  background-color: #333333;
 }
 #SamplersMiniMaxiButton {
 }
@@ -1400,8 +1412,8 @@ WPushButton {
   }
 
 /*################################################################
-####### Spinnies ###############################################
-################################################################ */
+######  Spinnies  ##############################################
+##############################################################*/
 
 #SpinnyContainer {
   margin: 0px;
@@ -1413,7 +1425,7 @@ WPushButton {
 }
 
 /*################################################################
-####### Preview Deck ############################################
+######  Preview Deck  ##########################################
 ##############################################################*/
 
 #PreviewDeck {
@@ -1452,8 +1464,14 @@ WPushButton {
 
 
 /*################################################################
-####### Misc  ##################################################
-################################################################ */
+######  Misc  ##################################################
+##############################################################*/
+
+QToolTip {
+  background-color: #1e1e1e;
+  color: #CCCCCC;
+  border: 1px solid #333333;
+}
 
 #KnobTextless {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
@@ -1524,9 +1542,9 @@ WPushButton {
 }
 
 /*################################################################
-####### Library styling is hard  ###############################
+######  Library styling is hard  ###############################
 ################### most of it was LateNight & Deere ##########
-############ added styling for AutoDJ & Recording etc ######## */
+############ added styling for AutoDJ & Recording etc ##### */
 
 #LibrarySingleton {
 }

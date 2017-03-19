@@ -198,7 +198,7 @@
     is never consiered/showing up in skin.
     FAILED.
     <SetVariable name="ToolTip"></SetVariable>
-    <SetVariable name="ToolTipID"></SetVariable>-->
+    <SetVariable name="TooltipId"></SetVariable>-->
 
 <!--  ################################################################
     Singleton definitions #########################################
