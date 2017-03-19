@@ -236,9 +236,8 @@ bool parseBpm(TrackMetadata* pTrackMetadata, QString sBpm) {
     return isBpmValid;
 }
 
-void parseFlacRating(QString sRating) {
+void parseFlacRating(int rating) {
 
-        int rating = sRating.toInt();
         int starRatingValue;
 
         if (rating <= 0) {
@@ -260,8 +259,7 @@ void parseFlacRating(QString sRating) {
 		return starRatingValue;
 }
 
-void parseMp4Rating(QString sRating) {
-        int rating = sRating.toInt();
+void parseMp4Rating(int rating) {
         int starRatingValue;
 
         if (rating <= 0) {
@@ -1129,19 +1127,21 @@ void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
         pTrackMetadata->setAlbumArtist(toQStringFirstNotEmpty(albumArtistFrame));
     }
 
-    QString rating;
+    int rating;
     const TagLib::ID3v2::FrameList popmRatingFrameList(tag.frameListMap()["POPM"]);
     if (!popmRatingFrameList.isEmpty()) {
-        auto intRating = 
-                dynamic_cast<TagLib::ID3v2::PopularimeterFrame*>(popmRatingFrameList.front())->rating();
-        if (intRating != nullptr){
-            rating = QString::number(intRating);
+		//All elements of frameListMap() are normal Framelist classes. 
+		//You have to convert to a PopularimeterFrame to access the rating()
+		//and email() functions.
+		auto popmRatingFrame = dynamic_cast<TagLib::ID3v2::PopularimeterFrame*>(popmRatingFrameList.front());
+        if (popmRatingFrame != nullptr){
+        	int  intRating = popmRatingFrame->rating();
             for (TagLib::ID3v2::FrameList::ConstIterator it(popmRatingFrameList.begin());
                 it != popmRatingFrameList.end(); it++){
                     auto popmFrame = dynamic_cast<TagLib::ID3v2::PopularimeterFrame*>(*it);
                     if (popmFrame != nullptr){
                         if (toQString(popmFrame->email()) == "mixxx@mixxx.org") {
-                            rating = QString::number(popmFrame->rating());
+                            rating = popmFrame->rating();
 							break;
                         }
                     }
@@ -1372,7 +1372,8 @@ void readTrackMetadataFromVorbisCommentTag(TrackMetadata* pTrackMetadata,
 
     QString rating;
     if (readXiphCommentField(tag, "RATING", &rating)) {
-        pTrackMetadata.setRating(parseFlacRating(rating));
+		int intRating = rating.toInt(); //readXiphCommentField reads all fields as strings
+        pTrackMetadata.setRating(parseFlacRating(intRating));
     }
 
     // Only read track gain (not album gain)
@@ -1458,7 +1459,8 @@ void readTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::MP
 
     QString rating;
     if (readMP4Atom(tag, "rate", &rating)) {
-		pTrackMetadata.setRating(parseMp4Rating(rating));
+		int intRating = rating.toInt(); //readMP4Atom reads all atoms as strings
+		pTrackMetadata.setRating(parseMp4Rating(intRating));
     }
 
     // Only read track gain (not album gain)
