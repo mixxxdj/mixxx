@@ -30,6 +30,7 @@ class WBeatSpinBox : public QDoubleSpinBox, public WBaseWidget {
     QString fractionString(int numerator, int denominator) const;
 
     ControlProxy m_valueControl;
+    QRegExp m_regexpBlacklist;
 };
 
 #endif
