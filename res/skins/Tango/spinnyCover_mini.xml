@@ -9,7 +9,7 @@ Variables:
 -->
 <Template>
   <WidgetStack currentpage="[Tango],spinny0_cover1_stack" persist="true">
-    <ObjectName>SpinnyCoverSmall</ObjectName>
+    <ObjectName>SpinnyCoverMini</ObjectName>
     <Size>50f,50f</Size><!-- 3 + 111px + 3px -->
     <Children>
 
@@ -22,7 +22,7 @@ Variables:
             <Size>50f,50f</Size>
             <TooltipId>spinny</TooltipId>
             <Group><Variable name="group"/></Group>
-            <PathBackground scalemode="STRETCH_ASPECT">skin:/graphics/spinnySmall_bg.svg</PathBackground>
+            <PathBackground scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_bg.svg</PathBackground>
             <PathForeground scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_indicator.svg</PathForeground>
             <PathMask scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_<Variable name="channum"/>_mask.svg</PathMask>
             <PathGhost scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_indicator_ghost.svg</PathGhost>
@@ -34,7 +34,7 @@ Variables:
             <Size>50f,50f</Size>
             <TooltipId>spinny</TooltipId>
             <Group><Variable name="group"/></Group>
-            <PathBackground scalemode="STRETCH_ASPECT">skin:/graphics/spinnySmall_bg.svg</PathBackground>
+            <PathBackground scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_bg.svg</PathBackground>
             <PathForeground scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_indicator.svg</PathForeground>
             <PathMask scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_<Variable name="channum"/>_mask.svg</PathMask>
             <PathGhost scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_indicator_ghost.svg</PathGhost>
@@ -53,9 +53,10 @@ Variables:
       </WidgetStack>
 
       <CoverArt>
+        <TooltipId>coverart</TooltipId>
         <Size>50f,50f</Size>
         <Group>[Channel<Variable name="channum"/>]</Group>
-        <DefaultCover>skin:/graphics/cover_default_small_<Variable name="channum"/>.svg</DefaultCover>
+        <DefaultCover>skin:/graphics/cover_default_mini_<Variable name="channum"/>.svg</DefaultCover>
         <Connection>
           <ConfigKey persist="true">[Tango],empty_spinny_cover</ConfigKey>
           <BindProperty>visible</BindProperty>

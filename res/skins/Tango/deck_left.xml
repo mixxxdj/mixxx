@@ -104,7 +104,7 @@
                                 <Children/>
                               </WidgetGroup>
 
-                              <Template src="skin:spinnyCover_big.xml"/>
+                              <Template src="skin:spinnyCover.xml"/>
 
                             </Children>
                             <Connection>

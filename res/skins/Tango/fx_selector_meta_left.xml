@@ -28,6 +28,7 @@ Variables:
           <!-- invisible, clickable Overlay to toggle Effect -->
           <Template src="skin:button_2state.xml"><!-- EffectToggleButton -->
             <SetVariable name="ObjectName">EffectToggleButton</SetVariable>
+            <SetVariable name="TooltipId">EffectSlot_enabled</SetVariable>
             <SetVariable name="Size">72f,20f</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,enabled</SetVariable>
           </Template>
@@ -69,6 +70,7 @@ Variables:
       <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
       <Template src="skin:knob_textless.xml">
+        <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
         <SetVariable name="ConfigKey">meta</SetVariable>
         <SetVariable name="Size">30f,30f</SetVariable>
         <SetVariable name="Color">blue</SetVariable>

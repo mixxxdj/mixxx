@@ -614,10 +614,9 @@ WPushButton {
 
 #MixerCoverStack {
 }
-  
-#SpinnyCoverSmall {
+#SpinnyCover {
 }
-#SpinnyCoverBig {
+#SpinnyCoverMini {
 }
 
 /*################################################################
