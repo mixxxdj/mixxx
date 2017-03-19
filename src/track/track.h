@@ -58,7 +58,7 @@ class Track : public QObject {
     Q_PROPERTY(int times_played READ getTimesPlayed)
     Q_PROPERTY(QString comment READ getComment WRITE setComment)
     Q_PROPERTY(double bpm READ getBpm WRITE setBpm)
-	Q_PROPERTY(int rating READ getRating WRITE setRating)
+    Q_PROPERTY(int rating READ getRating WRITE setRating)
     Q_PROPERTY(QString bpmFormatted READ getBpmText STORED false)
     Q_PROPERTY(QString key READ getKeyText WRITE setKeyText)
     Q_PROPERTY(double duration READ getDuration WRITE setDuration)
@@ -381,7 +381,7 @@ class Track : public QObject {
     QString m_sURL;
 
     // Cue point in samples
-    float m_cuePoint;
+    double m_cuePoint;
 
     // Date the track was added to the library
     QDateTime m_dateAdded;

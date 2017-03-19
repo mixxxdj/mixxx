@@ -202,7 +202,7 @@ private:
     // Integer fields (in alphabetical order)
     int m_bitrate; // kbit/s
     int m_channels;
-	int m_rating;
+    int m_rating;
     int m_sampleRate; // Hz
 };
 
