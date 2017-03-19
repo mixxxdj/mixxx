@@ -301,12 +301,12 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     double scaleFactor = m_pConfig->getValue(
             ConfigKey("[Config]", "ScaleFactor"), 1.0);
 
-    //: Entry of the HiDPI scale combo box. %1 is the scale factor-
-    comboBoxScaleFactor->addItem(QString(tr("x %1")).arg(0.5), 0.5);
-    comboBoxScaleFactor->addItem(QString(tr("x %1")).arg(1), 1);
-    comboBoxScaleFactor->addItem(QString(tr("x %1")).arg(2), 2);
-    comboBoxScaleFactor->addItem(QString(tr("x %1")).arg(3), 3);
-    comboBoxScaleFactor->addItem(QString(tr("x %1")).arg(4), 4);
+    //: Entry of the HiDPI scale combo box. %1 is the scale factor in percent
+    comboBoxScaleFactor->addItem(QString(tr("%1 % (Experimental)")).arg(50), 0.5);
+    comboBoxScaleFactor->addItem(QString(tr("%1 %")).arg(100), 1);
+    comboBoxScaleFactor->addItem(QString(tr("%1 % (Experimental)")).arg(200), 2);
+    comboBoxScaleFactor->addItem(QString(tr("%1 % (Experimental)")).arg(300), 3);
+    comboBoxScaleFactor->addItem(QString(tr("%1 % (Experimental)")).arg(400), 4);
     int i;
     for (i = 0; i < comboBoxScaleFactor->count(); ++i) {
         if (scaleFactor == comboBoxScaleFactor->itemData(i)) {
