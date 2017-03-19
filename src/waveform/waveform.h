@@ -32,8 +32,7 @@ union WaveformData {
 class Waveform {
   public:
     enum class SaveState {
-        Virgin = 0,
-        Changing, 
+        NotSaved = 0,
         SavePending, 
         Saved
     };
@@ -86,8 +85,8 @@ class Waveform {
         return m_saveState;
     }
 
-    // AnalysisDAO needs to be able to set the waveform as clean so we mark this
-    // as const and m_saveState mutable.
+    // AnalysisDAO needs to be able to change the state to savePending when finished 
+    // so we mark this as const and m_saveState mutable.
     void setSaveState(SaveState eState) const {
         m_saveState = eState;
     }
@@ -105,7 +104,6 @@ class Waveform {
     }
     void setCompletion(int completion) {
         m_completion = completion;
-        m_saveState = Waveform::SaveState::Changing;
     }
 
     // We do not lock the mutex since m_textureStride is not changed after

@@ -204,6 +204,8 @@ void AnalyzerWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
     m_filter[Mid]->process(buffer, &m_buffers[Mid][0], bufferLength);
     m_filter[High]->process(buffer, &m_buffers[High][0], bufferLength);
 
+    m_waveform->setSaveState(Waveform::SaveState::NotSaved);
+    m_waveformSummary->setSaveState(Waveform::SaveState::NotSaved);
 
     for (int i = 0; i < bufferLength; i+=2) {
         // Take max value, not average of data

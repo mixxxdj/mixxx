@@ -19,7 +19,7 @@ int computeTextureStride(int size) {
 
 Waveform::Waveform(const QByteArray data)
         : m_id(-1),
-          m_saveState(SaveState::Virgin),
+          m_saveState(SaveState::NotSaved),
           m_dataSize(0),
           m_visualSampleRate(0),
           m_audioVisualRatio(0),
@@ -31,7 +31,7 @@ Waveform::Waveform(const QByteArray data)
 Waveform::Waveform(int audioSampleRate, int audioSamples,
                    int desiredVisualSampleRate, int maxVisualSamples)
         : m_id(-1),
-          m_saveState(SaveState::Virgin),
+          m_saveState(SaveState::NotSaved),
           m_dataSize(0),
           m_visualSampleRate(0),
           m_audioVisualRatio(0),
@@ -167,7 +167,7 @@ void Waveform::readByteArray(const QByteArray& data) {
         qDebug() << "ERROR: Couldn't resize Waveform to" << all.value_size()
                  << "while reading.";
         resize(0);
-        m_saveState = SaveState::Virgin;
+        m_saveState = SaveState::NotSaved;
         return;
     }
 
