@@ -15,14 +15,6 @@
     <MinimumSize>-1,150</MinimumSize>
     <Children>
       <WidgetGroup>
-        <ObjectName>DeckInnerColumn</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <Template src="skin:deck_inner_column.xml"/>
-        </Children>
-      </WidgetGroup>
-      <WidgetGroup>
         <ObjectName>DeckRows</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>me,me</SizePolicy>
@@ -46,6 +38,15 @@
           </WidgetGroup>
           <Template src="skin:deck_overview_row.xml"/>
           <Template src="skin:deck_controls_row.xml"/>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>DeckRateSlider</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:deck_inner_column.xml"/>
         </Children>
       </WidgetGroup>
     </Children>

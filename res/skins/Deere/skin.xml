@@ -17,12 +17,10 @@
       <attribute persist="true" config_key="[Deere],show_stacked_waveforms">1</attribute>
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
-      <attribute persist="true" config_key="[Library],show_coverart">0</attribute> <!-- in library -->
 
       <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Master],show_4effectunits">0</attribute>
       <attribute persist="true" config_key="[Master],show_spinnies">1</attribute>
-      <attribute persist="true" config_key="[Deere],show_coverart">1</attribute> <!-- in decks -->
       <attribute persist="true" config_key="[Deere],show_starrating">0</attribute>
       <attribute persist="true" config_key="[Deere],show_track_info">1</attribute>
       <attribute persist="true" config_key="[Deere],show_bpm_info">1</attribute>
@@ -185,7 +183,7 @@
               <Layout>vertical</Layout>
               <Children>
 
-                                <WidgetGroup>
+                <WidgetGroup>
                   <Layout>horizontal</Layout>
                   <Children>
                     <Template src="skin:effect_rack.xml"/>

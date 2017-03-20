@@ -8,9 +8,8 @@
     <ObjectName>LeftGutter</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>me,me</SizePolicy>
-<!--     <MinimumSize>-1,200</SizePolicy> -->
     <Children>
-      <Template src="skin:deck_left.xml">
+      <Template src="skin:deck.xml">
         <SetVariable name="i">1</SetVariable>
         <!-- Traditional Blue -->
         <SetVariable name="DeckSignalColor">#007BCD</SetVariable>
@@ -21,7 +20,7 @@
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:deck_left.xml">
+          <Template src="skin:deck.xml">
             <SetVariable name="i">3</SetVariable>
             <!-- Violet -->
             <SetVariable name="DeckSignalColor">#B500B5</SetVariable>

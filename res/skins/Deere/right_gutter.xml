@@ -9,7 +9,7 @@
     <Layout>vertical</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
-      <Template src="skin:deck_right.xml">
+      <Template src="skin:deck.xml">
         <SetVariable name="i">2</SetVariable>
         <!-- Traditional Orange -->
         <SetVariable name="DeckSignalColor">#E67A00</SetVariable>
@@ -20,7 +20,7 @@
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:deck_right.xml">
+          <Template src="skin:deck.xml">
             <SetVariable name="i">4</SetVariable>
             <!-- Lime -->
             <SetVariable name="DeckSignalColor">#AABD00</SetVariable>

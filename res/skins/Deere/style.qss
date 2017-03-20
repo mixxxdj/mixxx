@@ -58,7 +58,7 @@
 
 #DeckRateSliderColumn {
   border: 0px solid #222;
-  border-right: 2px solid #222;
+  border-left: 2px solid #222;
 }
 
 #VisualRow {
