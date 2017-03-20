@@ -117,9 +117,11 @@
           <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
 
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- /Skin controls -->
 
-      <WidgetGroup>
+      <!-- Sections on the left and on the right are expanding,
+          so Crossfader is centered horizontally -->
+      <WidgetGroup><!-- Crossfader -->
         <SizePolicy>min,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
@@ -140,9 +142,9 @@
           <ConfigKey persist="true">[Tango],crossfader</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup>
+      </WidgetGroup><!-- /Crossfader -->
       
-      <WidgetGroup><!-- Skin Controls -->
+      <WidgetGroup><!-- Logo, Rec, Broadcast, Clock, Skinsettings -->
         <Layout>horizontal</Layout>
         <ObjectName>SkinControlsBarRight</ObjectName>
         <SizePolicy>me,min</SizePolicy>
@@ -173,7 +175,7 @@
 
           <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
 
-          <Template src="skin:button_4state_display.xml"><!-- Recording -->
+          <Template src="skin:button_4state_display.xml">
             <SetVariable name="TooltipId">broadcast_enabled</SetVariable>
             <SetVariable name="ObjectName">BroadcastButton</SetVariable>
             <SetVariable name="Size">24f,24f</SetVariable>
@@ -203,7 +205,7 @@
           <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
 
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- /Logo, Rec, Broadcast, Clock, Skinsettings -->
 
     </Children>
     <Connection>
