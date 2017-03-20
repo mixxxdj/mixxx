@@ -7,17 +7,23 @@
 
 #include "widget/wlabel.h"
 #include "skin/skincontext.h"
+#include "recording/recordingmanager.h"
 
 class WRecordingDuration: public WLabel {
     Q_OBJECT
   public:
-    explicit WRecordingDuration(QWidget *parent=nullptr);
+    WRecordingDuration(QWidget *parent=nullptr, RecordingManager* pRecManager);
     ~WRecordingDuration() override;
 
     void setup(const QDomNode& node, const SkinContext& context) override;
 
   private slots:
     void refreshLabel();
+
+  private:
+    QString m_durationRecordedStr;
+
+    RecordingManager* m_pRecordingManager;
 };
 
 #endif /* WRECORDINGDURATION_H */
