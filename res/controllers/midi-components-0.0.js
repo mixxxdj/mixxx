@@ -487,7 +487,7 @@
         }
     });
 
-    EffectUnit = function (unitNumbers) {
+    EffectUnit = function (unitNumbers, allowFocusWhenParametersHidden) {
         var eu = this;
 
         if (unitNumbers !== undefined) {
@@ -504,6 +504,16 @@
             }
         } else {
             print('ERROR! new EffectUnit() called without specifying any unit numbers!');
+        }
+
+        if (allowFocusWhenParametersHidden === undefined) {
+            allowFocusWhenParametersHidden = false;
+            if (engine.getValue(this.group, "show_parameters") === 0) {
+                engine.setValue(this.group, "focused_effect", 0);
+                engine.setValue(this.group, "show_focus", 0);
+            }
+        } else if (allowFocusWhenParametersHidden === true) {
+            engine.setValue(this.group, "show_focus", 1);
         }
 
         this.setCurrentUnit = function (newNumber) {
@@ -665,10 +675,12 @@
                                                       this.startEffectFocusChooseMode,
                                                       true);
                         } else {
-                            engine.setValue(this.group, "show_parameters", 1);
-                            engine.setValue(this.group, "show_focus", 1);
-                            engine.setValue(this.group, "focused_effect",
-                                            this.previouslyFocusedEffect);
+                            if (!allowFocusWhenParametersHidden) {
+                                engine.setValue(this.group, "focused_effect",
+                                                this.previouslyFocusedEffect);
+                                engine.setValue(this.group, "show_parameters", 1);
+                                engine.setValue(this.group, "show_focus", 1);
+                            }
                             this.longPressTimer = engine.beginTimer(275,
                                                       this.startEffectFocusChooseMode,
                                                       true);
@@ -684,11 +696,15 @@
                             });
                             this.focusChooseMode = false;
                         } else if (showParameters && !this.pressedWhenParametersHidden) {
-                            this.previouslyFocusedEffect = engine.getValue(this.group,
-                                                                          "focused_effect");
-                            engine.setValue(this.group, "focused_effect", 0);
-                            engine.setValue(this.group, "show_focus", 0);
+                            if (!allowFocusWhenParametersHidden) {
+                                this.previouslyFocusedEffect = engine.getValue(this.group,
+                                                                              "focused_effect");
+                                engine.setValue(this.group, "focused_effect", 0);
+                                engine.setValue(this.group, "show_focus", 0);
+                            }
                             engine.setValue(this.group, "show_parameters", 0);
+                        } else if (!showParameters && allowFocusWhenParametersHidden) {
+                            engine.setValue(this.group, "show_parameters", 1);
                         }
                         this.pressedWhenParametersHidden = false;
                     }
