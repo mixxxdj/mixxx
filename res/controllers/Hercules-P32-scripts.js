@@ -365,7 +365,7 @@ P32.Deck = function (deckNumbers, channel) {
     });
 
     this.loopMoveEncoder = function (channel, control, value, status, group) {
-        if (value < 64) { // left turn
+        if (value > 64) { // left turn
             engine.setValue(this.currentDeck, 'loop_move_backward', 1);
         } else { // right turn
             engine.setValue(this.currentDeck, 'loop_move_forward', 1);

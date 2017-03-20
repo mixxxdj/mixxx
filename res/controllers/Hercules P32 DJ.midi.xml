@@ -946,7 +946,7 @@
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.loopMoveEncoder</key>
                 <status>0xB5</status>
-                <midino>0x0A</midino>
+                <midino>0x05</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1018,7 +1018,7 @@
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.tempoEncoder</key>
                 <status>0xB2</status>
-                <midino>0x05</midino>
+                <midino>0x0A</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1036,7 +1036,7 @@
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.beatJumpEncoder</key>
                 <status>0xB5</status>
-                <midino>0x05</midino>
+                <midino>0x0A</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1126,7 +1126,7 @@
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.tempoEncoderPress</key>
                 <status>0x92</status>
-                <midino>0x02</midino>
+                <midino>0x01</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1153,7 +1153,7 @@
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.loopToggleEncoderPress</key>
                 <status>0x92</status>
-                <midino>0x01</midino>
+                <midino>0x02</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1162,7 +1162,7 @@
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.beatJumpEncoderPress</key>
                 <status>0x95</status>
-                <midino>0x02</midino>
+                <midino>0x01</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1180,7 +1180,7 @@
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.loopSizeEncoder.input</key>
                 <status>0xB2</status>
-                <midino>0x0A</midino>
+                <midino>0x05</midino>
                 <options>
                     <script-binding/>
                 </options>
