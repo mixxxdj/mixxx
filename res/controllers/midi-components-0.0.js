@@ -580,7 +580,7 @@
             outKey: "focused_effect",
             connect: function () {
                 if (this.firstValueReceived) {
-                    engine.softTakeover(this.group, this.inKey, true);
+
                 }
                 this.connections[0] = engine.connectControl(eu.group, "focused_effect",
                                                             this.onFocusChange);
@@ -604,7 +604,6 @@
                                   '_Effect' + value + ']';
                     this.inKey = 'parameter' + this.number;
                     engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
-
                 }
             },
         });
@@ -650,6 +649,12 @@
         this.enableButtons = new ComponentContainer();
         for (var n = 1; n <= 3; n++) {
             this.knobs[n] = new this.EffectUnitKnob(n);
+            var effect = '[EffectRack1_EffectUnit' + this.currentUnitNumber +
+                         '_Effect' + n + ']';
+            engine.softTakeover(effect, 'meta', true);
+            engine.softTakeover(effect, 'parameter1', true);
+            engine.softTakeover(effect, 'parameter2', true);
+            engine.softTakeover(effect, 'parameter3', true);
             this.enableButtons[n] = new this.EffectEnableButton(n);
         }
 
