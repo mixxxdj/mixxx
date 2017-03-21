@@ -335,7 +335,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
                                                            m_pLibrary,
                                                            m_pVCManager,
                                                            m_pEffectsManager,
-                                                           pRecordingManager))) {
+                                                           m_pRecordingManager))) {
         reportCriticalErrorAndQuit(
                 "default skin cannot be loaded see <b>mixxx</b> trace for more information.");
 
