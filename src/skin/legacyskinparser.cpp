@@ -1789,6 +1789,31 @@ QString LegacySkinParser::getStyleFromNode(const QDomNode& node) {
             style = QString::fromLocal8Bit(fileBytes.constData(),
                                            fileBytes.length());
         }
+
+        double scaleFactor = m_pContext->getScaleFactor();
+        if (scaleFactor >= 3) {
+            // Try to load with @3x suffix
+            QFileInfo info(file);
+            QString strNewName = info.path() + "/" + info.baseName() + "@3x."
+                    + info.completeSuffix();
+            QFile file(strNewName);
+            if (file.open(QIODevice::ReadOnly)) {
+                QByteArray fileBytes = file.readAll();
+                style.prepend(QString::fromLocal8Bit(fileBytes.constData(),
+                                               fileBytes.length()));
+            }
+        } else if (scaleFactor >= 2) {
+            // Try to load with @3x suffix
+            QFileInfo info(file);
+            QString strNewName = info.path() + "/" + info.baseName() + "@2x."
+                    + info.completeSuffix();
+            QFile file(strNewName);
+            if (file.open(QIODevice::ReadOnly)) {
+                QByteArray fileBytes = file.readAll();
+                style.prepend(QString::fromLocal8Bit(fileBytes.constData(),
+                                               fileBytes.length()));
+            }
+        }
     } else {
         // If no src attribute, use the node data as text.
         style = styleElement.text();
