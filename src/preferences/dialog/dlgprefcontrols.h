@@ -108,6 +108,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     bool m_speedAutoReset;
     bool m_pitchAutoReset;
     int m_keylockMode;
+    double m_autoScaleFactor;
 };
 
 #endif

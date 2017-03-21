@@ -1117,6 +1117,7 @@ class MixxxCore(Feature):
                    "util/logging.cpp",
                    "util/cmdlineargs.cpp",
                    "util/audiosignal.cpp",
+                   "util/autohidpi.cpp",
 
                    '#res/mixxx.qrc'
                    ]

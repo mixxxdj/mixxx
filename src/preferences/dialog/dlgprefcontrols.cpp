@@ -38,6 +38,7 @@
 #include "control/controlobject.h"
 #include "mixxx.h"
 #include "defs_urls.h"
+#include "util/autohidpi.h"
 
 DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
                                  SkinLoader* pSkinLoader,
@@ -49,7 +50,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
            m_pSkinLoader(pSkinLoader),
            m_pPlayerManager(pPlayerManager),
            m_iNumConfiguredDecks(0),
-           m_iNumConfiguredSamplers(0) {
+           m_iNumConfiguredSamplers(0),
+           m_autoScaleFactor(0) {
     setupUi(this);
 
     m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
@@ -298,8 +300,30 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
 
     slotUpdateSchemes();
 
-    double scaleFactor = m_pConfig->getValue(
-            ConfigKey("[Config]", "ScaleFactor"), 1.0);
+
+    AutoHiDpi autoHiDpi;
+    m_autoScaleFactor = autoHiDpi.getScaleFactor();
+    double scaleFactor = m_autoScaleFactor;
+    if (scaleFactor > 0) {
+        // we got a valid auto scale factor
+        bool scaleFactorAuto = m_pConfig->getValue(
+                ConfigKey("[Config]", "ScaleFactorAuto"), true);
+        checkBoxScaleFactorAuto->setChecked(scaleFactorAuto);
+        if (scaleFactorAuto) {
+            comboBoxScaleFactor->setEnabled(false);
+        } else {
+            scaleFactor = m_pConfig->getValue(
+                        ConfigKey("[Config]", "ScaleFactor"), 1.0);
+        }
+        connect(checkBoxScaleFactorAuto, SIGNAL(toggled(bool)),
+                this, SLOT(slotSetScaleFactorAuto(bool)));
+    } else {
+        checkBoxScaleFactorAuto->setEnabled(false);
+        scaleFactor = m_pConfig->getValue(
+                    ConfigKey("[Config]", "ScaleFactor"), 1.0);
+    }
+    connect(checkBoxScaleFactorAuto, SIGNAL(toggled(bool)),
+            this, SLOT(slotSetScaleFactorAuto(bool)));
 
     //: Entry of the HiDPI scale combo box. %1 is the scale factor in percent
     comboBoxScaleFactor->addItem(QString(tr("%1 % (Experimental)")).arg(50), 0.5);
@@ -317,26 +341,11 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     if (i == comboBoxScaleFactor->count()) {
         // no default scale, add custom scale
         comboBoxScaleFactor->addItem(
-                QString(tr("x %1")).arg(scaleFactor), scaleFactor);
+                QString(tr("%1 % (Experimental)")).arg(scaleFactor * 100), scaleFactor);
         comboBoxScaleFactor->setCurrentIndex(i);
     }
     connect(comboBoxScaleFactor, SIGNAL(activated(int)),
             this, SLOT(slotSetScaleFactor(int)));
-
-
-    bool autoValueAvalable = false;
-    if (autoValueAvalable) {
-        bool scaleFactorAuto = m_pConfig->getValue(
-                ConfigKey("[Config]", "ScaleFactorAuto"), true);
-        checkBoxScaleFactorAuto->setChecked(scaleFactorAuto);
-        if (scaleFactorAuto) {
-            comboBoxScaleFactor->setEnabled(false);
-        }
-        connect(checkBoxScaleFactorAuto, SIGNAL(toggled(bool)),
-                this, SLOT(slotSetScaleFactorAuto(bool)));
-    } else {
-        checkBoxScaleFactorAuto->setEnabled(false);
-    }
 
     //
     // Start in fullscreen mode
@@ -494,7 +503,7 @@ void DlgPrefControls::slotResetToDefaults() {
     checkBoxSeekToCue->setChecked(true);
 
     // Default to normal size widgets
-    comboBoxScaleFactor->setCurrentIndex(1);
+    comboBoxScaleFactor->setCurrentIndex(1); // 100 %
     checkBoxScaleFactorAuto->setChecked(true);
 
     // Don't start in full screen.
@@ -613,12 +622,23 @@ void DlgPrefControls::slotSetScaleFactor(int index) {
     double scaleFactor = comboBoxScaleFactor->itemData(index).toDouble();
     m_pConfig->setValue(ConfigKey("[Config]", "ScaleFactor"), scaleFactor);
     // reload the skin when the button is toggled
+    repaint();
     m_mixxx->rebootMixxxView();
 }
 
 void DlgPrefControls::slotSetScaleFactorAuto(bool checked) {
-    Q_UNUSED(checked);
-   // DODO
+    m_pConfig->setValue(
+            ConfigKey("[Config]", "ScaleFactorAuto"), checked);
+    comboBoxScaleFactor->setEnabled(!checked);
+    if (checked) {
+        m_pConfig->setValue(
+                ConfigKey("[Config]", "ScaleFactor"), m_autoScaleFactor);
+        // reload the skin when the button is toggled
+        repaint();
+        m_mixxx->rebootMixxxView();
+    } else {
+        slotSetScaleFactor(comboBoxScaleFactor->currentIndex());
+    }
 }
 
 void DlgPrefControls::slotSetStartInFullScreen(bool b) {
@@ -645,6 +665,7 @@ void DlgPrefControls::notifyRebootNecessary() {
 
 void DlgPrefControls::slotSetScheme(int) {
     m_pConfig->set(ConfigKey("[Config]", "Scheme"), ComboBoxSchemeconf->currentText());
+    repaint();
     m_mixxx->rebootMixxxView();
 }
 
@@ -652,6 +673,7 @@ void DlgPrefControls::slotSetSkin(int) {
     ComboBoxSkinconf->repaint(); // without it the combobox sticks to the old value until
                                  // the new Skin is fully loaded
     m_pConfig->set(ConfigKey("[Config]", "ResizableSkin"), ComboBoxSkinconf->currentText());
+    repaint();
     m_mixxx->rebootMixxxView();
     checkSkinResolution(ComboBoxSkinconf->currentText())
             ? warningLabel->hide() : warningLabel->show();
