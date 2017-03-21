@@ -220,6 +220,8 @@ Variables:
                     </Children>
                   </WidgetGroup>
 
+                  <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
+
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Tango],mixerbar_head_extras</ConfigKey>
