@@ -35,7 +35,7 @@ class LegacySkinParser : public QObject, public SkinParser {
                      KeyboardEventFilter* pKeyboard, PlayerManager* pPlayerManager,
                      ControllerManager* pControllerManager,
                      Library* pLibrary, VinylControlManager* pVCMan,
-                     EffectsManager* pEffectsManager
+                     EffectsManager* pEffectsManager,
                      RecordingManager* pRecordingManager);
     virtual ~LegacySkinParser();
 
