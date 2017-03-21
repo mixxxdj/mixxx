@@ -784,13 +784,57 @@ void LoopingControl::clearActiveBeatLoop() {
 }
 
 bool LoopingControl::currentLoopMatchesBeatloopSize() {
-    double dBeatLength;
     LoopSamples loopSamples = m_loopSamples.getValue();
-    BpmControl::getBeatContext(m_pBeats, loopSamples.start,
-                                nullptr, nullptr, &dBeatLength, nullptr);
-    double currentLoopLength = loopSamples.end - loopSamples.start;
-    double beatLoopLength = dBeatLength * m_pCOBeatLoopSize->get();
-    return abs(currentLoopLength - beatLoopLength) < MINIMUM_AUDIBLE_LOOP_SIZE;
+    int currentLoopLength = loopSamples.end - loopSamples.start;
+
+    double beatloopSize = m_pCOBeatLoopSize->get();
+    int beatLoopLength = calculateEndOfBeatloop(loopSamples.start, beatloopSize)
+                         - loopSamples.start;
+
+    // qDebug() << "LoopingControl::currentLoopMatchesBeatloopSize" << currentLoopLength << beatLoopLength;
+
+    // calculateEndOfBeatloop will round to the nearest even sample, so allow
+    // 2 samples of wiggle room.
+    return abs(currentLoopLength - beatLoopLength) <= 2;
+}
+
+int LoopingControl::calculateEndOfBeatloop(int startSample, double beatloopSize) {
+    if (m_pBeats == nullptr) {
+        return kNoTrigger;
+    }
+
+    int fullbeats = static_cast<int>(beatloopSize);
+    double fracbeats = beatloopSize - static_cast<double>(fullbeats);
+
+    // Now we need to calculate the length of the beatloop. We do this by
+    // taking the current beat and the fullbeats'th beat and adding the
+    // distance between them.
+    int endSample = startSample;
+
+    if (fullbeats > 0) {
+        // Add the length between this beat and the fullbeats'th beat to the
+        // loop_out position;
+        // TODO: figure out how to convert this to a findPrevNext call.
+        double this_beat = m_pBeats->findNthBeat(startSample, 1);
+        double nth_beat = m_pBeats->findNthBeat(startSample, 1 + fullbeats);
+        endSample += (nth_beat - this_beat);
+    }
+
+    if (fracbeats > 0) {
+        // Add the fraction of the beat following the current loop_out
+        // position to loop out.
+        // TODO: figure out how to convert this to a findPrevNext call.
+        double loop_out_beat = m_pBeats->findNthBeat(endSample, 1);
+        double loop_out_next_beat = m_pBeats->findNthBeat(endSample, 2);
+        endSample += (loop_out_next_beat - loop_out_beat) * fracbeats;
+    }
+
+    if (!even(endSample)) {
+        endSample--;
+    }
+
+    // qDebug() << "LoopingControl::calculateEndOfBeatloop" << startSample << endSample << beatloopSize;
+    return endSample;
 }
 
 void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable) {
@@ -835,87 +879,53 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     LoopSamples newloopSamples = {kNoTrigger, kNoTrigger};
     LoopSamples loopSamples = m_loopSamples.getValue();
 
-    // For positive numbers we start from the current position/closest beat and
+    // Start from the current position/closest beat and
     // create the loop around X beats from there.
-    if (beats > 0) {
-        if (keepStartPoint) {
-            if (loopSamples.start != kNoTrigger) {
-                newloopSamples.start = loopSamples.start;
-            } else {
-                newloopSamples.start = getCurrentSample();
-            }
+    if (keepStartPoint) {
+        if (loopSamples.start != kNoTrigger) {
+            newloopSamples.start = loopSamples.start;
         } else {
-            // loop_in is set to the previous beat if quantize is on.  The
-            // closest beat might be ahead of play position which would cause a seek.
-            // TODO: If in reverse, should probably choose nextBeat.
-            double cur_pos = getCurrentSample();
-            double prevBeat;
-            double nextBeat;
-            m_pBeats->findPrevNextBeats(cur_pos, &prevBeat, &nextBeat);
+            newloopSamples.start = getCurrentSample();
+        }
+    } else {
+        // loop_in is set to the previous beat if quantize is on.  The
+        // closest beat might be ahead of play position which would cause a seek.
+        // TODO: If in reverse, should probably choose nextBeat.
+        double cur_pos = getCurrentSample();
+        double prevBeat;
+        double nextBeat;
+        m_pBeats->findPrevNextBeats(cur_pos, &prevBeat, &nextBeat);
 
-            if (m_pQuantizeEnabled->get() > 0.0 && prevBeat != -1) {
-                if (beats >= 1.0) {
-                    newloopSamples.start = prevBeat;
-                } else {
-                    // In case of beat length less then 1 beat:
-                    // (| - beats, ^ - current track's position):
-                    //
-                    // ...|...................^........|...
-                    //
-                    // If we press 1/2 beatloop we want loop from 50% to 100%,
-                    // If I press 1/4 beatloop, we want loop from 50% to 75% etc
-                    double beat_len = nextBeat - prevBeat;
-                    double loops_per_beat = 1.0 / beats;
-                    double beat_pos = cur_pos - prevBeat;
-                    int beat_frac =
-                            static_cast<int>(floor((beat_pos / beat_len) *
-                                                   loops_per_beat));
-                    newloopSamples.start = prevBeat + beat_len / loops_per_beat * beat_frac;
-                }
-
+        if (m_pQuantizeEnabled->get() > 0.0 && prevBeat != -1) {
+            if (beats >= 1.0) {
+                newloopSamples.start = prevBeat;
             } else {
-                newloopSamples.start = floor(cur_pos);
+                // In case of beat length less then 1 beat:
+                // (| - beats, ^ - current track's position):
+                //
+                // ...|...................^........|...
+                //
+                // If we press 1/2 beatloop we want loop from 50% to 100%,
+                // If I press 1/4 beatloop, we want loop from 50% to 75% etc
+                double beat_len = nextBeat - prevBeat;
+                double loops_per_beat = 1.0 / beats;
+                double beat_pos = cur_pos - prevBeat;
+                int beat_frac =
+                        static_cast<int>(floor((beat_pos / beat_len) *
+                                                loops_per_beat));
+                newloopSamples.start = prevBeat + beat_len / loops_per_beat * beat_frac;
             }
 
-
-            if (!even(newloopSamples.start)) {
-                newloopSamples.start--;
-            }
-        }
-
-        int fullbeats = static_cast<int>(beats);
-        double fracbeats = beats - static_cast<double>(fullbeats);
-
-        // Now we need to calculate the length of the beatloop. We do this by
-        // taking the current beat and the fullbeats'th beat and measuring the
-        // distance between them.
-        newloopSamples.end = newloopSamples.start;
-
-        if (fullbeats > 0) {
-            // Add the length between this beat and the fullbeats'th beat to the
-            // loop_out position;
-            // TODO: figure out how to convert this to a findPrevNext call.
-            double this_beat = m_pBeats->findNthBeat(newloopSamples.start, 1);
-            double nth_beat = m_pBeats->findNthBeat(newloopSamples.start, 1 + fullbeats);
-            newloopSamples.end += (nth_beat - this_beat);
-        }
-
-        if (fracbeats > 0) {
-            // Add the fraction of the beat following the current loop_out
-            // position to loop out.
-            // TODO: figure out how to convert this to a findPrevNext call.
-            double loop_out_beat = m_pBeats->findNthBeat(newloopSamples.end, 1);
-            double loop_out_next_beat = m_pBeats->findNthBeat(newloopSamples.end, 2);
-            newloopSamples.end += (loop_out_next_beat - loop_out_beat) * fracbeats;
+        } else {
+            newloopSamples.start = floor(cur_pos);
         }
     }
 
     if (!even(newloopSamples.start)) {
         newloopSamples.start--;
     }
-    if (!even(newloopSamples.end)) {
-        newloopSamples.end--;
-    }
+
+    newloopSamples.end = calculateEndOfBeatloop(newloopSamples.start, beats);
 
     if (newloopSamples.start == newloopSamples.end) {
         if ((newloopSamples.end + 2) > samples) {
