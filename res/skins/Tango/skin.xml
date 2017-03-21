@@ -65,7 +65,7 @@
       <attribute persist="true" config_key="[Tango],deck_controls">1</attribute>
       <attribute persist="true" config_key="[Tango],empty_spinny_cover">2</attribute>
       <attribute persist="true" config_key="[Tango],eq_knobs">1</attribute>
-      <attribute persist="true" config_key="[Tango],hotcues">2</attribute>
+      <attribute persist="true" config_key="[Tango],hotcues">1</attribute>
       <attribute persist="true" config_key="[Tango],key_controls">1</attribute>
       <attribute persist="true" config_key="[Tango],loop_beatjump_controls">0</attribute>
       <attribute persist="true" config_key="[Tango],mixerbar">0</attribute>
