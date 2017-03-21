@@ -554,7 +554,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
     } else if (nodeName == "Time") {
         result = wrapWidget(parseLabelWidget<WTime>(node));
     } else if (nodeName == "RecordingDuration") {
-        result = wrapWidget(parseLabelWidget<WRecordingDuration>(node));
+//        result = wrapWidget(parseLabelWidget<WRecordingDuration>(node));
+        result = wrapWidget(parseRecordingDuration(node));
     } else if (nodeName == "Splitter") {
         result = wrapWidget(parseSplitter(node));
     } else if (nodeName == "LibrarySidebar") {
@@ -1093,6 +1094,17 @@ QWidget* LegacySkinParser::parseEngineKey(const QDomElement& node) {
 
 QWidget* LegacySkinParser::parseBattery(const QDomElement& node) {
     WBattery *p = new WBattery(m_pParent);
+    setupBaseWidget(node, p);
+    setupWidget(node, p);
+    p->setup(node, *m_pContext);
+    setupConnections(node, p);
+    p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    return p;
+}
+
+QWidget* LegacySkinParser::parseRecordingDuration(const QDomElement& node) {
+    WRecordingDuration *p = new WRecordingDuration(m_pParent, pRecordingManager);
     setupBaseWidget(node, p);
     setupWidget(node, p);
     p->setup(node, *m_pContext);

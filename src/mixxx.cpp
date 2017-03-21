@@ -1126,7 +1126,8 @@ void MixxxMainWindow::rebootMixxxView() {
                                                            m_pControllerManager,
                                                            m_pLibrary,
                                                            m_pVCManager,
-                                                           m_pEffectsManager))) {
+                                                           m_pEffectsManager,
+                                                           m_pRecordingManager))) {
 
         QMessageBox::critical(this,
                               tr("Error in skin file"),
