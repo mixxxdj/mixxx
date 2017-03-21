@@ -13,6 +13,8 @@
     </info>
     <controller id="Xponent">
         <scriptfiles>
+            <file filename="lodash.mixxx.js"/>
+            <file filename="midi-components-0.0.js"/>
             <file functionprefix="MaudioXponent" filename="M-Audio-Xponent-Advanced-scripts.js"/>
         </scriptfiles>
         <controls>
@@ -3180,7 +3182,7 @@
             </control>
             <control>
                 <group>[Master]</group>
-                <key>crossfader</key>
+                <key>MaudioXponent.crossfader</key>
                 <description>Crossfader</description>
                 <status>0xB7</status>
                 <midino>0x07</midino>

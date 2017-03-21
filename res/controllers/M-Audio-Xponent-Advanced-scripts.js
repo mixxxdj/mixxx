@@ -34,7 +34,7 @@ MaudioXponent.decks =
 MaudioXponent.state = {
     bank : 0,               // Which position is the bank switch currently set to?
     faderPosition : 0,      // Temporary storage for cross-fader position during punch-ins.
-    focusedEffect : 0,
+    focusedEffectUnit : 0,  // Which overall effect chain has the focus
     plnumberpos : 0,
     plnumberneg : 0,
 };
@@ -174,10 +174,9 @@ MaudioXponent.initDecks = function() {
         engine.softTakeover(group, "rate", true);
         engine.softTakeover(group, "volume", true);
 
-        // Soft-takeovers that aren't yet working correctly (Might need to save/restore on bank change)
-        engine.softTakeover(group, "filterLow", true);
-        engine.softTakeover(group, "filterMid", true);
-        engine.softTakeover(group, "filterHigh", true);
+        engine.softTakeover("[EqualizerRack1_" + group + "_Effect1]", "parameter1", true);
+        engine.softTakeover("[EqualizerRack1_" + group + "_Effect1]", "parameter2", true);
+        engine.softTakeover("[EqualizerRack1_" + group + "_Effect1]", "parameter3", true);
     }
 
     for (i = 1; i <=4; i++) {
@@ -185,7 +184,7 @@ MaudioXponent.initDecks = function() {
         engine.connectControl(group, "play_indicator", "MaudioXponent.onSampler");
     }
 
-    // Effects parameters... soft-takeove not working in Mixxx 2.0, should work in 2.1
+    // Effects parameters... soft-takeover not working in Mixxx 2.0, should work in 2.1
     for(i = 1; i <= 4; i++) {
         engine.softTakeover("[EffectRack1_EffectUnit" + i + "_Effect1]", "parameter1", true);
         engine.softTakeover("[EffectRack1_EffectUnit" + i + "_Effect1]", "parameter2", true);
@@ -340,7 +339,7 @@ MaudioXponent.bankSwitch = function(channel, control, value, status) {
         MaudioXponent.leftDeck = MaudioXponent.decks[2];
         MaudioXponent.rightDeck = MaudioXponent.decks[3];
     }
-
+    
     MaudioXponent.syncLights();
 };
 
@@ -430,50 +429,62 @@ MaudioXponent.onFilterKill = function(value, group, control) {
 MaudioXponent.effectButton = function(channel, control, value, status, group) {
     // script.midiDebug(channel, control, value, status, group);
     var deck = MaudioXponent.getDeck(group);
-    var currentControl = control - 0x0B;
-    group = "[EffectRack1_EffectUnit" + currentControl + "]";
+    var button = control - 0x0B;
 
     if (deck.shift) {
-        // Cycle effects
-        engine.setValue(group, "next_chain", 1);
-    } else {
-        if (currentControl == MaudioXponent.state.focusedEffect) {
-            // Toggle enabled
-            var effectEnabled = engine.getValue(group, "enabled");
-            if (effectEnabled) {
-                engine.setValue(group, "enabled", 0);
-            } else {
-                engine.setValue(group, "enabled", 1);
-            }
-        } else {
-            // Change focus
-            MaudioXponent.state.focusedEffect = currentControl;
-        }
+        // Focus/Unfocus EffectUnit
+        MaudioXponent.state.focusedEffectUnit = (button === MaudioXponent.state.focusedEffectUnit) ? 0 : button;
 
         // Light the focused effect
         for (var i = 0; i < 4; i++) {
             var ctrl = MaudioXponent.buttons.fx1 + i;
-            var fxNum = i + 1;
-            var newValue = (fxNum == MaudioXponent.state.focusedEffect) ? 1 : 0;
+            var newValue = (i + 1 === MaudioXponent.state.focusedEffectUnit) ? 1 : 0;
             midi.sendShortMsg(deck.on, ctrl, newValue);
         }
+    } else {
+        // Toggle EffectUnit
+        group = "[EffectRack1_EffectUnit" + button + "]";
+        var effectEnabled = !engine.getValue(group, "enabled");
+        engine.setValue(group, "enabled", effectEnabled);
     }
 };
 
 MaudioXponent.effectParameter = function(channel, control, value, status, group) {
     // script.midiDebug(channel, control, value, status, group);
-    var currentControl = control - 0x0B;
+    var knob = control - 0x0B;
+    var scaledValue = value / 0x7F;
 
-    if (MaudioXponent.state.focusedEffect != 0) {
-        group = "[EffectRack1_EffectUnit" + MaudioXponent.state.focusedEffect + "_Effect1]";
-        var scaledValue = value / 0x7F;
-
-        if (currentControl == 4) {
-            // Wet / Dry
-            engine.setParameter("[EffectRack1_EffectUnit" + MaudioXponent.state.focusedEffect + "]", "mix", scaledValue);
+    if (MaudioXponent.state.focusedEffectUnit != 0) {
+        if (MaudioXponent.rightDeck.shift) {
+            // Manipulate focused EffectUnit parameters
+            if (knob == 4) {
+                // Wet / Dry
+                engine.setParameter("[EffectRack1_EffectUnit" + MaudioXponent.state.focusedEffectUnit + "]", "mix", scaledValue);
+            } else {
+                // Other parameter
+                engine.setParameter("[EffectRack1_EffectUnit" + MaudioXponent.state.focusedEffectUnit + "_Effect1]", "parameter" + knob, scaledValue);
+            }
         } else {
-            // Other parameter
-            engine.setParameter(group, "parameter" + currentControl, scaledValue);
+            // Manipulate focused EffectUnit meta/super knobs
+            if (knob == 4) {
+                // Super-knob
+                group = "[EffectRack1_EffectUnit" + MaudioXponent.state.focusedEffectUnit + "]";
+                engine.setParameter(group, "super1", scaledValue);
+            } else {
+                // Meta-knob
+                group = "[EffectRack1_EffectUnit" + MaudioXponent.state.focusedEffectUnit + "_Effect" + knob + "]";
+                engine.setParameter(group, "meta", scaledValue);
+            }
+        }
+    } else {
+        if (MaudioXponent.rightDeck.shift) {
+            // Manipulate Wet/Dry mix
+            group = "[EffectRack1_EffectUnit" + knob + "]";
+            engine.setParameter(group, "mix", scaledValue);
+        } else {
+            // Manipulate Super-knobs
+            group = "[EffectRack1_EffectUnit" + knob + "]";
+            engine.setParameter(group, "super1", scaledValue);
         }
     }
 };
