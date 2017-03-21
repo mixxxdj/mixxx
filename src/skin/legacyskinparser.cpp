@@ -162,7 +162,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
           m_pLibrary(pLibrary),
           m_pVCManager(pVCMan),
           m_pEffectsManager(pEffectsManager),
-          m_pRecordingManager(pRecordingManager)
+          m_pRecordingManager(pRecordingManager),
           m_pParent(NULL) {
 }
 

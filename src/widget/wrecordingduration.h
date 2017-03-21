@@ -12,7 +12,7 @@
 class WRecordingDuration: public WLabel {
     Q_OBJECT
   public:
-    WRecordingDuration(QWidget *parent=nullptr, RecordingManager* pRecManager);
+    WRecordingDuration(QWidget *parent=nullptr);
     ~WRecordingDuration() override;
 
     void setup(const QDomNode& node, const SkinContext& context) override;
