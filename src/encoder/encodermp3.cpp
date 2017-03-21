@@ -23,6 +23,20 @@
 #include "encoder/encodercallback.h"
 #include "errordialoghandler.h"
 
+// Automatic thresholds for switching the encoder to mono
+// They have been choosen by testing and to keep the same number
+// of values for the slider.
+// The threshold of bitrate (CBR/ABR) at which the encoder
+// with switch to mono encoding
+const int EncoderMp3::MONO_BITRATE_TRESHOLD = 100;
+// The threshold of quality (VBR) at which the encoder
+// with switch to mono encoding. Values from 0 to 6 encode at 44Khz
+const int EncoderMp3::MONO_VBR_THRESHOLD = 8;
+// Quality offset to substract to the quality value when
+// switching to mono encoding.
+const int EncoderMp3::MONO_VBR_OFFSET = 4;
+
+
 EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
   : m_lameFlags(nullptr),
     m_bufferOut(nullptr),
@@ -255,7 +269,7 @@ void EncoderMp3::setEncoderSettings(const EncoderSettings& settings)
     m_encoding_mode = (modeoption==0) ? vbr_off : (modeoption==1) ? vbr_abr : vbr_default;
 
     if (m_encoding_mode == vbr_off) {
-        if (m_bitrate > 100 ) {
+        if (m_bitrate > MONO_BITRATE_TRESHOLD ) {
             m_stereo_mode = JOINT_STEREO;
         } else {
             m_stereo_mode = MONO;
@@ -263,7 +277,7 @@ void EncoderMp3::setEncoderSettings(const EncoderSettings& settings)
     } else {
         // Inverting range: vbr 0 best, 9 worst. slider 0 min to max.
         int val = settings.getQualityValues().size() - 1 - settings.getQualityIndex();
-        if (val < 8) {
+        if (val < MONO_VBR_THRESHOLD) {
             m_stereo_mode = JOINT_STEREO;
             m_vbr_index = val;
         } else {
