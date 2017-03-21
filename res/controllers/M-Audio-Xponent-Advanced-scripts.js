@@ -580,12 +580,14 @@ MaudioXponent.hotcue = function(channel, control, value, status, group) {
     // script.midiDebug(channel, control, value, status, group)
     var deck = MaudioXponent.getDeck(group);
     var cueNumber = control - 0x16;
+    var activate = (status == deck.on);
 
-    if (!deck.shift) {
-        var activate = (status == deck.on);
-        engine.setValue(group, "hotcue_" + cueNumber + "_activate", activate);
-    } else {
-        engine.setValue(group, "hotcue_" + cueNumber + "_clear", 1);
+    if (activate) {
+        if (!deck.shift) {
+            engine.setValue(group, "hotcue_" + cueNumber + "_activate", activate);
+        } else {
+            engine.setValue(group, "hotcue_" + cueNumber + "_clear", 1);
+        }
     }
 };
 
