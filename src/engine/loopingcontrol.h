@@ -74,7 +74,7 @@ class LoopingControl : public EngineControl {
     // Generate a loop of 'beats' length. It can also do fractions for a
     // beatslicing effect.
     void slotBeatLoop(double loopSize, bool keepStartPoint=false, bool enable=true);
-    void slotBeatLoopSizeChanged(double beats);
+    void slotBeatLoopSizeChangeRequest(double beats);
     void slotBeatLoopToggle(double pressed);
     void slotBeatLoopRollToggle(double pressed);
     void slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl);
@@ -140,7 +140,6 @@ class LoopingControl : public EngineControl {
     bool m_bLoopingEnabled;
     bool m_bLoopRollActive;
     bool m_bLoopManualTogglePressedToExitLoop;
-    bool m_bBeatloopEndPointIsEndOfTrack;
     // TODO(DSC) Make the following values double
     ControlValueAtomic<LoopSamples> m_loopSamples;
     QAtomicInt m_iCurrentSample;

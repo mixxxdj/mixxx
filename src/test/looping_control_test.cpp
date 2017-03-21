@@ -301,6 +301,16 @@ TEST_F(LoopingControlTest, LoopDoubleButton_DoublesBeatloopSize) {
     EXPECT_EQ(64.0, m_pBeatLoopSize->get());
 }
 
+TEST_F(LoopingControlTest, LoopDoubleButton_DoublesBeatloopSizeWhenNoLoopIsSet) {
+    m_pTrack1->setBpm(120.0);
+    m_pBeatLoopSize->set(64.0);
+    m_pLoopStartPoint->set(kNoTrigger);
+    m_pLoopEndPoint->set(kNoTrigger);
+    m_pButtonLoopDouble->slotSet(1);
+    m_pButtonLoopDouble->slotSet(0);
+    EXPECT_EQ(128.0, m_pBeatLoopSize->get());
+}
+
 TEST_F(LoopingControlTest, LoopDoubleButton_DoesNotDoubleBeatloopSizeForManualLoop) {
     m_pTrack1->setBpm(120.0);
     m_pBeatLoopSize->set(8.0);
@@ -387,21 +397,14 @@ TEST_F(LoopingControlTest, LoopHalveButton_HalvesBeatloopSize) {
     EXPECT_EQ(16.0, m_pBeatLoopSize->get());
 }
 
-TEST_F(LoopingControlTest, LoopHalveButton_HalvesBeatloopSizeWhenLoopExtendsToEndOfTrack) {
-    seekToSampleAndProcess(m_pTrackSamples->get() - 500);
+TEST_F(LoopingControlTest, LoopHalveButton_HalvesBeatloopSizeWhenNoLoopIsSet) {
     m_pTrack1->setBpm(120.0);
     m_pBeatLoopSize->set(64.0);
-    m_pButtonBeatLoopToggle->set(1.0);
-    m_pButtonBeatLoopToggle->set(0.0);
+    m_pLoopStartPoint->set(kNoTrigger);
+    m_pLoopEndPoint->set(kNoTrigger);
     m_pButtonLoopHalve->slotSet(1);
     m_pButtonLoopHalve->slotSet(0);
     EXPECT_EQ(32.0, m_pBeatLoopSize->get());
-
-    m_pButtonBeatLoopToggle->set(1.0);
-    m_pButtonBeatLoopToggle->set(0.0);
-    m_pButtonLoopHalve->slotSet(1);
-    m_pButtonLoopHalve->slotSet(0);
-    EXPECT_EQ(16.0, m_pBeatLoopSize->get());
 }
 
 TEST_F(LoopingControlTest, LoopHalveButton_DoesNotHalveBeatloopSizeForManualLoop) {
@@ -548,6 +551,22 @@ TEST_F(LoopingControlTest, BeatLoopSize_SetAndToggle) {
     m_pButtonBeatLoopToggle->set(0.0);
     EXPECT_FALSE(m_pLoopEnabled->toBool());
     EXPECT_FALSE(m_pBeatLoop2Enabled->toBool());
+}
+
+TEST_F(LoopingControlTest, BeatLoopSize_SetWithoutTrackLoaded) {
+    // Eject the track that is automatically loaded by the testing framework
+    m_pChannel1->getEngineBuffer()->slotEjectTrack(1.0);
+    m_pBeatLoopSize->set(5.0);
+    EXPECT_EQ(5.0, m_pBeatLoopSize->get());
+}
+
+TEST_F(LoopingControlTest, BeatLoopSize_IgnoresPastTrackEnd) {
+    // TODO: actually calculate that the beatloop would go beyond
+    // the end of the track
+    m_pTrack1->setBpm(60.0);
+    seekToSampleAndProcess(m_pTrackSamples->get() - 400);
+    m_pBeatLoopSize->set(64.0);
+    EXPECT_NE(64.0, m_pBeatLoopSize->get());
 }
 
 TEST_F(LoopingControlTest, BeatLoopSize_SetsNumberedControls) {

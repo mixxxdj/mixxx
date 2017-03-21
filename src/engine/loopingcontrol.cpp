@@ -120,8 +120,8 @@ LoopingControl::LoopingControl(QString group,
 
     m_pCOBeatLoopSize = new ControlObject(ConfigKey(group, "beatloop_size"),
                                           true, false, false, 4.0);
-    connect(m_pCOBeatLoopSize, SIGNAL(valueChanged(double)),
-            this, SLOT(slotBeatLoopSizeChanged(double)));
+    m_pCOBeatLoopSize->connectValueChangeRequest(this,
+            SLOT(slotBeatLoopSizeChangeRequest(double)), Qt::DirectConnection);
     m_pCOBeatLoopToggle = new ControlPushButton(ConfigKey(group, "beatloop_toggle"));
     connect(m_pCOBeatLoopToggle, SIGNAL(valueChanged(double)),
             this, SLOT(slotBeatLoopToggle(double)));
@@ -320,7 +320,11 @@ void LoopingControl::slotLoopHalve(double pressed) {
         return;
     }
 
-    if (currentLoopMatchesBeatloopSize() || m_bBeatloopEndPointIsEndOfTrack) {
+    LoopSamples loopSamples = m_loopSamples.getValue();
+    bool noLoopSet = (loopSamples.start == kNoTrigger) &&
+                     (loopSamples.end == kNoTrigger);
+
+    if (noLoopSet || currentLoopMatchesBeatloopSize()) {
         slotBeatLoop(m_pCOBeatLoopSize->get() / 2.0, true, false);
     } else {
         slotLoopScale(0.5);
@@ -332,7 +336,11 @@ void LoopingControl::slotLoopDouble(double pressed) {
         return;
     }
 
-    if (currentLoopMatchesBeatloopSize()) {
+    LoopSamples loopSamples = m_loopSamples.getValue();
+    bool noLoopSet = (loopSamples.start == kNoTrigger) &&
+                     (loopSamples.end == kNoTrigger);
+
+    if (noLoopSet || currentLoopMatchesBeatloopSize()) {
         slotBeatLoop(m_pCOBeatLoopSize->get() * 2.0, true, false);
     } else {
         slotLoopScale(2.0);
@@ -448,7 +456,6 @@ void LoopingControl::slotLoopIn(double val) {
     }
 
     clearActiveBeatLoop();
-    m_bBeatloopEndPointIsEndOfTrack = false;
 
     // set loop-in position
     LoopSamples loopSamples = m_loopSamples.getValue();
@@ -542,7 +549,6 @@ void LoopingControl::slotLoopOut(double val) {
     }
 
     clearActiveBeatLoop();
-    m_bBeatloopEndPointIsEndOfTrack = false;
 
     // set loop out position
     loopSamples.end = pos;
@@ -788,30 +794,23 @@ bool LoopingControl::currentLoopMatchesBeatloopSize() {
 }
 
 void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable) {
-    // For now we do not handle negative beatloops.
+    double maxBeatSize = s_dBeatSizes[sizeof(s_dBeatSizes)/sizeof(s_dBeatSizes[0]) - 1];
+    double minBeatSize = s_dBeatSizes[0];
     if (beats < 0) {
+        // For now we do not handle negative beatloops.
         clearActiveBeatLoop();
         return;
-    }
-
-    if (beats > 512.0) {
-        beats = 512;
-    } else if (beats < 1.0/32.0) {
-        beats = 1.0/32.0;
-    }
-
-    if (m_pCOBeatLoopSize->get() != beats) {
-        m_pCOBeatLoopSize->set(beats);
+    } else if (beats > maxBeatSize) {
+        beats = maxBeatSize;
+    } else if (beats < minBeatSize) {
+        beats = minBeatSize;
     }
 
     int samples = m_pTrackSamples->get();
-    if (!m_pTrack || samples == 0) {
+    if (!m_pTrack || samples == 0
+            || !m_pBeats) {
         clearActiveBeatLoop();
-        return;
-    }
-
-    if (!m_pBeats) {
-        clearActiveBeatLoop();
+        m_pCOBeatLoopSize->setAndConfirm(beats);
         return;
     }
 
@@ -831,16 +830,20 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         }
     }
 
+    // Calculate the new loop start and end samples
     // give start and end defaults so we can detect problems
     LoopSamples newloopSamples = {kNoTrigger, kNoTrigger};
     LoopSamples loopSamples = m_loopSamples.getValue();
-
 
     // For positive numbers we start from the current position/closest beat and
     // create the loop around X beats from there.
     if (beats > 0) {
         if (keepStartPoint) {
-            newloopSamples.start = loopSamples.start;
+            if (loopSamples.start != kNoTrigger) {
+                newloopSamples.start = loopSamples.start;
+            } else {
+                newloopSamples.start = getCurrentSample();
+            }
         } else {
             // loop_in is set to the previous beat if quantize is on.  The
             // closest beat might be ahead of play position which would cause a seek.
@@ -907,9 +910,6 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         }
     }
 
-    if ((newloopSamples.start == kNoTrigger) || (newloopSamples.end == kNoTrigger))
-        return;
-
     if (!even(newloopSamples.start)) {
         newloopSamples.start--;
     }
@@ -924,15 +924,23 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
             newloopSamples.end += 2;
         }
     }
+
+    // Do not allow beat loops to go beyond the end of the track
     if (newloopSamples.end > samples) {
-        // Do not allow beat loops to go beyond the end of the track
-        newloopSamples.end = samples;
-        // Let slotLoopHalve know to adjust beatloop_size
-        m_bBeatloopEndPointIsEndOfTrack = true;
-    } else {
-        m_bBeatloopEndPointIsEndOfTrack = false;
+        return;
     }
 
+    if (m_pCOBeatLoopSize->get() != beats) {
+        m_pCOBeatLoopSize->setAndConfirm(beats);
+    }
+
+    // This check happens after setting m_pCOBeatLoopSize so
+    // beatloop_size can be prepared without having a track loaded.
+    if ((newloopSamples.start == kNoTrigger) || (newloopSamples.end == kNoTrigger))
+        return;
+
+    // If resizing an inactive loop by changing beatloop_size,
+    // do not seek to the adjusted loop.
     if (keepStartPoint && (enable || m_bLoopingEnabled)) {
         seekInsideAdjustedLoop(loopSamples.start, loopSamples.end,
                 newloopSamples.start, newloopSamples.end);
@@ -946,7 +954,9 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     }
 }
 
-void LoopingControl::slotBeatLoopSizeChanged(double beats) {
+void LoopingControl::slotBeatLoopSizeChangeRequest(double beats) {
+    // slotBeatLoop will call m_pCOBeatLoopSize->setAndConfirm if
+    // new beatloop_size is valid
     slotBeatLoop(beats, true, false);
 }
 
