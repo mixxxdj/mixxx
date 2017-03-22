@@ -11,9 +11,10 @@
 
 //static const double kLockOriginalKey = 0;
 static const double kLockCurrentKey = 1;
+static const double kUnlockKeyToRate = 1;
 
 KeyControl::KeyControl(QString group,
-                       UserSettingsPointer pConfig)
+						UserSettingsPointer pConfig)
         : EngineControl(group, pConfig) {
     m_pitchRateInfo.pitchRatio = 1.0;
     m_pitchRateInfo.tempoRatio = 1.0;
@@ -64,13 +65,16 @@ KeyControl::KeyControl(QString group,
             Qt::DirectConnection);
 
     m_pEngineKeyDistance = new ControlPotmeter(ConfigKey(group, "visual_key_distance"),
-                                               -0.5, 0.5);
+												-0.5, 0.5);
     connect(m_pEngineKeyDistance, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetEngineKeyDistance(double)),
             Qt::DirectConnection);
 
     m_keylockMode = new ControlPushButton(ConfigKey(group, "keylockMode"));
     m_keylockMode->setButtonMode(ControlPushButton::TOGGLE);
+
+    m_keyunlockMode = new ControlPushButton(ConfigKey(group, "keyunlockMode"));
+    m_keyunlockMode->setButtonMode(ControlPushButton::TOGGLE);
 
     // In case of vinyl control "rate" is a filtered mean value for display
     m_pRateSlider = ControlObject::getControl(ConfigKey(group, "rate"));
@@ -135,6 +139,7 @@ KeyControl::~KeyControl() {
     delete m_pEngineKey;
     delete m_pEngineKeyDistance;
     delete m_keylockMode;
+    delete m_keyunlockMode;
 }
 
 KeyControl::PitchTempoRatio KeyControl::getPitchTempoRatio() {
@@ -212,12 +217,14 @@ void KeyControl::updateRate() {
         // !bKeylock
         if (m_pitchRateInfo.keylock) {
             // Disabling Keylock
-            if (m_keylockMode->get() == kLockCurrentKey) {
-                // reset to linear pitch
-                m_pitchRateInfo.pitchTweakRatio = 1.0;
-                // For not resetting to linear pitch:
-                // Adopt speedPitchRatio change as pitchTweakRatio
-                //pitchRateInfo.pitchTweakRatio *= (m_speedSliderPitchRatio / pitchRateInfo.tempoRatio);
+            if (m_keyunlockMode->get() == kUnlockKeyToRate) {
+                if (m_keylockMode->get() == kLockCurrentKey) {
+                    // reset to linear pitch
+                    m_pitchRateInfo.pitchTweakRatio = 1.0;
+                    // For not resetting to linear pitch:
+                    // Adopt speedPitchRatio change as pitchTweakRatio
+                    //pitchRateInfo.pitchTweakRatio *= (m_speedSliderPitchRatio / pitchRateInfo.tempoRatio);
+                }
             }
             m_pitchRateInfo.keylock = false;
         }

@@ -1,6 +1,6 @@
 /***************************************************************************
-                          dlgprefcontrols.cpp  -  description
-                             -------------------
+							dlgprefcontrols.cpp  -  description
+                            -------------------
     begin                : Sat Jul 5 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
@@ -40,9 +40,9 @@
 #include "defs_urls.h"
 
 DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
-                                 SkinLoader* pSkinLoader,
-                                 PlayerManager* pPlayerManager,
-                                 UserSettingsPointer  pConfig)
+								 SkinLoader* pSkinLoader,
+								 PlayerManager* pPlayerManager,
+								 UserSettingsPointer  pConfig)
         :  DlgPreferencePage(parent),
            m_pConfig(pConfig),
            m_mixxx(mixxx),
@@ -125,10 +125,24 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     connect(buttonGroupKeyLockMode, SIGNAL(buttonClicked(QAbstractButton*)),
             this, SLOT(slotKeyLockMode(QAbstractButton *)));
 
+    // 0 Lock original key, 1 Lock current key
     m_keylockMode = m_pConfig->getValue(
         ConfigKey("[Controls]", "keylockMode"), 0);
     foreach (ControlProxy* pControl, m_keylockModeControls) {
         pControl->set(m_keylockMode);
+    }
+
+    //
+    // Key unlock mode
+    //
+    connect(buttonGroupKeyUnlockMode, SIGNAL(buttonClicked(QAbstractButton*)),
+            this, SLOT(slotKeyUnlockMode(QAbstractButton *)));
+
+    // 0 Keep locked key, 1 Calculate key from tempo
+    m_keyunlockMode = m_pConfig->getValue(
+        ConfigKey("[Controls]", "keyunlockMode"), 0);
+    foreach (ControlProxy* pControl, m_keylockModeControls) {
+        pControl->set(m_keyunlockMode);
     }
 
     //
@@ -545,7 +559,7 @@ void DlgPrefControls::slotKeyLockMode(QAbstractButton* b) {
 void DlgPrefControls::slotSetAllowTrackLoadToPlayingDeck(bool b) {
     // If b is true, it means NOT to allow track loading
     m_pConfig->set(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"),
-                   ConfigValue(b?0:1));
+				   ConfigValue(b?0:1));
 }
 
 void DlgPrefControls::slotSetCueDefault(int index)
@@ -691,7 +705,7 @@ void DlgPrefControls::slotApply() {
                    ConfigValue(configSPAutoReset));
 
     m_pConfig->set(ConfigKey("[Controls]", "keylockMode"),
-            ConfigValue(m_keylockMode));
+        		   ConfigValue(m_keylockMode));
     // Set key lock behavior for every group
     foreach (ControlProxy* pControl, m_keylockModeControls) {
         pControl->set(m_keylockMode);
@@ -774,7 +788,7 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
         m_cueControls.push_back(new ControlProxy(
                 group, "cue_mode"));
         m_keylockModeControls.push_back(new ControlProxy(
-                        group, "keylockMode"));
+                group, "keylockMode"));
         m_keylockModeControls.last()->set(m_keylockMode);
     }
 

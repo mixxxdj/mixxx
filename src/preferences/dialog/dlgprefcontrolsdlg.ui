@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>485</width>
-    <height>554</height>
+    <height>571</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,7 +22,7 @@
      <layout class="QGridLayout" name="gridLayout_7">
       <item row="0" column="0">
        <layout class="QGridLayout" name="GridLayoutSpeedOptions">
-        <item row="6" column="1">
+        <item row="7" column="1">
          <widget class="QDoubleSpinBox" name="spinBoxPermRateLeft">
           <property name="toolTip">
            <string>Permanent rate change when left-clicking</string>
@@ -50,7 +50,7 @@
           </property>
          </widget>
         </item>
-        <item row="7" column="1">
+        <item row="8" column="1">
          <widget class="QDoubleSpinBox" name="spinBoxPermRateRight">
           <property name="toolTip">
            <string>Permanent rate change when right-clicking</string>
@@ -98,7 +98,7 @@
           </attribute>
          </widget>
         </item>
-        <item row="7" column="2">
+        <item row="8" column="2">
          <widget class="QDoubleSpinBox" name="spinBoxTempRateRight">
           <property name="enabled">
            <bool>false</bool>
@@ -129,7 +129,7 @@
           </property>
          </widget>
         </item>
-        <item row="5" column="1">
+        <item row="6" column="1">
          <widget class="QLabel" name="labelSpeedPermanent">
           <property name="text">
            <string>Permanent</string>
@@ -139,7 +139,7 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="1" colspan="2">
+        <item row="5" column="1" colspan="2">
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QSlider" name="SliderRateRampSensitivity">
@@ -187,7 +187,7 @@
           </item>
          </layout>
         </item>
-        <item row="5" column="2">
+        <item row="6" column="2">
          <widget class="QLabel" name="labelSpeedTemporary">
           <property name="enabled">
            <bool>false</bool>
@@ -210,7 +210,7 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="0">
+        <item row="5" column="0">
          <widget class="QLabel" name="labelSpeedRampSensitivity">
           <property name="enabled">
            <bool>false</bool>
@@ -223,7 +223,7 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="0">
+        <item row="4" column="0">
          <widget class="QLabel" name="labelSpeedBendBehavior">
           <property name="text">
            <string>Pitch bend behavior</string>
@@ -243,7 +243,7 @@
           </attribute>
          </widget>
         </item>
-        <item row="6" column="2">
+        <item row="7" column="2">
          <widget class="QDoubleSpinBox" name="spinBoxTempRateLeft">
           <property name="enabled">
            <bool>false</bool>
@@ -294,14 +294,14 @@
           </attribute>
          </widget>
         </item>
-        <item row="5" column="0">
+        <item row="6" column="0">
          <widget class="QLabel" name="labelSpeedAdjustment">
           <property name="text">
            <string>Adjustment buttons:</string>
           </property>
          </widget>
         </item>
-        <item row="6" column="0">
+        <item row="7" column="0">
          <widget class="QLabel" name="labelSpeedCoarse">
           <property name="enabled">
            <bool>true</bool>
@@ -326,7 +326,7 @@
           </property>
          </widget>
         </item>
-        <item row="7" column="0">
+        <item row="8" column="0">
          <widget class="QLabel" name="labelSpeedFine">
           <property name="enabled">
            <bool>true</bool>
@@ -362,7 +362,7 @@
          </widget>
         </item>
         <item row="0" column="0">
-         <widget class="QLabel" name="lableSpeedSliderrange">
+         <widget class="QLabel" name="labelSpeedSliderrange">
           <property name="enabled">
            <bool>true</bool>
           </property>
@@ -390,7 +390,7 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="2">
+        <item row="4" column="2">
          <widget class="QRadioButton" name="radioButtonSpeedBendStatic">
           <property name="text">
            <string>Abrupt jump</string>
@@ -400,7 +400,7 @@
           </attribute>
          </widget>
         </item>
-        <item row="3" column="1">
+        <item row="4" column="1">
          <widget class="QRadioButton" name="radioButtonSpeedBendRamping">
           <property name="toolTip">
            <string>Smoothly adjusts deck speed when temporary change buttons are held down</string>
@@ -410,6 +410,33 @@
           </property>
           <attribute name="buttonGroup">
            <string notr="true">buttonGroupSpeedBendBehavior</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="labelKeyunlockMode">
+          <property name="text">
+           <string>Keyunlock mode</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QRadioButton" name="radioButtonKeepLockedKey">
+          <property name="text">
+           <string>Keep previously locked key</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupKeyUnlockMode</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="3" column="2">
+         <widget class="QRadioButton" name="radioButtonCalculateNewKey">
+          <property name="text">
+           <string>Adapt key to current tempo</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupKeyUnlockMode</string>
           </attribute>
          </widget>
         </item>
@@ -743,6 +770,8 @@ CUP mode:
   <tabstop>checkBoxResetSpeed</tabstop>
   <tabstop>radioButtonOriginalKey</tabstop>
   <tabstop>radioButtonCurrentKey</tabstop>
+  <tabstop>radioButtonKeepLockedKey</tabstop>
+  <tabstop>radioButtonCalculateNewKey</tabstop>
   <tabstop>radioButtonSpeedBendRamping</tabstop>
   <tabstop>radioButtonSpeedBendStatic</tabstop>
   <tabstop>SliderRateRampSensitivity</tabstop>
@@ -885,6 +914,7 @@ CUP mode:
  </connections>
  <buttongroups>
   <buttongroup name="buttonGroupKeyLockMode"/>
+  <buttongroup name="buttonGroupKeyUnlockMode"/>
   <buttongroup name="buttonGroupTooltips"/>
   <buttongroup name="buttonGroupSpeedPitchReset">
    <property name="exclusive">
