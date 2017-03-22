@@ -500,35 +500,63 @@
     EffectUnit = function (unitNumbers, allowFocusWhenParametersHidden) {
         var eu = this;
 
-        if (unitNumbers !== undefined) {
-            if (Array.isArray(unitNumbers)) {
-                this.group = '[EffectRack1_EffectUnit' + unitNumbers[0] + ']';
-                this.currentUnitNumber = unitNumbers[0];
-                this.unitNumbers = unitNumbers;
-            } else if (typeof unitNumbers === 'number' &&
-                      Math.floor(unitNumbers) === unitNumbers &&
-                      isFinite(unitNumbers)) {
-                this.group = '[EffectRack1_EffectUnit' + unitNumbers + ']';
-                this.currentUnitNumber = unitNumbers;
-                this.unitNumbers = [unitNumbers];
+        // This is only connected if allowFocusWhenParametersHidden is false.
+        this.onShowParametersChange = function (value) {
+            if (value === 0) {
+                // Prevent this from getting called twice (on button down and button up)
+                // when show_parameters button is clicked in skin.
+                // Otherwise this.previouslyFocusedEffect would always be set to 0
+                // on the second call.
+                if (engine.getValue(this.group, 'show_focus') > 0) {
+                    engine.setValue(this.group, 'show_focus', 0);
+                    this.previouslyFocusedEffect = engine.getValue(this.group,
+                                                                  "focused_effect");
+                    engine.setValue(this.group, "focused_effect", 0);
+                }
+            } else {
+                engine.setValue(this.group, 'show_focus', 1);
+                if (this.previouslyFocusedEffect !== undefined) {
+                    engine.setValue(this.group, 'focused_effect',
+                                    this.previouslyFocusedEffect);
+                }
             }
-        } else {
-            print('ERROR! new EffectUnit() called without specifying any unit numbers!');
-            return;
-        }
-
-        if (allowFocusWhenParametersHidden === true) {
-            engine.setValue(this.group, "show_focus", 1);
-        } else {
-            if (engine.getValue(this.group, "show_parameters") === 0) {
-                engine.setValue(this.group, "focused_effect", 0);
-                engine.setValue(this.group, "show_focus", 0);
-            }
-        }
+        };
 
         this.setCurrentUnit = function (newNumber) {
             this.currentUnitNumber = newNumber;
+            if (allowFocusWhenParametersHidden) {
+                engine.setValue(this.group, 'show_focus', 0);
+            } else {
+                if (this.showParametersConnection !== undefined) {
+                    this.showParametersConnection.disconnect();
+                }
+                delete this.previouslyFocusedEffect;
+            }
+
             this.group = '[EffectRack1_EffectUnit' + newNumber + ']';
+
+            if (allowFocusWhenParametersHidden) {
+                engine.setValue(this.group, 'show_focus', 1);
+            } else {
+                // Connect a callback to show_parameters changing instead of
+                // setting show_focus when effectFocusButton is pressed so
+                // show_focus is always in the correct state, even if the user
+                // presses the skin button for show_parameters.
+                this.showParametersConnection = engine.connectControl(this.group,
+                                                    'show_parameters',
+                                                    this.onShowParametersChange);
+                this.showParametersConnection.trigger();
+            }
+
+            for (var n = 1; n <= 3; n++) {
+                var effect = '[EffectRack1_EffectUnit' + this.currentUnitNumber +
+                            '_Effect' + n + ']';
+                engine.softTakeover(effect, 'meta', true);
+                engine.softTakeover(effect, 'parameter1', true);
+                engine.softTakeover(effect, 'parameter2', true);
+                engine.softTakeover(effect, 'parameter3', true);
+            }
+
             this.reconnectComponents(function (component) {
                 // update [EffectRack1_EffectUnitX] groups
                 var unitMatch = component.group.match(script.effectUnitRegEx);
@@ -555,6 +583,21 @@
                 index += 1;
             }
             this.setCurrentUnit(this.unitNumbers[index]);
+        }
+
+        if (unitNumbers !== undefined) {
+            if (Array.isArray(unitNumbers)) {
+                this.unitNumbers = unitNumbers;
+                this.setCurrentUnit(unitNumbers[0]);
+            } else if (typeof unitNumbers === 'number' &&
+                      Math.floor(unitNumbers) === unitNumbers &&
+                      isFinite(unitNumbers)) {
+                this.unitNumbers = [unitNumbers];
+                this.setCurrentUnit(unitNumbers);
+            }
+        } else {
+            print('ERROR! new EffectUnit() called without specifying any unit numbers!');
+            return;
         }
 
         this.dryWetKnob = new Pot({
@@ -671,12 +714,6 @@
         this.enableButtons = new ComponentContainer();
         for (var n = 1; n <= 3; n++) {
             this.knobs[n] = new this.EffectUnitKnob(n);
-            var effect = '[EffectRack1_EffectUnit' + this.currentUnitNumber +
-                         '_Effect' + n + ']';
-            engine.softTakeover(effect, 'meta', true);
-            engine.softTakeover(effect, 'parameter1', true);
-            engine.softTakeover(effect, 'parameter2', true);
-            engine.softTakeover(effect, 'parameter3', true);
             this.enableButtons[n] = new this.EffectEnableButton(n);
         }
 
@@ -702,10 +739,9 @@
                                                       true);
                         if (!showParameters) {
                             if (!allowFocusWhenParametersHidden) {
-                                engine.setValue(this.group, "focused_effect",
-                                                this.previouslyFocusedEffect);
                                 engine.setValue(this.group, "show_parameters", 1);
-                                engine.setValue(this.group, "show_focus", 1);
+                                // eu.onShowParametersChange will refocus the
+                                // previously focused effect and show focus in skin
                             }
                             this.pressedWhenParametersHidden = true;
                         }
@@ -723,13 +759,9 @@
                             if (!showParameters && allowFocusWhenParametersHidden) {
                                   engine.setValue(this.group, "show_parameters", 1);
                             } else if (showParameters && !this.pressedWhenParametersHidden) {
-                                  if (!allowFocusWhenParametersHidden) {
-                                      this.previouslyFocusedEffect = engine.getValue(this.group,
-                                                                         "focused_effect");
-                                      engine.setValue(this.group, "focused_effect", 0);
-                                      engine.setValue(this.group, "show_focus", 0);
-                                  }
                                   engine.setValue(this.group, "show_parameters", 0);
+                                  // eu.onShowParametersChange will save the focused effect,
+                                  // unfocus, and hide focus buttons in skin
                             }
                         }
                         this.pressedWhenParametersHidden = false;
