@@ -144,6 +144,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig)
           m_pLibrary(NULL),
           m_pVCManager(NULL),
           m_pEffectsManager(NULL),
+          m_pRecordingManager(NULL),
           m_pParent(NULL) {
 }
 
@@ -1106,7 +1107,7 @@ QWidget* LegacySkinParser::parseBattery(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseRecordingDuration(const QDomElement& node) {
-    WRecordingDuration *p = new WRecordingDuration(m_pParent, pRecordingManager);
+    WRecordingDuration *p = new WRecordingDuration(m_pParent, m_pRecordingManager);
     setupBaseWidget(node, p);
     setupWidget(node, p);
     p->setup(node, *m_pContext);
