@@ -388,6 +388,8 @@ script.samplerRegEx = /^\[Sampler(\d+)\]$/ ;
 script.channelRegEx = /^\[Channel(\d+)\]$/ ;
 script.eqRegEx = /^\[EqualizerRack1_(\[.*\])_Effect1\]$/ ;
 script.quickEffectRegEx = /^\[QuickEffectRack1_(\[.*\])\]$/ ;
+script.effectUnitRegEx = /^\[EffectRack1_EffectUnit(\d+)\]$/ ;
+script.individualEffectRegEx = /^\[EffectRack1_EffectUnit(\d+)_Effect(\d+)\]$/ ;
 
 // ----------------- Object definitions --------------------------
 
