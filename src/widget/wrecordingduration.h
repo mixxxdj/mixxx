@@ -1,5 +1,5 @@
 // wrecordingduration.h
-// WRecordingDuration is a widget showing the duration of running recoding
+// WRecordingDuration is a label showing the duration of running recording.
 // In skin.xml, it is represented by a <RecordingDuration> node.
 
 #ifndef WRECORDINGDURATION_H

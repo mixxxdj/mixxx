@@ -559,7 +559,6 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
     } else if (nodeName == "Time") {
         result = wrapWidget(parseLabelWidget<WTime>(node));
     } else if (nodeName == "RecordingDuration") {
-//        result = wrapWidget(parseLabelWidget<WRecordingDuration>(node));
         result = wrapWidget(parseRecordingDuration(node));
     } else if (nodeName == "Splitter") {
         result = wrapWidget(parseSplitter(node));
