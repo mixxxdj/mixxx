@@ -5,8 +5,6 @@ WRecordingDuration::WRecordingDuration(QWidget *parent,
         : WLabel(parent),
           m_durationRecordedStr(""),
           m_pRecordingManager(pRecordingManager) {
-        connect(m_pRecordingManager, SIGNAL(durationRecorded(QString)),
-            this, SLOT(slotDurationRecorded(QString)));
 }
 
 WRecordingDuration::~WRecordingDuration() {
@@ -14,14 +12,11 @@ WRecordingDuration::~WRecordingDuration() {
 
 void WRecordingDuration::setup(const QDomNode& node, const SkinContext& context) {
     WLabel::setup(node, context);
+    connect(m_pRecordingManager, SIGNAL(durationRecorded(QString)),
+        this, SLOT(refreshLabelText(QString)));
 }
 
-void WRecordingDuration::slotDurationRecorded(QString durationRecorded) {
+void WRecordingDuration::refreshLabelText(QString durationRecorded) {
     m_durationRecordedStr = durationRecorded;
-    refreshLabel();
-}
-
-void WRecordingDuration::refreshLabel() {
-    QString recDuration = m_durationRecordedStr;
-    label->setText(recDuration);
+    setText(m_durationRecordedStr);
 }
