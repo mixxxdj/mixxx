@@ -707,8 +707,8 @@
 
             <control>
                 <group>[Sampler1]</group>
-                <key>MaudioXponent.sampler</key>
-                <description>Sampler 1 Button Press</description>
+                <key>MaudioXponent.samplerButton</key>
+                <description>Sampler 1 Button Press (Bank A)</description>
                 <status>0x90</status>
                 <midino>0x0C</midino>
                 <options>
@@ -717,8 +717,19 @@
             </control>
             <control>
                 <group>[Sampler1]</group>
-                <key>MaudioXponent.sampler</key>
-                <description>Sampler 1 Button Press</description>
+                <key>MaudioXponent.samplerButton</key>
+                <description>Sampler 1 Button Release (Bank A)</description>
+                <status>0x80</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Sampler1]</group>
+                <key>MaudioXponent.samplerButton</key>
+                <description>Sampler 1 Button Press (Bank B)</description>
                 <status>0x95</status>
                 <midino>0x0C</midino>
                 <options>
@@ -727,8 +738,19 @@
             </control>
             <control>
                 <group>[Sampler1]</group>
+                <key>MaudioXponent.samplerButton</key>
+                <description>Sampler 1 Button Release (Bank B)</description>
+                <status>0x85</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Sampler1]</group>
                 <key>pregain</key>
-                <description>Sampler 1 Knob</description>
+                <description>Sampler 1 Knob (Bank A)</description>
                 <status>0xB0</status>
                 <midino>0x0C</midino>
                 <options>
@@ -738,7 +760,7 @@
             <control>
                 <group>[Sampler1]</group>
                 <key>pregain</key>
-                <description>Sampler 1 Knob</description>
+                <description>Sampler 1 Knob (Bank B)</description>
                 <status>0xB5</status>
                 <midino>0x0C</midino>
                 <options>
@@ -748,8 +770,8 @@
 
             <control>
                 <group>[Sampler2]</group>
-                <key>MaudioXponent.sampler</key>
-                <description>Sampler 2 Button Press</description>
+                <key>MaudioXponent.samplerButton</key>
+                <description>Sampler 2 Button Press (Bank A)</description>
                 <status>0x90</status>
                 <midino>0x0D</midino>
                 <options>
@@ -758,8 +780,19 @@
             </control>
             <control>
                 <group>[Sampler2]</group>
-                <key>MaudioXponent.sampler</key>
-                <description>Sampler 2 Button Press</description>
+                <key>MaudioXponent.samplerButton</key>
+                <description>Sampler 2 Button Release (Bank A)</description>
+                <status>0x80</status>
+                <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Sampler2]</group>
+                <key>MaudioXponent.samplerButton</key>
+                <description>Sampler 2 Button Press (Bank B)</description>
                 <status>0x95</status>
                 <midino>0x0D</midino>
                 <options>
@@ -768,8 +801,19 @@
             </control>
             <control>
                 <group>[Sampler2]</group>
+                <key>MaudioXponent.samplerButton</key>
+                <description>Sampler 2 Button Release (Bank B)</description>
+                <status>0x85</status>
+                <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Sampler2]</group>
                 <key>pregain</key>
-                <description>Sampler 2 Knob</description>
+                <description>Sampler 2 Knob (Bank A)</description>
                 <status>0xB0</status>
                 <midino>0x0D</midino>
                 <options>
@@ -779,7 +823,7 @@
             <control>
                 <group>[Sampler2]</group>
                 <key>pregain</key>
-                <description>Sampler 2 Knob</description>
+                <description>Sampler 2 Knob (Bank B)</description>
                 <status>0xB5</status>
                 <midino>0x0D</midino>
                 <options>
@@ -787,11 +831,10 @@
                 </options>
             </control>
 
-
             <control>
                 <group>[Sampler3]</group>
-                <key>MaudioXponent.sampler</key>
-                <description>Sampler 3 Button Press</description>
+                <key>MaudioXponent.samplerButton</key>
+                <description>Sampler 3 Button Press (Bank A)</description>
                 <status>0x90</status>
                 <midino>0x0E</midino>
                 <options>
@@ -800,8 +843,19 @@
             </control>
             <control>
                 <group>[Sampler3]</group>
-                <key>MaudioXponent.sampler</key>
-                <description>Sampler 3 Button Press</description>
+                <key>MaudioXponent.samplerButton</key>
+                <description>Sampler 3 Button Release (Bank A)</description>
+                <status>0x80</status>
+                <midino>0x0E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Sampler3]</group>
+                <key>MaudioXponent.samplerButton</key>
+                <description>Sampler 3 Button Press (Bank B)</description>
                 <status>0x95</status>
                 <midino>0x0E</midino>
                 <options>
@@ -810,8 +864,19 @@
             </control>
             <control>
                 <group>[Sampler3]</group>
+                <key>MaudioXponent.samplerButton</key>
+                <description>Sampler 3 Button Release (Bank B)</description>
+                <status>0x85</status>
+                <midino>0x0E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Sampler3]</group>
                 <key>pregain</key>
-                <description>Sampler 3 Knob</description>
+                <description>Sampler 3 Knob (Bank A)</description>
                 <status>0xB0</status>
                 <midino>0x0E</midino>
                 <options>
@@ -821,7 +886,7 @@
            <control>
                 <group>[Sampler3]</group>
                 <key>pregain</key>
-                <description>Sampler 3 Knob</description>
+                <description>Sampler 3 Knob (Bank B)</description>
                 <status>0xB5</status>
                 <midino>0x0E</midino>
                 <options>
@@ -831,8 +896,8 @@
 
             <control>
                 <group>[Sampler4]</group>
-                <key>MaudioXponent.sampler</key>
-                <description>Sampler 4 Button Press</description>
+                <key>MaudioXponent.samplerButton</key>
+                <description>Sampler 4 Button Press (Bank A)</description>
                 <status>0x90</status>
                 <midino>0x0F</midino>
                 <options>
@@ -841,8 +906,19 @@
             </control>
             <control>
                 <group>[Sampler4]</group>
-                <key>MaudioXponent.sampler</key>
-                <description>Sampler 4 Button Press</description>
+                <key>MaudioXponent.samplerButton</key>
+                <description>Sampler 4 Button Release (Bank A)</description>
+                <status>0x80</status>
+                <midino>0x0F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Sampler4]</group>
+                <key>MaudioXponent.samplerButton</key>
+                <description>Sampler 4 Button Press (Bank B)</description>
                 <status>0x95</status>
                 <midino>0x0F</midino>
                 <options>
@@ -851,8 +927,19 @@
             </control>
             <control>
                 <group>[Sampler4]</group>
+                <key>MaudioXponent.samplerButton</key>
+                <description>Sampler 4 Button Relase (Bank B)</description>
+                <status>0x85</status>
+                <midino>0x0F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Sampler4]</group>
                 <key>pregain</key>
-                <description>Sampler 4 Knob</description>
+                <description>Sampler 4 Knob (Bank A)</description>
                 <status>0xB0</status>
                 <midino>0x0F</midino>
                 <options>
@@ -862,7 +949,7 @@
             <control>
                 <group>[Sampler4]</group>
                 <key>pregain</key>
-                <description>Sampler 4 Knob</description>
+                <description>Sampler 4 Knob (Bank B)</description>
                 <status>0xB5</status>
                 <midino>0x0F</midino>
                 <options>
@@ -954,7 +1041,7 @@
 
             <control>
                 <group>[Channel2]</group>
-                <key>MaudioXponent.effectParameter</key>
+                <key>MaudioXponent.effectKnob</key>
                 <description>Effect Parameter 1 Knob</description>
                 <status>0xB1</status>
                 <midino>0x0C</midino>
@@ -964,7 +1051,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>MaudioXponent.effectParameter</key>
+                <key>MaudioXponent.effectKnob</key>
                 <description>Effect Parameter 2 Knob</description>
                 <status>0xB1</status>
                 <midino>0x0D</midino>
@@ -974,7 +1061,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>MaudioXponent.effectParameter</key>
+                <key>MaudioXponent.effectKnob</key>
                 <description>Effect Parameter 3 Knob</description>
                 <status>0xB1</status>
                 <midino>0x0E</midino>
@@ -984,7 +1071,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>MaudioXponent.effectParameter</key>
+                <key>MaudioXponent.effectKnob</key>
                 <description>Effect Parameter 4 Knob</description>
                 <status>0xB1</status>
                 <midino>0x0F</midino>
@@ -995,7 +1082,7 @@
 
             <control>
                 <group>[Channel4]</group>
-                <key>MaudioXponent.effectParameter</key>
+                <key>MaudioXponent.effectKnob</key>
                 <description>Effect Parameter 1 Knob</description>
                 <status>0xB6</status>
                 <midino>0x0C</midino>
@@ -1005,7 +1092,7 @@
             </control>         
             <control>
                 <group>[Channel4]</group>
-                <key>MaudioXponent.effectParameter</key>
+                <key>MaudioXponent.effectKnob</key>
                 <description>Effect Parameter 2 Knob</description>
                 <status>0xB6</status>
                 <midino>0x0D</midino>
@@ -1015,7 +1102,7 @@
             </control>          
             <control>
                 <group>[Channel4]</group>
-                <key>MaudioXponent.effectParameter</key>
+                <key>MaudioXponent.effectKnob</key>
                 <description>Effect Parameter 3 Knob</description>
                 <status>0xB6</status>
                 <midino>0x0E</midino>
@@ -1025,7 +1112,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>MaudioXponent.effectParameter</key>
+                <key>MaudioXponent.effectKnob</key>
                 <description>Effect Parameter 4 Knob</description>
                 <status>0xB6</status>
                 <midino>0x0F</midino>
