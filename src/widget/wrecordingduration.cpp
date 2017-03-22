@@ -1,6 +1,7 @@
 #include "widget/wrecordingduration.h"
 
-WRecordingDuration::WRecordingDuration(QWidget *parent)
+WRecordingDuration::WRecordingDuration(QWidget *parent,
+                                    RecordingManager* pRecordingManager)
         : WLabel(parent),
           m_durationRecordedStr(""),
           m_pRecordingManager(pRecordingManager) {
