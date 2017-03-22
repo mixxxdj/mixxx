@@ -849,14 +849,14 @@ MaudioXponent.seek = function(channel, control, value, status, group) {
 };
 
 MaudioXponent.samplerButton = function(channel, control, value, status, group) {
-    script.midiDebug(channel, control, value, status, group);
+    //script.midiDebug(channel, control, value, status, group);
     var activate = (status === MaudioXponent.leftDeck.on);
 
     if (activate) {
-        print("*** " + group + " cue_gotoandplay");
+        //print("*** " + group + " cue_gotoandplay");
         engine.setValue(group, "cue_gotoandplay", 1);
     } else if (MaudioXponent.leftDeck.shift) {
-        print("*** " + group + " cue_gotoandstop");
+        //print("*** " + group + " cue_gotoandstop");
         engine.setValue(group, "cue_gotoandstop", 1);
     }
 };
