@@ -833,15 +833,23 @@ WPushButton {
     color: #eeeeee;
     background-color: #666666;
     }
-  
+
 #RecordingButton[displayValue="0"]:hover, #RecordingButton[displayValue="1"] {
   background-color: #5c0000;
   border: 1px solid #a90000;
   }
   #RecordingButton[displayValue="2"] {
-    color: #dddddd;
-    background-color: #a90000;
-    border: 1px solid #ca0000;
+    background-color: transparent;
+  }
+  #RecordingButton[displayValue="2"]:hover {
+    border: 1px solid #dddddd;
+  }
+  #RecDurationLabel, #RecordingButtonUnderlay {
+    border: 1px solid #dddddd;
+    font-weight: bold;
+    background-color: #5c0000;
+    border: 1px solid #a90000;
+    border-radius: 2px;
     }
 
 #ClockBox {
