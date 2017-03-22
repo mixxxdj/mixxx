@@ -11,14 +11,13 @@ Variables:
   <WidgetGroup>
     <ObjectName>FocusableEffect</ObjectName>
     <Layout>vertical</Layout>
+    <SizePolicy>max,max</SizePolicy>
     <Children>
 
       <WidgetGroup>
         <ObjectName>EffectHighlightable</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>max,f</SizePolicy>
-        <MinimumSize>-1,65</MinimumSize>
-        <MaximumSize>-1,75</MaximumSize>
+        <Size>-1max,70f</Size>
         <Children>
 
           <WidgetGroup>

@@ -13,14 +13,6 @@
     <SizePolicy>me,f</SizePolicy>
     <Children>
       <Template src="skin:sampler_text_row.xml"/>
-
-      <Template src="skin:vumeter_h.xml">
-        <SetVariable name="TooltipId">channel_VuMeter</SetVariable>
-        <SetVariable name="group"><Variable name="group"/></SetVariable>
-        <SetVariable name="control">VuMeter</SetVariable>
-        <SetVariable name="tooltip_meter">sampler_VuMeter</SetVariable>
-        <SetVariable name="tooltip_clip">sampler_PeakIndicator</SetVariable>
-      </Template>
     </Children>
   </WidgetGroup>
 </Template>

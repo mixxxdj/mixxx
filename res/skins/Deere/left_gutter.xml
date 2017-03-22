@@ -7,32 +7,32 @@
   <WidgetGroup>
     <ObjectName>LeftGutter</ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>me,min</SizePolicy>
+    <SizePolicy>me,me</SizePolicy>
     <Children>
-      <Template src="skin:spacer.xml"/>
-      <Template src="skin:deck_left.xml">
+      <Template src="skin:deck.xml">
         <SetVariable name="i">1</SetVariable>
         <!-- Traditional Blue -->
         <SetVariable name="DeckSignalColor">#007BCD</SetVariable>
         <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+        <SetVariable name="PlayedOverlayColor">#88000000</SetVariable>
       </Template>
 
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:deck_left.xml">
+          <Template src="skin:deck.xml">
             <SetVariable name="i">3</SetVariable>
             <!-- Violet -->
             <SetVariable name="DeckSignalColor">#B500B5</SetVariable>
-            <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+            <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
+            <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
           </Template>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+          <ConfigKey>[Master],show_4decks</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
-      <Template src="skin:spacer.xml"/>
     </Children>
   </WidgetGroup>
 </Template>

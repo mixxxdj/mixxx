@@ -12,7 +12,7 @@
    version="1.1"
    viewBox="0 0 48 48.000001"
    id="svg2"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.0 r"
    sodipodi:docname="ic_loop_move_forward_48px.svg">
   <metadata
      id="metadata10">
@@ -22,6 +22,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -37,19 +38,25 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:window-width="1366"
-     inkscape:window-height="702"
+     inkscape:window-height="696"
      id="namedview6"
      showgrid="false"
-     inkscape:zoom="4.9166667"
-     inkscape:cx="-14.237288"
-     inkscape:cy="24.813559"
+     inkscape:zoom="6.9532167"
+     inkscape:cx="10.631095"
+     inkscape:cy="24.525604"
      inkscape:window-x="0"
-     inkscape:window-y="27"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg2" />
   <path
-     d="m 32,24 -8,-8 0,6 -8,0 0,4 8,0 0,6 z m 8,-12 0,24 -4,0 0,-24 z m -28,0 0,24 -4,0 0,-24 z"
+     style="fill:#d2d2d2;fill-opacity:1"
+     d="m 31.071909,10.143818 v 8 h -12 v 12 h 12 v 8 l 14,-14 z"
+     id="path815"
+     inkscape:connector-curvature="0" />
+  <path
+     style="fill:#d2d2d2;fill-opacity:1"
+     d="m 6.928091,10 v 28 h 6 V 10 Z"
      id="path4"
      inkscape:connector-curvature="0"
-     style="fill:#d2d2d2;fill-opacity:1" />
+     sodipodi:nodetypes="ccccc" />
 </svg>
