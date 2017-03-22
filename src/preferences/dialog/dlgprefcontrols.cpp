@@ -1,6 +1,6 @@
 /***************************************************************************
-                            dlgprefcontrols.cpp  -  description
-                            -------------------
+                           dlgprefcontrols.cpp  -  description
+                          -------------------
     begin                : Sat Jul 5 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
@@ -141,7 +141,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     // 0 Keep locked key, 1 Calculate key from tempo
     m_keyunlockMode = m_pConfig->getValue(
         ConfigKey("[Controls]", "keyunlockMode"), 0);
-    foreach (ControlProxy* pControl, m_keylockModeControls) {
+    foreach (ControlProxy* pControl, m_keyunlockModeControls) {
         pControl->set(m_keyunlockMode);
     }
 
@@ -392,6 +392,7 @@ DlgPrefControls::~DlgPrefControls() {
     qDeleteAll(m_cueControls);
     qDeleteAll(m_rateRangeControls);
     qDeleteAll(m_keylockModeControls);
+    qDeleteAll(m_keyunlockModeControls);
 }
 
 void DlgPrefControls::slotUpdateSchemes() {
@@ -425,7 +426,7 @@ void DlgPrefControls::slotUpdate() {
     int idx = ComboBoxRateRange->findData(static_cast<int>(deck1RateRange * 100));
     if (idx == -1) {
         ComboBoxRateRange->addItem(QString::number(deck1RateRange * 100.).append("%"),
-                                deck1RateRange * 100.);
+                                   deck1RateRange * 100.);
     }
 
     ComboBoxRateRange->setCurrentIndex(idx);
@@ -440,6 +441,11 @@ void DlgPrefControls::slotUpdate() {
         radioButtonCurrentKey->setChecked(true);
     else
         radioButtonOriginalKey->setChecked(true);
+
+    if (m_keyunlockMode == 1)
+        radioButtonCalculateNewKey->setChecked(true);
+    else
+        radioButtonKeepLockedKey->setChecked(true);
 
     checkBoxResetSpeed->setChecked(m_speedAutoReset);
     checkBoxResetPitch->setChecked(m_pitchAutoReset);
@@ -495,6 +501,10 @@ void DlgPrefControls::slotResetToDefaults() {
     // Lock to original key
     m_keylockMode = 0;
     radioButtonOriginalKey->setChecked(true);
+
+    // Unlock to key calculated from current rate
+    m_keyunlockMode = 0;
+    radioButtonCalculateNewKey->setChecked(true);
 }
 
 void DlgPrefControls::slotSetLocale(int pos) {
@@ -554,6 +564,13 @@ void DlgPrefControls::slotKeyLockMode(QAbstractButton* b) {
         m_keylockMode = 1;
     }
     else { m_keylockMode = 0; }
+}
+
+void DlgPrefControls::slotKeyUnlockMode(QAbstractButton* b) {
+    if (b == radioButtonCalculateNewKey) {
+        m_keyunlockMode = 1;
+    }
+    else { m_keyunlockMode = 0; }
 }
 
 void DlgPrefControls::slotSetAllowTrackLoadToPlayingDeck(bool b) {
@@ -710,6 +727,13 @@ void DlgPrefControls::slotApply() {
     foreach (ControlProxy* pControl, m_keylockModeControls) {
         pControl->set(m_keylockMode);
     }
+
+    m_pConfig->set(ConfigKey("[Controls]", "keyunlockMode"),
+                   ConfigValue(m_keyunlockMode));
+    // Set key un-lock behavior for every group
+    foreach (ControlProxy* pControl, m_keyunlockModeControls) {
+        pControl->set(m_keyunlockMode);
+    }
 }
 
 //Returns TRUE if skin fits to screen resolution, FALSE otherwise
@@ -764,6 +788,9 @@ void DlgPrefControls::slotNumDecksChanged(double new_count) {
         m_keylockModeControls.push_back(new ControlProxy(
                 group, "keylockMode"));
         m_keylockModeControls.last()->set(m_keylockMode);
+        m_keyunlockModeControls.push_back(new ControlProxy(
+                group, "keyunlockMode"));
+        m_keyunlockModeControls.last()->set(m_keyunlockMode);
     }
 
     m_iNumConfiguredDecks = numdecks;
@@ -790,6 +817,10 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
         m_keylockModeControls.push_back(new ControlProxy(
                 group, "keylockMode"));
         m_keylockModeControls.last()->set(m_keylockMode);
+        // Do we need key un-lock mode for Samplers as well?
+        // Except GUI, they don't have proper (physical!) controls
+        // to change pitch.
+        // Test if build succeeds...
     }
 
     m_iNumConfiguredSamplers = numsamplers;
