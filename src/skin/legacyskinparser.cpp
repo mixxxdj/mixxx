@@ -30,6 +30,8 @@
 
 #include "effects/effectsmanager.h"
 
+#include "recording/recordingmanager.h"
+
 #include "widget/controlwidgetconnection.h"
 #include "widget/wbasewidget.h"
 #include "widget/wcoverart.h"
