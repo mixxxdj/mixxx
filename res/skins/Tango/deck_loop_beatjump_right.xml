@@ -1,0 +1,25 @@
+<Template>
+  <WidgetGroup>
+    <ObjectName>DeckLoopBeatjump</ObjectName>
+    <SizePolicy>min,min</SizePolicy>
+    <Layout>horizontal</Layout>
+    <Children>
+      <Template src="skin:beatjump_sizes.xml"/>
+        <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,1min</Size></WidgetGroup>
+      <Template src="skin:loop_basics.xml"/>
+        <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+      <Template src="skin:loop_sizes.xml"/>
+        <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+      <Template src="skin:loop_scale.xml"/>
+        <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+      <Template src="skin:loop_move_sizes.xml"/>
+        <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,1min</Size></WidgetGroup>
+      <Template src="skin:loop_roll.xml"/>
+        <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,1min</Size></WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Tango],loop_beatjump_controls</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

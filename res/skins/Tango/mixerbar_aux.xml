@@ -1,0 +1,94 @@
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Size>-1min,32f</Size>
+    <Children>
+
+      <WidgetGroup>
+        <Layout>stacked</Layout>
+        <Size>20f,32f</Size>
+        <Children>
+          <!-- This I left here in order to add an overlay (X) later on -->
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="TooltipId">headSplit</SetVariable>
+            <SetVariable name="ObjectName">MixerBar_MicAuxMuteButton</SetVariable>
+            <SetVariable name="Size">20f,32f</SetVariable>
+            <SetVariable name="ConfigKey">[Auxiliary<Variable name="AuxNumber"/>],mute</SetVariable>
+          </Template>
+          <!-- Using a Label here would be eaier, but there were problems
+              centering its text. So I added a button just as display. -->
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="TooltipId">microphone_talkover</SetVariable>
+            <SetVariable name="ObjectName">MixerBar_MicAuxMuteButtonUnderlay</SetVariable>
+            <SetVariable name="Size">20f,32f</SetVariable>
+            <SetVariable name="state_0_text"><Variable name="AuxNumber"/></SetVariable>
+            <SetVariable name="state_1_text"><Variable name="AuxNumber"/></SetVariable>
+            <SetVariable name="ConfigKey">[Auxiliary<Variable name="AuxNumber"/>],mute</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <Template src="skin:knob_textless.xml">
+        <SetVariable name="TooltipId"></SetVariable>
+        <SetVariable name="ObjectName">MixerBarKnob</SetVariable>
+        <SetVariable name="Size">28f,28f</SetVariable>
+        <SetVariable name="group">[Auxiliary<Variable name="AuxNumber"/>]</SetVariable>
+        <SetVariable name="ConfigKey">pregain</SetVariable>
+        <SetVariable name="Color">yellow</SetVariable>
+      </Template>
+
+      <WidgetGroup><!-- Volume fader + VU Meter -->
+        <SizePolicy>max,max</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+
+          <SliderComposed>
+            <TooltipId></TooltipId>
+            <ObjectName>MixerBarSlider</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Handle>skin:/knobs_sliders/slider_volume_h_handle.svg</Handle>
+            <Slider>skin:/knobs_sliders/slider_volume_h_scale.svg</Slider>
+            <Horizontal>true</Horizontal>
+            <Connection>
+              <ConfigKey>[Auxiliary<Variable name="AuxNumber"/>],volume</ConfigKey>
+            </Connection>
+          </SliderComposed>
+
+          <WidgetGroup><!-- VU Meter -->
+            <ObjectName>VUMeterFloating_h</ObjectName>
+            <SizePolicy>max,max</SizePolicy>
+            <Layout>stacked</Layout>
+            <Children>
+              <StatusLight>
+                <PathStatusLight>skin:/graphics/vumeter_h_floating_clipping_over.png</PathStatusLight>
+                <PathBack>skin:/graphics/vumeter_h_floating_clipping.png</PathBack>
+                <Connection>
+                  <ConfigKey>[Auxiliary<Variable name="AuxNumber"/>],PeakIndicator</ConfigKey>
+                </Connection>
+              </StatusLight>
+              <VuMeter>
+                <PathVu>skin:/graphics/vumeter_h_floating_over.png</PathVu>
+                <PathBack>skin:/graphics/vumeter_h_floating.png</PathBack>
+                <Horizontal>true</Horizontal>
+                <PeakHoldSize>5</PeakHoldSize>
+                <PeakHoldTime>500</PeakHoldTime>
+                <PeakFallTime>50</PeakFallTime>
+                <PeakFallStep>2</PeakFallStep>
+                <Connection>
+                  <ConfigKey>[Auxiliary<Variable name="AuxNumber"/>],VuMeter</ConfigKey>
+                </Connection>
+              </VuMeter>
+            </Children>
+          </WidgetGroup><!-- /VU Meter -->
+        </Children>
+      </WidgetGroup><!-- /Volume fader + VU Meter -->
+
+      <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+
+    </Children>
+    <Connection>
+      <ConfigKey>[Auxiliary<Variable name="AuxNumber"/>],enabled</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

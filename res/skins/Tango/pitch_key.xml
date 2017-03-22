@@ -1,0 +1,129 @@
+<!--
+Description:
+  The pitch container with
+  * BPM display with Sync/Reset button overlay
+  * Key display with Sync/Reset button overlay
+  * Pitch slider (right-click resets speed)
+Variables:
+  ToolTip/ToolTipID
+  ObjectName
+  Size
+  channum: channel number.
+  ConfigKey: left-click connection (Sync)
+  ConfigKeyRight: right-click connection (Reset)
+  Slider graphics
+-->
+<Template>	
+  <WidgetGroup><!-- RateContainer -->
+    <ObjectName>RateContainer<Variable name="channum" /></ObjectName>
+    <Layout>vertical</Layout>
+    <Size>50f,136f</Size>
+    <Children>
+      
+      <WidgetGroup><!-- BpmContainer -->
+        <ObjectName>BpmContainer</ObjectName>
+        <Layout>stacked</Layout>
+        <Size>50f,16me</Size>
+        <Children>
+          <Template src="skin:button_2state_right.xml">
+            <SetVariable name="TooltipId">sync_enabled</SetVariable>
+            <SetVariable name="ObjectName">SyncButtonOverlay</SetVariable>
+            <SetVariable name="Size">50f,16me</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,sync_enabled</SetVariable>
+            <SetVariable name="ConfigKeyRight"><Variable name="group"/>,rate_set_default</SetVariable>
+          </Template>
+          <NumberBpm>
+            <ObjectName>Bpm</ObjectName>
+            <Size>50f,16me</Size>
+            <TooltipId>visual_bpm</TooltipId>
+            <Channel><Variable name="channum" /></Channel>
+            <NumberOfDigits>1</NumberOfDigits>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+            </Connection>
+          </NumberBpm>
+        </Children>
+      </WidgetGroup><!-- /BpmContainer -->
+      
+      <WidgetGroup><!-- KeyContainer -->
+        <ObjectName>KeyContainer</ObjectName>
+        <Layout>stacked</Layout>
+        <Size>50f,13f</Size>
+        <Children>
+        
+          <WidgetGroup><!-- Overlay buttons: down, reset, up -->
+            <ObjectName>KeyDisplayReset</ObjectName>
+            <Layout>horizontal</Layout>
+            <Size>50f,13f</Size>
+            <Children>
+              <Template src="skin:button_1state.xml"><!-- key_down/_small -->
+                <SetVariable name="TooltipId">pitch_down</SetVariable>
+                <SetVariable name="ObjectName">KeyDown</SetVariable>
+                <SetVariable name="Size">12f,13f</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,pitch_down</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,pitch_down_small</SetVariable>
+              </Template>
+              <Template src="skin:button_1state_right.xml">
+                <SetVariable name="TooltipId">sync_reset_key</SetVariable>
+                <SetVariable name="ObjectName">KeyReset</SetVariable>
+                <SetVariable name="Size">26f,13f</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,sync_key</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,pitch_set_default</SetVariable>
+              </Template>
+              <Template src="skin:button_1state_right.xml"><!-- key_up/_small -->
+                <SetVariable name="TooltipId">pitch_up</SetVariable>
+                <SetVariable name="ObjectName">KeyUp</SetVariable>
+                <SetVariable name="Size">12f,13f</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,pitch_up</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,pitch_up_small</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- /Overlay buttons: down, reset, up -->
+          
+          <Key><!-- Actual Key display -->
+            <TooltipId>visual_key</TooltipId>
+            <ObjectName>KeyDisplay</ObjectName>
+            <Channel><Variable name="channum"/></Channel>
+            <Size>50f,13f</Size>
+            <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+            <Alignment>center</Alignment>
+            <Elide>right</Elide>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+            </Connection>
+          </Key>
+        
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Tango],key_controls</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /KeyContainer -->
+      
+      <WidgetGroup><!-- PitchSlider -->
+        <ObjectName>PitchSliderContainer</ObjectName>
+        <Layout>horizontal</Layout>
+        <!-- Define size either here or for RateContainer in order to stay
+        steady when Key controls are disabled and BPM container expands -->
+        <Size>50f,107f</Size>
+        <Children>
+          <SliderComposed>
+              <ObjectName>PitchSlider</ObjectName>
+            <TooltipId>rate</TooltipId>
+            <Handle>skin:/knobs_sliders/slider_pitch_handle.svg</Handle>
+            <Slider>skin:/knobs_sliders/slider_pitch_scale.svg</Slider>
+            <Horizontal>false</Horizontal>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,rate</ConfigKey>
+            </Connection>
+          </SliderComposed>
+        </Children>
+      </WidgetGroup><!-- /PitchSlider -->
+      
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Tango],pitch_fader</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup><!-- /RateContainer -->
+</Template>

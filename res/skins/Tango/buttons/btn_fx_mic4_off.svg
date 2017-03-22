@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="32"
+   height="36"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="btn_fx_mic4_off.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="11.313708"
+     inkscape:cx="9.1553639"
+     inkscape:cy="15.147187"
+     inkscape:document-units="px"
+     inkscape:current-layer="text2988"
+     showgrid="false"
+     inkscape:snap-page="true"
+     inkscape:snap-bbox="true"
+     inkscape:snap-bbox-midpoints="true"
+     inkscape:snap-bbox-edge-midpoints="true"
+     inkscape:bbox-nodes="true"
+     inkscape:bbox-paths="true"
+     inkscape:snap-object-midpoints="true"
+     inkscape:object-nodes="true"
+     inkscape:snap-smooth-nodes="true"
+     inkscape:object-paths="true"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="1366"
+     inkscape:window-height="747"
+     inkscape:window-x="0"
+     inkscape:window-y="21"
+     inkscape:window-maximized="1"
+     inkscape:snap-global="true" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(0,-1016.3622)"
+     id="g3923"
+     inkscape:groupmode="layer"
+     inkscape:label="OFF"
+     style="display:inline">
+    <g
+       id="g2989"
+       transform="translate(-88.571429,8.1332715)" />
+    <g
+       id="g3785"
+       transform="matrix(0.580304,0.26552477,-0.26552477,0.580304,273.32209,435.11622)"
+       style="fill:#888888;fill-opacity:1">
+      <path
+         inkscape:connector-curvature="0"
+         id="path2994"
+         d="m 18,1000.1524 c -4.336479,0 -7.84375,3.5072 -7.84375,7.8437 0,1.8238 0.613137,3.5109 1.65625,4.8438 l 12.375,0 c 1.043113,-1.3329 1.65625,-3.02 1.65625,-4.8438 0,-4.3365 -3.507271,-7.8437 -7.84375,-7.8437 z"
+         style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3024"
+         d="m 12.53125,1013.9247 2.21875,33.7813 6.5,0 2.21875,-33.7813 -10.9375,0 z M 18,1017.5497 c 0.829921,0 1.5,0.669 1.5,1.5 l 0,5.0313 c 0,0.831 -0.670079,1.5 -1.5,1.5 -0.829921,0 -1.5,-0.669 -1.5,-1.5 l 0,-5.0313 c 0,-0.831 0.670079,-1.5 1.5,-1.5 z"
+         style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline" />
+    </g>
+    <g
+       style="font-size:27.9999733px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#888888;fill-opacity:0.94117647;stroke:none;font-family:Times New Roman;-inkscape-font-specification:Times New Roman"
+       id="text2988">
+      <path
+         d="m 25.043993,1037.3422 c -0.336007,0.4293 -0.68134,0.8867 -1.035999,1.372 -0.354672,0.4853 -0.709338,0.9987 -1.063999,1.54 -0.336005,0.5227 -0.662671,1.0547 -0.979999,1.596 -0.317337,0.5413 -0.597337,1.0733 -0.839999,1.596 l 3.919996,0 0,-6.104 m 3.443997,-4.312 0,10.416 1.875998,0 0,2.828 -1.875998,0 0,4.088 -3.443997,0 0,-4.088 -7.223993,0 0,-2.52 c 0.354666,-0.728 0.811998,-1.5493 1.371999,-2.464 0.559997,-0.9333 1.175996,-1.8853 1.847998,-2.856 0.671995,-0.9707 1.381327,-1.9227 2.127998,-2.856 0.746659,-0.952 1.493325,-1.8013 2.239998,-2.548 l 3.079997,0"
+         style="font-variant:normal;font-weight:bold;font-stretch:normal;fill:#888888;font-family:Ubuntu Mono;-inkscape-font-specification:Ubuntu Mono Bold;fill-opacity:1"
+         id="path5009" />
+    </g>
+  </g>
+</svg>

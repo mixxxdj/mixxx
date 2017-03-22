@@ -1,0 +1,43 @@
+<!--
+Description:
+  A labeled knob for effect units' Super knob and Wet/Dry knob.
+Variables:
+  ObjectName
+  Size
+  ToolTip/ToolTipID: The tooltip to display.
+  group: the Effect Unit
+  ConfigKey: 'super' or 'mix'
+  Color: The knob's notch colour.
+  Label:  The text to show on the button.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName><Variable name="ObjectName"/></ObjectName>
+    <Layout>stacked</Layout>
+    <Size>40f,32f</Size>
+    <Children>
+
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <Size>40f,32f</Size>
+        <Children>
+          <Template src="skin:knob_textless.xml">
+            <TooltipId><Variable name="TooltipId"/></TooltipId>
+            <SetVariable name="ObjectName"><Variable name="ObjectName"/>Knob</SetVariable>
+            <SetVariable name="Size">32f,32f</SetVariable>
+            <SetVariable name="group"><Variable name="group"/></SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="ConfigKey"/></SetVariable>
+            <SetVariable name="Color"><Variable name="Color"/></SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+    <!--  <Label>
+        <ObjectName><Variable name="ObjectName"/>Label</ObjectName>
+        <Size>40f,39f</Size>
+        <Text><Variable name="Label"/></Text>
+        <Alignment>center</Alignment>
+      </Label>  -->
+    </Children>
+  </WidgetGroup>
+</Template>

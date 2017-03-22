@@ -1,0 +1,209 @@
+<!--
+Description:
+  A Sampler container.
+Variables:
+-->
+<Template>
+  <WidgetGroup><!-- 4x2 minimized Samplers -->
+    <Layout>horizontal</Layout>
+    <Size>770me,37min</Size>
+    <Children>
+
+      <WidgetGroup><!-- Mini Samplers 1-2 + 5-6 -->
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup><!-- Mini Samplers 1-2 -->
+            <ObjectName>SamplerDecks</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <Template src="skin:sampler_mini.xml">
+                <SetVariable name="samplernum">1</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skin:sampler_mini.xml">
+                <SetVariable name="samplernum">2</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+            </Children>
+          </WidgetGroup><!-- /Mini Samplers 1-2 -->
+
+          <WidgetGroup><!-- Mini Samplers 5-6 -->
+            <ObjectName>SamplerDecks</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <Template src="skin:sampler_mini.xml">
+                <SetVariable name="samplernum">5</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skin:sampler_mini.xml">
+                <SetVariable name="samplernum">6</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+              <Transform><Add>-1</Add></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /Mini Samplers 5-6 -->
+
+        </Children>
+      </WidgetGroup><!-- /Mini Samplers 1-2 + 5-6 -->
+
+      <WidgetGroup><!-- Load + Save + mini/MAXI * 4 Samplers -->
+        <ObjectName>SamplerDecks</ObjectName>
+        <Layout>vertical</Layout>
+        <Size>47f,37f</Size>
+        <Children>
+
+          <!-- Load + Save + mini/MAXI button
+          Only visible when there's enough space for MAXI -->
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="ObjectName">SamplersMiniMaxiButton</SetVariable>
+            <SetVariable name="Size"><Variable name="MaxiButtonSize"/></SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Tango],Samplers_miniMAXI</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Size>47f,22f</Size>
+            <Children>
+              <Template src="skin:button_1state.xml">
+                <SetVariable name="ObjectName">SamplersLoadButton</SetVariable>
+                <SetVariable name="Size">22f,22f</SetVariable>
+                <SetVariable name="ConfigKey">[Sampler],LoadSamplerBank</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skin:button_1state.xml">
+                <SetVariable name="ObjectName">SamplersSaveButton</SetVariable>
+                <SetVariable name="Size">22f,22f</SetVariable>
+                <SetVariable name="ConfigKey">[Sampler],SaveSamplerBank</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+          <Transform><Add>-1</Add><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Load + Save + mini/MAXI * 4 Samplers -->
+
+      <WidgetGroup><!-- Load + Save + mini/MAXI * 8 Samplers -->
+        <ObjectName>SamplerDecks</ObjectName>
+        <Layout>vertical</Layout>
+        <Size>22f,74f</Size>
+        <Children>
+
+          <!-- Load + Save + mini/MAXI button
+          Only visible when there's enough space for MAXI -->
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="ObjectName">SamplersMiniMaxiButton</SetVariable>
+            <SetVariable name="Size"><Variable name="MaxiButtonSize"/></SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Tango],Samplers_miniMAXI</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
+
+          <Template src="skin:button_1state.xml">
+            <SetVariable name="ObjectName">SamplersLoadButton</SetVariable>
+            <SetVariable name="Size">22f,22f</SetVariable>
+            <SetVariable name="ConfigKey">[Sampler],LoadSamplerBank</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
+
+          <Template src="skin:button_1state.xml">
+            <SetVariable name="ObjectName">SamplersSaveButton</SetVariable>
+            <SetVariable name="Size">22f,22f</SetVariable>
+            <SetVariable name="ConfigKey">[Sampler],SaveSamplerBank</SetVariable>
+          </Template>
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+          <Transform><Add>-1</Add></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Load + Save + mini/MAXI * 8 Samplers -->
+
+      <WidgetGroup><!-- Mini Samplers 3-4 + 7-8 -->
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup><!-- Mini Samplers 3-4 -->
+            <ObjectName>SamplerDecks</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skin:sampler_mini.xml">
+                <SetVariable name="samplernum">3</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skin:sampler_mini.xml">
+                <SetVariable name="samplernum">4</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup><!-- /Mini Samplers 3-4 -->
+
+          <WidgetGroup><!-- Mini Samplers 7-8 -->
+            <ObjectName>SamplerDecks</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skin:sampler_mini.xml">
+                <SetVariable name="samplernum">7</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skin:sampler_mini.xml">
+                <SetVariable name="samplernum">8</SetVariable>
+              </Template>
+
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+              <Transform><Add>-1</Add></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /Mini Samplers 7-8 -->
+
+        </Children>
+      </WidgetGroup><!-- /Mini Samplers 3-4 + 7-8 -->
+
+    </Children>
+  </WidgetGroup>
+</Template>

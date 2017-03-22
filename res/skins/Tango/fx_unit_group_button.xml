@@ -1,0 +1,44 @@
+<!--
+Description:
+  An effect group control button.
+Variables:
+  ObjectName
+  Size
+  Align: Set horizontal label alignment. 
+  ToolTip/ToolTipID: The tooltip to display.
+  group: The Effect Unit.
+  GroupName: The affected group.
+  ConfigKey: 'super' or 'mix'
+  Color: The knob's notch colour.
+  Label: The text to show on the button.
+  LabelOff: The backpath in state 0.
+  LabelOn: The backpath in state 1.
+-->
+<Template>
+  <PushButton>
+    <TooltipId>EffectUnit_group_enabled</TooltipId>
+    <ObjectName>EffectUnitGroupButton</ObjectName>
+    <Size><Variable name="Size"/></Size>
+    <NumberStates>2</NumberStates>
+    <RightClickIsPushButton>false</RightClickIsPushButton>
+    <State>
+      <Number>0</Number>
+      <Text><Variable name="LabelText"/></Text>
+      <Alignment>center</Alignment>
+      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="LabelOff"/>.svg</Pressed>
+      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="LabelOff"/>.svg</Unpressed>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Text><Variable name="LabelText"/></Text>
+      <Alignment>center</Alignment>
+      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="LabelOn"/>.svg</Pressed>
+      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="LabelOn"/>.svg</Unpressed>
+    </State>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,group_<Variable name="GroupName"/>_enable</ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+  </PushButton>
+</Template>
+

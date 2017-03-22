@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="28"
+   height="32"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="btn_aux2.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="11.313708"
+     inkscape:cx="-12.083326"
+     inkscape:cy="12.967121"
+     inkscape:document-units="px"
+     inkscape:current-layer="g3923"
+     showgrid="false"
+     inkscape:snap-page="true"
+     inkscape:snap-bbox="true"
+     inkscape:snap-bbox-midpoints="true"
+     inkscape:snap-bbox-edge-midpoints="true"
+     inkscape:bbox-nodes="true"
+     inkscape:bbox-paths="true"
+     inkscape:snap-object-midpoints="true"
+     inkscape:object-nodes="true"
+     inkscape:snap-smooth-nodes="true"
+     inkscape:object-paths="true"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="1366"
+     inkscape:window-height="747"
+     inkscape:window-x="0"
+     inkscape:window-y="21"
+     inkscape:window-maximized="1"
+     inkscape:snap-global="true" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(0,-1020.3622)"
+     id="g3923"
+     inkscape:groupmode="layer"
+     inkscape:label="OFF"
+     style="display:inline">
+    <g
+       id="g2989"
+       transform="translate(-88.571429,8.1332715)" />
+    <path
+       style="fill:#939393;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       d="m 8.1603034,1022.9654 c -0.3900552,0 -0.7040705,0.314 -0.7040705,0.704 l 0,6.6667 -2.9482965,0 0,9.3068 2.1122125,4.2247 0,5.7644 4.2244251,0 0,-5.7644 2.112213,-4.2247 0,-9.3068 -2.948296,0 0,-6.6667 c 0,-0.39 -0.3140174,-0.704 -0.7040725,-0.704 l -1.1441151,0 z"
+       id="rect3835-6"
+       inkscape:connector-curvature="0" />
+    <g
+       style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#d2d2d2;fill-opacity:1;stroke:none;font-family:Ubuntu;-inkscape-font-specification:Ubuntu"
+       id="text3030">
+      <path
+         d="m 25.328,1039.4182 c -1.1e-5,0.512 -0.09601,1.008 -0.288,1.488 -0.19201,0.464 -0.44801,0.92 -0.768,1.368 -0.320009,0.448 -0.680009,0.88 -1.08,1.296 -0.400008,0.416 -0.808008,0.816 -1.224,1.2 -0.208007,0.192 -0.448007,0.424 -0.72,0.696 -0.272006,0.256 -0.528006,0.528 -0.768,0.816 -0.240006,0.272 -0.448005,0.552 -0.624,0.84 -0.160005,0.288 -0.240005,0.552 -0.24,0.792 l 6.384,0 0,2.448 -9.696,0 c -0.048,-0.16 -0.072,-0.36 -0.072,-0.6 0.016,-0.24 0.024,-0.408 0.024,-0.504 -2e-6,-0.8 0.143998,-1.536 0.432,-2.208 0.303998,-0.672 0.679997,-1.288 1.128,-1.848 0.463996,-0.576 0.951996,-1.104 1.464,-1.584 0.527995,-0.496 1.015994,-0.968 1.464,-1.416 0.463993,-0.448 0.839993,-0.88 1.128,-1.296 0.303992,-0.416 0.455992,-0.84 0.456,-1.272 -8e-6,-0.608 -0.184008,-1.072 -0.552,-1.392 -0.368007,-0.336 -0.832006,-0.504 -1.392,-0.504 -0.464005,0 -0.952005,0.112 -1.464,0.336 -0.512004,0.224 -1.016003,0.6 -1.512,1.128 l -1.464,-2.064 c 0.639998,-0.672 1.375997,-1.168 2.208,-1.488 0.847996,-0.32 1.687995,-0.48 2.52,-0.48 0.607993,0 1.191993,0.088 1.752,0.264 0.559992,0.176 1.055991,0.44 1.488,0.792 0.43199,0.352 0.77599,0.8 1.032,1.344 0.255989,0.528 0.383989,1.144 0.384,1.848"
+         style="font-size:24px;font-weight:bold;fill:#d2d2d2;font-family:Ubuntu Mono;-inkscape-font-specification:Ubuntu Mono Bold"
+         id="path3876" />
+    </g>
+  </g>
+</svg>
