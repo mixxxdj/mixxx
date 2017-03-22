@@ -951,6 +951,15 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
 
     // Do not allow beat loops to go beyond the end of the track
     if (newloopSamples.end > samples) {
+        // If a track is loaded with beatloop_size larger than
+        // the distance between the loop in point and
+        // the end of the track, let beatloop_size be set to
+        // a smaller size, but not get larger.
+        double previousBeatloopSize = m_pCOBeatLoopSize->get();
+        if (calculateEndOfBeatloop(newloopSamples.start, previousBeatloopSize) > samples
+                && beats < previousBeatloopSize) {
+            m_pCOBeatLoopSize->setAndConfirm(beats);
+        }
         return;
     }
 
