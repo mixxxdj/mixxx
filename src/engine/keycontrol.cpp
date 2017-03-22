@@ -14,7 +14,7 @@ static const double kLockCurrentKey = 1;
 static const double kUnlockKeyToRate = 1;
 
 KeyControl::KeyControl(QString group,
-						UserSettingsPointer pConfig)
+                       UserSettingsPointer pConfig)
         : EngineControl(group, pConfig) {
     m_pitchRateInfo.pitchRatio = 1.0;
     m_pitchRateInfo.tempoRatio = 1.0;
@@ -65,7 +65,7 @@ KeyControl::KeyControl(QString group,
             Qt::DirectConnection);
 
     m_pEngineKeyDistance = new ControlPotmeter(ConfigKey(group, "visual_key_distance"),
-												-0.5, 0.5);
+                                               -0.5, 0.5);
     connect(m_pEngineKeyDistance, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetEngineKeyDistance(double)),
             Qt::DirectConnection);
