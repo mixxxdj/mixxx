@@ -1790,6 +1790,12 @@ QString LegacySkinParser::getStyleFromNode(const QDomNode& node) {
                                            fileBytes.length());
         }
 
+        // now load style files with suffix for HiDPI scaling.
+        // We follow here the Gnome/Unity scaling slider approach, where
+        // the widgets are scaled by an integer value once the slider is
+        // greater or equal to the next integer step.
+        // This should help to scale the GUI along with the native widgets once
+        // we are on Qt 5.
         double scaleFactor = m_pContext->getScaleFactor();
         if (scaleFactor >= 3) {
             // Try to load with @3x suffix
@@ -1803,7 +1809,7 @@ QString LegacySkinParser::getStyleFromNode(const QDomNode& node) {
                                                fileBytes.length()));
             }
         } else if (scaleFactor >= 2) {
-            // Try to load with @3x suffix
+            // Try to load with @2x suffix
             QFileInfo info(file);
             QString strNewName = info.path() + "/" + info.baseName() + "@2x."
                     + info.completeSuffix();
