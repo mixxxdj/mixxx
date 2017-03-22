@@ -258,9 +258,12 @@ TEST_F(LoopingControlTest, ReloopToggleButton_TogglesLoop) {
 }
 
 TEST_F(LoopingControlTest, LoopDoubleButton_DoublesLoop) {
-    seekToSampleAndProcess(50);
-    m_pLoopStartPoint->slotSet(0);
-    m_pLoopEndPoint->slotSet(500);
+    seekToSampleAndProcess(0);
+    m_pButtonLoopIn->set(1);
+    m_pButtonLoopIn->set(0);
+    seekToSampleAndProcess(500);
+    m_pButtonLoopOut->set(1);
+    m_pButtonLoopOut->set(0);
     EXPECT_EQ(0, m_pLoopStartPoint->get());
     EXPECT_EQ(500, m_pLoopEndPoint->get());
     m_pButtonLoopDouble->slotSet(1);
@@ -340,12 +343,18 @@ TEST_F(LoopingControlTest, LoopDoubleButton_UpdatesNumberedBeatloopActivationCon
 }
 
 TEST_F(LoopingControlTest, LoopHalveButton_HalvesLoop) {
-    m_pLoopStartPoint->slotSet(0);
-    m_pLoopEndPoint->slotSet(2000);
+    seekToSampleAndProcess(0);
+    m_pButtonLoopIn->set(1);
+    m_pButtonLoopIn->set(0);
+    seekToSampleAndProcess(2000);
+    m_pButtonLoopOut->set(1);
+    m_pButtonLoopOut->set(0);
     seekToSampleAndProcess(1800);
     EXPECT_EQ(0, m_pLoopStartPoint->get());
     EXPECT_EQ(2000, m_pLoopEndPoint->get());
     EXPECT_EQ(1800, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    m_pButtonReloopToggle->set(1);
+    m_pButtonReloopToggle->set(0);
     EXPECT_FALSE(isLoopEnabled());
     m_pButtonLoopHalve->slotSet(1);
     m_pButtonLoopHalve->slotSet(0);

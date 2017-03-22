@@ -324,7 +324,11 @@ void LoopingControl::slotLoopHalve(double pressed) {
     bool noLoopSet = (loopSamples.start == kNoTrigger) &&
                      (loopSamples.end == kNoTrigger);
 
-    if (noLoopSet || currentLoopMatchesBeatloopSize()) {
+    // Halve beatloop_size unless a manual loop has been set
+    // with loop_in, loop_out, or loopmanual_toggle since
+    // loading the track.
+    if (currentLoopMatchesBeatloopSize()
+          || !m_bLoopSetSinceTrackLoaded || noLoopSet) {
         slotBeatLoop(m_pCOBeatLoopSize->get() / 2.0, true, false);
     } else {
         slotLoopScale(0.5);
@@ -340,7 +344,11 @@ void LoopingControl::slotLoopDouble(double pressed) {
     bool noLoopSet = (loopSamples.start == kNoTrigger) &&
                      (loopSamples.end == kNoTrigger);
 
-    if (noLoopSet || currentLoopMatchesBeatloopSize()) {
+    // Double beatloop_size unless a manual loop has been set
+    // with loop_in, loop_out, or loopmanual_toggle since
+    // loading the track.
+    if (currentLoopMatchesBeatloopSize()
+          || !m_bLoopSetSinceTrackLoaded || noLoopSet) {
         slotBeatLoop(m_pCOBeatLoopSize->get() * 2.0, true, false);
     } else {
         slotLoopScale(2.0);
@@ -500,6 +508,8 @@ void LoopingControl::slotLoopIn(double val) {
 
     m_loopSamples.setValue(loopSamples);
     //qDebug() << "set loop_in to " << loopSamples.start;
+
+    m_bLoopSetSinceTrackLoaded = true;
 }
 
 void LoopingControl::slotLoopInGoto(double pressed) {
@@ -561,6 +571,8 @@ void LoopingControl::slotLoopOut(double val) {
         setLoopingEnabled(true);
     }
     //qDebug() << "set loop_out to " << loopSamples.end;
+
+    m_bLoopSetSinceTrackLoaded = true;
 }
 
 void LoopingControl::slotLoopOutGoto(double pressed) {
@@ -728,6 +740,8 @@ void LoopingControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack)
         m_pTrack.reset();
         m_pBeats.clear();
     }
+
+    m_bLoopSetSinceTrackLoaded = false;
 }
 
 void LoopingControl::slotUpdatedTrackBeats()
@@ -949,6 +963,12 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     if ((newloopSamples.start == kNoTrigger) || (newloopSamples.end == kNoTrigger))
         return;
 
+    // When loading a new track, do not resize the existing loop
+    // until beatloop_size matches the size of the existing loop
+    if (!m_bLoopSetSinceTrackLoaded && !currentLoopMatchesBeatloopSize() && !enable) {
+        return;
+    }
+
     // If resizing an inactive loop by changing beatloop_size,
     // do not seek to the adjusted loop.
     if (keepStartPoint && (enable || m_bLoopingEnabled)) {
@@ -962,6 +982,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     if (enable) {
         setLoopingEnabled(true);
     }
+    m_bLoopSetSinceTrackLoaded = true;
 }
 
 void LoopingControl::slotBeatLoopSizeChangeRequest(double beats) {
