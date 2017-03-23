@@ -18,11 +18,10 @@ class WRecordingDuration: public WLabel {
     void setup(const QDomNode& node, const SkinContext& context) override;
 
   private slots:
-    void refreshLabelText(QString);
+    void refreshLabel(QString);
+    void clearLabel(QString);
 
   private:
-    QString m_durationRecordedStr;
-
     RecordingManager* m_pRecordingManager;
 };
 
