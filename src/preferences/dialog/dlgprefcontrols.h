@@ -31,6 +31,14 @@ class PlayerManager;
 class MixxxMainWindow;
 class ControlObject;
 
+namespace Duration {
+    enum class DisplayMode {
+        Elapsed,
+        Remaining,
+        ElapsedAndRemaining,
+    };
+}
+
 /**
   *@author Tue & Ken Haste Andersen
   */

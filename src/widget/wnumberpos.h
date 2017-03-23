@@ -6,6 +6,7 @@
 #include <QMouseEvent>
 
 #include "wnumber.h"
+#include "preferences/dialog/dlgprefcontrols.h"
 
 class ControlProxy;
 
@@ -25,13 +26,8 @@ class WNumberPos : public WNumber {
     void slotSetDisplayMode(double);
 
   private:
-    enum class DisplayMode {
-        Elapsed,
-        Remaining,
-        ElapsedAndRemaining,
-    };
 
-    DisplayMode m_displayMode;
+    Duration::DisplayMode m_displayMode;
 
     // Old value set
     double m_dOldPosition;
