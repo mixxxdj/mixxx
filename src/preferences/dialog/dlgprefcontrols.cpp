@@ -138,7 +138,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     connect(buttonGroupKeyUnlockMode, SIGNAL(buttonClicked(QAbstractButton*)),
             this, SLOT(slotKeyUnlockMode(QAbstractButton *)));
 
-    // 0 Keep locked key, 1 Reset locked key
+    // 0 Keep locked key, 1 Reset locked key (default)
     m_keyunlockMode = m_pConfig->getValue(
         ConfigKey("[Controls]", "keyunlockMode"), 0);
     foreach (ControlProxy* pControl, m_keyunlockModeControls) {
@@ -502,8 +502,8 @@ void DlgPrefControls::slotResetToDefaults() {
     m_keylockMode = 0;
     radioButtonOriginalKey->setChecked(true);
 
-    // Keep unlocked key
-    m_keyunlockMode = 0;
+    // Reset key on unlock
+    m_keyunlockMode = 1;
     radioButtonKeepUnlockedKey->setChecked(true);
 }
 
@@ -817,9 +817,6 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
         m_keylockModeControls.push_back(new ControlProxy(
                 group, "keylockMode"));
         m_keylockModeControls.last()->set(m_keylockMode);
-        // Do we need key un-lock mode for Samplers as well?
-        // Except GUI, they probably don't have proper (physical!) controls
-        // to change pitch.
         m_keyunlockModeControls.push_back(new ControlProxy(
                 group, "keyunlockMode"));
         m_keyunlockModeControls.last()->set(m_keyunlockMode);
