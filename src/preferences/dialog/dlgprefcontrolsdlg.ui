@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>562</width>
-    <height>598</height>
+    <height>632</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -421,9 +421,9 @@
          </widget>
         </item>
         <item row="3" column="1">
-         <widget class="QRadioButton" name="radioButtonCalculateNewKey">
+         <widget class="QRadioButton" name="radioButtonKeepUnlockedKey">
           <property name="text">
-           <string>Adapt key to current tempo</string>
+           <string>Keep key</string>
           </property>
           <attribute name="buttonGroup">
            <string notr="true">buttonGroupKeyUnlockMode</string>
@@ -431,9 +431,9 @@
          </widget>
         </item>
         <item row="3" column="2">
-         <widget class="QRadioButton" name="radioButtonKeepLockedKey">
+         <widget class="QRadioButton" name="radioButtonResetUnlockedKey">
           <property name="text">
-           <string>Keep previously locked key</string>
+           <string>Reset key</string>
           </property>
           <attribute name="buttonGroup">
            <string notr="true">buttonGroupKeyUnlockMode</string>
@@ -770,8 +770,8 @@ CUP mode:
   <tabstop>checkBoxResetSpeed</tabstop>
   <tabstop>radioButtonOriginalKey</tabstop>
   <tabstop>radioButtonCurrentKey</tabstop>
-  <tabstop>radioButtonCalculateNewKey</tabstop>
-  <tabstop>radioButtonKeepLockedKey</tabstop>
+  <tabstop>radioButtonKeepUnlockedKey</tabstop>
+  <tabstop>radioButtonResetUnlockedKey</tabstop>
   <tabstop>radioButtonSpeedBendRamping</tabstop>
   <tabstop>radioButtonSpeedBendStatic</tabstop>
   <tabstop>SliderRateRampSensitivity</tabstop>

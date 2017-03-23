@@ -138,7 +138,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     connect(buttonGroupKeyUnlockMode, SIGNAL(buttonClicked(QAbstractButton*)),
             this, SLOT(slotKeyUnlockMode(QAbstractButton *)));
 
-    // 0 Keep locked key, 1 Calculate key from tempo
+    // 0 Keep locked key, 1 Reset locked key
     m_keyunlockMode = m_pConfig->getValue(
         ConfigKey("[Controls]", "keyunlockMode"), 0);
     foreach (ControlProxy* pControl, m_keyunlockModeControls) {
@@ -443,9 +443,9 @@ void DlgPrefControls::slotUpdate() {
         radioButtonOriginalKey->setChecked(true);
 
     if (m_keyunlockMode == 1)
-        radioButtonCalculateNewKey->setChecked(true);
+        radioButtonResetUnlockedKey->setChecked(true);
     else
-        radioButtonKeepLockedKey->setChecked(true);
+        radioButtonKeepUnlockedKey->setChecked(true);
 
     checkBoxResetSpeed->setChecked(m_speedAutoReset);
     checkBoxResetPitch->setChecked(m_pitchAutoReset);
@@ -502,9 +502,9 @@ void DlgPrefControls::slotResetToDefaults() {
     m_keylockMode = 0;
     radioButtonOriginalKey->setChecked(true);
 
-    // Unlock to key calculated from current rate
+    // Keep unlocked key
     m_keyunlockMode = 0;
-    radioButtonCalculateNewKey->setChecked(true);
+    radioButtonKeepUnlockedKey->setChecked(true);
 }
 
 void DlgPrefControls::slotSetLocale(int pos) {
@@ -567,7 +567,7 @@ void DlgPrefControls::slotKeyLockMode(QAbstractButton* b) {
 }
 
 void DlgPrefControls::slotKeyUnlockMode(QAbstractButton* b) {
-    if (b == radioButtonCalculateNewKey) {
+    if (b == radioButtonResetUnlockedKey) {
         m_keyunlockMode = 1;
     }
     else { m_keyunlockMode = 0; }
@@ -818,9 +818,11 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
                 group, "keylockMode"));
         m_keylockModeControls.last()->set(m_keylockMode);
         // Do we need key un-lock mode for Samplers as well?
-        // Except GUI, they don't have proper (physical!) controls
+        // Except GUI, they probably don't have proper (physical!) controls
         // to change pitch.
-        // Test if build succeeds...
+        m_keyunlockModeControls.push_back(new ControlProxy(
+                group, "keyunlockMode"));
+        m_keyunlockModeControls.last()->set(m_keyunlockMode);
     }
 
     m_iNumConfiguredSamplers = numsamplers;
