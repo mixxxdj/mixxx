@@ -13,14 +13,13 @@ void WRecordingDuration::setup(const QDomNode& node, const SkinContext& context)
     WLabel::setup(node, context);
     connect(m_pRecordingManager, SIGNAL(durationRecorded(QString)),
         this, SLOT(refreshLabel(QString)));
-    connect(m_pRecordingManager, SIGNAL(isRecordingActive(bool)),
-        this, SLOT(clearLabel(bool)));
+    connect(m_pRecordingManager, SIGNAL(isRecording(bool)),
+            this, SLOT(clearLabel(bool)));
 }
 
-void WRecordingDuration::clearLabel(bool toggle) {
-    Q_UNUSED(toggle);
+void WRecordingDuration::clearLabel(bool isRecording) {
     // If recording is stopped/inactive
-    if(!m_pRecordingManager->isRecordingActive()) {
+    if(!isRecording) {
         setText("--:--");
     }
 }
