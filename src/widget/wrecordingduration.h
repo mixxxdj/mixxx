@@ -19,7 +19,7 @@ class WRecordingDuration: public WLabel {
 
   private slots:
     void refreshLabel(QString);
-    void clearLabel(QString);
+    void clearLabel(bool);
 
   private:
     RecordingManager* m_pRecordingManager;
