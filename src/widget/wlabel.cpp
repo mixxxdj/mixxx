@@ -126,12 +126,10 @@ bool WLabel::event(QEvent* pEvent) {
         updateTooltip();
     } else if (pEvent->type() == QEvent::FontChange) {
         const QFont& fonti = font();
-        // Change the new font on the fly by casting away its constness
+        // Change the new font on the fly by casting away its constancy
         // using setFont() here, would results into a recursive loop
         // resetting the font to the original css values.
-        if (fonti.pointSizeF() > 0) {
-            const_cast<QFont&>(fonti).setPointSizeF(fonti.pointSizeF() * m_scaleFactor);
-        }
+        // Only scale pixel size fonts, point size fonts are scaled by the OS
         if (fonti.pixelSize() > 0) {
             const_cast<QFont&>(fonti).setPixelSize(fonti.pixelSize() * m_scaleFactor);
         }
