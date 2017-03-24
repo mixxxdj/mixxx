@@ -221,11 +221,27 @@
             </Children>
           </WidgetGroup><!-- Clock (& Logo when Crossfader is visible in 2-decks mode) -->
 
-          <Template src="skin:button_2state.xml">
-            <SetVariable name="ObjectName">SkinSettingsToggler</SetVariable>
-            <SetVariable name="Size">24f,24f</SetVariable>
-            <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>
-          </Template>
+          <WidgetGroup>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>vertical</Layout>
+            <Children>
+            <!-- Still disabled, doesn't work for states below [states-2]
+              <Battery>
+                <Size>24f,18f</Size>
+                <Backpath></Backpath>
+                <PixmapUnknown>skin:/graphics/battery_unknown.svg</PixmapUnknown>
+                <PixmapCharged>skin:/graphics/battery_charged.svg</PixmapCharged>
+                <NumberStates>6</NumberStates>
+                <PixmapsCharging>skin:/graphics/batt/battery_%1_charging.png</PixmapsCharging>
+                <PixmapsDischarging>skin:/graphics/batt/battery_%1.png</PixmapsDischarging>
+              </Battery>  -->
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="ObjectName">SkinSettingsToggler</SetVariable>
+                <SetVariable name="Size">24f,24f</SetVariable>
+                <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
 
         </Children>
       </WidgetGroup><!-- /Broadcast + Clock Skin + Settings -->
