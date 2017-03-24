@@ -53,13 +53,11 @@ void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
 }
 
 ImgSource* ColorSchemeParser::parseFilters(QDomNode filt) {
+    ImgSource* ret = new ImgLoader();
 
-    // TODO: Move this code into ImgSource
     if (!filt.hasChildNodes()) {
-        return 0;
+        return ret;
     }
-
-    ImgSource * ret = new ImgLoader();
 
     QDomNode f = filt.firstChild();
 
