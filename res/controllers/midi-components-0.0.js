@@ -318,21 +318,45 @@
         this.firstValueReceived = false;
     };
     Pot.prototype = new Component({
+        relative: false,
         inValueScale: function (value) { return value / this.max; },
-        input: function (channel, control, value, status, group) {
-            this.inSetParameter(this.inValueScale(value));
-            if (! this.firstValueReceived) {
-                this.firstValueReceived = true;
-                this.connect();
+        shift: function () {
+            if (this.relative) {
+                this.input = function (channel, control, value, status, group) {
+                    this.previousValueReceived = value;
+                }
+            }
+        },
+        unshift: function () {
+            this.input = function (channel, control, value, status, group) {
+                if (this.relative) {
+                    if (this.previousValueReceived !== undefined) {
+                        var delta = (value - this.previousValueReceived) / this.max;
+                        this.inSetParameter(this.inGetParameter() + delta);
+                    } else {
+                        if (this.loadStateOnStartup) {
+                            this.inSetParameter(value / this.max);
+                        }
+                    }
+                    this.previousValueReceived = value;
+                } else {
+                    this.inSetParameter(this.inValueScale(value));
+                    if (!this.firstValueReceived) {
+                        this.firstValueReceived = true;
+                        this.connect();
+                    }
+                }
             }
         },
         connect: function () {
-            if (this.firstValueReceived) {
+            if (this.firstValueReceived && !this.relative) {
                 engine.softTakeover(this.group, this.inKey, true);
             }
         },
         disconnect: function () {
-            engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
+            if (!this.relative) {
+                engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
+            }
         },
         trigger: function () {},
     });
