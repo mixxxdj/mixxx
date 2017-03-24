@@ -241,43 +241,59 @@ P32.Deck = function (deckNumbers, channel) {
 
     this.loopIn = new components.Button({
         midi: [0x90 + channel, 0x50],
-        inKey: 'loop_in',
+        key: 'loop_in',
+        onlyOnPress: false,
+        on: P32.padColors.red,
+        off: P32.padColors.purple,
     });
     this.loopOut = new components.Button({
         midi: [0x90 + channel, 0x51],
-        inKey: 'loop_out',
+        key: 'loop_out',
+        onlyOnPress: false,
+        on: P32.padColors.red,
+        off: P32.padColors.purple,
     });
-    this.loopTogglePad = new components.LoopToggleButton({
+    this.reloop = new components.Button({
         midi: [0x90 + channel, 0x52],
+        unshift: function () {
+            this.inKey = 'reloop_toggle';
+        },
+        shift: function () {
+            this.inKey = 'reloop_cue';
+        },
+        onlyOnPress: false,
         on: P32.padColors.red,
         off: P32.padColors.blue,
+        outKey: 'loop_enabled',
     });
-    this.loopIn.send(P32.padColors.purple);
-    this.loopOut.send(P32.padColors.purple);
 
     this.tempSlow = new components.Button({
         midi: [0x90 + channel, 0x44],
-        inKey: 'rate_temp_down',
+        key: 'rate_temp_down',
         onlyOnPress: false,
+        on: P32.padColors.red,
+        off: P32.padColors.purple,
     });
     this.tempFast = new components.Button({
         midi: [0x90 + channel, 0x45],
-        inKey: 'rate_temp_up',
+        key: 'rate_temp_up',
         onlyOnPress: false,
+        on: P32.padColors.red,
+        off: P32.padColors.purple,
     });
     this.alignBeats = new components.Button({
         midi: [0x90 + channel, 0x46],
-        inKey: 'beats_translate_curpos',
+        key: 'beats_translate_curpos',
+        onlyOnPress: false,
+        on: P32.padColors.red,
+        off: P32.padColors.blue,
     });
     this.quantize = new components.Button({
-        midi: [0x90 + channel, 0x47],
+        midi: [0x90 + channel, 0x4B],
         key: 'quantize',
         on: P32.padColors.red,
         off: P32.padColors.blue,
     });
-    this.tempSlow.send(P32.padColors.purple);
-    this.tempFast.send(P32.padColors.purple);
-    this.alignBeats.send(P32.padColors.blue);
 
     this.enableEffectUnitButtons = new components.ComponentContainer(); //fii
     this.enableEffectUnitButtons[1] = new components.EffectAssignmentButton({
@@ -367,8 +383,14 @@ P32.Deck = function (deckNumbers, channel) {
     this.loopMoveEncoder = function (channel, control, value, status, group) {
         if (value > 64) { // left turn
             engine.setValue(this.currentDeck, 'loop_move_backward', 1);
+            engine.beginTimer(200, function () {
+                engine.setValue(this.currentDeck, 'loop_move_backward', 0);
+            }, true);
         } else { // right turn
             engine.setValue(this.currentDeck, 'loop_move_forward', 1);
+            engine.beginTimer(200, function () {
+                engine.setValue(this.currentDeck, 'loop_move_forward', 0);
+            }, true);
         }
     };
 
@@ -376,8 +398,12 @@ P32.Deck = function (deckNumbers, channel) {
         engine.setValue(this.currentDeck, 'loopauto_toggle', value / 127);
     };
 
-    this.loopEncoderManualLoopPress = function (channel, control, value, status, group) {
-        engine.setValue(this.currentDeck, 'loopmanual_toggle', value / 127);
+    this.loopEncoderShiftPress = function (channel, control, value, status, group) {
+        if (engine.getValue(this.currentDeck, 'loop_enabled') === 1) {
+            engine.setValue(this.currentDeck, 'reloop_cue', value / 127);
+        } else {
+            engine.setValue(this.currentDeck, 'reloop_toggle', value / 127);
+        }
     };
 
     this.tempoEncoder = function (channel, control, value, status, group) {

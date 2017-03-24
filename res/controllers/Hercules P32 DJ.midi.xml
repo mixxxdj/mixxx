@@ -61,7 +61,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.loopTogglePad.input</key>
+                <key>P32.leftDeck.reloop.input</key>
                 <status>0x91</status>
                 <midino>0x52</midino>
                 <options>
@@ -88,7 +88,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.loopTogglePad.input</key>
+                <key>P32.leftDeck.reloop.input</key>
                 <status>0x94</status>
                 <midino>0x52</midino>
                 <options>
@@ -649,7 +649,7 @@
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.quantize.input</key>
                 <status>0x91</status>
-                <midino>0x47</midino>
+                <midino>0x4B</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -730,7 +730,7 @@
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.quantize.input</key>
                 <status>0x94</status>
-                <midino>0x47</midino>
+                <midino>0x4B</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -926,7 +926,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.loopEncoderManualLoopPress</key>
+                <key>P32.leftDeck.loopEncoderShiftPress</key>
                 <status>0x94</status>
                 <midino>0x01</midino>
                 <options>
@@ -1169,7 +1169,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.loopEncoderManualLoopPress</key>
+                <key>P32.rightDeck.loopEncoderShiftPress</key>
                 <status>0x95</status>
                 <midino>0x01</midino>
                 <options>
@@ -2214,7 +2214,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.loopTogglePad.input</key>
+                <key>P32.rightDeck.reloop.input</key>
                 <status>0x92</status>
                 <midino>0x52</midino>
                 <options>
@@ -2241,7 +2241,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.loopTogglePad.input</key>
+                <key>P32.rightDeck.reloop.input</key>
                 <status>0x95</status>
                 <midino>0x52</midino>
                 <options>
@@ -2306,7 +2306,7 @@
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.quantize.input</key>
                 <status>0x92</status>
-                <midino>0x47</midino>
+                <midino>0x4B</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -2315,7 +2315,7 @@
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.quantize.input</key>
                 <status>0x95</status>
-                <midino>0x47</midino>
+                <midino>0x4B</midino>
                 <options>
                     <script-binding/>
                 </options>
