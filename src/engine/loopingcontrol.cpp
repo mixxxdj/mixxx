@@ -872,22 +872,6 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         return;
     }
 
-    // O(n) search, but there are only ~10-ish beatloop controls so this is
-    // fine.
-    for (BeatLoopingControl* pBeatLoopControl: m_beatLoops) {
-        if (pBeatLoopControl->getSize() == beats) {
-            if (enable || m_bLoopingEnabled) {
-                pBeatLoopControl->activate();
-            }
-            BeatLoopingControl* pOldBeatLoop =
-                    m_pActiveBeatLoop.fetchAndStoreRelease(pBeatLoopControl);
-            if (pOldBeatLoop != nullptr && pOldBeatLoop != pBeatLoopControl) {
-                pOldBeatLoop->deactivate();
-            }
-            break;
-        }
-    }
-
     // Calculate the new loop start and end samples
     // give start and end defaults so we can detect problems
     LoopSamples newloopSamples = {kNoTrigger, kNoTrigger};
@@ -976,6 +960,22 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     // until beatloop_size matches the size of the existing loop
     if (!m_bLoopSetSinceTrackLoaded && !currentLoopMatchesBeatloopSize() && !enable) {
         return;
+    }
+
+    // O(n) search, but there are only ~10-ish beatloop controls so this is
+    // fine.
+    for (BeatLoopingControl* pBeatLoopControl: m_beatLoops) {
+        if (pBeatLoopControl->getSize() == beats) {
+            if (enable || m_bLoopingEnabled) {
+                pBeatLoopControl->activate();
+            }
+            BeatLoopingControl* pOldBeatLoop =
+                    m_pActiveBeatLoop.fetchAndStoreRelease(pBeatLoopControl);
+            if (pOldBeatLoop != nullptr && pOldBeatLoop != pBeatLoopControl) {
+                pOldBeatLoop->deactivate();
+            }
+            break;
+        }
     }
 
     // If resizing an inactive loop by changing beatloop_size,

@@ -45,6 +45,7 @@ class LoopingControlTest : public MockedEngineBackendTest {
         m_pButtonBeatLoop4Activate = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_4_activate");
         m_pBeatLoop2Enabled = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_2_enabled");
         m_pBeatLoop4Enabled = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_4_enabled");
+        m_pBeatLoop64Enabled = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_64_enabled");
         m_pBeatLoop = std::make_unique<ControlProxy>(m_sGroup1, "beatloop");
         m_pBeatLoopSize = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_size");
         m_pButtonBeatLoopToggle = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_toggle");
@@ -80,6 +81,7 @@ class LoopingControlTest : public MockedEngineBackendTest {
     std::unique_ptr<ControlProxy> m_pButtonBeatLoop4Activate;
     std::unique_ptr<ControlProxy> m_pBeatLoop2Enabled;
     std::unique_ptr<ControlProxy> m_pBeatLoop4Enabled;
+    std::unique_ptr<ControlProxy> m_pBeatLoop64Enabled;
     std::unique_ptr<ControlProxy> m_pBeatLoop;
     std::unique_ptr<ControlProxy> m_pBeatLoopSize;
     std::unique_ptr<ControlProxy> m_pButtonBeatLoopToggle;
@@ -576,6 +578,7 @@ TEST_F(LoopingControlTest, BeatLoopSize_IgnoresPastTrackEnd) {
     seekToSampleAndProcess(m_pTrackSamples->get() - 400);
     m_pBeatLoopSize->set(64.0);
     EXPECT_NE(64.0, m_pBeatLoopSize->get());
+    EXPECT_FALSE(m_pBeatLoop64Enabled->toBool());
 }
 
 TEST_F(LoopingControlTest, BeatLoopSize_SetsNumberedControls) {
