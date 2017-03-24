@@ -6,10 +6,8 @@
 
 QRegExp WBeatSpinBox::s_regexpBlacklist("[^0-9./ ]");
 
-WBeatSpinBox::WBeatSpinBox(QWidget * parent,
-                                         ControlObject* pValueControl,
-                                         int decimals,
-                                         double minimum, double maximum)
+WBeatSpinBox::WBeatSpinBox(QWidget * parent, ControlObject* pValueControl,
+                           int decimals, double minimum, double maximum)
         : WBaseWidget(parent),
           m_valueControl(
             pValueControl ?
@@ -22,9 +20,6 @@ WBeatSpinBox::WBeatSpinBox(QWidget * parent,
     // to avoid interfering with using the library via keyboard.
     setFocusPolicy(Qt::ClickFocus);
 
-    connect(this, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSpinboxValueChanged(double)));
-
     setValue(m_valueControl.get());
     m_valueControl.connectValueChanged(SLOT(slotControlValueChanged(double)));
 }
@@ -36,10 +31,8 @@ void WBeatSpinBox::stepBy(int steps) {
     } else if (newValue > maximum()) {
         newValue = maximum();
     }
-    setValue(newValue);
-}
-
-void WBeatSpinBox::slotSpinboxValueChanged(double newValue) {
+    // Do not call QDoubleSpinBox::setValue directly in case
+    // the new value of the ControlObject needs to be confirmed.
     m_valueControl.set(newValue);
 }
 

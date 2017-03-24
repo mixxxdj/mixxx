@@ -18,7 +18,6 @@ class WBeatSpinBox : public QDoubleSpinBox, public WBaseWidget {
                         double minimum=0.03125, double maximum=512.00);
 
   private slots:
-    void slotSpinboxValueChanged(double newValue);
     void slotControlValueChanged(double newValue);
 
     QString textFromValue(double value) const override;
