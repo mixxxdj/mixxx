@@ -329,9 +329,10 @@ script.brake = function(channel, control, value, status, group, factor) {
 
 /* -------- ------------------------------------------------------
      script.softStart
-   Purpose: wrapper around engine.brake() that can be directly mapped
-            from xml for a brake effect
-            e.g: <key>script.brake</key>
+   Purpose: wrapper around engine.softStart() that can be directly mapped
+            from xml to start and accelerate a deck from zero to full rate
+            defined by pitch slider, can also interrupt engine.brake()
+            e.g: <key>script.softStart</key>
    Input:   channel, control, value, status, group, acceleration factor (optional)
    Output:  none
    -------- ------------------------------------------------------ */

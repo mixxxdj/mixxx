@@ -118,7 +118,7 @@ class ControllerEngine : public QObject {
     Q_INVOKABLE void softTakeoverIgnoreNextValue(QString group, QString name);
     Q_INVOKABLE void brake(int deck, bool activate, double factor=1.0, double rate=1.0);
     Q_INVOKABLE void spinback(int deck, bool activate, double factor=1.8, double rate=-10.0);
-    Q_INVOKABLE void softStart(int deck, bool activate, double factor=1.0, double finalRate=1.0);
+    Q_INVOKABLE void softStart(int deck, bool activate, double factor=1.0);
 
     // Handler for timers that scripts set.
     virtual void timerEvent(QTimerEvent *event);

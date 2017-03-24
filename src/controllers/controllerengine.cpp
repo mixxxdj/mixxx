@@ -1234,7 +1234,7 @@ void ControllerEngine::scratchProcess(int timerId) {
         // Once this code path is run, latch so it always runs until reset
         //m_lastMovement[deck] += mixxx::Duration::fromSeconds(1);
     } else if (m_softStartActive[deck]) {
-        // pretend we have moved by (finalRate*default distance)
+        // pretend we have moved by (desired rate*default distance)
         filter->observation(m_rampTo[deck]*kAlphaBetaDt);
     } else {
         // This will (and should) be 0 if no net ticks have been accumulated
@@ -1449,11 +1449,10 @@ void ControllerEngine::brake(int deck, bool activate, double factor, double rate
 
 /*  -------- ------------------------------------------------------
     Purpose: [En/dis]ables softStart effect for the channel
-    Input:   deck, activate/deactivate, factor (optional),
-             rate (optiona)
+    Input:   deck, activate/deactivate, factor (optional)
     Output:  -
     -------- ------------------------------------------------------ */
-void ControllerEngine::softStart(int deck, bool activate, double factor, double finalRate) {
+void ControllerEngine::softStart(int deck, bool activate, double factor) {
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
 
@@ -1473,12 +1472,8 @@ void ControllerEngine::softStart(int deck, bool activate, double factor, double 
     double initRate = 0.0;
 
     if (activate) {
-        // store the new values for this spinback/brake effect
-        if (finalRate == 1.0) {// then rate is really 1.0 or was set to default
-            // so check for real value taking pitch into account
-            finalRate = getDeckRate(group);
-        }
-        m_rampTo[deck] = finalRate;
+        // aquire deck rate
+        m_rampTo[deck] = getDeckRate(group);
 
         // if brake()ing, get current rate from filter
         if (m_brakeActive[deck]) {
