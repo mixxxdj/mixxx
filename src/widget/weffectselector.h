@@ -29,6 +29,7 @@ class WEffectSelector : public QComboBox, public WBaseWidget {
     EffectSlotPointer m_pEffectSlot;
     EffectChainSlotPointer m_pChainSlot;
     EffectRackPointer m_pRack;
+    double m_scaleFactor;
 };
 
 

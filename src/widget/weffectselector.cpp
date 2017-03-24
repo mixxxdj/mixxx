@@ -8,10 +8,13 @@
 WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManager)
         : QComboBox(pParent),
           WBaseWidget(pParent),
-          m_pEffectsManager(pEffectsManager) {
+          m_pEffectsManager(pEffectsManager),
+          m_scaleFactor(1.0) {
 }
 
 void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
+    m_scaleFactor = context.getScaleFactor();
+
     // EffectWidgetUtils propagates NULLs so this is all safe.
     m_pRack = EffectWidgetUtils::getEffectRackFromNode(
             node, context, m_pEffectsManager);
@@ -102,8 +105,19 @@ bool WEffectSelector::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
     } else if (pEvent->type() == QEvent::FontChange) {
+        const QFont& fonti = font();
+        // Change the new font on the fly by casting away its constness
+        // using setFont() here, would results into a recursive loop
+        // resetting the font to the original css values.
+        if (fonti.pointSizeF() > 0) {
+            const_cast<QFont&>(fonti).setPointSizeF(fonti.pointSizeF() * m_scaleFactor);
+        }
+        if (fonti.pixelSize() > 0) {
+            const_cast<QFont&>(fonti).setPixelSize(fonti.pixelSize() * m_scaleFactor);
+        }
         // repopulate to add text according to the new font measures
         populate();
     }
+
     return QComboBox::event(pEvent);
 }
