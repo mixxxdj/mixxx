@@ -360,3 +360,17 @@ TEST_F(ControllerEngineTest, connectControl_TriggerByConnectionObject) {
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, counter->get());
 }
+
+TEST_F(ControllerEngineTest, softStart) {
+	// Test that brake() toggles [group],scratch2_enable and sets
+	// [group],scratch2 to 'rate' passed as argument (initRate) and sets
+	// [group],scratch2 to actual rate if no parameter is passed respectively
+	// test if [group],play is set to 0 'after a while'?
+	// test if it sets m_softStartActive to 0?
+}
+TEST_F(ControllerEngineTest, brake) {
+	// Test that brake() toggles [group],scratch2_enable and sets
+	// [group]scratch2 to 'rate' passed as argument (initRate)
+	// test if [group],play is set to 0 'after a while'?
+	// test if it sets m_softStartActive to 0?
+}
