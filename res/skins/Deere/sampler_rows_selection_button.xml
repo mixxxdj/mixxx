@@ -1,0 +1,21 @@
+<Template>
+  <PushButton>
+    <TooltipId><Variable name="TooltipId"/></TooltipId>
+    <ObjectName><Variable name="ObjectName"/></ObjectName>
+    <Size>80me,20f</Size>
+    <NumberStates>1</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Text>[<Variable name="current"/>] Rows</Text>
+      <Alignment>left</Alignment>
+    </State>
+    <Connection>
+      <ConfigKey>[Deere],sampler_row_<Variable name="next"/></ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey>[Deere],sampler_row_<Variable name="prev"/></ConfigKey>
+      <ButtonState>RightButton</ButtonState>
+    </Connection>
+  </PushButton>
+</Template>

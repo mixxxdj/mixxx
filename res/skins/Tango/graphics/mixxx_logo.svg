@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="358pt" version="1.1" xmlns="http://www.w3.org/2000/svg" height="89pt" viewBox="0 0 358 89" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <linearGradient id="Grad0" y1="-0.1462" x1="74.993" y2="88.767" gradientUnits="userSpaceOnUse" x2="13.4863">
+   <stop offset="47.8%" stop-color="#39b549" stop-opacity="1"/>
+   <stop offset="100%" stop-color="#1a76bc" stop-opacity="1"/>
+  </linearGradient>
+  <linearGradient id="Grad1" y1="-0.1501" x1="74.9979" y2="88.7673" gradientUnits="userSpaceOnUse" x2="13.4883">
+   <stop offset="0%" stop-color="#381f1f" stop-opacity="1"/>
+   <stop offset="0.17%" stop-color="#3a1f20" stop-opacity="1"/>
+   <stop offset="3.76%" stop-color="#5b2825" stop-opacity="1"/>
+   <stop offset="7.57%" stop-color="#7c2f28" stop-opacity="1"/>
+   <stop offset="11.73%" stop-color="#9b2e28" stop-opacity="1"/>
+   <stop offset="16.26%" stop-color="#b62c28" stop-opacity="1"/>
+   <stop offset="21.29%" stop-color="#cc2626" stop-opacity="1"/>
+   <stop offset="27.1%" stop-color="#dc2225" stop-opacity="1"/>
+   <stop offset="34.38%" stop-color="#e81f25" stop-opacity="1"/>
+   <stop offset="47.8%" stop-color="#ed1b26" stop-opacity="1"/>
+   <stop offset="100%" stop-color="#f7921e" stop-opacity="1"/>
+  </linearGradient>
+  <linearGradient id="Grad2" y1="-0.1471" x1="74.9919" y2="88.766" gradientUnits="userSpaceOnUse" x2="13.4852">
+   <stop offset="0%" stop-color="#120e1e" stop-opacity="1"/>
+   <stop offset="2.31%" stop-color="#1b1426" stop-opacity="1"/>
+   <stop offset="14.46%" stop-color="#442349" stop-opacity="1"/>
+   <stop offset="25.52%" stop-color="#652866" stop-opacity="1"/>
+   <stop offset="35.11%" stop-color="#7c287b" stop-opacity="1"/>
+   <stop offset="42.86%" stop-color="#8b2589" stop-opacity="1"/>
+   <stop offset="47.8%" stop-color="#91268f" stop-opacity="1"/>
+   <stop offset="100%" stop-color="#ed1b26" stop-opacity="1"/>
+  </linearGradient>
+  <clipPath id="Clip0">
+   <path d="M0 0 L358.182 0 L358.182 89.118 L0 89.118 L0 0 Z" transform="translate(0, 0.028)"/>
+  </clipPath>
+  <linearGradient id="Grad3" y1="0.2469" x1="44.0611" y2="93.878" gradientUnits="userSpaceOnUse" x2="44.0611">
+   <stop offset="0%" stop-color="#1f1f20" stop-opacity="1"/>
+   <stop offset="0.555556%" stop-color="#1f1f20" stop-opacity="1"/>
+   <stop offset="63.3333%" stop-color="#58595b" stop-opacity="1"/>
+   <stop offset="100%" stop-color="#a5a8aa" stop-opacity="1"/>
+  </linearGradient>
+  <linearGradient id="Grad4" y1="0.2469" x1="44.0661" y2="93.878" gradientUnits="userSpaceOnUse" x2="44.0661">
+   <stop offset="0%" stop-color="#1f1f20" stop-opacity="1"/>
+   <stop offset="0.555556%" stop-color="#1f1f20" stop-opacity="1"/>
+   <stop offset="63.3333%" stop-color="#58595b" stop-opacity="1"/>
+   <stop offset="100%" stop-color="#a5a8aa" stop-opacity="1"/>
+  </linearGradient>
+  <linearGradient id="Grad5" y1="0.2469" x1="44.0663" y2="93.878" gradientUnits="userSpaceOnUse" x2="44.0663">
+   <stop offset="0%" stop-color="#1f1f20" stop-opacity="1"/>
+   <stop offset="0.555556%" stop-color="#1f1f20" stop-opacity="1"/>
+   <stop offset="63.3333%" stop-color="#58595b" stop-opacity="1"/>
+   <stop offset="100%" stop-color="#a5a8aa" stop-opacity="1"/>
+  </linearGradient>
+  <linearGradient id="Grad6" y1="0.2469" x1="11.5568" y2="93.878" gradientUnits="userSpaceOnUse" x2="11.5568">
+   <stop offset="0%" stop-color="#1f1f20" stop-opacity="1"/>
+   <stop offset="0.555556%" stop-color="#1f1f20" stop-opacity="1"/>
+   <stop offset="63.3333%" stop-color="#58595b" stop-opacity="1"/>
+   <stop offset="100%" stop-color="#a5a8aa" stop-opacity="1"/>
+  </linearGradient>
+  <linearGradient id="Grad7" y1="0.2469" x1="52.5435" y2="93.878" gradientUnits="userSpaceOnUse" x2="52.5435">
+   <stop offset="0%" stop-color="#1f1f20" stop-opacity="1"/>
+   <stop offset="0.555556%" stop-color="#1f1f20" stop-opacity="1"/>
+   <stop offset="63.3333%" stop-color="#58595b" stop-opacity="1"/>
+   <stop offset="100%" stop-color="#a5a8aa" stop-opacity="1"/>
+  </linearGradient>
+  <linearGradient id="Grad8" y1="90.6366" x1="0.3482" y2="-2.3324" gradientUnits="userSpaceOnUse" x2="0.3482">
+   <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+   <stop offset="100%" stop-color="#000000" stop-opacity="1"/>
+  </linearGradient>
+  <linearGradient id="Grad9" y1="90.6366" x1="0.348" y2="-2.3324" gradientUnits="userSpaceOnUse" x2="0.348">
+   <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+   <stop offset="100%" stop-color="#000000" stop-opacity="1"/>
+  </linearGradient>
+  <linearGradient id="Grad10" y1="88.6561" x1="0.3126" y2="1.1722" gradientUnits="userSpaceOnUse" x2="0.3126">
+   <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+   <stop offset="100%" stop-color="#000000" stop-opacity="1"/>
+  </linearGradient>
+  <linearGradient id="Grad11" y1="88.6561" x1="0.3121" y2="1.1722" gradientUnits="userSpaceOnUse" x2="0.3121">
+   <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+   <stop offset="100%" stop-color="#000000" stop-opacity="1"/>
+  </linearGradient>
+  <clipPath id="Clip1">
+   <path d="M0 0 L88.123 0 L88.123 89.118 L0 89.118 L0 0 Z" transform="translate(147.641, 0.028)"/>
+  </clipPath>
+  <linearGradient id="Grad12" y1="89.1185" x1="30.5499" y2="-3.2409" gradientUnits="userSpaceOnUse" x2="30.5499">
+   <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+   <stop offset="100%" stop-color="#000000" stop-opacity="1"/>
+  </linearGradient>
+  <linearGradient id="Grad13" y1="90.0257" x1="30.5475" y2="0.1055" gradientUnits="userSpaceOnUse" x2="30.5475">
+   <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+   <stop offset="100%" stop-color="#000000" stop-opacity="1"/>
+  </linearGradient>
+  <clipPath id="Clip2">
+   <path d="M0 0 L88.123 0 L88.123 89.118 L0 89.118 L0 0 Z" transform="translate(208.823, 0)"/>
+  </clipPath>
+  <linearGradient id="Grad14" y1="89.1182" x1="30.5495" y2="-3.2412" gradientUnits="userSpaceOnUse" x2="30.5495">
+   <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+   <stop offset="100%" stop-color="#000000" stop-opacity="1"/>
+  </linearGradient>
+  <linearGradient id="Grad15" y1="90.0254" x1="30.5491" y2="0.1052" gradientUnits="userSpaceOnUse" x2="30.5491">
+   <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+   <stop offset="100%" stop-color="#000000" stop-opacity="1"/>
+  </linearGradient>
+  <clipPath id="Clip3">
+   <path d="M0 0 L88.123 0 L88.123 89.118 L0 89.118 L0 0 Z" transform="translate(270.034, 0)"/>
+  </clipPath>
+  <linearGradient id="Grad16" y1="89.1182" x1="30.5494" y2="-3.2412" gradientUnits="userSpaceOnUse" x2="30.5494">
+   <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+   <stop offset="100%" stop-color="#000000" stop-opacity="1"/>
+  </linearGradient>
+  <linearGradient id="Grad17" y1="90.0254" x1="30.549" y2="0.1052" gradientUnits="userSpaceOnUse" x2="30.549">
+   <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+   <stop offset="100%" stop-color="#000000" stop-opacity="1"/>
+  </linearGradient>
+  <linearGradient id="Grad18" y1="52.6405" x1="0.291698" y2="-37.8988" gradientUnits="userSpaceOnUse" x2="0.291698">
+   <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+   <stop offset="100%" stop-color="#000000" stop-opacity="1"/>
+  </linearGradient>
+  <linearGradient id="Grad19" y1="52.9165" x1="0.2481" y2="-35.3257" gradientUnits="userSpaceOnUse" x2="0.2481">
+   <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+   <stop offset="100%" stop-color="#000000" stop-opacity="1"/>
+  </linearGradient>
+  <linearGradient id="Grad20" y1="89.1199" x1="27.6264" y2="0.1302" gradientUnits="userSpaceOnUse" x2="27.6264">
+   <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+   <stop offset="100%" stop-color="#000000" stop-opacity="1"/>
+  </linearGradient>
+  <linearGradient id="Grad21" y1="53.389" x1="29.7261" y2="-36.6212" gradientUnits="userSpaceOnUse" x2="29.7261">
+   <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+   <stop offset="100%" stop-color="#000000" stop-opacity="1"/>
+  </linearGradient>
+ </defs>
+ <g id="Background">
+  <path style="fill:url(#Grad0); fill-rule:nonzero;stroke:none;" id=" polygon460" d="M0 89.118 L61.111 0 L88.123 0 L27.023 89.118 L0 89.118 Z" transform="translate(270.048, 0.028)"/>
+  <path style="fill:url(#Grad1); fill-rule:nonzero;stroke:none;" id=" polygon485" d="M0 89.118 L61.107 0 L88.134 0 L27.034 89.118 L0 89.118 Z" transform="translate(147.63, 0.028)"/>
+  <path style="fill:url(#Grad2); fill-rule:nonzero;stroke:none;" id=" polygon504" d="M0 89.118 L61.11 0 L88.123 0 L27.022 89.118 L0 89.118 Z" transform="translate(208.845, 0.028)"/>
+ </g>
+ <g id="New Layer 1">
+  <g id="Group9" clip-path="url(#Clip0)">
+   <path style="fill:url(#Grad3); fill-rule:nonzero;stroke:none;" id=" polygon515" d="M88.123 89.118 L27.023 0 L0 0 L61.096 89.118 L88.123 89.118 Z" transform="translate(147.641, 0.028)"/>
+   <path style="fill:url(#Grad4); fill-rule:nonzero;stroke:none;" id=" polygon524" d="M88.133 89.118 L27.022 0 L0 0 L61.11 89.118 L88.133 89.118 Z" transform="translate(208.845, 0.028)"/>
+   <path style="fill:url(#Grad5); fill-rule:nonzero;stroke:none;" id=" polygon533" d="M88.134 89.118 L27.023 0 L0 0 L61.111 89.118 L88.134 89.118 Z" transform="translate(270.048, 0.028)"/>
+   <path style="fill:url(#Grad6); fill-rule:evenodd;stroke:none;" id=" rect542" d="M0 0 L23.115 0 L23.115 89.118 L0 89.118 L0 0 Z" transform="translate(115.307, 0.028)"/>
+   <path style="fill:url(#Grad7); fill-rule:nonzero;stroke:none;" id=" polygon551" d="M22.665 89.118 L22.665 36.93 L51.941 81.368 L52.538 81.368 L82.118 36.478 L82.118 89.118 L105.087 89.118 L105.087 0 L80.171 0 L52.538 44.437 L24.919 0 L0 0 L0 89.118 L22.665 89.118 Z" transform="translate(0, 0.028)"/>
+  </g>
+ </g>
+ <g id="New Layer 2">
+  <path style="fill:url(#Grad8); fill-rule:nonzero;stroke:none;" id=" polygon569" d="M0.696 89.118 L0.696 0 L0 0 L0.696 89.118 Z" transform="translate(137.725, 0.028)"/>
+  <path style="fill:url(#Grad9); fill-rule:nonzero;stroke:none;" id=" polygon576" d="M0.697 89.118 L0.697 0 L0 0 L0.697 89.118 Z" transform="translate(104.34, 0.028)"/>
+  <path style="fill:url(#Grad10); fill-rule:nonzero;stroke:none;" id=" polygon583" d="M0.625 89.118 L0 0 L0 89.118 L0.625 89.118 Z" transform="translate(115.307, 0.028)"/>
+  <path style="fill:url(#Grad11); fill-rule:nonzero;stroke:none;" id=" polygon590" d="M0.625 89.118 L0 0 L0 89.118 L0.625 89.118 Z" transform="translate(0.079, 0.028)"/>
+  <g id="g592" clip-path="url(#Clip1)">
+   <path style="fill:url(#Grad12); fill-rule:nonzero;stroke:none;" id=" polygon599" d="M61.1 89.118 L0 0 L60.524 89.118 L61.1 89.118 Z" transform="translate(174.664, 0.028)"/>
+   <path style="fill:url(#Grad13); fill-rule:nonzero;stroke:none;" id=" polygon606" d="M0.821 0 L0 0 L61.096 89.118 L0.821 0 Z" transform="translate(147.641, 0.028)"/>
+  </g>
+  <g id="g608" clip-path="url(#Clip2)">
+   <path style="fill:url(#Grad14); fill-rule:nonzero;stroke:none;" id=" polygon615" d="M61.1 89.118 L0 0 L60.525 89.118 L61.1 89.118 Z" transform="translate(235.846, 0)"/>
+   <path style="fill:url(#Grad15); fill-rule:nonzero;stroke:none;" id=" polygon622" d="M0.822 0 L0 0 L61.097 89.118 L0.822 0 Z" transform="translate(208.823, 0)"/>
+  </g>
+  <g id="g624" clip-path="url(#Clip3)">
+   <path style="fill:url(#Grad16); fill-rule:nonzero;stroke:none;" id=" polygon631" d="M61.1 89.118 L0 0 L60.525 89.118 L61.1 89.118 Z" transform="translate(297.057, 0)"/>
+   <path style="fill:url(#Grad17); fill-rule:nonzero;stroke:none;" id=" polygon638" d="M0.821 0 L0 0 L61.097 89.118 L0.821 0 Z" transform="translate(270.034, 0)"/>
+  </g>
+  <path style="fill:url(#Grad18); fill-rule:nonzero;stroke:none;" id=" polygon645" d="M0 0 L0 52.64 L0.583 52.64 L0 0 Z" transform="translate(82.118, 36.506)"/>
+  <path style="fill:url(#Grad19); fill-rule:nonzero;stroke:none;" id=" polygon652" d="M0.497 52.916 L0.497 0.728 L0 0 L0.497 52.916 Z" transform="translate(22.163, 36.23)"/>
+  <path style="fill:url(#Grad20); fill-rule:nonzero;stroke:none;" id=" polygon659" d="M27.622 45.09 L55.252 0 L27.619 44.437 L0 0 L27.622 45.09 Z" transform="translate(24.919, 0.028)"/>
+  <path style="fill:url(#Grad21); fill-rule:nonzero;stroke:none;" id=" polygon666" d="M0 0.452 L29.276 44.89 L29.873 44.89 L59.453 0 L29.603 44.57 L0 0.452 Z" transform="translate(22.665, 36.506)"/>
+ </g>
+</svg>

@@ -4,9 +4,9 @@
     <WidgetGroup>
     <ObjectName>VinylControlsContainer</ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>max,max</SizePolicy>
+    <SizePolicy>min,min</SizePolicy>
     <Connection>
-      <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
+      <ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
     <Children>

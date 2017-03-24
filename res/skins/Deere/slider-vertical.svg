@@ -9,7 +9,7 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
    width="40"
-   height="180"
+   height="162"
    id="svg2"
    inkscape:version="0.91 r13725"
    sodipodi:docname="slider-vertical.svg">
@@ -21,6 +21,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -36,14 +37,14 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:window-width="1366"
-     inkscape:window-height="702"
+     inkscape:window-height="696"
      id="namedview72"
      showgrid="false"
      inkscape:zoom="2.6222222"
-     inkscape:cx="-28.786214"
-     inkscape:cy="89.202864"
+     inkscape:cx="-60.771531"
+     inkscape:cy="88.448764"
      inkscape:window-x="0"
-     inkscape:window-y="27"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg2" />
   <!-- marker lines every 5px -->
@@ -58,7 +59,7 @@
      width="14.734042"
      height="159.5"
      x="12.632978"
-     y="10.25"
+     y="1.25"
      ry="1"
      rx="1" />
   <path
@@ -67,5 +68,6 @@
      inkscape:original="M 14.632812 10.25 C 13.524812 10.25 12.632812 11.142 12.632812 12.25 L 12.632812 167.75 C 12.632812 168.858 13.524812 169.75 14.632812 169.75 L 25.367188 169.75 C 26.475188 169.75 27.367188 168.858 27.367188 167.75 L 27.367188 12.25 C 27.367187 11.142 26.475188 10.25 25.367188 10.25 L 14.632812 10.25 z "
      style="opacity:1;fill:#222222;fill-opacity:1;stroke:#222222;stroke-width:2.5;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      id="path4175"
-     d="m 18.064453,15.681641 0,148.636719 3.871094,0 0,-148.636719 -3.871094,0 z" />
+     d="m 18.064453,15.681641 0,148.636719 3.871094,0 0,-148.636719 -3.871094,0 z"
+     transform="translate(0,-9)" />
 </svg>

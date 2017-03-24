@@ -11,8 +11,9 @@
     <ObjectName>Sampler</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>me,f</SizePolicy>
+    <MinimumSize>167,-1</MinimumSize>
     <Children>
-      <Template src="skin:sampler_overview_row.xml"/>
+      <Template src="skin:sampler_text_row.xml"/>
       <Template src="skin:sampler_controls_row.xml"/>
     </Children>
   </WidgetGroup>

@@ -1,0 +1,114 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The QuickEffect rack superknob.
+  Variables:
+    QuickEffect: the quick effect rack
+    group: the group
+    color: the notch color. red, green, yellow, blue or light_blue
+-->
+<Template>
+  <SetVariable name="QuickEffectRackGroup">[QuickEffectRack<Variable name="QuickEffect"/>]</SetVariable>
+  <SetVariable name="QuickEffectUnitGroup">[QuickEffectRack<Variable name="QuickEffect"/>_<Variable name="group"/>]</SetVariable>
+  <SetVariable name="QuickEffectEffectGroup">[QuickEffectRack<Variable name="QuickEffect"/>_<Variable name="group"/>_Effect1]</SetVariable>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Children>
+
+      <SizeAwareStack>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>EQKnobNoLabel</ObjectName>
+            <MinimumSize>40,34</MinimumSize>
+            <MaximumSize>40,41</MaximumSize>
+            <Layout>vertical</Layout>
+            <Children>
+              <Template src="skin:knob.xml">
+                <SetVariable name="group"><Variable name="QuickEffectUnitGroup"/></SetVariable>
+                <SetVariable name="control">super1</SetVariable>
+                <SetVariable name="color"><Variable name="color"/></SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>EQKnobWithLabel</ObjectName>
+            <MinimumSize>40,42</MinimumSize>
+            <MaximumSize>40,45</MaximumSize>
+            <Layout>vertical</Layout>
+            <Children>
+              <Template src="skin:knob.xml">
+                <SetVariable name="group"><Variable name="QuickEffectUnitGroup"/></SetVariable>
+                <SetVariable name="control">super1</SetVariable>
+                <SetVariable name="color"><Variable name="color"/></SetVariable>
+              </Template>
+              <EffectName>
+                <Size>40f,10f</Size>
+                <ObjectName>KnobLabel</ObjectName>
+                <EffectRackGroup><Variable name="QuickEffectRackGroup"/></EffectRackGroup>
+                <EffectUnitGroup><Variable name="QuickEffectUnitGroup"/></EffectUnitGroup>
+                <Effect>1</Effect>
+                <Elide>middle</Elide>
+              </EffectName>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </SizeAwareStack>
+
+      <!--Wrap the EffectPushButton in a vertical WidgetGroup with spacers to ensure it stays in the
+      correct position when the knobs get further apart and closer together.-->
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <Children>
+
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Size>15f,12f</Size>
+            <Children/>
+          </WidgetGroup>
+
+          <EffectPushButton>
+            <TooltipId><Variable name="button_TooltipId"/></TooltipId>
+            <Size>15f,15f</Size>
+            <ObjectName>CircleButton</ObjectName>
+            <EffectRackGroup><Variable name="QuickEffectRackGroup"/></EffectRackGroup>
+            <EffectUnitGroup><Variable name="QuickEffectUnitGroup"/></EffectUnitGroup>
+            <Effect><Variable name="QuickEffect"/></Effect>
+            <EffectButtonParameter><Variable name="QuickEffect"/></EffectButtonParameter>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text></Text>
+              <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_off_48px.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_off_48px.svg</Unpressed>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text></Text>
+              <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Unpressed>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="QuickEffectEffectGroup"/>,enabled</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </EffectPushButton>
+
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Size>15f,-1me</Size>
+            <Children/>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+    <Connection>
+      <ConfigKey><Variable name="QuickEffectEffectGroup"/>,loaded</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>
