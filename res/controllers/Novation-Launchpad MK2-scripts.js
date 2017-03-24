@@ -1,4 +1,4 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.NovationLaunchpad = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.NovationLaunchpadMK2 = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
 var has = Object.prototype.hasOwnProperty,
@@ -11962,7 +11962,7 @@ var Buttons = exports.Buttons = Object.keys(_buttons2['default']).reduce(functio
   return (0, _lodash2['default'])(obj, _defineProperty({}, name, new LaunchpadMidiButton(_buttons2['default'][name])));
 }, {});
 
-},{"../Mixxx/globals":51,"@mixxx-launchpad/mk-specs/buttons":55,"@mixxx-launchpad/mk-specs/colors":56,"lodash.assign":3}],44:[function(require,module,exports){
+},{"../Mixxx/globals":51,"@mixxx-launchpad/mk-specs/buttons":54,"@mixxx-launchpad/mk-specs/colors":55,"lodash.assign":3}],44:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12673,11 +12673,6 @@ function create(globalName) {
 },{"./App/Screen":15,"./Component":40,"./Controls/ControlComponent":41,"./Controls/MidiComponent":42,"./Launchpad":45,"./Mixxx":52,"./Mixxx/console-polyfill":49}],54:[function(require,module,exports){
 'use strict';
 
-module.exports = require('@mixxx-launchpad/app').create(require('./package.json').controller.global, {});
-
-},{"./package.json":57,"@mixxx-launchpad/app":53}],55:[function(require,module,exports){
-'use strict';
-
 module.exports = {
   /* eslint-disable key-spacing, no-multi-spaces */
   'up': { status: '0xB0', midino: '0x68', name: 'up' },
@@ -12688,114 +12683,120 @@ module.exports = {
   'user1': { status: '0xB0', midino: '0x6D', name: 'user1' },
   'user2': { status: '0xB0', midino: '0x6E', name: 'user2' },
   'mixer': { status: '0xB0', midino: '0x6F', name: 'mixer' },
-  'vol': { status: '0x90', midino: '0x08', name: 'vol' },
-  'pan': { status: '0x90', midino: '0x18', name: 'pan' },
-  'snda': { status: '0x90', midino: '0x28', name: 'snda' },
-  'sndb': { status: '0x90', midino: '0x38', name: 'sndb' },
-  'stop': { status: '0x90', midino: '0x48', name: 'stop' },
-  'trkon': { status: '0x90', midino: '0x58', name: 'trkon' },
-  'solo': { status: '0x90', midino: '0x68', name: 'solo' },
-  'arm': { status: '0x90', midino: '0x78', name: 'arm' },
-  '0,0': { status: '0x90', midino: '0x00', name: '0,0' },
-  '0,1': { status: '0x90', midino: '0x01', name: '0,1' },
-  '0,2': { status: '0x90', midino: '0x02', name: '0,2' },
-  '0,3': { status: '0x90', midino: '0x03', name: '0,3' },
-  '0,4': { status: '0x90', midino: '0x04', name: '0,4' },
-  '0,5': { status: '0x90', midino: '0x05', name: '0,5' },
-  '0,6': { status: '0x90', midino: '0x06', name: '0,6' },
-  '0,7': { status: '0x90', midino: '0x07', name: '0,7' },
-  '1,0': { status: '0x90', midino: '0x10', name: '1,0' },
-  '1,1': { status: '0x90', midino: '0x11', name: '1,1' },
-  '1,2': { status: '0x90', midino: '0x12', name: '1,2' },
-  '1,3': { status: '0x90', midino: '0x13', name: '1,3' },
-  '1,4': { status: '0x90', midino: '0x14', name: '1,4' },
-  '1,5': { status: '0x90', midino: '0x15', name: '1,5' },
-  '1,6': { status: '0x90', midino: '0x16', name: '1,6' },
-  '1,7': { status: '0x90', midino: '0x17', name: '1,7' },
-  '2,0': { status: '0x90', midino: '0x20', name: '2,0' },
-  '2,1': { status: '0x90', midino: '0x21', name: '2,1' },
-  '2,2': { status: '0x90', midino: '0x22', name: '2,2' },
-  '2,3': { status: '0x90', midino: '0x23', name: '2,3' },
-  '2,4': { status: '0x90', midino: '0x24', name: '2,4' },
-  '2,5': { status: '0x90', midino: '0x25', name: '2,5' },
-  '2,6': { status: '0x90', midino: '0x26', name: '2,6' },
-  '2,7': { status: '0x90', midino: '0x27', name: '2,7' },
-  '3,0': { status: '0x90', midino: '0x30', name: '3,0' },
-  '3,1': { status: '0x90', midino: '0x31', name: '3,1' },
-  '3,2': { status: '0x90', midino: '0x32', name: '3,2' },
-  '3,3': { status: '0x90', midino: '0x33', name: '3,3' },
-  '3,4': { status: '0x90', midino: '0x34', name: '3,4' },
-  '3,5': { status: '0x90', midino: '0x35', name: '3,5' },
-  '3,6': { status: '0x90', midino: '0x36', name: '3,6' },
-  '3,7': { status: '0x90', midino: '0x37', name: '3,7' },
-  '4,0': { status: '0x90', midino: '0x40', name: '4,0' },
-  '4,1': { status: '0x90', midino: '0x41', name: '4,1' },
-  '4,2': { status: '0x90', midino: '0x42', name: '4,2' },
-  '4,3': { status: '0x90', midino: '0x43', name: '4,3' },
-  '4,4': { status: '0x90', midino: '0x44', name: '4,4' },
-  '4,5': { status: '0x90', midino: '0x45', name: '4,5' },
-  '4,6': { status: '0x90', midino: '0x46', name: '4,6' },
-  '4,7': { status: '0x90', midino: '0x47', name: '4,7' },
-  '5,0': { status: '0x90', midino: '0x50', name: '5,0' },
-  '5,1': { status: '0x90', midino: '0x51', name: '5,1' },
-  '5,2': { status: '0x90', midino: '0x52', name: '5,2' },
-  '5,3': { status: '0x90', midino: '0x53', name: '5,3' },
-  '5,4': { status: '0x90', midino: '0x54', name: '5,4' },
-  '5,5': { status: '0x90', midino: '0x55', name: '5,5' },
-  '5,6': { status: '0x90', midino: '0x56', name: '5,6' },
-  '5,7': { status: '0x90', midino: '0x57', name: '5,7' },
-  '6,0': { status: '0x90', midino: '0x60', name: '6,0' },
-  '6,1': { status: '0x90', midino: '0x61', name: '6,1' },
-  '6,2': { status: '0x90', midino: '0x62', name: '6,2' },
-  '6,3': { status: '0x90', midino: '0x63', name: '6,3' },
-  '6,4': { status: '0x90', midino: '0x64', name: '6,4' },
-  '6,5': { status: '0x90', midino: '0x65', name: '6,5' },
-  '6,6': { status: '0x90', midino: '0x66', name: '6,6' },
-  '6,7': { status: '0x90', midino: '0x67', name: '6,7' },
-  '7,0': { status: '0x90', midino: '0x70', name: '7,0' },
-  '7,1': { status: '0x90', midino: '0x71', name: '7,1' },
-  '7,2': { status: '0x90', midino: '0x72', name: '7,2' },
-  '7,3': { status: '0x90', midino: '0x73', name: '7,3' },
-  '7,4': { status: '0x90', midino: '0x74', name: '7,4' },
-  '7,5': { status: '0x90', midino: '0x75', name: '7,5' },
-  '7,6': { status: '0x90', midino: '0x76', name: '7,6' },
-  '7,7': { status: '0x90', midino: '0x77', name: '7,7' }
+  'vol': { status: '0x90', midino: '0x59', name: 'vol' },
+  'pan': { status: '0x90', midino: '0x4F', name: 'pan' },
+  'snda': { status: '0x90', midino: '0x45', name: 'snda' },
+  'sndb': { status: '0x90', midino: '0x3B', name: 'sndb' },
+  'stop': { status: '0x90', midino: '0x31', name: 'stop' },
+  'trkon': { status: '0x90', midino: '0x27', name: 'trkon' },
+  'solo': { status: '0x90', midino: '0x1D', name: 'solo' },
+  'arm': { status: '0x90', midino: '0x13', name: 'arm' },
+  '0,0': { status: '0x90', midino: '0x51', name: '0,0' },
+  '0,1': { status: '0x90', midino: '0x52', name: '0,1' },
+  '0,2': { status: '0x90', midino: '0x53', name: '0,2' },
+  '0,3': { status: '0x90', midino: '0x54', name: '0,3' },
+  '0,4': { status: '0x90', midino: '0x55', name: '0,4' },
+  '0,5': { status: '0x90', midino: '0x56', name: '0,5' },
+  '0,6': { status: '0x90', midino: '0x57', name: '0,6' },
+  '0,7': { status: '0x90', midino: '0x58', name: '0,7' },
+  '1,0': { status: '0x90', midino: '0x47', name: '1,0' },
+  '1,1': { status: '0x90', midino: '0x48', name: '1,1' },
+  '1,2': { status: '0x90', midino: '0x49', name: '1,2' },
+  '1,3': { status: '0x90', midino: '0x4A', name: '1,3' },
+  '1,4': { status: '0x90', midino: '0x4B', name: '1,4' },
+  '1,5': { status: '0x90', midino: '0x4C', name: '1,5' },
+  '1,6': { status: '0x90', midino: '0x4D', name: '1,6' },
+  '1,7': { status: '0x90', midino: '0x4E', name: '1,7' },
+  '2,0': { status: '0x90', midino: '0x3D', name: '2,0' },
+  '2,1': { status: '0x90', midino: '0x3E', name: '2,1' },
+  '2,2': { status: '0x90', midino: '0x3F', name: '2,2' },
+  '2,3': { status: '0x90', midino: '0x40', name: '2,3' },
+  '2,4': { status: '0x90', midino: '0x41', name: '2,4' },
+  '2,5': { status: '0x90', midino: '0x42', name: '2,5' },
+  '2,6': { status: '0x90', midino: '0x43', name: '2,6' },
+  '2,7': { status: '0x90', midino: '0x44', name: '2,7' },
+  '3,0': { status: '0x90', midino: '0x33', name: '3,0' },
+  '3,1': { status: '0x90', midino: '0x34', name: '3,1' },
+  '3,2': { status: '0x90', midino: '0x35', name: '3,2' },
+  '3,3': { status: '0x90', midino: '0x36', name: '3,3' },
+  '3,4': { status: '0x90', midino: '0x37', name: '3,4' },
+  '3,5': { status: '0x90', midino: '0x38', name: '3,5' },
+  '3,6': { status: '0x90', midino: '0x39', name: '3,6' },
+  '3,7': { status: '0x90', midino: '0x3A', name: '3,7' },
+  '4,0': { status: '0x90', midino: '0x29', name: '4,0' },
+  '4,1': { status: '0x90', midino: '0x2A', name: '4,1' },
+  '4,2': { status: '0x90', midino: '0x2B', name: '4,2' },
+  '4,3': { status: '0x90', midino: '0x2C', name: '4,3' },
+  '4,4': { status: '0x90', midino: '0x2D', name: '4,4' },
+  '4,5': { status: '0x90', midino: '0x2E', name: '4,5' },
+  '4,6': { status: '0x90', midino: '0x2F', name: '4,6' },
+  '4,7': { status: '0x90', midino: '0x30', name: '4,7' },
+  '5,0': { status: '0x90', midino: '0x1F', name: '5,0' },
+  '5,1': { status: '0x90', midino: '0x20', name: '5,1' },
+  '5,2': { status: '0x90', midino: '0x21', name: '5,2' },
+  '5,3': { status: '0x90', midino: '0x22', name: '5,3' },
+  '5,4': { status: '0x90', midino: '0x23', name: '5,4' },
+  '5,5': { status: '0x90', midino: '0x24', name: '5,5' },
+  '5,6': { status: '0x90', midino: '0x25', name: '5,6' },
+  '5,7': { status: '0x90', midino: '0x26', name: '5,7' },
+  '6,0': { status: '0x90', midino: '0x15', name: '6,0' },
+  '6,1': { status: '0x90', midino: '0x16', name: '6,1' },
+  '6,2': { status: '0x90', midino: '0x17', name: '6,2' },
+  '6,3': { status: '0x90', midino: '0x18', name: '6,3' },
+  '6,4': { status: '0x90', midino: '0x19', name: '6,4' },
+  '6,5': { status: '0x90', midino: '0x1A', name: '6,5' },
+  '6,6': { status: '0x90', midino: '0x1B', name: '6,6' },
+  '6,7': { status: '0x90', midino: '0x1C', name: '6,7' },
+  '7,0': { status: '0x90', midino: '0x0B', name: '7,0' },
+  '7,1': { status: '0x90', midino: '0x0C', name: '7,1' },
+  '7,2': { status: '0x90', midino: '0x0D', name: '7,2' },
+  '7,3': { status: '0x90', midino: '0x0E', name: '7,3' },
+  '7,4': { status: '0x90', midino: '0x0F', name: '7,4' },
+  '7,5': { status: '0x90', midino: '0x10', name: '7,5' },
+  '7,6': { status: '0x90', midino: '0x11', name: '7,6' },
+  '7,7': { status: '0x90', midino: '0x12', name: '7,7' }
   /* eslint-enable key-spacing, no-multi-spaces */
+};
+
+},{}],55:[function(require,module,exports){
+'use strict';
+
+module.exports = {
+  black: 0,
+
+  lo_red: 7,
+  hi_red: 5,
+  lo_green: 19,
+  hi_green: 17,
+  lo_amber: 43,
+  hi_amber: 41,
+  hi_orange: 84,
+  lo_orange: 61,
+  hi_yellow: 13,
+  lo_yellow: 15
 };
 
 },{}],56:[function(require,module,exports){
 'use strict';
 
-module.exports = {
-  black: 4,
-  lo_red: 1 + 4,
-  hi_red: 3 + 4,
-  lo_green: 16 + 4,
-  hi_green: 48 + 4,
-  lo_amber: 17 + 4,
-  hi_amber: 51 + 4,
-  hi_orange: 35 + 4,
-  lo_orange: 18 + 4,
-  hi_yellow: 50 + 4,
-  lo_yellow: 33 + 4
-};
+module.exports = require('@mixxx-launchpad/app').create(require('./package.json').controller.global, {});
 
-},{}],57:[function(require,module,exports){
+},{"./package.json":57,"@mixxx-launchpad/app":53}],57:[function(require,module,exports){
 module.exports={
-  "name": "@mixxx-launchpad/mk1",
+  "name": "@mixxx-launchpad/mk2",
   "private": true,
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
     "@mixxx-launchpad/app": "1.0.0",
-    "@mixxx-launchpad/mk-specs": "../mk-specs@1.0.0"
+    "@mixxx-launchpad/mk-specs": "../mk-specs@2.0.0"
   },
   "controller": {
-    "device": "Launchpad",
+    "device": "Launchpad MK2",
     "manufacturer": "Novation",
-    "global": "NovationLaunchpad"
+    "global": "NovationLaunchpadMK2"
   }
 }
 
-},{}]},{},[54])(54)
+},{}]},{},[56])(56)
 });

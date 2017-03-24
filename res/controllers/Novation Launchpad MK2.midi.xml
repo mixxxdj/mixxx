@@ -1,19 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxControllerPreset mixxxVersion="1.11+" schemaVersion="1">
     <info>
-        <name>Novation Launchpad</name>
+        <name>Novation Launchpad MK2</name>
         <author>Midiparse</author>
         <description>Novation Launchpad mapping for Mixxx</description>
         <forums>https://github.com/szdavid92/mixxx-launchpad</forums>
     </info>
-    <controller id="Novation Launchpad">
+    <controller id="Novation Launchpad MK2">
         <scriptfiles>
-            <file functionprefix="NovationLaunchpad" filename="Novation-Launchpad-scripts.js"/>
+            <file functionprefix="NovationLaunchpadMK2" filename="Novation-Launchpad MK2-scripts.js"/>
         </scriptfiles>
         <controls>
             <control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -21,7 +21,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -29,7 +29,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -37,7 +37,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -45,7 +45,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -53,7 +53,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -61,7 +61,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -69,7 +69,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -77,7 +77,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -85,7 +85,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -93,7 +93,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -101,7 +101,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -109,7 +109,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -117,7 +117,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -125,7 +125,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -133,7 +133,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -141,7 +141,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -149,7 +149,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -157,7 +157,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -165,7 +165,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -173,7 +173,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -181,7 +181,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -189,7 +189,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -197,7 +197,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -205,7 +205,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -213,7 +213,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -221,7 +221,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -229,7 +229,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -237,7 +237,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -245,7 +245,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -253,7 +253,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -261,7 +261,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -269,7 +269,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -277,7 +277,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -285,7 +285,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -293,7 +293,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -301,7 +301,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -309,7 +309,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -317,7 +317,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -325,7 +325,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -333,7 +333,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -341,7 +341,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -349,7 +349,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -357,7 +357,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -365,7 +365,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -373,7 +373,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -381,7 +381,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -389,7 +389,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -397,7 +397,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -405,7 +405,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -413,7 +413,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -421,7 +421,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -429,7 +429,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -437,7 +437,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -445,7 +445,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -453,7 +453,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -461,7 +461,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -469,7 +469,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -477,7 +477,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -485,7 +485,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -493,7 +493,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -501,7 +501,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -509,7 +509,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -517,7 +517,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -525,7 +525,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -533,7 +533,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -541,7 +541,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -549,7 +549,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -557,7 +557,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -565,7 +565,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -573,7 +573,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -581,7 +581,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -589,7 +589,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -597,7 +597,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -605,7 +605,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -613,7 +613,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -621,7 +621,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -629,7 +629,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -637,7 +637,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>
@@ -645,7 +645,7 @@
                 </options>
             </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.__midi__</key>
+                <key>NovationLaunchpadMK2.__midi__</key>
                 <status></status>
                 <midino></midino>
                 <options>

@@ -1,0 +1,14 @@
+{
+  "presets": ["es2015"],
+  "env": {
+    "production": {
+      "presets": ["babili"]
+    }
+  },
+  "plugins": [
+    "transform-es3-member-expression-literals",
+    "transform-es3-property-literals",
+    "transform-class-properties",
+    "transform-flow-strip-types"
+  ]
+}
