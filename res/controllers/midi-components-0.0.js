@@ -499,6 +499,7 @@
 
     EffectUnit = function (unitNumbers, allowFocusWhenParametersHidden) {
         var eu = this;
+        this.focusChooseModeActive = false;
 
         // This is only connected if allowFocusWhenParametersHidden is false.
         this.onShowParametersChange = function (value) {
@@ -682,6 +683,7 @@
         this.EffectEnableButton.prototype = new Button({
             stopEffectFocusChooseMode: function () {
                 this.inKey = 'enabled';
+                this.onlyOnPress = true;
                 this.outKey = 'enabled';
                 this.input = Button.prototype.input;
                 this.connect = Button.prototype.connect;
@@ -708,6 +710,18 @@
                     this.send(value === this.number);
                 };
             },
+            unshift: function () {
+                if (eu.focusChooseModeActive) {
+                    this.startEffectFocusChooseMode();
+                } else {
+                    this.stopEffectFocusChooseMode();
+                }
+            },
+            shift: function () {
+                this.inKey = 'next_effect';
+                this.onlyOnPress = false;
+                this.input = Button.prototype.input;
+            },
         });
 
         this.knobs = new ComponentContainer();
@@ -720,12 +734,11 @@
         this.effectFocusButton = new Button({
             group: this.group,
             longPressed: false,
-            focusChooseModeActive: false,
             longPressTimer: 0,
             pressedWhenParametersHidden: false,
             previouslyFocusedEffect: 0,
             startEffectFocusChooseMode: function () {
-                this.focusChooseModeActive = true;
+                eu.focusChooseModeActive = true;
                 eu.enableButtons.reconnectComponents(function (button) {
                     button.startEffectFocusChooseMode();
                 });
@@ -750,11 +763,11 @@
                             engine.stopTimer(this.longPressTimer);
                         }
 
-                        if (this.focusChooseModeActive) {
+                        if (eu.focusChooseModeActive) {
                             eu.enableButtons.reconnectComponents(function (button) {
                                 button.stopEffectFocusChooseMode();
                             });
-                            this.focusChooseModeActive = false;
+                            eu.focusChooseModeActive = false;
                         } else {
                             if (!showParameters && allowFocusWhenParametersHidden) {
                                   engine.setValue(this.group, "show_parameters", 1);
