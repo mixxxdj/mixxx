@@ -1,0 +1,18 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Menu bar.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>MenuBarWrapper</ObjectName>
+    <Layout>horizontal</Layout>
+    <Children>
+      <MenuBar/>
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[MainWindow],show_menubar</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

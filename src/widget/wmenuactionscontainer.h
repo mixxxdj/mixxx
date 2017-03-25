@@ -1,5 +1,5 @@
-#ifndef WIDGET_WMAINMENUBAR
-#define WIDGET_WMAINMENUBAR
+#ifndef WIDGET_WMMENUACTIONSCONTAINER
+#define WIDGET_WMMENUACTIONSCONTAINER
 
 #include <QAction>
 #include <QList>
@@ -30,11 +30,12 @@ class VisibilityControlConnection : public QObject {
     QAction* m_pAction;
 };
 
-class WMainMenuBar : public QMenuBar {
+class WMenuActionsContainer : public QWidget {
     Q_OBJECT
   public:
-    WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
+    WMenuActionsContainer(QWidget* pParent, UserSettingsPointer pConfig,
                  ConfigObject<ConfigValueKbd>* pKbdConfig);
+    QList<QMenu*> getMenus();
 
   public slots:
     void onLibraryScanStarted();
@@ -91,6 +92,7 @@ class WMainMenuBar : public QMenuBar {
     QList<QAction*> m_loadToDeckActions;
     QSignalMapper m_vinylControlEnabledMapper;
     QList<QAction*> m_vinylControlEnabledActions;
+    QList<QMenu*> m_menus;
 };
 
-#endif /* WIDGET_WMAINMENUBAR */
+#endif /* WIDGET_WMMENUACTIONSCONTAINER */

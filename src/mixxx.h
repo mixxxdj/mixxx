@@ -28,6 +28,7 @@
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 #include "soundio/sounddeviceerror.h"
+#include "widget/wmenuactionscontainer.h"
 
 class ControlPushButton;
 class ControllerManager;
@@ -46,7 +47,7 @@ class BroadcastManager;
 class SkinLoader;
 class SoundManager;
 class VinylControlManager;
-class WMainMenuBar;
+class WMenuActionsContainer;
 
 // This Class is the base class for Mixxx. It sets up the main
 // window and providing a menubar.
@@ -63,8 +64,8 @@ class MixxxMainWindow : public QMainWindow {
     void finalize();
 
     // creates the menu_bar and inserts the file Menu
-    void createMenuBar();
-    void connectMenuBar();
+    void createMenuActionsContainer();
+    void connectMenuActionsContainer();
 
     void setToolTipsCfg(mixxx::TooltipsPreference tt);
     inline mixxx::TooltipsPreference getToolTipsCfg() { return m_toolTipsCfg; }
@@ -158,7 +159,7 @@ class MixxxMainWindow : public QMainWindow {
     // The library management object
     Library* m_pLibrary;
 
-    WMainMenuBar* m_pMenuBar;
+    WMenuActionsContainer* m_pMenuActionsContainer;
 
     DlgDeveloperTools* m_pDeveloperToolsDlg;
 

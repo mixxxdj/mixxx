@@ -6,6 +6,7 @@
 #include <QDir>
 
 #include "preferences/usersettings.h"
+#include "widget/wmenuactionscontainer.h"
 
 class KeyboardEventFilter;
 class PlayerManager;
@@ -26,7 +27,8 @@ class SkinLoader {
                              ControllerManager* pControllerManager,
                              Library* pLibrary,
                              VinylControlManager* pVCMan,
-                             EffectsManager* pEffectsManager);
+                             EffectsManager* pEffectsManager,
+                             WMenuActionsContainer* pMenuActionsContainer);
 
     LaunchImage* loadLaunchImage(QWidget* pParent);
 
