@@ -75,6 +75,11 @@ LoopingControl::LoopingControl(QString group,
             Qt::DirectConnection);
     m_pLoopExitButton->set(0);
 
+    m_pReloopButton = new ControlPushButton(ConfigKey(group, "reloop"));
+    connect(m_pReloopButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotReloop(double)),
+            Qt::DirectConnection);
+
     m_pReloopToggleButton = new ControlPushButton(ConfigKey(group, "reloop_toggle"));
     connect(m_pReloopToggleButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotReloopToggle(double)),
@@ -590,6 +595,18 @@ void LoopingControl::slotLoopExit(double val) {
     // If we're looping, stop looping
     if (m_bLoopingEnabled) {
         setLoopingEnabled(false);
+    }
+}
+
+void LoopingControl::slotReloop(double pressed) {
+    if (!m_pTrack || pressed <= 0.0) {
+        return;
+    }
+
+    if (m_bLoopingEnabled) {
+        slotReloopCue(1);
+    } else {
+        slotReloopToggle(1);
     }
 }
 
