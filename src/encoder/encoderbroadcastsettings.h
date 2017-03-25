@@ -34,6 +34,8 @@ class EncoderBroadcastSettings : public EncoderSettings {
     // Returns the current quality value
     int getQuality() const override;
     int getQualityIndex() const override;
+    void setChannelMode(ChannelMode mode) override;
+    ChannelMode getChannelMode() const override;
 
   private:
     QList<int> m_qualList;

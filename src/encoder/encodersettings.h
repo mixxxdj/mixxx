@@ -22,6 +22,11 @@ class EncoderSettings {
             QString groupCode;
             QList<QString> controlNames;
         };
+        enum class ChannelMode {
+            AUTOMATIC=0,
+            MONO=1,
+            STEREO=2
+        };
 
     EncoderSettings() {}
     virtual ~EncoderSettings() {}
@@ -56,6 +61,8 @@ class EncoderSettings {
     // 0 means disabled and 1 enabled.
     virtual int getSelectedOption(QString groupCode) const { Q_UNUSED(groupCode); return 0; }
     
+    virtual void setChannelMode(ChannelMode mode) { Q_UNUSED(mode); }
+    virtual ChannelMode getChannelMode() const { return ChannelMode::AUTOMATIC; }
 };
 
 typedef std::shared_ptr<EncoderSettings> EncoderSettingsPointer;

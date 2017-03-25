@@ -21,6 +21,8 @@ class EncoderCallback;
 
 class EncoderVorbis : public Encoder {
   public:
+    static const int MONO_BITRATE_TRESHOLD;
+  
     EncoderVorbis(EncoderCallback* pCallback=nullptr);
     virtual ~EncoderVorbis();
 
@@ -54,6 +56,7 @@ class EncoderVorbis : public Encoder {
     QString m_metaDataArtist;
     QString m_metaDataAlbum;
     int m_bitrate;
+    int m_channels;
     QFile m_file;
 };
 

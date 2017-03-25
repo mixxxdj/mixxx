@@ -26,6 +26,14 @@ http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
 #include "encoder/encodercallback.h"
 #include "errordialoghandler.h"
 
+// Automatic thresholds for switching the encoder to mono
+// They have been choosen by testing and to keep the same number
+// of values for the slider.
+// The threshold of bitrate at which the encoder
+// with switch to mono encoding
+const int EncoderVorbis::MONO_BITRATE_TRESHOLD = 70;
+
+
 EncoderVorbis::EncoderVorbis(EncoderCallback* pCallback)
         : m_bStreamInitialized(false),
           m_vblock({}),
@@ -34,7 +42,8 @@ EncoderVorbis::EncoderVorbis(EncoderCallback* pCallback)
           m_vcomment({}),
           m_header_write(false),
           m_pCallback(pCallback),
-          m_bitrate(128) {
+          m_bitrate(128),
+          m_channels(2) {
 }
 
 EncoderVorbis::~EncoderVorbis() {
@@ -50,6 +59,21 @@ EncoderVorbis::~EncoderVorbis() {
 void EncoderVorbis::setEncoderSettings(const EncoderSettings& settings)
 {
     m_bitrate = settings.getQuality();
+    // Check if the user has forced a stereo mode.
+    switch(settings.getChannelMode()) {
+        case EncoderSettings::ChannelMode::MONO:  m_channels = 1; break;
+        case EncoderSettings::ChannelMode::STEREO: m_channels = 2; break;
+        case EncoderSettings::ChannelMode::AUTOMATIC: // fallthrough
+        default: 
+            if (m_bitrate > MONO_BITRATE_TRESHOLD ) {
+                m_channels = 2;
+            }
+            else {
+                m_channels = 1;
+            }
+        break;
+    }
+
 }
 
 // call sendPackages() or write() after 'flush()' as outlined in enginebroadcast.cpp
@@ -128,9 +152,16 @@ void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size) {
     // Deinterleave samples. We use normalized floats in the engine [-1.0, 1.0]
     // and libvorbis expects samples in the range [-1.0, 1.0] so no conversion
     // is required.
-    for (int i = 0; i < size/2; ++i) {
-        buffer[0][i] = samples[i*2];
-        buffer[1][i] = samples[i*2+1];
+    if (m_channels == 2) {
+        for (int i = 0; i < size/2; ++i) {
+            buffer[0][i] = samples[i*2];
+            buffer[1][i] = samples[i*2+1];
+        }
+    }
+    else {
+        for (int i = 0; i < size/2; ++i) {
+            buffer[0][i] = (samples[i*2] + samples[i*2+1]) / 2.f;
+        }
     }
     /** encodes audio **/
     vorbis_analysis_wrote(&m_vdsp, size/2);
@@ -190,7 +221,7 @@ int EncoderVorbis::initEncoder(int samplerate, QString errorMessage) {
     vorbis_info_init(&m_vinfo);
 
     // initialize VBR quality based mode
-    int ret = vorbis_encode_init(&m_vinfo, 2, samplerate, -1, m_bitrate*1000, -1);
+    int ret = vorbis_encode_init(&m_vinfo, m_channels, samplerate, -1, m_bitrate*1000, -1);
 
     if (ret == 0) {
         initStream();

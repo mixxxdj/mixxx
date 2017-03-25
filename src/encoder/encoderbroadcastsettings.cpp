@@ -74,3 +74,18 @@ int EncoderBroadcastSettings::getQualityIndex() const
 {
     return m_qualList.indexOf(getQuality());
 }
+
+void EncoderBroadcastSettings::setChannelMode(EncoderSettings::ChannelMode mode)
+{
+    m_settings.setChannels(static_cast<int>(mode));
+}
+EncoderSettings::ChannelMode EncoderBroadcastSettings::getChannelMode() const
+{
+    switch(m_settings.getChannels()) {
+        case 1: return EncoderSettings::ChannelMode::MONO;
+        case 2: return EncoderSettings::ChannelMode::STEREO;
+        case 0: // fallthrough
+        default: return EncoderSettings::ChannelMode::AUTOMATIC;
+    }
+}
+

@@ -285,6 +285,12 @@ void EncoderMp3::setEncoderSettings(const EncoderSettings& settings)
             m_stereo_mode = MONO;
         }
     }
+    // Check if the user has forced a stereo mode.
+    switch(settings.getChannelMode()) {
+        case EncoderSettings::ChannelMode::MONO:  m_stereo_mode = MONO; break;
+        case EncoderSettings::ChannelMode::STEREO: m_stereo_mode = JOINT_STEREO; break;
+        default: break;
+    }
 }
 
 /*
