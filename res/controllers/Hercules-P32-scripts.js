@@ -399,11 +399,7 @@ P32.Deck = function (deckNumbers, channel) {
     };
 
     this.loopEncoderShiftPress = function (channel, control, value, status, group) {
-        if (engine.getValue(this.currentDeck, 'loop_enabled') === 1) {
-            engine.setValue(this.currentDeck, 'reloop_cue', value / 127);
-        } else {
-            engine.setValue(this.currentDeck, 'reloop_toggle', value / 127);
-        }
+        engine.setValue(this.currentDeck, 'reloop', value / 127);
     };
 
     this.tempoEncoder = function (channel, control, value, status, group) {
