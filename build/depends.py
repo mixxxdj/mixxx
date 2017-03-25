@@ -280,7 +280,8 @@ class Qt(Dependence):
                 raise Exception('Qt >= 5.0 not found')
             elif not qt5 and not conf.CheckForPKG('QtCore', '4.6'):
                 raise Exception('QT >= 4.6 not found')
-
+            
+            qt_modules.extend(['QtDBus'])
             # This automatically converts QtXXX to Qt5XXX where appropriate.
             if qt5:
                 build.env.EnableQt5Modules(qt_modules, debug=False)
@@ -1117,6 +1118,7 @@ class MixxxCore(Feature):
                    "util/logging.cpp",
                    "util/cmdlineargs.cpp",
                    "util/audiosignal.cpp",
+                   "util/screensaver.cpp",
 
                    '#res/mixxx.qrc'
                    ]

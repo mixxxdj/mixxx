@@ -64,6 +64,7 @@
 #include "skin/launchimage.h"
 #include "preferences/settingsmanager.h"
 #include "widget/wmainmenubar.h"
+#include "util/screensaver.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrolmanager.h"
@@ -434,6 +435,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         }
     }
 
+    mixxx::ScreenSaverHelper::inhibit();
+
     connect(&PlayerInfo::instance(),
             SIGNAL(currentPlayingTrackChanged(TrackPointer)),
             this, SLOT(slotUpdateWindowTitle(TrackPointer)));
@@ -451,7 +454,9 @@ void MixxxMainWindow::finalize() {
     Timer t("MixxxMainWindow::~finalize");
     t.start();
 
-    // Save the current window state (position, maximized, etc)
+    mixxx::ScreenSaverHelper::uninhibit();
+
+   // Save the current window state (position, maximized, etc)
     m_pSettingsManager->settings()->set(ConfigKey("[MainWindow]", "geometry"),
         QString(saveGeometry().toBase64()));
     m_pSettingsManager->settings()->set(ConfigKey("[MainWindow]", "state"),
