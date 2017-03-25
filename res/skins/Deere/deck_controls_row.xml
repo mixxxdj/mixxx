@@ -107,6 +107,19 @@
             <SetVariable name="display_connection_control"><Variable name="group"/>,loop_enabled</SetVariable>
           </Template>
 
+          <Template src="skin:left_right_display_2state_button.xml">
+            <SetVariable name="TooltipId">reloop</SetVariable>
+            <SetVariable name="ObjectName">Reloop</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text">RE</SetVariable>
+            <SetVariable name="state_1_text">RE</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,reloop</SetVariable>
+            <SetVariable name="right_connection_control"><Variable name="group"/>,reloop_cue</SetVariable>
+            <SetVariable name="display_connection_control"><Variable name="group"/>,reloop</SetVariable>
+          </Template>
+
           <Template src="skin:spacer_h.xml"/>
 
           <Template src="skin:left_2state_button.xml">
