@@ -57,7 +57,7 @@ void ScreenSaverHelper::inhibit()
 
     /* prevent the system from sleeping */
     if (systemSleepAssertionID > 0) {
-        qDebug() "IOKit releasing old screensaver inhibitor" << systemSleepAssertionID;
+        qDebug() << "IOKit releasing old screensaver inhibitor" << systemSleepAssertionID;
         IOPMAssertionRelease(systemSleepAssertionID);
     }
 
