@@ -613,6 +613,11 @@ void LoopingControl::slotReloopToggle(double val) {
         if (loopSamples.start != kNoTrigger && loopSamples.end != kNoTrigger &&
                 loopSamples.start <= loopSamples.end) {
             setLoopingEnabled(true);
+            // If we're not playing, jump to the loop in point so the waveform
+            // shows where it will play from when playback resumes.
+            if (!m_pPlayButton->toBool()) {
+                slotLoopInGoto(1);
+            }
         }
         //qDebug() << "reloop_exit looping on";
     }
