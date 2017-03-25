@@ -44,7 +44,7 @@ void ScreenSaverHelper::inhibit()
     if (&IOPMAssertionDeclareUserActivity)
     {
         CFStringRef reasonForActivity = CFStringCreateWithCString(kCFAllocatorDefault, 
-                _("Mixxx digital DJ software"), kCFStringEncodingUTF8);
+                "Mixxx digital DJ software", kCFStringEncodingUTF8);
         IOReturn success = IOPMAssertionDeclareUserActivity(reasonForActivity,
                                          kIOPMUserActiveLocal,
                                          &userActivityAssertionID);
@@ -57,7 +57,7 @@ void ScreenSaverHelper::inhibit()
 
     /* prevent the system from sleeping */
     if (systemSleepAssertionID > 0) {
-        qDebug("releasing old sleep blocker (%1)").arg(systemSleepAssertionID);
+        qDebug() "IOKit releasing old screensaver inhibitor" << systemSleepAssertionID;
         IOPMAssertionRelease(systemSleepAssertionID);
     }
 
@@ -69,14 +69,14 @@ void ScreenSaverHelper::inhibit()
                 &systemSleepAssertionID);
     } else {
         CFStringRef reasonForActivity = CFStringCreateWithCString(kCFAllocatorDefault, 
-                _("Mixxx digital DJ software"), kCFStringEncodingUTF8);
+                "Mixxx digital DJ software", kCFStringEncodingUTF8);
         success = IOPMAssertionCreateWithName(kIOPMAssertionTypeNoDisplaySleep, kIOPMAssertionLevelOn, 
                 reasonForActivity, &systemSleepAssertionID);
         CFRelease(reasonForActivity);
     }
 
     if (success == kIOReturnSuccess) {
-        qDebug("prevented sleep through IOKit (%1)").arg(systemSleepAssertionID);
+        qDebug() << "IOKit screensaver inhibited " << systemSleepAssertionID;
     } else {
         qWarning("failed to prevent system sleep through IOKit");    
     }
@@ -85,8 +85,8 @@ void ScreenSaverHelper::uninhibit()
 {
     /* allow the system to sleep again */
     if (systemSleepAssertionID > 0) {
-        qDebug("releasing sleep blocker (%1)").arg(systemSleepAssertionID);
         IOPMAssertionRelease(systemSleepAssertionID);
+        qDebug() << "IOKit screensaver uninhibited " << systemSleepAssertionID;
     }
 }
 
@@ -94,10 +94,12 @@ void ScreenSaverHelper::uninhibit()
 void ScreenSaverHelper::inhibit()
 {
     SetThreadExecutionState( ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED | ES_CONTINUOUS );
+    qDebug() << "screensaver inhibited";
 }
 void ScreenSaverHelper::uninhibit()
 {
     SetThreadExecutionState(ES_CONTINUOUS);
+    qDebug() << "screensaver uninhibited";
 }
 
 #elif defined(Q_OS_LINUX)
