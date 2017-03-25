@@ -1790,6 +1790,10 @@ QString LegacySkinParser::getStyleFromNode(const QDomNode& node) {
                                            fileBytes.length());
         }
 
+// This section can be enabled on demand. It is useful to tweak
+// pixel sized values for different scalings. But we should know if this is
+// actually used when migrating to Qt5
+#if 0
         // now load style files with suffix for HiDPI scaling.
         // We follow here the Gnome/Unity scaling slider approach, where
         // the widgets are scaled by an integer value once the slider is
@@ -1820,6 +1824,7 @@ QString LegacySkinParser::getStyleFromNode(const QDomNode& node) {
                                                fileBytes.length()));
             }
         }
+#endif
     } else {
         // If no src attribute, use the node data as text.
         style = styleElement.text();
