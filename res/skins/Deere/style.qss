@@ -176,8 +176,7 @@ QHeaderView {
 }
 
 QHeaderView::section {
-  height: 18px;
-  font-size: 13px/15px;
+  font-size: 10pt;
   font-weight: normal;
   padding: 2px;
   background: #1A1A1A;
@@ -188,7 +187,7 @@ QHeaderView::section {
 }
 
 QHeaderView::section:selected {
-  font-size: 13px/15px;
+  font-size: 10pt;
   font-weight: bold;
   padding: 2px;
   background: #1A1A1A;
