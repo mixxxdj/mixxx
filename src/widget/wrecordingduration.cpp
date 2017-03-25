@@ -14,10 +14,10 @@ void WRecordingDuration::setup(const QDomNode& node, const SkinContext& context)
     connect(m_pRecordingManager, SIGNAL(durationRecorded(QString)),
         this, SLOT(refreshLabel(QString)));
     connect(m_pRecordingManager, SIGNAL(isRecording(bool)),
-            this, SLOT(slotReccordingInactive(bool)));
+            this, SLOT(slotRecordingInactive(bool)));
 }
 
-void WRecordingDuration::slotReccordingInactive(bool isRecording) {
+void WRecordingDuration::slotRecordingInactive(bool isRecording) {
     // If recording is stopped/inactive
     if(!isRecording) {
         setText("--:--");
