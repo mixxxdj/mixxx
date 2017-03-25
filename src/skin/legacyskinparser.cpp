@@ -30,6 +30,8 @@
 
 #include "effects/effectsmanager.h"
 
+#include "recording/recordingmanager.h"
+
 #include "widget/controlwidgetconnection.h"
 #include "widget/wbasewidget.h"
 #include "widget/wcoverart.h"
@@ -44,6 +46,7 @@
 #include "widget/wstatuslight.h"
 #include "widget/wlabel.h"
 #include "widget/wtime.h"
+#include "widget/wrecordingduration.h"
 #include "widget/wtracktext.h"
 #include "widget/wtrackproperty.h"
 #include "widget/wstarrating.h"
@@ -143,6 +146,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig)
           m_pLibrary(NULL),
           m_pVCManager(NULL),
           m_pEffectsManager(NULL),
+          m_pRecordingManager(NULL),
           m_pParent(NULL) {
 }
 
@@ -152,7 +156,8 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
                                    ControllerManager* pControllerManager,
                                    Library* pLibrary,
                                    VinylControlManager* pVCMan,
-                                   EffectsManager* pEffectsManager)
+                                   EffectsManager* pEffectsManager,
+                                   RecordingManager* pRecordingManager)
         : m_pConfig(pConfig),
           m_pKeyboard(pKeyboard),
           m_pPlayerManager(pPlayerManager),
@@ -160,6 +165,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
           m_pLibrary(pLibrary),
           m_pVCManager(pVCMan),
           m_pEffectsManager(pEffectsManager),
+          m_pRecordingManager(pRecordingManager),
           m_pParent(NULL) {
 }
 
@@ -552,6 +558,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseSpinny(node));
     } else if (nodeName == "Time") {
         result = wrapWidget(parseLabelWidget<WTime>(node));
+    } else if (nodeName == "RecordingDuration") {
+        result = wrapWidget(parseRecordingDuration(node));
     } else if (nodeName == "Splitter") {
         result = wrapWidget(parseSplitter(node));
     } else if (nodeName == "LibrarySidebar") {
@@ -1090,6 +1098,17 @@ QWidget* LegacySkinParser::parseEngineKey(const QDomElement& node) {
 
 QWidget* LegacySkinParser::parseBattery(const QDomElement& node) {
     WBattery *p = new WBattery(m_pParent);
+    setupBaseWidget(node, p);
+    setupWidget(node, p);
+    p->setup(node, *m_pContext);
+    setupConnections(node, p);
+    p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    return p;
+}
+
+QWidget* LegacySkinParser::parseRecordingDuration(const QDomElement& node) {
+    WRecordingDuration *p = new WRecordingDuration(m_pParent, m_pRecordingManager);
     setupBaseWidget(node, p);
     setupWidget(node, p);
     p->setup(node, *m_pContext);
