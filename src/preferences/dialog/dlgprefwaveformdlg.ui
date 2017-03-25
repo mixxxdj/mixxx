@@ -188,7 +188,7 @@
        <item row="0" column="3">
         <widget class="QLabel" name="visualGainLabel_5">
          <property name="text">
-          <string>Low</string>
+          <string>High</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -265,7 +265,7 @@
        <item row="0" column="1">
         <widget class="QLabel" name="visualGainLabel_3">
          <property name="text">
-          <string>High</string>
+          <string>Low</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
