@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>485</width>
-    <height>554</height>
+    <height>574</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -420,27 +420,14 @@
    </item>
    <item row="0" column="0">
     <layout class="QGridLayout" name="GridLayout1">
-     <item row="0" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxSkinconf">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font/>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="textLabelLocale">
+     <item row="10" column="2">
+      <widget class="QRadioButton" name="radioButtonRemaining">
        <property name="text">
-        <string>Locale</string>
+        <string>Remaining</string>
        </property>
-       <property name="buddy">
-        <cstring>ComboBoxLocale</cstring>
-       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroupTrackTime</string>
+       </attribute>
       </widget>
      </item>
      <item row="2" column="0" rowspan="2">
@@ -462,17 +449,20 @@
        </property>
       </widget>
      </item>
-     <item row="9" column="2">
-      <widget class="QRadioButton" name="radioButtonRemaining">
-       <property name="text">
-        <string>Remaining</string>
+     <item row="0" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxSkinconf">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
-       <attribute name="buttonGroup">
-        <string notr="true">buttonGroupTrackTime</string>
-       </attribute>
+       <property name="font">
+        <font/>
+       </property>
       </widget>
      </item>
-     <item row="9" column="1">
+     <item row="10" column="1">
       <widget class="QRadioButton" name="radioButtonElapsed">
        <property name="text">
         <string>Elapsed</string>
@@ -482,6 +472,26 @@
        </attribute>
       </widget>
      </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="textLabelLocale">
+       <property name="text">
+        <string>Locale</string>
+       </property>
+       <property name="buddy">
+        <cstring>ComboBoxLocale</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1" colspan="2">
+      <widget class="QLabel" name="warningLabel">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
      <item row="5" column="1" colspan="2">
       <widget class="QCheckBox" name="checkBoxStartFullScreen">
        <property name="text">
@@ -489,7 +499,14 @@
        </property>
       </widget>
      </item>
-     <item row="9" column="0">
+     <item row="8" column="0" colspan="3">
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="0">
       <widget class="QLabel" name="labelPositionDisplay">
        <property name="enabled">
         <bool>true</bool>
@@ -518,20 +535,26 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="1" colspan="2">
-      <widget class="QLabel" name="warningLabel">
-       <property name="text">
-        <string/>
+     <item row="2" column="1" rowspan="2" colspan="2">
+      <widget class="QComboBox" name="ComboBoxSchemeconf">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
-       <property name="alignment">
-        <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+       <property name="font">
+        <font/>
+       </property>
+       <property name="toolTip">
+        <string>Select from different color schemes of a skin if available.</string>
        </property>
       </widget>
      </item>
-     <item row="7" column="0" colspan="3">
-      <widget class="Line" name="line">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+     <item row="12" column="1" colspan="2">
+      <widget class="QCheckBox" name="checkBoxDisallowLoadToPlayingDeck">
+       <property name="text">
+        <string>Do not load tracks into playing decks</string>
        </property>
       </widget>
      </item>
@@ -554,30 +577,7 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxLocale">
-       <property name="toolTip">
-        <string>Locales determine country and language specific settings.</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1" rowspan="2" colspan="2">
-      <widget class="QComboBox" name="ComboBoxSchemeconf">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font/>
-       </property>
-       <property name="toolTip">
-        <string>Select from different color schemes of a skin if available.</string>
-       </property>
-      </widget>
-     </item>
-     <item row="11" column="0">
+     <item row="12" column="0">
       <widget class="QLabel" name="labelPlayingTrackProtection">
        <property name="text">
         <string>Playing track protection</string>
@@ -587,27 +587,24 @@
        </property>
       </widget>
      </item>
-     <item row="11" column="1" colspan="2">
-      <widget class="QCheckBox" name="checkBoxDisallowLoadToPlayingDeck">
-       <property name="text">
-        <string>Do not load tracks into playing decks</string>
+     <item row="4" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxLocale">
+       <property name="toolTip">
+        <string>Locales determine country and language specific settings.</string>
        </property>
       </widget>
      </item>
-     <item row="8" column="0">
-      <widget class="QLabel" name="labelCueMode">
+     <item row="11" column="0">
+      <widget class="QLabel" name="labelAutoCue">
        <property name="text">
-        <string>Cue mode</string>
-       </property>
-       <property name="openExternalLinks">
-        <bool>true</bool>
+        <string>Auto cue</string>
        </property>
        <property name="buddy">
-        <cstring>ComboBoxCueDefault</cstring>
+        <cstring>checkBoxSeekToCue</cstring>
        </property>
       </widget>
      </item>
-     <item row="8" column="1" colspan="2">
+     <item row="9" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxCueDefault">
        <property name="toolTip">
         <string>Mixxx mode:
@@ -632,7 +629,20 @@ CUP mode:
        </property>
       </widget>
      </item>
-     <item row="10" column="1" colspan="2">
+     <item row="9" column="0">
+      <widget class="QLabel" name="labelCueMode">
+       <property name="text">
+        <string>Cue mode</string>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+       <property name="buddy">
+        <cstring>ComboBoxCueDefault</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="1" colspan="2">
       <widget class="QCheckBox" name="checkBoxSeekToCue">
        <property name="toolTip">
         <string>Automatically seeks to the first saved cue point on track load.
@@ -643,13 +653,22 @@ CUP mode:
        </property>
       </widget>
      </item>
-     <item row="10" column="0">
-      <widget class="QLabel" name="labelAutoCue">
+     <item row="6" column="0">
+      <widget class="QLabel" name="labelTooltips">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="font">
+        <font/>
+       </property>
        <property name="text">
-        <string>Auto cue</string>
+        <string>Tool tips</string>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
        </property>
        <property name="buddy">
-        <cstring>checkBoxSeekToCue</cstring>
+        <cstring>radioButtonTooltipsOff</cstring>
        </property>
       </widget>
      </item>
@@ -687,24 +706,15 @@ CUP mode:
        </item>
       </layout>
      </item>
-     <item row="6" column="0">
-      <widget class="QLabel" name="labelTooltips">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="font">
-        <font/>
-       </property>
+     <item row="7" column="0">
+      <widget class="QLabel" name="label">
        <property name="text">
-        <string>Tool tips</string>
-       </property>
-       <property name="wordWrap">
-        <bool>false</bool>
-       </property>
-       <property name="buddy">
-        <cstring>radioButtonTooltipsOff</cstring>
+        <string>Screen saver</string>
        </property>
       </widget>
+     </item>
+     <item row="7" column="1" colspan="2">
+      <widget class="QComboBox" name="comboBoxScreensaver"/>
      </item>
     </layout>
    </item>
@@ -884,6 +894,8 @@ CUP mode:
   </connection>
  </connections>
  <buttongroups>
+  <buttongroup name="buttonGroupSpeedBendBehavior"/>
+  <buttongroup name="buttonGroupTrackTime"/>
   <buttongroup name="buttonGroupKeyLockMode"/>
   <buttongroup name="buttonGroupTooltips"/>
   <buttongroup name="buttonGroupSpeedPitchReset">
@@ -891,7 +903,5 @@ CUP mode:
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroupTrackTime"/>
-  <buttongroup name="buttonGroupSpeedBendBehavior"/>
  </buttongroups>
 </ui>

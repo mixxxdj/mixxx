@@ -28,6 +28,7 @@
 #include "dialog/dlgabout.h"
 #include "preferences/dialog/dlgpreferences.h"
 #include "preferences/dialog/dlgprefeq.h"
+#include "preferences/constants.h"
 #include "dialog/dlgdevelopertools.h"
 #include "engine/enginemaster.h"
 #include "effects/effectsmanager.h"
@@ -368,6 +369,18 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     }
     emit(newSkinLoaded());
 
+    // Inhibit the screensaver if the option is set.
+    int inhibit = pConfig->getValue<int>(ConfigKey("[Config]","InhibitScreensaver"),-1);
+    if (inhibit == -1) {
+        inhibit = static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON);
+        pConfig->setValue<int>(ConfigKey("[Config]","InhibitScreensaver"), inhibit);
+    }
+    mixxx::ScreenSaverPreference inhiPref = mixxx::ScreenSaverPreference(inhibit);
+    if (inhiPref == mixxx::ScreenSaverPreference::PREVENT_ON) {
+        mixxx::ScreenSaverHelper::inhibit();
+    }
+
+
     // Wait until all other ControlObjects are set up before initializing
     // controllers
     m_pControllerManager->setUpDevices();
@@ -434,9 +447,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i+1);
         }
     }
-
-    mixxx::ScreenSaverHelper::inhibit();
-
+    
     connect(&PlayerInfo::instance(),
             SIGNAL(currentPlayingTrackChanged(TrackPointer)),
             this, SLOT(slotUpdateWindowTitle(TrackPointer)));
@@ -454,7 +465,12 @@ void MixxxMainWindow::finalize() {
     Timer t("MixxxMainWindow::~finalize");
     t.start();
 
-    mixxx::ScreenSaverHelper::uninhibit();
+    int inhibit = m_pSettingsManager->settings()->getValue<int>(ConfigKey("[Config]","InhibitScreensaver"));
+    mixxx::ScreenSaverPreference inhiPref = mixxx::ScreenSaverPreference(inhibit);
+    if (inhiPref == mixxx::ScreenSaverPreference::PREVENT_ON) {
+        mixxx::ScreenSaverHelper::uninhibit();
+    }
+
 
    // Save the current window state (position, maximized, etc)
     m_pSettingsManager->settings()->set(ConfigKey("[MainWindow]", "geometry"),

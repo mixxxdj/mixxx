@@ -37,6 +37,7 @@
 #include "mixer/playermanager.h"
 #include "control/controlobject.h"
 #include "mixxx.h"
+#include "util/screensaver.h"
 #include "defs_urls.h"
 
 DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
@@ -305,6 +306,21 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
                        ConfigKey("[Config]", "StartInFullscreen")).toInt()==1);
     connect(checkBoxStartFullScreen, SIGNAL(toggled(bool)),
             this, SLOT(slotSetStartInFullScreen(bool)));
+
+    //
+    // Screensaver mode
+    //
+    comboBoxScreensaver->clear();
+    comboBoxScreensaver->addItem(tr("Allow screensaver to run"), 
+        static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_OFF));
+    comboBoxScreensaver->addItem(tr("Prevent screensaver from runnig"), 
+        static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON));
+    comboBoxScreensaver->addItem(tr("Prevent screensaver while playing"), 
+        static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON_PLAY));
+
+    int inhibitsettings = pConfig->getValue<int>(ConfigKey("[Config]","InhibitScreensaver"));
+    comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));
+
     //
     // Tooltip configuration
     //
@@ -456,6 +472,10 @@ void DlgPrefControls::slotResetToDefaults() {
     // Don't start in full screen.
     checkBoxStartFullScreen->setChecked(false);
 
+    // Inhibit the screensaver
+    comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(
+        static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON)));
+
     // Tooltips on everywhere.
     radioButtonTooltipsLibraryAndSkin->setChecked(true);
 
@@ -492,7 +512,6 @@ void DlgPrefControls::slotSetLocale(int pos) {
 void DlgPrefControls::slotSetRateRange(int pos) {
     slotSetRateRangePercent(ComboBoxRateRange->itemData(pos).toInt());
 }
-
 
 void DlgPrefControls::slotSetRateRangePercent (int rateRangePercent) {
     double rateRange = rateRangePercent / 100.;
@@ -681,6 +700,31 @@ void DlgPrefControls::slotApply() {
 
     int configSPAutoReset = BaseTrackPlayer::RESET_NONE;
 
+    // screensaver mode update
+    int inhibitcombo = comboBoxScreensaver->itemData(
+            comboBoxScreensaver->currentIndex()).toInt();
+    int inhibitsettings = m_pConfig->getValue<int>(ConfigKey("[Config]","InhibitScreensaver"));
+    if (inhibitcombo != inhibitsettings) {
+        m_pConfig->set(ConfigKey("[Config]", "InhibitScreensaver"), ConfigValue(inhibitcombo));
+
+        mixxx::ScreenSaverPreference inhiOld = mixxx::ScreenSaverPreference(inhibitsettings);
+        if (inhiOld == mixxx::ScreenSaverPreference::PREVENT_ON) {
+            mixxx::ScreenSaverHelper::uninhibit();
+        } else if (inhiOld == mixxx::ScreenSaverPreference::PREVENT_ON_PLAY &&
+            1 /*TODO(JosepMaJAZ) Playing detector*/) {
+            mixxx::ScreenSaverHelper::uninhibit();
+        }
+
+        mixxx::ScreenSaverPreference inhiNew = mixxx::ScreenSaverPreference(inhibitcombo);
+        if (inhiNew == mixxx::ScreenSaverPreference::PREVENT_ON) {
+            mixxx::ScreenSaverHelper::inhibit();
+        } else if (inhiNew == mixxx::ScreenSaverPreference::PREVENT_ON_PLAY &&
+            0 /*TODO(JosepMaJAZ) Playing detector*/) {
+            mixxx::ScreenSaverHelper::inhibit();
+        }
+    }
+
+    
     if (m_speedAutoReset && m_pitchAutoReset) {
         configSPAutoReset = BaseTrackPlayer::RESET_PITCH_AND_SPEED;
     }
