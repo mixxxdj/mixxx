@@ -392,6 +392,13 @@ VMS4.jog_move_msb = function(channel, control, value, status, group) {
    deck.jogMsb = value;
 }
 
+VMS4.touch_strip = function(channel, control, value, status, group) {
+   // Only modify the playposition if the deck is NOT playing!
+   if (engine.getValue(group, "play") === 0) {
+      engine.setValue(group, "playposition", value);
+   }
+}
+
 VMS4.vinyl = function(channel, control, value, status, group) {
     var deck = VMS4.GetDeck(group);
     deck.Buttons.Vinyl.handleEvent(value);

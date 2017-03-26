@@ -90,10 +90,6 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
         m_endOfTrackColor = WSkinColor::getCorrectColor(m_endOfTrackColor);
     }
 
-    QPalette palette; //Qt4 update according to http://doc.trolltech.com/4.4/qwidget-qt3.html#setBackgroundColor (this could probably be cleaner maybe?)
-    palette.setColor(this->backgroundRole(), m_qColorBackground);
-    setPalette(palette);
-
     // setup hotcues and cue and loop(s)
     m_marks.setup(m_group, node, context, m_signalColors);
 
@@ -290,7 +286,8 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
     ScopedTimer t("WOverview::paintEvent");
 
     QPainter painter(this);
-    // Fill with transparent pixels
+    painter.fillRect(rect(), m_qColorBackground);
+
     if (!m_backgroundPixmap.isNull()) {
         painter.drawPixmap(rect(), m_backgroundPixmap);
     }
@@ -342,6 +339,16 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
             }
 
             painter.drawImage(rect(), m_waveformImageScaled);
+
+            // Overlay the played part of the overview-waveform with a skin defined color
+            QColor playedOverlayColor = m_signalColors.getPlayedOverlayColor();
+            if (playedOverlayColor.alpha() > 0) {
+                if (m_orientation == Qt::Vertical) {
+                    painter.fillRect(0, 0, m_waveformImageScaled.width(),  m_iPos, playedOverlayColor);
+                } else {
+                    painter.fillRect(0, 0, m_iPos, m_waveformImageScaled.height(), playedOverlayColor);
+                }
+            }
         }
 
         if (m_dAnalyzerProgress < 1.0) {

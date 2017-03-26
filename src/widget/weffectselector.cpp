@@ -10,6 +10,9 @@ WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManag
           WBaseWidget(pParent),
           m_pEffectsManager(pEffectsManager),
           m_scaleFactor(1.0) {
+    // Prevent this widget from getting focused to avoid
+    // interfering with using the library via keyboard.
+    setFocusPolicy(Qt::NoFocus);
 }
 
 void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
