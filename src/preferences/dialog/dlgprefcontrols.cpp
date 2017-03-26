@@ -35,6 +35,7 @@
 #include "skin/skinloader.h"
 #include "skin/legacyskinparser.h"
 #include "mixer/playermanager.h"
+#include "mixer/playerinfo.h"
 #include "control/controlobject.h"
 #include "mixxx.h"
 #include "util/screensaver.h"
@@ -313,7 +314,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     comboBoxScreensaver->clear();
     comboBoxScreensaver->addItem(tr("Allow screensaver to run"), 
         static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_OFF));
-    comboBoxScreensaver->addItem(tr("Prevent screensaver from runnig"), 
+    comboBoxScreensaver->addItem(tr("Prevent screensaver from running"), 
         static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON));
     comboBoxScreensaver->addItem(tr("Prevent screensaver while playing"), 
         static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON_PLAY));
@@ -710,17 +711,16 @@ void DlgPrefControls::slotApply() {
         mixxx::ScreenSaverPreference inhiOld = mixxx::ScreenSaverPreference(inhibitsettings);
         if (inhiOld == mixxx::ScreenSaverPreference::PREVENT_ON) {
             mixxx::ScreenSaverHelper::uninhibit();
-        } else if (inhiOld == mixxx::ScreenSaverPreference::PREVENT_ON_PLAY &&
-            1 /*TODO(JosepMaJAZ) Playing detector*/) {
-            mixxx::ScreenSaverHelper::uninhibit();
+        } else if (inhiOld == mixxx::ScreenSaverPreference::PREVENT_ON_PLAY) {
+            mixxx::ScreenSaverHelper::inhibitOnCondition(false);
         }
 
         mixxx::ScreenSaverPreference inhiNew = mixxx::ScreenSaverPreference(inhibitcombo);
         if (inhiNew == mixxx::ScreenSaverPreference::PREVENT_ON) {
             mixxx::ScreenSaverHelper::inhibit();
-        } else if (inhiNew == mixxx::ScreenSaverPreference::PREVENT_ON_PLAY &&
-            0 /*TODO(JosepMaJAZ) Playing detector*/) {
-            mixxx::ScreenSaverHelper::inhibit();
+        } else if (inhiNew == mixxx::ScreenSaverPreference::PREVENT_ON_PLAY) {
+            mixxx::ScreenSaverHelper::inhibitOnCondition(
+                    PlayerInfo::instance().getCurrentPlayingDeck()!=-1);
         }
     }
 

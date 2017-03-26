@@ -452,6 +452,10 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             SIGNAL(currentPlayingTrackChanged(TrackPointer)),
             this, SLOT(slotUpdateWindowTitle(TrackPointer)));
 
+    connect(&PlayerInfo::instance(),
+            SIGNAL(currentPlayingDeckChanged(int)),
+            this, SLOT(slotChangedPlayingDeck(int)));
+
     // this has to be after the OpenGL widgets are created or depending on a
     // million different variables the first waveform may be horribly
     // corrupted. See bug 521509 -- bkgood ?? -- vrince
@@ -465,7 +469,8 @@ void MixxxMainWindow::finalize() {
     Timer t("MixxxMainWindow::~finalize");
     t.start();
 
-    int inhibit = m_pSettingsManager->settings()->getValue<int>(ConfigKey("[Config]","InhibitScreensaver"));
+    UserSettingsPointer pConfig = m_pSettingsManager->settings();
+    int inhibit = pConfig->getValue<int>(ConfigKey("[Config]","InhibitScreensaver"));
     mixxx::ScreenSaverPreference inhiPref = mixxx::ScreenSaverPreference(inhibit);
     if (inhiPref == mixxx::ScreenSaverPreference::PREVENT_ON) {
         mixxx::ScreenSaverHelper::uninhibit();
@@ -1098,6 +1103,15 @@ void MixxxMainWindow::slotNoMicrophoneInputConfigured() {
         QMessageBox::Ok, QMessageBox::Ok);
     m_pPrefDlg->show();
     m_pPrefDlg->showSoundHardwarePage();
+}
+
+void MixxxMainWindow::slotChangedPlayingDeck(int deck) {
+    UserSettingsPointer pConfig = m_pSettingsManager->settings();
+    int inhibit = pConfig->getValue<int>(ConfigKey("[Config]","InhibitScreensaver"));
+    mixxx::ScreenSaverPreference inhiPref = mixxx::ScreenSaverPreference(inhibit);
+    if (inhiPref == mixxx::ScreenSaverPreference::PREVENT_ON_PLAY) {
+        mixxx::ScreenSaverHelper::inhibitOnCondition(deck!=-1);
+    }
 }
 
 void MixxxMainWindow::slotHelpAbout() {

@@ -16,7 +16,10 @@ public:
 
    static void inhibit();
    static void uninhibit();
+   static void inhibitOnCondition(bool desired);
 
+private:
+   static bool enabled;
 #if defined(Q_OS_MAC)
     /* sleep management */
     static IOPMAssertionID systemSleepAssertionID;

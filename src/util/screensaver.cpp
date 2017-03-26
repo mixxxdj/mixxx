@@ -32,6 +32,17 @@ https://github.com/awjackson/bsnes-classic/blob/038e2e051ffc8abe7c56a3bf27e3016c
 
 namespace mixxx {
 
+bool ScreenSaverHelper::enabled = false;
+
+void ScreenSaverHelper::inhibitOnCondition(bool desired)
+{
+    if (desired != enabled) {
+        if (enabled) uninhibit();
+        else inhibit();
+    }
+}
+
+
 #ifdef Q_OS_MAC
 IOPMAssertionID ScreenSaverHelper::systemSleepAssertionID=0;
 IOPMAssertionID ScreenSaverHelper::userActivityAssertionID=0;
@@ -69,6 +80,7 @@ void ScreenSaverHelper::inhibit()
     CFRelease(reasonForActivity);
 
     if (success == kIOReturnSuccess) {
+        enabled = true;
         qDebug() << "IOKit screensaver inhibited " << systemSleepAssertionID;
     } else {
         qWarning("failed to prevent system sleep through IOKit");    
@@ -78,6 +90,7 @@ void ScreenSaverHelper::uninhibit()
 {
     /* allow the system to sleep again */
     if (systemSleepAssertionID > 0) {
+        enabled = false;
         IOPMAssertionRelease(systemSleepAssertionID);
         qDebug() << "IOKit screensaver uninhibited " << systemSleepAssertionID;
     }
@@ -86,13 +99,17 @@ void ScreenSaverHelper::uninhibit()
 #elif defined(Q_OS_WIN)
 void ScreenSaverHelper::inhibit()
 {
+    // Calling once without "ES_CONTINUOUS" to force the monitor to wake up.
+    SetThreadExecutionState( ES_DISPLAY_REQUIRED );
     SetThreadExecutionState( ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED | ES_CONTINUOUS );
     qDebug() << "screensaver inhibited";
+    enabled = true;
 }
 void ScreenSaverHelper::uninhibit()
 {
     SetThreadExecutionState(ES_CONTINUOUS);
     qDebug() << "screensaver uninhibited";
+    enabled = false;
 }
 
 #elif defined(Q_OS_LINUX)
@@ -129,6 +146,7 @@ void ScreenSaverHelper::inhibit()
             if (reply.isValid()) {
                 cookie = reply.value();
                 saverindex = i;
+                enabled = true;
                 qDebug() << "DBus screensaver " << SCREENSAVERS[i][0] <<" inhibited";
                 break;
             } else {
@@ -144,6 +162,7 @@ void ScreenSaverHelper::inhibit()
 void ScreenSaverHelper::uninhibit()
 {
     if (cookie > 0) {
+        enabled = false;
         QDBusInterface iface(SCREENSAVERS[saverindex][0], SCREENSAVERS[saverindex][1], 
             SCREENSAVERS[saverindex][2],  QDBusConnection::sessionBus());
         if (iface.isValid()) {
@@ -170,6 +189,7 @@ void ScreenSaverHelper::inhibit()
         name=getenv("DISPLAY");
     display=XOpenDisplay(name);
     XScreenSaverSuspend(display,True);
+    enabled = true;
 }
 void ScreenSaverHelper::uninhibit()
 {
@@ -178,7 +198,8 @@ void ScreenSaverHelper::uninhibit()
     if (getenv("DISPLAY"))
         name=getenv("DISPLAY");
     display=XOpenDisplay(name);
-    XScreenSaverSuspend(, False);
+    XScreenSaverSuspend(display, False);
+    enabled = false;
 }
 
 #else
