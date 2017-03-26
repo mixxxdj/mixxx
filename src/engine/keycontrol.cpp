@@ -11,7 +11,7 @@
 
 //static const double kLockOriginalKey = 0;
 static const double kLockCurrentKey = 1;
-static const double kResetUnlockedKey = 1;
+static const double kKeepUnlockedKey = 1;
 
 KeyControl::KeyControl(QString group,
                        UserSettingsPointer pConfig)
@@ -217,15 +217,17 @@ void KeyControl::updateRate() {
         // !bKeylock
         if (m_pitchRateInfo.keylock) {
             // Disabling Keylock
-            // If "Reset (unlocked) Key" is enabled
-            if (m_keyunlockMode->get() == kResetUnlockedKey) {
+            // If "Keep unlocked key" is enabled
+            if (m_keyunlockMode->get() == kKeepUnlockedKey) {
+                // don't reset to linear pitch, instead adopt speedSliderPitchRatio
+                // change as pitchTweakRatio
+                m_pitchRateInfo.pitchTweakRatio *=
+                 (speedSliderPitchRatio / m_pitchRateInfo.tempoRatio);
+            } else {
                 // If 'current' aka 'not original' key was locked
                 if (m_keylockMode->get() == kLockCurrentKey) {
                     // reset to linear pitch
                     m_pitchRateInfo.pitchTweakRatio = 1.0;
-                    // For not resetting to linear pitch:
-                    // Adopt speedPitchRatio change as pitchTweakRatio
-                    //pitchRateInfo.pitchTweakRatio *= (m_speedSliderPitchRatio / pitchRateInfo.tempoRatio);
                 }
             }
             m_pitchRateInfo.keylock = false;

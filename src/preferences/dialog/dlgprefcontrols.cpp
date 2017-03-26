@@ -138,7 +138,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     connect(buttonGroupKeyUnlockMode, SIGNAL(buttonClicked(QAbstractButton*)),
             this, SLOT(slotKeyUnlockMode(QAbstractButton *)));
 
-    // 0 Keep locked key, 1 Reset locked key (default)
+    // 0 Reset locked key (default), 1 Keep locked key
     m_keyunlockMode = m_pConfig->getValue(
         ConfigKey("[Controls]", "keyunlockMode"), 0);
     foreach (ControlProxy* pControl, m_keyunlockModeControls) {
@@ -443,9 +443,9 @@ void DlgPrefControls::slotUpdate() {
         radioButtonOriginalKey->setChecked(true);
 
     if (m_keyunlockMode == 1)
-        radioButtonResetUnlockedKey->setChecked(true);
-    else
         radioButtonKeepUnlockedKey->setChecked(true);
+    else
+        radioButtonResetUnlockedKey->setChecked(true);
 
     checkBoxResetSpeed->setChecked(m_speedAutoReset);
     checkBoxResetPitch->setChecked(m_pitchAutoReset);
@@ -503,8 +503,8 @@ void DlgPrefControls::slotResetToDefaults() {
     radioButtonOriginalKey->setChecked(true);
 
     // Reset key on unlock
-    m_keyunlockMode = 1;
-    radioButtonKeepUnlockedKey->setChecked(true);
+    m_keyunlockMode = 0;
+    radioButtonResetUnlockedKey->setChecked(true);
 }
 
 void DlgPrefControls::slotSetLocale(int pos) {
@@ -568,9 +568,9 @@ void DlgPrefControls::slotKeyLockMode(QAbstractButton* b) {
 
 void DlgPrefControls::slotKeyUnlockMode(QAbstractButton* b) {
     if (b == radioButtonResetUnlockedKey) {
-        m_keyunlockMode = 1;
+        m_keyunlockMode = 0;
     }
-    else { m_keyunlockMode = 0; }
+    else { m_keyunlockMode = 1; }
 }
 
 void DlgPrefControls::slotSetAllowTrackLoadToPlayingDeck(bool b) {
