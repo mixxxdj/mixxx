@@ -737,7 +737,10 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
     // If cache is empty then retun without crash.
     if (m_SCache.isEmpty()) {
         qDebug() << "SoundSourceFFmpeg::getBytesFromCache: Cache is empty can't return bytes";
-        memset(l_pBuffer, 0x00, l_lLeft);
+        if(l_pBuffer != nullptr)
+        {
+            memset(l_pBuffer, 0x00, l_lLeft);
+        }
         return false;
     }
 
@@ -835,7 +838,10 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
                 } else {
                     qDebug() <<
                              "SoundSourceFFmpeg::getBytesFromCache: Buffer run out. Shouldn't happen!";
-                    memset(l_pBuffer, 0x00, l_lLeft);
+                    if(l_pBuffer != nullptr)
+                    {
+                        memset(l_pBuffer, 0x00, l_lLeft);
+                    }
                     return false;
                 }
             }
