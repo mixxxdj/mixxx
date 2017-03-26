@@ -542,8 +542,8 @@ TrackId AutoDJCratesDAO::getRandomTrackId() {
     int minimumAvailablePercentage = m_pConfig->getValue(
             ConfigKey("[Auto DJ]", "MinimumAvailable"), 20);
 
-    // If there are no tracks availabe not already in AutoDJ
-    // state readding tracks to AutoSJs
+    // If there are no tracks available not already in AutoDJ
+    // start re-adding tracks to AutoDJ
     if (iTotalTracks == 0) {
         return getRandomTrackIdFromAutoDj(minimumAvailablePercentage);
     }
