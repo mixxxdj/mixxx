@@ -105,7 +105,9 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
         // Fall back to old [Controls]RateRange
         if (!m_pConfig->exists(ConfigKey("[Controls]","RateRange")) ||
             m_pConfig->getValueString(ConfigKey("[Controls]", "RateRange")).length() == 0) {
-            m_pConfig->set(ConfigKey("[Controls]", "RateRangePercent"), ConfigValue(8));
+            int rateRangePercent = 8;
+            m_pConfig->set(ConfigKey("[Controls]", "RateRangePercent"), ConfigValue(rateRangePercent));
+            slotSetRateRangePercent(rateRangePercent);
         } else {
             int oldIdx = m_pConfig->getValueString(ConfigKey("[Controls]", "RateRange")).toInt();
             double oldRange = static_cast<double>(oldIdx-1) / 10.0;
