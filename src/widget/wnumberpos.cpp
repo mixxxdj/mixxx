@@ -53,12 +53,12 @@ void WNumberPos::mousePressEvent(QMouseEvent* pEvent) {
 
     if (leftClick) {
         // Cycle through display modes
-        if (m_displayMode == Duration::DisplayMode::Elapsed) {
-            m_displayMode = Duration::DisplayMode::Remaining;
-        } else if (m_displayMode == Duration::DisplayMode::Remaining) {
-            m_displayMode = Duration::DisplayMode::ElapsedAndRemaining;
-        } else if (m_displayMode == Duration::DisplayMode::ElapsedAndRemaining) {
-            m_displayMode = Duration::DisplayMode::Elapsed;
+        if (m_displayMode == TrackTime::DisplayMode::Elapsed) {
+            m_displayMode = TrackTime::DisplayMode::Remaining;
+        } else if (m_displayMode == TrackTime::DisplayMode::Remaining) {
+            m_displayMode = TrackTime::DisplayMode::ElapsedAndRemaining;
+        } else if (m_displayMode == TrackTime::DisplayMode::ElapsedAndRemaining) {
+            m_displayMode = TrackTime::DisplayMode::Elapsed;
         }
 
         m_pShowTrackTimeRemaining->set(static_cast<double>(m_displayMode));
@@ -94,13 +94,13 @@ void WNumberPos::slotSetPosition(double dPosition) {
         double dDurationMillis = dDurationSeconds * 1000.0;
         double dPosMillis = dPosition * dDurationMillis;
         dPosSecondsElapsed = dPosMillis / 1000.0;
-        if (m_displayMode != Duration::DisplayMode::Elapsed) {
+        if (m_displayMode != TrackTime::DisplayMode::Elapsed) {
             double dPosMillisRemaining = math_max(dDurationMillis - dPosMillis, 0.0);
             dPosSecondsRemaining = dPosMillisRemaining / 1000.0;
         }
     }
 
-    if (m_displayMode == Duration::DisplayMode::Elapsed) {
+    if (m_displayMode == TrackTime::DisplayMode::Elapsed) {
         if (dPosSecondsElapsed >= 0.0) {
             setText(mixxx::Duration::formatSeconds(
                         dPosSecondsElapsed, mixxx::Duration::Precision::CENTISECONDS));
@@ -108,10 +108,10 @@ void WNumberPos::slotSetPosition(double dPosition) {
             setText(QLatin1String("-") % mixxx::Duration::formatSeconds(
                         -dPosSecondsElapsed, mixxx::Duration::Precision::CENTISECONDS));
         }
-    } else if (m_displayMode == Duration::DisplayMode::Remaining) {
+    } else if (m_displayMode == TrackTime::DisplayMode::Remaining) {
         setText(QLatin1String("-") % mixxx::Duration::formatSeconds(
                     dPosSecondsRemaining, mixxx::Duration::Precision::CENTISECONDS));
-    } else if (m_displayMode == Duration::DisplayMode::ElapsedAndRemaining) {
+    } else if (m_displayMode == TrackTime::DisplayMode::ElapsedAndRemaining) {
         if (dPosSecondsElapsed >= 0.0) {
             setText(mixxx::Duration::formatSeconds(
                         dPosSecondsElapsed, mixxx::Duration::Precision::CENTISECONDS)
@@ -130,11 +130,11 @@ void WNumberPos::slotSetPosition(double dPosition) {
 
 void WNumberPos::slotSetDisplayMode(double remain) {
     if (remain == 1.0) {
-        m_displayMode = Duration::DisplayMode::Remaining;
+        m_displayMode = TrackTime::DisplayMode::Remaining;
     } else if (remain == 2.0) {
-        m_displayMode = Duration::DisplayMode::ElapsedAndRemaining;
+        m_displayMode = TrackTime::DisplayMode::ElapsedAndRemaining;
     } else {
-        m_displayMode = Duration::DisplayMode::Elapsed;
+        m_displayMode = TrackTime::DisplayMode::Elapsed;
     }
 
     slotSetPosition(m_dOldPosition);

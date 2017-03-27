@@ -72,21 +72,21 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
 
     double positionDisplayType = m_pConfig->getValue(
             ConfigKey("[Controls]", "PositionDisplay"),
-            static_cast<double>(Duration::DisplayMode::Elapsed));
+            static_cast<double>(TrackTime::DisplayMode::Elapsed));
     if (positionDisplayType ==
-            static_cast<double>(Duration::DisplayMode::Remaining)) {
+            static_cast<double>(TrackTime::DisplayMode::Remaining)) {
         radioButtonRemaining->setChecked(true);
         m_pControlTrackTimeDisplay->set(
-            static_cast<double>(Duration::DisplayMode::Remaining));
+            static_cast<double>(TrackTime::DisplayMode::Remaining));
     } else if (positionDisplayType ==
-                   static_cast<double>(Duration::DisplayMode::ElapsedAndRemaining)) {
+                   static_cast<double>(TrackTime::DisplayMode::ElapsedAndRemaining)) {
         radioButtonElapsedAndRemaining->setChecked(true);
         m_pControlTrackTimeDisplay->set(
-            static_cast<double>(Duration::DisplayMode::ElapsedAndRemaining));
+            static_cast<double>(TrackTime::DisplayMode::ElapsedAndRemaining));
     } else {
         radioButtonElapsed->setChecked(true);
         m_pControlTrackTimeDisplay->set(
-            static_cast<double>(Duration::DisplayMode::Elapsed));
+            static_cast<double>(TrackTime::DisplayMode::Elapsed));
     }
     connect(buttonGroupTrackTime, SIGNAL(buttonClicked(QAbstractButton*)),
             this, SLOT(slotSetTrackTimeDisplay(QAbstractButton *)));
@@ -615,11 +615,11 @@ void DlgPrefControls::slotSetSkin(int) {
 void DlgPrefControls::slotSetTrackTimeDisplay(QAbstractButton* b) {
     double timeDisplay;
     if (b == radioButtonRemaining) {
-        timeDisplay = static_cast<double>(Duration::DisplayMode::Remaining);
+        timeDisplay = static_cast<double>(TrackTime::DisplayMode::Remaining);
     } else if (b == radioButtonElapsedAndRemaining) {
-        timeDisplay = static_cast<double>(Duration::DisplayMode::ElapsedAndRemaining);
+        timeDisplay = static_cast<double>(TrackTime::DisplayMode::ElapsedAndRemaining);
     } else {
-        timeDisplay = static_cast<double>(Duration::DisplayMode::Elapsed);
+        timeDisplay = static_cast<double>(TrackTime::DisplayMode::Elapsed);
     }
     m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(timeDisplay));
     m_pControlTrackTimeDisplay->set(timeDisplay);

@@ -27,7 +27,7 @@ class WNumberPos : public WNumber {
 
   private:
 
-    Duration::DisplayMode m_displayMode;
+    TrackTime::DisplayMode m_displayMode;
 
     // Old value set
     double m_dOldPosition;

@@ -31,7 +31,7 @@ class PlayerManager;
 class MixxxMainWindow;
 class ControlObject;
 
-namespace Duration {
+namespace TrackTime {
     enum class DisplayMode {
         Elapsed,
         Remaining,
