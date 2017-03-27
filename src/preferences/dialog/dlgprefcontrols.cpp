@@ -103,7 +103,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     if (!m_pConfig->exists(ConfigKey("[Controls]","RateRangePercent")) ||
         m_pConfig->getValueString(ConfigKey("[Controls]", "RateRangePercent")).length() == 0) {
         // Fall back to old [Controls]RateRange
-        if (m_pConfig->getValueString(ConfigKey("[Controls]", "RateRange")).length() == 0) {
+        if (!m_pConfig->exists(ConfigKey("[Controls]","RateRange")) ||
+            m_pConfig->getValueString(ConfigKey("[Controls]", "RateRange")).length() == 0) {
             m_pConfig->set(ConfigKey("[Controls]", "RateRangePercent"), ConfigValue(8));
         } else {
             int oldIdx = m_pConfig->getValueString(ConfigKey("[Controls]", "RateRange")).toInt();
