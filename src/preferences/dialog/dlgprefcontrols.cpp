@@ -99,13 +99,9 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     connect(ComboBoxRateRange, SIGNAL(activated(int)),
             this, SLOT(slotSetRateRange(int)));
 
-    // If not present in the config, set the default value
-    if (!m_pConfig->exists(ConfigKey("[Controls]","RateRangePercent")) &&
-        !m_pConfig->exists(ConfigKey("[Controls]","RateRange")))
-        m_pConfig->set(ConfigKey("[Controls]","RateRangePercent"),ConfigValue(8));
-
     // Set default range as stored in config file
-    if (m_pConfig->getValueString(ConfigKey("[Controls]", "RateRangePercent")).length() == 0) {
+    if (!m_pConfig->exists(ConfigKey("[Controls]","RateRangePercent")) ||
+        m_pConfig->getValueString(ConfigKey("[Controls]", "RateRangePercent")).length() == 0) {
         // Fall back to old [Controls]RateRange
         if (m_pConfig->getValueString(ConfigKey("[Controls]", "RateRange")).length() == 0) {
             m_pConfig->set(ConfigKey("[Controls]", "RateRangePercent"), ConfigValue(8));
