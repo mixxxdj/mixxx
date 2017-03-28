@@ -227,6 +227,7 @@ LoopingControl::~LoopingControl() {
     delete m_pLoopInButton;
     delete m_pLoopInGotoButton;
     delete m_pLoopExitButton;
+    delete m_pReloopButton;
     delete m_pReloopToggleButton;
     delete m_pReloopCueButton;
     delete m_pCOLoopEnabled;
