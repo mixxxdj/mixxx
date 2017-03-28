@@ -319,7 +319,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     comboBoxScreensaver->addItem(tr("Prevent screensaver while playing"), 
         static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON_PLAY));
 
-    int inhibitsettings = pConfig->getValue<int>(ConfigKey("[Config]","InhibitScreensaver"));
+    int inhibitsettings = static_cast<int>(mixxx->getInhibitScreensaver());
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));
 
     //
@@ -704,24 +704,9 @@ void DlgPrefControls::slotApply() {
     // screensaver mode update
     int inhibitcombo = comboBoxScreensaver->itemData(
             comboBoxScreensaver->currentIndex()).toInt();
-    int inhibitsettings = m_pConfig->getValue<int>(ConfigKey("[Config]","InhibitScreensaver"));
+    int inhibitsettings = static_cast<int>(m_mixxx->getInhibitScreensaver());
     if (inhibitcombo != inhibitsettings) {
-        m_pConfig->set(ConfigKey("[Config]", "InhibitScreensaver"), ConfigValue(inhibitcombo));
-
-        mixxx::ScreenSaverPreference inhiOld = mixxx::ScreenSaverPreference(inhibitsettings);
-        if (inhiOld == mixxx::ScreenSaverPreference::PREVENT_ON) {
-            mixxx::ScreenSaverHelper::uninhibit();
-        } else if (inhiOld == mixxx::ScreenSaverPreference::PREVENT_ON_PLAY) {
-            mixxx::ScreenSaverHelper::inhibitOnCondition(false);
-        }
-
-        mixxx::ScreenSaverPreference inhiNew = mixxx::ScreenSaverPreference(inhibitcombo);
-        if (inhiNew == mixxx::ScreenSaverPreference::PREVENT_ON) {
-            mixxx::ScreenSaverHelper::inhibit();
-        } else if (inhiNew == mixxx::ScreenSaverPreference::PREVENT_ON_PLAY) {
-            mixxx::ScreenSaverHelper::inhibitOnCondition(
-                    PlayerInfo::instance().getCurrentPlayingDeck()!=-1);
-        }
+        m_mixxx->setInhibitScreensaver(static_cast<mixxx::ScreenSaverPreference>(inhibitcombo));
     }
 
     

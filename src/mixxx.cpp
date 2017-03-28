@@ -375,8 +375,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         inhibit = static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON);
         pConfig->setValue<int>(ConfigKey("[Config]","InhibitScreensaver"), inhibit);
     }
-    mixxx::ScreenSaverPreference inhiPref = mixxx::ScreenSaverPreference(inhibit);
-    if (inhiPref == mixxx::ScreenSaverPreference::PREVENT_ON) {
+    m_inhibitScreensaver = static_cast<mixxx::ScreenSaverPreference>(inhibit);
+    if (m_inhibitScreensaver == mixxx::ScreenSaverPreference::PREVENT_ON) {
         mixxx::ScreenSaverHelper::inhibit();
     }
 
@@ -469,10 +469,7 @@ void MixxxMainWindow::finalize() {
     Timer t("MixxxMainWindow::~finalize");
     t.start();
 
-    UserSettingsPointer pConfig = m_pSettingsManager->settings();
-    int inhibit = pConfig->getValue<int>(ConfigKey("[Config]","InhibitScreensaver"));
-    mixxx::ScreenSaverPreference inhiPref = mixxx::ScreenSaverPreference(inhibit);
-    if (inhiPref == mixxx::ScreenSaverPreference::PREVENT_ON) {
+    if (m_inhibitScreensaver != mixxx::ScreenSaverPreference::PREVENT_OFF) {
         mixxx::ScreenSaverHelper::uninhibit();
     }
 
@@ -1106,11 +1103,13 @@ void MixxxMainWindow::slotNoMicrophoneInputConfigured() {
 }
 
 void MixxxMainWindow::slotChangedPlayingDeck(int deck) {
-    UserSettingsPointer pConfig = m_pSettingsManager->settings();
-    int inhibit = pConfig->getValue<int>(ConfigKey("[Config]","InhibitScreensaver"));
-    mixxx::ScreenSaverPreference inhiPref = mixxx::ScreenSaverPreference(inhibit);
-    if (inhiPref == mixxx::ScreenSaverPreference::PREVENT_ON_PLAY) {
-        mixxx::ScreenSaverHelper::inhibitOnCondition(deck!=-1);
+    if (m_inhibitScreensaver == mixxx::ScreenSaverPreference::PREVENT_ON_PLAY) {
+        if (deck==-1) {
+            // If no deck is playing, allow the screensaver to run.
+            mixxx::ScreenSaverHelper::uninhibit();
+        } else {
+            mixxx::ScreenSaverHelper::inhibit();
+        }
     }
 }
 
@@ -1316,6 +1315,31 @@ bool MixxxMainWindow::confirmExit() {
     }
 
     return true;
+}
+
+void MixxxMainWindow::setInhibitScreensaver(mixxx::ScreenSaverPreference newInhibit)
+{
+    UserSettingsPointer pConfig = m_pSettingsManager->settings();
+
+    if (m_inhibitScreensaver != mixxx::ScreenSaverPreference::PREVENT_OFF) {
+        mixxx::ScreenSaverHelper::uninhibit();
+    }
+
+    if (newInhibit == mixxx::ScreenSaverPreference::PREVENT_ON) {
+        mixxx::ScreenSaverHelper::inhibit();
+    } else if (newInhibit == mixxx::ScreenSaverPreference::PREVENT_ON_PLAY
+            && PlayerInfo::instance().getCurrentPlayingDeck()!=-1) {
+        mixxx::ScreenSaverHelper::inhibit();
+    }
+
+    int inhibit_int = static_cast<int>(newInhibit);
+    pConfig->set(ConfigKey("[Config]", "InhibitScreensaver"), ConfigValue(inhibit_int));
+    m_inhibitScreensaver = newInhibit;
+}
+
+mixxx::ScreenSaverPreference MixxxMainWindow::getInhibitScreensaver()
+{
+    return m_inhibitScreensaver;
 }
 
 void MixxxMainWindow::launchProgress(int progress) {

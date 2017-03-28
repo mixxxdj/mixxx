@@ -16,17 +16,19 @@ public:
 
    static void inhibit();
    static void uninhibit();
-   static void inhibitOnCondition(bool desired);
 
 private:
-   static bool enabled;
+   static void inhibitInternal();
+   static void uninhibitInternal();
+
+   static bool s_enabled;
 #if defined(Q_OS_MAC)
     /* sleep management */
-    static IOPMAssertionID systemSleepAssertionID;
-    static IOPMAssertionID userActivityAssertionID;
+    static IOPMAssertionID s_systemSleepAssertionID;
+    static IOPMAssertionID s_userActivityAssertionID;
 #elif defined(Q_OS_LINUX)
-    static uint32_t cookie;
-    static int saverindex;
+    static uint32_t s_cookie;
+    static int s_saverindex;
 #endif // Q_OS_MAC
 };
 
