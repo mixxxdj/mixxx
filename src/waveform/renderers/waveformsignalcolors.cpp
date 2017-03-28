@@ -43,21 +43,28 @@ bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& contex
     }
     m_rgbHighColor = WSkinColor::getCorrectColor(m_rgbHighColor).toRgb();
 
-    m_axesColor.setNamedColor(context.selectString(node, "AxesColor"));
+    m_axesColor = context.selectColor(node, "AxesColor");
     if (!m_axesColor.isValid()) {
         m_axesColor = QColor(245,245,245);
     }
     m_axesColor = WSkinColor::getCorrectColor(m_axesColor).toRgb();
 
-    m_playPosColor.setNamedColor(context.selectString(node, "PlayPosColor"));
+    m_playPosColor = context.selectColor(node, "PlayPosColor");
     m_playPosColor = WSkinColor::getCorrectColor(m_playPosColor).toRgb();
     if (!m_playPosColor.isValid()) {
         m_playPosColor = m_axesColor;
     }
 
-    m_bgColor.setNamedColor(context.selectString(node, "BgColor"));
+    // This color is used to draw an overlay over the played part the overview-waveforms
+    m_playedOverlayColor = context.selectColor(node, "PlayedOverlayColor");
+    m_playedOverlayColor = WSkinColor::getCorrectColor(m_playedOverlayColor).toRgb();
+    if (!m_playedOverlayColor.isValid()) {
+        m_playedOverlayColor = Qt::transparent;
+    }
+
+    m_bgColor = context.selectColor(node, "BgColor");
     if (!m_bgColor.isValid()) {
-        m_bgColor = QColor(0, 0, 0);
+        m_bgColor = Qt::transparent;
     }
     m_bgColor = WSkinColor::getCorrectColor(m_bgColor).toRgb();
 

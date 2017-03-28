@@ -1,6 +1,6 @@
 /***************************************************************************
-                          dlgprefcontrols.cpp  -  description
-                             -------------------
+                           dlgprefcontrols.cpp  -  description
+                          -------------------
     begin                : Sat Jul 5 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
@@ -127,10 +127,24 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     connect(buttonGroupKeyLockMode, SIGNAL(buttonClicked(QAbstractButton*)),
             this, SLOT(slotKeyLockMode(QAbstractButton *)));
 
+    // 0 Lock original key, 1 Lock current key
     m_keylockMode = m_pConfig->getValue(
         ConfigKey("[Controls]", "keylockMode"), 0);
     foreach (ControlProxy* pControl, m_keylockModeControls) {
         pControl->set(m_keylockMode);
+    }
+
+    //
+    // Key unlock mode
+    //
+    connect(buttonGroupKeyUnlockMode, SIGNAL(buttonClicked(QAbstractButton*)),
+            this, SLOT(slotKeyUnlockMode(QAbstractButton *)));
+
+    // 0 Reset locked key (default), 1 Keep locked key
+    m_keyunlockMode = m_pConfig->getValue(
+        ConfigKey("[Controls]", "keyunlockMode"), 0);
+    foreach (ControlProxy* pControl, m_keyunlockModeControls) {
+        pControl->set(m_keyunlockMode);
     }
 
     //
@@ -304,7 +318,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     // Start in fullscreen mode
     //
     checkBoxStartFullScreen->setChecked(m_pConfig->getValueString(
-                       ConfigKey("[Config]", "StartInFullscreen")).toInt()==1);
+                    ConfigKey("[Config]", "StartInFullscreen")).toInt()==1);
     connect(checkBoxStartFullScreen, SIGNAL(toggled(bool)),
             this, SLOT(slotSetStartInFullScreen(bool)));
 
@@ -395,6 +409,7 @@ DlgPrefControls::~DlgPrefControls() {
     qDeleteAll(m_cueControls);
     qDeleteAll(m_rateRangeControls);
     qDeleteAll(m_keylockModeControls);
+    qDeleteAll(m_keyunlockModeControls);
 }
 
 void DlgPrefControls::slotUpdateSchemes() {
@@ -443,6 +458,11 @@ void DlgPrefControls::slotUpdate() {
         radioButtonCurrentKey->setChecked(true);
     else
         radioButtonOriginalKey->setChecked(true);
+
+    if (m_keyunlockMode == 1)
+        radioButtonKeepUnlockedKey->setChecked(true);
+    else
+        radioButtonResetUnlockedKey->setChecked(true);
 
     checkBoxResetSpeed->setChecked(m_speedAutoReset);
     checkBoxResetPitch->setChecked(m_pitchAutoReset);
@@ -502,6 +522,10 @@ void DlgPrefControls::slotResetToDefaults() {
     // Lock to original key
     m_keylockMode = 0;
     radioButtonOriginalKey->setChecked(true);
+
+    // Reset key on unlock
+    m_keyunlockMode = 0;
+    radioButtonResetUnlockedKey->setChecked(true);
 }
 
 void DlgPrefControls::slotSetLocale(int pos) {
@@ -560,6 +584,13 @@ void DlgPrefControls::slotKeyLockMode(QAbstractButton* b) {
         m_keylockMode = 1;
     }
     else { m_keylockMode = 0; }
+}
+
+void DlgPrefControls::slotKeyUnlockMode(QAbstractButton* b) {
+    if (b == radioButtonResetUnlockedKey) {
+        m_keyunlockMode = 0;
+    }
+    else { m_keyunlockMode = 1; }
 }
 
 void DlgPrefControls::slotSetAllowTrackLoadToPlayingDeck(bool b) {
@@ -720,10 +751,17 @@ void DlgPrefControls::slotApply() {
                    ConfigValue(configSPAutoReset));
 
     m_pConfig->set(ConfigKey("[Controls]", "keylockMode"),
-            ConfigValue(m_keylockMode));
+                   ConfigValue(m_keylockMode));
     // Set key lock behavior for every group
     foreach (ControlProxy* pControl, m_keylockModeControls) {
         pControl->set(m_keylockMode);
+    }
+
+    m_pConfig->set(ConfigKey("[Controls]", "keyunlockMode"),
+                   ConfigValue(m_keyunlockMode));
+    // Set key un-lock behavior for every group
+    foreach (ControlProxy* pControl, m_keyunlockModeControls) {
+        pControl->set(m_keyunlockMode);
     }
 }
 
@@ -777,8 +815,11 @@ void DlgPrefControls::slotNumDecksChanged(double new_count) {
         m_cueControls.push_back(new ControlProxy(
                 group, "cue_mode"));
         m_keylockModeControls.push_back(new ControlProxy(
-                        group, "keylockMode"));
+                group, "keylockMode"));
         m_keylockModeControls.last()->set(m_keylockMode);
+        m_keyunlockModeControls.push_back(new ControlProxy(
+                group, "keyunlockMode"));
+        m_keyunlockModeControls.last()->set(m_keyunlockMode);
     }
 
     m_iNumConfiguredDecks = numdecks;
@@ -803,8 +844,11 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
         m_cueControls.push_back(new ControlProxy(
                 group, "cue_mode"));
         m_keylockModeControls.push_back(new ControlProxy(
-                        group, "keylockMode"));
+                group, "keylockMode"));
         m_keylockModeControls.last()->set(m_keylockMode);
+        m_keyunlockModeControls.push_back(new ControlProxy(
+                group, "keyunlockMode"));
+        m_keyunlockModeControls.last()->set(m_keyunlockMode);
     }
 
     m_iNumConfiguredSamplers = numsamplers;
