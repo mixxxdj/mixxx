@@ -822,7 +822,7 @@ QScriptValue ControllerEngine::connectControl(
     }
 
     ControlObjectScript* coScript = getControlObjectScript(group, name);
-    // This check is redundant with makeConnectionInner, but the
+    // This check is redundant with makeConnection, but the
     // ControlObjectScript is also needed here to check for duplicate connections.
     if (coScript == nullptr) {
         if (disconnect) {
@@ -836,7 +836,7 @@ QScriptValue ControllerEngine::connectControl(
     }
 
     if (passedCallback.isString()) {
-        // This check is redundant with makeConnectionInner, but it must be done here
+        // This check is redundant with makeConnection, but it must be done here
         // before evaluating the code string.
         if (m_pEngine == nullptr) {
             qWarning() << "Tried to connect script callback, but there is no script engine!";
