@@ -511,7 +511,7 @@ void Tooltips::addStandardTooltips() {
     // Status displays and toggle buttons
     add("recording_duration")
             << tr("Recording Duration")
-            << tr("Displays the duration of the running recording.);
+            << tr("Displays the duration of the running recording.");
 
     // For legacy reasons also add tooltips for "shoutcast_enabled".
     for (const char* key : {"shoutcast_enabled", "broadcast_enabled"}) {
