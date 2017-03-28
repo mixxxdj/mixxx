@@ -53,6 +53,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     void slotSetRateDir(bool invert);
     void slotSetRateDir(int pos);
     void slotKeyLockMode(QAbstractButton*);
+    void slotKeyUnlockMode(QAbstractButton*);
     void slotSetRateTempLeft(double);
     void slotSetRateTempRight(double);
     void slotSetRatePermLeft(double);
@@ -96,6 +97,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     QList<ControlProxy*> m_rateDirControls;
     QList<ControlProxy*> m_rateRangeControls;
     QList<ControlProxy*> m_keylockModeControls;
+    QList<ControlProxy*> m_keyunlockModeControls;
     MixxxMainWindow *m_mixxx;
     SkinLoader* m_pSkinLoader;
     PlayerManager* m_pPlayerManager;
@@ -106,6 +108,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     bool m_speedAutoReset;
     bool m_pitchAutoReset;
     int m_keylockMode;
+    int m_keyunlockMode;
 };
 
 #endif
