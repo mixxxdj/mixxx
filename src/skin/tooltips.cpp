@@ -60,6 +60,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Spinning Vinyl")
             << tr("Rotates during playback and shows the position of a track.")
             << scratchMouse
+            << tr("Right click to show cover art of loaded track.")
             << dropTracksHere
             << tr("If Vinyl control is enabled, displays time-coded vinyl signal quality (see Preferences -> Vinyl Control).");
 

@@ -222,6 +222,7 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
 
     populateFields(*m_pLoadedTrack);
     populateCues(m_pLoadedTrack);
+    m_pWCoverArtLabel->loadTrack(m_pLoadedTrack);
 
     // We already listen to changed() so we don't need to listen to individual
     // signals such as cuesUpdates, coverArtUpdated(), etc.

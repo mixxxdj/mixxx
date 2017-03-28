@@ -1107,8 +1107,10 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
         dummy->setText(tr("Safe Mode Enabled"));
         return dummy;
     }
+
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
     WSpinny* spinny = new WSpinny(m_pParent, channelStr, m_pConfig,
-                                  m_pVCManager);
+                                  m_pVCManager, pPlayer);
     if (!spinny->isValid()) {
         delete spinny;
         WLabel* dummy = new WLabel(m_pParent);
@@ -1121,16 +1123,6 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
     WaveformWidgetFactory::instance()->addTimerListener(spinny);
     connect(spinny, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
-
-    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
-    if (pPlayer != NULL) {
-        connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
-                spinny, SLOT(slotLoadTrack(TrackPointer)));
-        connect(pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
-                spinny, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
-        // just in case a track is already loaded
-        spinny->slotLoadTrack(pPlayer->getLoadedTrack());
-    }
 
     spinny->setup(node, *m_pContext);
     spinny->installEventFilter(m_pKeyboard);
@@ -1161,7 +1153,7 @@ QWidget* LegacySkinParser::parseCoverArt(const QDomElement& node) {
     QString channel = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channel);
 
-    WCoverArt* pCoverArt = new WCoverArt(m_pParent, m_pConfig, channel);
+    WCoverArt* pCoverArt = new WCoverArt(m_pParent, m_pConfig, channel, pPlayer);
     commonWidgetSetup(node, pCoverArt);
     pCoverArt->setup(node, *m_pContext);
 
@@ -1174,16 +1166,9 @@ QWidget* LegacySkinParser::parseCoverArt(const QDomElement& node) {
                 pCoverArt, SLOT(slotEnable(bool)));
         connect(m_pLibrary, SIGNAL(trackSelected(TrackPointer)),
                 pCoverArt, SLOT(slotLoadTrack(TrackPointer)));
-    } else if (pPlayer != NULL) {
-        connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
-                pCoverArt, SLOT(slotLoadTrack(TrackPointer)));
-        connect(pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
-                pCoverArt, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
+    } else if (pPlayer != nullptr) {
         connect(pCoverArt, SIGNAL(trackDropped(QString, QString)),
                 m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
-
-        // just in case a track is already loaded
-        pCoverArt->slotLoadTrack(pPlayer->getLoadedTrack());
     }
 
     return pCoverArt;

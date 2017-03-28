@@ -6,6 +6,7 @@
 #include <QMouseEvent>
 #include <QWidget>
 
+#include "mixer/basetrackplayer.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "library/coverartcache.h"
@@ -19,7 +20,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
     Q_OBJECT
   public:
     WCoverArt(QWidget* parent, UserSettingsPointer pConfig,
-              const QString& group);
+              const QString& group, BaseTrackPlayer* pPlayer);
     ~WCoverArt() override;
 
     void setup(const QDomNode& node, const SkinContext& context);
@@ -62,6 +63,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
     QPixmap m_defaultCover;
     QPixmap m_defaultCoverScaled;
     CoverInfo m_lastRequestedCover;
+    BaseTrackPlayer* m_pPlayer;
     DlgCoverArtFullSize* m_pDlgFullSize;
 };
 
