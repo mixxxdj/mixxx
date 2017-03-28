@@ -16,12 +16,14 @@ public:
 
    static void inhibit();
    static void uninhibit();
+   static void triggerUserActivity();
 
 private:
    static void inhibitInternal();
    static void uninhibitInternal();
 
    static bool s_enabled;
+   static bool s_sendActivity;
 #if defined(Q_OS_MAC)
     /* sleep management */
     static IOPMAssertionID s_systemSleepAssertionID;

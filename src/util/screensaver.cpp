@@ -26,6 +26,11 @@ https://github.com/awjackson/bsnes-classic/blob/038e2e051ffc8abe7c56a3bf27e3016c
 #elif defined(Q_OS_LINUX)
 #  include <QtDBus>
 #elif HAVE_XSCREENSAVER_SUSPEND
+#  define None XNone
+#  define Window XWindow
+#  include <X11/Xlib.h>
+#  undef None
+#  undef Window
 #  include <X11/extensions/scrnsaver.h>
 #endif // Q_OS_WIN
 
@@ -54,7 +59,7 @@ void ScreenSaverHelper::uninhibit()
 IOPMAssertionID ScreenSaverHelper::s_systemSleepAssertionID=0;
 IOPMAssertionID ScreenSaverHelper::s_userActivityAssertionID=0;
 
-void ScreenSaverHelper::inhibitInternal()
+void ScreenSaverHelper::triggerUserActivity()
 {
     /* Declare user activity.
      This wakes the display if it is off, and postpones display sleep according to the users system preferences
@@ -72,7 +77,12 @@ void ScreenSaverHelper::inhibitInternal()
             qWarning("failed to declare user activity.");
         }
     }
+}
 
+void ScreenSaverHelper::inhibitInternal()
+{
+     triggerUserActivity();
+ 
     /* prevent the system from sleeping */
     if (s_systemSleepAssertionID > 0) {
         qDebug() << "IOKit releasing old screensaver inhibitor" << s_systemSleepAssertionID;
@@ -101,13 +111,20 @@ void ScreenSaverHelper::uninhibitInternal()
         qDebug() << "IOKit screensaver uninhibited " << s_systemSleepAssertionID;
         IOPMAssertionRelease(s_systemSleepAssertionID);
     }
+    if (s_userActivityAssertionID > 0) {
+        IOPMAssertionRelease(s_userActivityAssertionID);
+    }
 }
 
 #elif defined(Q_OS_WIN)
+void ScreenSaverHelper::triggerUserActivity()
+{
+    SetThreadExecutionState( ES_DISPLAY_REQUIRED );
+}
 void ScreenSaverHelper::inhibitInternal()
 {
     // Calling once without "ES_CONTINUOUS" to force the monitor to wake up.
-    SetThreadExecutionState( ES_DISPLAY_REQUIRED );
+    triggerUserActivity();
     SetThreadExecutionState( ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED | ES_CONTINUOUS );
     qDebug() << "screensaver inhibited";
     s_enabled = true;
@@ -121,19 +138,58 @@ void ScreenSaverHelper::uninhibitInternal()
 
 #elif defined(Q_OS_LINUX)
 const char *SCREENSAVERS[][4] = {
-    // org.freedesktop.ScreenSaver is the standard. should work for kde.
+    // org.freedesktop.ScreenSaver is the standard. should work for gnome and kde too, 
+    // but I add their specific names too
     {"org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", "Inhibit"},
     {"org.gnome.ScreenSaver", "/org/gnome/ScreenSaver", "org.gnome.ScreenSaver", "Inhibit"},
-    // Seen this on internet, not sure if it was a typo or what.
-    {"org.gnome.SessionManager", "/org/gnome/SessionManager", "org.gnome.SessionManager", "Inhibit"},
-    // This can be used to simulate action instead. gnome also has "SimulateUserActivity".
+    {"org.kde.screensaver", "/ScreenSaver", "org.kde.screensaver", "Inhibit"},
+    {nullptr, nullptr, nullptr, nullptr}
+};
+const char *USERACTIVITY[][4] = {
+    // org.freedesktop.ScreenSaver is the standard. should work for gnome and kde too, 
+    // but I add their specific names too
+    {"org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", "SimulateUserActivity"},
+    {"org.gnome.ScreenSaver", "/org/gnome/ScreenSaver", "org.gnome.ScreenSaver", "SimulateUserActivity"},
     {"org.kde.screensaver", "/ScreenSaver", "org.kde.screensaver", "SimulateUserActivity"},
     {nullptr, nullptr, nullptr, nullptr}
 };
 
 uint32_t ScreenSaverHelper::s_cookie = 0;
 int ScreenSaverHelper::s_saverindex = -1;
+bool ScreenSaverHelper::s_sendActivity = true;
 
+void ScreenSaverHelper::triggerUserActivity()
+{
+    if (!s_sendActivity) {
+        return;
+    }
+    
+    s_sendActivity = false;
+    if (!QDBusConnection::sessionBus().isConnected()) {
+        qWarning("Cannot connect to the D-Bus session bus.\nTo start it, run:\n"
+                "\teval `dbus-launch --auto-syntax`");
+        return;
+    }
+    s_sendActivity = false;
+    for (int i=0; USERACTIVITY[i][0] != nullptr; i++ ) {
+        QDBusInterface iface(USERACTIVITY[i][0], USERACTIVITY[i][1], USERACTIVITY[i][2], 
+            QDBusConnection::sessionBus());
+        if (iface.isValid()) {
+            QDBusReply<uint32_t> reply = iface.call(USERACTIVITY[i][3]);
+            if (reply.isValid()) {
+                s_sendActivity = true;
+                break;
+            } else {
+                qWarning() << "Call to inhibit for " << USERACTIVITY[i][0] << " failed: " 
+                    << reply.error().message();
+            }
+        } 
+    }
+    if (!s_sendActivity) {
+        qWarning() << "Could not send activity using the registered DBus methods. " 
+        << "Will not try again until the program is restarted. ";
+    }
+}
 void ScreenSaverHelper::inhibitInternal()
 {
     if (!QDBusConnection::sessionBus().isConnected()) {
@@ -149,7 +205,7 @@ void ScreenSaverHelper::inhibitInternal()
         QDBusInterface iface(SCREENSAVERS[i][0], SCREENSAVERS[i][1], SCREENSAVERS[i][2], 
             QDBusConnection::sessionBus());
         if (iface.isValid()) {
-            QDBusReply<uint32_t> reply = iface.call("Inhibit", "org.mixxxdj","Mixxx active");
+            QDBusReply<uint32_t> reply = iface.call(SCREENSAVERS[i][3], "org.mixxxdj","Mixxx active");
             if (reply.isValid()) {
                 s_cookie = reply.value();
                 s_saverindex = i;
@@ -159,7 +215,6 @@ void ScreenSaverHelper::inhibitInternal()
             } else {
                 qWarning() << "Call to inhibit for " << SCREENSAVERS[i][0] << " failed: " 
                     << reply.error().message();
-                return;
             }
         } else {
             qDebug() << "DBus interface " << SCREENSAVERS[i][0] << " not valid";
@@ -189,6 +244,27 @@ void ScreenSaverHelper::uninhibitInternal()
 
 #elif HAS_XWINDOW_SCREENSAVER
 // This is untested.
+struct LibXtst : public library {
+  function<int (Display*, unsigned int, Bool, unsigned long)> XTestFakeKeyEvent;
+
+  LibXtst() {
+    if(open("Xtst")) {
+      XTestFakeKeyEvent = sym("XTestFakeKeyEvent");
+    }
+  }
+} libXtst;
+
+void ScreenSaverHelper::triggerUserActivity()
+{
+    char *name = ":0.0";
+    Display *display;
+    if (getenv("DISPLAY"))
+        name=getenv("DISPLAY");
+    display=XOpenDisplay(name);
+    libXtst.XTestFakeKeyEvent(display, 255, True,  0);
+    libXtst.XTestFakeKeyEvent(display, 255, False, 0);
+    XCloseDisplay(display);
+}
 void ScreenSaverHelper::inhibitInternal()
 {
     char *name = ":0.0";
