@@ -67,8 +67,10 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
             this, SLOT(slotSetTrackTimeDisplay(double)));
 
     // If not present in the config, set the default value
-    if (!m_pConfig->exists(ConfigKey("[Controls]","PositionDisplay")))
-        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"),ConfigValue(0));
+    if (!m_pConfig->exists(ConfigKey("[Controls]","PositionDisplay"))) {
+        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"),
+          QString::number(static_cast<int>(TrackTime::DisplayMode::Remaining)));
+    }
 
     double positionDisplayType = m_pConfig->getValue(
             ConfigKey("[Controls]", "PositionDisplay"),
