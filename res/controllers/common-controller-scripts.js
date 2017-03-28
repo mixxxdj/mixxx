@@ -302,10 +302,14 @@ script.midiPitch = function (LSB, MSB, status) {
    Purpose: wrapper around engine.spinback() that can be directly mapped
             from xml for a spinback effect
             e.g: <key>script.spinback</key>
-   Input:   channel, control, value, status, group
+   Input:   channel, control, value, status, group, factor (optional), start rate (optional)
    Output:  none
    -------- ------------------------------------------------------ */
-script.spinback = function(channel, control, value, status, group) {
+script.spinback = function(channel, control, value, status, group, factor, rate) {
+    // set default factor
+    if (factor === undefined) {
+        factor = 1;
+    }
     // disable on note-off or zero value note/cc
     engine.spinback(parseInt(group.substring(8,9)), ((status & 0xF0) !== 0x80 && value > 0));
 }
