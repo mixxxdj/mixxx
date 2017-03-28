@@ -11,6 +11,7 @@
 #include "controllers/controller.h"
 #include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
+#include "util/screensaver.h"
 
 Controller::Controller()
         : QObject(),
@@ -96,6 +97,16 @@ void Controller::send(QList<int> data, unsigned int length) {
 }
 
 void Controller::receive(const QByteArray data, mixxx::Duration timestamp) {
+    if (userActivityInhibitTimer.isNull()) {
+        mixxx::ScreenSaverHelper::triggerUserActivity();
+        userActivityInhibitTimer.start();
+    }
+     // Inhibit Updates for 1000 milliseconds
+    if (userActivityInhibitTimer.elapsed() > 1000) {
+        mixxx::ScreenSaverHelper::triggerUserActivity();
+        userActivityInhibitTimer.start();
+    }        
+
     if (m_pEngine == NULL) {
         //qWarning() << "Controller::receive called with no active engine!";
         // Don't complain, since this will always show after closing a device as

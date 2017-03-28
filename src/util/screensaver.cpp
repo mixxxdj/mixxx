@@ -44,13 +44,13 @@ bool ScreenSaverHelper::s_enabled = false;
 void ScreenSaverHelper::inhibit()
 {
     if (!s_enabled) {
-        inhibit();
+        inhibitInternal();
     }
 }
 void ScreenSaverHelper::uninhibit()
 {
     if (s_enabled) {
-        uninhibit();
+        uninhibitInternal();
     }
 }
 
@@ -111,6 +111,8 @@ void ScreenSaverHelper::uninhibitInternal()
         qDebug() << "IOKit screensaver uninhibited " << s_systemSleepAssertionID;
         IOPMAssertionRelease(s_systemSleepAssertionID);
     }
+    // JosepMaJAZ: I am not sure if this needs to be called or not, and specifically when
+    // called on on the triggerUserActivity alone.
     if (s_userActivityAssertionID > 0) {
         IOPMAssertionRelease(s_userActivityAssertionID);
     }

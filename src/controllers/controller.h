@@ -157,6 +157,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // Indicates whether or not the device has been opened for input/output.
     bool m_bIsOpen;
     bool m_bLearning;
+    QTime userActivityInhibitTimer;
 
     // accesses lots of our stuff, but in the same thread
     friend class ControllerManager;
