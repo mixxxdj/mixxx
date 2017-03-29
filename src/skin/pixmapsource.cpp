@@ -1,4 +1,6 @@
 #include <QtDebug>
+#include <QPainter>
+#include <QSvgRenderer>
 
 #include "skin/pixmapsource.h"
 

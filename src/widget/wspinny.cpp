@@ -24,10 +24,6 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
           WBaseWidget(this),
           m_group(group),
           m_pConfig(pConfig),
-          m_pBgImage(nullptr),
-          m_pMaskImage(nullptr),
-          m_pFgImage(nullptr),
-          m_pGhostImage(nullptr),
           m_pPlay(nullptr),
           m_pPlayPos(nullptr),
           m_pVisualPlayPos(nullptr),
@@ -83,10 +79,6 @@ WSpinny::~WSpinny() {
 #ifdef __VINYLCONTROL__
     m_pVCManager->removeSignalQualityListener(this);
 #endif
-    WImageStore::deleteImage(m_pBgImage);
-    WImageStore::deleteImage(m_pMaskImage);
-    WImageStore::deleteImage(m_pFgImage);
-    WImageStore::deleteImage(m_pGhostImage);
 }
 
 void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report) {
@@ -125,38 +117,44 @@ void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report)
 }
 
 void WSpinny::setup(const QDomNode& node, const SkinContext& context) {
-    // Set images
-    QDomElement backPathElement = context.selectElement(node, "PathBackground");
-    m_pBgImage = WImageStore::getImage(context.getPixmapSource(backPathElement));
-    Paintable::DrawMode bgmode = context.selectScaleMode(backPathElement,
-                                                         Paintable::FIXED);
-    if (m_pBgImage && !m_pBgImage->isNull() && bgmode == Paintable::FIXED) {
-        setFixedSize(m_pBgImage->size());
-    } else {
-        setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    }
-    m_pMaskImage = WImageStore::getImage(context.getPixmapSource(
-                        context.selectNode(node, "PathMask")));
-    m_pFgImage = WImageStore::getImage(context.getPixmapSource(
-                        context.selectNode(node,"PathForeground")));
-    if (m_pFgImage && !m_pFgImage->isNull()) {
-        m_fgImageScaled = m_pFgImage->scaled(
-                size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    }
-    m_pGhostImage = WImageStore::getImage(context.getPixmapSource(
-                        context.selectNode(node,"PathGhost")));
-    if (m_pGhostImage && !m_pGhostImage->isNull()) {
-        m_ghostImageScaled = m_pGhostImage->scaled(
-                size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    }
+    QDomElement bgElement = context.selectElement(node, "PathBackground");
+    PixmapSource bgSource = context.getPixmapSource(bgElement);
+    m_pBgPaintable = WPixmapStore::getPaintable(bgSource,
+                        context.selectScaleMode(bgElement,
+                                                Paintable::STRETCH_ASPECT));
+    //TODO: legacy behavior
+
+    QDomElement fgElement = context.selectElement(node, "PathForeground");
+    PixmapSource fgSource = context.getPixmapSource(fgElement);
+    m_pFgPaintable = WPixmapStore::getPaintable(fgSource,
+                        context.selectScaleMode(fgElement,
+                                                Paintable::STRETCH_ASPECT));
+
+    QDomElement maskElement = context.selectElement(node, "PathMask");
+    PixmapSource maskSource = context.getPixmapSource(maskElement);
+    m_pMaskPaintable = WPixmapStore::getPaintable(maskSource,
+                        context.selectScaleMode(maskElement,
+                                                Paintable::STRETCH_ASPECT));
+
+    QDomElement ghostElement = context.selectElement(node, "PathGhost");
+    PixmapSource ghostSource = context.getPixmapSource(ghostElement);
+    m_pGhostPaintable = WPixmapStore::getPaintable(ghostSource,
+                        context.selectScaleMode(ghostElement,
+                                                Paintable::STRETCH_ASPECT));
+
+    // Pixmaps are rendered from SVGs upon resizing, so initialize the pixmaps
+    resize(width(), height());
 
     m_bShowCover = context.selectBool(node, "ShowCover", false);
+
+    // TODO: set default size policy here?
 
 #ifdef __VINYLCONTROL__
     // Find the vinyl input we should listen to reports about.
     if (m_pVCManager) {
         m_iVinylInput = m_pVCManager->vinylInputFromGroup(m_group);
     }
+    // TODO: scale?
     m_iVinylScopeSize = MIXXX_VINYL_SCOPE_SIZE;
     m_qImage = QImage(m_iVinylScopeSize, m_iVinylScopeSize, QImage::Format_ARGB32);
     // fill with transparent black
@@ -289,8 +287,8 @@ void WSpinny::paintEvent(QPaintEvent *e) {
     p.setRenderHint(QPainter::SmoothPixmapTransform);
     p.drawPrimitive(QStyle::PE_Widget, option);
 
-    if (m_pBgImage) {
-        p.drawImage(rect(), *m_pBgImage, m_pBgImage->rect());
+    if (!m_bgImage.isNull()) {
+        p.drawImage(rect(), m_bgImage);
     }
 
     if (m_bShowCover && !m_loadedCoverScaled.isNull()) {
@@ -300,11 +298,12 @@ void WSpinny::paintEvent(QPaintEvent *e) {
         p.drawPixmap(x, y, m_loadedCoverScaled);
     }
 
-    if (m_pMaskImage) {
-        p.drawImage(rect(), *m_pMaskImage, m_pMaskImage->rect());
+    if (!m_maskImage.isNull()) {
+        p.drawImage(rect(), m_maskImage);
     }
 
 #ifdef __VINYLCONTROL__
+    // TODO: scale
     // Overlay the signal quality drawing if vinyl is active
     if (m_bVinylActive && m_bSignalActive) {
         // draw the last good image
@@ -318,7 +317,7 @@ void WSpinny::paintEvent(QPaintEvent *e) {
     // and draw the image at the corner.
     p.translate(width() / 2, height() / 2);
 
-    bool paintGhost = m_bGhostPlayback && m_pGhostImage && !m_pGhostImage->isNull();
+    bool paintGhost = m_bGhostPlayback && !m_ghostImage.isNull();
     if (paintGhost) {
         p.save();
     }
@@ -333,19 +332,19 @@ void WSpinny::paintEvent(QPaintEvent *e) {
         m_dGhostAngleLastPlaypos = m_dGhostAngleCurrentPlaypos;
     }
 
-    if (m_pFgImage && !m_pFgImage->isNull()) {
+    if (!m_fgImage.isNull()) {
         // Now rotate the image and draw it on the screen.
         p.rotate(m_fAngle);
-        p.drawImage(-(m_fgImageScaled.width() / 2),
-                    -(m_fgImageScaled.height() / 2), m_fgImageScaled);
+        p.drawImage(-(m_fgImage.width() / 2),
+                    -(m_fgImage.height() / 2), m_fgImage);
     }
 
     if (paintGhost) {
         p.restore();
         p.save();
         p.rotate(m_fGhostAngle);
-        p.drawImage(-(m_ghostImageScaled.width() / 2),
-                    -(m_ghostImageScaled.height() / 2), m_ghostImageScaled);
+        p.drawImage(-(m_ghostImage.width() / 2),
+                    -(m_ghostImage.height() / 2), m_ghostImage);
 
         //Rotate back to the playback position (not the ghost positon),
         //and draw the beat marks from there.
@@ -360,16 +359,33 @@ QPixmap WSpinny::scaledCoverArt(const QPixmap& normal) {
     return normal.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
-void WSpinny::resizeEvent(QResizeEvent* /*unused*/) {
+void WSpinny::resizeEvent(QResizeEvent* re) {
+    qDebug() << "RESIZING SPINNY, QResizeEvent size: " << re->size()
+             << "WSpinny size:" << size()
+             << "old size:" << re->oldSize();
+    // Keep it square
+    if (height() < width()) {
+        resize(height(), height());
+        return;
+    } else if (height() > width()) {
+        resize(width(), width());
+        return;
+    }
+
+    // TODO: if cover art is off or unavailable, set to deck color
+    // specify deck color in QSS
     m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
-    if (m_pFgImage && !m_pFgImage->isNull()) {
-        m_fgImageScaled = m_pFgImage->scaled(
-                size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+    m_bgImage = m_pBgPaintable->renderToImage(size());
+    m_fgImage = m_pFgPaintable->renderToImage(size());
+    if (m_pMaskPaintable != nullptr) {
+        m_maskImage = m_pMaskPaintable->renderToImage(size());
     }
-    if (m_pGhostImage && !m_pGhostImage->isNull()) {
-        m_ghostImageScaled = m_pGhostImage->scaled(
-                size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    }
+    m_ghostImage = m_pGhostPaintable->renderToImage(size());
+}
+
+QSize WSpinny::sizeHint() const {
+    return QSize(height(), height());
 }
 
 /* Convert between a normalized playback position (0.0 - 1.0) and an angle
