@@ -119,7 +119,7 @@ void PlayerInfo::updateCurrentPlayingDeck() {
             continue;
         }
 
-        if (pDc->m_pregain.get() <= 0.5) {
+        if (pDc->m_pregain.get() <= 0.25) {
             continue;
         }
 
@@ -150,7 +150,6 @@ void PlayerInfo::updateCurrentPlayingDeck() {
             maxVolume = dvol;
         }
     }
-
     if (maxDeck != m_currentlyPlayingDeck) {
         m_currentlyPlayingDeck = maxDeck;
         locker.unlock();

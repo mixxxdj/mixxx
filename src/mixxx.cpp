@@ -1333,9 +1333,8 @@ void MixxxMainWindow::setInhibitScreensaver(mixxx::ScreenSaverPreference newInhi
             && PlayerInfo::instance().getCurrentPlayingDeck()!=-1) {
         mixxx::ScreenSaverHelper::inhibit();
     }
-
     int inhibit_int = static_cast<int>(newInhibit);
-    pConfig->set(ConfigKey("[Config]", "InhibitScreensaver"), ConfigValue(inhibit_int));
+    pConfig->setValue<int>(ConfigKey("[Config]","InhibitScreensaver"), inhibit_int);
     m_inhibitScreensaver = newInhibit;
 }
 

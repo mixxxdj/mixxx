@@ -289,13 +289,17 @@ void ScreenSaverHelper::uninhibitInternal()
 }
 
 #else
+void ScreenSaverHelper::triggerUserActivity()
+{
+    DEBUG_ASSERT(!"Screensaver trigger activity not implemented");
+}
 void ScreenSaverHelper::inhibitInternal()
 {
-    qError("Screensaver suspending not implemented");
+    DEBUG_ASSERT(!"Screensaver suspending not implemented")
 }
 void ScreenSaverHelper::uninhibitInternal()
 {
-    qError("Screensaver suspending not implemented");
+    DEBUG_ASSERT(!"Screensaver suspending not implemented");
 }
 #endif // Q_OS_MAC
 

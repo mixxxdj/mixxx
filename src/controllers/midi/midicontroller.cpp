@@ -200,16 +200,6 @@ void MidiController::commitTemporaryInputMappings() {
 
 void MidiController::receive(unsigned char status, unsigned char control,
                              unsigned char value, mixxx::Duration timestamp) {
-    if (userActivityInhibitTimer.isNull()) {
-        mixxx::ScreenSaverHelper::triggerUserActivity();
-        userActivityInhibitTimer.start();
-    }
-     // Inhibit Updates for 1000 milliseconds
-    if (userActivityInhibitTimer.elapsed() > 1000) {
-        mixxx::ScreenSaverHelper::triggerUserActivity();
-        userActivityInhibitTimer.start();
-    }        
-
     unsigned char channel = MidiUtils::channelFromStatus(status);
     unsigned char opCode = MidiUtils::opCodeFromStatus(status);
 
@@ -217,6 +207,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
                                                  channel, opCode, timestamp));
     MidiKey mappingKey(status, control);
 
+    triggerActivity();
     if (isLearning()) {
         emit(messageReceived(status, control, value));
 
@@ -463,18 +454,10 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
 
 void MidiController::receive(QByteArray data, mixxx::Duration timestamp) {
     controllerDebug(MidiUtils::formatSysexMessage(getName(), data, timestamp));
-    if (userActivityInhibitTimer.isNull()) {
-        mixxx::ScreenSaverHelper::triggerUserActivity();
-        userActivityInhibitTimer.start();
-    }
-     // Inhibit Updates for 1000 milliseconds
-    if (userActivityInhibitTimer.elapsed() > 1000) {
-        mixxx::ScreenSaverHelper::triggerUserActivity();
-        userActivityInhibitTimer.start();
-    }
 
     MidiKey mappingKey(data.at(0), 0xFF);
 
+    triggerActivity();
     // TODO(rryan): Need to review how MIDI learn works with sysex messages. I
     // don't think this actually does anything useful.
     if (isLearning()) {

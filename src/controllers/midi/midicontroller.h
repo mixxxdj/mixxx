@@ -108,7 +108,6 @@ class MidiController : public Controller {
     MidiControllerPreset m_preset;
     SoftTakeoverCtrl m_st;
     QList<QPair<MidiInputMapping, unsigned char> > m_fourteen_bit_queued_mappings;
-    QTime userActivityInhibitTimer;
 
     // So it can access sendShortMsg()
     friend class MidiOutputHandler;
