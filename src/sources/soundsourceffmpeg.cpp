@@ -976,6 +976,12 @@ SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
 SINT SoundSourceFFmpeg::readSampleFrames(SINT numberOfFrames,
         CSAMPLE* sampleBuffer) {
 
+    if (sampleBuffer == nullptr) {
+       // They are trying to make us skip
+       // we don't want to do that so we lie
+       return numberOfFrames;
+    }
+
     if (m_SCache.size() == 0) {
         // Make sure we always start at beginning and cache have some
         // material that we can consume.
