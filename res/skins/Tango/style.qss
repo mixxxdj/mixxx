@@ -845,7 +845,7 @@ WPushButton {
     border: 1px solid #dddddd;
   }
   #RecDurationLabel, #RecordingButtonUnderlay {
-    border: 1px solid #dddddd;
+    color: #888888;
     font-weight: bold;
     background-color: #5c0000;
     border: 1px solid #a90000;

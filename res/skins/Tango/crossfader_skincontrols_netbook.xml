@@ -169,7 +169,7 @@
               <Template src="skin:button_3state_display.xml">
                 <SetVariable name="ObjectName">RecordingButton</SetVariable>
                 <SetVariable name="Size">60f,20f</SetVariable>
-                <SetVariable name="state_0_text">REC ?</SetVariable>
+                <SetVariable name="state_0_text">REC</SetVariable>
                 <SetVariable name="state_1_text">. . .</SetVariable>
                 <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
                 <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
@@ -182,7 +182,7 @@
               <Template src="skin:button_3state_display.xml">
                 <SetVariable name="ObjectName">RecordingButtonUnderlay</SetVariable>
                 <SetVariable name="Size">60f,20f</SetVariable>
-                <SetVariable name="state_2_text">REC !</SetVariable>
+                <SetVariable name="state_2_text">REC</SetVariable>
                 <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
                 <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
               </Template>
