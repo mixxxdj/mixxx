@@ -38,6 +38,9 @@ class WTrackTableView : public WLibraryTableView {
     void loadSelectedTrack() override;
     void loadSelectedTrackToGroup(QString group, bool play) override;
 
+    void saveCurrentVScrollBarPos();
+    void restoreCurrentVScrollBarPos();
+
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
     void slotMouseDoubleClicked(const QModelIndex &);

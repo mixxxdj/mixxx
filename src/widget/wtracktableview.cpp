@@ -196,7 +196,7 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
 
 // slot
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
-    //qDebug() << "WTrackTableView::loadTrackModel()" << model;
+    qDebug() << "WTrackTableView::loadTrackModel()" << model;
 
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
 
@@ -579,7 +579,6 @@ void WTrackTableView::slotOpenInFileBrowser() {
 }
 
 void WTrackTableView::slotHide() {
-
     QModelIndexList indices = selectionModel()->selectedRows();
     if (indices.size() > 0) {
         TrackModel* trackModel = getTrackModel();
@@ -1706,4 +1705,18 @@ void WTrackTableView::slotReloadCoverArt() {
 
 bool WTrackTableView::hasFocus() const {
     return QWidget::hasFocus();
+}
+
+void WTrackTableView::saveCurrentVScrollBarPos()
+{
+    long value = getTrackModel() == nullptr?
+                0:reinterpret_cast<unsigned long>(getTrackModel());
+    saveVScrollBarPos(QString::number(value));
+}
+
+void WTrackTableView::restoreCurrentVScrollBarPos()
+{
+    long value = getTrackModel() == nullptr?
+                0:reinterpret_cast<unsigned long>(getTrackModel());
+    restoreVScrollBarPos(QString::number(value));
 }
