@@ -328,6 +328,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     slotUpdateSchemes();
 
 
+#if QT_VERSION > QT_VERSION_CHECK(5, 0, 0)
     AutoHiDpi autoHiDpi;
     m_autoScaleFactor = autoHiDpi.getScaleFactor();
     double scaleFactor = m_autoScaleFactor;
@@ -373,6 +374,12 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     }
     connect(comboBoxScaleFactor, SIGNAL(activated(int)),
             this, SLOT(slotSetScaleFactor(int)));
+#else
+    checkBoxScaleFactorAuto->hide();
+    comboBoxScaleFactor->hide();
+    labelScaleFactor->hide();
+#endif
+
 
     //
     // Start in fullscreen mode

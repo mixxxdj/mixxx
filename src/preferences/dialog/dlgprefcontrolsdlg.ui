@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>562</width>
-    <height>632</height>
+    <height>711</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -185,7 +185,7 @@
        </layout>
       </item>
       <item row="6" column="0">
-       <widget class="QLabel" name="labelDoubleWidgetOption">
+       <widget class="QLabel" name="labelScaleFactor">
         <property name="text">
          <string>HiDPI / Retina scaling</string>
         </property>
@@ -278,39 +278,39 @@ CUP mode:
        </widget>
       </item>
       <item row="1" column="1" colspan="2">
-        <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-            <widget class="QRadioButton" name="radioButtonElapsed">
-            <property name="text">
-              <string>Elapsed</string>
-            </property>
-            <attribute name="buttonGroup">
-              <string notr="true">buttonGroupTrackTime</string>
-            </attribute>
-            </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="radioButtonRemaining">
-             <property name="text">
-             <string>Remaining</string>
-           </property>
-           <attribute name="buttonGroup">
-             <string notr="true">buttonGroupTrackTime</string>
-           </attribute>
-           </widget>
-          </item>
-          <item>
-            <widget class="QRadioButton" name="radioButtonElapsedAndRemaining">
-              <property name="text">
-            <string>Elapsed and Remaining</string>
-            </property>
-              <attribute name="buttonGroup">
-                <string notr="true">buttonGroupTrackTime</string>
-              </attribute>
-          </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QRadioButton" name="radioButtonElapsed">
+          <property name="text">
+           <string>Elapsed</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupTrackTime</string>
+          </attribute>
+         </widget>
         </item>
-      </layout>
-     </item>
+        <item>
+         <widget class="QRadioButton" name="radioButtonRemaining">
+          <property name="text">
+           <string>Remaining</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupTrackTime</string>
+          </attribute>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioButtonElapsedAndRemaining">
+          <property name="text">
+           <string>Elapsed and Remaining</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupTrackTime</string>
+          </attribute>
+         </widget>
+        </item>
+       </layout>
+      </item>
       <item row="2" column="0">
        <widget class="QLabel" name="labelAutoCue">
         <property name="text">
