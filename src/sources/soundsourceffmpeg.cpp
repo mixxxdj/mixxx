@@ -512,8 +512,17 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
             // Are we on correct audio stream. Currently we are always
             // Using first audio stream but in future there should be
             // possibility to choose which to use
+            // If Pos is -1 it meand FFmpeg/AVConv doesn't know it
+            // So then we use pts instead
             if (l_SPacket.stream_index == m_pAudioStream->index &&
-                    l_SPacket.pos >= 0) {
+                    (l_SPacket.pos >= 0 || l_SPacket.pos == -1)) {
+
+                // Codecs like Wavpack does it like this
+                // They work but you can say about position nothing
+                if (l_SPacket.pos == -1)
+                {
+                   l_SPacket.pos = l_SPacket.pts;
+                }
                 if (m_lStoredSeekPoint > 0) {
                     struct ffmpegLocationObject *l_STestObj = nullptr;
                     if (m_SJumpPoints.size() > 0) {
