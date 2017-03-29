@@ -18,71 +18,84 @@ Controls:
 
 -->
 <Template>
-  <SizeAwareStack>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
     <Children>
-
-      <WidgetGroup><!-- 0  show skin controls at top edge of window -->
-        <Layout>vertical</Layout>
-        <SizePolicy>me,max</SizePolicy>
-        <MinimumSize>1,1</MinimumSize>
-        <MaximumSize>1259,1</MaximumSize>
+      <SizeAwareStack><!-- Netbook trigger -->
         <Children>
-          <WidgetStack currentpage="[Tango],netbook_normal_stack0" persist="true">
-            <Children>
-              <WidgetGroup trigger="[Tango],netbook_mode">
-                <Size>2f,2f</Size>
-                <Children>
-                </Children>
-                <Connection>
-                  <ConfigKey>[Tango],netbook_mode</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-              <WidgetGroup trigger="[Tango],normal_mode">
-                <Size>2f,2f</Size>
-                <Children>
-                </Children>
-                <Connection>
-                  <ConfigKey>[Tango],normal_mode</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-            </Children>
-          </WidgetStack>
-        </Children>
-      </WidgetGroup>
 
-      <WidgetGroup><!-- 1  show skin controls in the center between decks -->
-        <Layout>vertical</Layout>
-        <SizePolicy>me,me</SizePolicy>
-        <MinimumSize>1260,-1</MinimumSize>
-        <MaximumSize>-1,-1</MaximumSize>
-        <Children>
-          <WidgetStack currentpage="[Tango],netbook_normal_stack1" persist="true">
+          <WidgetGroup><!-- 0  show skin controls at top edge of window -->
+            <Layout>vertical</Layout>
+            <SizePolicy>me,max</SizePolicy>
+            <MinimumSize>1,1</MinimumSize>
+            <MaximumSize>1259,1</MaximumSize>
             <Children>
-              <WidgetGroup trigger="[Tango],netbook_mode">
-                <Size>2f,2f</Size>
+              <WidgetStack currentpage="[Tango],netbook_normal_stack0" persist="true">
                 <Children>
+                  <WidgetGroup trigger="[Tango],netbook_mode">
+                    <Size>2f,2f</Size>
+                    <Children>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Tango],netbook_mode</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                  <WidgetGroup trigger="[Tango],normal_mode">
+                    <Size>2f,2f</Size>
+                    <Children>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Tango],normal_mode</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
                 </Children>
-                <Connection>
-                  <ConfigKey>[Tango],netbook_mode</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-              <WidgetGroup trigger="[Tango],normal_mode">
-                <Size>2f,2f</Size>
-                <Children>
-                </Children>
-                <Connection>
-                  <ConfigKey>[Tango],normal_mode</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
+              </WidgetStack>
             </Children>
-          </WidgetStack>
-        </Children>
-      </WidgetGroup>
+          </WidgetGroup>
 
+          <WidgetGroup><!-- 1  show skin controls in the center between decks -->
+            <Layout>vertical</Layout>
+            <SizePolicy>me,me</SizePolicy>
+            <MinimumSize>1260,-1</MinimumSize>
+            <MaximumSize>-1,-1</MaximumSize>
+            <Children>
+              <WidgetStack currentpage="[Tango],netbook_normal_stack1" persist="true">
+                <Children>
+                  <WidgetGroup trigger="[Tango],netbook_mode">
+                    <Size>2f,2f</Size>
+                    <Children>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Tango],netbook_mode</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                  <WidgetGroup trigger="[Tango],normal_mode">
+                    <Size>2f,2f</Size>
+                    <Children>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Tango],normal_mode</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                </Children>
+              </WidgetStack>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </SizeAwareStack><!-- /Netbook trigger -->
+      <WidgetGroup>
+        <ObjectName>EnforceNetbookMode</ObjectName>
+        <Size>3000f,1f</Size>
+        <Children/>
+        <Connection>
+          <ConfigKey persist="true">[Tango],enforce_netbook_mode</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
     </Children>
-  </SizeAwareStack>
+  </WidgetGroup>
 </Template>

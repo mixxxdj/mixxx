@@ -90,13 +90,14 @@
       <attribute persist="true" config_key="[Tango],vinylControlsDeck3">0</attribute>
       <attribute persist="true" config_key="[Tango],vinylControlsDeck4">0</attribute>
       <attribute persist="true" config_key="[Tango],vumeter">1</attribute>
-      <!-- These two are preset and must never be changed manually, otherwise
-            SizeAwareStack in netbook_trigger.xml won't work properly.
-            See description there!
+      <!-- Next tow COs are preset and must never be changed manually, otherwise
+            SizeAwareStack in netbook_trigger.xml won't work properly!
+            See description there.
             netbook_normal_stack0 = 0 means netbook mode with < 1260px width
             netbook_normal_stack1 = 1 means normal mode with >= 1260px width -->
       <attribute persist="true" config_key="[Tango],netbook_normal_stack0">0</attribute>
       <attribute persist="true" config_key="[Tango],netbook_normal_stack1">1</attribute>
+      <attribute persist="true" config_key="[Tango],enforce_netbook_mode">0</attribute>
     </attributes>
   </manifest>
 

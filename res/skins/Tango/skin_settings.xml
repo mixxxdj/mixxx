@@ -388,6 +388,16 @@ Description:
                 <SetVariable name="ConfigKeyPerm">[PreviewDeck],show_previewdeck</SetVariable>
               </Template>
 
+              <Template src="skin:button_2state_persist.xml">
+                <SetVariable name="TooltipId">show_previewdeck</SetVariable>
+                <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
+                <SetVariable name="Size">172f,17f</SetVariable>
+                <SetVariable name="Align">left</SetVariable>
+                <SetVariable name="state_0_text">      Enforce compact mode</SetVariable>
+                <SetVariable name="state_1_text"> &#10003; Enforce compact mode</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Tango],enforce_netbook_mode</SetVariable>
+              </Template>
+
             </Children>
           </WidgetGroup><!-- /Extras -->
         </Children>
