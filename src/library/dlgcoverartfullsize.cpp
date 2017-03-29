@@ -48,12 +48,12 @@ void DlgCoverArtFullSize::init(TrackPointer pTrack) {
 }
 
 void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
-    if (m_pLoadedTrack) {
+    if (m_pLoadedTrack != nullptr) {
         disconnect(m_pLoadedTrack.get(), SIGNAL(coverArtUpdated()),
                    this, SLOT(slotTrackCoverArtUpdated()));
     }
     m_pLoadedTrack = pTrack;
-    if (m_pLoadedTrack) {
+    if (m_pLoadedTrack != nullptr) {
         QString windowTitle;
         const QString albumArtist = m_pLoadedTrack->getAlbumArtist();
         const QString artist = m_pLoadedTrack->getArtist();
@@ -113,7 +113,7 @@ void DlgCoverArtFullSize::slotCoverFound(const QObject* pRequestor,
 
 // slots to handle signals from the context menu
 void DlgCoverArtFullSize::slotReloadCoverArt() {
-    if (m_pLoadedTrack) {
+    if (m_pLoadedTrack != nullptr) {
         CoverInfo coverInfo =
                 CoverArtUtils::guessCoverInfo(*m_pLoadedTrack);
         slotCoverInfoSelected(coverInfo);

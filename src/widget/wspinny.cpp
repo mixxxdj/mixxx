@@ -294,14 +294,14 @@ void WSpinny::slotCoverFound(const QObject* pRequestor,
 }
 
 void WSpinny::slotCoverInfoSelected(const CoverInfo& coverInfo) {
-    if (m_loadedTrack) {
+    if (m_loadedTrack != nullptr) {
         // Will trigger slotTrackCoverArtUpdated().
         m_loadedTrack->setCoverInfo(coverInfo);
     }
 }
 
 void WSpinny::slotReloadCoverArt() {
-    if (m_loadedTrack) {
+    if (m_loadedTrack != nullptr) {
         CoverArtCache* pCache = CoverArtCache::instance();
         if (pCache) {
             pCache->requestGuessCover(m_loadedTrack);
