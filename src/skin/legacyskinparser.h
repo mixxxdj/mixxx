@@ -12,12 +12,14 @@
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "skin/tooltips.h"
 #include "proto/skin.pb.h"
+#include "util/memory.h"
 
 class WBaseWidget;
 class Library;
 class KeyboardEventFilter;
 class PlayerManager;
 class EffectsManager;
+class RecordingManager;
 class ControllerManager;
 class SkinContext;
 class WLabel;
@@ -33,7 +35,8 @@ class LegacySkinParser : public QObject, public SkinParser {
                      KeyboardEventFilter* pKeyboard, PlayerManager* pPlayerManager,
                      ControllerManager* pControllerManager,
                      Library* pLibrary, VinylControlManager* pVCMan,
-                     EffectsManager* pEffectsManager);
+                     EffectsManager* pEffectsManager,
+                     RecordingManager* pRecordingManager);
     virtual ~LegacySkinParser();
 
     virtual bool canParse(const QString& skinPath);
@@ -103,6 +106,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseLibrary(const QDomElement& node);
     QWidget* parseLibrarySidebar(const QDomElement& node);
     QWidget* parseBattery(const QDomElement& node);
+    QWidget* parseRecordingDuration(const QDomElement& node);
     QWidget* parseCoverArt(const QDomElement& node);
 
     // Renders a template.
@@ -136,8 +140,9 @@ class LegacySkinParser : public QObject, public SkinParser {
     Library* m_pLibrary;
     VinylControlManager* m_pVCManager;
     EffectsManager* m_pEffectsManager;
+    RecordingManager* m_pRecordingManager;
     QWidget* m_pParent;
-    SkinContext* m_pContext;
+    std::unique_ptr<SkinContext> m_pContext;
     Tooltips m_tooltips;
     QHash<QString, QDomElement> m_templateCache;
     static QList<const char*> s_channelStrs;

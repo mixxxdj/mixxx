@@ -15,7 +15,7 @@
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
 #include "library/browse/browsefeature.h"
-#include "library/cratefeature.h"
+#include "library/crate/cratefeature.h"
 #include "library/rhythmbox/rhythmboxfeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/recording/recordingfeature.h"
@@ -327,7 +327,7 @@ void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
             break;
         case Library::PurgeTracks:
             // The user requested that we purge all metadata.
-            m_pTrackCollection->getTrackDAO().purgeTracks(dir);
+            m_pTrackCollection->purgeTracks(dir);
             break;
         case Library::LeaveTracksUnchanged:
         default:

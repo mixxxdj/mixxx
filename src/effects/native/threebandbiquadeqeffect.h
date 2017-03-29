@@ -1,8 +1,6 @@
 #ifndef THREEBANDBIQUADEQEFFECT_H
 #define THREEBANDBIQUADEQEFFECT_H
 
-#include <QMap>
-
 #include "control/controlproxy.h"
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"
@@ -14,6 +12,7 @@
 #include "util/sample.h"
 #include "util/types.h"
 #include "util/memory.h"
+#include "util/samplebuffer.h"
 
 class ThreeBandBiquadEQEffectGroupState final {
   public:
@@ -29,7 +28,7 @@ class ThreeBandBiquadEQEffectGroupState final {
     std::unique_ptr<EngineFilterBiquad1Peaking> m_lowCut;
     std::unique_ptr<EngineFilterBiquad1Peaking> m_midCut;
     std::unique_ptr<EngineFilterBiquad1HighShelving> m_highCut;
-    CSAMPLE* m_pBuf;
+    SampleBuffer m_tempBuf;
     double m_oldLowBoost;
     double m_oldMidBoost;
     double m_oldHighBoost;

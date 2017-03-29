@@ -98,6 +98,32 @@ class SkinContext {
             return ok ? conv : 0;
     }
 
+    inline QColor selectColor(const QDomNode& node, const QString& nodeName) const {
+        // Takes a string with format #AARRGGBB and returns the corresponding QColor with alpha-channel set
+        // QT5.2 parses such strings by default in QColor::setNamedColor()
+        // TODO(MK): remove that logic once QT > 5.2 is the default
+
+        QColor color;
+        QString sColorString = nodeToString(selectElement(node, nodeName));
+        if (sColorString.startsWith('#') && sColorString.length() == 9) {
+            // first extract the #RRGGBB part and parse the color from that
+            QString sRgbHex = sColorString.mid(3, 6).prepend("#");
+            color.setNamedColor(sRgbHex);
+
+            // now extract the alpha-value
+            QString sAlphaHex = sColorString.mid(1, 2);
+            bool bAlphaValueTransformed;
+            int iAlpha = sAlphaHex.toUInt(&bAlphaValueTransformed, 16);
+            if (bAlphaValueTransformed) {
+                color.setAlpha(iAlpha);
+            }
+        } else {
+            // if the given string is not in #AARRGGBB format, fall back to default QT behaviour
+            color.setNamedColor(sColorString);
+        }
+        return color;
+    }
+
     inline bool selectBool(const QDomNode& node, const QString& nodeName,
                            bool defaultValue) const {
         QDomNode child = selectNode(node, nodeName);

@@ -123,13 +123,17 @@
         },
         disconnect: function () {
             if (this.connections[0] !== undefined) {
-                this.connections.forEach(function (connection) {
-                    connection.disconnect();
+                this.connections.forEach(function (conn) {
+                    conn.disconnect();
                 });
             }
         },
         trigger: function() {
-            engine.trigger(this.group, this.outKey);
+            if (this.connections[0] !== undefined) {
+                this.connections.forEach(function (conn) {
+                    conn.trigger();
+                });
+            }
         },
         shiftOffset: 0,
         sendShifted: false,
@@ -157,27 +161,21 @@
         onlyOnPress: true,
         on: 127,
         off: 0,
+        isPress: function (channel, control, value, status) {
+            return value > 0;
+        },
         inValueScale: function () { return ! this.inGetValue(); },
-        separateNoteOnOff: false,
         input: function (channel, control, value, status, group) {
             if (this.onlyOnPress) {
-                var pressed;
-                if (this.separateNoteOnOff) {
-                    // Does the first nybble of the first MIDI byte indicate a
-                    // note on or note off message?
-                    pressed = (status & 0xF0) === 0x90;
-                } else {
-                    pressed = value > 0;
-                }
-                if (pressed) {
+                if (this.isPress(channel, control, value, status)) {
                     this.inSetValue(this.inValueScale(value));
                 }
             } else {
                 this.inSetValue(this.inValueScale(value));
             }
         },
-        outValueScale: function() {
-            return (this.outGetValue()) ? this.on : this.off;
+        outValueScale: function (value) {
+            return (value > 0) ? this.on : this.off;
         },
     });
 
@@ -187,9 +185,16 @@
     PlayButton.prototype = new Button({
         unshift: function () {
             this.inKey = 'play';
+            this.input = Button.prototype.input;
+            // Stop reversing playback if the user releases the shift button before releasing this PlayButton.
+            if (engine.getValue(this.group, 'reverse') === 1) {
+                engine.setValue(this.group, 'reverse', 0);
+            }
         },
         shift: function () {
-            this.inKey = 'start_stop';
+            this.input = function (channel, control, value, status, group) {
+                engine.setValue(this.group, 'reverse', this.isPress(channel, control, value, status));
+            };
         },
         outKey: 'play_indicator',
     });
@@ -198,9 +203,16 @@
         Button.call(this, options);
     };
     CueButton.prototype = new Button({
-        inKey: 'cue_default',
+        unshift: function () {
+            this.inKey = 'cue_default';
+        },
+        shift: function () {
+            this.inKey = 'start_stop';
+        },
+        input: function (channel, control, value, status, group) {
+            this.inSetValue(this.isPress(channel, control, value, status));
+        },
         outKey: 'cue_indicator',
-        onlyOnPress: false,
     });
 
     var SyncButton = function (options) {
@@ -225,9 +237,6 @@
             return 1;
         },
         outKey: 'loop_enabled',
-        outValueScale: function (value) {
-            return (value) ? this.on : this.off;
-        },
     });
 
     var HotcueButton = function (options) {
@@ -259,7 +268,7 @@
     SamplerButton.prototype = new Button({
         unshift: function () {
             this.input = function (channel, control, value, status, group) {
-                if (value > 0) {
+                if (this.isPress(channel, control, value, status)) {
                     if (engine.getValue(this.group, 'track_loaded') === 0) {
                         engine.setValue(this.group, 'LoadSelectedTrack', 1);
                     } else {
@@ -270,7 +279,7 @@
         },
         shift: function() {
             this.input = function (channel, control, value, status, group) {
-                if (value > 0) {
+                if (this.isPress(channel, control, value, status)) {
                     if (engine.getValue(this.group, 'play') === 1) {
                         engine.setValue(this.group, 'play', 0);
                     } else {
@@ -551,7 +560,7 @@
                 this.shift = function () {
                     this.isShifted = true;
                     this.input = function (channel, control, value, status, group) {
-                        if (value > 0) {
+                        if (this.isPress(channel, control, value, status)) {
                             if (engine.getValue(eu.group, "focused_effect") === this.number) {
                                 // unfocus and make knobs control metaknobs
                                 engine.setValue(eu.group, "focused_effect", 0);

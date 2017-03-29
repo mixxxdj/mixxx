@@ -39,7 +39,7 @@ class CoverArtUtilTest : public LibraryTest, public CoverArtCache {
 
     void TearDown() override {
         // make sure we clean up the db
-        QSqlQuery query(collection()->getDatabase());
+        QSqlQuery query(collection()->database());
         query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE);
         ASSERT_TRUE(query.exec());
         query.prepare("DELETE FROM library");

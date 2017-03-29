@@ -334,7 +334,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
                                                            m_pControllerManager,
                                                            m_pLibrary,
                                                            m_pVCManager,
-                                                           m_pEffectsManager))) {
+                                                           m_pEffectsManager,
+                                                           m_pRecordingManager))) {
         reportCriticalErrorAndQuit(
                 "default skin cannot be loaded see <b>mixxx</b> trace for more information.");
 
@@ -1125,7 +1126,8 @@ void MixxxMainWindow::rebootMixxxView() {
                                                            m_pControllerManager,
                                                            m_pLibrary,
                                                            m_pVCManager,
-                                                           m_pEffectsManager))) {
+                                                           m_pEffectsManager,
+                                                           m_pRecordingManager))) {
 
         QMessageBox::critical(this,
                               tr("Error in skin file"),
