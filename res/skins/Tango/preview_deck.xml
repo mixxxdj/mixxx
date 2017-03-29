@@ -2,31 +2,21 @@
 Description:
   The Preview deck with 0/4/8 Hotcue buttons and Gain knob
 Variables:
-  ToolTip/ToolTipID
-  ObjectName
-  Size
-  channum: channel number.
-  ConfigKey: left-click connection
-  ConfigKeyRight: right-click connection
-  ConfigKeyDisp: display connection
-  Button graphics
-  Knob graphics
+  PlayedOverlayColor  <- skin.xml
 -->
 <Template>	
   <SetVariable name="group">[PreviewDeck1]</SetVariable>
-  <WidgetGroup><!-- Preview Deck Column 1 Row 1 -->
+  <WidgetGroup>
     <ObjectName>PreviewDeck</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>me,min</SizePolicy>
-    <!-- 'XXXme' is overwritten by parent column in library.xml
-    thus previewdeck would be truncated if XXXme here is bigger than there -->
     <Children>
       <WidgetGroup>
         <ObjectName>PreviewTitleEject</ObjectName>
         <Layout>horizontal</Layout>
-        <Size>1me,19f</Size><!-- 18px + 1px margin -->
+        <Size>1me,19f</Size>
         <Children>
-          <WidgetGroup><!-- SamplerText -->
+          <WidgetGroup>
             <Layout>horizontal</Layout>
             <Size>1me,18f</Size>
             <ObjectName>PreviewTitle</ObjectName>
@@ -50,10 +40,10 @@ Variables:
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup>
+      <WidgetGroup><!-- Play-Overview-Gain -->
         <ObjectName>PreviewPlayOverview</ObjectName>
         <Layout>horizontal</Layout>
-        <Size>80me,35f</Size>
+        <Size>80me,34f</Size>
         <Children>
           <WidgetGroup>
             <ObjectName>PreviewPlay</ObjectName>
@@ -118,9 +108,11 @@ Variables:
             </Children>
           </WidgetGroup>
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- /Play-Overview-Gain -->
+
+      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>0me,1f</Size><Children/></WidgetGroup>
       
-      <WidgetGroup><!-- PreviewHotcues -->
+      <WidgetGroup><!-- Hotcues -->
         <Layout>horizontal</Layout>
         <ObjectName>PreviewHotcues</ObjectName>
         <Size>1me,24f</Size>
@@ -132,7 +124,7 @@ Variables:
           <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- /PreviewHotcues -->
+      </WidgetGroup><!-- /Hotcues -->
 
       <WidgetGroup><Size>1me,4f</Size><Children/></WidgetGroup>
 

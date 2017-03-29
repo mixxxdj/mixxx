@@ -34,14 +34,31 @@ Variables:
         </Children>
         <Connection>
           <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
+          <Transform><IsEqual>1</IsEqual></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /Hotcues 1-4 -->
 
-      <WidgetGroup><!-- Hotcues 5-8 -->
+      <WidgetGroup><!-- Hotcues 1-8 -->
         <Layout>horizontal</Layout>
         <SizePolicy>max,max</SizePolicy>
         <Children>
+          <Template src="skin:button_hotcue_sam_pre.xml">
+            <SetVariable name="HotCue">1</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:button_hotcue_sam_pre.xml">
+            <SetVariable name="HotCue">2</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:button_hotcue_sam_pre.xml">
+            <SetVariable name="HotCue">3</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:button_hotcue_sam_pre.xml">
+            <SetVariable name="HotCue">4</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
           <Template src="skin:button_hotcue_sam_pre.xml">
             <SetVariable name="HotCue">5</SetVariable>
           </Template>
@@ -61,10 +78,10 @@ Variables:
         </Children>
         <Connection>
           <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
+          <Transform><IsEqual>2</IsEqual></Transform>
           <BindProperty>visible</BindProperty>
-          <Transform><Add>-1</Add></Transform>
         </Connection>
-      </WidgetGroup><!-- /Hotcues 5-8 -->
+      </WidgetGroup><!-- /Hotcues 1-8 -->
 
     </Children>
   </WidgetGroup>

@@ -62,7 +62,7 @@ Variables:
         <Connection>
           <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
           <BindProperty>visible</BindProperty>
-          <Transform><Add>-1</Add></Transform>
+          <Transform><IsEqual>2</IsEqual></Transform>
         </Connection>
       </WidgetGroup><!-- /Hotcues 5-8 -->
 

@@ -1443,9 +1443,12 @@ WPushButton {
 #PreviewTitle, #PreviewEject, #PreviewGainKnob {
   background-color: #333333;
 }
-#PreviewTitleEject, #PreviewPlayOverview {
+#PreviewTitleEject {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   margin-bottom: 1px;
+}
+#PreviewPlayOverview {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
   #PreviewTitle {
     padding-left: 1px;
