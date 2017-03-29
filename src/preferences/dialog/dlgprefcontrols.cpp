@@ -328,7 +328,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     slotUpdateSchemes();
 
 
-#if QT_VERSION > QT_VERSION_CHECK(5, 0, 0)
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     AutoHiDpi autoHiDpi;
     m_autoScaleFactor = autoHiDpi.getScaleFactor();
     double scaleFactor = m_autoScaleFactor;
@@ -339,6 +339,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
         checkBoxScaleFactorAuto->setChecked(scaleFactorAuto);
         if (scaleFactorAuto) {
             comboBoxScaleFactor->setEnabled(false);
+            m_pConfig->setValue(
+                    ConfigKey("[Config]", "ScaleFactor"), m_autoScaleFactor);
         } else {
             scaleFactor = m_pConfig->getValue(
                         ConfigKey("[Config]", "ScaleFactor"), 1.0);
