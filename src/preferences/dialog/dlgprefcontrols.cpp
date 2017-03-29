@@ -69,15 +69,28 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
             this, SLOT(slotSetTrackTimeDisplay(double)));
 
     // If not present in the config, set the default value
-    if (!m_pConfig->exists(ConfigKey("[Controls]","PositionDisplay")))
-        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"),ConfigValue(0));
+    if (!m_pConfig->exists(ConfigKey("[Controls]","PositionDisplay"))) {
+        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"),
+          QString::number(static_cast<int>(TrackTime::DisplayMode::Remaining)));
+    }
 
-    if (m_pConfig->getValueString(ConfigKey("[Controls]", "PositionDisplay")).toInt() == 1) {
+    double positionDisplayType = m_pConfig->getValue(
+            ConfigKey("[Controls]", "PositionDisplay"),
+            static_cast<double>(TrackTime::DisplayMode::Elapsed));
+    if (positionDisplayType ==
+            static_cast<double>(TrackTime::DisplayMode::Remaining)) {
         radioButtonRemaining->setChecked(true);
-        m_pControlTrackTimeDisplay->set(1.0);
+        m_pControlTrackTimeDisplay->set(
+            static_cast<double>(TrackTime::DisplayMode::Remaining));
+    } else if (positionDisplayType ==
+                   static_cast<double>(TrackTime::DisplayMode::ElapsedAndRemaining)) {
+        radioButtonElapsedAndRemaining->setChecked(true);
+        m_pControlTrackTimeDisplay->set(
+            static_cast<double>(TrackTime::DisplayMode::ElapsedAndRemaining));
     } else {
         radioButtonElapsed->setChecked(true);
-        m_pControlTrackTimeDisplay->set(0.0);
+        m_pControlTrackTimeDisplay->set(
+            static_cast<double>(TrackTime::DisplayMode::Elapsed));
     }
     connect(buttonGroupTrackTime, SIGNAL(buttonClicked(QAbstractButton*)),
             this, SLOT(slotSetTrackTimeDisplay(QAbstractButton *)));
@@ -653,22 +666,27 @@ void DlgPrefControls::slotSetSkin(int) {
 }
 
 void DlgPrefControls::slotSetTrackTimeDisplay(QAbstractButton* b) {
-    int timeDisplay = 0;
+    double timeDisplay;
     if (b == radioButtonRemaining) {
-        timeDisplay = 1;
-        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(1));
+        timeDisplay = static_cast<double>(TrackTime::DisplayMode::Remaining);
+    } else if (b == radioButtonElapsedAndRemaining) {
+        timeDisplay = static_cast<double>(TrackTime::DisplayMode::ElapsedAndRemaining);
+    } else {
+        timeDisplay = static_cast<double>(TrackTime::DisplayMode::Elapsed);
     }
-    else {
-        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(0));
-    }
+    m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(timeDisplay));
     m_pControlTrackTimeDisplay->set(timeDisplay);
 }
 
 void DlgPrefControls::slotSetTrackTimeDisplay(double v) {
-    if (v > 0) {
+    if (v == 1.0) {
         // Remaining
         radioButtonRemaining->setChecked(true);
         m_pConfig->set(ConfigKey("[Controls]", "PositionDisplay"), ConfigValue(1));
+    } else if (v == 2.0) {
+        // Elapsed and remaining
+        radioButtonElapsedAndRemaining->setChecked(true);
+        m_pConfig->set(ConfigKey("[Controls]", "PositionDisplay"), ConfigValue(2));
     } else {
         // Elapsed
         radioButtonElapsed->setChecked(true);

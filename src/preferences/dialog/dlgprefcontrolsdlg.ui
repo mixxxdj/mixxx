@@ -447,16 +447,6 @@
    </item>
    <item row="0" column="0">
     <layout class="QGridLayout" name="GridLayout1">
-     <item row="10" column="2">
-      <widget class="QRadioButton" name="radioButtonRemaining">
-       <property name="text">
-        <string>Remaining</string>
-       </property>
-       <attribute name="buttonGroup">
-        <string notr="true">buttonGroupTrackTime</string>
-       </attribute>
-      </widget>
-     </item>
      <item row="2" column="0" rowspan="2">
       <widget class="QLabel" name="lableColorScheme">
        <property name="enabled">
@@ -489,15 +479,39 @@
        </property>
       </widget>
      </item>
-     <item row="10" column="1">
-      <widget class="QRadioButton" name="radioButtonElapsed">
-       <property name="text">
-        <string>Elapsed</string>
-       </property>
-       <attribute name="buttonGroup">
-        <string notr="true">buttonGroupTrackTime</string>
-       </attribute>
-      </widget>
+     <item row="10" column="1" colspan="2">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+          <widget class="QRadioButton" name="radioButtonElapsed">
+          <property name="text">
+            <string>Elapsed</string>
+          </property>
+          <attribute name="buttonGroup">
+            <string notr="true">buttonGroupTrackTime</string>
+          </attribute>
+          </widget>
+        </item>
+        <item>
+          <widget class="QRadioButton" name="radioButtonRemaining">
+          <property name="text">
+            <string>Remaining</string>
+          </property>
+          <attribute name="buttonGroup">
+            <string notr="true">buttonGroupTrackTime</string>
+          </attribute>
+          </widget>
+        </item>
+        <item>
+          <widget class="QRadioButton" name="radioButtonElapsedAndRemaining">
+          <property name="text">
+            <string>Elapsed and Remaining</string>
+          </property>
+          <attribute name="buttonGroup">
+            <string notr="true">buttonGroupTrackTime</string>
+          </attribute>
+          </widget>
+        </item>
+      </layout>
      </item>
      <item row="4" column="0">
       <widget class="QLabel" name="textLabelLocale">
@@ -772,6 +786,7 @@ CUP mode:
   <tabstop>ComboBoxCueDefault</tabstop>
   <tabstop>radioButtonElapsed</tabstop>
   <tabstop>radioButtonRemaining</tabstop>
+  <tabstop>radioButtonElapsedAndRemaining</tabstop>
   <tabstop>checkBoxSeekToCue</tabstop>
   <tabstop>checkBoxDisallowLoadToPlayingDeck</tabstop>
   <tabstop>ComboBoxRateRange</tabstop>
