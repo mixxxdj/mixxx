@@ -644,10 +644,11 @@ WPushButton {
   #SyncButtonOverlay[displayValue="0"]:hover, #KeyReset:hover {
     border: 1px solid #ff4800;
   }
-  #SyncButtonOverlay[displayValue="1"] {
+  #SyncButtonOverlay[displayValue="1"], #SamplerSyncButton[displayValue="1"] {
     border: 1px solid #ff4800;
+    color: #eeeeee;
   }
-  #SyncButtonOverlay[displayValue="1"]:hover {
+  #SyncButtonOverlay[displayValue="1"]:hover, #SamplerSyncButton[displayValue="1"]:hover {
     border: 1px solid #eeeeee;
   }
   #KeyDisplay {
@@ -1249,7 +1250,6 @@ WPushButton {
 }
   #SamplerDeck {
     qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-    background-color: #0f0f0f;
   }
 
 #SamplersLoadButton, #SamplersSaveButton {
@@ -1287,12 +1287,10 @@ WPushButton {
     image: url(skin:/buttons/btn_samplers_save_hover.svg) no-repeat center center;
   }
 
-#SamplerSyncGainPfl, #SamplerVU, #SamplerPitchSlider, #SamplerTitle {
-  background-color: #333333;
-}
-
 #SamplerPlayBox {
-  padding: 1px 1px 1px 0px;
+  border-color: #0f0f0f;
+  border-style: solid;
+  border-width: 1px 1px 1px 0px;
 }
 #SamplerPlayBox_mini {
   padding: 0px 1px 0px 0px;
@@ -1319,16 +1317,17 @@ WPushButton {
     background: #a90000;
     }
 
-#SamplerMain_mini[displayValue="0"] {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  }
-  #SamplerMain_miniUnderlay,
-  #Sampler_mini_empty {
-    background-color: #333333;
-  }
-  #SamplerMain_miniUnderlay[displayValue="1"] {
-    background-color: #888888;
-  }
+#Sampler_PlayIndicatorUnderlay[displayValue="0"],
+#Sampler_mini_PlayIndicatorUnderlay[displayValue="0"],
+#Sampler_mini_empty {
+  background-color: #333333;
+}
+#Sampler_PlayIndicatorUnderlay[displayValue="1"] {
+  background-color: #666666;
+}
+#Sampler_mini_PlayIndicatorUnderlay[displayValue="1"] {
+  background-color: #888888;
+}
 
 #SamplerTitle {
   padding-left: 3px;

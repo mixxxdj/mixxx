@@ -162,8 +162,8 @@ Variables:
                     </Connection>
                   </WidgetGroup><!-- /Overview + Title when track is loaded -->
 
-                  <!-- Neutral spacer when no track is loaded. Needs to be something like
-                      TrackPropperty or Overview so that tracks can be drop on it -->
+              <!-- Neutral spacer when no track is loaded. Needs to be something like
+                  TrackPropperty or Overview so that tracks can be dropped on it -->
                   <Text>
                     <TooltipId>text</TooltipId>
                     <SizePolicy>me,me</SizePolicy>
@@ -178,13 +178,13 @@ Variables:
 
                   <WidgetGroup><Size>2f,1min</Size><Children/></WidgetGroup>
 
-                  <Template src="skin:button_1state.xml">
+                  <Template src="skin:button_2state.xml">
                     <SetVariable name="TooltipId">beatsync_beatsync_tempo</SetVariable>
                     <SetVariable name="ObjectName">SamplerSyncButton</SetVariable>
                     <SetVariable name="Size">35f,22f</SetVariable>
                     <SetVariable name="state_0_text">SYNC</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="group"/>,beatsync</SetVariable>
-                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatsync_tempo</SetVariable>
+                    <SetVariable name="state_1_text">SYNC</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,sync_enabled</SetVariable>
                   </Template>
 
                   <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
@@ -216,7 +216,7 @@ Variables:
               </WidgetGroup><!-- /SamplerMain_mini -->
 
               <Template src="skin:button_2state.xml">
-                <SetVariable name="ObjectName">SamplerMain_miniUnderlay</SetVariable>
+                <SetVariable name="ObjectName">Sampler_mini_PlayIndicatorUnderlay</SetVariable>
                 <SetVariable name="Size">1me,1me</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,play_indicator</SetVariable>
               </Template>
