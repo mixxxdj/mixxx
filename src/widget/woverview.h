@@ -34,7 +34,6 @@ class WOverview : public WWidget {
     Q_OBJECT
   public:
     WOverview(const char* pGroup, UserSettingsPointer pConfig, QWidget* parent=nullptr);
-    ~WOverview() override;
 
     void setup(const QDomNode& node, const SkinContext& context);
 
@@ -67,7 +66,7 @@ class WOverview : public WWidget {
         return m_pWaveform;
     }
 
-    QImage* m_pWaveformSourceImage;
+    QImage m_waveformSourceImage;
     QImage m_waveformImageScaled;
 
     WaveformSignalColors m_signalColors;

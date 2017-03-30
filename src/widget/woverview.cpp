@@ -35,7 +35,6 @@
 
 WOverview::WOverview(const char *pGroup, UserSettingsPointer pConfig, QWidget* parent) :
         WWidget(parent),
-        m_pWaveformSourceImage(nullptr),
         m_actualCompletion(0),
         m_pixmapDone(false),
         m_waveformPeak(-1.0),
@@ -59,12 +58,6 @@ WOverview::WOverview(const char *pGroup, UserSettingsPointer pConfig, QWidget* p
             new ControlProxy(m_group, "track_samples", this);
     m_playControl = new ControlProxy(m_group, "play", this);
     setAcceptDrops(true);
-}
-
-WOverview::~WOverview() {
-    if (m_pWaveformSourceImage) {
-        delete m_pWaveformSourceImage;
-    }
 }
 
 void WOverview::setup(const QDomNode& node, const SkinContext& context) {
@@ -165,12 +158,23 @@ void WOverview::slotWaveformSummaryUpdated() {
         return;
     }
     m_pWaveform = pTrack->getWaveformSummary();
-    // If the waveform is already complete, just draw it.
-    if (m_pWaveform && m_pWaveform->getCompletion() == m_pWaveform->getDataSize()) {
-        m_actualCompletion = 0;
-        if (drawNextPixmapPart()) {
-            update();
+    if (m_pWaveform) {
+        // If the waveform is already complete, just draw it.
+        if (m_pWaveform->getCompletion() == m_pWaveform->getDataSize()) {
+            m_actualCompletion = 0;
+            if (drawNextPixmapPart()) {
+                update();
+            }
         }
+    } else {
+        // Null waveform pointer means waveform was cleared.
+        m_waveformSourceImage = QImage();
+        m_dAnalyzerProgress = 1.0;
+        m_actualCompletion = 0;
+        m_waveformPeak = -1.0;
+        m_pixmapDone = false;
+
+        update();
     }
 }
 
@@ -207,11 +211,7 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
                    this, SLOT(slotAnalyzerProgress(int)));
     }
 
-    if (m_pWaveformSourceImage) {
-        delete m_pWaveformSourceImage;
-        m_pWaveformSourceImage = nullptr;
-    }
-
+    m_waveformSourceImage = QImage();
     m_dAnalyzerProgress = 1.0;
     m_actualCompletion = 0;
     m_waveformPeak = -1.0;
@@ -311,7 +311,7 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
 
         // Draw waveform pixmap
         WaveformWidgetFactory* widgetFactory = WaveformWidgetFactory::instance();
-        if (m_pWaveformSourceImage) {
+        if (!m_waveformSourceImage.isNull()) {
             int diffGain;
             bool normalize = widgetFactory->isOverviewNormalized();
             if (normalize && m_pixmapDone && m_waveformPeak > 1) {
@@ -322,9 +322,9 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
             }
 
             if (m_diffGain != diffGain || m_waveformImageScaled.isNull()) {
-                QRect sourceRect(0, diffGain, m_pWaveformSourceImage->width(),
-                    m_pWaveformSourceImage->height() - 2 * diffGain);
-                QImage croppedImage = m_pWaveformSourceImage->copy(sourceRect);
+                QRect sourceRect(0, diffGain, m_waveformSourceImage.width(),
+                    m_waveformSourceImage.height() - 2 * diffGain);
+                QImage croppedImage = m_waveformSourceImage.copy(sourceRect);
                 if (m_orientation == Qt::Vertical) {
                     // Rotate pixmap
                     croppedImage = croppedImage.transformed(QTransform(0, 1, 1, 0, 0, 0));
