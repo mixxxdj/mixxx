@@ -44,7 +44,6 @@ WWaveformViewer::~WWaveformViewer() {
 }
 
 void WWaveformViewer::setup(const QDomNode& node, const SkinContext& context) {
-    Q_UNUSED(context);
     if (m_waveformWidget) {
         m_waveformWidget->setup(node, context);
     }

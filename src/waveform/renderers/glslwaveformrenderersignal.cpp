@@ -219,12 +219,27 @@ void GLSLWaveformRendererSignal::onSetup(const QDomNode& node) {
 }
 
 void GLSLWaveformRendererSignal::onSetTrack() {
-    m_loadedWaveform = 0;
-    loadTexture();
+    slotWaveformUpdated();
+
+    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+    if (!pTrack) {
+        return;
+    }
+
+    // When the track's waveform has been changed (or cleared), it is necessary
+    // to update (or delete) the texture containing the waveform which was
+    // uploaded to GPU. Otherwise, previous waveform will be shown.
+    connect(pTrack.get(), SIGNAL(waveformUpdated()),
+            this, SLOT(slotWaveformUpdated()));
 }
 
 void GLSLWaveformRendererSignal::onResize() {
     createFrameBuffers();
+}
+
+void GLSLWaveformRendererSignal::slotWaveformUpdated() {
+    m_loadedWaveform = 0;
+    loadTexture();
 }
 
 void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {

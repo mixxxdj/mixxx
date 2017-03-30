@@ -176,8 +176,7 @@ QHeaderView {
 }
 
 QHeaderView::section {
-  height: 18px;
-  font-size: 13px/15px;
+  font-size: 10pt;
   font-weight: normal;
   padding: 2px;
   background: #1A1A1A;
@@ -188,7 +187,7 @@ QHeaderView::section {
 }
 
 QHeaderView::section:selected {
-  font-size: 13px/15px;
+  font-size: 10pt;
   font-weight: bold;
   padding: 2px;
   background: #1A1A1A;
@@ -860,6 +859,8 @@ WEffectSelector {
   /* The 3D frame on the combo box becomes flat when you give it a border */
   border: 1px solid #444342;
   border-radius: 3px;
+  
+  font: 12px;
 }
 
   WEffectSelector:hover {

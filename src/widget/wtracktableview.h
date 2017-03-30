@@ -70,6 +70,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotUnlockBpm();
     void slotScaleBpm(int);
     void slotClearBeats();
+    void slotClearWaveform();
     void slotReplayGainReset();
     // Signalled 20 times per second (every 50ms) by GuiTick.
     void slotGuiTick50ms(double);
@@ -163,6 +164,9 @@ class WTrackTableView : public WLibraryTableView {
 
     // Clear track beats
     QAction* m_pClearBeatsAction;
+
+    // Clear track waveform
+    QAction* m_pClearWaveformAction;
 
     // Replay Gain feature
     QAction *m_pReplayGainResetAction;

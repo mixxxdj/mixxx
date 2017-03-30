@@ -48,11 +48,18 @@ class WWidget : public QWidget, public WBaseWidget {
   protected:
     bool touchIsRightButton();
     bool event(QEvent* e) override;
+    void setScaleFactor(double value) {
+        m_scaleFactor = value;
+    }
+    double scaleFactor() {
+        return m_scaleFactor;
+    }
 
     enum Qt::MouseButton m_activeTouchButton;
 
   private:
     ControlProxy* m_pTouchShift;
+    double m_scaleFactor;
 };
 
 #endif
