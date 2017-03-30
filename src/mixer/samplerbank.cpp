@@ -67,7 +67,7 @@ bool SamplerBank::saveSamplerBankToPath(const QString& samplerBankPath) {
     // folder. We don't need access to this file on a regular basis so we do not
     // register a security bookmark.
 
-    if (m_pPlayerManager == nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(m_pPlayerManager != nullptr) {
         qWarning() << "SamplerBank::saveSamplerBankToPath called with no PlayerManager";
         return false;
     }
@@ -137,7 +137,7 @@ bool SamplerBank::loadSamplerBankFromPath(const QString& samplerBankPath) {
     // folder. We don't need access to this file on a regular basis so we do not
     // register a security bookmark.
 
-    if (m_pPlayerManager == nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(m_pPlayerManager != nullptr) {
         qWarning() << "SamplerBank::loadSamplerBankFromPath called with no PlayerManager";
         return false;
     }
