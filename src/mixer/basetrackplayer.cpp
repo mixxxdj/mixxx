@@ -83,14 +83,21 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
     m_pDuration = new ControlObject(ConfigKey(getGroup(), "duration"));
 
     // Waveform controls
-    m_pWaveformZoom = new ControlPotmeter(ConfigKey(group, "waveform_zoom"),
-                                          WaveformWidgetRenderer::s_waveformMinZoom,
-                                          WaveformWidgetRenderer::s_waveformMaxZoom);
+    // This acts somewhat like a ControlPotmeter, but the normal _up/_down methods
+    // do not work properly with this CO.
+    m_pWaveformZoom = new ControlObject(ConfigKey(group, "waveform_zoom"));
+    m_pWaveformZoom->connectValueChangeRequest(this,
+        SLOT(slotWaveformZoomValueChangeRequest(double)), Qt::DirectConnection);
     m_pWaveformZoom->set(1.0);
-    m_pWaveformZoom->setStepCount(WaveformWidgetRenderer::s_waveformMaxZoom -
-            WaveformWidgetRenderer::s_waveformMinZoom);
-    m_pWaveformZoom->setSmallStepCount(WaveformWidgetRenderer::s_waveformMaxZoom -
-            WaveformWidgetRenderer::s_waveformMinZoom);
+    m_pWaveformZoomUp = new ControlPushButton(ConfigKey(group, "waveform_zoom_up"));
+    connect(m_pWaveformZoomUp, SIGNAL(valueChanged(double)),
+            this, SLOT(slotWaveformZoomUp(double)));
+    m_pWaveformZoomDown = new ControlPushButton(ConfigKey(group, "waveform_zoom_down"));
+    connect(m_pWaveformZoomDown, SIGNAL(valueChanged(double)),
+            this, SLOT(slotWaveformZoomDown(double)));
+    m_pWaveformZoomSetDefault = new ControlPushButton(ConfigKey(group, "waveform_zoom_set_default"));
+    connect(m_pWaveformZoomSetDefault, SIGNAL(valueChanged(double)),
+            this, SLOT(slotWaveformZoomSetDefault(double)));
 
     m_pEndOfTrack = new ControlObject(ConfigKey(group, "end_of_track"));
     m_pEndOfTrack->set(0.);
@@ -410,6 +417,39 @@ void BaseTrackPlayerImpl::slotVinylControlEnabled(double v) {
         emit(noVinylControlInputConfigured());
     }
 #endif
+}
+
+void BaseTrackPlayerImpl::slotWaveformZoomValueChangeRequest(double v) {
+    if (v <= WaveformWidgetRenderer::s_waveformMaxZoom
+            && v >= WaveformWidgetRenderer::s_waveformMinZoom) {
+        m_pWaveformZoom->setAndConfirm(v);
+    }
+}
+
+void BaseTrackPlayerImpl::slotWaveformZoomUp(double pressed) {
+    if (pressed <= 0.0) {
+        return;
+    }
+
+    m_pWaveformZoom->set(m_pWaveformZoom->get() + 1.0);
+}
+
+void BaseTrackPlayerImpl::slotWaveformZoomDown(double pressed) {
+    if (pressed <= 0.0) {
+        return;
+    }
+
+    m_pWaveformZoom->set(m_pWaveformZoom->get() - 1.0);
+}
+
+void BaseTrackPlayerImpl::slotWaveformZoomSetDefault(double pressed) {
+    if (pressed <= 0.0) {
+        return;
+    }
+
+    double defaultZoom = m_pConfig->getValue(ConfigKey("[Waveform]","DefaultZoom"),
+        WaveformWidgetRenderer::s_waveformDefaultZoom);
+    m_pWaveformZoom->set(defaultZoom);
 }
 
 void BaseTrackPlayerImpl::setReplayGain(double value) {
