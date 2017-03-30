@@ -103,7 +103,8 @@ void WWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
     if (!backPathNode.isNull()) {
         setPixmapBackground(
                 context.getPixmapSource(backPathNode),
-                context.selectScaleMode(backPathNode, Paintable::TILE));
+                context.selectScaleMode(backPathNode, Paintable::TILE),
+                context.getScaleFactor());
     }
 
     // Set background pixmap for the highlighted state
@@ -112,7 +113,8 @@ void WWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
     if (!backPathNodeHighlighted.isNull()) {
         setPixmapBackgroundHighlighted(
                 context.getPixmapSource(backPathNodeHighlighted),
-                context.selectScaleMode(backPathNodeHighlighted, Paintable::TILE));
+                context.selectScaleMode(backPathNodeHighlighted, Paintable::TILE),
+                context.getScaleFactor());
     }
 
     QLayout* pLayout = nullptr;
@@ -147,9 +149,11 @@ void WWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
 }
 
 void WWidgetGroup::setPixmapBackground(
-        PixmapSource source, Paintable::DrawMode mode) {
+        PixmapSource source,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
     // Load background pixmap
-    m_pPixmapBack = WPixmapStore::getPaintable(source, mode);
+    m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (!m_pPixmapBack) {
         qWarning() << "WWidgetGroup: Error loading background pixmap:"
                  << source.getPath();
@@ -157,9 +161,11 @@ void WWidgetGroup::setPixmapBackground(
 }
 
 void WWidgetGroup::setPixmapBackgroundHighlighted(
-        PixmapSource source, Paintable::DrawMode mode) {
+        PixmapSource source,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
     // Load background pixmap for the highlighted state
-    m_pPixmapBackHighlighted = WPixmapStore::getPaintable(source, mode);
+    m_pPixmapBackHighlighted = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (!m_pPixmapBackHighlighted) {
         qWarning() << "WWidgetGroup: Error loading background highlighted pixmap:"
                  << source.getPath();

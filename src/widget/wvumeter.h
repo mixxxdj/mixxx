@@ -35,10 +35,15 @@ class WVuMeter : public WWidget  {
     explicit WVuMeter(QWidget *parent=nullptr);
 
     void setup(const QDomNode& node, const SkinContext& context);
-    void setPixmapBackground(PixmapSource source, Paintable::DrawMode mode);
-    void setPixmaps(PixmapSource source,
-                    bool bHorizontal,
-                    Paintable::DrawMode mode);
+    void setPixmapBackground(
+            PixmapSource source,
+            Paintable::DrawMode mode,
+            double scaleFactor);
+    void setPixmaps(
+            PixmapSource source,
+            bool bHorizontal,
+            Paintable::DrawMode mode,
+            double scaleFactor);
     void onConnectedControlChanged(double dParameter, double dValue) override;
 
   protected slots:
