@@ -306,6 +306,17 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     connect(this, SIGNAL(newSkinLoaded()),
             m_pLibrary, SLOT(onSkinLoadFinished()));
 
+    // Inhibit the screensaver if the option is set. (Do it before creating the preferences dialog)
+    int inhibit = pConfig->getValue<int>(ConfigKey("[Config]","InhibitScreensaver"),-1);
+    if (inhibit == -1) {
+        inhibit = static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON);
+        pConfig->setValue<int>(ConfigKey("[Config]","InhibitScreensaver"), inhibit);
+    }
+    m_inhibitScreensaver = static_cast<mixxx::ScreenSaverPreference>(inhibit);
+    if (m_inhibitScreensaver == mixxx::ScreenSaverPreference::PREVENT_ON) {
+        mixxx::ScreenSaverHelper::inhibit();
+    }
+
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
                                     m_pControllerManager, m_pVCManager, m_pEffectsManager,
@@ -369,17 +380,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         slotViewFullScreen(true);
     }
     emit(newSkinLoaded());
-
-    // Inhibit the screensaver if the option is set.
-    int inhibit = pConfig->getValue<int>(ConfigKey("[Config]","InhibitScreensaver"),-1);
-    if (inhibit == -1) {
-        inhibit = static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON);
-        pConfig->setValue<int>(ConfigKey("[Config]","InhibitScreensaver"), inhibit);
-    }
-    m_inhibitScreensaver = static_cast<mixxx::ScreenSaverPreference>(inhibit);
-    if (m_inhibitScreensaver == mixxx::ScreenSaverPreference::PREVENT_ON) {
-        mixxx::ScreenSaverHelper::inhibit();
-    }
 
 
     // Wait until all other ControlObjects are set up before initializing
