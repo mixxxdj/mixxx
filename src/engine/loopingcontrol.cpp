@@ -38,8 +38,7 @@ QList<double> LoopingControl::getBeatSizes() {
 
 LoopingControl::LoopingControl(QString group,
                                UserSettingsPointer pConfig)
-        : EngineControl(group, pConfig),
-          m_mutex(QMutex::Recursive) {
+        : EngineControl(group, pConfig) {
     m_bLoopingEnabled = false;
     m_bLoopRollActive = false;
     LoopSamples loopSamples = { kNoTrigger, kNoTrigger };
@@ -643,14 +642,10 @@ void LoopingControl::slotReloopToggle(double val) {
 
 void LoopingControl::slotReloopCue(double pressed) {
     if (pressed > 0) {
-        QMutexLocker lock(&m_mutex);
-
         m_pPlayButton->set(0.0);
         seekAbs(static_cast<double>(
             m_loopSamples.getValue().start));
         setLoopingEnabled(true);
-
-        lock.unlock();
     }
 }
 

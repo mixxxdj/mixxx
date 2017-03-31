@@ -176,8 +176,6 @@ class LoopingControl : public EngineControl {
 
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
-
-    QMutex m_mutex;
 };
 
 // Class for handling loop moves of a set size. This allows easy access from
