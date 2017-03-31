@@ -45,6 +45,7 @@ class WLabel : public QLabel, public WBaseWidget {
   private:
     QString m_longText;
     Qt::TextElideMode m_elideMode;
+    double m_scaleFactor;
 };
 
 #endif
