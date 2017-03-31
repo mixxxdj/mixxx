@@ -12,7 +12,8 @@ WBeatSpinBox::WBeatSpinBox(QWidget * parent, ControlObject* pValueControl,
           m_valueControl(
             pValueControl ?
             pValueControl->getKey() : ConfigKey(), this
-          ) {
+          ),
+          m_scaleFactor(1.0) {
     setDecimals(decimals);
     setMinimum(minimum);
     setMaximum(maximum);
@@ -22,6 +23,11 @@ WBeatSpinBox::WBeatSpinBox(QWidget * parent, ControlObject* pValueControl,
 
     setValue(m_valueControl.get());
     m_valueControl.connectValueChanged(SLOT(slotControlValueChanged(double)));
+}
+
+void WBeatSpinBox::setup(const QDomNode& node, const SkinContext& context) {
+    Q_UNUSED(node);
+    m_scaleFactor = context.getScaleFactor();
 }
 
 void WBeatSpinBox::stepBy(int steps) {
@@ -235,4 +241,23 @@ QValidator::State WBeatSpinBox::validate(QString& input, int& pos) const {
     }
 
     return QValidator::Acceptable;
+}
+
+bool WBeatSpinBox::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    } else if (pEvent->type() == QEvent::FontChange) {
+        const QFont& fonti = font();
+        qDebug() << "WBeatSpinBox::event QEvent::FontChange" << fonti.pixelSize() * m_scaleFactor;
+        // Change the new font on the fly by casting away its constancy
+        // using setFont() here, would results into a recursive loop
+        // resetting the font to the original css values.
+        // Only scale pixel size fonts, point size fonts are scaled by the OS
+        if (fonti.pixelSize() > 0) {
+            const_cast<QFont&>(fonti).setPixelSize(fonti.pixelSize() * m_scaleFactor);
+        }
+        // TODO(Be): Figure out how to apply newly scaled font???
+    }
+
+    return QDoubleSpinBox::event(pEvent);
 }

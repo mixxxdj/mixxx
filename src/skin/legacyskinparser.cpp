@@ -1105,6 +1105,7 @@ QWidget* LegacySkinParser::parseBeatSpinBox(const QDomElement& node) {
 
     WBeatSpinBox* pSpinbox = new WBeatSpinBox(m_pParent, valueControl);
     commonWidgetSetup(node, pSpinbox);
+    pSpinbox->setup(node, *m_pContext);
 
     if (createdValueControl && valueControl != nullptr) {
         valueControl->setParent(pSpinbox);

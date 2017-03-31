@@ -17,6 +17,8 @@ class WBeatSpinBox : public QDoubleSpinBox, public WBaseWidget {
                         int decimals=5,
                         double minimum=0.03125, double maximum=512.00);
 
+    void setup(const QDomNode& node, const SkinContext& context);
+
   private slots:
     void slotControlValueChanged(double newValue);
 
@@ -30,6 +32,10 @@ class WBeatSpinBox : public QDoubleSpinBox, public WBaseWidget {
 
     ControlProxy m_valueControl;
     static QRegExp s_regexpBlacklist;
+
+    // for font scaling
+    bool event(QEvent* pEvent) override;
+    double m_scaleFactor;
 };
 
 #endif
