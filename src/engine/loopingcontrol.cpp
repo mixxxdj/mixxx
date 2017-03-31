@@ -816,9 +816,11 @@ void LoopingControl::clearActiveBeatLoop() {
 }
 
 bool LoopingControl::currentLoopMatchesBeatloopSize() {
+    // Calculate actual loop length in samples
     LoopSamples loopSamples = m_loopSamples.getValue();
     int currentLoopLength = loopSamples.end - loopSamples.start;
 
+    // Calculate what the loop size would be (in samples) if it is a beatloop
     double beatloopSize = m_pCOBeatLoopSize->get();
     int beatLoopLength = calculateEndOfBeatloop(loopSamples.start, beatloopSize)
                          - loopSamples.start;
@@ -830,13 +832,13 @@ bool LoopingControl::currentLoopMatchesBeatloopSize() {
     return abs(currentLoopLength - beatLoopLength) <= 2;
 }
 
-int LoopingControl::calculateEndOfBeatloop(int startSample, double beatloopSize) {
+int LoopingControl::calculateEndOfBeatloop(int startSample, double beatloopSizeInBeats) {
     if (m_pBeats == nullptr) {
         return kNoTrigger;
     }
 
-    int fullbeats = static_cast<int>(beatloopSize);
-    double fracbeats = beatloopSize - static_cast<double>(fullbeats);
+    int fullbeats = static_cast<int>(beatloopSizeInBeats);
+    double fracbeats = beatloopSizeInBeats - static_cast<double>(fullbeats);
 
     // Now we need to calculate the length of the beatloop. We do this by
     // taking the current beat and the fullbeats'th beat and adding the
@@ -1064,6 +1066,8 @@ void LoopingControl::slotLoopAutoToggle(double pressed) {
 }
 
 void LoopingControl::slotLoopManualToggle(double pressed) {
+    // If a loop is enabled, disable it. Otherwise, set
+    // loop in point on button down and loop out point on button up.
     if (m_bLoopingEnabled) {
         slotReloopToggle(1.0);
         m_bLoopManualTogglePressedToExitLoop = true;
