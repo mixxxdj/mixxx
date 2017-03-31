@@ -88,9 +88,9 @@ LoopingControl::LoopingControl(QString group,
     ControlDoublePrivate::insertAlias(ConfigKey(group, "reloop_exit"),
                                       ConfigKey(group, "reloop_toggle"));
 
-    m_pReloopCueButton = new ControlPushButton(ConfigKey(group, "reloop_cue"));
-    connect(m_pReloopCueButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotReloopCue(double)),
+    m_pReloopAndStopButton = new ControlPushButton(ConfigKey(group, "reloop_andstop"));
+    connect(m_pReloopAndStopButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotReloopAndStop(double)),
             Qt::DirectConnection);
 
     m_pCOLoopEnabled = new ControlObject(ConfigKey(group, "loop_enabled"));
@@ -228,7 +228,7 @@ LoopingControl::~LoopingControl() {
     delete m_pLoopExitButton;
     delete m_pReloopButton;
     delete m_pReloopToggleButton;
-    delete m_pReloopCueButton;
+    delete m_pReloopAndStopButton;
     delete m_pCOLoopEnabled;
     delete m_pCOLoopStartPosition;
     delete m_pCOLoopEndPosition;
@@ -604,7 +604,7 @@ void LoopingControl::slotReloop(double pressed) {
     }
 
     if (m_bLoopingEnabled) {
-        slotReloopCue(1);
+        slotReloopAndStop(1);
     } else {
         slotReloopToggle(1);
     }
@@ -640,7 +640,7 @@ void LoopingControl::slotReloopToggle(double val) {
     }
 }
 
-void LoopingControl::slotReloopCue(double pressed) {
+void LoopingControl::slotReloopAndStop(double pressed) {
     if (pressed > 0) {
         m_pPlayButton->set(0.0);
         seekAbs(static_cast<double>(
