@@ -26,7 +26,6 @@ EncoderVorbisSettings::EncoderVorbisSettings(UserSettingsPointer pConfig) :
     m_qualList.append(224);
     m_qualList.append(256);
     m_qualList.append(320);
-    m_pConfig = m_pConfig;
 }
 EncoderVorbisSettings::~EncoderVorbisSettings()
 {
@@ -49,13 +48,13 @@ void EncoderVorbisSettings::setQualityByValue(int qualityValue)
     // If we let the user write a bitrate value, this would allow to save such value.
         indexValue = qualityValue;
     }
-    m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "OGG_Quality"), ConfigValue(indexValue));
+    m_pConfig->setValue<int>(ConfigKey(RECORDING_PREF_KEY, "OGG_Quality"), indexValue);
 }
 
 void EncoderVorbisSettings::setQualityByIndex(int qualityIndex)
 {
     if (qualityIndex >= 0 && qualityIndex < m_qualList.size()) {
-        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "OGG_Quality"), ConfigValue(qualityIndex));
+        m_pConfig->setValue<int>(ConfigKey(RECORDING_PREF_KEY, "OGG_Quality"), qualityIndex);
     } else {
         qWarning() << "Invalid qualityIndex given to EncoderVorbisSettings: " 
             << qualityIndex << ". Ignoring it";
@@ -78,12 +77,13 @@ int EncoderVorbisSettings::getQualityIndex() const
 {
     int qualityIndex = m_pConfig->getValue(
             ConfigKey(RECORDING_PREF_KEY, "OGG_Quality"), DEFAULT_BITRATE_INDEX);
-    if (qualityIndex < 0 || qualityIndex > m_qualList.size()) {
-        return m_qualList.at(qualityIndex);
+    if (qualityIndex >= 0 && qualityIndex < m_qualList.size()) {
+        return qualityIndex;
     }
     else {
-        qWarning() << "Invalid qualityIndex in EncoderMp3Settings " 
-            << qualityIndex << ". Ignoring it and returning default";
+        qWarning() << "Invalid qualityIndex in EncoderVorbisSettings " 
+            << qualityIndex << "(Max is:" << m_qualList.size() << ") . Ignoring it and"
+            << "returning default which is" << DEFAULT_BITRATE_INDEX;
         return DEFAULT_BITRATE_INDEX;
     }
 }
