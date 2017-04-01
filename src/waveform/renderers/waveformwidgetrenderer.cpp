@@ -10,7 +10,8 @@
 #include "util/performancetimer.h"
 
 const int WaveformWidgetRenderer::s_waveformMinZoom = 1;
-const int WaveformWidgetRenderer::s_waveformMaxZoom = 6;
+const int WaveformWidgetRenderer::s_waveformMaxZoom = 10;
+const int WaveformWidgetRenderer::s_waveformDefaultZoom = 3;
 
 WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
     : m_group(group),
