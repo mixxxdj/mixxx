@@ -12,10 +12,9 @@
 
 DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
-          m_hider(parent),
           m_pConfig(pConfig),
           m_selFormat("","",false)
-          {
+{
     setupUi(this);
 
     // Setting recordings path.
@@ -30,19 +29,11 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     LineEditRecordings->setText(recordingsPath);
     connect(PushButtonBrowseRecordings, SIGNAL(clicked()),
             this, SLOT(slotBrowseRecordingsDir()));
-
-    m_hider.retainSizeFor(LabelQuality);
-    m_hider.retainSizeFor(SliderQuality);
-    m_hider.retainSizeFor(TextQuality);
-    m_hider.retainSizeFor(LabelCompression);
-    m_hider.retainSizeFor(SliderCompression);
-    m_hider.retainSizeFor(TextCompression);
-    m_hider.retainSizeFor(labelOptionGroup);
             
     // Setting Encoder
     bool found = false;
     QString prefformat = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Encoding"));
-    foreach( Encoder::Format format, EncoderFactory::getFactory().getFormats()) {
+    for ( const Encoder::Format format : EncoderFactory::getFactory().getFormats()) {
         QRadioButton* button = new QRadioButton(format.label, this);
         button->setObjectName(format.internalName);
         connect(button, SIGNAL(clicked()), this, SLOT(slotFormatChanged()));
@@ -120,26 +111,27 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
             this, SLOT(slotSliderCompression()));
 }
 
-DlgPrefRecord::~DlgPrefRecord() {
+DlgPrefRecord::~DlgPrefRecord()
+{
     // Note: I don't disconnect signals, since that's supposedly done automatically
     // when the object is deleted
-    foreach(QRadioButton* button, m_formatButtons) {
+    for (QRadioButton* button : m_formatButtons) {
         if (LosslessEncLayout->indexOf(button) != -1) {
             LosslessEncLayout->removeWidget(button);
         } else {
             LossyEncLayout->removeWidget(button);
         }
-        // TODO: Not sure if this is necessary or correct, or I should simply "delete button;"
-        emit(button->deleteLater());
+        button->deleteLater();
     }
-    foreach(QAbstractButton* widget, m_optionWidgets) {
+    for (QAbstractButton* widget : m_optionWidgets) {
         OptionGroupsLayout->removeWidget(widget);
         widget->deleteLater();
     }
     m_optionWidgets.clear();
 }
 
-void DlgPrefRecord::slotApply() {
+void DlgPrefRecord::slotApply()
+{
     saveRecordingFolder();
     saveMetaData();
     saveEncoding();
@@ -148,22 +140,52 @@ void DlgPrefRecord::slotApply() {
 }
 
 // This function updates/refreshes the contents of this dialog.
-void DlgPrefRecord::slotUpdate() {
+void DlgPrefRecord::slotUpdate()
+{
+    // Find out the max width of the labels. This is needed to keep the 
+    // UI fixed in size when hiding or showing elements.
+    // It is not perfect, but it didn't get better than this.
+    int max=0;
+    if (LabelQuality->size().width()> max) {
+        max=LabelQuality->size().width();
+    }
+    LabelLossless->setMaximumWidth(max);
+    LabelLossy->setMaximumWidth(max);
+    LabelLossless->setMinimumWidth(max);
+    LabelLossy->setMinimumWidth(max);
 
     QString recordingsPath = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Directory"));
     LineEditRecordings->setText(recordingsPath);
 
+    QString prefformat = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Encoding"));
+    for ( const Encoder::Format format : EncoderFactory::getFactory().getFormats()) {
+        if (prefformat == format.internalName) {
+            m_selFormat = format;
+            break;
+        }
+    }
+    setupEncoderUI(m_selFormat);
 
-//    setupEncoderUI(m_selFormat);
- 
     loadMetaData();
+
+     // Setting miscellaneous
+    CheckBoxRecordCueFile->setChecked(
+            (bool) m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt());
+
+    QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
+    int index = comboBoxSplitting->findText(fileSizeStr);
+    if (index >= 0) {
+        comboBoxSplitting->setCurrentIndex(index);
+    }
 }
 
-void DlgPrefRecord::slotResetToDefaults() {
+void DlgPrefRecord::slotResetToDefaults()
+{
     m_formatButtons.first()->setChecked(true);
-    setupEncoderUI(EncoderFactory::getFactory().getFormatFor(m_formatButtons.first()->objectName()));
-    // TODO: There really should be a defaultSettings() option 
-    // in the EncoderSettings interface
+    setupEncoderUI(EncoderFactory::getFactory().getFormatFor(
+        m_formatButtons.first()->objectName()));
+    // TODO (XXX): It would be better that a defaultSettings() method is added
+    // to the EncoderSettings interface so that we know which option to set
     m_optionWidgets.first()->setChecked(true);
 
     LineEditTitle->setText("");
@@ -177,7 +199,8 @@ void DlgPrefRecord::slotResetToDefaults() {
 }
 
 
-void DlgPrefRecord::slotBrowseRecordingsDir() {
+void DlgPrefRecord::slotBrowseRecordingsDir()
+{
     QString fd = QFileDialog::getExistingDirectory(
             this, tr("Choose recordings directory"),
             m_pConfig->getValueString(
@@ -206,33 +229,33 @@ void DlgPrefRecord::setupEncoderUI(Encoder::Format selformat)
 {
     EncoderSettingsPointer settings = EncoderFactory::getFactory().getEncoderSettings(selformat, m_pConfig);
     if (settings->usesQualitySlider()) {
-        m_hider.showWidget(LabelQuality);
-        m_hider.showWidget(SliderQuality);
-        m_hider.showWidget(TextQuality);
+        LabelQuality->setVisible(true);
+        SliderQuality->setVisible(true);
+        TextQuality->setVisible(true);
         SliderQuality->setMinimum(0);
         SliderQuality->setMaximum(settings->getQualityValues().size()-1);
         SliderQuality->setValue(settings->getQualityIndex());
         updateTextQuality();
     } else {
-        m_hider.hideWidget(LabelQuality);
-        m_hider.hideWidget(SliderQuality);
-        m_hider.hideWidget(TextQuality);
+        LabelQuality->setVisible(false);
+        SliderQuality->setVisible(false);
+        TextQuality->setVisible(false);
     }
     if (settings->usesCompressionSlider()) {
-        m_hider.showWidget(LabelCompression);
-        m_hider.showWidget(SliderCompression);
-        m_hider.showWidget(TextCompression);
+        LabelCompression->setVisible(true);
+        SliderCompression->setVisible(true);
+        TextCompression->setVisible(true);
         SliderCompression->setMinimum(0);
         SliderCompression->setMaximum(settings->getCompressionValues().size()-1);
         SliderCompression->setValue(settings->getCompression());
         updateTextCompression();
     } else {
-        m_hider.hideWidget(LabelCompression);
-        m_hider.hideWidget(SliderCompression);
-        m_hider.hideWidget(TextCompression);
+        LabelCompression->setVisible(false);
+        SliderCompression->setVisible(false);
+        TextCompression->setVisible(false);
     }
 
-    foreach(QAbstractButton* widget, m_optionWidgets) {
+    for (QAbstractButton* widget : m_optionWidgets) {
         optionsgroup.removeButton(widget);
         OptionGroupsLayout->removeWidget(widget);
         disconnect(widget, SIGNAL(clicked()), this, SLOT(slotGroupChanged()));
@@ -240,8 +263,8 @@ void DlgPrefRecord::setupEncoderUI(Encoder::Format selformat)
     }
     m_optionWidgets.clear();
     if (settings->usesOptionGroups()) {
-        m_hider.showWidget(labelOptionGroup);
-        // TODO: Right now i am supporting just one optiongroup.
+        labelOptionGroup->setVisible(true);
+        // TODO (XXX): Right now i am supporting just one optiongroup.
         // The concept is already there for multiple groups
         // It will require to generate the buttongroup dynamically like:
         // >> buttongroup = new QButtonGroup(this);
@@ -251,7 +274,7 @@ void DlgPrefRecord::setupEncoderUI(Encoder::Format selformat)
         EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
         labelOptionGroup->setText(group.groupName);
         int controlIdx = settings->getSelectedOption(group.groupCode);
-        foreach(QString name, group.controlNames) {
+        for (const QString& name : group.controlNames) {
             QAbstractButton* widget;
             if (group.controlNames.size() == 1) {
                 QCheckBox* button = new QCheckBox(name, this);
@@ -271,7 +294,7 @@ void DlgPrefRecord::setupEncoderUI(Encoder::Format selformat)
             controlIdx--;
         }
     } else {
-        m_hider.hideWidget(labelOptionGroup);
+        labelOptionGroup->setVisible(false);
     }
         // small hack for VBR
     if (m_selFormat.internalName == ENCODING_MP3) {
@@ -279,12 +302,14 @@ void DlgPrefRecord::setupEncoderUI(Encoder::Format selformat)
     }
 }
 
-void DlgPrefRecord::slotSliderQuality() {
+void DlgPrefRecord::slotSliderQuality()
+{
     updateTextQuality();
     // Settings are only stored when doing an apply so that "cancel" can actually cancel.
 }
 
-void DlgPrefRecord::updateTextQuality() {
+void DlgPrefRecord::updateTextQuality()
+{
     EncoderSettingsPointer settings = EncoderFactory::getFactory().getEncoderSettings(m_selFormat, m_pConfig);
     int quality;
     // This should be handled somehow by the EncoderSettings classes, but currently
@@ -293,7 +318,7 @@ void DlgPrefRecord::updateTextQuality() {
     if (m_selFormat.internalName == ENCODING_MP3) {
         EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
         int i=0;
-        foreach(QAbstractButton* widget, m_optionWidgets) {
+        for (const QAbstractButton* widget : m_optionWidgets) {
             if (widget->objectName() == group.groupCode) {
                 if (widget->isChecked() != Qt::Unchecked && widget->text() == "VBR") {
                     isVbr = true;
@@ -312,11 +337,13 @@ void DlgPrefRecord::updateTextQuality() {
     }
 }
 
-void DlgPrefRecord::slotSliderCompression() {
+void DlgPrefRecord::slotSliderCompression()
+{
     updateTextCompression();
     // Settings are only stored when doing an apply so that "cancel" can actually cancel.
 }
-void DlgPrefRecord::updateTextCompression() {
+void DlgPrefRecord::updateTextCompression()
+{
     EncoderSettingsPointer settings = EncoderFactory::getFactory().getEncoderSettings(m_selFormat, m_pConfig);
     int quality = settings->getCompressionValues().at(SliderCompression->value());
     TextCompression->setText(QString::number(quality));
@@ -371,11 +398,11 @@ void DlgPrefRecord::saveEncoding()
         settings->setCompression(comps.at(SliderCompression->value()));
     }
     if (settings->usesOptionGroups()) {
-        // TODO: Right now i am supporting just one optiongroup.
+        // TODO (XXX): Right now i am supporting just one optiongroup.
         // The concept is already there for multiple groups
         EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
         int i=0;
-        foreach(QAbstractButton* widget, m_optionWidgets) {
+        for (const QAbstractButton* widget : m_optionWidgets) {
             if (widget->objectName() == group.groupCode) {
                 if (widget->isChecked() != Qt::Unchecked) {
                     settings->setGroupOption(group.groupCode, i);
