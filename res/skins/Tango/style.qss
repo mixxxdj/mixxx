@@ -46,10 +46,10 @@ WPushButton {
 ###############################################################*/
     
 #Deck1 WLabel, #RateContainer1 WLabel {
-  color: #52b5ff;	/* SignalColor: #159bff		> decks_left.xml */
+  color: #33a8ff;	/* SignalColor: #159bff		> decks_left.xml */
 }
 #Deck2 WLabel, #RateContainer2 WLabel {
-  color: #bf880f;	/* SignalColor: #e7c413		> decks_right.xml */
+  color: #cc7400;	/* SignalColor: #e7c413		> decks_right.xml */
 }
 #Deck3 WLabel, #RateContainer3 WLabel {
   color: #0fbf0f;	/* SignalColor: #2cb02c		> decks_left.xml */
@@ -604,11 +604,20 @@ WPushButton {
   #LoopBeatJumpButton:hover, #LoopSizeButton:hover, #LoopRollButton:hover {
     border: 1px solid #888888;
   }
-  #LoopBeatJumpButton[displayValue="1"], #LoopBeatJumpButton[displayValue="1"]:hover {
-    border: 1px solid #FF8F00;
-  }
   #LoopSizeButton, #LoopRollButton {
     font-size: 12px/12px;
+  }
+  #LoopSizeButton[displayValue="1"], #LoopRollButton[displayValue="1"]:hover {
+    border: 1px solid #FF8F00;
+  }
+  WPushButton#LoopRollButton:pressed {
+    border: 1px solid #FF8F00;
+  }
+  #LoopRollButton::WPushButton:pressed {
+    border: 1px solid #FF8F00;
+  }
+  #LoopRollButton::pressed {
+    border: 1px solid #FF8F00;
   }
   /* See also #LoopIndicator near DeckButtons */
 
@@ -1072,8 +1081,8 @@ WPushButton {
     text sits at left border now */
     border: 0;
   }
-  /* This is sufficient to completely hide the tick mark, but
-    this alone would show an empty, shadowed box instead of tick mark */
+/* This is sufficient to completely hide the tick mark, but
+  this alone would show an empty, shadowed box instead of tick mark */
   WEffectSelector::indicator {
     background-color: transparent;
   }
@@ -1864,3 +1873,10 @@ Extra declaration for QRadioButton otherwise it shows up with
 wrong colors in Linux with Gnome 	*/
   color: #cfcfcf;
   }
+
+/* Test :: increase font size of WOverview "Ready to play, analyzing..." etc.
+WOverview {
+  font-size: 16px/16px;
+  color: #eeeeee;
+  font-size is considered, color not.
+} */

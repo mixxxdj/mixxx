@@ -292,7 +292,7 @@ Description:
 
           <Label>
             <ObjectName>CategoryLabel</ObjectName>
-            <Text>Spinny</Text>
+            <Text>Spinny / Cover</Text>
           </Label>
           <WidgetGroup><!-- Spinny Settings -->
             <ObjectName>SkinSettingsCategory</ObjectName>

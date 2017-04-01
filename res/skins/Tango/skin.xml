@@ -90,11 +90,11 @@
       <attribute persist="true" config_key="[Tango],vinylControlsDeck3">0</attribute>
       <attribute persist="true" config_key="[Tango],vinylControlsDeck4">0</attribute>
       <attribute persist="true" config_key="[Tango],vumeter">1</attribute>
-      <!-- Next tow COs are preset and must never be changed manually, otherwise
-            SizeAwareStack in netbook_trigger.xml won't work properly!
-            See description there.
-            netbook_normal_stack0 = 0 means netbook mode with < 1260px width
-            netbook_normal_stack1 = 1 means normal mode with >= 1260px width -->
+    <!-- Next two COs are pre-set and must never be changed!
+        Otherwise SizeAwareStack in netbook_trigger.xml won't work properly.
+        See description there.
+        netbook_normal_stack0 = 0 means netbook mode with < 1260px width
+        netbook_normal_stack1 = 1 means normal mode with >= 1260px width -->
       <attribute persist="true" config_key="[Tango],netbook_normal_stack0">0</attribute>
       <attribute persist="true" config_key="[Tango],netbook_normal_stack1">1</attribute>
       <attribute persist="true" config_key="[Tango],enforce_netbook_mode">0</attribute>
@@ -103,16 +103,13 @@
 
   <ObjectName>Mixxx</ObjectName>
   <Style src="skin:style.qss"/>
-
-<!--MinimumSize should not be an exact monitor resolution. There needs
-  to be space for the title bar or other chrome at full screen -->
   <MinimumSize>1008,500</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
 
-<!--    ################################################################
-        Launch Image  #################################################
-      ###############################################################
+<!--  ################################################################
+       Launch Image  ################################################
+     ###############################################################
 -->
   <LaunchImageStyle>
     LaunchImage {
@@ -149,14 +146,10 @@
       have all Variables available. -->
         
 <!--  Initially I was trying to match 'active angle' on Reloop TerminalMix 2.
-      Though, it didn't matter for the screen/controller connection,
-      but it feels good on screen :) Change to your liking.
       Values beyond -150/150 might interfere with some knob labels. -->
     <SetVariable name="PotiMinAngle">-130</SetVariable>
     <SetVariable name="PotiMaxAngle">130</SetVariable>
 
-<!--  Not working for Overview (yet),
-      accomplished via sytyle.qss -->
     <SetVariable name="SignalBgColor_1">#001D33</SetVariable>
     <SetVariable name="SignalBgColor_2">#2F290a</SetVariable>
     <SetVariable name="SignalBgColor_3">#032603</SetVariable>
@@ -173,37 +166,9 @@
 
     <SetVariable name="PlayedOverlayColor">#AA000000</SetVariable>
 
-    <!-- I was trying to center button backpath when defined via <Pressed>
-    and <Unpressed> by setting SCALE_MODE to FIXED.
-    FAILED: (some internal default?) backpath would expand actual button size
-    to 48x48px -no matter if fixed sized- and button would be croppped by
-    fixed-size parent Widget.
-    Tried to set default button backpath (transparent 1x1px) for when
-    there's no backpath defined.
-    FAILED.
-    For now, 5 states are the maximum.
-    <SetVariable name="state_0_unpressed">1x1_blank.png</SetVariable>
-    <SetVariable name="state_0_pressed">1x1_blank.png</SetVariable>
-    <SetVariable name="state_1_unpressed">1x1_blank.png</SetVariable>
-    <SetVariable name="state_1_pressed">1x1_blank.png</SetVariable>
-    <SetVariable name="state_2_unpressed">1x1_blank.png</SetVariable>
-    <SetVariable name="state_2_pressed">1x1_blank.png</SetVariable>
-    <SetVariable name="state_3_unpressed">1x1_blank.png</SetVariable>
-    <SetVariable name="state_3_pressed">1x1_blank.png</SetVariable>
-    <SetVariable name="state_4_unpressed">1x1_blank.png</SetVariable>
-    <SetVariable name="state_4_pressed">1x1_blank.png</SetVariable> -->
-
-    <!-- Somehow I fail to have a button template which would accept
-    either <Tooltip> or <TooltipId>:
-    When <Tooltip> or <TooltipId> are set to accept variables, <TooltipId>
-    is never consiered/showing up in skin.
-    FAILED.
-    <SetVariable name="ToolTip"></SetVariable>
-    <SetVariable name="TooltipId"></SetVariable>-->
-
-<!--  ################################################################
-    Singleton definitions #########################################
-    ############################################################### -->
+<!--################################################################
+     Singleton definitions  #######################################
+   ############################################################### -->
     <SingletonDefinition>
       <ObjectName>Library_Singleton</ObjectName>
       <Children>
@@ -310,9 +275,9 @@
       </Children>
     </SingletonDefinition><!-- /Decks 34 -->
 
-<!--    ################################################################
-        SkinContainer #################################################
-      ############################################################### -->
+<!--  ################################################################
+       SkinContainer  ###############################################
+     ############################################################### -->
     <WidgetGroup><!-- extra wrapper, may help with Skin Settings on Mac. TEST! -->
       <Layout>vertical</Layout>
       <SizePolicy>me,me</SizePolicy>
@@ -472,8 +437,7 @@
             </WidgetStack><!-- /full UI or Library maximized -->
 
           </Children>
-        </WidgetGroup>
-    <!-- /SkinContainer -->
+        </WidgetGroup><!-- /SkinContainer -->
 
       </Children>
     </WidgetGroup><!-- /extra wrapper, may help with Skin Settings on Mac -->

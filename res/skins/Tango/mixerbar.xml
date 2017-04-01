@@ -409,6 +409,8 @@ Variables:
         </Connection>
       </WidgetGroup><!-- /Auxiliary Mixer -->
 
+      <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+
     </Children>
     <Connection>
       <ConfigKey persist="true">[Tango],mixerbar</ConfigKey>
