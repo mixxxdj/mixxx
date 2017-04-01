@@ -591,6 +591,7 @@ int EngineBroadcast::tell() {
 }
 // These are not used for streaming, but the interface requires them
 void EngineBroadcast::seek(int pos) {
+    Q_UNUSED(pos)
     return;
 }
 // These are not used for streaming, but the interface requires them

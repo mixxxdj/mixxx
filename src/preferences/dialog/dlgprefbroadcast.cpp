@@ -127,9 +127,12 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
     comboBoxEncodingFormat->setCurrentIndex(tmp_index);
 
     // Encoding channels combobox
-    comboBoxEncodingChannels->addItem(tr("Automatic"), static_cast<int>(EncoderSettings::ChannelMode::AUTOMATIC));
-    comboBoxEncodingChannels->addItem(tr("Mono"), static_cast<int>(EncoderSettings::ChannelMode::MONO));
-    comboBoxEncodingChannels->addItem(tr("Stereo"), static_cast<int>(EncoderSettings::ChannelMode::STEREO));
+    comboBoxEncodingChannels->addItem(tr("Automatic"),
+        static_cast<int>(EncoderSettings::ChannelMode::AUTOMATIC));
+    comboBoxEncodingChannels->addItem(tr("Mono"),
+        static_cast<int>(EncoderSettings::ChannelMode::MONO));
+    comboBoxEncodingChannels->addItem(tr("Stereo"),
+        static_cast<int>(EncoderSettings::ChannelMode::STEREO));
     tmp_index = comboBoxEncodingChannels->findData(m_settings.getChannels());
     if (tmp_index < 0) { // Set default to automatic if invalid.
         tmp_index = 0;

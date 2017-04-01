@@ -97,8 +97,9 @@ int EncoderMp3Settings::getQualityIndex() const
         return qualityIndex;
     }
     else {
-        qWarning() << "Invalid qualityIndex in EncoderMp3Settings " 
-            << qualityIndex << ". Ignoring it and returning default";
+        qWarning() << "Invalid qualityIndex in EncoderMp3Settings" 
+            << qualityIndex << "(Max is:" << m_qualList.size() << "). Ignoring it"
+            << "and returning default, which is:" << DEFAULT_BITRATE_INDEX;
     }
     return DEFAULT_BITRATE_INDEX;
 }

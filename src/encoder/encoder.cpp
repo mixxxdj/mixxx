@@ -9,10 +9,10 @@
 #include "encoder/encoder.h"
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
-// TODO: __FFMPEGFILE_ENCODERS__ is currently undefined because FFMPEG encoders
-// provide less features than the other encoders and currently we don't have
-// a good fallback for using them. That's why it's a bad idea to have
-// the worse encoders to take precedence over the good ones.
+// TODO(XXX): __FFMPEGFILE_ENCODERS__ is currently undefined because
+// FFMPEG encoders provide less features than the other encoders and currently
+// we don't have a good fallback for using them. That's why it's a bad idea
+// to have the worse encoders to take precedence over the good ones.
 #ifdef __FFMPEGFILE_ENCODERS__
 #include "encoder/encoderffmpegmp3.h"
 #include "encoder/encoderffmpegvorbis.h"

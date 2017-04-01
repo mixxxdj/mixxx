@@ -10,13 +10,16 @@
  
 const QString EncoderWaveSettings::BITS_GROUP = "BITS";
  
-EncoderWaveSettings::EncoderWaveSettings(UserSettingsPointer pConfig, Encoder::Format format) :
+EncoderWaveSettings::EncoderWaveSettings(UserSettingsPointer pConfig,
+        Encoder::Format format) :
     m_pConfig(pConfig),
     m_format(format)
 {
-    // TODO: assert?
-    if (m_format.internalName != ENCODING_WAVE && m_format.internalName != ENCODING_AIFF) {
-        qWarning() << "EncoderWaveSettings setup with " << format.internalName << ". This is an error!";
+    VERIFY_OR_DEBUG_ASSERT(m_format.internalName == ENCODING_WAVE
+            || m_format.internalName == ENCODING_AIFF) {
+        m_format = EncoderFactory::getFactory().getFormatFor(ENCODING_WAVE);
+        qWarning() << "EncoderWaveSettings setup with " << format.internalName
+        << ". This is an error! Changing it to " << m_format.internalName;
     }
     QList<QString> names;
     names.append(QObject::tr("16 bits"));
@@ -45,7 +48,8 @@ void EncoderWaveSettings::setGroupOption(QString groupCode, int optionIndex)
         if (groupCode == group.groupCode) {
             found=true;
             if (optionIndex < group.controlNames.size() || optionIndex == 1) {
-                m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, m_format.internalName + "_" + groupCode),
+                m_pConfig->set(
+                    ConfigKey(RECORDING_PREF_KEY, m_format.internalName + "_" + groupCode),
                     ConfigValue(optionIndex));
             } else {
                 qWarning() << "Received an index out of range for: " 
