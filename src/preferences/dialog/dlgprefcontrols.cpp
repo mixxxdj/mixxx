@@ -1,6 +1,6 @@
 /***************************************************************************
-                          dlgprefcontrols.cpp  -  description
-                             -------------------
+                           dlgprefcontrols.cpp  -  description
+                          -------------------
     begin                : Sat Jul 5 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
@@ -38,6 +38,7 @@
 #include "control/controlobject.h"
 #include "mixxx.h"
 #include "defs_urls.h"
+#include "util/autohidpi.h"
 
 DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
                                  SkinLoader* pSkinLoader,
@@ -49,7 +50,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
            m_pSkinLoader(pSkinLoader),
            m_pPlayerManager(pPlayerManager),
            m_iNumConfiguredDecks(0),
-           m_iNumConfiguredSamplers(0) {
+           m_iNumConfiguredSamplers(0),
+           m_autoScaleFactor(0) {
     setupUi(this);
 
     m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
@@ -67,15 +69,28 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
             this, SLOT(slotSetTrackTimeDisplay(double)));
 
     // If not present in the config, set the default value
-    if (!m_pConfig->exists(ConfigKey("[Controls]","PositionDisplay")))
-        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"),ConfigValue(0));
+    if (!m_pConfig->exists(ConfigKey("[Controls]","PositionDisplay"))) {
+        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"),
+          QString::number(static_cast<int>(TrackTime::DisplayMode::Remaining)));
+    }
 
-    if (m_pConfig->getValueString(ConfigKey("[Controls]", "PositionDisplay")).toInt() == 1) {
+    double positionDisplayType = m_pConfig->getValue(
+            ConfigKey("[Controls]", "PositionDisplay"),
+            static_cast<double>(TrackTime::DisplayMode::Elapsed));
+    if (positionDisplayType ==
+            static_cast<double>(TrackTime::DisplayMode::Remaining)) {
         radioButtonRemaining->setChecked(true);
-        m_pControlTrackTimeDisplay->set(1.0);
+        m_pControlTrackTimeDisplay->set(
+            static_cast<double>(TrackTime::DisplayMode::Remaining));
+    } else if (positionDisplayType ==
+                   static_cast<double>(TrackTime::DisplayMode::ElapsedAndRemaining)) {
+        radioButtonElapsedAndRemaining->setChecked(true);
+        m_pControlTrackTimeDisplay->set(
+            static_cast<double>(TrackTime::DisplayMode::ElapsedAndRemaining));
     } else {
         radioButtonElapsed->setChecked(true);
-        m_pControlTrackTimeDisplay->set(0.0);
+        m_pControlTrackTimeDisplay->set(
+            static_cast<double>(TrackTime::DisplayMode::Elapsed));
     }
     connect(buttonGroupTrackTime, SIGNAL(buttonClicked(QAbstractButton*)),
             this, SLOT(slotSetTrackTimeDisplay(QAbstractButton *)));
@@ -125,10 +140,24 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     connect(buttonGroupKeyLockMode, SIGNAL(buttonClicked(QAbstractButton*)),
             this, SLOT(slotKeyLockMode(QAbstractButton *)));
 
+    // 0 Lock original key, 1 Lock current key
     m_keylockMode = m_pConfig->getValue(
         ConfigKey("[Controls]", "keylockMode"), 0);
     foreach (ControlProxy* pControl, m_keylockModeControls) {
         pControl->set(m_keylockMode);
+    }
+
+    //
+    // Key unlock mode
+    //
+    connect(buttonGroupKeyUnlockMode, SIGNAL(buttonClicked(QAbstractButton*)),
+            this, SLOT(slotKeyUnlockMode(QAbstractButton *)));
+
+    // 0 Reset locked key (default), 1 Keep locked key
+    m_keyunlockMode = m_pConfig->getValue(
+        ConfigKey("[Controls]", "keyunlockMode"), 0);
+    foreach (ControlProxy* pControl, m_keyunlockModeControls) {
+        pControl->set(m_keyunlockMode);
     }
 
     //
@@ -298,11 +327,67 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
 
     slotUpdateSchemes();
 
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    AutoHiDpi autoHiDpi;
+    m_autoScaleFactor = autoHiDpi.getScaleFactor();
+    double scaleFactor = m_autoScaleFactor;
+    if (scaleFactor > 0) {
+        // we got a valid auto scale factor
+        bool scaleFactorAuto = m_pConfig->getValue(
+                ConfigKey("[Config]", "ScaleFactorAuto"), true);
+        checkBoxScaleFactorAuto->setChecked(scaleFactorAuto);
+        if (scaleFactorAuto) {
+            comboBoxScaleFactor->setEnabled(false);
+            m_pConfig->setValue(
+                    ConfigKey("[Config]", "ScaleFactor"), m_autoScaleFactor);
+        } else {
+            scaleFactor = m_pConfig->getValue(
+                        ConfigKey("[Config]", "ScaleFactor"), 1.0);
+        }
+        connect(checkBoxScaleFactorAuto, SIGNAL(toggled(bool)),
+                this, SLOT(slotSetScaleFactorAuto(bool)));
+    } else {
+        checkBoxScaleFactorAuto->setEnabled(false);
+        scaleFactor = m_pConfig->getValue(
+                    ConfigKey("[Config]", "ScaleFactor"), 1.0);
+    }
+    connect(checkBoxScaleFactorAuto, SIGNAL(toggled(bool)),
+            this, SLOT(slotSetScaleFactorAuto(bool)));
+
+    //: Entry of the HiDPI scale combo box. %1 is the scale factor in percent
+    comboBoxScaleFactor->addItem(QString(tr("%1 % (Experimental)")).arg(50), 0.5);
+    comboBoxScaleFactor->addItem(QString(tr("%1 %")).arg(100), 1);
+    comboBoxScaleFactor->addItem(QString(tr("%1 % (Experimental)")).arg(200), 2);
+    comboBoxScaleFactor->addItem(QString(tr("%1 % (Experimental)")).arg(300), 3);
+    comboBoxScaleFactor->addItem(QString(tr("%1 % (Experimental)")).arg(400), 4);
+    int i;
+    for (i = 0; i < comboBoxScaleFactor->count(); ++i) {
+        if (scaleFactor == comboBoxScaleFactor->itemData(i)) {
+            comboBoxScaleFactor->setCurrentIndex(i);
+            break;
+        }
+    }
+    if (i == comboBoxScaleFactor->count()) {
+        // no default scale, add custom scale
+        comboBoxScaleFactor->addItem(
+                QString(tr("%1 % (Experimental)")).arg(scaleFactor * 100), scaleFactor);
+        comboBoxScaleFactor->setCurrentIndex(i);
+    }
+    connect(comboBoxScaleFactor, SIGNAL(activated(int)),
+            this, SLOT(slotSetScaleFactor(int)));
+#else
+    checkBoxScaleFactorAuto->hide();
+    comboBoxScaleFactor->hide();
+    labelScaleFactor->hide();
+#endif
+
+
     //
     // Start in fullscreen mode
     //
     checkBoxStartFullScreen->setChecked(m_pConfig->getValueString(
-                       ConfigKey("[Config]", "StartInFullscreen")).toInt()==1);
+                    ConfigKey("[Config]", "StartInFullscreen")).toInt()==1);
     connect(checkBoxStartFullScreen, SIGNAL(toggled(bool)),
             this, SLOT(slotSetStartInFullScreen(bool)));
     //
@@ -378,6 +463,7 @@ DlgPrefControls::~DlgPrefControls() {
     qDeleteAll(m_cueControls);
     qDeleteAll(m_rateRangeControls);
     qDeleteAll(m_keylockModeControls);
+    qDeleteAll(m_keyunlockModeControls);
 }
 
 void DlgPrefControls::slotUpdateSchemes() {
@@ -427,6 +513,11 @@ void DlgPrefControls::slotUpdate() {
     else
         radioButtonOriginalKey->setChecked(true);
 
+    if (m_keyunlockMode == 1)
+        radioButtonKeepUnlockedKey->setChecked(true);
+    else
+        radioButtonResetUnlockedKey->setChecked(true);
+
     checkBoxResetSpeed->setChecked(m_speedAutoReset);
     checkBoxResetPitch->setChecked(m_pitchAutoReset);
 }
@@ -452,6 +543,10 @@ void DlgPrefControls::slotResetToDefaults() {
 
     // Cue recall on.
     checkBoxSeekToCue->setChecked(true);
+
+    // Default to normal size widgets
+    comboBoxScaleFactor->setCurrentIndex(1); // 100 %
+    checkBoxScaleFactorAuto->setChecked(true);
 
     // Don't start in full screen.
     checkBoxStartFullScreen->setChecked(false);
@@ -481,6 +576,10 @@ void DlgPrefControls::slotResetToDefaults() {
     // Lock to original key
     m_keylockMode = 0;
     radioButtonOriginalKey->setChecked(true);
+
+    // Reset key on unlock
+    m_keyunlockMode = 0;
+    radioButtonResetUnlockedKey->setChecked(true);
 }
 
 void DlgPrefControls::slotSetLocale(int pos) {
@@ -542,6 +641,13 @@ void DlgPrefControls::slotKeyLockMode(QAbstractButton* b) {
     else { m_keylockMode = 0; }
 }
 
+void DlgPrefControls::slotKeyUnlockMode(QAbstractButton* b) {
+    if (b == radioButtonResetUnlockedKey) {
+        m_keyunlockMode = 0;
+    }
+    else { m_keyunlockMode = 1; }
+}
+
 void DlgPrefControls::slotSetAllowTrackLoadToPlayingDeck(bool b) {
     // If b is true, it means NOT to allow track loading
     m_pConfig->set(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"),
@@ -562,6 +668,30 @@ void DlgPrefControls::slotSetCueDefault(int index)
 void DlgPrefControls::slotSetCueRecall(bool b)
 {
     m_pConfig->set(ConfigKey("[Controls]", "CueRecall"), ConfigValue(b?0:1));
+}
+
+
+void DlgPrefControls::slotSetScaleFactor(int index) {
+    double scaleFactor = comboBoxScaleFactor->itemData(index).toDouble();
+    m_pConfig->setValue(ConfigKey("[Config]", "ScaleFactor"), scaleFactor);
+    // reload the skin when the button is toggled
+    repaint();
+    m_mixxx->rebootMixxxView();
+}
+
+void DlgPrefControls::slotSetScaleFactorAuto(bool checked) {
+    m_pConfig->setValue(
+            ConfigKey("[Config]", "ScaleFactorAuto"), checked);
+    comboBoxScaleFactor->setEnabled(!checked);
+    if (checked) {
+        m_pConfig->setValue(
+                ConfigKey("[Config]", "ScaleFactor"), m_autoScaleFactor);
+        // reload the skin when the button is toggled
+        repaint();
+        m_mixxx->rebootMixxxView();
+    } else {
+        slotSetScaleFactor(comboBoxScaleFactor->currentIndex());
+    }
 }
 
 void DlgPrefControls::slotSetStartInFullScreen(bool b) {
@@ -588,6 +718,7 @@ void DlgPrefControls::notifyRebootNecessary() {
 
 void DlgPrefControls::slotSetScheme(int) {
     m_pConfig->set(ConfigKey("[Config]", "Scheme"), ComboBoxSchemeconf->currentText());
+    repaint();
     m_mixxx->rebootMixxxView();
 }
 
@@ -595,6 +726,7 @@ void DlgPrefControls::slotSetSkin(int) {
     ComboBoxSkinconf->repaint(); // without it the combobox sticks to the old value until
                                  // the new Skin is fully loaded
     m_pConfig->set(ConfigKey("[Config]", "ResizableSkin"), ComboBoxSkinconf->currentText());
+    repaint();
     m_mixxx->rebootMixxxView();
     checkSkinResolution(ComboBoxSkinconf->currentText())
             ? warningLabel->hide() : warningLabel->show();
@@ -602,22 +734,27 @@ void DlgPrefControls::slotSetSkin(int) {
 }
 
 void DlgPrefControls::slotSetTrackTimeDisplay(QAbstractButton* b) {
-    int timeDisplay = 0;
+    double timeDisplay;
     if (b == radioButtonRemaining) {
-        timeDisplay = 1;
-        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(1));
+        timeDisplay = static_cast<double>(TrackTime::DisplayMode::Remaining);
+    } else if (b == radioButtonElapsedAndRemaining) {
+        timeDisplay = static_cast<double>(TrackTime::DisplayMode::ElapsedAndRemaining);
+    } else {
+        timeDisplay = static_cast<double>(TrackTime::DisplayMode::Elapsed);
     }
-    else {
-        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(0));
-    }
+    m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(timeDisplay));
     m_pControlTrackTimeDisplay->set(timeDisplay);
 }
 
 void DlgPrefControls::slotSetTrackTimeDisplay(double v) {
-    if (v > 0) {
+    if (v == 1.0) {
         // Remaining
         radioButtonRemaining->setChecked(true);
         m_pConfig->set(ConfigKey("[Controls]", "PositionDisplay"), ConfigValue(1));
+    } else if (v == 2.0) {
+        // Elapsed and remaining
+        radioButtonElapsedAndRemaining->setChecked(true);
+        m_pConfig->set(ConfigKey("[Controls]", "PositionDisplay"), ConfigValue(2));
     } else {
         // Elapsed
         radioButtonElapsed->setChecked(true);
@@ -691,10 +828,17 @@ void DlgPrefControls::slotApply() {
                    ConfigValue(configSPAutoReset));
 
     m_pConfig->set(ConfigKey("[Controls]", "keylockMode"),
-            ConfigValue(m_keylockMode));
+                   ConfigValue(m_keylockMode));
     // Set key lock behavior for every group
     foreach (ControlProxy* pControl, m_keylockModeControls) {
         pControl->set(m_keylockMode);
+    }
+
+    m_pConfig->set(ConfigKey("[Controls]", "keyunlockMode"),
+                   ConfigValue(m_keyunlockMode));
+    // Set key un-lock behavior for every group
+    foreach (ControlProxy* pControl, m_keyunlockModeControls) {
+        pControl->set(m_keyunlockMode);
     }
 }
 
@@ -748,8 +892,11 @@ void DlgPrefControls::slotNumDecksChanged(double new_count) {
         m_cueControls.push_back(new ControlProxy(
                 group, "cue_mode"));
         m_keylockModeControls.push_back(new ControlProxy(
-                        group, "keylockMode"));
+                group, "keylockMode"));
         m_keylockModeControls.last()->set(m_keylockMode);
+        m_keyunlockModeControls.push_back(new ControlProxy(
+                group, "keyunlockMode"));
+        m_keyunlockModeControls.last()->set(m_keyunlockMode);
     }
 
     m_iNumConfiguredDecks = numdecks;
@@ -774,8 +921,11 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
         m_cueControls.push_back(new ControlProxy(
                 group, "cue_mode"));
         m_keylockModeControls.push_back(new ControlProxy(
-                        group, "keylockMode"));
+                group, "keylockMode"));
         m_keylockModeControls.last()->set(m_keylockMode);
+        m_keyunlockModeControls.push_back(new ControlProxy(
+                group, "keyunlockMode"));
+        m_keyunlockModeControls.last()->set(m_keyunlockMode);
     }
 
     m_iNumConfiguredSamplers = numsamplers;
