@@ -549,37 +549,31 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                 }
 
 #if AVSTREAM_FROM_API_VERSION_3_1
+                l_iRet = avcodec_send_packet(m_pAudioContext, &l_SPacket);
+
                 // AVERROR(EAGAIN) means that we need to feed more
                 // That we can decode Frame or Packet
-                
-                quint8 l_iRepeat = 5;
-                
-                do {
-                    do {
-                        l_iRet = avcodec_send_packet(m_pAudioContext, &l_SPacket);
-                    } while(l_iRet == AVERROR(EAGAIN));
+                if (l_iRet == AVERROR(EAGAIN)) {
+                  qDebug() << "SoundSourceFFmpeg::readFramesToCache: Need more packets to decode!";
+                  continue;
+                }
 
-                    if(l_iRet == AVERROR_EOF || l_iRet == AVERROR(EINVAL)) {
-                        qDebug() << "SoundSourceFFmpeg::readFramesToCache: Warning can't decode frame!";
-                        break;
-                    }
+                if(l_iRet == AVERROR_EOF || l_iRet == AVERROR(EINVAL)) {
+                      qDebug() << "SoundSourceFFmpeg::readFramesToCache: Warning can't decode frame!";
+                }
 
-                    l_iRet = avcodec_receive_frame(m_pAudioContext, l_pFrame);
+                l_iRet = avcodec_receive_frame(m_pAudioContext, l_pFrame);
 
-                    if(l_iRet == AVERROR_EOF || l_iRet == AVERROR(EINVAL)) {
-                        qDebug() << "SoundSourceFFmpeg::readFramesToCache: Warning can't decode frame!";
-                        break;
-                    }
-                    
-                    // Sometimes (Espescially with m4a with Cover art)
-                    // This gets stuck.. then we have to bail out
-                    // not hang here more than 5 times..
-                    if( l_iRet == AVERROR(EAGAIN) ) {
-                        l_iRepeat --;
-                    } else {
-                        l_iRepeat = 5;
-                    }
-                } while(l_iRet == AVERROR(EAGAIN) && l_iRepeat);
+                // AVERROR(EAGAIN) means that we need to feed more
+                // That we can decode Frame or Packet
+                if (l_iRet == AVERROR(EAGAIN)) {
+                  qDebug() << "SoundSourceFFmpeg::readFramesToCache: Need more packets to decode!";
+                  continue;
+                }
+
+                if(l_iRet == AVERROR_EOF || l_iRet == AVERROR(EINVAL)) {
+                      qDebug() << "SoundSourceFFmpeg::readFramesToCache: Warning can't decode frame!";
+                }
 
                 if (l_iRet == AVERROR_EOF || l_iRet < 0) {
 #else
@@ -590,7 +584,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
 #endif
                     // An error or EOF occurred,index break out and return what
                     // we have so far.
-                    qDebug() << "EOF!";
+                    qDebug() << "SoundSourceFFmpeg::readFramesToCache: EOF or uncoverable error!";
                     l_bStop = true;
                     continue;
                 } else {
@@ -987,7 +981,7 @@ SINT SoundSourceFFmpeg::readSampleFrames(SINT numberOfFrames,
 
     if (sampleBuffer == nullptr) {
        // They are trying to make us skip
-       // we don't want to do that so we lie
+       seekSampleFrame(m_currentMixxxFrameIndex + numberOfFrames);
        return numberOfFrames;
     }
 
@@ -1000,12 +994,7 @@ SINT SoundSourceFFmpeg::readSampleFrames(SINT numberOfFrames,
 
     getBytesFromCache(sampleBuffer, m_currentMixxxFrameIndex, numberOfFrames);
 
-    //  As this is also Hack
-    // If we don't seek like we don't on analyzer.. keep
-    // place in mind..
-    if (m_bIsSeeked == false) {
-        m_currentMixxxFrameIndex += numberOfFrames;
-    }
+    m_currentMixxxFrameIndex += numberOfFrames;
 
     m_bIsSeeked = false;
 
