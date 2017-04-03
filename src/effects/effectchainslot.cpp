@@ -449,7 +449,7 @@ QDomElement EffectChainSlot::toXml(QDomDocument* doc) const {
     XmlParse::addElement(*doc, chainElement, EffectXml::ChainInsertionType,
                          EffectChain::insertionTypeToString(
                            static_cast<EffectChain::InsertionType>(
-                              m_pControlChainInsertionType->get())));
+                              static_cast<int>(m_pControlChainInsertionType->get()))));
     XmlParse::addElement(*doc, chainElement, EffectXml::ChainSuperParameter,
                          QString::number(m_pControlChainSuperParameter->get()));
 
