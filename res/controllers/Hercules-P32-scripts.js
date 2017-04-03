@@ -417,10 +417,11 @@ P32.Deck = function (deckNumbers, channel) {
         var beatJumpSize = engine.getValue(this.currentDeck, 'beatjump_size');
         if (this.beatJumpEncoderPressed) {
             if (value > 64 && beatJumpSize > 1/32) { // turn left
-                engine.setValue(this.currentDeck, 'beatjump_size', beatJumpSize / 2);
+                beatJumpSize /= 2;
             } else if (value < 64 && beatJumpSize < 64) { // turn right
-                engine.setValue(this.currentDeck, 'beatjump_size', beatJumpSize * 2);
+                beatJumpSize *= 2;
             }
+            engine.setValue(this.currentDeck, 'beatjump_size', beatJumpSize);
             // The firmware will only change the numeric LED readout when sent messages
             // on the unshifted channel.
             midi.sendShortMsg(0xB0 + channel - P32.shiftOffset, 0x1B, 5 + Math.log(beatJumpSize) / Math.log(2));
