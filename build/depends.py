@@ -852,6 +852,7 @@ class MixxxCore(Feature):
                    "widget/weffectbuttonparameter.cpp",
                    "widget/weffectparameterbase.cpp",
                    "widget/wtime.cpp",
+                   "widget/wrecordingduration.cpp",
                    "widget/wkey.cpp",
                    "widget/wbattery.cpp",
                    "widget/wcombobox.cpp",
@@ -1117,6 +1118,7 @@ class MixxxCore(Feature):
                    "util/logging.cpp",
                    "util/cmdlineargs.cpp",
                    "util/audiosignal.cpp",
+                   "util/autohidpi.cpp",
 
                    '#res/mixxx.qrc'
                    ]

@@ -139,15 +139,18 @@ void CrateStorage::repairDatabase(QSqlDatabase database) {
 
     // Crates
     {
+        // Delete crates with empty names
         FwdSqlQuery query(database, QString(
                 "DELETE FROM %1 WHERE %2 IS NULL OR TRIM(%2)=''").arg(
                         CRATE_TABLE,
                         CRATETABLE_NAME));
         if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            qWarning() << "Deleted" << query.numRowsAffected() << "crates with empty names";
+            qWarning() << "Deleted" << query.numRowsAffected()
+                    << "crates with empty names";
         }
     }
     {
+        // Fix invalid values in the "locked" column
         FwdSqlQuery query(database, QString(
                 "UPDATE %1 SET %2=0 WHERE %2 NOT IN (0,1)").arg(
                         CRATE_TABLE,
@@ -160,6 +163,7 @@ void CrateStorage::repairDatabase(QSqlDatabase database) {
         }
     }
     {
+        // Fix invalid values in the "autodj_source" column
         FwdSqlQuery query(database, QString(
                 "UPDATE %1 SET %2=0 WHERE %2 NOT IN (0,1)").arg(
                         CRATE_TABLE,
@@ -174,6 +178,7 @@ void CrateStorage::repairDatabase(QSqlDatabase database) {
 
     // Crate tracks
     {
+        // Remove tracks from non-existent crates
         FwdSqlQuery query(database, QString(
                 "DELETE FROM %1 WHERE %2 NOT IN (SELECT %3 FROM %4)").arg(
                         CRATE_TRACKS_TABLE,
@@ -181,10 +186,12 @@ void CrateStorage::repairDatabase(QSqlDatabase database) {
                         CRATETABLE_ID,
                         CRATE_TABLE));
         if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            qWarning() << "Deleted" << query.numRowsAffected() << "crate tracks of non-existent crates";
+            qWarning() << "Removed" << query.numRowsAffected()
+                    << "crate tracks from non-existent crates";
         }
     }
     {
+        // Remove library purged tracks from crates
         FwdSqlQuery query(database, QString(
                 "DELETE FROM %1 WHERE %2 NOT IN (SELECT %3 FROM %4)").arg(
                         CRATE_TRACKS_TABLE,
@@ -192,7 +199,8 @@ void CrateStorage::repairDatabase(QSqlDatabase database) {
                         LIBRARYTABLE_ID,
                         LIBRARY_TABLE));
         if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            qWarning() << "Deleted" << query.numRowsAffected() << "crate tracks of non-existent tracks";
+            qWarning() << "Removed" << query.numRowsAffected()
+                    << "library purged tracks from crates";
         }
     }
 }

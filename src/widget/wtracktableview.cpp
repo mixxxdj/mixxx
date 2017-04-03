@@ -127,6 +127,7 @@ WTrackTableView::~WTrackTableView() {
     delete m_pPropertiesAct;
     delete m_pMenu;
     delete m_pPlaylistMenu;
+    delete m_pCoverMenu;
     delete m_pCrateMenu;
     delete m_pBpmLockAction;
     delete m_pBpmUnlockAction;
@@ -137,6 +138,8 @@ WTrackTableView::~WTrackTableView() {
     delete m_pBpmFourThirdsAction;
     delete m_pBpmThreeHalvesAction;
     delete m_pBPMMenu;
+    delete m_pClearBeatsAction;
+    delete m_pClearWaveformAction;
     delete m_pReplayGainResetAction;
     delete m_pPurgeAct;
     delete m_pFileBrowserAct;
@@ -454,6 +457,10 @@ void WTrackTableView::createActions() {
     m_pClearBeatsAction = new QAction(tr("Clear BPM and Beatgrid"), this);
     connect(m_pClearBeatsAction, SIGNAL(triggered()),
             this, SLOT(slotClearBeats()));
+
+    m_pClearWaveformAction = new QAction(tr("Clear Waveform"), this);
+    connect(m_pClearWaveformAction, SIGNAL(triggered()),
+            this, SLOT(slotClearWaveform()));
 
     m_pReplayGainResetAction = new QAction(tr("Reset ReplayGain"), this);
     connect(m_pReplayGainResetAction, SIGNAL(triggered()),
@@ -929,6 +936,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pBPMMenu->addAction(m_pClearBeatsAction);
     }
 
+    m_pMenu->addAction(m_pClearWaveformAction);
+
     m_pMenu->addAction(m_pReplayGainResetAction);
 
     m_pMenu->addSeparator();
@@ -1271,12 +1280,12 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     restoreVScrollBarPos();
 }
 
-TrackModel* WTrackTableView::getTrackModel() {
+TrackModel* WTrackTableView::getTrackModel() const {
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
     return trackModel;
 }
 
-bool WTrackTableView::modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) {
+bool WTrackTableView::modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) const {
     TrackModel* trackModel = getTrackModel();
     return trackModel &&
             (trackModel->getCapabilities() & capabilities) == capabilities;
@@ -1317,35 +1326,50 @@ void WTrackTableView::slotSendToAutoDJReplace() {
     sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::REPLACE);
 }
 
+QList<TrackId> WTrackTableView::getSelectedTrackIds() const {
+    QList<TrackId> trackIds;
+
+    QItemSelectionModel* pSelectionModel = selectionModel();
+    VERIFY_OR_DEBUG_ASSERT(pSelectionModel != nullptr) {
+        qWarning() << "No selected tracks available";
+        return trackIds;
+    }
+
+    TrackModel* pTrackModel = getTrackModel();
+    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
+        qWarning() << "No selected tracks available";
+        return trackIds;
+    }
+
+    const QModelIndexList rows = selectionModel()->selectedRows();
+    trackIds.reserve(rows.size());
+    for (const QModelIndex& row: rows) {
+        const TrackId trackId = pTrackModel->getTrackId(row);
+        VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
+            qWarning() << "Skipping invalid track id @" << row;
+            continue;
+        }
+        trackIds.append(trackId);
+    }
+
+    return trackIds;
+}
+
 void WTrackTableView::sendToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
         return;
     }
 
-    PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
-
-    QModelIndexList indices = selectionModel()->selectedRows();
-    QList<TrackId> trackIds;
-
-    TrackModel* trackModel = getTrackModel();
-    if (!trackModel) {
+    const QList<TrackId> trackIds = getSelectedTrackIds();
+    if (trackIds.isEmpty()) {
+        qWarning() << "No tracks selected for AutoDJ";
         return;
     }
 
-    for (const QModelIndex& index : indices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
-        if (pTrack) {
-            TrackId trackId(pTrack->getId());
-            if (!trackId.isValid()) {
-                continue;
-            }
-            trackIds.append(trackId);
-        }
-    }
-
-    m_pTrackCollection->unhideTracks(trackIds);
+    PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
 
     // TODO(XXX): Care whether the append succeeded.
+    m_pTrackCollection->unhideTracks(trackIds);
     playlistDao.sendToAutoDJ(trackIds, loc);
 }
 
@@ -1388,51 +1412,40 @@ void WTrackTableView::slotResetPlayed() {
 }
 
 void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
-    PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
-    TrackModel* trackModel = getTrackModel();
-
-    if (!trackModel) {
+    const QList<TrackId> trackIds = getSelectedTrackIds();
+    if (trackIds.isEmpty()) {
+        qWarning() << "No tracks selected for playlist";
         return;
     }
 
-    QModelIndexList indices = selectionModel()->selectedRows();
-    QList<TrackId> trackIds;
-    for (const QModelIndex& index : indices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
-        if (!pTrack) {
-            continue;
-        }
-        TrackId trackId(pTrack->getId());
-        if (trackId.isValid()) {
-            trackIds.append(trackId);
-        }
-    }
-   if (iPlaylistId == -1) { // i.e. a new playlist is suppose to be created
-       QString name;
-       bool validNameGiven = false;
+    PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
 
-       do {
-           bool ok = false;
-           name = QInputDialog::getText(nullptr,
-                                        tr("Create New Playlist"),
-                                        tr("Enter name for new playlist:"),
-                                        QLineEdit::Normal,
-                                        tr("New Playlist"),
-                                        &ok).trimmed();
-           if (!ok) {
-               return;
-           }
-           if (playlistDao.getPlaylistIdFromName(name) != -1) {
-               QMessageBox::warning(nullptr,
-                                    tr("Playlist Creation Failed"),
-                                    tr("A playlist by that name already exists."));
-           } else if (name.isEmpty()) {
-               QMessageBox::warning(nullptr,
-                                    tr("Playlist Creation Failed"),
-                                    tr("A playlist cannot have a blank name."));
-           } else {
-               validNameGiven = true;
-           }
+    if (iPlaylistId == -1) { // i.e. a new playlist is suppose to be created
+        QString name;
+        bool validNameGiven = false;
+
+        do {
+            bool ok = false;
+            name = QInputDialog::getText(nullptr,
+                    tr("Create New Playlist"),
+                    tr("Enter name for new playlist:"),
+                    QLineEdit::Normal,
+                    tr("New Playlist"),
+                    &ok).trimmed();
+            if (!ok) {
+                return;
+            }
+            if (playlistDao.getPlaylistIdFromName(name) != -1) {
+                QMessageBox::warning(nullptr,
+                        tr("Playlist Creation Failed"),
+                        tr("A playlist by that name already exists."));
+            } else if (name.isEmpty()) {
+                QMessageBox::warning(nullptr,
+                        tr("Playlist Creation Failed"),
+                        tr("A playlist cannot have a blank name."));
+            } else {
+                validNameGiven = true;
+            }
        } while (!validNameGiven);
        iPlaylistId = playlistDao.createPlaylist(name);//-1 is changed to the new playlist ID return from the DAO
        if (iPlaylistId == -1) {
@@ -1442,35 +1455,17 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
                                  +name);
            return;
        }
-   }
-    if (trackIds.size() > 0) {
-        // TODO(XXX): Care whether the append succeeded.
-        m_pTrackCollection->unhideTracks(trackIds);
-        playlistDao.appendTracksToPlaylist(trackIds, iPlaylistId);
     }
+
+    // TODO(XXX): Care whether the append succeeded.
+    m_pTrackCollection->unhideTracks(trackIds);
+    playlistDao.appendTracksToPlaylist(trackIds, iPlaylistId);
 }
 
 void WTrackTableView::addSelectionToCrate(int iCrateId) {
-    TrackModel* trackModel = getTrackModel();
-
-    if (!trackModel) {
-        return;
-    }
-
-    QModelIndexList indices = selectionModel()->selectedRows();
-    QList<TrackId> trackIds;
-    for (const QModelIndex& index : indices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
-        if (!pTrack) {
-            continue;
-        }
-        TrackId trackId(pTrack->getId());
-        if (trackId.isValid()) {
-            trackIds.append(trackId);
-        }
-    }
+    const QList<TrackId> trackIds = getSelectedTrackIds();
     if (trackIds.isEmpty()) {
-        qWarning() << "Cannot add empty track selection to crate";
+        qWarning() << "No tracks selected for crate";
         return;
     }
 
@@ -1494,11 +1489,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     }
 
     // Save the selection
-    QModelIndexList selection = selectionModel()->selectedRows();
-    QSet<TrackId> trackIds;
-    for (const auto& index: selection) {
-        trackIds.insert(trackModel->getTrackId(index));
-    }
+    const QList<TrackId> trackIds = getSelectedTrackIds();
 
     sortByColumn(headerSection);
 
@@ -1603,6 +1594,25 @@ void WTrackTableView::slotClearBeats() {
         if (!track->isBpmLocked()) {
             track->setBeats(BeatsPointer());
         }
+    }
+}
+
+void WTrackTableView::slotClearWaveform() {
+    TrackModel* trackModel = getTrackModel();
+    if (trackModel == nullptr) {
+        return;
+    }
+
+    AnalysisDao& analysisDao = m_pTrackCollection->getAnalysisDAO();
+    QModelIndexList indices = selectionModel()->selectedRows();
+    for (const QModelIndex& index : indices) {
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (!pTrack) {
+            continue;
+        }
+        analysisDao.deleteAnalysesForTrack(pTrack->getId());
+        pTrack->setWaveform(WaveformPointer());
+        pTrack->setWaveformSummary(WaveformPointer());
     }
 }
 

@@ -72,8 +72,7 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
     // ControlObjects for skin <-> controller mapping interaction.
     // Refer to comment in header for full explanation.
     m_pControlChainShowFocus = new ControlPushButton(
-                                   ConfigKey(m_group, "show_focus"),
-                                   true);
+                                   ConfigKey(m_group, "show_focus"));
     m_pControlChainShowFocus->setButtonMode(ControlPushButton::TOGGLE);
 
     m_pControlChainShowParameters = new ControlPushButton(

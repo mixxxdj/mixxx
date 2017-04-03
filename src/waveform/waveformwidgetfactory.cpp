@@ -62,7 +62,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_skipRender(false),
         m_frameRate(30),
         m_endOfTrackWarningTime(30),
-        m_defaultZoom(3),
+        m_defaultZoom(WaveformWidgetRenderer::s_waveformDefaultZoom),
         m_zoomSync(false),
         m_overviewNormalized(false),
         m_openGLAvailable(false),

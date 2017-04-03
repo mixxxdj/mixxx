@@ -10,7 +10,8 @@
 #include "util/performancetimer.h"
 
 const int WaveformWidgetRenderer::s_waveformMinZoom = 1;
-const int WaveformWidgetRenderer::s_waveformMaxZoom = 6;
+const int WaveformWidgetRenderer::s_waveformMaxZoom = 10;
+const int WaveformWidgetRenderer::s_waveformDefaultZoom = 3;
 
 WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
     : m_group(group),
@@ -40,7 +41,8 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
       m_pGainControlObject(NULL),
       m_gain(1.0),
       m_pTrackSamplesControlObject(NULL),
-      m_trackSamples(0.0) {
+      m_trackSamples(0.0),
+      m_scaleFactor(1.0) {
 
     //qDebug() << "WaveformWidgetRenderer";
 
@@ -120,7 +122,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     //rate adjust may have change sampling per
     //vRince for the moment only more than one sample per pixel is supported
     //due to the fact we play the visual play pos modulo floor m_visualSamplePerPixel ...
-    double visualSamplePerPixel = m_zoomFactor * (1.0 + m_rateAdjust);
+    double visualSamplePerPixel = m_zoomFactor * (1.0 + m_rateAdjust) / m_scaleFactor;
     m_visualSamplePerPixel = math_max(1.0, visualSamplePerPixel);
 
     TrackPointer pTrack(m_pTrack);
@@ -250,7 +252,9 @@ void WaveformWidgetRenderer::resize(int width, int height) {
     }
 }
 
-void WaveformWidgetRenderer::setup(const QDomNode& node, const SkinContext& context) {
+void WaveformWidgetRenderer::setup(
+        const QDomNode& node, const SkinContext& context) {
+    m_scaleFactor = context.getScaleFactor();
     QString orientationString = context.selectString(node, "Orientation").toLower();
     if (orientationString == "vertical") {
         m_orientation = Qt::Vertical;
@@ -260,6 +264,7 @@ void WaveformWidgetRenderer::setup(const QDomNode& node, const SkinContext& cont
 
     m_colors.setup(node, context);
     for (int i = 0; i < m_rendererStack.size(); ++i) {
+        m_rendererStack[i]->setScaleFactor(m_scaleFactor);
         m_rendererStack[i]->setup(node, context);
     }
 }

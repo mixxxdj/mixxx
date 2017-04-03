@@ -31,13 +31,13 @@ bool WOverviewLMH::drawNextPixmapPart() {
         return false;
     }
 
-    if (!m_pWaveformSourceImage) {
+    if (m_waveformSourceImage.isNull()) {
         // Waveform pixmap twice the height of the viewport to be scalable
         // by total_gain
         // We keep full range waveform data to scale it on paint
-        m_pWaveformSourceImage = new QImage(dataSize / 2, 2 * 255,
+        m_waveformSourceImage = QImage(dataSize / 2, 2 * 255,
                 QImage::Format_ARGB32_Premultiplied);
-        m_pWaveformSourceImage->fill(QColor(0,0,0,0).value());
+        m_waveformSourceImage.fill(QColor(0, 0, 0, 0).value());
     }
 
     // Always multiple of 2
@@ -59,8 +59,8 @@ bool WOverviewLMH::drawNextPixmapPart() {
     //         << "completionIncrement:" << completionIncrement;
 
 
-    QPainter painter(m_pWaveformSourceImage);
-    painter.translate(0.0,static_cast<double>(m_pWaveformSourceImage->height())/2.0);
+    QPainter painter(&m_waveformSourceImage);
+    painter.translate(0.0, static_cast<double>(m_waveformSourceImage.height()) / 2.0);
 
     QColor lowColor = m_signalColors.getLowColor();
     QPen lowColorPen(QBrush(lowColor), 1);

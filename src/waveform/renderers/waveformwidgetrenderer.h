@@ -23,6 +23,7 @@ class WaveformWidgetRenderer {
   public:
     static const int s_waveformMinZoom;
     static const int s_waveformMaxZoom;
+    static const int s_waveformDefaultZoom;
 
   public:
     explicit WaveformWidgetRenderer(const char* group);
@@ -120,6 +121,7 @@ class WaveformWidgetRenderer {
     double m_gain;
     ControlProxy* m_pTrackSamplesControlObject;
     int m_trackSamples;
+    double m_scaleFactor;
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     PerformanceTimer* m_timer;
