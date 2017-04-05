@@ -328,8 +328,8 @@ void AnalysisDao::saveTrackAnalyses(const Track& track) {
     ConstWaveformPointer pWaveSummary = track.getWaveformSummary();
 
     // Don't try to save invalid or non-dirty waveforms.
-    if (!pWaveform || pWaveform->getDataSize() == 0 || !pWaveform->isDirty() ||
-        !pWaveSummary || pWaveSummary->getDataSize() == 0 || !pWaveSummary->isDirty()) {
+    if (!pWaveform || pWaveform->saveState() != Waveform::SaveState::SavePending ||
+        !pWaveSummary || pWaveSummary->saveState() != Waveform::SaveState::SavePending) {
         return;
     }
 
@@ -346,7 +346,7 @@ void AnalysisDao::saveTrackAnalyses(const Track& track) {
     analysis.data = pWaveform->toByteArray();
     bool success = saveAnalysis(&analysis);
     if (success) {
-        pWaveform->setDirty(false);
+        pWaveform->setSaveState(Waveform::SaveState::Saved);
     }
 
     qDebug() << (success ? "Saved" : "Failed to save")
@@ -362,7 +362,7 @@ void AnalysisDao::saveTrackAnalyses(const Track& track) {
 
     success = saveAnalysis(&analysis);
     if (success) {
-        pWaveSummary->setDirty(false);
+        pWaveSummary->setSaveState(Waveform::SaveState::Saved);
     }
     qDebug() << (success ? "Saved" : "Failed to save")
              << "waveform summary analysis for trackId" << trackId
@@ -407,5 +407,11 @@ bool AnalysisDao::deleteAnalysesByType(AnalysisType type) {
         QString dataPath = analysisPath.absoluteFilePath(query.value(idColumn).toString());
         deleteFile(dataPath);
     }
+    query.prepare(QString("DELETE FROM %1 WHERE type=:type").arg(s_analysisTableName));
+    query.bindValue(":type", type);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't delete analysis";
+    }
+
     return true;
 }
