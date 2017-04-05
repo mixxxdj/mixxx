@@ -4,31 +4,43 @@
     copyright            : (C) 2007 by Wesley Stessens
                            (C) 2009 by Phillip Whelan (rewritten for mp3)
                            (C) 2010 by Tobias Rafreider (fixes for broadcast, dynamic loading of lame_enc.dll, etc)
- ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+    Libmp3lame API:
+    http://lame.cvs.sourceforge.net/viewvc/lame/lame/API?view=markup
+    http://lame.cvs.sourceforge.net/viewvc/lame/lame/include/lame.h?view=markup
 
+    Older BladeEncDll API:
+    http://lame.cvs.sourceforge.net/viewvc/lame/lame/Dll/BladeMP3EncDLL.h?view=markup
+
+*****************************************************************************/
+ 
 #include <QtDebug>
 #include <QObject>
 #include <limits.h>
 
 #include "encoder/encodermp3.h"
+#include "encoder/encodermp3settings.h"
 #include "encoder/encodercallback.h"
 #include "errordialoghandler.h"
 
+// Automatic thresholds for switching the encoder to mono
+// They have been choosen by testing and to keep the same number
+// of values for the slider.
+// The threshold of bitrate (CBR/ABR) at which the encoder
+// with switch to mono encoding
+const int EncoderMp3::MONO_BITRATE_TRESHOLD = 100;
+// The threshold of quality (VBR) at which the encoder
+// with switch to mono encoding. Values from 0 to 6 encode at 44Khz
+const int EncoderMp3::MONO_VBR_THRESHOLD = 8;
+// Quality offset to substract to the quality value when
+// switching to mono encoding.
+const int EncoderMp3::MONO_VBR_OFFSET = 4;
+
+
 EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
-  : m_lameFlags(NULL),
-    m_metaDataTitle(NULL),
-    m_metaDataArtist(NULL),
-    m_metaDataAlbum(NULL),
-    m_bufferOut(NULL),
+  : m_lameFlags(nullptr),
+    m_bufferOut(nullptr),
+    m_bitrate(128),
     m_bufferOutSize(0),
     /*
      * @ Author: Tobias Rafreider
@@ -48,28 +60,35 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
      */
     m_bufferInSize(0),
     m_pCallback(pCallback),
-    m_library(NULL) {
-    m_bufferIn[0] = NULL;
-    m_bufferIn[1] = NULL;
+    m_library(nullptr) {
+    m_bufferIn[0] = nullptr;
+    m_bufferIn[1] = nullptr;
 
     //These are the function pointers for lame
-    lame_init =  0;
-    lame_set_num_channels = 0;
-    lame_set_in_samplerate =  0;
-    lame_set_out_samplerate = 0;
-    lame_close = 0;
-    lame_set_brate = 0;
-    lame_set_mode = 0;
-    lame_set_quality = 0;
-    lame_set_bWriteVbrTag = 0;
-    lame_encode_buffer_float = 0;
-    lame_init_params = 0;
-    lame_encode_flush = 0;
+    lame_init = nullptr;
+    lame_set_num_channels = nullptr;
+    lame_set_in_samplerate = nullptr;
+    lame_set_out_samplerate = nullptr;
+    lame_close = nullptr;
+    lame_set_brate = nullptr;
+    lame_set_mode = nullptr;
+    lame_set_quality = nullptr;
+    lame_set_bWriteVbrTag = nullptr;
+    lame_encode_buffer_float = nullptr;
+    lame_init_params = nullptr;
+    lame_encode_flush = nullptr;
+    lame_set_VBR = nullptr;
+    lame_set_VBR_q = nullptr;
+    lame_set_VBR_quality = nullptr;
+    lame_set_VBR_mean_bitrate_kbps = nullptr;
+    lame_encode_buffer_interleaved_ieee_float = nullptr;
+    lame_get_lametag_frame = nullptr;
 
-    id3tag_init= 0;
-    id3tag_set_title = 0;
-    id3tag_set_artist = 0;
-    id3tag_set_album = 0;
+    id3tag_init = nullptr;
+    id3tag_set_title = nullptr;
+    id3tag_set_artist = nullptr;
+    id3tag_set_album = nullptr;
+    id3tag_add_v2 = nullptr;
 
     /*
      * Load shared library
@@ -87,7 +106,7 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
     libnames << "/opt/local/lib/libmp3lame.dylib";
 #endif
 
-    foreach (QString libname, libnames) {
+    for (const auto& libname : libnames) {
         m_library = new QLibrary(libname, 0);
         if (m_library->load()) {
             qDebug() << "Successfully loaded encoder library " << libname;
@@ -96,7 +115,7 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
             qWarning() << "Failed to load " << libname << ", " << m_library->errorString();
         }
         delete m_library;
-        m_library = NULL;
+        m_library = nullptr;
     }
 
     if (!m_library || !m_library->isLoaded()) {
@@ -136,13 +155,25 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
     lame_init_params            = (lame_init_params__)m_library->resolve("lame_init_params");
     lame_encode_flush           = (lame_encode_flush__)m_library->resolve("lame_encode_flush");
 
+    lame_set_VBR                = (lame_set_VBR__)m_library->resolve("lame_set_VBR");
+    lame_set_VBR_q              = (lame_set_VBR_q__)m_library->resolve("lame_set_VBR_q");
+    lame_set_VBR_quality        = (lame_set_VBR_quality__)m_library->resolve("lame_set_VBR_quality");
+
+    lame_set_VBR_mean_bitrate_kbps = 
+              (lame_set_VBR_mean_bitrate_kbps__)m_library->resolve("lame_set_VBR_mean_bitrate_kbps");
+    lame_encode_buffer_interleaved_ieee_float = 
+              (lame_encode_buffer_interleaved_ieee_float__)m_library->resolve("lame_encode_buffer_interleaved_ieee_float");
+    lame_get_lametag_frame      = (lame_get_lametag_frame__)m_library->resolve("lame_get_lametag_frame");
+
+
     id3tag_init                 = (id3tag_init__)m_library->resolve("id3tag_init");
     id3tag_set_title            = (id3tag_set_title__)m_library->resolve("id3tag_set_title");
     id3tag_set_artist           = (id3tag_set_artist__)m_library->resolve("id3tag_set_artist");
     id3tag_set_album            = (id3tag_set_album__)m_library->resolve("id3tag_set_album");
 
+    id3tag_add_v2               = (id3tag_add_v2__)m_library->resolve("id3tag_add_v2");;
 
-      /*
+    /*
      * Check if all function pointers are not NULL
      * Otherwise, the lame_enc.dll, libmp3lame.so or libmp3lame.mylib do not comply with the official header lame.h
      * Indicates a modified lame version
@@ -161,13 +192,19 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
        !lame_encode_buffer_float ||
        !lame_init_params ||
        !lame_encode_flush ||
+       !lame_set_VBR ||
+       !lame_set_VBR_q ||
+       !lame_set_VBR_mean_bitrate_kbps ||
+       !lame_get_lametag_frame ||
        !get_lame_version ||
        !id3tag_init ||
        !id3tag_set_title ||
        !id3tag_set_artist ||
-       !id3tag_set_album) {
+       !id3tag_set_album)
+    {
         m_library->unload();
-        m_library = NULL;
+        delete m_library;
+        m_library = nullptr;
         //print qDebugs to detect which function pointers are null
         qDebug() << "lame_init: " << lame_init;
         qDebug() << "lame_set_num_channels: " << lame_set_num_channels;
@@ -181,6 +218,9 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
         qDebug() << "lame_encode_buffer_float: " << lame_encode_buffer_float;
         qDebug() << "lame_init_params: " << lame_init_params;
         qDebug() << "lame_encode_flush: " << lame_encode_flush;
+        qDebug() << "lame_set_VBR: " << lame_set_VBR;
+        qDebug() << "lame_set_VBR_q: " << lame_set_VBR_q;
+        qDebug() << "lame_set_VBR_mean_bitrate_kbps: " << lame_set_VBR_mean_bitrate_kbps;
         qDebug() << "get_lame_version: " << get_lame_version;
         qDebug() << "id3tag_init: " << id3tag_init;
         qDebug() << "id3tag_set_title : " << id3tag_set_title ;
@@ -197,42 +237,60 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
         return;
     }
     qDebug() << "Loaded libmp3lame version " << get_lame_version();
+    qDebug() << "lame_set_VBR_quality: " << QString((lame_set_VBR_quality == nullptr) ? "missing" : "present")
+        << " lame_encode_buffer_interleaved_ieee_float: " 
+        << QString((lame_encode_buffer_interleaved_ieee_float == nullptr) ? "missing" : "present")
+        << " id3tag_add_v2: " << QString((id3tag_add_v2 == nullptr) ? "missing" : "present");
 }
 
 // Destructor
 EncoderMp3::~EncoderMp3() {
-    if (m_library != NULL && m_library->isLoaded()) {
+    if (m_library != nullptr && m_library->isLoaded()) {
         flush();
         lame_close(m_lameFlags);
         m_library->unload(); //unload dll, so, ...
         qDebug() << "Unloaded libmp3lame ";
-        m_library = NULL;
+        m_library = nullptr;
     }
     //free requested buffers
-    if (m_bufferIn[0] != NULL)
+    if (m_bufferIn[0] != nullptr)
         delete m_bufferIn[0];
-    if (m_bufferIn[1] != NULL)
+    if (m_bufferIn[1] != nullptr)
         delete m_bufferIn[1];
-    if (m_bufferOut != NULL)
+    if (m_bufferOut != nullptr)
         delete m_bufferOut;
+}
 
-    lame_init =  0;
-    lame_set_num_channels = 0;
-    lame_set_in_samplerate =  0;
-    lame_set_out_samplerate = 0;
-    lame_close = 0;
-    lame_set_brate = 0;
-    lame_set_mode = 0;
-    lame_set_quality = 0;
-    lame_set_bWriteVbrTag = 0;
-    lame_encode_buffer_float = 0;
-    lame_init_params = 0;
-    lame_encode_flush = 0;
+void EncoderMp3::setEncoderSettings(const EncoderSettings& settings)
+{
+    m_bitrate = settings.getQuality();
+    
+    int modeoption = settings.getSelectedOption(EncoderMp3Settings::ENCODING_MODE_GROUP);
+    m_encoding_mode = (modeoption==0) ? vbr_off : (modeoption==1) ? vbr_abr : vbr_default;
 
-    id3tag_init= 0;
-    id3tag_set_title = 0;
-    id3tag_set_artist = 0;
-    id3tag_set_album = 0;
+    if (m_encoding_mode == vbr_off) {
+        if (m_bitrate > MONO_BITRATE_TRESHOLD ) {
+            m_stereo_mode = JOINT_STEREO;
+        } else {
+            m_stereo_mode = MONO;
+        }
+    } else {
+        // Inverting range: vbr 0 best, 9 worst. slider 0 min to max.
+        int val = settings.getQualityValues().size() - 1 - settings.getQualityIndex();
+        if (val < MONO_VBR_THRESHOLD) {
+            m_stereo_mode = JOINT_STEREO;
+            m_vbr_index = val;
+        } else {
+            m_vbr_index = val-4;
+            m_stereo_mode = MONO;
+        }
+    }
+    // Check if the user has forced a stereo mode.
+    switch(settings.getChannelMode()) {
+        case EncoderSettings::ChannelMode::MONO:  m_stereo_mode = MONO; break;
+        case EncoderSettings::ChannelMode::STEREO: m_stereo_mode = JOINT_STEREO; break;
+        default: break;
+    }
 }
 
 /*
@@ -244,7 +302,7 @@ int EncoderMp3::bufferOutGrow(int size) {
         return 0;
 
     m_bufferOut = (unsigned char *)realloc(m_bufferOut, size);
-    if (m_bufferOut == NULL)
+    if (m_bufferOut == nullptr)
         return -1;
 
     m_bufferOutSize = size;
@@ -261,17 +319,17 @@ int EncoderMp3::bufferInGrow(int size) {
 
     m_bufferIn[0] = (float *)realloc(m_bufferIn[0], size * sizeof(float));
     m_bufferIn[1] = (float *)realloc(m_bufferIn[1], size * sizeof(float));
-    if ((m_bufferIn[0] == NULL) || (m_bufferIn[1] == NULL))
+    if ((m_bufferIn[0] == nullptr) || (m_bufferIn[1] == nullptr))
         return -1;
 
     m_bufferInSize = size;
     return 0;
 }
 
-//Using this method requires to call method 'write()' or 'sendPackages()'
-//depending on which context you use the class (broadcast or recording to HDD)
+// Using this method requires to call method 'write()' or 'sendPackages()'
+// depending on which context you use the class (broadcast or recording to HDD)
 void EncoderMp3::flush() {
-    if (m_library == NULL || !m_library->isLoaded())
+    if (m_library == nullptr || !m_library->isLoaded())
         return;
     int rc = 0;
     /**Flush also writes ID3 tags **/
@@ -279,12 +337,21 @@ void EncoderMp3::flush() {
     if (rc < 0) {
         return;
     }
-    //end encoded audio to broadcast or file
-    m_pCallback->write(NULL, m_bufferOut, 0, rc);
+    // end encoded audio to broadcast or file
+    m_pCallback->write(nullptr, m_bufferOut, 0, rc);
+
+    // Write the lame/xing header.
+    rc = lame_get_lametag_frame(m_lameFlags, m_bufferOut, m_bufferOutSize);
+    if (rc != m_bufferOutSize) {
+        bufferOutGrow(rc);
+        rc = lame_get_lametag_frame(m_lameFlags, m_bufferOut, m_bufferOutSize);
+    }
+    m_pCallback->seek(0);
+    m_pCallback->write(nullptr, m_bufferOut, 0, rc);
 }
 
 void EncoderMp3::encodeBuffer(const CSAMPLE *samples, const int size) {
-    if (m_library == NULL || !m_library->isLoaded())
+    if (m_library == nullptr || !m_library->isLoaded())
         return;
     int outsize = 0;
     int rc = 0;
@@ -307,7 +374,7 @@ void EncoderMp3::encodeBuffer(const CSAMPLE *samples, const int size) {
         return;
     }
     //write encoded audio to broadcast stream or file
-    m_pCallback->write(NULL, m_bufferOut, 0, rc);
+    m_pCallback->write(nullptr, m_bufferOut, 0, rc);
 }
 
 void EncoderMp3::initStream() {
@@ -319,41 +386,65 @@ void EncoderMp3::initStream() {
     return;
 }
 
-int EncoderMp3::initEncoder(int bitrate, int samplerate) {
-    if (m_library == NULL || !m_library->isLoaded())
-        return -1;
-
-    unsigned long samplerate_in = samplerate;
-    unsigned long samplerate_out =
-            (samplerate_in > 48000 ? 48000 : samplerate_in);
-
-    m_lameFlags = lame_init();
-
-    if (m_lameFlags == NULL) {
-        qDebug() << "Unable to initialize MP3";
+int EncoderMp3::initEncoder(int samplerate, QString errorMessage) {
+    if (m_library == nullptr || !m_library->isLoaded()) {
+        errorMessage  = "MP3 recording is not supported. Lame could not be initialized";
         return -1;
     }
 
-    lame_set_num_channels(m_lameFlags, 2);
+    unsigned long samplerate_in = samplerate;
+    // samplerate_out 0 means "let LAME pick the appropiate one"
+    unsigned long samplerate_out = (samplerate_in > 48000 ? 48000 : 0);
+
+    m_lameFlags = lame_init();
+
+    if (m_lameFlags == nullptr) {
+        qDebug() << "Unable to initialize MP3";
+        errorMessage  = "MP3 recording is not supported. Lame could not be initialized";
+        return -1;
+    }
+
     lame_set_in_samplerate(m_lameFlags, samplerate_in);
     lame_set_out_samplerate(m_lameFlags, samplerate_out);
-    lame_set_brate(m_lameFlags, bitrate);
-    lame_set_mode(m_lameFlags, STEREO);
+
+    // Input channels into the encoder
+    lame_set_num_channels(m_lameFlags, 2);
+    // Output channels (on the mp3 file)
+    // mode = 0,1,2,3 = stereo, jstereo, dual channel (not supported), mono
+    // Note: JOINT_STEREO is not "forced joint stereo" (That is lame_set_force_ms )
+    lame_set_mode(m_lameFlags, m_stereo_mode);
+
+    if (m_encoding_mode == vbr_off) {
+        qDebug() << " CBR mode with bitrate: " << m_bitrate;
+        lame_set_brate(m_lameFlags, m_bitrate);
+    } else if (m_encoding_mode == vbr_abr) {
+        qDebug() << " ABR mode with bitrate: " << m_bitrate;
+        lame_set_VBR(m_lameFlags, vbr_abr);
+        lame_set_VBR_mean_bitrate_kbps(m_lameFlags, m_bitrate);
+    } else {
+        qDebug() << " VBR mode with value: " << m_vbr_index;
+        lame_set_VBR(m_lameFlags, vbr_default);
+        lame_set_VBR_q(m_lameFlags, m_vbr_index);
+    }
+
     lame_set_quality(m_lameFlags, 2);
-    lame_set_bWriteVbrTag(m_lameFlags, 0);
 
-    //ID3 Tag if fiels are not NULL
+    //ID3 Tag if fields are not NULL
     id3tag_init(m_lameFlags);
-    if (m_metaDataTitle)
-        id3tag_set_title(m_lameFlags, m_metaDataTitle);
-    if (m_metaDataArtist)
-        id3tag_set_artist(m_lameFlags, m_metaDataArtist);
-    if (m_metaDataAlbum)
-        id3tag_set_album(m_lameFlags,m_metaDataAlbum);
+    if (!m_metaDataTitle.isEmpty()) {
+        id3tag_set_title(m_lameFlags, m_metaDataTitle.toLatin1().constData());
+    }
+    if (!m_metaDataArtist.isEmpty()) {
+        id3tag_set_artist(m_lameFlags, m_metaDataArtist.toLatin1().constData());
+    }
+    if (!m_metaDataAlbum.isEmpty()) {
+        id3tag_set_album(m_lameFlags,m_metaDataAlbum.toLatin1().constData());
+    }
 
-
-    if ((lame_init_params(m_lameFlags)) < 0) {
-        qDebug() << "Unable to initialize MP3 parameters";
+    int ret;
+    if ((ret = lame_init_params(m_lameFlags)) < 0) {
+        qDebug() << "Unable to initialize MP3 parameters. return code:" << ret;
+        errorMessage  = "MP3 recording is not supported. Lame could not be initialized.";
         return -1;
     }
 
@@ -362,7 +453,7 @@ int EncoderMp3::initEncoder(int bitrate, int samplerate) {
     return 0;
 }
 
-void EncoderMp3::updateMetaData(char* artist, char* title, char* album) {
+void EncoderMp3::updateMetaData(const QString& artist, const QString& title, const QString& album) {
     m_metaDataTitle = title;
     m_metaDataArtist = artist;
     m_metaDataAlbum = album;

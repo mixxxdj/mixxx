@@ -171,6 +171,8 @@ QString& RecordingManager::getRecordingDir() {
     return m_recordingDir;
 }
 
+
+
 // Only called when recording is active.
 void RecordingManager::slotDurationRecorded(quint64 duration)
 {
@@ -231,17 +233,18 @@ void RecordingManager::slotIsRecording(bool isRecordingActive, bool error) {
     }
 }
 
-bool RecordingManager::isRecordingActive() {
+bool RecordingManager::isRecordingActive() const {
     return m_bRecording;
 }
 
-QString& RecordingManager::getRecordingFile() {
+const QString& RecordingManager::getRecordingFile() const {
     return m_recordingFile;
 }
 
-QString& RecordingManager::getRecordingLocation() {
+const QString& RecordingManager::getRecordingLocation() const {
     return m_recordingLocation;
 }
+
 
 quint64 RecordingManager::getFileSplitSize()
 {
