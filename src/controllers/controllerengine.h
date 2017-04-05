@@ -35,6 +35,15 @@ class ControllerEngineConnection {
     QScriptValue context;
 
     void executeCallback(double value) const;
+
+    // Required for QList::removeAll to work correctly in
+    // ControlObjectScript::disconnectScriptFunction
+    inline bool operator==(const ControllerEngineConnection& other) {
+        return id == other.id;
+    }
+    inline bool operator!=(const ControllerEngineConnection& other) {
+        return !(*this == other);
+    }
 };
 
 class ControllerEngineConnectionScriptValue : public QObject {
