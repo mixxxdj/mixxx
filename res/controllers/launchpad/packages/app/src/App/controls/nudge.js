@@ -29,23 +29,23 @@ export default (gridPosition: [number, number]) => (deck: ChannelControl) => (mo
         modes(mode,
           () => {
             state[dir].nudging = true
-            bindings[dir].button(Colors.hi_yellow)
+            bindings[dir].button.sendColor(Colors.hi_yellow)
             // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
             deck[(`rate_temp_${dir}`: any)].setValue(1)
           },
           () => {
-            bindings[dir].button(Colors.hi_red)
+            bindings[dir].button.sendColor(Colors.hi_red)
             // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
             deck[(`rate_perm_${dir}`: any)].setValue(1)
           },
           () => {
             state[dir].nudging = true
-            bindings[dir].button(Colors.lo_yellow)
+            bindings[dir].button.sendColor(Colors.lo_yellow)
             // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
             deck[(`rate_temp_${dir}_small`: any)].setValue(1)
           },
           () => {
-            bindings[dir].button(Colors.lo_red)
+            bindings[dir].button.sendColor(Colors.lo_red)
             // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
             deck[(`rate_perm_${dir}_small`: any)].setValue(1)
           }
@@ -54,9 +54,9 @@ export default (gridPosition: [number, number]) => (deck: ChannelControl) => (mo
     } else {
       state[dir].nudging = state[dir].pressing = false
       if (getDirection(bindings.rate.getValue()) === dir) {
-        bindings[dir].button.setValue(Colors.lo_amber)
+        bindings[dir].button.sendColor(Colors.lo_amber)
       } else {
-        bindings[dir].button.setValue(Colors.black)
+        bindings[dir].button.sendColor(Colors.black)
       }
       modes(mode,
         // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637

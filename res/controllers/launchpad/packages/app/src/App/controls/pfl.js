@@ -13,7 +13,7 @@ export default (gridPosition: [number, number]) => (deck: ChannelControl) => (mo
         type: 'control',
         target: deck.pfl,
         update: ({ value }: ControlMessage, { bindings }: Object) => value
-          ? bindings.button.button(Colors.hi_green)
+          ? bindings.button.button.sendColor(Colors.hi_green)
           : bindings.button.button.sendColor(Colors.black)
       },
       button: {

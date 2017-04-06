@@ -10782,20 +10782,20 @@ exports['default'] = function (gridPosition) {
               } else {
                 (0, _ModifierSidebar.modes)(mode, function () {
                   state[dir].nudging = true;
-                  bindings[dir].button(_Launchpad.Colors.hi_yellow);
+                  bindings[dir].button.sendColor(_Launchpad.Colors.hi_yellow);
                   // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
                   deck['rate_temp_' + dir].setValue(1);
                 }, function () {
-                  bindings[dir].button(_Launchpad.Colors.hi_red);
+                  bindings[dir].button.sendColor(_Launchpad.Colors.hi_red);
                   // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
                   deck['rate_perm_' + dir].setValue(1);
                 }, function () {
                   state[dir].nudging = true;
-                  bindings[dir].button(_Launchpad.Colors.lo_yellow);
+                  bindings[dir].button.sendColor(_Launchpad.Colors.lo_yellow);
                   // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
                   deck['rate_temp_' + dir + '_small'].setValue(1);
                 }, function () {
-                  bindings[dir].button(_Launchpad.Colors.lo_red);
+                  bindings[dir].button.sendColor(_Launchpad.Colors.lo_red);
                   // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
                   deck['rate_perm_' + dir + '_small'].setValue(1);
                 });
@@ -10803,9 +10803,9 @@ exports['default'] = function (gridPosition) {
             } else {
               state[dir].nudging = state[dir].pressing = false;
               if (getDirection(bindings.rate.getValue()) === dir) {
-                bindings[dir].button.setValue(_Launchpad.Colors.lo_amber);
+                bindings[dir].button.sendColor(_Launchpad.Colors.lo_amber);
               } else {
-                bindings[dir].button.setValue(_Launchpad.Colors.black);
+                bindings[dir].button.sendColor(_Launchpad.Colors.black);
               }
               (0, _ModifierSidebar.modes)(mode,
               // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
@@ -10899,7 +10899,7 @@ exports['default'] = function (gridPosition) {
             update: function update(_ref, _ref2) {
               var value = _ref.value;
               var bindings = _ref2.bindings;
-              return value ? bindings.button.button(_Launchpad.Colors.hi_green) : bindings.button.button.sendColor(_Launchpad.Colors.black);
+              return value ? bindings.button.button.sendColor(_Launchpad.Colors.hi_green) : bindings.button.button.sendColor(_Launchpad.Colors.black);
             }
           },
           button: {

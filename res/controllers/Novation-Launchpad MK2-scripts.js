@@ -10782,20 +10782,20 @@ exports['default'] = function (gridPosition) {
               } else {
                 (0, _ModifierSidebar.modes)(mode, function () {
                   state[dir].nudging = true;
-                  bindings[dir].button(_Launchpad.Colors.hi_yellow);
+                  bindings[dir].button.sendColor(_Launchpad.Colors.hi_yellow);
                   // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
                   deck['rate_temp_' + dir].setValue(1);
                 }, function () {
-                  bindings[dir].button(_Launchpad.Colors.hi_red);
+                  bindings[dir].button.sendColor(_Launchpad.Colors.hi_red);
                   // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
                   deck['rate_perm_' + dir].setValue(1);
                 }, function () {
                   state[dir].nudging = true;
-                  bindings[dir].button(_Launchpad.Colors.lo_yellow);
+                  bindings[dir].button.sendColor(_Launchpad.Colors.lo_yellow);
                   // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
                   deck['rate_temp_' + dir + '_small'].setValue(1);
                 }, function () {
-                  bindings[dir].button(_Launchpad.Colors.lo_red);
+                  bindings[dir].button.sendColor(_Launchpad.Colors.lo_red);
                   // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
                   deck['rate_perm_' + dir + '_small'].setValue(1);
                 });
@@ -10803,9 +10803,9 @@ exports['default'] = function (gridPosition) {
             } else {
               state[dir].nudging = state[dir].pressing = false;
               if (getDirection(bindings.rate.getValue()) === dir) {
-                bindings[dir].button.setValue(_Launchpad.Colors.lo_amber);
+                bindings[dir].button.sendColor(_Launchpad.Colors.lo_amber);
               } else {
-                bindings[dir].button.setValue(_Launchpad.Colors.black);
+                bindings[dir].button.sendColor(_Launchpad.Colors.black);
               }
               (0, _ModifierSidebar.modes)(mode,
               // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
@@ -10899,7 +10899,7 @@ exports['default'] = function (gridPosition) {
             update: function update(_ref, _ref2) {
               var value = _ref.value;
               var bindings = _ref2.bindings;
-              return value ? bindings.button.button(_Launchpad.Colors.hi_green) : bindings.button.button.sendColor(_Launchpad.Colors.black);
+              return value ? bindings.button.button.sendColor(_Launchpad.Colors.hi_green) : bindings.button.button.sendColor(_Launchpad.Colors.black);
             }
           },
           button: {
@@ -11962,7 +11962,7 @@ var Buttons = exports.Buttons = Object.keys(_buttons2['default']).reduce(functio
   return (0, _lodash2['default'])(obj, _defineProperty({}, name, new LaunchpadMidiButton(_buttons2['default'][name])));
 }, {});
 
-},{"../Mixxx/globals":51,"@mixxx-launchpad/mk-specs/buttons":54,"@mixxx-launchpad/mk-specs/colors":55,"lodash.assign":3}],44:[function(require,module,exports){
+},{"../Mixxx/globals":51,"@mixxx-launchpad/mk-specs/buttons":55,"@mixxx-launchpad/mk-specs/colors":56,"lodash.assign":3}],44:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12673,6 +12673,11 @@ function create(globalName) {
 },{"./App/Screen":15,"./Component":40,"./Controls/ControlComponent":41,"./Controls/MidiComponent":42,"./Launchpad":45,"./Mixxx":52,"./Mixxx/console-polyfill":49}],54:[function(require,module,exports){
 'use strict';
 
+module.exports = require('@mixxx-launchpad/app').create(require('./package.json').controller.global, {});
+
+},{"./package.json":57,"@mixxx-launchpad/app":53}],55:[function(require,module,exports){
+'use strict';
+
 module.exports = {
   /* eslint-disable key-spacing, no-multi-spaces */
   'up': { status: '0xB0', midino: '0x68', name: 'up' },
@@ -12758,7 +12763,7 @@ module.exports = {
   /* eslint-enable key-spacing, no-multi-spaces */
 };
 
-},{}],55:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -12776,12 +12781,7 @@ module.exports = {
   lo_yellow: 15
 };
 
-},{}],56:[function(require,module,exports){
-'use strict';
-
-module.exports = require('@mixxx-launchpad/app').create(require('./package.json').controller.global, {});
-
-},{"./package.json":57,"@mixxx-launchpad/app":53}],57:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 module.exports={
   "name": "@mixxx-launchpad/mk2",
   "private": true,
@@ -12798,5 +12798,5 @@ module.exports={
   }
 }
 
-},{}]},{},[56])(56)
+},{}]},{},[54])(54)
 });

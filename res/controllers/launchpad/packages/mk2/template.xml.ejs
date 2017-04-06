@@ -13,9 +13,9 @@
         <controls>
             <% buttons.forEach(function (button) { %><control>
                 <group>[Master]</group>
-                <key><%= global %>.__midi_<%= button[0] %>_<%= button[1] %></key>
-                <status><%= button[0] %></status>
-                <midino><%= button[1] %></midino>
+                <key><%= global %>.__midi_<%= button.status %>_<%= button.midino %></key>
+                <status><%= button.status %></status>
+                <midino><%= button.midino %></midino>
                 <options>
                     <script-binding/>
                 </options>
