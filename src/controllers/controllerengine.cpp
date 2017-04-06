@@ -702,12 +702,12 @@ void ControllerEngine::log(QString message) {
 // Output:  a ScriptConnectionInvokableWrapper turned into a QtScriptValue.
 //          The script should store this object to call its
 //          'disconnect' and 'trigger' methods as needed.
-//          If unsuccessful, returns false.
+//          If unsuccessful, returns undefined.
 QScriptValue ControllerEngine::makeConnection(QString group, QString name,
                                               const QScriptValue callback) {
-    if (m_pEngine == nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(m_pEngine != nullptr) {
         qWarning() << "Tried to connect script callback, but there is no script engine!";
-        return QScriptValue(false);
+        return QScriptValue();
     }
 
     ControlObjectScript* coScript = getControlObjectScript(group, name);
@@ -715,13 +715,13 @@ QScriptValue ControllerEngine::makeConnection(QString group, QString name,
         qWarning() << "ControllerEngine: script tried to connect to ControlObject (" +
                       group + ", " + name +
                       ") which is non-existent, ignoring.";
-        return QScriptValue(false);
+        return QScriptValue();
     }
 
     if (!callback.isFunction()) {
         qWarning() << "Tried to connect (" + group + ", " + name + ")"
                    << "to an invalid callback, ignoring.";
-        return QScriptValue(false);
+        return QScriptValue();
     }
 
     ScriptConnection connection;
@@ -737,7 +737,7 @@ QScriptValue ControllerEngine::makeConnection(QString group, QString name,
             QScriptEngine::ScriptOwnership);
     }
 
-    return QScriptValue(false);
+    return QScriptValue();
 }
 
 /* -------- ------------------------------------------------------
@@ -832,13 +832,15 @@ QScriptValue ControllerEngine::connectControl(
             qWarning() << "ControllerEngine: script tried to connect to ControlObject (" +
                            group + ", " + name + ") which is non-existent, ignoring.";
         }
-        return QScriptValue(false);
+        // This is inconsistent with other failures, which return false.
+        // QScriptValue() with no arguments is undefined in JavaScript.
+        return QScriptValue();
     }
 
     if (passedCallback.isString()) {
         // This check is redundant with makeConnection, but it must be done here
         // before evaluating the code string.
-        if (m_pEngine == nullptr) {
+        VERIFY_OR_DEBUG_ASSERT(m_pEngine != nullptr) {
             qWarning() << "Tried to connect script callback, but there is no script engine!";
             return QScriptValue(false);
         }
