@@ -668,6 +668,8 @@ WBeatSpinBox {
     width: 16px;
     height: 20px;
     background-color: #333333;
+    /* as with spinbox, border is added to size.
+      define it with same width as hover border, otherwise size jumps */
     border: 1px solid #333333;
     border-radius: 2px;
     }
@@ -675,18 +677,12 @@ WBeatSpinBox {
       border: 1px solid #888888;
     }
   WBeatSpinBox::up-button {
-    subcontrol-position: right; /* */
+    subcontrol-position: right;
     image: url(skin:/buttons/btn_loopbeat_plus.svg);
     }
-    WBeatSpinBox::up-button:pressed { /* */
-      image: url(skin:/buttons/btn_loopbeat_plus_hover.svg);
-    }
   WBeatSpinBox::down-button {
-    subcontrol-position: left; /* */
+    subcontrol-position: left;
     image: url(skin:/buttons/btn_loopbeat_minus.svg);
-    }
-    WBeatSpinBox::down-button:pressed { /* */
-      image: url(skin:/buttons/btn_loopbeat_minus_hover.svg);
     }
 
 /*################################################################

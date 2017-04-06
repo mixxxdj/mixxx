@@ -20,7 +20,7 @@ Variables:
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Template src="skin:button_1state_right_display.xml">
+              <Template src="skin:button_1state_right.xml">
                 <SetVariable name="TooltipId">loop_in</SetVariable>
                 <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
                 <SetVariable name="Size">22f,22f</SetVariable>
@@ -30,7 +30,7 @@ Variables:
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,loop_in_goto</SetVariable>
               </Template>
                 <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-              <Template src="skin:button_1state_right_display.xml">
+              <Template src="skin:button_1state_right.xml">
                 <SetVariable name="TooltipId">loop_out</SetVariable>
                 <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
                 <SetVariable name="Size">22f,22f</SetVariable>
