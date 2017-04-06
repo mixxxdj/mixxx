@@ -14,7 +14,7 @@
     <SetVariable name="state_0_text"><Variable name="LoopLength_Text"/></SetVariable>
     <SetVariable name="state_1_text"><Variable name="LoopLength_Text"/></SetVariable>
     <SetVariable name="ConfigKey"><Variable name="group"/>,beatloop_<Variable name="LoopLength_Control"/>_toggle</SetVariable>
-    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatloop_<Variable name="LoopLength_Control"/>_activate</SetVariable>
+    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatlooproll_<Variable name="LoopLength_Control"/>_activate</SetVariable>
     <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,beatloop_<Variable name="LoopLength_Control"/>_enabled</SetVariable>
   </Template>
 </Template>

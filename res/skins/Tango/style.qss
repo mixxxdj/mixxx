@@ -90,7 +90,7 @@ WPushButton {
 
 
 /*################################################################
-#######  Skin Settings  ########################################
+ #######  Skin Settings  ########################################
 ##############################################################*/
 
 #SkinSettings {
@@ -153,7 +153,7 @@ WPushButton {
 
 
 /*################################################################
-####### Waveforms ##############################################
+ ####### Waveforms ##############################################
 ##############################################################*/
 
 /* Also, see color definition above. */
@@ -201,7 +201,7 @@ WPushButton {
 
 
 /*################################################################
-######## Mixer Bar #############################################
+ ######## Mixer Bar #############################################
 ##############################################################*/
 
 #MixerBar {
@@ -352,7 +352,7 @@ WPushButton {
 }
 
 /*################################################################
-######  Decks  #################################################
+ ######  Decks  #################################################
 ##############################################################*/
 
 #Decks12 {
@@ -582,19 +582,18 @@ WPushButton {
   #PlayCueUnderlay[displayValue="0"] {
     background-color: #333333;
     }
-  #PlayCueUnderlay[displayValue="1"] { /*
-    background-color: #c66d00; too dark
-    background-color: #ffb401; too flat*/
+  #PlayCueUnderlay[displayValue="1"] {
     background-color: #ffa601;
     }
-    
-#DeckLoopBeatjump {
-  margin: 0px;
-  padding: 0px;
-  qproperty-layoutSpacing: 0px;
-}
+
+/*################################################################
+ #######  Loop Controls  ########################################
+##############################################################*/
+
 #LoopBeatJumpContainer {
+  qproperty-layoutAlignment: 'AlignBottom';
   padding-top: 1px;
+  border-radius: 3px;
 }
   #LoopBeatJumpButton, #LoopSizeButton, #LoopRollButton {
     font-weight: bold;
@@ -621,23 +620,81 @@ WPushButton {
   }
   /* See also #LoopIndicator near DeckButtons */
 
-#MixerCoverStack {
+#BeatJumpBackwardButton, #LoopBeatForwardJumpButton {
+  background-color: #333333;
+  }
+  #BeatJumpBackwardButton:hover, #LoopBeatForwardJumpButton:hover {
+    border: 1px solid #888888;
+  }
+#BeatJumpBackwardButton {
+  image: url(skin:/buttons/btn_backward.svg) left center;
 }
-#SpinnyCover {
+#BeatJumpForwardButton {
+  image: url(skin:/buttons/btn_forward.svg) left center;
 }
-#SpinnyCoverMini {
+
+#LoopEnabledbutton[displayValue="0"], #ReloopButton {
+  background-color: #333333;
+  }
+  #LoopEnabledbutton[displayValue="0"]:hover, #ReloopButton:hover {
+    border: 1px solid #888888;
+  }
+  #LoopEnabledbutton[displayValue="1"] {
+    background-color: #FF8F00;
+    }
+    #LoopEnabledbutton[displayValue="1"]:hover {
+      border: 1px solid #eeeeee;
+    }
+
+WBeatSpinBox {
+  /* make it 2px smaller in each dimension,
+    border is added for actual size */
+  min-width: 68px;
+  max-width: 68px;
+  min-height: 20px;
+  max-height: 20px;
+  border: 1px solid #333333;
+  border-radius: 5px;
+  background-color: #0f0f0f;
+  color: #888888;
 }
+  WBeatSpinBox:hover { /*
+    border-color: #888888; */
+  }
+
+  WBeatSpinBox::up-button, WBeatSpinBox::down-button {
+    subcontrol-origin: margin;
+    border: 0px;
+    width: 16px;
+    height: 20px;
+    background-color: #333333;
+    border: 1px solid #333333;
+    border-radius: 2px;
+    }
+    WBeatSpinBox::up-button:hover, WBeatSpinBox::down-button:hover {
+      border: 1px solid #888888;
+    }
+  WBeatSpinBox::up-button {
+    subcontrol-position: right; /* */
+    image: url(skin:/buttons/btn_loopbeat_plus.svg);
+    }
+    WBeatSpinBox::up-button:pressed { /* */
+      image: url(skin:/buttons/btn_loopbeat_plus_hover.svg);
+    }
+  WBeatSpinBox::down-button {
+    subcontrol-position: left; /* */
+    image: url(skin:/buttons/btn_loopbeat_minus.svg);
+    }
+    WBeatSpinBox::down-button:pressed { /* */
+      image: url(skin:/buttons/btn_loopbeat_minus_hover.svg);
+    }
 
 /*################################################################
-#######  Rate Container  #######################################
+ #######  Rate Container  #######################################
 ##############################################################*/
-
 
 #RateContainer1, #RateContainer2, #RateContainer3, #RateContainer4, #BpmContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-}
-
-#BpmContainer {
 }
 
 #Bpm {
@@ -653,11 +710,13 @@ WPushButton {
   #SyncButtonOverlay[displayValue="0"]:hover, #KeyReset:hover {
     border: 1px solid #ff4800;
   }
-  #SyncButtonOverlay[displayValue="1"], #SamplerSyncButton[displayValue="1"] {
+  #SyncButtonOverlay[displayValue="1"],
+  #SamplerSyncButton[displayValue="1"] {
     border: 1px solid #ff4800;
     color: #eeeeee;
   }
-  #SyncButtonOverlay[displayValue="1"]:hover, #SamplerSyncButton[displayValue="1"]:hover {
+  #SyncButtonOverlay[displayValue="1"]:hover,
+  #SamplerSyncButton[displayValue="1"]:hover {
     border: 1px solid #eeeeee;
   }
   #KeyDisplay {
@@ -689,7 +748,6 @@ WPushButton {
       #KeyReset:hover {
         }
 
-  
 #PitchSliderContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   }
@@ -698,7 +756,7 @@ WPushButton {
   }
 
 /*################################################################
-#######  Channel Mixer  ########################################
+ #######  Channel Mixer  ########################################
 ##############################################################*/
     
 #MixerMaster {
@@ -782,10 +840,6 @@ WPushButton {
   qproperty-layoutAlignment: 'AlignHCenter';
   margin-top: 2px;
 }
-#VolumeSlider {
-}
-#GainKnob {
-}
 
 #VUMeterFloating {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';	/*
@@ -801,7 +855,7 @@ WPushButton {
 }
 
 /*################################################################
-######  Skin Controls / Crossfader / Clock  ####################
+ ######  Skin Controls / Crossfader / Clock  ####################
 ##############################################################*/
 
 #SkinControls {
@@ -871,40 +925,41 @@ WPushButton {
     text-align: center;
   }
 
-  #BroadcastButton, #SkinSettingsToggler {
+#BroadcastButton, #SkinSettingsToggler {
+  background-color: transparent;
+  }
+  #BroadcastButton[displayValue="0"] {
+    background: transparent url(skin:/buttons/btn_broadcast_off.svg) no-repeat center center;
     }
-    #BroadcastButton[displayValue="0"] {
-      background: transparent url(skin:/buttons/btn_broadcast_off.svg) no-repeat center center;
+    #BroadcastButton[displayValue="0"]:hover {
+      background: #0f0f0f url(skin:/buttons/btn_broadcast_off_hover.svg) no-repeat center center;
       }
-      #BroadcastButton[displayValue="0"]:hover {
-        background: #0f0f0f url(skin:/buttons/btn_broadcast_off_hover.svg) no-repeat center center;
-        }
-    #BroadcastButton[displayValue="1"] {
-      background: transparent url(skin:/buttons/btn_broadcast_connecting.svg) no-repeat center center;
-      }
-    #BroadcastButton[displayValue="2"] {
-      background: transparent url(skin:/buttons/btn_broadcast_connected.svg) no-repeat center center;
-      }
-    #BroadcastButton[displayValue="3"] {
-      background: transparent url(skin:/buttons/btn_broadcast_failure.svg) no-repeat center center;
-      }
-      #BroadcastButton[displayValue="2"]:hover, #BroadcastButton[displayValue="3"]:hover {
-        background-color: #0f0f0f;
-        border: 1px solid #666666;
-      }
-
-  #SkinSettingsToggler[displayValue="0"] {
-    background: transparent url(skin:/buttons/btn_skinsettings_off.svg) no-repeat center center; 
+  #BroadcastButton[displayValue="1"] {
+    background: transparent url(skin:/buttons/btn_broadcast_connecting.svg) no-repeat center center;
     }
-    #SkinSettingsToggler[displayValue="0"]:hover {
-      background: #0f0f0f url(skin:/buttons/btn_skinsettings_on.svg) no-repeat center center; 
+  #BroadcastButton[displayValue="2"] {
+    background: transparent url(skin:/buttons/btn_broadcast_connected.svg) no-repeat center center;
     }
-  #SkinSettingsToggler[displayValue="1"] {
-    background: #0f0f0f url(skin:/buttons/btn_skinsettings_on.svg) no-repeat center center;
+  #BroadcastButton[displayValue="3"] {
+    background: transparent url(skin:/buttons/btn_broadcast_failure.svg) no-repeat center center;
     }
-    #SkinSettingsToggler[displayValue="1"]:hover {
+    #BroadcastButton[displayValue="2"]:hover, #BroadcastButton[displayValue="3"]:hover {
+      background-color: #0f0f0f;
       border: 1px solid #666666;
     }
+
+#SkinSettingsToggler[displayValue="0"] {
+  background: transparent url(skin:/buttons/btn_skinsettings_off.svg) no-repeat center center; 
+  }
+  #SkinSettingsToggler[displayValue="0"]:hover {
+    background: #0f0f0f url(skin:/buttons/btn_skinsettings_on.svg) no-repeat center center; 
+  }
+#SkinSettingsToggler[displayValue="1"] {
+  background: #0f0f0f url(skin:/buttons/btn_skinsettings_on.svg) no-repeat center center;
+  }
+  #SkinSettingsToggler[displayValue="1"]:hover {
+    border: 1px solid #666666;
+  }
 
 #LogoMaxi:hover, #LogoMini:hover {
 /*  background-color: #0f0f0f;  */
@@ -912,7 +967,7 @@ WPushButton {
 
 #CrossfaderBox {
   qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
-  }
+}
 
 /*################################################################
 ######  Effects  ###############################################
@@ -1062,30 +1117,31 @@ WPushButton {
         height: 16px;
         image: url(skin:/buttons/btn_arrow_down_hover.svg);
       }
-  WEffectSelector QAbstractItemView {
-    color: #cccccc;
-    background-color: #202020;
-    padding-left: 5px;
-  }
-  /* selected item */
-  WEffectSelector::checked {
-    /* not applied
-    padding-left: 5px;
-    font-weight: bold;	*/
-    color: #00B4FF;
-  }
-  /* hovered items */
-  WEffectSelector::item:selected {
-    background-color: #0f0f0f;
-  /* This moves the tick mark behind item text,
-    text sits at left border now */
-    border: 0;
-  }
-/* This is sufficient to completely hide the tick mark, but
-  this alone would show an empty, shadowed box instead of tick mark */
-  WEffectSelector::indicator {
-    background-color: transparent;
-  }
+
+    WEffectSelector QAbstractItemView {
+      color: #cccccc;
+      background-color: #202020;
+      padding-left: 5px;
+    }
+    /* selected item */
+    WEffectSelector::checked {
+      /* not applied
+      padding-left: 5px;
+      font-weight: bold;	*/
+      color: #00B4FF;
+    }
+    /* hovered items */
+    WEffectSelector::item:selected {
+      background-color: #0f0f0f;
+    /* This moves the tick mark behind item text,
+      text sits at left border now */
+      border: 0;
+    }
+  /* This is sufficient to completely hide the tick mark, but
+    this alone would show an empty, shadowed box instead of tick mark */
+    WEffectSelector::indicator {
+      background-color: transparent;
+    }
 
 #EffectSlotParameters {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
@@ -1250,7 +1306,7 @@ WPushButton {
     }
 
 /*################################################################
-######  Samplers  ##############################################
+ ######  Samplers  ##############################################
 ##############################################################*/
 
 #SamplerDecks {
@@ -1427,7 +1483,7 @@ WPushButton {
   }
 
 /*################################################################
-######  Spinnies  ##############################################
+ ######  Spinnies  ##############################################
 ##############################################################*/
 
 #SpinnyContainer {
@@ -1440,7 +1496,7 @@ WPushButton {
 }
 
 /*################################################################
-######  Preview Deck  ##########################################
+ ######  Preview Deck  ##########################################
 ##############################################################*/
 
 #PreviewDeck {
@@ -1482,7 +1538,7 @@ WPushButton {
 
 
 /*################################################################
-######  Misc  ##################################################
+ ######  Misc  ##################################################
 ##############################################################*/
 
 QToolTip {
@@ -1555,17 +1611,15 @@ QToolTip {
 #Spacer58 {
   background-color: #585858;
 }
+/* righthand drop-shadow of skinsettings */
 #FadeRight {
   background: none url(skin:/graphics/fadeRight.png) repeat-y;
 }
 
 /*################################################################
-######  Library styling is hard  ###############################
-################### most of it was LateNight & Deere ##########
+ ######  Library styling is hard  ###############################
+ ################### most of it was LateNight & Deere ##########
 ############ added styling for AutoDJ & Recording etc ##### */
-
-#LibrarySingleton {
-}
 
 #Library {
   background-color: #0f0f0f;
@@ -1838,17 +1892,17 @@ QPushButton {
   }
   
 /* SpinBox, currently only used for transition time in Auto DJ tab */
-QSpinBox {
+WLibrary QSpinBox {
   min-height: 20px;
   max-height: 20px;
   min-width: 40px;
   max-width: 40px;
   }
-  QSpinBox:editable {
+  WLibrary QSpinBox:editable {
     background: transparent;
     color: #FFA600;
   }
-  QSpinBox:editable:focus {
+  WLibrary QSpinBox:editable:focus {
     border: 1px solid #FF6600;
   }
 

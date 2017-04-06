@@ -46,7 +46,7 @@ Variables:
         <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-          <EffectParameterName><!-- Label -->
+          <EffectParameterName>
             <ObjectName>EffectKnobParameterName</ObjectName>
             <SizePolicy>min,me</SizePolicy>
             <EffectRack><Variable name="EffectRack"/></EffectRack>

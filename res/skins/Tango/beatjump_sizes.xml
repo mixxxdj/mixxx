@@ -39,13 +39,13 @@ Variables:
       </Template>
 
       <Template src="skin:button_beatjump.xml">
-        <SetVariable name="BeatjumpLength_Text">1/32</SetVariable>
-        <SetVariable name="BeatjumpLength_Control">0.03125</SetVariable>
+        <SetVariable name="BeatjumpLength_Text">128</SetVariable>
+        <SetVariable name="BeatjumpLength_Control">128</SetVariable>
       </Template>
 
       <Template src="skin:button_beatjump.xml">
-        <SetVariable name="BeatjumpLength_Text">1/16</SetVariable>
-        <SetVariable name="BeatjumpLength_Control">0.0625</SetVariable>
+        <SetVariable name="BeatjumpLength_Text">256</SetVariable>
+        <SetVariable name="BeatjumpLength_Control">256</SetVariable>
       </Template>
 
       <Template src="skin:button_beatjump.xml">

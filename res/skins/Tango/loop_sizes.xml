@@ -19,7 +19,7 @@ Variables:
             <SetVariable name="LoopLength_Control">0.125</SetVariable>
             <SetVariable name="LoopLength_Text">/8</SetVariable>
           </Template>
-            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup><!--   -->
           <Template src="skin:button_loop.xml">
             <SetVariable name="LoopLength_Control">0.25</SetVariable>
             <SetVariable name="LoopLength_Text">/4</SetVariable>
@@ -61,7 +61,7 @@ Variables:
           <Template src="skin:button_loop.xml">
             <SetVariable name="LoopLength_Control">16</SetVariable>
             <SetVariable name="LoopLength_Text">16</SetVariable>
-          </Template>
+          </Template><!--    -->
         </Children>
       </WidgetGroup><!-- /Loop row 2 -->
       

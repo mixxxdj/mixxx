@@ -8,10 +8,10 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
-   viewBox="0 0 48 96"
+   viewBox="0 0 22 22"
    id="svg2"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_loop_out.svg">
+   sodipodi:docname="btn_loop_in.svg">
   <metadata
      id="metadata12">
     <rdf:RDF>
@@ -20,6 +20,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -38,21 +39,21 @@
      inkscape:window-height="746"
      id="namedview8"
      showgrid="false"
-     inkscape:zoom="13.906433"
-     inkscape:cx="17.397265"
-     inkscape:cy="78.141904"
+     inkscape:zoom="9.8333334"
+     inkscape:cx="-10.124514"
+     inkscape:cy="14.97112"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg2" />
   <path
-     d="m 32,32 -12,0 0,41 -4,0 0,-57 16,0 z"
+     d="m 15,10 -6,0 0,10 -2,0 0,-17.9999998 8,0 z"
      id="path4"
-     style="fill:#888888;fill-opacity:1"
      inkscape:connector-curvature="0"
+     style="fill:#888888;fill-opacity:1"
      sodipodi:nodetypes="ccccccc" />
   <path
-     d="M 0,48 H 48 V 96 H 0 z"
+     d="M 0,-26 H 48 V 22 H 0 z"
      id="path6"
      inkscape:connector-curvature="0"
      style="fill:none" />

@@ -7,13 +7,13 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   height="48"
-   width="48"
+   height="22"
+   width="22"
    version="1.1"
-   viewBox="0 0 48 48"
+   viewBox="0 0 22 22"
    id="svg2"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_beatjump_forward.svg">
+   sodipodi:docname="btn_backward.svg">
   <metadata
      id="metadata10">
     <rdf:RDF>
@@ -22,6 +22,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -37,14 +38,14 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:window-width="1366"
-     inkscape:window-height="746"
+     inkscape:window-height="747"
      id="namedview6"
      showgrid="false"
-     inkscape:zoom="3.4766083"
-     inkscape:cx="-3.1429747"
-     inkscape:cy="10.196902"
+     inkscape:zoom="8"
+     inkscape:cx="8.4757822"
+     inkscape:cy="7.4927795"
      inkscape:window-x="0"
-     inkscape:window-y="0"
+     inkscape:window-y="21"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg2"
      inkscape:snap-bbox="true"
@@ -55,45 +56,18 @@
      inkscape:object-nodes="true"
      inkscape:snap-smooth-nodes="true"
      inkscape:snap-bbox-edge-midpoints="true"
-     inkscape:object-paths="true"
-     inkscape:bbox-paths="true">
-    <sodipodi:guide
-       orientation="1,0"
-       position="6,30"
-       id="guide3033" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="42,43.576954"
-       id="guide3040" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="19,38"
-       id="guide3060" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="41,10.000001"
-       id="guide3062" />
-  </sodipodi:namedview>
+     inkscape:object-paths="false"
+     inkscape:bbox-paths="true" />
   <path
      style="fill:#888888;fill-opacity:1"
-     d="m 34,9.9999999 4,0 0,28.0000011 -4,0 0,-28.0000011 z"
+     d="m 15,4.9999997 2,0 L 17,17 15,17 15,4.9999997 z"
      id="path4-6"
      inkscape:connector-curvature="0" />
   <path
-     sodipodi:type="star"
      style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none"
+     inkscape:transform-center-x="-1.7142849"
+     d="M 15,11 5,16.999999 5,4.9999992 z"
      id="path3018"
-     sodipodi:sides="3"
-     sodipodi:cx="3"
-     sodipodi:cy="5"
-     sodipodi:r1="15.119611"
-     sodipodi:r2="7.5598059"
-     sodipodi:arg1="0"
-     sodipodi:arg2="1.0471976"
-     inkscape:flatsided="true"
-     inkscape:rounded="0"
-     inkscape:randomized="0"
-     d="m 18.119611,5 -22.6794164,13.093967 0,-26.187934 z"
-     transform="matrix(1.0582283,0,0,1.0691947,14.825314,18.654027)"
-     inkscape:transform-center-x="-3.9999988" />
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="cccc" />
 </svg>

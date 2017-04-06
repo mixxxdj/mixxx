@@ -33,7 +33,7 @@
             <SetVariable name="TooltipId">loop_move</SetVariable>
             <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
             <SetVariable name="Size">22f,22f</SetVariable>
-            <SetVariable name="state_0_pressed">backward.svg</SetVariable>
+            <SetVariable name="state_0_pressed">backward_pressed.svg</SetVariable>
             <SetVariable name="state_0_unpressed">backward.svg</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,loop_move_<Variable name="LoopMoveLength_Control"/>_backward</SetVariable>
           </Template>
@@ -42,7 +42,7 @@
             <SetVariable name="TooltipId">loop_move</SetVariable>
             <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
             <SetVariable name="Size">22f,22f</SetVariable>
-            <SetVariable name="state_0_pressed">forward.svg</SetVariable>
+            <SetVariable name="state_0_pressed">forward_pressed.svg</SetVariable>
             <SetVariable name="state_0_unpressed">forward.svg</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,loop_move_<Variable name="LoopMoveLength_Control"/>_forward</SetVariable>
           </Template>

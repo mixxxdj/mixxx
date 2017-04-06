@@ -33,16 +33,6 @@
       </Template>
       
       <Template src="skin:button_loopmove.xml">
-        <SetVariable name="LoopMoveLength_Text">64</SetVariable>
-        <SetVariable name="LoopMoveLength_Control">64</SetVariable>
-      </Template>
-      
-      <Template src="skin:button_loopmove.xml">
-        <SetVariable name="LoopMoveLength_Text">1/32</SetVariable>
-        <SetVariable name="LoopMoveLength_Control">0.03125</SetVariable>
-      </Template>
-      
-      <Template src="skin:button_loopmove.xml">
         <SetVariable name="LoopMoveLength_Text">1/16</SetVariable>
         <SetVariable name="LoopMoveLength_Control">0.0625</SetVariable>
       </Template>
