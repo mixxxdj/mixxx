@@ -26,14 +26,16 @@ https://github.com/awjackson/bsnes-classic/blob/038e2e051ffc8abe7c56a3bf27e3016c
 #elif defined(Q_OS_LINUX)
 #  include <QtDBus>
 #elif HAVE_XSCREENSAVER_SUSPEND
+#  include <X11/extensions/scrnsaver.h>
+#endif // Q_OS_WIN
+
+#if defined(Q_OS_LINUX) || HAVE_XSCREENSAVER_SUSPEND
 #  define None XNone
 #  define Window XWindow
 #  include <X11/Xlib.h>
 #  undef None
 #  undef Window
-#  include <X11/extensions/scrnsaver.h>
-#endif // Q_OS_WIN
-
+#endif
 
 namespace mixxx {
 
@@ -148,11 +150,11 @@ const char *SCREENSAVERS[][4] = {
     {nullptr, nullptr, nullptr, nullptr}
 };
 const char *USERACTIVITY[][4] = {
-    // org.freedesktop.ScreenSaver is the standard. should work for gnome and kde too, 
-    // but I add their specific names too
-    {"org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", "SimulateUserActivity"},
+    // "SimulateUserActivity" is not widely supported, but we can try that first.
+    {"org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", "SimulateUserActivity" },
     {"org.gnome.ScreenSaver", "/org/gnome/ScreenSaver", "org.gnome.ScreenSaver", "SimulateUserActivity"},
     {"org.kde.screensaver", "/ScreenSaver", "org.kde.screensaver", "SimulateUserActivity"},
+    {"org.cinnamon.ScreenSaver", "/ScreenSaver", "org.cinnamon.ScreenSaver", "SimulateUserActivity"},
     {nullptr, nullptr, nullptr, nullptr}
 };
 
@@ -163,6 +165,14 @@ bool ScreenSaverHelper::s_sendActivity = true;
 void ScreenSaverHelper::triggerUserActivity()
 {
     if (!s_sendActivity) {
+        // If the D-Bus method didn't work, let's try the Xlib method.
+        const char* name = ":0.0";
+        Display *display;
+        if (getenv("DISPLAY"))
+            name=getenv("DISPLAY");
+        display=XOpenDisplay(name);
+        XResetScreenSaver(display);
+        XCloseDisplay(display);
         return;
     }
     
@@ -173,23 +183,25 @@ void ScreenSaverHelper::triggerUserActivity()
         return;
     }
     s_sendActivity = false;
+    QString errors;
     for (int i=0; USERACTIVITY[i][0] != nullptr; i++ ) {
         QDBusInterface iface(USERACTIVITY[i][0], USERACTIVITY[i][1], USERACTIVITY[i][2], 
             QDBusConnection::sessionBus());
         if (iface.isValid()) {
-            QDBusReply<uint32_t> reply = iface.call(USERACTIVITY[i][3]);
+            QDBusReply<void> reply = iface.call(USERACTIVITY[i][3]);
             if (reply.isValid()) {
                 s_sendActivity = true;
                 break;
             } else {
-                qWarning() << "Call to inhibit for " << USERACTIVITY[i][0] << " failed: " 
-                    << reply.error().message();
+                errors = errors +  "\nCall to inhibit for " + USERACTIVITY[i][0] + " failed: " 
+                    + reply.error().message();
             }
         } 
     }
     if (!s_sendActivity) {
         qWarning() << "Could not send activity using the registered DBus methods. " 
-        << "Will not try again until the program is restarted. ";
+        << "Errors were: " << errors << 
+        "\nWill try to use the Xlib XResetScreensaver instead.";
     }
 }
 void ScreenSaverHelper::inhibitInternal()
