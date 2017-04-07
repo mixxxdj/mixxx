@@ -23,6 +23,7 @@ class WaveformWidgetRenderer {
   public:
     static const int s_waveformMinZoom;
     static const int s_waveformMaxZoom;
+    static const int s_waveformDefaultZoom;
 
   public:
     explicit WaveformWidgetRenderer(const char* group);
