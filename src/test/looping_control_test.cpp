@@ -673,6 +673,33 @@ TEST_F(LoopingControlTest, BeatLoopSize_ValueChangeResizesLoop) {
     EXPECT_EQ(oldLoopLength * 2, newLoopLength);
 }
 
+TEST_F(LoopingControlTest, BeatLoopSize_ValueChangeDoesNotResizeManualLoop) {
+    seekToSampleAndProcess(50);
+    m_pTrack1->setBpm(160.0);
+    m_pBeatLoopSize->set(4.0);
+    m_pButtonLoopIn->slotSet(1);
+    m_pButtonLoopIn->slotSet(0);
+    seekToSampleAndProcess(500);
+    m_pButtonLoopOut->slotSet(1);
+    m_pButtonLoopOut->slotSet(0);
+    EXPECT_TRUE(m_pLoopEnabled->toBool());
+    double oldLoopStart = m_pLoopStartPoint->get();
+    double oldLoopEnd = m_pLoopEndPoint->get();
+    double oldLoopLength = oldLoopEnd - oldLoopStart;
+
+    m_pButtonBeatLoopToggle->set(1.0);
+    m_pButtonBeatLoopToggle->set(0.0);
+    EXPECT_FALSE(m_pLoopEnabled->toBool());
+    m_pBeatLoopSize->set(8.0);
+
+    double newLoopStart = m_pLoopStartPoint->get();
+    double newLoopEnd = m_pLoopEndPoint->get();
+    double newLoopLength = newLoopEnd - newLoopStart;
+    EXPECT_EQ(oldLoopStart, newLoopStart);
+    EXPECT_EQ(oldLoopEnd, newLoopEnd);
+    EXPECT_EQ(oldLoopLength, newLoopLength);
+}
+
 TEST_F(LoopingControlTest, LegacyBeatLoopControl) {
     m_pTrack1->setBpm(120.0);
     m_pBeatLoop->set(2.0);

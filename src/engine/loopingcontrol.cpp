@@ -967,6 +967,15 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         return;
     }
 
+    // When loading a new track or after setting a manual loop,
+    // do not resize the existing loop until beatloop_size matches
+    // the size of the existing loop.
+    // Do not return immediately so beatloop_size can be updated.
+    bool avoidResize = false;
+    if (!currentLoopMatchesBeatloopSize() && !enable) {
+        avoidResize = true;
+    }
+
     if (m_pCOBeatLoopSize->get() != beats) {
         m_pCOBeatLoopSize->setAndConfirm(beats);
     }
@@ -976,9 +985,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     if ((newloopSamples.start == kNoTrigger) || (newloopSamples.end == kNoTrigger))
         return;
 
-    // When loading a new track, do not resize the existing loop
-    // until beatloop_size matches the size of the existing loop
-    if (!m_bLoopSetSinceTrackLoaded && !currentLoopMatchesBeatloopSize() && !enable) {
+    if (avoidResize) {
         return;
     }
 
