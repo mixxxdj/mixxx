@@ -133,8 +133,8 @@ LoopingControl::LoopingControl(QString group,
     connect(m_pCOBeatLoopRollActivate, SIGNAL(valueChanged(double)),
             this, SLOT(slotBeatLoopRollToggle(double)));
 
-    m_pCOLoopManualToggle = new ControlPushButton(ConfigKey(group, "loopmanual_toggle"));
-    connect(m_pCOLoopManualToggle, SIGNAL(valueChanged(double)),
+    m_pCOLoopManualSet = new ControlPushButton(ConfigKey(group, "loopmanual_set"));
+    connect(m_pCOLoopManualSet, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoopManualToggle(double)));
 
     // Here we create corresponding beatloop_(SIZE) CO's which all call the same
@@ -241,8 +241,7 @@ LoopingControl::~LoopingControl() {
     delete m_pCOBeatLoopSize;
     delete m_pCOBeatLoopToggle;
     delete m_pCOBeatLoopRollActivate;
-
-    delete m_pCOLoopManualToggle;
+    delete m_pCOLoopManualSet;
 
     delete m_pCOBeatJump;
     delete m_pCOBeatJumpSize;
