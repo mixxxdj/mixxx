@@ -115,9 +115,9 @@ Description:
                 <SetVariable name="Size">172f,17f</SetVariable>
                 <SetVariable name="Align">left</SetVariable>
                 <SetVariable name="state_0_text">      Loop/Jump controls</SetVariable>
-                <SetVariable name="state_1_text"> &#10003; Loop/Jump 2.0&#9668; 2.1   2.1+</SetVariable>
-                <SetVariable name="state_2_text"> &#10003; Loop/Jump 2.0 &#9658;2.1   2.1+</SetVariable>
-                <SetVariable name="state_3_text"> &#10003; Loop/Jump 2.0   2.1 &#9658;2.1+</SetVariable>
+                <SetVariable name="state_1_text"> &#10003; Loop/Jump   2.0&#9668; 2.1   2.1+</SetVariable>
+                <SetVariable name="state_2_text"> &#10003; Loop/Jump   2.0 &#9658;2.1   2.1+</SetVariable>
+                <SetVariable name="state_3_text"> &#10003; Loop/Jump   2.0   2.1 &#9658;2.1+</SetVariable>
                 <SetVariable name="ConfigKeyPerm">[Tango],loop_beatjump_controls</SetVariable>
               </Template>
             </Children>
