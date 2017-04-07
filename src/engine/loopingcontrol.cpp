@@ -133,11 +133,11 @@ LoopingControl::LoopingControl(QString group,
             this, SLOT(slotBeatLoopToggle(double)));
     m_pCOBeatLoopRollActivate = new ControlPushButton(ConfigKey(group, "beatlooproll_activate"));
     connect(m_pCOBeatLoopRollActivate, SIGNAL(valueChanged(double)),
-            this, SLOT(slotBeatLoopRollToggle(double)));
+            this, SLOT(slotBeatLoopRollActivate(double)));
 
     m_pCOLoopManualSet = new ControlPushButton(ConfigKey(group, "loopmanual_set"));
     connect(m_pCOLoopManualSet, SIGNAL(valueChanged(double)),
-            this, SLOT(slotLoopManualToggle(double)));
+            this, SLOT(slotLoopManualSet(double)));
 
     // Here we create corresponding beatloop_(SIZE) CO's which all call the same
     // BeatControl, but with a set value.
@@ -1077,7 +1077,7 @@ void LoopingControl::slotBeatLoopRollActivate(double pressed) {
     }
 }
 
-void LoopingControl::slotLoopManualToggle(double pressed) {
+void LoopingControl::slotLoopManualSet(double pressed) {
     // If a loop is enabled, disable it. Otherwise, set
     // loop in point on button down and loop out point on button up.
     if (m_bLoopingEnabled) {
