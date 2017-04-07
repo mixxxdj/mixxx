@@ -360,18 +360,3 @@ TEST_F(ControllerEngineTest, connectControl_TriggerByConnectionObject) {
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, counter->get());
 }
-
-//TEST_F(ControllerEngineTest, softStart) {
-	// Test that brake()
-	// - toggles [group],scratch2_enable
-	// - sets [group],scratch2 to deck rate
-	// - sets [group],play to 0 'after a while' (?)
-	// - sets m_softStartActive to 0 (?)
-//}
-//TEST_F(ControllerEngineTest, brake) {
-	// Test that brake()
-	// - toggles [group],scratch2_enable
-	// - sets [group]scratch2 to rate passed as argument (initRate)
-	// - sets [group],play to 0 'after a while' (?)
-	// - sets m_softStartActive to 0 (?)
-//}
