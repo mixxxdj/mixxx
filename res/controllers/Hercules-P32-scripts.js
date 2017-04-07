@@ -395,7 +395,7 @@ P32.Deck = function (deckNumbers, channel) {
     };
 
     this.loopToggleEncoderPress = function (channel, control, value, status, group) {
-        engine.setValue(this.currentDeck, 'loopauto_toggle', value / 127);
+        engine.setValue(this.currentDeck, 'beatloop_toggle', value / 127);
     };
 
     this.loopEncoderShiftPress = function (channel, control, value, status, group) {
