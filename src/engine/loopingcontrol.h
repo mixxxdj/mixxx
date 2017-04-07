@@ -153,6 +153,7 @@ class LoopingControl : public EngineControl {
     // Base BeatLoop Control Object.
     ControlObject* m_pCOBeatLoop;
     ControlObject* m_pCOBeatLoopSize;
+    ControlObject* m_pCOBeatLoopSizeIndicator;
     // Different sizes for Beat Loops/Seeks.
     static double s_dBeatSizes[];
     // Array of BeatLoopingControls, one for each size.
