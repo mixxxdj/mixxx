@@ -22,6 +22,8 @@ WBeatSpinBox::WBeatSpinBox(QWidget * parent, ControlObject* pValueControl,
     setFocusPolicy(Qt::ClickFocus);
 
     setValue(m_valueControl.get());
+    connect(this, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSpinboxValueChanged(double)));
     m_valueControl.connectValueChanged(SLOT(slotControlValueChanged(double)));
 }
 
@@ -37,6 +39,12 @@ void WBeatSpinBox::stepBy(int steps) {
     } else if (newValue > maximum()) {
         newValue = maximum();
     }
+    // Do not call QDoubleSpinBox::setValue directly in case
+    // the new value of the ControlObject needs to be confirmed.
+    m_valueControl.set(newValue);
+}
+
+void WBeatSpinBox::slotSpinboxValueChanged(double newValue) {
     // Do not call QDoubleSpinBox::setValue directly in case
     // the new value of the ControlObject needs to be confirmed.
     m_valueControl.set(newValue);

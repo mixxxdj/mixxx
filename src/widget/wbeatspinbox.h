@@ -20,6 +20,7 @@ class WBeatSpinBox : public QDoubleSpinBox, public WBaseWidget {
     void setup(const QDomNode& node, const SkinContext& context);
 
   private slots:
+    void slotSpinboxValueChanged(double newValue);
     void slotControlValueChanged(double newValue);
 
     QString textFromValue(double value) const override;
