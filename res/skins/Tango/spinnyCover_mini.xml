@@ -1,16 +1,19 @@
 <!--
 Description:
-  Container for either CoverArt or Spinny (with or without Cover) next to
-  waveform overview in deck.
+  Container for either CoverArt or Spinny (with or without Cover).
+  Displayed next to overview waveform in decks.
 Variables:
-  channum: channel number
+  channum : channel number
+  group   : [ChannelXY]
   [Tango],spinny0_cover1_stack: show Spinny or CoverArt
+          : keeps Spinny/Cover selection when switching between small and big version
   [Tango],spinnyWithCoverArt_stack: show Spinny with or without Cover
+          : keeps CoverArt option when switching between small and big Spinny
 -->
 <Template>
   <WidgetStack currentpage="[Tango],spinny0_cover1_stack" persist="true">
     <ObjectName>SpinnyCoverMini</ObjectName>
-    <Size>50f,50f</Size><!-- 3 + 111px + 3px -->
+    <Size>50f,50f</Size>
     <Children>
 
       <WidgetStack currentpage="[Tango],spinnyWithCoverArt_stack" persist="true">

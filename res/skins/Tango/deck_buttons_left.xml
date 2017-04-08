@@ -1,3 +1,14 @@
+<!--
+Description:
+  Container for deck buttons:
+  * deck controls
+  * Star rating
+  * HotCues
+  * Play/Cue
+Variables:
+  group   : [ChannelN]
+  channum : channel number
+-->
 <Template>
   <WidgetGroup>
     <ObjectName>DeckButtonsPlay</ObjectName>

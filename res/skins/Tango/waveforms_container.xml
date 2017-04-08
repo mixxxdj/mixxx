@@ -1,14 +1,12 @@
 <!--
 Description:
-  Container for 2/4 stacked scrolling waveforms.
+  Container for 2 or 4 stacked scrolling waveforms.
 Variables:
-  Size
-  channum
-  SignalBgColor
-  SignalColor
-  SignalRGBLowColor   }
-  SignalRGBMidColor   } defined skin.xml, set in waveform.xml
-  SignalRGBHighColor  }
+  SignalBgColor_N       : defined skin.xml
+  SignalColor_N         :
+  SignalRGBLowColor_N   :
+  SignalRGBMidColor_N   :
+  SignalRGBHighColor_N  :
 -->
 <Template>
   <WidgetGroup>

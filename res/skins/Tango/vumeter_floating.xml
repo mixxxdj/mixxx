@@ -1,9 +1,9 @@
 <!--
 Description:
-  'Floating' VUMeter next to big CoverArt/Spinny in decks.
+  Floating VUMeter next to big CoverArt/Spinny in decks.
 Variables:
-  channum: channel number
-  VUMeter/clipping graphics
+  group   : [ChannelN]
+  channum : channel number
 -->
 <Template>
   <WidgetGroup>

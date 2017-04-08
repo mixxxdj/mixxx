@@ -1,13 +1,10 @@
 <!--
 Description:
   An EQ knob with a Kill button next to it.
-  The knob has an underlying display button connected to 'Kill'
+  A 'button' underneath the knob turns grey when EQ range is killed.
 Variables:
-  group
-  parameter
-  Size
-  Color
-  
+  group     : [ChannelN]
+  parameter : EQ parameter number
 -->
 <Template>
   <SetVariable name="EqualizerEffectGroup">[EqualizerRack1_<Variable name="group"/>_Effect1]</SetVariable>
@@ -21,7 +18,6 @@ Variables:
         <Layout>horizontal</Layout>
         <Size>54f,34f</Size><!-- 42f,30f + [4 12 0 0] margin -->
         <Children>
-
           <WidgetGroup><!-- EQ knob + Kill indicator underneath -->
             <SizePolicy>min,min</SizePolicy>
             <Layout>stacked</Layout>
@@ -46,11 +42,10 @@ Variables:
             <SetVariable name="Size">12f,30f</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="EqualizerEffectGroup"/>,button_parameter<Variable name="parameter"/></SetVariable>
           </Template><!-- Kill button -->
-
         </Children>
       </WidgetGroup><!-- /EQ knob + Kill button -->
 
-      <WidgetGroup><!-- free up some space when Filter knob is visible -->
+      <WidgetGroup><!-- create margin when Filter knob is visible -->
         <Size>6f,1min</Size>
         <Connection>
           <ConfigKey persist="true">[Tango],filter_knob</ConfigKey>

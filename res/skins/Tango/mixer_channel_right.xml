@@ -1,23 +1,14 @@
 <!--
 Description:
   The channel mixer containing
-  * EQs incl. Kill buttons
+  * EQ knobs incl. Kill buttons (if enabled)
+  * Filter knob (if enabled)
   * Headphone cue button
   * Volume slider
   * Gain knob
-  * VUMeter
+  * VUMeter (if enabled)
 Variables:
-  ToolTip/ToolTipID
-  ObjectName
-  Size
-  group: The affected group.
-  channum: channel number.
-  parameter: number of EQ parameter.
-  Knob graphics
-  Button graphics
-  Slider graphics
-  [EqualizerRack1_[Channel1]_Effect1],parameter{1,2,3}
-  [EqualizerRack1_[Channel1]_Effect1],button_parameter{1,2,3}
+  group : [ChannelXY]
 -->
 <Template>
   <WidgetGroup>

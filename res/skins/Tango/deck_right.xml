@@ -1,3 +1,16 @@
+<!--
+Description:
+  A deck container
+  * VU meter
+  * mixer / [CoverArt/Spinny]
+  * main deck
+    * artist/title
+    * overview
+    * track comment (if enabled)
+    * deck buttons
+Variables:
+  channum : [ChannelN]
+-->
 <Template>
   <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
   <WidgetGroup>

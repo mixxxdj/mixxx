@@ -1,10 +1,15 @@
 <!--
-  Description:
-    An individual beatjump button.
-  Variables:
-    group: The group for the controls.
-    BeatjumpLength_Text: jump distance as text
-    BeatjumpLength_Control: jump distance as config value
+Description:
+  An individual beatjump button:
+  * size display
+    left-click  : double beatjump size
+    right-click : halve beatjump size
+  * button to jump backward by beatjump size
+  * button to jump forward by beatjump size
+Variables:
+  group                 : [ChannelN]
+  BeatjumpLength_Text   : jump distance as text
+  BeatjumpLength_Control: jump distance as config value
 -->
 <Template>
   <WidgetGroup>

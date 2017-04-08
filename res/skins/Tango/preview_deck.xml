@@ -1,8 +1,15 @@
 <!--
 Description:
-  The Preview deck with 0/4/8 Hotcue buttons and Gain knob
+  The Preview deck with
+  * title
+  * overview
+  * Play/Cue button
+  * HotCue buttons (if enabled, else row is hidden to save space)
+  * Gain knob
+  * Eject button
 Variables:
-  PlayedOverlayColor  <- skin.xml
+  group: set to [PreviewDeck1]
+  PlayedOverlayColor  : defined in skin.xml
 -->
 <Template>	
   <SetVariable name="group">[PreviewDeck1]</SetVariable>

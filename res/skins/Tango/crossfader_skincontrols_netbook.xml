@@ -1,3 +1,14 @@
+<!--
+Description:
+  Top bar only displayed in netbook mode (auto or enforced) with
+  * GUI toggle buttons (FX, Sampler, Lib, Wave ...)
+  * Crossfader (if enabled)
+  * Logo
+  * recording button with duration display
+  * broadcast button
+  * clock
+  * skin settings toggler
+-->
 <Template>
   <WidgetGroup><!-- Skin Controls -->
     <ObjectName>AlignCenter</ObjectName>

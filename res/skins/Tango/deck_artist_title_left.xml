@@ -1,3 +1,14 @@
+<!--
+Description:
+  Container for:
+  * artist/title
+  * play position (elapsed/remaining)
+  * track duration
+  * indicator for enabled loop (if loop controls are hidden)
+Variables:
+  group   : [ChannelN]
+  channum : channel number
+-->
 <Template>
   <WidgetGroup>
     <SizePolicy>me,me</SizePolicy>
@@ -89,37 +100,7 @@
           <Template src="skin:loop_indicator.xml"/>
   
         </Children>
-<!--    This feature is not working reliably:
-        When you disable the 'passthrough' device in Preferences and forgot to deactivate
-        'passthrough' in skin prior to that, 'passthrough' is still 1/active in skin and deck's Artist/Title row
-        would not appear.
-        When clicking 'PASS' to deactivate(!) it, a warning and Preferences window would pop up again.
-        As long as the warning is visible, 'passthrough' CO is still 0 but Artist/Title are visible.
-        Close that window and Artist/Title vanish, although 'passthrough' is 0.
-        You'd have to set a input device for passthrough audio, close Prefs, disable 'PASS' in skin,
-        open Prefs, unset input device, close window, and finally disable 'PASS'.
-        
-        It doesn't matter in parent WidgetGroup has a stacked or vertical layout.
-        WidgetStack could be worth a try.
-        
-        <Connection>
-          <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
-          <BindProperty>visible</BindProperty>
-          <Transform><Not/></Transform>
-        </Connection>   -->
       </WidgetGroup><!-- DeckArtistTitle -->
-      
-      <!-- Show alternate Artist/Title when (Vinyl) Passthrough is enabled on deck
-      <WidgetGroup>
-        <ObjectName>DeckTitlePassthroughLeft</ObjectName>
-        <Layout>horizontal</Layout>
-        <Size>100me,40me</Size>
-        <Children/>
-        <Connection>
-          <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup> -->
     </Children>
   </WidgetGroup>
 </Template>

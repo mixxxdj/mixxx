@@ -1,14 +1,9 @@
 <!--
 Description:
-	An effect parameter button.
-	Stacked layout of invisible button, parameter name
-	and button display underneath.
-Variables:
-	EffectRack: the rack
-	EffectUnit: the unit
-	Effect: the effect
-	EffectButtonParameter: the parameter
-	
+  Container for EffectUnits 1 & 2.
+  In netbook mode they are pushed apart by several spacers which also
+  aligns them to decks (resp. channel mixer or cover art).
+  For each EffectUnit there's a minimized and a full mode.
 -->
 <Template>
   <WidgetGroup><!-- EffectUnits 3 & 4 -->
@@ -25,8 +20,9 @@ Variables:
           <!-- margin not respected, workaround -->
           <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
           <Template src="skin:fx_unit_left.xml">
-            <SetVariable name="EffectRack">1</SetVariable>
-            <SetVariable name="EffectUnit">3</SetVariable>
+              <SetVariable name="EffectRack">1</SetVariable>
+              <SetVariable name="EffectUnit">3</SetVariable>
+              <SetVariable name="fxGroup">EffectRack1_EffectUnit3</SetVariable>
           </Template>
         </Children>
         <Connection>
@@ -43,8 +39,9 @@ Variables:
           <!-- margin not respected, workaround -->
           <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
           <Template src="skin:fx_unit_left_mini.xml">
-            <SetVariable name="EffectRack">1</SetVariable>
-            <SetVariable name="EffectUnit">3</SetVariable>
+              <SetVariable name="EffectRack">1</SetVariable>
+              <SetVariable name="EffectUnit">3</SetVariable>
+              <SetVariable name="fxGroup">EffectRack1_EffectUnit3</SetVariable>
           </Template>
           <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
         </Children>
@@ -123,8 +120,9 @@ Variables:
           <!-- margin not respected, workaround -->
           <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
           <Template src="skin:fx_unit_right.xml">
-            <SetVariable name="EffectRack">1</SetVariable>
-            <SetVariable name="EffectUnit">4</SetVariable>
+              <SetVariable name="EffectRack">1</SetVariable>
+              <SetVariable name="EffectUnit">4</SetVariable>
+              <SetVariable name="fxGroup">EffectRack1_EffectUnit4</SetVariable>
           </Template>
         </Children>
         <Connection>
@@ -141,8 +139,9 @@ Variables:
           <!-- margin not respected, workaround -->
           <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
           <Template src="skin:fx_unit_right_mini.xml">
-            <SetVariable name="EffectRack">1</SetVariable>
-            <SetVariable name="EffectUnit">4</SetVariable>
+              <SetVariable name="EffectRack">1</SetVariable>
+              <SetVariable name="EffectUnit">4</SetVariable>
+              <SetVariable name="fxGroup">EffectRack1_EffectUnit4</SetVariable>
           </Template>
           <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
         </Children>

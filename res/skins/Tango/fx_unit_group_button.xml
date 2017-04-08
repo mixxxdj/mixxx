@@ -2,17 +2,14 @@
 Description:
   An effect group control button.
 Variables:
-  ObjectName
-  Size
-  Align: Set horizontal label alignment. 
-  ToolTip/ToolTipID: The tooltip to display.
-  group: The Effect Unit.
-  GroupName: The affected group.
-  ConfigKey: 'super' or 'mix'
-  Color: The knob's notch colour.
-  Label: The text to show on the button.
-  LabelOff: The backpath in state 0.
-  LabelOn: The backpath in state 1.
+  ToolTipID : tooltip to display.
+  fxGroup   : [EffectRack1_EffectUnitN]
+  GroupName : affected group
+  Color     : knob notch colour
+  Align     : horizontal label alignment
+  LabelText : text to show on the button
+  LabelOff  : backpath in state 0
+  LabelOn   : backpath in state 1
 -->
 <Template>
   <PushButton>
@@ -36,7 +33,7 @@ Variables:
       <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="LabelOn"/>.svg</Unpressed>
     </State>
     <Connection>
-      <ConfigKey><Variable name="group"/>,group_<Variable name="GroupName"/>_enable</ConfigKey>
+      <ConfigKey>[<Variable name="fxGroup"/>],group_<Variable name="GroupName"/>_enable</ConfigKey>
       <ButtonState>LeftButton</ButtonState>
     </Connection>
   </PushButton>

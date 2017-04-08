@@ -1,10 +1,15 @@
 <!--
-  Description:
-    An individual beatloop button.
-  Variables:
-    group: The group for the controls.
-    LoopMoveLength_Text: move distance as text
-    LoopMoveLength_Control: move distance as config value
+Description:
+  An individual loopmove button:
+  * size display
+    left-click  : double loopmove size
+    right-click : halve loopmove size
+  * button to move backward by loopmove size
+  * button to move forward by loopmove size
+Variables:
+  group                   : [ChannelN]
+  LoopMoveLength_Text     : move distance as text
+  LoopMoveLength_Control  : move distance as config value
 -->
 <Template>
   <WidgetGroup>

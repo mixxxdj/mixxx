@@ -81,9 +81,11 @@
       <attribute persist="true" config_key="[Tango],stacked_waveforms">1</attribute>
       <attribute persist="true" config_key="[Tango],stars">1</attribute>
       <attribute persist="true" config_key="[Tango],trackComment">1</attribute>
+      <!-- keeps Spinny/Cover selection when switching between small and big version -->
       <attribute persist="true" config_key="[Tango],spinny0_cover1_stack">1</attribute>
       <attribute persist="true" config_key="[Tango],spinnyCoverBIG">1</attribute>
       <attribute persist="true" config_key="[Tango],spinnyWithCoverArt">1</attribute>
+      <!-- keeps CoverArt option when switching between small and big Spinny -->
       <attribute persist="true" config_key="[Tango],spinnyWithCoverArt_stack">1</attribute>
       <attribute persist="true" config_key="[Tango],vinylControlsDeck1">0</attribute>
       <attribute persist="true" config_key="[Tango],vinylControlsDeck2">0</attribute>
@@ -314,15 +316,15 @@
                     <Splitter>
                       <ObjectName>WaveformSplitter</ObjectName>
                       <SizePolicy>me,me</SizePolicy>
-                      <SplitSizes>1,10</SplitSizes>
-                      <SplitSizesConfigKey>[Tango],waveform_splitSize</SplitSizesConfigKey>
                       <Orientation>vertical</Orientation>
+                      <SplitSizes>100,10000</SplitSizes>
+                      <SplitSizesConfigKey>[Tango],waveform_splitSize</SplitSizesConfigKey>
                       <Collapsible>0,0</Collapsible>
                       <Children>
 
                         <WidgetGroup>
                           <Layout>vertical</Layout>
-                          <SizePolicy>me,min</SizePolicy>
+                          <SizePolicy>me,max</SizePolicy>
                           <Children>
                             <Template src="skin:waveforms_container.xml"/>
                           </Children>

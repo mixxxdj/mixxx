@@ -1,14 +1,9 @@
 <!--
 Description:
-	An effect parameter button.
-	Stacked layout of invisible button, parameter name
-	and button display underneath.
-Variables:
-	EffectRack: the rack
-	EffectUnit: the unit
-	Effect: the effect
-	EffectButtonParameter: the parameter
-	
+  Container for EffectUnits 1 & 2.
+  In netbook mode they are pushed apart by several spacers which also
+  aligns them to decks (resp. channel mixer or cover art).
+  For each EffectUnit there's a minimized and a full mode.
 -->
 <Template>
   <WidgetGroup>
@@ -31,6 +26,7 @@ Variables:
               <Template src="skin:fx_unit_left.xml">
                 <SetVariable name="EffectRack">1</SetVariable>
                 <SetVariable name="EffectUnit">1</SetVariable>
+                <SetVariable name="fxGroup">EffectRack1_EffectUnit1</SetVariable>
               </Template>
             </Children>
             <Connection>
@@ -47,6 +43,7 @@ Variables:
               <Template src="skin:fx_unit_left_mini.xml">
                 <SetVariable name="EffectRack">1</SetVariable>
                 <SetVariable name="EffectUnit">1</SetVariable>
+                <SetVariable name="fxGroup">EffectRack1_EffectUnit1</SetVariable>
               </Template>
               <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
             </Children>
@@ -125,6 +122,7 @@ Variables:
               <Template src="skin:fx_unit_right.xml">
                 <SetVariable name="EffectRack">1</SetVariable>
                 <SetVariable name="EffectUnit">2</SetVariable>
+                <SetVariable name="fxGroup">EffectRack1_EffectUnit2</SetVariable>
               </Template>
             </Children>
             <Connection>
@@ -141,6 +139,7 @@ Variables:
               <Template src="skin:fx_unit_right_mini.xml">
                 <SetVariable name="EffectRack">1</SetVariable>
                 <SetVariable name="EffectUnit">2</SetVariable>
+                <SetVariable name="fxGroup">EffectRack1_EffectUnit2</SetVariable>
               </Template>
               <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
             </Children>

@@ -1,3 +1,20 @@
+<!--
+Description:
+  Container for
+  * waveform overview
+  * CoverArt/Spinny
+  * Vinyl controls
+Variables:
+  group               : [ChannelN]
+  channum             : channel number
+  SignalBgColor       : defined in skin.xml
+  SignalColor         :
+  SignalRGBLowColor   :
+  SignalRGBMidColor   :
+  SignalRGBHighColor  :
+  SignalBgColor_1     : for hidden scrolling waveform
+  SignalColor_1       :
+-->
 <Template>
   <WidgetGroup>
     <ObjectName>DeckOverview</ObjectName>

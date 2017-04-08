@@ -6,7 +6,6 @@
     EffectUnit: Number of effect unit.
 -->
 <Template>
-  <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>]</SetVariable>
   <WidgetGroup><!-- EffectUnit -->
     <ObjectName>EffectUnitLeftMini</ObjectName>
     <Layout>horizontal</Layout>
@@ -30,11 +29,11 @@
             <Children>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
               <Template src="skin:fx_selector_meta_left.xml">
-                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectNum">1</SetVariable>
               </Template>
             </Children>
             <Connection>
-              <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],focused_effect</ConfigKey>
+              <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
               <BindProperty>highlight</BindProperty>
               <Transform><IsEqual>1</IsEqual></Transform>
             </Connection>
@@ -49,11 +48,11 @@
             <Children>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
               <Template src="skin:fx_selector_meta_left.xml">
-                <SetVariable name="Effect">2</SetVariable>
+                <SetVariable name="EffectNum">2</SetVariable>
               </Template>
             </Children>
             <Connection>
-              <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],focused_effect</ConfigKey>
+              <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
               <BindProperty>highlight</BindProperty>
               <Transform><IsEqual>2</IsEqual></Transform>
             </Connection>
@@ -68,11 +67,11 @@
             <Children>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
               <Template src="skin:fx_selector_meta_left.xml">
-                <SetVariable name="Effect">3</SetVariable>
+                <SetVariable name="EffectNum">3</SetVariable>
               </Template>
             </Children>
             <Connection>
-              <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],focused_effect</ConfigKey>
+              <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
               <BindProperty>highlight</BindProperty>
               <Transform><IsEqual>3</IsEqual></Transform>
             </Connection>
@@ -80,7 +79,7 @@
 
         </Children>
         <Connection>
-          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_focus</ConfigKey>
+          <ConfigKey>[<Variable name="fxGroup"/>],show_focus</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /Effect _selector_meta_s * highlightable -->
@@ -102,7 +101,7 @@
             <Children>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
               <Template src="skin:fx_selector_meta_left.xml">
-                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectNum">1</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
@@ -116,7 +115,7 @@
             <Children>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
               <Template src="skin:fx_selector_meta_left.xml">
-                <SetVariable name="Effect">2</SetVariable>
+                <SetVariable name="EffectNum">2</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
@@ -130,14 +129,14 @@
             <Children>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
               <Template src="skin:fx_selector_meta_left.xml">
-                <SetVariable name="Effect">3</SetVariable>
+                <SetVariable name="EffectNum">3</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
 
         </Children>
         <Connection>
-          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_focus</ConfigKey>
+          <ConfigKey>[<Variable name="fxGroup"/>],show_focus</ConfigKey>
           <BindProperty>visible</BindProperty>
           <Transform><Not/></Transform>
         </Connection>
@@ -218,14 +217,14 @@
           <Template src="skin:button_2state_persist.xml">
             <SetVariable name="ObjectName">FxMiniMaxiButton</SetVariable>
             <SetVariable name="Size">22f,13f</SetVariable>
-            <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,show_parameters</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[<Variable name="fxGroup"/>],show_parameters</SetVariable>
           </Template>
             <WidgetGroup><Size>1min,1f</Size><Children/></WidgetGroup>
           <Template src="skin:button_2state.xml">
             <SetVariable name="TooltipId">EffectUnit_enabled</SetVariable>
             <SetVariable name="ObjectName">EffectUnitToggleButton</SetVariable>
             <SetVariable name="Size">22f,1me</SetVariable>
-            <SetVariable name="ConfigKey"><Variable name="group"/>,enabled</SetVariable>
+            <SetVariable name="ConfigKey">[<Variable name="fxGroup"/>],enabled</SetVariable>
           </Template>
         </Children>
       </WidgetGroup><!-- /FX Unit _selector_meta_ & miniMaxi button -->

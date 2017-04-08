@@ -1,9 +1,10 @@
 <!--
 Description:
-  A button that has a left-click display control and a right-click control.
+  A HotCue button for regular decks only.
+  Left-click activates/recalls HotCue, right-click deletes it
 Variables:
-  HotCue: The hotcue's number.
-  group: The affected group/context (deck, preview deck or sampler)
+  group : [ChannelN]
+  HotCue: hotcue number
 -->
 <Template>
   <WidgetGroup>

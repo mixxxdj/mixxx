@@ -1,3 +1,14 @@
+<!--
+Description:
+  Container for:
+  * artist/title
+  * play position (elapsed/remaining)
+  * track duration
+  * indicator for enabled loop (if loop controls are hidden)
+Variables:
+  group   : [ChannelN]
+  channum : channel number
+-->
 <Template>
   <WidgetGroup>
     <SizePolicy>me,me</SizePolicy>

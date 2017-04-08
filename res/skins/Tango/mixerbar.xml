@@ -1,15 +1,15 @@
 <!--
 Description:
-	The mixerbar containing sections for
+	The mixerbar, containing collapsible sections for
 	* Master
-	* Headphones
-	* Microphones
-	* Auxiliary
-Variables:
-  Label text
-  Knob graphics
-  Button graphics
-  Slider graphics
+	* Headphones (if enabled)
+	* Microphones (if enabled)
+	* Auxiliary (if enabled)
+	Mixerbar is alsways at bottom edge of screen.
+	It is centered if Library is hidden.
+	With Library visible, it can either show up below tracks table to save
+	space for treeview on the left, or full-width below Libary if many
+	Mics/AUX are enabled.
 -->
 <Template>
   <WidgetGroup><!-- Mixer Bar -->

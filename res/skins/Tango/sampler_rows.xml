@@ -1,7 +1,12 @@
 <!--
 Description:
-  A Sampler container.
+  Container for standard-sized Samplers with option to show minimal Samplers.
+  * 4/8 Samplers
+  * mini/maxi button
+  * button to load/save sampler banks
 Variables:
+  Samplers_miniMAXI_Stack : stores mini/Maxi state of Samplers
+  Samplers_miniMAXI       : stores mini/Maxi state of Samplers
 -->
 <Template>
   <WidgetStack currentpage="[Tango],Samplers_miniMAXI_Stack" persist="true">

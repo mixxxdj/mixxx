@@ -1,3 +1,13 @@
+<!--
+Description:
+  Container for microphone controls in mixerbar
+  * talkover/enable button
+  * Pregain knob
+  * Volume slider with level meter
+Variables:
+  Label     : text shown on talkover button
+  MicNumber : internal microphone number (empty for Mic1)
+-->
 <Template>
   <WidgetGroup>
     <Layout>horizontal</Layout>

@@ -1,7 +1,12 @@
 <!--
 Description:
-  A Sampler container.
+  Container for minimal Samplers, 4 in each row.
+  * 4/8 Samplers
+  * mini/maxi button
+  * button to load/save sampler banks
 Variables:
+  MaxiButtonSize  : shows button or hides it if available vertical space
+                    doesn't suffice to show maximized samplers
 -->
 <Template>
   <WidgetGroup><!-- 4x2 minimized Samplers -->

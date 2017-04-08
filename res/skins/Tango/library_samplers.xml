@@ -2,10 +2,10 @@
 Description:
   Size-aware container for sampler decks and Library.
 Modes:
-  0-82px    show noting
-  83-164px  show Samplers or Library
-  165-x     show both, depending on display settings
-            Libary expands.
+  0-36px    Library only
+  37-81px   Library or 4 miniSamplers
+  82-166    Library & [4/8 minisamplers / 4 maxiSamplers]
+  167++     Library & all Sampler options
 -->
 <Template>
   <SizeAwareStack>

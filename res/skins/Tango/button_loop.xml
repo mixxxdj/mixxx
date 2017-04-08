@@ -1,10 +1,10 @@
 <!--
-  Description:
-    An individual beatloop button.
-  Variables:
-    group: The group for the controls.
-    LoopLength_Text: length of the beat loop as text
-    LoopLength_Control: length of the beatloop as config value
+Description:
+  An individual beatloop button.
+Variables:
+  group             : [ChannelN]
+  LoopLength_Text   : length of the beat loop as text
+  LoopLength_Control: length of the beatloop as config value
 -->
 <Template>
   <Template src="skin:button_2state_right_display.xml">

@@ -1,17 +1,12 @@
 <!--
 Description:
   The pitch container with
-  * BPM display with Sync/Reset button overlay
+  * BPM display with Sync/Reset button overlay (Master sync on long-press)
   * Key display with Sync/Reset button overlay
   * Pitch slider (right-click resets speed)
 Variables:
-  ToolTip/ToolTipID
-  ObjectName
-  Size
-  channum: channel number.
-  ConfigKey: left-click connection (Sync)
-  ConfigKeyRight: right-click connection (Reset)
-  Slider graphics
+  channum : channel number
+  group   : [ChannelXY]
 -->
 <Template>	
   <WidgetGroup><!-- RateContainer -->

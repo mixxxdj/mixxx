@@ -1,3 +1,12 @@
+<!--
+Description:
+  Container for auxiliary controls in mixerbar
+  * enable/mute button
+  * Pregain knob
+  * Volume slider with level meter
+Variables:
+  AuxNumber : text shown on talkover button and internal auxiliary number
+-->
 <Template>
   <WidgetGroup>
     <Layout>horizontal</Layout>

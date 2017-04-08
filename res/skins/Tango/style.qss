@@ -606,11 +606,14 @@ WPushButton {
   #LoopSizeButton, #LoopRollButton {
     font-size: 12px/12px;
   }
-  #LoopSizeButton[displayValue="1"], #LoopRollButton[displayValue="1"]:hover {
+  #LoopSizeButton[displayValue="1"],
+  #LoopRollButton[displayValue="1"] {
     border: 1px solid #FF8F00;
+    color: #d2d2d2;
   }
-  WPushButton#LoopRollButton:pressed {
-    border: 1px solid #FF8F00;
+  #LoopSizeButton[displayValue="1"]:hover,
+  #LoopRollButton[displayValue="1"]:hover {
+    border: 1px solid #eeeeee;
   }
   #LoopRollButton::WPushButton:pressed {
     border: 1px solid #FF8F00;

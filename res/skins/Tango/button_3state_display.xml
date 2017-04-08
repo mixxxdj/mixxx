@@ -2,17 +2,17 @@
 Description:
   A button that has click or display controls.
 Variables:
-  ObjectName: The object name.
-  ToolTip: custom Tooltip string
-  TooolTipID: standart Tooltip from mixxx db.
+  ObjectName        : object name
+  ToolTip           : custom Tooltip string
+  TooolTipID        : standard Tooltip from mixxx db
     see: https://github.com/mixxxdj/mixxx/blob/master/src/skin/tooltips.cpp
-  Size: the button size.
-  state_X_text: label text for state X
-  state_X_pressed: background graphic for pressed state X
-  state_X_unpressed: background graphic for unpressed state X
-  Align: alignment of text
-  ConfigKey: left-click control
-  ConfigKeyDisp: display control
+  Size              : button size
+  state_X_text      : label text for state X
+  state_X_pressed   : background graphic for pressed state X
+  state_X_unpressed : background graphic for unpressed state X
+  Align             : alignment of text
+  ConfigKey         : left-click control
+  ConfigKeyDisp     : display control
 -->
 <Template>
   <PushButton>

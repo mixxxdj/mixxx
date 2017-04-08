@@ -1,15 +1,16 @@
 <!--
 Description:
-  Scrolling waveform on top edge of skin.
-  At the right side are the beat grid buttons.
+  Scrolling waveform on top edge of skin with beat grid buttons at the right-hand side.
+  Minimum size is 50px, in netbook mode it's 22px.
+  Expanded beat grid buttons make the waveform grow to 50px.
 Variables:
-  channum: the channel number
-  SignalBgColor: background colour
-  SignalColor: Signal colour for filtered view mode
-  SignalRGBLowColor: colours for HSV/RGB view mode > see skin.xml
-  SignalRGBMidColor: 
-  SignalRGBHighColor: 
-  Button graphics
+  group   : [ChannelN]
+  channum : channel number
+  SignalBgColor       : defined in skin.xml
+  SignalColor         :
+  SignalRGBLowColor   :
+  SignalRGBMidColor   :
+  SignalRGBHighColor  :
 -->
 <Template>
   <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
@@ -17,7 +18,7 @@ Variables:
     <ObjectName>WaveformContainer<Variable name="channum"/></ObjectName>
     <Layout>horizontal</Layout>
     <Children>
-      <Visual><!-- Waveform * normal mode-->
+      <Visual><!-- Waveform * Netbook mode-->
         <TooltipId>waveform_display</TooltipId>
         <ObjectName>Waveform</ObjectName>
         <Size>0me,22me</Size>
@@ -81,7 +82,7 @@ Variables:
           <ConfigKey>[Tango],netbook_mode</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </Visual><!-- /Waveform * normal mode-->
+      </Visual><!-- /Waveform * Netbook mode-->
 
       <Visual><!-- Waveform * Normal mode -->
         <TooltipId>waveform_display</TooltipId>

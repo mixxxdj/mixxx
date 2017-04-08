@@ -1,3 +1,7 @@
+<!--
+Description:
+  Shows Logo if 4 decks and crossfader are enabled (in normal mode)
+-->
 <Template>
   <WidgetGroup><!-- Skin Controls -->
     <Layout>vertical</Layout>

@@ -1,17 +1,20 @@
 <!--
 Description:
-  A Sampler deck with 0/4/8 Hotcue buttons, control buttons, Gain knob,
-  Pitch slider and waveform overview.
+  Sampler deck with
+  * Play/Goto_Cue button
+  * overview + track title
+  * HotCue buttons (if enabled)
+  * Sync button (can follow master sync)
+  * Volume knob
+  * CrossFader orientation button
+  * Repeat button
+  * Eject button
+  * Keylock button
+  Switches to light grey background when playing.
 Variables:
-  ToolTip/ToolTipID
-  ObjectName
-  Size
-  samplernum: sampler deck number.
-  ConfigKey: left-click connection
-  ConfigKeyRight: right-click connection
-  ConfigKeyDisp: display connection
-  Button graphics
-  Knob graphics
+  samplernum  : sampler deck number
+  group       : [ChannelXY]
+  PlayedOverlayColor  : defined in skin.xml
 -->
 <Template>
   <SetVariable name="group">[Sampler<Variable name="samplernum"/>]</SetVariable>

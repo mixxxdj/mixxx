@@ -2,11 +2,11 @@
 Description:
   Container for Vinyl control options next to waveform overview in decks.
   Visibility is toggled by VinylTogglerLeft.
-  Contains spacers for when decks' overview waveformsare stacked like scrolling waveforms
-  and track comment is displayed.
+  Contains spacers for when decks' overview waveforms are stacked like
+  scrolling waveforms and track comment is displayed.
 Variables:
-  channum: channel number
-  button graphics
+  group   : [ChannelN]
+  channum : channel number
 -->
 <Template>
   <WidgetGroup>

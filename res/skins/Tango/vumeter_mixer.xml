@@ -1,9 +1,9 @@
 <!--
 Description:
-  VUMeter in channel mixer
+  VUMeter embedded in channel mixer.
 Variables:
-  channum: channel number
-  VUMeter/clipping graphics
+  group   : [ChannelN]
+  channum : channel number
 -->
 <Template>
   <WidgetGroup>

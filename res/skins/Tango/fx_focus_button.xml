@@ -1,25 +1,22 @@
 <!--
 Description:
-	An effect parameter button.
-	Stacked layout of invisible button, parameter name
-	and button display underneath.
+  A button that displays focus state of an effect slot.
+  Left-click sets focus, right-click removes focus from all effects
 Variables:
-	EffectRack: the rack
-	EffectUnit: the unit
-	Effect: the effect
-	EffectButtonParameter: the parameter
-	
+  fxGroup   : [EffectRack1_EffectUnitN]
+  Effectnum : effect number
 -->
 <Template>
   <WidgetGroup>
     <Layout>horizontal</Layout>
     <Size>11f,30me</Size>
     <Children>
-	    <PushButton>
-		    <TooltipId></TooltipId>
-		    <ObjectName>EffectFocusButton</ObjectName>
-		    <Size>11f,30me</Size>
-		    <NumberStates>2</NumberStates>
+      <PushButton>
+        <TooltipId></TooltipId>
+        <ObjectName>EffectFocusButton</ObjectName>
+        <Size>11f,30me</Size>
+        <NumberStates>2</NumberStates>
+        <RightClickIsPushButton>true</RightClickIsPushButton>
         <State>
           <Number>0</Number>
           <Text></Text>
@@ -29,21 +26,21 @@ Variables:
           <Text></Text>
         </State>
         <Connection>
-          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],focused_effect</ConfigKey>
+          <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
           <EmitOnDownPress>true</EmitOnDownPress>
-          <Transform><IsEqual><Variable name="Effect"/></IsEqual></Transform>
+          <Transform><IsEqual><Variable name="EffectNum"/></IsEqual></Transform>
         </Connection>
         <Connection>
-          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],focused_effect</ConfigKey>
+          <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
           <ButtonState>RightButton</ButtonState>
           <EmitOnDownPress>true</EmitOnDownPress>
-          <Transform><IsEqual><Variable name="Effect"/></IsEqual><Not/></Transform>
+          <Transform><IsEqual><Variable name="EffectNum"/></IsEqual><Not/></Transform>
         </Connection>
-	    </PushButton>
-	  </Children>
+      </PushButton>
+    </Children>
     <Connection>
-      <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_focus</ConfigKey>
+      <ConfigKey>[<Variable name="fxGroup"/>],show_focus</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

@@ -21,7 +21,7 @@ Variables:
       <Template src="skin:button_2state.xml">
         <SetVariable name="ObjectName">EffectButtonParameterOverlay</SetVariable>
         <SetVariable name="Size">51f,18f</SetVariable>
-        <SetVariable name="ConfigKey">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],button_parameter<Variable name="EffectButtonParameter"/></SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="Effect"/>,button_parameter<Variable name="EffectButtonParameter"/></SetVariable>
       </Template>
 
       <WidgetGroup>
@@ -34,7 +34,7 @@ Variables:
             <ObjectName>EffectButtonParameterName</ObjectName>
             <EffectRack><Variable name="EffectRack"/></EffectRack>
             <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
-            <Effect><Variable name="Effect"/></Effect>
+            <Effect><Variable name="EffectNum"/></Effect>
             <EffectButtonParameter><Variable name="EffectButtonParameter"/></EffectButtonParameter>
             <Alignment>center</Alignment>
           </EffectButtonParameterName>
@@ -45,12 +45,12 @@ Variables:
       <Template src="skin:button_2state.xml">
         <SetVariable name="ObjectName">EffectButtonParameterUnderlay</SetVariable>
         <SetVariable name="Size">51f,18f</SetVariable>
-        <SetVariable name="ConfigKey">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],button_parameter<Variable name="EffectButtonParameter"/></SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="Effect"/>,button_parameter<Variable name="EffectButtonParameter"/></SetVariable>
       </Template>
     </Children>
     <!-- show only if button parameter is loaded -->
     <Connection>
-      <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],button_parameter<Variable name="EffectButtonParameter"/>_loaded</ConfigKey>
+      <ConfigKey><Variable name="Effect"/>,button_parameter<Variable name="EffectButtonParameter"/>_loaded</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>
