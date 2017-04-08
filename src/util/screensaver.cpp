@@ -149,19 +149,35 @@ const char *SCREENSAVERS[][4] = {
     {"org.kde.screensaver", "/ScreenSaver", "org.kde.screensaver", "Inhibit"},
     {nullptr, nullptr, nullptr, nullptr}
 };
+// Disabling the method with DBus since it seems to be failing on several systems.
+#if 0
 const char *USERACTIVITY[][4] = {
     // "SimulateUserActivity" is not widely supported, but we can try that first.
     {"org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", "SimulateUserActivity" },
+    {"org.cinnamon.ScreenSaver", "/ScreenSaver", "org.cinnamon.ScreenSaver", "SimulateUserActivity"},
     {"org.gnome.ScreenSaver", "/org/gnome/ScreenSaver", "org.gnome.ScreenSaver", "SimulateUserActivity"},
     {"org.kde.screensaver", "/ScreenSaver", "org.kde.screensaver", "SimulateUserActivity"},
-    {"org.cinnamon.ScreenSaver", "/ScreenSaver", "org.cinnamon.ScreenSaver", "SimulateUserActivity"},
     {nullptr, nullptr, nullptr, nullptr}
 };
+#endif // 0
 
 uint32_t ScreenSaverHelper::s_cookie = 0;
 int ScreenSaverHelper::s_saverindex = -1;
 bool ScreenSaverHelper::s_sendActivity = true;
 
+void ScreenSaverHelper::triggerUserActivity()
+{
+    const char* name = ":0.0";
+    Display *display;
+    if (getenv("DISPLAY"))
+        name=getenv("DISPLAY");
+    display=XOpenDisplay(name);
+    XResetScreenSaver(display);
+    XCloseDisplay(display);
+    return;
+}
+// Disabling the method with DBus since it seems to be failing on several systems.
+#if 0
 void ScreenSaverHelper::triggerUserActivity()
 {
     if (!s_sendActivity) {
@@ -204,6 +220,8 @@ void ScreenSaverHelper::triggerUserActivity()
         "\nWill try to use the Xlib XResetScreensaver instead.";
     }
 }
+#endif // 0
+
 void ScreenSaverHelper::inhibitInternal()
 {
     if (!QDBusConnection::sessionBus().isConnected()) {
