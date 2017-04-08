@@ -155,6 +155,8 @@ class SndFile(Dependence):
             raise Exception(
                 "Did not find libsndfile or it\'s development headers")
         build.env.Append(CPPDEFINES='__SNDFILE__')
+        if conf.CheckDeclaration('SFC_SET_COMPRESSION_LEVEL', '#include "sndfile.h"'):
+            build.env.Append(CPPDEFINES='SFC_SUPPORTS_SET_COMPRESSION_LEVEL')
 
         if build.platform_is_windows and build.static_dependencies:
             build.env.Append(CPPDEFINES='FLAC__NO_DLL')
@@ -240,10 +242,10 @@ class Qt(Dependence):
     def enabled_imageformats(build):
         qt5 = Qt.qt5_enabled(build)
         qt_imageformats = [
-            'qgif', 'qico', 'qjpeg',  'qtga', 'qtiff', 'qsvg'
+            'qgif', 'qico', 'qjpeg',  'qmng', 'qtga', 'qtiff', 'qsvg'
         ]
         if qt5:
-            qt_imageformats.extend(['qdds', 'qicns', 'qwbmp', 'qwebp'])
+            qt_imageformats.extend(['qdds', 'qicns', 'qjp2', 'qwbmp', 'qwebp'])
         return qt_imageformats
 
     def satisfy(self):
@@ -704,6 +706,7 @@ class MixxxCore(Feature):
                    "effects/native/bessel4lvmixeqeffect.cpp",
                    "effects/native/bessel8lvmixeqeffect.cpp",
                    "effects/native/threebandbiquadeqeffect.cpp",
+                   "effects/native/biquadfullkilleqeffect.cpp",
                    "effects/native/loudnesscontoureffect.cpp",
                    "effects/native/graphiceqeffect.cpp",
                    "effects/native/flangereffect.cpp",
@@ -852,6 +855,7 @@ class MixxxCore(Feature):
                    "widget/weffectbuttonparameter.cpp",
                    "widget/weffectparameterbase.cpp",
                    "widget/wtime.cpp",
+                   "widget/wrecordingduration.cpp",
                    "widget/wkey.cpp",
                    "widget/wbattery.cpp",
                    "widget/wcombobox.cpp",
@@ -891,6 +895,11 @@ class MixxxCore(Feature):
                    "library/coverart.cpp",
                    "library/coverartcache.cpp",
                    "library/coverartutils.cpp",
+
+                   "library/crate/cratestorage.cpp",
+                   "library/crate/cratefeature.cpp",
+                   "library/crate/cratefeaturehelper.cpp",
+                   "library/crate/cratetablemodel.cpp",
 
                    "library/playlisttablemodel.cpp",
                    "library/libraryfeature.cpp",
@@ -937,7 +946,6 @@ class MixxxCore(Feature):
                    "library/itunes/itunesfeature.cpp",
                    "library/traktor/traktorfeature.cpp",
 
-                   "library/cratefeature.cpp",
                    "library/sidebarmodel.cpp",
                    "library/library.cpp",
 
@@ -947,8 +955,6 @@ class MixxxCore(Feature):
                    "library/scanner/importfilestask.cpp",
                    "library/scanner/recursivescandirectorytask.cpp",
 
-                   "library/dao/cratedao.cpp",
-                   "library/cratetablemodel.cpp",
                    "library/dao/cuedao.cpp",
                    "library/dao/cue.cpp",
                    "library/dao/trackdao.cpp",
@@ -1076,6 +1082,13 @@ class MixxxCore(Feature):
                    "encoder/encoder.cpp",
                    "encoder/encodermp3.cpp",
                    "encoder/encodervorbis.cpp",
+                   "encoder/encoderwave.cpp",
+                   "encoder/encodersndfileflac.cpp",
+                   "encoder/encodermp3settings.cpp",
+                   "encoder/encodervorbissettings.cpp",
+                   "encoder/encoderwavesettings.cpp",
+                   "encoder/encoderflacsettings.cpp",
+                   "encoder/encoderbroadcastsettings.cpp",
 
                    "util/sleepableqthread.cpp",
                    "util/statsmanager.cpp",
@@ -1099,7 +1112,14 @@ class MixxxCore(Feature):
                    "util/tapfilter.cpp",
                    "util/movinginterquartilemean.cpp",
                    "util/console.cpp",
-                   "util/dbid.cpp",
+                   "util/db/dbconnection.cpp",
+                   "util/db/dbid.cpp",
+                   "util/db/fwdsqlquery.cpp",
+                   "util/db/fwdsqlqueryselectresult.cpp",
+                   "util/db/sqllikewildcardescaper.cpp",
+                   "util/db/sqlqueryfinisher.cpp",
+                   "util/db/sqlstringformatter.cpp",
+                   "util/db/sqltransaction.cpp",
                    "util/sample.cpp",
                    "util/samplebuffer.cpp",
                    "util/singularsamplebuffer.cpp",
@@ -1108,6 +1128,8 @@ class MixxxCore(Feature):
                    "util/logging.cpp",
                    "util/cmdlineargs.cpp",
                    "util/audiosignal.cpp",
+                   "util/widgethider.cpp",
+                   "util/autohidpi.cpp",
 
                    '#res/mixxx.qrc'
                    ]

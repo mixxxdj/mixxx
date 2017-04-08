@@ -1,4 +1,6 @@
-#include "util/dbid.h"
+#include "util/db/dbid.h"
+
+#include <QtDebug>
 
 
 //static
@@ -18,5 +20,7 @@ DbId::value_type DbId::valueOf(QVariant /*pass-by-value*/ variant) {
             return value;
         }
     }
+    qCritical() << "Invalid database identifier value:"
+            << variant;
     return kInvalidValue;
 }

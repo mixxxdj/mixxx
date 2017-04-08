@@ -32,7 +32,6 @@
 #include <QSemaphore>
 #include <QScopedPointer>
 
-#include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/libraryhashdao.h"
 #include "library/dao/directorydao.h"
@@ -134,7 +133,6 @@ class LibraryScanner : public QThread {
     LibraryHashDAO m_libraryHashDao;
     CueDAO m_cueDao;
     PlaylistDAO m_playlistDao;
-    CrateDAO m_crateDao;
     DirectoryDAO m_directoryDao;
     AnalysisDao m_analysisDao;
     TrackDAO m_trackDao;

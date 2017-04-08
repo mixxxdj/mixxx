@@ -1,0 +1,101 @@
+<!DOCTYPE template>
+<!--
+An effect with just the metaknob but no parameters showing
+
+Variables:
+  EffectRack: the rack
+  EffectUnit: the chain
+  Effect: the effect
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>FocusableEffect</ObjectName>
+    <Layout>vertical</Layout>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>EffectHighlightable</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>max,f</SizePolicy>
+        <MinimumSize>-1,65</MinimumSize>
+        <MaximumSize>-1,75</MaximumSize>
+        <Children>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+
+              <Template src="skin:effect_buttons.xml"/>
+
+              <Template src="skin:effect_meta_knob.xml"/>
+
+            </Children>
+          </WidgetGroup>
+
+          <EffectSelector>
+            <EffectRack><Variable name="EffectRack"/></EffectRack>
+            <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+            <Effect><Variable name="Effect"/></Effect>
+          </EffectSelector>
+
+        </Children>
+        <Connection>
+          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],focused_effect</ConfigKey>
+          <BindProperty>highlight</BindProperty>
+          <Transform>
+            <IsEqual><Variable name="Effect"/></IsEqual>
+          </Transform>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+    <Connection>
+      <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_focus</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+
+  <WidgetGroup>
+    <ObjectName>NotFocusableEffect</ObjectName>
+    <Layout>vertical</Layout>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>EffectNotHighlightable</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,f</SizePolicy>
+        <MinimumSize>-1,65</MinimumSize>
+        <MaximumSize>-1,65</MaximumSize>
+        <Children>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+
+              <Template src="skin:effect_buttons.xml"/>
+
+              <Template src="skin:effect_meta_knob.xml"/>
+
+            </Children>
+          </WidgetGroup>
+
+          <EffectSelector>
+            <EffectRack><Variable name="EffectRack"/></EffectRack>
+            <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+            <Effect><Variable name="Effect"/></Effect>
+          </EffectSelector>
+
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+    <Connection>
+      <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_focus</ConfigKey>
+      <BindProperty>visible</BindProperty>
+      <Transform>
+        <Not/>
+      </Transform>
+    </Connection>
+  </WidgetGroup>
+
+</Template>

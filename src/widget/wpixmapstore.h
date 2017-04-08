@@ -48,7 +48,6 @@ class Paintable {
 
     // Takes ownership of QImage.
     Paintable(QImage* pImage, DrawMode mode);
-    Paintable(const QString& fileName, DrawMode mode);
     Paintable(const PixmapSource& source, DrawMode mode);
 
     QSize size() const;
@@ -71,6 +70,7 @@ class Paintable {
 
     static DrawMode DrawModeFromString(const QString& str);
     static QString DrawModeToString(DrawMode mode);
+    static QString getAltFileName(const QString& fileName);
 
   private:
     void drawInternal(const QRectF& targetRect, QPainter* pPainter,
@@ -86,9 +86,11 @@ typedef QWeakPointer<Paintable> WeakPaintablePointer;
 
 class WPixmapStore {
   public:
-    static PaintablePointer getPaintable(PixmapSource source,
-                                            Paintable::DrawMode mode);
-    static QPixmap* getPixmapNoCache(const QString& fileName);
+    static PaintablePointer getPaintable(
+            PixmapSource source,
+            Paintable::DrawMode mode,
+            double scaleFactor);
+    static QPixmap* getPixmapNoCache(const QString& fileName, double scaleFactor);
     static void setLoader(QSharedPointer<ImgSource> ld);
 
   private:

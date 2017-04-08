@@ -195,10 +195,12 @@ double ControlAudioTaperPotBehavior::parameterToValue(double dParam) {
         }
     } else if (dParam == m_neutralParameter) {
         dValue = 1.0;
-    } else if (dParam <= 1.0) {
+    } else if (dParam < 1.0) {
         // m_maxDB = 1
         // 0 dB = m_neutralParame;
         dValue = db2ratio((dParam - m_neutralParameter) * m_maxDB / (1 - m_neutralParameter));
+    } else {
+        dValue = db2ratio(m_maxDB);
     }
     //qDebug() << "ControlAudioTaperPotBehavior::parameterToValue" << "dValue =" << dValue << "dParam =" << dParam;
     return dValue;

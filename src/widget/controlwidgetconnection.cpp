@@ -54,9 +54,10 @@ void ControlParameterWidgetConnection::Init() {
 
 QString ControlParameterWidgetConnection::toDebugString() const {
     const ConfigKey& key = getKey();
-    return QString("%1,%2 Parameter: %3 Direction: %4 Emit: %5")
+    return QString("%1,%2 Parameter: %3 Value: %4 Direction: %5 Emit: %6")
             .arg(key.group, key.item,
                  QString::number(m_pControl->getParameter()),
+                 QString::number(m_pControl->get()),
                  directionOptionToString(m_directionOption),
                  emitOptionToString(m_emitOption));
 }

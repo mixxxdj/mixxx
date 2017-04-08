@@ -176,8 +176,7 @@ QHeaderView {
 }
 
 QHeaderView::section {
-  height: 18px;
-  font-size: 13px/15px;
+  font-size: 10pt;
   font-weight: normal;
   padding: 2px;
   background: #1A1A1A;
@@ -188,7 +187,7 @@ QHeaderView::section {
 }
 
 QHeaderView::section:selected {
-  font-size: 13px/15px;
+  font-size: 10pt;
   font-weight: bold;
   padding: 2px;
   background: #1A1A1A;
@@ -788,6 +787,24 @@ WWidget, QLabel {
   border-left:none;
 }
 
+#EffectButtonControls {
+  qproperty-layoutSpacing: 5;
+}
+
+#EffectHighlightable[highlight="0"] {
+  border: 0px;
+  padding: 4px;
+}
+
+#EffectHighlightable[highlight="1"] {
+  border: 2px solid #0081bd;
+  padding: 2px;
+}
+
+#EffectChainGroupControlButton {
+  font: 10px;
+}
+
 #EffectUnit1 {
   border-left: 1px solid #222;
 }
@@ -808,10 +825,66 @@ WWidget, QLabel {
   font-size: 11px;
 }
 
-#EffectKnob {
+#EffectMetaKnobControls > WPushButton {
+  qproperty-alignment: 'AlignHCenter';
 }
 
-#EffectButton {
+#EffectUnitGroupControlsLeft {
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+}
+
+#EffectUnitGroupControlsRight {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+}
+
+#EffectMetaKnob, WEffect {
+  font-size: 12px;
+  background-color: none;
+  border: none;
+}
+
+WEffectSelector {
+  color: #c1cabe;
+  background-color: #444342;
+  /* TODO: use a linear gradient for the background color */
+
+  /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
+  margin-top: 0px;
+  margin-bottom: 0px;
+
+  /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
+   * names start getting cut off. Adding explicit padding improves this. */
+  padding: 0px 6px;
+
+  /* The 3D frame on the combo box becomes flat when you give it a border */
+  border: 1px solid #444342;
+  border-radius: 3px;
+  
+  font: 12px;
+}
+
+  WEffectSelector:hover {
+    border: 1px ridge #015d8d;
+  }
+
+  WEffectSelector::drop-down {
+    /* This causes the Qt theme's widget style to magically not apply. Go figure. */
+    border: 0;
+  }
+
+  WEffectSelector::down-arrow {
+    width: 20px;
+    height: 20px;
+    image: url(skin:/icon/ic_chevron_down_48px.svg);
+  }
+
+  WEffectSelector QAbstractItemView {
+    color: #c1cabe;
+    background-color: #201f1f;
+    selection-background-color: #184880;
+  }
+
+#EffectKnob {
 }
 
 #EffectButtonParameter {
@@ -845,15 +918,19 @@ WWidget, QLabel {
   background-color: none;
   border: none;
   qproperty-alignment: 'AlignHCenter | AlignTop';
-  font: 8px;
+  font: 10px;
   margin-top: -2px;
+}
+
+#EffectButton {
+  font: 10px;
 }
 
 #EffectButtonLabel {
   background-color: none;
   border: none;
   qproperty-alignment: 'AlignHCenter';
-  font: 8px;
+  font: 10px;
   margin-top: 1px;
 }
 
@@ -1011,11 +1088,15 @@ WStarRating {
                                     stop: 1.0 #333333);
 }
 
-#EffectRackExpanded, #EffectRackCollapsed {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+#EffectUnitNoParameters {
+  padding-left: 5px;
 }
 
-#EffectUnitParameters {
+#EffectUnitEffectsNoParameters {
+  qproperty-layoutSpacing: 40;
+}
+
+#EffectUnitEffects, #EffectUnitParameters {
   padding: 2px;
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   qproperty-layoutSpacing: 2;
@@ -1036,16 +1117,8 @@ WStarRating {
   font-size: 15px;
 }
 
-#EffectUnit1 {
-}
-
-#EffectUnit2 {
-}
-
-#EffectUnit3 {
-}
-
-#EffectUnit4 {
+#EffectUnit1, #EffectUnit2 {
+  /*border-bottom: none;*/
 }
 
 #SampleDecksContainer {
@@ -1282,6 +1355,18 @@ WPushButton[value="2"]:hover {
                                       stop: 1 #0080BE);
 
     border: 0px solid #0080BE;
+}
+
+#EffectSlotParameterLinkInversionButton {
+    margin: 0px 4px 0px 4px;
+}
+
+#EffectSlotParameterLinkInversionButton[value="1"] {
+    background-color: #b90505;
+}
+
+#EffectSlotParameterLinkInversionButton[value="1"]:hover {
+    background-color: #e80808;
 }
 
 /* Special case "hide/show" button

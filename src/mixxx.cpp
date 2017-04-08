@@ -345,7 +345,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
                                                            m_pControllerManager,
                                                            m_pLibrary,
                                                            m_pVCManager,
-                                                           m_pEffectsManager))) {
+                                                           m_pEffectsManager,
+                                                           m_pRecordingManager))) {
         reportCriticalErrorAndQuit(
                 "default skin cannot be loaded see <b>mixxx</b> trace for more information.");
 
@@ -444,6 +445,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i+1);
         }
     }
+
+    m_pPlayerManager->loadSamplers();
 
     connect(&PlayerInfo::instance(),
             SIGNAL(currentPlayingTrackChanged(TrackPointer)),
@@ -1136,7 +1139,8 @@ void MixxxMainWindow::rebootMixxxView() {
                                                            m_pControllerManager,
                                                            m_pLibrary,
                                                            m_pVCManager,
-                                                           m_pEffectsManager))) {
+                                                           m_pEffectsManager,
+                                                           m_pRecordingManager))) {
 
         QMessageBox::critical(this,
                               tr("Error in skin file"),

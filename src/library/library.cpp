@@ -15,7 +15,7 @@
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
 #include "library/browse/browsefeature.h"
-#include "library/cratefeature.h"
+#include "library/crate/cratefeature.h"
 #include "library/rhythmbox/rhythmboxfeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/recording/recordingfeature.h"
@@ -51,7 +51,7 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
         m_pTrackCollection(new TrackCollection(pConfig)),
         m_pLibraryControl(new LibraryControl(this)),
         m_pRecordingManager(pRecordingManager),
-        m_pAnalyzerManager(m_pAnalyzerManager),
+        m_pAnalyzerManager(pAnalyzerManager),
         m_scanner(m_pTrackCollection, pConfig) {
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
 
@@ -87,7 +87,7 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
     addFeature(browseFeature);
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
-    m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection, pAnalyzerManager);
+    m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection, m_pAnalyzerManager);
     connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
             m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
     connect(m_pCrateFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
@@ -329,7 +329,7 @@ void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
             break;
         case Library::PurgeTracks:
             // The user requested that we purge all metadata.
-            m_pTrackCollection->getTrackDAO().purgeTracks(dir);
+            m_pTrackCollection->purgeTracks(dir);
             break;
         case Library::LeaveTracksUnchanged:
         default:

@@ -25,8 +25,9 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     bool hasFocus() const override;
     void loadSelectedTrack() override;
     void loadSelectedTrackToGroup(QString group, bool play) override;
-    void slotSendToAutoDJ() override;
+    void slotSendToAutoDJBottom() override;
     void slotSendToAutoDJTop() override;
+    void slotSendToAutoDJReplace() override;
     void moveSelection(int delta) override;
     inline const QString currentSearch() {
         return m_pAnalysisLibraryTableModel->currentSearch();
@@ -61,7 +62,8 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     QButtonGroup m_songsButtonGroup;
     WAnalysisLibraryTableView* m_pAnalysisLibraryTableView;
     AnalysisLibraryTableModel* m_pAnalysisLibraryTableModel;
-    //Since we iterate it, it is better to provide a consistent order
+    //Individual thread percentages. Since we iterate it, it is better
+    // to provide a consistent order, and that's why it is a QMap
     QMap<int,int> m_percentages;
     int m_tracksInQueue;
     int m_currentTrack;

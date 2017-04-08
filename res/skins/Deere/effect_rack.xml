@@ -1,9 +1,6 @@
 <!DOCTYPE template>
 <!--
-  Description:
-    An effect rack widget.
-  Variables:
-    group: The group for the controls.
+Container for all the effect units
 -->
 <Template>
   <WidgetGroup>
@@ -17,82 +14,21 @@
         <ObjectName>EffectRackContainer</ObjectName>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <!-- Collapsed EffectRack -->
           <WidgetGroup>
-            <ObjectName>EffectRackCollapsed</ObjectName>
+            <ObjectName>EffectUnitsRow1</ObjectName>
             <Layout>horizontal</Layout>
             <MinimumSize>-1,50</MinimumSize>
-            <MaximumSize>-1,50</MaximumSize>
-            <SizePolicy>me,f</SizePolicy>
+            <MaximumSize>-1,195</MaximumSize>
+            <SizePolicy>me,me</SizePolicy>
             <Children>
-              <WidgetGroup>
-                <Layout>vertical</Layout>
-                <ObjectName>ShowHideToggle</ObjectName>
-                <Children>
-                  <Template src="skin:hide_show_button.xml">
-                    <SetVariable name="object_name">EffectRackToggle</SetVariable>
-                    <SetVariable name="control">[EffectRack1],show</SetVariable>
-                  </Template>
-                </Children>
-              </WidgetGroup>
-
-              <Template src="skin:effect_chain_simple.xml">
+              <Template src="skin:effect_unit.xml">
                 <SetVariable name="EffectRack">1</SetVariable>
                 <SetVariable name="EffectUnit">1</SetVariable>
               </Template>
 
-              <Template src="skin:effect_chain_simple.xml">
+              <Template src="skin:effect_unit.xml">
                 <SetVariable name="EffectRack">1</SetVariable>
                 <SetVariable name="EffectUnit">2</SetVariable>
-              </Template>
-
-              <Template src="skin:effect_chain_simple.xml">
-                <SetVariable name="EffectRack">1</SetVariable>
-                <SetVariable name="EffectUnit">3</SetVariable>
-              </Template>
-
-              <Template src="skin:effect_chain_simple.xml">
-                <SetVariable name="EffectRack">1</SetVariable>
-                <SetVariable name="EffectUnit">4</SetVariable>
-              </Template>
-            </Children>
-          </WidgetGroup>
-
-          <!-- Expanded EffectRack -->
-          <WidgetGroup trigger="[EffectRack1],show">
-            <ObjectName>EffectRackExpanded</ObjectName>
-            <SizePolicy>me,min</SizePolicy>
-            <Layout>horizontal</Layout>
-            <Children>
-              <WidgetGroup>
-                <Layout>vertical</Layout>
-                <ObjectName>ShowHideToggle</ObjectName>
-                <Children>
-                  <Template src="skin:hide_show_button.xml">
-                    <SetVariable name="object_name">EffectRackToggle</SetVariable>
-                    <SetVariable name="control">[EffectRack1],show</SetVariable>
-                  </Template>
-                </Children>
-              </WidgetGroup>
-
-              <Template src="skin:effect_chain.xml">
-                <SetVariable name="EffectRack">1</SetVariable>
-                <SetVariable name="EffectUnit">1</SetVariable>
-              </Template>
-
-              <Template src="skin:effect_chain.xml">
-                <SetVariable name="EffectRack">1</SetVariable>
-                <SetVariable name="EffectUnit">2</SetVariable>
-              </Template>
-
-              <Template src="skin:effect_chain.xml">
-                <SetVariable name="EffectRack">1</SetVariable>
-                <SetVariable name="EffectUnit">3</SetVariable>
-              </Template>
-
-              <Template src="skin:effect_chain.xml">
-                <SetVariable name="EffectRack">1</SetVariable>
-                <SetVariable name="EffectUnit">4</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>

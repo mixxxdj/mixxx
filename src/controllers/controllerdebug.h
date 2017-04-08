@@ -4,6 +4,7 @@
 #include <QDebug>
 
 #include "util/cmdlineargs.h"
+#include "util/logging.h"
 
 class ControllerDebug {
   public:
@@ -31,12 +32,15 @@ class ControllerDebug {
     bool m_enabled;
 };
 
-// Usage
-// controllerDebug("hello" << "world");
+// Usage: controllerDebug("hello" << "world");
+//
+// We prefix every log message with Logging::kControllerDebugPrefix so that we
+// can bypass the --logLevel commandline argument when --controllerDebug is
+// specified.
 #define controllerDebug(stream)       \
 {                                     \
     if (ControllerDebug::enabled()) { \
-        QDebug(QtDebugMsg) << stream; \
+        QDebug(QtDebugMsg) << mixxx::Logging::kControllerDebugPrefix << stream; \
     }                                 \
 }                                     \
 

@@ -6,6 +6,8 @@
 #include <QDir>
 #include <QDesktopServices>
 
+#include "util/logging.h"
+
 // A structure to store the parsed command-line arguments
 class CmdlineArgs final {
   public:
@@ -22,8 +24,9 @@ class CmdlineArgs final {
     bool getMidiDebug() const { return m_midiDebug; }
     bool getDeveloper() const { return m_developer; }
     bool getSafeMode() const { return m_safeMode; }
+    bool getDebugAssertBreak() const { return m_debugAssertBreak; }
     bool getSettingsPathSet() const { return m_settingsPathSet; }
-    int getDebugLevel() const { return m_debugLevel; }
+    mixxx::Logging::LogLevel getLogLevel() const { return m_logLevel; }
     bool getTimelineEnabled() const { return !m_timelinePath.isEmpty(); }
     const QString& getLocale() const { return m_locale; }
     const QString& getSettingsPath() const { return m_settingsPath; }
@@ -42,8 +45,9 @@ class CmdlineArgs final {
     bool m_midiDebug;
     bool m_developer; // Developer Mode
     bool m_safeMode;
+    bool m_debugAssertBreak;
     bool m_settingsPathSet; // has --settingsPath been set on command line ?
-    int m_debugLevel; // Level of debug message verbosity
+    mixxx::Logging::LogLevel m_logLevel; // Level of logging message verbosity
     QString m_locale;
     QString m_settingsPath;
     QString m_resourcePath;

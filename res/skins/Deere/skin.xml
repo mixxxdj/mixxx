@@ -37,8 +37,8 @@
     <SetVariable name="SmallSquareButtonMaximumSize">15,15</SetVariable>
     <SetVariable name="SmallSquareButtonSizePolicy">f,f</SetVariable>
 
-    <SetVariable name="SmallWideButtonMinimumSize">30,15</SetVariable>
-    <SetVariable name="SmallWideButtonMaximumSize">30,15</SetVariable>
+    <SetVariable name="SmallWideButtonMinimumSize">40,20</SetVariable>
+    <SetVariable name="SmallWideButtonMaximumSize">40,20</SetVariable>
     <SetVariable name="SmallWideButtonSizePolicy">me,me</SetVariable>
 
     <SetVariable name="SmallHorizontalStretchButtonMinimumSize">-1,15</SetVariable>

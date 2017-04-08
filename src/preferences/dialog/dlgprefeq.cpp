@@ -20,6 +20,8 @@
 #include <QHBoxLayout>
 
 #include "preferences/dialog/dlgprefeq.h"
+#include "effects/native/biquadfullkilleqeffect.h"
+#include "effects/native/filtereffect.h"
 #include "engine/enginefilterbessel4.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -31,9 +33,9 @@ const QString kConfigKey = "[Mixer Profile]";
 const QString kEnableEqs = "EnableEQs";
 const QString kEqsOnly = "EQsOnly";
 const QString kSingleEq = "SingleEQEffect";
-const QString kDefaultEqId = "org.mixxx.effects.bessel8lvmixeq";
+const QString kDefaultEqId = BiquadFullKillEQEffect::getId();
 const QString kDefaultMasterEqId = QString();
-const QString kDefaultQuickEffectId = "org.mixxx.effects.filter";
+const QString kDefaultQuickEffectId = FilterEffect::getId();
 
 const int kFrequencyUpperLimit = 20050;
 const int kFrequencyLowerLimit = 16;

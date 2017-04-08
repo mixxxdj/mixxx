@@ -28,7 +28,7 @@ class WBattery : public WWidget {
 
   private:
     void setPixmap(PaintablePointer* ppPixmap, const PixmapSource& source,
-                   Paintable::DrawMode mode);
+                   Paintable::DrawMode mode, double scaleFactor);
 
     QScopedPointer<Battery> m_pBattery;
     PaintablePointer m_pCurrentPixmap;
