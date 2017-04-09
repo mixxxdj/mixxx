@@ -125,7 +125,8 @@ void EffectParameterSlot::slotParameterValueChanged(double value) {
 void EffectParameterSlot::slotLinkTypeChanging(double v) {
     m_pSoftTakeover->ignoreNext();
     EffectManifestParameter::LinkType newType =
-        static_cast<EffectManifestParameter::LinkType>(v);
+        static_cast<EffectManifestParameter::LinkType>(
+            static_cast<int>(v));
     if (newType == EffectManifestParameter::LinkType::LINKED_LEFT ||
         newType == EffectManifestParameter::LinkType::LINKED_RIGHT ||
         newType == EffectManifestParameter::LinkType::LINKED_LEFT_RIGHT) {
@@ -265,7 +266,7 @@ QDomElement EffectParameterSlot::toXml(QDomDocument* doc) const {
                              EffectXml::ParameterLinkType,
                              EffectManifestParameter::LinkTypeToString(
                                 static_cast<EffectManifestParameter::LinkType>(
-                                    m_pControlLinkType->get())));
+                                    static_cast<int>(m_pControlLinkType->get()))));
         XmlParse::addElement(*doc, parameterElement,
                              EffectXml::ParameterLinkInversion,
                              QString::number(m_pControlLinkInverse->get()));
