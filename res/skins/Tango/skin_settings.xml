@@ -18,7 +18,7 @@ Description:
           <WidgetGroup>
             <ObjectName>SkinSettingsHeader</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>me,min</SizePolicy>
+            <SizePolicy>me,f</SizePolicy>
             <Children>
               <Label>
                 <ObjectName>CategoryLabel</ObjectName>

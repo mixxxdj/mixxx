@@ -938,6 +938,29 @@ WBeatSpinBox {
       border: 1px solid #666666;
     }
 
+#BroadcastButtonNetbook {
+  background-color: transparent;
+  }
+  #BroadcastButtonNetbook[displayValue="0"] {
+    background: transparent url(skin:/buttons/btn_broadcast_mini_off.svg) no-repeat center center;
+    }
+    #BroadcastButtonNetbook[displayValue="0"]:hover {
+      background: #0f0f0f url(skin:/buttons/btn_broadcast_mini_off_hover.svg) no-repeat center center;
+      }
+  #BroadcastButtonNetbook[displayValue="1"] {
+    background: transparent url(skin:/buttons/btn_broadcast_mini_connecting.svg) no-repeat center center;
+    }
+  #BroadcastButtonNetbook[displayValue="2"] {
+    background: transparent url(skin:/buttons/btn_broadcast_mini_connected.svg) no-repeat center center;
+    }
+  #BroadcastButtonNetbook[displayValue="3"] {
+    background: transparent url(skin:/buttons/btn_broadcast_mini_failure.svg) no-repeat center center;
+    }
+    #BroadcastButtonNetbook[displayValue="2"]:hover, #BroadcastButtonNetbook[displayValue="3"]:hover {
+      background-color: #0f0f0f;
+      border: 1px solid #666666;
+    }
+
 #SkinSettingsToggler[displayValue="0"] {
   background: transparent url(skin:/buttons/btn_skinsettings_off.svg) no-repeat center center; 
   }

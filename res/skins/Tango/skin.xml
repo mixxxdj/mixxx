@@ -189,10 +189,19 @@
           <Children>
 
             <!-- spacer when stacked waveforms are hidden -->
-            <WidgetGroup><Size>1me,3f</Size><Children/>
+            <WidgetGroup>
+              <Layout>vertical</Layout>
+              <Children>
+                <WidgetGroup><Size>1me,3f</Size><Children/>
+                  <Connection>
+                    <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
+                    <Transform><Not/></Transform>
+                    <BindProperty>visible</BindProperty>
+                  </Connection>
+                </WidgetGroup>
+              </Children>
               <Connection>
-                <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
-                <Transform><Not/></Transform>
+                <ConfigKey persist="true">[Tango],normal_mode</ConfigKey>
                 <BindProperty>visible</BindProperty>
               </Connection>
             </WidgetGroup>
