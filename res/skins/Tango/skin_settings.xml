@@ -13,24 +13,22 @@ Description:
       <WidgetGroup>
         <ObjectName>SkinSettings</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>200f,me</SizePolicy>
+        <Size>200f,1me</Size>
         <Children>
           <WidgetGroup>
             <ObjectName>SkinSettingsHeader</ObjectName>
             <Layout>horizontal</Layout>
-            <Size>200f,30f</Size>
+            <SizePolicy>me,min</SizePolicy>
             <Children>
               <Label>
                 <ObjectName>CategoryLabel</ObjectName>
                 <Text>Decks / General</Text>
               </Label>
+                <!-- push Close button to far right -->
                 <WidgetGroup><Size>1me,1me</Size><Children/></WidgetGroup>
               <Template src="skin:button_2state.xml">
                 <SetVariable name="ObjectName">SkinSettingsClose</SetVariable>
-                <SetVariable name="Size">23f,17f</SetVariable>
-              <!-- actually not necessary because state_0 can't be visible here -->
-                <SetVariable name="state_0_pressed">skinsettings_close.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">skinsettings_close.svg</SetVariable>
+                <SetVariable name="Size">17f,17f</SetVariable><!-- 17x17 + 6px margin-right -->
                 <SetVariable name="state_1_pressed">skinsettings_close.svg</SetVariable>
                 <SetVariable name="state_1_unpressed">skinsettings_close.svg</SetVariable>
                 <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>
@@ -41,43 +39,31 @@ Description:
           <WidgetGroup><!-- Main Decks Settings -->
             <ObjectName>SkinSettingsCategory</ObjectName>
             <Layout>vertical</Layout>
-            <SizePolicy>f,f</SizePolicy>
+            <SizePolicy>me,f</SizePolicy>
             <Children>
 
-              <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                <SetVariable name="Size">172f,17f</SetVariable>
-                <SetVariable name="Align">left</SetVariable>
+              <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      Stacked Overviews</SetVariable>
-                <SetVariable name="state_1_text"> &#10003; Stacked Overviews</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Tango],stacked_overviews</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Stacked Overviews</SetVariable>
+                <SetVariable name="Setting">[Tango],stacked_overviews</SetVariable>
               </Template>
 
-              <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                <SetVariable name="Size">172f,17f</SetVariable>
-                <SetVariable name="Align">left</SetVariable>
+              <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      Star Rating</SetVariable>
-                <SetVariable name="state_1_text"> &#10003; Star Rating</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Tango],stars</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Star Rating</SetVariable>
+                <SetVariable name="Setting">[Tango],stars</SetVariable>
               </Template>
 
-              <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                <SetVariable name="Size">172f,17f</SetVariable>
-                <SetVariable name="Align">left</SetVariable>
+              <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      Track Comment</SetVariable>
-                <SetVariable name="state_1_text"> &#10003; Track Comment</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Tango],trackComment</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Track Comment</SetVariable>
+                <SetVariable name="Setting">[Tango],trackComment</SetVariable>
               </Template>
 
-              <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                <SetVariable name="Size">172f,17f</SetVariable>
-                <SetVariable name="Align">left</SetVariable>
+              <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      BPM / Pitch Fader</SetVariable>
-                <SetVariable name="state_1_text"> &#10003; BPM / Pitch Fader</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Tango],pitch_fader</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; BPM / Pitch Fader</SetVariable>
+                <SetVariable name="Setting">[Tango],pitch_fader</SetVariable>
               </Template>
 
               <WidgetGroup><!-- Pitch/Key submenu -->
@@ -99,26 +85,20 @@ Description:
                     </Connection>
                   </WidgetGroup>
 
-                  <Template src="skin:button_2state_persist.xml">
-                    <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                    <SetVariable name="Size">172f,17f</SetVariable>
-                    <SetVariable name="Align">left</SetVariable>
+                  <Template src="skin:skin_settings_button_2state.xml">
                     <SetVariable name="state_0_text">      Key Controls</SetVariable>
-                    <SetVariable name="state_1_text"> &#10003; Key Controls</SetVariable>
-                    <SetVariable name="ConfigKeyPerm">[Tango],key_controls</SetVariable>
+                    <SetVariable name="state_1_text"> &#10004; Key Controls</SetVariable>
+                    <SetVariable name="Setting">[Tango],key_controls</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup><!-- Pitch/Key submenu -->
 
-              <Template src="skin:button_4state_persist.xml">
-                <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                <SetVariable name="Size">172f,17f</SetVariable>
-                <SetVariable name="Align">left</SetVariable>
+              <Template src="skin:skin_settings_button_4state.xml">
                 <SetVariable name="state_0_text">      Loop/Jump controls</SetVariable>
-                <SetVariable name="state_1_text"> &#10003; Loop/Jump   2.0&#9668; 2.1   2.1+</SetVariable>
-                <SetVariable name="state_2_text"> &#10003; Loop/Jump   2.0 &#9658;2.1   2.1+</SetVariable>
-                <SetVariable name="state_3_text"> &#10003; Loop/Jump   2.0   2.1 &#9658;2.1+</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Tango],loop_beatjump_controls</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Loop/Jump   2.0&#9668; 2.1   2.1+</SetVariable>
+                <SetVariable name="state_2_text"> &#10004; Loop/Jump   2.0 &#9658;2.1   2.1+</SetVariable>
+                <SetVariable name="state_3_text"> &#10004; Loop/Jump   2.0   2.1 &#9658;2.1+</SetVariable>
+                <SetVariable name="Setting">[Tango],loop_beatjump_controls</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
@@ -133,13 +113,10 @@ Description:
             <SizePolicy>f,f</SizePolicy>
             <Children>
 
-              <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                <SetVariable name="Size">172f,17f</SetVariable>
-                <SetVariable name="Align">left</SetVariable>
+              <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      Channel Mixer</SetVariable>
-                <SetVariable name="state_1_text"> &#10003; Channel Mixer</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Tango],channel_mixer</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Channel Mixer</SetVariable>
+                <SetVariable name="Setting">[Tango],channel_mixer</SetVariable>
               </Template>
 
               <WidgetGroup><!-- EQ & Filter knobs submenu -->
@@ -152,7 +129,7 @@ Description:
                   <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
-                    <SizePolicy>me,me</SizePolicy>
+                    <Size>172f,34f</Size>
                     <Children/>
                     <Connection>
                       <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
@@ -166,13 +143,10 @@ Description:
                     <Size>172f,34f</Size>
                     <Children>
 
-                      <Template src="skin:button_2state_persist.xml">
-                        <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                        <SetVariable name="Size">172f,17f</SetVariable>
-                        <SetVariable name="Align">left</SetVariable>
+                      <Template src="skin:skin_settings_button_2state.xml">
                         <SetVariable name="state_0_text">      EQ Knobs</SetVariable>
-                        <SetVariable name="state_1_text"> &#10003; EQ Knobs</SetVariable>
-                        <SetVariable name="ConfigKeyPerm">[Tango],eq_knobs</SetVariable>
+                        <SetVariable name="state_1_text"> &#10004; EQ Knobs</SetVariable>
+                        <SetVariable name="Setting">[Tango],eq_knobs</SetVariable>
                       </Template>
 
                       <WidgetGroup><!-- Filter knob submenu -->
@@ -194,13 +168,10 @@ Description:
                             </Connection>
                           </WidgetGroup>
 
-                          <Template src="skin:button_2state_persist.xml">
-                            <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                            <SetVariable name="Size">172f,17f</SetVariable>
-                            <SetVariable name="Align">left</SetVariable>
+                          <Template src="skin:skin_settings_button_2state.xml">
                             <SetVariable name="state_0_text">      Filter Knob</SetVariable>
-                            <SetVariable name="state_1_text"> &#10003; Filter Knob</SetVariable>
-                            <SetVariable name="ConfigKeyPerm">[Tango],filter_knob</SetVariable>
+                            <SetVariable name="state_1_text"> &#10004; Filter Knob</SetVariable>
+                            <SetVariable name="Setting">[Tango],filter_knob</SetVariable>
                           </Template>
                         </Children>
                       </WidgetGroup>
@@ -211,31 +182,22 @@ Description:
                 </Children>
               </WidgetGroup><!-- /EQ & Filter knobs submenu -->
 
-              <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                <SetVariable name="Size">172f,17f</SetVariable>
-                <SetVariable name="Align">left</SetVariable>
+              <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      VU Meter</SetVariable>
-                <SetVariable name="state_1_text"> &#10003; VU Meter</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Tango],vumeter</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; VU Meter</SetVariable>
+                <SetVariable name="Setting">[Tango],vumeter</SetVariable>
               </Template>
 
-              <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                <SetVariable name="Size">172f,17f</SetVariable>
-                <SetVariable name="Align">left</SetVariable>
+              <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      Crossfader</SetVariable>
-                <SetVariable name="state_1_text"> &#10003; Crossfader</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Tango],crossfader</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Crossfader</SetVariable>
+                <SetVariable name="Setting">[Tango],crossfader</SetVariable>
               </Template>
 
-              <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                <SetVariable name="Size">172f,17f</SetVariable>
-                <SetVariable name="Align">left</SetVariable>
+              <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      Mixer Bar</SetVariable>
-                <SetVariable name="state_1_text"> &#10003; Mixer Bar</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Tango],mixerbar</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Mixer Bar</SetVariable>
+                <SetVariable name="Setting">[Tango],mixerbar</SetVariable>
               </Template>
 
               <WidgetGroup><!-- MixerBar submenu -->
@@ -261,29 +223,20 @@ Description:
                     <Layout>vertical</Layout>
                     <Size>172f,51f</Size>
                     <Children>
-                      <Template src="skin:button_2state_persist.xml">
-                        <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                        <SetVariable name="Size">172f,17f</SetVariable>
-                        <SetVariable name="Align">left</SetVariable>
+                    <Template src="skin:skin_settings_button_2state.xml">
                         <SetVariable name="state_0_text">      Headphone Mixer</SetVariable>
-                        <SetVariable name="state_1_text"> &#10003; Headphone Mixer</SetVariable>
-                        <SetVariable name="ConfigKeyPerm">[Tango],mixerbar_headphone</SetVariable>
+                        <SetVariable name="state_1_text"> &#10004; Headphone Mixer</SetVariable>
+                        <SetVariable name="Setting">[Tango],mixerbar_headphone</SetVariable>
                       </Template>
-                      <Template src="skin:button_2state_persist.xml">
-                        <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                        <SetVariable name="Size">172f,17f</SetVariable>
-                        <SetVariable name="Align">left</SetVariable>
+                    <Template src="skin:skin_settings_button_2state.xml">
                         <SetVariable name="state_0_text">      MIC mixer (if configured)</SetVariable>
-                        <SetVariable name="state_1_text"> &#10003; MIC mixer (if configured)</SetVariable>
-                        <SetVariable name="ConfigKeyPerm">[Tango],mixerbar_mic</SetVariable>
+                        <SetVariable name="state_1_text"> &#10004; MIC mixer (if configured)</SetVariable>
+                        <SetVariable name="Setting">[Tango],mixerbar_mic</SetVariable>
                       </Template>
-                      <Template src="skin:button_2state_persist.xml">
-                        <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                        <SetVariable name="Size">172f,17f</SetVariable>
-                        <SetVariable name="Align">left</SetVariable>
+                      <Template src="skin:skin_settings_button_2state.xml">
                         <SetVariable name="state_0_text">      AUX mixer (if configured)</SetVariable>
-                        <SetVariable name="state_1_text"> &#10003; AUX mixer (if configured)</SetVariable>
-                        <SetVariable name="ConfigKeyPerm">[Tango],mixerbar_aux</SetVariable>
+                        <SetVariable name="state_1_text"> &#10004; AUX mixer (if configured)</SetVariable>
+                        <SetVariable name="Setting">[Tango],mixerbar_aux</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup><!-- MixerBar submenu buttons -->
@@ -302,14 +255,11 @@ Description:
             <SizePolicy>f,f</SizePolicy>
             <Children>
 
-              <Template src="skin:button_3state_persist.xml">
-                <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                <SetVariable name="Size">172f,17f</SetVariable>
-                <SetVariable name="Align">left</SetVariable>
+              <Template src="skin:skin_settings_button_3state.xml">
                 <SetVariable name="state_0_text">      Spinny  /  Cover</SetVariable>
-                <SetVariable name="state_1_text"> &#10003; Spinny&#9668; Cover</SetVariable>
-                <SetVariable name="state_2_text"> &#10003; Spinny &#9658;Cover</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Tango],empty_spinny_cover</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Spinny&#9668; Cover</SetVariable>
+                <SetVariable name="state_2_text"> &#10004; Spinny &#9658;Cover</SetVariable>
+                <SetVariable name="Setting">[Tango],empty_spinny_cover</SetVariable>
               </Template>
 
               <WidgetGroup><!-- SpinnyCover submenu -->
@@ -336,22 +286,16 @@ Description:
                     <Size>172f,34f</Size>
                     <Children>
 
-                      <Template src="skin:button_2state_persist.xml">
-                        <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                        <SetVariable name="Size">172f,17f</SetVariable>
-                        <SetVariable name="Align">left</SetVariable>
+                    <Template src="skin:skin_settings_button_2state.xml">
                         <SetVariable name="state_0_text">      °&#9668; O</SetVariable>
                         <SetVariable name="state_1_text">      ° &#9658;O</SetVariable>
-                        <SetVariable name="ConfigKeyPerm">[Tango],spinnyCoverBIG</SetVariable>
+                        <SetVariable name="Setting">[Tango],spinnyCoverBIG</SetVariable>
                       </Template>
 
-                      <Template src="skin:button_2state_persist.xml">
-                        <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                        <SetVariable name="Size">172f,17f</SetVariable>
-                        <SetVariable name="Align">left</SetVariable>
+                      <Template src="skin:skin_settings_button_2state.xml">
                         <SetVariable name="state_0_text">      Cover on Spinny</SetVariable>
-                        <SetVariable name="state_1_text"> &#10003; Cover on Spinny</SetVariable>
-                        <SetVariable name="ConfigKeyPerm">[Tango],spinnyWithCoverArt</SetVariable>
+                        <SetVariable name="state_1_text"> &#10004; Cover on Spinny</SetVariable>
+                        <SetVariable name="Setting">[Tango],spinnyWithCoverArt</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup><!-- Spinny/Cover submenu buttons -->
@@ -371,40 +315,29 @@ Description:
             <SizePolicy>f,f</SizePolicy>
             <Children>
 
-              <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                <SetVariable name="Size">172f,17f</SetVariable>
-                <SetVariable name="Align">left</SetVariable>
+              <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      2&#9668; 4  Effect Units</SetVariable>
                 <SetVariable name="state_1_text">      2 &#9658;4  Effect Units</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Tango],2or4_fxUnits</SetVariable>
+                <SetVariable name="Setting">[Tango],2or4_fxUnits</SetVariable>
               </Template>
 
-              <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="TooltipId">show_previewdeck</SetVariable>
-                <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                <SetVariable name="Size">172f,17f</SetVariable>
-                <SetVariable name="Align">left</SetVariable>
+              <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      Preview Deck</SetVariable>
-                <SetVariable name="state_1_text"> &#10003; Preview Deck</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[PreviewDeck],show_previewdeck</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Preview Deck</SetVariable>
+                <SetVariable name="Setting">[PreviewDeck],show_previewdeck</SetVariable>
               </Template>
 
-              <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="TooltipId">show_previewdeck</SetVariable>
-                <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                <SetVariable name="Size">172f,17f</SetVariable>
-                <SetVariable name="Align">left</SetVariable>
+              <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      Enforce compact mode</SetVariable>
-                <SetVariable name="state_1_text"> &#10003; Enforce compact mode</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Tango],enforce_netbook_mode</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Enforce compact mode</SetVariable>
+                <SetVariable name="Setting">[Tango],enforce_netbook_mode</SetVariable>
               </Template>
 
             </Children>
           </WidgetGroup><!-- /Extras -->
         </Children>
       </WidgetGroup><!-- SkinSettings -->
-      <!-- Add a shadow on the right edge -->
+      <!-- Add a fading shadow to the right edge -->
       <WidgetGroup>
         <ObjectName>FadeRight</ObjectName>
         <Size>15f,1me</Size>

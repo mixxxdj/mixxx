@@ -95,24 +95,16 @@ WPushButton {
 
 #SkinSettings {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  background-color: #333333;
+  padding: 5px 0px 0px 10px;
   text-align: left;
+  background-color: #333333;
 }
 #SkinSettingsHeader {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding: 0px;
-  }
-  #SkinSettingsHeader WLabel {
-    font-size: 14px/18px;
-    text-align: left;
-    text-transform: uppercase;
-    padding-top: 1px;
-    color: #eeeeee;
+  padding-right: 3px;
   }
   #SkinSettingsClose {
     font-size: 16px/16px;
-    padding-top: 3px;
-    margin-right: 6px;
     color: #d2d2d2;
     }
     #SkinSettingsClose:hover {
@@ -121,7 +113,7 @@ WPushButton {
     }
 
 #SkinSettingsCategory {
-  margin: 0 10px 5px 10px;
+  margin: 0px 10px 5px 0px;
   padding: 5px 5px 0px 2px;
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   border-top: 1px solid #000000;
@@ -130,8 +122,8 @@ WPushButton {
   #CategoryLabel {
     font-size: 16px/16px;
     text-align: left;
-    margin: 5px 20px 0px 10px;
-    padding: 0 10px 0px 13px;
+    margin-top: 5px;
+    padding-left: 13px;
     color: #eeeeee;
     background-color: none;
     border-top: none;
@@ -140,10 +132,9 @@ WPushButton {
     background-color: rgba(51, 51, 51, 127);
   }
   #SkinSettingsButton {
-    padding: 2px 0px 0px 2px;
+    padding-top: 2px;
     margin-bottom: 2px;
     font-size: 12px/14px;
-    text-align: left;
     color: #d2d2d2;
   }
   #SkinSettingsButton:hover {
