@@ -202,7 +202,7 @@ Variables:
 
                   <Template src="skin:knob_textless.xml">
                     <SetVariable name="TooltipId">pregain</SetVariable>
-                    <SetVariable name="ObjectName">SamplerGainKnob_mini</SetVariable>
+                    <SetVariable name="ObjectName">SamplerGainKnob</SetVariable>
                     <SetVariable name="Size">22f,22f</SetVariable>
                     <SetVariable name="group"><Variable name="group"/></SetVariable>
                     <SetVariable name="ConfigKey">volume</SetVariable>
