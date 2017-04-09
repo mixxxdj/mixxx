@@ -15,6 +15,7 @@
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
 #include "util/math.h"
+#include "util/screensaver.h"
 
 MidiController::MidiController()
         : Controller() {
@@ -206,6 +207,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
                                                  channel, opCode, timestamp));
     MidiKey mappingKey(status, control);
 
+    triggerActivity();
     if (isLearning()) {
         emit(messageReceived(status, control, value));
 
@@ -455,6 +457,7 @@ void MidiController::receive(QByteArray data, mixxx::Duration timestamp) {
 
     MidiKey mappingKey(data.at(0), 0xFF);
 
+    triggerActivity();
     // TODO(rryan): Need to review how MIDI learn works with sysex messages. I
     // don't think this actually does anything useful.
     if (isLearning()) {
