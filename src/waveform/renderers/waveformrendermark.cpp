@@ -103,7 +103,7 @@ void WaveformRenderMark::slotCuesUpdated() {
     QList<CuePointer> loadedCues = trackInfo->getCuePoints();
     for (const CuePointer pCue: loadedCues) {
         int hotCue = pCue->getHotCue();
-        if (hotCue == -1) {
+        if (hotCue < 0) {
             continue;
         }
 
@@ -112,14 +112,17 @@ void WaveformRenderMark::slotCuesUpdated() {
 
         // Here we assume no two cues can have the same hotcue assigned,
         // because WaveformMarkSet stores one mark for each hotcue.
-        WaveformMark* pMark = m_marks.getHotCueMark(hotCue).data();
+        WaveformMarkPointer pMark = m_marks.getHotCueMark(hotCue);
+        if (pMark.isNull()) {
+        	continue;
+        }
         WaveformMarkProperties markProperties = pMark->getProperties();
         if (markProperties.m_text.isNull() || newLabel != markProperties.m_text ||
                 !markProperties.m_color.isValid() || newColor != markProperties.m_color) {
             markProperties.m_text = newLabel;
             markProperties.m_color = newColor;
             pMark->setProperties(markProperties);
-            generateMarkImage(pMark);
+            generateMarkImage(pMark.data());
         }
     }
 }
@@ -147,11 +150,11 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
     if (!markProperties.m_text.isNull()) {
         // Determine mark text.
         QString label = markProperties.m_text;
-        if (pMark->m_iHotCue != -1) {
+        if (pMark->getHotCue() >= 0) {
             if (!label.isEmpty()) {
                 label.prepend(": ");
             }
-            label.prepend(QString::number(pMark->m_iHotCue));
+            label.prepend(QString::number(pMark->getHotCue() + 1));
             if (label.size() > kMaxCueLabelLength) {
                 label = label.left(kMaxCueLabelLength - 3) + "...";
             }

@@ -28,7 +28,8 @@ class WaveformMarkSet {
     void clear(){ m_marks.clear(); }
     std::unique_ptr<WaveformMark> m_pDefaultMark;
     QList<WaveformMarkPointer> m_marks;
-    int m_iFirstHotCue;
+    QMap<int, WaveformMarkPointer> m_hotCueMarks;
+
     DISALLOW_COPY_AND_ASSIGN(WaveformMarkSet);
 };
 
