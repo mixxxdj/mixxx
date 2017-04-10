@@ -151,21 +151,21 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         if (gs.ping_pong_left) {
             // Left sample plus a fraction of the right sample, normalized
             // by 1 + fraction.
-            pOutput[i] = (pInput[i] +
-                    (gs.delay_buf[read_position] +
+            pOutput[i] = pInput[i] +
+                    ((gs.delay_buf[read_position] +
                             gs.delay_buf[read_position + 1] * pingpong_frac) /
                     (1 + pingpong_frac)) / 2.0;
             // Right sample reduced by (1 - fraction)
-            pOutput[i + 1] = (pInput[i + 1] +
-                    gs.delay_buf[read_position + 1] * (1 - pingpong_frac)) / 2.0;
+            pOutput[i + 1] = pInput[i + 1] +
+                    (gs.delay_buf[read_position + 1] * (1 - pingpong_frac)) / 2.0;
         } else {
             // Left sample reduced by (1 - fraction)
-            pOutput[i] = (pInput[i] +
-                    gs.delay_buf[read_position] * (1 - pingpong_frac)) / 2.0;
+            pOutput[i] = pInput[i] +
+                    (gs.delay_buf[read_position] * (1 - pingpong_frac)) / 2.0;
             // Right sample plus fraction of left sample, normalized by
             // 1 + fraction
-            pOutput[i + 1] = (pInput[i + 1] +
-                    (gs.delay_buf[read_position + 1] +
+            pOutput[i + 1] = pInput[i + 1] +
+                    ((gs.delay_buf[read_position + 1] +
                             gs.delay_buf[read_position] * pingpong_frac) /
                     (1 + pingpong_frac)) / 2.0;
         }
