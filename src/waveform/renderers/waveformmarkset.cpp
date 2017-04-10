@@ -20,7 +20,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
 
 
 #if QT_VERSION >= 0x040700
-    m_marks.reserve(NUM_HOT_CUES);
+    m_marks.reserve(NUM_HOT_CUES + 3);
 #endif
 
     std::set<QString> controlItemSet;
@@ -76,11 +76,9 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
 }
 
 WaveformMarkPointer WaveformMarkSet::getHotCueMark(int hotCue) const {
-    DEBUG_ASSERT(hotCue >= 0);
-    DEBUG_ASSERT(hotCue < NUM_HOT_CUES);
-    return operator[](m_iFirstHotCue + hotCue);
-}
-
-void WaveformMarkSet::setHotCueMark(int hotCue, WaveformMarkPointer pMark) {
-    m_marks[m_iFirstHotCue + hotCue] = pMark;
+	VERIFY_OR_DEBUG_ASSERT(hotCue >= 0 &&
+			               hotCue + m_iFirstHotCue < m_marks.count()) {
+		return WaveformMarkPointer();
+	}
+    return m_marks.at(m_iFirstHotCue + hotCue);
 }
