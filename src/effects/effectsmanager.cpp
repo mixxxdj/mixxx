@@ -26,6 +26,9 @@ EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig)
 
     m_pRequestPipe.reset(requestPipes.first);
     m_pEngineEffectsManager = new EngineEffectsManager(requestPipes.second);
+
+    m_pNumEffectsAvailable = new ControlObject(ConfigKey("[Master]", "num_effectsavailable"));
+    m_pNumEffectsAvailable->setReadOnly();
 }
 
 EffectsManager::~EffectsManager() {
@@ -47,6 +50,7 @@ EffectsManager::~EffectsManager() {
 
     delete m_pHiEqFreq;
     delete m_pLoEqFreq;
+    delete m_pNumEffectsAvailable;
     // Safe because the Engine is deleted before EffectsManager. Also, it holds
     // a bare pointer to m_pRequestPipe so it is critical that it does not
     // outlast us.
@@ -69,6 +73,8 @@ void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
         m_availableEffectManifests.append(pBackend->getManifest(effectId));
     }
 
+    m_pNumEffectsAvailable->forceSet(m_availableEffectManifests.size());
+
     qSort(m_availableEffectManifests.begin(), m_availableEffectManifests.end(),
           alphabetizeEffectManifests);
 
@@ -84,6 +90,7 @@ void EffectsManager::slotBackendRegisteredEffect(EffectManifest manifest) {
                                        m_availableEffectManifests.end(),
                                        manifest, alphabetizeEffectManifests);
     m_availableEffectManifests.insert(insertion_point, manifest);
+    m_pNumEffectsAvailable->forceSet(m_availableEffectManifests.size());
 }
 
 void EffectsManager::registerChannel(const ChannelHandleAndGroup& handle_group) {
