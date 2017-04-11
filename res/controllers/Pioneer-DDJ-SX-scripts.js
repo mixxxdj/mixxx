@@ -9,7 +9,7 @@
 var PioneerDDJSX = function() {};
 
 /*
-    Find the latest code at http://github.com/DJMaxergy/mixxx
+    Find the latest code at http://github.com/DJMaxergy/mixxx/tree/pioneerDDJSX_mapping
    
     
     This mapping for the Pioneer DDJ-SX was made by DJMaxergy, Maximilian Beiersdorfer
@@ -18,7 +18,7 @@ var PioneerDDJSX = function() {};
     basing on midiAutoDJ-scripts by Sophia Herzog,
     basing on the work of wingcom (wwingcomm@gmail.com, https://github.com/wingcom/Mixxx-Pioneer-DDJ-SB).
     which in turn was based on the work of Hilton Rudham (https://github.com/hrudham/Mixxx-Pioneer-DDJ-SR).
-    Just as wingcom's and Rudham's work, this mapping is pusblished under the MIT license.
+    Just as wingcom's and Rudham's work, PioneerDDJSX mapping is pusblished under the MIT license.
  
 */
 
@@ -334,14 +334,14 @@ PioneerDDJSX.init = function(id) {
 
     // switch on Effect Units as default:
     for (var index in PioneerDDJSX.fxUnitGroups) {
-        if (typeof index === "string") {
+        if (PioneerDDJSX.fxUnitGroups.hasOwnProperty(index)) {
             engine.setValue(index, "enabled", true);
         }
     }
 
     // activate vu meter timer for Auto DJ:
     if (PioneerDDJSX.twinkleVumeterAutodjOn) {
-        PioneerDDJSX.vuMeterTimer = engine.beginTimer(100, "PioneerDDJSX.vuMeterTwinkle()");
+        PioneerDDJSX.vuMeterTimer = engine.beginTimer(200, "PioneerDDJSX.vuMeterTwinkle()");
     }
 
     // initialize autoDJ tick timer:
@@ -380,44 +380,16 @@ PioneerDDJSX.setDefaultSpeedSliderRange = function(group, range) {
 //                      VU - METER                           //
 ///////////////////////////////////////////////////////////////
 
-PioneerDDJSX.blinkAutodjState = 0;
+PioneerDDJSX.blinkAutodjState = false;
 
 PioneerDDJSX.vuMeterTwinkle = function() {
     if (engine.getValue("[AutoDJ]", "enabled")) {
-        PioneerDDJSX.blinkAutodjState++;
-        if (PioneerDDJSX.blinkAutodjState > 3) {
-            PioneerDDJSX.blinkAutodjState = 0;
-        }
-        if (PioneerDDJSX.blinkAutodjState === 0) {
-            PioneerDDJSX.valueVuMeter["[Channel1]_enabled"] = 0;
-            PioneerDDJSX.valueVuMeter["[Channel3]_enabled"] = 0;
-            PioneerDDJSX.valueVuMeter["[Channel2]_enabled"] = 0;
-            PioneerDDJSX.valueVuMeter["[Channel4]_enabled"] = 0;
-        }
-        if (PioneerDDJSX.blinkAutodjState === 1) {
-            PioneerDDJSX.valueVuMeter["[Channel1]_enabled"] = 1;
-            PioneerDDJSX.valueVuMeter["[Channel3]_enabled"] = 1;
-            PioneerDDJSX.valueVuMeter["[Channel2]_enabled"] = 0;
-            PioneerDDJSX.valueVuMeter["[Channel4]_enabled"] = 0;
-        }
-        if (PioneerDDJSX.blinkAutodjState === 2) {
-            PioneerDDJSX.valueVuMeter["[Channel1]_enabled"] = 1;
-            PioneerDDJSX.valueVuMeter["[Channel3]_enabled"] = 1;
-            PioneerDDJSX.valueVuMeter["[Channel2]_enabled"] = 1;
-            PioneerDDJSX.valueVuMeter["[Channel4]_enabled"] = 1;
-        }
-        if (PioneerDDJSX.blinkAutodjState === 3) {
-            PioneerDDJSX.valueVuMeter["[Channel1]_enabled"] = 0;
-            PioneerDDJSX.valueVuMeter["[Channel3]_enabled"] = 0;
-            PioneerDDJSX.valueVuMeter["[Channel2]_enabled"] = 1;
-            PioneerDDJSX.valueVuMeter["[Channel4]_enabled"] = 1;
-        }
-    } else {
-        PioneerDDJSX.valueVuMeter["[Channel1]_enabled"] = 1;
-        PioneerDDJSX.valueVuMeter["[Channel3]_enabled"] = 1;
-        PioneerDDJSX.valueVuMeter["[Channel2]_enabled"] = 1;
-        PioneerDDJSX.valueVuMeter["[Channel4]_enabled"] = 1;
+    	PioneerDDJSX.blinkAutodjState = !PioneerDDJSX.blinkAutodjState;
     }
+    PioneerDDJSX.valueVuMeter["[Channel1]_enabled"] = PioneerDDJSX.blinkAutodjState ? 1 : 0;
+    PioneerDDJSX.valueVuMeter["[Channel3]_enabled"] = PioneerDDJSX.blinkAutodjState ? 1 : 0;
+    PioneerDDJSX.valueVuMeter["[Channel2]_enabled"] = PioneerDDJSX.blinkAutodjState ? 1 : 0;
+    PioneerDDJSX.valueVuMeter["[Channel4]_enabled"] = PioneerDDJSX.blinkAutodjState ? 1 : 0;
 };
 
 
@@ -607,13 +579,13 @@ PioneerDDJSX.bindDeckControlConnections = function(channelGroup, bind) {
     }
 
     for (index in PioneerDDJSX.selectedLoopIntervals[deck]) {
-        if (typeof index === "string") {
+        if (PioneerDDJSX.selectedLoopIntervals[deck].hasOwnProperty(index)) {
             controlsToFunctions["beatloop_" + PioneerDDJSX.selectedLoopIntervals[deck][index] + "_enabled"] = "PioneerDDJSX.beatloopLeds";
         }
     }
 
     for (index in PioneerDDJSX.selectedLooprollIntervals[deck]) {
-        if (typeof index === "string") {
+        if (PioneerDDJSX.selectedLooprollIntervals[deck].hasOwnProperty(index)) {
             controlsToFunctions["beatlooproll_" + PioneerDDJSX.selectedLooprollIntervals[deck][index] + "_activate"] = "PioneerDDJSX.beatlooprollLeds";
         }
     }
@@ -621,7 +593,7 @@ PioneerDDJSX.bindDeckControlConnections = function(channelGroup, bind) {
     script.bindConnections(channelGroup, controlsToFunctions, !bind);
 
     for (index in PioneerDDJSX.fxUnitGroups) {
-        if (typeof index === "string") {
+        if (PioneerDDJSX.fxUnitGroups.hasOwnProperty(index)) {
             engine.connectControl(index, "group_" + channelGroup + "_enable", "PioneerDDJSX.fxAssignLeds", !bind);
             if (bind) {
                 engine.trigger(index, "group_" + channelGroup + "_enable");
@@ -634,7 +606,7 @@ PioneerDDJSX.bindNonDeckControlConnections = function(bind) {
     var index;
 
     for (index in PioneerDDJSX.samplerGroups) {
-        if (typeof index === "string") {
+        if (PioneerDDJSX.samplerGroups.hasOwnProperty(index)) {
             engine.connectControl(index, "duration", "PioneerDDJSX.samplerLeds", !bind);
             engine.connectControl(index, "play", "PioneerDDJSX.samplerLedsPlay", !bind);
             if (bind) {
@@ -644,7 +616,7 @@ PioneerDDJSX.bindNonDeckControlConnections = function(bind) {
     }
 
     for (index in PioneerDDJSX.fxUnitGroups) {
-        if (typeof index === "string") {
+        if (PioneerDDJSX.fxUnitGroups.hasOwnProperty(index)) {
             engine.connectControl(index, "enabled", "PioneerDDJSX.fxLeds", !bind);
             engine.connectControl(index, "next_chain", "PioneerDDJSX.fxLeds", !bind);
             if (bind) {
@@ -653,7 +625,7 @@ PioneerDDJSX.bindNonDeckControlConnections = function(bind) {
         }
     }
     for (index in PioneerDDJSX.fxEffectGroups) {
-        if (typeof index === "string") {
+        if (PioneerDDJSX.fxEffectGroups.hasOwnProperty(index)) {
             engine.connectControl(index, "enabled", "PioneerDDJSX.fxLeds", !bind);
             engine.connectControl(index, "next_effect", "PioneerDDJSX.fxLeds", !bind);
             if (bind) {
@@ -692,13 +664,13 @@ PioneerDDJSX.setNonDeckSoftTakeover = function(enable) {
 
     // no soft take-over for sampler volume, as it can be controlled by pad velocity (absolute)
     /* for (index in PioneerDDJSX.samplerGroups) {
-    	if (typeof index === "string") {
+    	if (PioneerDDJSX.samplerGroups.hasOwnProperty(index)) {
 			engine.softTakeover(index, "volume", enable);
 		}
 	} */
 
     for (index in PioneerDDJSX.fxEffectGroups) {
-        if (typeof index === "string") {
+        if (PioneerDDJSX.fxEffectGroups.hasOwnProperty(index)) {
             engine.softTakeover(index, "meta", enable);
         }
     }
@@ -1042,243 +1014,142 @@ PioneerDDJSX.samplerVelocityVolume = function(channel, control, value, status, g
     }
 };
 
-PioneerDDJSX.parameterLeft = function(channel, control, value, status, group) {
-    var deck = PioneerDDJSX.channelGroups[group],
+PioneerDDJSX.changeParameters = function(group, ctrl, increment) {
+	var deck = PioneerDDJSX.channelGroups[group],
         index,
         offset = 0,
         samplerIndex = 0;
+        
+    //Roll Mode:
+	if (ctrl === PioneerDDJSX.nonPadLeds.parameterLeftRollMode || ctrl === PioneerDDJSX.nonPadLeds.parameterRightRollMode) {
+		// unbind previous connected controls:
+		for (index in PioneerDDJSX.selectedLooprollIntervals[deck]) {
+			if (PioneerDDJSX.selectedLooprollIntervals[deck].hasOwnProperty(index)) {
+				engine.connectControl(
+					group,
+					"beatlooproll_" + PioneerDDJSX.selectedLooprollIntervals[deck][index] + "_activate",
+					"PioneerDDJSX.beatlooprollLeds",
+					true
+				);
+			}
+		}
+		// change parameter set:
+		if (ctrl === PioneerDDJSX.nonPadLeds.parameterLeftRollMode && PioneerDDJSX.selectedLoopRollParam[deck] > 0) {
+			PioneerDDJSX.selectedLoopRollParam[deck] = PioneerDDJSX.selectedLoopRollParam[deck] - 1;
+		} else if (ctrl === PioneerDDJSX.nonPadLeds.parameterRightRollMode && PioneerDDJSX.selectedLoopRollParam[deck] < 3) {
+			PioneerDDJSX.selectedLoopRollParam[deck] = PioneerDDJSX.selectedLoopRollParam[deck] + 1;
+		}
+		PioneerDDJSX.selectedLooprollIntervals[deck] = PioneerDDJSX.loopIntervals[PioneerDDJSX.selectedLoopRollParam[deck]];
+		// bind new controls:
+		for (index in PioneerDDJSX.selectedLooprollIntervals[deck]) {
+			if (PioneerDDJSX.selectedLooprollIntervals[deck].hasOwnProperty(index)) {
+				engine.connectControl(
+					group,
+					"beatlooproll_" + PioneerDDJSX.selectedLooprollIntervals[deck][index] + "_activate",
+					"PioneerDDJSX.beatlooprollLeds",
+					false
+				);
+			}
+		}
+	}
+	//Slicer Mode:
+	if (ctrl === PioneerDDJSX.nonPadLeds.parameterLeftSlicerMode || ctrl === PioneerDDJSX.nonPadLeds.parameterRightSlicerMode) {
+		// unbind previous connected controls:
+		for (index in PioneerDDJSX.selectedLoopIntervals[deck]) {
+			if (PioneerDDJSX.selectedLoopIntervals[deck].hasOwnProperty(index)) {
+				engine.connectControl(
+					group,
+					"beatloop_" + PioneerDDJSX.selectedLoopIntervals[deck][index] + "_enabled",
+					"PioneerDDJSX.beatloopLeds",
+					true
+				);
+			}
+		}
+		// change parameter set:
+		if (ctrl === PioneerDDJSX.nonPadLeds.parameterLeftSlicerMode && PioneerDDJSX.selectedLoopParam[deck] > 0) {
+			PioneerDDJSX.selectedLoopParam[deck] = PioneerDDJSX.selectedLoopParam[deck] - 1;
+		} else if (ctrl === PioneerDDJSX.nonPadLeds.parameterRightSlicerMode && PioneerDDJSX.selectedLoopParam[deck] < 3) {
+			PioneerDDJSX.selectedLoopParam[deck] = PioneerDDJSX.selectedLoopParam[deck] + 1;
+		}
+		PioneerDDJSX.selectedLoopIntervals[deck] = PioneerDDJSX.loopIntervals[PioneerDDJSX.selectedLoopParam[deck]];
+		// bind new controls:
+		for (index in PioneerDDJSX.selectedLoopIntervals[deck]) {
+			if (PioneerDDJSX.selectedLoopIntervals[deck].hasOwnProperty(index)) {
+				engine.connectControl(
+					group,
+					"beatloop_" + PioneerDDJSX.selectedLoopIntervals[deck][index] + "_enabled",
+					"PioneerDDJSX.beatloopLeds",
+					false
+				);
+			}
+		}
+	}
+	//Sampler Mode:
+	if (ctrl === PioneerDDJSX.nonPadLeds.parameterLeftSamplerMode || ctrl === PioneerDDJSX.nonPadLeds.parameterRightSamplerMode) {
+		// unbind previous connected controls:
+		for (index in PioneerDDJSX.samplerGroups) {
+			if (PioneerDDJSX.samplerGroups.hasOwnProperty(index)) {
+				offset = PioneerDDJSX.selectedSamplerBank * 8;
+				samplerIndex = (PioneerDDJSX.samplerGroups[index] + 1) + offset;
+				engine.connectControl(
+					"[Sampler" + samplerIndex + "]",
+					"duration",
+					"PioneerDDJSX.samplerLeds",
+					true
+				);
+				engine.connectControl(
+					"[Sampler" + samplerIndex + "]",
+					"play",
+					"PioneerDDJSX.samplerLedsPlay",
+					true
+				);
+			}
+		}
+		// change sampler bank:
+		if (ctrl === PioneerDDJSX.nonPadLeds.parameterLeftSamplerMode && PioneerDDJSX.selectedSamplerBank > 0) {
+			PioneerDDJSX.selectedSamplerBank = PioneerDDJSX.selectedSamplerBank - 1;
+		} else if (ctrl === PioneerDDJSX.nonPadLeds.parameterRightSamplerMode && PioneerDDJSX.selectedSamplerBank < 3) {
+			PioneerDDJSX.selectedSamplerBank = PioneerDDJSX.selectedSamplerBank + 1;
+		}
+		// bind new controls:
+		for (index in PioneerDDJSX.samplerGroups) {
+			if (PioneerDDJSX.samplerGroups.hasOwnProperty(index)) {
+				offset = PioneerDDJSX.selectedSamplerBank * 8;
+				samplerIndex = (PioneerDDJSX.samplerGroups[index] + 1) + offset;
+				engine.connectControl(
+					"[Sampler" + samplerIndex + "]",
+					"duration",
+					"PioneerDDJSX.samplerLeds",
+					false
+				);
+				engine.connectControl(
+					"[Sampler" + samplerIndex + "]",
+					"play",
+					"PioneerDDJSX.samplerLedsPlay",
+					false
+				);
+				engine.trigger("[Sampler" + samplerIndex + "]", "duration");
+			}
+		}
+	}
+	// update parameter status leds:
+	PioneerDDJSX.updateParameterStatusLeds(
+		group,
+		PioneerDDJSX.selectedLoopRollParam[deck],
+		PioneerDDJSX.selectedLoopParam[deck],
+		PioneerDDJSX.selectedSamplerBank
+	);
+};
 
-    if (value) {
-        if ((control % 0x25) === 0) {
-            // unbind previous connected controls:
-            for (index in PioneerDDJSX.selectedLooprollIntervals[deck]) {
-                if (typeof index === "string") {
-                    engine.connectControl(
-                        group,
-                        "beatlooproll_" + PioneerDDJSX.selectedLooprollIntervals[deck][index] + "_activate",
-                        "PioneerDDJSX.beatlooprollLeds",
-                        true
-                    );
-                }
-            }
-            // change parameter set:
-            if (PioneerDDJSX.selectedLoopRollParam[deck] > 0) {
-                PioneerDDJSX.selectedLoopRollParam[deck] = PioneerDDJSX.selectedLoopRollParam[deck] - 1;
-            }
-            PioneerDDJSX.selectedLooprollIntervals[deck] = PioneerDDJSX.loopIntervals[PioneerDDJSX.selectedLoopRollParam[deck]];
-            // bind new controls:
-            for (index in PioneerDDJSX.selectedLooprollIntervals[deck]) {
-                if (typeof index === "string") {
-                    engine.connectControl(
-                        group,
-                        "beatlooproll_" + PioneerDDJSX.selectedLooprollIntervals[deck][index] + "_activate",
-                        "PioneerDDJSX.beatlooprollLeds",
-                        false
-                    );
-                }
-            }
-        }
-        if ((control % 0x26) === 0) {
-            // unbind previous connected controls:
-            for (index in PioneerDDJSX.selectedLoopIntervals[deck]) {
-                if (typeof index === "string") {
-                    engine.connectControl(
-                        group,
-                        "beatloop_" + PioneerDDJSX.selectedLoopIntervals[deck][index] + "_enabled",
-                        "PioneerDDJSX.beatloopLeds",
-                        true
-                    );
-                }
-            }
-            // change parameter set:
-            if (PioneerDDJSX.selectedLoopParam[deck] > 0) {
-                PioneerDDJSX.selectedLoopParam[deck] = PioneerDDJSX.selectedLoopParam[deck] - 1;
-            }
-            PioneerDDJSX.selectedLoopIntervals[deck] = PioneerDDJSX.loopIntervals[PioneerDDJSX.selectedLoopParam[deck]];
-            // bind new controls:
-            for (index in PioneerDDJSX.selectedLoopIntervals[deck]) {
-                if (typeof index === "string") {
-                    engine.connectControl(
-                        group,
-                        "beatloop_" + PioneerDDJSX.selectedLoopIntervals[deck][index] + "_enabled",
-                        "PioneerDDJSX.beatloopLeds",
-                        false
-                    );
-                }
-            }
-        }
-        if ((control % 0x27) === 0) {
-            // unbind previous connected controls:
-            for (index in PioneerDDJSX.samplerGroups) {
-                if (typeof index === "string") {
-                    offset = PioneerDDJSX.selectedSamplerBank * 8;
-                    samplerIndex = (PioneerDDJSX.samplerGroups[index] + 1) + offset;
-                    engine.connectControl(
-                        "[Sampler" + samplerIndex + "]",
-                        "duration",
-                        "PioneerDDJSX.samplerLeds",
-                        true
-                    );
-                    engine.connectControl(
-                        "[Sampler" + samplerIndex + "]",
-                        "play",
-                        "PioneerDDJSX.samplerLedsPlay",
-                        true
-                    );
-                }
-            }
-            // change sampler bank:
-            if (PioneerDDJSX.selectedSamplerBank > 0) {
-                PioneerDDJSX.selectedSamplerBank = PioneerDDJSX.selectedSamplerBank - 1;
-            }
-            // bind new controls:
-            for (index in PioneerDDJSX.samplerGroups) {
-                if (typeof index === "string") {
-                    offset = PioneerDDJSX.selectedSamplerBank * 8;
-                    samplerIndex = (PioneerDDJSX.samplerGroups[index] + 1) + offset;
-                    engine.connectControl(
-                        "[Sampler" + samplerIndex + "]",
-                        "duration",
-                        "PioneerDDJSX.samplerLeds",
-                        false
-                    );
-                    engine.connectControl(
-                        "[Sampler" + samplerIndex + "]",
-                        "play",
-                        "PioneerDDJSX.samplerLedsPlay",
-                        false
-                    );
-                    engine.trigger("[Sampler" + samplerIndex + "]", "duration");
-                }
-            }
-        }
-        // update parameter status leds:
-        PioneerDDJSX.updateParameterStatusLeds(
-            group,
-            PioneerDDJSX.selectedLoopRollParam[deck],
-            PioneerDDJSX.selectedLoopParam[deck],
-            PioneerDDJSX.selectedSamplerBank
-        );
+PioneerDDJSX.parameterLeft = function(channel, control, value, status, group) {
+    if (value) {    
+    	PioneerDDJSX.changeParameters(group, control, false); 	
     }
 };
 
 PioneerDDJSX.parameterRight = function(channel, control, value, status, group) {
-    var deck = PioneerDDJSX.channelGroups[group],
-        index,
-        offset = 0,
-        samplerIndex = 0;
-
-    if (value) {
-        if ((control % 0x2D) === 0) {
-            // unbind previous connected controls:
-            for (index in PioneerDDJSX.selectedLooprollIntervals[deck]) {
-                if (typeof index === "string") {
-                    engine.connectControl(
-                        group,
-                        "beatlooproll_" + PioneerDDJSX.selectedLooprollIntervals[deck][index] + "_activate",
-                        "PioneerDDJSX.beatlooprollLeds",
-                        true
-                    );
-                }
-            }
-            // change parameter set:
-            if (PioneerDDJSX.selectedLoopRollParam[deck] < 3) {
-                PioneerDDJSX.selectedLoopRollParam[deck] = PioneerDDJSX.selectedLoopRollParam[deck] + 1;
-            }
-            PioneerDDJSX.selectedLooprollIntervals[deck] = PioneerDDJSX.loopIntervals[PioneerDDJSX.selectedLoopRollParam[deck]];
-            // bind new controls:
-            for (index in PioneerDDJSX.selectedLooprollIntervals[deck]) {
-                if (typeof index === "string") {
-                    engine.connectControl(
-                        group,
-                        "beatlooproll_" + PioneerDDJSX.selectedLooprollIntervals[deck][index] + "_activate",
-                        "PioneerDDJSX.beatlooprollLeds",
-                        false
-                    );
-                }
-            }
-        }
-        if ((control % 0x2E) === 0) {
-            // unbind previous connected controls:
-            for (index in PioneerDDJSX.selectedLoopIntervals[deck]) {
-                if (typeof index === "string") {
-                    engine.connectControl(
-                        group,
-                        "beatloop_" + PioneerDDJSX.selectedLoopIntervals[deck][index] + "_enabled",
-                        "PioneerDDJSX.beatloopLeds",
-                        true
-                    );
-                }
-            }
-            // change parameter set:
-            if (PioneerDDJSX.selectedLoopParam[deck] < 3) {
-                PioneerDDJSX.selectedLoopParam[deck] = PioneerDDJSX.selectedLoopParam[deck] + 1;
-            }
-            PioneerDDJSX.selectedLoopIntervals[deck] = PioneerDDJSX.loopIntervals[PioneerDDJSX.selectedLoopParam[deck]];
-            // bind new controls:
-            for (index in PioneerDDJSX.selectedLoopIntervals[deck]) {
-                if (typeof index === "string") {
-                    engine.connectControl(
-                        group,
-                        "beatloop_" + PioneerDDJSX.selectedLoopIntervals[deck][index] + "_enabled",
-                        "PioneerDDJSX.beatloopLeds",
-                        false
-                    );
-                }
-            }
-        }
-        if ((control % 0x2F) === 0) {
-            // unbind previous connected controls:
-            for (index in PioneerDDJSX.samplerGroups) {
-                if (typeof index === "string") {
-                    offset = PioneerDDJSX.selectedSamplerBank * 8;
-                    samplerIndex = (PioneerDDJSX.samplerGroups[index] + 1) + offset;
-                    engine.connectControl(
-                        "[Sampler" + samplerIndex + "]",
-                        "duration",
-                        "PioneerDDJSX.samplerLeds",
-                        true
-                    );
-                    engine.connectControl(
-                        "[Sampler" + samplerIndex + "]",
-                        "play",
-                        "PioneerDDJSX.samplerLedsPlay",
-                        true
-                    );
-                }
-            }
-            // change sampler bank:
-            if (PioneerDDJSX.selectedSamplerBank < 3) {
-                PioneerDDJSX.selectedSamplerBank = PioneerDDJSX.selectedSamplerBank + 1;
-            }
-            // bind new controls:
-            for (index in PioneerDDJSX.samplerGroups) {
-                if (typeof index === "string") {
-                    offset = PioneerDDJSX.selectedSamplerBank * 8;
-                    samplerIndex = (PioneerDDJSX.samplerGroups[index] + 1) + offset;
-                    engine.connectControl(
-                        "[Sampler" + samplerIndex + "]",
-                        "duration",
-                        "PioneerDDJSX.samplerLeds",
-                        false
-                    );
-                    engine.connectControl(
-                        "[Sampler" + samplerIndex + "]",
-                        "play",
-                        "PioneerDDJSX.samplerLedsPlay",
-                        false
-                    );
-                    engine.trigger("[Sampler" + samplerIndex + "]", "duration");
-                }
-            }
-        }
-        // update parameter status leds:
-        PioneerDDJSX.updateParameterStatusLeds(
-            group,
-            PioneerDDJSX.selectedLoopRollParam[deck],
-            PioneerDDJSX.selectedLoopParam[deck],
-            PioneerDDJSX.selectedSamplerBank
-        );
+    if (value) {    
+    	PioneerDDJSX.changeParameters(group, control, true);
     }
 };
 
@@ -1375,7 +1246,7 @@ PioneerDDJSX.loadButton = function(channel, control, value, status, group) {
         engine.setValue(group, "LoadSelectedTrack", true);
         if (PioneerDDJSX.autoPFL) {
             for (var index in PioneerDDJSX.channelGroups) {
-                if (typeof index === "string") {
+                if (PioneerDDJSX.channelGroups.hasOwnProperty(index)) {
                     if (index === group) {
                         engine.setValue(index, "pfl", true);
                     } else {
@@ -1482,7 +1353,7 @@ PioneerDDJSX.panelSelectButton = function(channel, control, value, status, group
 ///////////////////////////////////////////////////////////////
 
 PioneerDDJSX.deckConverter = function(group) {
-    if (typeof group === "string") {
+    if (PioneerDDJSX.channelGroups.hasOwnProperty(group)) {
         return PioneerDDJSX.channelGroups[group];
     }
     return group;
@@ -1506,9 +1377,9 @@ PioneerDDJSX.resetNonDeckLeds = function() {
 
     // fx Leds:
     for (indexFxUnit in PioneerDDJSX.fxUnitGroups) {
-        if (typeof indexFxUnit === "string") {
+        if (PioneerDDJSX.fxUnitGroups.hasOwnProperty(indexFxUnit)) {
             for (indexFxLed in PioneerDDJSX.fxEffectGroups) {
-                if (typeof indexFxLed === "string") {
+                if (PioneerDDJSX.fxEffectGroups.hasOwnProperty(indexFxLed)) {
                     PioneerDDJSX.fxLedControl(
                         PioneerDDJSX.fxUnitGroups[indexFxUnit],
                         PioneerDDJSX.fxEffectGroups[indexFxLed],
@@ -1528,9 +1399,9 @@ PioneerDDJSX.resetNonDeckLeds = function() {
 
     // fx assign Leds:
     for (indexFxUnit in PioneerDDJSX.fxUnitGroups) {
-        if (typeof indexFxUnit === "string") {
+        if (PioneerDDJSX.fxUnitGroups.hasOwnProperty(indexFxUnit)) {
             for (indexFxLed in PioneerDDJSX.fxAssign) {
-                if (typeof indexFxLed === "string") {
+                if (PioneerDDJSX.fxAssign.hasOwnProperty(indexFxLed)) {
                     PioneerDDJSX.fxAssignLedControl(
                         PioneerDDJSX.fxUnitGroups[indexFxUnit],
                         PioneerDDJSX.fxAssign[indexFxLed],
@@ -1663,20 +1534,18 @@ PioneerDDJSX.fxLeds = function(value, group, control) {
         searchStr,
         ledNumber = 0;
 
-    if (typeof group === "string") {
-        for (var index in PioneerDDJSX.fxUnitGroups) {
-            if (typeof index === "string") {
-                searchStr = index.replace(']', '_');
-                if (group.indexOf(searchStr) !== -1) {
-                    unit = PioneerDDJSX.fxUnitGroups[index];
-                    ledNumber = PioneerDDJSX.fxEffectGroups[group];
-                } else if (group.indexOf(index) !== -1) {
-                    unit = PioneerDDJSX.fxUnitGroups[index];
-                    ledNumber = 0x03;
-                }
-            }
-        }
-    }
+	for (var index in PioneerDDJSX.fxUnitGroups) {
+		if (PioneerDDJSX.fxUnitGroups.hasOwnProperty(index)) {
+			searchStr = index.replace(']', '_');
+			if (group.indexOf(searchStr) !== -1) {
+				unit = PioneerDDJSX.fxUnitGroups[index];
+				ledNumber = PioneerDDJSX.fxEffectGroups[group];
+			} else if (group.indexOf(index) !== -1) {
+				unit = PioneerDDJSX.fxUnitGroups[index];
+				ledNumber = 0x03;
+			}
+		}
+	}
 
     PioneerDDJSX.fxLedControl(unit, ledNumber, PioneerDDJSX.shiftPressed, value);
     PioneerDDJSX.fxLedControl(unit, ledNumber, true, value);
@@ -1826,7 +1695,7 @@ PioneerDDJSX.samplerLeds = function(value, group, control) {
         padNum = PioneerDDJSX.samplerGroups[sampleDeck];
 
     for (var index in PioneerDDJSX.channelGroups) {
-        if (typeof index === "string") {
+        if (PioneerDDJSX.channelGroups.hasOwnProperty(index)) {
             PioneerDDJSX.padLedControl(
                 PioneerDDJSX.channelGroups[index],
                 PioneerDDJSX.ledGroups.sampler,
@@ -1844,7 +1713,7 @@ PioneerDDJSX.samplerLedsPlay = function(value, group, control) {
         padNum = PioneerDDJSX.samplerGroups[sampleDeck];
 
     for (var index in PioneerDDJSX.channelGroups) {
-        if (typeof index === "string") {
+        if (PioneerDDJSX.channelGroups.hasOwnProperty(index)) {
             PioneerDDJSX.padLedControl(
                 PioneerDDJSX.channelGroups[index],
                 PioneerDDJSX.ledGroups.sampler,
@@ -1868,7 +1737,7 @@ PioneerDDJSX.beatloopLeds = function(value, group, control) {
         deck = PioneerDDJSX.channelGroups[group];
 
     for (var index in PioneerDDJSX.selectedLoopIntervals[deck]) {
-        if (typeof index === "string") {
+        if (PioneerDDJSX.selectedLoopIntervals[deck].hasOwnProperty(index)) {
             if (control === "beatloop_" + PioneerDDJSX.selectedLoopIntervals[deck][index] + "_enabled") {
                 padNum = index % 8;
                 PioneerDDJSX.padLedControl(group, PioneerDDJSX.ledGroups.slicer, padNum, shifted, value);
@@ -1883,7 +1752,7 @@ PioneerDDJSX.beatlooprollLeds = function(value, group, control) {
         deck = PioneerDDJSX.channelGroups[group];
 
     for (var index in PioneerDDJSX.selectedLooprollIntervals[deck]) {
-        if (typeof index === "string") {
+        if (PioneerDDJSX.selectedLooprollIntervals[deck].hasOwnProperty(index)) {
             if (control === "beatlooproll_" + PioneerDDJSX.selectedLooprollIntervals[deck][index] + "_activate") {
                 padNum = index % 8;
                 PioneerDDJSX.padLedControl(group, PioneerDDJSX.ledGroups.loopRoll, padNum, shifted, value);
@@ -1930,7 +1799,7 @@ PioneerDDJSX.VuMeterLeds = function(value, group, control) {
     PioneerDDJSX.valueVuMeter[group + "_current"] = value;
 
     for (var index in PioneerDDJSX.channelGroups) {
-        if (typeof index === "string") {
+        if (PioneerDDJSX.channelGroups.hasOwnProperty(index)) {
             midiOut = PioneerDDJSX.valueVuMeter[index + "_current"];
             if (PioneerDDJSX.twinkleVumeterAutodjOn) {
                 if (engine.getValue("[AutoDJ]", "enabled")) {

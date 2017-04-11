@@ -2,10 +2,10 @@
 <MixxxControllerPreset mixxxVersion="2.0+" schemaVersion="1">
     <info>
         <name>Pioneer DDJ-SX</name>
-        <author>Maximilian Beiersdorfer, DJ Maxergy</author>
-        <description>Pioneer DDJ-SX</description>
-        <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&t=8310</forums>
-        <wiki>http://www.mixxx.org/wiki/doku.php/pioneer_ddj-sx</wiki>
+        <author>Maximilian Beiersdorfer, DJMaxergy</author>
+        <description>Pioneer DDJ-SX controller mapping</description>
+        <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=8310</forums>
+        <wiki>http://mixxx.org/wiki/doku.php/pioneer_ddj-sx</wiki>
     </info>
     <controller id="PIONEER">
         <scriptfiles>
