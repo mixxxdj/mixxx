@@ -638,13 +638,35 @@
         };
         this.EffectUnitKnob.prototype = new Pot({
             group: this.group,
-            input: function (channel, control, value, status, group) {
-                this.inSetParameter(this.inValueScale(value));
-                // Unlike the Pot prototype, do not enable soft takeover here
-                // because soft takeover needs to be enabled for all the
-                // metaknobs and parameters 1-3 of all 3 effects. Instead, enabling
-                // soft takeover is handled below in the loop that calls the
-                // EffectUnitKnob constructor.
+            unshift: function () {
+                this.input = function (channel, control, value, status, group) {
+                    this.inSetParameter(this.inValueScale(value));
+                    // Unlike the Pot prototype, do not enable soft takeover here
+                    // because soft takeover needs to be enabled for all the
+                    // metaknobs and parameters 1-3 of all 3 effects. Instead, enabling
+                    // soft takeover is handled in the loop that calls the
+                    // EffectUnitKnob constructor.
+                    this.previousValueReceived = value;
+                };
+            },
+            shift: function () {
+                this.valueAtLastEffectSwitch = this.previousValueReceived;
+                // Floor the threshold to ensure that every effect can be selected
+                this.changeThreshold = Math.floor(this.max /
+                    engine.getValue('[Master]', 'num_effectsavailable'));
+
+                this.input = function (channel, control, value, status, group) {
+                    var change = value - this.valueAtLastEffectSwitch;
+                    if (Math.abs(change) >= this.changeThreshold) {
+                        var effectGroup = '[EffectRack1_EffectUnit' +
+                                           eu.currentUnitNumber + '_Effect' +
+                                           this.number + ']';
+                        engine.setValue(effectGroup, 'effect_selector', change);
+                        this.valueAtLastEffectSwitch = value;
+                    }
+
+                    this.previousValueReceived = value;
+                };
             },
             outKey: "focused_effect",
             connect: function () {
@@ -683,7 +705,6 @@
         this.EffectEnableButton.prototype = new Button({
             stopEffectFocusChooseMode: function () {
                 this.inKey = 'enabled';
-                this.onlyOnPress = true;
                 this.outKey = 'enabled';
                 this.input = Button.prototype.input;
                 this.connect = Button.prototype.connect;
@@ -709,18 +730,6 @@
                 this.output = function (value, group, control) {
                     this.send(value === this.number);
                 };
-            },
-            unshift: function () {
-                if (eu.focusChooseModeActive) {
-                    this.startEffectFocusChooseMode();
-                } else {
-                    this.stopEffectFocusChooseMode();
-                }
-            },
-            shift: function () {
-                this.inKey = 'next_effect';
-                this.onlyOnPress = false;
-                this.input = Button.prototype.input;
             },
         });
 
