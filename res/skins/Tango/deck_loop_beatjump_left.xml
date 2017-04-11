@@ -33,7 +33,7 @@
     <Children>
         <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,1min</Size></WidgetGroup>
         <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0me,1min</Size></WidgetGroup>
-      <Template src="skin:loop_basics_2.1_compact.xml"/>
+      <Template src="skin:loop_basics_2.1_compact_left.xml"/>
         <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,1min</Size></WidgetGroup>
       <Template src="skin:beatjump_2.1_compact_left.xml"/>
     </Children>
