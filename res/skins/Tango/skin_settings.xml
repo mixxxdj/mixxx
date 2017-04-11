@@ -199,49 +199,6 @@ Description:
                 <SetVariable name="state_1_text"> &#10004; Mixer Bar</SetVariable>
                 <SetVariable name="Setting">[Tango],mixerbar</SetVariable>
               </Template>
-
-              <WidgetGroup><!-- MixerBar submenu -->
-                <Layout>stacked</Layout>
-                <Size>172f,51f</Size>
-                <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
-                  <WidgetGroup><!-- translucent cover when MixerBar is hidden -->
-                    <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>vertical</Layout>
-                    <SizePolicy>me,me</SizePolicy>
-                    <Children/>
-                    <Connection>
-                      <ConfigKey persist="true">[Tango],mixerbar</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                      <Transform><Not/></Transform>
-                    </Connection>
-                  </WidgetGroup>
-
-                  <WidgetGroup><!-- MixerBar submenu buttons -->
-                    <Layout>vertical</Layout>
-                    <Size>172f,51f</Size>
-                    <Children>
-                    <Template src="skin:skin_settings_button_2state.xml">
-                        <SetVariable name="state_0_text">      Headphone Mixer</SetVariable>
-                        <SetVariable name="state_1_text"> &#10004; Headphone Mixer</SetVariable>
-                        <SetVariable name="Setting">[Tango],mixerbar_headphone</SetVariable>
-                      </Template>
-                    <Template src="skin:skin_settings_button_2state.xml">
-                        <SetVariable name="state_0_text">      MIC mixer (if configured)</SetVariable>
-                        <SetVariable name="state_1_text"> &#10004; MIC mixer (if configured)</SetVariable>
-                        <SetVariable name="Setting">[Tango],mixerbar_mic</SetVariable>
-                      </Template>
-                      <Template src="skin:skin_settings_button_2state.xml">
-                        <SetVariable name="state_0_text">      AUX mixer (if configured)</SetVariable>
-                        <SetVariable name="state_1_text"> &#10004; AUX mixer (if configured)</SetVariable>
-                        <SetVariable name="Setting">[Tango],mixerbar_aux</SetVariable>
-                      </Template>
-                    </Children>
-                  </WidgetGroup><!-- MixerBar submenu buttons -->
-                </Children>
-              </WidgetGroup><!-- MixerBar submenu -->
             </Children>
           </WidgetGroup><!-- /Mixer Settings -->
 

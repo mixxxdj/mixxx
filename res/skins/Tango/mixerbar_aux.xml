@@ -13,29 +13,25 @@ Variables:
     <Size>-1min,32f</Size>
     <Children>
 
-      <WidgetGroup>
-        <Layout>stacked</Layout>
+      <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+
+      <Label>
+        <ObjectName>MixerBar_MicAuxLabel</ObjectName>
         <Size>20f,32f</Size>
-        <Children>
-          <!-- This I left here in order to add an overlay (X) later on -->
-          <Template src="skin:button_2state.xml">
-            <SetVariable name="TooltipId">headSplit</SetVariable>
-            <SetVariable name="ObjectName">MixerBar_MicAuxMuteButton</SetVariable>
-            <SetVariable name="Size">20f,32f</SetVariable>
-            <SetVariable name="ConfigKey">[Auxiliary<Variable name="AuxNumber"/>],mute</SetVariable>
-          </Template>
-          <!-- Using a Label here would be eaier, but there were problems
-              centering its text. So I added a button just as display. -->
-          <Template src="skin:button_2state.xml">
-            <SetVariable name="TooltipId">microphone_talkover</SetVariable>
-            <SetVariable name="ObjectName">MixerBar_MicAuxMuteButtonUnderlay</SetVariable>
-            <SetVariable name="Size">20f,32f</SetVariable>
-            <SetVariable name="state_0_text"><Variable name="AuxNumber"/></SetVariable>
-            <SetVariable name="state_1_text"><Variable name="AuxNumber"/></SetVariable>
-            <SetVariable name="ConfigKey">[Auxiliary<Variable name="AuxNumber"/>],mute</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
+        <Text><Variable name="AuxNumber"/></Text>
+        <Alignment>center</Alignment>
+      </Label>
+
+      <Template src="skin:button_2state.xml">
+        <SetVariable name="TooltipId">microphone_talkover</SetVariable>
+        <SetVariable name="ObjectName">MixerBarButton</SetVariable>
+        <SetVariable name="Size">20f,28f</SetVariable>
+        <SetVariable name="state_0_unpressed">mic_off.svg</SetVariable>
+        <SetVariable name="state_0_pressed">mic_off.svg</SetVariable>
+        <SetVariable name="state_1_unpressed">mic_on.svg</SetVariable>
+        <SetVariable name="state_1_pressed">mic_on.svg</SetVariable>
+        <SetVariable name="ConfigKey">[Microphone<Variable name="MicNumber"/>],talkover</SetVariable>
+      </Template>
 
       <Template src="skin:knob_textless.xml">
         <SetVariable name="TooltipId"></SetVariable>
@@ -91,8 +87,6 @@ Variables:
           </WidgetGroup><!-- /VU Meter -->
         </Children>
       </WidgetGroup><!-- /Volume fader + VU Meter -->
-
-      <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
 
     </Children>
     <Connection>

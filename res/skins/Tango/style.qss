@@ -204,6 +204,14 @@ WPushButton {
   qproperty-layoutSpacing: 0px;
 }
 
+#MixerBarSection {
+  qproperty-layoutAlignment: 'AlignTop';
+  margin: 2px 8px 1px 0px;
+  border: 1px solid #585858;
+  border-width: 1px 0px 0px 1px;
+}
+
+
 #MixerBar_BelowLibrary[displayValue="0"] {
   background: transparent url(skin:/buttons/btn_arrow_downleft_thin.svg) no-repeat center top;
   }
@@ -217,59 +225,43 @@ WPushButton {
     background: transparent url(skin:/buttons/btn_arrow_upright_thin_hover.svg) no-repeat center top;
   }
 
-#MixerBarSection {
-  qproperty-layoutAlignment: 'AlignTop';
-  margin: 2px 0px 1px 0px;
-}
+#MixerBarToggler[displayValue="0"] {
+  background: transparent url(skin:/buttons/btn_arrow_right_thin.svg) no-repeat center top;
+  }
+  #MixerBarToggler[displayValue="0"]:hover {
+    background: transparent url(skin:/buttons/btn_arrow_right_thin_hover.svg) no-repeat center top;
+  }
+  #MixerBarToggler[displayValue="1"] {
+    background: transparent url(skin:/buttons/btn_arrow_left_thin.svg) no-repeat center top;
+  }
+  #MixerBarToggler[displayValue="1"]:hover {
+    background: transparent url(skin:/buttons/btn_arrow_left_thin_hover.svg) no-repeat center top;
+  }
+  
 
-#MasterLabel, #HeadLabel, #MicSectionLabel, #AuxSectionLabel {
+#MixerBar_MasterSectionLabel, #MixerBar_HeadSectionLabel,
+#MixerBar_MicSectionLabel, #MixerBar_AuxSectionLabel {
+  }
+  #MixerBar_MasterSectionLabel {
+    image: url(skin:/buttons/btn_master.svg) no-repeat center center;
+  }
+  #MixerBar_HeadSectionLabel {
+    image: url(skin:/buttons/btn_head.svg) no-repeat center center;
+  }
+  #MixerBar_MicSectionLabel {
+    image: url(skin:/buttons/btn_mic.svg) no-repeat center center;
+  }
+  #MixerBar_AuxSectionLabel {
+    image: url(skin:/buttons/btn_aux.svg) no-repeat center center;
+  }
+
+#MixerBar_MicAuxLabel { /*
   border: 1px solid #585858;
-  border-right: 0px;
-  border-bottom: 0px;
+  border-width: 0px 0px 0px 1px; */
+  font-size: 22px/22px;
+  font-weight: bold;
+  text-align: center;
 }
-#MicLabel, #Mic2Label, #Mic3Label, #Mic4Label,
-#Aux1Label, #Aux2Label, #Aux3Label, #Aux4Label {
-}
-
-#MasterLabel {
-  image: url(skin:/buttons/btn_master.svg) no-repeat center center;
-}
-
-#HeadLabel {
-  image: url(skin:/buttons/btn_head.svg) no-repeat center center;
-}
-
-#MicSectionLabel {
-  image: url(skin:/buttons/btn_mic.svg) no-repeat center center;
-  }
-  #MicLabel {
-    image: url(skin:/buttons/btn_mic1.svg) no-repeat center center;
-    }
-  #Mic2Label {
-    image: url(skin:/buttons/btn_mic2.svg) no-repeat center center;
-    }
-  #Mic3Label {
-    image: url(skin:/buttons/btn_mic3.svg) no-repeat center center;
-    }
-  #Mic4Label {
-    image: url(skin:/buttons/btn_mic4.svg) no-repeat center center;
-    }
-
-#AuxSectionLabel {
-  image: url(skin:/buttons/btn_aux.svg) no-repeat center center;
-  }
-  #Aux1Label {
-    image: url(skin:/buttons/btn_aux1.svg) no-repeat center center;
-    }
-  #Aux2Label {
-    image: url(skin:/buttons/btn_aux2.svg) no-repeat center center;
-    }
-  #Aux3Label {
-    image: url(skin:/buttons/btn_aux3.svg) no-repeat center center;
-    }
-  #Aux4Label {
-    image: url(skin:/buttons/btn_aux4.svg) no-repeat center center;
-    }
 
 #MixerBarButton {
   font-weight: bold;
@@ -291,53 +283,9 @@ WPushButton {
       border: 1px solid #eeeeee;
     }
 
-#MixerBar_MicAuxMuteButton[displayValue="0"] {
-  background: url(skin:/buttons/btn_micaux_off.svg) no-repeat center center;
-  }
-  #MixerBar_MicAuxMuteButton[displayValue="0"]:hover {
-    border: 1px solid #888888;
-  }
-  #MixerBar_MicAuxMuteButton[displayValue="1"]:hover {
-    border: 1px solid #eeeeee;
-    background: url(skin:/buttons/btn_micaux_off.svg) no-repeat center center;
-  }
-
-#MixerBar_MicAuxMuteButtonUnderlay {
-  font-size: 22px/22px;
-  font-weight: bold;
-  text-align: center;
-  }
-  #MixerBar_MicAuxMuteButtonUnderlay[displayValue="0"] {
-    background-color: #333333;
-    color: #888888;
-  }
-  #MixerBar_MicAuxMuteButtonUnderlay[displayValue="1"] {
-    background-color: #666666;
-    color: #d2d2d2;
-  }
-
-#MixerBarSlider:hover, #MixerBarKnob:hover {  /*
-  border: 1px solid #666666;
-  background-color: #000000;
-  border-radius: 2px;  */
-  }
-
 #VUMeterFloating_h {
   margin: 0px 3px 0px 1px;
 }
-
-#MixerBarToggler[displayValue="0"] {
-  background: transparent url(skin:/buttons/btn_arrow_right_thin.svg) no-repeat center top;
-  }
-  #MixerBarToggler[displayValue="0"]:hover {
-    background: transparent url(skin:/buttons/btn_arrow_right_thin_hover.svg) no-repeat center top;
-  }
-  #MixerBarToggler[displayValue="1"] {
-    background: transparent url(skin:/buttons/btn_arrow_left_thin.svg) no-repeat center top;
-  }
-  #MixerBarToggler[displayValue="1"]:hover {
-    background: transparent url(skin:/buttons/btn_arrow_left_thin_hover.svg) no-repeat center top;
-  }
 
 #MixerBarCover {
   background-color: rgba(30, 30, 30, 200);
