@@ -118,7 +118,7 @@ Variables:
         <Size>50f,107f</Size>
         <Children>
           <SliderComposed>
-              <ObjectName>PitchSlider</ObjectName>
+            <ObjectName>PitchSlider</ObjectName>
             <TooltipId>rate</TooltipId>
             <Handle>skin:/knobs_sliders/slider_pitch_handle.svg</Handle>
             <Slider>skin:/knobs_sliders/slider_pitch_scale.svg</Slider>

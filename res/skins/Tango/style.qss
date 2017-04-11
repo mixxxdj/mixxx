@@ -5,7 +5,7 @@
   Not working. See https://bugs.launchpad.net/mixxx/+bug/1623997 */
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
   background-color: #1e1e1e;
-  font-family: Ubuntu, "Open Sans", Arial, Verdana, sans-serif;
+  font-family: Ubuntu;
   font-weight: normal;
 }
 
@@ -16,11 +16,12 @@
 }
 
 WWidget, WLabel {
-  font-family: Ubuntu, "Open Sans", Arial, Verdana, sans-serif;
+  font-family: Ubuntu;
   font-weight: normal;
 }
 
 WPushButton {
+  font-family: Ubuntu;
   border-radius: 2px;
 }
 
@@ -1107,6 +1108,8 @@ WBeatSpinBox {
     }
   /* TODO: copied from Deere */
   WEffectSelector {
+    font-family: Ubuntu;
+    font-weight: normal;
     color: #c1cabe;
     background-color: #333333;
     /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
@@ -1138,6 +1141,7 @@ WBeatSpinBox {
       color: #cccccc;
       background-color: #202020;
       padding-left: 5px;
+      font-family: Ubuntu;
     }
     /* selected item */
     WEffectSelector::checked {
@@ -1660,6 +1664,7 @@ QToolTip {
 
 QTableView, QTextBrowser, QTreeView {
   border: 1px solid #585858;
+  font-family: Ubuntu;
   color: #9E9E9E;
   background-color: #0f0f0f;
   alternate-background-color: #1a1a1a;
@@ -1729,6 +1734,7 @@ QTableView:focus { /*
 
 QHeaderView {
   font-size: 13px/13px;
+  font-family: Ubuntu;
   font-weight: bold;
   color: #CFCFCF;
   background-color: #1e1e1e;
@@ -1806,6 +1812,7 @@ QScrollBar:horizontal {
 /* Pushbuttons, a lot of them...	*/
 QPushButton {
   text-align: center;
+  font-family: Ubuntu;
   font-size: 14px/14px;
   color: #cccccc;
   border-radius: 2px;
@@ -1929,6 +1936,7 @@ WSearchLineEdit {
   border: 1px solid #656565;
   border-left: 0px;
   background: #0f0f0f;
+  font-family: Ubuntu;
   color: #CFCFCF;
   margin-bottom: 5px;
   }

@@ -77,12 +77,13 @@ Variables:
                         <Layout>vertical</Layout>
                         <Size>1me,16f</Size>
                         <Children>
-                          <Text>
+                          <TrackProperty>
                             <TooltipId>text</TooltipId>
                             <SizePolicy>i,me</SizePolicy>
                             <Group><Variable name="group"/></Group>
+                            <Property>title</Property>
                             <Elide>right</Elide>
-                          </Text>
+                          </TrackProperty>
                           <WidgetGroup><Size>1me,0f</Size></WidgetGroup>
                         </Children>
                       </WidgetGroup><!-- /SamplerTitle -->

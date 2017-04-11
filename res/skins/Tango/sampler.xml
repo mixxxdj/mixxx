@@ -39,12 +39,13 @@ Variables:
                 <Size>1me,19f</Size>
                 <ObjectName>SamplerTitle</ObjectName>
                 <Children>
-                  <Text>
+                  <TrackProperty>
                     <TooltipId>text</TooltipId>
                     <Size>1me,18f</Size>
                     <Group><Variable name="group"/></Group>
+                    <Property>title</Property>
                     <Elide>right</Elide>
-                  </Text>
+                  </TrackProperty>
                 </Children>
               </WidgetGroup><!-- /SamplerTitle -->
 
