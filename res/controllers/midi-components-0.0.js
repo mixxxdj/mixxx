@@ -549,13 +549,17 @@
                 this.showParametersConnection.trigger();
             }
 
-            for (var n = 1; n <= 3; n++) {
-                var effect = '[EffectRack1_EffectUnit' + this.currentUnitNumber +
-                            '_Effect' + n + ']';
-                engine.softTakeover(effect, 'meta', true);
-                engine.softTakeover(effect, 'parameter1', true);
-                engine.softTakeover(effect, 'parameter2', true);
-                engine.softTakeover(effect, 'parameter3', true);
+            // Do not enable soft takeover upon EffectUnit construction
+            // so initial values can be loaded from knobs.
+            if (this.hasInitialized === true) {
+                for (var n = 1; n <= 3; n++) {
+                    var effect = '[EffectRack1_EffectUnit' + this.currentUnitNumber +
+                                '_Effect' + n + ']';
+                    engine.softTakeover(effect, 'meta', true);
+                    engine.softTakeover(effect, 'parameter1', true);
+                    engine.softTakeover(effect, 'parameter2', true);
+                    engine.softTakeover(effect, 'parameter3', true);
+                }
             }
 
             this.reconnectComponents(function (component) {
@@ -641,11 +645,15 @@
             unshift: function () {
                 this.input = function (channel, control, value, status, group) {
                     this.inSetParameter(this.inValueScale(value));
-                    // Unlike the Pot prototype, do not enable soft takeover here
-                    // because soft takeover needs to be enabled for all the
-                    // metaknobs and parameters 1-3 of all 3 effects. Instead, enabling
-                    // soft takeover is handled in the loop that calls the
-                    // EffectUnitKnob constructor.
+
+                    if (this.previousValueReceived === undefined) {
+                        var effect = '[EffectRack1_EffectUnit' + eu.currentUnitNumber +
+                                    '_Effect' + this.number + ']';
+                        engine.softTakeover(effect, 'meta', true);
+                        engine.softTakeover(effect, 'parameter1', true);
+                        engine.softTakeover(effect, 'parameter2', true);
+                        engine.softTakeover(effect, 'parameter3', true);
+                    }
                     this.previousValueReceived = value;
                 };
             },
@@ -686,13 +694,12 @@
                                   eu.currentUnitNumber + '_Effect' +
                                   this.number + ']';
                     this.inKey = 'meta';
-                    engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
                 } else {
                     this.group = '[EffectRack1_EffectUnit' + eu.currentUnitNumber +
                                   '_Effect' + value + ']';
                     this.inKey = 'parameter' + this.number;
-                    engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
                 }
+                engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
             },
         });
 
@@ -825,6 +832,8 @@
                     component.group = eu.group;
                 }
             });
+
+            this.hasInitialized = true;
         };
     };
     EffectUnit.prototype = new ComponentContainer();
