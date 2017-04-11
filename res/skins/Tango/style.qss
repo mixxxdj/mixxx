@@ -882,8 +882,7 @@ WBeatSpinBox {
   #GuiToggleButton:hover {
     background-color: #666666;
     }
-  #GuiToggleButton[displayValue="0"], #RecordingButton[displayValue="0"],
-    #GuiToggleButton2 {
+  #GuiToggleButton[displayValue="0"], #GuiToggleButton2 {
     color: #888888;
     background-color: #333333;
     }
@@ -892,23 +891,29 @@ WBeatSpinBox {
     background-color: #666666;
     }
 
-#RecordingButton[displayValue="0"]:hover, #RecordingButton[displayValue="1"] {
-  background-color: #5c0000;
-  border: 1px solid #a90000;
+#RecordingButton[displayValue="0"] { /*
+  define bg-color because RecDurationLabel shows "--:--" when inactive */
+  background-color: #333333;
+  color: #888888;
+}
+  #RecordingButton[displayValue="0"]:hover, #RecordingButton[displayValue="2"] {
+    border: 1px solid #a90000;
   }
-  #RecordingButton[displayValue="2"] {
-    background-color: transparent;
+  #RecordingButton[displayValue="1"] {
+    color: #d2d2d2;
+    border: 1px solid #FFA601;
   }
   #RecordingButton[displayValue="2"]:hover {
     border: 1px solid #dddddd;
   }
-  #RecDurationLabel, #RecordingButtonUnderlay {
-    color: #888888;
-    font-weight: bold;
-    background-color: #5c0000;
-    border: 1px solid #a90000;
-    border-radius: 2px;
-    }
+/* RecordingDuration underneath RecordingButton */
+#RecDurationLabel {
+  /* RecordingButton is transparent so label needs bg-color */
+  background-color: #333333;
+  color: #d2d2d2;
+  font-family: Ubuntu;
+  font-weight: bold;
+}
 
 #ClockBox {
   qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';	

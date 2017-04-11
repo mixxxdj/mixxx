@@ -150,14 +150,6 @@ Description:
             <Size>104f,20f</Size>
             <Alignment>center</Alignment>
           </RecordingDuration>
-          <!-- same red style as RecDurationLabel for backwards compatibility -->
-          <Template src="skin:button_3state_display.xml">
-            <SetVariable name="ObjectName">RecordingButtonUnderlay</SetVariable>
-            <SetVariable name="Size">104f,20f</SetVariable>
-            <SetVariable name="state_2_text">RECORDING</SetVariable>
-            <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
-            <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
-          </Template>
         </Children>
       </WidgetGroup><!-- /Recording button & recording duration label -->
 

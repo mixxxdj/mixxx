@@ -173,7 +173,7 @@ Description:
 
           <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
 
-          <WidgetGroup>
+          <WidgetGroup><!-- Recording button & recording duration label -->
             <Layout>stacked</Layout>
             <Size>60f,20f</Size>
             <Children>
@@ -190,15 +190,8 @@ Description:
                 <Size>60f,20f</Size>
                 <Alignment>center</Alignment>
               </RecordingDuration>
-              <Template src="skin:button_3state_display.xml">
-                <SetVariable name="ObjectName">RecordingButtonUnderlay</SetVariable>
-                <SetVariable name="Size">60f,20f</SetVariable>
-                <SetVariable name="state_2_text">REC</SetVariable>
-                <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
-                <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
-              </Template>
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- /Recording button & recording duration label -->
 
           <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
 
