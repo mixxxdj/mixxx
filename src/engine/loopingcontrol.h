@@ -64,7 +64,6 @@ class LoopingControl : public EngineControl {
     void slotLoopOut(double pressed);
     void slotLoopOutGoto(double);
     void slotLoopExit(double);
-    void slotReloop(double);
     void slotReloopToggle(double);
     void slotReloopAndStop(double);
     void slotLoopStartPos(double);
@@ -130,7 +129,6 @@ class LoopingControl : public EngineControl {
     ControlPushButton* m_pLoopOutButton;
     ControlPushButton* m_pLoopOutGotoButton;
     ControlPushButton* m_pLoopExitButton;
-    ControlPushButton* m_pReloopButton;
     ControlPushButton* m_pReloopToggleButton;
     ControlPushButton* m_pReloopAndStopButton;
     ControlObject* m_pCOLoopScale;
@@ -142,7 +140,7 @@ class LoopingControl : public EngineControl {
     bool m_bLoopingEnabled = false;
     bool m_bLoopRollActive = false;
     bool m_bLoopManualTogglePressedToExitLoop = false;
-    bool m_bCatchLoop = false;
+    bool m_bReloopCatchUpcomingLoop = false;
     bool m_bAdjustingLoopIn = false;
     bool m_bAdjustingLoopOut = false;
     bool m_bLoopOutPressedWhileLoopDisabled = false;

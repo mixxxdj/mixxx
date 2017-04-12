@@ -72,11 +72,6 @@ LoopingControl::LoopingControl(QString group,
             Qt::DirectConnection);
     m_pLoopExitButton->set(0);
 
-    m_pReloopButton = new ControlPushButton(ConfigKey(group, "reloop"));
-    connect(m_pReloopButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotReloop(double)),
-            Qt::DirectConnection);
-
     m_pReloopToggleButton = new ControlPushButton(ConfigKey(group, "reloop_toggle"));
     connect(m_pReloopToggleButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotReloopToggle(double)),
@@ -225,7 +220,6 @@ LoopingControl::~LoopingControl() {
     delete m_pLoopInButton;
     delete m_pLoopInGotoButton;
     delete m_pLoopExitButton;
-    delete m_pReloopButton;
     delete m_pReloopToggleButton;
     delete m_pReloopAndStopButton;
     delete m_pCOLoopEnabled;
@@ -408,11 +402,11 @@ double LoopingControl::process(const double dRate,
         bool outsideLoop = currentSample >= loopSamples.end ||
                            currentSample <= loopSamples.start;
         if (outsideLoop) {
-            if (!m_bCatchLoop && !m_bAdjustingLoopIn && !m_bAdjustingLoopOut) {
+            if (!m_bReloopCatchUpcomingLoop && !m_bAdjustingLoopIn && !m_bAdjustingLoopOut) {
                 retval = reverse ? loopSamples.end : loopSamples.start;
             }
         } else {
-            m_bCatchLoop = false;
+            m_bReloopCatchUpcomingLoop = false;
         }
     }
 
@@ -435,7 +429,7 @@ double LoopingControl::nextTrigger(const double dRate,
     bool bReverse = dRate < 0;
     LoopSamples loopSamples = m_loopSamples.getValue();
 
-    if (m_bLoopingEnabled && !m_bCatchLoop &&
+    if (m_bLoopingEnabled && !m_bReloopCatchUpcomingLoop &&
             !m_bAdjustingLoopIn && !m_bAdjustingLoopOut) {
         if (bReverse) {
             return loopSamples.start;
@@ -456,7 +450,7 @@ double LoopingControl::getTrigger(const double dRate,
     bool bReverse = dRate < 0;
     LoopSamples loopSamples = m_loopSamples.getValue();
 
-    if (m_bLoopingEnabled && !m_bCatchLoop &&
+    if (m_bLoopingEnabled && !m_bReloopCatchUpcomingLoop &&
             !m_bAdjustingLoopIn && !m_bAdjustingLoopOut) {
         if (bReverse) {
             return loopSamples.end;
@@ -683,27 +677,6 @@ void LoopingControl::slotLoopExit(double val) {
     }
 }
 
-void LoopingControl::slotReloop(double pressed) {
-    if (!m_pTrack || pressed <= 0.0) {
-        return;
-    }
-
-    if (m_bLoopingEnabled) {
-        slotReloopAndStop(1);
-    } else {
-        LoopSamples loopSamples = m_loopSamples.getValue();
-        if (loopSamples.start != kNoTrigger && loopSamples.end != kNoTrigger &&
-                loopSamples.start <= loopSamples.end) {
-            if (getCurrentSample() <= loopSamples.end) {
-                m_bCatchLoop = true;
-                setLoopingEnabled(true);
-            } else {
-                slotReloopAndStop(1);
-            }
-        }
-    }
-}
-
 void LoopingControl::slotReloopToggle(double val) {
     if (!m_pTrack || val <= 0.0) {
         return;
@@ -717,20 +690,24 @@ void LoopingControl::slotReloopToggle(double val) {
             m_bLoopRollActive = false;
         }
         setLoopingEnabled(false);
-        //qDebug() << "reloop_exit looping off";
+        //qDebug() << "reloop_toggle looping off";
     } else {
-        // If we're not looping, jump to the loop-in point and start looping
+        // If we're not looping, enable the loop. If the loop is ahead of the
+        // current play position, do not jump to it.
         LoopSamples loopSamples = m_loopSamples.getValue();
         if (loopSamples.start != kNoTrigger && loopSamples.end != kNoTrigger &&
                 loopSamples.start <= loopSamples.end) {
+            if (getCurrentSample() < loopSamples.start) {
+                m_bReloopCatchUpcomingLoop = true;
+            }
             setLoopingEnabled(true);
             // If we're not playing, jump to the loop in point so the waveform
             // shows where it will play from when playback resumes.
-            if (!m_pPlayButton->toBool()) {
+            if (!m_pPlayButton->toBool() && !m_bReloopCatchUpcomingLoop) {
                 slotLoopInGoto(1);
             }
         }
-        //qDebug() << "reloop_exit looping on";
+        //qDebug() << "reloop_toggle looping on";
     }
 }
 
