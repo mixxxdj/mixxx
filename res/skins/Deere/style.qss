@@ -682,6 +682,8 @@ WBeatSpinBox {
   border-radius: 3px;
 
   padding: 2px;
+
+  font: 15px;
 }
 
   WBeatSpinBox:hover {
@@ -911,8 +913,8 @@ WEffectSelector {
   /* The 3D frame on the combo box becomes flat when you give it a border */
   border: 1px solid #444342;
   border-radius: 3px;
-  
-  font: 12px;
+
+  font: 15px;
 }
 
   WEffectSelector:hover {
