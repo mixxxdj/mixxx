@@ -833,7 +833,7 @@ WBeatSpinBox {
   text-align: left;
 }
 
-#EffectRackCollapsed #EffectUnitNameContainer WLabel {
+#EffectUnitLabel, #EffectRackCollapsed #EffectUnitNameContainer WLabel {
   font-weight: bold;
   font-size: 15px;
   text-transform: none;

@@ -48,6 +48,13 @@
             </Children>
           </WidgetGroup>
 
+          <Template src="skin:spacer_h.xml"/>
+          <Label>
+            <ObjectName>EffectUnitLabel</ObjectName>
+            <Text>FX<Variable name="EffectUnit"/></Text>
+          </Label>
+          <Template src="skin:spacer_h.xml"/>
+
           <WidgetGroup>
             <ObjectName>EffectUnitGroupControlsRight</ObjectName>
             <Layout>horizontal</Layout>
