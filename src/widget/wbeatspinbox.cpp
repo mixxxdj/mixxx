@@ -41,7 +41,13 @@ void WBeatSpinBox::stepBy(int steps) {
     }
     // Do not call QDoubleSpinBox::setValue directly in case
     // the new value of the ControlObject needs to be confirmed.
+    // Curiously, m_valueControl.set() does not cause slotControlValueChanged
+    // to execute for beatjump_size, so call QDoubleSpinBox::setValue in this function.
+    double oldValue = m_valueControl.get();
     m_valueControl.set(newValue);
+    if (m_valueControl.get() != oldValue) {
+        setValue(newValue);
+    }
 }
 
 void WBeatSpinBox::slotSpinboxValueChanged(double newValue) {
