@@ -367,7 +367,7 @@ TEST_F(LoopingControlTest, LoopDoubleButton_IgnoresPastTrackEnd) {
     EXPECT_EQ(kTrackLengthSamples, m_pLoopEndPoint->get());
 }
 
-TEST_F(LoopingControlTest, LoopDoubleButton_DoublesBeatloopSizeForPowerOf2Sizes) {
+TEST_F(LoopingControlTest, LoopDoubleButton_DoublesBeatloopSize) {
     m_pTrack1->setBpm(120.0);
     m_pBeatLoopSize->set(16.0);
     m_pButtonBeatLoopToggle->set(1.0);
@@ -447,7 +447,7 @@ TEST_F(LoopingControlTest, LoopHalveButton_IgnoresTooSmall) {
     EXPECT_EQ(40, m_pLoopEndPoint->get());
 }
 
-TEST_F(LoopingControlTest, LoopHalveButton_HalvesBeatloopSizeForPowerOf2Sizes) {
+TEST_F(LoopingControlTest, LoopHalveButton_HalvesBeatloopSize) {
     m_pTrack1->setBpm(120.0);
     m_pBeatLoopSize->set(64.0);
     m_pButtonBeatLoopToggle->set(1.0);

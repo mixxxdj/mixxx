@@ -318,33 +318,10 @@ void LoopingControl::slotLoopHalve(double pressed) {
     }
 
     LoopSamples loopSamples = m_loopSamples.getValue();
-    if (loopSamples.start == kNoTrigger || loopSamples.end == kNoTrigger) {
-        return;
-    }
+    bool noLoopSet = loopSamples.start == kNoTrigger || loopSamples.end == kNoTrigger;
 
-    // If a beatloop is active then halve should deactive the current
-    // beatloop and activate the previous one.
-    BeatLoopingControl* pActiveBeatLoop = m_pActiveBeatLoop;
-    if (pActiveBeatLoop != nullptr) {
-        int active_index = m_beatLoops.indexOf(pActiveBeatLoop);
-        if (active_index - 1 >= 0) {
-            if (m_bLoopingEnabled) {
-                // If the current position is outside the range of the new loop,
-                // take the current position and subtract the length of the new loop until
-                // it fits.
-                int old_loop_in = loopSamples.start;
-                int old_loop_out = loopSamples.end;
-                slotBeatLoopActivate(m_beatLoops[active_index - 1]);
-                loopSamples = m_loopSamples.getValue();
-                seekInsideAdjustedLoop(
-                        old_loop_in, old_loop_out,
-                        loopSamples.start, loopSamples.end);
-            } else {
-                // Calling scale clears the active beatloop.
-                slotLoopScale(0.5);
-                m_pActiveBeatLoop = m_beatLoops[active_index - 1];
-            }
-        }
+    if (noLoopSet || currentLoopMatchesBeatloopSize()) {
+        slotBeatLoop(m_pCOBeatLoopSize->get() / 2.0, true, false);
     } else {
         slotLoopScale(0.5);
     }
@@ -356,24 +333,10 @@ void LoopingControl::slotLoopDouble(double pressed) {
     }
 
     LoopSamples loopSamples = m_loopSamples.getValue();
-    if (loopSamples.start == kNoTrigger || loopSamples.end == kNoTrigger) {
-        return;
-    }
+    bool noLoopSet = loopSamples.start == kNoTrigger || loopSamples.end == kNoTrigger;
 
-    // If a beatloop is active then double should deactive the current
-    // beatloop and activate the next one.
-    BeatLoopingControl* pActiveBeatLoop = m_pActiveBeatLoop;
-    if (pActiveBeatLoop != nullptr) {
-        int active_index = m_beatLoops.indexOf(pActiveBeatLoop);
-        if (active_index + 1 < m_beatLoops.size()) {
-            if (m_bLoopingEnabled) {
-                slotBeatLoopActivate(m_beatLoops[active_index + 1]);
-            } else {
-                // Calling scale clears the active beatloop.
-                slotLoopScale(2.0);
-                m_pActiveBeatLoop = m_beatLoops[active_index + 1];
-            }
-        }
+    if (noLoopSet || currentLoopMatchesBeatloopSize()) {
+        slotBeatLoop(m_pCOBeatLoopSize->get() * 2.0, true, false);
     } else {
         slotLoopScale(2.0);
     }
