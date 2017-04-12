@@ -32,12 +32,15 @@ class LoopingControlTest : public MockedEngineBackendTest {
         m_pButtonLoopIn = std::make_unique<ControlProxy>(m_sGroup1, "loop_in");
         m_pButtonLoopOut = std::make_unique<ControlProxy>(m_sGroup1, "loop_out");
         m_pButtonLoopExit = std::make_unique<ControlProxy>(m_sGroup1, "loop_exit");
+        m_pButtonReloop = std::make_unique<ControlProxy>(m_sGroup1, "reloop");
+        m_pButtonReloopAndStop = std::make_unique<ControlProxy>(m_sGroup1, "reloop_andstop");
         m_pButtonReloopToggle = std::make_unique<ControlProxy>(m_sGroup1, "reloop_toggle");
         m_pButtonLoopDouble = std::make_unique<ControlProxy>(m_sGroup1, "loop_double");
         m_pButtonLoopHalve = std::make_unique<ControlProxy>(m_sGroup1, "loop_halve");
         m_pLoopEnabled = std::make_unique<ControlProxy>(m_sGroup1, "loop_enabled");
         m_pLoopStartPoint = std::make_unique<ControlProxy>(m_sGroup1, "loop_start_position");
         m_pLoopEndPoint = std::make_unique<ControlProxy>(m_sGroup1, "loop_end_position");
+        m_pButtonPlay = std::make_unique<ControlProxy>(m_sGroup1, "play");
         m_pPlayPosition = std::make_unique<ControlProxy>(m_sGroup1, "playposition");
         m_pButtonBeatMoveForward = std::make_unique<ControlProxy>(m_sGroup1, "loop_move_1_forward");
         m_pButtonBeatMoveBackward = std::make_unique<ControlProxy>(m_sGroup1, "loop_move_1_backward");
@@ -48,6 +51,8 @@ class LoopingControlTest : public MockedEngineBackendTest {
         m_pBeatLoop64Enabled = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_64_enabled");
         m_pBeatLoop = std::make_unique<ControlProxy>(m_sGroup1, "beatloop");
         m_pBeatLoopSize = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_size");
+        m_pButtonBeatLoopDouble = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_double");
+        m_pButtonBeatLoopHalve = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_halve");
         m_pButtonBeatLoopToggle = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_toggle");
     }
 
@@ -68,6 +73,8 @@ class LoopingControlTest : public MockedEngineBackendTest {
     std::unique_ptr<ControlProxy> m_pButtonLoopIn;
     std::unique_ptr<ControlProxy> m_pButtonLoopOut;
     std::unique_ptr<ControlProxy> m_pButtonLoopExit;
+    std::unique_ptr<ControlProxy> m_pButtonReloop;
+    std::unique_ptr<ControlProxy> m_pButtonReloopAndStop;
     std::unique_ptr<ControlProxy> m_pButtonReloopToggle;
     std::unique_ptr<ControlProxy> m_pButtonLoopDouble;
     std::unique_ptr<ControlProxy> m_pButtonLoopHalve;
@@ -75,6 +82,7 @@ class LoopingControlTest : public MockedEngineBackendTest {
     std::unique_ptr<ControlProxy> m_pLoopStartPoint;
     std::unique_ptr<ControlProxy> m_pLoopEndPoint;
     std::unique_ptr<ControlProxy> m_pPlayPosition;
+    std::unique_ptr<ControlProxy> m_pButtonPlay;
     std::unique_ptr<ControlProxy> m_pButtonBeatMoveForward;
     std::unique_ptr<ControlProxy> m_pButtonBeatMoveBackward;
     std::unique_ptr<ControlProxy> m_pButtonBeatLoop2Activate;
@@ -84,6 +92,8 @@ class LoopingControlTest : public MockedEngineBackendTest {
     std::unique_ptr<ControlProxy> m_pBeatLoop64Enabled;
     std::unique_ptr<ControlProxy> m_pBeatLoop;
     std::unique_ptr<ControlProxy> m_pBeatLoopSize;
+    std::unique_ptr<ControlProxy> m_pButtonBeatLoopDouble;
+    std::unique_ptr<ControlProxy> m_pButtonBeatLoopHalve;
     std::unique_ptr<ControlProxy> m_pButtonBeatLoopToggle;
 };
 
@@ -195,6 +205,28 @@ TEST_F(LoopingControlTest, LoopInButton_QuantizeEnabledClosestBeat) {
     EXPECT_EQ(100, m_pLoopStartPoint->get());
 }
 
+TEST_F(LoopingControlTest, LoopInButton_AdjustLoopInPointOutsideLoop) {
+    m_pLoopStartPoint->slotSet(1000);
+    m_pLoopEndPoint->slotSet(2000);
+    m_pButtonReloopToggle->slotSet(1);
+    m_pButtonReloopToggle->slotSet(0);
+    m_pButtonLoopIn->slotSet(1);
+    seekToSampleAndProcess(50);
+    m_pButtonLoopIn->slotSet(0);
+    EXPECT_EQ(50, m_pLoopStartPoint->get());
+}
+
+TEST_F(LoopingControlTest, LoopInButton_AdjustLoopInPointInsideLoop) {
+    m_pLoopStartPoint->slotSet(1000);
+    m_pLoopEndPoint->slotSet(2000);
+    m_pButtonReloopToggle->slotSet(1);
+    m_pButtonReloopToggle->slotSet(0);
+    m_pButtonLoopIn->slotSet(1);
+    seekToSampleAndProcess(1500);
+    m_pButtonLoopIn->slotSet(0);
+    EXPECT_EQ(1500, m_pLoopStartPoint->get());
+}
+
 TEST_F(LoopingControlTest, LoopOutButton_QuantizeDisabled) {
     m_pQuantizeEnabled->set(0);
     m_pClosestBeat->set(1000);
@@ -228,6 +260,29 @@ TEST_F(LoopingControlTest, LoopOutButton_QuantizeEnabledClosestBeat) {
     EXPECT_EQ(1000, m_pLoopEndPoint->get());
 }
 
+TEST_F(LoopingControlTest, LoopOutButton_AdjustLoopOutPointOutsideLoop) {
+    m_pLoopStartPoint->slotSet(1000);
+    m_pLoopEndPoint->slotSet(2000);
+    m_pButtonReloopToggle->slotSet(1);
+    m_pButtonReloopToggle->slotSet(0);
+    m_pButtonLoopOut->slotSet(1);
+    seekToSampleAndProcess(3000);
+    m_pButtonLoopOut->slotSet(0);
+    EXPECT_EQ(3000, m_pLoopEndPoint->get());
+}
+
+TEST_F(LoopingControlTest, LoopOutButton_AdjustLoopOutPointInsideLoop) {
+    m_pLoopStartPoint->slotSet(100);
+    m_pLoopEndPoint->slotSet(2000);
+    m_pButtonReloopToggle->slotSet(1);
+    m_pButtonReloopToggle->slotSet(0);
+    m_pButtonLoopOut->slotSet(1);
+    seekToSampleAndProcess(1500);
+    m_pButtonLoopOut->slotSet(0);
+    EXPECT_EQ(1500, m_pLoopEndPoint->get());
+}
+
+
 TEST_F(LoopingControlTest, ReloopToggleButton_TogglesLoop) {
     m_pQuantizeEnabled->set(0);
     m_pClosestBeat->set(-1);
@@ -257,6 +312,68 @@ TEST_F(LoopingControlTest, ReloopToggleButton_TogglesLoop) {
     m_pButtonLoopExit->slotSet(1);
     m_pButtonLoopExit->slotSet(0);
     EXPECT_FALSE(isLoopEnabled());
+}
+
+TEST_F(LoopingControlTest, ReloopButton_PressedBeforeLoop) {
+    m_pLoopStartPoint->slotSet(1000);
+    m_pLoopEndPoint->slotSet(2000);
+    seekToSampleAndProcess(0);
+
+    m_pButtonReloop->slotSet(1);
+    m_pButtonReloop->slotSet(0);
+    seekToSampleAndProcess(50);
+    EXPECT_LE(m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample(), m_pLoopStartPoint->get());
+}
+
+TEST_F(LoopingControlTest, ReloopButton_PressedAfterLoop) {
+    m_pLoopStartPoint->slotSet(1000);
+    m_pLoopEndPoint->slotSet(2000);
+    seekToSampleAndProcess(3000);
+
+    m_pButtonReloop->slotSet(1);
+    m_pButtonReloop->slotSet(0);
+    ProcessBuffer();
+    EXPECT_EQ(m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample(), m_pLoopStartPoint->get());
+    EXPECT_FALSE(m_pButtonPlay->toBool());
+    EXPECT_TRUE(m_pLoopEnabled->toBool());
+}
+
+TEST_F(LoopingControlTest, ReloopButton_PressedInDisabledLoop) {
+    m_pLoopStartPoint->slotSet(1000);
+    m_pLoopEndPoint->slotSet(2000);
+    seekToSampleAndProcess(1500);
+
+    m_pButtonReloop->slotSet(1);
+    m_pButtonReloop->slotSet(0);
+    ProcessBuffer();
+    EXPECT_EQ(m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample(), 1500);
+    EXPECT_TRUE(m_pLoopEnabled->toBool());
+}
+
+TEST_F(LoopingControlTest, ReloopButton_LoopEnabled) {
+    m_pLoopStartPoint->slotSet(1000);
+    m_pLoopEndPoint->slotSet(2000);
+    seekToSampleAndProcess(1500);
+    m_pButtonReloopToggle->slotSet(1);
+    m_pButtonReloopToggle->slotSet(0);
+    m_pButtonReloop->slotSet(1);
+    m_pButtonReloop->slotSet(0);
+    ProcessBuffer();
+    EXPECT_EQ(m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample(), m_pLoopStartPoint->get());
+    EXPECT_TRUE(m_pLoopEnabled->toBool());
+}
+
+TEST_F(LoopingControlTest, ReloopAndStopButton) {
+    m_pLoopStartPoint->slotSet(1000);
+    m_pLoopEndPoint->slotSet(2000);
+    seekToSampleAndProcess(1500);
+    m_pButtonReloopToggle->slotSet(1);
+    m_pButtonReloopToggle->slotSet(0);
+    m_pButtonReloopAndStop->slotSet(1);
+    m_pButtonReloopAndStop->slotSet(0);
+    ProcessBuffer();
+    EXPECT_EQ(m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample(), m_pLoopStartPoint->get());
+    EXPECT_TRUE(m_pLoopEnabled->toBool());
 }
 
 TEST_F(LoopingControlTest, LoopDoubleButton_DoublesLoop) {

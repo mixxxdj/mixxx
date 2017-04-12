@@ -39,8 +39,6 @@ QList<double> LoopingControl::getBeatSizes() {
 LoopingControl::LoopingControl(QString group,
                                UserSettingsPointer pConfig)
         : EngineControl(group, pConfig) {
-    m_bLoopingEnabled = false;
-    m_bLoopRollActive = false;
     LoopSamples loopSamples = { kNoTrigger, kNoTrigger };
     m_loopSamples.setValue(loopSamples);
     m_iCurrentSample = 0;
@@ -415,8 +413,18 @@ double LoopingControl::process(const double dRate,
         bool outsideLoop = currentSample >= loopSamples.end ||
                            currentSample <= loopSamples.start;
         if (outsideLoop) {
-            retval = reverse ? loopSamples.end : loopSamples.start;
+            if (!m_bCatchLoop && !m_bAdjustingLoopIn && !m_bAdjustingLoopOut) {
+                retval = reverse ? loopSamples.end : loopSamples.start;
+            }
+        } else {
+            m_bCatchLoop = false;
         }
+    }
+
+    if (m_bAdjustingLoopIn) {
+        setLoopInToCurrentPosition();
+    } else if (m_bAdjustingLoopOut) {
+        setLoopOutToCurrentPosition();
     }
 
     return retval;
@@ -432,7 +440,8 @@ double LoopingControl::nextTrigger(const double dRate,
     bool bReverse = dRate < 0;
     LoopSamples loopSamples = m_loopSamples.getValue();
 
-    if (m_bLoopingEnabled) {
+    if (m_bLoopingEnabled && !m_bCatchLoop &&
+            !m_bAdjustingLoopIn && !m_bAdjustingLoopOut) {
         if (bReverse) {
             return loopSamples.start;
         } else {
@@ -452,7 +461,8 @@ double LoopingControl::getTrigger(const double dRate,
     bool bReverse = dRate < 0;
     LoopSamples loopSamples = m_loopSamples.getValue();
 
-    if (m_bLoopingEnabled) {
+    if (m_bLoopingEnabled && !m_bCatchLoop &&
+            !m_bAdjustingLoopIn && !m_bAdjustingLoopOut) {
         if (bReverse) {
             return loopSamples.end;
         } else {
@@ -495,11 +505,7 @@ void LoopingControl::hintReader(HintVector* pHintList) {
     }
 }
 
-void LoopingControl::slotLoopIn(double val) {
-    if (!m_pTrack || val <= 0.0) {
-        return;
-    }
-
+void LoopingControl::setLoopInToCurrentPosition() {
     clearActiveBeatLoop();
 
     // set loop-in position
@@ -549,6 +555,30 @@ void LoopingControl::slotLoopIn(double val) {
     m_pCOBeatLoopSizeIndicator->forceSet(!currentLoopMatchesBeatloopSize());
 }
 
+void LoopingControl::slotLoopIn(double pressed) {
+    if (m_pTrack == nullptr) {
+        return;
+    }
+
+    // If loop is enabled, suspend looping and set the loop in point
+    // when this button is released.
+    if (m_bLoopingEnabled) {
+        if (pressed > 0.0) {
+            m_bAdjustingLoopIn = true;
+            // Adjusting both the in and out point at the same time makes no sense
+            m_bAdjustingLoopOut = false;
+        } else {
+            m_bAdjustingLoopIn = false;
+            setLoopInToCurrentPosition();
+        }
+    } else {
+        if (pressed > 0.0) {
+            setLoopInToCurrentPosition();
+        }
+        m_bAdjustingLoopIn = false;
+    }
+}
+
 void LoopingControl::slotLoopInGoto(double pressed) {
     if (pressed > 0.0) {
         seekAbs(static_cast<double>(
@@ -556,11 +586,7 @@ void LoopingControl::slotLoopInGoto(double pressed) {
     }
 }
 
-void LoopingControl::slotLoopOut(double val) {
-    if (!m_pTrack || val <= 0.0) {
-        return;
-    }
-
+void LoopingControl::setLoopOutToCurrentPosition() {
     LoopSamples loopSamples = m_loopSamples.getValue();
     double closestBeat = -1;
     int pos = m_iCurrentSample;
@@ -612,6 +638,38 @@ void LoopingControl::slotLoopOut(double val) {
     m_pCOBeatLoopSizeIndicator->forceSet(!currentLoopMatchesBeatloopSize());
 }
 
+void LoopingControl::slotLoopOut(double pressed) {
+    if (m_pTrack == nullptr) {
+        return;
+    }
+
+    // If loop is enabled, suspend looping and set the loop out point
+    // when this button is released.
+    if (m_bLoopingEnabled) {
+        if (pressed > 0.0) {
+            m_bAdjustingLoopOut = true;
+            // Adjusting both the in and out point at the same time makes no sense
+            m_bAdjustingLoopIn = false;
+        } else {
+            // If this button was pressed to set the loop out point when loop
+            // was disabled, that will enable looping, so avoid moving the
+            // loop out point when the button is released.
+            if (!m_bLoopOutPressedWhileLoopDisabled) {
+                m_bAdjustingLoopOut = false;
+                setLoopOutToCurrentPosition();
+            } else {
+                m_bLoopOutPressedWhileLoopDisabled = false;
+            }
+        }
+    } else {
+        if (pressed > 0.0) {
+            setLoopOutToCurrentPosition();
+            m_bLoopOutPressedWhileLoopDisabled = true;
+        }
+        m_bAdjustingLoopOut = false;
+    }
+}
+
 void LoopingControl::slotLoopOutGoto(double pressed) {
     if (pressed > 0.0) {
         seekAbs(static_cast<double>(
@@ -638,7 +696,16 @@ void LoopingControl::slotReloop(double pressed) {
     if (m_bLoopingEnabled) {
         slotReloopAndStop(1);
     } else {
-        slotReloopToggle(1);
+        LoopSamples loopSamples = m_loopSamples.getValue();
+        if (loopSamples.start != kNoTrigger && loopSamples.end != kNoTrigger &&
+                loopSamples.start <= loopSamples.end) {
+            if (getCurrentSample() <= loopSamples.end) {
+                m_bCatchLoop = true;
+                setLoopingEnabled(true);
+            } else {
+                slotReloopAndStop(1);
+            }
+        }
     }
 }
 

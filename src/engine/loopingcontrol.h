@@ -59,9 +59,9 @@ class LoopingControl : public EngineControl {
     virtual void notifySeek(double dNewPlaypos);
 
   public slots:
-    void slotLoopIn(double);
+    void slotLoopIn(double pressed);
     void slotLoopInGoto(double);
-    void slotLoopOut(double);
+    void slotLoopOut(double pressed);
     void slotLoopOutGoto(double);
     void slotLoopExit(double);
     void slotReloop(double);
@@ -110,6 +110,8 @@ class LoopingControl : public EngineControl {
     };
 
     void setLoopingEnabled(bool enabled);
+    void setLoopInToCurrentPosition();
+    void setLoopOutToCurrentPosition();
     void clearActiveBeatLoop();
     int calculateEndOfBeatloop(int startSample, double beatloopSizeInBeats);
     bool currentLoopMatchesBeatloopSize();
@@ -139,9 +141,13 @@ class LoopingControl : public EngineControl {
     ControlObject* m_pSlipEnabled;
     ControlObject* m_pPlayButton;
 
-    bool m_bLoopingEnabled;
-    bool m_bLoopRollActive;
-    bool m_bLoopManualTogglePressedToExitLoop;
+    bool m_bLoopingEnabled = false;
+    bool m_bLoopRollActive = false;
+    bool m_bLoopManualTogglePressedToExitLoop = false;
+    bool m_bCatchLoop = false;
+    bool m_bAdjustingLoopIn = false;
+    bool m_bAdjustingLoopOut = false;
+    bool m_bLoopOutPressedWhileLoopDisabled = false;
     // TODO(DSC) Make the following values double
     ControlValueAtomic<LoopSamples> m_loopSamples;
     QAtomicInt m_iCurrentSample;
