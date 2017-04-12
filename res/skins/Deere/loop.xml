@@ -17,6 +17,7 @@
 
       <BeatSpinBox>
         <ObjectName>BeatloopSizeSpinBox</ObjectName>
+        <TooltipId>beatloop_size</TooltipId>
         <Value><Variable name="group"/>,beatloop_size</Value>
       </BeatSpinBox>
 
@@ -51,7 +52,7 @@
               </Template>
 
               <Template src="skin:left_right_1state_button.xml">
-                <SetVariable name="TooltipId">loop_move</SetVariable>
+                <SetVariable name="TooltipId">loop_move_backward</SetVariable>
                 <SetVariable name="ObjectName">LoopMoveButton</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -63,7 +64,7 @@
               </Template>
 
               <Template src="skin:left_right_1state_button.xml">
-                <SetVariable name="TooltipId">loop_move</SetVariable>
+                <SetVariable name="TooltipId">loop_move_forward</SetVariable>
                 <SetVariable name="ObjectName">LoopMoveButton</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -83,7 +84,7 @@
             <Children>
 
               <Template src="skin:left_right_display_2state_button.xml">
-                <SetVariable name="TooltipId">reloop</SetVariable>
+                <SetVariable name="TooltipId">reloop_toggle</SetVariable>
                 <SetVariable name="ObjectName">Reloop</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
