@@ -84,7 +84,6 @@ class LoopingControl : public EngineControl {
     void slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopControl);
     void slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl);
     void slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopControl);
-    void slotLoopManualSet(double pressed);
 
     // Jump forward or backward by beats.
     void slotBeatJump(double beats);
@@ -123,7 +122,6 @@ class LoopingControl : public EngineControl {
 
     ControlPushButton* m_pCOBeatLoopToggle;
     ControlPushButton* m_pCOBeatLoopRollActivate;
-    ControlPushButton* m_pCOLoopManualSet;
     ControlObject* m_pCOLoopStartPosition;
     ControlObject* m_pCOLoopEndPosition;
     ControlObject* m_pCOLoopEnabled;

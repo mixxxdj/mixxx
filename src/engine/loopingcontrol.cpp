@@ -139,10 +139,6 @@ LoopingControl::LoopingControl(QString group,
     connect(m_pCOBeatLoopRollActivate, SIGNAL(valueChanged(double)),
             this, SLOT(slotBeatLoopRollActivate(double)));
 
-    m_pCOLoopManualSet = new ControlPushButton(ConfigKey(group, "loopmanual_set"));
-    connect(m_pCOLoopManualSet, SIGNAL(valueChanged(double)),
-            this, SLOT(slotLoopManualSet(double)));
-
     // Here we create corresponding beatloop_(SIZE) CO's which all call the same
     // BeatControl, but with a set value.
     for (unsigned int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0])); ++i) {
@@ -249,7 +245,6 @@ LoopingControl::~LoopingControl() {
     delete m_pCOBeatLoopHalve;
     delete m_pCOBeatLoopToggle;
     delete m_pCOBeatLoopRollActivate;
-    delete m_pCOLoopManualSet;
 
     delete m_pCOBeatJump;
     delete m_pCOBeatJumpSize;
@@ -1184,25 +1179,6 @@ void LoopingControl::slotBeatLoopRollActivate(double pressed) {
         if (m_bLoopRollActive) {
             m_pSlipEnabled->set(0.0);
             m_bLoopRollActive = false;
-        }
-    }
-}
-
-void LoopingControl::slotLoopManualSet(double pressed) {
-    // If a loop is enabled, disable it. Otherwise, set
-    // loop in point on button down and loop out point on button up.
-    if (m_bLoopingEnabled) {
-        slotReloopToggle(1.0);
-        m_bLoopManualTogglePressedToExitLoop = true;
-    } else {
-        if (pressed > 0.0) {
-            slotLoopIn(1.0);
-        } else {
-            if (m_bLoopManualTogglePressedToExitLoop) {
-                m_bLoopManualTogglePressedToExitLoop = false;
-            } else {
-                slotLoopOut(1.0);
-            }
         }
     }
 }
