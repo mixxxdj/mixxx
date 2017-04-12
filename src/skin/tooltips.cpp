@@ -553,13 +553,21 @@ void Tooltips::addStandardTooltips() {
 
     add("loop_in")
             << tr("Loop-In Marker")
-            << tr("Sets the deck loop-in position to the current play position.")
-            << quantizeSnap;
+            << QString("%1: %2").arg(leftClick + " (" + tr("loop inactive") + ")",
+                      tr("Sets the track Loop-In Marker to the current play position."))
+            << quantizeSnap
+            << QString("%1: %2").arg(leftClick + " (" + tr("loop active") + ")",
+                      tr("Press and hold to move Loop-In Marker."))
+            << QString("%1: %2").arg(rightClick, tr("Jump to Loop-In Marker."));
 
     add("loop_out")
             << tr("Loop-Out Marker")
-            << tr("Sets the deck loop-out position to the current play position.")
-            << quantizeSnap;
+            << QString("%1: %2").arg(leftClick + " (" + tr("loop inactive") + ")",
+                      tr("Sets the track Loop-Out Marker to the current play position."))
+            << quantizeSnap
+            << QString("%1: %2").arg(leftClick + " (" + tr("loop active") + ")",
+                      tr("Press and hold to move Loop-Out Marker."))
+            << QString("%1: %2").arg(rightClick, tr("Jump to Loop-Out Marker."));
 
     add("loop_halve")
             << tr("Loop Halve")
@@ -570,31 +578,62 @@ void Tooltips::addStandardTooltips() {
             << tr("Loop Double")
             << tr("Doubles the current loop's length by moving the end marker.");
 
+    add("beatloop_size")
+            << tr("Beatloop Size")
+            << tr("Select the size of the loop in beats to set with the Beatloop button.")
+            << tr("Changing this resizes the loop if the loop already matches this size.");
+
+    add("beatloop_halve")
+            << tr("Halve the size of an existing beatloop, or halve the size of the next beatloop set with the Beatloop button.");
+
+    add("beatloop_double")
+            << tr("Double the size of an existing beatloop, or double the size of the next beatloop set with the Beatloop button.");
+
     //beatloop and beatlooproll
-    add("beatloop")
+    add("beatloop_toggle")
             << tr("Beatloop")
-            << QString("%1: %2").arg(leftClick, tr("Setup a loop over the set number of beats."))
+            << QString("%1: %2").arg(leftClick, tr("Start a loop over the set number of beats."))
             << quantizeSnap
-            << QString("%1: %2").arg(rightClick, tr("Temporarily setup a rolling loop over the set number of beats."))
+            << QString("%1: %2").arg(rightClick, tr("Temporarily enable a rolling loop over the set number of beats."))
             << tr("Playback will resume where the track would have been if it had not entered the loop.");
 
-    add("beatjump")
-            << tr("Beatjump")
-            << QString("%1: %2").arg(leftClick, tr("Jump forward or backward by the set number of beats."));
+    add("loop_move_forward")
+            << tr("Loop Move Forward")
+            << QString("%1: %2").arg(leftClick, tr("Move the loop forward by 1 beat."))
+            << tr("If the loop is shorter than 1 beat, move the loop forward by its size.")
+            << QString("%1: %2").arg(rightClick, tr("Move the loop forward by its size."));
 
-    add("loop_move")
-            << tr("Loop Move")
-            << QString("%1: %2").arg(leftClick, tr("Adjust the loop in and out points by the set number of beats."));
+    add("loop_move_backward")
+            << tr("Loop Move Backward")
+            << QString("%1: %2").arg(leftClick, tr("Move the loop backward by 1 beat."))
+            << tr("If the loop is shorter than 1 beat, move the loop backward by its size.")
+            << QString("%1: %2").arg(rightClick, tr("Move the loop backward by its size."));
+
+    add("beatjump_size")
+            << tr("Beatjump Size")
+            << tr("Select the number of beats to jump with the Beatjump Forward/Backward buttons.");
+
+    add("beatjump_forward")
+            << tr("Beatjump Forward")
+            << QString("%1: %2").arg(leftClick, tr("Jump forward by the set number of beats."))
+            << QString("%1: %2").arg(rightClick, tr("Jump forward by 1 beat."));
+
+    add("beatjump_backward")
+            << tr("Beatjump Backward")
+            << QString("%1: %2").arg(leftClick, tr("Jump backward by the set number of beats."))
+            << QString("%1: %2").arg(rightClick, tr("Jump backward by 1 beat."));
 
     add("loop_exit")
             << tr("Loop Exit")
             << tr("Turns the current loop off.")
             << tr("Works only if Loop-In and Loop-Out marker are set.");
 
-    add("reloop_exit")
-            << tr("Reloop/Exit")
-            << tr("Toggles the current loop on or off.")
-            << tr("Works only if Loop-In and Loop-Out marker are set.");
+    add("reloop_toggle")
+            << tr("Reloop")
+            << QString("%1: %2").arg(leftClick, tr("Toggles the current loop on or off."))
+            << tr("If the loop is ahead of the current position, looping will start when the loop is reached.")
+            << tr("Works only if Loop-In and Loop-Out Marker are set.")
+            << QString("%1: %2").arg(rightClick, tr("Enable loop, jump to Loop-In Marker, and stop playback."));
 
     add("slip_mode")
             << tr("Slip Mode")
