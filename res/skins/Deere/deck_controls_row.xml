@@ -90,7 +90,7 @@
             <Value><Variable name="group"/>,beatloop_size</Value>
           </BeatSpinBox>
 
-          <Template src="skin:left_right_display_2state_button.xml">
+          <Template src="skin:left_right_2state_button.xml">
             <SetVariable name="TooltipId">beatloop_toggle</SetVariable>
             <SetVariable name="ObjectName">BeatloopToggle</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -104,7 +104,6 @@
             <SetVariable name="state_1_unpressed">icon/ic_loop_48px.svg</SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,beatloop_toggle</SetVariable>
             <SetVariable name="right_connection_control"><Variable name="group"/>,beatlooproll_toggle</SetVariable>
-            <SetVariable name="display_connection_control"><Variable name="group"/>,loop_enabled</SetVariable>
           </Template>
 
           <Template src="skin:left_right_display_2state_button.xml">
@@ -115,9 +114,9 @@
             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
             <SetVariable name="state_0_text">RE</SetVariable>
             <SetVariable name="state_1_text">RE</SetVariable>
-            <SetVariable name="left_connection_control"><Variable name="group"/>,reloop</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,reloop_toggle</SetVariable>
             <SetVariable name="right_connection_control"><Variable name="group"/>,reloop_andstop</SetVariable>
-            <SetVariable name="display_connection_control"><Variable name="group"/>,reloop</SetVariable>
+            <SetVariable name="display_connection_control"><Variable name="group"/>,loop_enabled</SetVariable>
           </Template>
 
           <Template src="skin:spacer_h.xml"/>
