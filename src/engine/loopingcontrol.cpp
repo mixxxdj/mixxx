@@ -126,6 +126,12 @@ LoopingControl::LoopingControl(QString group,
                                           true, false, false, 4.0);
     m_pCOBeatLoopSize->connectValueChangeRequest(this,
             SLOT(slotBeatLoopSizeChangeRequest(double)), Qt::DirectConnection);
+    m_pCOBeatLoopDouble = new ControlPushButton(ConfigKey(group, "beatloop_double"));
+    connect(m_pCOBeatLoopDouble, SIGNAL(valueChanged(double)),
+            this, SLOT(slotBeatLoopDouble(double)));
+    m_pCOBeatLoopHalve = new ControlPushButton(ConfigKey(group, "beatloop_halve"));
+    connect(m_pCOBeatLoopHalve, SIGNAL(valueChanged(double)),
+            this, SLOT(slotBeatLoopHalve(double)));
     m_pCOBeatLoopSizeIndicator = new ControlObject(ConfigKey(group, "beatloop_size_indicator"));
     m_pCOBeatLoopSizeIndicator->setReadOnly();
     m_pCOBeatLoopToggle = new ControlPushButton(ConfigKey(group, "beatloop_toggle"));
@@ -241,6 +247,8 @@ LoopingControl::~LoopingControl() {
         delete pBeatLoop;
     }
     delete m_pCOBeatLoopSize;
+    delete m_pCOBeatLoopDouble;
+    delete m_pCOBeatLoopHalve;
     delete m_pCOBeatLoopToggle;
     delete m_pCOBeatLoopRollActivate;
     delete m_pCOLoopManualSet;
@@ -1061,6 +1069,20 @@ void LoopingControl::slotBeatLoopSizeChangeRequest(double beats) {
     // slotBeatLoop will call m_pCOBeatLoopSize->setAndConfirm if
     // new beatloop_size is valid
     slotBeatLoop(beats, true, false);
+}
+
+void LoopingControl::slotBeatLoopDouble(double pressed) {
+    if (pressed <= 0.0) {
+        return;
+    }
+    slotBeatLoop(m_pCOBeatLoopSize->get() * 2.0, true, false);
+}
+
+void LoopingControl::slotBeatLoopHalve(double pressed) {
+    if (pressed <= 0.0) {
+        return;
+    }
+    slotBeatLoop(m_pCOBeatLoopSize->get() / 2.0, true, false);
 }
 
 void LoopingControl::slotBeatLoopToggle(double pressed) {

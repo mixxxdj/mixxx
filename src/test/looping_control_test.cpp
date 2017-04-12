@@ -662,6 +662,42 @@ TEST_F(LoopingControlTest, BeatLoopSize_ValueChangeDoesNotResizeManualLoop) {
     EXPECT_EQ(oldLoopLength, newLoopLength);
 }
 
+TEST_F(LoopingControlTest, BeatLoopDoubleButton_DoublesBeatloopSize) {
+    m_pTrack1->setBpm(120.0);
+    m_pBeatLoopSize->set(3.0);
+    m_pButtonBeatLoopDouble->set(1.0);
+    m_pButtonBeatLoopDouble->set(0.0);
+    EXPECT_EQ(6.0, m_pBeatLoopSize->get());
+}
+
+TEST_F(LoopingControlTest, BeatLoopDoubleButton_DoublesBeatloopSizeWhenNoLoopIsSet) {
+    m_pTrack1->setBpm(120.0);
+    m_pBeatLoopSize->set(64.0);
+    m_pLoopStartPoint->set(kNoTrigger);
+    m_pLoopEndPoint->set(kNoTrigger);
+    m_pButtonBeatLoopDouble->slotSet(1);
+    m_pButtonBeatLoopDouble->slotSet(0);
+    EXPECT_EQ(128.0, m_pBeatLoopSize->get());
+}
+
+TEST_F(LoopingControlTest, BeatLoopHalveButton_HalvesBeatloopSize) {
+    m_pTrack1->setBpm(120.0);
+    m_pBeatLoopSize->set(6.0);
+    m_pButtonBeatLoopHalve->set(1.0);
+    m_pButtonBeatLoopHalve->set(0.0);
+    EXPECT_EQ(3.0, m_pBeatLoopSize->get());
+}
+
+TEST_F(LoopingControlTest, BeatLoopHalveButton_HalvesBeatloopSizeWhenNoLoopIsSet) {
+    m_pTrack1->setBpm(120.0);
+    m_pBeatLoopSize->set(64.0);
+    m_pLoopStartPoint->set(kNoTrigger);
+    m_pLoopEndPoint->set(kNoTrigger);
+    m_pButtonBeatLoopHalve->slotSet(1);
+    m_pButtonBeatLoopHalve->slotSet(0);
+    EXPECT_EQ(32.0, m_pBeatLoopSize->get());
+}
+
 TEST_F(LoopingControlTest, LegacyBeatLoopControl) {
     m_pTrack1->setBpm(120.0);
     m_pBeatLoop->set(2.0);
