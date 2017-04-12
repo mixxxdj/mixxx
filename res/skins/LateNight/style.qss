@@ -1199,12 +1199,11 @@ QPushButton#LibraryPreviewButton:!checked{ image: url(skin:/style/style_library_
 QPushButton#LibraryPreviewButton:checked{ image: url(skin:/style/style_library_preview_pause.png); }
 
 QHeaderView {
-  font: 13px/15px;
+  font: 10pt;
   color: #cfb32c;
   background-color: #0f0f0f;
 }
 QHeaderView::section {
-  height: 18px;
   border: 1px solid #585858;
   border-left: 0px;
   background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
