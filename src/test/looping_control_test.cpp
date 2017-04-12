@@ -290,7 +290,7 @@ TEST_F(LoopingControlTest, LoopDoubleButton_IgnoresPastTrackEnd) {
     EXPECT_EQ(kTrackLengthSamples, m_pLoopEndPoint->get());
 }
 
-TEST_F(LoopingControlTest, LoopDoubleButton_DoublesBeatloopSize) {
+TEST_F(LoopingControlTest, LoopDoubleButton_DoublesBeatloopSizeForPowerOf2Sizes) {
     m_pTrack1->setBpm(120.0);
     m_pBeatLoopSize->set(16.0);
     m_pButtonBeatLoopToggle->set(1.0);
@@ -298,22 +298,6 @@ TEST_F(LoopingControlTest, LoopDoubleButton_DoublesBeatloopSize) {
     m_pButtonLoopDouble->set(1.0);
     m_pButtonLoopDouble->set(0.0);
     EXPECT_EQ(32.0, m_pBeatLoopSize->get());
-
-    m_pButtonBeatLoopToggle->set(1.0);
-    m_pButtonBeatLoopToggle->set(0.0);
-    m_pButtonLoopDouble->set(1.0);
-    m_pButtonLoopDouble->set(0.0);
-    EXPECT_EQ(64.0, m_pBeatLoopSize->get());
-}
-
-TEST_F(LoopingControlTest, LoopDoubleButton_DoublesBeatloopSizeWhenNoLoopIsSet) {
-    m_pTrack1->setBpm(120.0);
-    m_pBeatLoopSize->set(64.0);
-    m_pLoopStartPoint->set(kNoTrigger);
-    m_pLoopEndPoint->set(kNoTrigger);
-    m_pButtonLoopDouble->slotSet(1);
-    m_pButtonLoopDouble->slotSet(0);
-    EXPECT_EQ(128.0, m_pBeatLoopSize->get());
 }
 
 TEST_F(LoopingControlTest, LoopDoubleButton_DoesNotDoubleBeatloopSizeForManualLoop) {
@@ -345,18 +329,12 @@ TEST_F(LoopingControlTest, LoopDoubleButton_UpdatesNumberedBeatloopActivationCon
 }
 
 TEST_F(LoopingControlTest, LoopHalveButton_HalvesLoop) {
-    seekToSampleAndProcess(0);
-    m_pButtonLoopIn->set(1);
-    m_pButtonLoopIn->set(0);
-    seekToSampleAndProcess(2000);
-    m_pButtonLoopOut->set(1);
-    m_pButtonLoopOut->set(0);
+    m_pLoopStartPoint->slotSet(0);
+    m_pLoopEndPoint->slotSet(2000);
     seekToSampleAndProcess(1800);
     EXPECT_EQ(0, m_pLoopStartPoint->get());
     EXPECT_EQ(2000, m_pLoopEndPoint->get());
     EXPECT_EQ(1800, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
-    m_pButtonReloopToggle->set(1);
-    m_pButtonReloopToggle->set(0);
     EXPECT_FALSE(isLoopEnabled());
     m_pButtonLoopHalve->slotSet(1);
     m_pButtonLoopHalve->slotSet(0);
@@ -392,27 +370,11 @@ TEST_F(LoopingControlTest, LoopHalveButton_IgnoresTooSmall) {
     EXPECT_EQ(40, m_pLoopEndPoint->get());
 }
 
-TEST_F(LoopingControlTest, LoopHalveButton_HalvesBeatloopSize) {
+TEST_F(LoopingControlTest, LoopHalveButton_HalvesBeatloopSizeForPowerOf2Sizes) {
     m_pTrack1->setBpm(120.0);
     m_pBeatLoopSize->set(64.0);
     m_pButtonBeatLoopToggle->set(1.0);
     m_pButtonBeatLoopToggle->set(0.0);
-    m_pButtonLoopHalve->slotSet(1);
-    m_pButtonLoopHalve->slotSet(0);
-    EXPECT_EQ(32.0, m_pBeatLoopSize->get());
-
-    m_pButtonBeatLoopToggle->set(1.0);
-    m_pButtonBeatLoopToggle->set(0.0);
-    m_pButtonLoopHalve->slotSet(1);
-    m_pButtonLoopHalve->slotSet(0);
-    EXPECT_EQ(16.0, m_pBeatLoopSize->get());
-}
-
-TEST_F(LoopingControlTest, LoopHalveButton_HalvesBeatloopSizeWhenNoLoopIsSet) {
-    m_pTrack1->setBpm(120.0);
-    m_pBeatLoopSize->set(64.0);
-    m_pLoopStartPoint->set(kNoTrigger);
-    m_pLoopEndPoint->set(kNoTrigger);
     m_pButtonLoopHalve->slotSet(1);
     m_pButtonLoopHalve->slotSet(0);
     EXPECT_EQ(32.0, m_pBeatLoopSize->get());
@@ -649,7 +611,7 @@ TEST_F(LoopingControlTest, BeatLoopSize_ValueChangeDoesNotActivateLoop) {
     EXPECT_FALSE(m_pBeatLoop4Enabled->toBool());
 }
 
-TEST_F(LoopingControlTest, BeatLoopSize_ValueChangeResizesLoop) {
+TEST_F(LoopingControlTest, BeatLoopSize_ValueChangeResizesBeatLoop) {
     seekToSampleAndProcess(50);
     m_pTrack1->setBpm(160.0);
     m_pBeatLoopSize->set(2.0);

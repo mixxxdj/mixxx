@@ -323,15 +323,33 @@ void LoopingControl::slotLoopHalve(double pressed) {
     }
 
     LoopSamples loopSamples = m_loopSamples.getValue();
-    bool noLoopSet = (loopSamples.start == kNoTrigger) &&
-                     (loopSamples.end == kNoTrigger);
+    if (loopSamples.start == kNoTrigger || loopSamples.end == kNoTrigger) {
+        return;
+    }
 
-    // Halve beatloop_size unless a manual loop has been set
-    // with loop_in, loop_out, or loopmanual_toggle since
-    // loading the track.
-    if (currentLoopMatchesBeatloopSize()
-          || !m_bLoopSetSinceTrackLoaded || noLoopSet) {
-        slotBeatLoop(m_pCOBeatLoopSize->get() / 2.0, true, false);
+    // If a beatloop is active then halve should deactive the current
+    // beatloop and activate the previous one.
+    BeatLoopingControl* pActiveBeatLoop = m_pActiveBeatLoop;
+    if (pActiveBeatLoop != nullptr) {
+        int active_index = m_beatLoops.indexOf(pActiveBeatLoop);
+        if (active_index - 1 >= 0) {
+            if (m_bLoopingEnabled) {
+                // If the current position is outside the range of the new loop,
+                // take the current position and subtract the length of the new loop until
+                // it fits.
+                int old_loop_in = loopSamples.start;
+                int old_loop_out = loopSamples.end;
+                slotBeatLoopActivate(m_beatLoops[active_index - 1]);
+                loopSamples = m_loopSamples.getValue();
+                seekInsideAdjustedLoop(
+                        old_loop_in, old_loop_out,
+                        loopSamples.start, loopSamples.end);
+            } else {
+                // Calling scale clears the active beatloop.
+                slotLoopScale(0.5);
+                m_pActiveBeatLoop = m_beatLoops[active_index - 1];
+            }
+        }
     } else {
         slotLoopScale(0.5);
     }
@@ -343,15 +361,24 @@ void LoopingControl::slotLoopDouble(double pressed) {
     }
 
     LoopSamples loopSamples = m_loopSamples.getValue();
-    bool noLoopSet = (loopSamples.start == kNoTrigger) &&
-                     (loopSamples.end == kNoTrigger);
+    if (loopSamples.start == kNoTrigger || loopSamples.end == kNoTrigger) {
+        return;
+    }
 
-    // Double beatloop_size unless a manual loop has been set
-    // with loop_in, loop_out, or loopmanual_toggle since
-    // loading the track.
-    if (currentLoopMatchesBeatloopSize()
-          || !m_bLoopSetSinceTrackLoaded || noLoopSet) {
-        slotBeatLoop(m_pCOBeatLoopSize->get() * 2.0, true, false);
+    // If a beatloop is active then double should deactive the current
+    // beatloop and activate the next one.
+    BeatLoopingControl* pActiveBeatLoop = m_pActiveBeatLoop;
+    if (pActiveBeatLoop != nullptr) {
+        int active_index = m_beatLoops.indexOf(pActiveBeatLoop);
+        if (active_index + 1 < m_beatLoops.size()) {
+            if (m_bLoopingEnabled) {
+                slotBeatLoopActivate(m_beatLoops[active_index + 1]);
+            } else {
+                // Calling scale clears the active beatloop.
+                slotLoopScale(2.0);
+                m_pActiveBeatLoop = m_beatLoops[active_index + 1];
+            }
+        }
     } else {
         slotLoopScale(2.0);
     }
@@ -511,7 +538,6 @@ void LoopingControl::slotLoopIn(double val) {
     m_loopSamples.setValue(loopSamples);
     //qDebug() << "set loop_in to " << loopSamples.start;
 
-    m_bLoopSetSinceTrackLoaded = true;
     m_pCOBeatLoopSizeIndicator->forceSet(!currentLoopMatchesBeatloopSize());
 }
 
@@ -575,7 +601,6 @@ void LoopingControl::slotLoopOut(double val) {
     }
     //qDebug() << "set loop_out to " << loopSamples.end;
 
-    m_bLoopSetSinceTrackLoaded = true;
     m_pCOBeatLoopSizeIndicator->forceSet(!currentLoopMatchesBeatloopSize());
 }
 
@@ -765,8 +790,6 @@ void LoopingControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack)
         m_pTrack.reset();
         m_pBeats.clear();
     }
-
-    m_bLoopSetSinceTrackLoaded = false;
 }
 
 void LoopingControl::slotUpdatedTrackBeats()
@@ -1031,7 +1054,6 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     if (enable) {
         setLoopingEnabled(true);
     }
-    m_bLoopSetSinceTrackLoaded = true;
     m_pCOBeatLoopSizeIndicator->forceSet(0.0);
 }
 

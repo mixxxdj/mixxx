@@ -140,7 +140,6 @@ class LoopingControl : public EngineControl {
     bool m_bLoopingEnabled;
     bool m_bLoopRollActive;
     bool m_bLoopManualTogglePressedToExitLoop;
-    bool m_bLoopSetSinceTrackLoaded;
     // TODO(DSC) Make the following values double
     ControlValueAtomic<LoopSamples> m_loopSamples;
     QAtomicInt m_iCurrentSample;
