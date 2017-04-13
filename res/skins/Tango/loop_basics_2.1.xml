@@ -85,7 +85,7 @@ Variables:
             <SizePolicy>min,min</SizePolicy>
             <Children>
               <Template src="skin:button_2state_right_display.xml">
-                <SetVariable name="TooltipId">beatloop_toggle_beatlooproll_toggle</SetVariable>
+                <SetVariable name="TooltipId"></SetVariable>
                 <SetVariable name="ObjectName">LoopEnabledbutton</SetVariable>
                 <SetVariable name="Size">35f,22f</SetVariable>
                 <SetVariable name="state_0_pressed">loop_disabled.svg</SetVariable>
@@ -98,7 +98,7 @@ Variables:
               </Template>
                 <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
               <Template src="skin:button_1state_right.xml">
-                <SetVariable name="TooltipId">reloop_reloop_cue</SetVariable>
+                <SetVariable name="TooltipId"></SetVariable>
                 <SetVariable name="ObjectName">ReloopButton</SetVariable>
                 <SetVariable name="Size">34f,22f</SetVariable>
                 <SetVariable name="state_0_pressed">reloop_pressed.svg</SetVariable>

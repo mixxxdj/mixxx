@@ -388,13 +388,11 @@ WPushButton {
     padding: 0px 2px 0px 2px;
     font-size: 16px/16px;
     }
-    #TrackBy {
-      }
-      #TrackBy WLabel {
-        font-size: 16px/16px;
-        text-align: left;
-        color: #888888;
-      }
+    WLabel#TrackBy {
+      font-size: 16px/16px;
+      text-align: left;
+      color: #888888;
+    }
     #TrackArtist {
       font-size: 16px/16px;
       font-weight: bold;

@@ -14,7 +14,7 @@ Variables:
     <SizePolicy>me,me</SizePolicy>
     <Layout>vertical</Layout>
     <Children>
-      
+
       <WidgetGroup><!-- DeckArtistTitle -->
         <ObjectName>DeckArtistTitleLoop</ObjectName>
         <Layout>horizontal</Layout>
@@ -38,7 +38,7 @@ Variables:
                     <Size>1me,22f</Size>
                     <Channel><Variable name="channum"/></Channel>
                   </TrackProperty>
-          
+
                   <NumberPos>
                     <ObjectName>TrackTime</ObjectName>
                     <TooltipId>track_time</TooltipId>
@@ -52,28 +52,19 @@ Variables:
                   </NumberPos>
                 </Children>
               </WidgetGroup><!-- /TitleTimeRow -->
-  
+
               <WidgetGroup><!-- ArtistDurationRow -->
                 <ObjectName>ArtistDurationRow</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
-                  <!--	have to wrap 'by' in an extra WidgetGroup to be able
-                  to color text with qss (TrackBy WLabel).
-                  Otherwise color defaults to Deck# WLabel (deck color) 
-                  -->
-                  <WidgetGroup>
+                  <Label>
                     <ObjectName>TrackBy</ObjectName>
                     <Size>20f,20f</Size>
-                    <Layout>horizontal</Layout>
-                    <Children>
-                      <Label>
-                        <Text>by </Text>
-                        <Alignment>left</Alignment>						
-                      </Label>
-                    </Children>
-                  </WidgetGroup>
-      
+                    <Text>by </Text>
+                    <Alignment>left</Alignment>
+                  </Label>
+
                   <TrackProperty>
                     <ObjectName>TrackArtist</ObjectName>
                     <Elide>right</Elide>
@@ -82,7 +73,7 @@ Variables:
                     <Property>artist</Property>
                     <Channel><Variable name="channum"/></Channel>
                   </TrackProperty>
-      
+
                   <TrackProperty>
                     <ObjectName>TrackDuration</ObjectName>
                     <Size>50f,20f</Size>
@@ -91,14 +82,15 @@ Variables:
                     <Alignment>right</Alignment>
                     <Channel><Variable name="channum"/></Channel>
                   </TrackProperty>
+
                 </Children>
               </WidgetGroup><!-- /ArtistDurationRow -->
-      
+
             </Children>
           </WidgetGroup><!-- Artist & Title rows -->
-      
+
           <Template src="skin:loop_indicator.xml"/>
-  
+
         </Children>
       </WidgetGroup><!-- DeckArtistTitle -->
     </Children>
