@@ -51,9 +51,9 @@
     <SetVariable name="SmallSquareButtonMaximumSize">15,15</SetVariable>
     <SetVariable name="SmallSquareButtonSizePolicy">f,f</SetVariable>
 
-    <SetVariable name="SmallWideButtonMinimumSize">40,20</SetVariable>
-    <SetVariable name="SmallWideButtonMaximumSize">40,20</SetVariable>
-    <SetVariable name="SmallWideButtonSizePolicy">me,me</SetVariable>
+    <SetVariable name="SmallWideButtonMinimumSize">50,20</SetVariable>
+    <SetVariable name="SmallWideButtonMaximumSize">50,20</SetVariable>
+    <SetVariable name="SmallWideButtonSizePolicy">f,f</SetVariable>
 
     <SetVariable name="MinimalControlsButtonMinimumSize">34,22</SetVariable>
     <SetVariable name="MinimalControlsButtonMaximumSize">34,22</SetVariable>

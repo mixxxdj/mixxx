@@ -1,6 +1,6 @@
 <Template>
   <Template src="skin:left_2state_button.xml">
-    <SetVariable name="TooltipId">fxAssignment</SetVariable>
+    <SetVariable name="TooltipId">EffectUnit_<Variable name="SourceType"/>_enabled</SetVariable>
     <SetVariable name="ObjectName">FxAssignmentButton</SetVariable>
     <SetVariable name="MinimumSize"><Variable name="FXAssignmentButtonMinimumSize"/></SetVariable>
     <SetVariable name="MaximumSize"><Variable name="FXAssignmentButtonMaximumSize"/></SetVariable>

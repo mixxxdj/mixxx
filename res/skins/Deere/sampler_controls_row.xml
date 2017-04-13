@@ -209,10 +209,12 @@
 
               <Template src="skin:fx_unit_group_assignment_button.xml">
                 <SetVariable name="EffectUnit">1</SetVariable>
+                <SetVariable name="SourceType">sampler</SetVariable>
               </Template>
 
               <Template src="skin:fx_unit_group_assignment_button.xml">
                 <SetVariable name="EffectUnit">2</SetVariable>
+                <SetVariable name="SourceType">sampler</SetVariable>
               </Template>
 
             </Children>
@@ -302,18 +304,22 @@
           <Children>
             <Template src="skin:fx_unit_group_assignment_button.xml">
               <SetVariable name="EffectUnit">1</SetVariable>
+              <SetVariable name="SourceType">sampler</SetVariable>
             </Template>
 
             <Template src="skin:fx_unit_group_assignment_button.xml">
               <SetVariable name="EffectUnit">2</SetVariable>
+              <SetVariable name="SourceType">sampler</SetVariable>
             </Template>
 
             <Template src="skin:fx_unit_group_assignment_button.xml">
               <SetVariable name="EffectUnit">3</SetVariable>
+              <SetVariable name="SourceType">sampler</SetVariable>
             </Template>
 
             <Template src="skin:fx_unit_group_assignment_button.xml">
               <SetVariable name="EffectUnit">4</SetVariable>
+              <SetVariable name="SourceType">sampler</SetVariable>
             </Template>
           </Children>
           <Connection>
