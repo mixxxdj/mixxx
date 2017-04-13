@@ -6,20 +6,6 @@
     group: the group to connect to
 -->
 <Template>
-  <SingletonDefinition>
-    <ObjectName>SpinnySingleton<Variable name="group"/></ObjectName>
-    <Children>
-      <Spinny>
-        <TooltipId>spinny</TooltipId>
-        <Group><Variable name="group"/></Group>
-        <PathBackground scalemode="STRETCH">image/vinyl_spinny_background.svg</PathBackground>
-        <PathForeground>image/vinyl_spinny_foreground.svg</PathForeground>
-        <PathGhost>image/vinyl_spinny_foreground_ghost.svg</PathGhost>
-        <PathMask>image/vinyl_spinny_cover_mask.svg</PathMask>
-        <ShowCover>true</ShowCover>
-      </Spinny>
-    </Children>
-  </SingletonDefinition>
   <WidgetGroup>
     <ObjectName>VisualRow</ObjectName>
     <Layout>horizontal</Layout>
@@ -28,47 +14,7 @@
 
       <Template src="skin:vinylcontrol.xml"/>
 
-      <WidgetGroup>
-        <ObjectName>SpinnyHolder</ObjectName>
-        <Layout>horizontal</Layout>
-        <SizePolicy>max,max</SizePolicy>
-        <Children>
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <Children>
-              <SingletonContainer>
-                 <ObjectName>SpinnySingleton<Variable name="group"/></ObjectName>
-                 <Size>75f,75f</Size>
-              </SingletonContainer>
-            </Children>
-            <Connection>
-              <ConfigKey>[Master],show_4decks</ConfigKey>
-              <Transform>
-                <Not/>
-              </Transform>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <Children>
-              <SingletonContainer>
-                 <ObjectName>SpinnySingleton<Variable name="group"/></ObjectName>
-                 <Size>55f,55f</Size>
-              </SingletonContainer>
-            </Children>
-            <Connection>
-              <ConfigKey>[Master],show_4decks</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-        </Children>
-        <Connection>
-          <ConfigKey>[Master],show_spinnies</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
+      <Template src="skin:spinny.xml"/>
 
       <Visual>
         <TooltipId>waveform_display</TooltipId>
