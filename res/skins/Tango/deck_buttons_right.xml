@@ -3,6 +3,7 @@ Description:
   Container for deck buttons:
   * Play/Cue
   * HotCues
+  * indicators for assigned effect unit(s)
   * Star rating
   * deck controls
 Variables:
@@ -47,8 +48,21 @@ Variables:
         <Size>1me,24f</Size>
         <Children>
 
-          <!-- Expanding spacer to to push extra deck buttons to the left,
-          since qss Alignment has no effect here. -->
+          <Template src="skin:deck_fx_indicator.xml">
+            <SetVariable name="fx_unit">1</SetVariable>
+          </Template>
+
+          <Template src="skin:deck_fx_indicator.xml">
+            <SetVariable name="fx_unit">2</SetVariable>
+          </Template>
+
+          <Template src="skin:deck_fx_indicator.xml">
+            <SetVariable name="fx_unit">3</SetVariable>
+          </Template>
+
+          <Template src="skin:deck_fx_indicator.xml">
+            <SetVariable name="fx_unit">4</SetVariable>
+          </Template>
 
           <SizeAwareStack><!-- Show Starrating depending on available space -->
             <Children>

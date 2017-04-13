@@ -402,6 +402,11 @@ WPushButton {
       font-size: 13px/15px;
       text-align: right;
       }
+    WLabel#DeckFxIndicator {
+      font-size: 12px/12px;
+      font-weight: bold;
+      color: #FF8F00;
+    }
   #LoopIndicator {
     }
     #LoopIndicator:hover {
