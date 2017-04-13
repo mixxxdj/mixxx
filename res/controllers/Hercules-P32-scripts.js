@@ -335,26 +335,26 @@ P32.Deck = function (deckNumbers, channel) {
                 if (value > 64 && loopSize > 2) { // turn left
                     // Unfortunately, there is no way to show 1 with a dot on the
                     // loop size LED.
-                    engine.setValue(this.group, 'loop_halve', 1);
-                    engine.setValue(this.group, 'loop_halve', 0);
+                    engine.setValue(this.group, 'beatloop_halve', 1);
+                    engine.setValue(this.group, 'beatloop_halve', 0);
                 } else if (value < 64 && loopSize < 32) { // turn right
                     // Mixxx supports loops longer than 32 beats, but there is no way
                     // to show 64 with a dot on the loop size LED.
-                    engine.setValue(this.group, 'loop_double', 1);
-                    engine.setValue(this.group, 'loop_double', 0);
+                    engine.setValue(this.group, 'beatloop_double', 1);
+                    engine.setValue(this.group, 'beatloop_double', 0);
                 }
             } else {
                 if (value > 64 && loopSize > 1/32) { // turn left
                     // Mixxx supports loops shorter than 1/32 beats, but there is no
                     // way to set the loop size LED less than 1/32 (even though it
                     // should be able to show 1/64).
-                    engine.setValue(this.group, 'loop_halve', 1);
-                    engine.setValue(this.group, 'loop_halve', 0);
+                    engine.setValue(this.group, 'beatloop_halve', 1);
+                    engine.setValue(this.group, 'beatloop_halve', 0);
                 } else if (value < 64) { // turn right
                     // Mixxx supports loops longer than 64 beats, but the loop size LED
                     // only has 2 digits, so it couldn't show 128
-                    engine.setValue(this.group, 'loop_double', 1);
-                    engine.setValue(this.group, 'loop_double', 0);
+                    engine.setValue(this.group, 'beatloop_double', 1);
+                    engine.setValue(this.group, 'beatloop_double', 0);
                 }
             }
         },
@@ -399,7 +399,11 @@ P32.Deck = function (deckNumbers, channel) {
     };
 
     this.loopEncoderShiftPress = function (channel, control, value, status, group) {
-        engine.setValue(this.currentDeck, 'reloop', value / 127);
+        if (engine.getValue(this.currentDeck, 'loop_enabled') === 1) {
+            engine.setValue(this.currentDeck, 'reloop_andstop', value / 127);
+        } else {
+            engine.setValue(this.currentDeck, 'reloop_toggle', value / 127);
+        }
     };
 
     this.tempoEncoder = function (channel, control, value, status, group) {

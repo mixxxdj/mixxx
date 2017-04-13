@@ -1171,7 +1171,7 @@
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.loopEncoderShiftPress</key>
                 <status>0x95</status>
-                <midino>0x01</midino>
+                <midino>0x02</midino>
                 <options>
                     <script-binding/>
                 </options>
