@@ -33,44 +33,15 @@ Variables:
             <Size>250me,111f</Size>
             <Children>
 
-              <Template src="skin:deck_overview_left.xml">
-                <SetVariable name="SignalBgColor"><Variable name="SignalBgColor"/></SetVariable>
-                <SetVariable name="SignalColor"><Variable name="SignalColor"/></SetVariable>
-              </Template>
-
-              <!--	Additional line to display comments from file tag/library column.
-              Useful to explain hotcues, loop, Ins & Outs for live sets etc.
-              Deprecated as soon as HotCue labels are easily editable -->
-              <WidgetGroup>
-                <ObjectName>TrackComment</ObjectName>
-                <Layout>vertical</Layout>
-                <Size>1me,17f</Size>
-                <Children>
-                  <TrackProperty>
-                    <SizePolicy>i,p</SizePolicy>
-                    <Property>comment</Property>
-                    <Elide>right</Elide>
-                    <Channel><Variable name="channum"/></Channel>
-                  </TrackProperty>
-                  <WidgetGroup>
-                    <ObjectName>Spacer0f</ObjectName>
-                    <Size>1me,1f</Size>
-                    <Children/>
-                  </WidgetGroup>
-                </Children>
-                <Connection>
-                  <ConfigKey persist="true">[Tango],trackComment</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup><!-- /Track Comment -->
-
-              <Template src="skin:deck_artist_title_left.xml"/><!-- = 20min + 20min -->
+              <Template src="skin:deck_overview_left.xml"/>
+              <Template src="skin:deck_comment_left.xml"/>
+              <Template src="skin:deck_artist_title_left.xml"/>
 
             </Children>
           </WidgetGroup><!-- /Overview, Comment, ArtistTitle -->
 
-          <Template src="skin:deck_buttons_left.xml" /><!-- 50+1 -->
-          <Template src="skin:deck_loop_beatjump_left.xml"/><!-- 24f -->
+          <Template src="skin:deck_buttons_left.xml" />
+          <Template src="skin:deck_loop_beatjump_left.xml"/>
 
         </Children>
       </WidgetGroup><!-- / [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->

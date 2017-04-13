@@ -1,0 +1,85 @@
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+      <WidgetGroup><!-- FX indicators when track comment is hidden -->
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,p</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>Spacer33</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+            <Children/>
+          </WidgetGroup>
+          <Template src="skin:deck_fx_indicator.xml">
+            <SetVariable name="fx_unit">4</SetVariable>
+          </Template>
+          <Template src="skin:deck_fx_indicator.xml">
+            <SetVariable name="fx_unit">3</SetVariable>
+          </Template>
+          <Template src="skin:deck_fx_indicator.xml">
+            <SetVariable name="fx_unit">2</SetVariable>
+          </Template>
+          <Template src="skin:deck_fx_indicator.xml">
+            <SetVariable name="fx_unit">1</SetVariable>
+          </Template>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Tango],trackComment</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /FX indicators when track comment is hidden -->
+
+      <WidgetGroup><!-- Track comment + FX indicators -->
+        <ObjectName>Spacer33</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>i,min</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <!--	Additional line to display comments from file tag.
+              Useful to explain hotcues, loop, Ins & Outs for live sets etc.
+              Deprecated as soon as HotCue labels are easily editable -->
+              <TrackProperty>
+                <ObjectName>TrackComment</ObjectName>
+                <Size>1me,16f</Size>
+                <Property>comment</Property>
+                <Elide>right</Elide>
+                <Channel><Variable name="channum"/></Channel>
+              </TrackProperty>
+
+              <Template src="skin:deck_fx_indicator.xml">
+                <SetVariable name="fx_unit">4</SetVariable>
+              </Template>
+              <Template src="skin:deck_fx_indicator.xml">
+                <SetVariable name="fx_unit">3</SetVariable>
+              </Template>
+              <Template src="skin:deck_fx_indicator.xml">
+                <SetVariable name="fx_unit">2</SetVariable>
+              </Template>
+              <Template src="skin:deck_fx_indicator.xml">
+                <SetVariable name="fx_unit">1</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>Spacer0f</ObjectName>
+            <Size>1me,1f</Size>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Tango],trackComment</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Track comment + FX indicators -->
+
+    </Children>
+  </WidgetGroup>
+</Template>

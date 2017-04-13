@@ -48,22 +48,6 @@ Variables:
         <Size>1me,24f</Size>
         <Children>
 
-          <Template src="skin:deck_fx_indicator.xml">
-            <SetVariable name="fx_unit">1</SetVariable>
-          </Template>
-
-          <Template src="skin:deck_fx_indicator.xml">
-            <SetVariable name="fx_unit">2</SetVariable>
-          </Template>
-
-          <Template src="skin:deck_fx_indicator.xml">
-            <SetVariable name="fx_unit">3</SetVariable>
-          </Template>
-
-          <Template src="skin:deck_fx_indicator.xml">
-            <SetVariable name="fx_unit">4</SetVariable>
-          </Template>
-
           <SizeAwareStack><!-- Show Starrating depending on available space -->
             <Children>
               <!-- when there is not enough space for stars (max 82px) show spacer. -->

@@ -9,7 +9,7 @@ Variables:
 <Template>
   <Label>
     <ObjectName>DeckFxIndicator</ObjectName>
-    <Size>25f,20f</Size>
+    <Size>24f,12f</Size>
     <Text>FX<Variable name="fx_unit"/></Text>
     <Alignment>center</Alignment>
     <Connection>

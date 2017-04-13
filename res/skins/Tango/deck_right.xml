@@ -138,33 +138,7 @@ Variables:
             <Children>
 
               <Template src="skin:deck_overview_right.xml"/>
-
-              <!--	Additional line to display comments from file tag/library column.
-              Useful to explain hotcues, loop, Ins & Outs for live sets etc.
-              Deprecated as soon as HotCue labels are easily editable -->
-              <WidgetGroup>
-                <ObjectName>TrackComment</ObjectName>
-                <Layout>vertical</Layout>
-                <Size>1me,17f</Size>
-                <Children>
-                  <TrackProperty>
-                    <SizePolicy>i,p</SizePolicy>
-                    <Property>comment</Property>
-                    <Elide>right</Elide>
-                    <Channel><Variable name="channum"/></Channel>
-                  </TrackProperty>
-                  <WidgetGroup>
-                    <ObjectName>Spacer0f</ObjectName>
-                    <Size>1me,1f</Size>
-                    <Children/>
-                  </WidgetGroup>
-                </Children>
-                <Connection>
-                  <ConfigKey persist="true">[Tango],trackComment</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup><!-- /Track Comment -->
-
+              <Template src="skin:deck_comment_right.xml"/>
               <Template src="skin:deck_artist_title_right.xml"/>
 
             </Children>
@@ -181,31 +155,8 @@ Variables:
             <Children>
 
               <Template src="skin:deck_artist_title_right.xml"/>
-
               <Template src="skin:deck_overview_right.xml"/>
-
-              <!--	Additional line to display comments from file tag/library column.
-              Useful to explain hotcues, loop, Ins & Outs for live sets etc.
-              Deprecated as soon as HotCue labels are easily editable -->
-              <WidgetGroup>
-                <ObjectName>TrackComment</ObjectName>
-                <Layout>vertical</Layout>
-                <Size>1me,16f</Size>
-                <Children>
-                  <TrackProperty>
-                    <SizePolicy>i,p</SizePolicy>
-                    <Property>comment</Property>
-                    <Elide>right</Elide>
-                    <Channel><Variable name="channum"/></Channel>
-                  </TrackProperty>
-                  <!-- This has to be here so that Comment expands horizontally as well -->
-                  <WidgetGroup><Size>1me,0f</Size></WidgetGroup>
-                </Children>
-                <Connection>
-                  <ConfigKey persist="true">[Tango],trackComment</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup><!-- /Track Comment -->
+              <Template src="skin:deck_comment_right.xml"/>
 
             </Children>
             <Connection>

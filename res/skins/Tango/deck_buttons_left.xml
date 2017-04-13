@@ -144,23 +144,7 @@ Variables:
 
           <!-- Expanding spacer to to push extra deck buttons to the left,
           since qss Alignment has no effect here. -->
-          <WidgetGroup><Size>1me,1min</Size><Children/></WidgetGroup>
-
-          <Template src="skin:deck_fx_indicator.xml">
-            <SetVariable name="fx_unit">1</SetVariable>
-          </Template>
-
-          <Template src="skin:deck_fx_indicator.xml">
-            <SetVariable name="fx_unit">2</SetVariable>
-          </Template>
-
-          <Template src="skin:deck_fx_indicator.xml">
-            <SetVariable name="fx_unit">3</SetVariable>
-          </Template>
-
-          <Template src="skin:deck_fx_indicator.xml">
-            <SetVariable name="fx_unit">4</SetVariable>
-          </Template>
+          <WidgetGroup><Size>1me,1min</Size><Children/></WidgetGroup>>
 
         </Children>
       </WidgetGroup><!-- /Deck Buttons -->
