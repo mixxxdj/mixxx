@@ -21,11 +21,13 @@
             <Layout>vertical</Layout>
             <Children>
 
+              <!-- 2 decks stacked no QuickEffect -->
               <Splitter>
                 <ObjectName>DeckSplitter</ObjectName>
                 <Orientation>vertical</Orientation>
                 <Size>-1me,-1me</Size>
-                <SplitSizesConfigKey>[Deere],DeckSplitterStackedWaveforms2NoQE</SplitSizesConfigKey>
+                <SplitSizesConfigKey>[Deere],WaveformSplitter2DecksNoQE</SplitSizesConfigKey>
+                <SplitSizes>166,230</SplitSizes>
                 <Children>
                   <WidgetGroup>
                     <ObjectName>StackedWaveformsContainer</ObjectName>
@@ -63,31 +65,17 @@
             </Connection>
           </WidgetGroup>
 
+          <!-- 2 decks split no QuickEffect -->
           <WidgetGroup>
             <Layout>vertical</Layout>
+            <ObjectName>DeckSplitter</ObjectName>
+            <Orientation>vertical</Orientation>
+            <Size>-1,155max</Size>
+            <MaximumSize>-1,330</MaximumSize>
             <Children>
-
-              <Splitter>
-                <ObjectName>DeckSplitter</ObjectName>
-                <Orientation>vertical</Orientation>
-                <Size>-1me,-1me</Size>
-                <SplitSizesConfigKey>[Deere],DeckSplitterSplitWaveforms2NoQE</SplitSizesConfigKey>
-                <Children>
-
-                  <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <Size>-1,155max</Size>
-                    <MaximumSize>-1,330</MaximumSize>
-                    <Children>
-                      <SingletonContainer>
-                        <ObjectName>DecksMixerSingleton</ObjectName>
-                      </SingletonContainer>
-                    </Children>
-                  </WidgetGroup>
-
-                </Children>
-              </Splitter>
-
+              <SingletonContainer>
+                <ObjectName>DecksMixerSingleton</ObjectName>
+              </SingletonContainer>
             </Children>
             <Connection>
               <ConfigKey>[Deere],show_stacked_waveforms</ConfigKey>
@@ -117,11 +105,13 @@
             <Layout>vertical</Layout>
             <Children>
 
+              <!-- 2 decks stacked with QuickEffect -->
               <Splitter>
                 <ObjectName>DeckSplitter</ObjectName>
                 <Orientation>vertical</Orientation>
                 <Size>-1me,-1me</Size>
-                <SplitSizesConfigKey>[Deere],DeckSplitterStackedWaveforms2YesQE</SplitSizesConfigKey>
+                <SplitSizesConfigKey>[Deere],WaveformSplitter2DecksWithQE</SplitSizesConfigKey>
+                <SplitSizes>158,230</SplitSizes>
                 <Children>
                   <WidgetGroup>
                     <ObjectName>StackedWaveformsContainer</ObjectName>
@@ -159,31 +149,15 @@
             </Connection>
           </WidgetGroup>
 
+          <!-- 2 decks split with QuickEffect -->
           <WidgetGroup>
             <Layout>vertical</Layout>
+            <Size>-1,160max</Size>
+            <MaximumSize>-1,260</MaximumSize>
             <Children>
-
-              <Splitter>
-                <ObjectName>DeckSplitter</ObjectName>
-                <Orientation>vertical</Orientation>
-                <Size>-1me,-1me</Size>
-                <SplitSizesConfigKey>[Deere],DeckSplitterSplitWaveforms2YesQE</SplitSizesConfigKey>
-                <Children>
-
-                  <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <Size>-1,160max</Size>
-                    <MaximumSize>-1,260</MaximumSize>
-                    <Children>
-                      <SingletonContainer>
-                        <ObjectName>DecksMixerSingleton</ObjectName>
-                      </SingletonContainer>
-                    </Children>
-                  </WidgetGroup>
-
-                </Children>
-              </Splitter>
-
+              <SingletonContainer>
+                <ObjectName>DecksMixerSingleton</ObjectName>
+              </SingletonContainer>
             </Children>
             <Connection>
               <ConfigKey>[Deere],show_stacked_waveforms</ConfigKey>
@@ -227,14 +201,14 @@
             <Layout>vertical</Layout>
             <Children>
 
+              <!-- 4 decks stacked no QuickEffect -->
               <Splitter>
                 <ObjectName>DeckSplitter</ObjectName>
                 <Orientation>vertical</Orientation>
                 <Size>-1me,-1me</Size>
-                <SplitSizesConfigKey>[Deere],DeckSplitterStackedWaveforms4NoQE</SplitSizesConfigKey>
-                <SplitSizes>2,8</SplitSizes>
+                <SplitSizesConfigKey>[Deere],WaveformSplitter4DecksNoQE</SplitSizesConfigKey>
+                <SplitSizes>220,362</SplitSizes>
                 <Children>
-                  <!-- Is displayed if the stacked waveforms option is activated in the skin settings -->
                   <WidgetGroup>
                     <ObjectName>StackedWaveformsContainer</ObjectName>
                     <Layout>vertical</Layout>
@@ -277,30 +251,15 @@
             </Connection>
           </WidgetGroup>
 
+          <!-- 4 decks split no QuickEffect -->
           <WidgetGroup>
             <Layout>vertical</Layout>
+            <Size>-1me,-1me</Size>
+            <MaximumSize>-1,630</MaximumSize>
             <Children>
-
-              <Splitter>
-                <ObjectName>DeckSplitter</ObjectName>
-                <Orientation>vertical</Orientation>
-                <Size>-1me,-1me</Size>
-                <SplitSizesConfigKey>[Deere],DeckSplitterSplitWaveforms4NoQE</SplitSizesConfigKey>
-                <Children>
-
-                  <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <MaximumSize>-1,630</MaximumSize>
-                    <Children>
-                      <SingletonContainer>
-                        <ObjectName>DecksMixerSingleton</ObjectName>
-                      </SingletonContainer>
-                    </Children>
-                  </WidgetGroup>
-
-                </Children>
-              </Splitter>
-
+              <SingletonContainer>
+                <ObjectName>DecksMixerSingleton</ObjectName>
+              </SingletonContainer>
             </Children>
             <Connection>
               <ConfigKey>[Deere],show_stacked_waveforms</ConfigKey>
@@ -329,14 +288,14 @@
             <Layout>vertical</Layout>
             <Children>
 
+              <!-- 4 decks stacked with QuickEffect -->
               <Splitter>
                 <ObjectName>DeckSplitter</ObjectName>
                 <Orientation>vertical</Orientation>
                 <Size>-1me,-1me</Size>
-                <SplitSizesConfigKey>[Deere],DeckSplitterStackedWaveforms4YesQE</SplitSizesConfigKey>
-                <SplitSizes>2,8</SplitSizes>
+                <SplitSizesConfigKey>[Deere],WaveformSplitter4DecksWithQE</SplitSizesConfigKey>
+                <SplitSizes>149,350</SplitSizes>
                 <Children>
-                  <!-- Is displayed if the stacked waveforms option is activated in the skin settings -->
                   <WidgetGroup>
                     <ObjectName>StackedWaveformsContainer</ObjectName>
                     <Layout>vertical</Layout>
@@ -379,30 +338,14 @@
             </Connection>
           </WidgetGroup>
 
+          <!-- 4 decks split with QuickEffect -->
           <WidgetGroup>
             <Layout>vertical</Layout>
+            <MaximumSize>-1,630</MaximumSize>
             <Children>
-
-              <Splitter>
-                <ObjectName>DeckSplitter</ObjectName>
-                <Orientation>vertical</Orientation>
-                <Size>-1me,-1me</Size>
-                <SplitSizesConfigKey>[Deere],DeckSplitterSplitWaveforms4YesQE</SplitSizesConfigKey>
-                <Children>
-
-                  <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <MaximumSize>-1,630</MaximumSize>
-                    <Children>
-                      <SingletonContainer>
-                        <ObjectName>DecksMixerSingleton</ObjectName>
-                      </SingletonContainer>
-                    </Children>
-                  </WidgetGroup>
-
-                </Children>
-              </Splitter>
-
+              <SingletonContainer>
+                <ObjectName>DecksMixerSingleton</ObjectName>
+              </SingletonContainer>
             </Children>
             <Connection>
               <ConfigKey>[Deere],show_stacked_waveforms</ConfigKey>
