@@ -323,12 +323,18 @@
         shift: function () {
             if (this.relative) {
                 this.input = function (channel, control, value, status, group) {
+                    if (this.MSB !== undefined) {
+                        value = this.MSB << 7 + value;
+                    }
                     this.previousValueReceived = value;
                 }
             }
         },
         unshift: function () {
             this.input = function (channel, control, value, status, group) {
+                if (this.MSB !== undefined) {
+                    value = this.MSB << 7 + value;
+                }
                 if (this.relative) {
                     if (this.previousValueReceived !== undefined) {
                         var delta = (value - this.previousValueReceived) / this.max;
@@ -346,6 +352,23 @@
                         this.connect();
                     }
                 }
+            }
+        },
+        // Input handlers for 14 bit MIDI
+        inputMSB: function (channel, control, value, status, group) {
+            // For the first messages, disregard the LSB in case
+            // the first LSB is received after the first MSB.
+            if (this.MSB === undefined) {
+                this.max = 127;
+                this.input(channel, control, value, status, group);
+                this.max = 16383;
+            }
+            this.MSB = value;
+        },
+        inputLSB: function (channel, control, value, status, group) {
+            // Make sure the first MSB has been received
+            if (this.MSB !== undefined) {
+                this.input(channel, control, value, status, group);
             }
         },
         connect: function () {
