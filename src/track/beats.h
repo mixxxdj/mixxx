@@ -107,28 +107,26 @@ class Beats {
     // Find the sample N beats away from dSample. The number of beats may be
     // negative and does not need to be an integer.
     inline double findNBeatsFromSample(double dSample, double beats) const {
-        int fullBeats = static_cast<int>(beats);
-        double fracBeats = beats - static_cast<double>(fullBeats);
-
-
         double endSample = dSample;
-        // Add the length between this beat and the fullbeats'th beat to the
-        // end position
+        double thisBeat = 0.0, nthBeat = 0.0;
+        int fullBeats = static_cast<int>(beats);
+        // Add the length between this beat and the fullbeats'th beat
+        // to the end position
         if (beats > 0) {
-            double thisBeat = findNthBeat(dSample, 1);
-            double nthBeat = findNthBeat(dSample, fullBeats + 1);
-            endSample += (nthBeat - thisBeat);
+            thisBeat = findNthBeat(dSample, 1);
+            nthBeat = findNthBeat(dSample, fullBeats + 1);
         } else if (beats < 0) {
-            double thisBeat = findNthBeat(dSample, -1);
-            double nthBeat = findNthBeat(dSample, fullBeats - 1);
-            endSample -= (thisBeat - nthBeat);
+            thisBeat = findNthBeat(dSample, -1);
+            nthBeat = findNthBeat(dSample, fullBeats - 1);
         }
+        endSample += nthBeat - thisBeat;
 
         // Add the fraction of the beat
-        if (fracBeats != 0) {
+        double fractionBeats = beats - static_cast<double>(fullBeats);
+        if (fractionBeats != 0) {
             double endNextBeat, endPrevBeat;
             findPrevNextBeats(endSample, &endPrevBeat, &endNextBeat);
-            endSample += (endNextBeat - endPrevBeat) * fracBeats;
+            endSample += (endNextBeat - endPrevBeat) * fractionBeats;
         }
 
         return endSample;
