@@ -856,59 +856,20 @@ void LoopingControl::clearActiveBeatLoop() {
 }
 
 bool LoopingControl::currentLoopMatchesBeatloopSize() {
-    // Calculate actual loop length in samples
-    LoopSamples loopSamples = m_loopSamples.getValue();
-    int currentLoopLength = loopSamples.end - loopSamples.start;
-
-    // Calculate what the loop size would be (in samples) if it is a beatloop
-    double beatloopSize = m_pCOBeatLoopSize->get();
-    int beatLoopLength = calculateEndOfBeatloop(loopSamples.start, beatloopSize)
-                         - loopSamples.start;
-
-    // qDebug() << "LoopingControl::currentLoopMatchesBeatloopSize" << currentLoopLength << beatLoopLength;
-
-    // calculateEndOfBeatloop will round to the nearest even sample, so allow
-    // 2 samples of wiggle room.
-    return abs(currentLoopLength - beatLoopLength) <= 2;
-}
-
-int LoopingControl::calculateEndOfBeatloop(int startSample, double beatloopSizeInBeats) {
     if (m_pBeats == nullptr) {
-        return kNoTrigger;
+        return false;
     }
 
-    int fullbeats = static_cast<int>(beatloopSizeInBeats);
-    double fracbeats = beatloopSizeInBeats - static_cast<double>(fullbeats);
+    LoopSamples loopSamples = m_loopSamples.getValue();
 
-    // Now we need to calculate the length of the beatloop. We do this by
-    // taking the current beat and the fullbeats'th beat and adding the
-    // distance between them.
-    int endSample = startSample;
-
-    if (fullbeats > 0) {
-        // Add the length between this beat and the fullbeats'th beat to the
-        // loop_out position;
-        // TODO: figure out how to convert this to a findPrevNext call.
-        double this_beat = m_pBeats->findNthBeat(startSample, 1);
-        double nth_beat = m_pBeats->findNthBeat(startSample, 1 + fullbeats);
-        endSample += (nth_beat - this_beat);
+    // Calculate where the loop out point would be if it is a beatloop
+    int beatLoopOutPoint =
+        m_pBeats->findNBeatsFromSample(loopSamples.start, m_pCOBeatLoopSize->get());
+    if (!even(beatLoopOutPoint)) {
+        beatLoopOutPoint--;
     }
 
-    if (fracbeats > 0) {
-        // Add the fraction of the beat following the current loop_out
-        // position to loop out.
-        // TODO: figure out how to convert this to a findPrevNext call.
-        double loop_out_beat = m_pBeats->findNthBeat(endSample, 1);
-        double loop_out_next_beat = m_pBeats->findNthBeat(endSample, 2);
-        endSample += (loop_out_next_beat - loop_out_beat) * fracbeats;
-    }
-
-    if (!even(endSample)) {
-        endSample--;
-    }
-
-    // qDebug() << "LoopingControl::calculateEndOfBeatloop" << startSample << endSample << beatloopSize;
-    return endSample;
+    return loopSamples.end == beatLoopOutPoint;
 }
 
 void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable) {
@@ -983,7 +944,10 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         newloopSamples.start--;
     }
 
-    newloopSamples.end = calculateEndOfBeatloop(newloopSamples.start, beats);
+    newloopSamples.end = m_pBeats->findNBeatsFromSample(newloopSamples.start, beats);
+    if (!even(newloopSamples.end)) {
+        newloopSamples.end--;
+    }
 
     if (newloopSamples.start == newloopSamples.end) {
         if ((newloopSamples.end + 2) > samples) {
@@ -1000,7 +964,9 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         // the end of the track, let beatloop_size be set to
         // a smaller size, but not get larger.
         double previousBeatloopSize = m_pCOBeatLoopSize->get();
-        if (calculateEndOfBeatloop(newloopSamples.start, previousBeatloopSize) > samples
+        double previousBeatloopOutPoint =
+            m_pBeats->findNBeatsFromSample(newloopSamples.start, previousBeatloopSize);
+        if (previousBeatloopOutPoint < newloopSamples.start
                 && beats < previousBeatloopSize) {
             m_pCOBeatLoopSize->setAndConfirm(beats);
         }
@@ -1132,12 +1098,7 @@ void LoopingControl::slotBeatJump(double beats) {
         m_pCOBeatJumpSize->set(abs(beats));
     }
 
-    double dPosition = getCurrentSample();
-    double dBeatLength;
-    if (BpmControl::getBeatContext(m_pBeats, dPosition,
-                                   NULL, NULL, &dBeatLength, NULL)) {
-        seekAbs(dPosition + beats * dBeatLength);
-    }
+    seekAbs(m_pBeats->findNBeatsFromSample(getCurrentSample(), beats));
 }
 
 void LoopingControl::slotBeatJumpForward(double pressed) {
@@ -1153,7 +1114,7 @@ void LoopingControl::slotBeatJumpBackward(double pressed) {
 }
 
 void LoopingControl::slotLoopMove(double beats) {
-    if (!m_pTrack || !m_pBeats) {
+    if (m_pTrack == nullptr || m_pBeats == nullptr || beats == 0) {
         return;
     }
     LoopSamples loopSamples = m_loopSamples.getValue();
@@ -1161,14 +1122,12 @@ void LoopingControl::slotLoopMove(double beats) {
         return;
     }
 
-    double dPosition = getCurrentSample();
-    double dBeatLength;
-    if (BpmControl::getBeatContext(m_pBeats, dPosition,
-                                   NULL, NULL, &dBeatLength, NULL)) {
+    if (BpmControl::getBeatContext(m_pBeats, getCurrentSample(),
+                                   nullptr, nullptr, nullptr, nullptr)) {
         int old_loop_in = loopSamples.start;
         int old_loop_out = loopSamples.end;
-        int new_loop_in = old_loop_in + (beats * dBeatLength);
-        int new_loop_out = old_loop_out + (beats * dBeatLength);
+        int new_loop_in = m_pBeats->findNBeatsFromSample(old_loop_in, beats);
+        int new_loop_out = m_pBeats->findNBeatsFromSample(old_loop_out, beats);
         if (!even(new_loop_in)) {
             --new_loop_in;
         }

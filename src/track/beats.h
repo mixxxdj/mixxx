@@ -104,6 +104,36 @@ class Beats {
     // then dSamples is returned. If no beat can be found, returns -1.
     virtual double findNthBeat(double dSamples, int n) const = 0;
 
+    // Find the sample N beats away from dSample. The number of beats may be
+    // negative and does not need to be an integer.
+    inline double findNBeatsFromSample(double dSample, double beats) const {
+        int fullBeats = static_cast<int>(beats);
+        double fracBeats = beats - static_cast<double>(fullBeats);
+
+
+        double endSample = dSample;
+        // Add the length between this beat and the fullbeats'th beat to the
+        // end position
+        if (beats > 0) {
+            double thisBeat = findNthBeat(dSample, 1);
+            double nthBeat = findNthBeat(dSample, fullBeats + 1);
+            endSample += (nthBeat - thisBeat);
+        } else if (beats < 0) {
+            double thisBeat = findNthBeat(dSample, -1);
+            double nthBeat = findNthBeat(dSample, fullBeats - 1);
+            endSample -= (thisBeat - nthBeat);
+        }
+
+        // Add the fraction of the beat
+        if (fracBeats != 0) {
+            double endNextBeat, endPrevBeat;
+            findPrevNextBeats(endSample, &endPrevBeat, &endNextBeat);
+            endSample += (endNextBeat - endPrevBeat) * fracBeats;
+        }
+
+        return endSample;
+    };
+
     // Adds to pBeatsList the position in samples of every beat occuring between
     // startPosition and endPosition. BeatIterator must be iterated while
     // holding a strong references to the Beats object to ensure that the Beats
