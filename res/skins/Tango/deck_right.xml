@@ -31,7 +31,7 @@ Variables:
             <Children>
 
               <!-- Pitch slider & Key controls -->
-              <Template src="skin:pitch_key.xml"/>
+              <Template src="skin:rate_pitch_key.xml"/>
 			
               <WidgetGroup>
                 <Size>3f,1me</Size>

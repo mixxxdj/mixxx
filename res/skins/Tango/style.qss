@@ -647,9 +647,6 @@ WBeatSpinBox {
   text-align: center;
   padding-top: 1px;
   }
-  #SyncButtonOverlay, #KeyReset,
-  #KeyUp, #KeyDown {
-  }
   #SyncButtonOverlay[displayValue="0"]:hover, #KeyReset:hover {
     border: 1px solid #ff4800;
   }
@@ -663,11 +660,9 @@ WBeatSpinBox {
     border: 1px solid #eeeeee;
   }
   #KeyDisplay {
-    font-size: 14px/14px;
+    font-size: 13px/13px;
   }
   #KeyDown, #KeyUp, #KeyReset {
-    font-size: 16px/13px;
-    font-weight: bold;
     border: 1px solid #666666;
     }
     #KeyUp {
@@ -675,21 +670,17 @@ WBeatSpinBox {
       }
       #KeyUp:hover {
         background: transparent url(skin:/buttons/btn_key_up.svg) no-repeat center center;
-        border: none;
         }
     #KeyDown {
       border-right: none;
       }
       #KeyDown:hover {
         background: transparent url(skin:/buttons/btn_key_down.svg) no-repeat center center;
-        border: none;
         }
     #KeyReset {
       border-left: none;
       border-right: none;
       }
-      #KeyReset:hover {
-        }
 
 #PitchSliderContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
@@ -758,10 +749,6 @@ WBeatSpinBox {
     border-bottom-right-radius: 15px;
     }
 
-  #FilterKnob {	/*
-    margin: 0px 4px 0px 4px;
-    background-color: #976939;	*/
-    }
 /*  This wouldn't scale the image:
 #PflButton[displayValue="0"] {
   background: transparent url(skin:/buttons/btn_pfl_off.svg) no-repeat center center;
@@ -776,8 +763,8 @@ WBeatSpinBox {
   }
   #PflButton:hover, #PflButton[displayValue="1"] {  /*
     In conjunction with the workaround above, this would only
-    draw invisible border and squeez image by [border-width] on each side.
-    Though, this is a nice hover effect, even more if border is removed on hover.
+    draw invisible border and squeeze image by border width on each side.
+    Though, this is a nice zoom effect on hover, even more if border is removed then.
     border: 1px solid #eeeeee;  */
     background-color: #000000;
   }
@@ -788,8 +775,7 @@ WBeatSpinBox {
 }
 
 #VUMeterFloating {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';	/*
-  background-color: #411223;	*/
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
 }
 #VUMeterMixer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
@@ -806,7 +792,6 @@ WBeatSpinBox {
 
 #SkinControls {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding: 0px;
   }
   #SkinControlsRow {
     qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
@@ -1221,26 +1206,19 @@ WBeatSpinBox {
       color: #999999;
       }
 
-#EffectUnitToggleButton {
-  font-size: 11px/13px;
-  font-weight: bold;
-  text-align: center;
-  background-repeat: no-repeat;
-  background-position: center center;
+#EffectUnitToggleButton[displayValue="0"] {
+  background: #333333 url(skin:/buttons/btn_off.svg) no-repeat center center;
   }
-  #EffectUnitToggleButton[displayValue="0"] {
-    background: #333333 url(skin:/buttons/btn_off.svg) no-repeat center center;
-    }
-    #EffectUnitToggleButton[displayValue="0"]:hover {
-      background: #333333 url(skin:/buttons/btn_on.svg) no-repeat center center;
-      border: 1px solid #888888;
-    }
-  #EffectUnitToggleButton[displayValue="1"] {
-      background: #666666 url(skin:/buttons/btn_on.svg) no-repeat center center;
-    }
-  #EffectUnitToggleButton[displayValue="1"]:hover {
-      border: 1px solid #eeeeee;
-    }
+  #EffectUnitToggleButton[displayValue="0"]:hover {
+    background: #333333 url(skin:/buttons/btn_on.svg) no-repeat center center;
+    border: 1px solid #888888;
+  }
+#EffectUnitToggleButton[displayValue="1"] {
+    background: #666666 url(skin:/buttons/btn_on.svg) no-repeat center center;
+  }
+#EffectUnitToggleButton[displayValue="1"]:hover {
+    border: 1px solid #eeeeee;
+  }
 
 #EffectUnitGroupColumn {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
@@ -1293,9 +1271,6 @@ WBeatSpinBox {
   #SamplerDeck {
     qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   }
-
-#SamplersLoadButton, #SamplersSaveButton {
-}
 
 #FxMiniMaxiButton {
   background-color: #333333;
@@ -1409,9 +1384,6 @@ WBeatSpinBox {
 
 #SamplerSyncGainPfl {
   padding: 1px;	
-}
-
-#SamplerButtonGrid {
 }
 
 #SamplerButton, #SamplerButton_mini {
@@ -1540,20 +1512,6 @@ QToolTip {
 #TEST {
   background-color: #451278;
 }
-#TEST321 {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  background-color: #451278;
-  margin-top: 27px;
-  padding-top: 28px;
-}
-#TEST_4 {
-  background-color: #123456;
-  border-right: 1px solid #FCFF00;
-}
-#TEST_5 {
-  background-color: #FCFF00;
-  border-right: 1px solid #123456;
-}
 #TEST_skin {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   margin-left: 2000px;
@@ -1638,7 +1596,7 @@ QTreeView {
   Defined by SearchBox	*/ 
   margin: 0px;
 }
-QTreeView:focus { /*
+QTreeView:focus, QTableView:focus { /*
   Helps me with my current controller mapping  */
   border-color: #dddddd;
 }
@@ -1683,10 +1641,6 @@ QTreeView::item:selected {
 QTableView {	/*
   padding-top: 1px;
   border-top: 0px;	*/
-}
-QTableView:focus { /*
-  Helps me with my current controller mapping  */
-  border: 1px solid #dddddd;
 }
 
 QHeaderView {
@@ -1739,7 +1693,7 @@ QScrollBar:horizontal {
     min-height: 25px;
     background: #595959;
     }
-  /* Turn off buttons */
+  /* Turn off scroll buttons */
   QScrollBar::add-line:horizontal, QScrollBar::add-line:vertical {
     width: 0px;
     height: 0px;
@@ -1754,7 +1708,8 @@ QScrollBar:horizontal {
   image: url(skin:/graphics/splitterHori_handle.png);
   width: 4px;
   }
-  #LibrarySplitter::handle:horizontal:hover, #LibrarySplitter::handle:horizontal:pressed {
+  #LibrarySplitter::handle:horizontal:hover,
+  #LibrarySplitter::handle:horizontal:pressed {
     image: url(skin:/graphics/splitterHori_handle_pressed.png);
   }
   /* splitter between coverArt and tree view */
@@ -1762,7 +1717,8 @@ QScrollBar:horizontal {
     height: 4px;
     image: url(skin:/graphics/splitterVert_handle.png);
     }
-    #LibrarySplitter::handle:vertical:hover, #LibrarySplitter::handle:vertical:pressed {
+    #LibrarySplitter::handle:vertical:hover,
+    #LibrarySplitter::handle:vertical:pressed {
       image: url(skin:/graphics/splitterVert_handle_pressed.png);
     }
 
@@ -1887,7 +1843,7 @@ WLibrary QSpinBox {
     border: 1px solid #FF6600;
   }
 
-/* library search bar */
+/* library search text box */
 WSearchLineEdit {
   padding: 2px;
   border: 1px solid #656565;
@@ -1905,8 +1861,8 @@ WSearchLineEdit {
 
 QLabel, QRadioButton {	/* 
   background: transparent;
-Extra declaration for QRadioButton otherwise it shows up with
-wrong colors in Linux with Gnome 	*/
+  Extra declaration for QRadioButton otherwise it shows up with
+  wrong colors in Linux with Gnome 	*/
   color: #cfcfcf;
   }
 

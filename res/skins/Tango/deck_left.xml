@@ -129,7 +129,7 @@ Variables:
                 </Connection>
               </WidgetGroup>
 
-              <Template src="skin:pitch_key.xml"/>
+              <Template src="skin:rate_pitch_key.xml"/>
               <!-- /Pitch slider & Key controls -->
 
             </Children>

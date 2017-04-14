@@ -2,8 +2,9 @@
 Description:
   The pitch container with
   * BPM display with Sync/Reset button overlay (Master sync on long-press)
-  * Key display with Sync/Reset button overlay
+  * Key display with Match/Reset and up/down button overlys
   * Pitch slider (right-click resets speed)
+  (* key offset indicator)
 Variables:
   channum : channel number
   group   : [ChannelXY]
@@ -103,6 +104,24 @@ Variables:
             </Connection>
           </Key>
         
+          <WidgetGroup><!-- Underlays to mark key_up/down buttons -->
+            <Layout>horizontal</Layout>
+            <Size>50f,13f</Size>
+            <Children>
+              <WidgetGroup><!-- key_down -->
+                <ObjectName>Spacer33</ObjectName>
+                <Size>12f,13f</Size>
+              </WidgetGroup>
+              <WidgetGroup>
+                <Size>26f,13f</Size>
+              </WidgetGroup>
+              <WidgetGroup><!-- key_up -->
+                <ObjectName>Spacer33</ObjectName>
+                <Size>12f,13f</Size>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup><!-- /Underlays to mark key_up/down buttons -->
+        
         </Children>
         <Connection>
           <ConfigKey persist="true">[Tango],key_controls</ConfigKey>
@@ -110,25 +129,19 @@ Variables:
         </Connection>
       </WidgetGroup><!-- /KeyContainer -->
       
-      <WidgetGroup><!-- PitchSlider -->
-        <ObjectName>PitchSliderContainer</ObjectName>
-        <Layout>horizontal</Layout>
-        <!-- Define size either here or for RateContainer in order to stay
-        steady when Key controls are disabled and BPM container expands -->
+      <!-- Define size either here AND for parent RateContainer so that pitch slider
+      stays steady when Key controls are disabled and BPM container expands -->
+      <SliderComposed>
+        <ObjectName>PitchSlider</ObjectName>
         <Size>50f,107f</Size>
-        <Children>
-          <SliderComposed>
-            <ObjectName>PitchSlider</ObjectName>
-            <TooltipId>rate</TooltipId>
-            <Handle>skin:/knobs_sliders/slider_pitch_handle.svg</Handle>
-            <Slider>skin:/knobs_sliders/slider_pitch_scale.svg</Slider>
-            <Horizontal>false</Horizontal>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,rate</ConfigKey>
-            </Connection>
-          </SliderComposed>
-        </Children>
-      </WidgetGroup><!-- /PitchSlider -->
+        <TooltipId>rate</TooltipId>
+        <Handle>skin:/knobs_sliders/slider_pitch_handle.svg</Handle>
+        <Slider>skin:/knobs_sliders/slider_pitch_scale.svg</Slider>
+        <Horizontal>false</Horizontal>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,rate</ConfigKey>
+        </Connection>
+      </SliderComposed><!-- /PitchSlider -->
       
     </Children>
     <Connection>
