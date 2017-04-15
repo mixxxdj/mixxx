@@ -106,8 +106,7 @@ Description:
         <Size>4f,1min</Size>
         <Children/>
         <Connection>
-          <ConfigKey>[Tango],normal_mode</ConfigKey>
-          <Transform><Not/></Transform>
+          <ConfigKey>[Tango],netbook_mode</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /Spacer for netbook mode -->

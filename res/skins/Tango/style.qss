@@ -355,9 +355,6 @@ WPushButton {
     font-weight: bold;
     }
 
-#TrackComment {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  }
   WLabel#TrackComment {
   /* defining font-size here breaks top alignment	*/
   font-size: 12px/12px;
@@ -422,13 +419,14 @@ WPushButton {
     
 #DeckButtonsPlay {
   margin-top: 1px;
+  background-color: #333333;
 }
-#DeckButtonsLeft {
+#DeckControlsLeft {
   qproperty-layoutAlignment: 'Alignleft | AlignVCenter';
   padding: 1px 0px 1px 1px;
   background-color: #333333;
 }
-#DeckButtonsRight {
+#DeckControlsRight {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
   padding: 1px 1px 1px 0px;
   background-color: #333333;
@@ -1511,6 +1509,9 @@ QToolTip {
 
 #TEST {
   background-color: #451278;
+}
+#TEST2 {
+  background-color: #127845;
 }
 #TEST_skin {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';

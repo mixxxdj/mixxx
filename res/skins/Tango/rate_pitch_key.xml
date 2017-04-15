@@ -2,9 +2,9 @@
 Description:
   The pitch container with
   * BPM display with Sync/Reset button overlay (Master sync on long-press)
-  * Key display with Match/Reset and up/down button overlys
-  * Pitch slider (right-click resets speed)
-  (* key offset indicator)
+  * Key display with Match/Reset and up/down button overlays
+  * Pitch slider
+  (* key offset indicator, not working reliably)
 Variables:
   channum : channel number
   group   : [ChannelXY]

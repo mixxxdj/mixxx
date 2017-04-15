@@ -308,8 +308,7 @@ Description:
 
     </Children>
     <Connection>
-      <ConfigKey>[Tango],netbook_mode</ConfigKey>
-      <Transform><Not/></Transform>
+      <ConfigKey>[Tango],normal_mode</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>
