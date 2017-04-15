@@ -39,24 +39,6 @@ void makeLatinLow(QChar* c, int count) {
 
 const QChar kSqlLikeEscapeDefault = '\0';
 
-// The collating function callback is invoked with a copy of the pArg
-// application data pointer and with two strings in the encoding specified
-// by the eTextRep argument.
-// The collating function must return an integer that is negative, zero,
-// or positive if the first string is less than, equal to, or greater
-// than the second, respectively.
-int sqliteStringCompareUTF16(void* pArg,
-                        int len1, const void* data1,
-                        int len2, const void* data2) {
-    Q_UNUSED(pArg);
-    // Construct a QString without copy
-    QString string1 = QString::fromRawData(reinterpret_cast<const QChar*>(data1),
-                                           len1 / sizeof(QChar));
-    QString string2 = QString::fromRawData(reinterpret_cast<const QChar*>(data2),
-                                           len2 / sizeof(QChar));
-    return compareLocalAwareCaseInsensitive(string1, string2);
-}
-
 // Compare two strings for equality where the first string is
 // a "LIKE" expression. Return true (1) if they are the same and
 // false (0) if they are different.
@@ -139,6 +121,24 @@ int likeCompareInner(
 }
 
 #ifdef __SQLITE3__
+
+// The collating function callback is invoked with a copy of the pArg
+// application data pointer and with two strings in the encoding specified
+// by the eTextRep argument.
+// The collating function must return an integer that is negative, zero,
+// or positive if the first string is less than, equal to, or greater
+// than the second, respectively.
+int sqliteStringCompareUTF16(void* pArg,
+                             int len1, const void* data1,
+                             int len2, const void* data2) {
+    Q_UNUSED(pArg);
+    // Construct a QString without copy
+    QString string1 = QString::fromRawData(reinterpret_cast<const QChar*>(data1),
+                                           len1 / sizeof(QChar));
+    QString string2 = QString::fromRawData(reinterpret_cast<const QChar*>(data2),
+                                           len2 / sizeof(QChar));
+    return compareLocaleAwareCaseInsensitive(string1, string2);
+}
 
 const char* const kLexicographicalCollationFunc = "mixxxLexicographicalCollation";
 
