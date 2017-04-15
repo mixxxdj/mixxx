@@ -29,7 +29,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     LineEditRecordings->setText(recordingsPath);
     connect(PushButtonBrowseRecordings, SIGNAL(clicked()),
             this, SLOT(slotBrowseRecordingsDir()));
-            
+
     // Setting Encoder
     bool found = false;
     QString prefformat = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Encoding"));
@@ -142,7 +142,7 @@ void DlgPrefRecord::slotApply()
 // This function updates/refreshes the contents of this dialog.
 void DlgPrefRecord::slotUpdate()
 {
-    // Find out the max width of the labels. This is needed to keep the 
+    // Find out the max width of the labels. This is needed to keep the
     // UI fixed in size when hiding or showing elements.
     // It is not perfect, but it didn't get better than this.
     int max=0;
@@ -269,8 +269,8 @@ void DlgPrefRecord::setupEncoderUI(Encoder::Format selformat)
         // It will require to generate the buttongroup dynamically like:
         // >> buttongroup = new QButtonGroup(this);
         // >> buttongroup->addButton(radioButtonNoFFT);
-	    // >> buttongroup->addButton(radioButtonFFT);
-        
+        // >> buttongroup->addButton(radioButtonFFT);
+
         EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
         labelOptionGroup->setText(group.groupName);
         int controlIdx = settings->getSelectedOption(group.groupCode);
