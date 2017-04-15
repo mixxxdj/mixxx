@@ -3,7 +3,6 @@ Description:
   A button that has click or display controls.
 Variables:
   ObjectName        : object name
-  ToolTip           : custom Tooltip string
   TooolTipID        : standard Tooltip from mixxx db
     see: https://github.com/mixxxdj/mixxx/blob/master/src/skin/tooltips.cpp
   Size              : button size

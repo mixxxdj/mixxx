@@ -47,7 +47,7 @@ Variables:
             <SizePolicy>min,min</SizePolicy>
             <Children>
               <Template src="skin:button_1state_right.xml">
-                <SetVariable name="TooltipId">loop_move</SetVariable>
+                <SetVariable name="TooltipId">loop_move_backward</SetVariable>
                 <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
                 <SetVariable name="Size">22f,22f</SetVariable>
                 <SetVariable name="state_0_pressed">backward_pressed.svg</SetVariable>
@@ -57,7 +57,7 @@ Variables:
               </Template>
                 <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
               <Template src="skin:button_1state_right.xml">
-                <SetVariable name="TooltipId">loop_move</SetVariable>
+                <SetVariable name="TooltipId">loop_move_forward</SetVariable>
                 <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
                 <SetVariable name="Size">22f,22f</SetVariable>
                 <SetVariable name="state_0_pressed">forward_pressed.svg</SetVariable>
@@ -77,6 +77,7 @@ Variables:
         <SizePolicy>min,min</SizePolicy>
         <Children>
           <BeatSpinBox><!-- 70x22 top row -->
+            <TooltipId>beatloop_size</TooltipId>
             <Value><Variable name="group"/>,beatloop_size</Value>
           </BeatSpinBox>
             <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
@@ -85,7 +86,7 @@ Variables:
             <SizePolicy>min,min</SizePolicy>
             <Children>
               <Template src="skin:button_2state_right_display.xml">
-                <SetVariable name="TooltipId"></SetVariable>
+                <SetVariable name="TooltipId">beatloop_toggle</SetVariable>
                 <SetVariable name="ObjectName">LoopEnabledbutton</SetVariable>
                 <SetVariable name="Size">35f,22f</SetVariable>
                 <SetVariable name="state_0_pressed">loop_disabled.svg</SetVariable>
@@ -98,7 +99,7 @@ Variables:
               </Template>
                 <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
               <Template src="skin:button_1state_right.xml">
-                <SetVariable name="TooltipId"></SetVariable>
+                <SetVariable name="TooltipId">reloop_toggle</SetVariable>
                 <SetVariable name="ObjectName">ReloopButton</SetVariable>
                 <SetVariable name="Size">34f,22f</SetVariable>
                 <SetVariable name="state_0_pressed">reloop_pressed.svg</SetVariable>

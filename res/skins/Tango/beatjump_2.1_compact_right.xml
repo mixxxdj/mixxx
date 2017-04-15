@@ -11,7 +11,7 @@ Variables:
     <SizePolicy>min,min</SizePolicy>
     <Children>
       <Template src="skin:button_1state.xml">
-        <SetVariable name="TooltipId">loop_move</SetVariable>
+        <SetVariable name="TooltipId">beatjump_backward</SetVariable>
         <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
         <SetVariable name="Size">24f,22f</SetVariable>
         <SetVariable name="state_0_pressed">backward_pressed.svg</SetVariable>
@@ -20,7 +20,7 @@ Variables:
       </Template>
         <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
       <Template src="skin:button_1state.xml">
-        <SetVariable name="TooltipId">loop_move</SetVariable>
+        <SetVariable name="TooltipId">beatjump_forward</SetVariable>
         <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
         <SetVariable name="Size">25f,22f</SetVariable>
         <SetVariable name="state_0_pressed">forward_pressed.svg</SetVariable>
@@ -29,6 +29,7 @@ Variables:
       </Template>
         <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
       <BeatSpinBox>
+        <TooltipId>beatjump_size</TooltipId>
         <Value><Variable name="group"/>,beatjump_size</Value>
       </BeatSpinBox>
     </Children>
