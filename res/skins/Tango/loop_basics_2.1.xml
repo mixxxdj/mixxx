@@ -104,7 +104,7 @@ Variables:
                 <SetVariable name="Size">34f,22f</SetVariable>
                 <SetVariable name="state_0_pressed">reloop_pressed.svg</SetVariable>
                 <SetVariable name="state_0_unpressed">reloop.svg</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="group"/>,reloop</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,reloop_toggle</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reloop_cue</SetVariable>
               </Template>
             </Children>
