@@ -157,7 +157,7 @@ void MessageHandler(QtMsgType type,
                     qFatal("%s", input);
 #else
                     // The "%s" is intentional. See -Werror=format-security.
-                    qFatal("%s", input.toLocal8Bit());
+                    qFatal("%s", input.toLocal8Bit().constData());
 #endif
                     return;
 #else
