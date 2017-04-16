@@ -69,8 +69,6 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     // Setting miscellaneous
     CheckBoxRecordCueFile->setChecked(
             (bool) m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt());
-    connect(CheckBoxRecordCueFile, SIGNAL(stateChanged(int)),
-            this, SLOT(slotEnableCueFile(int)));
 
     // Setting split
     comboBoxSplitting->addItem(SPLIT_650MB);
@@ -93,8 +91,6 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         //Use max RIFF size (4GB) as default index, since usually people don't want to split.
         comboBoxSplitting->setCurrentIndex(4);
     }
-    connect(comboBoxSplitting, SIGNAL(activated(int)),
-            this, SLOT(slotChangeSplitSize()));
 
     // Do the one-time connection of signals here.
     connect(SliderQuality, SIGNAL(valueChanged(int)),
@@ -413,13 +409,13 @@ void DlgPrefRecord::saveEncoding()
         }
     }
 }
-void DlgPrefRecord::saveUseCueFile()
-{
+
+void DlgPrefRecord::saveUseCueFile() {
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CueEnabled"),
-        ConfigValue(CheckBoxRecordCueFile->isChecked()));
+                   ConfigValue(CheckBoxRecordCueFile->isChecked()));
 }
-void DlgPrefRecord::saveSplitSize()
-{
+
+void DlgPrefRecord::saveSplitSize() {
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "FileSize"),
-                ConfigValue(comboBoxSplitting->currentText()));
+                   ConfigValue(comboBoxSplitting->currentText()));
 }
