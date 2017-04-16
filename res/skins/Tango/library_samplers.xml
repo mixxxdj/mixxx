@@ -144,7 +144,6 @@ Modes:
         <Layout>vertical</Layout>
         <SizePolicy>me,me</SizePolicy>
         <MinimumSize>770,167</MinimumSize>
-        <MaximumSize>-1,-1</MaximumSize>
         <Children>
 
           <WidgetGroup>

@@ -4,6 +4,8 @@
     <SizePolicy>min,min</SizePolicy>
     <Layout>horizontal</Layout>
     <Children>
+      <!-- Number of spacers besides the loop containers determines the
+          ratio of 'white space' between them -->
         <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0me,1min</Size></WidgetGroup>
         <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0me,1min</Size></WidgetGroup>
         <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0me,1min</Size></WidgetGroup>
@@ -33,7 +35,7 @@
     <Children>
         <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,1min</Size></WidgetGroup>
         <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0me,1min</Size></WidgetGroup>
-      <Template src="skin:loop_basics_2.1_compact_left.xml"/>
+      <Template src="skin:loop_controls_2.1_compact_left.xml"/>
         <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,1min</Size></WidgetGroup>
       <Template src="skin:beatjump_2.1_compact_left.xml"/>
     </Children>
@@ -54,7 +56,7 @@
         <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0me,1min</Size></WidgetGroup>
       <Template src="skin:loop_sizes.xml"/>
         <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,1min</Size></WidgetGroup>
-      <Template src="skin:loop_basics_2.1.xml"/>
+      <Template src="skin:loop_controls_2.1.xml"/>
         <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,1min</Size></WidgetGroup>
         <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0me,1min</Size></WidgetGroup>
         <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0me,1min</Size></WidgetGroup>

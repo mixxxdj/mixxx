@@ -69,33 +69,22 @@ Variables:
             <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,vinylcontrol_mode</SetVariable>
           </Template>
 
-          <WidgetGroup><!-- Cue mode button with translucent covers -->
+          <WidgetGroup><!-- Cue mode button with translucent cover -->
             <Layout>stacked</Layout>
             <Size>40f,23me</Size>
             <Children>
               <!-- index 0 due to bug -->
               <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-              <WidgetGroup><!-- translucent cover when Vinyl control mode is CONST -->
+              <!-- Block mouse when Vinyl control not RELATIVE mode -->
+              <WidgetGroup>
                 <ObjectName>SubmenuCover</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>me,me</SizePolicy>
                 <Children/>
                 <Connection>
                   <ConfigKey persist="true"><Variable name="group"/>,vinylcontrol_mode</ConfigKey>
-                  <Transform><Not/></Transform>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-
-              <WidgetGroup><!-- translucent cover when Vinyl control mode is ABS -->
-                <ObjectName>SubmenuCover</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>me,me</SizePolicy>
-                <Children/>
-                <Connection>
-                  <ConfigKey persist="true"><Variable name="group"/>,vinylcontrol_mode</ConfigKey>
-                  <Transform><Add>-1</Add></Transform>
+                  <Transform><IsEqual>1</IsEqual><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>

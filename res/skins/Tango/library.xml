@@ -2,14 +2,16 @@
 Description:
   The Library container.
   Left side contains preview deck, CoverArt and tree view.
-  Right side contains table view and mixerbar at the bottom
-Variables:
+  Right side contains table view and mixerbar at the bottom.
+  Mixerbar can be diplayed below tracks table so that tree pane has maximum
+  space. With a toggler it can be set use full screen width below library
+  if necessary.
 -->
 <Template>
   <WidgetGroup>
-  <!-- Finally fixed: library can shrink to noting!
-      Solution was to define SizePolicy as 'xx,i'.
-      Found this in Deere-2.1 -->
+<!-- Finally fixed: library can shrink to noting!
+    Solution was to define SizePolicy as 'xx,i'.
+    Found this in Deere-2.1 -->
     <ObjectName>Library</ObjectName>
     <SizePolicy>me,i</SizePolicy>
     <Layout>vertical</Layout>
@@ -25,7 +27,7 @@ Variables:
 
           <WidgetGroup><!-- Preview Search Cover Tree -->
             <Layout>vertical</Layout>
-            <!-- minSize so that 8 Preview HotCues (23+1 each) fit nicely -->
+            <!-- minSize so that 8 Preview HotCues fit nicely, 23+1px each -->
             <Size>159min,74me</Size>
             <Children>
               <Template src="skin:preview_deck.xml"/>
@@ -61,7 +63,8 @@ Variables:
                         </Children>
                       </WidgetGroup>
                       <LibrarySidebar></LibrarySidebar>
-                      <!-- Draw a 1px line if Mixerbar is displayed below Library -->
+                      <!-- Draw a 1px line with Library border color if Mixerbar
+                          is displayed below Library -->
                       <WidgetGroup>
                         <ObjectName>Spacer58</ObjectName>
                         <Size>1me,1f</Size>
