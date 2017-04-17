@@ -17,7 +17,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
                             const SkinContext& context,
                             const WaveformSignalColors& signalColors) {
 
-    m_marks.reserve(NUM_HOT_CUES + 3);
+    m_marks.reserve(NUM_HOT_CUES + 3); // + 3 for cue_point, loop_start_position and loop_end_position
     m_hotCueMarks.remove(NUM_HOT_CUES);
 
     std::set<QString> controlItemSet;
