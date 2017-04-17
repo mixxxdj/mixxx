@@ -86,10 +86,9 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     // setup hotcues and cue and loop(s)
     m_marks.setup(m_group, node, context, m_signalColors);
 
-    for (int i = 0; i < m_marks.size(); ++i) {
-        const WaveformMarkPointer& mark = m_marks[i];
-        if (mark->isValid()) {
-            mark->connectSamplePositionChanged(this,
+    for (const auto& pMark: m_marks) {
+        if (pMark->isValid()) {
+            pMark->connectSamplePositionChanged(this,
                     SLOT(onMarkChanged(double)));
         }
     }
@@ -433,8 +432,7 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
 
             painter.setOpacity(0.9);
 
-            for (int i = 0; i < m_marks.size(); ++i) {
-                const WaveformMarkPointer currentMark = m_marks[i];
+            for (const auto& currentMark: m_marks) {
                 const WaveformMarkProperties& markProperties = currentMark->getProperties();
                 if (currentMark->isValid() && currentMark->getSamplePosition() >= 0.0) {
                     //const float markPosition = 1.0 +
