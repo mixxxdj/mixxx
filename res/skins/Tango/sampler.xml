@@ -20,12 +20,12 @@ Variables:
   <SetVariable name="group">[Sampler<Variable name="samplernum"/>]</SetVariable>
   <WidgetGroup><!-- SamplerDeck -->
     <Layout>stacked</Layout>
-    <Size>180me,79f</Size>
+    <Size>117me,79f</Size>
     <Children>
       <WidgetGroup><!-- SamplerDeck -->
         <Layout>horizontal</Layout>
         <ObjectName>SamplerDeck</ObjectName>
-        <Size>180me,79f</Size>
+        <Size>117me,79f</Size>
         <Children>
 
           <WidgetGroup><!-- SamplerMain -->

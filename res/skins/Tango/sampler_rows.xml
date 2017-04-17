@@ -35,6 +35,18 @@ Variables:
 
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
+              <Template src="skin:sampler.xml">
+                <SetVariable name="samplernum">3</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skin:sampler.xml">
+                <SetVariable name="samplernum">4</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
               <WidgetGroup>
                 <SizePolicy>min,me</SizePolicy>
                 <Layout>vertical</Layout>
@@ -68,25 +80,6 @@ Variables:
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
               <Template src="skin:sampler.xml">
-                <SetVariable name="samplernum">3</SetVariable>
-              </Template>
-
-              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
-
-              <Template src="skin:sampler.xml">
-                <SetVariable name="samplernum">4</SetVariable>
-              </Template>
-
-            </Children>
-          </WidgetGroup><!-- /Maxi Samplers 1-4 -->
-
-          <WidgetGroup><!-- Maxi Samplers 5-8 -->
-            <ObjectName>SamplerDecks</ObjectName>
-            <Layout>horizontal</Layout>
-            <Size>770me,82f</Size>
-            <Children>
-
-              <Template src="skin:sampler.xml">
                 <SetVariable name="samplernum">5</SetVariable>
               </Template>
 
@@ -106,6 +99,61 @@ Variables:
 
               <Template src="skin:sampler.xml">
                 <SetVariable name="samplernum">8</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup><!-- /Maxi Samplers 1-4 -->
+
+          <WidgetGroup><!-- Maxi Samplers 5-8 -->
+            <ObjectName>SamplerDecks</ObjectName>
+            <Layout>horizontal</Layout>
+            <Size>770me,82f</Size>
+            <Children>
+
+              <Template src="skin:sampler.xml">
+                <SetVariable name="samplernum">9</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skin:sampler.xml">
+                <SetVariable name="samplernum">10</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skin:sampler.xml">
+                <SetVariable name="samplernum">11</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skin:sampler.xml">
+                <SetVariable name="samplernum">12</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skin:sampler.xml">
+                <SetVariable name="samplernum">13</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skin:sampler.xml">
+                <SetVariable name="samplernum">14</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skin:sampler.xml">
+                <SetVariable name="samplernum">15</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skin:sampler.xml">
+                <SetVariable name="samplernum">16</SetVariable>
               </Template>
 
             </Children>

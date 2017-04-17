@@ -129,7 +129,7 @@ Variables:
         </Connection>
       </WidgetGroup><!-- /KeyContainer -->
       
-      <!-- Define size either here AND for parent RateContainer so that pitch slider
+      <!-- Define size here and for parent RateContainer so that pitch slider
       stays steady when Key controls are disabled and BPM container expands -->
       <SliderComposed>
         <ObjectName>PitchSlider</ObjectName>

@@ -1265,6 +1265,7 @@ WBeatSpinBox {
 #SamplerDecks {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   margin-bottom: 3px;
+  border-radius: 2px;
 }
   #SamplerDeck {
     qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
@@ -1344,6 +1345,10 @@ WBeatSpinBox {
   background-color: #888888;
 }
 
+#SamplerMain_mini {
+  
+}
+
 #SamplerTitle {
   padding-left: 3px;
   }
@@ -1354,16 +1359,13 @@ WBeatSpinBox {
     text-align: left;
   }
 
-#SamplerTitle_mini {
+WTrackProperty#SamplerTitle_mini {
+  font-size: 14px/14px;
+  font-weight: bold;
+  color: #bababa;
+  text-align: left;
   background-color: rgba(51, 51, 51, 170);
-  }
-  #SamplerTitle_mini WLabel {
-    margin: 0px 1px 0px 2px;
-    font-size: 14px/16px;
-    font-weight: bold;
-    color: #bababa;
-    text-align: left;
-  }
+}
 
 #SamplerOverviewRow, #PreviewOverview {
   background-color: #1a1a1a;
@@ -1377,7 +1379,6 @@ WBeatSpinBox {
 }
 
 #SamplerOverview_mini {
-  margin: 0px 2px 0px 2px;
 }
 
 #SamplerSyncGainPfl {
