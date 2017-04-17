@@ -91,6 +91,7 @@ void MessageHandler(QtMsgType type,
         case QtCriticalMsg:
             tag = "Critical [";
             baSize += strlen(tag);
+            shouldFlush = true;
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
             isDebugAssert = strncmp(input, kDebugAssertPrefix,
                                     strlen(kDebugAssertPrefix)) == 0;
