@@ -18,7 +18,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
                             const WaveformSignalColors& signalColors) {
 
     m_marks.reserve(NUM_HOT_CUES + 3); // + 3 for cue_point, loop_start_position and loop_end_position
-    m_hotCueMarks.remove(NUM_HOT_CUES);
+    // Note: m_hotCueMarks does not support reserving space
 
     std::set<QString> controlItemSet;
     bool hasDefaultMark = false;
