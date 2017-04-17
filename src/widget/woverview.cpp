@@ -89,7 +89,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     for (const auto& pMark: m_marks) {
         if (pMark->isValid()) {
             pMark->connectSamplePositionChanged(this,
-            		SLOT(onMarkChanged(double)));
+                    SLOT(onMarkChanged(double)));
         }
     }
 

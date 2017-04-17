@@ -14,7 +14,7 @@ WaveformMark::WaveformMark(const QString& group,
     if (!item.isEmpty()) {
         m_pPointCos = std::make_unique<ControlProxy>(group, item);
         if (item.startsWith("hotcue_") && item.endsWith("_position")) {
-        	m_iHotCue = item.mid(7, item.count() - 16).toInt() - 1;
+            m_iHotCue = item.mid(7, item.count() - 16).toInt() - 1;
         }
     }
     m_properties = WaveformMarkProperties(node, context, signalColors);
@@ -26,8 +26,8 @@ WaveformMark::WaveformMark(const QString& group,
                            const WaveformSignalColors& signalColors,
                            int hotCue)
         : m_iHotCue(hotCue) {
-	if (hotCue >= 0) {
-		QString item = "hotcue_" + QString::number(hotCue + 1) + "_position";
+    if (hotCue >= 0) {
+        QString item = "hotcue_" + QString::number(hotCue + 1) + "_position";
         m_pPointCos = std::make_unique<ControlProxy>(group, item);
     }
     m_properties = WaveformMarkProperties(node, context, signalColors);
