@@ -1,6 +1,8 @@
 #ifndef MIXXX_UTIL_LOGGING_H
 #define MIXXX_UTIL_LOGGING_H
 
+#include <QString>
+
 namespace mixxx {
 
 class Logging {
@@ -16,13 +18,15 @@ class Logging {
     // command line flags.
     static constexpr const char* kControllerDebugPrefix = "CDBG";
 
-    static void initialize();
+    // These are not thread safe. Only call them on Mixxx startup and shutdown.
+    static void initialize(const QString& settingsPath,
+                           LogLevel logLevel,
+                           bool debugAssertBreak);
     static void shutdown();
+
   private:
     Logging() = delete;
 };
-
-void install_message_handler();
 
 }  // namespace mixxx
 
