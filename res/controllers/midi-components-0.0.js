@@ -323,6 +323,9 @@
         shift: function () {
             if (this.relative) {
                 this.input = function (channel, control, value, status, group) {
+                    // Do not manipulate inKey, just store the position of the
+                    // physical potentiometer for calculating how much it moves
+                    // when shift is released.
                     if (this.MSB !== undefined) {
                         value = this.MSB << 7 + value;
                     }
