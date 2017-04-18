@@ -65,22 +65,22 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             // Build and set the parameter id from its name
             // Append its index to avoid duplicate ids
             param->setId(paramName.trimmed().toLower().replace(' ', '_').append(i + '0'));
-            param->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-            param->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+            param->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+            param->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
             param->setDefault(m_default[i]);
             param->setMinimum(m_minimum[i]);
             param->setMaximum(m_maximum[i]);
 
             // Set the appropriate Hints
             if (lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
-                param->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
+                param->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
             } else if (lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"])) {
                 buildEnumerationOptions(port, param);
-                param->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
+                param->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
             } else if (lilv_port_has_property(m_pLV2plugin, port, properties["integer_port"])) {
-                param->setControlHint(EffectManifestParameter::CONTROL_KNOB_STEPPING);
+                param->setControlHint(EffectManifestParameter::ControlHint::KNOB_STEPPING);
             } else {
-                 param->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+                 param->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
             }
         }
     }
@@ -105,9 +105,9 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             // Append its index to avoid duplicate ids
             // Set the appropriate Hints
             param->setId(paramName.trimmed().toLower().replace(' ', '_').append(i + '0'));
-            param->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-            param->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-            param->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
+            param->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+            param->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+            param->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
             if (lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"])) {
                 buildEnumerationOptions(port, param);
             } else {

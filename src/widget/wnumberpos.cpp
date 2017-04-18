@@ -10,15 +10,15 @@
 
 WNumberPos::WNumberPos(const char* group, QWidget* parent)
         : WNumber(parent),
-          m_dOldValue(0.0),
+          m_dOldPosition(0.0),
           m_dTrackSamples(0.0),
           m_dTrackSampleRate(0.0),
           m_bRemain(false) {
     m_pShowTrackTimeRemaining = new ControlProxy(
             "[Controls]", "ShowDurationRemaining", this);
     m_pShowTrackTimeRemaining->connectValueChanged(
-            SLOT(slotSetRemain(double)));
-    slotSetRemain(m_pShowTrackTimeRemaining->get());
+            SLOT(slotSetDisplayMode(double)));
+    slotSetDisplayMode(m_pShowTrackTimeRemaining->get());
 
     // We use the engine's playposition value directly because the parameter
     // normalization done by the widget system used to be unusable for this
@@ -26,7 +26,7 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
     // result, the <Connection> parameter is no longer necessary in skin
     // definitions, but leaving it in is harmless.
     m_pVisualPlaypos = new ControlProxy(group, "playposition", this);
-    m_pVisualPlaypos->connectValueChanged(SLOT(slotSetValue(double)));
+    m_pVisualPlaypos->connectValueChanged(SLOT(slotSetPosition(double)));
 
     m_pTrackSamples = new ControlProxy(
             group, "track_samples", this);
@@ -45,73 +45,97 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
     // set to a valid value.
     m_pTrackSampleRate->emitValueChanged();
 
-    slotSetValue(m_pVisualPlaypos->get());
+    slotSetPosition(m_pVisualPlaypos->get());
 }
 
 void WNumberPos::mousePressEvent(QMouseEvent* pEvent) {
     bool leftClick = pEvent->buttons() & Qt::LeftButton;
 
     if (leftClick) {
-        setRemain(!m_bRemain);
-        m_pShowTrackTimeRemaining->set(m_bRemain ? 1.0 : 0.0);
+        // Cycle through display modes
+        if (m_displayMode == TrackTime::DisplayMode::Elapsed) {
+            m_displayMode = TrackTime::DisplayMode::Remaining;
+        } else if (m_displayMode == TrackTime::DisplayMode::Remaining) {
+            m_displayMode = TrackTime::DisplayMode::ElapsedAndRemaining;
+        } else if (m_displayMode == TrackTime::DisplayMode::ElapsedAndRemaining) {
+            m_displayMode = TrackTime::DisplayMode::Elapsed;
+        }
+
+        m_pShowTrackTimeRemaining->set(static_cast<double>(m_displayMode));
+        slotSetPosition(m_dOldPosition);
     }
 }
 
 void WNumberPos::slotSetTrackSamples(double dSamples) {
     m_dTrackSamples = dSamples;
-    slotSetValue(m_dOldValue);
+    slotSetPosition(m_dOldPosition);
 }
 
 void WNumberPos::slotSetTrackSampleRate(double dSampleRate) {
     m_dTrackSampleRate = dSampleRate;
-    slotSetValue(m_dOldValue);
+    slotSetPosition(m_dOldPosition);
 }
 
+// Reimplementing WNumber::setValue
 void WNumberPos::setValue(double dValue) {
     // Ignore midi-scaled signals from the skin connection.
     Q_UNUSED(dValue);
     // Update our value with the old value.
-    slotSetValue(m_dOldValue);
+    slotSetPosition(m_dOldPosition);
 }
 
-void WNumberPos::slotSetValue(double dValue) {
-    m_dOldValue = dValue;
+void WNumberPos::slotSetPosition(double dPosition) {
+    m_dOldPosition = dPosition;
 
-    double dPosSeconds = 0.0;
+    double dPosSecondsElapsed = 0.0;
+    double dPosSecondsRemaining = 0.0;
     if (m_dTrackSamples > 0 && m_dTrackSampleRate > 0) {
         double dDurationSeconds = (m_dTrackSamples / 2.0) / m_dTrackSampleRate;
         double dDurationMillis = dDurationSeconds * 1000.0;
-        double dPosMillis = dValue * dDurationMillis;
-        if (m_bRemain) {
-            dPosMillis = math_max(dDurationMillis - dPosMillis, 0.0);
+        double dPosMillis = dPosition * dDurationMillis;
+        dPosSecondsElapsed = dPosMillis / 1000.0;
+        if (m_displayMode != TrackTime::DisplayMode::Elapsed) {
+            double dPosMillisRemaining = math_max(dDurationMillis - dPosMillis, 0.0);
+            dPosSecondsRemaining = dPosMillisRemaining / 1000.0;
         }
-        dPosSeconds = dPosMillis / 1000.0;
     }
 
-    QString sPosText;
-    if (dPosSeconds >= 0.0) {
-        sPosText = m_skinText % mixxx::Duration::formatSeconds(
-                dPosSeconds, mixxx::Duration::Precision::CENTISECONDS);
-    } else {
-        sPosText = m_skinText % QLatin1String("-") % mixxx::Duration::formatSeconds(
-                -dPosSeconds, mixxx::Duration::Precision::CENTISECONDS);
+    if (m_displayMode == TrackTime::DisplayMode::Elapsed) {
+        if (dPosSecondsElapsed >= 0.0) {
+            setText(mixxx::Duration::formatSeconds(
+                        dPosSecondsElapsed, mixxx::Duration::Precision::CENTISECONDS));
+        } else {
+            setText(QLatin1String("-") % mixxx::Duration::formatSeconds(
+                        -dPosSecondsElapsed, mixxx::Duration::Precision::CENTISECONDS));
+        }
+    } else if (m_displayMode == TrackTime::DisplayMode::Remaining) {
+        setText(QLatin1String("-") % mixxx::Duration::formatSeconds(
+                    dPosSecondsRemaining, mixxx::Duration::Precision::CENTISECONDS));
+    } else if (m_displayMode == TrackTime::DisplayMode::ElapsedAndRemaining) {
+        if (dPosSecondsElapsed >= 0.0) {
+            setText(mixxx::Duration::formatSeconds(
+                        dPosSecondsElapsed, mixxx::Duration::Precision::CENTISECONDS)
+                    % QLatin1String("  -") %
+                    mixxx::Duration::formatSeconds(
+                        dPosSecondsRemaining, mixxx::Duration::Precision::CENTISECONDS));
+        } else {
+            setText(QLatin1String("-") % mixxx::Duration::formatSeconds(
+                        -dPosSecondsElapsed, mixxx::Duration::Precision::CENTISECONDS)
+                    % QLatin1String("  -") %
+                    mixxx::Duration::formatSeconds(
+                        dPosSecondsRemaining, mixxx::Duration::Precision::CENTISECONDS));
+        }
     }
-    setText(sPosText);
 }
 
-void WNumberPos::slotSetRemain(double remain) {
-    setRemain(remain > 0.0);
-}
-
-void WNumberPos::setRemain(bool bRemain) {
-    m_bRemain = bRemain;
-
-    // Shift display state between showing position and remaining
-    if (m_bRemain) {
-        m_skinText = "-";
+void WNumberPos::slotSetDisplayMode(double remain) {
+    if (remain == 1.0) {
+        m_displayMode = TrackTime::DisplayMode::Remaining;
+    } else if (remain == 2.0) {
+        m_displayMode = TrackTime::DisplayMode::ElapsedAndRemaining;
     } else {
-        m_skinText = "";
+        m_displayMode = TrackTime::DisplayMode::Elapsed;
     }
-    // Have the widget redraw itself with its current value.
-    slotSetValue(m_dOldValue);
+
+    slotSetPosition(m_dOldPosition);
 }

@@ -1,16 +1,15 @@
 #include "wskincolor.h"
 
-QSharedPointer<ImgSource> WSkinColor::loader = QSharedPointer<ImgSource>();
+#include "skin/imgloader.h"
+
+QSharedPointer<ImgSource> WSkinColor::loader
+    = QSharedPointer<ImgSource>(new ImgLoader());
 
 void WSkinColor::setLoader(QSharedPointer<ImgSource> ld) {
     loader = ld;
 }
 
 QColor WSkinColor::getCorrectColor(QColor c) {
-    if (loader) {
-        return loader->getCorrectColor(c);
-    } else {
-        return c;
-    }
+    return loader->getCorrectColor(c);
 }
 

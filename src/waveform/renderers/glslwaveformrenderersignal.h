@@ -7,7 +7,8 @@
 
 #include "waveformrenderersignalbase.h"
 
-class GLSLWaveformRendererSignal : public WaveformRendererSignalBase {
+class GLSLWaveformRendererSignal : public QObject, public WaveformRendererSignalBase {
+    Q_OBJECT
   public:
     explicit GLSLWaveformRendererSignal(
             WaveformWidgetRenderer* waveformWidgetRenderer, bool rgbShader);
@@ -23,6 +24,9 @@ class GLSLWaveformRendererSignal : public WaveformRendererSignalBase {
     void debugClick();
     bool loadShaders();
     bool loadTexture();
+
+  public slots:
+    void slotWaveformUpdated();
 
   private:
     void createGeometry();

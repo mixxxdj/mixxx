@@ -164,6 +164,7 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
 
             // Both buffers should be equal
             ASSERT_EQ(contReadFrameCount, seekReadFrameCount);
+#ifdef __OPUS__
             if (filePath.endsWith(".opus")) {
                 expectDecodedSamplesEqualOpus(
                         pContReadSource->frames2samples(contReadFrameCount),
@@ -171,12 +172,15 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
                         &seekReadData[0],
                         "Decoding mismatch after seeking forward");
             } else {
+#endif // __OPUS__
                 expectDecodedSamplesEqual(
                         pContReadSource->frames2samples(contReadFrameCount),
                         &contReadData[0],
                         &seekReadData[0],
                         "Decoding mismatch after seeking forward");
+#ifdef __OPUS__
             }
+#endif // __OPUS__
 
             // Seek backwards to beginning of chunk and read again
             seekFrameIndex =

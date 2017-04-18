@@ -494,7 +494,7 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,max</SizePolicy>
                     <MinimumSize>70,20</MinimumSize>
-                    <MaximumSize>100,30</MaximumSize>
+                    <MaximumSize>190,30</MaximumSize>
                     <Children>
                       <NumberPos>
                         <TooltipId>track_time</TooltipId>

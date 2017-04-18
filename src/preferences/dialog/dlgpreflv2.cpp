@@ -106,7 +106,8 @@ void DlgPrefLV2::slotDisplayParameters() {
 }
 
 void DlgPrefLV2::slotApply() {
-    EffectManifest& currentEffectManifest = m_pLV2Backend->getManifestReference(m_currentEffectId);
+    EffectManifest& currentEffectManifest =
+            m_pLV2Backend->getManifestReference(m_currentEffectId);
     for (int i = 0; i < m_pluginParameters.size(); i++) {       
 	if (m_pluginParameters[i]->isChecked()) {
             currentEffectManifest.parameter(i)->setShowInParameterSlot(true);
