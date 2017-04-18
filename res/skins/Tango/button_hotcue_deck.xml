@@ -10,7 +10,7 @@ Variables:
   <PushButton>
     <TooltipId>hotcue</TooltipId>
     <ObjectName>HotcueButton</ObjectName>
-    <MinimumSize>10,24</MinimumSize>
+    <MinimumSize>15,24</MinimumSize>
     <MaximumSize>23,24</MaximumSize>
     <SizePolicy>me,f</SizePolicy>
     <NumberStates>2</NumberStates>

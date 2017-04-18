@@ -1414,7 +1414,6 @@ WTrackProperty#SamplerTitle_mini {
     }
 
 #SamplerVU, #SamplerPitchSlider {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   background-color: #333333;
   }
 
