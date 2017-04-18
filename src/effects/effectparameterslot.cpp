@@ -48,6 +48,7 @@ EffectParameterSlot::~EffectParameterSlot() {
     //qDebug() << debugString() << "destroyed";
     delete m_pControlValue;
     delete m_pSoftTakeover;
+    // m_pControlLoaded and m_pControlType are deleted by ~EffectParameterSlotBase
     delete m_pControlLinkType;
     delete m_pControlLinkInverse;
 }

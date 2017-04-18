@@ -33,6 +33,7 @@ EffectButtonParameterSlot::EffectButtonParameterSlot(const QString& group,
 
 EffectButtonParameterSlot::~EffectButtonParameterSlot() {
     //qDebug() << debugString() << "destroyed";
+    // m_pControlLoaded and m_pControlType are deleted by ~EffectParameterSlotBase
     delete m_pControlValue;
 }
 
