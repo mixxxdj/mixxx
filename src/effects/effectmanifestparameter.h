@@ -7,38 +7,66 @@
 
 class EffectManifestParameter {
   public:
-    enum ControlHint {
-        CONTROL_UNKNOWN = 0,
-        CONTROL_KNOB_LINEAR,
-        CONTROL_KNOB_LOGARITHMIC,
-        CONTROL_KNOB_STEPPING,   // A step rotary, steps given by m_steps
-                                 // are arranged with equal distance on scale
-        CONTROL_TOGGLE_STEPPING  // For button and enum controls, not accessible
-                                 // form many controllers, no linking to super knob
+    enum class ControlHint {
+        UNKNOWN = 0,
+        KNOB_LINEAR,
+        KNOB_LOGARITHMIC,
+        KNOB_STEPPING,   // A step rotary, steps given by m_steps
+                         // are arranged with equal distance on scale
+        TOGGLE_STEPPING  // For button and enum controls, not accessible
+                         // from many controllers, no linking to meta knob
     };
 
-    enum SemanticHint {
-        SEMANTIC_UNKNOWN = 0,
-        SEMANTIC_SAMPLES,
-        SEMANTIC_NOTE,
+    enum class SemanticHint {
+        UNKNOWN = 0,
+        SAMPLES,
+        NOTE,
     };
 
-    enum UnitsHint {
-        UNITS_UNKNOWN = 0,
-        UNITS_TIME,
-        UNITS_HERTZ,
-        UNITS_SAMPLERATE, // fraction of the samplerate
-        UNITS_BEATS, // multiples of a beat
+    enum class UnitsHint {
+        UNKNOWN = 0,
+        TIME,
+        HERTZ,
+        SAMPLERATE, // fraction of the samplerate
+        BEATS, // multiples of a beat
     };
 
-    enum LinkType {
-        LINK_NONE = 0,  // Not controlled by the super knob
-        LINK_LINKED,  // Controlled by the super knob as it is
-        LINK_LINKED_LEFT,  // Controlled by the left side of the super knob
-        LINK_LINKED_RIGHT, // Controlled by the right side of the super knob
-        LINK_LINKED_LEFT_RIGHT, // Controlled by both sides of the super knob
+    enum class LinkType {
+        NONE = 0,  // Not controlled by the meta knob
+        LINKED,  // Controlled by the meta knob as it is
+        LINKED_LEFT,  // Controlled by the left side of the meta knob
+        LINKED_RIGHT, // Controlled by the right side of the meta knob
+        LINKED_LEFT_RIGHT, // Controlled by both sides of the meta knob
         NUM_LINK_TYPES
     };
+
+    static QString LinkTypeToString (LinkType type) {
+        if (type == LinkType::LINKED) {
+            return "LINKED";
+        } else if (type == LinkType::LINKED_LEFT) {
+            return "LINKED_LEFT";
+        } else if (type == LinkType::LINKED_RIGHT) {
+            return "LINKED_RIGHT";
+        } else if (type == LinkType::LINKED_LEFT_RIGHT) {
+            return "LINKED_LEFT_RIGHT";
+        } else {
+            return "NONE";
+        }
+    }
+
+    static LinkType LinkTypeFromString (const QString& string) {
+        if (string == "LINKED") {
+            return LinkType::LINKED;
+        } else if (string == "LINKED_LEFT") {
+            return LinkType::LINKED_LEFT;
+        } else if (string == "LINKED_RIGHT") {
+            return LinkType::LINKED_RIGHT;
+        } else if (string == "LINKED_LEFT_RIGHT") {
+            return LinkType::LINKED_LEFT_RIGHT;
+        } else {
+            return LinkType::NONE;
+        }
+    }
 
     enum class LinkInversion {
         NOT_INVERTED = 0,
@@ -46,10 +74,10 @@ class EffectManifestParameter {
     };
 
     EffectManifestParameter()
-            : m_controlHint(CONTROL_UNKNOWN),
-              m_semanticHint(SEMANTIC_UNKNOWN),
-              m_unitsHint(UNITS_UNKNOWN),
-              m_defaultLinkType(LINK_NONE),
+            : m_controlHint(ControlHint::UNKNOWN),
+              m_semanticHint(SemanticHint::UNKNOWN),
+              m_unitsHint(UnitsHint::UNKNOWN),
+              m_defaultLinkType(LinkType::NONE),
               m_defaultLinkInversion(LinkInversion::NOT_INVERTED),
               m_neutralPointOnScale(0.0),
               m_default(0),
@@ -135,13 +163,13 @@ class EffectManifestParameter {
 
 
     // Neutral Point On Scale is the parameter in the range 0 .. 1 on the knob that
-    // is adopted as neutral when controlled by the super knob.
-    // This is allows to link the super knob in a way that two effects are
-    // cranked in simultaneous, or in case of a split filter like super knob,
-    // both effects are neutral at super knob center.
+    // is adopted as neutral when controlled by the meta knob.
+    // This is allows to link the meta knob in a way that two effects are
+    // cranked in simultaneous, or in case of a split filter like meta knob,
+    // both effects are neutral at meta knob center.
     // A EQ Gain has usually a neutral point of 0.5 (0 dB) while a delay knob
     // has a neutral point of 0.0 (no delay)
-    // A EQ Gain knob cannot be used on a split super knob.
+    // A EQ Gain knob cannot be used on a split meta knob.
     virtual double neutralPointOnScale() const {
         return m_neutralPointOnScale;
     }
