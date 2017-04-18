@@ -305,7 +305,7 @@ QDomElement EffectSlot::toXml(QDomDocument* doc) const {
 }
 
 void EffectSlot::loadEffectSlotFromXml(const QDomElement& effectElement) {
-    if (effectElement.text().isEmpty()) {
+    if (!effectElement.hasChildNodes()) {
         return;
     }
 
@@ -314,7 +314,7 @@ void EffectSlot::loadEffectSlotFromXml(const QDomElement& effectElement) {
 
     QDomElement parametersElement = XmlParse::selectElement(effectElement,
                                                             EffectXml::ParametersRoot);
-    if (parametersElement.text().isEmpty()) {
+    if (!parametersElement.hasChildNodes()) {
         return;
     }
 

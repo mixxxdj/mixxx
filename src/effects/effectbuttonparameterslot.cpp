@@ -128,7 +128,7 @@ void EffectButtonParameterSlot::loadParameterSlotFromXml(const QDomElement&
     if (m_pEffectParameter == nullptr) {
         return;
     }
-    if (parameterElement.text().isEmpty()) {
+    if (!parameterElement.hasChildNodes()) {
         m_pControlValue->reset();
     } else {
         bool conversionWorked = false;

@@ -280,7 +280,7 @@ void EffectParameterSlot::loadParameterSlotFromXml(const QDomElement& parameterE
     if (m_pEffectParameter == nullptr) {
         return;
     }
-    if (parameterElement.text().isEmpty()) {
+    if (!parameterElement.hasChildNodes()) {
         m_pControlValue->reset();
         m_pControlLinkType->set(
             static_cast<double>(m_pEffectParameter->getDefaultLinkType()));

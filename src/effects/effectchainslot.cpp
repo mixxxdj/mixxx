@@ -470,7 +470,7 @@ QDomElement EffectChainSlot::toXml(QDomDocument* doc) const {
 }
 
 void EffectChainSlot::loadChainSlotFromXml(const QDomElement& effectChainElement) {
-    if (effectChainElement.text().isEmpty()) {
+    if (!effectChainElement.hasChildNodes()) {
         return;
     }
 
