@@ -11,33 +11,33 @@
 EffectParameterSlot::EffectParameterSlot(const QString& group, const unsigned int iParameterSlotNumber)
         : EffectParameterSlotBase(group, iParameterSlotNumber) {
     QString itemPrefix = formatItemPrefix(iParameterSlotNumber);
-    m_pControlLoaded = new ControlObject(
-            ConfigKey(m_group, itemPrefix + QString("_loaded")));
-    m_pControlType = new ControlObject(
-            ConfigKey(m_group, itemPrefix + QString("_type")));
-
-    m_pControlLinkType = new ControlPushButton(
-            ConfigKey(m_group, itemPrefix + QString("_link_type")));
-    m_pControlLinkType->setButtonMode(ControlPushButton::TOGGLE);
-    m_pControlLinkType->setStates(
-        static_cast<double>(EffectManifestParameter::LinkType::NUM_LINK_TYPES));
-
-    m_pControlLinkInverse = new ControlPushButton(
-            ConfigKey(m_group, itemPrefix + QString("_link_inverse")));
-    m_pControlLinkInverse->setButtonMode(ControlPushButton::TOGGLE);
 
     m_pControlValue = new ControlEffectKnob(
             ConfigKey(m_group, itemPrefix));
     connect(m_pControlValue, SIGNAL(valueChanged(double)),
             this, SLOT(slotValueChanged(double)));
 
+    m_pControlLoaded = new ControlObject(
+            ConfigKey(m_group, itemPrefix + QString("_loaded")));
+    m_pControlLoaded->setReadOnly();
+
+    m_pControlType = new ControlObject(
+            ConfigKey(m_group, itemPrefix + QString("_type")));
+    m_pControlType->setReadOnly();
+
+    m_pControlLinkType = new ControlPushButton(
+            ConfigKey(m_group, itemPrefix + QString("_link_type")));
+    m_pControlLinkType->setButtonMode(ControlPushButton::TOGGLE);
+    m_pControlLinkType->setStates(
+        static_cast<double>(EffectManifestParameter::LinkType::NUM_LINK_TYPES));
     m_pControlLinkType->connectValueChangeRequest(
             this, SLOT(slotLinkTypeChanging(double)));
+
+    m_pControlLinkInverse = new ControlPushButton(
+            ConfigKey(m_group, itemPrefix + QString("_link_inverse")));
+    m_pControlLinkInverse->setButtonMode(ControlPushButton::TOGGLE);
     connect(m_pControlLinkInverse, SIGNAL(valueChanged(double)),
             this, SLOT(slotLinkInverseChanged(double)));
-
-    m_pControlType->setReadOnly();
-    m_pControlLoaded->setReadOnly();
 
     m_pSoftTakeover = new SoftTakeover();
 
@@ -47,10 +47,10 @@ EffectParameterSlot::EffectParameterSlot(const QString& group, const unsigned in
 EffectParameterSlot::~EffectParameterSlot() {
     //qDebug() << debugString() << "destroyed";
     delete m_pControlValue;
-    delete m_pSoftTakeover;
     // m_pControlLoaded and m_pControlType are deleted by ~EffectParameterSlotBase
     delete m_pControlLinkType;
     delete m_pControlLinkInverse;
+    delete m_pSoftTakeover;
 }
 
 void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
