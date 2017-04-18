@@ -66,7 +66,8 @@ int main(int argc, char * argv[]) {
     // ErrorDialogHandler::errorDialog(). TODO(XXX): Remove this hack.
     QThread::currentThread()->setObjectName("Main");
 
-    mixxx::Logging::initialize();
+    mixxx::Logging::initialize(args.getSettingsPath(),
+                               args.getLogLevel(), args.getDebugAssertBreak());
 
     MixxxApplication a(argc, argv);
 

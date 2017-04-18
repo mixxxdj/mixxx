@@ -102,6 +102,7 @@ class EffectsManager : public QObject {
     qint64 m_nextRequestId;
     QHash<qint64, EffectsRequest*> m_activeRequests;
 
+    ControlObject* m_pNumEffectsAvailable;
     // We need to create Control Objects for Equalizers' frequencies
     ControlPotmeter* m_pLoEqFreq;
     ControlPotmeter* m_pHiEqFreq;

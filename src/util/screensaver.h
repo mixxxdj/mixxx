@@ -2,12 +2,12 @@
 #define MIXXX_SCREENSAVER_H
 
 #ifdef Q_OS_MAC
-#import <IOKit/pwr_mgt/IOPMLib.h>
+#include <IOKit/pwr_mgt/IOPMLib.h>
 #endif // Q_OS_MAC
 
 namespace mixxx {
 
-// Code related to interacting with the screensaver. 
+// Code related to interacting with the screensaver.
 //
 // Main use is to prevent the screensaver from starting if Mixxx is being used.
 //
