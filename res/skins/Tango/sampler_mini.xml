@@ -75,6 +75,27 @@ Variables:
                 <Size>82me,20f</Size>
                 <Children>
 
+                  <Template src="skin:knob_textless.xml">
+                    <SetVariable name="TooltipId">pregain</SetVariable>
+                    <SetVariable name="ObjectName">SamplerGainKnob</SetVariable>
+                    <SetVariable name="Size">20f,20f</SetVariable>
+                    <SetVariable name="group"><Variable name="group"/></SetVariable>
+                    <SetVariable name="ConfigKey">volume</SetVariable>
+                    <SetVariable name="Color">tiny_red</SetVariable>
+                  </Template>
+
+                  <WidgetGroup><Size>1me,1min</Size><Children/></WidgetGroup>
+
+                  <Template src="skin:button_3state.xml">
+                    <SetVariable name="TooltipId">orientation</SetVariable>
+                    <SetVariable name="ObjectName">SamplerButton_mini</SetVariable>
+                    <SetVariable name="Size">18f,18f</SetVariable>
+                    <SetVariable name="state_0_text">|--</SetVariable>
+                    <SetVariable name="state_1_text">-|-</SetVariable>
+                    <SetVariable name="state_2_text">--|</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
+                  </Template>
+
                   <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
 
                   <Template src="skin:button_2state.xml">
@@ -87,27 +108,6 @@ Variables:
                   </Template>
 
                   <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
-
-                  <Template src="skin:button_3state.xml">
-                    <SetVariable name="TooltipId">orientation</SetVariable>
-                    <SetVariable name="ObjectName">SamplerButton_mini</SetVariable>
-                    <SetVariable name="Size">18f,18f</SetVariable>
-                    <SetVariable name="state_0_text">|--</SetVariable>
-                    <SetVariable name="state_1_text">-|-</SetVariable>
-                    <SetVariable name="state_2_text">--|</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
-                  </Template>
-
-                  <WidgetGroup><Size>1me,1min</Size><Children/></WidgetGroup>
-
-                  <Template src="skin:knob_textless.xml">
-                    <SetVariable name="TooltipId">pregain</SetVariable>
-                    <SetVariable name="ObjectName">SamplerGainKnob</SetVariable>
-                    <SetVariable name="Size">20f,20f</SetVariable>
-                    <SetVariable name="group"><Variable name="group"/></SetVariable>
-                    <SetVariable name="ConfigKey">volume</SetVariable>
-                    <SetVariable name="Color">tiny_red</SetVariable>
-                  </Template>
                 </Children>
               </WidgetGroup><!-- Sync, CF assign, Volume -->
               

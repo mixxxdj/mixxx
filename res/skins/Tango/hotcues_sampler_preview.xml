@@ -6,14 +6,16 @@ Variables:
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>Hotcues</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>max,max</SizePolicy>
+    <SizePolicy>me,f</SizePolicy>
     <Children>
 
-      <WidgetGroup><!-- Hotcues 1-4 -->
+      <WidgetGroup><!-- 4 -->
+        <ObjectName>Hotcues</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>max,max</SizePolicy>
+        <MinimumSize>60,18</MinimumSize>
+        <MaximumSize>83,18</MaximumSize>
+        <SizePolicy>me,f</SizePolicy>
         <Children>
           <Template src="skin:button_hotcue_sam_pre.xml">
             <SetVariable name="HotCue">1</SetVariable>
@@ -30,18 +32,20 @@ Variables:
           <Template src="skin:button_hotcue_sam_pre.xml">
             <SetVariable name="HotCue">4</SetVariable>
           </Template>
-            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
           <Transform><IsEqual>1</IsEqual></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- /Hotcues 1-4 -->
+      </WidgetGroup><!-- 4 -->
 
-      <WidgetGroup><!-- Hotcues 1-8 -->
+      <WidgetGroup><!-- 8 -->
+        <ObjectName>Hotcues</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>max,max</SizePolicy>
+        <MinimumSize>120,18</MinimumSize>
+        <MaximumSize>167,18</MaximumSize>
+        <SizePolicy>me,f</SizePolicy>
         <Children>
           <Template src="skin:button_hotcue_sam_pre.xml">
             <SetVariable name="HotCue">1</SetVariable>
@@ -74,15 +78,29 @@ Variables:
           <Template src="skin:button_hotcue_sam_pre.xml">
             <SetVariable name="HotCue">8</SetVariable>
           </Template>
-            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
           <Transform><IsEqual>2</IsEqual></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- /Hotcues 1-8 -->
+      </WidgetGroup><!-- 8 -->
 
+      <WidgetGroup>
+        <ObjectName>Spacer0f</ObjectName>
+        <MinimumSize>0,0</MinimumSize>
+        <MaximumSize>1,18</MaximumSize>
+        <SizePolicy>min,me</SizePolicy>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>Spacer33</ObjectName>
+        <SizePolicy>min,me</SizePolicy>
+      </WidgetGroup>
     </Children>
+    <Connection>
+      <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
   </WidgetGroup>
 </Template>

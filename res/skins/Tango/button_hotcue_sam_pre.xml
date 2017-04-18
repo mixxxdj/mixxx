@@ -9,19 +9,30 @@ Variables:
   HotCue: hotcue number
 -->
 <Template>
-  <WidgetGroup>
-    <Layout>vertical</Layout>
-    <SizePolicy>max,min</SizePolicy>
-    <Children>
-      <Template src="skin:button_2state_display.xml">
-        <SetVariable name="TooltipId">hotcue</SetVariable>
-        <SetVariable name="ObjectName">HotcueButton</SetVariable>
-        <SetVariable name="Size">19max,24f</SetVariable>
-        <SetVariable name="state_0_text"><Variable name="HotCue"/></SetVariable>
-        <SetVariable name="state_1_text"><Variable name="HotCue"/></SetVariable>
-        <SetVariable name="ConfigKey"><Variable name="group"/>,hotcue_<Variable name="HotCue"/>_activate</SetVariable>
-        <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,hotcue_<Variable name="HotCue"/>_enabled</SetVariable>
-      </Template>
-    </Children>
-  </WidgetGroup>
+  <PushButton>
+    <TooltipId>hotcue</TooltipId>
+    <ObjectName>HotcueButton</ObjectName>
+    <MinimumSize>14,18</MinimumSize>
+    <MaximumSize>20,18</MaximumSize>
+    <SizePolicy>me,f</SizePolicy>
+    <NumberStates>2</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Text><Variable name="HotCue"/></Text>
+      <Alignment>center</Alignment>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Text><Variable name="HotCue"/></Text>
+      <Alignment>center</Alignment>
+    </State>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="HotCue"/>_activate</ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="HotCue"/>_enabled</ConfigKey>
+      <ConnectValueFromWidget>false</ConnectValueFromWidget>
+    </Connection>
+  </PushButton>
 </Template>

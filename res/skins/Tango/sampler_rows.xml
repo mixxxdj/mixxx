@@ -20,7 +20,7 @@ Variables:
           <WidgetGroup><!-- Maxi Samplers 1-4 -->
             <ObjectName>SamplerDecks</ObjectName>
             <Layout>horizontal</Layout>
-            <Size>770me,82f</Size>
+            <SizePolicy>me,min</SizePolicy>
             <Children>
 
               <Template src="skin:sampler.xml">
@@ -107,7 +107,7 @@ Variables:
           <WidgetGroup><!-- Maxi Samplers 5-8 -->
             <ObjectName>SamplerDecks</ObjectName>
             <Layout>horizontal</Layout>
-            <Size>770me,82f</Size>
+            <SizePolicy>me,min</SizePolicy>
             <Children>
 
               <Template src="skin:sampler.xml">

@@ -483,7 +483,7 @@ WPushButton {
     }
 
 #Hotcues {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   background-color: #0f0f0f;
   }
   #HotcueButton {
@@ -1349,33 +1349,24 @@ WBeatSpinBox {
   
 }
 
-#SamplerTitle {
-  padding-left: 3px;
-  }
-  #SamplerTitle WLabel {
-    font-size: 14px/18px;
-    font-weight: bold;
-    color: #bababa;
-    text-align: left;
-  }
+WTrackProperty#SamplerTitle {
+  font-size: 14px/18px;
+  font-weight: bold;
+  color: #bababa;
+  text-align: left;
+  background-color: #333333;
+}
 
 WTrackProperty#SamplerTitle_mini {
   font-size: 14px/14px;
   font-weight: bold;
-  color: #bababa;
+  color: #d2d2d2;
   text-align: left;
-  background-color: rgba(51, 51, 51, 170);
+  padding: 0px 1px 0px 1px;
 }
 
 #SamplerOverviewRow, #PreviewOverview {
   background-color: #1a1a1a;
-}
-#SamplerOverview_Underlay[displayValue="0"] {
-  background-color: #1a1a1a;
-}
-#SamplerOverview_Underlay[displayValue="1"] {
-  border: 1px solid #eeeeee;
-  background-color: #333333;
 }
 
 #SamplerOverview_mini {
@@ -1402,15 +1393,34 @@ WTrackProperty#SamplerTitle_mini {
     margin-left: 3px;
   }
 
-#SamplerVU {
-  padding: 4px 3px 4px 3px;
-}
-#SamplerPitchSlider {
+#SamplerFxAssignButton {
+  font-size: 13px/13px;
+  font-weight: bold;
+  text-align: center;
+  }
+  #SamplerFxAssignButton[displayValue="0"] {
+    background-color: #333333;
+    color: #888888;
+    }
+    #SamplerFxAssignButton[displayValue="0"]:hover {
+      border: 1px solid #ffb401;
+    }
+  #SamplerFxAssignButton[displayValue="1"] {
+    background-color: #ffb401;	/* yellow2 	*/
+    color: #000000;
+    }
+    #SamplerFxAssignButton[displayValue="1"]:hover {
+      border: 1px solid #FFFFFF;
+    }
+
+#SamplerVU, #SamplerPitchSlider {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   background-color: #333333;
   }
-  #SamplerPitchSlider:hover {
-  }
+
+#SamplerVU {
+  padding: 2px 2px 1px 2px;
+}
 
 #SamplerPlay {
   margin: 1px 1px 1px 0px;

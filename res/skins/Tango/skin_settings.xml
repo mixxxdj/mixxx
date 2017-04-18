@@ -285,6 +285,12 @@ Description:
               </Template>
 
               <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="state_0_text">      Sampler FX buttons</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Sampler FX buttons</SetVariable>
+                <SetVariable name="Setting">[Tango],sampler_fx_buttons</SetVariable>
+              </Template>
+
+              <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      Enforce compact mode</SetVariable>
                 <SetVariable name="state_1_text"> &#10004; Enforce compact mode</SetVariable>
                 <SetVariable name="Setting">[Tango],enforce_netbook_mode</SetVariable>

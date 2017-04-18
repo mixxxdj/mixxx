@@ -45,7 +45,7 @@
     <attributes>
       <!-- Set skin defaults. -->
       <attribute config_key="[Master],num_decks">4</attribute>
-      <attribute config_key="[Master],num_samplers">8</attribute>
+      <attribute config_key="[Master],num_samplers">16</attribute>
       <attribute persist="true" config_key="[Master],show_mixer">0</attribute>
       <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Master],maximize_library">0</attribute>
@@ -75,6 +75,7 @@
       <attribute persist="true" config_key="[Tango],mixerbar_mic">1</attribute>
       <attribute persist="true" config_key="[Tango],mixer_spinnyCover">0</attribute>
       <attribute persist="true" config_key="[Tango],pitch_fader">1</attribute>
+      <attribute persist="true" config_key="[Tango],sampler_fx_buttons">1</attribute>
       <attribute persist="true" config_key="[Tango],Samplers_miniMAXI">1</attribute>
       <attribute persist="true" config_key="[Tango],Samplers_miniMAXI_Stack">0</attribute>
       <attribute persist="true" config_key="[Tango],stacked_overviews">1</attribute>
