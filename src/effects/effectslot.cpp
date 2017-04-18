@@ -175,14 +175,11 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
             addEffectButtonParameterSlot();
         }
 
-        m_parametersById.clear();
         for (const auto& pParameter : m_parameters) {
             pParameter->loadEffect(pEffect);
-            m_parametersById.insert(pParameter->getManifest().id(), pParameter);
         }
         for (const auto& pParameter : m_buttonParameters) {
             pParameter->loadEffect(pEffect);
-            m_parametersById.insert(pParameter->getManifest().id(), pParameter);
         }
 
         emit(effectLoaded(pEffect, m_iEffectNumber));
@@ -291,8 +288,21 @@ QDomElement EffectSlot::toXml(QDomDocument* doc) const {
 
     QDomElement parametersElement = doc->createElement(EffectXml::ParametersRoot);
 
-    for (const auto& pParameter : m_parametersById) {
+    for (const auto& pParameter : m_parameters) {
         QDomElement parameterElement = pParameter->toXml(doc);
+        if (!parameterElement.hasChildNodes()) {
+            continue;
+        }
+        XmlParse::addElement(*doc, parameterElement,
+                             EffectXml::ParameterId,
+                             pParameter->getManifest().id());
+        parametersElement.appendChild(parameterElement);
+    }
+    for (const auto& pParameter : m_buttonParameters) {
+        QDomElement parameterElement = pParameter->toXml(doc);
+        if (!parameterElement.hasChildNodes()) {
+            continue;
+        }
         XmlParse::addElement(*doc, parameterElement,
                              EffectXml::ParameterId,
                              pParameter->getManifest().id());
@@ -309,6 +319,14 @@ void EffectSlot::loadEffectSlotFromXml(const QDomElement& effectElement) {
         return;
     }
 
+    QDomElement effectIdElement = XmlParse::selectElement(effectElement,
+                                                          EffectXml::EffectId);
+    if (m_pEffect->getManifest().id() != effectIdElement.text()) {
+        qWarning() << "EffectSlot::loadEffectSlotFromXml"
+                   << "effect ID in XML does not match presently loaded effect, ignoring.";
+        return;
+    }
+
     m_pControlMetaParameter->set(XmlParse::selectNodeDouble(effectElement,
                                                             EffectXml::EffectMetaParameter));
 
@@ -318,14 +336,22 @@ void EffectSlot::loadEffectSlotFromXml(const QDomElement& effectElement) {
         return;
     }
 
+    QMap<QString, EffectParameterSlotBasePointer> parametersById;
+    for (const auto& pParameter : m_parameters) {
+        parametersById.insert(pParameter->getManifest().id(), pParameter);
+    }
+    for (const auto& pParameter : m_buttonParameters) {
+        parametersById.insert(pParameter->getManifest().id(), pParameter);
+    }
+
     QDomNodeList parametersNodeList = parametersElement.childNodes();
     for (int i = 0; i < parametersNodeList.size(); ++i) {
         QDomNode parameterNode = parametersNodeList.at(i);
         if (parameterNode.isElement()) {
             const QString id = XmlParse::selectNodeQString(parameterNode,
                                                            EffectXml::ParameterId);
-            if (m_parametersById.contains(id)) {
-                EffectParameterSlotBasePointer pParameterSlot = m_parametersById.value(id);
+            EffectParameterSlotBasePointer pParameterSlot = parametersById.value(id);
+            if (pParameterSlot != nullptr) {
                 pParameterSlot->loadParameterSlotFromXml(parameterNode.toElement());
             }
         }
