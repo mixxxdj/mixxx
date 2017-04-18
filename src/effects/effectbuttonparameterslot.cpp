@@ -132,7 +132,8 @@ void EffectButtonParameterSlot::loadParameterSlotFromXml(const QDomElement&
     } else {
         bool conversionWorked = false;
         double value = XmlParse::selectNodeDouble(parameterElement,
-                                                  EffectXml::ParameterValue);
+                                                  EffectXml::ParameterValue,
+                                                  &conversionWorked);
         if (conversionWorked) {
             m_pControlValue->set(value);
         }
