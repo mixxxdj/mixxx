@@ -201,23 +201,24 @@ Variables:
               <WidgetGroup>
                 <ObjectName>SuperWetDryContainer</ObjectName>
                 <Layout>horizontal</Layout>
-                <SizePolicy>f,f</SizePolicy>
+                <Size>80f,-1min</Size>
                 <Children>
-
-                  <Template src="skin:fx_superwetdry_knob.xml">
-                    <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
-                    <SetVariable name="ObjectName">SuperWetDry</SetVariable>
+                  <Template src="skin:knob_textless.xml">
+                    <TooltipId>EffectUnit_super1</TooltipId>
+                    <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
+                    <SetVariable name="Size">32f,32f</SetVariable>
+                    <SetVariable name="group">[<Variable name="fxGroup"/>]</SetVariable>
                     <SetVariable name="ConfigKey">super1</SetVariable>
                     <SetVariable name="Color">blue</SetVariable>
-                    <SetVariable name="Label">Super</SetVariable>
                   </Template>
-
-                  <Template src="skin:fx_superwetdry_knob.xml">
-                    <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
-                    <SetVariable name="ObjectName">SuperWetDry</SetVariable>
+                    <WidgetGroup><Size>8f,1min</Size><Children/></WidgetGroup>
+                  <Template src="skin:knob_textless.xml">
+                    <TooltipId>EffectUnit_mix</TooltipId>
+                    <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
+                    <SetVariable name="Size">32f,32f</SetVariable>
+                    <SetVariable name="group">[<Variable name="fxGroup"/>]</SetVariable>
                     <SetVariable name="ConfigKey">mix</SetVariable>
                     <SetVariable name="Color">red</SetVariable>
-                    <SetVariable name="Label">Mix</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup><!-- /SuperWetDryContainer -->

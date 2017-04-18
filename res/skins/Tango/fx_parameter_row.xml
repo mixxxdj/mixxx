@@ -2,11 +2,8 @@
 Description:
   A row of up to 8 effect parameter knobs and up to 8 parameter buttons.
 Variables:
-  EffectRack: the rack
-  EffectUnit: the unit
-  Effect: the effect
-  EffectParameter: the parameter if it is a knob
-  EffectButtonParameter: the parameter if it is a button
+  fxGroup   : EffectRack1_EffectUnitX
+  EffectNum : effect number
 -->
 <Template>
   <SetVariable name="Effect">[<Variable name="fxGroup"/>_Effect<Variable name="EffectNum"/>]</SetVariable>

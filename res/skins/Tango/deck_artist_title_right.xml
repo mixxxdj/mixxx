@@ -18,8 +18,6 @@ Variables:
 
       <Template src="skin:loop_indicator.xml"/>
 
-      <Template src="skin:deck_fx_indicator.xml"/>
-
       <WidgetGroup><!-- Artist & Title rows -->
         <Layout>vertical</Layout>
         <SizePolicy>me,me</SizePolicy>

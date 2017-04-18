@@ -3,15 +3,11 @@ Description:
   An effect parameter knob with a 5 state button below
   that controls SuperKnob linking type.
 Variables:
-  ToolTip/TooltipId
-  ObjectName
-  Size
-  Color: The knob's notch colour.
-  ConfigKey			The control to connect to.
-  EffectRack: the rack
-  EffectUnit: the unit
-  Effect: the effect
-  EffectParameter: the parameter
+  EffectRack      : rack number
+  EffectUnit      : unit number
+  Effect          : EffectRack1_EffectUnitX_EffectY
+  EffectNum       : effect number
+  EffectParameter : the parameter
 -->
 <Template>
   <WidgetGroup>
@@ -19,9 +15,9 @@ Variables:
     <Size>52f,39f</Size>
     <Children>
 
-      <WidgetGroup>
-        <Layout>vertical</Layout>
+      <WidgetGroup><!-- Effect parameter knob -->
         <ObjectName>EffectKnobParameter</ObjectName>
+        <Layout>vertical</Layout>
         <Size>51f,30f</Size>
         <Children>
           <Template src="skin:knob_textless.xml">
@@ -34,6 +30,7 @@ Variables:
         </Children>
       </WidgetGroup>
 
+      <!-- Meta knob link button -->
       <Template src="skin:button_5state.xml">
         <SetVariable name="ObjectName">EffectLinkTypeButton</SetVariable>
         <SetVariable name="TooltipId">EffectSlot_parameter_link_type</SetVariable>
@@ -41,7 +38,7 @@ Variables:
         <SetVariable name="ConfigKey"><Variable name="Effect"/>,parameter<Variable name="EffectParameter"/>_link_type</SetVariable>
       </Template>
 
-      <WidgetGroup>
+      <WidgetGroup><!-- Name of paramter -->
         <Size>51f,1min</Size>
         <Layout>horizontal</Layout>
         <Children>
@@ -59,6 +56,7 @@ Variables:
         </Children>
       </WidgetGroup>
 
+      <!-- Button to display meta knob link type underneath the parameter name -->
       <Template src="skin:button_5state.xml">
         <SetVariable name="ObjectName">EffectLinkTypeButtonUnderlay</SetVariable>
         <SetVariable name="Size">51f,38f</SetVariable>

@@ -8,16 +8,16 @@
         <SizePolicy>me,p</SizePolicy>
         <Children>
           <Template src="skin:deck_fx_indicator.xml">
-            <SetVariable name="fx_unit">1</SetVariable>
+            <SetVariable name="fxUnit">1</SetVariable>
           </Template>
           <Template src="skin:deck_fx_indicator.xml">
-            <SetVariable name="fx_unit">2</SetVariable>
+            <SetVariable name="fxUnit">2</SetVariable>
           </Template>
           <Template src="skin:deck_fx_indicator.xml">
-            <SetVariable name="fx_unit">3</SetVariable>
+            <SetVariable name="fxUnit">3</SetVariable>
           </Template>
           <Template src="skin:deck_fx_indicator.xml">
-            <SetVariable name="fx_unit">4</SetVariable>
+            <SetVariable name="fxUnit">4</SetVariable>
           </Template>
           <WidgetGroup>
             <ObjectName>Spacer33</ObjectName>
@@ -40,17 +40,18 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
+
               <Template src="skin:deck_fx_indicator.xml">
-                <SetVariable name="fx_unit">1</SetVariable>
+                <SetVariable name="fxUnit">4</SetVariable>
               </Template>
               <Template src="skin:deck_fx_indicator.xml">
-                <SetVariable name="fx_unit">2</SetVariable>
+                <SetVariable name="fxUnit">3</SetVariable>
               </Template>
               <Template src="skin:deck_fx_indicator.xml">
-                <SetVariable name="fx_unit">3</SetVariable>
+                <SetVariable name="fxUnit">2</SetVariable>
               </Template>
               <Template src="skin:deck_fx_indicator.xml">
-                <SetVariable name="fx_unit">4</SetVariable>
+                <SetVariable name="fxUnit">1</SetVariable>
               </Template>
 
               <!--	Additional line to display comments from file tag.

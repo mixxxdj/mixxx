@@ -1,14 +1,15 @@
 <!--
 Description:
-  Container in right effect units with
+  Container in left effect units with
   * effect enable button
   * effect focus button
   * effect selector drop-down list
   * Meta knob
 Variables:
+  fxGroup     : EffectRack1_EffectUnitX
   EffectRack  : effect rack number
   EffectUnit  : effect unit number
-  EffectNum      : effect number
+  EffectNum   : effect number
 -->
 <Template>
   <SetVariable name="Effect">[<Variable name="fxGroup"/>_Effect<Variable name="EffectNum"/>]</SetVariable>

@@ -189,21 +189,23 @@
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-
-          <Template src="skin:fx_superwetdry_knob_mini.xml">
-            <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
-            <SetVariable name="ObjectName">SuperWetDry</SetVariable>
+          <Template src="skin:knob_textless.xml">
+            <TooltipId>EffectUnit_super1</TooltipId>
+            <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
+            <SetVariable name="Size">30f,30f</SetVariable>
+            <SetVariable name="group">[<Variable name="fxGroup"/>]</SetVariable>
             <SetVariable name="ConfigKey">super1</SetVariable>
             <SetVariable name="Color">blue</SetVariable>
           </Template>
 
-          <Template src="skin:fx_superwetdry_knob_mini.xml">
-            <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
-            <SetVariable name="ObjectName">SuperWetDry</SetVariable>
+          <Template src="skin:knob_textless.xml">
+            <TooltipId>EffectUnit_mix</TooltipId>
+            <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
+            <SetVariable name="Size">30f,30f</SetVariable>
+            <SetVariable name="group">[<Variable name="fxGroup"/>]</SetVariable>
             <SetVariable name="ConfigKey">mix</SetVariable>
             <SetVariable name="Color">red</SetVariable>
           </Template>
-
         </Children>
       </WidgetGroup><!-- /SuperWetDryContainer -->
 

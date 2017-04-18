@@ -1186,23 +1186,11 @@ WBeatSpinBox {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   margin-left: 1px;
   }
-  #SuperWetDryContainer {
-    qproperty-layoutAlignment: 'AlignRight | AlignTop';
-    background-color: #333333;
-    }
-    #SuperWetDry {
-      qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-      }
-    #SuperWetDryKnob WKnobComposed {
-      qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-      }
-    #SuperWetDryLabel {
-      margin-top: 27px;
-      font-size: 11px/13px;
-      font-weight: bold;
-      text-align: center;
-      color: #999999;
-      }
+
+#SuperWetDryContainer {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  background-color: #333333;
+  }
 
 #EffectUnitToggleButton[displayValue="0"] {
   background: #333333 url(skin:/buttons/btn_off.svg) no-repeat center center;
@@ -1214,9 +1202,9 @@ WBeatSpinBox {
 #EffectUnitToggleButton[displayValue="1"] {
     background: #666666 url(skin:/buttons/btn_on.svg) no-repeat center center;
   }
-#EffectUnitToggleButton[displayValue="1"]:hover {
-    border: 1px solid #eeeeee;
-  }
+  #EffectUnitToggleButton[displayValue="1"]:hover {
+      border: 1px solid #eeeeee;
+    }
 
 #EffectUnitGroupColumn {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
