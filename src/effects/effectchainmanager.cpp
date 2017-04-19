@@ -174,31 +174,16 @@ QList<std::pair<EffectChainPointer, QDomElement>> EffectChainManager::loadEffect
     QFile file(settingsPath.absoluteFilePath("effects.xml"));
     QDomDocument doc;
 
-    if (!file.open(QIODevice::ReadOnly)) {
-        EffectChainPointer pEmptyChain;
-        QDomElement emptyChainElement = doc.createElement(EffectXml::Chain);
-        for (int i = 0; i < kNumEffectsPerUnit; ++i) {
-            pEmptyChain = EffectChainPointer(new EffectChain(m_pEffectsManager,
-                                                            QString(),
-                                                            EffectChainPointer()));
+    QDomElement emptyChainElement = doc.createElement(EffectXml::Chain);
+    // Check that XML file can be opened and is valid XML
+    if (!file.open(QIODevice::ReadOnly) || !doc.setContent(&file)) {
+        for (int i = 0; i < kNumStandardEffectChains; ++i) {
+            EffectChainPointer pEmptyChain = EffectChainPointer(
+                new EffectChain(m_pEffectsManager, QString(), EffectChainPointer()));
             loadedChains.append(std::make_pair(pEmptyChain, emptyChainElement));
         }
         return loadedChains;
     }
-
-    if (!doc.setContent(&file)) {
-        file.close();
-        EffectChainPointer pEmptyChain;
-        QDomElement emptyChainElement = doc.createElement(EffectXml::Chain);
-        for (int i = 0; i < kNumEffectsPerUnit; ++i) {
-            pEmptyChain = EffectChainPointer(new EffectChain(m_pEffectsManager,
-                                                            QString(),
-                                                            EffectChainPointer()));
-            loadedChains.append(std::make_pair(pEmptyChain, emptyChainElement));
-        }
-        return loadedChains;
-    }
-    file.close();
 
     QDomElement root = doc.documentElement();
     QDomElement rackElement = XmlParse::selectElement(root, EffectXml::Rack);
@@ -217,5 +202,14 @@ QList<std::pair<EffectChainPointer, QDomElement>> EffectChainManager::loadEffect
             m_effectChains.append(pChain);
         }
     }
+
+    // Make sure there are enough chains if the XML file does not have
+    // enough <EffectChain> elements
+    for (int i = loadedChains.size(); i < kNumStandardEffectChains; ++i) {
+        EffectChainPointer pEmptyChain = EffectChainPointer(
+            new EffectChain(m_pEffectsManager, QString(), EffectChainPointer()));
+        loadedChains.append(std::make_pair(pEmptyChain, emptyChainElement));
+    }
+
     return loadedChains;
 }

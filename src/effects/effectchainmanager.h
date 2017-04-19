@@ -54,6 +54,7 @@ class EffectChainManager : public QObject {
     QList<std::pair<EffectChainPointer, QDomElement>> loadEffectChains();
 
     static const int kNumEffectsPerUnit = 4;
+    static const int kNumStandardEffectChains = 4;
 
   private:
     QString debugString() const {
