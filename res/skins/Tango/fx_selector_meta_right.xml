@@ -18,7 +18,7 @@ Variables:
     <Layout>horizontal</Layout>
     <MinimunSize>115,30</MinimunSize>
     <MaximumSize>130,39</MaximumSize>
-    <SizePolicy>min,min</SizePolicy>
+    <SizePolicy>min,me</SizePolicy>
     <Children>
 
       <Template src="skin:fx_focus_button.xml"/>
