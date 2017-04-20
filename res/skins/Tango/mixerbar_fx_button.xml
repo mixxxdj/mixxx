@@ -9,7 +9,7 @@ Variables:
   <PushButton>
     <TooltipId>EffectUnit_group_enabled</TooltipId>
     <ObjectName>SamplerFxAssignButton</ObjectName>
-    <Size>28me,16f</Size>
+    <Size>26f,15f</Size>
     <NumberStates>2</NumberStates>
     <RightClickIsPushButton>false</RightClickIsPushButton>
     <State>

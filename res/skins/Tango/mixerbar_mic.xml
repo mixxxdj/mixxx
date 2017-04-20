@@ -92,6 +92,52 @@ Variables:
         </Children>
       </WidgetGroup><!-- /Volume fader + VU Meter -->
 
+      <WidgetGroup><!-- FX assignment buttons -->
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skin:mixerbar_fx_button.xml">
+                <SetVariable name="fxUnit">1</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+              <Template src="skin:mixerbar_fx_button.xml">
+                <SetVariable name="fxUnit">2</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skin:mixerbar_fx_button.xml">
+                <SetVariable name="fxUnit">3</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+              <Template src="skin:mixerbar_fx_button.xml">
+                <SetVariable name="fxUnit">4</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Tango],micaux_fx_buttons</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /FX assignment buttons -->
+
     </Children>
     <Connection>
       <ConfigKey><Variable name="group"/>,enabled</ConfigKey>
