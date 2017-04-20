@@ -109,13 +109,12 @@ Description:
 
           <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
 
-          <Template src="skin:button_3state_persist.xml"><!-- Samplers -->
+          <Template src="skin:button_2state_persist.xml"><!-- Samplers -->
             <SetVariable name="TooltipId">show_samplers</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">34f,20f</SetVariable>
             <SetVariable name="state_0_text">SAM</SetVariable>
             <SetVariable name="state_1_text">SAM</SetVariable>
-            <SetVariable name="state_2_text">SAM</SetVariable>
             <SetVariable name="ConfigKeyPerm">[Samplers],show_samplers</SetVariable>
           </Template>
 

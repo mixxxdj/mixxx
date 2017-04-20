@@ -7,6 +7,7 @@
   background-color: #1e1e1e;
   font-family: Ubuntu;
   font-weight: normal;
+  font-size: 12px/12px;
 }
 
 #SkinContainer {	/*
@@ -18,11 +19,18 @@
 WWidget, WLabel {
   font-family: Ubuntu;
   font-weight: normal;
+  font-size: 12px/12px;
 }
 
 WPushButton {
   font-family: Ubuntu;
+  font-weight: normal;
+  font-size: 12px/12px;
   border-radius: 2px;
+}
+
+WWidgetGroup {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
 #Library_Samplers_0, #Library_Samplers_1, #Library_Samplers_2, #Library_Samplers_3 {
@@ -357,15 +365,14 @@ WPushButton {
 
   WLabel#TrackComment {
   /* defining font-size here breaks top alignment	*/
-  font-size: 12px/12px;
     padding-left: 1px;
   /* this is necessary to display multi-line comments correctly.
     Without it, first line would be cut off at the top. */
     padding-top: 1px;
     color: #888888;
     text-align: left;
-  background-color: #333333;
-    }
+    background-color: #333333;
+  }
 
 #DeckArtistTitleLoop, #DeckTitlePassthrough {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
@@ -400,7 +407,6 @@ WPushButton {
       text-align: right;
       }
     WLabel#DeckFxIndicator {
-      font-size: 10px/10px;
       font-weight: bold;
       color: #FF8F00;
       background-color: #333333;
@@ -546,7 +552,6 @@ WPushButton {
     border: 1px solid #888888;
   }
   #LoopSizeButton, #LoopRollButton {
-    font-size: 12px/12px;
   }
   #LoopSizeButton[displayValue="1"],
   #LoopRollButton[displayValue="1"] {
@@ -805,7 +810,6 @@ WBeatSpinBox {
 
 #GuiToggleButton, #GuiToggleButton2, #RecordingButton {
   text-align: center;
-  font-size: 12px/12px;
   font-weight: bold;
   }
   #GuiToggleButton[displayValue="0"]:hover, #GuiToggleButton2:hover {
@@ -845,9 +849,10 @@ WBeatSpinBox {
 #RecDurationLabel {
   /* RecordingButton is transparent so label needs bg-color */
   background-color: #333333;
-  color: #d2d2d2;
   font-family: Ubuntu;
   font-weight: bold;
+  font-size: 12px/12px;
+  color: #d2d2d2;
 }
 
 #ClockBox {
@@ -1050,6 +1055,7 @@ WBeatSpinBox {
   WEffectSelector {
     font-family: Ubuntu;
     font-weight: normal;
+    font-size: 12px/12px;
     color: #c1cabe;
     background-color: #333333;
     /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
@@ -1078,10 +1084,12 @@ WBeatSpinBox {
       }
 
     WEffectSelector QAbstractItemView {
-      color: #cccccc;
       background-color: #202020;
       padding-left: 5px;
       font-family: Ubuntu;
+      font-weight: normal;
+      font-size: 12px/12px;
+      color: #cccccc;
     }
     /* selected item */
     WEffectSelector::checked {
@@ -1252,12 +1260,16 @@ WBeatSpinBox {
 
 #SamplerDecks {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  margin-bottom: 3px;
-  border-radius: 2px;
 }
-  #SamplerDeck {
-    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  }
+
+#SamplerRow5 {
+  margin-top: 2px;
+}
+
+#SamplerDeck {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  margin: 3px 0px 0px 3px;
+}
 
 #FxMiniMaxiButton {
   background-color: #333333;
@@ -1333,10 +1345,6 @@ WBeatSpinBox {
   background-color: #888888;
 }
 
-#SamplerMain_mini {
-  
-}
-
 WTrackProperty#SamplerTitle {
   font-size: 14px/18px;
   font-weight: bold;
@@ -1350,7 +1358,7 @@ WTrackProperty#SamplerTitle_mini {
   font-weight: bold;
   color: #d2d2d2;
   text-align: left;
-  padding: 0px 1px 0px 1px;
+  padding: 0px 1px 0px 0px;
 }
 
 #SamplerOverviewRow, #PreviewOverview {
@@ -1557,7 +1565,6 @@ QToolTip {
 ############ added styling for AutoDJ & Recording etc ##### */
 
 #Library {
-  background-color: #0f0f0f;
 }
 
 #LibMiniMaxiButton {
@@ -1579,6 +1586,7 @@ QToolTip {
 QTableView, QTextBrowser, QTreeView {
   border: 1px solid #585858;
   font-family: Ubuntu;
+  font-weight: normal;
   color: #9E9E9E;
   background-color: #0f0f0f;
   alternate-background-color: #1a1a1a;
@@ -1643,9 +1651,9 @@ QTableView {	/*
 }
 
 QHeaderView {
-  font-size: 13px/13px;
   font-family: Ubuntu;
   font-weight: bold;
+  font-size: 13px/13px;
   color: #CFCFCF;
   background-color: #1e1e1e;
   }
@@ -1725,6 +1733,7 @@ QScrollBar:horizontal {
 QPushButton {
   text-align: center;
   font-family: Ubuntu;
+  font-weight: normal;
   font-size: 14px/14px;
   color: #cccccc;
   border-radius: 2px;
@@ -1849,6 +1858,8 @@ WSearchLineEdit {
   border-left: 0px;
   background: #0f0f0f;
   font-family: Ubuntu;
+  font-weight: normal;
+  font-size: 12px/12px;
   color: #CFCFCF;
   margin-bottom: 5px;
   }

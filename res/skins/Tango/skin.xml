@@ -45,7 +45,7 @@
     <attributes>
       <!-- Set skin defaults. -->
       <attribute config_key="[Master],num_decks">4</attribute>
-      <attribute config_key="[Master],num_samplers">16</attribute>
+      <attribute config_key="[Master],num_samplers">64</attribute>
       <attribute persist="true" config_key="[Master],show_mixer">0</attribute>
       <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Master],maximize_library">0</attribute>
@@ -76,8 +76,16 @@
       <attribute persist="true" config_key="[Tango],mixer_spinnyCover">0</attribute>
       <attribute persist="true" config_key="[Tango],pitch_fader">1</attribute>
       <attribute persist="true" config_key="[Tango],sampler_fx_buttons">1</attribute>
-      <attribute persist="true" config_key="[Tango],Samplers_miniMAXI">1</attribute>
-      <attribute persist="true" config_key="[Tango],Samplers_miniMAXI_Stack">0</attribute>
+      <!-- item index inskin_settings_sampler_rows.xml, sets 2 sampler rows -->
+      <attribute persist="true" config_key="[Tango],sampler_rows">1</attribute>
+      <attribute persist="true" config_key="[SamplerRow1],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow2],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow3],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow4],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow5],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow6],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow7],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow8],expanded">0</attribute>
       <attribute persist="true" config_key="[Tango],stacked_overviews">1</attribute>
       <attribute persist="true" config_key="[Tango],stacked_waveforms">1</attribute>
       <attribute persist="true" config_key="[Tango],stars">1</attribute>
@@ -412,7 +420,11 @@
                                   </Connection>
                                 </WidgetGroup><!-- /Decks + 4 FX Units -->
 
-                                <Template src="skin:library_samplers.xml"/>
+                                <Template src="skin:sample_decks.xml"/>
+
+                                <SingletonContainer>
+                                  <ObjectName>Library_Singleton</ObjectName>
+                                </SingletonContainer>
 
                                 <WidgetGroup><!-- MixerBar when Library is not shown -->
                                   <ObjectName>MixerBar_Container_skin</ObjectName>

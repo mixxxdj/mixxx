@@ -262,9 +262,9 @@ Description:
             </Children>
           </WidgetGroup><!-- /Spinny Settings -->
 
-          <Label><!-- Extras -->
+          <Label><!-- Effects -->
             <ObjectName>CategoryLabel</ObjectName>
-            <Text>Extras</Text>
+            <Text>Effects</Text>
           </Label>
           <WidgetGroup>
             <ObjectName>SkinSettingsCategory</ObjectName>
@@ -279,16 +279,37 @@ Description:
               </Template>
 
               <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="state_0_text">      Sampler FX buttons</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Sampler FX buttons</SetVariable>
+                <SetVariable name="Setting">[Tango],sampler_fx_buttons</SetVariable>
+              </Template>
+
+              <!-- <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="state_0_text">      Mic/AUX FX buttons</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Mic/AUX FX buttons</SetVariable>
+                <SetVariable name="Setting">[Tango],micaux_fx_buttons</SetVariable>
+              </Template> -->
+
+            </Children>
+          </WidgetGroup><!-- /Effects -->
+
+          <Label><!-- Extras -->
+            <ObjectName>CategoryLabel</ObjectName>
+            <Text>Extras</Text>
+          </Label>
+          <WidgetGroup>
+            <ObjectName>SkinSettingsCategory</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>f,f</SizePolicy>
+            <Children>
+
+              <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      Preview Deck</SetVariable>
                 <SetVariable name="state_1_text"> &#10004; Preview Deck</SetVariable>
                 <SetVariable name="Setting">[PreviewDeck],show_previewdeck</SetVariable>
               </Template>
 
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      Sampler FX buttons</SetVariable>
-                <SetVariable name="state_1_text"> &#10004; Sampler FX buttons</SetVariable>
-                <SetVariable name="Setting">[Tango],sampler_fx_buttons</SetVariable>
-              </Template>
+              <Template src="skin:skin_settings_sampler_rows.xml"/>
 
               <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      Enforce compact mode</SetVariable>

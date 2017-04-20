@@ -16,6 +16,10 @@ Description:
     <SizePolicy>me,i</SizePolicy>
     <Layout>vertical</Layout>
     <Children>
+
+      <!-- margin-top has no effect -->
+      <WidgetGroup><Size>1me,3f</Size></WidgetGroup>
+
       <Splitter>
         <ObjectName>LibrarySplitter</ObjectName>
         <SizePolicy>me,me</SizePolicy>
@@ -101,7 +105,7 @@ Description:
                   <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup>
+              </WidgetGroup><!-- /Mixerbar -->
             </Children>
           </WidgetGroup><!-- /Library Table -->
         </Children>
@@ -118,7 +122,11 @@ Description:
           <ConfigKey>[Tango],mixerbar_below_library</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup>
+      </WidgetGroup><!-- /Mixerbar -->
     </Children>
+    <Connection>
+      <ConfigKey persist="true">[Library],show_library</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
   </WidgetGroup>
 </Template>
