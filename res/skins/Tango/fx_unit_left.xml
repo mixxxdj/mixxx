@@ -162,17 +162,17 @@ Variables:
       <WidgetGroup><!-- SuperKnob + Wet/Dry + GroupButtons -->
         <ObjectName>EffectUnitControlsLeft</ObjectName>
         <Layout>vertical</Layout>
-        <Size>81f,1me</Size>
+        <Size>65f,1me</Size>
         <Children>
           <WidgetGroup><!-- EffectUnitMixer -->
             <ObjectName>EffectUnitMixer</ObjectName>
             <Layout>vertical</Layout>
-            <Size>81f,53f</Size>
+            <Size>65f,53f</Size>
             <Children>
 
               <WidgetGroup><!-- Clear FX unit + ON/OFF -->
                 <Layout>horizontal</Layout>
-                <Size>80f,20f</Size>
+                <Size>64f,20f</Size>
                 <Children>
                   <Template src="skin:button_1state.xml">
                     <SetVariable name="ObjectName">EffectEject</SetVariable>
@@ -201,7 +201,7 @@ Variables:
               <WidgetGroup>
                 <ObjectName>SuperWetDryContainer</ObjectName>
                 <Layout>horizontal</Layout>
-                <Size>80f,-1min</Size>
+                <Size>64f,-1min</Size>
                 <Children>
                   <Template src="skin:knob_textless.xml">
                     <TooltipId>EffectUnit_super1</TooltipId>
@@ -211,7 +211,9 @@ Variables:
                     <SetVariable name="ConfigKey">super1</SetVariable>
                     <SetVariable name="Color">blue</SetVariable>
                   </Template>
-                    <WidgetGroup><Size>8f,1min</Size><Children/></WidgetGroup>
+
+                  <!--<WidgetGroup><Size>8f,1min</Size><Children/></WidgetGroup> -->
+
                   <Template src="skin:knob_textless.xml">
                     <TooltipId>EffectUnit_mix</TooltipId>
                     <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
@@ -228,11 +230,12 @@ Variables:
 
           <WidgetGroup><!-- Group Button Columns -->
             <Layout>horizontal</Layout>
-            <Size>81f,1me</Size>
+            <Size>65f,1me</Size>
             <Children>
           <!-- 	Optionally display Mic 1-4 assignment buttons if these
               channels are configured in the Sound Hardware preferences. -->
-              <WidgetGroup><!-- Group buttons AUX -->
+              <!-- Group buttons AUX
+              <WidgetGroup>
                 <ObjectName>EffectUnitGroupColumn</ObjectName>
                 <Layout>vertical</Layout>
                 <Children>
@@ -300,11 +303,12 @@ Variables:
                     </Connection>
                   </WidgetGroup>
                 </Children>
-              </WidgetGroup><!-- /Group buttons MIC -->
+              </WidgetGroup> --><!-- /Group buttons MIC -->
 
           <!-- 	Optionally display Aux 1-4 assignment buttons if these
               channels are configured in the Sound Hardware preferences. -->
-              <WidgetGroup><!-- Group buttons AUX -->
+              <!-- Group buttons AUX
+              <WidgetGroup>
                 <ObjectName>EffectUnitGroupColumn</ObjectName>
                 <Layout>vertical</Layout>
                 <Children>
@@ -372,7 +376,7 @@ Variables:
                     </Connection>
                   </WidgetGroup>
                 </Children>
-              </WidgetGroup><!-- /Group buttons AUX -->
+              </WidgetGroup> --><!-- /Group buttons AUX -->
 
               <WidgetGroup><!-- Group buttons CH1, CH3, Master -->
                 <ObjectName>EffectUnitGroupColumn</ObjectName>
