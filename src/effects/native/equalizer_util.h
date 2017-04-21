@@ -8,18 +8,26 @@
 class EqualizerUtil {
   public:
     // Creates common EQ parameters like low/mid/high gain and kill buttons.
-    static void createCommonParameters(EffectManifest* manifest) {
+    static void createCommonParameters(EffectManifest* manifest, bool linear) {
+        EffectManifestParameter::ControlHint controlHint =
+                EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC;
+        double maximum = 4.0;
+        if (linear) {
+            controlHint = EffectManifestParameter::ControlHint::KNOB_LINEAR;
+            maximum = 2.0;
+        }
+
         EffectManifestParameter* low = manifest->addParameter();
         low->setId("low");
         low->setName(QObject::tr("Low"));
         low->setDescription(QObject::tr("Gain for Low Filter"));
-        low->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+        low->setControlHint(controlHint);
         low->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
         low->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
         low->setNeutralPointOnScale(0.5);
         low->setDefault(1.0);
         low->setMinimum(0);
-        low->setMaximum(4.0);
+        low->setMaximum(maximum);
 
         EffectManifestParameter* killLow = manifest->addParameter();
         killLow->setId("killLow");
@@ -36,13 +44,13 @@ class EqualizerUtil {
         mid->setId("mid");
         mid->setName(QObject::tr("Mid"));
         mid->setDescription(QObject::tr("Gain for Mid Filter"));
-        mid->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+        mid->setControlHint(controlHint);
         mid->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
         mid->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
         mid->setNeutralPointOnScale(0.5);
         mid->setDefault(1.0);
         mid->setMinimum(0);
-        mid->setMaximum(4.0);
+        mid->setMaximum(maximum);
 
         EffectManifestParameter* killMid = manifest->addParameter();
         killMid->setId("killMid");
@@ -59,13 +67,13 @@ class EqualizerUtil {
         high->setId("high");
         high->setName(QObject::tr("High"));
         high->setDescription(QObject::tr("Gain for High Filter"));
-        high->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+        high->setControlHint(controlHint);
         high->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
         high->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
         high->setNeutralPointOnScale(0.5);
         high->setDefault(1.0);
         high->setMinimum(0);
-        high->setMaximum(4.0);
+        high->setMaximum(maximum);
 
         EffectManifestParameter* killHigh = manifest->addParameter();
         killHigh->setId("killHigh");

@@ -24,7 +24,7 @@ EffectManifest LinkwitzRiley8EQEffect::getManifest() {
         "A Linkwitz-Riley 8th-order filter isolator (optimized crossover, constant phase shift, roll-off -48 dB/octave).") + " " + EqualizerUtil::adjustFrequencyShelvesTip());
     manifest.setIsMixingEQ(true);
 
-    EqualizerUtil::createCommonParameters(&manifest);
+    EqualizerUtil::createCommonParameters(&manifest, false);
     return manifest;
 }
 

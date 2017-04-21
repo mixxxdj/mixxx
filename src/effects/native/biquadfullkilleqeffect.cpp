@@ -65,7 +65,7 @@ EffectManifest BiquadFullKillEQEffect::getManifest() {
     manifest.setEffectRampsFromDry(true);
     manifest.setIsMixingEQ(true);
 
-    EqualizerUtil::createCommonParameters(&manifest);
+    EqualizerUtil::createCommonParameters(&manifest, false);
     return manifest;
 }
 

@@ -21,7 +21,7 @@ EffectManifest Bessel8LVMixEQEffect::getManifest() {
     manifest.setIsMixingEQ(true);
     manifest.setEffectRampsFromDry(true);
 
-    EqualizerUtil::createCommonParameters(&manifest);
+    EqualizerUtil::createCommonParameters(&manifest, false);
     return manifest;
 }
 

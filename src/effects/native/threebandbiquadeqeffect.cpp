@@ -64,15 +64,7 @@ EffectManifest ThreeBandBiquadEQEffect::getManifest() {
     manifest.setEffectRampsFromDry(true);
     manifest.setIsMixingEQ(true);
 
-    EqualizerUtil::createCommonParameters(&manifest);
-
-    for (auto&& parameter : manifest.parameters()) {
-        if (parameter.id() == "low" || parameter.id() == "mid" ||
-                parameter.id() == "high") {
-            parameter.setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
-            parameter.setMaximum(2.0);
-        }
-    }
+    EqualizerUtil::createCommonParameters(&manifest, true);
     return manifest;
 }
 
