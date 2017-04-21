@@ -1073,7 +1073,7 @@ WBeatSpinBox {
     WEffectSelector::down-arrow {
       width: 16px;
       height: 16px;
-      margin-right: -2px;
+      margin-right: -3px;
       image: url(skin:/buttons/btn_arrow_down.svg);
       }
       WEffectSelector::down-arrow:hover {
