@@ -8,7 +8,7 @@ Description:
 <Template>
   <PushButton>
     <ObjectName>SkinSettingsButton</ObjectName>
-    <Size>172f,17f</Size>
+    <Size>172f,15f</Size>
     <NumberStates>1</NumberStates>
     <RightClickIsPushButton>true</RightClickIsPushButton>
     <State>

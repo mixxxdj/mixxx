@@ -28,7 +28,7 @@ Description:
                 <WidgetGroup><Size>1me,1me</Size><Children/></WidgetGroup>
               <Template src="skin:button_2state.xml">
                 <SetVariable name="ObjectName">SkinSettingsClose</SetVariable>
-                <SetVariable name="Size">17f,17f</SetVariable><!-- 17x17 + 6px margin-right -->
+                <SetVariable name="Size">17f,24f</SetVariable>
                 <SetVariable name="state_1_pressed">skinsettings_close.svg</SetVariable>
                 <SetVariable name="state_1_unpressed">skinsettings_close.svg</SetVariable>
                 <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>
@@ -39,7 +39,7 @@ Description:
           <WidgetGroup><!-- Main Decks Settings -->
             <ObjectName>SkinSettingsCategory</ObjectName>
             <Layout>vertical</Layout>
-            <SizePolicy>me,f</SizePolicy>
+            <SizePolicy>me,max</SizePolicy>
             <Children>
 
               <Template src="skin:skin_settings_button_2state.xml">
@@ -68,7 +68,9 @@ Description:
 
               <WidgetGroup><!-- Pitch/Key submenu -->
                 <Layout>stacked</Layout>
-                <Size>172f,17f</Size>
+                <MinimumSize>172,15</MinimumSize>
+                <MaximumSize>172,17</MaximumSize>
+                <SizePolicy>f,max</SizePolicy>
                 <Children>
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
@@ -76,7 +78,7 @@ Description:
                   <WidgetGroup><!-- translucent cover when Pitch slider is hidden -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
-                    <SizePolicy>me,me</SizePolicy>
+                    <SizePolicy>me,max</SizePolicy>
                     <Children/>
                     <Connection>
                       <ConfigKey persist="true">[Tango],pitch_fader</ConfigKey>
@@ -110,7 +112,7 @@ Description:
           <WidgetGroup>
             <ObjectName>SkinSettingsCategory</ObjectName>
             <Layout>vertical</Layout>
-            <SizePolicy>f,f</SizePolicy>
+            <SizePolicy>f,max</SizePolicy>
             <Children>
 
               <Template src="skin:skin_settings_button_2state.xml">
@@ -121,7 +123,7 @@ Description:
 
               <WidgetGroup><!-- EQ & Filter knobs submenu -->
                 <Layout>stacked</Layout>
-                <Size>172f,34f</Size>
+                <Size>172f,30f</Size>
                 <Children>
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
@@ -129,7 +131,7 @@ Description:
                   <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
-                    <Size>172f,34f</Size>
+                    <Size>172f,30f</Size>
                     <Children/>
                     <Connection>
                       <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
@@ -140,7 +142,7 @@ Description:
 
                   <WidgetGroup><!-- EQ Knobs button -->
                     <Layout>vertical</Layout>
-                    <Size>172f,34f</Size>
+                    <Size>172f,30f</Size>
                     <Children>
 
                       <Template src="skin:skin_settings_button_2state.xml">
@@ -151,7 +153,7 @@ Description:
 
                       <WidgetGroup><!-- Filter knob submenu -->
                         <Layout>stacked</Layout>
-                        <Size>172f,17f</Size>
+                        <Size>172f,15f</Size>
                         <Children>
                           <!-- index 0 due to bug -->
                           <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
@@ -209,7 +211,7 @@ Description:
           <WidgetGroup><!-- Spinny Settings -->
             <ObjectName>SkinSettingsCategory</ObjectName>
             <Layout>vertical</Layout>
-            <SizePolicy>f,f</SizePolicy>
+            <SizePolicy>f,max</SizePolicy>
             <Children>
 
               <Template src="skin:skin_settings_button_3state.xml">
@@ -221,7 +223,7 @@ Description:
 
               <WidgetGroup><!-- SpinnyCover submenu -->
                 <Layout>stacked</Layout>
-                <Size>172f,34f</Size>
+                <Size>172f,30f</Size>
                 <Children>
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
@@ -240,7 +242,7 @@ Description:
 
                   <WidgetGroup><!-- SpinnyCover submenu buttons -->
                     <Layout>vertical</Layout>
-                    <Size>172f,34f</Size>
+                    <Size>172f,30f</Size>
                     <Children>
 
                     <Template src="skin:skin_settings_button_2state.xml">
@@ -269,7 +271,7 @@ Description:
           <WidgetGroup>
             <ObjectName>SkinSettingsCategory</ObjectName>
             <Layout>vertical</Layout>
-            <SizePolicy>f,f</SizePolicy>
+            <SizePolicy>f,max</SizePolicy>
             <Children>
 
               <Template src="skin:skin_settings_button_2state.xml">
@@ -300,7 +302,7 @@ Description:
           <WidgetGroup>
             <ObjectName>SkinSettingsCategory</ObjectName>
             <Layout>vertical</Layout>
-            <SizePolicy>f,f</SizePolicy>
+            <SizePolicy>f,max</SizePolicy>
             <Children>
 
               <Template src="skin:skin_settings_button_2state.xml">
