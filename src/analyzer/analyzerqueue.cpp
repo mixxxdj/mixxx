@@ -13,6 +13,7 @@
 #include "analyzer/analyzergain.h"
 #include "analyzer/analyzerebur128.h"
 #include "analyzer/analyzerwaveform.h"
+#include "analyzer/analyzersilence.h"
 #include "library/trackcollection.h"
 #include "mixer/playerinfo.h"
 #include "sources/soundsourceproxy.h"
@@ -441,6 +442,7 @@ AnalyzerQueue* AnalyzerQueue::createDefaultAnalyzerQueue(
     ret->addAnalyzer(new AnalyzerWaveform(pConfig));
     ret->addAnalyzer(new AnalyzerGain(pConfig));
     ret->addAnalyzer(new AnalyzerEbur128(pConfig));
+    ret->addAnalyzer(new AnalyzerSilence(pConfig));
 #ifdef __VAMP__
     VampAnalyzer::initializePluginPaths();
     ret->addAnalyzer(new AnalyzerBeats(pConfig));
@@ -461,6 +463,7 @@ AnalyzerQueue* AnalyzerQueue::createAnalysisFeatureAnalyzerQueue(
     }
     ret->addAnalyzer(new AnalyzerGain(pConfig));
     ret->addAnalyzer(new AnalyzerEbur128(pConfig));
+    ret->addAnalyzer(new AnalyzerSilence(pConfig));
 #ifdef __VAMP__
     VampAnalyzer::initializePluginPaths();
     ret->addAnalyzer(new AnalyzerBeats(pConfig));

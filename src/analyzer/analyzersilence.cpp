@@ -1,0 +1,104 @@
+#include "analyzer/analyzersilence.h"
+
+const int kChannelCount = 2;
+const float kSilenceThreshold = -60.0f;
+
+AnalyzerSilence::AnalyzerSilence(UserSettingsPointer pConfig)
+    : m_pConfig(pConfig),
+      m_fThreshold(db2ratio(kSilenceThreshold)),
+      m_iSampleRate(0),
+      m_iTotalSamples(0),
+      m_iFramesProcessed(0),
+      m_bPrevSilence(true),
+      m_iSignalBegin(-1),
+      m_iSignalEnd(-1) {
+}
+
+AnalyzerSilence::~AnalyzerSilence() {
+}
+
+bool AnalyzerSilence::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
+    Q_UNUSED(tio);
+
+    m_iSampleRate = sampleRate;
+    m_iTotalSamples = totalSamples;
+    m_iFramesProcessed = 0;
+    m_bPrevSilence = true;
+    m_iSignalBegin = 0;
+    m_iSignalEnd = 0;
+
+    return true;
+}
+
+bool AnalyzerSilence::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
+    Q_UNUSED(tio);
+
+    return false;
+}
+
+void AnalyzerSilence::process(const CSAMPLE *pIn, const int iLen) {
+    for (int i = 0; i < iLen; i += kChannelCount) {
+        bool bSilence = math_max(fabs(pIn[i]), fabs(pIn[i + 1])) < m_fThreshold;
+
+        if (m_bPrevSilence && !bSilence) {
+            if (m_iSignalBegin <= 0) {
+                m_iSignalBegin = m_iFramesProcessed + i / kChannelCount;
+            }
+        } else if (!m_bPrevSilence && bSilence) {
+            m_iSignalEnd = m_iFramesProcessed + i / kChannelCount;
+        }
+
+        m_bPrevSilence = bSilence;
+    }
+
+    m_iFramesProcessed += iLen / kChannelCount;
+}
+
+void AnalyzerSilence::cleanup(TrackPointer tio) {
+    Q_UNUSED(tio);
+}
+
+void AnalyzerSilence::finalize(TrackPointer tio) {
+    // If track didn't end with silence, place signal end marker
+    // on the end of the track.
+    if (!m_bPrevSilence) {
+        m_iSignalEnd = m_iFramesProcessed;
+    }
+
+    bool bBeginPointFoundAndSet = false;
+    bool bEndPointFoundAndSet = false;
+    QList<CuePointer> cues = tio->getCuePoints();
+    foreach (CuePointer pCue, cues) {
+        if (pCue->getType() == Cue::BEGIN) {
+            pCue->setHotCue(0);
+            pCue->setLabel("BEGIN");
+            pCue->setLength(0);
+            pCue->setPosition(kChannelCount * m_iSignalBegin);
+            bBeginPointFoundAndSet = true;
+        } else if (pCue->getType() == Cue::END) {
+            pCue->setHotCue(1);
+            pCue->setLabel("END");
+            pCue->setLength(0);
+            pCue->setPosition(kChannelCount * m_iSignalEnd);
+            bEndPointFoundAndSet = true;
+        }
+    }
+
+    if (!bBeginPointFoundAndSet) {
+        CuePointer pCue = tio->createAndAddCue();
+        pCue->setType(Cue::BEGIN);
+        pCue->setHotCue(0);
+        pCue->setLabel("BEGIN");
+        pCue->setLength(0);
+        pCue->setPosition(kChannelCount * m_iSignalBegin);
+    }
+
+    if (!bEndPointFoundAndSet) {
+        CuePointer pCue = tio->createAndAddCue();
+        pCue->setType(Cue::END);
+        pCue->setHotCue(1);
+        pCue->setLabel("END");
+        pCue->setLength(0);
+        pCue->setPosition(kChannelCount * m_iSignalEnd);
+    }
+}

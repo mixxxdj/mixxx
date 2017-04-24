@@ -41,6 +41,20 @@
 					<Color>#FF001C</Color>
 					<TextColor>#FFFFFF</TextColor>
 				</Mark>
+				<Mark>
+					<Control>signal_begin_position</Control>
+					<Text>B</Text>
+					<Align>vcenter|right</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>signal_end_position</Control>
+					<Text>E</Text>
+					<Align>left|vcenter</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
 				<Connection>
 					<ConfigKey>[Channel<Variable name="channum"/>],playposition</ConfigKey>
 				</Connection>
