@@ -160,6 +160,12 @@
           <WidgetGroup>
             <ObjectName>Spacer0f</ObjectName>
             <Size>1me,1f</Size>
+            <Children/>
+            <Connection>
+              <ConfigKey persist="true">[Tango],stacked_overviews</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
 
         </Children>
