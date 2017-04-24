@@ -6,7 +6,7 @@
 #define MAX_BUFFER_LEN 160000
 
 LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
-                                       const EffectManifest& manifest,
+                                       EffectManifestPointer pManifest,
                                        const LilvPlugin* plugin,
                                        QList<int> audioPortIndices,
                                        QList<int> controlPortIndices) {
@@ -21,11 +21,11 @@ LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
     m_inputR = new float[MAX_BUFFER_LEN];
     m_outputL = new float[MAX_BUFFER_LEN];
     m_outputR = new float[MAX_BUFFER_LEN];
-    m_params = new float[manifest.parameters().size()];
+    m_params = new float[pManifest->parameters().size()];
 
 
-    const QList<EffectManifestParameter> effectManifestParameterList =
-            manifest.parameters();
+    const QList<EffectManifestParameter>& effectManifestParameterList =
+            pManifest->parameters();
 
     // Initialize EngineEffectParameters
     foreach (EffectManifestParameter param, effectManifestParameterList) {

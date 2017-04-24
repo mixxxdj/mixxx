@@ -102,8 +102,8 @@ EffectChainPointer EffectChain::clone(EffectChainPointer pChain) {
             // Insert empty effect to preserve chain order
             pClonedEffect = EffectPointer();
         } else {
-            pClonedEffect = pChain->m_pEffectsManager
-                    ->instantiateEffect(pEffect->getManifest().id());
+            pClonedEffect = pChain->m_pEffectsManager->instantiateEffect(
+                    pEffect->getManifest()->id());
         }
         pClone->addEffect(pClonedEffect);
     }

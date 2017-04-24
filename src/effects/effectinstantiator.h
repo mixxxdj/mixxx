@@ -14,7 +14,7 @@ class EffectInstantiator {
   public:
     virtual ~EffectInstantiator() {}
     virtual EffectProcessor* instantiate(EngineEffect* pEngineEffect,
-                                         const EffectManifest& manifest) = 0;
+                                         EffectManifestPointer pManifest) = 0;
 };
 typedef QSharedPointer<EffectInstantiator> EffectInstantiatorPointer;
 
@@ -22,8 +22,9 @@ template <typename T>
 class EffectProcessorInstantiator : public EffectInstantiator {
   public:
     EffectProcessor* instantiate(EngineEffect* pEngineEffect,
-                                 const EffectManifest& manifest) {
-        return new T(pEngineEffect, manifest);
+                                 EffectManifestPointer pManifest) {
+        Q_UNUSED(pManifest);
+        return new T(pEngineEffect);
     }
 };
 
@@ -37,8 +38,8 @@ class LV2EffectProcessorInstantiator : public EffectInstantiator {
               controlPortIndices(controlPortIndices) { }
 
     EffectProcessor* instantiate(EngineEffect* pEngineEffect,
-                                 const EffectManifest& manifest) {
-        return new LV2EffectProcessor(pEngineEffect, manifest, m_pPlugin,
+                                 EffectManifestPointer pManifest) {
+        return new LV2EffectProcessor(pEngineEffect, pManifest, m_pPlugin,
                                       audioPortIndices, controlPortIndices);
     }
   private:

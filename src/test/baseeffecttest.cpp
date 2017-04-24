@@ -7,7 +7,7 @@ using ::testing::Return;
 using ::testing::Invoke;
 using ::testing::_;
 
-void BaseEffectTest::registerTestEffect(const EffectManifest& manifest, bool willAddToEngine) {
+void BaseEffectTest::registerTestEffect(EffectManifestPointer pManifest, bool willAddToEngine) {
     MockEffectProcessor* pProcessor = new MockEffectProcessor();
     MockEffectInstantiator* pInstantiator = new MockEffectInstantiator();
 
@@ -17,6 +17,6 @@ void BaseEffectTest::registerTestEffect(const EffectManifest& manifest, bool wil
                 .WillOnce(Return(pProcessor));
     }
 
-    m_pTestBackend->registerEffect(manifest.id(), manifest,
+    m_pTestBackend->registerEffect(pManifest->id(), pManifest,
                                    EffectInstantiatorPointer(pInstantiator));
 }

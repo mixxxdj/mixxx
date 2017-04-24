@@ -9,23 +9,23 @@ QString GraphicEQEffect::getId() {
 }
 
 // static
-EffectManifest GraphicEQEffect::getManifest() {
-    EffectManifest manifest;
-    manifest.setId(getId());
-    manifest.setName(QObject::tr("Graphic Equalizer"));
-    manifest.setShortName(QObject::tr("Graphic EQ"));
-    manifest.setAuthor("The Mixxx Team");
-    manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr(
+EffectManifestPointer GraphicEQEffect::getManifest() {
+    EffectManifestPointer pManifest(new EffectManifest());
+    pManifest->setId(getId());
+    pManifest->setName(QObject::tr("Graphic Equalizer"));
+    pManifest->setShortName(QObject::tr("Graphic EQ"));
+    pManifest->setAuthor("The Mixxx Team");
+    pManifest->setVersion("1.0");
+    pManifest->setDescription(QObject::tr(
         "An 8-band graphic equalizer based on biquad filters"));
-    manifest.setEffectRampsFromDry(true);
-    manifest.setIsMasterEQ(true);
+    pManifest->setEffectRampsFromDry(true);
+    pManifest->setIsMasterEQ(true);
 
     // Display rounded center frequencies for each filter
     float centerFrequencies[8] = {45, 100, 220, 500, 1100, 2500,
                                   5500, 12000};
 
-    EffectManifestParameter* low = manifest.addParameter();
+    EffectManifestParameter* low = pManifest->addParameter();
     low->setId(QString("low"));
     low->setName(QString("%1 Hz").arg(centerFrequencies[0]));
     low->setDescription(QObject::tr("Gain for Low Filter"));
@@ -45,7 +45,7 @@ EffectManifest GraphicEQEffect::getManifest() {
             paramName = QString("%1 kHz").arg(centerFrequencies[i + 1] / 1000);
         }
 
-        EffectManifestParameter* mid = manifest.addParameter();
+        EffectManifestParameter* mid = pManifest->addParameter();
         mid->setId(QString("mid%1").arg(i));
         mid->setName(paramName);
         mid->setDescription(QObject::tr("Gain for Band Filter %1").arg(i));
@@ -58,7 +58,7 @@ EffectManifest GraphicEQEffect::getManifest() {
         mid->setMaximum(12);
     }
 
-    EffectManifestParameter* high = manifest.addParameter();
+    EffectManifestParameter* high = pManifest->addParameter();
     high->setId(QString("high"));
     high->setName(QString("%1 kHz").arg(centerFrequencies[7] / 1000));
     high->setDescription(QObject::tr("Gain for High Filter"));
@@ -69,7 +69,7 @@ EffectManifest GraphicEQEffect::getManifest() {
     high->setMinimum(-12);
     high->setMaximum(12);
 
-    return manifest;
+    return pManifest;
 }
 
 GraphicEQEffectGroupState::GraphicEQEffectGroupState() {
@@ -126,10 +126,8 @@ void GraphicEQEffectGroupState::setFilters(int sampleRate) {
     }
 }
 
-GraphicEQEffect::GraphicEQEffect(EngineEffect* pEffect,
-                                 const EffectManifest& manifest)
+GraphicEQEffect::GraphicEQEffect(EngineEffect* pEffect)
         : m_oldSampleRate(44100) {
-    Q_UNUSED(manifest);
     m_pPotLow = pEffect->getParameterById("low");
     for (int i = 0; i < 6; i++) {
         m_pPotMid.append(pEffect->getParameterById(QString("mid%1").arg(i)));

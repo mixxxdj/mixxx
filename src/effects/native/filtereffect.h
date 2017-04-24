@@ -28,11 +28,11 @@ struct FilterGroupState {
 
 class FilterEffect : public PerChannelEffectProcessor<FilterGroupState> {
   public:
-    FilterEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    FilterEffect(EngineEffect* pEffect);
     virtual ~FilterEffect();
 
     static QString getId();
-    static EffectManifest getManifest();
+    static EffectManifestPointer getManifest();
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,

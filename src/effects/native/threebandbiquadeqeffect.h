@@ -44,11 +44,11 @@ class ThreeBandBiquadEQEffectGroupState final {
 
 class ThreeBandBiquadEQEffect : public PerChannelEffectProcessor<ThreeBandBiquadEQEffectGroupState> {
   public:
-    ThreeBandBiquadEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    ThreeBandBiquadEQEffect(EngineEffect* pEffect);
     ~ThreeBandBiquadEQEffect() override;
 
     static QString getId();
-    static EffectManifest getManifest();
+    static EffectManifestPointer getManifest();
 
     void setFilters(int sampleRate, double lowFreqCorner, double highFreqCorner);
 

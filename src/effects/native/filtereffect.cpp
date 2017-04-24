@@ -10,18 +10,18 @@ QString FilterEffect::getId() {
 }
 
 // static
-EffectManifest FilterEffect::getManifest() {
-    EffectManifest manifest;
-    manifest.setId(getId());
-    manifest.setName(QObject::tr("Filter"));
-    manifest.setAuthor("The Mixxx Team");
-    manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr("The filter changes the tone of the "
+EffectManifestPointer FilterEffect::getManifest() {
+    EffectManifestPointer pManifest(new EffectManifest());
+    pManifest->setId(getId());
+    pManifest->setName(QObject::tr("Filter"));
+    pManifest->setAuthor("The Mixxx Team");
+    pManifest->setVersion("1.0");
+    pManifest->setDescription(QObject::tr("The filter changes the tone of the "
                                         "music by allowing only high or low "
                                         "frequencies to pass through."));
-    manifest.setEffectRampsFromDry(true);
+    pManifest->setEffectRampsFromDry(true);
 
-    EffectManifestParameter* lpf = manifest.addParameter();
+    EffectManifestParameter* lpf = pManifest->addParameter();
     lpf->setId("lpf");
     lpf->setName(QObject::tr("LPF"));
     lpf->setDescription(QObject::tr("Corner frequency ratio of the low pass filter"));
@@ -34,7 +34,7 @@ EffectManifest FilterEffect::getManifest() {
     lpf->setMinimum(kMinCorner);
     lpf->setMaximum(kMaxCorner);
 
-    EffectManifestParameter* q = manifest.addParameter();
+    EffectManifestParameter* q = pManifest->addParameter();
     q->setId("q");
     q->setName(QObject::tr("Resonance"));
     q->setShortName(QObject::tr("Q"));
@@ -46,7 +46,7 @@ EffectManifest FilterEffect::getManifest() {
     q->setMinimum(0.4);
     q->setMaximum(4.0);
 
-    EffectManifestParameter* hpf = manifest.addParameter();
+    EffectManifestParameter* hpf = pManifest->addParameter();
     hpf->setId("hpf");
     hpf->setName(QObject::tr("HPF"));
     hpf->setDescription(QObject::tr("Corner frequency ratio of the high pass filter"));
@@ -59,7 +59,7 @@ EffectManifest FilterEffect::getManifest() {
     hpf->setMinimum(kMinCorner);
     hpf->setMaximum(kMaxCorner);
 
-    return manifest;
+    return pManifest;
 }
 
 FilterGroupState::FilterGroupState()
@@ -77,12 +77,10 @@ FilterGroupState::~FilterGroupState() {
     delete m_pHighFilter;
 }
 
-FilterEffect::FilterEffect(EngineEffect* pEffect,
-                           const EffectManifest& manifest)
+FilterEffect::FilterEffect(EngineEffect* pEffect)
         : m_pLPF(pEffect->getParameterById("lpf")),
           m_pQ(pEffect->getParameterById("q")),
           m_pHPF(pEffect->getParameterById("hpf")) {
-    Q_UNUSED(manifest);
 }
 
 FilterEffect::~FilterEffect() {

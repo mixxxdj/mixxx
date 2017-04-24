@@ -9,18 +9,18 @@
 #include "util/xml.h"
 
 Effect::Effect(EffectsManager* pEffectsManager,
-               const EffectManifest& manifest,
+               EffectManifestPointer pManifest,
                EffectInstantiatorPointer pInstantiator)
         : QObject(), // no parent
           m_pEffectsManager(pEffectsManager),
-          m_manifest(manifest),
+          m_pManifest(pManifest),
           m_pInstantiator(pInstantiator),
           m_pEngineEffect(NULL),
           m_bAddedToEngine(false),
           m_bEnabled(false) {
-    foreach (const EffectManifestParameter& parameter, m_manifest.parameters()) {
+    for (const auto& parameter: m_pManifest->parameters()) {
         EffectParameter* pParameter = new EffectParameter(
-            this, pEffectsManager, m_parameters.size(), parameter);
+                this, pEffectsManager, m_parameters.size(), parameter);
         m_parameters.append(pParameter);
         if (m_parametersById.contains(parameter.id())) {
             qWarning() << debugString() << "WARNING: Loaded EffectManifest that had parameters with duplicate IDs. Dropping one of them.";
@@ -44,7 +44,7 @@ void Effect::addToEngine(EngineEffectChain* pChain, int iIndex) {
     if (m_pEngineEffect) {
         return;
     }
-    m_pEngineEffect = new EngineEffect(m_manifest,
+    m_pEngineEffect = new EngineEffect(m_pManifest,
             m_pEffectsManager->registeredChannels(),
             m_pInstantiator);
     EffectsRequest* request = new EffectsRequest();
@@ -82,8 +82,8 @@ EngineEffect* Effect::getEngineEffect() {
     return m_pEngineEffect;
 }
 
-const EffectManifest& Effect::getManifest() const {
-    return m_manifest;
+EffectManifestPointer Effect::getManifest() const {
+    return m_pManifest;
 }
 
 void Effect::setEnabled(bool enabled) {
@@ -154,7 +154,7 @@ EffectParameter* Effect::getFilteredParameterForSlot(ParameterFilterFnc filterFn
     // It's normal to ask for a parameter that doesn't exist. Callers must check
     // for NULL.
     unsigned int num = 0;
-    foreach(EffectParameter* parameter, m_parameters) {
+    for (const auto& parameter: m_parameters) {
         if (parameter->manifest().showInParameterSlot() && filterFnc(parameter)) {
             if(num == slotNumber) {
                 return parameter;

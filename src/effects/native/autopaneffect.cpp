@@ -15,13 +15,13 @@ QString AutoPanEffect::getId() {
 }
 
 // static
-EffectManifest AutoPanEffect::getManifest() {
-    EffectManifest manifest;
-    manifest.setId(getId());
-    manifest.setName(QObject::tr("AutoPan"));
-    manifest.setAuthor("The Mixxx Team");
-    manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr("Bounce the sound from a channel "
+EffectManifestPointer AutoPanEffect::getManifest() {
+    EffectManifestPointer pManifest(new EffectManifest());
+    pManifest->setId(getId());
+    pManifest->setName(QObject::tr("AutoPan"));
+    pManifest->setAuthor("The Mixxx Team");
+    pManifest->setVersion("1.0");
+    pManifest->setDescription(QObject::tr("Bounce the sound from a channel "
             "to another, roughly or softly, fully or partially, fastly or slowly. "
             "A delay, inversed on each side, is added to increase the "
             "spatial move and the period can be synced with the BPM."));
@@ -29,7 +29,7 @@ EffectManifest AutoPanEffect::getManifest() {
     // Period
     // The maximum is at 128 + 1 allowing 128 as max value and
     // enabling us to pause time when the parameter is above
-    EffectManifestParameter* period = manifest.addParameter();
+    EffectManifestParameter* period = pManifest->addParameter();
     period->setId("period");
     period->setName(QObject::tr("Period"));
     period->setDescription(QObject::tr("How fast the sound goes from a side to another,"
@@ -42,7 +42,7 @@ EffectManifest AutoPanEffect::getManifest() {
     period->setDefault(3.0);
 
     // This parameter controls the easing of the sound from a side to another.
-    EffectManifestParameter* smoothing = manifest.addParameter();
+    EffectManifestParameter* smoothing = pManifest->addParameter();
     smoothing->setId("smoothing");
     smoothing->setName(QObject::tr("Smoothing"));
     smoothing->setShortName(QObject::tr("Smooth"));
@@ -58,7 +58,7 @@ EffectManifest AutoPanEffect::getManifest() {
     //                     make the scaleStartParameter for this be 1.
 
     // Width : applied on the channel with gain reducing.
-    EffectManifestParameter* width = manifest.addParameter();
+    EffectManifestParameter* width = pManifest->addParameter();
     width->setId("width");
     width->setName(QObject::tr("Width"));
     width->setDescription("How far the signal goes on the left or on the right");
@@ -71,7 +71,7 @@ EffectManifest AutoPanEffect::getManifest() {
     width->setDefault(0.5);
 
     // Period unit
-    EffectManifestParameter* periodUnit = manifest.addParameter();
+    EffectManifestParameter* periodUnit = pManifest->addParameter();
     periodUnit->setId("periodUnit");
     periodUnit->setName(QObject::tr("Sync"));
     periodUnit->setDescription(QObject::tr("Synchronizes the period with the BPM if it can be retrieved"));
@@ -82,15 +82,14 @@ EffectManifest AutoPanEffect::getManifest() {
     periodUnit->setMinimum(0);
     periodUnit->setMaximum(1);
 
-    return manifest;
+    return pManifest;
 }
 
-AutoPanEffect::AutoPanEffect(EngineEffect* pEffect, const EffectManifest& manifest)
+AutoPanEffect::AutoPanEffect(EngineEffect* pEffect)
         : m_pSmoothingParameter(pEffect->getParameterById("smoothing")),
           m_pPeriodUnitParameter(pEffect->getParameterById("periodUnit")),
           m_pPeriodParameter(pEffect->getParameterById("period")),
           m_pWidthParameter(pEffect->getParameterById("width")) {
-    Q_UNUSED(manifest);
 }
 
 AutoPanEffect::~AutoPanEffect() {

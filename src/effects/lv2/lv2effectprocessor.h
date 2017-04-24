@@ -9,7 +9,7 @@
 class LV2EffectProcessor : public EffectProcessor {
   public:
     LV2EffectProcessor(EngineEffect* pEngineEffect,
-                       const EffectManifest& manifest,
+                       EffectManifestPointer pManifest,
                        const LilvPlugin* plugin,
                        QList<int> audioPortIndices,
                        QList<int> controlPortIndices);

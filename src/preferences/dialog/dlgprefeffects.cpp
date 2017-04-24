@@ -18,12 +18,13 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
 
 void DlgPrefEffects::slotUpdate() {
     clear();
-    const QList<EffectManifest> availableEffectManifests = m_pEffectsManager->getAvailableEffectManifests();
+    const QList<EffectManifestPointer> availableEffectManifests =
+            m_pEffectsManager->getAvailableEffectManifests();
 
-    for (const auto& manifest : availableEffectManifests) {
+    for (const auto& pManifest : availableEffectManifests) {
         QListWidgetItem* pItem = new QListWidgetItem();
-        pItem->setData(Qt::UserRole, manifest.id());
-        pItem->setText(manifest.displayName());
+        pItem->setData(Qt::UserRole, pManifest->id());
+        pItem->setText(pManifest->displayName());
         availableEffectsList->addItem(pItem);
     }
 
@@ -56,16 +57,16 @@ void DlgPrefEffects::slotEffectSelected(QListWidgetItem* pCurrent,
         return;
     }
     QString effectId = pCurrent->data(Qt::UserRole).toString();
-    QPair<EffectManifest, EffectsBackend*> manifestAndBackend =
-            m_pEffectsManager->getEffectManifestAndBackend(effectId);
+    EffectManifestPointer pManifest;
+    EffectsBackend* pBackend;
+    m_pEffectsManager->getEffectManifestAndBackend(effectId, &pManifest, &pBackend);
 
-    const EffectManifest& manifest = manifestAndBackend.first;
-    effectName->setText(manifest.name());
-    effectAuthor->setText(manifest.author());
-    effectDescription->setText(manifest.description());
-    effectVersion->setText(manifest.version());
-    if (manifestAndBackend.second != NULL) {
-        effectType->setText(manifestAndBackend.second->getName());
+    effectName->setText(pManifest->name());
+    effectAuthor->setText(pManifest->author());
+    effectDescription->setText(pManifest->description());
+    effectVersion->setText(pManifest->version());
+    if (pBackend != NULL) {
+        effectType->setText(pBackend->getName());
     } else {
         effectType->clear();
     }

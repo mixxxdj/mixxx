@@ -25,7 +25,7 @@ template <class EffectType>
 void benchmarkNativeEffectDefaultParameters(const unsigned int sampleRate,
                                             const unsigned int numSamples,
                                             benchmark::State* pState) {
-    EffectManifest manifest = EffectType::getManifest();
+    EffectManifestPointer pManifest = EffectType::getManifest();
 
     ChannelHandleFactory factory;
     QSet<ChannelHandleAndGroup> registeredChannels;
@@ -35,7 +35,7 @@ void benchmarkNativeEffectDefaultParameters(const unsigned int sampleRate,
     registeredChannels.insert(ChannelHandleAndGroup(channel1, channel1_group));
     EffectInstantiatorPointer pInstantiator = EffectInstantiatorPointer(
         new EffectProcessorInstantiator<EffectType>());
-    EngineEffect effect(manifest, registeredChannels, pInstantiator);
+    EngineEffect effect(pManifest, registeredChannels, pInstantiator);
 
     GroupFeatureState featureState;
     EffectProcessor::EnableState enableState = EffectProcessor::ENABLED;

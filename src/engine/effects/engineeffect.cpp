@@ -2,13 +2,13 @@
 
 #include "util/sample.h"
 
-EngineEffect::EngineEffect(const EffectManifest& manifest,
+EngineEffect::EngineEffect(EffectManifestPointer pManifest,
                            const QSet<ChannelHandleAndGroup>& registeredChannels,
                            EffectInstantiatorPointer pInstantiator)
-        : m_manifest(manifest),
+        : m_pManifest(pManifest),
           m_enableState(EffectProcessor::DISABLED),
-          m_parameters(manifest.parameters().size()) {
-    const QList<EffectManifestParameter>& parameters = m_manifest.parameters();
+          m_parameters(pManifest->parameters().size()) {
+    const QList<EffectManifestParameter>& parameters = m_pManifest->parameters();
     for (int i = 0; i < parameters.size(); ++i) {
         const EffectManifestParameter& parameter = parameters.at(i);
         EngineEffectParameter* pParameter =
@@ -18,9 +18,9 @@ EngineEffect::EngineEffect(const EffectManifest& manifest,
     }
 
     // Creating the processor must come last.
-    m_pProcessor = pInstantiator->instantiate(this, manifest);
+    m_pProcessor = pInstantiator->instantiate(this, pManifest);
     m_pProcessor->initialize(registeredChannels);
-    m_effectRampsFromDry = manifest.effectRampsFromDry();
+    m_effectRampsFromDry = pManifest->effectRampsFromDry();
 }
 
 EngineEffect::~EngineEffect() {

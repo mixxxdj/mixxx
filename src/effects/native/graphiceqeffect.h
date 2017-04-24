@@ -33,11 +33,11 @@ class GraphicEQEffectGroupState {
 
 class GraphicEQEffect : public PerChannelEffectProcessor<GraphicEQEffectGroupState> {
   public:
-    GraphicEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    GraphicEQEffect(EngineEffect* pEffect);
     virtual ~GraphicEQEffect();
 
     static QString getId();
-    static EffectManifest getManifest();
+    static EffectManifestPointer getManifest();
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,

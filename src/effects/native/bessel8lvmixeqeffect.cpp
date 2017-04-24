@@ -9,31 +9,29 @@ QString Bessel8LVMixEQEffect::getId() {
 }
 
 // static
-EffectManifest Bessel8LVMixEQEffect::getManifest() {
-    EffectManifest manifest;
-    manifest.setId(getId());
-    manifest.setName(QObject::tr("Bessel8 LV-Mix Isolator"));
-    manifest.setShortName(QObject::tr("Bessel8 ISO"));
-    manifest.setAuthor("The Mixxx Team");
-    manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr(
+EffectManifestPointer Bessel8LVMixEQEffect::getManifest() {
+    EffectManifestPointer pManifest(new EffectManifest());
+    pManifest->setId(getId());
+    pManifest->setName(QObject::tr("Bessel8 LV-Mix Isolator"));
+    pManifest->setShortName(QObject::tr("Bessel8 ISO"));
+    pManifest->setAuthor("The Mixxx Team");
+    pManifest->setVersion("1.0");
+    pManifest->setDescription(QObject::tr(
         "A Bessel 8th-order filter isolator with Lipshitz and Vanderkooy mix (bit perfect unity, roll-off -48 dB/octave).") + " " + EqualizerUtil::adjustFrequencyShelvesTip());
-    manifest.setIsMixingEQ(true);
-    manifest.setEffectRampsFromDry(true);
+    pManifest->setIsMixingEQ(true);
+    pManifest->setEffectRampsFromDry(true);
 
-    EqualizerUtil::createCommonParameters(&manifest, false);
-    return manifest;
+    EqualizerUtil::createCommonParameters(pManifest.data(), false);
+    return pManifest;
 }
 
-Bessel8LVMixEQEffect::Bessel8LVMixEQEffect(EngineEffect* pEffect,
-                                           const EffectManifest& manifest)
+Bessel8LVMixEQEffect::Bessel8LVMixEQEffect(EngineEffect* pEffect)
         : m_pPotLow(pEffect->getParameterById("low")),
           m_pPotMid(pEffect->getParameterById("mid")),
           m_pPotHigh(pEffect->getParameterById("high")),
           m_pKillLow(pEffect->getParameterById("killLow")),
           m_pKillMid(pEffect->getParameterById("killMid")),
           m_pKillHigh(pEffect->getParameterById("killHigh")) {
-    Q_UNUSED(manifest);
     m_pLoFreqCorner = new ControlProxy("[Mixer Profile]", "LoEQFrequency");
     m_pHiFreqCorner = new ControlProxy("[Mixer Profile]", "HiEQFrequency");
 }

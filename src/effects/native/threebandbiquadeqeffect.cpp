@@ -51,21 +51,21 @@ QString ThreeBandBiquadEQEffect::getId() {
 }
 
 // static
-EffectManifest ThreeBandBiquadEQEffect::getManifest() {
-    EffectManifest manifest;
-    manifest.setId(getId());
-    manifest.setName(QObject::tr("Biquad Equalizer"));
-    manifest.setShortName(QObject::tr("BQ EQ"));
-    manifest.setAuthor("The Mixxx Team");
-    manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr(
+EffectManifestPointer ThreeBandBiquadEQEffect::getManifest() {
+    EffectManifestPointer pManifest(new EffectManifest());
+    pManifest->setId(getId());
+    pManifest->setName(QObject::tr("Biquad Equalizer"));
+    pManifest->setShortName(QObject::tr("BQ EQ"));
+    pManifest->setAuthor("The Mixxx Team");
+    pManifest->setVersion("1.0");
+    pManifest->setDescription(QObject::tr(
         "A 3-band Equalizer with two biquad bell filters, a shelving high pass and kill switches.") +
         " " + EqualizerUtil::adjustFrequencyShelvesTip());
-    manifest.setEffectRampsFromDry(true);
-    manifest.setIsMixingEQ(true);
+    pManifest->setEffectRampsFromDry(true);
+    pManifest->setIsMixingEQ(true);
 
-    EqualizerUtil::createCommonParameters(&manifest, true);
-    return manifest;
+    EqualizerUtil::createCommonParameters(pManifest.data(), true);
+    return pManifest;
 }
 
 ThreeBandBiquadEQEffectGroupState::ThreeBandBiquadEQEffectGroupState()
@@ -122,15 +122,13 @@ void ThreeBandBiquadEQEffectGroupState::setFilters(
 
 }
 
-ThreeBandBiquadEQEffect::ThreeBandBiquadEQEffect(EngineEffect* pEffect,
-                                             const EffectManifest& manifest)
+ThreeBandBiquadEQEffect::ThreeBandBiquadEQEffect(EngineEffect* pEffect)
         : m_pPotLow(pEffect->getParameterById("low")),
           m_pPotMid(pEffect->getParameterById("mid")),
           m_pPotHigh(pEffect->getParameterById("high")),
           m_pKillLow(pEffect->getParameterById("killLow")),
           m_pKillMid(pEffect->getParameterById("killMid")),
           m_pKillHigh(pEffect->getParameterById("killHigh")) {
-    Q_UNUSED(manifest);
     m_pLoFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "LoEQFrequency");
     m_pHiFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "HiEQFrequency");
 }

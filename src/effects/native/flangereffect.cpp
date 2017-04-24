@@ -14,17 +14,17 @@ QString FlangerEffect::getId() {
 }
 
 // static
-EffectManifest FlangerEffect::getManifest() {
-    EffectManifest manifest;
-    manifest.setId(getId());
-    manifest.setName(QObject::tr("Flanger"));
-    manifest.setAuthor("The Mixxx Team");
-    manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr(
+EffectManifestPointer FlangerEffect::getManifest() {
+    EffectManifestPointer pManifest(new EffectManifest());
+    pManifest->setId(getId());
+    pManifest->setName(QObject::tr("Flanger"));
+    pManifest->setAuthor("The Mixxx Team");
+    pManifest->setVersion("1.0");
+    pManifest->setDescription(QObject::tr(
         "A simple modulation effect, created by taking the input signal "
         "and mixing it with a delayed, pitch modulated copy of itself."));
 
-    EffectManifestParameter* delay = manifest.addParameter();
+    EffectManifestParameter* delay = pManifest->addParameter();
     delay->setId("delay");
     delay->setName(QObject::tr("Delay"));
     delay->setDescription(QObject::tr("Sets the value for the delay length."));
@@ -35,7 +35,7 @@ EffectManifest FlangerEffect::getManifest() {
     delay->setMinimum(50.0);
     delay->setMaximum(10000.0);
 
-    EffectManifestParameter* period = manifest.addParameter();
+    EffectManifestParameter* period = pManifest->addParameter();
     period->setId("period");
     period->setName(QObject::tr("Period"));
     period->setDescription(QObject::tr("Controls the speed of the effect."));
@@ -46,7 +46,7 @@ EffectManifest FlangerEffect::getManifest() {
     period->setMinimum(50000.0);
     period->setMaximum(2000000.0);
 
-    EffectManifestParameter* depth = manifest.addParameter();
+    EffectManifestParameter* depth = pManifest->addParameter();
     depth->setId("depth");
     depth->setName(QObject::tr("Depth"));
     depth->setDescription(QObject::tr("Controls the intensity of the effect."));
@@ -59,15 +59,13 @@ EffectManifest FlangerEffect::getManifest() {
     depth->setMaximum(1.0);
 
 
-    return manifest;
+    return pManifest;
 }
 
-FlangerEffect::FlangerEffect(EngineEffect* pEffect,
-                             const EffectManifest& manifest)
+FlangerEffect::FlangerEffect(EngineEffect* pEffect)
         : m_pPeriodParameter(pEffect->getParameterById("period")),
           m_pDepthParameter(pEffect->getParameterById("depth")),
           m_pDelayParameter(pEffect->getParameterById("delay")) {
-    Q_UNUSED(manifest);
 }
 
 FlangerEffect::~FlangerEffect() {

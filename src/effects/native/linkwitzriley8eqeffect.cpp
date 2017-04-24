@@ -13,19 +13,19 @@ QString LinkwitzRiley8EQEffect::getId() {
 }
 
 // static
-EffectManifest LinkwitzRiley8EQEffect::getManifest() {
-    EffectManifest manifest;
-    manifest.setId(getId());
-    manifest.setName(QObject::tr("LinkwitzRiley8 Isolator"));
-    manifest.setShortName(QObject::tr("LR8 ISO"));
-    manifest.setAuthor("The Mixxx Team");
-    manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr(
+EffectManifestPointer LinkwitzRiley8EQEffect::getManifest() {
+    EffectManifestPointer pManifest(new EffectManifest());
+    pManifest->setId(getId());
+    pManifest->setName(QObject::tr("LinkwitzRiley8 Isolator"));
+    pManifest->setShortName(QObject::tr("LR8 ISO"));
+    pManifest->setAuthor("The Mixxx Team");
+    pManifest->setVersion("1.0");
+    pManifest->setDescription(QObject::tr(
         "A Linkwitz-Riley 8th-order filter isolator (optimized crossover, constant phase shift, roll-off -48 dB/octave).") + " " + EqualizerUtil::adjustFrequencyShelvesTip());
-    manifest.setIsMixingEQ(true);
+    pManifest->setIsMixingEQ(true);
 
-    EqualizerUtil::createCommonParameters(&manifest, false);
-    return manifest;
+    EqualizerUtil::createCommonParameters(pManifest.data(), false);
+    return pManifest;
 }
 
 LinkwitzRiley8EQEffectGroupState::LinkwitzRiley8EQEffectGroupState()
@@ -64,15 +64,13 @@ void LinkwitzRiley8EQEffectGroupState::setFilters(int sampleRate, int lowFreq,
     m_high2->setFrequencyCorners(sampleRate, highFreq);
 }
 
-LinkwitzRiley8EQEffect::LinkwitzRiley8EQEffect(EngineEffect* pEffect,
-                                         const EffectManifest& manifest)
+LinkwitzRiley8EQEffect::LinkwitzRiley8EQEffect(EngineEffect* pEffect)
         : m_pPotLow(pEffect->getParameterById("low")),
           m_pPotMid(pEffect->getParameterById("mid")),
           m_pPotHigh(pEffect->getParameterById("high")),
           m_pKillLow(pEffect->getParameterById("killLow")),
           m_pKillMid(pEffect->getParameterById("killMid")),
           m_pKillHigh(pEffect->getParameterById("killHigh")) {
-    Q_UNUSED(manifest);
     m_pLoFreqCorner = new ControlProxy("[Mixer Profile]", "LoEQFrequency");
     m_pHiFreqCorner = new ControlProxy("[Mixer Profile]", "HiEQFrequency");
 }

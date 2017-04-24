@@ -110,7 +110,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_weq);
     m_weffects = new DlgPrefEffects(this, m_pConfig, pEffectsManager);
     addPageWidget(m_weffects);
-    m_wlv2 = new DlgPrefLV2(this, pLV2Backend, m_pConfig);
+    m_wlv2 = new DlgPrefLV2(this, pLV2Backend, m_pConfig, pEffectsManager);
     addPageWidget(m_wlv2);
     m_wcrossfader = new DlgPrefCrossfader(this, m_pConfig);
     addPageWidget(m_wcrossfader);

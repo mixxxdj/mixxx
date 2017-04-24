@@ -46,19 +46,19 @@ void WEffectSelector::populate() {
 
     // TODO(xxx): filter out blacklisted effects
     // https://bugs.launchpad.net/mixxx/+bug/1653140
-    const QList<EffectManifest> availableEffectManifests =
+    const QList<EffectManifestPointer> availableEffectManifests =
             m_pEffectsManager->getAvailableEffectManifests();
     QFontMetrics metrics(font());
 
     for (int i = 0; i < availableEffectManifests.size(); ++i) {
-        const EffectManifest& manifest = availableEffectManifests.at(i);
-        QString elidedDisplayName = metrics.elidedText(manifest.displayName(),
+        const EffectManifestPointer pManifest = availableEffectManifests.at(i);
+        QString elidedDisplayName = metrics.elidedText(pManifest->displayName(),
                                                        Qt::ElideMiddle,
                                                        width() - 2);
-        addItem(elidedDisplayName, QVariant(manifest.id()));
+        addItem(elidedDisplayName, QVariant(pManifest->id()));
 
         //: %1 = effect name; %2 = effect description
-        QString description = tr("%1: %2").arg(manifest.name(), manifest.description());
+        QString description = tr("%1: %2").arg(pManifest->name(), pManifest->description());
         // The <span/> is a hack to get Qt to treat the string as rich text so
         // it automatically wraps long lines.
         setItemData(i, QVariant("<span/>" + description), Qt::ToolTipRole);
@@ -90,8 +90,8 @@ void WEffectSelector::slotEffectUpdated() {
     if (m_pEffectSlot != nullptr) {
         EffectPointer pEffect = m_pEffectSlot->getEffect();
         if (pEffect != nullptr) {
-            const EffectManifest& manifest = pEffect->getManifest();
-            newIndex = findData(QVariant(manifest.id()));
+            EffectManifestPointer pManifest = pEffect->getManifest();
+            newIndex = findData(QVariant(pManifest->id()));
         } else {
             newIndex = findData(QVariant());
         }

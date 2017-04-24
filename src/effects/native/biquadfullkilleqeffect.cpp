@@ -53,20 +53,20 @@ QString BiquadFullKillEQEffect::getId() {
 }
 
 // static
-EffectManifest BiquadFullKillEQEffect::getManifest() {
-    EffectManifest manifest;
-    manifest.setId(getId());
-    manifest.setName(QObject::tr("Biquad Full Kill Equalizer"));
-    manifest.setShortName(QObject::tr("BQ EQ/ISO"));
-    manifest.setAuthor("The Mixxx Team");
-    manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr(
+EffectManifestPointer BiquadFullKillEQEffect::getManifest() {
+    EffectManifestPointer pManifest(new EffectManifest());
+    pManifest->setId(getId());
+    pManifest->setName(QObject::tr("Biquad Full Kill Equalizer"));
+    pManifest->setShortName(QObject::tr("BQ EQ/ISO"));
+    pManifest->setAuthor("The Mixxx Team");
+    pManifest->setVersion("1.0");
+    pManifest->setDescription(QObject::tr(
         "A 3-band Equalizer that combines an Equalizer and an Isolator circuit to offer gentle slopes and full kill.") + " " +  EqualizerUtil::adjustFrequencyShelvesTip());
-    manifest.setEffectRampsFromDry(true);
-    manifest.setIsMixingEQ(true);
+    pManifest->setEffectRampsFromDry(true);
+    pManifest->setIsMixingEQ(true);
 
-    EqualizerUtil::createCommonParameters(&manifest, false);
-    return manifest;
+    EqualizerUtil::createCommonParameters(pManifest.data(), false);
+    return pManifest;
 }
 
 BiquadFullKillEQEffectGroupState::BiquadFullKillEQEffectGroupState()
@@ -135,15 +135,13 @@ void BiquadFullKillEQEffectGroupState::setFilters(
     m_lvMixIso->setFilters(sampleRate, lowFreqCorner, highFreqCorner);
 }
 
-BiquadFullKillEQEffect::BiquadFullKillEQEffect(EngineEffect* pEffect,
-                                             const EffectManifest& manifest)
+BiquadFullKillEQEffect::BiquadFullKillEQEffect(EngineEffect* pEffect)
         : m_pPotLow(pEffect->getParameterById("low")),
           m_pPotMid(pEffect->getParameterById("mid")),
           m_pPotHigh(pEffect->getParameterById("high")),
           m_pKillLow(pEffect->getParameterById("killLow")),
           m_pKillMid(pEffect->getParameterById("killMid")),
           m_pKillHigh(pEffect->getParameterById("killHigh")) {
-    Q_UNUSED(manifest);
     m_pLoFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "LoEQFrequency");
     m_pHiFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "HiEQFrequency");
 }

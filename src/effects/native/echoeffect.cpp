@@ -16,15 +16,15 @@ QString EchoEffect::getId() {
 }
 
 // static
-EffectManifest EchoEffect::getManifest() {
-    EffectManifest manifest;
-    manifest.setId(getId());
-    manifest.setName(QObject::tr("Echo"));
-    manifest.setAuthor("The Mixxx Team");
-    manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr("Simple Echo with pingpong"));
+EffectManifestPointer EchoEffect::getManifest() {
+    EffectManifestPointer pManifest(new EffectManifest());
+    pManifest->setId(getId());
+    pManifest->setName(QObject::tr("Echo"));
+    pManifest->setAuthor("The Mixxx Team");
+    pManifest->setVersion("1.0");
+    pManifest->setDescription(QObject::tr("Simple Echo with pingpong"));
 
-    EffectManifestParameter* delay = manifest.addParameter();
+    EffectManifestParameter* delay = pManifest->addParameter();
     delay->setId("delay_time");
     delay->setName(QObject::tr("Delay"));
     delay->setDescription(QObject::tr("Delay time (seconds)"));
@@ -35,7 +35,7 @@ EffectManifest EchoEffect::getManifest() {
     delay->setDefault(1.0);
     delay->setMaximum(EchoGroupState::kMaxDelaySeconds);
 
-    EffectManifestParameter* feedback = manifest.addParameter();
+    EffectManifestParameter* feedback = pManifest->addParameter();
     feedback->setId("feedback_amount");
     feedback->setName(QObject::tr("Feedback"));
     feedback->setDescription(
@@ -47,7 +47,7 @@ EffectManifest EchoEffect::getManifest() {
     feedback->setDefault(0.5);
     feedback->setMaximum(1.0);
 
-    EffectManifestParameter* pingpong = manifest.addParameter();
+    EffectManifestParameter* pingpong = pManifest->addParameter();
     pingpong->setId("pingpong_amount");
     pingpong->setName(QObject::tr("PingPong"));
     pingpong->setDescription(
@@ -61,7 +61,7 @@ EffectManifest EchoEffect::getManifest() {
     pingpong->setDefault(0.0);
     pingpong->setMaximum(1.0);
 
-    EffectManifestParameter* send = manifest.addParameter();
+    EffectManifestParameter* send = pManifest->addParameter();
     send->setId("send_amount");
     send->setName(QObject::tr("Send"));
     send->setDescription(
@@ -74,15 +74,14 @@ EffectManifest EchoEffect::getManifest() {
     send->setDefault(1.0);
     send->setMaximum(1.0);
 
-    return manifest;
+    return pManifest;
 }
 
-EchoEffect::EchoEffect(EngineEffect* pEffect, const EffectManifest& manifest)
+EchoEffect::EchoEffect(EngineEffect* pEffect)
         : m_pDelayParameter(pEffect->getParameterById("delay_time")),
           m_pSendParameter(pEffect->getParameterById("send_amount")),
           m_pFeedbackParameter(pEffect->getParameterById("feedback_amount")),
           m_pPingPongParameter(pEffect->getParameterById("pingpong_amount")) {
-    Q_UNUSED(manifest);
 }
 
 EchoEffect::~EchoEffect() {

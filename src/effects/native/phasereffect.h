@@ -31,11 +31,11 @@ struct PhaserGroupState {
 class PhaserEffect : public PerChannelEffectProcessor<PhaserGroupState> {
 
   public:
-    PhaserEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    PhaserEffect(EngineEffect* pEffect);
     virtual ~PhaserEffect();
 
     static QString getId();
-    static EffectManifest getManifest();
+    static EffectManifestPointer getManifest();
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,

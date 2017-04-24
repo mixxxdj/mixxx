@@ -12,18 +12,18 @@ QString PhaserEffect::getId() {
 }
 
 // static
-EffectManifest PhaserEffect::getManifest() {
-    EffectManifest manifest;
-    manifest.setId(getId());
-    manifest.setName(QObject::tr("Phaser"));
-    manifest.setAuthor("The Mixxx Team");
-    manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr(
+EffectManifestPointer PhaserEffect::getManifest() {
+    EffectManifestPointer pManifest(new EffectManifest());
+    pManifest->setId(getId());
+    pManifest->setName(QObject::tr("Phaser"));
+    pManifest->setAuthor("The Mixxx Team");
+    pManifest->setVersion("1.0");
+    pManifest->setDescription(QObject::tr(
                 "A more complex sound effect obtained by mixing the input signal"
                 " with a copy passed through a series of all-pass filters."));
-    manifest.setEffectRampsFromDry(true);
+    pManifest->setEffectRampsFromDry(true);
 
-    EffectManifestParameter* frequency = manifest.addParameter();
+    EffectManifestParameter* frequency = pManifest->addParameter();
     frequency->setId("lfo_frequency");
     frequency->setName(QObject::tr("Rate"));
     frequency->setDescription(QObject::tr("Controls the speed of the low frequency oscilator."));
@@ -34,7 +34,7 @@ EffectManifest PhaserEffect::getManifest() {
     frequency->setMaximum(5.0);
     frequency->setDefault(2.5);
 
-    EffectManifestParameter* range = manifest.addParameter();
+    EffectManifestParameter* range = pManifest->addParameter();
     range->setId("range");
     range->setName(QObject::tr("Range"));
     range->setDescription(QObject::tr("Controls the frequency range across which the notches sweep."));
@@ -45,7 +45,7 @@ EffectManifest PhaserEffect::getManifest() {
     range->setMaximum(0.95);
     range->setDefault(0.05);
 
-    EffectManifestParameter* stages = manifest.addParameter();
+    EffectManifestParameter* stages = pManifest->addParameter();
     stages->setId("stages");
     stages->setName(QObject::tr("Stages"));
     stages->setDescription(QObject::tr("Sets number of stages."));
@@ -56,7 +56,7 @@ EffectManifest PhaserEffect::getManifest() {
     stages->setMaximum(6.0);
     stages->setDefault(3.5);
 
-    EffectManifestParameter* fb = manifest.addParameter();
+    EffectManifestParameter* fb = pManifest->addParameter();
     fb->setId("feedback");
     fb->setName(QObject::tr("Feedback"));
     fb->setDescription(QObject::tr("Controls how much of the output signal is looped"));
@@ -67,7 +67,7 @@ EffectManifest PhaserEffect::getManifest() {
     fb->setMaximum(0.95);
     fb->setDefault(0.0);
 
-    EffectManifestParameter* depth = manifest.addParameter();
+    EffectManifestParameter* depth = pManifest->addParameter();
     depth->setId("depth");
     depth->setName(QObject::tr("Depth"));
     depth->setDescription("Controls the intensity of the effect.");
@@ -79,7 +79,7 @@ EffectManifest PhaserEffect::getManifest() {
     depth->setMaximum(1.0);
     depth->setDefault(0.0);
 
-    EffectManifestParameter* stereo = manifest.addParameter();
+    EffectManifestParameter* stereo = pManifest->addParameter();
     stereo->setId("stereo");
     stereo->setName(QObject::tr("Stereo"));
     stereo->setDescription(QObject::tr("Enables/disables stereo"));
@@ -90,18 +90,16 @@ EffectManifest PhaserEffect::getManifest() {
     stereo->setMaximum(1);
     stereo->setDefault(0);
 
-    return manifest;
+    return pManifest;
 }
 
-PhaserEffect::PhaserEffect(EngineEffect* pEffect,
-                           const EffectManifest& manifest)
+PhaserEffect::PhaserEffect(EngineEffect* pEffect)
         : m_pStagesParameter(pEffect->getParameterById("stages")),
           m_pLFOFrequencyParameter(pEffect->getParameterById("lfo_frequency")),
           m_pDepthParameter(pEffect->getParameterById("depth")),
           m_pFeedbackParameter(pEffect->getParameterById("feedback")),
           m_pRangeParameter(pEffect->getParameterById("range")),
           m_pStereoParameter(pEffect->getParameterById("stereo")) {
-    Q_UNUSED(manifest);
 }
 
 PhaserEffect::~PhaserEffect() {

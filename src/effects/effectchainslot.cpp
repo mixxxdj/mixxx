@@ -183,8 +183,8 @@ void EffectChainSlot::slotChainEffectChanged(unsigned int effectSlotNumber,
         }
 
         m_pControlNumEffects->forceSet(math_min(
-            static_cast<unsigned int>(m_slots.size()),
-            m_pEffectChain->numEffects()));
+                static_cast<unsigned int>(m_slots.size()),
+                m_pEffectChain->numEffects()));
 
         if (shouldEmit) {
             emit(updated());

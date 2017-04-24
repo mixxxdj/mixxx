@@ -21,18 +21,18 @@ QString LoudnessContourEffect::getId() {
 }
 
 // static
-EffectManifest LoudnessContourEffect::getManifest() {
-    EffectManifest manifest;
-    manifest.setId(getId());
-    manifest.setName(QObject::tr("Loudness Contour"));
-    manifest.setShortName(QObject::tr("Loudness"));
-    manifest.setAuthor("The Mixxx Team");
-    manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr(
+EffectManifestPointer LoudnessContourEffect::getManifest() {
+    EffectManifestPointer pManifest(new EffectManifest());
+    pManifest->setId(getId());
+    pManifest->setName(QObject::tr("Loudness Contour"));
+    pManifest->setShortName(QObject::tr("Loudness"));
+    pManifest->setAuthor("The Mixxx Team");
+    pManifest->setVersion("1.0");
+    pManifest->setDescription(QObject::tr(
             "Amplifies low and high frequencies at low volumes to compensate for reduced sensitivity of the human ear."));
-    manifest.setEffectRampsFromDry(true);
+    pManifest->setEffectRampsFromDry(true);
 
-    EffectManifestParameter* loudness = manifest.addParameter();
+    EffectManifestParameter* loudness = pManifest->addParameter();
     loudness->setId("loudness");
     loudness->setName(QObject::tr("Loudness"));
     loudness->setDescription(
@@ -46,7 +46,7 @@ EffectManifest LoudnessContourEffect::getManifest() {
     loudness->setMinimum(-kMaxLoGain);
     loudness->setMaximum(0);
 
-    EffectManifestParameter* useGain = manifest.addParameter();
+    EffectManifestParameter* useGain = pManifest->addParameter();
     useGain->setId("useGain");
     useGain->setName(QObject::tr("Use Gain"));
     useGain->setDescription(QObject::tr("Follow Gain Knob"));
@@ -57,7 +57,7 @@ EffectManifest LoudnessContourEffect::getManifest() {
     useGain->setMinimum(0);
     useGain->setMaximum(1);
 
-    return manifest;
+    return pManifest;
 }
 
 LoudnessContourEffectGroupState::LoudnessContourEffectGroupState()
@@ -90,10 +90,9 @@ void LoudnessContourEffectGroupState::setFilters(int sampleRate, double gain) {
 }
 
 LoudnessContourEffect::LoudnessContourEffect(
-                EngineEffect* pEffect, const EffectManifest& manifest)
+                EngineEffect* pEffect)
         : m_pLoudness(pEffect->getParameterById("loudness")),
           m_pUseGain(pEffect->getParameterById("useGain")) {
-    Q_UNUSED(manifest);
 }
 
 LoudnessContourEffect::~LoudnessContourEffect() {

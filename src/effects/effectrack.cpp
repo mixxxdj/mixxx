@@ -149,7 +149,7 @@ void EffectRack::maybeLoadEffect(const unsigned int iChainSlotNumber,
     bool loadNew = false;
     if (pEffectSlot == nullptr || pEffectSlot->getEffect() == nullptr) {
         loadNew = true;
-    } else if (id != pEffectSlot->getEffect()->getManifest().id()) {
+    } else if (id != pEffectSlot->getEffect()->getManifest()->id()) {
         loadNew = true;
     }
 
@@ -167,7 +167,7 @@ void EffectRack::loadNextEffect(const unsigned int iChainSlotNumber,
         return;
     }
 
-    QString effectId = pEffect ? pEffect->getManifest().id() : QString();
+    QString effectId = pEffect ? pEffect->getManifest()->id() : QString();
     QString nextEffectId = m_pEffectsManager->getNextEffectId(effectId);
     EffectPointer pNextEffect = m_pEffectsManager->instantiateEffect(nextEffectId);
 
@@ -188,7 +188,7 @@ void EffectRack::loadPrevEffect(const unsigned int iChainSlotNumber,
         return;
     }
 
-    QString effectId = pEffect ? pEffect->getManifest().id() : QString();
+    QString effectId = pEffect ? pEffect->getManifest()->id() : QString();
     QString prevEffectId = m_pEffectsManager->getPrevEffectId(effectId);
     EffectPointer pPrevEffect = m_pEffectsManager->instantiateEffect(prevEffectId);
 

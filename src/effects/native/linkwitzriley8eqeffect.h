@@ -41,11 +41,11 @@ class LinkwitzRiley8EQEffectGroupState {
 
 class LinkwitzRiley8EQEffect : public PerChannelEffectProcessor<LinkwitzRiley8EQEffectGroupState> {
   public:
-    LinkwitzRiley8EQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    LinkwitzRiley8EQEffect(EngineEffect* pEffect);
     virtual ~LinkwitzRiley8EQEffect();
 
     static QString getId();
-    static EffectManifest getManifest();
+    static EffectManifestPointer getManifest();
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,

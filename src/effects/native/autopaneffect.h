@@ -80,11 +80,11 @@ struct PanGroupState {
 
 class AutoPanEffect : public PerChannelEffectProcessor<PanGroupState> {
   public:
-    AutoPanEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    AutoPanEffect(EngineEffect* pEffect);
     virtual ~AutoPanEffect();
 
     static QString getId();
-    static EffectManifest getManifest();
+    static EffectManifestPointer getManifest();
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,

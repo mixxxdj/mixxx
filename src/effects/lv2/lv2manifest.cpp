@@ -4,22 +4,23 @@
 
 LV2Manifest::LV2Manifest(const LilvPlugin* plug,
                          QHash<QString, LilvNode*>& properties)
-        : m_status(AVAILABLE) {
+        : m_pEffectManifest(new EffectManifest()),
+          m_status(AVAILABLE) {
 
     m_pLV2plugin = plug;
 
     // Get and set the ID
     const LilvNode* id = lilv_plugin_get_uri(m_pLV2plugin);
-    m_effectManifest.setId(lilv_node_as_string(id));
+    m_pEffectManifest->setId(lilv_node_as_string(id));
 
     // Get and set the name
     LilvNode* info = lilv_plugin_get_name(m_pLV2plugin);
-    m_effectManifest.setName(lilv_node_as_string(info));
+    m_pEffectManifest->setName(lilv_node_as_string(info));
     lilv_node_free(info);
 
     // Get and set the author
     info = lilv_plugin_get_author_name(m_pLV2plugin);
-    m_effectManifest.setAuthor(lilv_node_as_string(info));
+    m_pEffectManifest->setAuthor(lilv_node_as_string(info));
     lilv_node_free(info);
 
     int numPorts = lilv_plugin_get_num_ports(plug);
@@ -54,7 +55,7 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             !lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"]) &&
             !lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
             controlPortIndices.append(i);
-            EffectManifestParameter* param = m_effectManifest.addParameter();
+            EffectManifestParameter* param = m_pEffectManifest->addParameter();
 
             // Get and set the parameter name
             info = lilv_port_get_name(m_pLV2plugin, port);
@@ -93,7 +94,7 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
                 (lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"]) ||
                 lilv_port_has_property(m_pLV2plugin, port, properties["button_port"]))) {
             controlPortIndices.append(i);
-            EffectManifestParameter* param = m_effectManifest.addParameter();
+            EffectManifestParameter* param = m_pEffectManifest->addParameter();
 
             // Get and set the parameter name
             info = lilv_port_get_name(m_pLV2plugin, port);
@@ -157,12 +158,8 @@ LV2Manifest::~LV2Manifest() {
     delete m_default;
 }
 
-EffectManifest LV2Manifest::getEffectManifest() {
-    return m_effectManifest;
-}
-
-EffectManifest& LV2Manifest::getEffectManifestReference() {
-    return m_effectManifest;
+EffectManifestPointer LV2Manifest::getEffectManifest() const {
+    return m_pEffectManifest;
 }
 
 QList<int> LV2Manifest::getAudioPortIndices() {

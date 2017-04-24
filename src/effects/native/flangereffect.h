@@ -26,11 +26,11 @@ struct FlangerGroupState {
 
 class FlangerEffect : public PerChannelEffectProcessor<FlangerGroupState> {
   public:
-    FlangerEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    FlangerEffect(EngineEffect* pEffect);
     virtual ~FlangerEffect();
 
     static QString getId();
-    static EffectManifest getManifest();
+    static EffectManifestPointer getManifest();
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,

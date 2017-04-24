@@ -41,11 +41,11 @@ struct EchoGroupState {
 
 class EchoEffect : public PerChannelEffectProcessor<EchoGroupState> {
   public:
-    EchoEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    EchoEffect(EngineEffect* pEffect);
     ~EchoEffect() override;
 
     static QString getId();
-    static EffectManifest getManifest();
+    static EffectManifestPointer getManifest();
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,

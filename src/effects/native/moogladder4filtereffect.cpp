@@ -12,18 +12,18 @@ QString MoogLadder4FilterEffect::getId() {
 }
 
 // static
-EffectManifest MoogLadder4FilterEffect::getManifest() {
-    EffectManifest manifest;
-    manifest.setId(getId());
-    manifest.setName(QObject::tr("Moog Ladder 4 Filter"));
-    manifest.setShortName(QObject::tr("Moog Filter"));
-    manifest.setAuthor("The Mixxx Team");
-    manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr(
+EffectManifestPointer MoogLadder4FilterEffect::getManifest() {
+    EffectManifestPointer pManifest(new EffectManifest());
+    pManifest->setId(getId());
+    pManifest->setName(QObject::tr("Moog Ladder 4 Filter"));
+    pManifest->setShortName(QObject::tr("Moog Filter"));
+    pManifest->setAuthor("The Mixxx Team");
+    pManifest->setVersion("1.0");
+    pManifest->setDescription(QObject::tr(
             "A 4-pole Moog ladder filter, based on Antti Houvilainen's non linear digital implementation"));
-    manifest.setEffectRampsFromDry(true);
+    pManifest->setEffectRampsFromDry(true);
 
-    EffectManifestParameter* lpf = manifest.addParameter();
+    EffectManifestParameter* lpf = pManifest->addParameter();
     lpf->setId("lpf");
     lpf->setName(QObject::tr("LPF"));
     lpf->setDescription(QObject::tr("Corner frequency ratio of the low pass filter"));
@@ -36,7 +36,7 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     lpf->setMinimum(kMinCorner);
     lpf->setMaximum(kMaxCorner);
 
-    EffectManifestParameter* q = manifest.addParameter();
+    EffectManifestParameter* q = pManifest->addParameter();
     q->setId("resonance");
     q->setName(QObject::tr("Resonance"));
     q->setShortName(QObject::tr("Res"));
@@ -48,7 +48,7 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     q->setMaximum(4.0);
     q->setDefault(1.0);
 
-    EffectManifestParameter* hpf = manifest.addParameter();
+    EffectManifestParameter* hpf = pManifest->addParameter();
     hpf->setId("hpf");
     hpf->setName(QObject::tr("HPF"));
     hpf->setDescription(QObject::tr("Corner frequency ratio of the high pass filter"));
@@ -61,7 +61,7 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     hpf->setMinimum(kMinCorner);
     hpf->setMaximum(kMaxCorner);
 
-    return manifest;
+    return pManifest;
 }
 
 MoogLadder4FilterGroupState::MoogLadder4FilterGroupState()
@@ -82,12 +82,10 @@ MoogLadder4FilterGroupState::~MoogLadder4FilterGroupState() {
     delete m_pHighFilter;
 }
 
-MoogLadder4FilterEffect::MoogLadder4FilterEffect(EngineEffect* pEffect,
-                           const EffectManifest& manifest)
+MoogLadder4FilterEffect::MoogLadder4FilterEffect(EngineEffect* pEffect)
         : m_pLPF(pEffect->getParameterById("lpf")),
           m_pResonance(pEffect->getParameterById("resonance")),
           m_pHPF(pEffect->getParameterById("hpf")) {
-    Q_UNUSED(manifest);
 }
 
 MoogLadder4FilterEffect::~MoogLadder4FilterEffect() {

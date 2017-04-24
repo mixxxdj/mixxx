@@ -23,11 +23,11 @@ struct ReverbGroupState {
 
 class ReverbEffect : public PerChannelEffectProcessor<ReverbGroupState> {
   public:
-    ReverbEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    ReverbEffect(EngineEffect* pEffect);
     virtual ~ReverbEffect();
 
     static QString getId();
-    static EffectManifest getManifest();
+    static EffectManifestPointer getManifest();
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,

@@ -24,11 +24,11 @@ class Bessel8LVMixEQEffectGroupState :
 
 class Bessel8LVMixEQEffect : public PerChannelEffectProcessor<Bessel8LVMixEQEffectGroupState> {
   public:
-    Bessel8LVMixEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    Bessel8LVMixEQEffect(EngineEffect* pEffect);
     virtual ~Bessel8LVMixEQEffect();
 
     static QString getId();
-    static EffectManifest getManifest();
+    static EffectManifestPointer getManifest();
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,

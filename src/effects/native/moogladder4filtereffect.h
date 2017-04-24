@@ -31,11 +31,11 @@ struct MoogLadder4FilterGroupState {
 
 class MoogLadder4FilterEffect : public PerChannelEffectProcessor<MoogLadder4FilterGroupState> {
   public:
-    MoogLadder4FilterEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    MoogLadder4FilterEffect(EngineEffect* pEffect);
     virtual ~MoogLadder4FilterEffect();
 
     static QString getId();
-    static EffectManifest getManifest();
+    static EffectManifestPointer getManifest();
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,

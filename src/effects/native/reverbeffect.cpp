@@ -10,21 +10,21 @@ QString ReverbEffect::getId() {
 }
 
 // static
-EffectManifest ReverbEffect::getManifest() {
-    EffectManifest manifest;
-    manifest.setId(getId());
-    manifest.setName(QObject::tr("Reverb"));
-    manifest.setAuthor("The Mixxx Team, CAPS Plugins");
-    manifest.setVersion("1.0");
-    manifest.setDescription("This is a port of the GPL'ed CAPS Reverb plugin, "
+EffectManifestPointer ReverbEffect::getManifest() {
+    EffectManifestPointer pManifest(new EffectManifest());
+    pManifest->setId(getId());
+    pManifest->setName(QObject::tr("Reverb"));
+    pManifest->setAuthor("The Mixxx Team, CAPS Plugins");
+    pManifest->setVersion("1.0");
+    pManifest->setDescription("This is a port of the GPL'ed CAPS Reverb plugin, "
             "which has the following description:"
             "This is based on some of the famous Stanford CCRMA reverbs "
             "(NRev, KipRev) all based on the Chowning/Moorer/Schroeder "
             "reverberators, which use networks of simple allpass and comb"
             "delay filters.");
-    manifest.setEffectRampsFromDry(true);
+    pManifest->setEffectRampsFromDry(true);
 
-    EffectManifestParameter* decay = manifest.addParameter();
+    EffectManifestParameter* decay = pManifest->addParameter();
     decay->setId("decay");
     decay->setName(QObject::tr("Decay"));
     decay->setDescription(QObject::tr("Lower decay values cause reverberations to die out more quickly."));
@@ -35,7 +35,7 @@ EffectManifest ReverbEffect::getManifest() {
     decay->setDefault(0.5);
     decay->setMaximum(1);
 
-    EffectManifestParameter* bandwidth = manifest.addParameter();
+    EffectManifestParameter* bandwidth = pManifest->addParameter();
     bandwidth->setId("bandwidth");
     bandwidth->setName(QObject::tr("Bandwidth"));
     bandwidth->setShortName(QObject::tr("BW"));
@@ -48,7 +48,7 @@ EffectManifest ReverbEffect::getManifest() {
     bandwidth->setDefault(1);
     bandwidth->setMaximum(1);
 
-    EffectManifestParameter* damping = manifest.addParameter();
+    EffectManifestParameter* damping = pManifest->addParameter();
     damping->setId("damping");
     damping->setName(QObject::tr("Damping"));
     damping->setDescription(QObject::tr("Higher damping values cause "
@@ -60,7 +60,7 @@ EffectManifest ReverbEffect::getManifest() {
     damping->setDefault(0);
     damping->setMaximum(1);
 
-    EffectManifestParameter* send = manifest.addParameter();
+    EffectManifestParameter* send = pManifest->addParameter();
     send->setId("send_amount");
     send->setName(QObject::tr("Send"));
     send->setDescription(QObject::tr("How much of the signal to send to the effect"));
@@ -72,16 +72,14 @@ EffectManifest ReverbEffect::getManifest() {
     send->setMinimum(0);
     send->setDefault(0);
     send->setMaximum(1);
-    return manifest;
+    return pManifest;
 }
 
-ReverbEffect::ReverbEffect(EngineEffect* pEffect,
-                             const EffectManifest& manifest)
+ReverbEffect::ReverbEffect(EngineEffect* pEffect)
         : m_pDecayParameter(pEffect->getParameterById("decay")),
           m_pBandWidthParameter(pEffect->getParameterById("bandwidth")),
           m_pDampingParameter(pEffect->getParameterById("damping")),
           m_pSendParameter(pEffect->getParameterById("send_amount")) {
-    Q_UNUSED(manifest);
 }
 
 ReverbEffect::~ReverbEffect() {

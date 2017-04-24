@@ -27,7 +27,7 @@ class EngineEffectsManager;
 class EffectsManager : public QObject {
     Q_OBJECT
   public:
-    typedef bool (*EffectManifestFilterFnc)(const EffectManifest& pManifest);
+    typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
 
     EffectsManager(QObject* pParent, UserSettingsPointer pConfig);
     virtual ~EffectsManager();
@@ -61,15 +61,16 @@ class EffectsManager : public QObject {
     QString getNextEffectId(const QString& effectId);
     QString getPrevEffectId(const QString& effectId);
 
-    inline const QList<EffectManifest>& getAvailableEffectManifests() const {
+    inline const QList<EffectManifestPointer>& getAvailableEffectManifests() const {
         return m_availableEffectManifests;
     };
-    const QList<EffectManifest> getAvailableEffectManifestsFiltered(
+    const QList<EffectManifestPointer> getAvailableEffectManifestsFiltered(
         EffectManifestFilterFnc filter) const;
     bool isEQ(const QString& effectId) const;
-    QPair<EffectManifest, EffectsBackend*> getEffectManifestAndBackend(
-            const QString& effectId) const;
-    EffectManifest getEffectManifest(const QString& effectId) const;
+    void getEffectManifestAndBackend(
+            const QString& effectId,
+            EffectManifestPointer* ppManifest, EffectsBackend** ppBackend) const;
+    EffectManifestPointer getEffectManifest(const QString& effectId) const;
     EffectPointer instantiateEffect(const QString& effectId);
 
     // Temporary, but for setting up all the default EffectChains and EffectRacks
@@ -80,10 +81,11 @@ class EffectsManager : public QObject {
     bool writeRequest(EffectsRequest* request);
 
   signals:
-    void availableEffectsUpdated(EffectManifest);
+    // TODO() Not connected. Can be used when we implement effect PlugIn loading at runtime
+    void availableEffectsUpdated(EffectManifestPointer);
 
   private slots:
-    void slotBackendRegisteredEffect(EffectManifest manifest);
+    void slotBackendRegisteredEffect(EffectManifestPointer pManifest);
 
   private:
     QString debugString() const {
@@ -94,7 +96,7 @@ class EffectsManager : public QObject {
 
     EffectChainManager* m_pEffectChainManager;
     QList<EffectsBackend*> m_effectsBackends;
-    QList<EffectManifest> m_availableEffectManifests;
+    QList<EffectManifestPointer> m_availableEffectManifests;
 
     EngineEffectsManager* m_pEngineEffectsManager;
 

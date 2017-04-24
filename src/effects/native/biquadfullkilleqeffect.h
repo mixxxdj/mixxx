@@ -61,11 +61,11 @@ class BiquadFullKillEQEffectGroupState final {
 
 class BiquadFullKillEQEffect : public PerChannelEffectProcessor<BiquadFullKillEQEffectGroupState> {
   public:
-    BiquadFullKillEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    BiquadFullKillEQEffect(EngineEffect* pEffect);
     ~BiquadFullKillEQEffect() override;
 
     static QString getId();
-    static EffectManifest getManifest();
+    static EffectManifestPointer getManifest();
 
     void setFilters(int sampleRate, double lowFreqCorner, double highFreqCorner);
 

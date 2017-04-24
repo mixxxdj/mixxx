@@ -8,18 +8,18 @@ QString BitCrusherEffect::getId() {
 }
 
 // static
-EffectManifest BitCrusherEffect::getManifest() {
-    EffectManifest manifest;
-    manifest.setId(getId());
-    manifest.setName(QObject::tr("BitCrusher"));
-    manifest.setAuthor("The Mixxx Team");
-    manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr(
+EffectManifestPointer BitCrusherEffect::getManifest() {
+    EffectManifestPointer pManifest(new EffectManifest());
+    pManifest->setId(getId());
+    pManifest->setName(QObject::tr("BitCrusher"));
+    pManifest->setAuthor("The Mixxx Team");
+    pManifest->setVersion("1.0");
+    pManifest->setDescription(QObject::tr(
         "The BitCrusher is an effect that adds quantisation noise to the signal "
         "by the reduction of the resolution or bandwidth of the samples."));
-    manifest.setEffectRampsFromDry(true);
+    pManifest->setEffectRampsFromDry(true);
 
-    EffectManifestParameter* depth = manifest.addParameter();
+    EffectManifestParameter* depth = pManifest->addParameter();
     depth->setId("bit_depth");
     depth->setName(QObject::tr("Bit Depth"));
     depth->setDescription(QObject::tr("Adjusts the bit depth of the samples."));
@@ -35,7 +35,7 @@ EffectManifest BitCrusherEffect::getManifest() {
     depth->setMinimum(2);
     depth->setMaximum(16);
 
-    EffectManifestParameter* frequency = manifest.addParameter();
+    EffectManifestParameter* frequency = pManifest->addParameter();
     frequency->setId("downsample");
     frequency->setName(QObject::tr("Downsampling"));
     frequency->setShortName(QObject::tr("Down"));
@@ -50,14 +50,12 @@ EffectManifest BitCrusherEffect::getManifest() {
     frequency->setMinimum(0.02);
     frequency->setMaximum(1.0);
 
-    return manifest;
+    return pManifest;
 }
 
-BitCrusherEffect::BitCrusherEffect(EngineEffect* pEffect,
-                                   const EffectManifest& manifest)
+BitCrusherEffect::BitCrusherEffect(EngineEffect* pEffect)
         : m_pBitDepthParameter(pEffect->getParameterById("bit_depth")),
           m_pDownsampleParameter(pEffect->getParameterById("downsample")) {
-    Q_UNUSED(manifest);
 }
 
 BitCrusherEffect::~BitCrusherEffect() {

@@ -38,11 +38,11 @@ class MetaLinkTest : public BaseEffectTest {
         QString group = StandardEffectRack::formatEffectSlotGroupString(
             iRackNumber, iChainNumber, iEffectNumber);
 
-        EffectManifest manifest;
-        manifest.setId("org.mixxx.test.effect");
-        manifest.setName("Test Effect");
+        EffectManifestPointer pManifest(new EffectManifest());
+        pManifest->setId("org.mixxx.test.effect");
+        pManifest->setName("Test Effect");
 
-        EffectManifestParameter* low = manifest.addParameter();
+        EffectManifestParameter* low = pManifest->addParameter();
         low->setId("low");
         low->setName(QObject::tr("Low"));
         low->setDescription(QObject::tr("Gain for Low Filter"));
@@ -54,10 +54,10 @@ class MetaLinkTest : public BaseEffectTest {
         low->setMinimum(0);
         low->setMaximum(1.0);
 
-        registerTestEffect(manifest, false);
+        registerTestEffect(pManifest, false);
 
         // Check the controls reflect the state of their loaded effect.
-        EffectPointer pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
+        EffectPointer pEffect = m_pEffectsManager->instantiateEffect(pManifest->id());
 
         m_pEffectSlot->loadEffect(pEffect);
 
@@ -205,10 +205,10 @@ TEST_F(MetaLinkTest, HalfLinkTakeover) {
     // 0 or 1.
     QString group = StandardEffectRack::formatEffectSlotGroupString(
         0, 0, 0);
-    EffectManifest manifest;
-    manifest.setId("org.mixxx.test.effect2");
-    manifest.setName("Test Effect2");
-    EffectManifestParameter* low = manifest.addParameter();
+    EffectManifestPointer pManifest(new EffectManifest());
+    pManifest->setId("org.mixxx.test.effect2");
+    pManifest->setName("Test Effect2");
+    EffectManifestParameter* low = pManifest->addParameter();
     low->setId("low");
     low->setName(QObject::tr("Low"));
     low->setDescription(QObject::tr("Gain for Low Filter (neutral at 1.0)"));
@@ -219,9 +219,9 @@ TEST_F(MetaLinkTest, HalfLinkTakeover) {
     low->setDefault(1.0);
     low->setMinimum(0);
     low->setMaximum(1.0);
-    registerTestEffect(manifest, false);
+    registerTestEffect(pManifest, false);
     // Check the controls reflect the state of their loaded effect.
-    EffectPointer pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
+    EffectPointer pEffect = m_pEffectsManager->instantiateEffect(pManifest->id());
     m_pEffectSlot->loadEffect(pEffect);
     QString itemPrefix = EffectParameterSlot::formatItemPrefix(0);
     m_pControlValue.reset(new ControlProxy(group, itemPrefix));
