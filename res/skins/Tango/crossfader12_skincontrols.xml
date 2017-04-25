@@ -167,7 +167,7 @@ Description:
           </Template>
 
           <WidgetGroup><!-- Clock (& Logo when Crossfader is visible in 2-decks mode) -->
-            <ObjectName>AlignCenter</ObjectName>
+            <ObjectName>AlignVCenter</ObjectName>
             <Size>56me,43me</Size>
             <Layout>vertical</Layout>
             <Children>
@@ -223,8 +223,9 @@ Description:
             </Children>
           </WidgetGroup><!-- Clock (& Logo when Crossfader is visible in 2-decks mode) -->
 
-          <WidgetGroup>
-            <SizePolicy>min,min</SizePolicy>
+          <WidgetGroup><!-- Toggler for skin settings menu -->
+            <ObjectName>AlignVCenter</ObjectName>
+            <SizePolicy>min,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
             <!-- Still disabled, doesn't work for states below [states-2]
@@ -243,7 +244,7 @@ Description:
                 <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>
               </Template>
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- /Toggler for skin settings menu -->
 
         </Children>
       </WidgetGroup><!-- /Broadcast + Clock Skin + Settings -->

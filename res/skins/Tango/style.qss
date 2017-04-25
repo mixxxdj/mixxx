@@ -1527,26 +1527,26 @@ QToolTip {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   margin-left: 2000px;
 }
+#AlignLeft{
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+  }
+  #AlignTopLeft {
+    qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  }
+  #AlignBottomLeft {
+    qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+  }
 #AlignRight {
   qproperty-layoutAlignment: 'AlignRight | AlignBottom';
-}
-#AlignRight {
-  qproperty-layoutAlignment: 'AlignRight | AlignBottom';
-}
+  }
+  #AlignRightCenter {
+    qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+  }
 #AlignVCenter {
   qproperty-layoutAlignment: 'AlignVCenter';
 }
-#AlignRightCenter {
-  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-}
 #AlignTop {
   qproperty-layoutAlignment: 'AlignTop';
-}
-#AlignTopLeft {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-}
-#AlignBottomLeft {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
 }
 
 #Spacer0f {

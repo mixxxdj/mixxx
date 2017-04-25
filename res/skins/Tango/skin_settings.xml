@@ -312,6 +312,28 @@ Description:
               </Template>
 
               <Template src="skin:skin_settings_sampler_rows.xml"/>
+          
+              <WidgetGroup>
+                <ObjectName>AlignLeft</ObjectName>
+                <Layout>horizontal</Layout>
+                <Size>172f,15f</Size>
+                <Children>
+                  <Template src="skin:button_1state.xml">
+                    <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
+                    <SetVariable name="Size">50f,15f</SetVariable>
+                    <SetVariable name="state_0_text">      Load /</SetVariable>
+                    <SetVariable name="Align">left</SetVariable>
+                    <SetVariable name="ConfigKey">[Sampler],LoadSamplerBank</SetVariable>
+                  </Template>
+                  <Template src="skin:button_1state.xml">
+                    <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
+                    <SetVariable name="Size">122f,15f</SetVariable>
+                    <SetVariable name="state_0_text"> Save Sample Banks</SetVariable>
+                    <SetVariable name="Align">left</SetVariable>
+                    <SetVariable name="ConfigKey">[Sampler],SaveSamplerBank</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
 
               <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      Enforce compact mode</SetVariable>
