@@ -1,5 +1,6 @@
 <Template>
   <WidgetGroup>
+    <ObjectName>TrackCommentContainer</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
@@ -78,7 +79,6 @@
       </WidgetGroup><!-- /FX indicators when track comment is hidden -->
 
       <WidgetGroup><!-- Track comment + FX indicators + Spacer -->
-        <ObjectName>Spacer33</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>i,min</SizePolicy>
         <Children>
@@ -89,6 +89,7 @@
 
               <!-- FX indicators when all FX units are hidden -->
               <WidgetGroup>
+                <ObjectName>AlignVCenter</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
@@ -115,6 +116,7 @@
 
               <!-- FX indicators when only FX units 3/4 are hidden -->
               <WidgetGroup>
+                <ObjectName>AlignVCenter</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
