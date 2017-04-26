@@ -53,6 +53,9 @@ class EffectChainManager : public QObject {
     bool saveEffectChains();
     QList<std::pair<EffectChainPointer, QDomElement>> loadEffectChains();
 
+    // Reloads all effect to the slots to update parameter assignements
+    void refeshAllRacks();
+
     static const int kNumEffectsPerUnit = 4;
 
   private:

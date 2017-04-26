@@ -284,6 +284,10 @@ void EffectsManager::setup() {
     addQuickEffectRack();
 }
 
+void EffectsManager::refeshAllRacks() {
+    m_pEffectChainManager->refeshAllRacks();
+}
+
 bool EffectsManager::writeRequest(EffectsRequest* request) {
     if (m_underDestruction) {
         // Catch all delete Messages since the engine is already down

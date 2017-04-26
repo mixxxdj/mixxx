@@ -218,6 +218,13 @@ QDomElement EffectRack::toXml(QDomDocument* doc) const {
     return rackElement;
 }
 
+void EffectRack::refresh() {
+    for (const auto& pChainSlot: m_effectChainSlots) {
+        EffectChainPointer pChain = pChainSlot->getEffectChain();
+        pChain->refreshAllEffects();
+    }
+}
+
 StandardEffectRack::StandardEffectRack(EffectsManager* pEffectsManager,
                                        EffectChainManager* pChainManager,
                                        const unsigned int iRackNumber)

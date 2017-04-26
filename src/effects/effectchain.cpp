@@ -253,6 +253,12 @@ void EffectChain::removeEffect(unsigned int effectSlotNumber) {
     replaceEffect(effectSlotNumber, EffectPointer());
 }
 
+void EffectChain::refreshAllEffects() {
+    for (int i = 0; i < m_effects.size(); ++i) {
+        emit(effectChanged(i));
+    }
+}
+
 unsigned int EffectChain::numEffects() const {
     return m_effects.size();
 }

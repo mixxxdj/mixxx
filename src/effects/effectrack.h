@@ -52,6 +52,8 @@ class EffectRack : public QObject {
         return m_group;
     }
 
+    void refresh();
+
     QDomElement toXml(QDomDocument* doc) const;
 
   public slots:
