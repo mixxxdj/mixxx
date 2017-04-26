@@ -98,17 +98,19 @@ class EffectManifest final {
         m_description = description;
     }
 
-    const QList<EffectManifestParameter>& parameters() const {
+    const QList<EffectManifestParameterPointer>& parameters() const {
         return m_parameters;
     }
 
-    EffectManifestParameter* addParameter() {
-        m_parameters.append(EffectManifestParameter());
-        return &m_parameters.last();
+    EffectManifestParameterPointer addParameter() {
+        EffectManifestParameterPointer effectManifestParameterPointer(
+                new EffectManifestParameter());
+        m_parameters.append(effectManifestParameterPointer);
+        return effectManifestParameterPointer;
     }
 
-    EffectManifestParameter* parameter(int i) {
-        return &m_parameters[i];
+    EffectManifestParameterPointer parameter(int i) {
+        return m_parameters[i];
     }
 
     bool effectRampsFromDry() const {
@@ -132,7 +134,7 @@ class EffectManifest final {
     // This helps us at DlgPrefEQ's basic selection of Equalizers
     bool m_isMixingEQ;
     bool m_isMasterEQ;
-    QList<EffectManifestParameter> m_parameters;
+    QList<EffectManifestParameterPointer> m_parameters;
     bool m_effectRampsFromDry;
 };
 

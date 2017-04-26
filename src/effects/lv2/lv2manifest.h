@@ -23,7 +23,7 @@ class LV2Manifest {
 
   private:
     void buildEnumerationOptions(const LilvPort* port,
-                                 EffectManifestParameter* param);
+                                 EffectManifestParameterPointer param);
     const LilvPlugin* m_pLV2plugin;
     EffectManifestPointer m_pEffectManifest;
 

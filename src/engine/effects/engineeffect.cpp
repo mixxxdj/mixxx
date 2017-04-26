@@ -8,13 +8,13 @@ EngineEffect::EngineEffect(EffectManifestPointer pManifest,
         : m_pManifest(pManifest),
           m_enableState(EffectProcessor::DISABLED),
           m_parameters(pManifest->parameters().size()) {
-    const QList<EffectManifestParameter>& parameters = m_pManifest->parameters();
+    const QList<EffectManifestParameterPointer>& parameters = m_pManifest->parameters();
     for (int i = 0; i < parameters.size(); ++i) {
-        const EffectManifestParameter& parameter = parameters.at(i);
+        EffectManifestParameterPointer param = parameters.at(i);
         EngineEffectParameter* pParameter =
-                new EngineEffectParameter(parameter);
+                new EngineEffectParameter(param);
         m_parameters[i] = pParameter;
-        m_parametersById[parameter.id()] = pParameter;
+        m_parametersById[param->id()] = pParameter;
     }
 
     // Creating the processor must come last.

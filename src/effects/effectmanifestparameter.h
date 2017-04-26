@@ -4,6 +4,10 @@
 #include <QVariant>
 #include <QString>
 #include <QtDebug>
+#include <QSharedPointer>
+
+class EffectManifestParameter;
+typedef QSharedPointer<EffectManifestParameter> EffectManifestParameterPointer;
 
 class EffectManifestParameter {
   public:

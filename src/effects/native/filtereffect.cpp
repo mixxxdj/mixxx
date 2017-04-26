@@ -21,7 +21,7 @@ EffectManifestPointer FilterEffect::getManifest() {
                                         "frequencies to pass through."));
     pManifest->setEffectRampsFromDry(true);
 
-    EffectManifestParameter* lpf = pManifest->addParameter();
+    EffectManifestParameterPointer lpf = pManifest->addParameter();
     lpf->setId("lpf");
     lpf->setName(QObject::tr("LPF"));
     lpf->setDescription(QObject::tr("Corner frequency ratio of the low pass filter"));
@@ -34,7 +34,7 @@ EffectManifestPointer FilterEffect::getManifest() {
     lpf->setMinimum(kMinCorner);
     lpf->setMaximum(kMaxCorner);
 
-    EffectManifestParameter* q = pManifest->addParameter();
+    EffectManifestParameterPointer q = pManifest->addParameter();
     q->setId("q");
     q->setName(QObject::tr("Resonance"));
     q->setShortName(QObject::tr("Q"));
@@ -46,7 +46,7 @@ EffectManifestPointer FilterEffect::getManifest() {
     q->setMinimum(0.4);
     q->setMaximum(4.0);
 
-    EffectManifestParameter* hpf = pManifest->addParameter();
+    EffectManifestParameterPointer hpf = pManifest->addParameter();
     hpf->setId("hpf");
     hpf->setName(QObject::tr("HPF"));
     hpf->setDescription(QObject::tr("Corner frequency ratio of the high pass filter"));

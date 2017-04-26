@@ -184,7 +184,7 @@ static bool isMasterEQ(EffectManifest* pManifest) {
 
 static bool hasSuperKnobLinking(EffectManifest* pManifest) {
     for (const auto& pParameterManifest : pManifest->parameters()) {
-        if (pParameterManifest.defaultLinkType() !=
+        if (pParameterManifest->defaultLinkType() !=
             EffectManifestParameter::LinkType::NONE) {
             return true;
         }
@@ -714,7 +714,7 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
                 if (param) {
                     // Setup Label
                     QLabel* centerFreqLabel = new QLabel(this);
-                    QString labelText = param->manifest().name();
+                    QString labelText = param->manifest()->name();
                     m_masterEQLabels.append(centerFreqLabel);
                     centerFreqLabel->setText(labelText);
                     slidersGridLayout->addWidget(centerFreqLabel, 0, i + 1, Qt::AlignCenter);

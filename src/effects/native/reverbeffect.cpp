@@ -24,7 +24,7 @@ EffectManifestPointer ReverbEffect::getManifest() {
             "delay filters.");
     pManifest->setEffectRampsFromDry(true);
 
-    EffectManifestParameter* decay = pManifest->addParameter();
+    EffectManifestParameterPointer decay = pManifest->addParameter();
     decay->setId("decay");
     decay->setName(QObject::tr("Decay"));
     decay->setDescription(QObject::tr("Lower decay values cause reverberations to die out more quickly."));
@@ -35,7 +35,7 @@ EffectManifestPointer ReverbEffect::getManifest() {
     decay->setDefault(0.5);
     decay->setMaximum(1);
 
-    EffectManifestParameter* bandwidth = pManifest->addParameter();
+    EffectManifestParameterPointer bandwidth = pManifest->addParameter();
     bandwidth->setId("bandwidth");
     bandwidth->setName(QObject::tr("Bandwidth"));
     bandwidth->setShortName(QObject::tr("BW"));
@@ -48,7 +48,7 @@ EffectManifestPointer ReverbEffect::getManifest() {
     bandwidth->setDefault(1);
     bandwidth->setMaximum(1);
 
-    EffectManifestParameter* damping = pManifest->addParameter();
+    EffectManifestParameterPointer damping = pManifest->addParameter();
     damping->setId("damping");
     damping->setName(QObject::tr("Damping"));
     damping->setDescription(QObject::tr("Higher damping values cause "
@@ -60,7 +60,7 @@ EffectManifestPointer ReverbEffect::getManifest() {
     damping->setDefault(0);
     damping->setMaximum(1);
 
-    EffectManifestParameter* send = pManifest->addParameter();
+    EffectManifestParameterPointer send = pManifest->addParameter();
     send->setId("send_amount");
     send->setName(QObject::tr("Send"));
     send->setDescription(QObject::tr("How much of the signal to send to the effect"));

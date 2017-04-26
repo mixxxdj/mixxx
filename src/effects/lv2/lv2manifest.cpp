@@ -55,7 +55,7 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             !lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"]) &&
             !lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
             controlPortIndices.append(i);
-            EffectManifestParameter* param = m_pEffectManifest->addParameter();
+            EffectManifestParameterPointer param = m_pEffectManifest->addParameter();
 
             // Get and set the parameter name
             info = lilv_port_get_name(m_pLV2plugin, port);
@@ -94,7 +94,7 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
                 (lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"]) ||
                 lilv_port_has_property(m_pLV2plugin, port, properties["button_port"]))) {
             controlPortIndices.append(i);
-            EffectManifestParameter* param = m_pEffectManifest->addParameter();
+            EffectManifestParameterPointer param = m_pEffectManifest->addParameter();
 
             // Get and set the parameter name
             info = lilv_port_get_name(m_pLV2plugin, port);
@@ -183,7 +183,7 @@ bool LV2Manifest::isValid() {
 }
 
 void LV2Manifest::buildEnumerationOptions(const LilvPort* port,
-                                          EffectManifestParameter* param) {
+                                          EffectManifestParameterPointer param) {
     LilvScalePoints* options = lilv_port_get_scale_points(m_pLV2plugin, port);
     LILV_FOREACH(scale_points, iterator, options) {
         const LilvScalePoint* option = lilv_scale_points_get(options, iterator);

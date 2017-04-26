@@ -29,7 +29,7 @@ EffectManifestPointer AutoPanEffect::getManifest() {
     // Period
     // The maximum is at 128 + 1 allowing 128 as max value and
     // enabling us to pause time when the parameter is above
-    EffectManifestParameter* period = pManifest->addParameter();
+    EffectManifestParameterPointer period = pManifest->addParameter();
     period->setId("period");
     period->setName(QObject::tr("Period"));
     period->setDescription(QObject::tr("How fast the sound goes from a side to another,"
@@ -42,7 +42,7 @@ EffectManifestPointer AutoPanEffect::getManifest() {
     period->setDefault(3.0);
 
     // This parameter controls the easing of the sound from a side to another.
-    EffectManifestParameter* smoothing = pManifest->addParameter();
+    EffectManifestParameterPointer smoothing = pManifest->addParameter();
     smoothing->setId("smoothing");
     smoothing->setName(QObject::tr("Smoothing"));
     smoothing->setShortName(QObject::tr("Smooth"));
@@ -58,7 +58,7 @@ EffectManifestPointer AutoPanEffect::getManifest() {
     //                     make the scaleStartParameter for this be 1.
 
     // Width : applied on the channel with gain reducing.
-    EffectManifestParameter* width = pManifest->addParameter();
+    EffectManifestParameterPointer width = pManifest->addParameter();
     width->setId("width");
     width->setName(QObject::tr("Width"));
     width->setDescription("How far the signal goes on the left or on the right");
@@ -71,7 +71,7 @@ EffectManifestPointer AutoPanEffect::getManifest() {
     width->setDefault(0.5);
 
     // Period unit
-    EffectManifestParameter* periodUnit = pManifest->addParameter();
+    EffectManifestParameterPointer periodUnit = pManifest->addParameter();
     periodUnit->setId("periodUnit");
     periodUnit->setName(QObject::tr("Sync"));
     periodUnit->setDescription(QObject::tr("Synchronizes the period with the BPM if it can be retrieved"));

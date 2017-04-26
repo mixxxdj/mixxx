@@ -19,7 +19,7 @@ EffectManifestPointer BitCrusherEffect::getManifest() {
         "by the reduction of the resolution or bandwidth of the samples."));
     pManifest->setEffectRampsFromDry(true);
 
-    EffectManifestParameter* depth = pManifest->addParameter();
+    EffectManifestParameterPointer depth = pManifest->addParameter();
     depth->setId("bit_depth");
     depth->setName(QObject::tr("Bit Depth"));
     depth->setDescription(QObject::tr("Adjusts the bit depth of the samples."));
@@ -35,7 +35,7 @@ EffectManifestPointer BitCrusherEffect::getManifest() {
     depth->setMinimum(2);
     depth->setMaximum(16);
 
-    EffectManifestParameter* frequency = pManifest->addParameter();
+    EffectManifestParameterPointer frequency = pManifest->addParameter();
     frequency->setId("downsample");
     frequency->setName(QObject::tr("Downsampling"));
     frequency->setShortName(QObject::tr("Down"));

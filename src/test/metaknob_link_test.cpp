@@ -42,7 +42,7 @@ class MetaLinkTest : public BaseEffectTest {
         pManifest->setId("org.mixxx.test.effect");
         pManifest->setName("Test Effect");
 
-        EffectManifestParameter* low = pManifest->addParameter();
+        EffectManifestParameterPointer low = pManifest->addParameter();
         low->setId("low");
         low->setName(QObject::tr("Low"));
         low->setDescription(QObject::tr("Gain for Low Filter"));
@@ -208,7 +208,7 @@ TEST_F(MetaLinkTest, HalfLinkTakeover) {
     EffectManifestPointer pManifest(new EffectManifest());
     pManifest->setId("org.mixxx.test.effect2");
     pManifest->setName("Test Effect2");
-    EffectManifestParameter* low = pManifest->addParameter();
+    EffectManifestParameterPointer low = pManifest->addParameter();
     low->setId("low");
     low->setName(QObject::tr("Low"));
     low->setDescription(QObject::tr("Gain for Low Filter (neutral at 1.0)"));

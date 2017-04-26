@@ -17,7 +17,7 @@ class EqualizerUtil {
             maximum = 2.0;
         }
 
-        EffectManifestParameter* low = pManifest->addParameter();
+        EffectManifestParameterPointer low = pManifest->addParameter();
         low->setId("low");
         low->setName(QObject::tr("Low"));
         low->setDescription(QObject::tr("Gain for Low Filter"));
@@ -29,7 +29,7 @@ class EqualizerUtil {
         low->setMinimum(0);
         low->setMaximum(maximum);
 
-        EffectManifestParameter* killLow = pManifest->addParameter();
+        EffectManifestParameterPointer killLow = pManifest->addParameter();
         killLow->setId("killLow");
         killLow->setName(QObject::tr("Kill Low"));
         killLow->setDescription(QObject::tr("Kill the Low Filter"));
@@ -40,7 +40,7 @@ class EqualizerUtil {
         killLow->setMinimum(0);
         killLow->setMaximum(1);
 
-        EffectManifestParameter* mid = pManifest->addParameter();
+        EffectManifestParameterPointer mid = pManifest->addParameter();
         mid->setId("mid");
         mid->setName(QObject::tr("Mid"));
         mid->setDescription(QObject::tr("Gain for Mid Filter"));
@@ -52,7 +52,7 @@ class EqualizerUtil {
         mid->setMinimum(0);
         mid->setMaximum(maximum);
 
-        EffectManifestParameter* killMid = pManifest->addParameter();
+        EffectManifestParameterPointer killMid = pManifest->addParameter();
         killMid->setId("killMid");
         killMid->setName(QObject::tr("Kill Mid"));
         killMid->setDescription(QObject::tr("Kill the Mid Filter"));
@@ -63,7 +63,7 @@ class EqualizerUtil {
         killMid->setMinimum(0);
         killMid->setMaximum(1);
 
-        EffectManifestParameter* high = pManifest->addParameter();
+        EffectManifestParameterPointer high = pManifest->addParameter();
         high->setId("high");
         high->setName(QObject::tr("High"));
         high->setDescription(QObject::tr("Gain for High Filter"));
@@ -75,7 +75,7 @@ class EqualizerUtil {
         high->setMinimum(0);
         high->setMaximum(maximum);
 
-        EffectManifestParameter* killHigh = pManifest->addParameter();
+        EffectManifestParameterPointer killHigh = pManifest->addParameter();
         killHigh->setId("killHigh");
         killHigh->setName(QObject::tr("Kill High"));
         killHigh->setDescription(QObject::tr("Kill the High Filter"));

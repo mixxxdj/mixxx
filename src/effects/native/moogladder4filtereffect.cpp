@@ -23,7 +23,7 @@ EffectManifestPointer MoogLadder4FilterEffect::getManifest() {
             "A 4-pole Moog ladder filter, based on Antti Houvilainen's non linear digital implementation"));
     pManifest->setEffectRampsFromDry(true);
 
-    EffectManifestParameter* lpf = pManifest->addParameter();
+    EffectManifestParameterPointer lpf = pManifest->addParameter();
     lpf->setId("lpf");
     lpf->setName(QObject::tr("LPF"));
     lpf->setDescription(QObject::tr("Corner frequency ratio of the low pass filter"));
@@ -36,7 +36,7 @@ EffectManifestPointer MoogLadder4FilterEffect::getManifest() {
     lpf->setMinimum(kMinCorner);
     lpf->setMaximum(kMaxCorner);
 
-    EffectManifestParameter* q = pManifest->addParameter();
+    EffectManifestParameterPointer q = pManifest->addParameter();
     q->setId("resonance");
     q->setName(QObject::tr("Resonance"));
     q->setShortName(QObject::tr("Res"));
@@ -48,7 +48,7 @@ EffectManifestPointer MoogLadder4FilterEffect::getManifest() {
     q->setMaximum(4.0);
     q->setDefault(1.0);
 
-    EffectManifestParameter* hpf = pManifest->addParameter();
+    EffectManifestParameterPointer hpf = pManifest->addParameter();
     hpf->setId("hpf");
     hpf->setName(QObject::tr("HPF"));
     hpf->setDescription(QObject::tr("Corner frequency ratio of the high pass filter"));

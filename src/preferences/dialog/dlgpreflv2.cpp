@@ -87,11 +87,12 @@ void DlgPrefLV2::slotDisplayParameters() {
     m_currentEffectId = pluginId;
 
     EffectManifestPointer pCurrentEffectManifest = m_pLV2Backend->getManifest(pluginId);
-    const QList<EffectManifestParameter>& parameterList = pCurrentEffectManifest->parameters();
-    for (const auto& parameter: parameterList) {
+    const QList<EffectManifestParameterPointer>& parameterList =
+            pCurrentEffectManifest->parameters();
+    for (const auto& pPrameter: parameterList) {
         QCheckBox* entry = new QCheckBox(this);
-        entry->setText(parameter.name());
-        if (parameter.showInParameterSlot()) {
+        entry->setText(pPrameter->name());
+        if (pPrameter->showInParameterSlot()) {
             entry->setChecked(true);
         } else {
             entry->setChecked(false);
@@ -113,8 +114,8 @@ void DlgPrefLV2::slotApply() {
             m_pLV2Backend->getManifest(m_currentEffectId);
     qDebug() << "DlgPrefLV2::slotApply" << pCurrentEffectManifest.data();
     for (int i = 0; i < m_pluginParameters.size(); i++) {
-        EffectManifestParameter* parameter = pCurrentEffectManifest->parameter(i);
-        parameter->setShowInParameterSlot(m_pluginParameters[i]->isChecked());
+        EffectManifestParameterPointer pParameter = pCurrentEffectManifest->parameter(i);
+        pParameter->setShowInParameterSlot(m_pluginParameters[i]->isChecked());
     }
 }
 

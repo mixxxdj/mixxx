@@ -24,7 +24,7 @@ EffectManifestPointer FlangerEffect::getManifest() {
         "A simple modulation effect, created by taking the input signal "
         "and mixing it with a delayed, pitch modulated copy of itself."));
 
-    EffectManifestParameter* delay = pManifest->addParameter();
+    EffectManifestParameterPointer delay = pManifest->addParameter();
     delay->setId("delay");
     delay->setName(QObject::tr("Delay"));
     delay->setDescription(QObject::tr("Sets the value for the delay length."));
@@ -35,7 +35,7 @@ EffectManifestPointer FlangerEffect::getManifest() {
     delay->setMinimum(50.0);
     delay->setMaximum(10000.0);
 
-    EffectManifestParameter* period = pManifest->addParameter();
+    EffectManifestParameterPointer period = pManifest->addParameter();
     period->setId("period");
     period->setName(QObject::tr("Period"));
     period->setDescription(QObject::tr("Controls the speed of the effect."));
@@ -46,7 +46,7 @@ EffectManifestPointer FlangerEffect::getManifest() {
     period->setMinimum(50000.0);
     period->setMaximum(2000000.0);
 
-    EffectManifestParameter* depth = pManifest->addParameter();
+    EffectManifestParameterPointer depth = pManifest->addParameter();
     depth->setId("depth");
     depth->setName(QObject::tr("Depth"));
     depth->setDescription(QObject::tr("Controls the intensity of the effect."));

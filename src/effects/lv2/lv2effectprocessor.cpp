@@ -24,12 +24,12 @@ LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
     m_params = new float[pManifest->parameters().size()];
 
 
-    const QList<EffectManifestParameter>& effectManifestParameterList =
+    const QList<EffectManifestParameterPointer>& effectManifestParameterList =
             pManifest->parameters();
 
     // Initialize EngineEffectParameters
-    foreach (EffectManifestParameter param, effectManifestParameterList) {
-        m_parameters.append(pEngineEffect->getParameterById(param.id()));
+    for (const auto& pParam: effectManifestParameterList) {
+        m_parameters.append(pEngineEffect->getParameterById(pParam->id()));
     }
 
     for (int i = 0; i < m_parameters.size(); i++) {

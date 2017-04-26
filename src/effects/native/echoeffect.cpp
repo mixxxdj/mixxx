@@ -24,7 +24,7 @@ EffectManifestPointer EchoEffect::getManifest() {
     pManifest->setVersion("1.0");
     pManifest->setDescription(QObject::tr("Simple Echo with pingpong"));
 
-    EffectManifestParameter* delay = pManifest->addParameter();
+    EffectManifestParameterPointer delay = pManifest->addParameter();
     delay->setId("delay_time");
     delay->setName(QObject::tr("Delay"));
     delay->setDescription(QObject::tr("Delay time (seconds)"));
@@ -35,7 +35,7 @@ EffectManifestPointer EchoEffect::getManifest() {
     delay->setDefault(1.0);
     delay->setMaximum(EchoGroupState::kMaxDelaySeconds);
 
-    EffectManifestParameter* feedback = pManifest->addParameter();
+    EffectManifestParameterPointer feedback = pManifest->addParameter();
     feedback->setId("feedback_amount");
     feedback->setName(QObject::tr("Feedback"));
     feedback->setDescription(
@@ -47,7 +47,7 @@ EffectManifestPointer EchoEffect::getManifest() {
     feedback->setDefault(0.5);
     feedback->setMaximum(1.0);
 
-    EffectManifestParameter* pingpong = pManifest->addParameter();
+    EffectManifestParameterPointer pingpong = pManifest->addParameter();
     pingpong->setId("pingpong_amount");
     pingpong->setName(QObject::tr("PingPong"));
     pingpong->setDescription(
@@ -61,7 +61,7 @@ EffectManifestPointer EchoEffect::getManifest() {
     pingpong->setDefault(0.0);
     pingpong->setMaximum(1.0);
 
-    EffectManifestParameter* send = pManifest->addParameter();
+    EffectManifestParameterPointer send = pManifest->addParameter();
     send->setId("send_amount");
     send->setName(QObject::tr("Send"));
     send->setDescription(

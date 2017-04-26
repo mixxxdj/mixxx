@@ -23,7 +23,7 @@ EffectManifestPointer PhaserEffect::getManifest() {
                 " with a copy passed through a series of all-pass filters."));
     pManifest->setEffectRampsFromDry(true);
 
-    EffectManifestParameter* frequency = pManifest->addParameter();
+    EffectManifestParameterPointer frequency = pManifest->addParameter();
     frequency->setId("lfo_frequency");
     frequency->setName(QObject::tr("Rate"));
     frequency->setDescription(QObject::tr("Controls the speed of the low frequency oscilator."));
@@ -34,7 +34,7 @@ EffectManifestPointer PhaserEffect::getManifest() {
     frequency->setMaximum(5.0);
     frequency->setDefault(2.5);
 
-    EffectManifestParameter* range = pManifest->addParameter();
+    EffectManifestParameterPointer range = pManifest->addParameter();
     range->setId("range");
     range->setName(QObject::tr("Range"));
     range->setDescription(QObject::tr("Controls the frequency range across which the notches sweep."));
@@ -45,7 +45,7 @@ EffectManifestPointer PhaserEffect::getManifest() {
     range->setMaximum(0.95);
     range->setDefault(0.05);
 
-    EffectManifestParameter* stages = pManifest->addParameter();
+    EffectManifestParameterPointer stages = pManifest->addParameter();
     stages->setId("stages");
     stages->setName(QObject::tr("Stages"));
     stages->setDescription(QObject::tr("Sets number of stages."));
@@ -56,7 +56,7 @@ EffectManifestPointer PhaserEffect::getManifest() {
     stages->setMaximum(6.0);
     stages->setDefault(3.5);
 
-    EffectManifestParameter* fb = pManifest->addParameter();
+    EffectManifestParameterPointer fb = pManifest->addParameter();
     fb->setId("feedback");
     fb->setName(QObject::tr("Feedback"));
     fb->setDescription(QObject::tr("Controls how much of the output signal is looped"));
@@ -67,7 +67,7 @@ EffectManifestPointer PhaserEffect::getManifest() {
     fb->setMaximum(0.95);
     fb->setDefault(0.0);
 
-    EffectManifestParameter* depth = pManifest->addParameter();
+    EffectManifestParameterPointer depth = pManifest->addParameter();
     depth->setId("depth");
     depth->setName(QObject::tr("Depth"));
     depth->setDescription("Controls the intensity of the effect.");
@@ -79,7 +79,7 @@ EffectManifestPointer PhaserEffect::getManifest() {
     depth->setMaximum(1.0);
     depth->setDefault(0.0);
 
-    EffectManifestParameter* stereo = pManifest->addParameter();
+    EffectManifestParameterPointer stereo = pManifest->addParameter();
     stereo->setId("stereo");
     stereo->setName(QObject::tr("Stereo"));
     stereo->setDescription(QObject::tr("Enables/disables stereo"));

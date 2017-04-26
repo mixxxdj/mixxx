@@ -25,7 +25,7 @@ EffectManifestPointer GraphicEQEffect::getManifest() {
     float centerFrequencies[8] = {45, 100, 220, 500, 1100, 2500,
                                   5500, 12000};
 
-    EffectManifestParameter* low = pManifest->addParameter();
+    EffectManifestParameterPointer low = pManifest->addParameter();
     low->setId(QString("low"));
     low->setName(QString("%1 Hz").arg(centerFrequencies[0]));
     low->setDescription(QObject::tr("Gain for Low Filter"));
@@ -45,7 +45,7 @@ EffectManifestPointer GraphicEQEffect::getManifest() {
             paramName = QString("%1 kHz").arg(centerFrequencies[i + 1] / 1000);
         }
 
-        EffectManifestParameter* mid = pManifest->addParameter();
+        EffectManifestParameterPointer mid = pManifest->addParameter();
         mid->setId(QString("mid%1").arg(i));
         mid->setName(paramName);
         mid->setDescription(QObject::tr("Gain for Band Filter %1").arg(i));
@@ -58,7 +58,7 @@ EffectManifestPointer GraphicEQEffect::getManifest() {
         mid->setMaximum(12);
     }
 
-    EffectManifestParameter* high = pManifest->addParameter();
+    EffectManifestParameterPointer high = pManifest->addParameter();
     high->setId(QString("high"));
     high->setName(QString("%1 kHz").arg(centerFrequencies[7] / 1000));
     high->setDescription(QObject::tr("Gain for High Filter"));

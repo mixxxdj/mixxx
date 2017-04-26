@@ -18,14 +18,14 @@ Effect::Effect(EffectsManager* pEffectsManager,
           m_pEngineEffect(NULL),
           m_bAddedToEngine(false),
           m_bEnabled(false) {
-    for (const auto& parameter: m_pManifest->parameters()) {
+    for (const auto& pManifestParameter: m_pManifest->parameters()) {
         EffectParameter* pParameter = new EffectParameter(
-                this, pEffectsManager, m_parameters.size(), parameter);
+                this, pEffectsManager, m_parameters.size(), pManifestParameter);
         m_parameters.append(pParameter);
-        if (m_parametersById.contains(parameter.id())) {
+        if (m_parametersById.contains(pParameter->id())) {
             qWarning() << debugString() << "WARNING: Loaded EffectManifest that had parameters with duplicate IDs. Dropping one of them.";
         }
-        m_parametersById[parameter.id()] = pParameter;
+        m_parametersById[pParameter->id()] = pParameter;
     }
     //qDebug() << debugString() << "created" << this;
 }
@@ -112,7 +112,8 @@ void Effect::sendParameterUpdate() {
 unsigned int Effect::numKnobParameters() const {
     unsigned int num = 0;
     foreach(const EffectParameter* parameter, m_parameters) {
-        if (parameter->manifest().controlHint() != EffectManifestParameter::ControlHint::TOGGLE_STEPPING) {
+        if (parameter->manifest()->controlHint() !=
+                EffectManifestParameter::ControlHint::TOGGLE_STEPPING) {
             ++num;
         }
     }
@@ -122,7 +123,8 @@ unsigned int Effect::numKnobParameters() const {
 unsigned int Effect::numButtonParameters() const {
     unsigned int num = 0;
     foreach(const EffectParameter* parameter, m_parameters) {
-        if (parameter->manifest().controlHint() == EffectManifestParameter::ControlHint::TOGGLE_STEPPING) {
+        if (parameter->manifest()->controlHint() ==
+                EffectManifestParameter::ControlHint::TOGGLE_STEPPING) {
             ++num;
         }
     }
@@ -140,7 +142,7 @@ EffectParameter* Effect::getParameterById(const QString& id) const {
 
 // static
 bool Effect::isButtonParameter(EffectParameter* parameter) {
-    return  parameter->manifest().controlHint() ==
+    return  parameter->manifest()->controlHint() ==
             EffectManifestParameter::ControlHint::TOGGLE_STEPPING;
 }
 
@@ -155,7 +157,7 @@ EffectParameter* Effect::getFilteredParameterForSlot(ParameterFilterFnc filterFn
     // for NULL.
     unsigned int num = 0;
     for (const auto& parameter: m_parameters) {
-        if (parameter->manifest().showInParameterSlot() && filterFnc(parameter)) {
+        if (parameter->manifest()->showInParameterSlot() && filterFnc(parameter)) {
             if(num == slotNumber) {
                 return parameter;
             }
