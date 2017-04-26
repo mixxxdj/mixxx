@@ -341,15 +341,26 @@
                 if (this.relative) {
                     if (this.previousValueReceived !== undefined) {
                         var delta = (value - this.previousValueReceived) / this.max;
+                        if (this.invert) {
+                            delta = -delta;
+                        }
                         this.inSetParameter(this.inGetParameter() + delta);
                     } else {
+                        var newValue = value / this.max;
+                        if (this.invert) {
+                            newValue = 1 - newValue;
+                        }
                         if (this.loadStateOnStartup) {
-                            this.inSetParameter(value / this.max);
+                            this.inSetParameter(newValue);
                         }
                     }
                     this.previousValueReceived = value;
                 } else {
-                    this.inSetParameter(this.inValueScale(value));
+                    var newValue = this.inValueScale(value);
+                    if (this.invert) {
+                        newValue = 1 - newValue;
+                    }
+                    this.inSetParameter(newValue);
                     if (!this.firstValueReceived) {
                         this.firstValueReceived = true;
                         this.connect();
