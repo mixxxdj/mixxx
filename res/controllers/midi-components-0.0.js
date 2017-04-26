@@ -327,7 +327,7 @@
                     // physical potentiometer for calculating how much it moves
                     // when shift is released.
                     if (this.MSB !== undefined) {
-                        value = this.MSB << 7 + value;
+                        value = (this.MSB << 7) + value;
                     }
                     this.previousValueReceived = value;
                 }
@@ -336,7 +336,7 @@
         unshift: function () {
             this.input = function (channel, control, value, status, group) {
                 if (this.MSB !== undefined) {
-                    value = this.MSB << 7 + value;
+                    value = (this.MSB << 7) + value;
                 }
                 if (this.relative) {
                     if (this.previousValueReceived !== undefined) {
