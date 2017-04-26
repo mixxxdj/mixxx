@@ -1,22 +1,4 @@
-var PioneerDDJSB2 = function() {};
-
-/*
-    Find the latest code at https://github.com/dg3nec/mixxx
-   
-    
-    This mapping for the Pioneer DDJ-SB2 was made by DG3NEC, Michael Stahl
-    Basing on DDj-SB for Mixxx 2.0 Joan Ardiaca Jové (joan.ardiaca@gmail.com),
-    basing on the work of wingcom (wwingcomm@gmail.com, https://github.com/wingcom/Mixxx-Pioneer-DDJ-SB).
-    which in turn was based on the work of Hilton Rudham (https://github.com/hrudham/Mixxx-Pioneer-DDJ-SR).
-    Just as wingcom's and Rudham's work, this mapping is pusblished under the MIT license.
-  
-    TODO:
-    - eliminate code for "virtual 4 deck mode DDJ-SB"
-    - Softtakeover: Rate, Crossover
- 
-*/
-
-
+var PioneerDDJSB2 = {};
 ///////////////////////////////////////////////////////////////
 //                       USER OPTIONS                        //
 ///////////////////////////////////////////////////////////////
@@ -53,6 +35,56 @@ PioneerDDJSB2.twinkleVumeterAutodjOn = true;
 PioneerDDJSB2.jumpPreviewEnabled = true;
 PioneerDDJSB2.jumpPreviewPosition = 0.5;
 
+/*
+    Pioneer DDJ-SB2 mapping for Mixxx
+    Copyright (c) 2017 Be (be.0@gmx.com), licensed under GPL version 2 or later
+    Copyright (c) 2014-2015 various contributors, licensed under MIT license
+
+    Contributors and change log:
+    - Be (be.0@gmx.com): update effects and autoloop mode for Mixxx 2.1, fix level meter scaling,
+      remove LED flickering when pressing shift, start porting to Components
+    - Michael Stahl (DG3NEC): original DDJ-SB2 mapping for Mixxx 2.0
+    - Joan Ardiaca Jové (joan.ardiaca@gmail.com): Pioneer DDJ-SB mapping for Mixxx 2.0
+    - wingcom (wwingcomm@gmail.com): start of Pioneer DDJ-SB mapping
+      https://github.com/wingcom/Mixxx-Pioneer-DDJ-SB
+    - Hilton Rudham: Pioneer DDJ-SR mapping
+      https://github.com/hrudham/Mixxx-Pioneer-DDJ-SR
+
+    GPL license notice for current version:
+    This program is free software; you can redistribute it and/or modify it under the terms of the
+    GNU General Public License as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+    the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along with this program; if
+    not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+
+    MIT License for earlier versions:
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+    and associated documentation files (the "Software"), to deal in the Software without
+    restriction, including without limitation the rights to use, copy, modify, merge, publish,
+    distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all copies or
+    substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+    BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+    DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+    TODO:
+      - bug when touching jog wheel for first time in vinyl mode
+*/
+
+
 
 ///////////////////////////////////////////////////////////////
 //               INIT, SHUTDOWN & GLOBAL HELPER              //
@@ -61,6 +93,10 @@ PioneerDDJSB2.longButtonPress = false;
 PioneerDDJSB2.speedRateToNormalTimer = new Array(4);
 
 PioneerDDJSB2.init = function(id) {
+    PioneerDDJSB2.effectUnit = [];
+    PioneerDDJSB2.effectUnit[1] = new PioneerDDJSB2.EffectUnit(1);
+    PioneerDDJSB2.effectUnit[2] = new PioneerDDJSB2.EffectUnit(2);
+
     PioneerDDJSB2.scratchSettings = {
         'alpha': 1.0 / 8,
         'beta': 1.0 / 8 / 32,
@@ -83,36 +119,11 @@ PioneerDDJSB2.init = function(id) {
         '[Sampler4]': 0x03
     };
 
-    PioneerDDJSB2.fxGroups = {
-        '[EffectRack1_EffectUnit1]': 0x00,
-        '[EffectRack1_EffectUnit2]': 0x01
-    };
-
-    PioneerDDJSB2.fxControls = {
-        'group_[Channel1]_enable': 0x00,
-        'group_[Channel3]_enable': 0x00,
-        'group_[Headphone]_enable': 0x01,
-        'group_[Master]_enable': 0x01,
-        'group_[Channel2]_enable': 0x02,
-        'group_[Channel4]_enable': 0x02
-    };
-
     PioneerDDJSB2.shiftPressed = false;
 
     PioneerDDJSB2.chFaderStart = [
         null,
         null
-    ];
-
-    PioneerDDJSB2.fxButtonPressed = [
-        [false, false, false],
-        [false, false, false]
-    ];
-
-    // used for soft takeover workaround
-    PioneerDDJSB2.fxParamsActiveValues = [
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0]
     ];
 
     PioneerDDJSB2.scratchMode = [false, false, false, false];
@@ -278,7 +289,6 @@ PioneerDDJSB2.bindSamplerControlConnections = function(samplerGroup, isUnbinding
 PioneerDDJSB2.bindDeckControlConnections = function(channelGroup, isUnbinding) {
     var i,
         index,
-        fxUnitIndex = 1,
         controlsToFunctions = {
             'play': 'PioneerDDJSB2.playLeds',
             'pfl': 'PioneerDDJSB2.headphoneCueLed',
@@ -315,28 +325,13 @@ PioneerDDJSB2.bindDeckControlConnections = function(channelGroup, isUnbinding) {
     }
 
     script.bindConnections(channelGroup, controlsToFunctions, isUnbinding);
-
-    for (fxUnitIndex = 1; fxUnitIndex <= 2; fxUnitIndex++) {
-        engine.connectControl('[EffectRack1_EffectUnit' + fxUnitIndex + ']', 'group_' + channelGroup + '_enable', 'PioneerDDJSB2.fxLeds', isUnbinding);
-        if (!isUnbinding) {
-            engine.trigger('[EffectRack1_EffectUnit' + fxUnitIndex + ']', 'group_' + channelGroup + '_enable');
-        }
-    }
 };
 
 PioneerDDJSB2.bindNonDeckControlConnections = function(isUnbinding) {
-    var samplerIndex,
-        fxUnitIndex;
+    var samplerIndex;
 
     for (samplerIndex = 1; samplerIndex <= 4; samplerIndex++) {
         PioneerDDJSB2.bindSamplerControlConnections('[Sampler' + samplerIndex + ']', isUnbinding);
-    }
-
-    for (fxUnitIndex = 1; fxUnitIndex <= 2; fxUnitIndex++) {
-        engine.connectControl('[EffectRack1_EffectUnit' + fxUnitIndex + ']', 'group_[Headphone]_enable', 'PioneerDDJSB2.fxLeds', isUnbinding);
-    }
-    for (fxUnitIndex = 1; fxUnitIndex <= 2; fxUnitIndex++) {
-        engine.connectControl('[EffectRack1_EffectUnit' + fxUnitIndex + ']', 'group_[Master]_enable', 'PioneerDDJSB2.fxLeds', isUnbinding);
     }
 
     if (PioneerDDJSB2.showVumeterMaster) {
@@ -352,15 +347,10 @@ PioneerDDJSB2.bindNonDeckControlConnections = function(isUnbinding) {
 
 PioneerDDJSB2.bindAllControlConnections = function(isUnbinding) {
     var samplerIndex,
-        fxUnitIndex,
         channelIndex;
 
     for (samplerIndex = 1; samplerIndex <= 4; samplerIndex++) {
         PioneerDDJSB2.bindSamplerControlConnections('[Sampler' + samplerIndex + ']', isUnbinding);
-    }
-
-    for (fxUnitIndex = 1; fxUnitIndex <= 2; fxUnitIndex++) {
-        engine.connectControl('[EffectRack1_EffectUnit' + fxUnitIndex + ']', 'group_[Headphone]_enable', 'PioneerDDJSB2.fxLeds', isUnbinding);
     }
 
     for (channelIndex = 1; channelIndex <= 2; channelIndex++) {
@@ -721,20 +711,6 @@ PioneerDDJSB2.deckConverter = function(group) {
     return group;
 };
 
-PioneerDDJSB2.fxLedControl = function(deck, ledNumber, shift, active) {
-    var fxLedsBaseChannel = 0x94,
-        fxLedsBaseControl = (shift ? 0x63 : 0x47),
-        midiChannelOffset = PioneerDDJSB2.deckConverter(deck);
-
-    if (midiChannelOffset !== null) {
-        midi.sendShortMsg(
-            fxLedsBaseChannel + midiChannelOffset,
-            fxLedsBaseControl + ledNumber,
-            active ? 0x7F : 0x00
-        );
-    }
-};
-
 PioneerDDJSB2.padLedControl = function(deck, groupNumber, shiftGroup, ledNumber, shift, active) {
     var padLedsBaseChannel = 0x97,
         padLedControl = (shiftGroup ? 0x40 : 0x00) + (shift ? 0x08 : 0x00) + groupNumber + ledNumber,
@@ -766,17 +742,6 @@ PioneerDDJSB2.nonPadLedControl = function(deck, ledNumber, active) {
 ///////////////////////////////////////////////////////////////
 //                             LEDS                          //
 ///////////////////////////////////////////////////////////////
-
-PioneerDDJSB2.fxLeds = function(value, group, control) {
-    var deck = PioneerDDJSB2.fxGroups[group],
-        ledNumber = PioneerDDJSB2.fxControls[control];
-
-    if (PioneerDDJSB2.shiftPressed === false) {
-        PioneerDDJSB2.fxLedControl(deck, ledNumber, false, value);
-    } else {
-        PioneerDDJSB2.fxLedControl(deck, ledNumber, true, value);
-    }
-};
 
 PioneerDDJSB2.headphoneCueLed = function(value, group, control) {
     PioneerDDJSB2.nonPadLedControl(group, PioneerDDJSB2.nonPadLeds.headphoneCue, value);
@@ -1096,98 +1061,81 @@ PioneerDDJSB2.rotarySelectorShiftedClick = function(channel, control, value, sta
 //                             FX                            //
 ///////////////////////////////////////////////////////////////
 
-PioneerDDJSB2.fxKnobMSB = [0, 0];
-PioneerDDJSB2.fxKnobShiftedMSB = [0, 0];
-PioneerDDJSB2.fxKnobParameterSet = false;
+PioneerDDJSB2.EffectUnit = function (unitNumber) {
+    var eu = this;
+    this.group = '[EffectRack1_EffectUnit' + unitNumber + ']';
+    engine.setValue(this.group, 'show_focus', 1);
 
-PioneerDDJSB2.fxButton = function(channel, control, value, status, group) {
-    var deck = channel - 4,
-        button = control - 0x47;
+    this.EffectButton = function (buttonNumber) {
+        this.buttonNumber = buttonNumber;
 
-    PioneerDDJSB2.fxButtonPressed[deck][button] = (value === 0x7F);
+        this.group = eu.group;
+        this.midi = [0x93 + unitNumber, 0x46 + buttonNumber];
 
-    if (!value) {
-        if (PioneerDDJSB2.fxKnobParameterSet) {
-            PioneerDDJSB2.fxKnobParameterSet = false;
+        components.Button.call(this);
+    };
+    this.EffectButton.prototype = new components.Button({
+        input: function (channel, control, value, status) {
+            if (this.isPress(channel, control, value, status)) {
+                this.isLongPressed = false;
+                this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
+                    var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + this.buttonNumber + ']';
+                    script.toggleControl(effectGroup, 'enabled');
+                    this.isLongPressed = true;
+                }, true);
+            } else {
+                if (!this.isLongPressed) {
+                    var focusedEffect = engine.getValue(eu.group, 'focused_effect');
+                    if (focusedEffect === this.buttonNumber) {
+                        engine.setValue(eu.group, 'focused_effect', 0);
+                    } else {
+                        engine.setValue(eu.group, 'focused_effect', this.buttonNumber);
+                    }
+                }
+                this.isLongPressed = false;
+                engine.stopTimer(this.longPressTimer);
+            }
+        },
+        outKey: 'focused_effect',
+        output: function (value, group, control) {
+            this.send((value === this.buttonNumber) ? this.on : this.off);
+        },
+        sendShifted: true,
+        shiftControl: true,
+        shiftOffset: 28,
+    });
+
+    this.button = [];
+    for (var i = 1; i <= 3; i++) {
+        this.button[i] = new this.EffectButton(i);
+
+        var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + i + ']';
+        engine.softTakeover(effectGroup, 'meta', true);
+        engine.softTakeover(eu.group, 'mix', true);
+    }
+
+    this.knob = new components.Pot({
+        unshift: function () {
+            this.input = function (channel, control, value, status) {
+                value = (this.MSB << 7) + value;
+
+                var focusedEffect = engine.getValue(eu.group, 'focused_effect');
+                if (focusedEffect === 0) {
+                    engine.setParameter(eu.group, 'mix', value / this.max);
+                } else {
+                    var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + focusedEffect + ']';
+                    engine.setParameter(effectGroup, 'meta', value / this.max);
+                }
+            }
+        },
+    });
+
+    this.knobSoftTakeoverHandler = engine.makeConnection(eu.group, 'focused_effect', function (value, group, control) {
+        if (value === 0) {
+            engine.softTakeoverIgnoreNextValue(eu.group, 'mix');
         } else {
-            if (button === 0) {
-                script.toggleControl(group, 'group_[Channel1]_enable');
-            } else if (button === 1) {
-                script.toggleControl(group, 'group_[Headphone]_enable');
-            } else if (button === 2) {
-                script.toggleControl(group, 'group_[Channel2]_enable');
-            }
+            var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + value + ']';
+            engine.softTakeoverIgnoreNextValue(effectGroup, 'meta');
         }
-    }
+    });
 };
-
-PioneerDDJSB2.fxButtonShifted = function(channel, control, value, status, group) {
-    var button = control - 0x63;
-    if (!value) {
-        if (button === 0) {
-            script.toggleControl(group, 'group_[Channel3]_enable');
-        } else if (button === 1) {
-            script.toggleControl(group, 'group_[Master]_enable');
-        } else if (button === 2) {
-            script.toggleControl(group, 'group_[Channel4]_enable');
-        }
-    }
-};
-
-PioneerDDJSB2.fxKnobShiftedMSB = function(channel, control, value, status) {
-    PioneerDDJSB2.fxKnobShiftedMSB[channel - 4] = value;
-};
-
-PioneerDDJSB2.fxKnobShiftedLSB = function(channel, control, value, status) {
-    var deck = channel - 4,
-        fullValue = (PioneerDDJSB2.fxKnobShiftedMSB[deck] << 7) + value;
-
-    if (PioneerDDJSB2.softTakeoverEmulation(deck, 4, PioneerDDJSB2.fxKnobShiftedMSB[deck])) {
-        engine.setValue('[EffectRack1_EffectUnit' + (deck + 1) + ']', 'super1', fullValue / 0x3FFF);
-    }
-};
-
-PioneerDDJSB2.fxKnobMSB = function(channel, control, value, status) {
-    PioneerDDJSB2.fxKnobMSB[channel - 4] = value;
-};
-
-PioneerDDJSB2.fxKnobLSB = function(channel, control, value, status) {
-    var deck = channel - 4,
-        anyButtonPressed = false,
-        fullValue = (PioneerDDJSB2.fxKnobMSB[deck] << 7) + value,
-        parameter;
-
-    for (parameter = 0; parameter < 3; parameter++) {
-        if (PioneerDDJSB2.fxButtonPressed[deck][parameter]) {
-            anyButtonPressed = true;
-        }
-    }
-
-    if (!anyButtonPressed) {
-        if (PioneerDDJSB2.softTakeoverEmulation(deck, 3, PioneerDDJSB2.fxKnobMSB[deck])) {
-            engine.setValue('[EffectRack1_EffectUnit' + (deck + 1) + ']', 'mix', fullValue / 0x3FFF);
-        }
-    } else {
-        for (parameter = 0; parameter < 3; parameter++) {
-            if (PioneerDDJSB2.fxButtonPressed[deck][parameter] && PioneerDDJSB2.softTakeoverEmulation(deck, parameter, PioneerDDJSB2.fxKnobMSB[deck])) {
-                engine.setParameter(
-                    '[EffectRack1_EffectUnit' + (deck + 1) + '_Effect1]',
-                    'parameter' + (parameter + 1),
-                    fullValue / 0x3FFF
-                );
-                PioneerDDJSB2.fxKnobParameterSet = true;
-            }
-        }
-    }
-};
-
-PioneerDDJSB2.softTakeoverEmulation = function(deck, index, currentValue) {
-    var deltaToActive = currentValue - PioneerDDJSB2.fxParamsActiveValues[deck][index];
-
-    if (Math.abs(deltaToActive) < 15) {
-        PioneerDDJSB2.fxParamsActiveValues[deck][index] = currentValue;
-        return true;
-    }
-    return false;
-};
-
