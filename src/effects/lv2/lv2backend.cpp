@@ -23,6 +23,9 @@ void LV2Backend::enumeratePlugins() {
     const LilvPlugins *plugs = lilv_world_get_all_plugins(m_pWorld);
     LILV_FOREACH(plugins, i, plugs) {
         const LilvPlugin *plug = lilv_plugins_get(plugs, i);
+        if (lilv_plugin_is_replaced(plug)) {
+            continue;
+        }
         LV2Manifest* lv2Manifest = new LV2Manifest(plug, m_properties);
         m_registeredEffects.insert(lv2Manifest->getEffectManifest()->id(),
                                    lv2Manifest);
