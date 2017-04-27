@@ -88,6 +88,12 @@ PioneerDDJSB2.longButtonPress = false;
 PioneerDDJSB2.speedRateToNormalTimer = new Array(4);
 
 PioneerDDJSB2.init = function(id) {
+    PioneerDDJSB2.deck = [];
+    PioneerDDJSB2.deck[1] = new PioneerDDJSB2.Deck(1);
+    PioneerDDJSB2.deck[2] = new PioneerDDJSB2.Deck(2);
+    PioneerDDJSB2.deck[3] = new PioneerDDJSB2.Deck(3);
+    PioneerDDJSB2.deck[4] = new PioneerDDJSB2.Deck(4);
+
     PioneerDDJSB2.effectUnit = [];
     PioneerDDJSB2.effectUnit[1] = new PioneerDDJSB2.EffectUnit(1);
     PioneerDDJSB2.effectUnit[2] = new PioneerDDJSB2.EffectUnit(2);
@@ -161,7 +167,6 @@ PioneerDDJSB2.init = function(id) {
 
     PioneerDDJSB2.looprollIntervals = [1 / 16, 1 / 8, 1 / 4, 1 / 2, 1, 2, 4, 8];
 
-    PioneerDDJSB2.setAllSoftTakeover(false);
     PioneerDDJSB2.bindNonDeckControlConnections(false);
     PioneerDDJSB2.initDeck('[Channel1]');
     PioneerDDJSB2.initDeck('[Channel2]');
@@ -172,6 +177,75 @@ PioneerDDJSB2.init = function(id) {
         PioneerDDJSB2.vu_meter_timer = engine.beginTimer(100, "PioneerDDJSB2.vuMeterTwinkle()");
     }
 };
+
+PioneerDDJSB2.Deck = function (deckNumber) {
+    var theDeck = this;
+    this.group = '[Channel' + deckNumber + ']';
+
+    this.shiftButton = function (channel, control, value, status, group) {
+        if (value > 0) {
+            theDeck.shift();
+            PioneerDDJSB2.shiftPressed = true;
+            PioneerDDJSB2.chFaderStart[deckNumber] = null;
+        } else {
+            theDeck.unshift();
+            PioneerDDJSB2.shiftPressed = false;
+        }
+    };
+
+    this.playButton = new components.PlayButton({
+        midi: [0x90 + deckNumber - 1, 0x0B],
+        shiftOffset: 60,
+        shiftControl: true,
+        sendShifted: true,
+    });
+
+    this.cueButton = new components.CueButton({
+        midi: [0x90 + deckNumber - 1, 0x0C],
+        shiftOffset: 60,
+        shiftControl: true,
+        sendShifted: true,
+    });
+
+    this.syncButton = new components.SyncButton({
+        midi: [0x90 + deckNumber - 1, 0x58],
+        shiftOffset: 4,
+        shiftControl: true,
+        sendShifted: true,
+    });
+
+    this.gainKnob = new components.Pot({
+        inKey: 'pregain',
+    });
+
+    this.eqKnob = [];
+    for (var k = 1; k <= 3; k++) {
+        this.eqKnob[k] = new components.Pot({
+            group: '[EqualizerRack1_[Channel' + deckNumber + ']_Effect1]',
+            inKey: 'parameter' + k,
+        });
+    }
+
+    this.quickEffectKnob = new components.Pot({
+        group: '[QuickEffectRack1_[Channel' + deckNumber + ']]',
+        inKey: 'super1',
+    });
+
+    this.tempoFader = new components.Pot({
+        inKey: 'rate',
+//         relative: true,
+        invert: true,
+    });
+
+    this.forEachComponent(function (c) {
+        if (c.group === undefined) {
+            c.group = theDeck.group;
+            c.connect();
+            c.trigger();
+        }
+    });
+};
+PioneerDDJSB2.Deck.prototype = components.ComponentContainer.prototype;
 
 PioneerDDJSB2.shutdown = function() {
     // turn off button LEDs
@@ -363,24 +437,6 @@ PioneerDDJSB2.bindAllControlConnections = function(isUnbinding) {
     }
 };
 
-PioneerDDJSB2.setDeckSoftTakeover = function(channel, isUnbinding) {
-    engine.softTakeover(channel, "volume", !isUnbinding);
-    engine.softTakeover(channel, "rate", !isUnbinding);
-    engine.softTakeover(channel, "pregain", !isUnbinding);
-    engine.softTakeover(channel, "filterHigh", !isUnbinding);
-    engine.softTakeover(channel, "filterMid", !isUnbinding);
-    engine.softTakeover(channel, "filterLow", !isUnbinding);
-    engine.softTakeover("[QuickEffectRack1_" + channel + "]", "super1", !isUnbinding);
-};
-
-PioneerDDJSB2.setAllSoftTakeover = function(isUnbinding) {
-    var channelIndex;
-    for (channelIndex = 1; channelIndex <= 4; channelIndex++) {
-        PioneerDDJSB2.setDeckSoftTakeover('[Channel' + channelIndex + ']', isUnbinding);
-    }
-};
-
-
 ///////////////////////////////////////////////////////////////
 //                       DECK SWITCHING                      //
 ///////////////////////////////////////////////////////////////
@@ -418,70 +474,6 @@ PioneerDDJSB2.highResMSB = {
     '[Channel4]': {}
 };
 
-PioneerDDJSB2.tempoSliderMSB = function(channel, control, value, status, group) {
-    PioneerDDJSB2.highResMSB[group].tempoSlider = value;
-};
-
-PioneerDDJSB2.tempoSliderLSB = function(channel, control, value, status, group) {
-    var fullValue = (PioneerDDJSB2.highResMSB[group].tempoSlider << 7) + value;
-    engine.setValue(
-        PioneerDDJSB2.deckSwitchTable[group],
-        'rate',
-        ((0x4000 - fullValue) - 0x2000) / 0x2000
-    );
-};
-
-PioneerDDJSB2.gainKnobMSB = function(channel, control, value, status, group) {
-    PioneerDDJSB2.highResMSB[group].gainKnob = value;
-};
-
-PioneerDDJSB2.gainKnobLSB = function(channel, control, value, status, group) {
-    var fullValue = (PioneerDDJSB2.highResMSB[group].gainKnob << 7) + value;
-    engine.setValue(
-        PioneerDDJSB2.deckSwitchTable[group],
-        'pregain',
-        script.absoluteNonLin(fullValue, 0.0, 1.0, 4.0, 0, 0x3FFF)
-    );
-};
-
-PioneerDDJSB2.filterHighKnobMSB = function(channel, control, value, status, group) {
-    PioneerDDJSB2.highResMSB[group].filterHigh = value;
-};
-
-PioneerDDJSB2.filterHighKnobLSB = function(channel, control, value, status, group) {
-    var fullValue = (PioneerDDJSB2.highResMSB[group].filterHigh << 7) + value;
-    engine.setValue(
-        group,
-        'filterHigh',
-        script.absoluteNonLin(fullValue, 0.0, 1.0, 4.0, 0, 0x3FFF)
-    );
-};
-
-PioneerDDJSB2.filterMidKnobMSB = function(channel, control, value, status, group) {
-    PioneerDDJSB2.highResMSB[group].filterMid = value;
-};
-
-PioneerDDJSB2.filterMidKnobLSB = function(channel, control, value, status, group) {
-    var fullValue = (PioneerDDJSB2.highResMSB[group].filterMid << 7) + value;
-    engine.setValue(
-        group,
-        'filterMid',
-        script.absoluteNonLin(fullValue, 0.0, 1.0, 4.0, 0, 0x3FFF));
-};
-
-PioneerDDJSB2.filterLowKnobMSB = function(channel, control, value, status, group) {
-    PioneerDDJSB2.highResMSB[group].filterLow = value;
-};
-
-PioneerDDJSB2.filterLowKnobLSB = function(channel, control, value, status, group) {
-    var fullValue = (PioneerDDJSB2.highResMSB[group].filterLow << 7) + value;
-    engine.setValue(
-        group,
-        'filterLow',
-        script.absoluteNonLin(fullValue, 0.0, 1.0, 4.0, 0, 0x3FFF)
-    );
-};
-
 PioneerDDJSB2.deckFaderMSB = function(channel, control, value, status, group) {
     PioneerDDJSB2.highResMSB[group].deckFader = value;
 };
@@ -509,16 +501,6 @@ PioneerDDJSB2.deckFaderLSB = function(channel, control, value, status, group) {
     }
     engine.setValue(group, 'volume', fullValue / 0x3FFF);
 };
-
-PioneerDDJSB2.filterKnobMSB = function(channel, control, value, status, group) {
-    PioneerDDJSB2.highResMSB[group].filterKnob = value;
-};
-
-PioneerDDJSB2.filterKnobLSB = function(channel, control, value, status, group) {
-    var fullValue = (PioneerDDJSB2.highResMSB[group].filterKnob << 7) + value;
-    engine.setValue('[QuickEffectRack1_' + group + ']', 'super1', fullValue / 0x3FFF);
-};
-
 
 ///////////////////////////////////////////////////////////////
 //           SINGLE MESSAGE MIDI INPUT HANDLERS              //
@@ -658,22 +640,6 @@ PioneerDDJSB2.loadButton = function(channel, control, value, status, group) {
 
 PioneerDDJSB2.reverseRollButton = function(channel, control, value, status, group) {
     engine.setValue(PioneerDDJSB2.deckSwitchTable[group], 'reverseroll', value);
-};
-
-PioneerDDJSB2.brakeButton = function(channel, control, value, status, group) {
-    script.brake(channel, control, value, status, group);
-};
-
-PioneerDDJSB2.syncButton = function(channel, control, value, status, group) {
-    if (value) {
-        script.toggleControl(group, 'sync_enabled');
-    }
-};
-
-PioneerDDJSB2.quantizeButton = function(channel, control, value, status, group) {
-    if (value) {
-        script.toggleControl(group, 'quantize');
-    }
 };
 
 PioneerDDJSB2.lowKillButton = function(channel, control, value, status, group) {

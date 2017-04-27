@@ -16,7 +16,7 @@
         <controls>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB2.playButton</key>
+                <key>PioneerDDJSB2.deck[1].playButton.input</key>
                 <description>Toggles Play/Pause Deck 1, Button: left PLAY (Deck 1 active)</description>
                 <status>0x90</status>
                 <midino>0x0B</midino>
@@ -26,7 +26,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.playButton</key>
+                <key>PioneerDDJSB2.deck[2].playButton.input</key>
                 <description>Toggles Play/Pause Deck 2, Button: right PLAY (Deck 2 active)</description>
                 <status>0x91</status>
                 <midino>0x0B</midino>
@@ -36,7 +36,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.playButton</key>
+                <key>PioneerDDJSB2.deck[3].playButton.input</key>
                 <description>Toggles Play/Pause Deck 3, Button: left PLAY (Deck 3 active)</description>
                 <status>0x92</status>
                 <midino>0x0B</midino>
@@ -46,7 +46,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.playButton</key>
+                <key>PioneerDDJSB2.deck[4].playButton.input</key>
                 <description>Toggles Play/Pause Deck 4, Button: right PLAY (Deck 4 active)</description>
                 <status>0x93</status>
                 <midino>0x0B</midino>
@@ -56,7 +56,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB2.reverseRollButton</key>
+                <key>PioneerDDJSB2.deck[1].playButton.input</key>
                 <description>Reverse play Deck 1, Button: SHIFT left PLAY (Deck 1 active)</description>
                 <status>0x90</status>
                 <midino>0x47</midino>
@@ -66,7 +66,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.reverseRollButton</key>
+                <key>PioneerDDJSB2.deck[2].playButton.input</key>
                 <description>Reverse play Deck 2, Button: SHIFT right PLAY (Deck 2 active)</description>
                 <status>0x91</status>
                 <midino>0x47</midino>
@@ -76,7 +76,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.reverseRollButton</key>
+                <key>PioneerDDJSB2.deck[3].playButton.input</key>
                 <description>Reverse play Deck 3, Button: SHIFT left PLAY (Deck 3 active)</description>
                 <status>0x92</status>
                 <midino>0x47</midino>
@@ -86,7 +86,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.reverseRollButton</key>
+                <key>PioneerDDJSB2.deck[4].playButton.input</key>
                 <description>Reverse play Deck 4, Button: SHIFT right PLAY (Deck 4 active)</description>
                 <status>0x93</status>
                 <midino>0x47</midino>
@@ -96,7 +96,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB2.cueButton</key>
+                <key>PioneerDDJSB2.deck[1].cueButton.input</key>
                 <description>Cue Deck 1, Button: left CUE (Deck 1 active)</description>
                 <status>0x90</status>
                 <midino>0x0C</midino>
@@ -106,7 +106,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.cueButton</key>
+                <key>PioneerDDJSB2.deck[2].cueButton.input</key>
                 <description>Cue Deck 2, Button: right CUE (Deck 2 active)</description>
                 <status>0x91</status>
                 <midino>0x0C</midino>
@@ -116,7 +116,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.cueButton</key>
+                <key>PioneerDDJSB2.deck[3].cueButton.input</key>
                 <description>Cue Deck 3, Button: left CUE (Deck 3 active)</description>
                 <status>0x92</status>
                 <midino>0x0C</midino>
@@ -126,7 +126,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.cueButton</key>
+                <key>PioneerDDJSB2.deck[4].cueButton.input</key>
                 <description>Cue Deck 4, Button: right CUE (Deck 4 active)</description>
                 <status>0x93</status>
                 <midino>0x0C</midino>
@@ -136,7 +136,7 @@
             </control>
              <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB2.brakeButton</key>
+                <key>PioneerDDJSB2.deck[1].cueButton.input</key>
                 <description>Break Deck 1, Button: left SHIFT CUE (Deck 1 active)</description>
                 <status>0x90</status>
                 <midino>0x48</midino>
@@ -146,7 +146,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.brakeButton</key>
+                <key>PioneerDDJSB2.deck[2].cueButton.input</key>
                 <description>Break Deck 2, Button: right SHIFT CUE (Deck 2 active)</description>
                 <status>0x91</status>
                 <midino>0x48</midino>
@@ -156,7 +156,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.brakeButton</key>
+                <key>PioneerDDJSB2.deck[3].cueButton.input</key>
                 <description>Break Deck 3, Button: left SHIFT CUE (Deck 3 active)</description>
                 <status>0x92</status>
                 <midino>0x48</midino>
@@ -166,7 +166,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.brakeButton</key>
+                <key>PioneerDDJSB2.deck[4].cueButton.input</key>
                 <description>Break Deck 4, Button: right SHIFT CUE (Deck 4 active)</description>
                 <status>0x93</status>
                 <midino>0x48</midino>
@@ -176,7 +176,7 @@
             </control>
            <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB2.syncButton</key>
+                <key>PioneerDDJSB2.deck[1].syncButton.input</key>
                 <description>Sync Deck 1, Button: left SYNC (Deck 1 active)</description>
                 <status>0x90</status>
                 <midino>0x58</midino>
@@ -186,7 +186,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.syncButton</key>
+                <key>PioneerDDJSB2.deck[2].syncButton.input</key>
                 <description>Sync Deck 2, Button: right SYNC (Deck 2 active)</description>
                 <status>0x91</status>
                 <midino>0x58</midino>
@@ -196,7 +196,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.syncButton</key>
+                <key>PioneerDDJSB2.deck[3].syncButton.input</key>
                 <description>Sync Deck 3, Button: left SYNC (Deck 3 active)</description>
                 <status>0x92</status>
                 <midino>0x58</midino>
@@ -206,7 +206,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.syncButton</key>
+                <key>PioneerDDJSB2.deck[4].syncButton.input</key>
                 <description>Sync Deck 4, Button: right SYNC (Deck 4 active)</description>
                 <status>0x93</status>
                 <midino>0x58</midino>
@@ -216,7 +216,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB2.quantizeButton</key>
+                <key>PioneerDDJSB2.deck[1].syncButton.input</key>
                 <description>Quantize Deck 1, Button: left SHIFT SYNC (Deck 1 active)</description>
                 <status>0x90</status>
                 <midino>0x5C</midino>
@@ -226,7 +226,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.quantizeButton</key>
+                <key>PioneerDDJSB2.deck[2].syncButton.input</key>
                 <description>Quantize Deck 2, Button: right SHIFT SYNC (Deck 2 active)</description>
                 <status>0x91</status>
                 <midino>0x5C</midino>
@@ -236,7 +236,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.quantizeButton</key>
+                <key>PioneerDDJSB2.deck[3].syncButton.input</key>
                 <description>Quantize Deck 3, Button: left SHIFT SYNC (Deck 3 active)</description>
                 <status>0x92</status>
                 <midino>0x5C</midino>
@@ -246,7 +246,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.quantizeButton</key>
+                <key>PioneerDDJSB2.deck[4].syncButton.input</key>
                 <description>Quantize Deck 4, Button: right SHIFT SYNC (Deck 4 active)</description>
                 <status>0x93</status>
                 <midino>0x5C</midino>
@@ -576,7 +576,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB2.tempoSliderMSB</key>
+                <key>PioneerDDJSB2.deck[1].tempoFader.inputMSB</key>
                 <description>Tempo slider Deck 1 (MSB), Slider: left TEMPO (Deck 1 active)</description>
                 <status>0xB0</status>
                 <midino>0x00</midino>
@@ -586,7 +586,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB2.tempoSliderLSB</key>
+                <key>PioneerDDJSB2.deck[1].tempoFader.inputLSB</key>
                 <description>Tempo slider Deck 1 (LSB), Slider: left TEMPO (Deck 1 active)</description>
                 <status>0xB0</status>
                 <midino>0x20</midino>
@@ -596,7 +596,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.tempoSliderMSB</key>
+                <key>PioneerDDJSB2.deck[2].tempoFader.inputMSB</key>
                 <description>Tempo slider Deck 2 (MSB), Slider: right TEMPO (Deck 2 active)</description>
                 <status>0xB1</status>
                 <midino>0x00</midino>
@@ -606,7 +606,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.tempoSliderLSB</key>
+                <key>PioneerDDJSB2.deck[2].tempoFader.inputLSB</key>
                 <description>Tempo slider Deck 2 (LSB), Slider: right TEMPO (Deck 2 active)</description>
                 <status>0xB1</status>
                 <midino>0x20</midino>
@@ -616,7 +616,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.tempoSliderMSB</key>
+                <key>PioneerDDJSB2.deck[3].tempoFader.inputMSB</key>
                 <description>Tempo slider Deck 3 (MSB), Slider: left TEMPO (Deck 3 active)</description>
                 <status>0xB2</status>
                 <midino>0x00</midino>
@@ -626,7 +626,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.tempoSliderLSB</key>
+                <key>PioneerDDJSB2.deck[3].tempoFader.inputLSB</key>
                 <description>Tempo slider Deck 3 (LSB), Slider: left TEMPO (Deck 3 active)</description>
                 <status>0xB2</status>
                 <midino>0x20</midino>
@@ -636,7 +636,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.tempoSliderMSB</key>
+                <key>PioneerDDJSB2.deck[4].tempoFader.inputMSB</key>
                 <description>Tempo slider Deck 4 (MSB), Slider: right TEMPO (Deck 4 active)</description>
                 <status>0xB3</status>
                 <midino>0x00</midino>
@@ -646,10 +646,92 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.tempoSliderLSB</key>
+                <key>PioneerDDJSB2.deck[4].tempoFader.inputLSB</key>
                 <description>Tempo slider Deck 4 (LSB), Slider: right TEMPO (Deck 4 active)</description>
                 <status>0xB3</status>
                 <midino>0x20</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <!-- Shifted tempo slider needs to be mapped for relative mode to work without jumps
+            when releasing shift. -->
+            <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSB2.deck[1].tempoFader.inputMSB</key>
+                <description>Tempo slider Deck 1 (MSB), Slider: SHIFT left TEMPO (Deck 1 active)</description>
+                <status>0xB0</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSB2.deck[1].tempoFader.inputLSB</key>
+                <description>Tempo slider Deck 1 (LSB), Slider: SHIFT left TEMPO (Deck 1 active)</description>
+                <status>0xB0</status>
+                <midino>0x25</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSB2.deck[2].tempoFader.inputMSB</key>
+                <description>Tempo slider Deck 2 (MSB), Slider: SHIFT right TEMPO (Deck 2 active)</description>
+                <status>0xB1</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSB2.deck[2].tempoFader.inputLSB</key>
+                <description>Tempo slider Deck 2 (LSB), Slider: SHIFT right TEMPO (Deck 2 active)</description>
+                <status>0xB1</status>
+                <midino>0x25</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>PioneerDDJSB2.deck[3].tempoFader.inputMSB</key>
+                <description>Tempo slider Deck 3 (MSB), Slider: SHIFT left TEMPO (Deck 3 active)</description>
+                <status>0xB2</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>PioneerDDJSB2.deck[3].tempoFader.inputLSB</key>
+                <description>Tempo slider Deck 3 (LSB), Slider: SHIFT left TEMPO (Deck 3 active)</description>
+                <status>0xB2</status>
+                <midino>0x25</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>PioneerDDJSB2.deck[4].tempoFader.inputMSB</key>
+                <description>Tempo slider Deck 4 (MSB), Slider: SHIFT right TEMPO (Deck 4 active)</description>
+                <status>0xB3</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>PioneerDDJSB2.deck[4].tempoFader.inputLSB</key>
+                <description>Tempo slider Deck 4 (LSB), Slider: SHIFT right TEMPO (Deck 4 active)</description>
+                <status>0xB3</status>
+                <midino>0x25</midino>
                 <options>
                     <script-binding />
                 </options>
@@ -816,7 +898,7 @@
             </control>
             <control>
                 <group>[Channel]</group>
-                <key>PioneerDDJSB2.shiftButton</key>
+                <key>PioneerDDJSB2.deck[1].shiftButton</key>
                 <description>Shift Deck 1, Button: left SHIFT (Deck 1 active)</description>
                 <status>0x90</status>
                 <midino>0x3F</midino>
@@ -826,7 +908,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.shiftButton</key>
+                <key>PioneerDDJSB2.deck[2].shiftButton</key>
                 <description>Shift Deck 2, Button: right SHIFT (Deck 2 active)</description>
                 <status>0x91</status>
                 <midino>0x3F</midino>
@@ -836,7 +918,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.shiftButton</key>
+                <key>PioneerDDJSB2.deck[3].shiftButton</key>
                 <description>Shift Deck 3, Button: left SHIFT (Deck 3 active)</description>
                 <status>0x92</status>
                 <midino>0x3F</midino>
@@ -846,7 +928,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.shiftButton</key>
+                <key>PioneerDDJSB2.deck[4].shiftButton</key>
                 <description>Shift Deck 4, Button: right SHIFT (Deck 4 active)</description>
                 <status>0x93</status>
                 <midino>0x3F</midino>
@@ -996,7 +1078,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB2.gainKnobMSB</key>
+                <key>PioneerDDJSB2.deck[1].gainKnob.inputMSB</key>
                 <description>Gain Deck 1 (MSB), Knob: left TRIM (Deck 1 active)</description>
                 <status>0xB0</status>
                 <midino>0x04</midino>
@@ -1006,7 +1088,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB2.gainKnobLSB</key>
+                <key>PioneerDDJSB2.deck[1].gainKnob.inputLSB</key>
                 <description>Gain Deck 1 (LSB), Knob: left TRIM (Deck 1 active)</description>
                 <status>0xB0</status>
                 <midino>0x24</midino>
@@ -1016,7 +1098,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.gainKnobMSB</key>
+                <key>PioneerDDJSB2.deck[2].gainKnob.inputMSB</key>
                 <description>Gain Deck 2 (MSB), Knob: right TRIM (Deck 2 active)</description>
                 <status>0xB1</status>
                 <midino>0x04</midino>
@@ -1026,7 +1108,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.gainKnobLSB</key>
+                <key>PioneerDDJSB2.deck[2].gainKnob.inputLSB</key>
                 <description>Gain Deck 2 (LSB), Knob: right TRIM (Deck 2 active)</description>
                 <status>0xB1</status>
                 <midino>0x24</midino>
@@ -1036,7 +1118,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.gainKnobMSB</key>
+                <key>PioneerDDJSB2.deck[3].gainKnob.inputMSB</key>
                 <description>Gain Deck 3 (MSB), Knob: left TRIM (Deck 3 active)</description>
                 <status>0xB2</status>
                 <midino>0x04</midino>
@@ -1046,7 +1128,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.gainKnobLSB</key>
+                <key>PioneerDDJSB2.deck[3].gainKnob.inputLSB</key>
                 <description>Gain Deck 3 (LSB), Knob: left TRIM (Deck 3 active)</description>
                 <status>0xB2</status>
                 <midino>0x24</midino>
@@ -1056,7 +1138,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.gainKnobMSB</key>
+                <key>PioneerDDJSB2.deck[4].gainKnob.inputMSB</key>
                 <description>Gain Deck 4 (MSB), Knob: right TRIM (Deck 4 active)</description>
                 <status>0xB3</status>
                 <midino>0x04</midino>
@@ -1066,7 +1148,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.gainKnobLSB</key>
+                <key>PioneerDDJSB2.deck[4].gainKnob.inputLSB</key>
                 <description>Gain Deck 4 (LSB), Knob: right TRIM (Deck 4 active)</description>
                 <status>0xB3</status>
                 <midino>0x24</midino>
@@ -1076,7 +1158,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB2.filterHighKnobMSB</key>
+                <key>PioneerDDJSB2.deck[1].eqKnob[3].inputMSB</key>
                 <description>High level Deck 1 (MSB), Knob: left HI (Deck 1 active)</description>
                 <status>0xB0</status>
                 <midino>0x07</midino>
@@ -1086,7 +1168,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB2.filterHighKnobLSB</key>
+                <key>PioneerDDJSB2.deck[1].eqKnob[3].inputLSB</key>
                 <description>High level Deck 1 (LSB), Knob: left HI (Deck 1 active)</description>
                 <status>0xB0</status>
                 <midino>0x27</midino>
@@ -1096,7 +1178,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.filterHighKnobMSB</key>
+                <key>PioneerDDJSB2.deck[2].eqKnob[3].inputMSB</key>
                 <description>High level Deck 2 (MSB), Knob: right HI (Deck 2 active)</description>
                 <status>0xB1</status>
                 <midino>0x07</midino>
@@ -1106,7 +1188,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.filterHighKnobLSB</key>
+                <key>PioneerDDJSB2.deck[2].eqKnob[3].inputLSB</key>
                 <description>High level Deck 2 (LSB), Knob: right HI (Deck 2 active)</description>
                 <status>0xB1</status>
                 <midino>0x27</midino>
@@ -1116,7 +1198,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.filterHighKnobMSB</key>
+                <key>PioneerDDJSB2.deck[3].eqKnob[3].inputMSB</key>
                 <description>High level Deck 3 (MSB), Knob: left HI (Deck 3 active)</description>
                 <status>0xB2</status>
                 <midino>0x07</midino>
@@ -1126,7 +1208,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.filterHighKnobLSB</key>
+                <key>PioneerDDJSB2.deck[3].eqKnob[3].inputLSB</key>
                 <description>High level Deck 3 (LSB), Knob: left HI (Deck 3 active)</description>
                 <status>0xB2</status>
                 <midino>0x27</midino>
@@ -1136,7 +1218,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.filterHighKnobMSB</key>
+                <key>PioneerDDJSB2.deck[4].eqKnob[3].inputMSB</key>
                 <description>High level Deck 4 (MSB), Knob: right HI (Deck 4 active)</description>
                 <status>0xB3</status>
                 <midino>0x07</midino>
@@ -1146,7 +1228,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.filterHighKnobLSB</key>
+                <key>PioneerDDJSB2.deck[4].eqKnob[3].inputLSB</key>
                 <description>High level Deck 4 (LSB), Knob: right HI (Deck 4 active)</description>
                 <status>0xB3</status>
                 <midino>0x27</midino>
@@ -1156,7 +1238,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB2.filterMidKnobMSB</key>
+                <key>PioneerDDJSB2.deck[1].eqKnob[2].inputMSB</key>
                 <description>Mid level Deck 1 (MSB), Knob: left MID (Deck 1 active)</description>
                 <status>0xB0</status>
                 <midino>0x0B</midino>
@@ -1166,7 +1248,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB2.filterMidKnobLSB</key>
+                <key>PioneerDDJSB2.deck[1].eqKnob[2].inputLSB</key>
                 <description>Mid level Deck 1 (LSB), Knob: left MID (Deck 1 active)</description>
                 <status>0xB0</status>
                 <midino>0x2B</midino>
@@ -1176,7 +1258,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.filterMidKnobMSB</key>
+                <key>PioneerDDJSB2.deck[2].eqKnob[2].inputMSB</key>
                 <description>Mid level Deck 2 (MSB), Knob: right HI (Deck 2 active)</description>
                 <status>0xB1</status>
                 <midino>0x0B</midino>
@@ -1186,7 +1268,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.filterMidKnobLSB</key>
+                <key>PioneerDDJSB2.deck[2].eqKnob[2].inputLSB</key>
                 <description>Mid level Deck 2 (LSB), Knob: right HI (Deck 2 active)</description>
                 <status>0xB1</status>
                 <midino>0x2B</midino>
@@ -1196,7 +1278,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.filterMidKnobMSB</key>
+                <key>PioneerDDJSB2.deck[3].eqKnob[2].inputMSB</key>
                 <description>Mid level Deck 3 (MSB), Knob: left MID (Deck 3 active)</description>
                 <status>0xB2</status>
                 <midino>0x0B</midino>
@@ -1206,7 +1288,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.filterMidKnobLSB</key>
+                <key>PioneerDDJSB2.deck[3].eqKnob[2].inputLSB</key>
                 <description>Mid level Deck 3 (LSB), Knob: left MID (Deck 3 active)</description>
                 <status>0xB2</status>
                 <midino>0x2B</midino>
@@ -1216,7 +1298,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.filterMidKnobMSB</key>
+                <key>PioneerDDJSB2.deck[4].eqKnob[2].inputMSB</key>
                 <description>Mid level Deck 4 (MSB), Knob: right MID (Deck 4 active)</description>
                 <status>0xB3</status>
                 <midino>0x0B</midino>
@@ -1226,7 +1308,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.filterMidKnobLSB</key>
+                <key>PioneerDDJSB2.deck[4].eqKnob[2].inputLSB</key>
                 <description>Mid level Deck 4 (LSB), Knob: right MID (Deck 4 active)</description>
                 <status>0xB3</status>
                 <midino>0x2B</midino>
@@ -1236,7 +1318,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB2.filterLowKnobMSB</key>
+                <key>PioneerDDJSB2.deck[1].eqKnob[1].inputMSB</key>
                 <description>Low level Deck 1 (MSB), Knob: left LOW (Deck 1 active)</description>
                 <status>0xB0</status>
                 <midino>0x0F</midino>
@@ -1246,7 +1328,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB2.filterLowKnobLSB</key>
+                <key>PioneerDDJSB2.deck[1].eqKnob[1].inputLSB</key>
                 <description>Low level Deck 1 (LSB), Knob: left LOW (Deck 1 active)</description>
                 <status>0xB0</status>
                 <midino>0x2F</midino>
@@ -1256,7 +1338,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.filterLowKnobMSB</key>
+                <key>PioneerDDJSB2.deck[2].eqKnob[1].inputMSB</key>
                 <description>Low level Deck 2 (MSB), Knob: right LOW (Deck 2 active)</description>
                 <status>0xB1</status>
                 <midino>0x0F</midino>
@@ -1266,7 +1348,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.filterLowKnobLSB</key>
+                <key>PioneerDDJSB2.deck[2].eqKnob[1].inputLSB</key>
                 <description>Low level Deck 2 (LSB), Knob: right LOW (Deck 2 active)</description>
                 <status>0xB1</status>
                 <midino>0x2F</midino>
@@ -1276,7 +1358,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.filterLowKnobMSB</key>
+                <key>PioneerDDJSB2.deck[3].eqKnob[1].inputMSB</key>
                 <description>Low level Deck 3 (MSB), Knob: left LOW (Deck 3 active)</description>
                 <status>0xB2</status>
                 <midino>0x0F</midino>
@@ -1286,7 +1368,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.filterLowKnobLSB</key>
+                <key>PioneerDDJSB2.deck[3].eqKnob[1].inputLSB</key>
                 <description>Low level Deck 3 (LSB), Knob: left LOW (Deck 3 active)</description>
                 <status>0xB2</status>
                 <midino>0x2F</midino>
@@ -1296,7 +1378,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.filterLowKnobMSB</key>
+                <key>PioneerDDJSB2.deck[4].eqKnob[1].inputMSB</key>
                 <description>Low level Deck 4 (MSB), Knob: right LOW (Deck 4 active)</description>
                 <status>0xB3</status>
                 <midino>0x0F</midino>
@@ -1306,7 +1388,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.filterLowKnobLSB</key>
+                <key>PioneerDDJSB2.deck[4].eqKnob[1].inputLSB</key>
                 <description>Low level Deck 4 (LSB), Knob: right LOW (Deck 4 active)</description>
                 <status>0xB3</status>
                 <midino>0x2F</midino>
@@ -1316,7 +1398,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB2.filterKnobMSB</key>
+                <key>PioneerDDJSB2.deck[1].quickEffectKnob.inputMSB</key>
                 <description>Filter Deck 1 (MSB), Knob: left FILTER (Deck 1 active)</description>
                 <status>0xB6</status>
                 <midino>0x17</midino>
@@ -1326,7 +1408,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB2.filterKnobLSB</key>
+                <key>PioneerDDJSB2.deck[1].quickEffectKnob.inputLSB</key>
                 <description>Filter Deck 1 (LSB), Knob: left FILTER (Deck 1 active)</description>
                 <status>0xB6</status>
                 <midino>0x37</midino>
@@ -1336,7 +1418,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.filterKnobMSB</key>
+                <key>PioneerDDJSB2.deck[2].quickEffectKnob.inputMSB</key>
                 <description>Filter Deck 2 (MSB), Knob: right FILTER (Deck 2 active)</description>
                 <status>0xB6</status>
                 <midino>0x18</midino>
@@ -1346,7 +1428,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.filterKnobLSB</key>
+                <key>PioneerDDJSB2.deck[2].quickEffectKnob.inputLSB</key>
                 <description>Filter Deck 2 (LSB), Knob: right FILTER (Deck 2 active)</description>
                 <status>0xB6</status>
                 <midino>0x38</midino>
@@ -1356,7 +1438,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.filterKnobMSB</key>
+                <key>PioneerDDJSB2.deck[3].quickEffectKnob.inputMSB</key>
                 <description>Filter Deck 3 (MSB), Knob: left FILTER (Deck 3 active)</description>
                 <status>0xB6</status>
                 <midino>0x19</midino>
@@ -1366,7 +1448,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.filterKnobLSB</key>
+                <key>PioneerDDJSB2.deck[3].quickEffectKnob.inputLSB</key>
                 <description>Filter Deck 3 (LSB), Knob: left FILTER (Deck 3 active)</description>
                 <status>0xB6</status>
                 <midino>0x39</midino>
@@ -1376,7 +1458,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.filterKnobMSB</key>
+                <key>PioneerDDJSB2.deck[4].quickEffectKnob.inputMSB</key>
                 <description>Filter Deck 4 (MSB), Knob: right FILTER (Deck 4 active)</description>
                 <status>0xB6</status>
                 <midino>0x1A</midino>
@@ -1386,7 +1468,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.filterKnobLSB</key>
+                <key>PioneerDDJSB2.deck[4].quickEffectKnob.inputLSB</key>
                 <description>Filter Deck 4 (LSB), Knob: right FILTER (Deck 4 active)</description>
                 <status>0xB6</status>
                 <midino>0x3A</midino>
