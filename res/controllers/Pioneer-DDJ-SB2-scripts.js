@@ -20,13 +20,8 @@ PioneerDDJSB2.jogwheelShiftMultiplier = 100;
 // Time per step (in ms) for pitch speed fade to normal
 PioneerDDJSB2.speedRateToNormalTime = 200;
 
-// If true Level-Meter shows VU-Master left & right. If false shows level of channel: 1/3  2/4 (depending active deck)
+// If true Level-Meter shows VU-Master left & right. If false shows level of active deck.
 PioneerDDJSB2.showVumeterMaster = false;
-
-// Cut's Level-Meter low and expand upper. Examples:
-// 0.25 -> only signals greater 25%, expanded to full range
-// 0.5 -> only signals greater 50%, expanded to full range
-PioneerDDJSB2.cutVumeter = 0.25;
 
 // If true VU-Level twinkle if AutoDJ is ON.
 PioneerDDJSB2.twinkleVumeterAutodjOn = true;
@@ -865,54 +860,60 @@ PioneerDDJSB2.hotCueLeds = function(value, group, control) {
 };
 
 PioneerDDJSB2.VuMeterLeds = function(value, group, control) {
-    var midiBaseAdress = 0xB0,
-        channel = 0,
-        midiOut = 0;
-
-    value = 1 / (1 - PioneerDDJSB2.cutVumeter) * (value - PioneerDDJSB2.cutVumeter);
-    if (value < 0) {
-        value = 0;
+    // The red LED lights up with MIDI values 119 (0x77) and above. That should only light up when
+    // the track is clipping.
+    if (engine.getValue(group, 'PeakIndicator') === 1) {
+        value = 119;
+    } else {
+        // 117 was determined experimentally so the yellow LED only lights
+        // up when the level meter in Mixxx is in the yellow region.
+        value = Math.floor(value * 117);
     }
 
-    value = parseInt(value * 0x7F);
-    if (value < 0) {
-        value = 0;
-    }
-    if (value > 127) {
-        value = 127;
-    }
-
-    if (group == "[Master]") {
-        if (control == "VuMeterL") {
-            PioneerDDJSB2.valueVuMeter['[Channel1]_current'] = value;
-            PioneerDDJSB2.valueVuMeter['[Channel3]_current'] = value;
+    if (!(PioneerDDJSB2.twinkleVumeterAutodjOn && engine.getValue("[AutoDJ]", "enabled"))) {
+        var midiChannel;
+        if (PioneerDDJSB2.showVumeterMaster) {
+            if (control === 'VuMeterL') {
+                midiChannel = 0;
+            } else if (control === 'VuMeterR') {
+                midiChannel = 1;
+            }
+            // Send for deck 1 or 2
+            midi.sendShortMsg(0xB0 + midiChannel, 2, value);
+            // Send for deck 3 or 4
+            midi.sendShortMsg(0xB0 + midiChannel + 2, 2, value);
         } else {
-            PioneerDDJSB2.valueVuMeter['[Channel2]_current'] = value;
-            PioneerDDJSB2.valueVuMeter['[Channel4]_current'] = value;
+            midiChannel = parseInt(group.substring(8, 9) - 1);
+            midi.sendShortMsg(0xB0 + midiChannel, 2, value);
         }
     } else {
-        PioneerDDJSB2.valueVuMeter[group + '_current'] = value;
-    }
-
-    for (channel = 0; channel < 4; channel++) {
-        midiOut = PioneerDDJSB2.valueVuMeter['[Channel' + (channel + 1) + ']_current'];
-        if (PioneerDDJSB2.twinkleVumeterAutodjOn) {
-            if (engine.getValue("[AutoDJ]", "enabled")) {
-                if (PioneerDDJSB2.valueVuMeter['[Channel' + (channel + 1) + ']_enabled']) {
-                    midiOut = 0;
-                }
+        if (group == "[Master]") {
+            if (control == "VuMeterL") {
+                PioneerDDJSB2.valueVuMeter['[Channel1]_current'] = value;
+                PioneerDDJSB2.valueVuMeter['[Channel3]_current'] = value;
+            } else {
+                PioneerDDJSB2.valueVuMeter['[Channel2]_current'] = value;
+                PioneerDDJSB2.valueVuMeter['[Channel4]_current'] = value;
             }
+        } else {
+            PioneerDDJSB2.valueVuMeter[group + '_current'] = value;
         }
-        if (PioneerDDJSB2.twinkleVumeterAutodjOn && engine.getValue("[AutoDJ]", "enabled") == 1) {
+
+        for (var channel = 0; channel < 4; channel++) {
+            var midiOut = PioneerDDJSB2.valueVuMeter['[Channel' + (channel + 1) + ']_current'];
+            if (PioneerDDJSB2.valueVuMeter['[Channel' + (channel + 1) + ']_enabled']) {
+                midiOut = 0;
+            }
             if (midiOut < 5 && PioneerDDJSB2.valueVuMeter['[Channel' + (channel + 1) + ']_enabled'] === 0) {
                 midiOut = 5;
             }
+
+            midi.sendShortMsg(
+                0xB0 + channel,
+                2,
+                midiOut
+            );
         }
-        midi.sendShortMsg(
-            midiBaseAdress + channel,
-            2,
-            midiOut
-        );
     }
 };
 
