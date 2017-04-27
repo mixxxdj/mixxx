@@ -177,6 +177,9 @@ PioneerDDJSB2.init = function(id) {
     if (PioneerDDJSB2.twinkleVumeterAutodjOn) {
         PioneerDDJSB2.vu_meter_timer = engine.beginTimer(100, "PioneerDDJSB2.vuMeterTwinkle()");
     }
+
+    // send "DJ App Connect" message
+    midi.sendShortMsg(0x9B, 0x09, 0x7f);
 };
 
 PioneerDDJSB2.Deck = function (deckNumber) {
