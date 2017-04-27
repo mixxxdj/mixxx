@@ -645,7 +645,7 @@
             unshift: function () {
                 this.input = function (channel, control, value, status, group) {
                     if (this.MSB !== undefined) {
-                        value = this.MSB << 7 + value;
+                        value = (this.MSB << 7) + value;
                     }
                     this.inSetParameter(this.inValueScale(value));
 
@@ -668,7 +668,7 @@
 
                 this.input = function (channel, control, value, status, group) {
                     if (this.MSB !== undefined) {
-                        value = this.MSB << 7 + value;
+                        value = (this.MSB << 7) + value;
                     }
                     var change = value - this.valueAtLastEffectSwitch;
                     if (Math.abs(change) >= this.changeThreshold) {
