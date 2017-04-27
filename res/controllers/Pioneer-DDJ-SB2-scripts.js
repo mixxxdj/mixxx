@@ -15,7 +15,7 @@ PioneerDDJSB2.jogwheelSensivity = 1.0;
 
 // Sets how much more sensitive the jogwheels get when holding shift.
 // Set to 1 to disable jogwheel sensitivity increase when holding shift.
-PioneerDDJSB2.jogwheelShiftMultiplier = 20;
+PioneerDDJSB2.jogwheelShiftMultiplier = 100;
 
 // Time per step (in ms) for pitch speed fade to normal
 PioneerDDJSB2.speedRateToNormalTime = 200;
