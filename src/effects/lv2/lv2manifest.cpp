@@ -51,9 +51,9 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             }
         }
 
-        if (lilv_port_is_a(m_pLV2plugin, port, properties["control_port"]) &&
-            !lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"]) &&
-            !lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
+        if (lilv_port_is_a(m_pLV2plugin, port, properties["control_port"])
+                && !lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"])
+                && !lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
             controlPortIndices.append(i);
             EffectManifestParameterPointer param = m_pEffectManifest->addParameter();
 
@@ -63,9 +63,11 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             param->setName(paramName);
             lilv_node_free(info);
 
-            // Build and set the parameter id from its name
-            // Append its index to avoid duplicate ids
-            param->setId(paramName.trimmed().toLower().replace(' ', '_').append(i + '0'));
+            const LilvNode* node = lilv_port_get_symbol(m_pLV2plugin, port);
+            QString symbol = lilv_node_as_string(node);
+            param->setId(symbol);
+            // node must not be freed here, it is owned by port
+
             param->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
             param->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
             param->setDefault(m_default[i]);
@@ -92,7 +94,7 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
 
         if (lilv_port_is_a(m_pLV2plugin, port, properties["control_port"]) &&
                 (lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"]) ||
-                lilv_port_has_property(m_pLV2plugin, port, properties["button_port"]))) {
+                 lilv_port_has_property(m_pLV2plugin, port, properties["button_port"]))) {
             controlPortIndices.append(i);
             EffectManifestParameterPointer param = m_pEffectManifest->addParameter();
 
@@ -102,10 +104,11 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             param->setName(paramName);
             lilv_node_free(info);
 
-            // Build and set the parameter id from its name
-            // Append its index to avoid duplicate ids
-            // Set the appropriate Hints
-            param->setId(paramName.trimmed().toLower().replace(' ', '_').append(i + '0'));
+            const LilvNode* node = lilv_port_get_symbol(m_pLV2plugin, port);
+            QString symbol = lilv_node_as_string(node);
+            param->setId(symbol);
+            // info must not be freed here, it is owned by port
+
             param->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
             param->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
             param->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
