@@ -3,8 +3,8 @@ var PioneerDDJSB2 = {};
 //                       USER OPTIONS                        //
 ///////////////////////////////////////////////////////////////
 
-// If true the sync button blinks with the beat, if false led is lit when sync is enabled.
-PioneerDDJSB2.blinkingSync = false;
+// If true, vinyl mode will be enabled when Mixxx starts.
+PioneerDDJSB2.vinylModeOnStartup = false;
 
 // If true, the vinyl button activates slip. Vinyl mode is then activated by using shift.
 // Allows toggling slip faster, but is counterintuitive.
@@ -300,11 +300,8 @@ PioneerDDJSB2.bindDeckControlConnections = function(channelGroup, isUnbinding) {
     var i,
         index,
         controlsToFunctions = {
-            'play': 'PioneerDDJSB2.playLeds',
             'pfl': 'PioneerDDJSB2.headphoneCueLed',
             'keylock': 'PioneerDDJSB2.keyLockLed',
-            'slip_enabled': 'PioneerDDJSB2.slipLed',
-            'quantize': 'PioneerDDJSB2.quantizeLed',
             'loop_in': 'PioneerDDJSB2.loopInLed',
             'loop_out': 'PioneerDDJSB2.loopOutLed',
             'filterLowKill': 'PioneerDDJSB2.lowKillLed',
@@ -316,10 +313,8 @@ PioneerDDJSB2.bindDeckControlConnections = function(channelGroup, isUnbinding) {
             'loop_halve': 'PioneerDDJSB2.loopHalveLed'
         };
 
-    if (PioneerDDJSB2.blinkingSync) {
-        controlsToFunctions.beat_active = 'PioneerDDJSB2.syncLed';
-    } else {
-        controlsToFunctions.sync_enabled = 'PioneerDDJSB2.syncLed';
+    if (PioneerDDJSB2.invertVinylSlipButton) {
+        controlsToFunctions.slip_enabled = 'PioneerDDJSB2.slipLed';
     }
 
     for (i = 1; i <= 8; i++) {
@@ -408,7 +403,7 @@ PioneerDDJSB2.deckShiftSwitchTable = {
 PioneerDDJSB2.initDeck = function(group) {
     PioneerDDJSB2.bindDeckControlConnections(group, false);
     PioneerDDJSB2.nonPadLedControl(group, PioneerDDJSB2.nonPadLeds.shiftKeyLock, PioneerDDJSB2.channelGroups[group] > 1);
-    PioneerDDJSB2.triggerVinylLed(PioneerDDJSB2.channelGroups[group]);
+    PioneerDDJSB2.toggleScratch(null, null, PioneerDDJSB2.vinylModeOnStartup, null, group);
 };
 
 
@@ -593,7 +588,7 @@ PioneerDDJSB2.beatloopRollButtons = function(channel, control, value, status, gr
 
 PioneerDDJSB2.vinylButton = function(channel, control, value, status, group) {
     if (PioneerDDJSB2.invertVinylSlipButton) {
-        PioneerDDJSB2.toggleSlip(channel, control, value, status, group);
+        engine.setValue(group, 'slip_enabled', value / 127);
     } else {
         PioneerDDJSB2.toggleScratch(channel, control, value, status, group);
     }
@@ -603,13 +598,7 @@ PioneerDDJSB2.slipButton = function(channel, control, value, status, group) {
     if (PioneerDDJSB2.invertVinylSlipButton) {
         PioneerDDJSB2.toggleScratch(channel, control, value, status, group);
     } else {
-        PioneerDDJSB2.toggleSlip(channel, control, value, status, group);
-    }
-};
-
-PioneerDDJSB2.toggleSlip = function(channel, control, value, status, group) {
-    if (value) {
-        script.toggleControl(group, 'slip_enabled');
+        engine.setValue(group, 'slip_enabled', value / 127);
     }
 };
 
@@ -622,6 +611,7 @@ PioneerDDJSB2.keyLockButton = function(channel, control, value, status, group) {
 PioneerDDJSB2.shiftKeyLockButton = function(channel, control, value, status, group) {
     var deck = status - 0x90;
     if (value) {
+        engine.stopTimer(PioneerDDJSB2.speedRateToNormalTimer[deck]);
         PioneerDDJSB2.speedRateToNormalTimer[deck] = engine.beginTimer(PioneerDDJSB2.speedRateToNormalTime, "PioneerDDJSB2.speedRateToNormal('" + group + "', " + deck + ")");
     }
 };
@@ -760,27 +750,12 @@ PioneerDDJSB2.headphoneCueLed = function(value, group, control) {
 
 PioneerDDJSB2.keyLockLed = function(value, group, control) {
     PioneerDDJSB2.nonPadLedControl(group, PioneerDDJSB2.nonPadLeds.keyLock, value);
-};
-
-PioneerDDJSB2.playLeds = function(value, group, control) {
-    PioneerDDJSB2.nonPadLedControl(group, PioneerDDJSB2.nonPadLeds.play, value);
-    PioneerDDJSB2.nonPadLedControl(group, PioneerDDJSB2.nonPadLeds.shiftPlay, value);
-    PioneerDDJSB2.nonPadLedControl(group, PioneerDDJSB2.nonPadLeds.cue, value);
-    PioneerDDJSB2.nonPadLedControl(group, PioneerDDJSB2.nonPadLeds.shiftCue, value);
+    PioneerDDJSB2.nonPadLedControl(group, PioneerDDJSB2.nonPadLeds.shiftKeyLock, value);
 };
 
 PioneerDDJSB2.slipLed = function(value, group, control) {
-    var led = (PioneerDDJSB2.invertVinylSlipButton ? PioneerDDJSB2.nonPadLeds.vinyl : PioneerDDJSB2.nonPadLeds.shiftVinyl);
-
-    PioneerDDJSB2.nonPadLedControl(group, led, value);
-};
-
-PioneerDDJSB2.quantizeLed = function(value, group, control) {
-    PioneerDDJSB2.nonPadLedControl(group, PioneerDDJSB2.nonPadLeds.shiftSync, value);
-};
-
-PioneerDDJSB2.syncLed = function(value, group, control) {
-    PioneerDDJSB2.nonPadLedControl(group, PioneerDDJSB2.nonPadLeds.sync, value);
+    PioneerDDJSB2.nonPadLedControl(group, PioneerDDJSB2.nonPadLeds.vinyl, value);
+    PioneerDDJSB2.nonPadLedControl(group, PioneerDDJSB2.nonPadLeds.shiftVinyl, value);
 };
 
 PioneerDDJSB2.loopInLed = function(value, group, control) {
@@ -997,17 +972,14 @@ PioneerDDJSB2.toggleScratch = function(channel, control, value, status, group) {
     var deck = PioneerDDJSB2.channelGroups[group];
     if (value) {
         PioneerDDJSB2.scratchMode[deck] = !PioneerDDJSB2.scratchMode[deck];
-        PioneerDDJSB2.triggerVinylLed(deck);
+        if (!PioneerDDJSB2.invertVinylSlipButton) {
+            PioneerDDJSB2.nonPadLedControl(deck, PioneerDDJSB2.nonPadLeds.vinyl, PioneerDDJSB2.scratchMode[deck]);
+            PioneerDDJSB2.nonPadLedControl(deck, PioneerDDJSB2.nonPadLeds.shiftVinyl, PioneerDDJSB2.scratchMode[deck]);
+        }
         if (!PioneerDDJSB2.scratchMode[deck]) {
             engine.scratchDisable(deck + 1, true);
         }
     }
-};
-
-PioneerDDJSB2.triggerVinylLed = function(deck) {
-    var led = (PioneerDDJSB2.invertVinylSlipButton ? PioneerDDJSB2.nonPadLeds.shiftVinyl : PioneerDDJSB2.nonPadLeds.vinyl);
-
-    PioneerDDJSB2.nonPadLedControl(deck, led, PioneerDDJSB2.scratchMode[deck]);
 };
 
 PioneerDDJSB2.pitchBendFromJog = function(channel, movement) {
