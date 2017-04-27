@@ -1978,7 +1978,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[1].topPadRow.autoLoopLayer.beatloopButton.input</key>
                 <description>Auto-Loop 1 Deck 1, Button: PAD1 (in AUTO-LOOP-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x10</midino>
@@ -1988,7 +1988,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[2].topPadRow.autoLoopLayer.beatloopButton.input</key>
                 <description>Auto-Loop 1 Deck 2, Button: PAD1 (in AUTO-LOOP-Mode, Deck 1 active)</description>
                 <status>0x98</status>
                 <midino>0x10</midino>
@@ -1998,7 +1998,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[3].topPadRow.autoLoopLayer.beatloopButton.input</key>
                 <description>Auto-Loop 1 Deck 3, Button: PAD1 (in AUTO-LOOP-Mode, Deck 3 active)</description>
                 <status>0x99</status>
                 <midino>0x10</midino>
@@ -2008,7 +2008,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[4].topPadRow.autoLoopLayer.beatloopButton.input</key>
                 <description>Auto-Loop 1 Deck 4, Button: PAD1 (in AUTO-LOOP-Mode, Deck 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x10</midino>
@@ -2018,7 +2018,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[1].topPadRow.autoLoopLayer.beatloopButton.input</key>
                 <description>Auto-Loop 16 Deck 1, Button: SHIFT &amp; PAD1 (in AUTO-LOOP-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x18</midino>
@@ -2028,7 +2028,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[2].topPadRow.autoLoopLayer.beatloopButton.input</key>
                 <description>Auto-Loop 16 Deck 2, Button: SHIFT &amp; PAD1 (in AUTO-LOOP-Mode, Deck 2 active)</description>
                 <status>0x98</status>
                 <midino>0x18</midino>
@@ -2038,7 +2038,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[3].topPadRow.autoLoopLayer.beatloopButton.input</key>
                 <description>Auto-Loop 16 Deck 3, Button: SHIFT &amp; PAD1 (in AUTO-LOOP-Mode, Deck 3 active)</description>
                 <status>0x99</status>
                 <midino>0x18</midino>
@@ -2048,7 +2048,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[4].topPadRow.autoLoopLayer.beatloopButton.input</key>
                 <description>Auto-Loop 16 Deck 4, Button: SHIFT &amp; PAD1 (in AUTO-LOOP-Mode, Deck 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x18</midino>
@@ -2618,7 +2618,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[1].topPadRow.autoLoopLayer.beatloopHalveButton.input</key>
                 <description>Auto-Loop 2 Deck 1, Button: PAD2 (in AUTO-LOOP-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x11</midino>
@@ -2628,7 +2628,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[2].topPadRow.autoLoopLayer.beatloopHalveButton.input</key>
                 <description>Auto-Loop 2 Deck 2, Button: PAD2 (in AUTO-LOOP-Mode, Deck 2 active)</description>
                 <status>0x98</status>
                 <midino>0x11</midino>
@@ -2638,7 +2638,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[3].topPadRow.autoLoopLayer.beatloopHalveButton.input</key>
                 <description>Auto-Loop 2 Deck 3, Button: PAD2 (in AUTO-LOOP-Mode, Deck 3 active)</description>
                 <status>0x99</status>
                 <midino>0x11</midino>
@@ -2648,7 +2648,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[4].topPadRow.autoLoopLayer.beatloopHalveButton.input</key>
                 <description>Auto-Loop 2 Deck 4, Button: PAD2 (in AUTO-LOOP-Mode, Deck 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x11</midino>
@@ -2658,7 +2658,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[1].topPadRow.autoLoopLayer.beatloopHalveButton.input</key>
                 <description>Auto-Loop 32 Deck 1, Button: SHIFT &amp; PAD2 (in AUTO-LOOP-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x19</midino>
@@ -2668,7 +2668,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[2].topPadRow.autoLoopLayer.beatloopHalveButton.input</key>
                 <description>Auto-Loop 32 Deck 2, Button: SHIFT &amp; PAD2 (in AUTO-LOOP-Mode, Deck 2 active)</description>
                 <status>0x98</status>
                 <midino>0x19</midino>
@@ -2678,7 +2678,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[3].topPadRow.autoLoopLayer.beatloopHalveButton.input</key>
                 <description>Auto-Loop 32 Deck 3, Button: SHIFT &amp; PAD2 (in AUTO-LOOP-Mode, Deck 3 active)</description>
                 <status>0x99</status>
                 <midino>0x19</midino>
@@ -2688,7 +2688,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[4].topPadRow.autoLoopLayer.beatloopHalveButton.input</key>
                 <description>Auto-Loop 32 Deck 4, Button: SHIFT &amp; PAD2 (in AUTO-LOOP-Mode, Deck 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x19</midino>
@@ -3258,7 +3258,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[1].topPadRow.autoLoopLayer.beatloopDoubleButton.input</key>
                 <description>Auto-Loop 4 Deck 1, Button: PAD3 (in AUTO-LOOP-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x12</midino>
@@ -3268,7 +3268,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[2].topPadRow.autoLoopLayer.beatloopDoubleButton.input</key>
                 <description>Auto-Loop 4 Deck 2, Button: PAD3 (in AUTO-LOOP-Mode, Deck 2 active)</description>
                 <status>0x98</status>
                 <midino>0x12</midino>
@@ -3278,7 +3278,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[3].topPadRow.autoLoopLayer.beatloopDoubleButton.input</key>
                 <description>Auto-Loop 4 Deck 3, Button: PAD3 (in AUTO-LOOP-Mode, Deck 3 active)</description>
                 <status>0x99</status>
                 <midino>0x12</midino>
@@ -3288,7 +3288,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[4].topPadRow.autoLoopLayer.beatloopDoubleButton.input</key>
                 <description>Auto-Loop 4 Deck 4, Button: PAD3 (in AUTO-LOOP-Mode, Deck 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x12</midino>
@@ -3298,7 +3298,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[1].topPadRow.autoLoopLayer.beatloopDoubleButton.input</key>
                 <description>Auto-Loop 64 Deck 1, Button: SHIFT &amp; PAD3 (in AUTO-LOOP-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x1A</midino>
@@ -3308,7 +3308,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[2].topPadRow.autoLoopLayer.beatloopDoubleButton.input</key>
                 <description>Auto-Loop 64 Deck 2, Button: SHIFT &amp; PAD3 (in AUTO-LOOP-Mode, Deck 2 active)</description>
                 <status>0x98</status>
                 <midino>0x1A</midino>
@@ -3318,7 +3318,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[3].topPadRow.autoLoopLayer.beatloopDoubleButton.input</key>
                 <description>Auto-Loop 64 Deck 3, Button: SHIFT &amp; PAD3 (in AUTO-LOOP-Mode, Deck 3 active)</description>
                 <status>0x99</status>
                 <midino>0x1A</midino>
@@ -3328,7 +3328,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[4].topPadRow.autoLoopLayer.beatloopDoubleButton.input</key>
                 <description>Auto-Loop 64 Deck 4, Button: SHIFT &amp; PAD3 (in AUTO-LOOP-Mode, Deck 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x1A</midino>
@@ -3818,7 +3818,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[1].topPadRow.autoLoopLayer.reloopButton.input</key>
                 <description>Auto-Loop 8 Deck 1, Button: PAD4 (in AUTO-LOOP-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x13</midino>
@@ -3828,7 +3828,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[2].topPadRow.autoLoopLayer.reloopButton.input</key>
                 <description>Auto-Loop 8 Deck 2, Button: PAD4 (in AUTO-LOOP-Mode, Deck 2 active)</description>
                 <status>0x98</status>
                 <midino>0x13</midino>
@@ -3838,7 +3838,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[3].topPadRow.autoLoopLayer.reloopButton.input</key>
                 <description>Auto-Loop 8 Deck 3, Button: PAD4 (in AUTO-LOOP-Mode, Deck 3 active)</description>
                 <status>0x99</status>
                 <midino>0x13</midino>
@@ -3848,10 +3848,50 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.beatloopButtons</key>
+                <key>PioneerDDJSB2.deck[4].topPadRow.autoLoopLayer.reloopButton.input</key>
                 <description>Auto-Loop 8 Deck 4, Button: PAD4 (in AUTO-LOOP-Mode, Deck 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x13</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSB2.deck[1].topPadRow.autoLoopLayer.reloopButton.input</key>
+                <description>Auto-Loop 8 Deck 1, Button: Shift &amp; PAD4 (in AUTO-LOOP-Mode, Deck 1 active)</description>
+                <status>0x97</status>
+                <midino>0x1B</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSB2.deck[2].topPadRow.autoLoopLayer.reloopButton.input</key>
+                <description>Auto-Loop 8 Deck 2, Button: Shift &amp; PAD4 (in AUTO-LOOP-Mode, Deck 2 active)</description>
+                <status>0x98</status>
+                <midino>0x1B</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>PioneerDDJSB2.deck[3].topPadRow.autoLoopLayer.reloopButton.input</key>
+                <description>Auto-Loop 8 Deck 3, Button: Shift &amp; PAD4 (in AUTO-LOOP-Mode, Deck 3 active)</description>
+                <status>0x99</status>
+                <midino>0x1B</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>PioneerDDJSB2.deck[4].topPadRow.autoLoopLayer.reloopButton.input</key>
+                <description>Auto-Loop 8 Deck 4, Button: Shift &amp; PAD4 (in AUTO-LOOP-Mode, Deck 4 active)</description>
+                <status>0x9A</status>
+                <midino>0x1B</midino>
                 <options>
                     <script-binding />
                 </options>

@@ -237,6 +237,62 @@ PioneerDDJSB2.Deck = function (deckNumber) {
         invert: true,
     });
 
+    this.topPadRow = new components.ComponentContainer();
+    this.topPadRow.autoLoopLayer = new components.ComponentContainer();
+    this.topPadRow.autoLoopLayer.beatloopButton = new components.Button({
+        midi: [0x96 + deckNumber, 0x10],
+        unshift: function () {
+            this.inKey = 'beatloop_toggle';
+            this.outKey = 'beatloop_toggle';
+        },
+        shift: function () {
+            this.inKey = 'beatlooproll_activate';
+            this.outKey = 'beatlooproll_activate';
+        },
+    });
+
+    this.topPadRow.autoLoopLayer.beatloopHalveButton = new components.Button({
+        midi: [0x96 + deckNumber, 0x11],
+        unshift: function () {
+            this.inKey = 'beatloop_halve';
+            this.outKey = 'beatloop_halve';
+        },
+        shift: function () {
+            this.inKey = 'loop_move_backward';
+            this.outKey = 'loop_move_backward';
+        },
+    });
+
+    this.topPadRow.autoLoopLayer.beatloopDoubleButton = new components.Button({
+        midi: [0x96 + deckNumber, 0x12],
+        unshift: function () {
+            this.inKey = 'beatloop_double';
+            this.outKey = 'beatloop_double';
+        },
+        shift: function () {
+            this.inKey = 'loop_move_forward';
+            this.outKey = 'loop_move_forward';
+        },
+    });
+
+    this.topPadRow.autoLoopLayer.reloopButton = new components.Button({
+        midi: [0x96 + deckNumber, 0x13],
+        outKey: 'loop_enabled',
+        unshift: function () {
+            this.inKey = 'reloop_toggle';
+        },
+        shift: function () {
+            this.inKey = 'reloop_andstop';
+        },
+    });
+
+    this.topPadRow.forEachComponent(function (button) {
+        button.onlyOnPress = false;
+        button.sendShifted = true;
+        button.shiftControl = true;
+        button.shiftOffset = 8;
+    });
+
     this.forEachComponent(function (c) {
         if (c.group === undefined) {
             c.group = theDeck.group;
@@ -395,10 +451,6 @@ PioneerDDJSB2.bindDeckControlConnections = function(channelGroup, isUnbinding) {
         controlsToFunctions['hotcue_' + i + '_enabled'] = 'PioneerDDJSB2.hotCueLeds';
     }
 
-    for (index in PioneerDDJSB2.loopIntervals) {
-        controlsToFunctions['beatloop_' + PioneerDDJSB2.loopIntervals[index] + '_enabled'] = 'PioneerDDJSB2.beatloopLeds';
-    }
-
     for (index in PioneerDDJSB2.looprollIntervals) {
         controlsToFunctions['beatlooproll_' + PioneerDDJSB2.looprollIntervals[index] + '_activate'] = 'PioneerDDJSB2.beatlooprollLeds';
     }
@@ -546,17 +598,6 @@ PioneerDDJSB2.clearHotCueButtons = function(channel, control, value, status, gro
 
 PioneerDDJSB2.cueButton = function(channel, control, value, status, group) {
     engine.setValue(PioneerDDJSB2.deckSwitchTable[group], 'cue_default', value);
-};
-
-PioneerDDJSB2.beatloopButtons = function(channel, control, value, status, group) {
-    var index = (control <= 0x13 ? control - 0x10 : control - 0x14);
-    if (value) {
-        engine.setValue(
-            group,
-            'beatloop_' + PioneerDDJSB2.loopIntervals[index] + '_toggle',
-            1
-        );
-    }
 };
 
 PioneerDDJSB2.beatloopRollButtons = function(channel, control, value, status, group) {
@@ -769,20 +810,6 @@ PioneerDDJSB2.samplerLeds = function(value, group, control) {
         PioneerDDJSB2.padLedControl(channel, PioneerDDJSB2.ledGroups.sampler, false, sampler, true, value);
         PioneerDDJSB2.padLedControl(channel, PioneerDDJSB2.ledGroups.sampler, true, sampler, false, value);
         PioneerDDJSB2.padLedControl(channel, PioneerDDJSB2.ledGroups.sampler, true, sampler, true, value);
-    }
-};
-
-PioneerDDJSB2.beatloopLeds = function(value, group, control) {
-    var index,
-        padNum,
-        shifted;
-
-    for (index in PioneerDDJSB2.loopIntervals) {
-        if (control === 'beatloop_' + PioneerDDJSB2.loopIntervals[index] + '_enabled') {
-            padNum = index % 4;
-            shifted = (index >= 4);
-            PioneerDDJSB2.padLedControl(group, PioneerDDJSB2.ledGroups.autoLoop, false, padNum, shifted, value);
-        }
     }
 };
 
