@@ -174,10 +174,25 @@ PioneerDDJSB2.init = function(id) {
 };
 
 PioneerDDJSB2.shutdown = function() {
-    PioneerDDJSB2.bindAllControlConnections(true);
-    PioneerDDJSB2.setAllSoftTakeover(true);
-    PioneerDDJSB2.bindDeckControlConnections('[Channel3]', true);
-    PioneerDDJSB2.bindDeckControlConnections('[Channel4]', true);
+    // turn off button LEDs
+    for (var channel = 0; channel <= 10; channel++) {
+        for (var control = 0; control <= 127; control++) {
+            // skip deck toggle buttons for now
+            if (control === 0x72) {
+                continue;
+            }
+            midi.sendShortMsg(0x90 + channel, control, 0);
+        }
+    }
+
+    // switch to decks 1 and 2 to turn off deck indication lights
+    midi.sendShortMsg(0x90, 0x72, 0x7f);
+    midi.sendShortMsg(0x91, 0x72, 0x7f);
+
+    // turn off level meters
+    for (channel = 0; channel <= 3; channel++) {
+        midi.sendShortMsg(0xB0 + channel, 2, 0);
+    }
 };
 
 PioneerDDJSB2.longButtonPressWait = function() {
