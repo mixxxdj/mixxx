@@ -318,21 +318,82 @@
         this.firstValueReceived = false;
     };
     Pot.prototype = new Component({
+        relative: false,
         inValueScale: function (value) { return value / this.max; },
-        input: function (channel, control, value, status, group) {
-            this.inSetParameter(this.inValueScale(value));
-            if (! this.firstValueReceived) {
-                this.firstValueReceived = true;
-                this.connect();
+        shift: function () {
+            if (this.relative) {
+                this.input = function (channel, control, value, status, group) {
+                    // Do not manipulate inKey, just store the position of the
+                    // physical potentiometer for calculating how much it moves
+                    // when shift is released.
+                    if (this.MSB !== undefined) {
+                        value = (this.MSB << 7) + value;
+                    }
+                    this.previousValueReceived = value;
+                }
+            }
+        },
+        unshift: function () {
+            this.input = function (channel, control, value, status, group) {
+                if (this.MSB !== undefined) {
+                    value = (this.MSB << 7) + value;
+                }
+                if (this.relative) {
+                    if (this.previousValueReceived !== undefined) {
+                        var delta = (value - this.previousValueReceived) / this.max;
+                        if (this.invert) {
+                            delta = -delta;
+                        }
+                        this.inSetParameter(this.inGetParameter() + delta);
+                    } else {
+                        var newValue = value / this.max;
+                        if (this.invert) {
+                            newValue = 1 - newValue;
+                        }
+                        if (this.loadStateOnStartup) {
+                            this.inSetParameter(newValue);
+                        }
+                    }
+                    this.previousValueReceived = value;
+                } else {
+                    var newValue = this.inValueScale(value);
+                    if (this.invert) {
+                        newValue = 1 - newValue;
+                    }
+                    this.inSetParameter(newValue);
+                    if (!this.firstValueReceived) {
+                        this.firstValueReceived = true;
+                        this.connect();
+                    }
+                }
+            }
+        },
+        // Input handlers for 14 bit MIDI
+        inputMSB: function (channel, control, value, status, group) {
+            // For the first messages, disregard the LSB in case
+            // the first LSB is received after the first MSB.
+            if (this.MSB === undefined) {
+                this.max = 127;
+                this.input(channel, control, value, status, group);
+                this.max = 16383;
+            }
+            this.MSB = value;
+        },
+        inputLSB: function (channel, control, value, status, group) {
+            // Make sure the first MSB has been received
+            if (this.MSB !== undefined) {
+                this.input(channel, control, value, status, group);
             }
         },
         connect: function () {
-            if (this.firstValueReceived) {
+            if (this.firstValueReceived && !this.relative) {
                 engine.softTakeover(this.group, this.inKey, true);
             }
         },
         disconnect: function () {
-            engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
+            if (!this.relative) {
+                engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
+            }
         },
         trigger: function () {},
     });
