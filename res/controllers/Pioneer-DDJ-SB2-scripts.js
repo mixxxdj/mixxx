@@ -26,8 +26,9 @@ PioneerDDJSB2.showVumeterMaster = false;
 // If true VU-Level twinkle if AutoDJ is ON.
 PioneerDDJSB2.twinkleVumeterAutodjOn = true;
 
-// If true, by release browser knob jump forward to "position". 
+// If true, releasing browser knob jumps forward to jumpPreviewPosition.
 PioneerDDJSB2.jumpPreviewEnabled = true;
+// Position in the track to jump to. 0 is the beginning of the track and 1 is the end.
 PioneerDDJSB2.jumpPreviewPosition = 0.5;
 
 /*
