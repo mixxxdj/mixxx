@@ -106,7 +106,18 @@ void DlgCoverArtFullSize::slotCoverFound(const QObject* pRequestor,
         if (m_pixmap.isNull()) {
             close();
         } else {
-            resize(pixmap.size());
+            // Scale down dialog to screen size if the pixmap is larger than the screen
+            QSize dialogSize = m_pixmap.size();
+            const QSize availableScreenSpace =
+                QApplication::desktop()->availableGeometry().size();
+            if (dialogSize.height() > availableScreenSpace.height()) {
+                dialogSize.scale(dialogSize.width(), availableScreenSpace.height(),
+                                 Qt::KeepAspectRatio);
+            } else if (dialogSize.width() > availableScreenSpace.width()) {
+                dialogSize.scale(availableScreenSpace.width(), dialogSize.height(),
+                                 Qt::KeepAspectRatio);
+            }
+            resize(dialogSize);
         }
     }
 }
