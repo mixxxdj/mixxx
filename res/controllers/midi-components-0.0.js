@@ -190,16 +190,9 @@
     PlayButton.prototype = new Button({
         unshift: function () {
             this.inKey = 'play';
-            this.input = Button.prototype.input;
-            // Stop reversing playback if the user releases the shift button before releasing this PlayButton.
-            if (engine.getValue(this.group, 'reverse') === 1) {
-                engine.setValue(this.group, 'reverse', 0);
-            }
         },
         shift: function () {
-            this.input = function (channel, control, value, status, group) {
-                engine.setValue(this.group, 'reverse', this.isPress(channel, control, value, status));
-            };
+            this.inKey = 'reverse';
         },
         outKey: 'play_indicator',
     });
