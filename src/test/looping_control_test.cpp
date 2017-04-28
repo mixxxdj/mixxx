@@ -486,8 +486,7 @@ TEST_F(LoopingControlTest, LoopHalveButton_UpdatesNumberedBeatloopActivationCont
 }
 
 TEST_F(LoopingControlTest, LoopMoveTest) {
-    // Set a crazy bpm so our super-short track of 1000 samples has a couple beats in it.
-    m_pTrack1->setBpm(23520);
+    m_pTrack1->setBpm(120);
     m_pLoopStartPoint->slotSet(0);
     m_pLoopEndPoint->slotSet(300);
     seekToSampleAndProcess(10);
@@ -501,12 +500,13 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     m_pButtonBeatMoveForward->set(1.0);
     m_pButtonBeatMoveForward->set(0.0);
     ProcessBuffer();
-    EXPECT_EQ(224, m_pLoopStartPoint->get());
-    EXPECT_EQ(524, m_pLoopEndPoint->get());
-    EXPECT_EQ(310, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    EXPECT_EQ(44100, m_pLoopStartPoint->get());
+    EXPECT_EQ(44400, m_pLoopEndPoint->get());
+    // Should seek to the corresponding offset within the moved loop
+    EXPECT_EQ(44110, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
 
-    // Move backward so that the current position is off the end of the loop.
-    m_pChannel1->getEngineBuffer()->queueNewPlaypos(500, EngineBuffer::SEEK_STANDARD);
+    // Move backward so that the current position is outside the new location of the loop
+    m_pChannel1->getEngineBuffer()->queueNewPlaypos(44300, EngineBuffer::SEEK_STANDARD);
     ProcessBuffer();
     m_pButtonBeatMoveBackward->set(1.0);
     m_pButtonBeatMoveBackward->set(0.0);
@@ -524,11 +524,12 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     m_pButtonBeatMoveForward->set(1.0);
     m_pButtonBeatMoveForward->set(0.0);
     ProcessBuffer();
-    EXPECT_EQ(224, m_pLoopStartPoint->get());
-    EXPECT_EQ(524, m_pLoopEndPoint->get());
+    EXPECT_EQ(44100, m_pLoopStartPoint->get());
+    EXPECT_EQ(44400, m_pLoopEndPoint->get());
+    // Should not seek inside the moved loop when the loop is disabled
     EXPECT_EQ(200, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
 
-    // Move backward so that the current position is off the end of the loop.
+    // Move backward so that the current position is outside the new location of the loop
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(500, EngineBuffer::SEEK_STANDARD);
     ProcessBuffer();
     m_pButtonBeatMoveBackward->set(1.0);
