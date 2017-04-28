@@ -161,10 +161,9 @@
         onlyOnPress: true,
         on: 127,
         off: 0,
-        // Time in milliseconds to distinguish a short press from a long press
-        // In the provided Components, only EffectUnit.effectFocusButton uses
-        // this, but it is recommended to refer to it (as this.longPressTimeout)
-        // in any custom Buttons that act differently with short and long presses
+        // Time in milliseconds to distinguish a short press from a long press.
+        // It is recommended to refer to it (as this.longPressTimeout)
+        // in any Buttons that act differently with short and long presses
         // to keep the timeouts uniform.
         longPressTimeout: 275,
         isPress: function (channel, control, value, status) {
@@ -226,10 +225,24 @@
     };
     SyncButton.prototype = new Button({
         unshift: function () {
-            this.inKey = 'beatsync';
+            this.input = function (channel, control, value, status, group) {
+                if (this.isPress(channel, control, value, status)) {
+                    if (engine.getValue(this.group, 'sync_enabled') === 0) {
+                        engine.setValue(this.group, 'beatsync', 1);
+                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
+                            engine.setValue(this.group, 'sync_enabled', 1);
+                        }, true);
+                    } else {
+                        engine.setValue(this.group, 'sync_enabled', 0);
+                    }
+                } else {
+                    engine.stopTimer(this.longPressTimer);
+                }
+            };
         },
         shift: function () {
-            this.inKey = 'sync_enabled';
+            this.inKey = 'quantize';
+            this.input = Button.prototype.input;
         },
         outKey: 'sync_enabled',
     });
