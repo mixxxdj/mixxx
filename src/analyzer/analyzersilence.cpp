@@ -1,13 +1,14 @@
 #include "analyzer/analyzersilence.h"
+#include "util/audiosignal.h"
 
-const int kChannelCount = 2;
-const float kSilenceThreshold = -60.0f;
+namespace {
+    const SINT kChannelCount = mixxx::AudioSignal::kChannelCountStereo;
+    const float kSilenceThresholdDb = -60.0f;
+}  // anonymous namespace
 
 AnalyzerSilence::AnalyzerSilence(UserSettingsPointer pConfig)
     : m_pConfig(pConfig),
-      m_fThreshold(db2ratio(kSilenceThreshold)),
-      m_iSampleRate(0),
-      m_iTotalSamples(0),
+      m_fThreshold(db2ratio(kSilenceThresholdDb)),
       m_iFramesProcessed(0),
       m_bPrevSilence(true),
       m_iSignalBegin(-1),
@@ -19,13 +20,13 @@ AnalyzerSilence::~AnalyzerSilence() {
 
 bool AnalyzerSilence::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
     Q_UNUSED(tio);
+    Q_UNUSED(sampleRate);
+    Q_UNUSED(totalSamples);
 
-    m_iSampleRate = sampleRate;
-    m_iTotalSamples = totalSamples;
     m_iFramesProcessed = 0;
     m_bPrevSilence = true;
-    m_iSignalBegin = 0;
-    m_iSignalEnd = 0;
+    m_iSignalBegin = -1;
+    m_iSignalEnd = -1;
 
     return true;
 }
@@ -38,10 +39,17 @@ bool AnalyzerSilence::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
 
 void AnalyzerSilence::process(const CSAMPLE *pIn, const int iLen) {
     for (int i = 0; i < iLen; i += kChannelCount) {
-        bool bSilence = math_max(fabs(pIn[i]), fabs(pIn[i + 1])) < m_fThreshold;
+        // Compute max of channels in this sample frame
+        CSAMPLE fMax = CSAMPLE_ZERO;
+        for (SINT ch = 0; ch < kChannelCount; ++ch) {
+            CSAMPLE fAbs = fabs(pIn[i + ch]);
+            fMax = math_max(fMax, fAbs);
+        }
+
+        bool bSilence = fMax < m_fThreshold;
 
         if (m_bPrevSilence && !bSilence) {
-            if (m_iSignalBegin <= 0) {
+            if (m_iSignalBegin < 0) {
                 m_iSignalBegin = m_iFramesProcessed + i / kChannelCount;
             }
         } else if (!m_bPrevSilence && bSilence) {
@@ -59,6 +67,13 @@ void AnalyzerSilence::cleanup(TrackPointer tio) {
 }
 
 void AnalyzerSilence::finalize(TrackPointer tio) {
+    if (m_iSignalBegin < 0) {
+        m_iSignalBegin = 0;
+    }
+    if (m_iSignalEnd < 0) {
+        m_iSignalEnd = m_iFramesProcessed;
+    }
+
     // If track didn't end with silence, place signal end marker
     // on the end of the track.
     if (!m_bPrevSilence) {

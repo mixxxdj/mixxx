@@ -7,7 +7,7 @@
 class AnalyzerSilence : public Analyzer {
   public:
     AnalyzerSilence(UserSettingsPointer pConfig);
-    virtual ~AnalyzerSilence();
+    virtual ~AnalyzerSilence() override;
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
     bool isDisabledOrLoadStoredSuccess(TrackPointer tio) const override;
@@ -18,8 +18,6 @@ class AnalyzerSilence : public Analyzer {
   private:
     UserSettingsPointer m_pConfig;
     float m_fThreshold;
-    int m_iSampleRate;
-    int m_iTotalSamples;
     int m_iFramesProcessed;
     bool m_bPrevSilence;
     int m_iSignalBegin;
