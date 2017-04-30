@@ -37,7 +37,7 @@
       <attribute persist="true" config_key="[Samplers],show_expanded">0</attribute>
 
       <attribute persist="true" config_key="[EffectRack1],show">1</attribute>
-      <attribute persist="true" config_key="[Master],show_superknobs">1</attribute>
+      <attribute persist="true" config_key="[Master],show_superknobs">0</attribute>
     </attributes>
   </manifest>
 
