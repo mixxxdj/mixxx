@@ -17,7 +17,8 @@ WaveformRendererPreroll::WaveformRendererPreroll(WaveformWidgetRenderer* wavefor
 WaveformRendererPreroll::~WaveformRendererPreroll() {
 }
 
-void WaveformRendererPreroll::setup(const QDomNode& node, const SkinContext& context) {
+void WaveformRendererPreroll::setup(
+        const QDomNode& node, const SkinContext& context) {
     m_color.setNamedColor(context.selectString(node, "SignalColor"));
     m_color = WSkinColor::getCorrectColor(m_color);
 }
@@ -42,15 +43,15 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
     if (currentPosition < numberOfSamples / 2.0) {
         int index = static_cast<int>(numberOfSamples / 2.0 - currentPosition);
         const int polyLength = static_cast<int>(40.0 / samplesPerPixel);
-        const float halfBreadth = m_waveformRenderer->getBreadth()/2.0;
-        const float halfPolyBreadth = m_waveformRenderer->getBreadth()/5.0;
+        const float halfBreadth = m_waveformRenderer->getBreadth() / 2.0;
+        const float halfPolyBreadth = m_waveformRenderer->getBreadth() / 5.0;
 
         painter->save();
         painter->setRenderHint(QPainter::Antialiasing);
         //painter->setRenderHint(QPainter::HighQualityAntialiasing);
         //painter->setBackgroundMode(Qt::TransparentMode);
         painter->setWorldMatrixEnabled(false);
-        painter->setPen(QPen(QBrush(m_color), 1));
+        painter->setPen(QPen(QBrush(m_color), std::max(1.0, scaleFactor())));
 
         // Rotate if drawing vertical waveforms
         if (m_waveformRenderer->getOrientation() == Qt::Vertical) {

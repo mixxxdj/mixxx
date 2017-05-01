@@ -35,27 +35,19 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
           m_pConfig(pConfig),
           m_pEngineMaster(pMixingEngine),
           m_pLoadedTrack(),
-          m_pLowFilter(NULL),
-          m_pMidFilter(NULL),
-          m_pHighFilter(NULL),
-          m_pLowFilterKill(NULL),
-          m_pMidFilterKill(NULL),
-          m_pHighFilterKill(NULL),
-          m_pRateSlider(NULL),
-          m_pPitchAdjust(NULL),
           m_replaygainPending(false) {
     ChannelHandleAndGroup channelGroup =
             pMixingEngine->registerChannelGroup(group);
     m_pChannel = new EngineDeck(channelGroup, pConfig, pMixingEngine,
                                 pEffectsManager, defaultOrientation);
 
-    m_pInputConfigured.reset(new ControlProxy(group, "input_configured", this));
-    m_pPassthroughEnabled.reset(new ControlProxy(group, "passthrough", this));
+    m_pInputConfigured = std::make_unique<ControlProxy>(group, "input_configured", this);
+    m_pPassthroughEnabled = std::make_unique<ControlProxy>(group, "passthrough", this);
     m_pPassthroughEnabled->connectValueChanged(SLOT(slotPassthroughEnabled(double)));
 #ifdef __VINYLCONTROL__
-    m_pVinylControlEnabled.reset(new ControlProxy(group, "vinylcontrol_enabled", this));
+    m_pVinylControlEnabled = std::make_unique<ControlProxy>(group, "vinylcontrol_enabled", this);
     m_pVinylControlEnabled->connectValueChanged(SLOT(slotVinylControlEnabled(double)));
-    m_pVinylControlStatus.reset(new ControlProxy(group, "vinylcontrol_status", this));
+    m_pVinylControlStatus = std::make_unique<ControlProxy>(group, "vinylcontrol_status", this);
 #endif
 
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
@@ -74,49 +66,59 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
             this, SLOT(slotLoadFailed(TrackPointer, QString)));
 
     // Get loop point control objects
-    m_pLoopInPoint = new ControlProxy(
+    m_pLoopInPoint = std::make_unique<ControlProxy>(
             getGroup(), "loop_start_position", this);
-    m_pLoopOutPoint = new ControlProxy(
+    m_pLoopOutPoint = std::make_unique<ControlProxy>(
             getGroup(), "loop_end_position", this);
 
     // Duration of the current song, we create this one because nothing else does.
-    m_pDuration = new ControlObject(ConfigKey(getGroup(), "duration"));
+    m_pDuration = std::make_unique<ControlObject>(
+        ConfigKey(getGroup(), "duration"));
 
     // Waveform controls
-    m_pWaveformZoom = new ControlPotmeter(ConfigKey(group, "waveform_zoom"),
-                                          WaveformWidgetRenderer::s_waveformMinZoom,
-                                          WaveformWidgetRenderer::s_waveformMaxZoom);
+    // This acts somewhat like a ControlPotmeter, but the normal _up/_down methods
+    // do not work properly with this CO.
+    m_pWaveformZoom = std::make_unique<ControlObject>(
+        ConfigKey(group, "waveform_zoom"));
+    m_pWaveformZoom->connectValueChangeRequest(
+        this, SLOT(slotWaveformZoomValueChangeRequest(double)),
+        Qt::DirectConnection);
     m_pWaveformZoom->set(1.0);
-    m_pWaveformZoom->setStepCount(WaveformWidgetRenderer::s_waveformMaxZoom -
-            WaveformWidgetRenderer::s_waveformMinZoom);
-    m_pWaveformZoom->setSmallStepCount(WaveformWidgetRenderer::s_waveformMaxZoom -
-            WaveformWidgetRenderer::s_waveformMinZoom);
+    m_pWaveformZoomUp = std::make_unique<ControlPushButton>(
+        ConfigKey(group, "waveform_zoom_up"));
+    connect(m_pWaveformZoomUp.get(), SIGNAL(valueChanged(double)),
+            this, SLOT(slotWaveformZoomUp(double)));
+    m_pWaveformZoomDown = std::make_unique<ControlPushButton>(
+        ConfigKey(group, "waveform_zoom_down"));
+    connect(m_pWaveformZoomDown.get(), SIGNAL(valueChanged(double)),
+            this, SLOT(slotWaveformZoomDown(double)));
+    m_pWaveformZoomSetDefault = std::make_unique<ControlPushButton>(
+        ConfigKey(group, "waveform_zoom_set_default"));
+    connect(m_pWaveformZoomSetDefault.get(), SIGNAL(valueChanged(double)),
+            this, SLOT(slotWaveformZoomSetDefault(double)));
 
-    m_pEndOfTrack = new ControlObject(ConfigKey(group, "end_of_track"));
+    m_pEndOfTrack = std::make_unique<ControlObject>(
+        ConfigKey(group, "end_of_track"));
     m_pEndOfTrack->set(0.);
 
-    m_pPreGain = new ControlProxy(group, "pregain", this);
-    //BPM of the current song
-    m_pBPM = new ControlProxy(group, "file_bpm", this);
-    m_pKey = new ControlProxy(group, "file_key", this);
+    m_pPreGain = std::make_unique<ControlProxy>(group, "pregain", this);
+    // BPM of the current song
+    m_pBPM = std::make_unique<ControlProxy>(group, "file_bpm", this);
+    m_pKey = std::make_unique<ControlProxy>(group, "file_key", this);
 
-    m_pReplayGain = new ControlProxy(group, "replaygain", this);
-    m_pPlay = new ControlProxy(group, "play", this);
+    m_pReplayGain = std::make_unique<ControlProxy>(group, "replaygain", this);
+    m_pPlay = std::make_unique<ControlProxy>(group, "play", this);
     m_pPlay->connectValueChanged(SLOT(slotPlayToggled(double)));
 }
 
 BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
     if (m_pLoadedTrack) {
         emit(loadingTrack(TrackPointer(), m_pLoadedTrack));
-        disconnect(m_pLoadedTrack.get(), 0, m_pBPM, 0);
+        disconnect(m_pLoadedTrack.get(), 0, m_pBPM.get(), 0);
         disconnect(m_pLoadedTrack.get(), 0, this, 0);
-        disconnect(m_pLoadedTrack.get(), 0, m_pKey, 0);
+        disconnect(m_pLoadedTrack.get(), 0, m_pKey.get(), 0);
         m_pLoadedTrack.reset();
     }
-
-    delete m_pDuration;
-    delete m_pWaveformZoom;
-    delete m_pEndOfTrack;
 }
 
 TrackPointer BaseTrackPlayerImpl::loadFakeTrack(bool bPlay, double filebpm) {
@@ -133,10 +135,10 @@ TrackPointer BaseTrackPlayerImpl::loadFakeTrack(bool bPlay, double filebpm) {
     if (m_pLoadedTrack) {
         // Listen for updates to the file's BPM
         connect(m_pLoadedTrack.get(), SIGNAL(bpmUpdated(double)),
-                m_pBPM, SLOT(set(double)));
+                m_pBPM.get(), SLOT(set(double)));
 
         connect(m_pLoadedTrack.get(), SIGNAL(keyUpdated(double)),
-                m_pKey, SLOT(set(double)));
+                m_pKey.get(), SLOT(set(double)));
 
         // Listen for updates to the file's Replay Gain
         connect(m_pLoadedTrack.get(), SIGNAL(ReplayGainUpdated(mixxx::ReplayGain)),
@@ -189,9 +191,9 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
         // WARNING: Never. Ever. call bare disconnect() on an object. Mixxx
         // relies on signals and slots to get tons of things done. Don't
         // randomly disconnect things.
-        disconnect(m_pLoadedTrack.get(), 0, m_pBPM, 0);
+        disconnect(m_pLoadedTrack.get(), 0, m_pBPM.get(), 0);
         disconnect(m_pLoadedTrack.get(), 0, this, 0);
-        disconnect(m_pLoadedTrack.get(), 0, m_pKey, 0);
+        disconnect(m_pLoadedTrack.get(), 0, m_pKey.get(), 0);
 
         // Do not reset m_pReplayGain here, because the track might be still
         // playing and the last buffer will be processed.
@@ -203,10 +205,10 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
     if (m_pLoadedTrack) {
         // Listen for updates to the file's BPM
         connect(m_pLoadedTrack.get(), SIGNAL(bpmUpdated(double)),
-                m_pBPM, SLOT(set(double)));
+                m_pBPM.get(), SLOT(set(double)));
 
         connect(m_pLoadedTrack.get(), SIGNAL(keyUpdated(double)),
-                m_pKey, SLOT(set(double)));
+                m_pKey.get(), SLOT(set(double)));
 
         // Listen for updates to the file's Replay Gain
         connect(m_pLoadedTrack.get(), SIGNAL(ReplayGainUpdated(mixxx::ReplayGain)),
@@ -251,9 +253,9 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         // relies on signals and slots to get tons of things done. Don't
         // randomly disconnect things.
         // m_pLoadedTrack->disconnect();
-        disconnect(m_pLoadedTrack.get(), 0, m_pBPM, 0);
+        disconnect(m_pLoadedTrack.get(), 0, m_pBPM.get(), 0);
         disconnect(m_pLoadedTrack.get(), 0, this, 0);
-        disconnect(m_pLoadedTrack.get(), 0, m_pKey, 0);
+        disconnect(m_pLoadedTrack.get(), 0, m_pKey.get(), 0);
 
         // Causes the track's data to be saved back to the library database and
         // for all the widgets to change the track and update themselves.
@@ -375,14 +377,14 @@ EngineDeck* BaseTrackPlayerImpl::getEngineDeck() const {
 
 void BaseTrackPlayerImpl::setupEqControls() {
     const QString group = getGroup();
-    m_pLowFilter = new ControlProxy(group, "filterLow", this);
-    m_pMidFilter = new ControlProxy(group, "filterMid", this);
-    m_pHighFilter = new ControlProxy(group, "filterHigh", this);
-    m_pLowFilterKill = new ControlProxy(group, "filterLowKill", this);
-    m_pMidFilterKill = new ControlProxy(group, "filterMidKill", this);
-    m_pHighFilterKill = new ControlProxy(group, "filterHighKill", this);
-    m_pRateSlider = new ControlProxy(group, "rate", this);
-    m_pPitchAdjust = new ControlProxy(group, "pitch_adjust", this);
+    m_pLowFilter = std::make_unique<ControlProxy>(group, "filterLow", this);
+    m_pMidFilter = std::make_unique<ControlProxy>(group, "filterMid", this);
+    m_pHighFilter = std::make_unique<ControlProxy>(group, "filterHigh", this);
+    m_pLowFilterKill = std::make_unique<ControlProxy>(group, "filterLowKill", this);
+    m_pMidFilterKill = std::make_unique<ControlProxy>(group, "filterMidKill", this);
+    m_pHighFilterKill = std::make_unique<ControlProxy>(group, "filterHighKill", this);
+    m_pRateSlider = std::make_unique<ControlProxy>(group, "rate", this);
+    m_pPitchAdjust = std::make_unique<ControlProxy>(group, "pitch_adjust", this);
 }
 
 void BaseTrackPlayerImpl::slotPassthroughEnabled(double v) {
@@ -410,6 +412,39 @@ void BaseTrackPlayerImpl::slotVinylControlEnabled(double v) {
         emit(noVinylControlInputConfigured());
     }
 #endif
+}
+
+void BaseTrackPlayerImpl::slotWaveformZoomValueChangeRequest(double v) {
+    if (v <= WaveformWidgetRenderer::s_waveformMaxZoom
+            && v >= WaveformWidgetRenderer::s_waveformMinZoom) {
+        m_pWaveformZoom->setAndConfirm(v);
+    }
+}
+
+void BaseTrackPlayerImpl::slotWaveformZoomUp(double pressed) {
+    if (pressed <= 0.0) {
+        return;
+    }
+
+    m_pWaveformZoom->set(m_pWaveformZoom->get() + 1.0);
+}
+
+void BaseTrackPlayerImpl::slotWaveformZoomDown(double pressed) {
+    if (pressed <= 0.0) {
+        return;
+    }
+
+    m_pWaveformZoom->set(m_pWaveformZoom->get() - 1.0);
+}
+
+void BaseTrackPlayerImpl::slotWaveformZoomSetDefault(double pressed) {
+    if (pressed <= 0.0) {
+        return;
+    }
+
+    double defaultZoom = m_pConfig->getValue(ConfigKey("[Waveform]","DefaultZoom"),
+        WaveformWidgetRenderer::s_waveformDefaultZoom);
+    m_pWaveformZoom->set(defaultZoom);
 }
 
 void BaseTrackPlayerImpl::setReplayGain(double value) {

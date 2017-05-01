@@ -164,6 +164,7 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
 
             // Both buffers should be equal
             ASSERT_EQ(contReadFrameCount, seekReadFrameCount);
+#ifdef __OPUS__
             if (filePath.endsWith(".opus")) {
                 expectDecodedSamplesEqualOpus(
                         pContReadSource->frames2samples(contReadFrameCount),
@@ -171,12 +172,15 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
                         &seekReadData[0],
                         "Decoding mismatch after seeking forward");
             } else {
+#endif // __OPUS__
                 expectDecodedSamplesEqual(
                         pContReadSource->frames2samples(contReadFrameCount),
                         &contReadData[0],
                         &seekReadData[0],
                         "Decoding mismatch after seeking forward");
+#ifdef __OPUS__
             }
+#endif // __OPUS__
 
             // Seek backwards to beginning of chunk and read again
             seekFrameIndex =
@@ -309,20 +313,8 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
         // Seek to boundaries (alternating)
         EXPECT_EQ(pSeekReadSource->getMinFrameIndex(),
                 pSeekReadSource->seekSampleFrame(pSeekReadSource->getMinFrameIndex()));
-#ifdef __MAD__
-        // TODO(XXX): Seeking near the end of an MP3 stream
-        // is currently broken for SoundSourceMP3 (libmad)
-        if (filePath.endsWith(".mp3")) {
-            qWarning()
-                    << "TODO(XXX): Fix seeking near end of stream for MP3 files"
-                    << "and re-enable this test!";
-        } else {
-#endif // __MAD__
-            EXPECT_EQ(pSeekReadSource->getMaxFrameIndex() - 1,
-                    pSeekReadSource->seekSampleFrame(pSeekReadSource->getMaxFrameIndex() - 1));
-#ifdef __MAD__
-        }
-#endif // __MAD__
+        EXPECT_EQ(pSeekReadSource->getMaxFrameIndex() - 1,
+                pSeekReadSource->seekSampleFrame(pSeekReadSource->getMaxFrameIndex() - 1));
         EXPECT_EQ(pSeekReadSource->getMinFrameIndex() + 1,
                 pSeekReadSource->seekSampleFrame(pSeekReadSource->getMinFrameIndex() + 1));
         EXPECT_EQ(pSeekReadSource->getMaxFrameIndex(),

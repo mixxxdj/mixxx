@@ -34,11 +34,11 @@ class BiquadFullKillEQEffectGroupState final {
     std::unique_ptr<EngineFilterBiquad1Peaking> m_midKill;
     std::unique_ptr<EngineFilterBiquad1HighShelving> m_highKill;
     std::unique_ptr<LVMixEQEffectGroupState<EngineFilterBessel4Low>> m_lvMixIso;
-    std::unique_ptr<SampleBuffer> m_pLowBuf;
-    std::unique_ptr<SampleBuffer> m_pBandBuf;
-    std::unique_ptr<SampleBuffer> m_pHighBuf;
-    std::unique_ptr<SampleBuffer> m_pTempBuf;
 
+    SampleBuffer m_pLowBuf;
+    SampleBuffer m_pBandBuf;
+    SampleBuffer m_pHighBuf;
+    SampleBuffer m_tempBuf;
 
     double m_oldLowBoost;
     double m_oldMidBoost;

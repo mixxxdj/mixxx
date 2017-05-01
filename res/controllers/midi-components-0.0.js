@@ -123,13 +123,17 @@
         },
         disconnect: function () {
             if (this.connections[0] !== undefined) {
-                this.connections.forEach(function (connection) {
-                    connection.disconnect();
+                this.connections.forEach(function (conn) {
+                    conn.disconnect();
                 });
             }
         },
         trigger: function() {
-            engine.trigger(this.group, this.outKey);
+            if (this.connections[0] !== undefined) {
+                this.connections.forEach(function (conn) {
+                    conn.trigger();
+                });
+            }
         },
         shiftOffset: 0,
         sendShifted: false,
@@ -181,9 +185,16 @@
     PlayButton.prototype = new Button({
         unshift: function () {
             this.inKey = 'play';
+            this.input = Button.prototype.input;
+            // Stop reversing playback if the user releases the shift button before releasing this PlayButton.
+            if (engine.getValue(this.group, 'reverse') === 1) {
+                engine.setValue(this.group, 'reverse', 0);
+            }
         },
         shift: function () {
-            this.inKey = 'start_stop';
+            this.input = function (channel, control, value, status, group) {
+                engine.setValue(this.group, 'reverse', this.isPress(channel, control, value, status));
+            };
         },
         outKey: 'play_indicator',
     });
@@ -192,9 +203,16 @@
         Button.call(this, options);
     };
     CueButton.prototype = new Button({
-        inKey: 'cue_default',
+        unshift: function () {
+            this.inKey = 'cue_default';
+        },
+        shift: function () {
+            this.inKey = 'start_stop';
+        },
+        input: function (channel, control, value, status, group) {
+            this.inSetValue(this.isPress(channel, control, value, status));
+        },
         outKey: 'cue_indicator',
-        onlyOnPress: false,
     });
 
     var SyncButton = function (options) {
@@ -219,9 +237,6 @@
             return 1;
         },
         outKey: 'loop_enabled',
-        outValueScale: function (value) {
-            return (value) ? this.on : this.off;
-        },
     });
 
     var HotcueButton = function (options) {
@@ -303,21 +318,82 @@
         this.firstValueReceived = false;
     };
     Pot.prototype = new Component({
+        relative: false,
         inValueScale: function (value) { return value / this.max; },
-        input: function (channel, control, value, status, group) {
-            this.inSetParameter(this.inValueScale(value));
-            if (! this.firstValueReceived) {
-                this.firstValueReceived = true;
-                this.connect();
+        shift: function () {
+            if (this.relative) {
+                this.input = function (channel, control, value, status, group) {
+                    // Do not manipulate inKey, just store the position of the
+                    // physical potentiometer for calculating how much it moves
+                    // when shift is released.
+                    if (this.MSB !== undefined) {
+                        value = (this.MSB << 7) + value;
+                    }
+                    this.previousValueReceived = value;
+                }
+            }
+        },
+        unshift: function () {
+            this.input = function (channel, control, value, status, group) {
+                if (this.MSB !== undefined) {
+                    value = (this.MSB << 7) + value;
+                }
+                if (this.relative) {
+                    if (this.previousValueReceived !== undefined) {
+                        var delta = (value - this.previousValueReceived) / this.max;
+                        if (this.invert) {
+                            delta = -delta;
+                        }
+                        this.inSetParameter(this.inGetParameter() + delta);
+                    } else {
+                        var newValue = value / this.max;
+                        if (this.invert) {
+                            newValue = 1 - newValue;
+                        }
+                        if (this.loadStateOnStartup) {
+                            this.inSetParameter(newValue);
+                        }
+                    }
+                    this.previousValueReceived = value;
+                } else {
+                    var newValue = this.inValueScale(value);
+                    if (this.invert) {
+                        newValue = 1 - newValue;
+                    }
+                    this.inSetParameter(newValue);
+                    if (!this.firstValueReceived) {
+                        this.firstValueReceived = true;
+                        this.connect();
+                    }
+                }
+            }
+        },
+        // Input handlers for 14 bit MIDI
+        inputMSB: function (channel, control, value, status, group) {
+            // For the first messages, disregard the LSB in case
+            // the first LSB is received after the first MSB.
+            if (this.MSB === undefined) {
+                this.max = 127;
+                this.input(channel, control, value, status, group);
+                this.max = 16383;
+            }
+            this.MSB = value;
+        },
+        inputLSB: function (channel, control, value, status, group) {
+            // Make sure the first MSB has been received
+            if (this.MSB !== undefined) {
+                this.input(channel, control, value, status, group);
             }
         },
         connect: function () {
-            if (this.firstValueReceived) {
+            if (this.firstValueReceived && !this.relative) {
                 engine.softTakeover(this.group, this.inKey, true);
             }
         },
         disconnect: function () {
-            engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
+            if (!this.relative) {
+                engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
+            }
         },
         trigger: function () {},
     });

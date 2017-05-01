@@ -78,8 +78,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
             Qt::DirectConnection);
 
     // This is parented to the PlayerManager so does not need to be deleted
-    SamplerBank* pSamplerBank = new SamplerBank(this);
-    Q_UNUSED(pSamplerBank);
+    m_pSamplerBank = new SamplerBank(this);
 
     // register the engine's outputs
     m_pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER, 0, 2),
@@ -96,6 +95,9 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
 
 PlayerManager::~PlayerManager() {
     QMutexLocker locker(&m_mutex);
+
+    m_pSamplerBank->saveSamplerBankToPath(
+        m_pConfig->getSettingsPath() + "/samplers.xml");
     // No need to delete anything because they are all parented to us and will
     // be destroyed when we are destroyed.
     m_players.clear();
@@ -175,6 +177,23 @@ bool PlayerManager::isDeckGroup(const QString& group, int* number) {
         return false;
     }
     if (number != NULL) {
+        *number = deckNum;
+    }
+    return true;
+}
+
+// static
+bool PlayerManager::isSamplerGroup(const QString& group, int* number) {
+    if (!group.startsWith("[Sampler")) {
+        return false;
+    }
+
+    bool ok = false;
+    int deckNum = group.mid(8,group.lastIndexOf("]")-8).toInt(&ok);
+    if (!ok || deckNum <= 0) {
+        return false;
+    }
+    if (number != nullptr) {
         *number = deckNum;
     }
     return true;
@@ -377,6 +396,11 @@ void PlayerManager::addDeckInner() {
     if (pQuickEffectRack) {
         pQuickEffectRack->addEffectChainSlotForGroup(group);
     }
+}
+
+void PlayerManager::loadSamplers() {
+    m_pSamplerBank->loadSamplerBankFromPath(
+        m_pConfig->getSettingsPath() + "/samplers.xml");
 }
 
 void PlayerManager::addSampler() {
