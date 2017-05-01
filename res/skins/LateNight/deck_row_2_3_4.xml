@@ -34,9 +34,9 @@
                     <WidgetGroup>
                         <ObjectName>AlignRightTop</ObjectName>
                         <Layout>horizontal</Layout>
-                        <SizePolicy>f,min</SizePolicy>
+                        <SizePolicy>max,min</SizePolicy>
                         <MinimumSize>100,</MinimumSize>
-                        <MaximumSize>100,</MaximumSize>
+                        <MaximumSize>220,</MaximumSize>
                         <Children>
                             <NumberPos>
                                 <ObjectName>TextColor<Variable name="channum" /></ObjectName>

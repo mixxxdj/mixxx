@@ -3,6 +3,7 @@
 
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
+#include "widget/wimagestore.h"
 
 WaveformRenderBackground::WaveformRenderBackground(
     WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -16,12 +17,9 @@ WaveformRenderBackground::~WaveformRenderBackground() {
 void WaveformRenderBackground::setup(const QDomNode& node,
                                      const SkinContext& context) {
     m_backgroundColor = m_waveformRenderer->getWaveformSignalColors()->getBgColor();
-    m_backgroundPixmapPath = context.selectString(node, "BgPixmap");
-    if (m_backgroundPixmapPath.isEmpty()) {
-        //qWarning() << "WaveformRenderBackground::generatePixmap - no background file";
-        m_backgroundPixmapPath = QString();
-    } else {
-        m_backgroundPixmapPath = context.getSkinPath(m_backgroundPixmapPath);
+    QString backgroundPixmapPath = context.selectString(node, "BgPixmap");
+    if (!backgroundPixmapPath.isEmpty()) {
+        m_backgroundPixmapPath = context.getSkinPath(backgroundPixmapPath);
     }
     setDirty(true);
 }
@@ -51,7 +49,9 @@ void WaveformRenderBackground::draw(QPainter* painter,
 void WaveformRenderBackground::generateImage() {
     m_backgroundImage = QImage();
     if (!m_backgroundPixmapPath.isEmpty()) {
-        QImage backgroundImage(m_backgroundPixmapPath);
+        QImage backgroundImage = *WImageStore::getImage(
+                m_backgroundPixmapPath,
+                scaleFactor());
 
         if (!backgroundImage.isNull()) {
             if (backgroundImage.width() == m_waveformRenderer->getWidth() &&

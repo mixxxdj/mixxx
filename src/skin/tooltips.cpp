@@ -30,6 +30,7 @@ void Tooltips::addStandardTooltips() {
     QString leftClick = tr("Left-click");
     QString rightClick = tr("Right-click");
     QString scrollWheel = tr("Scroll-wheel");
+    QString effectsWithinChain = tr("Effects within the chain must be enabled to hear them.");
 
     add("waveform_overview")
             << tr("Waveform Overview")
@@ -508,6 +509,11 @@ void Tooltips::addStandardTooltips() {
             << tr("Record Mix")
             << tr("Toggle mix recording.");
 
+    // Status displays and toggle buttons
+    add("recording_duration")
+            << tr("Recording Duration")
+            << tr("Displays the duration of the running recording.");
+
     // For legacy reasons also add tooltips for "shoutcast_enabled".
     for (const char* key : {"shoutcast_enabled", "broadcast_enabled"}) {
         add(key)
@@ -598,8 +604,8 @@ void Tooltips::addStandardTooltips() {
 
     add("track_time")
             << tr("Track Time")
-            << tr("Displays the elapsed or remaining time of the track loaded.")
-            << tr("Click to toggle between time elapsed/remaining time.");
+            << tr("Displays the elapsed and/or remaining time of the track loaded.")
+            << tr("Click to toggle between time elapsed/remaining time/both.");
 
     add("track_duration")
             << tr("Track Duration")
@@ -660,21 +666,24 @@ void Tooltips::addStandardTooltips() {
 
     // Effect Unit Controls
     add("EffectUnit_clear")
-            << tr("Clear Unit")
-            << tr("Clear effect unit.");
+            << tr("Clear Chain")
+            << tr("Clear effect chain.");
+
+    add("EffectUnit_show_parameters")
+            << tr("Show Effect Parameters")
+            << tr("Show/hide parameters for effects in this chain.");
 
     add("EffectUnit_enabled")
-            << tr("Toggle Unit")
-            << tr("Enable or disable effect processing.");
-
+            << tr("Toggle Chain")
+            << tr("Enable or disable this whole effect chain.");
     add("EffectUnit_mix")
             << tr("Dry/Wet")
-            << tr("Adjust the balance between the original (dry) and processed (wet) signal.")
+            << tr("Adjust the balance between the original (dry) and processed (wet) signal for the whole effect chain.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("EffectUnit_super1")
             << tr("Super Knob")
-            << tr("Super Knob (control linked effect parameters).")
+            << tr("Controls the Meta Knob of all effects in this chain together.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("EffectUnit_insertion_type")
@@ -683,19 +692,50 @@ void Tooltips::addStandardTooltips() {
 
     add("EffectUnit_next_chain")
             << tr("Next Chain")
-            << tr("Next chain preset.");
+            << tr("Next effect chain preset.");
 
     add("EffectUnit_prev_chain")
             << tr("Previous Chain")
-            << tr("Previous chain preset.");
+            << tr("Previous effect chain preset.");
 
     add("EffectUnit_chain_selector")
             << tr("Next/Previous Chain")
-            << tr("Next or previous chain preset.");
+            << tr("Next or previous effect chain preset.");
 
     add("EffectUnit_group_enabled")
             << tr("Assign Effect Chain")
-            << tr("Assign effect unit to the channel output.");
+            << tr("Assign this effect chain to the channel output.")
+            << effectsWithinChain;
+
+    add("EffectUnit_headphones_enabled")
+            << tr("Assign Effect Chain")
+            << tr("Route the headphone channel through this effect chain.")
+            << effectsWithinChain;
+
+    add("EffectUnit_master_enabled")
+            << tr("Assign Effect Chain")
+            << tr("Route the master mix through this effect chain.")
+            << effectsWithinChain;
+
+    add("EffectUnit_deck_enabled")
+            << tr("Assign Effect Chain")
+            << tr("Route this deck through the indicated effect chain.")
+            << effectsWithinChain;
+
+    add("EffectUnit_sampler_enabled")
+            << tr("Assign Effect Chain")
+            << tr("Route this sampler through the indicated effect chain.")
+            << effectsWithinChain;
+
+    add("EffectUnit_microphone_enabled")
+            << tr("Assign Effect Chain")
+            << tr("Route this microphone through the indicated effect chain.")
+            << effectsWithinChain;
+
+    add("EffectUnit_auxiliary_enabled")
+            << tr("Assign Effect Chain")
+            << tr("Route this auxiliary input through the indicated effect chain.")
+            << effectsWithinChain;
 
     // Effect Slot Controls
     add("EffectSlot_clear")
@@ -703,8 +743,8 @@ void Tooltips::addStandardTooltips() {
             << tr("Clear the current effect.");
 
     add("EffectSlot_enabled")
-            << tr("Toggle")
-            << tr("Toggle the current effect.");
+            << tr("Enable Effect")
+            << tr("This effect chain must also be assigned to a deck or other sound source to hear the effect.");
 
     add("EffectSlot_next_effect")
             << tr("Next")
@@ -718,18 +758,34 @@ void Tooltips::addStandardTooltips() {
             << tr("Next or Previous")
             << tr("Switch to either the next or previous effect.");
 
+    add("EffectSlot_metaknob")
+            << tr("Meta Knob")
+            << tr("Controls linked parameters of this effect")
+            << QString("%1: %2").arg(rightClick, resetToDefault);
+
+    add("EffectSlot_focus")
+            << tr("Effect Focus Button")
+            << QString("%1: %2").arg(leftClick, tr("Focuses this effect."))
+            << QString("%1: %2").arg(rightClick, tr("Unfocuses this effect."))
+            << tr("Refer to the web page on the Mixxx wiki for your controller for more information.");
+
     add("EffectSlot_parameter")
             << tr("Effect Parameter")
             << tr("Adjusts a parameter of the effect.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("EffectSlot_parameter_link_type")
-            << tr("Super Knob Mode")
-            << tr("Set how linked effect parameters change when turning the Super Knob.");
+            << tr("Meta Knob Link")
+            << tr("Set how this parameter is linked to the effect's Meta Knob.")
+            << tr("Empty bar: not linked")
+            << tr("Solid bar: moves with Meta Knob")
+            << tr("Left side: moves with left half of Meta Knob")
+            << tr("Right side: moves with right half of Meta Knob")
+            << tr("Left and right: moves across range with half of Meta Knob and back with the other half");
 
     add("EffectSlot_parameter_inversion")
-            << tr("Super Knob Inversion")
-            << tr("Inverts how linked effect parameters change when turning the Super Knob.");
+            << tr("Meta Knob Link Inversion")
+            << tr("Inverts the direction this parameter moves when turning the effect's Meta Knob.");
 
     add("EffectSlot_button_parameter")
             << tr("Equalizer Parameter Kill")

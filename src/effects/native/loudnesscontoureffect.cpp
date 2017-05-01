@@ -37,10 +37,10 @@ EffectManifest LoudnessContourEffect::getManifest() {
     loudness->setName(QObject::tr("Loudness"));
     loudness->setDescription(
             QObject::tr("Set the gain of the applied loudness contour"));
-    loudness->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    loudness->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    loudness->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    loudness->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    loudness->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    loudness->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    loudness->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    loudness->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     loudness->setNeutralPointOnScale(1);
     loudness->setDefault(-kMaxLoGain / 2);
     loudness->setMinimum(-kMaxLoGain);
@@ -50,9 +50,9 @@ EffectManifest LoudnessContourEffect::getManifest() {
     useGain->setId("useGain");
     useGain->setName(QObject::tr("Use Gain"));
     useGain->setDescription(QObject::tr("Follow Gain Knob"));
-    useGain->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
-    useGain->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    useGain->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    useGain->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
+    useGain->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    useGain->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     useGain->setDefault(0);
     useGain->setMinimum(0);
     useGain->setMaximum(1);

@@ -10,6 +10,11 @@
 #include "track/track.h"
 #include "waveform/waveformfactory.h"
 
+namespace
+{
+    QAtomicInt dbIndex(0);
+}
+
 AnalyzerWaveform::AnalyzerWaveform(UserSettingsPointer pConfig) :
         m_skipProcessing(false),
         m_waveformData(nullptr),
@@ -17,14 +22,14 @@ AnalyzerWaveform::AnalyzerWaveform(UserSettingsPointer pConfig) :
         m_stride(0, 0),
         m_currentStride(0),
         m_currentSummaryStride(0) {
-    qDebug() << "AnalyzerWaveform::AnalyzerWaveform()";
+    const int idx = ::dbIndex.fetchAndAddAcquire(1);
+    qDebug() << "AnalyzerWaveform::AnalyzerWaveform() :" << idx;
 
     m_filter[0] = 0;
     m_filter[1] = 0;
     m_filter[2] = 0;
-
-    static int i = 0;
-    m_database = QSqlDatabase::addDatabase("QSQLITE", "WAVEFORM_ANALYSIS" + QString::number(i++));
+    //A new connection different for each thread is needed http://doc.qt.io/qt-4.8/threads-modules.html#threads-and-the-sql-module
+    m_database = QSqlDatabase::addDatabase("QSQLITE", "WAVEFORM_ANALYSIS" + QString::number(idx));
     if (!m_database.isOpen()) {
         m_database.setHostName("localhost");
         m_database.setDatabaseName(QDir(pConfig->getSettingsPath()).filePath("mixxxdb.sqlite"));
@@ -42,9 +47,11 @@ AnalyzerWaveform::AnalyzerWaveform(UserSettingsPointer pConfig) :
 }
 
 AnalyzerWaveform::~AnalyzerWaveform() {
-    qDebug() << "AnalyzerWaveform::~AnalyzerWaveform()";
+    QString conname = m_database.connectionName();
+    qDebug() << "AnalyzerWaveform::~AnalyzerWaveform():" << conname;
     destroyFilters();
     m_database.close();
+    QSqlDatabase::removeDatabase(conname);
 }
 
 bool AnalyzerWaveform::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
@@ -197,6 +204,8 @@ void AnalyzerWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
     m_filter[Mid]->process(buffer, &m_buffers[Mid][0], bufferLength);
     m_filter[High]->process(buffer, &m_buffers[High][0], bufferLength);
 
+    m_waveform->setSaveState(Waveform::SaveState::NotSaved);
+    m_waveformSummary->setSaveState(Waveform::SaveState::NotSaved);
 
     for (int i = 0; i < bufferLength; i+=2) {
         // Take max value, not average of data
@@ -290,6 +299,7 @@ void AnalyzerWaveform::finalize(TrackPointer tio) {
 
     // Force completion to waveform size
     if (m_waveform) {
+        m_waveform->setSaveState(Waveform::SaveState::SavePending);
         m_waveform->setCompletion(m_waveform->getDataSize());
         m_waveform->setVersion(WaveformFactory::currentWaveformVersion());
         m_waveform->setDescription(WaveformFactory::currentWaveformDescription());
@@ -301,6 +311,7 @@ void AnalyzerWaveform::finalize(TrackPointer tio) {
 
     // Force completion to waveform size
     if (m_waveformSummary) {
+        m_waveformSummary->setSaveState(Waveform::SaveState::SavePending);
         m_waveformSummary->setCompletion(m_waveformSummary->getDataSize());
         m_waveformSummary->setVersion(WaveformFactory::currentWaveformSummaryVersion());
         m_waveformSummary->setDescription(WaveformFactory::currentWaveformSummaryDescription());
@@ -313,6 +324,12 @@ void AnalyzerWaveform::finalize(TrackPointer tio) {
 #ifdef TEST_HEAT_MAP
     test_heatMap->save("heatMap.png");
 #endif
+    // Ensure that the analyses get saved. This is also called from
+    // TrackDAO.updateTrack(), but it can happen that we analyze only the
+    // waveforms (i.e. if the config setting was disabled in a previous scan)
+    // and then it is not called. The other analyzers have signals which control
+    // the update of their data.
+    m_pAnalysisDao->saveTrackAnalyses(*tio);
 
     qDebug() << "Waveform generation for track" << tio->getId() << "done"
              << m_timer.elapsed().debugSecondsWithUnit();

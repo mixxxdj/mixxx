@@ -2,6 +2,7 @@
 
 #include "effects/effectchainmanager.h"
 #include "effects/effectsmanager.h"
+#include "effects/effectxmlelements.h"
 #include "engine/effects/engineeffectchain.h"
 #include "engine/effects/engineeffectrack.h"
 #include "engine/effects/message.h"
@@ -96,8 +97,14 @@ EffectChainPointer EffectChain::clone(EffectChainPointer pChain) {
     // Do not set the state of the chain because that information belongs
     // to the EffectChainSlot. Leave that to EffectChainSlot::loadEffectChain.
     for (const auto& pEffect : pChain->effects()) {
-        EffectPointer pClonedEffect = pChain->m_pEffectsManager
-                ->instantiateEffect(pEffect->getManifest().id());
+        EffectPointer pClonedEffect;
+        if (pEffect == nullptr) {
+            // Insert empty effect to preserve chain order
+            pClonedEffect = EffectPointer();
+        } else {
+            pClonedEffect = pChain->m_pEffectsManager
+                    ->instantiateEffect(pEffect->getManifest().id());
+        }
         pClone->addEffect(pClonedEffect);
     }
     return EffectChainPointer(pClone);
@@ -196,6 +203,9 @@ void EffectChain::setInsertionType(InsertionType insertionType) {
 void EffectChain::addEffect(EffectPointer pEffect) {
     //qDebug() << debugString() << "addEffect";
     if (!pEffect) {
+        // Insert empty effects to preserve chain order
+        // when loading chains with empty effects
+        m_effects.append(pEffect);
         return;
     }
 
@@ -214,14 +224,13 @@ void EffectChain::addEffect(EffectPointer pEffect) {
 
 void EffectChain::replaceEffect(unsigned int effectSlotNumber,
                                 EffectPointer pEffect) {
-    //qDebug() << debugString() << "replaceEffect" << iEffectNumber << pEffect;
+    //qDebug() << debugString() << "replaceEffect" << effectSlotNumber << pEffect;
     while (effectSlotNumber >= static_cast<unsigned int>(m_effects.size())) {
         if (pEffect.isNull()) {
             return;
         }
         m_effects.append(EffectPointer());
     }
-
 
     EffectPointer pOldEffect = m_effects[effectSlotNumber];
     if (!pOldEffect.isNull()) {
@@ -269,34 +278,17 @@ void EffectChain::sendParameterUpdate() {
     m_pEffectsManager->writeRequest(pRequest);
 }
 
-QDomElement EffectChain::toXML(QDomDocument* doc) const {
-    QDomElement element = doc->createElement("EffectChain");
-
-    XmlParse::addElement(*doc, element, "Id", m_id);
-    XmlParse::addElement(*doc, element, "Name", m_name);
-    XmlParse::addElement(*doc, element, "Description", m_description);
-    XmlParse::addElement(*doc, element, "InsertionType",
-                         insertionTypeToString(m_insertionType));
-
-    QDomElement effectsNode = doc->createElement("Effects");
-    foreach (EffectPointer pEffect, m_effects) {
-        if (pEffect) {
-            QDomElement effectNode = pEffect->toXML(doc);
-            effectsNode.appendChild(effectNode);
-        }
-    }
-    element.appendChild(effectsNode);
-
-    return element;
-}
-
 // static
-EffectChainPointer EffectChain::fromXML(EffectsManager* pEffectsManager,
+EffectChainPointer EffectChain::createFromXml(EffectsManager* pEffectsManager,
                                         const QDomElement& element) {
-    QString id = XmlParse::selectNodeQString(element, "Id");
-    QString name = XmlParse::selectNodeQString(element, "Name");
-    QString description = XmlParse::selectNodeQString(element, "Description");
-    QString insertionTypeStr = XmlParse::selectNodeQString(element, "InsertionType");
+    QString id = XmlParse::selectNodeQString(element,
+                                             EffectXml::ChainId);
+    QString name = XmlParse::selectNodeQString(element,
+                                               EffectXml::ChainName);
+    QString description = XmlParse::selectNodeQString(element,
+                                                      EffectXml::ChainDescription);
+    QString insertionTypeStr = XmlParse::selectNodeQString(element,
+                                                           EffectXml::ChainInsertionType);
 
     EffectChain* pChain = new EffectChain(pEffectsManager, id);
     pChain->setName(name);
@@ -309,17 +301,15 @@ EffectChainPointer EffectChain::fromXML(EffectsManager* pEffectsManager,
     EffectChainPointer pChainWrapped(pChain);
     pEffectsManager->getEffectChainManager()->addEffectChain(pChainWrapped);
 
-    QDomElement effects = XmlParse::selectElement(element, "Effects");
+    QDomElement effects = XmlParse::selectElement(element, EffectXml::EffectsRoot);
     QDomNodeList effectChildren = effects.childNodes();
 
     for (int i = 0; i < effectChildren.count(); ++i) {
         QDomNode effect = effectChildren.at(i);
         if (effect.isElement()) {
-            EffectPointer pEffect = Effect::fromXML(
+            EffectPointer pEffect = Effect::createFromXml(
                 pEffectsManager, effect.toElement());
-            if (pEffect) {
-                pChain->addEffect(pEffect);
-            }
+            pChain->addEffect(pEffect);
         }
     }
 

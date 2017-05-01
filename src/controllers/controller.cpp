@@ -11,6 +11,7 @@
 #include "controllers/controller.h"
 #include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
+#include "util/screensaver.h"
 
 Controller::Controller()
         : QObject(),
@@ -19,6 +20,7 @@ Controller::Controller()
           m_bIsInputDevice(false),
           m_bIsOpen(false),
           m_bLearning(false) {
+        m_userActivityInhibitTimer.start();
 }
 
 Controller::~Controller() {
@@ -95,13 +97,23 @@ void Controller::send(QList<int> data, unsigned int length) {
     send(msg);
 }
 
+void Controller::triggerActivity()
+{
+     // Inhibit Updates for 1000 milliseconds
+    if (m_userActivityInhibitTimer.elapsed() > 1000) {
+        mixxx::ScreenSaverHelper::triggerUserActivity();
+        m_userActivityInhibitTimer.start();
+    }
+}
 void Controller::receive(const QByteArray data, mixxx::Duration timestamp) {
+
     if (m_pEngine == NULL) {
         //qWarning() << "Controller::receive called with no active engine!";
         // Don't complain, since this will always show after closing a device as
         //  queued signals flush out
         return;
     }
+    triggerActivity();
 
     int length = data.size();
     if (ControllerDebug::enabled()) {

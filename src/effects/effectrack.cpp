@@ -202,6 +202,22 @@ void EffectRack::loadPrevEffect(const unsigned int iChainSlotNumber,
     pChain->replaceEffect(iEffectSlotNumber, pPrevEffect);
 }
 
+QDomElement EffectRack::toXml(QDomDocument* doc) const {
+    QDomElement rackElement = doc->createElement("Rack");
+    QDomElement groupElement = doc->createElement("Group");
+    QDomText groupText = doc->createTextNode(m_group);
+    groupElement.appendChild(groupText);
+    rackElement.appendChild(groupElement);
+
+    QDomElement chainsElement = doc->createElement("Chains");
+    for (EffectChainSlotPointer pChainSlot : m_effectChainSlots) {
+        QDomElement chain = pChainSlot->toXml(doc);
+        chainsElement.appendChild(chain);
+    }
+    rackElement.appendChild(chainsElement);
+    return rackElement;
+}
+
 StandardEffectRack::StandardEffectRack(EffectsManager* pEffectsManager,
                                        EffectChainManager* pChainManager,
                                        const unsigned int iRackNumber)
@@ -209,7 +225,8 @@ StandardEffectRack::StandardEffectRack(EffectsManager* pEffectsManager,
                      formatGroupString(iRackNumber)) {
 }
 
-EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
+EffectChainSlotPointer StandardEffectRack::addEffectChainSlot(EffectChainPointer pChain,
+                                                              const QDomElement& effectChainElement) {
     int iChainSlotNumber = numEffectChainSlots();
 
     QString group = formatEffectChainSlotGroupString(getRackNumber(),
@@ -217,10 +234,7 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
     EffectChainSlot* pChainSlot =
             new EffectChainSlot(this, group, iChainSlotNumber);
 
-    // TODO(rryan) How many should we make default? They create controls that
-    // the GUI may rely on, so the choice is important to communicate to skin
-    // designers.
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < EffectChainManager::kNumEffectsPerUnit; ++i) {
         pChainSlot->addEffectSlot(
             StandardEffectRack::formatEffectSlotGroupString(
                 getRackNumber(), iChainSlotNumber, i));
@@ -239,17 +253,16 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
     // Register all the existing channels with the new EffectChain.
     const QSet<ChannelHandleAndGroup>& registeredChannels =
             m_pEffectChainManager->registeredChannels();
-    foreach (const ChannelHandleAndGroup& handle_group, registeredChannels) {
+    for (const ChannelHandleAndGroup& handle_group : registeredChannels) {
         pChainSlot->registerChannel(handle_group);
     }
 
     EffectChainSlotPointer pChainSlotPointer = EffectChainSlotPointer(pChainSlot);
     addEffectChainSlotInternal(pChainSlotPointer);
 
-    // Now load an empty effect chain into the slot so that users can edit
-    // effect slots on the fly without having to load a chain.
-    EffectChainPointer pChain = makeEmptyChain();
     pChainSlotPointer->loadEffectChain(pChain);
+
+    pChainSlot->loadChainSlotFromXml(effectChainElement);
 
     return pChainSlotPointer;
 }
