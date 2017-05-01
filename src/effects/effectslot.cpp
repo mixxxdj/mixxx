@@ -272,7 +272,7 @@ void EffectSlot::slotEffectMetaParameter(double v, bool force) {
 
 QDomElement EffectSlot::toXml(QDomDocument* doc) const {
     QDomElement effectElement = doc->createElement(EffectXml::Effect);
-    if (m_pEffect == nullptr) {
+    if (!m_pEffect) {
         return effectElement;
     }
 
@@ -315,6 +315,10 @@ QDomElement EffectSlot::toXml(QDomDocument* doc) const {
 }
 
 void EffectSlot::loadEffectSlotFromXml(const QDomElement& effectElement) {
+    if (!m_pEffect) {
+        return;
+    }
+
     if (!effectElement.hasChildNodes()) {
         return;
     }
