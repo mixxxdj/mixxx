@@ -27,7 +27,7 @@ class PixmapSource final {
     };
 
     QString m_path;
-    QByteArray m_baData;
+    QByteArray m_svgSourceData;
     enum Type m_eType;
 };
 
