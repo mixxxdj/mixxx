@@ -2,12 +2,17 @@
 
 #include "skin/pixmapsource.h"
 
-PixmapSource::PixmapSource():
-    m_eType(SVG) {
+PixmapSource::PixmapSource()
+     : m_eType(SVG) {
 }
 
-PixmapSource::PixmapSource(const QString& filepath) {
-    setPath(filepath);
+PixmapSource::PixmapSource(const QString& filepath)
+    : m_path(filepath) {
+    if (m_path.endsWith(".svg", Qt::CaseInsensitive)) {
+        m_eType = SVG;
+    } else {
+        m_eType = BITMAP;
+    }
 }
 
 QByteArray PixmapSource::getData() const {
@@ -16,16 +21,6 @@ QByteArray PixmapSource::getData() const {
 
 QString PixmapSource::getPath() const {
     return m_path;
-}
-
-void PixmapSource::setPath(const QString& newPath) {
-    m_svgSourceData.clear();
-    m_path = newPath;
-    if (m_path.endsWith(".svg", Qt::CaseInsensitive)) {
-        m_eType = SVG;
-    } else {
-        m_eType = BITMAP;
-    }
 }
 
 bool PixmapSource::isEmpty() const {
