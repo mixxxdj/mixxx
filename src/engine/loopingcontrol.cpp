@@ -125,8 +125,6 @@ LoopingControl::LoopingControl(QString group,
     m_pCOBeatLoopHalve = new ControlPushButton(ConfigKey(group, "beatloop_halve"));
     connect(m_pCOBeatLoopHalve, SIGNAL(valueChanged(double)),
             this, SLOT(slotBeatLoopHalve(double)));
-    m_pCOBeatLoopSizeIndicator = new ControlObject(ConfigKey(group, "beatloop_size_indicator"));
-    m_pCOBeatLoopSizeIndicator->setReadOnly();
     m_pCOBeatLoopToggle = new ControlPushButton(ConfigKey(group, "beatloop_toggle"));
     connect(m_pCOBeatLoopToggle, SIGNAL(valueChanged(double)),
             this, SLOT(slotBeatLoopToggle(double)));
@@ -503,8 +501,6 @@ void LoopingControl::setLoopInToCurrentPosition() {
 
     m_loopSamples.setValue(loopSamples);
     //qDebug() << "set loop_in to " << loopSamples.start;
-
-    m_pCOBeatLoopSizeIndicator->forceSet(!currentLoopMatchesBeatloopSize());
 }
 
 void LoopingControl::slotLoopIn(double pressed) {
@@ -586,8 +582,6 @@ void LoopingControl::setLoopOutToCurrentPosition() {
         setLoopingEnabled(true);
     }
     //qDebug() << "set loop_out to " << loopSamples.end;
-
-    m_pCOBeatLoopSizeIndicator->forceSet(!currentLoopMatchesBeatloopSize());
 }
 
 void LoopingControl::slotLoopOut(double pressed) {
@@ -789,13 +783,6 @@ void LoopingControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack)
         m_pBeats = m_pTrack->getBeats();
         connect(m_pTrack.get(), SIGNAL(beatsUpdated()),
                 this, SLOT(slotUpdatedTrackBeats()));
-
-        LoopSamples loopSamples = m_loopSamples.getValue();
-        if ((loopSamples.start == kNoTrigger) || (loopSamples.end == kNoTrigger)) {
-            m_pCOBeatLoopSizeIndicator->forceSet(0.0);
-        } else {
-            m_pCOBeatLoopSizeIndicator->forceSet(!currentLoopMatchesBeatloopSize());
-        }
     } else {
         m_pTrack.reset();
         m_pBeats.clear();
@@ -993,11 +980,6 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     }
 
     if (avoidResize) {
-        // beatloop_size has been updated,
-        // so currentLoopMatchesBeatloopSize() might return true now.
-        if (currentLoopMatchesBeatloopSize()) {
-            m_pCOBeatLoopSizeIndicator->forceSet(0.0);
-        }
         return;
     }
 
@@ -1030,7 +1012,6 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     if (enable) {
         setLoopingEnabled(true);
     }
-    m_pCOBeatLoopSizeIndicator->forceSet(0.0);
 }
 
 void LoopingControl::slotBeatLoopSizeChangeRequest(double beats) {
