@@ -175,21 +175,26 @@ void ReadAheadManager::hintReader(double dRate, HintVector* pHintList) {
 
     // SoundTouch can read up to 2 chunks ahead. Always keep 2 chunks ahead in
     // cache.
-    SINT length_to_cache = 2 * CachingReaderChunk::kSamples;
+    SINT frameCountToCache = 2 * CachingReaderChunk::kFrames;
+    current_position.frameCount = frameCountToCache;
 
     // this called after the precious chunk was consumed
-    int sample = SampleUtil::roundPlayPosToFrameStart(
-            m_currentPosition, kNumChannels);
-    current_position.length = length_to_cache;
-    current_position.sample = in_reverse ?
-            sample - length_to_cache :
-            sample;
+    if (in_reverse) {
+        current_position.frame =
+                static_cast<SINT>(ceil(m_currentPosition / kNumChannels)) -
+                frameCountToCache;
+    } else {
+        current_position.frame =
+                static_cast<SINT>(floor(m_currentPosition / kNumChannels));
+    }
 
     // If we are trying to cache before the start of the track,
     // Then we don't need to cache because it's all zeros!
-    if (current_position.sample < 0 &&
-        current_position.sample + current_position.length < 0)
-        return;
+    if (current_position.frame < 0 &&
+            current_position.frame + current_position.frameCount < 0)
+    {
+    	return;
+    }
 
     // top priority, we need to read this data immediately
     current_position.priority = 1;
