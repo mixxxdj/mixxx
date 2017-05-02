@@ -845,6 +845,7 @@ class MixxxCore(Feature):
                    "widget/wskincolor.cpp",
                    "widget/wsearchlineedit.cpp",
                    "widget/wpixmapstore.cpp",
+                   "widget/paintable.cpp",
                    "widget/wimagestore.cpp",
                    "widget/hexspinbox.cpp",
                    "widget/wtrackproperty.cpp",
