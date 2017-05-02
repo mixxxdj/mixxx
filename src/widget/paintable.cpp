@@ -44,20 +44,12 @@ QString Paintable::DrawModeToString(DrawMode mode) {
     return "FIXED";
 }
 
-Paintable::Paintable(QImage* pImage, DrawMode mode)
-        : m_drawMode(mode) {
-#if QT_VERSION >= 0x040700
-    m_pPixmap.reset(new QPixmap());
-    m_pPixmap->convertFromImage(*pImage);
-#else
-    m_pPixmap.reset(new QPixmap(QPixmap::fromImage(*pImage)));
-#endif
-    delete pImage;
-}
-
-Paintable::Paintable(const PixmapSource& source, DrawMode mode)
-        : m_drawMode(mode) {
-    if (source.isSVG()) {
+Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFactor)
+        : m_drawMode(mode),
+          m_source(source) {
+    if (mode == Paintable::FIXED || mode == Paintable::TILE || !source.isSVG()) {
+        m_pPixmap.reset(WPixmapStore::getPixmapNoCache(source.getPath(), scaleFactor));
+    } else if (source.isSVG()) {
         QScopedPointer<QSvgRenderer> pSvgRenderer(new QSvgRenderer());
         if (source.getData().isEmpty()) {
             pSvgRenderer->load(source.getPath());

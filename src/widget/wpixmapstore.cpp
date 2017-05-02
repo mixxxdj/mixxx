@@ -26,26 +26,7 @@ PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
         return pPaintable;
     }
 
-    // Otherwise, construct it with the pixmap loader.
-    //qDebug() << "WPixmapStore Loading pixmap from file" << source.getPath();
-
-    if (mode == Paintable::FIXED || mode == Paintable::TILE || !source.isSVG()) {
-        QImage* pImage = m_loader->getImage(source.getPath(), scaleFactor);
-        pPaintable = PaintablePointer(new Paintable(pImage, mode));
-    } else {
-        pPaintable = PaintablePointer(new Paintable(source, mode));
-    }
-
-    if (pPaintable->isNull()) {
-        // Only log if it looks like the user tried to specify a
-        // pixmap. Otherwise we probably just have a widget that is calling
-        // getPaintable without checking that the skinner actually wanted one.
-        if (!source.isEmpty()) {
-            qDebug() << "WPixmapStore couldn't load:" << source.getPath()
-                     << pPaintable.isNull();
-        }
-        return PaintablePointer();
-    }
+    pPaintable = PaintablePointer(new Paintable(source, mode, scaleFactor));
 
     m_paintableCache.insert(key, pPaintable);
     return pPaintable;

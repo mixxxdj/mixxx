@@ -30,9 +30,7 @@ class Paintable {
         TILE
     };
 
-    // Takes ownership of QImage.
-    Paintable(QImage* pImage, DrawMode mode);
-    Paintable(const PixmapSource& source, DrawMode mode);
+    Paintable(const PixmapSource& source, DrawMode mode, double scaleFactor);
 
     QSize size() const;
     int width() const;
@@ -63,6 +61,7 @@ class Paintable {
     QScopedPointer<QPixmap> m_pPixmap;
     QScopedPointer<QSvgRenderer> m_pSvg;
     DrawMode m_drawMode;
+    PixmapSource m_source;
 };
 
 #endif // PAINTABLE
