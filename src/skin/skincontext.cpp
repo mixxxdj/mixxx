@@ -179,7 +179,7 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
             source.setSVG(rslt);
         } else {
             // filename.
-            return getPixmapSourceInner(nodeToString(pixmapNode), svgParser);
+            return getPixmapSourceInner(nodeToString(pixmapNode));
         }
     }
 
@@ -187,8 +187,7 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
 }
 
 PixmapSource SkinContext::getPixmapSource(const QString& filename) const {
-    const SvgParser svgParser(*this);
-    return getPixmapSourceInner(filename, svgParser);
+    return getPixmapSourceInner(filename);
 }
 
 QDomElement SkinContext::loadSvg(const QString& filename) const {
@@ -207,17 +206,9 @@ QDomElement SkinContext::loadSvg(const QString& filename) const {
     return cachedSvg;
 }
 
-PixmapSource SkinContext::getPixmapSourceInner(const QString& filename,
-                                               const SvgParser& svgParser) const {
+PixmapSource SkinContext::getPixmapSourceInner(const QString& filename) const {
     if (!filename.isEmpty()) {
-        PixmapSource source(getSkinPath(filename));
-        if (source.isSVG()) {
-            QDomElement svgElement = loadSvg(filename);
-            const QByteArray rslt = svgParser.saveToQByteArray(
-                    svgParser.parseSvgTree(svgElement, filename));
-            source.setSVG(rslt);
-        }
-        return source;
+        return PixmapSource(getSkinPath(filename));
     }
     return PixmapSource();
 }
