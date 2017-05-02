@@ -69,14 +69,6 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFact
         } else {
             m_pSvg.reset(pSvgRenderer.take());
         }
-    } else {
-        auto  pPixmap = new QPixmap();
-        if (!source.getData().isEmpty()) {
-            pPixmap->loadFromData(source.getData());
-        } else {
-            pPixmap->load(source.getPath());
-        }
-        m_pPixmap.reset(pPixmap);
     }
 }
 
