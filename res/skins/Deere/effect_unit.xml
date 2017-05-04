@@ -55,7 +55,7 @@
                 <SetVariable name="state_0_unpressed">icon/ic_headphones_48px.svg</SetVariable>
                 <SetVariable name="state_1_pressed">icon/ic_headphones_48px.svg</SetVariable>
                 <SetVariable name="state_1_unpressed">icon/ic_headphones_48px.svg</SetVariable>
-                <SetVariable name="left_connection_control">[EffectRack1_EffectUnit<Variable name="EffectUnit"/>],group_[Headphones]_enable</SetVariable>
+                <SetVariable name="left_connection_control">[EffectRack1_EffectUnit<Variable name="EffectUnit"/>],group_[Headphone]_enable</SetVariable>
               </Template>
 
               <Template src="skin:left_2state_button.xml">
