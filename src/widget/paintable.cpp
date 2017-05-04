@@ -47,38 +47,32 @@ QString Paintable::DrawModeToString(DrawMode mode) {
 Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFactor)
         : m_drawMode(mode),
           m_source(source) {
-    if (mode == Paintable::FIXED || mode == Paintable::TILE || !source.isSVG()) {
+    if (!source.isSVG()) {
         m_pPixmap.reset(WPixmapStore::getPixmapNoCache(source.getPath(), scaleFactor));
-    } else if (source.isSVG()) {
-        QScopedPointer<QSvgRenderer> pSvgRenderer(new QSvgRenderer());
+    } else {
+        m_pSvg.reset(new QSvgRenderer());
         if (source.getData().isEmpty()) {
-            pSvgRenderer->load(source.getPath());
+            m_pSvg->load(source.getPath());
         } else {
-            pSvgRenderer->load(source.getData());
+            m_pSvg->load(source.getData());
         }
-
-        if (mode == TILE) {
+        if (mode == TILE || mode == Paintable::FIXED) {
             // The SVG renderer doesn't directly support tiling, so we render
             // it to a pixmap which will then get tiled.
-            QImage copy_buffer(pSvgRenderer->defaultSize(), QImage::Format_ARGB32);
+            QImage copy_buffer(m_pSvg->defaultSize() * scaleFactor, QImage::Format_ARGB32);
             copy_buffer.fill(0x00000000);  // Transparent black.
-            m_pPixmap.reset(new QPixmap(pSvgRenderer->defaultSize()));
             QPainter painter(&copy_buffer);
-            pSvgRenderer->render(&painter);
+            m_pSvg->render(&painter);
+            WPixmapStore::correctImageColors(&copy_buffer);
+
+            m_pPixmap.reset(new QPixmap(copy_buffer.size()));
             m_pPixmap->convertFromImage(copy_buffer);
-        } else {
-            m_pSvg.reset(pSvgRenderer.take());
         }
     }
 }
 
 bool Paintable::isNull() const {
-    if (!m_pPixmap.isNull()) {
-        return m_pPixmap->isNull();
-    } else if (!m_pSvg.isNull()) {
-        return !m_pSvg->isValid();
-    }
-    return false;
+    return m_source.isEmpty();
 }
 
 QSize Paintable::size() const {

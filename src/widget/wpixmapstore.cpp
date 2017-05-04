@@ -48,6 +48,11 @@ QPixmap* WPixmapStore::getPixmapNoCache(
     return pPixmap;
 }
 
+// static
+void WPixmapStore::correctImageColors(QImage* p) {
+    m_loader->correctImageColors(p);
+}
+
 void WPixmapStore::setLoader(QSharedPointer<ImgSource> ld) {
     m_loader = ld;
 

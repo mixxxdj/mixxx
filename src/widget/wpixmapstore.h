@@ -44,6 +44,7 @@ class WPixmapStore {
             double scaleFactor);
     static QPixmap* getPixmapNoCache(const QString& fileName, double scaleFactor);
     static void setLoader(QSharedPointer<ImgSource> ld);
+    static void correctImageColors(QImage* p);
 
   private:
     static QHash<QString, WeakPaintablePointer> m_paintableCache;
