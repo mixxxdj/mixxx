@@ -53,6 +53,10 @@ void WPixmapStore::correctImageColors(QImage* p) {
     m_loader->correctImageColors(p);
 }
 
+bool WPixmapStore::willCorrectColors() {
+    return m_loader->willCorrectColors();
+};
+
 void WPixmapStore::setLoader(QSharedPointer<ImgSource> ld) {
     m_loader = ld;
 

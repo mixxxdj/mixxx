@@ -56,7 +56,7 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFact
         } else {
             m_pSvg->load(source.getData());
         }
-        if (mode == TILE || mode == Paintable::FIXED) {
+        if (mode == TILE || mode == Paintable::FIXED || WPixmapStore::willCorrectColors()) {
             // The SVG renderer doesn't directly support tiling, so we render
             // it to a pixmap which will then get tiled.
             QImage copy_buffer(m_pSvg->defaultSize() * scaleFactor, QImage::Format_ARGB32);
@@ -122,10 +122,6 @@ void Paintable::draw(int x, int y, QPainter* pPainter) {
     QRectF sourceRect(rect());
     QRectF targetRect(QPointF(x, y), sourceRect.size());
     draw(targetRect, pPainter, sourceRect);
-}
-
-void Paintable::draw(const QPointF& point, QPainter* pPainter, const QRectF& sourceRect) {
-    return draw(QRectF(point, sourceRect.size()), pPainter, sourceRect);
 }
 
 void Paintable::draw(const QRectF& targetRect, QPainter* pPainter,
