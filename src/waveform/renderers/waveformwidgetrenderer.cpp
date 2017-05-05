@@ -42,7 +42,8 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
       m_gain(1.0),
       m_pTrackSamplesControlObject(NULL),
       m_trackSamples(0.0),
-      m_scaleFactor(1.0) {
+      m_scaleFactor(1.0),
+      m_renderGrid(true) {
 
     //qDebug() << "WaveformWidgetRenderer";
 
@@ -272,6 +273,10 @@ void WaveformWidgetRenderer::setup(
 void WaveformWidgetRenderer::setZoom(int zoom) {
     //qDebug() << "WaveformWidgetRenderer::setZoom" << zoom;
     m_zoomFactor = math_clamp<double>(zoom, s_waveformMinZoom, s_waveformMaxZoom);
+}
+
+void WaveformWidgetRenderer::setDisplayGrid(bool set){
+    m_renderGrid = set;
 }
 
 void WaveformWidgetRenderer::setTrack(TrackPointer track) {

@@ -70,7 +70,8 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_vsyncThread(NULL),
         m_frameCnt(0),
         m_actualFrameRate(0),
-        m_vSyncType(0) {
+        m_vSyncType(0),
+        m_gridEnabled(true) {
 
     m_visualGain[All] = 1.0;
     m_visualGain[Low] = 1.0;
@@ -221,6 +222,13 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
         setZoomSync(static_cast<bool>(zoomSync));
     } else {
         m_config->set(ConfigKey("[Waveform]","ZoomSynchronization"), ConfigValue(m_zoomSync));
+    }
+
+    int displayGrid = m_config->getValueString(ConfigKey("[Waveform]", "beatGridLinesCheckBox")).toInt(&ok);
+    if(ok) {
+        setDisplayGrid(static_cast<bool>(displayGrid));
+    } else {
+        m_config->set(ConfigKey("[Waveform]", "beatGridLinesCheckBox"), ConfigValue(m_gridEnabled));
     }
 
     WaveformWidgetType::Type type = static_cast<WaveformWidgetType::Type>(
@@ -430,6 +438,22 @@ void WaveformWidgetFactory::setZoomSync(bool sync) {
     for (int i = 1; i < m_waveformWidgetHolders.size(); i++) {
         m_waveformWidgetHolders[i].m_waveformViewer->setZoom(refZoom);
     }
+}
+
+void WaveformWidgetFactory::setDisplayGrid(bool sync){
+    m_gridEnabled = sync;
+    if (m_config){
+        m_config->set(ConfigKey("[Waveform]", "beatGridLinesCheckBox"), ConfigValue(m_gridEnabled));
+    }
+
+    if(m_waveformWidgetHolders.size() == 0){
+        return;
+    }
+
+    for (int i = 0; i < m_waveformWidgetHolders.size(); i++){
+        m_waveformWidgetHolders[i].m_waveformWidget->setDisplayGrid(m_gridEnabled);
+    }
+
 }
 
 void WaveformWidgetFactory::setVisualGain(FilterIndex index, double gain) {

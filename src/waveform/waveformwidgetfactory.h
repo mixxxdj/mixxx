@@ -87,6 +87,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setZoomSync(bool sync);
     int isZoomSync() const { return m_zoomSync;}
 
+    void setDisplayGrid(bool sync);
+    bool enableGrid() const { return m_gridEnabled; }
+
     void setVisualGain(FilterIndex index, double gain);
     double getVisualGain(FilterIndex index) const;
 
@@ -138,6 +141,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     UserSettingsPointer m_config;
 
     bool m_skipRender;
+    bool m_gridEnabled;
     int m_frameRate;
     int m_endOfTrackWarningTime;
     int m_defaultZoom;

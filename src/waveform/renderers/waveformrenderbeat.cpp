@@ -37,6 +37,9 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     if (!trackBeats)
         return;
 
+    if (!m_waveformRenderer->renderGrid())
+        return;
+
     const int trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
         return;

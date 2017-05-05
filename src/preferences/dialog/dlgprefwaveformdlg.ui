@@ -106,6 +106,19 @@
        </property>
       </widget>
      </item>
+     <item row="12" column="0">
+      <widget class="QLabel" name="BeatgridWaveform">
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="text">
+        <string>Display grid lines on waveform</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
      <item row="2" column="0">
       <widget class="QLabel" name="frameRateLabel">
        <property name="text">
@@ -327,6 +340,16 @@
        </property>
        <property name="text">
         <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="1">
+      <widget class="QCheckBox" name="beatGridLinesCheckBox">
+       <property name="toolTip">
+        <string>Display beat grid lines on waveform</string>
+       </property>
+       <property name="text">
+        <string>Enable Beat Grid Lines</string>
        </property>
       </widget>
      </item>
