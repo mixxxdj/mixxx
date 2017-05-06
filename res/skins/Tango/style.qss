@@ -1362,7 +1362,7 @@ WTrackProperty#SamplerTitle_mini {
   font-weight: bold;
   color: #d2d2d2;
   text-align: left;
-  padding: 0px 1px 0px 0px;
+  padding: 0px 2px 0px 0px;
 }
 
 #SamplerOverviewRow, #PreviewOverview {
