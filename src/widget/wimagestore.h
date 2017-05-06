@@ -12,10 +12,10 @@ class QImage;
 
 class WImageStore {
   public:
-    static QImage* getImage(const QString &fileName);
-    static QImage* getImageNoCache(const QString &fileName);
-    static QImage* getImage(const PixmapSource& source);
-    static QImage* getImageNoCache(const PixmapSource& source);
+    static QImage* getImage(const QString& fileName, double scaleFactor);
+    static QImage* getImageNoCache(const QString& fileName, double scaleFactor);
+    static QImage* getImage(const PixmapSource& source, double scaleFactor);
+    static QImage* getImageNoCache(const PixmapSource& source, double scaleFactor);
     static void deleteImage(QImage* p);
     static void setLoader(QSharedPointer<ImgSource> ld);
     // For external owned images like software generated ones.

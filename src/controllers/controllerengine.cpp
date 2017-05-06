@@ -152,10 +152,6 @@ Output:  -
 void ControllerEngine::gracefulShutdown() {
     qDebug() << "ControllerEngine shutting down...";
 
-    // Clear the m_connectedControls hash so we stop responding
-    // to signals.
-    m_connectedControls.clear();
-
     // Stop all timers
     stopAllTimers();
 
@@ -180,7 +176,7 @@ void ControllerEngine::gracefulShutdown() {
     // Clear the cache of function wrappers
     m_scriptWrappedFunctionCache.clear();
 
-    // Free all the control object threads
+    // Free all the ControlObjectScripts
     QList<ConfigKey> keys = m_controlCache.keys();
     QList<ConfigKey>::iterator it = keys.begin();
     QList<ConfigKey>::iterator end = keys.end();
@@ -701,8 +697,220 @@ void ControllerEngine::log(QString message) {
     controllerDebug(message);
 }
 
+// Purpose: Connect a ControlObject's valueChanged() signal to a script callback function
+// Input:   Control group (e.g. '[Channel1]'), Key name (e.g. 'pfl'), script callback
+// Output:  a ScriptConnectionInvokableWrapper turned into a QtScriptValue.
+//          The script should store this object to call its
+//          'disconnect' and 'trigger' methods as needed.
+//          If unsuccessful, returns undefined.
+QScriptValue ControllerEngine::makeConnection(QString group, QString name,
+                                              const QScriptValue callback) {
+    VERIFY_OR_DEBUG_ASSERT(m_pEngine != nullptr) {
+        qWarning() << "Tried to connect script callback, but there is no script engine!";
+        return QScriptValue();
+    }
+
+    ControlObjectScript* coScript = getControlObjectScript(group, name);
+    if (coScript == nullptr) {
+        qWarning() << "ControllerEngine: script tried to connect to ControlObject (" +
+                      group + ", " + name +
+                      ") which is non-existent, ignoring.";
+        return QScriptValue();
+    }
+
+    if (!callback.isFunction()) {
+        qWarning() << "Tried to connect (" + group + ", " + name + ")"
+                   << "to an invalid callback, ignoring.";
+        return QScriptValue();
+    }
+
+    ScriptConnection connection;
+    connection.key = ConfigKey(group, name);
+    connection.controllerEngine = this;
+    connection.callback = callback;
+    connection.context = getThisObjectInFunctionCall();
+    connection.id = QUuid::createUuid();
+
+    if (coScript->addScriptConnection(connection)) {
+        return m_pEngine->newQObject(
+            new ScriptConnectionInvokableWrapper(connection),
+            QScriptEngine::ScriptOwnership);
+    }
+
+    return QScriptValue();
+}
+
 /* -------- ------------------------------------------------------
-   Purpose: Emits valueChanged() so device outputs update
+   Purpose: Execute a ScriptConnection's callback
+   Input:   the value of the connected ControlObject to pass to the callback
+   -------- ------------------------------------------------------ */
+void ScriptConnection::executeCallback(double value) const {
+    QScriptValueList args;
+    args << QScriptValue(value);
+    args << QScriptValue(key.group);
+    args << QScriptValue(key.item);
+    QScriptValue func = callback; // copy function because QScriptValue::call is not const
+    QScriptValue result = func.call(context, args);
+    if (result.isError()) {
+        qWarning() << "ControllerEngine: Invocation of connection " << id.toString()
+                   << "connected to (" + key.group + ", " + key.item + ") failed:"
+                   << result.toString();
+    }
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: (Dis)connects a ScriptConnection
+   Input:   the ScriptConnection to disconnect
+   -------- ------------------------------------------------------ */
+void ControllerEngine::removeScriptConnection(const ScriptConnection connection) {
+    ControlObjectScript* coScript = getControlObjectScript(connection.key.group,
+                                                           connection.key.item);
+
+    if (m_pEngine == nullptr || coScript == nullptr) {
+        return;
+    }
+
+    coScript->removeScriptConnection(connection);
+}
+
+void ScriptConnectionInvokableWrapper::disconnect() {
+    m_scriptConnection.controllerEngine->removeScriptConnection(m_scriptConnection);
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: Triggers the callback function of a ScriptConnection
+   Input:   the ScriptConnection to trigger
+   -------- ------------------------------------------------------ */
+void ControllerEngine::triggerScriptConnection(const ScriptConnection connection) {
+    if (m_pEngine == nullptr) {
+        return;
+    }
+
+    ControlObjectScript* coScript = getControlObjectScript(connection.key.group,
+                                                           connection.key.item);
+    if (coScript == nullptr) {
+        return;
+    }
+
+    connection.executeCallback(coScript->get());
+}
+
+void ScriptConnectionInvokableWrapper::trigger() {
+    m_scriptConnection.controllerEngine->triggerScriptConnection(m_scriptConnection);
+}
+
+// This function is a legacy version of makeConnection with several alternate
+// ways of invoking it. The callback function can be passed either as a string of
+// JavaScript code that evaluates to a function or an actual JavaScript function.
+// If "true" is passed as a 4th parameter, all connections to the ControlObject
+// are removed. If a ScriptConnectionInvokableWrapper is passed instead of a callback,
+// it is disconnected.
+// WARNING: These behaviors are quirky and confusing, so if you change this function,
+// be sure to run the ControllerEngineTest suite to make sure you do not break old scripts.
+QScriptValue ControllerEngine::connectControl(
+        QString group, QString name, const QScriptValue passedCallback, bool disconnect) {
+    // The passedCallback may or may not actually be a function, so when
+    // the actual callback function is found, store it in this variable.
+    QScriptValue actualCallbackFunction;
+
+    if (passedCallback.isFunction()) {
+        if (!disconnect) {
+            // skip all the checks below and just make the connection
+            return makeConnection(group, name, passedCallback);
+        }
+        actualCallbackFunction = passedCallback;
+    }
+
+    ControlObjectScript* coScript = getControlObjectScript(group, name);
+    // This check is redundant with makeConnection, but the
+    // ControlObjectScript is also needed here to check for duplicate connections.
+    if (coScript == nullptr) {
+        if (disconnect) {
+            qWarning() << "ControllerEngine: script tried to disconnect from ControlObject (" +
+                          group + ", " + name + ") which is non-existent, ignoring.";
+        } else {
+            qWarning() << "ControllerEngine: script tried to connect to ControlObject (" +
+                           group + ", " + name + ") which is non-existent, ignoring.";
+        }
+        // This is inconsistent with other failures, which return false.
+        // QScriptValue() with no arguments is undefined in JavaScript.
+        return QScriptValue();
+    }
+
+    if (passedCallback.isString()) {
+        // This check is redundant with makeConnection, but it must be done here
+        // before evaluating the code string.
+        VERIFY_OR_DEBUG_ASSERT(m_pEngine != nullptr) {
+            qWarning() << "Tried to connect script callback, but there is no script engine!";
+            return QScriptValue(false);
+        }
+
+        actualCallbackFunction = m_pEngine->evaluate(passedCallback.toString());
+
+        if (checkException() || !actualCallbackFunction.isFunction()) {
+            qWarning() << "Could not evaluate callback function:"
+                        << passedCallback.toString();
+            return QScriptValue(false);
+        }
+
+        if (coScript->countConnections() > 0 && !disconnect) {
+            // This is inconsistent with the behavior when passing the callback as
+            // a function, but keep the old behavior to make sure old scripts do
+            // not break.
+            ScriptConnection connection = coScript->firstConnection();
+
+            qWarning() << "Tried to make duplicate connection between (" +
+                          group + ", " + name + ") and " + passedCallback.toString() +
+                          " but this is not allowed when passing a callback as a string. " +
+                          "If you actually want to create duplicate connections, " +
+                          "use engine.makeConnection. Returning reference to connection " +
+                          connection.id.toString();
+
+            return m_pEngine->newQObject(
+                new ScriptConnectionInvokableWrapper(connection),
+                QScriptEngine::ScriptOwnership);
+        }
+    } else if (passedCallback.isQObject()) {
+        // Assume a ScriptConnection and assume that the script author
+        // wants to disconnect it, regardless of the disconnect parameter
+        // and regardless of whether it is connected to the same ControlObject
+        // specified by the first two parameters to this function.
+        QObject *qobject = passedCallback.toQObject();
+        const QMetaObject *qmeta = qobject->metaObject();
+
+        qWarning() << "QObject passed to engine.connectControl. Assuming it is"
+                  << "a connection object to disconnect and returning false.";
+        if (!strcmp(qmeta->className(),
+                "ScriptConnectionInvokableWrapper")) {
+            ScriptConnectionInvokableWrapper* proxy =
+                    (ScriptConnectionInvokableWrapper*)qobject;
+            proxy->disconnect();
+        }
+        return QScriptValue(false);
+    }
+
+    // Support removing connections by passing "true" as the last parameter
+    // to this function, regardless of whether the callback is provided
+    // as a function or a string.
+    if (disconnect) {
+        // There is no way to determine which
+        // ScriptConnection to disconnect unless the script calls
+        // ScriptConnectionInvokableWrapper::disconnect(), so
+        // disconnect all ScriptConnections connected to the
+        // callback function, even though there may be multiple connections.
+        coScript->disconnectAllConnectionsToFunction(actualCallbackFunction);
+        return QScriptValue(true);
+    }
+
+    // If execution gets this far without returning, make
+    // a new connection to actualCallbackFunction.
+    return makeConnection(group, name, actualCallbackFunction);
+}
+
+/* -------- ------------------------------------------------------
+   DEPRECATED: Use ScriptConnectionInvokableWrapper::trigger instead
+   Purpose: Emits valueChanged() so all ScriptConnections held by a
+            ControlObjectScript have their callback executed
    Input:   -
    Output:  -
    -------- ------------------------------------------------------ */
@@ -711,165 +919,6 @@ void ControllerEngine::trigger(QString group, QString name) {
     if (coScript != nullptr) {
         coScript->emitValueChanged();
     }
-}
-
-// Purpose: (Dis)connects a ControlObject valueChanged() signal to/from a
-//          script function
-// Input:   Control group (e.g. [Channel1]), Key name (e.g. [filterHigh]),
-//          script function name, true if you want to disconnect
-// Output:  true if successful
-QScriptValue ControllerEngine::connectControl(
-        QString group, QString name, QScriptValue callback, bool disconnect) {
-    ConfigKey key(group, name);
-    ControlObjectScript* coScript = getControlObjectScript(group, name);
-    QScriptValue function;
-
-    if (coScript == nullptr) {
-        qWarning() << "ControllerEngine: script connecting [" << group << "," << name
-                   << "], which is non-existent. ignoring.";
-        return QScriptValue();
-    }
-
-    if (m_pEngine == nullptr) {
-        return QScriptValue(false);
-    }
-
-    if (callback.isString()) {
-        ControllerEngineConnection cb;
-        cb.key = key;
-        cb.id = callback.toString();
-        cb.ce = this;
-
-        if (disconnect) {
-            disconnectControl(cb);
-            return QScriptValue(true);
-        }
-
-        function = m_pEngine->evaluate(callback.toString());
-        if (checkException() || !function.isFunction()) {
-            qWarning() << "Could not evaluate callback function:"
-                       << callback.toString();
-            return QScriptValue(false);
-        } else {
-            // Do not allow multiple connections to named functions
-            QHash<ConfigKey, ControllerEngineConnection>::const_iterator i =
-                    m_connectedControls.find(key);
-            if (i != m_connectedControls.end()) {
-                // Return a wrapper to the conn
-                ControllerEngineConnection conn = i.value();
-                return m_pEngine->newQObject(
-                        new ControllerEngineConnectionScriptValue(conn),
-                        QScriptEngine::ScriptOwnership);
-            }
-        }
-    } else if (callback.isFunction()) {
-        function = callback;
-    } else if (callback.isQObject()) {
-        // Assume a ControllerEngineConnection
-        QObject *qobject = callback.toQObject();
-        const QMetaObject *qmeta = qobject->metaObject();
-
-        if (!strcmp(qmeta->className(),
-                "ControllerEngineConnectionScriptValue")) {
-            ControllerEngineConnectionScriptValue* proxy =
-                    (ControllerEngineConnectionScriptValue*)qobject;
-            proxy->disconnect();
-        }
-    } else {
-        qWarning() << "Invalid callback";
-        return QScriptValue(false);
-    }
-
-    if (function.isFunction()) {
-        ControllerEngineConnection conn;
-        conn.key = key;
-        conn.ce = this;
-        conn.function = function;
-
-        if (disconnect) {
-            disconnectControl(conn);
-            return QScriptValue(true);
-        }
-
-        conn.context = getThisObjectInFunctionCall();
-
-        if (callback.isString()) {
-            conn.id = callback.toString();
-        } else {
-            QUuid uuid = QUuid::createUuid();
-            conn.id = uuid.toString();
-        }
-
-        coScript->connectScriptFunction(conn);
-
-        m_connectedControls.insert(key, conn);
-        return m_pEngine->newQObject(
-                new ControllerEngineConnectionScriptValue(conn),
-                QScriptEngine::ScriptOwnership);
-    }
-
-    return QScriptValue(false);
-}
-
-/* -------- ------------------------------------------------------
-   Purpose: Execute a ControllerEngineConnection's callback
-   Input:   the value of the connected ControlObject to pass to the callback
-   -------- ------------------------------------------------------ */
-void ControllerEngineConnection::executeCallback(double value) const {
-    QScriptValueList args;
-    args << QScriptValue(value);
-    args << QScriptValue(key.group);
-    args << QScriptValue(key.item);
-    QScriptValue func = function; // copy function because QScriptValue::call is not const
-    QScriptValue result = func.call(context, args);
-    if (result.isError()) {
-        qWarning() << "ControllerEngine: Invocation of callback" << id
-                   << "failed:" << result.toString();
-    }
-}
-
-/* -------- ------------------------------------------------------
-   Purpose: (Dis)connects a ControllerEngineConnection
-   Input:   the ControllerEngineConnection to disconnect
-   -------- ------------------------------------------------------ */
-void ControllerEngine::disconnectControl(const ControllerEngineConnection conn) {
-    ControlObjectScript* coScript = getControlObjectScript(conn.key.group, conn.key.item);
-
-    if (m_pEngine == nullptr || coScript == nullptr) {
-        return;
-    }
-
-    if (m_connectedControls.remove(conn.key, conn) > 0) {
-        bool ret = coScript->disconnectScriptFunction(conn);
-        DEBUG_ASSERT(ret);
-    } else {
-        qWarning() << "Could not Disconnect connection" << conn.id;
-    }
-}
-
-void ControllerEngineConnectionScriptValue::disconnect() {
-    m_conn.ce->disconnectControl(m_conn);
-}
-
-/* -------- ------------------------------------------------------
-   Purpose: Triggers the callback function of a ControllerEngineConnection
-   Input:   the ControllerEngineConnection to trigger
-   -------- ------------------------------------------------------ */
-void ControllerEngine::triggerControl(const ControllerEngineConnection conn) {
-    if (m_pEngine == nullptr) {
-        return;
-    }
-
-    ControlObjectScript* coScript = getControlObjectScript(conn.key.group, conn.key.item);
-    if (coScript == nullptr) {
-        return;
-    }
-
-    conn.executeCallback(coScript->get());
-}
-
-void ControllerEngineConnectionScriptValue::trigger() {
-    m_conn.ce->triggerControl(m_conn);
 }
 
 /* -------- ------------------------------------------------------
