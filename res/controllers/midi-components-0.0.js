@@ -161,10 +161,9 @@
         onlyOnPress: true,
         on: 127,
         off: 0,
-        // Time in milliseconds to distinguish a short press from a long press
-        // In the provided Components, only EffectUnit.effectFocusButton uses
-        // this, but it is recommended to refer to it (as this.longPressTimeout)
-        // in any custom Buttons that act differently with short and long presses
+        // Time in milliseconds to distinguish a short press from a long press.
+        // It is recommended to refer to it (as this.longPressTimeout)
+        // in any Buttons that act differently with short and long presses
         // to keep the timeouts uniform.
         longPressTimeout: 275,
         isPress: function (channel, control, value, status) {
@@ -191,16 +190,9 @@
     PlayButton.prototype = new Button({
         unshift: function () {
             this.inKey = 'play';
-            this.input = Button.prototype.input;
-            // Stop reversing playback if the user releases the shift button before releasing this PlayButton.
-            if (engine.getValue(this.group, 'reverse') === 1) {
-                engine.setValue(this.group, 'reverse', 0);
-            }
         },
         shift: function () {
-            this.input = function (channel, control, value, status, group) {
-                engine.setValue(this.group, 'reverse', this.isPress(channel, control, value, status));
-            };
+            this.inKey = 'reverse';
         },
         outKey: 'play_indicator',
     });
@@ -226,10 +218,24 @@
     };
     SyncButton.prototype = new Button({
         unshift: function () {
-            this.inKey = 'beatsync';
+            this.input = function (channel, control, value, status, group) {
+                if (this.isPress(channel, control, value, status)) {
+                    if (engine.getValue(this.group, 'sync_enabled') === 0) {
+                        engine.setValue(this.group, 'beatsync', 1);
+                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
+                            engine.setValue(this.group, 'sync_enabled', 1);
+                        }, true);
+                    } else {
+                        engine.setValue(this.group, 'sync_enabled', 0);
+                    }
+                } else {
+                    engine.stopTimer(this.longPressTimer);
+                }
+            };
         },
         shift: function () {
-            this.inKey = 'sync_enabled';
+            this.inKey = 'quantize';
+            this.input = Button.prototype.input;
         },
         outKey: 'sync_enabled',
     });
