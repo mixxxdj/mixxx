@@ -78,77 +78,7 @@ Variables:
           <Color>#FF001C</Color>
           <TextColor>#FFFFFF</TextColor>
         </Mark>
-        <Connection>
-          <ConfigKey>[Tango],netbook_mode</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
       </Visual><!-- /Waveform * Netbook mode-->
-
-      <Visual><!-- Waveform * Normal mode -->
-        <TooltipId>waveform_display</TooltipId>
-        <ObjectName>Waveform</ObjectName>
-        <Size>0me,50me</Size>
-        <Channel><Variable name="channum"/></Channel>
-        <BgColor><Variable name="SignalBgColor"/></BgColor>
-        <SignalColor><Variable name="SignalColor"/></SignalColor>
-        <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
-        <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
-        <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
-        <BeatColor>#ffffff</BeatColor>
-        <PlayPosColor>#FF4300</PlayPosColor>
-        <EndOfTrackColor>#EA0085</EndOfTrackColor>
-        <DefaultMark>
-          <Align>bottom|right</Align>
-          <Color>#00FF00</Color>
-          <TextColor>#FFFFFF</TextColor>
-          <Text> %1 </Text>
-        </DefaultMark>
-        <Mark>
-          <Control>cue_point</Control>
-          <Text>C</Text>
-          <Align>top</Align>
-          <Color>#FF0080</Color>
-          <TextColor>#FFFFFF</TextColor>
-        </Mark>
-        <MarkRange>
-          <StartControl>loop_start_position</StartControl>
-          <EndControl>loop_end_position</EndControl>
-          <EnabledControl>loop_enabled</EnabledControl>
-          <Color>#00FF00</Color>
-          <DisabledColor>#FFFFFF</DisabledColor>
-        </MarkRange>
-        <Mark>
-          <Control>loop_start_position</Control>
-          <Text>IN</Text>
-          <Align>top|left</Align>
-          <Color>#00FF00</Color>
-          <TextColor>#FFFFFF</TextColor>
-        </Mark>
-        <Mark>
-          <Control>loop_end_position</Control>
-          <Text>OUT</Text>
-          <Align>top|right</Align>
-          <Color>#00FF00</Color>
-          <TextColor>#FFFFFF</TextColor>
-        </Mark>
-        <!--
-        The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
-          - if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
-          - if you change from a skin which supports more hotcues than buttons are in the current skin
-          (and has them activated)
-        -->
-        <Mark>
-          <Control>cue_point</Control>
-          <Text>C</Text>
-          <Align>bottom</Align>
-          <Color>#FF001C</Color>
-          <TextColor>#FFFFFF</TextColor>
-        </Mark>
-        <Connection>
-          <ConfigKey>[Tango],normal_mode</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </Visual><!-- /Waveform * Normal mode -->
 
       <WidgetGroup><!-- Container for beatgrid buttons -->
         <ObjectName>BeatgridButtonGridBox</ObjectName>
