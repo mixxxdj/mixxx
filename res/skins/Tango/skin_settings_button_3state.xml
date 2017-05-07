@@ -1,0 +1,34 @@
+<!--
+Description:
+  3-state button for skin settings menu.
+Variables:
+  state_X_text  : label text for state X
+  Setting       : persistent left-click control
+-->
+<Template>
+  <PushButton>
+    <ObjectName>SkinSettingsButton</ObjectName>
+    <Size>172f,15f</Size>
+    <NumberStates>3</NumberStates>
+    <RightClickIsPushButton>false</RightClickIsPushButton>
+    <State>
+      <Number>0</Number>
+      <Text><Variable name="state_0_text"/></Text>
+      <Alignment>left</Alignment>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Text><Variable name="state_1_text"/></Text>
+      <Alignment>left</Alignment>
+    </State>
+    <State>
+      <Number>2</Number>
+      <Text><Variable name="state_2_text"/></Text>
+      <Alignment>left</Alignment>
+    </State>
+    <Connection>
+      <ConfigKey persist="true"><Variable name="Setting"/></ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+  </PushButton>
+</Template>
