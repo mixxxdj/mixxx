@@ -171,12 +171,30 @@
         },
         inValueScale: function () { return ! this.inGetValue(); },
         input: function (channel, control, value, status, group) {
-            if (this.onlyOnPress) {
+            if (this.powerWindow) {
                 if (this.isPress(channel, control, value, status)) {
-                    this.inSetValue(this.inValueScale(value));
+                    script.toggleControl(this.group, this.inKey);
+                    this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
+                        this.isLongPressed = true;
+                    }, true);
+                } else {
+                    if (this.isLongPressed) {
+                        script.toggleControl(this.group, this.inKey);
+                    }
+                    if (this.longPressTimer) {
+                        engine.stopTimer(this.longPressTimer);
+                        this.isLongPressed = false;
+                        this.longPressTimer = 0;
+                    }
                 }
             } else {
-                this.inSetValue(this.inValueScale(value));
+                if (this.onlyOnPress) {
+                    if (this.isPress(channel, control, value, status)) {
+                        this.inSetValue(this.inValueScale(value));
+                    }
+                } else {
+                    this.inSetValue(this.inValueScale(value));
+                }
             }
         },
         outValueScale: function (value) {
@@ -785,8 +803,10 @@
         this.EffectEnableButton.prototype = new Button({
             stopEffectFocusChooseMode: function () {
                 this.inKey = 'enabled';
-                this.outKey = 'enabled';
+                this.powerWindow = true;
                 this.input = Button.prototype.input;
+
+                this.outKey = 'enabled';
                 this.connect = Button.prototype.connect;
                 this.output = Button.prototype.output;
             },
