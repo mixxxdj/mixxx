@@ -5,6 +5,7 @@
 	<!-- WIDGETGROUP: Tool Bar Microphones -->	
 	<WidgetGroup>
 	<ObjectName>ToolBarMicros</ObjectName>
+	<BackPath>gfx_hifi/background_toolbar3.svg</BackPath>
 	<MinimumSize>1,45</MinimumSize>
 	<SizePolicy>me,f</SizePolicy>
 	<Layout>horizontal</Layout>
@@ -19,6 +20,7 @@
 	
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLineDarker</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_darker_50.svg</BackPath>
 		<MinimumSize>3,45</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>
@@ -34,6 +36,7 @@
 
 		<WidgetGroup>
 		<ObjectName>Microphone</ObjectName>
+		<BackPath>gfx_hifi/background_microphone.svg</BackPath>
 		<MinimumSize>210,45</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
 		<Children>	
@@ -153,6 +156,7 @@
 		
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLineDarker</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_darker_50.svg</BackPath>
 		<MinimumSize>3,45</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>
@@ -288,6 +292,7 @@
 		
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLineDarker</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_darker_50.svg</BackPath>
 		<MinimumSize>3,45</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>
@@ -423,6 +428,7 @@
 		
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLineDarker</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_darker_50.svg</BackPath>
 		<MinimumSize>3,45</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>
@@ -558,6 +564,7 @@
 		
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLineDarker</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_darker_50.svg</BackPath>
 		<MinimumSize>3,45</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>

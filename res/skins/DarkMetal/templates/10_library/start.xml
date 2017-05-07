@@ -23,6 +23,7 @@
 		<!-- Library: Starts - settings buttons -->	
 		<WidgetGroup>
 		<ObjectName>LibrarySettings</ObjectName>
+		<BackPath>gfx_hifi/background_library_settings.svg</BackPath>
 		<Size>me,30</Size>
 		<SizePolicy>me,f</SizePolicy>
 		<Layout>horizontal</Layout>		
@@ -30,6 +31,7 @@
 		
 		<WidgetGroup> <!-- Design only: Visual Rack Left -->
 		<ObjectName>Rack30</ObjectName>
+		<BackPath>gfx_hifi/rack_30.svg</BackPath>
 		<MinimumSize>15,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children><!-- Design --></Children>
@@ -136,6 +138,7 @@
 		
 		<WidgetGroup>
 		<ObjectName>LibrarySetFonts</ObjectName>
+		<BackPath>gfx_hifi/background_library_fonts.svg</BackPath>
 		<Size>108,30</Size>
 		<SizePolicy>f,f</SizePolicy>
 		<Layout>horizontal</Layout>		
@@ -195,6 +198,7 @@
 		
 		<WidgetGroup> <!-- Design only: Visual Rack Left -->
 		<ObjectName>Rack30</ObjectName>
+		<BackPath>gfx_hifi/rack_30.svg</BackPath>
 		<MinimumSize>15,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children><!-- Design --></Children>
@@ -224,6 +228,7 @@
 		
 		<WidgetGroup> <!-- Design only: Visual Rack Left -->
 		<ObjectName>Rack500</ObjectName>
+		<BackPath>gfx_hifi/rack_500.svg</BackPath>
 		<MinimumSize>15,1</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>
@@ -535,6 +540,7 @@
 		
 		<WidgetGroup> <!-- Design only: Visual Rack Left -->
 		<ObjectName>Rack500</ObjectName>
+		<BackPath>gfx_hifi/rack_500.svg</BackPath>
 		<MinimumSize>15,1</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>

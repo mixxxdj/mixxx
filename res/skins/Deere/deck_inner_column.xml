@@ -8,6 +8,7 @@
 <Template>
   <WidgetGroup>
     <ObjectName>Deck<Variable name="i"/>InnerColumn</ObjectName>
+    <BackPath>gfx_hifi/background_decks.svg</BackPath>
     <Layout>vertical</Layout>
     <SizePolicy>max,min</SizePolicy>
     <Children>

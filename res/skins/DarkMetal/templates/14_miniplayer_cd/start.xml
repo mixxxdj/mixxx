@@ -5,6 +5,7 @@
 	<!-- WIDGETGROUP: Mini Player AB -->	
 	<WidgetGroup>
 	<ObjectName>MiniPlayer</ObjectName>
+	<BackPath>gfx_hifi/background_miniplayer_metal.svg</BackPath>
 	<Pos>0,0</Pos>
 	<MinimumSize>1,46</MinimumSize>
 	<SizePolicy>me,f</SizePolicy>
@@ -26,6 +27,7 @@
 	<!-- Slider - Crossfader -->
 	<WidgetGroup>
 	<ObjectName>MiniFader</ObjectName>
+	<BackPath>gfx_hifi/background_miniplayer_fader.svg</BackPath>
 	<MinimumSize>200,45</MinimumSize>
 	<SizePolicy>f,f</SizePolicy>
 	<Children>					

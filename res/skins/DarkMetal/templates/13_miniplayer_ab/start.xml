@@ -26,6 +26,7 @@
 	<!-- Slider - Crossfader -->
 	<WidgetGroup>
 	<ObjectName>MiniFader</ObjectName>
+	<BackPath>gfx_hifi/background_miniplayer_fader.svg</BackPath>
 	<MinimumSize>200,45</MinimumSize>
 	<SizePolicy>f,f</SizePolicy>
 	<Children>					

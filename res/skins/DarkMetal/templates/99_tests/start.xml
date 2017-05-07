@@ -4,6 +4,7 @@
 
 	<WidgetGroup>
 	<ObjectName>ToolBarTests</ObjectName>
+	<BackPath>gfx_hifi/background_toolbar99.svg</BackPath>
 	<Pos>0,0</Pos>
 	<MinimumSize>1230,46</MinimumSize>
 	<SizePolicy>me,f</SizePolicy>
@@ -24,6 +25,7 @@
 		
 	<WidgetGroup>
 	<ObjectName>VerticalLine</ObjectName>
+	<BackPath>gfx_hifi/background_vertical_line_50.svg</BackPath>
 	<MinimumSize>3,45</MinimumSize>
 	<SizePolicy>f,me</SizePolicy>
 	<Children><!-- Design --></Children>
@@ -31,6 +33,7 @@
 	
 	<WidgetGroup>
 	<ObjectName>ToolBarTestsMetal</ObjectName>
+	<BackPath>gfx_hifi/background_tests.svg</BackPath>
 	<MinimumSize>800,45</MinimumSize>
 	<SizePolicy>f,f</SizePolicy>
 	<Layout>horizontal</Layout>
@@ -143,6 +146,7 @@
 
 	<WidgetGroup>
 	<ObjectName>VerticalLine</ObjectName>
+	<BackPath>gfx_hifi/background_vertical_line_50.svg</BackPath>
 	<MinimumSize>3,45</MinimumSize>
 	<SizePolicy>f,me</SizePolicy>
 	<Children><!-- Design --></Children>

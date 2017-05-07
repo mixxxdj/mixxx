@@ -420,6 +420,7 @@
 	<!-- LAYOUT GLOBALS -->
 	<ObjectName>Mixxx</ObjectName>
 	<Background><BgColor>#000000</BgColor></Background>
+	<BackPath>gfx_hifi/background_main.svg</BackPath>
 	<Style src="skin:styles.qss"/> <!-- Includes the QT styles -->
 	<MinimumSize>980,350</MinimumSize>
 	<MaximumSize>-1,-1</MaximumSize>

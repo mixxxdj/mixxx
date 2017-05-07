@@ -4,6 +4,7 @@
 
 	<WidgetGroup>
 	<ObjectName>ToolBar2</ObjectName>
+	<BackPath>gfx_hifi/background_toolbar2.svg</BackPath>
 	<Pos>0,0</Pos>
 	<MinimumSize>1,51</MinimumSize>
 	<SizePolicy>me,f</SizePolicy>
@@ -25,6 +26,7 @@
 
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLine</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_50.svg</BackPath>
 		<MinimumSize>3,50</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>
@@ -32,6 +34,7 @@
 		
 		<WidgetGroup>
 		<ObjectName>HeadphoneButtons</ObjectName>
+		<BackPath>gfx_hifi/background_global_head.svg</BackPath>
 		<MinimumSize>100,50</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
 		<Children>
@@ -77,6 +80,7 @@
 
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLine</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_50.svg</BackPath>
 		<MinimumSize>3,50</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>
@@ -84,6 +88,7 @@
 
 		<WidgetGroup>
 		<ObjectName>MasterButtons</ObjectName>
+		<BackPath>gfx_hifi/background_global_master.svg</BackPath>
 		<MinimumSize>100,50</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
 		<Children>		
@@ -130,6 +135,7 @@
 
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLine</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_50.svg</BackPath>
 		<MinimumSize>3,50</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>
@@ -138,6 +144,7 @@
 		
 		<WidgetGroup>
 		<ObjectName>GlobalVUS</ObjectName>
+		<BackPath>gfx_hifi/background_global_vus.svg</BackPath>
 		<MinimumSize>36,50</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
 		<Children>
@@ -208,6 +215,7 @@
 		
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLine</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_50.svg</BackPath>
 		<MinimumSize>3,50</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>
@@ -216,6 +224,7 @@
 		
 		<WidgetGroup>
 		<ObjectName>AnalogVUS</ObjectName>
+		<BackPath>gfx_hifi/background_analogvus.svg</BackPath>
 		<MinimumSize>210,50</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
 		<Layout>horizontal</Layout>
@@ -459,6 +468,7 @@
 		
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLine</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_50.svg</BackPath>
 		<MinimumSize>3,50</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>
@@ -472,6 +482,7 @@
 		
 		<WidgetGroup>				
 		<ObjectName>Broadcast</ObjectName>
+		<BackPath>gfx_hifi/background_broadcast.svg</BackPath>
 		<MinimumSize>100,50</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
 		<Children>			
@@ -511,6 +522,7 @@
 		
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLine</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_50.svg</BackPath>
 		<MinimumSize>3,50</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>
@@ -524,6 +536,7 @@
 
 		<WidgetGroup>				
 		<ObjectName>Record</ObjectName>
+		<BackPath>gfx_hifi/background_record.svg</BackPath>
 		<MinimumSize>65,50</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
 		<Children>			
@@ -566,6 +579,7 @@
 		
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLine</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_50.svg</BackPath>
 		<MinimumSize>3,50</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>
@@ -580,6 +594,7 @@
 
 		<WidgetGroup>				
 		<ObjectName>AutoDJ</ObjectName>
+		<BackPath>gfx_hifi/background_autodj.svg</BackPath>
 		<MinimumSize>65,50</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
 		<Children>			
@@ -604,6 +619,7 @@
 
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLine</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_50.svg</BackPath>
 		<MinimumSize>3,50</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>
@@ -617,6 +633,7 @@
 
 		<WidgetGroup>				
 		<ObjectName>Clock</ObjectName>
+		<BackPath>gfx_hifi/background_clock.svg</BackPath>
 		<MinimumSize>100,50</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
 		<Children>			
@@ -632,6 +649,7 @@
 		
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLine</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_50.svg</BackPath>
 		<MinimumSize>3,50</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>
@@ -645,6 +663,7 @@
 		
 		<WidgetGroup>	
 		<ObjectName>LatencyVumeter</ObjectName>
+		<BackPath>gfx_hifi/background_latency.svg</BackPath>
 		<MinimumSize>100,50</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
 		<Children>
@@ -670,6 +689,7 @@
 
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLine</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_50.svg</BackPath>
 		<MinimumSize>3,50</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>

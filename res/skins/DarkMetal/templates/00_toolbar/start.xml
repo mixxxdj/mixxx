@@ -5,6 +5,7 @@
 	<!-- WIDGETGROUP: Toolbar -->	
 	<WidgetGroup>
 	<ObjectName>ToolBar1</ObjectName>
+	<BackPath>gfx_hifi/background_toolbar1.svg</BackPath>
 	<Pos>0,0</Pos>
 	<MinimumSize>1,31</MinimumSize>
 	<SizePolicy>me,f</SizePolicy>
@@ -19,6 +20,7 @@
 	
 	<WidgetGroup>
 	<ObjectName>ToolBar1Metal</ObjectName>
+	<BackPath>gfx_hifi/background_toolbar1.svg</BackPath>
 	<MinimumSize>1,30</MinimumSize>
 	<SizePolicy>me,f</SizePolicy>
 	<Children><!-- Design --></Children>
@@ -32,6 +34,7 @@
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -63,6 +66,7 @@
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -94,6 +98,7 @@
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -125,6 +130,7 @@
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -156,6 +162,7 @@
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -187,6 +194,7 @@
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -218,6 +226,7 @@
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -249,6 +258,7 @@
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -280,6 +290,7 @@
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -311,6 +322,7 @@
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -342,6 +354,7 @@
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -373,6 +386,7 @@
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -404,6 +418,7 @@
 
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
+		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -417,6 +432,7 @@
 
 		<WidgetGroup>
 		<ObjectName>ToolBar1Metal</ObjectName>
+		<BackPath>gfx_hifi/background_toolbar1.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>me,f</SizePolicy>
 		<Children><!-- Design --></Children>

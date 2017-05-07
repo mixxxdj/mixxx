@@ -14,6 +14,7 @@
 		
 		<WidgetGroup> <!-- Design only: Visual Rack Left -->
 		<ObjectName>Rack25</ObjectName>
+		<BackPath>gfx_hifi/rack_25.svg</BackPath>
 		<MinimumSize>15,25</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children><!-- Design --></Children>
@@ -259,6 +260,7 @@
 
 		<WidgetGroup> <!-- Design only: Visual Rack Right -->
 		<ObjectName>Rack25</ObjectName>
+		<BackPath>gfx_hifi/rack_25.svg</BackPath>
 		<MinimumSize>15,25</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children><!-- Design --></Children>

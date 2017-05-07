@@ -4,6 +4,7 @@
 
 	<WidgetGroup>
 	<ObjectName>EffectsRacks</ObjectName>
+    <BackPath>gfx_hifi/background_racks_150.svg</BackPath>
 	<MinimumSize>-1,115</MinimumSize>
 	<SizePolicy>me,f</SizePolicy>
 	<Layout>vertical</Layout> 
@@ -11,6 +12,7 @@
 	
 	<WidgetGroup>
 	<ObjectName>EffectsOptions</ObjectName>
+	<BackPath>gfx_hifi/background_effects_settings.svg</BackPath>
 	<MinimumSize>-1,30</MinimumSize>
 	<SizePolicy>me,f</SizePolicy>
 	<Layout>horizontal</Layout> 
@@ -32,6 +34,7 @@
 	
 	<WidgetGroup> <!-- Design only: Visual Rack Left -->
 	<ObjectName>Rack85</ObjectName>
+	<BackPath>gfx_hifi/rack_85.svg</BackPath>
 	<MinimumSize>15,-1</MinimumSize>
 	<SizePolicy>f,me</SizePolicy>
 	<Children><!-- Design --></Children>
@@ -80,6 +83,7 @@
 	
 	<WidgetGroup> <!-- Design only: Visual Rack Right -->
 	<ObjectName>Rack85</ObjectName>
+	<BackPath>gfx_hifi/rack_85.svg</BackPath>
 	<MinimumSize>15,-1</MinimumSize>
 	<SizePolicy>f,me</SizePolicy>
 	<Children><!-- Design --></Children>
