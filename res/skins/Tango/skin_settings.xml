@@ -95,11 +95,17 @@ Description:
                 </Children>
               </WidgetGroup><!-- Pitch/Key submenu -->
 
+              <!--
               <Template src="skin:skin_settings_button_4state.xml">
                 <SetVariable name="state_0_text">      Loop/Jump controls</SetVariable>
                 <SetVariable name="state_1_text"> &#10004; Loop/Jump   2.0&#9668; 2.1   2.1+</SetVariable>
                 <SetVariable name="state_2_text"> &#10004; Loop/Jump   2.0 &#9658;2.1   2.1+</SetVariable>
                 <SetVariable name="state_3_text"> &#10004; Loop/Jump   2.0   2.1 &#9658;2.1+</SetVariable>
+                <SetVariable name="Setting">[Tango],loop_beatjump_controls</SetVariable>
+              </Template> -->
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="state_0_text">      Loop/Jump controls</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Loop/Jump controls</SetVariable>
                 <SetVariable name="Setting">[Tango],loop_beatjump_controls</SetVariable>
               </Template>
             </Children>
