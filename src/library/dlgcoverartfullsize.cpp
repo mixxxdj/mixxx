@@ -34,6 +34,7 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlay
 }
 
 DlgCoverArtFullSize::~DlgCoverArtFullSize() {
+    delete m_pCoverMenu;
 }
 
 void DlgCoverArtFullSize::init(TrackPointer pTrack) {

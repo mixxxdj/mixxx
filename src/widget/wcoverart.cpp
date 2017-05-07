@@ -26,7 +26,7 @@ WCoverArt::WCoverArt(QWidget* parent,
           m_bEnable(true),
           m_pMenu(new WCoverArtMenu(this)),
           m_pPlayer(pPlayer),
-          m_pDlgFullSize(new DlgCoverArtFullSize(parent, pPlayer)) {
+          m_pDlgFullSize(new DlgCoverArtFullSize(this, pPlayer)) {
     // Accept drops if we have a group to load tracks into.
     setAcceptDrops(!m_group.isEmpty());
 
