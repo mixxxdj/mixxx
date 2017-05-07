@@ -36,18 +36,6 @@ P32.init = function () {
     components.Component.prototype.shiftChannel = true;
     components.Button.prototype.sendShifted = true;
 
-    /**
-    The P32 has encoders for changing tempo, so the actual tempo getting out of sync with a hardware
-    fader and dealing with soft takeover in that situation is not an issue. So, make toggling master
-    sync the default unshifted behavior and momentary sync the shifted behavior.
-    **/
-    components.SyncButton.prototype.unshift = function () {
-        this.inKey = 'sync_enabled';
-    };
-    components.SyncButton.prototype.shift = function () {
-        this.inKey = 'beatsync';
-    };
-
     if (engine.getValue('[Master]', 'num_samplers') < 32) {
         engine.setValue('[Master]', 'num_samplers', 32);
     }
