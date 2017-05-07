@@ -1,0 +1,37 @@
+<!--
+Description:
+  An indicator displayed in decks' artist/title container when loop is enabled.
+Variables:
+  group   : [ChannelN]
+  channum : channel number
+-->
+<Template>
+  <WidgetGroup>
+    <SizePolicy>max,min</SizePolicy>
+    <Layout>horizontal</Layout>
+    <Children>
+      <WidgetGroup>
+        <SizePolicy>max,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:button_2state_display.xml">
+            <SetVariable name="TooltipId">reloop_toggle</SetVariable>
+            <SetVariable name="ObjectName">LoopIndicator</SetVariable>
+            <SetVariable name="Size">50f,44me</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,reloop_toggle</SetVariable>
+            <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,loop_enabled</SetVariable>
+          </Template>
+        </Children>
+        <Connection>
+          <ConfigKey>[Channel<Variable name="channum"/>],loop_enabled</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Tango],loop_beatjump_controls</ConfigKey>
+      <Transform><Not/></Transform>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

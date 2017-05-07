@@ -1,0 +1,73 @@
+<!--
+Description:
+  Container for either CoverArt or Spinny (with or without Cover).
+  Displayed next to overview waveform in decks.
+Variables:
+  channum : channel number
+  group   : [ChannelXY]
+  [Tango],spinny0_cover1_stack (show Spinny or CoverArt)
+          : keeps Spinny/Cover selection when switching between small and big version
+  [Tango],spinnyWithCoverArt_stack (show Spinny with or without Cover)
+          : keeps CoverArt option when switching between small and big Spinny
+-->
+<Template>
+  <WidgetStack currentpage="[Tango],spinny0_cover1_stack" persist="true">
+    <ObjectName>SpinnyCoverMini</ObjectName>
+    <Size>50f,50f</Size>
+    <Children>
+
+      <WidgetStack currentpage="[Tango],spinnyWithCoverArt_stack" persist="true">
+        <Size>111f,111f</Size>
+        <Children>
+
+          <Spinny><!-- no Cover on Spinny -->
+            <ObjectName>SpinnyMini</ObjectName>
+            <Size>50f,50f</Size>
+            <TooltipId>spinny</TooltipId>
+            <Group><Variable name="group"/></Group>
+            <PathBackground scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_bg.svg</PathBackground>
+            <PathForeground scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_indicator.svg</PathForeground>
+            <PathMask scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_<Variable name="channum"/>_mask.svg</PathMask>
+            <PathGhost scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_indicator_ghost.svg</PathGhost>
+            <ShowCover>false</ShowCover>
+          </Spinny>
+          <!-- Cover on Spinny -->
+          <Spinny trigger="[Tango],spinnyWithCoverArt" persist="true">
+            <ObjectName>SpinnyMini</ObjectName>
+            <Size>50f,50f</Size>
+            <TooltipId>spinny</TooltipId>
+            <Group><Variable name="group"/></Group>
+            <PathBackground scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_bg.svg</PathBackground>
+            <PathForeground scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_indicator.svg</PathForeground>
+            <PathMask scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_<Variable name="channum"/>_mask.svg</PathMask>
+            <PathGhost scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_indicator_ghost.svg</PathGhost>
+            <ShowCover>true</ShowCover>
+            <Connection>
+              <ConfigKey persist="true">[Tango],spinnyWithCoverArt</ConfigKey>
+          <Transform><IsEqual>1</IsEqual></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </Spinny>
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Tango],empty_spinny_cover</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetStack>
+
+      <CoverArt>
+        <TooltipId>coverart</TooltipId>
+        <Size>50f,50f</Size>
+        <Group>[Channel<Variable name="channum"/>]</Group>
+        <DefaultCover>skin:/graphics/cover_default_mini_<Variable name="channum"/>.svg</DefaultCover>
+        <Connection>
+          <ConfigKey persist="true">[Tango],empty_spinny_cover</ConfigKey>
+          <Transform><IsEqual>2</IsEqual></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </CoverArt>
+
+    </Children>
+  </WidgetStack>
+</Template>

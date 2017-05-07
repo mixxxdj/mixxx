@@ -61,6 +61,9 @@ class EffectSlot : public QObject {
         return m_group;
     }
 
+    QDomElement toXml(QDomDocument* doc) const;
+    void loadEffectSlotFromXml(const QDomElement& effectElement);
+
   public slots:
     // Request that this EffectSlot load the given Effect
     void loadEffect(EffectPointer pEffect);

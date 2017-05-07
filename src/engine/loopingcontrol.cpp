@@ -11,6 +11,7 @@
 #include "engine/bpmcontrol.h"
 #include "engine/enginecontrol.h"
 #include "util/math.h"
+#include "util/sample.h"
 
 #include "track/track.h"
 #include "track/beats.h"
@@ -389,21 +390,21 @@ void LoopingControl::hintReader(HintVector* pHintList) {
         // aren't that bad to make anyway.
         if (loopSamples.start >= 0) {
             loop_hint.priority = 2;
-            loop_hint.sample = loopSamples.start;
-            loop_hint.length = 0; // Let it issue the default length
+            loop_hint.frame = SampleUtil::floorPlayPosToFrame(loopSamples.start);
+            loop_hint.frameCount = Hint::kFrameCountForward;
             pHintList->append(loop_hint);
         }
         if (loopSamples.end >= 0) {
             loop_hint.priority = 10;
-            loop_hint.sample = loopSamples.end;
-            loop_hint.length = -1; // Let it issue the default (backwards) length
+            loop_hint.frame = SampleUtil::ceilPlayPosToFrame(loopSamples.end);
+            loop_hint.frameCount = Hint::kFrameCountBackward;
             pHintList->append(loop_hint);
         }
     } else {
         if (loopSamples.start >= 0) {
             loop_hint.priority = 10;
-            loop_hint.sample = loopSamples.start;
-            loop_hint.length = 0; // Let it issue the default length
+            loop_hint.frame = SampleUtil::floorPlayPosToFrame(loopSamples.start);
+            loop_hint.frameCount = Hint::kFrameCountForward;
             pHintList->append(loop_hint);
         }
     }

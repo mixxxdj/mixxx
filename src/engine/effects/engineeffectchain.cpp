@@ -184,11 +184,8 @@ void EngineEffectChain::process(const ChannelHandle& handle,
     CSAMPLE wet_gain = m_dMix;
     CSAMPLE wet_gain_old = channel_info.old_gain;
 
-    if (wet_gain_old == 0.0 && wet_gain == 0.0) {
-        // Fully dry, no ramp, insert optimization. No action is needed
-        return;
-    } else if (wet_gain_old != 0.0 && wet_gain == 0.0) {
-        // Tell the effect that this is the last call before disabling
+    if (wet_gain_old != 0.0 && wet_gain == 0.0) {
+        // Tell the effects that this is the last call before disabling
         effectiveEnableState = EffectProcessor::DISABLING;
     }
 
@@ -200,7 +197,7 @@ void EngineEffectChain::process(const ChannelHandle& handle,
     CSAMPLE* pIntermediateOutput = m_buffer1.data();
 
     for (EngineEffect* pEffect: m_effects) {
-        if (pEffect == NULL || !pEffect->enabled()) {
+        if (pEffect == nullptr || pEffect->disabled()) {
             continue;
         }
         pEffect->process(
@@ -219,7 +216,9 @@ void EngineEffectChain::process(const ChannelHandle& handle,
         }
     }
 
-    if (enabledEffectCount > 0) {
+    // Mix the effected signal, unless no effects are enabled
+    // or the chain is fully dry and not ramping.
+    if (enabledEffectCount > 0 && !(wet_gain == 0.0 && wet_gain_old == 0.0)) {
         if (m_insertionType == EffectChain::INSERT) {
             // INSERT mode: output = input * (1-wet) + effect(input) * wet
             SampleUtil::copy2WithRampingGain(

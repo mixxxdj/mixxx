@@ -29,7 +29,7 @@ class MetaLinkTest : public BaseEffectTest {
         int iEffectNumber = 0;
 
         StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
-        m_pChainSlot = pRack->addEffectChainSlot();
+        m_pChainSlot = pRack->addEffectChainSlot(pChain, QDomElement());
         // StandardEffectRack::addEffectChainSlot automatically adds 4 effect
         // slots. In the future we will probably remove this so this will just
         // start segfaulting.
@@ -46,9 +46,9 @@ class MetaLinkTest : public BaseEffectTest {
         low->setId("low");
         low->setName(QObject::tr("Low"));
         low->setDescription(QObject::tr("Gain for Low Filter"));
-        low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-        low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-        low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+        low->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+        low->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+        low->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
         low->setNeutralPointOnScale(0.25);
         low->setDefault(1.0);
         low->setMinimum(0);
@@ -97,7 +97,8 @@ TEST_F(MetaLinkTest, LinkDefault) {
 
 TEST_F(MetaLinkTest, LinkLinked) {
     m_pEffectSlot->syncSofttakeover();
-    m_pControlLinkType->set(EffectManifestParameter::LINK_LINKED);
+    m_pControlLinkType->set(
+        static_cast<double>(EffectManifestParameter::LinkType::LINKED));
     m_pEffectSlot->slotEffectMetaParameter(1.0);
     EXPECT_EQ(1.0, m_pControlValue->get());
     m_pEffectSlot->slotEffectMetaParameter(0.5);
@@ -106,7 +107,8 @@ TEST_F(MetaLinkTest, LinkLinked) {
 
 TEST_F(MetaLinkTest, LinkLinkedInverse) {
     m_pEffectSlot->syncSofttakeover();
-    m_pControlLinkType->set(EffectManifestParameter::LINK_LINKED);
+    m_pControlLinkType->set(
+        static_cast<double>(EffectManifestParameter::LinkType::LINKED));
     m_pControlLinkInverse->set(1.0);
     m_pEffectSlot->slotEffectMetaParameter(0.0);
     EXPECT_EQ(1.0, m_pControlValue->get());
@@ -115,7 +117,8 @@ TEST_F(MetaLinkTest, LinkLinkedInverse) {
 }
 
 TEST_F(MetaLinkTest, MetaToParameter_Softtakeover_EffectEnabled) {
-    m_pControlLinkType->set(EffectManifestParameter::LINK_LINKED);
+    m_pControlLinkType->set(
+        static_cast<double>(EffectManifestParameter::LinkType::LINKED));
     // Soft takeover should only occur when the effect is enabled.
     m_pEffectSlot->slotEnabled(1.0);
 
@@ -139,7 +142,8 @@ TEST_F(MetaLinkTest, MetaToParameter_Softtakeover_EffectDisabled) {
     // Soft takeover should not occur when the effect is disabled;
     // parameter values should always jump to match the metaknob.
     // Effects are disabled by default.
-    m_pControlLinkType->set(EffectManifestParameter::LINK_LINKED);
+    m_pControlLinkType->set(
+        static_cast<double>(EffectManifestParameter::LinkType::LINKED));
 
     m_pEffectSlot->slotEffectMetaParameter(1.0);
     EXPECT_EQ(1.0, m_pControlValue->get());
@@ -208,9 +212,9 @@ TEST_F(MetaLinkTest, HalfLinkTakeover) {
     low->setId("low");
     low->setName(QObject::tr("Low"));
     low->setDescription(QObject::tr("Gain for Low Filter (neutral at 1.0)"));
-    low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    low->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    low->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    low->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     low->setNeutralPointOnScale(1.0);
     low->setDefault(1.0);
     low->setMinimum(0);
@@ -239,7 +243,8 @@ TEST_F(MetaLinkTest, HalfLinkTakeover) {
     // we should see the control change as expected.
     m_pEffectSlot->slotEffectMetaParameter(0.5);
     m_pControlValue->set(1.0);
-    m_pControlLinkType->set(EffectManifestParameter::LINK_LINKED_LEFT);
+    m_pControlLinkType->set(
+        static_cast<double>(EffectManifestParameter::LinkType::LINKED_LEFT));
     m_pEffectSlot->syncSofttakeover();
     m_pEffectSlot->slotEffectMetaParameter(newParam);
     EXPECT_EQ(newParam * 2.0, m_pControlValue->get());
@@ -247,7 +252,8 @@ TEST_F(MetaLinkTest, HalfLinkTakeover) {
     // This tolerance change should also work for linked-right controls.
     m_pEffectSlot->slotEffectMetaParameter(0.5);
     m_pControlValue->set(1.0);
-    m_pControlLinkType->set(EffectManifestParameter::LINK_LINKED_RIGHT);
+    m_pControlLinkType->set(
+        static_cast<double>(EffectManifestParameter::LinkType::LINKED_RIGHT));
     m_pEffectSlot->syncSofttakeover();
     newParam = 0.5 + SoftTakeover::kDefaultTakeoverThreshold * 1.5;
     m_pEffectSlot->slotEffectMetaParameter(newParam);

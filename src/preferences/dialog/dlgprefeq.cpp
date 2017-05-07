@@ -184,7 +184,8 @@ static bool isMasterEQ(const EffectManifest& pManifest) {
 
 static bool hasSuperKnobLinking(const EffectManifest& pManifest) {
     for (const auto& pParameterManifest : pManifest.parameters()) {
-        if (pParameterManifest.defaultLinkType() != EffectManifestParameter::LINK_NONE) {
+        if (pParameterManifest.defaultLinkType() !=
+            EffectManifestParameter::LinkType::NONE) {
             return true;
         }
     }

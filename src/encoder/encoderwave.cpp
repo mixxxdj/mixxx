@@ -20,7 +20,7 @@ static sf_count_t  sf_f_get_filelen (void *user_data)
     EncoderCallback* pCallback = static_cast<EncoderCallback*>(user_data);
     return pCallback->filelen();
 }
-// The virtual file context must seek to offset using the seek mode provided 
+// The virtual file context must seek to offset using the seek mode provided
 // by whence which is one of
 //      SEEK_CUR
 //      SEEK_SET
@@ -46,6 +46,9 @@ static sf_count_t  sf_f_seek (sf_count_t offset, int whence, void *user_data)
 // provided by ptr and return the count of actually copied bytes.
 static sf_count_t  sf_f_read (void *ptr, sf_count_t count, void *user_data)
 {
+    Q_UNUSED(ptr);
+    Q_UNUSED(count);
+    Q_UNUSED(user_data);
     qWarning() << "sf_f_read called for EncoderWave. Call not implemented!";
     return 0;
 }
@@ -107,7 +110,7 @@ void EncoderWave::setEncoderSettings(const EncoderSettings& settings)
     }
     else {
         qWarning() << "Unexpected Format when setting EncoderWave: " << format.internalName << ". Reverting to wav";
-        // Other possibly interesting formats 
+        // Other possibly interesting formats
         // There is a n option for RF64 to automatically downgrade to RIFF WAV if less than 4GB using an
         // sf_command, so it could be interesting to use it in place of FORMAT_WAVE.
         // SF_FORMAT_W64          = 0x0B0000,     /* Sonic Foundry's 64 bit RIFF/WAV */
@@ -132,7 +135,7 @@ void EncoderWave::setEncoderSettings(const EncoderSettings& settings)
             break;
         default:
             m_sfInfo.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
-            qWarning() << " Unexpected radio index on EncoderWave: " 
+            qWarning() << " Unexpected radio index on EncoderWave: "
                     << radio << ". reverting to PCM 16bits";
             break;
     }
@@ -202,7 +205,7 @@ void EncoderWave::initStream() {
 }
 
 int EncoderWave::initEncoder(int samplerate, QString errorMessage) {
-    
+
     // set sfInfo.
     // m_sfInfo.format is setup on setEncoderSettings previous to calling initEncoder.
     m_sfInfo.samplerate = samplerate;
