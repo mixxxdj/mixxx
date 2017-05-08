@@ -21,12 +21,21 @@ Variables:
           <SetVariable name="ConfigKeyRight"><Variable name="group"/>,loop_in_goto</SetVariable>
         </Template>
           <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+        <!-- ToDo(ronso0) uncomment as soon as #1187 is merged
         <Template src="skin:button_2state_right_display.xml">
           <SetVariable name="TooltipId">reloop_toggle</SetVariable>
           <SetVariable name="ObjectName">LoopIndicator</SetVariable>
           <SetVariable name="Size">45f,45f</SetVariable>
           <SetVariable name="ConfigKey"><Variable name="group"/>,reloop_toggle</SetVariable>
           <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reloop_andstop</SetVariable>
+          <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,loop_enabled</SetVariable>
+        </Template> -->
+        <Template src="skin:button_2state_right_display.xml">
+          <SetVariable name="TooltipId">reloop_exit</SetVariable>
+          <SetVariable name="ObjectName">LoopIndicator</SetVariable>
+          <SetVariable name="Size">45f,45f</SetVariable>
+          <SetVariable name="ConfigKey"><Variable name="group"/>,reloop_exit</SetVariable>
+          <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reloop_exit</SetVariable>
           <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,loop_enabled</SetVariable>
         </Template>
           <WidgetGroup><Size>1f,1min</Size></WidgetGroup>

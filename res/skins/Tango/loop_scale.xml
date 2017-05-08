@@ -10,22 +10,23 @@ Variables:
     <Layout>vertical</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
+      <!-- ToDo (ronso0) update COs as soon as #1187 is merged -->
       <Template src="skin:button_1state.xml">
-        <SetVariable name="TooltipId">beatloop_double</SetVariable>
+        <SetVariable name="TooltipId">loop_double</SetVariable>
         <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
         <SetVariable name="Size">22f,22f</SetVariable>
         <SetVariable name="state_0_pressed">loopbeat_plus_hover.svg</SetVariable>
         <SetVariable name="state_0_unpressed">loopbeat_plus.svg</SetVariable>
-        <SetVariable name="ConfigKey"><Variable name="group"/>,beatloop_double</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="group"/>,loop_double</SetVariable>
       </Template>
         <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
       <Template src="skin:button_1state.xml">
-        <SetVariable name="TooltipId">beatloop_halve</SetVariable>
+        <SetVariable name="TooltipId">loop_halve</SetVariable>
         <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
         <SetVariable name="Size">22f,22f</SetVariable>
         <SetVariable name="state_0_pressed">loopbeat_minus_hover.svg</SetVariable>
         <SetVariable name="state_0_unpressed">loopbeat_minus.svg</SetVariable>
-        <SetVariable name="ConfigKey"><Variable name="group"/>,beatloop_halve</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="group"/>,loop_halve</SetVariable>
       </Template>
     </Children>
   </WidgetGroup>
