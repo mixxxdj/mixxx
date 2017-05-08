@@ -320,6 +320,9 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
             if (m_pHighFilterKill != NULL) {
                 m_pHighFilterKill->set(0.0);
             }
+        }
+        if (m_pConfig->getValue(
+                ConfigKey("[Mixer Profile]", "GainAutoReset"), false)) {
             m_pPreGain->set(1.0);
         }
         int reset = m_pConfig->getValue<int>(
