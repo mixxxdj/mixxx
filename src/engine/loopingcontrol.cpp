@@ -440,7 +440,7 @@ void LoopingControl::setLoopInToCurrentPosition() {
     LoopSamples loopSamples = m_loopSamples.getValue();
     double closestBeat = -1;
     int pos = m_iCurrentSample;
-    if (m_pQuantizeEnabled->toBool()) {
+    if (m_pQuantizeEnabled->toBool() && m_pBeats != nullptr) {
         closestBeat = m_pClosestBeat->get();
         if (closestBeat != -1) {
             pos = static_cast<int>(floor(closestBeat));
@@ -523,7 +523,7 @@ void LoopingControl::setLoopOutToCurrentPosition() {
     LoopSamples loopSamples = m_loopSamples.getValue();
     double closestBeat = -1;
     int pos = m_iCurrentSample;
-    if (m_pQuantizeEnabled->toBool()) {
+    if (m_pQuantizeEnabled->toBool() && m_pBeats != nullptr) {
         closestBeat = m_pClosestBeat->get();
         if (closestBeat != -1) {
             pos = static_cast<int>(floor(closestBeat));
