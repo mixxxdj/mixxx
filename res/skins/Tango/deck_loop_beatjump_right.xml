@@ -23,12 +23,12 @@
     </Children>
     <Connection>
       <ConfigKey persist="true">[Tango],loop_beatjump_controls</ConfigKey>
-      <Transform><IsEqual>1</IsEqual></Transform>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup><!-- /Loop/Jump 2.0 -->
 
-  <WidgetGroup><!-- Loop/Jump 2.1 compact -->
+  <!-- Loop/Jump 2.1 compact
+  <WidgetGroup>
     <ObjectName>DeckLoopBeatjump</ObjectName>
     <SizePolicy>min,min</SizePolicy>
     <Layout>horizontal</Layout>
@@ -44,9 +44,10 @@
       <Transform><IsEqual>2</IsEqual></Transform>
       <BindProperty>visible</BindProperty>
     </Connection>
-  </WidgetGroup><!-- /Loop/Jump 2.1 compact -->
+  </WidgetGroup> -->
 
-  <WidgetGroup><!-- Loop/Jump 2.1+ advanced -->
+  <!-- Loop/Jump 2.1+ advanced
+  <WidgetGroup>
     <ObjectName>DeckLoopBeatjump</ObjectName>
     <SizePolicy>min,min</SizePolicy>
     <Layout>horizontal</Layout>
@@ -67,5 +68,5 @@
       <Transform><IsEqual>3</IsEqual></Transform>
       <BindProperty>visible</BindProperty>
     </Connection>
-  </WidgetGroup><!-- /Loop/Jump 2.1+ advanced -->
+  </WidgetGroup>   -->
 </Template>
