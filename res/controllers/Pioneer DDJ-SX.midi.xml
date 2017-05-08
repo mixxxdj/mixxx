@@ -14,15 +14,6 @@
         <controls>
             <control>
                 <group>[Master]</group>
-                <key>PioneerDDJSX.inboundSysex</key>
-                <description>Sysex message receive function</description>
-                <status>0xF0</status>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Master]</group>
                 <key>PioneerDDJSX.crossfaderCurveKnobMSB</key>
                 <description>Crossfader Curve adjust (MSB), Knob: Frontpanel CROSSFADER CURVE</description>
                 <status>0xB6</status>

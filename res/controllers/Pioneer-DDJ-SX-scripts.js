@@ -10,7 +10,7 @@ var PioneerDDJSX = function() {};
 
 /*
 	Author: 		DJMaxergy
-	Version: 		1.01, 05/06/2017
+	Version: 		1.02, 05/08/2017
 	Description: 	Pioneer DDJ-SX Controller Mapping for Mixxx
     Source: 		http://github.com/DJMaxergy/mixxx/tree/pioneerDDJSX_mapping
     
@@ -104,21 +104,6 @@ PioneerDDJSX.blinkAutodjState = false;
 PioneerDDJSX.autoDJTickTimer = 0;
 PioneerDDJSX.autoDJSyncBPM = false;
 PioneerDDJSX.autoDJSyncKey = false;
-
-// init helpers:
-PioneerDDJSX.initHandshakeTime = 0;
-PioneerDDJSX.initSendMsg = [
-    0xF0, 0x00, 0x20, 0x7F, 0x01, 0x02, 0x01, 0x01, 0x12,
-    0x06, 0x0D, 0x03, 0x09,
-    0x0A, 0x08, 0x03, 0x00,
-    0x05, 0x09, 0x0F, 0x0F, 0x01, 0x08, 0x00, 0x09, 0xF7
-];
-PioneerDDJSX.initRecvMsg = [
-    0xF0, 0x00, 0x20, 0x7F, 0x01, 0x02, 0x01, 0x02, 0x12,
-    0x07, 0x06, 0x03, 0x02,
-    0x0B, 0x02, 0x0E, 0x07,
-    0x06, 0x00, 0x09, 0x01, 0x0B, 0x04, 0x09, 0x03, 0xF7
-];
 
 // used for pad parameter selection:
 PioneerDDJSX.selectedSamplerBank = 0;
@@ -361,9 +346,16 @@ PioneerDDJSX.init = function(id) {
         PioneerDDJSX.vuMeterTimer = engine.beginTimer(200, "PioneerDDJSX.vuMeterTwinkle()");
     }
 
-    // send init message to controller:
-    midi.sendSysexMsg(PioneerDDJSX.initSendMsg, PioneerDDJSX.initSendMsg.length);
-    PioneerDDJSX.initTimer = engine.beginTimer(1000, "PioneerDDJSX.initTimerTick()");
+    // initiate control status request:
+    midi.sendShortMsg(0x9B, 0x08, 0x7F);
+    
+    // bind controls and init deck parameters:
+    PioneerDDJSX.bindNonDeckControlConnections(true);
+    for (var index in PioneerDDJSX.channelGroups) {
+        if (PioneerDDJSX.channelGroups.hasOwnProperty(index)) {
+            PioneerDDJSX.initDeck(index);
+        }
+    }
 };
 
 PioneerDDJSX.shutdown = function() {
@@ -371,59 +363,12 @@ PioneerDDJSX.shutdown = function() {
     PioneerDDJSX.resetDeck("[Channel2]");
     PioneerDDJSX.resetDeck("[Channel3]");
     PioneerDDJSX.resetDeck("[Channel4]");
-
+    
     PioneerDDJSX.resetNonDeckLeds();
 };
 
 PioneerDDJSX.setDefaultSpeedSliderRange = function(group, range) {
     engine.setValue(group, "rateRange", range);
-};
-
-PioneerDDJSX.inboundSysex = function(data, length) {
-    engine.stopTimer(PioneerDDJSX.initTimer);
-    PioneerDDJSX.initTimer = 0;
-
-    if (length !== PioneerDDJSX.initRecvMsg.length) {
-        print("Sysex message has different length!");
-        return;
-    }
-
-    for (var i = 0; i < length; i++) {
-        if (data[i] !== PioneerDDJSX.initRecvMsg[i]) {
-            print("Init - Sysex handshake failed!");
-            return;
-        }
-    }
-
-    print("Init - Sysex handshake success!");
-    PioneerDDJSX.initAfterHandshake(true);
-};
-
-PioneerDDJSX.initAfterHandshake = function(status) {
-    // initiate control status request:
-    if (status) {
-        midi.sendShortMsg(0x9B, 0x08, 0x7F);
-    } else {
-        PioneerDDJSX.setNonDeckSoftTakeover(true);
-    }
-
-    PioneerDDJSX.bindNonDeckControlConnections(true);
-
-    for (var index in PioneerDDJSX.channelGroups) {
-        if (PioneerDDJSX.channelGroups.hasOwnProperty(index)) {
-            PioneerDDJSX.initDeck(index, !status);
-        }
-    }
-};
-
-PioneerDDJSX.initTimerTick = function() {
-    PioneerDDJSX.initHandshakeTime++;
-    if (PioneerDDJSX.initHandshakeTime > 5) {
-        engine.stopTimer(PioneerDDJSX.initTimer);
-        PioneerDDJSX.initTimer = 0;
-        print("Init - Sysex handshake Timeout!");
-        PioneerDDJSX.initAfterHandshake(false);
-    }
 };
 
 
@@ -688,40 +633,13 @@ PioneerDDJSX.bindNonDeckControlConnections = function(bind) {
     engine.connectControl("[AutoDJ]", "enabled", "PioneerDDJSX.autoDJTimer", !bind);
 };
 
-PioneerDDJSX.setDeckSoftTakeover = function(channel, enable) {
-    engine.softTakeover(channel, "volume", enable);
-    engine.softTakeover(channel, "rate", enable);
-    engine.softTakeover(channel, "pregain", enable);
-    engine.softTakeover("[EqualizerRack1_" + channel + "_Effect1]", "parameter3", enable); //HI
-    engine.softTakeover("[EqualizerRack1_" + channel + "_Effect1]", "parameter2", enable); //MID
-    engine.softTakeover("[EqualizerRack1_" + channel + "_Effect1]", "parameter1", enable); //LOW
-    engine.softTakeover("[QuickEffectRack1_" + channel + "]", "super1", enable);
-};
-
-PioneerDDJSX.setNonDeckSoftTakeover = function(enable) {
-    var index;
-
-    engine.softTakeover("[Master]", "crossfader", enable);
-
-    // no soft take-over for sampler volume, as it can be controlled by pad velocity (absolute)
-
-    for (index in PioneerDDJSX.fxEffectGroups) {
-        if (PioneerDDJSX.fxEffectGroups.hasOwnProperty(index)) {
-            engine.softTakeover(index, "meta", enable);
-        }
-    }
-};
 
 ///////////////////////////////////////////////////////////////
 //                     DECK INIT / RESET                     //
 ///////////////////////////////////////////////////////////////
 
-PioneerDDJSX.initDeck = function(group, setSoftTakeover) {
+PioneerDDJSX.initDeck = function(group) {
     var deck = PioneerDDJSX.channelGroups[group];
-
-    if (setSoftTakeover) {
-        PioneerDDJSX.setDeckSoftTakeover(group, true);
-    }
 
     PioneerDDJSX.bindDeckControlConnections(group, true);
 
