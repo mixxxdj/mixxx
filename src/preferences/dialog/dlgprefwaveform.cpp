@@ -104,7 +104,7 @@ void DlgPrefWaveform::slotUpdate() {
     highVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::High));
     normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
     defaultZoomComboBox->setCurrentIndex(factory->getDefaultZoom() - 1);
-    beatGridLinesCheckBox->setChecked(factory->enableGrid());
+    beatGridLinesCheckBox->setChecked(factory->isBeatGridEnabled());
 
     // By default we set RGB woverview = "2"
     int overviewType = m_pConfig->getValue(
@@ -233,7 +233,7 @@ void DlgPrefWaveform::slotClearCachedWaveforms() {
 }
 
 void DlgPrefWaveform::slotSetGridLines(bool displayGrid){
-    WaveformWidgetFactory::instance()->setDisplayGrid(displayGrid);
+    WaveformWidgetFactory::instance()->setDisplayBeatGrid(displayGrid);
 }
 
 void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {

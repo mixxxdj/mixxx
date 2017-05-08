@@ -27,6 +27,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
       m_rateAdjust(0.0),
       m_visualSamplePerPixel(1.0),
       m_audioSamplePerPixel(1.0),
+      m_enableBeatGrid(true),
 
       // Really create some to manage those;
       m_visualPlayPosition(NULL),
@@ -42,8 +43,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
       m_gain(1.0),
       m_pTrackSamplesControlObject(NULL),
       m_trackSamples(0.0),
-      m_scaleFactor(1.0),
-      m_renderGrid(true) {
+      m_scaleFactor(1.0) {
 
     //qDebug() << "WaveformWidgetRenderer";
 
@@ -275,8 +275,8 @@ void WaveformWidgetRenderer::setZoom(int zoom) {
     m_zoomFactor = math_clamp<double>(zoom, s_waveformMinZoom, s_waveformMaxZoom);
 }
 
-void WaveformWidgetRenderer::setDisplayGrid(bool set){
-    m_renderGrid = set;
+void WaveformWidgetRenderer::setDisplayBeatGrid(bool set){
+    m_enableBeatGrid = set;
 }
 
 void WaveformWidgetRenderer::setTrack(TrackPointer track) {

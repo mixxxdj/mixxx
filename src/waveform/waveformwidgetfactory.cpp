@@ -67,11 +67,11 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_overviewNormalized(false),
         m_openGLAvailable(false),
         m_openGLShaderAvailable(false),
+        m_beatGridEnabled(true),
         m_vsyncThread(NULL),
         m_frameCnt(0),
         m_actualFrameRate(0),
-        m_vSyncType(0),
-        m_gridEnabled(true) {
+        m_vSyncType(0) {
 
     m_visualGain[All] = 1.0;
     m_visualGain[Low] = 1.0;
@@ -224,11 +224,11 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
         m_config->set(ConfigKey("[Waveform]","ZoomSynchronization"), ConfigValue(m_zoomSync));
     }
 
-    int displayGrid = m_config->getValueString(ConfigKey("[Waveform]", "beatGridLinesCheckBox")).toInt(&ok);
+    int showBeatGrid = m_config->getValue(ConfigKey("[Waveform]", "beatGridLinesCheckBox")).toInt(&ok);
     if(ok) {
-        setDisplayGrid(static_cast<bool>(displayGrid));
+        setDisplayBeatGrid(static_cast<bool>(showBeatGrid));
     } else {
-        m_config->set(ConfigKey("[Waveform]", "beatGridLinesCheckBox"), ConfigValue(m_gridEnabled));
+        m_config->set(ConfigKey("[Waveform]", "beatGridLinesCheckBox"), ConfigValue(m_beatGridEnabled));
     }
 
     WaveformWidgetType::Type type = static_cast<WaveformWidgetType::Type>(
@@ -440,10 +440,10 @@ void WaveformWidgetFactory::setZoomSync(bool sync) {
     }
 }
 
-void WaveformWidgetFactory::setDisplayGrid(bool sync){
-    m_gridEnabled = sync;
+void WaveformWidgetFactory::setDisplayBeatGrid(bool sync){
+    m_beatGridEnabled = sync;
     if (m_config){
-        m_config->set(ConfigKey("[Waveform]", "beatGridLinesCheckBox"), ConfigValue(m_gridEnabled));
+        m_config->set(ConfigKey("[Waveform]", "beatGridLinesCheckBox"), ConfigValue(m_beatGridEnabled));
     }
 
     if(m_waveformWidgetHolders.size() == 0){
@@ -451,7 +451,7 @@ void WaveformWidgetFactory::setDisplayGrid(bool sync){
     }
 
     for (int i = 0; i < m_waveformWidgetHolders.size(); i++){
-        m_waveformWidgetHolders[i].m_waveformWidget->setDisplayGrid(m_gridEnabled);
+        m_waveformWidgetHolders[i].m_waveformWidget->setDisplayBeatGrid(m_beatGridEnabled);
     }
 
 }
