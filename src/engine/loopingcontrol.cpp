@@ -1079,7 +1079,11 @@ void LoopingControl::slotBeatJump(double beats) {
         m_pCOBeatJumpSize->set(abs(beats));
     }
 
-    seekAbs(m_pBeats->findNBeatsFromSample(getCurrentSample(), beats));
+    if (m_bLoopingEnabled) {
+        slotLoopMove(beats);
+    } else {
+        seekAbs(m_pBeats->findNBeatsFromSample(getCurrentSample(), beats));
+    }
 }
 
 void LoopingControl::slotBeatJumpForward(double pressed) {
