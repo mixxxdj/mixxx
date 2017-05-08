@@ -231,7 +231,7 @@ class EngineBuffer : public EngineObject {
     UserSettingsPointer m_pConfig;
 
     LoopingControl* m_pLoopingControl;
-    FRIEND_TEST(LoopingControlTest, LoopHalveButton_HalvesLoop);
+    FRIEND_TEST(LoopingControlTest, LoopScale_HalvesLoop);
     FRIEND_TEST(LoopingControlTest, LoopMoveTest);
     FRIEND_TEST(LoopingControlTest, LoopResizeSeek);
     FRIEND_TEST(LoopingControlTest, ReloopToggleButton_DoesNotJumpAhead);

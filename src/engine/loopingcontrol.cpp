@@ -119,12 +119,6 @@ LoopingControl::LoopingControl(QString group,
                                           true, false, false, 4.0);
     m_pCOBeatLoopSize->connectValueChangeRequest(this,
             SLOT(slotBeatLoopSizeChangeRequest(double)), Qt::DirectConnection);
-    m_pCOBeatLoopDouble = new ControlPushButton(ConfigKey(group, "beatloop_double"));
-    connect(m_pCOBeatLoopDouble, SIGNAL(valueChanged(double)),
-            this, SLOT(slotBeatLoopDouble(double)));
-    m_pCOBeatLoopHalve = new ControlPushButton(ConfigKey(group, "beatloop_halve"));
-    connect(m_pCOBeatLoopHalve, SIGNAL(valueChanged(double)),
-            this, SLOT(slotBeatLoopHalve(double)));
     m_pCOBeatLoopToggle = new ControlPushButton(ConfigKey(group, "beatloop_toggle"));
     connect(m_pCOBeatLoopToggle, SIGNAL(valueChanged(double)),
             this, SLOT(slotBeatLoopToggle(double)));
@@ -233,8 +227,6 @@ LoopingControl::~LoopingControl() {
         delete pBeatLoop;
     }
     delete m_pCOBeatLoopSize;
-    delete m_pCOBeatLoopDouble;
-    delete m_pCOBeatLoopHalve;
     delete m_pCOBeatLoopToggle;
     delete m_pCOBeatLoopRollActivate;
 
@@ -315,14 +307,7 @@ void LoopingControl::slotLoopHalve(double pressed) {
         return;
     }
 
-    LoopSamples loopSamples = m_loopSamples.getValue();
-    bool noLoopSet = loopSamples.start == kNoTrigger || loopSamples.end == kNoTrigger;
-
-    if (noLoopSet || currentLoopMatchesBeatloopSize()) {
-        slotBeatLoop(m_pCOBeatLoopSize->get() / 2.0, true, false);
-    } else {
-        slotLoopScale(0.5);
-    }
+    slotBeatLoop(m_pCOBeatLoopSize->get() / 2.0, true, false);
 }
 
 void LoopingControl::slotLoopDouble(double pressed) {
@@ -330,14 +315,7 @@ void LoopingControl::slotLoopDouble(double pressed) {
         return;
     }
 
-    LoopSamples loopSamples = m_loopSamples.getValue();
-    bool noLoopSet = loopSamples.start == kNoTrigger || loopSamples.end == kNoTrigger;
-
-    if (noLoopSet || currentLoopMatchesBeatloopSize()) {
-        slotBeatLoop(m_pCOBeatLoopSize->get() * 2.0, true, false);
-    } else {
-        slotLoopScale(2.0);
-    }
+    slotBeatLoop(m_pCOBeatLoopSize->get() * 2.0, true, false);
 }
 
 double LoopingControl::process(const double dRate,
@@ -499,6 +477,13 @@ void LoopingControl::setLoopInToCurrentPosition() {
     loopSamples.start = pos;
     m_pCOLoopStartPosition->set(loopSamples.start);
 
+    if (m_pQuantizeEnabled->toBool()
+            && loopSamples.start < loopSamples.end
+            && m_pBeats != nullptr) {
+        m_pCOBeatLoopSize->setAndConfirm(
+            m_pBeats->numBeatsInRange(loopSamples.start, loopSamples.end));
+    }
+
     m_loopSamples.setValue(loopSamples);
     //qDebug() << "set loop_in to " << loopSamples.start;
 }
@@ -575,6 +560,10 @@ void LoopingControl::setLoopOutToCurrentPosition() {
     loopSamples.end = pos;
     m_pCOLoopEndPosition->set(loopSamples.end);
     m_loopSamples.setValue(loopSamples);
+    if (m_pQuantizeEnabled->toBool() && m_pBeats != nullptr) {
+        m_pCOBeatLoopSize->setAndConfirm(
+            m_pBeats->numBeatsInRange(loopSamples.start, loopSamples.end));
+    }
 
     // start looping
     if (loopSamples.start != kNoTrigger &&
@@ -902,7 +891,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         double nextBeat;
         m_pBeats->findPrevNextBeats(cur_pos, &prevBeat, &nextBeat);
 
-        if (m_pQuantizeEnabled->get() > 0.0 && prevBeat != -1) {
+        if (m_pQuantizeEnabled->toBool() && prevBeat != -1) {
             if (beats >= 1.0) {
                 newloopSamples.start = prevBeat;
             } else {
@@ -960,7 +949,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         return;
     }
 
-    // When loading a new track or after setting a manual loop,
+    // When loading a new track or after setting a manual loop without quantize,
     // do not resize the existing loop until beatloop_size matches
     // the size of the existing loop.
     // Do not return immediately so beatloop_size can be updated.
@@ -1018,20 +1007,6 @@ void LoopingControl::slotBeatLoopSizeChangeRequest(double beats) {
     // slotBeatLoop will call m_pCOBeatLoopSize->setAndConfirm if
     // new beatloop_size is valid
     slotBeatLoop(beats, true, false);
-}
-
-void LoopingControl::slotBeatLoopDouble(double pressed) {
-    if (pressed <= 0.0) {
-        return;
-    }
-    slotBeatLoop(m_pCOBeatLoopSize->get() * 2.0, true, false);
-}
-
-void LoopingControl::slotBeatLoopHalve(double pressed) {
-    if (pressed <= 0.0) {
-        return;
-    }
-    slotBeatLoop(m_pCOBeatLoopSize->get() / 2.0, true, false);
 }
 
 void LoopingControl::slotBeatLoopToggle(double pressed) {

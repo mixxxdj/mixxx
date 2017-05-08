@@ -104,6 +104,18 @@ class Beats {
     // then dSamples is returned. If no beat can be found, returns -1.
     virtual double findNthBeat(double dSamples, int n) const = 0;
 
+    inline int numBeatsInRange(double dStartSample, double dEndSample) {
+        double dLastCountedBeat = 0.0;
+        int iBeatsCounter;
+        for (iBeatsCounter = 1; dLastCountedBeat < dEndSample; iBeatsCounter++) {
+            dLastCountedBeat = findNthBeat(dStartSample, iBeatsCounter);
+            if (dLastCountedBeat == -1) {
+                break;
+            }
+        }
+        return iBeatsCounter - 2;
+    };
+
     // Find the sample N beats away from dSample. The number of beats may be
     // negative and does not need to be an integer.
     inline double findNBeatsFromSample(double dSample, double beats) const {

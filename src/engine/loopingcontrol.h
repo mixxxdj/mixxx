@@ -75,8 +75,6 @@ class LoopingControl : public EngineControl {
     // beatslicing effect.
     void slotBeatLoop(double loopSize, bool keepStartPoint=false, bool enable=true);
     void slotBeatLoopSizeChangeRequest(double beats);
-    void slotBeatLoopHalve(double pressed);
-    void slotBeatLoopDouble(double pressed);
     void slotBeatLoopToggle(double pressed);
     void slotBeatLoopRollActivate(double pressed);
     void slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl);
@@ -156,8 +154,6 @@ class LoopingControl : public EngineControl {
     // Base BeatLoop Control Object.
     ControlObject* m_pCOBeatLoop;
     ControlObject* m_pCOBeatLoopSize;
-    ControlPushButton* m_pCOBeatLoopDouble;
-    ControlPushButton* m_pCOBeatLoopHalve;
     // Different sizes for Beat Loops/Seeks.
     static double s_dBeatSizes[];
     // Array of BeatLoopingControls, one for each size.
