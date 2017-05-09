@@ -65,7 +65,6 @@
       <attribute persist="true" config_key="[Tango],crossfader">1</attribute>
       <attribute persist="true" config_key="[Tango],crossfader_logo_Stack">1</attribute>
       <attribute persist="true" config_key="[Tango],deck_controls">1</attribute>
-      <attribute persist="true" config_key="[Tango],empty_spinny_cover">2</attribute>
       <attribute persist="true" config_key="[Tango],eq_knobs">1</attribute>
       <attribute persist="true" config_key="[Tango],hotcues">1</attribute>
       <attribute persist="true" config_key="[Tango],key_controls">1</attribute>
@@ -91,12 +90,9 @@
       <attribute persist="true" config_key="[Tango],stacked_waveforms">1</attribute>
       <attribute persist="true" config_key="[Tango],stars">1</attribute>
       <attribute persist="true" config_key="[Tango],trackComment">1</attribute>
-      <!-- keeps Spinny/Cover selection when switching between small and big version -->
-      <attribute persist="true" config_key="[Tango],spinny0_cover1_stack">1</attribute>
+      <attribute persist="true" config_key="[Tango],spinny_cover_none">1</attribute>
       <attribute persist="true" config_key="[Tango],spinnyCoverBIG">1</attribute>
       <attribute persist="true" config_key="[Tango],spinnyWithCoverArt">1</attribute>
-      <!-- keeps CoverArt option when switching between small and big Spinny -->
-      <attribute persist="true" config_key="[Tango],spinnyWithCoverArt_stack">1</attribute>
       <attribute persist="true" config_key="[Tango],vinylControlsDeck1">0</attribute>
       <attribute persist="true" config_key="[Tango],vinylControlsDeck2">0</attribute>
       <attribute persist="true" config_key="[Tango],vinylControlsDeck3">0</attribute>

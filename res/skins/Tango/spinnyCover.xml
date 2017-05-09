@@ -4,21 +4,21 @@ Description:
   Displayed next to decks where channel mixer would be.
 Variables:
   group   : [ChannelN]
-  [Tango],spinny0_cover1_stack (show Spinny or CoverArt)
-          : keeps Spinny/Cover selection when switching between small and big version
-  [Tango],spinnyWithCoverArt_stack (show Spinny with or without Cover)
-          : keeps CoverArt option when switching between small and big Spinny
 -->
-<Template>	
-  <WidgetStack currentpage="[Tango],spinny0_cover1_stack" persist="true">
+<Template>
+  <WidgetGroup>
     <ObjectName>SpinnyCover</ObjectName>
-    <Size>111f,136f</Size>
+    <SizePolicy>min,min</SizePolicy>
+    <Layout>vertical</Layout>
     <Children>
 
-      <WidgetStack currentpage="[Tango],spinnyWithCoverArt_stack" persist="true">
+      <!-- spinny -->
+      <WidgetGroup>
         <Size>111f,111f</Size>
+        <Layout>vertical</Layout>
         <Children>
-          <Spinny><!-- no Cover on Spinny -->
+          <!-- no Cover on Spinny -->
+          <Spinny>
             <TooltipId>spinny</TooltipId>
             <Size>111f,111f</Size>
             <Group><Variable name="group"/></Group>
@@ -27,9 +27,14 @@ Variables:
             <PathForeground scalemode="STRETCH_ASPECT">skin:/graphics/spinny_indicator.svg</PathForeground>
             <PathGhost scalemode="STRETCH_ASPECT">skin:/graphics/spinny_indicator_ghost.svg</PathGhost>
             <ShowCover>false</ShowCover>
+            <Connection>
+              <ConfigKey persist="true">[Tango],spinnyWithCoverArt</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </Spinny>
           <!-- Cover on Spinny -->
-          <Spinny trigger="[Tango],spinnyWithCoverArt" persist="true" on-hide-select="0">
+          <Spinny>
             <TooltipId>spinny</TooltipId>
             <Size>111f,111f</Size>
             <Group><Variable name="group"/></Group>
@@ -45,11 +50,11 @@ Variables:
           </Spinny>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Tango],empty_spinny_cover</ConfigKey>
-          <Transform><IsEqual>1</IsEqual></Transform>
+          <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
+          <Transform><IsEqual>0</IsEqual></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetStack>
+      </WidgetGroup>
 
       <CoverArt>
         <TooltipId>coverart</TooltipId>
@@ -57,12 +62,23 @@ Variables:
         <Group><Variable name="group"/></Group>
         <DefaultCover>skin:/graphics/cover_default.svg</DefaultCover>
         <Connection>
-          <ConfigKey persist="true">[Tango],empty_spinny_cover</ConfigKey>
-          <Transform><IsEqual>2</IsEqual></Transform>
+          <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
+          <Transform><IsEqual>1</IsEqual></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
       </CoverArt>
 
+      <!-- none -->
+      <WidgetGroup>
+        <Size>0f,0f</Size>
+        <Children/>
+        <Connection>
+          <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
+          <Transform><IsEqual>2</IsEqual></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
     </Children>
-  </WidgetStack>
+  </WidgetGroup>
 </Template>
