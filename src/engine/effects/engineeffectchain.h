@@ -62,7 +62,7 @@ class EngineEffectChain : public EffectsRequestHandler {
     ChannelStatus& getChannelStatus(const ChannelHandle& handle);
 
     QString m_id;
-    EffectProcessor::EnableState m_enableState;
+    EffectProcessor::EnableState m_chainEnableState;
     EffectChain::InsertionType m_insertionType;
     CSAMPLE m_dMix;
     QList<EngineEffect*> m_effects;

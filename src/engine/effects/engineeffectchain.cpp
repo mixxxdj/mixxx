@@ -6,7 +6,7 @@
 
 EngineEffectChain::EngineEffectChain(const QString& id)
         : m_id(id),
-          m_enableState(EffectProcessor::ENABLED),
+          m_chainEnableState(EffectProcessor::ENABLED),
           m_insertionType(EffectChain::INSERT),
           m_dMix(0),
           m_buffer1(MAX_BUFFER_LEN),
@@ -69,10 +69,10 @@ bool EngineEffectChain::updateParameters(const EffectsRequest& message) {
     m_insertionType = message.SetEffectChainParameters.insertion_type;
     m_dMix = message.SetEffectChainParameters.mix;
 
-    if (m_enableState != EffectProcessor::DISABLED && !message.SetEffectParameters.enabled) {
-        m_enableState = EffectProcessor::DISABLING;
-    } else if (m_enableState == EffectProcessor::DISABLED && message.SetEffectParameters.enabled) {
-        m_enableState = EffectProcessor::ENABLING;
+    if (m_chainEnableState != EffectProcessor::DISABLED && !message.SetEffectParameters.enabled) {
+        m_chainEnableState = EffectProcessor::DISABLING;
+    } else if (m_chainEnableState == EffectProcessor::DISABLED && message.SetEffectParameters.enabled) {
+        m_chainEnableState = EffectProcessor::ENABLING;
     }
     return true;
 }
@@ -156,7 +156,7 @@ void EngineEffectChain::process(const ChannelHandle& handle,
                                 const GroupFeatureState& groupFeatures) {
     ChannelStatus& channel_info = getChannelStatus(handle);
 
-    if (m_enableState == EffectProcessor::DISABLED
+    if (m_chainEnableState == EffectProcessor::DISABLED
             || channel_info.enable_state == EffectProcessor::DISABLED) {
         // If the chain is not enabled and the channel is not enabled and we are not
         // ramping out then do nothing.
@@ -171,12 +171,12 @@ void EngineEffectChain::process(const ChannelHandle& handle,
         channel_info.enable_state = EffectProcessor::ENABLED;
     }
 
-    if (m_enableState == EffectProcessor::DISABLING) {
+    if (m_chainEnableState == EffectProcessor::DISABLING) {
         effectiveEnableState = EffectProcessor::DISABLING;
-        m_enableState = EffectProcessor::DISABLED;
-    } else if (m_enableState == EffectProcessor::ENABLING) {
+        m_chainEnableState = EffectProcessor::DISABLED;
+    } else if (m_chainEnableState == EffectProcessor::ENABLING) {
         effectiveEnableState = EffectProcessor::ENABLING;
-        m_enableState = EffectProcessor::ENABLED;
+        m_chainEnableState = EffectProcessor::ENABLED;
     }
 
     // At this point either the chain and channel are enabled or we are ramping
@@ -192,33 +192,35 @@ void EngineEffectChain::process(const ChannelHandle& handle,
     // Ramping code inside the effects need to access the original samples
     // after writing to the output buffer. This requires not to use the same buffer
     // for in and output:
-    int enabledEffectCount = 0;
+    int processedEffectCount = 0;
     CSAMPLE* pIntermediateInput = pInOut;
     CSAMPLE* pIntermediateOutput = m_buffer1.data();
 
     for (EngineEffect* pEffect: m_effects) {
-        if (pEffect == nullptr || pEffect->disabled()) {
+        if (pEffect == nullptr) {
             continue;
         }
-        pEffect->process(
+        bool effectIsProcessing = pEffect->process(
                 handle,
                 pIntermediateInput, pIntermediateOutput,
                 numSamples, sampleRate,
                 effectiveEnableState, groupFeatures);
 
-        ++enabledEffectCount;
-        if (enabledEffectCount % 2) {
-            pIntermediateInput = m_buffer1.data();
-            pIntermediateOutput = m_buffer2.data();
-        } else {
-            pIntermediateInput = m_buffer2.data();
-            pIntermediateOutput = m_buffer1.data();
+        if (effectIsProcessing) {
+            ++processedEffectCount;
+            if (processedEffectCount % 2) {
+                pIntermediateInput = m_buffer1.data();
+                pIntermediateOutput = m_buffer2.data();
+            } else {
+                pIntermediateInput = m_buffer2.data();
+                pIntermediateOutput = m_buffer1.data();
+            }
         }
     }
 
     // Mix the effected signal, unless no effects are enabled
     // or the chain is fully dry and not ramping.
-    if (enabledEffectCount > 0 && !(wet_gain == 0.0 && wet_gain_old == 0.0)) {
+    if (processedEffectCount > 0 && !(wet_gain == 0.0 && wet_gain_old == 0.0)) {
         if (m_insertionType == EffectChain::INSERT) {
             // INSERT mode: output = input * (1-wet) + effect(input) * wet
             SampleUtil::copy2WithRampingGain(

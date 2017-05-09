@@ -35,16 +35,12 @@ class EngineEffect : public EffectsRequestHandler {
         const EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe);
 
-    void process(const ChannelHandle& handle,
+    bool process(const ChannelHandle& handle,
                  const CSAMPLE* pInput, CSAMPLE* pOutput,
                  const unsigned int numSamples,
                  const unsigned int sampleRate,
                  const EffectProcessor::EnableState enableState,
                  const GroupFeatureState& groupFeatures);
-
-    bool disabled() const {
-        return m_enableState == EffectProcessor::DISABLED;
-    }
 
   private:
     QString debugString() const {
@@ -53,8 +49,9 @@ class EngineEffect : public EffectsRequestHandler {
 
     EffectManifest m_manifest;
     EffectProcessor* m_pProcessor;
-    EffectProcessor::EnableState m_enableState;
+    bool m_bEffectSlotEnabled;
     bool m_effectRampsFromDry;
+    QHash<const ChannelHandle&, EffectProcessor::EnableState> m_channelEnableState;
     // Must not be modified after construction.
     QVector<EngineEffectParameter*> m_parameters;
     QMap<QString, EngineEffectParameter*> m_parametersById;
