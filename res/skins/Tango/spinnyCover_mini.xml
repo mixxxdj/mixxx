@@ -36,7 +36,7 @@ Variables:
             </Connection>
           </Spinny>
           <!-- Cover on Spinny -->
-          <Spinny trigger="[Tango],spinnyWithCoverArt" persist="true">
+          <Spinny>
             <ObjectName>SpinnyMini</ObjectName>
             <Size>50f,50f</Size>
             <TooltipId>spinny</TooltipId>
