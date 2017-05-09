@@ -5,6 +5,7 @@
 
 #include "util/types.h"
 #include "engine/enginemaster.h"
+#include "effects/engineeffectsmanager.h"
 
 class ChannelMixer {
   public:
@@ -20,6 +21,22 @@ class ChannelMixer {
         QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache,
         CSAMPLE* pOutput,
         unsigned int iBufferSize);
+    static void applyEffectsAndMixChannels(
+        const EngineMaster::GainCalculator& gainCalculator,
+        QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>* activeChannels,
+        QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache,
+        CSAMPLE* pOutput,
+        unsigned int iBufferSize,
+        unsigned int iSampleRate,
+        EngineEffectsManager* pEngineEffectsManager);
+    static void applyEffectsAndMixChannelsRamping(
+        const EngineMaster::GainCalculator& gainCalculator,
+        QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>* activeChannels,
+        QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache,
+        CSAMPLE* pOutput,
+        unsigned int iBufferSize,
+        unsigned int iSampleRate,
+        EngineEffectsManager* pEngineEffectsManager);
 };
 
 #endif /* CHANNELMIXER_H */

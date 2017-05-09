@@ -82,7 +82,7 @@ void EngineAux::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
 
 void EngineAux::process(CSAMPLE* pOut, const int iBufferSize) {
     const CSAMPLE* sampleBuffer = m_sampleBuffer; // save pointer on stack
-    double pregain =  m_pPregain->get();
+    double pregain = m_pPregain->get();
     if (sampleBuffer) {
         SampleUtil::copyWithGain(pOut, sampleBuffer, pregain, iBufferSize);
         m_sampleBuffer = NULL;
@@ -90,15 +90,10 @@ void EngineAux::process(CSAMPLE* pOut, const int iBufferSize) {
         SampleUtil::clear(pOut, iBufferSize);
     }
 
-    if (m_pEngineEffectsManager != NULL) {
-        GroupFeatureState features;
-        // This is out of date by a callback but some effects will want the RMS
-        // volume.
-        m_vuMeter.collectFeatures(&features);
-        // Process effects enabled for this channel
-        m_pEngineEffectsManager->process(getHandle(), pOut, iBufferSize,
-                                         m_pSampleRate->get(), features);
-    }
     // Update VU meter
     m_vuMeter.process(pOut, iBufferSize);
+}
+
+void EngineAux::collectFeatures(GroupFeatureState* pGroupFeatures) const {
+    m_vuMeter.collectFeatures(pGroupFeatures);
 }

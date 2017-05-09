@@ -316,6 +316,13 @@ void EngineMaster::processChannels(int iBufferSize) {
         ChannelInfo* pChannelInfo = m_activeChannels[i];
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
         pChannel->process(pChannelInfo->m_pBuffer, iBufferSize);
+
+        // Collect metadata for effects
+        if (m_pEngineEffectsManager) {
+            GroupFeatureState features;
+            pChannel->collectFeatures(&features);
+            pChannelInfo->m_features = features;
+        }
     }
 
     // After all the engines have been processed, trigger post-processing
@@ -414,17 +421,19 @@ void EngineMaster::process(const int iBufferSize) {
     // master volume, the channel volume, and the orientation gain.
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
         if (m_bRampingGain) {
-            ChannelMixer::mixChannelsRamping(
+            ChannelMixer::applyEffectsAndMixChannelsRamping(
                     m_masterGain,
                     &m_activeBusChannels[o],
                     &m_channelMasterGainCache, // no [o] because the old gain follows an orientation switch
-                    m_pOutputBusBuffers[o], iBufferSize);
+                    m_pOutputBusBuffers[o],
+                    iBufferSize, iSampleRate, m_pEngineEffectsManager);
         } else {
-            ChannelMixer::mixChannels(
+            ChannelMixer::applyEffectsAndMixChannels(
                     m_masterGain,
                     &m_activeBusChannels[o],
                     &m_channelMasterGainCache,
-                    m_pOutputBusBuffers[o], iBufferSize);
+                    m_pOutputBusBuffers[o],
+                    iBufferSize, iSampleRate, m_pEngineEffectsManager);
         }
     }
 

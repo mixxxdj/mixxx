@@ -149,6 +149,7 @@ class EngineMaster : public QObject, public AudioSource {
         CSAMPLE* m_pBuffer;
         ControlObject* m_pVolumeControl;
         ControlPushButton* m_pMuteControl;
+        GroupFeatureState m_features;
         int m_index;
     };
 

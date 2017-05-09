@@ -30,6 +30,7 @@ class EngineAux : public EngineChannel, public AudioDestination {
 
     // Called by EngineMaster whenever is requesting a new buffer of audio.
     virtual void process(CSAMPLE* pOutput, const int iBufferSize);
+    virtual void collectFeatures(GroupFeatureState* pGroupFeatures) const;
     virtual void postProcess(const int iBufferSize) { Q_UNUSED(iBufferSize) }
 
     // This is called by SoundManager whenever there are new samples from the

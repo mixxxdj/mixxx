@@ -90,15 +90,10 @@ void EngineMicrophone::process(CSAMPLE* pOut, const int iBufferSize) {
     }
     m_sampleBuffer = NULL;
 
-    if (m_pEngineEffectsManager != NULL) {
-        // Process effects enabled for this channel
-        GroupFeatureState features;
-        // This is out of date by a callback but some effects will want the RMS
-        // volume.
-        m_vuMeter.collectFeatures(&features);
-        m_pEngineEffectsManager->process(getHandle(), pOut, iBufferSize,
-                                         m_pSampleRate->get(), features);
-    }
     // Update VU meter
     m_vuMeter.process(pOut, iBufferSize);
+}
+
+void EngineMicrophone::collectFeatures(GroupFeatureState* pGroupFeatures) const {
+    m_vuMeter.collectFeatures(pGroupFeatures);
 }
