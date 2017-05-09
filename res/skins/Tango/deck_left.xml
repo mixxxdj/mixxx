@@ -69,12 +69,12 @@ Variables:
                     </Children>
                   </WidgetGroup><!-- /Mixer -->
 
-                  <WidgetGroup><!-- [Spinny / Cover] + VUMeter -->
+                  <WidgetGroup><!-- [Spinny / Cover / none] + VUMeter -->
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,me</SizePolicy>
                     <Children>
 
-                      <WidgetGroup><!-- [Spinny / Cover] -->
+                      <WidgetGroup><!-- [Spinny / Cover / none] -->
                         <Layout>horizontal</Layout>
                         <SizePolicy>min,min</SizePolicy>
                         <Children>
@@ -98,10 +98,11 @@ Variables:
                           </WidgetGroup>
                         </Children>
                         <Connection>
-                          <ConfigKey persist="true">[Tango],empty_spinny_cover</ConfigKey>
+                          <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
+                          <Transform><IsEqual>2</IsEqual><Not/></Transform>
                           <BindProperty>visible</BindProperty>
                         </Connection>
-                      </WidgetGroup><!-- /[Spinny / Cover] -->
+                      </WidgetGroup><!-- /[Spinny / Cover /none] -->
 
                       <WidgetGroup>
                         <Size>3f,1me</Size>
@@ -115,10 +116,10 @@ Variables:
                       <Template src="skin:vumeter_floating.xml"/>
 
                     </Children>
-                  </WidgetGroup><!-- / [Spinny / Cover] + VUMeter -->
+                  </WidgetGroup><!-- / [Spinny / Cover / none] + VUMeter -->
 
                 </Children>
-              </WidgetStack><!-- /Mixer / [ [Spinny / Cover] + VUMeter ] -->
+              </WidgetStack><!-- /Mixer / [ [Spinny / Cover / none] + VUMeter ] -->
 
               <WidgetGroup><!-- Pitch slider & Key controls -->
                 <Size>3f,1me</Size>
