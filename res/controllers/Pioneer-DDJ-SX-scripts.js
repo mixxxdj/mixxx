@@ -10,7 +10,7 @@ var PioneerDDJSX = function() {};
 
 /*
 	Author: 		DJMaxergy
-	Version: 		1.04, 05/10/2017
+	Version: 		1.05, 05/10/2017
 	Description: 	Pioneer DDJ-SX Controller Mapping for Mixxx
     Source: 		http://github.com/DJMaxergy/mixxx/tree/pioneerDDJSX_mapping
     
@@ -36,11 +36,6 @@ PioneerDDJSX.jogwheelShiftMultiplier = 10;
 
 // Sets the default speed slider range (default: 0.08 = 8%).
 PioneerDDJSX.speedSliderRange = 0.08;
-
-// Cuts level-meter low frequencies and expands upper frequencies (default: 0). Examples:
-// 0.25 -> only signals greater 25%, expanded to full range
-// 0.5 -> only signals greater 50%, expanded to full range
-PioneerDDJSX.cutVumeter = 0;
 
 // If true, vu meters twinkle if AutoDJ is enabled (default: true).
 PioneerDDJSX.twinkleVumeterAutodjOn = true;
@@ -1955,26 +1950,15 @@ PioneerDDJSX.hotCueLeds = function(value, group, control) {
 };
 
 PioneerDDJSX.VuMeterLeds = function(value, group, control) {
+	// Remark: Only deck vu meters can be controlled! Master vu meter is handled by hardware!
     var midiBaseAdress = 0xB0,
         channel = 0x02,
         midiOut = 0x00;
 
-    value = 1 / (1 - PioneerDDJSX.cutVumeter) * (value - PioneerDDJSX.cutVumeter);
-    if (value < 0) {
-        value = 0;
-    }
-
     value = parseInt(value * 0x76); //full level indicator: 0x7F
-    if (value < 0) {
-        value = 0;
-    }
-
-    if (value > 0x76) {
-        value = 0x76;
-    }
 
     if (engine.getValue(group, "PeakIndicator")) {
-        value = value + 0x08;
+        value = value + 0x09;
     }
 
     PioneerDDJSX.valueVuMeter[group + "_current"] = value;
