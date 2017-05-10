@@ -1,0 +1,173 @@
+<!--
+Description:
+  A deck container
+  * VU meter
+  * mixer / [CoverArt/Spinny]
+  * main deck
+    * artist/title
+    * overview
+    * track comment (if enabled)
+    * deck buttons
+Variables:
+  channum : [ChannelN]
+-->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>DeckContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <Size>504me,136min</Size>
+    <Children>
+
+      <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
+
+      <WidgetGroup><!-- Mixer / [ [Spinny / Cover / none] + VUMeter ] + Pitch + spacer -->
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup><!-- Mixer / [ [Spinny / Cover / none] + VUMeter ] + Pitch -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <!-- Pitch slider & Key controls -->
+              <Template src="skin:rate_pitch_key.xml"/>
+			
+              <WidgetGroup>
+                <Size>3f,1me</Size>
+                <Children/>
+                <Connection>
+                  <ConfigKey>[Tango],pitch_fader</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+              <!-- /Pitch slider & Key controls -->
+              
+              <!-- Mixer / [ [Spinny / Cover] + VUMeter ] -->
+              <WidgetStack currentpage="[Tango],mixer_spinnyCover" persist="true">
+                <ObjectName>MixerCoverStack</ObjectName>
+                <SizePolicy>f,min</SizePolicy>
+                <Children>
+                
+                  <!-- Mixer -->
+                  <WidgetGroup trigger="[Tango],channel_mixer" persist="true" on-hide-select="1">
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>f,f</SizePolicy>
+                    <Children>
+                      <Template src="skin:mixer_channel_right.xml"/>
+                    </Children>
+                  </WidgetGroup><!-- /Mixer -->
+                  
+                  <WidgetGroup><!-- [Spinny / Cover / none] + VUMeter -->
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,me</SizePolicy>
+                    <Children>
+                      
+                      <Template src="skin:vumeter_floating.xml"/>
+			
+                      <WidgetGroup>
+                        <Size>3f,1me</Size>
+                        <Children/>
+                        <Connection>
+                          <ConfigKey>[Tango],vumeter</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
+                    
+                      <WidgetGroup><!-- [Spinny / Cover / none] -->
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Children>
+                          <WidgetGroup>
+                            <Layout>horizontal</Layout>
+                            <SizePolicy>min,min</SizePolicy>
+                            <Children>
+                            
+                                <Template src="skin:spinnyCover.xml"/>
+			
+                                <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
+                                
+                            </Children>
+                            <Connection>
+                              <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </WidgetGroup>
+                        </Children>
+                        <Connection>
+                          <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
+                          <Transform><IsEqual>2</IsEqual><Not/></Transform>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
+                        
+                    </Children>
+                  </WidgetGroup><!-- /[Spinny / Cover / none] + VUMeter -->
+                    
+                </Children>
+              </WidgetStack><!-- /Mixer / [ [Spinny / Cover / none] + VUMeter ] -->
+            
+            </Children>
+          </WidgetGroup><!-- /Mixer / [ [Spinny / Cover / none] + VUMeter ] + Pitch -->
+          
+          Expanding spacer, necessary because obviously WidgetStack breaks
+          qproperty-layoutAlignment of parent Widget -->
+          <WidgetGroup><SizePolicy>min,me</SizePolicy><Children/></WidgetGroup>
+          
+        </Children>
+      </WidgetGroup><!-- /Mixer / [ [Spinny / Cover] + VUMeter ] + Pitch + spacer -->
+
+      <WidgetGroup><!-- [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
+        <ObjectName>Deck<Variable name="channum"/></ObjectName>
+        <Size>250me,136min</Size>
+        <Layout>vertical</Layout>
+        <Children>
+        
+          <!-- Packed Waveform & ArtistTitle into a fixed-size container,
+          so Deck stays steady while Comment and LoopBeatjump controls can be toggled.
+          On request, I also added the option for symmetrical left & right decks:
+          1 Waveform
+          2 Comment (optional)
+          3 Title / Play position
+          4 Artist / track length -->
+          <WidgetGroup><!-- Overview, Comment, ArtistTitle -->
+            <Layout>vertical</Layout>
+            <Size>250me,111f</Size>
+            <Children>
+
+              <Template src="skin:deck_overview_right.xml"/>
+              <Template src="skin:deck_comment_right.xml"/>
+              <Template src="skin:deck_artist_title_right.xml"/>
+
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],stacked_overviews</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /Overview, Comment, ArtistTitle -->
+
+          <WidgetGroup><!-- ArtistTitle, Overview, Comment -->
+            <Layout>vertical</Layout>
+            <Size>250me,111f</Size>
+            <Children>
+
+              <Template src="skin:deck_artist_title_right.xml"/>
+              <Template src="skin:deck_overview_right.xml"/>
+              <Template src="skin:deck_comment_right.xml"/>
+
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],stacked_overviews</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /ArtistTitle, Overview, Comment -->
+
+          <Template src="skin:deck_buttons_right.xml" /><!-- 24f -->
+          <Template src="skin:deck_loop_beatjump_right.xml"/><!-- 50+1 -->
+          
+        </Children>
+      </WidgetGroup><!-- / [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
+    </Children>
+  </WidgetGroup>
+</Template>

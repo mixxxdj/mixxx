@@ -1,0 +1,315 @@
+<!--
+Description:
+  Box in between decks (displayed in normal mode) with
+  * GUI toggle buttons (FX, Sampler, Lib, Wave ...)
+  * Crossfader (if enabled)
+  * Logo
+  * recording button with duration display
+  * broadcast button
+  * clock
+  * skin settings toggler
+-->
+<Template>
+  <WidgetGroup><!-- Skin Controls -->
+    <Layout>vertical</Layout>
+    <ObjectName>SkinControls</ObjectName>
+    <Size>104f,1me</Size>
+    <Children>
+
+      <WidgetGroup><!-- 4 Decks / Wave / Spinny / HotCues / Mixer -->
+        <Layout>horizontal</Layout>
+        <ObjectName>SkinControlsRow</ObjectName>
+        <Size>104f,21f</Size>
+        <Children>
+
+          <Template src="skin:button_2state_persist.xml"><!-- 4 Decks -->
+            <SetVariable name="ObjectName">GuiToggleButton2</SetVariable>
+            <SetVariable name="Size">20f,20f</SetVariable>
+            <SetVariable name="TooltipId">toggle_4decks</SetVariable>
+            <SetVariable name="state_0_pressed">2decks.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">2decks.svg</SetVariable>
+            <SetVariable name="state_1_pressed">4decks.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">4decks.svg</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Master],show_4decks</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+
+          <Template src="skin:button_2state_persist.xml"><!-- Waveforms -->
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">20f,20f</SetVariable>
+            <SetVariable name="state_0_pressed">wave_off.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">wave_off.svg</SetVariable>
+            <SetVariable name="state_1_pressed">wave_on.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">wave_on.svg</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Tango],stacked_waveforms</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+
+          <Template src="skin:button_3state_persist.xml"><!-- Spinny -->
+            <SetVariable name="TooltipId">show_spinny</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton2</SetVariable>
+            <SetVariable name="Size">20f,20f</SetVariable>
+            <SetVariable name="state_0_pressed">cover.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">cover.svg</SetVariable>
+            <SetVariable name="state_1_pressed">cover_off.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">cover_off.svg</SetVariable>
+            <SetVariable name="state_2_pressed">spinny.svg</SetVariable>
+            <SetVariable name="state_2_unpressed">spinny.svg</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Tango],spinny_cover_none</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+
+          <Template src="skin:button_3state_persist.xml">
+              <SetVariable name="TooltipId"></SetVariable>
+              <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+              <SetVariable name="Size">20f,20f</SetVariable>
+              <SetVariable name="Align">left</SetVariable>
+              <SetVariable name="state_0_unpressed">hotcues_off.svg</SetVariable>
+              <SetVariable name="state_0_pressed">hotcues_off.svg</SetVariable>
+              <SetVariable name="state_1_unpressed">hotcues_on.svg</SetVariable>
+              <SetVariable name="state_1_pressed">hotcues_on.svg</SetVariable>
+              <SetVariable name="state_2_unpressed">hotcues_on.svg</SetVariable>
+              <SetVariable name="state_2_pressed">hotcues_on.svg</SetVariable>
+              <SetVariable name="ConfigKeyPerm">[Tango],hotcues</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+
+          <Template src="skin:button_2state_persist.xml"><!-- Mixer -->
+            <SetVariable name="TooltipId">show_mixer</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">20f,20f</SetVariable>
+            <SetVariable name="state_0_pressed">mixer_off.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">mixer_off.svg</SetVariable>
+            <SetVariable name="state_1_pressed">mixer_on.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">mixer_on.svg</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Tango],channel_mixer</SetVariable>
+          </Template>
+
+        </Children>
+      </WidgetGroup><!-- 4 Decks / Wave / Spinny / HotCues / Mixer -->
+
+      <WidgetGroup><!-- Lib / FX / Sampler-->
+        <Layout>horizontal</Layout>
+        <ObjectName>SkinControlsRow</ObjectName>
+        <Size>104f,21f</Size>
+        <Children>
+
+          <Template src="skin:button_2state_persist.xml"><!-- FX -->
+            <SetVariable name="TooltipId">show_effects</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">34f,20f</SetVariable>
+            <SetVariable name="state_0_text">FX</SetVariable>
+            <SetVariable name="state_1_text">FX</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[EffectRack1],show</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+
+          <Template src="skin:button_2state_persist.xml"><!-- Samplers -->
+            <SetVariable name="TooltipId">show_samplers</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">34f,20f</SetVariable>
+            <SetVariable name="state_0_text">SAM</SetVariable>
+            <SetVariable name="state_1_text">SAM</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Samplers],show_samplers</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+
+          <Template src="skin:button_2state_persist.xml"><!-- Library -->
+            <SetVariable name="TooltipId">show_library</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">34f,20f</SetVariable>
+            <SetVariable name="state_0_text">LIB</SetVariable>
+            <SetVariable name="state_1_text">LIB</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Library],show_library</SetVariable>
+          </Template>
+
+        </Children>
+      </WidgetGroup><!-- /Lib / FX / Sampler-->
+
+      <WidgetGroup><!-- Recording button & recording duration label -->
+        <Layout>stacked</Layout>
+        <Size>104f,20f</Size>
+        <Children>
+          <Template src="skin:button_3state_display.xml">
+            <SetVariable name="ObjectName">RecordingButton</SetVariable>
+            <SetVariable name="Size">104f,20f</SetVariable>
+            <SetVariable name="state_0_text">START REC</SetVariable>
+            <SetVariable name="state_1_text">. . .</SetVariable>
+            <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
+            <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
+          </Template>
+          <RecordingDuration>
+            <ObjectName>RecDurationLabel</ObjectName>
+            <Size>104f,20f</Size>
+            <Alignment>center</Alignment>
+          </RecordingDuration>
+        </Children>
+      </WidgetGroup><!-- /Recording button & recording duration label -->
+
+      <WidgetGroup><!-- Broadcast + Clock + Skin Settings -->
+        <ObjectName>ClockBox</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>104f,30me</Size>
+        <Children>
+
+          <Template src="skin:button_4state_display.xml"><!-- Recording -->
+            <SetVariable name="TooltipId">broadcast_enabled</SetVariable>
+            <SetVariable name="ObjectName">BroadcastButton</SetVariable>
+            <SetVariable name="Size">24f,34f</SetVariable>
+            <SetVariable name="ConfigKey">[Shoutcast],enabled</SetVariable>
+            <SetVariable name="ConfigKeyDisp">[Shoutcast],status</SetVariable>
+          </Template>
+
+          <WidgetGroup><!-- Clock (& Logo when Crossfader is visible in 2-decks mode) -->
+            <ObjectName>AlignVCenter</ObjectName>
+            <Size>56me,43me</Size>
+            <Layout>vertical</Layout>
+            <Children>
+              <WidgetGroup><!-- Clock container -->
+                <ObjectName>AlignCenter</ObjectName>
+                <Size>me,min</Size>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Time>
+                    <TooltipId>time</TooltipId>
+                    <ObjectName>Clock</ObjectName>
+                    <Size>30min,20f</Size>
+                    <ShowSeconds>false</ShowSeconds>
+                    <!-- This has no effect, neither has 'text-align' in qss.
+                    <Align>center</Align>   -->
+                  </Time>
+                </Children>
+              </WidgetGroup><!-- Clock container -->
+
+              <WidgetGroup><!-- LogoMini container -->
+                <ObjectName>AlignCenter</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <Size>52f,13f</Size>
+                    <Layout>vertical</Layout>
+                    <ObjectName>LogoMiniBox</ObjectName>
+                    <Children>
+                      <Template src="skin:button_2state_persist.xml">
+                        <SetVariable name="ObjectName">LogoMini</SetVariable>
+                        <SetVariable name="Size">52f,13f</SetVariable>
+                        <SetVariable name="state_0_pressed">logo_52x13_grey.svg</SetVariable>
+                        <SetVariable name="state_0_unpressed">logo_52x13_grey.svg</SetVariable>
+                        <SetVariable name="state_1_pressed">logo_52x13.svg</SetVariable>
+                        <SetVariable name="state_1_unpressed">logo_52x13.svg</SetVariable>
+                        <SetVariable name="ConfigKeyPerm">[Tango],colorLogo</SetVariable>
+                      </Template>
+                    </Children>
+                    <Connection>
+                      <ConfigKey persist="true">[Tango],crossfader</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- LogoMini container -->
+
+            </Children>
+          </WidgetGroup><!-- Clock (& Logo when Crossfader is visible in 2-decks mode) -->
+
+          <WidgetGroup><!-- Toggler for skin settings menu -->
+            <ObjectName>AlignVCenter</ObjectName>
+            <SizePolicy>min,me</SizePolicy>
+            <Layout>vertical</Layout>
+            <Children>
+            <!-- Still disabled, doesn't work for states below [states-2]
+              <Battery>
+                <Size>24f,18f</Size>
+                <Backpath></Backpath>
+                <PixmapUnknown>skin:/graphics/battery_unknown.svg</PixmapUnknown>
+                <PixmapCharged>skin:/graphics/battery_charged.svg</PixmapCharged>
+                <NumberStates>6</NumberStates>
+                <PixmapsCharging>skin:/graphics/batt/battery_%1_charging.png</PixmapsCharging>
+                <PixmapsDischarging>skin:/graphics/batt/battery_%1.png</PixmapsDischarging>
+              </Battery>  -->
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="ObjectName">SkinSettingsToggler</SetVariable>
+                <SetVariable name="Size">24f,24f</SetVariable>
+                <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- /Toggler for skin settings menu -->
+
+        </Children>
+      </WidgetGroup><!-- /Broadcast + Clock Skin + Settings -->
+
+      <!-- LogoCrossfaderBox 2 Decks-->
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Size>104f,28max</Size>
+        <Children>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>LogoMaxiBox</ObjectName>
+                <Layout>horizontal</Layout>
+                <Size>104f,26f</Size>
+                <Children>
+                  <Template src="skin:button_2state_persist.xml">
+                    <SetVariable name="ObjectName">LogoMaxi</SetVariable>
+                    <SetVariable name="Size">102f,26f</SetVariable>
+                    <SetVariable name="state_0_pressed">logo_104x26_grey.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">logo_104x26_grey.svg</SetVariable>
+                    <SetVariable name="state_1_pressed">logo_104x26.svg</SetVariable>
+                    <SetVariable name="state_1_unpressed">logo_104x26.svg</SetVariable>
+                    <SetVariable name="ConfigKeyPerm">[Tango],colorLogo</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],crossfader</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform><Not/></Transform>
+            </Connection>
+          </WidgetGroup>
+
+          <SliderComposed>
+            <ObjectName>Crossfader</ObjectName>
+            <TooltipId>crossfader</TooltipId>
+            <Handle>skin:/knobs_sliders/slider_crossfader_handle.svg</Handle>
+            <Slider>skin:/knobs_sliders/slider_crossfader_scale.svg</Slider>
+            <Horizontal>true</Horizontal>
+            <Connection>
+              <ConfigKey>[Master],crossfader</ConfigKey>
+            </Connection>
+            <Connection>
+              <ConfigKey persist="true">[Tango],crossfader</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </SliderComposed>
+
+        </Children>
+      </WidgetGroup><!-- /LogoCrossfaderBox 2 Decks -->
+
+    </Children>
+    <Connection>
+      <ConfigKey>[Tango],normal_mode</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

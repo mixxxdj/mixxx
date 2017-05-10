@@ -1,0 +1,78 @@
+<!--
+Description:
+    A stack of beatjump controls that jump forward or backward by X beats.
+Variables:
+    group: The group for the controls.
+-->
+<Template>
+  <WidgetStack>
+    <SizePolicy>max,min</SizePolicy>
+    <NextControl>[BeatJump],next</NextControl>
+    <PrevControl>[BeatJump],prev</PrevControl>
+    <Children>
+
+      <!-- Container with buttons for length choice and backward/forward buttons.
+        4 beats is first to make it default, later user changes persist. -->
+      <Template src="skin:button_beatjump.xml">
+        <SetVariable name="BeatjumpLength_Text">4</SetVariable>
+        <SetVariable name="BeatjumpLength_Control">4</SetVariable>
+      </Template>
+
+      <Template src="skin:button_beatjump.xml">
+        <SetVariable name="BeatjumpLength_Text">8</SetVariable>
+        <SetVariable name="BeatjumpLength_Control">8</SetVariable>
+      </Template>
+
+      <Template src="skin:button_beatjump.xml">
+        <SetVariable name="BeatjumpLength_Text">16</SetVariable>
+        <SetVariable name="BeatjumpLength_Control">16</SetVariable>
+      </Template>
+
+      <Template src="skin:button_beatjump.xml">
+        <SetVariable name="BeatjumpLength_Text">32</SetVariable>
+        <SetVariable name="BeatjumpLength_Control">32</SetVariable>
+      </Template>
+
+      <Template src="skin:button_beatjump.xml">
+        <SetVariable name="BeatjumpLength_Text">64</SetVariable>
+        <SetVariable name="BeatjumpLength_Control">64</SetVariable>
+      </Template>
+
+      <Template src="skin:button_beatjump.xml">
+        <SetVariable name="BeatjumpLength_Text">128</SetVariable>
+        <SetVariable name="BeatjumpLength_Control">128</SetVariable>
+      </Template>
+
+      <Template src="skin:button_beatjump.xml">
+        <SetVariable name="BeatjumpLength_Text">256</SetVariable>
+        <SetVariable name="BeatjumpLength_Control">256</SetVariable>
+      </Template>
+
+      <Template src="skin:button_beatjump.xml">
+        <SetVariable name="BeatjumpLength_Text">1/8</SetVariable>
+        <SetVariable name="BeatjumpLength_Control">0.125</SetVariable>
+      </Template>
+
+      <Template src="skin:button_beatjump.xml">
+        <SetVariable name="BeatjumpLength_Text">1/4</SetVariable>
+        <SetVariable name="BeatjumpLength_Control">0.25</SetVariable>
+      </Template>
+
+      <Template src="skin:button_beatjump.xml">
+        <SetVariable name="BeatjumpLength_Text">1/2</SetVariable>
+        <SetVariable name="BeatjumpLength_Control">0.5</SetVariable>
+      </Template>
+
+      <Template src="skin:button_beatjump.xml">
+        <SetVariable name="BeatjumpLength_Text">1</SetVariable>
+        <SetVariable name="BeatjumpLength_Control">1</SetVariable>
+      </Template>
+
+      <Template src="skin:button_beatjump.xml">
+        <SetVariable name="BeatjumpLength_Text">2</SetVariable>
+        <SetVariable name="BeatjumpLength_Control">2</SetVariable>
+      </Template>
+
+    </Children>
+  </WidgetStack>
+</Template>

@@ -202,6 +202,8 @@ SINT SoundSourceCoreAudio::readSampleFrames(
         UInt32 numFramesToReadInOut = numFramesToRead; // input/output parameter
         OSStatus err = ExtAudioFileRead(m_audioFile, &numFramesToReadInOut,
                 &fillBufList);
+        // TODO(uklotz): Should this be handled?
+        Q_UNUSED(err);
         if (0 == numFramesToReadInOut) {
             // EOF
             break;// done

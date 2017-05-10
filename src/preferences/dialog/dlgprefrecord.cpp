@@ -29,7 +29,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     LineEditRecordings->setText(recordingsPath);
     connect(PushButtonBrowseRecordings, SIGNAL(clicked()),
             this, SLOT(slotBrowseRecordingsDir()));
-            
+
     // Setting Encoder
     bool found = false;
     QString prefformat = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Encoding"));
@@ -69,8 +69,6 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     // Setting miscellaneous
     CheckBoxRecordCueFile->setChecked(
             (bool) m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt());
-    connect(CheckBoxRecordCueFile, SIGNAL(stateChanged(int)),
-            this, SLOT(slotEnableCueFile(int)));
 
     // Setting split
     comboBoxSplitting->addItem(SPLIT_650MB);
@@ -93,8 +91,6 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         //Use max RIFF size (4GB) as default index, since usually people don't want to split.
         comboBoxSplitting->setCurrentIndex(4);
     }
-    connect(comboBoxSplitting, SIGNAL(activated(int)),
-            this, SLOT(slotChangeSplitSize()));
 
     // Do the one-time connection of signals here.
     connect(SliderQuality, SIGNAL(valueChanged(int)),
@@ -142,7 +138,7 @@ void DlgPrefRecord::slotApply()
 // This function updates/refreshes the contents of this dialog.
 void DlgPrefRecord::slotUpdate()
 {
-    // Find out the max width of the labels. This is needed to keep the 
+    // Find out the max width of the labels. This is needed to keep the
     // UI fixed in size when hiding or showing elements.
     // It is not perfect, but it didn't get better than this.
     int max=0;
@@ -269,8 +265,8 @@ void DlgPrefRecord::setupEncoderUI(Encoder::Format selformat)
         // It will require to generate the buttongroup dynamically like:
         // >> buttongroup = new QButtonGroup(this);
         // >> buttongroup->addButton(radioButtonNoFFT);
-	    // >> buttongroup->addButton(radioButtonFFT);
-        
+        // >> buttongroup->addButton(radioButtonFFT);
+
         EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
         labelOptionGroup->setText(group.groupName);
         int controlIdx = settings->getSelectedOption(group.groupCode);
@@ -413,13 +409,13 @@ void DlgPrefRecord::saveEncoding()
         }
     }
 }
-void DlgPrefRecord::saveUseCueFile()
-{
+
+void DlgPrefRecord::saveUseCueFile() {
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CueEnabled"),
-        ConfigValue(CheckBoxRecordCueFile->isChecked()));
+                   ConfigValue(CheckBoxRecordCueFile->isChecked()));
 }
-void DlgPrefRecord::saveSplitSize()
-{
+
+void DlgPrefRecord::saveSplitSize() {
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "FileSize"),
-                ConfigValue(comboBoxSplitting->currentText()));
+                   ConfigValue(comboBoxSplitting->currentText()));
 }

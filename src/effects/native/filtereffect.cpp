@@ -25,10 +25,10 @@ EffectManifest FilterEffect::getManifest() {
     lpf->setId("lpf");
     lpf->setName(QObject::tr("LPF"));
     lpf->setDescription(QObject::tr("Corner frequency ratio of the low pass filter"));
-    lpf->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    lpf->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    lpf->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    lpf->setDefaultLinkType(EffectManifestParameter::LINK_LINKED_LEFT);
+    lpf->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+    lpf->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    lpf->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    lpf->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED_LEFT);
     lpf->setNeutralPointOnScale(1);
     lpf->setDefault(kMaxCorner);
     lpf->setMinimum(kMinCorner);
@@ -39,9 +39,9 @@ EffectManifest FilterEffect::getManifest() {
     q->setName(QObject::tr("Resonance"));
     q->setShortName(QObject::tr("Q"));
     q->setDescription(QObject::tr("Resonance of the filters, default = Flat top"));
-    q->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    q->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    q->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
+    q->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+    q->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    q->setUnitsHint(EffectManifestParameter::UnitsHint::SAMPLERATE);
     q->setDefault(0.707106781); // 0.707106781 = Butterworth
     q->setMinimum(0.4);
     q->setMaximum(4.0);
@@ -50,10 +50,10 @@ EffectManifest FilterEffect::getManifest() {
     hpf->setId("hpf");
     hpf->setName(QObject::tr("HPF"));
     hpf->setDescription(QObject::tr("Corner frequency ratio of the high pass filter"));
-    hpf->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    hpf->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    hpf->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    hpf->setDefaultLinkType(EffectManifestParameter::LINK_LINKED_RIGHT);
+    hpf->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+    hpf->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    hpf->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    hpf->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED_RIGHT);
     hpf->setNeutralPointOnScale(0.0);
     hpf->setDefault(kMinCorner);
     hpf->setMinimum(kMinCorner);
