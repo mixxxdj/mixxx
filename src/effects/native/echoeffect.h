@@ -26,14 +26,14 @@ struct EchoGroupState {
             : delay_buf(mixxx::AudioSignal::kSamplingRateMax * kMaxDelaySeconds *
                         kChannelCount) {
         delay_buf.clear();
-        prev_delay_time = 0.0;
+        prev_beats = 0.0;
         prev_delay_samples = 0;
         write_position = 0;
         ping_pong_left = true;
     }
 
     SampleBuffer delay_buf;
-    double prev_delay_time;
+    double prev_beats;
     int prev_delay_samples;
     int write_position;
     bool ping_pong_left;

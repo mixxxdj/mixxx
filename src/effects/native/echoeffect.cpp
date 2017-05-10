@@ -27,25 +27,25 @@ EffectManifest EchoEffect::getManifest() {
     EffectManifestParameter* delay = manifest.addParameter();
     delay->setId("delay_time");
     delay->setName(QObject::tr("Delay"));
-    delay->setDescription(QObject::tr("Delay time (seconds)"));
+    delay->setDescription(QObject::tr("Delay time (0 - 2 beats)"));
     delay->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     delay->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    delay->setUnitsHint(EffectManifestParameter::UnitsHint::TIME);
-    delay->setMinimum(0.1);
-    delay->setDefault(1.0);
-    delay->setMaximum(EchoGroupState::kMaxDelaySeconds);
+    delay->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
+    delay->setMinimum(0.01);
+    delay->setDefault(0.50);
+    delay->setMaximum(2.00);
 
     EffectManifestParameter* feedback = manifest.addParameter();
     feedback->setId("feedback_amount");
     feedback->setName(QObject::tr("Feedback"));
     feedback->setDescription(
             QObject::tr("Amount the echo fades each time it loops"));
-    feedback->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+    feedback->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     feedback->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     feedback->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    feedback->setMinimum(0.00);
-    feedback->setDefault(0.5);
-    feedback->setMaximum(1.0);
+    feedback->setMinimum(0.25);
+    feedback->setDefault(0.75);
+    feedback->setMaximum(0.90);
 
     EffectManifestParameter* pingpong = manifest.addParameter();
     pingpong->setId("pingpong_amount");
@@ -96,23 +96,33 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
                                 const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(enableState);
-    Q_UNUSED(groupFeatures);
+
     DEBUG_ASSERT(0 == (numSamples % EchoGroupState::kChannelCount));
     EchoGroupState& gs = *pGroupState;
-    double delay_time = m_pDelayParameter->value();
+    double beats = m_pDelayParameter->value();
     double send_amount = m_pSendParameter->value();
     double feedback_amount = m_pFeedbackParameter->value();
     double pingpong_frac = m_pPingPongParameter->value();
 
-    int delay_samples = EchoGroupState::kChannelCount * delay_time * sampleRate;
+    int delay_samples;
+    if (groupFeatures.has_beat_length) {
+        delay_samples = beats * groupFeatures.beat_length;
+    } else {
+        // Act as if the input is 100 BPM, which is a totally arbitrary tempo.
+        delay_samples = beats
+          / 100.0 * 60.0 * sampleRate / EchoGroupState::kChannelCount;
+    }
+    VERIFY_OR_DEBUG_ASSERT(delay_samples > 0) {
+        delay_samples = 1;
+    }
     VERIFY_OR_DEBUG_ASSERT(delay_samples <= gs.delay_buf.size()) {
         delay_samples = gs.delay_buf.size();
     }
 
-    if (delay_time < gs.prev_delay_time) {
+    if (beats < gs.prev_beats) {
         // If the delay time has shrunk, we may need to wrap the write position.
         gs.write_position = gs.write_position % delay_samples;
-    } else if (delay_time > gs.prev_delay_time) {
+    } else if (beats > gs.prev_beats) {
         // If the delay time has grown, we need to zero out the new portion
         // of the buffer we are using.
         SampleUtil::applyGain(gs.delay_buf.data(gs.prev_delay_samples), 0,
@@ -120,7 +130,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     }
 
     int read_position = gs.write_position;
-    gs.prev_delay_time = delay_time;
+    gs.prev_beats = beats;
     gs.prev_delay_samples = delay_samples;
 
     // Feedback the delay buffer and then add the new input.
