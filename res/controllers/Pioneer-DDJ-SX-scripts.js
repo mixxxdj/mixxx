@@ -10,7 +10,7 @@ var PioneerDDJSX = function() {};
 
 /*
 	Author: 		DJMaxergy
-	Version: 		1.03, 05/10/2017
+	Version: 		1.04, 05/10/2017
 	Description: 	Pioneer DDJ-SX Controller Mapping for Mixxx
     Source: 		http://github.com/DJMaxergy/mixxx/tree/pioneerDDJSX_mapping
     
@@ -1765,6 +1765,8 @@ PioneerDDJSX.wheelLeds = function(value, group, control) {
 
     if (value >= 0) {
         wheelPos = 0x01 + ((speed * (value * duration)) % 0x48);
+    } else {
+        wheelPos = 0x49 + ((speed * (value * duration)) % 0x48);
     }
     if (remainingTime > 0 && remainingTime < 30) {
         if (PioneerDDJSX.wheelLedsBlinkStatus[deck] > 2) {
