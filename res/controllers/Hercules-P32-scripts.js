@@ -184,7 +184,7 @@ P32.Deck = function (deckNumbers, channel) {
         outKey: 'pfl',
         shift: function () {
             this.group = '[EffectRack1_EffectUnit' + theDeck.effectUnit.currentUnitNumber + ']';
-            this.inKey = 'group_[Headphones]_enable';
+            this.inKey = 'group_[Headphone]_enable';
         },
     });
 
