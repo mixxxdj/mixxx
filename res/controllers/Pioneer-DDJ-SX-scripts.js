@@ -10,7 +10,7 @@ var PioneerDDJSX = function() {};
 
 /*
 	Author: 		DJMaxergy
-	Version: 		1.02, 05/08/2017
+	Version: 		1.02, 05/10/2017
 	Description: 	Pioneer DDJ-SX Controller Mapping for Mixxx
     Source: 		http://github.com/DJMaxergy/mixxx/tree/pioneerDDJSX_mapping
     
@@ -28,52 +28,53 @@ var PioneerDDJSX = function() {};
 ///////////////////////////////////////////////////////////////
 
 // Sets the jogwheels sensivity. 1 is default, 2 is twice as sensitive, 0.5 is half as sensitive.
-PioneerDDJSX.jogwheelSensivity = 1; //default: 1
+PioneerDDJSX.jogwheelSensivity = 1;
 
 // Sets how much more sensitive the jogwheels get when holding shift.
-// Set to 1 to disable jogwheel sensitivity increase when holding shift.
-PioneerDDJSX.jogwheelShiftMultiplier = 10; //default: 10
+// Set to 1 to disable jogwheel sensitivity increase when holding shift (default: 10).
+PioneerDDJSX.jogwheelShiftMultiplier = 10;
 
-// Sets the default speed slider range (0.08 = 8%).
-PioneerDDJSX.speedSliderRange = 0.08; //default: 0.08
+// Sets the default speed slider range (default: 0.08 = 8%).
+PioneerDDJSX.speedSliderRange = 0.08;
 
-// Cuts level-meter low frequencies and expands upper frequencies. Examples:
+// Cuts level-meter low frequencies and expands upper frequencies (default: 0). Examples:
 // 0.25 -> only signals greater 25%, expanded to full range
 // 0.5 -> only signals greater 50%, expanded to full range
-PioneerDDJSX.cutVumeter = 0; //default: 0
+PioneerDDJSX.cutVumeter = 0;
 
-// If true, level-Level twinkle if AutoDJ is enabled.
-PioneerDDJSX.twinkleVumeterAutodjOn = true; //default: true
+// If true, vu meters twinkle if AutoDJ is enabled (default: true).
+PioneerDDJSX.twinkleVumeterAutodjOn = true;
 // If true, selected track will be added to AutoDJ queue-top on pressing rotary selector,
-// else track will be added to AutoDJ queue-bottom.
-PioneerDDJSX.autoDJAddTop = false; //default: false
-// Sets the duration of sleeping between AutoDJ actions if AutoDJ is enabled [ms].
-PioneerDDJSX.autoDJTickInterval = 1000; //default: 1000
-// Sets the maximum adjustment of BPM allowed for beats to sync if AutoDJ is enabled [BPM].
-PioneerDDJSX.autoDJMaxBpmAdjustment = 10; //default: 10
-// If true, AutoDJ queue is being shuffled after skipping a track.
+// else track will be added to AutoDJ queue-bottom (default: false).
+PioneerDDJSX.autoDJAddTop = false;
+// Sets the duration of sleeping between AutoDJ actions if AutoDJ is enabled [ms] (default: 1000).
+PioneerDDJSX.autoDJTickInterval = 1000;
+// Sets the maximum adjustment of BPM allowed for beats to sync if AutoDJ is enabled [BPM] (default: 10).
+PioneerDDJSX.autoDJMaxBpmAdjustment = 10;
+// If true, AutoDJ queue is being shuffled after skipping a track (default: false).
 // When using a fixed set of tracks without manual intervention, some tracks may be unreachable, 
 // due to having an unfortunate place in the queue ordering. This solves the issue.
-PioneerDDJSX.autoDJShuffleAfterSkip = false; //default: false
+PioneerDDJSX.autoDJShuffleAfterSkip = false;
 
 // If true, by releasing rotary selector, 
-// track in preview player jumps forward to "jumpPreviewPosition". 
-PioneerDDJSX.jumpPreviewEnabled = true; //default: true
-PioneerDDJSX.jumpPreviewPosition = 0.3; //default: 0.3
+// track in preview player jumps forward to "jumpPreviewPosition"
+// (default: jumpPreviewEnabled = true, jumpPreviewPosition = 0.3). 
+PioneerDDJSX.jumpPreviewEnabled = true;
+PioneerDDJSX.jumpPreviewPosition = 0.3;
 
 // If true, pad press in SAMPLER-PAD-MODE repeatedly causes sampler to play 
-// loaded track from cue-point, else it causes to play loaded track from the beginning.
-PioneerDDJSX.samplerCueGotoAndPlay = false; //default: false
+// loaded track from cue-point, else it causes to play loaded track from the beginning (default: false).
+PioneerDDJSX.samplerCueGotoAndPlay = false;
 
-// If true, PFL / Cue (headphone) is being activated by loading a track into certain deck.
-PioneerDDJSX.autoPFL = true; //default: true
+// If true, PFL / Cue (headphone) is being activated by loading a track into certain deck (default: true).
+PioneerDDJSX.autoPFL = true;
 
 // If true, new in Mixxx 2.1 introduced library controls will be used,
-// else old playlist controls will be used.
-PioneerDDJSX.useNewLibraryControls = false; //default: false
+// else old playlist controls will be used (default: false).
+PioneerDDJSX.useNewLibraryControls = false;
 
-// If true, SHIFT has to be pressed to activate needle search control
-PioneerDDJSX.needleSearchShiftEnable = false; //default: false
+// If true, SHIFT has to be pressed to activate needle search control (default: false).
+PioneerDDJSX.needleSearchShiftEnable = false;
 
 
 ///////////////////////////////////////////////////////////////
