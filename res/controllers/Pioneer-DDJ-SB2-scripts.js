@@ -260,8 +260,8 @@ PioneerDDJSB2.Deck = function (deckNumber) {
     this.topPadRow.autoLoopLayer.beatloopHalveButton = new components.Button({
         midi: [0x96 + deckNumber, 0x11],
         unshift: function () {
-            this.inKey = 'beatloop_halve';
-            this.outKey = 'beatloop_halve';
+            this.inKey = 'loop_halve';
+            this.outKey = 'loop_halve';
         },
         shift: function () {
             this.inKey = 'loop_move_backward';
@@ -272,8 +272,8 @@ PioneerDDJSB2.Deck = function (deckNumber) {
     this.topPadRow.autoLoopLayer.beatloopDoubleButton = new components.Button({
         midi: [0x96 + deckNumber, 0x12],
         unshift: function () {
-            this.inKey = 'beatloop_double';
-            this.outKey = 'beatloop_double';
+            this.inKey = 'loop_double';
+            this.outKey = 'loop_double';
         },
         shift: function () {
             this.inKey = 'loop_move_forward';
@@ -445,8 +445,6 @@ PioneerDDJSB2.bindDeckControlConnections = function(channelGroup, isUnbinding) {
             'filterHighKill': 'PioneerDDJSB2.highKillLed',
             'mute': 'PioneerDDJSB2.muteLed',
             'loop_enabled': 'PioneerDDJSB2.loopExitLed',
-            'loop_double': 'PioneerDDJSB2.loopDoubleLed',
-            'loop_halve': 'PioneerDDJSB2.loopHalveLed'
         };
 
     if (PioneerDDJSB2.invertVinylSlipButton) {
@@ -660,11 +658,15 @@ PioneerDDJSB2.loopExitButton = function(channel, control, value, status, group) 
 };
 
 PioneerDDJSB2.loopHalveButton = function(channel, control, value, status, group) {
-    engine.setValue(PioneerDDJSB2.deckSwitchTable[group], 'loop_halve', value ? 1 : 0);
+    if (value) {
+        engine.setValue(PioneerDDJSB2.deckSwitchTable[group], 'loop_scale', 0.5);
+    }
 };
 
 PioneerDDJSB2.loopDoubleButton = function(channel, control, value, status, group) {
-    engine.setValue(PioneerDDJSB2.deckSwitchTable[group], 'loop_double', value ? 1 : 0);
+    if (value) {
+        engine.setValue(PioneerDDJSB2.deckSwitchTable[group], 'loop_scale', 2.0);
+    }
 };
 
 PioneerDDJSB2.loopMoveBackButton = function(channel, control, value, status, group) {
