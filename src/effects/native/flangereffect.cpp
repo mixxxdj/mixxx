@@ -24,27 +24,18 @@ EffectManifest FlangerEffect::getManifest() {
         "A simple modulation effect, created by taking the input signal "
         "and mixing it with a delayed, pitch modulated copy of itself."));
 
-    EffectManifestParameter* delay = manifest.addParameter();
-    delay->setId("delay");
-    delay->setName(QObject::tr("Delay"));
-    delay->setDescription(QObject::tr("Sets the value for the delay length."));
-    delay->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
-    delay->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    delay->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    delay->setDefault(3333.3);
-    delay->setMinimum(50.0);
-    delay->setMaximum(10000.0);
-
     EffectManifestParameter* period = manifest.addParameter();
     period->setId("period");
     period->setName(QObject::tr("Period"));
-    period->setDescription(QObject::tr("Controls the speed of the effect."));
+    period->setDescription(QObject::tr("Controls the period of the LFO (low frequency oscillator)\n"
+        "0 - 4 beats if sync parameter is enabled and tempo is detected (decks and samplers) \n"
+        "0 - 4 seconds if sync parameter is disabled or no tempo is detected (mic & aux inputs, master mix)"));
     period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    period->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    period->setDefault(666666.6);
-    period->setMinimum(50000.0);
-    period->setMaximum(2000000.0);
+    period->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
+    period->setMinimum(0.00);
+    period->setMaximum(4.00);
+    period->setDefault(0.50);
 
     EffectManifestParameter* depth = manifest.addParameter();
     depth->setId("depth");
@@ -54,10 +45,20 @@ EffectManifest FlangerEffect::getManifest() {
     depth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     depth->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
-    depth->setDefault(0.0);
+    depth->setDefault(1.0);
     depth->setMinimum(0.0);
     depth->setMaximum(1.0);
 
+    EffectManifestParameter* sync = manifest.addParameter();
+    sync->setId("sync");
+    sync->setName(QObject::tr("Sync"));
+    sync->setDescription(QObject::tr("Synchronizes the period with the tempo if it can be retrieved"));
+    sync->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
+    sync->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    sync->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    sync->setDefault(1);
+    sync->setMinimum(0);
+    sync->setMaximum(1);
 
     return manifest;
 }
@@ -66,7 +67,7 @@ FlangerEffect::FlangerEffect(EngineEffect* pEffect,
                              const EffectManifest& manifest)
         : m_pPeriodParameter(pEffect->getParameterById("period")),
           m_pDepthParameter(pEffect->getParameterById("depth")),
-          m_pDelayParameter(pEffect->getParameterById("delay")) {
+          m_pSyncParameter(pEffect->getParameterById("sync")) {
     Q_UNUSED(manifest);
 }
 
@@ -84,22 +85,26 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     Q_UNUSED(handle);
     Q_UNUSED(enableState);
     Q_UNUSED(groupFeatures);
-    Q_UNUSED(sampleRate);
-    CSAMPLE lfoPeriod = m_pPeriodParameter->value();
-    CSAMPLE lfoDepth = m_pDepthParameter->value();
-    // Unused in EngineFlanger
-    // CSAMPLE lfoDelay = m_pDelayParameter ?
-    //         m_pDelayParameter->value().toDouble() : 0.0f;
 
-    // TODO(rryan) check ranges
-    // period needs to be >=0
-    // delay needs to be >=0
-    // depth is ???
+    // TODO: remove assumption of stereo signal
+    const int kChannels = 2;
+
+    // The parameter minimum is zero so the exact center of the knob is 2 beats.
+    CSAMPLE periodTime = std::max(m_pPeriodParameter->value(), 0.05);
+    CSAMPLE lfoPeriod;
+    if (m_pSyncParameter->toBool() && groupFeatures.has_beat_length) {
+        // period is a number of beats
+        lfoPeriod = periodTime * groupFeatures.beat_length;
+    } else {
+        // period is a number of seconds
+        lfoPeriod = periodTime * sampleRate * kChannels;
+    }
+
+    CSAMPLE lfoDepth = m_pDepthParameter->value();
 
     CSAMPLE* delayLeft = pState->delayLeft;
     CSAMPLE* delayRight = pState->delayRight;
 
-    const int kChannels = 2;
     for (unsigned int i = 0; i < numSamples; i += kChannels) {
         delayLeft[pState->delayPos] = pInput[i];
         delayRight[pState->delayPos] = pInput[i+1];
