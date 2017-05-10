@@ -1,0 +1,115 @@
+<!--
+Description:
+  Minimal Sampler deck with
+  * Play/Goto_Cue button
+  * overview + track title
+  * Sync button (can follow master sync)
+  * CrossFader orientation button
+  * Volume knob
+  Switches to light grey background when playing.
+Variables:
+  samplernum  : sampler deck number
+  group       : [ChannelXY]
+  PlayedOverlayColor  : defined in skin.xml
+-->
+<Template>
+  <SetVariable name="group">[Sampler<Variable name="samplernum"/>]</SetVariable>
+  <WidgetGroup><!-- SamplerDeck -->
+    <Layout>horizontal</Layout>
+    <ObjectName>SamplerDeck</ObjectName>
+    <Size>120me,37f</Size>
+    <Children>
+
+      <WidgetGroup><!-- Play -->
+        <ObjectName>SamplerPlayBox_mini</ObjectName>
+        <Layout>stacked</Layout>
+        <Size>35f,34f</Size>
+        <Children>
+          <Template src="skin:button_2state_right_display.xml">
+            <SetVariable name="ObjectName">SamplerPlayCue</SetVariable>
+            <SetVariable name="Size">34f,34f</SetVariable>
+            <SetVariable name="TooltipId">play_cue_set</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,cue_gotoandplay</SetVariable>
+            <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
+            <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
+          </Template>
+      <!-- Second layer is CoverArt. DefaultCover is transparent -->
+          <CoverArt>
+            <ObjectName>SamplerCover</ObjectName>
+            <Size>34f,34f</Size>
+            <Group><Variable name="group"/></Group>
+            <DefaultCover>skin:/buttons/btn_.svg</DefaultCover>
+          </CoverArt>
+      <!-- Background turns Orange when playing preview from HotCue.
+          Only visible when play_indicator=0 and no CoverArt loaded -->
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="ObjectName">SamplerPlayCueUnderlay</SetVariable>
+            <SetVariable name="Size">34f,34f</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup><!-- Play -->
+
+      <WidgetGroup><!-- Title + [Sync, CF assign, Volume] -->
+        <ObjectName>Spacer33</ObjectName>
+        <Layout>vertical</Layout>
+        <Size>82me,34f</Size>
+        <Children>
+
+          <TrackProperty>
+            <ObjectName>SamplerTitle_mini</ObjectName>
+            <TooltipId>text</TooltipId>
+            <Size>i,14f</Size>
+            <Group><Variable name="group"/></Group>
+            <Property>title</Property>
+          </TrackProperty>
+
+          <WidgetGroup><!-- Sync, CF assign, Volume -->
+            <Layout>horizontal</Layout>
+            <Size>82me,20f</Size>
+            <Children>
+
+              <Template src="skin:knob_textless.xml">
+                <SetVariable name="TooltipId">pregain</SetVariable>
+                <SetVariable name="ObjectName">SamplerGainKnob</SetVariable>
+                <SetVariable name="Size">20f,20f</SetVariable>
+                <SetVariable name="group"><Variable name="group"/></SetVariable>
+                <SetVariable name="ConfigKey">volume</SetVariable>
+                <SetVariable name="Color">tiny_red</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>1me,1min</Size><Children/></WidgetGroup>
+
+              <Template src="skin:button_3state.xml">
+                <SetVariable name="TooltipId">orientation</SetVariable>
+                <SetVariable name="ObjectName">SamplerButton_mini</SetVariable>
+                <SetVariable name="Size">18f,18f</SetVariable>
+                <SetVariable name="state_0_text">|--</SetVariable>
+                <SetVariable name="state_1_text">-|-</SetVariable>
+                <SetVariable name="state_2_text">--|</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="TooltipId">sync_enabled</SetVariable>
+                <SetVariable name="ObjectName">SamplerSyncButton</SetVariable>
+                <SetVariable name="Size">18f,18f</SetVariable>
+                <SetVariable name="state_0_unpressed">sampler_sync_off.svg</SetVariable>
+                <SetVariable name="state_0_pressed">sampler_sync_off.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">sampler_sync_on.svg</SetVariable>
+                <SetVariable name="state_1_pressed">sampler_sync_on.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,sync_enabled</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+            </Children>
+          </WidgetGroup><!-- Sync, CF assign, Volume -->
+
+        </Children>
+      </WidgetGroup><!-- /Title + [Sync, CF assign, Volume] -->
+
+    </Children>
+  </WidgetGroup><!-- /SamplerDeck -->
+</Template>

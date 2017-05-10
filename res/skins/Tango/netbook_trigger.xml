@@ -1,0 +1,100 @@
+<!--
+Description:
+  Size-aware container that switches between 'netbook_mode' and 'normal_mode'.
+  In 'netbook_mode' skin controls are moved from center block to top row,
+  so that all spacers between left and right decks and between FX units are removed.
+  Waveforms can be much smaller. Though, they will grow to min 50px when beatgrid
+  buttons are shown.
+  Modes are flipping as soon as FX units have enough space to host effects
+  with 6 parameters (knobs plus buttons)
+
+Controls:
+  [Tango],netbook_normal_stack0
+    This is set to '0' in skin.xml so that 'netbook_mode' is triggered
+    for widths up to 1259px.
+  [Tango],netbook_normal_stack1
+    This is set to '1' in skin.xml so that 'normal_mode' is triggered
+    for widths from 1260px up.
+
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Children>
+      <SizeAwareStack><!-- Netbook trigger -->
+        <Children>
+
+          <WidgetGroup><!-- 0  show skin controls at top edge of window -->
+            <Layout>vertical</Layout>
+            <SizePolicy>me,max</SizePolicy>
+            <MinimumSize>1,1</MinimumSize>
+            <MaximumSize>1259,1</MaximumSize>
+            <Children>
+              <WidgetStack currentpage="[Tango],netbook_normal_stack0" persist="true">
+                <Children>
+                  <WidgetGroup trigger="[Tango],netbook_mode">
+                    <Size>2f,2f</Size>
+                    <Children>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Tango],netbook_mode</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                  <WidgetGroup trigger="[Tango],normal_mode">
+                    <Size>2f,2f</Size>
+                    <Children>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Tango],normal_mode</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                </Children>
+              </WidgetStack>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup><!-- 1  show skin controls in the center between decks -->
+            <Layout>vertical</Layout>
+            <SizePolicy>me,me</SizePolicy>
+            <MinimumSize>1260,-1</MinimumSize>
+            <Children>
+              <WidgetStack currentpage="[Tango],netbook_normal_stack1" persist="true">
+                <Children>
+                  <WidgetGroup trigger="[Tango],netbook_mode">
+                    <Size>2f,2f</Size>
+                    <Children>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Tango],netbook_mode</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                  <WidgetGroup trigger="[Tango],normal_mode">
+                    <Size>2f,2f</Size>
+                    <Children>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Tango],normal_mode</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                </Children>
+              </WidgetStack>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </SizeAwareStack><!-- /Netbook trigger -->
+      <WidgetGroup>
+        <ObjectName>EnforceNetbookMode</ObjectName>
+        <Size>10000f,1f</Size>
+        <Children/>
+        <Connection>
+          <ConfigKey persist="true">[Tango],enforce_netbook_mode</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

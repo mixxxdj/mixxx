@@ -1,0 +1,58 @@
+<!--
+Description:
+  An individual loopmove button:
+  * size display
+    left-click  : double loopmove size
+    right-click : halve loopmove size
+  * button to move backward by loopmove size
+  * button to move forward by loopmove size
+Variables:
+  group                   : [ChannelN]
+  LoopMoveLength_Text     : move distance as text
+  LoopMoveLength_Control  : move distance as config value
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>LoopBeatJumpContainer</ObjectName>
+    <Layout>vertical</Layout>
+    <!-- For some reason this button expands when SizePolicy is 'min,min',
+      although it's identical to button_beatjump.xml -->
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+    
+      <Template src="skin:button_1state_right.xml">
+        <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
+        <SetVariable name="Size">45f,22f</SetVariable>
+        <SetVariable name="state_0_text"><Variable name="LoopMoveLength_Text"/></SetVariable>
+        <SetVariable name="ConfigKey">[LoopMove],next</SetVariable>
+        <SetVariable name="ConfigKeyRight">[LoopMove],prev</SetVariable>
+      </Template>
+      
+        <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
+        
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:button_1state.xml">
+            <SetVariable name="TooltipId">loop_move_backward</SetVariable>
+            <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
+            <SetVariable name="Size">22f,22f</SetVariable>
+            <SetVariable name="state_0_pressed">backward_pressed.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">backward.svg</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,loop_move_<Variable name="LoopMoveLength_Control"/>_backward</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:button_1state.xml">
+            <SetVariable name="TooltipId">loop_move_forward</SetVariable>
+            <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
+            <SetVariable name="Size">22f,22f</SetVariable>
+            <SetVariable name="state_0_pressed">forward_pressed.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">forward.svg</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,loop_move_<Variable name="LoopMoveLength_Control"/>_forward</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>
