@@ -1,0 +1,118 @@
+<!--
+Description:
+    Full looping controls: in/goto, out/goto, spinbox for beatloop size,
+                           loop move, reloop, reloop cue, beatloop
+Variables:
+    group : The group for the controls.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>LoopBeatJumpContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+        
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <!-- in/out top row -->
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skin:button_1state_right.xml">
+                <SetVariable name="TooltipId">loop_in</SetVariable>
+                <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
+                <SetVariable name="Size">22f,22f</SetVariable>
+                <SetVariable name="state_0_pressed">loop_in_active.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">loop_in.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,loop_in</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,loop_in_goto</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+              <Template src="skin:button_1state_right.xml">
+                <SetVariable name="TooltipId">loop_out</SetVariable>
+                <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
+                <SetVariable name="Size">22f,22f</SetVariable>
+                <SetVariable name="state_0_pressed">loop_out_active.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">loop_out.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,loop_out</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,loop_out_goto</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+            <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
+          <WidgetGroup><!-- loop_move bottom row -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skin:button_1state_right.xml">
+                <SetVariable name="TooltipId">loop_move_backward</SetVariable>
+                <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
+                <SetVariable name="Size">22f,22f</SetVariable>
+                <SetVariable name="state_0_pressed">backward_pressed.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">backward.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,loop_move_backward</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,loop_move_backward_beatloop_size</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+              <Template src="skin:button_1state_right.xml">
+                <SetVariable name="TooltipId">loop_move_forward</SetVariable>
+                <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
+                <SetVariable name="Size">22f,22f</SetVariable>
+                <SetVariable name="state_0_pressed">forward_pressed.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">forward.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,loop_move_forward</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,loop_move_forward_beatloop_size</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup><Size>1f,1min</Size></WidgetGroup>            
+
+      <WidgetGroup><!-- Spinbox + looptoggle/reloop -->
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <BeatSpinBox><!-- 70x22 top row -->
+            <TooltipId>beatloop_size</TooltipId>
+            <Value><Variable name="group"/>,beatloop_size</Value>
+          </BeatSpinBox>
+            <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
+          <WidgetGroup><!-- loop/reloop bottom row -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skin:button_2state_right_display.xml">
+                <SetVariable name="TooltipId">beatloop_toggle</SetVariable>
+                <SetVariable name="ObjectName">LoopEnabledbutton</SetVariable>
+                <SetVariable name="Size">35f,22f</SetVariable>
+                <SetVariable name="state_0_pressed">loop_disabled.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">loop_disabled.svg</SetVariable>
+                <SetVariable name="state_1_pressed">loop_enabled.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">loop_enabled.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,beatloop_toggle</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatlooproll_toggle</SetVariable>
+                <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,loop_enabled</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+              <Template src="skin:button_1state_right.xml">
+                <SetVariable name="TooltipId">reloop_toggle</SetVariable>
+                <SetVariable name="ObjectName">ReloopButton</SetVariable>
+                <SetVariable name="Size">34f,22f</SetVariable>
+                <SetVariable name="state_0_pressed">reloop_pressed.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">reloop.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,reloop_toggle</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reloop_andstop</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup><!-- /Spinbox + looptoggle/reloop -->
+    
+    </Children>
+  </WidgetGroup>
+</Template>

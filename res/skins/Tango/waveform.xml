@@ -1,0 +1,172 @@
+<!--
+Description:
+  Scrolling waveform on top edge of skin with beat grid buttons at the right-hand side.
+  Minimum size is 50px, in netbook mode it's 22px.
+  Expanded beat grid buttons make the waveform grow to 50px.
+Variables:
+  group   : [ChannelN]
+  channum : channel number
+  SignalBgColor       : defined in skin.xml
+  SignalColor         :
+  SignalRGBLowColor   :
+  SignalRGBMidColor   :
+  SignalRGBHighColor  :
+-->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>WaveformContainer<Variable name="channum"/></ObjectName>
+    <Layout>horizontal</Layout>
+    <Children>
+      <Visual><!-- Waveform * Netbook mode-->
+        <TooltipId>waveform_display</TooltipId>
+        <ObjectName>Waveform</ObjectName>
+        <Size>0me,22me</Size>
+        <Channel><Variable name="channum"/></Channel>
+        <BgColor><Variable name="SignalBgColor"/></BgColor>
+        <SignalColor><Variable name="SignalColor"/></SignalColor>
+        <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
+        <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
+        <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
+        <BeatColor>#ffffff</BeatColor>
+        <PlayPosColor>#FF4300</PlayPosColor>
+        <EndOfTrackColor>#EA0085</EndOfTrackColor>
+        <DefaultMark>
+          <Align>bottom|right</Align>
+          <Color>#00FF00</Color>
+          <TextColor>#FFFFFF</TextColor>
+          <Text> %1 </Text>
+        </DefaultMark>
+        <Mark>
+          <Control>cue_point</Control>
+          <Text>C</Text>
+          <Align>top</Align>
+          <Color>#FF0080</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <MarkRange>
+          <StartControl>loop_start_position</StartControl>
+          <EndControl>loop_end_position</EndControl>
+          <EnabledControl>loop_enabled</EnabledControl>
+          <Color>#00FF00</Color>
+          <DisabledColor>#FFFFFF</DisabledColor>
+        </MarkRange>
+        <Mark>
+          <Control>loop_start_position</Control>
+          <Text>IN</Text>
+          <Align>top|left</Align>
+          <Color>#00FF00</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <Mark>
+          <Control>loop_end_position</Control>
+          <Text>OUT</Text>
+          <Align>top|right</Align>
+          <Color>#00FF00</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <!--
+        The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
+          - if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
+          - if you change from a skin which supports more hotcues than buttons are in the current skin
+          (and has them activated)
+        -->
+        <Mark>
+          <Control>cue_point</Control>
+          <Text>C</Text>
+          <Align>bottom</Align>
+          <Color>#FF001C</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+      </Visual><!-- /Waveform * Netbook mode-->
+
+      <WidgetGroup><!-- Container for beatgrid buttons -->
+        <ObjectName>BeatgridButtonGridBox</ObjectName>
+        <Layout>vertical</Layout>
+        <Size>75f,50me</Size>
+        <Children>
+
+          <WidgetGroup><!-- Beatgrid buttons -->
+            <ObjectName>BeatgridButtonGrid</ObjectName>
+            <Layout>horizontal</Layout>
+            <MinimumSize>75,50</MinimumSize>
+            <MaximumSize>75,51</MaximumSize>
+            <SizePolicy>f,me</SizePolicy>
+            <Children>
+
+              <Template src="skin:button_1state.xml">
+                <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
+                <SetVariable name="ObjectName">BeatgridButton</SetVariable>
+                <SetVariable name="Size">25f,50f</SetVariable>
+                <SetVariable name="state_0_pressed">beats_curpos.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">beats_curpos.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_curpos</SetVariable>
+              </Template>
+
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>f,f</SizePolicy>
+                <Children>
+                  <Template src="skin:button_1state.xml">
+                    <SetVariable name="TooltipId">beats_translate_earlier</SetVariable>
+                    <SetVariable name="ObjectName">BeatgridButton</SetVariable>
+                    <SetVariable name="Size">25f,25f</SetVariable>
+                    <SetVariable name="state_0_pressed">beats_earlier.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">beats_earlier.svg</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_earlier</SetVariable>
+                  </Template>
+                  <Template src="skin:button_1state.xml">
+                    <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
+                    <SetVariable name="ObjectName">BeatgridButton</SetVariable>
+                    <SetVariable name="Size">25f,25f</SetVariable>
+                    <SetVariable name="state_0_pressed">beats_faster.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">beats_faster.svg</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,beats_adjust_faster</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup><!-- beats slower & faster -->
+                <Layout>vertical</Layout>
+                <SizePolicy>f,f</SizePolicy>
+                <Children>
+                  <Template src="skin:button_1state.xml">
+                    <SetVariable name="TooltipId">beats_translate_later</SetVariable>
+                    <SetVariable name="ObjectName">BeatgridButton</SetVariable>
+                    <SetVariable name="Size">25f,25f</SetVariable>
+                    <SetVariable name="state_0_pressed">beats_later.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">beats_later.svg</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_later</SetVariable>
+                  </Template>
+                  <Template src="skin:button_1state.xml">
+                    <SetVariable name="TooltipId">beats_adjust_slower</SetVariable>
+                    <SetVariable name="ObjectName">BeatgridButton</SetVariable>
+                    <SetVariable name="Size">25f,25f</SetVariable>
+                    <SetVariable name="state_0_pressed">beats_slower.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">beats_slower.svg</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,beats_adjust_slower</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup><!-- /Beatgrid buttons -->
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Tango],beatgrid_buttons</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Container for beatgrid buttons -->
+
+      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1me</Size></WidgetGroup>
+
+      <Template src="skin:button_2state_persist.xml">
+        <SetVariable name="ObjectName">BeatgridButtonToggler</SetVariable>
+        <SetVariable name="Size">11f,22me</SetVariable>
+        <SetVariable name="ConfigKeyPerm">[Tango],beatgrid_buttons</SetVariable>
+      </Template>
+
+    </Children>
+  </WidgetGroup>
+</Template>

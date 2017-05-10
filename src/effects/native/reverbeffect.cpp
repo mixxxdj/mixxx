@@ -28,9 +28,9 @@ EffectManifest ReverbEffect::getManifest() {
     decay->setId("decay");
     decay->setName(QObject::tr("Decay"));
     decay->setDescription(QObject::tr("Lower decay values cause reverberations to die out more quickly."));
-    decay->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    decay->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    decay->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    decay->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    decay->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    decay->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     decay->setMinimum(0);
     decay->setDefault(0.5);
     decay->setMaximum(1);
@@ -41,9 +41,9 @@ EffectManifest ReverbEffect::getManifest() {
     bandwidth->setShortName(QObject::tr("BW"));
     bandwidth->setDescription(QObject::tr("Bandwidth of the low pass filter at the input. "
             "Higher values result in less attenuation of high frequencies."));
-    bandwidth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    bandwidth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    bandwidth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    bandwidth->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    bandwidth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    bandwidth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     bandwidth->setMinimum(0);
     bandwidth->setDefault(1);
     bandwidth->setMaximum(1);
@@ -53,9 +53,9 @@ EffectManifest ReverbEffect::getManifest() {
     damping->setName(QObject::tr("Damping"));
     damping->setDescription(QObject::tr("Higher damping values cause "
             "high frequencies to decay more quickly than low frequencies."));
-    damping->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    damping->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    damping->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    damping->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    damping->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    damping->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     damping->setMinimum(0);
     damping->setDefault(0);
     damping->setMaximum(1);
@@ -64,10 +64,10 @@ EffectManifest ReverbEffect::getManifest() {
     send->setId("send_amount");
     send->setName(QObject::tr("Send"));
     send->setDescription(QObject::tr("How much of the signal to send to the effect"));
-    send->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    send->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    send->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    send->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    send->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    send->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    send->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    send->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     send->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::NOT_INVERTED);
     send->setMinimum(0);
     send->setDefault(0);

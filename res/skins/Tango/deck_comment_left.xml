@@ -1,0 +1,170 @@
+<Template>
+  <WidgetGroup>
+    <ObjectName>TrackCommentContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+      <WidgetGroup><!-- FX indicators when track comment is hidden -->
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,p</SizePolicy>
+        <Children>
+          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+
+          <!-- FX indicators when all FX units are hidden -->
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skin:deck_fx_indicator.xml">
+                <SetVariable name="fxUnit">4</SetVariable>
+              </Template>
+              <Template src="skin:deck_fx_indicator.xml">
+                <SetVariable name="fxUnit">3</SetVariable>
+              </Template>
+              <Template src="skin:deck_fx_indicator.xml">
+                <SetVariable name="fxUnit">2</SetVariable>
+              </Template>
+              <Template src="skin:deck_fx_indicator.xml">
+                <SetVariable name="fxUnit">1</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <!-- FX indicators when all FX units are hidden -->
+
+          <!-- FX indicators when only FX units 3/4 are hidden -->
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Template src="skin:deck_fx_indicator.xml">
+                    <SetVariable name="fxUnit">4</SetVariable>
+                  </Template>
+                  <Template src="skin:deck_fx_indicator.xml">
+                    <SetVariable name="fxUnit">3</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],2or4_fxUnits</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <!-- FX indicators when only FX units 3/4 are hidden -->
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Tango],trackComment</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /FX indicators when track comment is hidden -->
+
+      <WidgetGroup><!-- Track comment + FX indicators + Spacer -->
+        <Layout>vertical</Layout>
+        <SizePolicy>i,min</SizePolicy>
+        <Children>
+          <WidgetGroup><!-- Track comment + FX indicators -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <!--	Additional line to display comments from file tag.
+              Useful to explain hotcues, loop, Ins & Outs for live sets etc.
+              Deprecated as soon as HotCue labels are easily editable -->
+              <TrackProperty>
+                <ObjectName>TrackComment</ObjectName>
+                <Size>1me,16f</Size>
+                <Property>comment</Property>
+                <Elide>right</Elide>
+                <Channel><Variable name="channum"/></Channel>
+              </TrackProperty>
+
+              <!-- FX indicators when all FX units are hidden -->
+              <WidgetGroup>
+                <ObjectName>AlignVCenter</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Template src="skin:deck_fx_indicator.xml">
+                    <SetVariable name="fxUnit">4</SetVariable>
+                  </Template>
+                  <Template src="skin:deck_fx_indicator.xml">
+                    <SetVariable name="fxUnit">3</SetVariable>
+                  </Template>
+                  <Template src="skin:deck_fx_indicator.xml">
+                    <SetVariable name="fxUnit">2</SetVariable>
+                  </Template>
+                  <Template src="skin:deck_fx_indicator.xml">
+                    <SetVariable name="fxUnit">1</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+              <!-- FX indicators when all FX units are hidden -->
+
+              <!-- FX indicators when only FX units 3/4 are hidden -->
+              <WidgetGroup>
+                <ObjectName>AlignVCenter</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <Template src="skin:deck_fx_indicator.xml">
+                        <SetVariable name="fxUnit">4</SetVariable>
+                      </Template>
+                      <Template src="skin:deck_fx_indicator.xml">
+                        <SetVariable name="fxUnit">3</SetVariable>
+                      </Template>
+                    </Children>
+                    <Connection>
+                      <ConfigKey persist="true">[Tango],2or4_fxUnits</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+              <!-- FX indicators when only FX units 3/4 are hidden -->
+
+            </Children>
+          </WidgetGroup><!-- /Track comment + FX indicators -->
+
+          <WidgetGroup>
+            <ObjectName>Spacer0f</ObjectName>
+            <Size>1me,1f</Size>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Tango],trackComment</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- Track comment + FX indicators + Spacer -->
+
+    </Children>
+  </WidgetGroup>
+</Template>

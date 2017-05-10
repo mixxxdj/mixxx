@@ -143,6 +143,42 @@ void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
 }
 
 bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
+    // Warn if tracks have a playlist membership
+    QSet<int> allPlaylistIds;
+    for (const auto& trackId: trackIds) {
+        QSet<int> playlistIds;
+        m_playlistDao.getPlaylistsTrackIsIn(trackId, &playlistIds);
+        for (const auto& playlistId: playlistIds) {
+            if (m_playlistDao.getHiddenType(playlistId) != PlaylistDAO::PLHT_SET_LOG) {
+                allPlaylistIds.insert(playlistId);
+            }
+        }
+    }
+
+    if (!allPlaylistIds.isEmpty()) {
+         QStringList playlistNames;
+         playlistNames.reserve(allPlaylistIds.count());
+         for (const auto& playlistId: allPlaylistIds) {
+             playlistNames.append(m_playlistDao.getPlaylistName(playlistId));
+         }
+
+         QString playlistNamesSection =
+                 "\n\n\"" %
+                 playlistNames.join("\"\n\"") %
+                 "\"\n\n";
+
+         if (QMessageBox::question(
+                 nullptr,
+                 tr("Hiding tracks"),
+                 tr("The selected tracks are in the following playlists:"
+                     "%1"
+                     "Hiding them will remove them from these playlists. Continue?")
+                         .arg(playlistNamesSection),
+                 QMessageBox::Ok | QMessageBox::Cancel) != QMessageBox::Ok) {
+             return false;
+         }
+     }
+
     // Transactional
     SqlTransaction transaction(database());
     VERIFY_OR_DEBUG_ASSERT(transaction) {
@@ -154,6 +190,8 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
         return false;
     }
+
+    m_playlistDao.removeTracksFromPlaylists(trackIds);
 
     // Post-processing
     // TODO(XXX): Move signals from TrackDAO to TrackCollection

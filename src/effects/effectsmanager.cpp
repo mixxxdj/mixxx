@@ -26,11 +26,14 @@ EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig)
 
     m_pRequestPipe.reset(requestPipes.first);
     m_pEngineEffectsManager = new EngineEffectsManager(requestPipes.second);
+
+    m_pNumEffectsAvailable = new ControlObject(ConfigKey("[Master]", "num_effectsavailable"));
+    m_pNumEffectsAvailable->setReadOnly();
 }
 
 EffectsManager::~EffectsManager() {
     m_underDestruction = true;
-    //m_pEffectChainManager->saveEffectChains();
+    m_pEffectChainManager->saveEffectChains();
     delete m_pEffectChainManager;
     // This must be done here, since the engineRacks are deleted via
     // the queue
@@ -47,6 +50,7 @@ EffectsManager::~EffectsManager() {
 
     delete m_pHiEqFreq;
     delete m_pLoEqFreq;
+    delete m_pNumEffectsAvailable;
     // Safe because the Engine is deleted before EffectsManager. Also, it holds
     // a bare pointer to m_pRequestPipe so it is critical that it does not
     // outlast us.
@@ -69,6 +73,8 @@ void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
         m_availableEffectManifests.append(pBackend->getManifest(effectId));
     }
 
+    m_pNumEffectsAvailable->forceSet(m_availableEffectManifests.size());
+
     qSort(m_availableEffectManifests.begin(), m_availableEffectManifests.end(),
           alphabetizeEffectManifests);
 
@@ -84,6 +90,7 @@ void EffectsManager::slotBackendRegisteredEffect(EffectManifest manifest) {
                                        m_availableEffectManifests.end(),
                                        manifest, alphabetizeEffectManifests);
     m_availableEffectManifests.insert(insertion_point, manifest);
+    m_pNumEffectsAvailable->forceSet(m_availableEffectManifests.size());
 }
 
 void EffectsManager::registerChannel(const ChannelHandleAndGroup& handle_group) {
@@ -211,15 +218,15 @@ EffectRackPointer EffectsManager::getEffectRack(const QString& group) {
     return m_pEffectChainManager->getEffectRack(group);
 }
 
-void EffectsManager::setupDefaults() {
-    //m_pEffectChainManager->loadEffectChains();
-
+void EffectsManager::setup() {
     // Add a general purpose rack
+    QList<std::pair<EffectChainPointer, QDomElement>> savedChains;
+    savedChains = m_pEffectChainManager->loadEffectChains();
+
     StandardEffectRackPointer pStandardRack = addStandardEffectRack();
-    pStandardRack->addEffectChainSlot();
-    pStandardRack->addEffectChainSlot();
-    pStandardRack->addEffectChainSlot();
-    pStandardRack->addEffectChainSlot();
+    for (auto chain : savedChains) {
+        pStandardRack->addEffectChainSlot(chain.first, chain.second);
+    }
 
     EffectChainPointer pChain = EffectChainPointer(new EffectChain(
            this, "org.mixxx.effectchain.flanger"));

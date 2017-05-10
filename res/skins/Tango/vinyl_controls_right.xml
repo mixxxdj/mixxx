@@ -1,0 +1,142 @@
+<!--
+Description:
+  Container for Vinyl control options next to waveform overview in decks.
+  Visibility is toggled by VinylTogglerLeft.
+  Contains spacers for when decks' overview waveforms are stacked like
+  scrolling waveforms and track comment is displayed.
+Variables:
+  group   : [ChannelN]
+  channum : channel number
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>VinylControls</ObjectName>
+    <Layout>vertical</Layout>
+    <Size>1min,50f</Size>
+    <Children>
+
+      <WidgetGroup>
+        <Size>1min,1f</Size>
+        <Children/>
+        <Connection>
+          <ConfigKey persist="true">[Tango],stacked_overviews</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>blaaa1</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>80f,24f</Size>
+        <Children>
+
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="TooltipId">vinylcontrol_enabled</SetVariable>
+            <SetVariable name="ObjectName">VinylButton</SetVariable>
+            <SetVariable name="Size">40f,24f</SetVariable>
+            <SetVariable name="state_0_text">VINYL</SetVariable>
+            <SetVariable name="state_1_text">VINYL</SetVariable>
+            <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,vinylcontrol_enabled</SetVariable>
+          </Template>
+
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="TooltipId">passthrough_enabled</SetVariable>
+            <SetVariable name="ObjectName">VinylButton</SetVariable>
+            <SetVariable name="Size">40f,24f</SetVariable>
+            <SetVariable name="state_0_text">PASS</SetVariable>
+            <SetVariable name="state_1_text">PASS</SetVariable>
+            <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,passthrough</SetVariable>
+          </Template>
+
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup><Size>1min,1f</Size><Children/></WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>blaaa2</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>80f,23min</Size>
+        <Children>
+
+          <Template src="skin:button_3state_persist.xml">
+            <SetVariable name="TooltipId">vinylcontrol_mode</SetVariable>
+            <SetVariable name="ObjectName">VinylModeButton</SetVariable>
+            <SetVariable name="Size">40f,23me</SetVariable>
+            <SetVariable name="state_0_text">ABS</SetVariable>
+            <SetVariable name="state_1_text">REL</SetVariable>
+            <SetVariable name="state_2_text">CONST</SetVariable>
+            <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,vinylcontrol_mode</SetVariable>
+          </Template>
+
+          <WidgetGroup><!-- Cue mode button with translucent cover -->
+            <Layout>stacked</Layout>
+            <Size>40f,23me</Size>
+            <Children>
+              <!-- index 0 due to bug -->
+              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+              <!-- Block mouse when Vinyl control not RELATIVE mode -->
+              <WidgetGroup>
+                <ObjectName>SubmenuCover</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Children/>
+                <Connection>
+                  <ConfigKey persist="true"><Variable name="group"/>,vinylcontrol_mode</ConfigKey>
+                  <Transform><IsEqual>1</IsEqual><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <Template src="skin:button_3state_persist.xml">
+                <SetVariable name="TooltipId">vinylcontrol_cueing</SetVariable>
+                <SetVariable name="ObjectName">VinylButton</SetVariable>
+                <SetVariable name="Size">40f,23me</SetVariable>
+                <SetVariable name="state_0_text">CUE</SetVariable>
+                <SetVariable name="state_1_text">CUE</SetVariable>
+                <SetVariable name="state_2_text">HOT</SetVariable>
+                <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,vinylcontrol_cueing</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- /Cue mode button with translucent covers -->
+
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Size>1min,1f</Size>
+        <Children/>
+        <Connection>
+          <ConfigKey persist="true">[Tango],stacked_overviews</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+          <WidgetGroup>
+            <Size>1min,1f</Size>
+            <Children/>
+            <Connection>
+              <ConfigKey persist="true">[Tango],trackComment</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Tango],stacked_overviews</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Tango],vinylControlsDeck<Variable name="channum"/></ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

@@ -1,0 +1,160 @@
+<!--
+Description:
+  Container for EffectUnits 1 & 2.
+  In netbook mode they are pushed apart by several spacers which also
+  aligns them to decks (resp. channel mixer or cover art).
+  For each EffectUnit there's a minimized and a full mode.
+-->
+<Template>
+  <WidgetGroup><!-- EffectUnits 3 & 4 -->
+    <ObjectName>EffectUnits34</ObjectName>
+    <SizePolicy>me,max</SizePolicy>
+    <Layout>horizontal</Layout>
+    <Children>
+
+      <WidgetGroup><!-- EffectUnit 3 -->
+        <ObjectName>EffectUnit3_maxi</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,max</SizePolicy>
+        <Children>
+          <!-- margin not respected, workaround -->
+          <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
+          <Template src="skin:fx_unit_left.xml">
+              <SetVariable name="EffectRack">1</SetVariable>
+              <SetVariable name="EffectUnit">3</SetVariable>
+              <SetVariable name="fxGroup">EffectRack1_EffectUnit3</SetVariable>
+          </Template>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[EffectRack1_EffectUnit3],show_parameters</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>EffectUnit3_mini</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,me</SizePolicy>
+        <Children>
+          <!-- margin not respected, workaround -->
+          <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
+          <Template src="skin:fx_unit_left_mini.xml">
+              <SetVariable name="EffectRack">1</SetVariable>
+              <SetVariable name="EffectUnit">3</SetVariable>
+              <SetVariable name="fxGroup">EffectRack1_EffectUnit3</SetVariable>
+          </Template>
+          <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[EffectRack1_EffectUnit3],show_parameters</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /EffectUnit 1 -->
+
+      <WidgetGroup><!-- Spacers for normal width -->
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+
+          <!-- Spacer to keep Deck & FX unit aligned -->
+          <WidgetGroup><Size>108f,1min</Size><Children/>
+            <Connection>
+              <ConfigKey>[Tango],normal_mode</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup> <!-- Spacer to keep Deck & FX unit aligned without Pitch fader-->
+            <Size>106f,1min</Size>
+            <Children/>
+            <Connection>
+              <ConfigKey>[Tango],pitch_fader</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup><!-- VU Meter spacer when Channel Mixer is hidden -->
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Size>22f,1min</Size>
+                <Children>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Tango],vumeter</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey>[Tango],channel_mixer</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform><Not/></Transform>
+            </Connection>
+          </WidgetGroup><!-- /VU Meter spacer when Channel Mixer is hidden -->
+        </Children>
+        <Connection>
+          <ConfigKey>[Tango],normal_mode</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Spacers for normal width -->
+
+      <WidgetGroup><!-- Spacer for netbook mode -->
+        <Size>4f,1min</Size>
+        <Children/>
+        <Connection>
+          <ConfigKey>[Tango],netbook_mode</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Spacer for netbook mode -->
+
+      <WidgetGroup><!-- EffectUnit 4 -->
+        <ObjectName>EffectUnit4_maxi</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,max</SizePolicy>
+        <Children>
+          <!-- margin not respected, workaround -->
+          <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
+          <Template src="skin:fx_unit_right.xml">
+              <SetVariable name="EffectRack">1</SetVariable>
+              <SetVariable name="EffectUnit">4</SetVariable>
+              <SetVariable name="fxGroup">EffectRack1_EffectUnit4</SetVariable>
+          </Template>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[EffectRack1_EffectUnit4],show_parameters</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>EffectUnit4_mini</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,me</SizePolicy>
+        <Children>
+          <!-- margin not respected, workaround -->
+          <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
+          <Template src="skin:fx_unit_right_mini.xml">
+              <SetVariable name="EffectRack">1</SetVariable>
+              <SetVariable name="EffectUnit">4</SetVariable>
+              <SetVariable name="fxGroup">EffectRack1_EffectUnit4</SetVariable>
+          </Template>
+          <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[EffectRack1_EffectUnit4],show_parameters</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /EffectUnit 4 -->
+
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup><!-- /EffectUnits 3 & 4 -->
+</Template>

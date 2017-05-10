@@ -51,6 +51,9 @@ class EffectChainSlot : public QObject {
         return m_group;
     }
 
+    QDomElement toXml(QDomDocument* doc) const;
+    void loadChainSlotFromXml(const QDomElement& effectChainElement);
+
   signals:
     // Indicates that the effect pEffect has been loaded into slotNumber of
     // EffectChainSlot chainNumber. pEffect may be an invalid pointer, which

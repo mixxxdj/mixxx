@@ -1,0 +1,167 @@
+<!--
+Description:
+  Container for deck buttons:
+  * deck controls
+  * Star rating
+  * indicators for assigned effect unit(s)
+  * HotCues
+  * Play/Cue
+Variables:
+  group   : [ChannelN]
+  channum : channel number
+-->
+<Template>
+  <WidgetGroup><!-- Play + deck controls -->
+    <ObjectName>DeckButtonsPlay</ObjectName>
+    <Size>1me,25f</Size>
+    <Layout>horizontal</Layout>
+    <Children>
+
+      <WidgetGroup><!-- Deck Controls + Star rating -->
+        <ObjectName>DeckControlsLeft</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,me</SizePolicy>
+        <Children>
+
+          <Template src="skin:button_2state_persist.xml"><!-- Keylock -->
+            <SetVariable name="ObjectName">DeckButton</SetVariable>
+            <SetVariable name="Size">22f,22f</SetVariable>
+            <SetVariable name="TooltipId">keylock</SetVariable>
+            <SetVariable name="state_0_pressed">keylock_off.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">keylock_off.svg</SetVariable>
+            <SetVariable name="state_1_pressed">keylock_on.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">keylock_on.svg</SetVariable>
+            <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,keylock</SetVariable>
+          </Template>
+
+          <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
+            <SetVariable name="ObjectName">DeckButtonTogglerLeft</SetVariable>
+            <SetVariable name="Size">11f,22f</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Tango],deck_controls</SetVariable>
+          </Template>
+
+          <WidgetGroup><!-- Deck controls -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skin:button_1state.xml">
+                <SetVariable name="ObjectName">DeckButton</SetVariable>
+                <SetVariable name="Size">20f,22f</SetVariable>
+                <SetVariable name="TooltipId">eject</SetVariable>
+                <SetVariable name="state_0_pressed">eject_pressed.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">eject.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,eject</SetVariable>
+              </Template>
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="ObjectName">DeckButton</SetVariable>
+                <SetVariable name="Size">22f,22f</SetVariable>
+                <SetVariable name="TooltipId">slip_mode</SetVariable>
+                <SetVariable name="state_0_pressed">slipmode_off.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">slipmode_off.svg</SetVariable>
+                <SetVariable name="state_1_pressed">slipmode_on.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">slipmode_on.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,slip_enabled</SetVariable>
+              </Template>
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="ObjectName">DeckButton</SetVariable>
+                <SetVariable name="Size">22f,22f</SetVariable>
+                <SetVariable name="TooltipId">repeat</SetVariable>
+                <SetVariable name="state_0_pressed">repeat_off.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">repeat_off.svg</SetVariable>
+                <SetVariable name="state_1_pressed">repeat_on.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">repeat_on.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,repeat</SetVariable>
+              </Template>
+              <Template src="skin:button_3state.xml">
+                <SetVariable name="ObjectName">DeckButton</SetVariable>
+                <SetVariable name="Size">20f,22f</SetVariable>
+                <SetVariable name="TooltipId">orientation</SetVariable>
+                <SetVariable name="state_0_pressed">cf_left.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">cf_left.svg</SetVariable>
+                <SetVariable name="state_1_pressed">cf_center_attention.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">cf_center_attention.svg</SetVariable>
+                <SetVariable name="state_2_pressed">cf_right_attention.svg</SetVariable>
+                <SetVariable name="state_2_unpressed">cf_right_attention.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
+              </Template>
+              <Template src="skin:button_2state_persist.xml">
+                <SetVariable name="ObjectName">DeckButton</SetVariable>
+                <SetVariable name="Size">22f,22f</SetVariable>
+                <SetVariable name="TooltipId">quantize</SetVariable>
+                <SetVariable name="state_0_pressed">quantize_off.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">quantize_off.svg</SetVariable>
+                <SetVariable name="state_1_pressed">quantize_on.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">quantize_on.svg</SetVariable>
+                <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,quantize</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],deck_controls</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /Deck controls -->
+
+          <WidgetGroup><!-- Stars -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <Size>84f,22f</Size>
+                <Layout>horizontal</Layout>
+                <Children>
+
+                  <StarRating>
+                    <ObjectName>DeckStars</ObjectName>
+                    <Size>83min,22f</Size>
+                    <TooltipId>starrating</TooltipId>
+                    <Channel><Variable name="channum"/></Channel>
+                  </StarRating>
+
+                  <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],stars</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <!-- visibilty controlled by SizeAwareStack in deck_buttons_right.xml -->
+            <Connection>
+              <ConfigKey>[Tango],stars_fit</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /Stars -->
+
+        </Children>
+      </WidgetGroup><!-- /Deck Controls + Star rating -->
+
+      <Template src="skin:hotcues_deck_left.xml"/>
+
+      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+
+      <WidgetGroup><!-- Play -->
+        <ObjectName>Spacer0f</ObjectName>
+        <Layout>stacked</Layout>
+        <Size>50f,24f</Size>
+        <Children>
+          <Template src="skin:button_2state_right_display.xml"><!-- Play -->
+            <SetVariable name="ObjectName">PlayCue</SetVariable>
+            <SetVariable name="TooltipId">play_cue_set</SetVariable>
+            <SetVariable name="Size">50f,24f</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
+            <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
+            <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
+          </Template>
+      <!--	Turns Orange when playing from Cue/HotCue position.
+          Only visible when play_indicator above is zero0, otherwise it's covered. -->
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="ObjectName">PlayCueUnderlay</SetVariable>
+            <SetVariable name="Size">50f,24f</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup><!-- /Play -->
+    </Children>
+  </WidgetGroup><!-- /Play + deck controls -->
+</Template>

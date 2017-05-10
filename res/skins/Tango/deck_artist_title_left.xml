@@ -1,0 +1,91 @@
+<!--
+Description:
+  Container for:
+  * artist/title
+  * play position (elapsed/remaining)
+  * track duration
+  * indicator for enabled loop (if loop controls are hidden)
+Variables:
+  group   : [ChannelN]
+  channum : channel number
+-->
+<Template>
+  <WidgetGroup><!-- DeckArtistTitle -->
+    <ObjectName>DeckArtistTitleLoop</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,me</SizePolicy>
+    <Children>
+      <WidgetGroup><!-- Artist & Title rows -->
+        <Layout>vertical</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+          <WidgetGroup><!-- TitleTimeRow -->
+            <ObjectName>TitleTimeRow</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,me</SizePolicy>
+            <Children>
+              <TrackProperty>
+                <ObjectName>TrackTitle</ObjectName>
+                <TooltipId>track_title</TooltipId>
+                <Property>title</Property>
+                <Alignment>Left</Alignment>
+                <Elide>right</Elide>
+                <Size>1me,22f</Size>
+                <Channel><Variable name="channum"/></Channel>
+              </TrackProperty>
+
+              <NumberPos>
+                <ObjectName>TrackTime</ObjectName>
+                <TooltipId>track_time</TooltipId>
+                <Size>80f,22f</Size>
+                <Alignment>right</Alignment>
+                <Channel><Variable name="channum"/></Channel>
+                <NumberOfDigits>1</NumberOfDigits>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+                </Connection>
+              </NumberPos>
+            </Children>
+          </WidgetGroup><!-- /TitleTimeRow -->
+
+          <WidgetGroup><!-- ArtistDurationRow -->
+            <ObjectName>ArtistDurationRow</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,me</SizePolicy>
+            <Children>
+              <Label>
+                <ObjectName>TrackBy</ObjectName>
+                <Size>20f,20f</Size>
+                <Text>by </Text>
+                <Alignment>left</Alignment>
+              </Label>
+
+              <TrackProperty>
+                <ObjectName>TrackArtist</ObjectName>
+                <Elide>right</Elide>
+                <Size>1me,20f</Size>
+                <TooltipId>track_artist</TooltipId>
+                <Property>artist</Property>
+                <Channel><Variable name="channum"/></Channel>
+              </TrackProperty>
+
+              <TrackProperty>
+                <ObjectName>TrackDuration</ObjectName>
+                <Size>50f,20f</Size>
+                <TooltipId>track_duration</TooltipId>
+                <Property>durationFormatted</Property>
+                <Alignment>right</Alignment>
+                <Channel><Variable name="channum"/></Channel>
+              </TrackProperty>
+
+            </Children>
+          </WidgetGroup><!-- /ArtistDurationRow -->
+
+        </Children>
+      </WidgetGroup><!-- Artist & Title rows -->
+
+      <Template src="skin:loop_indicator.xml"/>
+
+    </Children>
+  </WidgetGroup><!-- DeckArtistTitle -->
+</Template>
