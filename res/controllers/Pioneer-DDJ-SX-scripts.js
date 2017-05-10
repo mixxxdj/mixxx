@@ -10,7 +10,7 @@ var PioneerDDJSX = function() {};
 
 /*
 	Author: 		DJMaxergy
-	Version: 		1.02, 05/10/2017
+	Version: 		1.03, 05/10/2017
 	Description: 	Pioneer DDJ-SX Controller Mapping for Mixxx
     Source: 		http://github.com/DJMaxergy/mixxx/tree/pioneerDDJSX_mapping
     
@@ -93,7 +93,24 @@ PioneerDDJSX.chFaderStart = [null, null, null, null];
 PioneerDDJSX.toggledBrake = [false, false, false, false];
 PioneerDDJSX.scratchMode = [true, true, true, true];
 PioneerDDJSX.wheelLedsBlinkStatus = [0, 0, 0, 0];
-PioneerDDJSX.padMode = [0, 0, 0, 0]; //0 = HOTCUE, 1 = ROLL, 2 = SLICER, 3 = SAMPLER
+
+// PAD mode storage:
+PioneerDDJSX.padModes = {
+    'hotCue': 0,
+    'loopRoll': 1,
+    'slicer': 2,
+    'sampler': 3,
+    'group1': 4,
+    'beatloop': 5,
+    'group3': 6,
+    'group4': 7
+};
+PioneerDDJSX.activePadMode = [
+    PioneerDDJSX.padModes.hotCue,
+    PioneerDDJSX.padModes.hotCue,
+    PioneerDDJSX.padModes.hotCue,
+    PioneerDDJSX.padModes.hotCue
+];
 PioneerDDJSX.samplerVelocityMode = [false, false, false, false];
 
 // FX storage:
@@ -106,7 +123,7 @@ PioneerDDJSX.autoDJTickTimer = 0;
 PioneerDDJSX.autoDJSyncBPM = false;
 PioneerDDJSX.autoDJSyncKey = false;
 
-// used for pad parameter selection:
+// used for PAD parameter selection:
 PioneerDDJSX.selectedSamplerBank = 0;
 PioneerDDJSX.selectedLoopParam = [0, 0, 0, 0];
 PioneerDDJSX.selectedLoopRollParam = [2, 2, 2, 2];
@@ -138,7 +155,16 @@ PioneerDDJSX.slicerPreviousBeatsPassed = [0, 0, 0, 0];
 PioneerDDJSX.slicerActive = [false, false, false, false];
 PioneerDDJSX.slicerAlreadyJumped = [false, false, false, false];
 PioneerDDJSX.slicerButton = [0, 0, 0, 0];
-PioneerDDJSX.slicerType = [0, 0, 0, 0];
+PioneerDDJSX.slicerModes = {
+    'contSlice': 0,
+    'loopSlice': 1
+};
+PioneerDDJSX.activeSlicerMode = [
+    PioneerDDJSX.slicerModes.contSlice,
+    PioneerDDJSX.slicerModes.contSlice,
+    PioneerDDJSX.slicerModes.contSlice,
+    PioneerDDJSX.slicerModes.contSlice
+];
 
 
 PioneerDDJSX.init = function(id) {
@@ -951,8 +977,8 @@ PioneerDDJSX.toggleHotCueMode = function(channel, control, value, status, group)
     var deck = PioneerDDJSX.channelGroups[group];
     //HOTCUE
     if (value) {
-        PioneerDDJSX.padMode[deck] = 0;
-        PioneerDDJSX.slicerType[deck] = 0;
+        PioneerDDJSX.activePadMode[deck] = PioneerDDJSX.padModes.hotCue;
+        PioneerDDJSX.activeSlicerMode[deck] = PioneerDDJSX.slicerModes.contSlice;
         PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.hotCueMode, value);
     }
 };
@@ -961,8 +987,8 @@ PioneerDDJSX.toggleBeatloopRollMode = function(channel, control, value, status, 
     var deck = PioneerDDJSX.channelGroups[group];
     //ROLL
     if (value) {
-        PioneerDDJSX.padMode[deck] = 1;
-        PioneerDDJSX.slicerType[deck] = 0;
+        PioneerDDJSX.activePadMode[deck] = PioneerDDJSX.padModes.loopRoll;
+        PioneerDDJSX.activeSlicerMode[deck] = PioneerDDJSX.slicerModes.contSlice;
         PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.rollMode, value);
     }
 };
@@ -971,14 +997,15 @@ PioneerDDJSX.toggleSlicerMode = function(channel, control, value, status, group)
     var deck = PioneerDDJSX.channelGroups[group];
     //SLICER
     if (value) {
-        if (PioneerDDJSX.padMode[deck] === 2 && PioneerDDJSX.slicerType[deck] === 0) {
-            PioneerDDJSX.slicerType[deck] = 1;
+        if (PioneerDDJSX.activePadMode[deck] === PioneerDDJSX.padModes.slicer && 
+            PioneerDDJSX.activeSlicerMode[deck] === PioneerDDJSX.slicerModes.contSlice) {
+            PioneerDDJSX.activeSlicerMode[deck] = PioneerDDJSX.slicerModes.loopSlice;
             engine.setValue(group, "slip_enabled", true);
         } else {
-            PioneerDDJSX.slicerType[deck] = 0;
+            PioneerDDJSX.activeSlicerMode[deck] = PioneerDDJSX.slicerModes.contSlice;
             engine.setValue(group, "slip_enabled", false);
         }
-        PioneerDDJSX.padMode[deck] = 2;
+        PioneerDDJSX.activePadMode[deck] = PioneerDDJSX.padModes.slicer;
         PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.slicerMode, value);
     }
 };
@@ -987,8 +1014,8 @@ PioneerDDJSX.toggleSamplerMode = function(channel, control, value, status, group
     var deck = PioneerDDJSX.channelGroups[group];
     //SAMPLER
     if (value) {
-        PioneerDDJSX.padMode[deck] = 3;
-        PioneerDDJSX.slicerType[deck] = 0;
+        PioneerDDJSX.activePadMode[deck] = PioneerDDJSX.padModes.sampler;
+        PioneerDDJSX.activeSlicerMode[deck] = PioneerDDJSX.slicerModes.contSlice;
         PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.samplerMode, value);
     }
 };
@@ -1013,8 +1040,8 @@ PioneerDDJSX.toggleBeatloopMode = function(channel, control, value, status, grou
     var deck = PioneerDDJSX.channelGroups[group];
     //GROUP2
     if (value) {
-        PioneerDDJSX.padMode[deck] = 5;
-        PioneerDDJSX.slicerType[deck] = 0;
+        PioneerDDJSX.activePadMode[deck] = PioneerDDJSX.padModes.beatloop;
+        PioneerDDJSX.activeSlicerMode[deck] = PioneerDDJSX.slicerModes.contSlice;
         PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.shiftRollMode, value);
     }
 };
@@ -1045,7 +1072,7 @@ PioneerDDJSX.slicerButtons = function(channel, control, value, status, group) {
         startPos = 0,
         beatsToJump = 0;
 
-    if (PioneerDDJSX.slicerType[deck] === 1) {
+    if (PioneerDDJSX.activeSlicerMode[deck] === PioneerDDJSX.slicerModes.loopSlice) {
         PioneerDDJSX.padLedControl(group, PioneerDDJSX.ledGroups.slicer, padNum, false, !value);
     } else {
         PioneerDDJSX.padLedControl(group, PioneerDDJSX.ledGroups.slicer, padNum, false, value);
@@ -1067,7 +1094,7 @@ PioneerDDJSX.slicerButtons = function(channel, control, value, status, group) {
         }
     }
 
-    if (PioneerDDJSX.slicerType[deck] === 0) {
+    if (PioneerDDJSX.activeSlicerMode[deck] === PioneerDDJSX.slicerModes.contSlice) {
         engine.setValue(group, "beatloop_" + PioneerDDJSX.selectedSlicerQuantization[deck] + "_activate", value);
         engine.setValue(group, "slip_enabled", value);
     }
@@ -2303,13 +2330,15 @@ PioneerDDJSX.slicerBeatActive = function(value, group, control) {
     PioneerDDJSX.slicerBeatsPassed[deck] = Math.round((playposition * duration) * (bpm / 60));
     slicerPos = PioneerDDJSX.slicerBeatsPassed[deck] % 8;
 
-    if (PioneerDDJSX.padMode[deck] === 2) {
-        if (PioneerDDJSX.slicerType[deck] === 0) {
+    if (PioneerDDJSX.activePadMode[deck] === PioneerDDJSX.padModes.slicer) {
+        if (PioneerDDJSX.activeSlicerMode[deck] === PioneerDDJSX.slicerModes.contSlice) {
             ledBeatState = true;
         }
-        if (PioneerDDJSX.slicerType[deck] === 1) {
+        if (PioneerDDJSX.activeSlicerMode[deck] === PioneerDDJSX.slicerModes.loopSlice) {
             ledBeatState = false;
-            if (((PioneerDDJSX.slicerBeatsPassed[deck] - 1) % 8) === 7 && !PioneerDDJSX.slicerAlreadyJumped[deck] && PioneerDDJSX.slicerPreviousBeatsPassed[deck] < PioneerDDJSX.slicerBeatsPassed[deck]) {
+            if (((PioneerDDJSX.slicerBeatsPassed[deck] - 1) % 8) === 7 && 
+                  !PioneerDDJSX.slicerAlreadyJumped[deck] && 
+                  PioneerDDJSX.slicerPreviousBeatsPassed[deck] < PioneerDDJSX.slicerBeatsPassed[deck]) {
                 engine.setValue(group, "beatjump", -8);
                 PioneerDDJSX.slicerAlreadyJumped[deck] = true;
             } else {
