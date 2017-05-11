@@ -10,7 +10,6 @@ Description:
     <ObjectName>SkinSettingsButton</ObjectName>
     <Size>172f,15f</Size>
     <NumberStates>1</NumberStates>
-    <RightClickIsPushButton>true</RightClickIsPushButton>
     <State>
       <Number>0</Number>
       <Text>[<Variable name="current"/>] Sampler Rows</Text>

@@ -177,7 +177,9 @@ Variables:
                   <Template src="skin:button_1state.xml">
                     <SetVariable name="ObjectName">EffectEject</SetVariable>
                     <SetVariable name="Size">20f,20f</SetVariable>
-                    <SetVariable name="TooltipId">eject</SetVariable>
+                    <SetVariable name="TooltipId">EffectUnit_clear</SetVariable>
+                    <SetVariable name="state_0_pressed">eject_pressed.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">eject.svg</SetVariable>
                     <SetVariable name="ConfigKey">[<Variable name="fxGroup"/>],clear</SetVariable>
                   </Template>
                     <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>

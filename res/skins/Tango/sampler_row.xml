@@ -16,24 +16,28 @@ Variables:
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
+            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler.xml">
             <SetVariable name="samplernum"><Variable name="sampler1"/></SetVariable>
           </Template>
+            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler.xml">
             <SetVariable name="samplernum"><Variable name="sampler2"/></SetVariable>
           </Template>
+            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler.xml">
             <SetVariable name="samplernum"><Variable name="sampler3"/></SetVariable>
           </Template>
+            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler.xml">
             <SetVariable name="samplernum"><Variable name="sampler4"/></SetVariable>
           </Template>
-            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
           <WidgetGroup>
             <SizePolicy>min,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
+              <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
               <Template src="skin:button_2state_persist.xml">
                 <SetVariable name="ObjectName">SamplersMiniMaxiButton</SetVariable>
                 <SetVariable name="Size">22f,13f</SetVariable>
@@ -46,12 +50,15 @@ Variables:
           <Template src="skin:sampler.xml">
             <SetVariable name="samplernum"><Variable name="sampler5"/></SetVariable>
           </Template>
+            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler.xml">
             <SetVariable name="samplernum"><Variable name="sampler6"/></SetVariable>
           </Template>
+            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler.xml">
             <SetVariable name="samplernum"><Variable name="sampler7"/></SetVariable>
           </Template>
+            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler.xml">
             <SetVariable name="samplernum"><Variable name="sampler8"/></SetVariable>
           </Template>
@@ -67,24 +74,28 @@ Variables:
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
+            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler_mini.xml">
             <SetVariable name="samplernum"><Variable name="sampler1"/></SetVariable>
           </Template>
+            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler_mini.xml">
             <SetVariable name="samplernum"><Variable name="sampler2"/></SetVariable>
           </Template>
+            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler_mini.xml">
             <SetVariable name="samplernum"><Variable name="sampler3"/></SetVariable>
           </Template>
+            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler_mini.xml">
             <SetVariable name="samplernum"><Variable name="sampler4"/></SetVariable>
           </Template>
-            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
           <WidgetGroup>
             <SizePolicy>min,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
+              <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
               <Template src="skin:button_2state_persist.xml">
                 <SetVariable name="ObjectName">SamplersMiniMaxiButton</SetVariable>
                 <SetVariable name="Size">22f,13f</SetVariable>
@@ -97,12 +108,15 @@ Variables:
           <Template src="skin:sampler_mini.xml">
             <SetVariable name="samplernum"><Variable name="sampler5"/></SetVariable>
           </Template>
+            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler_mini.xml">
             <SetVariable name="samplernum"><Variable name="sampler6"/></SetVariable>
           </Template>
+            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler_mini.xml">
             <SetVariable name="samplernum"><Variable name="sampler7"/></SetVariable>
           </Template>
+            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler_mini.xml">
             <SetVariable name="samplernum"><Variable name="sampler8"/></SetVariable>
           </Template>

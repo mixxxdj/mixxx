@@ -69,6 +69,8 @@ Variables:
             <Size>82me,20f</Size>
             <Children>
 
+              <WidgetGroup><Size>2f,1min</Size><Children/></WidgetGroup>
+
               <Template src="skin:knob_textless.xml">
                 <SetVariable name="TooltipId">pregain</SetVariable>
                 <SetVariable name="ObjectName">SamplerGainKnob</SetVariable>

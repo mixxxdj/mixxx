@@ -1244,10 +1244,9 @@ WBeatSpinBox {
       }
 
   #EffectEject {
-    background: #333333 url(skin:/buttons/btn_eject.svg) no-repeat center center;
+    background-color: #333333;
     }
     #EffectEject:hover {
-      background: transparent url(skin:/buttons/btn_eject_hover.svg) no-repeat center center;
       background-color: #ca0000;
       border: 1px solid #ff0000;
     }
@@ -1266,7 +1265,7 @@ WBeatSpinBox {
 
 #SamplerDeck {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  margin: 3px 0px 0px 3px;
+  margin-top: 3px;
 }
 
 #FxMiniMaxiButton {
