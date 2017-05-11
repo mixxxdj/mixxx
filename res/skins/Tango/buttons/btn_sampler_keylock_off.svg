@@ -9,13 +9,13 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="20"
-   height="22"
-   viewBox="0 0 20 22"
+   width="14"
+   height="16"
+   viewBox="0 0 14 16"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_keylock_off.svg"
+   sodipodi:docname="btn_sampler_keylock_off.svg"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <sodipodi:namedview
@@ -31,15 +31,13 @@
      inkscape:window-height="747"
      id="namedview2993"
      showgrid="false"
-     inkscape:zoom="4.9166667"
-     inkscape:cx="24"
-     inkscape:cy="20.873539"
+     inkscape:zoom="11.313708"
+     inkscape:cx="-15.914243"
+     inkscape:cy="3.4941284"
      inkscape:window-x="0"
      inkscape:window-y="21"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g3886"
-     inkscape:snap-page="true"
-     inkscape:snap-bbox="true" />
+     inkscape:current-layer="g3886" />
   <metadata
      id="metadata12">
     <rdf:RDF>
@@ -57,9 +55,9 @@
   <g
      id="g3886"
      style="display:inline"
-     transform="translate(0,-26)">
+     transform="translate(0,-32)">
     <path
-       d="m 10.917,28.75 0,10.786875 C 10.161667,39.084959 9.182208,38.83425 8.1669998,38.833334 c -2.2781916,0 -4.1249998,1.23122 -4.1249998,2.749999 0,1.518779 1.8468082,2.75 4.1249998,2.75 2.2781912,0 4.1250002,-1.231221 4.1250002,-2.75 l 0,-10.083333 4.125,0.916666 0,-2.749999 L 12.292,28.75 z"
+       d="m 8.0414031,33.935813 0,8.70287 C 7.4319983,42.274076 6.6417693,42.071804 5.8226975,42.071065 c -1.8380489,0 -3.3280574,0.993351 -3.3280574,2.218705 0,1.225354 1.4900085,2.218705 3.3280574,2.218705 1.8380497,0 3.3280582,-0.993351 3.3280582,-2.218705 l 0,-8.135252 3.3280573,0.739568 0,-2.218704 -3.3280573,-0.739569 z"
        id="path3888"
        style="fill:#888888;fill-opacity:1;display:inline"
        inkscape:connector-curvature="0" />

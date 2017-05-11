@@ -24,8 +24,8 @@ Variables:
         <Children>
 
           <Template src="skin:button_2state_persist.xml"><!-- Keylock -->
-            <SetVariable name="ObjectName">DeckButton</SetVariable>
-            <SetVariable name="Size">22f,22f</SetVariable>
+            <SetVariable name="ObjectName">Keylock</SetVariable>
+            <SetVariable name="Size">20f,22f</SetVariable>
             <SetVariable name="TooltipId">keylock</SetVariable>
             <SetVariable name="state_0_pressed">keylock_off.svg</SetVariable>
             <SetVariable name="state_0_unpressed">keylock_off.svg</SetVariable>
@@ -33,6 +33,8 @@ Variables:
             <SetVariable name="state_1_unpressed">keylock_on.svg</SetVariable>
             <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,keylock</SetVariable>
           </Template>
+
+          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
             <SetVariable name="ObjectName">DeckButtonTogglerLeft</SetVariable>

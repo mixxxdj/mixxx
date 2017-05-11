@@ -458,8 +458,12 @@ WWidgetGroup {
   #DeckButtonTogglerRight[displayValue="0"]:hover {
     background: transparent url(skin:/buttons/btn_arrow_left_thin_hover.svg) no-repeat center center;
   }
-  #DeckButton:hover {
+  #DeckButton:hover, #Keylock[displayValue="0"]:hover, #Keylock[displayValue="1"],
+  #PflButton[displayValue="0"]:hover, #PflButton[displayValue="1"] {
     background-color: #151515;
+  }
+  #Keylock[displayValue="1"]:hover, #PflButton[displayValue="1"]:hover {
+    border: 1px solid #d2d2d2;
   }
   #SyncModeButton {
     font-weight: bold;
@@ -766,16 +770,6 @@ WBeatSpinBox {
   if it is scaled up too much (>120). Source:
   https://forum.qt.io/topic/40151/solved-scaled-background-image-using-stylesheet/6
   border-image: url(skin:/buttons/btn_pfl_off.svg) 0 0 0 0 stretch stretch; */
-#PflButton {
-  background-color: #333333;
-  }
-  #PflButton:hover, #PflButton[displayValue="1"] {  /*
-    In conjunction with the workaround above, this would only
-    draw invisible border and squeeze image by border width on each side.
-    Though, this is a nice zoom effect on hover, even more if border is removed then.
-    border: 1px solid #eeeeee;  */
-    background-color: #000000;
-  }
         
 #VolumeSliderGain {
   qproperty-layoutAlignment: 'AlignHCenter';
