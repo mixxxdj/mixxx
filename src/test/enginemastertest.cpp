@@ -34,7 +34,7 @@ class EngineChannelMock : public EngineChannel {
     MOCK_CONST_METHOD0(isMasterEnabled, bool());
     MOCK_CONST_METHOD0(isPflEnabled, bool());
     MOCK_METHOD2(process, void(CSAMPLE* pInOut, const int iBufferSize));
-    MOCK_METHOD1(collectFeatures, void(GroupFeatureState* pGroupFeatures));
+    MOCK_CONST_METHOD1(collectFeatures, void(GroupFeatureState* pGroupFeatures));
     MOCK_METHOD1(postProcess, void(const int iBufferSize));
 };
 
