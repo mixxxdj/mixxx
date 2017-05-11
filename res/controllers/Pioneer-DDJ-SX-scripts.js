@@ -10,7 +10,7 @@ var PioneerDDJSX = function() {};
 
 /*
 	Author: 		DJMaxergy
-	Version: 		1.05, 05/10/2017
+	Version: 		1.06, 05/12/2017
 	Description: 	Pioneer DDJ-SX Controller Mapping for Mixxx
     Source: 		http://github.com/DJMaxergy/mixxx/tree/pioneerDDJSX_mapping
     
@@ -1752,22 +1752,31 @@ PioneerDDJSX.playLed = function(value, group, control) {
 };
 
 PioneerDDJSX.wheelLeds = function(value, group, control) {
+    // Timing calculation is handled in seconds!
     var deck = PioneerDDJSX.channelGroups[group],
         duration = engine.getValue(group, "duration"),
-        remainingTime = duration - (value * duration),
-        speed = 0x28,
-        wheelPos = 0x01;
+        elapsedTime = value * duration,
+        remainingTime = duration - elapsedTime,
+        refsPerSecond = PioneerDDJSX.scratchSettings.vinylSpeed / 60,
+        speed = parseInt(refsPerSecond * 0x48),
+        wheelPos = 0x00;
 
+    // wheelPos = 0x48 : all LEDs are lit, wheelPos = 0x00 : all LEDs off
     if (value >= 0) {
-        wheelPos = 0x01 + ((speed * (value * duration)) % 0x48);
+        wheelPos = 0x01 + ((speed * elapsedTime) % 0x48);
     } else {
-        wheelPos = 0x49 + ((speed * (value * duration)) % 0x48);
+        wheelPos = 0x49 + ((speed * elapsedTime) % 0x48);
     }
-    if (remainingTime > 0 && remainingTime < 30) {
-        if (PioneerDDJSX.wheelLedsBlinkStatus[deck] > 2) {
-            PioneerDDJSX.wheelLedsBlinkStatus[deck] = 0;
-        } else {
+    // let wheel LEDs blink if remaining time is less than 30s:
+    if (remainingTime > 0 && remainingTime < 30 && !engine.isScratching(deck + 1)) {
+        var blinkInterval = parseInt(remainingTime / 3); //increase blinking according time left
+        if (blinkInterval < 3) {
+    	    blinkInterval = 3;
+        }
+        if (PioneerDDJSX.wheelLedsBlinkStatus[deck] < blinkInterval) {
             wheelPos = 0x00;
+        } else if (PioneerDDJSX.wheelLedsBlinkStatus[deck] > (blinkInterval - parseInt(6 / blinkInterval))) {
+            PioneerDDJSX.wheelLedsBlinkStatus[deck] = 0;
         }
         PioneerDDJSX.wheelLedsBlinkStatus[deck]++;
     }
