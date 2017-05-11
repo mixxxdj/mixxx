@@ -275,7 +275,7 @@ void WaveformWidgetRenderer::setZoom(int zoom) {
     m_zoomFactor = math_clamp<double>(zoom, s_waveformMinZoom, s_waveformMaxZoom);
 }
 
-void WaveformWidgetRenderer::setDisplayBeatGrid(bool set){
+void WaveformWidgetRenderer::setDisplayBeatGrid(bool set) {
     m_enableBeatGrid = set;
 }
 

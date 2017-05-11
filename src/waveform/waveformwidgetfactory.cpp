@@ -225,7 +225,7 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     }
 
     int showBeatGrid = m_config->getValue(ConfigKey("[Waveform]", "beatGridLinesCheckBox")).toInt(&ok);
-    if(ok) {
+    if (ok) {
         setDisplayBeatGrid(static_cast<bool>(showBeatGrid));
     } else {
         m_config->set(ConfigKey("[Waveform]", "beatGridLinesCheckBox"), ConfigValue(m_beatGridEnabled));
@@ -440,17 +440,17 @@ void WaveformWidgetFactory::setZoomSync(bool sync) {
     }
 }
 
-void WaveformWidgetFactory::setDisplayBeatGrid(bool sync){
+void WaveformWidgetFactory::setDisplayBeatGrid(bool sync) {
     m_beatGridEnabled = sync;
-    if (m_config){
+    if (m_config) {
         m_config->set(ConfigKey("[Waveform]", "beatGridLinesCheckBox"), ConfigValue(m_beatGridEnabled));
     }
 
-    if(m_waveformWidgetHolders.size() == 0){
+    if (m_waveformWidgetHolders.size() == 0) {
         return;
     }
 
-    for (int i = 0; i < m_waveformWidgetHolders.size(); i++){
+    for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
         m_waveformWidgetHolders[i].m_waveformWidget->setDisplayBeatGrid(m_beatGridEnabled);
     }
 

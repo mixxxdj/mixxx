@@ -163,7 +163,7 @@ void DlgPrefWaveform::slotResetToDefaults() {
     enableWaveformCaching->setChecked(true);
     enableWaveformGenerationWithAnalysis->setChecked(false);
 
-    // Grid lines on waveform is default
+    // Beat grid lines on waveform is default
     beatGridLinesCheckBox->setChecked(true);
 }
 
@@ -232,7 +232,7 @@ void DlgPrefWaveform::slotClearCachedWaveforms() {
     }
 }
 
-void DlgPrefWaveform::slotSetGridLines(bool displayGrid){
+void DlgPrefWaveform::slotSetGridLines(bool displayGrid) {
     WaveformWidgetFactory::instance()->setDisplayBeatGrid(displayGrid);
 }
 
