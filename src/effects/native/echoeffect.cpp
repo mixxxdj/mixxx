@@ -26,14 +26,16 @@ EffectManifest EchoEffect::getManifest() {
 
     EffectManifestParameter* delay = manifest.addParameter();
     delay->setId("delay_time");
-    delay->setName(QObject::tr("Delay"));
-    delay->setDescription(QObject::tr("Delay time (0 - 2 beats)"));
+    delay->setName(QObject::tr("Time"));
+    delay->setDescription(QObject::tr("Delay time\n"
+        "0 - 2 beats if tempo is detected (decks and samplers) \n"
+        "0 - 2 seconds if no tempo is detected (mic & aux inputs, master mix, headphone mix)."));
     delay->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     delay->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     delay->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
-    delay->setMinimum(0.01);
-    delay->setDefault(0.50);
-    delay->setMaximum(2.00);
+    delay->setMinimum(0.0);
+    delay->setDefault(0.5);
+    delay->setMaximum(2.0);
 
     EffectManifestParameter* feedback = manifest.addParameter();
     feedback->setId("feedback_amount");
@@ -98,7 +100,8 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
 
     DEBUG_ASSERT(0 == (numSamples % EchoGroupState::kChannelCount));
     EchoGroupState& gs = *pGroupState;
-    double beats = m_pDelayParameter->value();
+    // The minimum of the parameter is zero so the exact center of the knob is 1 beat.
+    double beats = std::max(m_pDelayParameter->value(), 0.03);
     double send_amount = m_pSendParameter->value();
     double feedback_amount = m_pFeedbackParameter->value();
     double pingpong_frac = m_pPingPongParameter->value();
@@ -107,9 +110,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     if (groupFeatures.has_beat_length) {
         delay_samples = beats * groupFeatures.beat_length;
     } else {
-        // Act as if the input is 100 BPM, which is a totally arbitrary tempo.
-        delay_samples = beats
-          / 100.0 * 60.0 * sampleRate / EchoGroupState::kChannelCount;
+        delay_samples = beats * sampleRate * EchoGroupState::kChannelCount;
     }
     VERIFY_OR_DEBUG_ASSERT(delay_samples > 0) {
         delay_samples = 1;
