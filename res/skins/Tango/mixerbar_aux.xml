@@ -1,0 +1,144 @@
+<!--
+Description:
+  Container for auxiliary controls in mixerbar
+  * enable/mute button
+  * Pregain knob
+  * Volume slider with level meter
+Variables:
+  AuxNumber : text shown on talkover button and internal auxiliary number
+-->
+<Template>
+  <SetVariable name="group">[Auxiliary<Variable name="AuxNumber"/>]</SetVariable>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Size>-1min,32f</Size>
+    <Children>
+
+      <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+
+      <Label>
+        <ObjectName>MixerBar_MicAuxLabel</ObjectName>
+        <Size>20f,32f</Size>
+        <Text><Variable name="AuxNumber"/></Text>
+        <Alignment>center</Alignment>
+      </Label>
+
+      <Template src="skin:button_2state.xml">
+        <SetVariable name="TooltipId">microphone_talkover</SetVariable>
+        <SetVariable name="ObjectName">MixerBarButton</SetVariable>
+        <SetVariable name="Size">20f,28f</SetVariable>
+        <SetVariable name="state_0_unpressed">mic_off.svg</SetVariable>
+        <SetVariable name="state_0_pressed">mic_off.svg</SetVariable>
+        <SetVariable name="state_1_unpressed">mic_on.svg</SetVariable>
+        <SetVariable name="state_1_pressed">mic_on.svg</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="group"/>,talkover</SetVariable>
+      </Template>
+
+      <Template src="skin:knob_textless.xml">
+        <SetVariable name="TooltipId"></SetVariable>
+        <SetVariable name="ObjectName">MixerBarKnob</SetVariable>
+        <SetVariable name="Size">28f,28f</SetVariable>
+        <SetVariable name="group"><Variable name="group"/></SetVariable>
+        <SetVariable name="ConfigKey">pregain</SetVariable>
+        <SetVariable name="Color">yellow</SetVariable>
+      </Template>
+
+      <WidgetGroup><!-- Volume fader + VU Meter -->
+        <SizePolicy>max,max</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+
+          <SliderComposed>
+            <TooltipId></TooltipId>
+            <ObjectName>MixerBarSlider</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Handle>skin:/knobs_sliders/slider_volume_h_handle.svg</Handle>
+            <Slider>skin:/knobs_sliders/slider_volume_h_scale.svg</Slider>
+            <Horizontal>true</Horizontal>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,volume</ConfigKey>
+            </Connection>
+          </SliderComposed>
+
+          <WidgetGroup><!-- VU Meter -->
+            <ObjectName>VUMeterFloating_h</ObjectName>
+            <SizePolicy>max,max</SizePolicy>
+            <Layout>stacked</Layout>
+            <Children>
+              <StatusLight>
+                <PathStatusLight>skin:/graphics/vumeter_h_floating_clipping_over.png</PathStatusLight>
+                <PathBack>skin:/graphics/vumeter_h_floating_clipping.png</PathBack>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
+                </Connection>
+              </StatusLight>
+              <VuMeter>
+                <PathVu>skin:/graphics/vumeter_h_floating_over.png</PathVu>
+                <PathBack>skin:/graphics/vumeter_h_floating.png</PathBack>
+                <Horizontal>true</Horizontal>
+                <PeakHoldSize>5</PeakHoldSize>
+                <PeakHoldTime>500</PeakHoldTime>
+                <PeakFallTime>50</PeakFallTime>
+                <PeakFallStep>2</PeakFallStep>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
+                </Connection>
+              </VuMeter>
+            </Children>
+          </WidgetGroup><!-- /VU Meter -->
+        </Children>
+      </WidgetGroup><!-- /Volume fader + VU Meter -->
+
+      <WidgetGroup><!-- FX assignment buttons -->
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skin:mixerbar_fx_button.xml">
+                <SetVariable name="fxUnit">1</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+              <Template src="skin:mixerbar_fx_button.xml">
+                <SetVariable name="fxUnit">2</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skin:mixerbar_fx_button.xml">
+                <SetVariable name="fxUnit">3</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+              <Template src="skin:mixerbar_fx_button.xml">
+                <SetVariable name="fxUnit">4</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Tango],micaux_fx_buttons</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /FX assignment buttons -->
+
+    </Children>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,enabled</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

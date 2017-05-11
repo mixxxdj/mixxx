@@ -1,0 +1,77 @@
+<!--
+Description:
+  Floating VUMeter next to big CoverArt/Spinny in decks.
+Variables:
+  group   : [ChannelN]
+  channum : channel number
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>VUMeterFloating</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,me</SizePolicy>
+    <Children>
+      
+      <WidgetGroup><!-- Left VU -->
+        <ObjectName>VUMeter</ObjectName>
+        <Layout>stacked</Layout>
+        <Size>4f,1me</Size>
+        <Children>
+          <StatusLight>
+            <TooltiId>channel_VuMeter</TooltiId>
+            <PathStatusLight>skin:/graphics/vumeter_floating_clipping_over.png</PathStatusLight>
+            <PathBack>skin:/graphics/vumeter_floating_clipping.png</PathBack>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,PeakIndicatorL</ConfigKey>
+            </Connection>
+          </StatusLight>
+          <VuMeter>
+            <PathVu>skin:/graphics/vumeter_floating_over.png</PathVu>
+            <PathBack>skin:/graphics/vumeter_floating.png</PathBack>
+            <Horizontal>false</Horizontal>
+            <PeakHoldSize>5</PeakHoldSize>
+            <PeakHoldTime>500</PeakHoldTime>
+            <PeakFallTime>50</PeakFallTime>
+            <PeakFallStep>2</PeakFallStep>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,VuMeterL</ConfigKey>
+            </Connection>
+          </VuMeter>
+        </Children>
+      </WidgetGroup><!-- /Left VU -->
+      
+      <WidgetGroup><!-- Right VU -->
+        <ObjectName>VUMeter</ObjectName>
+        <Layout>stacked</Layout>
+        <Size>4f,1me</Size>
+        <Children>
+          <StatusLight>
+            <TooltiId>channel_VuMeter</TooltiId>
+            <PathStatusLight>skin:/graphics/vumeter_floating_clipping_over.png</PathStatusLight>
+            <PathBack>skin:/graphics/vumeter_floating_clipping.png</PathBack>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,PeakIndicatorR</ConfigKey>
+            </Connection>
+          </StatusLight>
+          <VuMeter>
+            <PathVu>skin:/graphics/vumeter_floating_over.png</PathVu>
+            <PathBack>skin:/graphics/vumeter_floating.png</PathBack>
+            <Horizontal>false</Horizontal>
+            <PeakHoldSize>5</PeakHoldSize>
+            <PeakHoldTime>500</PeakHoldTime>
+            <PeakFallTime>50</PeakFallTime>
+            <PeakFallStep>2</PeakFallStep>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,VuMeterR</ConfigKey>
+            </Connection>
+          </VuMeter>
+        </Children>
+      </WidgetGroup><!-- /Right VU -->
+      
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Tango],vumeter</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

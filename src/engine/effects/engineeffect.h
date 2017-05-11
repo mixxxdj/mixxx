@@ -42,8 +42,8 @@ class EngineEffect : public EffectsRequestHandler {
                  const EffectProcessor::EnableState enableState,
                  const GroupFeatureState& groupFeatures);
 
-    bool enabled() const {
-        return m_enableState != EffectProcessor::DISABLED;
+    bool disabled() const {
+        return m_enableState == EffectProcessor::DISABLED;
     }
 
   private:

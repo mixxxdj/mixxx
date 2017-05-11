@@ -39,19 +39,17 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     painter->setWorldMatrixEnabled(false);
 
-    for (int i = 0; i < m_marks.size(); i++) {
-        WaveformMarkPointer mark = m_marks[i];
-
-        if (!mark->isValid())
+    for (const auto& pMark: m_marks) {
+        if (!pMark->isValid())
             continue;
 
         // Generate image on first paint can't be done in setup since we need
         // render widget to be resized yet ...
-        if (mark->m_image.isNull()) {
-            generateMarkImage(mark.data());
+        if (pMark->m_image.isNull()) {
+            generateMarkImage(pMark.data());
         }
 
-        double samplePosition = mark->getSamplePosition();
+        double samplePosition = pMark->getSamplePosition();
         if (samplePosition != -1.0) {
             double currentMarkPoint =
                     m_waveformRenderer->transformSamplePositionInRendererWorld(samplePosition);
@@ -59,17 +57,17 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
             if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
                 // NOTE: vRince I guess image width is odd to display the center on the exact line !
                 // external image should respect that ...
-                const int markHalfWidth = mark->m_image.width() / 2.0;
+                const int markHalfWidth = pMark->m_image.width() / 2.0;
 
                 // Check if the current point need to be displayed
                 if (currentMarkPoint > -markHalfWidth && currentMarkPoint < m_waveformRenderer->getWidth() + markHalfWidth) {
-                    painter->drawImage(QPoint(currentMarkPoint - markHalfWidth, 0), mark->m_image);
+                    painter->drawImage(QPoint(currentMarkPoint - markHalfWidth, 0), pMark->m_image);
                 }
             } else {
-                const int markHalfHeight = mark->m_image.height() / 2.0;
+                const int markHalfHeight = pMark->m_image.height() / 2.0;
 
                 if (currentMarkPoint > -markHalfHeight && currentMarkPoint < m_waveformRenderer->getHeight() + markHalfHeight) {
-                    painter->drawImage(QPoint(0,currentMarkPoint - markHalfHeight), mark->m_image);
+                    painter->drawImage(QPoint(0,currentMarkPoint - markHalfHeight), pMark->m_image);
                 }
             }
         }
@@ -80,8 +78,8 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
 void WaveformRenderMark::onResize() {
     // Delete all marks' images. New images will be created on next paint.
-    for (int i = 0; i < m_marks.size(); i++) {
-        m_marks[i]->m_image = QImage();
+    for (const auto& pMark: m_marks) {
+    	pMark->m_image = QImage();
     }
 }
 
@@ -105,7 +103,7 @@ void WaveformRenderMark::slotCuesUpdated() {
     QList<CuePointer> loadedCues = trackInfo->getCuePoints();
     for (const CuePointer pCue: loadedCues) {
         int hotCue = pCue->getHotCue();
-        if (hotCue == -1) {
+        if (hotCue < 0) {
             continue;
         }
 
@@ -114,14 +112,17 @@ void WaveformRenderMark::slotCuesUpdated() {
 
         // Here we assume no two cues can have the same hotcue assigned,
         // because WaveformMarkSet stores one mark for each hotcue.
-        WaveformMark* pMark = m_marks.getHotCueMark(hotCue).data();
+        WaveformMarkPointer pMark = m_marks.getHotCueMark(hotCue);
+        if (pMark.isNull()) {
+        	continue;
+        }
         WaveformMarkProperties markProperties = pMark->getProperties();
         if (markProperties.m_text.isNull() || newLabel != markProperties.m_text ||
                 !markProperties.m_color.isValid() || newColor != markProperties.m_color) {
             markProperties.m_text = newLabel;
             markProperties.m_color = newColor;
             pMark->setProperties(markProperties);
-            generateMarkImage(pMark);
+            generateMarkImage(pMark.data());
         }
     }
 }
@@ -149,11 +150,11 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
     if (!markProperties.m_text.isNull()) {
         // Determine mark text.
         QString label = markProperties.m_text;
-        if (pMark->m_iHotCue != -1) {
+        if (pMark->getHotCue() >= 0) {
             if (!label.isEmpty()) {
                 label.prepend(": ");
             }
-            label.prepend(QString::number(pMark->m_iHotCue));
+            label.prepend(QString::number(pMark->getHotCue() + 1));
             if (label.size() > kMaxCueLabelLength) {
                 label = label.left(kMaxCueLabelLength - 3) + "...";
             }

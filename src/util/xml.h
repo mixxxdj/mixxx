@@ -21,13 +21,19 @@ class XmlParse {
     // parses the text value of its children as an integer. Returns 0 if sNode
     // is not found in nodeHeader's children.
     static int selectNodeInt(const QDomNode& nodeHeader,
-                             const QString& sNode);
+                             const QString& sNode, bool* ok = 0);
 
     // Searches for an element named sNode in the children of nodeHeader and
     // parses the text value of its children as a float. Returns 0.0f if sNode
     // is not found in nodeHeader's children.
     static float selectNodeFloat(const QDomNode& nodeHeader,
-                                 const QString& sNode);
+                                 const QString& sNode, bool* ok = 0);
+
+    // Searches for an element named sNode in the children of nodeHeader and
+    // parses the text value of its children as a double. Returns 0.0 if sNode
+    // is not found in nodeHeader's children.
+    static double selectNodeDouble(const QDomNode& nodeHeader,
+                                   const QString& sNode, bool* ok = 0);
 
     // Searches for an element named sNode in the children of nodeHeader and
     // returns the text value of its children. Returns the empty string if sNode

@@ -1,0 +1,99 @@
+<!--
+Description:
+  A widget containing hotcue buttons whose number can be set to 4 or 8.
+Variables:
+  HotCue: The hotcue nummber (1-8).
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>Hotcues</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,f</SizePolicy>
+    <Children>
+
+      <WidgetGroup><!-- 4 -->
+        <Layout>horizontal</Layout>
+        <MinimumSize>64,24</MinimumSize>
+        <MaximumSize>96,24</MaximumSize>
+        <SizePolicy>me,f</SizePolicy>
+        <Children>
+          <Template src="skin:button_hotcue_deck.xml">
+            <SetVariable name="HotCue">1</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:button_hotcue_deck.xml">
+            <SetVariable name="HotCue">2</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:button_hotcue_deck.xml">
+            <SetVariable name="HotCue">3</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:button_hotcue_deck.xml">
+            <SetVariable name="HotCue">4</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
+          <Transform><IsEqual>1</IsEqual></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- 4 -->
+
+      <WidgetGroup><!-- 8 -->
+        <Layout>horizontal</Layout>
+        <MinimumSize>128,24</MinimumSize>
+        <MaximumSize>192,24</MaximumSize>
+        <SizePolicy>me,f</SizePolicy>
+        <Children>
+          <Template src="skin:button_hotcue_deck.xml">
+            <SetVariable name="HotCue">1</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:button_hotcue_deck.xml">
+            <SetVariable name="HotCue">2</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:button_hotcue_deck.xml">
+            <SetVariable name="HotCue">3</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:button_hotcue_deck.xml">
+            <SetVariable name="HotCue">4</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:button_hotcue_deck.xml">
+            <SetVariable name="HotCue">5</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:button_hotcue_deck.xml">
+            <SetVariable name="HotCue">6</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:button_hotcue_deck.xml">
+            <SetVariable name="HotCue">7</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:button_hotcue_deck.xml">
+            <SetVariable name="HotCue">8</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
+          <Transform><IsEqual>2</IsEqual></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- 8 -->
+
+  <!-- Qt is fun to design with...not.
+      This spacer is necessary to fill (expanding) container
+      when 4 hotcues are enabled. -->
+      <WidgetGroup>
+        <ObjectName>Spacer33</ObjectName>
+        <SizePolicy>min,me</SizePolicy>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

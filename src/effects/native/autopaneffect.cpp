@@ -34,9 +34,9 @@ EffectManifest AutoPanEffect::getManifest() {
     period->setName(QObject::tr("Period"));
     period->setDescription(QObject::tr("How fast the sound goes from a side to another,"
             " following a logarithmic scale"));
-    period->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    period->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+    period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    period->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     period->setMinimum(0.0625);     // 1 / 16
     period->setMaximum(129.0);      // 128 + 1
     period->setDefault(3.0);
@@ -48,9 +48,9 @@ EffectManifest AutoPanEffect::getManifest() {
     smoothing->setShortName(QObject::tr("Smooth"));
     smoothing->setDescription(
             QObject::tr("How fast the signal goes from a channel to another"));
-    smoothing->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    smoothing->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    smoothing->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    smoothing->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+    smoothing->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    smoothing->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     smoothing->setMinimum(0.0);
     smoothing->setMaximum(0.5);  // there are two steps per period so max is half
     smoothing->setDefault(0.5);
@@ -62,10 +62,10 @@ EffectManifest AutoPanEffect::getManifest() {
     width->setId("width");
     width->setName(QObject::tr("Width"));
     width->setDescription("How far the signal goes on the left or on the right");
-    width->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    width->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    width->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    width->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    width->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    width->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    width->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    width->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     width->setMinimum(0.0);
     width->setMaximum(1.0);    // 0.02 * sampleRate => 20ms
     width->setDefault(0.5);
@@ -75,9 +75,9 @@ EffectManifest AutoPanEffect::getManifest() {
     periodUnit->setId("periodUnit");
     periodUnit->setName(QObject::tr("Sync"));
     periodUnit->setDescription(QObject::tr("Synchronizes the period with the BPM if it can be retrieved"));
-    periodUnit->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
-    periodUnit->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    periodUnit->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    periodUnit->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
+    periodUnit->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    periodUnit->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     periodUnit->setDefault(1);
     periodUnit->setMinimum(0);
     periodUnit->setMaximum(1);
