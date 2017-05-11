@@ -551,6 +551,15 @@ void EngineMaster::process(const int iBufferSize) {
         // Process headphone channel effects
         if (m_pEngineEffectsManager) {
             GroupFeatureState headphoneFeatures;
+            // If there is only one channel in the headphone mix, use its features
+            // for effects processing. This allows for previewing how an effect will
+            // sound on a playing deck before turning up the dry/wet knob to make it
+            // audible on the master mix. Without this, the effect would sound different
+            // in headphones than how it would sound if it was enabled on the deck,
+            // for example with tempo synced effects.
+            if (m_activeHeadphoneChannels.size() == 1) {
+                headphoneFeatures = m_activeHeadphoneChannels.at(0)->m_features;
+            }
             m_pEngineEffectsManager->process(m_headphoneHandle.handle(),
                                              m_pHead,
                                              iBufferSize, iSampleRate,
