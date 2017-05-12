@@ -6,20 +6,16 @@
 
     Main focus was to make every control easily and quickly recognizable,
     especially when your eyes are mostly on your controller and your hands.
-    I started with LateNight -like most of the mods- and I got much inspiration
-    from Deere and how templates and variables can be used.
+    I started with LateNight and got much inspiration from Deere and how templates and
+    variables can be used.
 
     I suppose everything is self-explaining, just try out.
     - Play buttons: RED when track is playing normally,
                     ORANGE when 'previewing' from Cue/HotCue.
     - right-clicking Play button when playing will stop/reset track to Cue point,
       right-clicking when stopped will set Cue point to current position.
-    - when keylock is OFF, keylock button turns RED
     - how to use comments row: insert a blank line in track's comment with
-      <space><shift-return> and add your notes in front of that.
-
-    Mixxx forum link for updates, bugs & hugs, feature requests and changelog:
-    http://www.mixxx.org/forums/viewtopic.php?f=8&t=8578
+      <shift><space> and add your notes in front of that.
 
     Enjoy!
     Big   U	  U   P P P
@@ -36,7 +32,7 @@
     <version>0.9.X</version>
     <description>A flat, super-minimizable, nightime-compatible skin</description>
     <language>en</language>
-    <license>Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International</license>
+    <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
 
   <!--    ################################################################
           Control Objects  ##############################################
