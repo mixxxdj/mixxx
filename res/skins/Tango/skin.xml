@@ -65,6 +65,12 @@
       <attribute persist="true" config_key="[Tango],crossfader">1</attribute>
       <attribute persist="true" config_key="[Tango],crossfader_logo_Stack">1</attribute>
       <attribute persist="true" config_key="[Tango],deck_controls">1</attribute>
+      <attribute persist="true" config_key="[Tango],always_visible_keylock">1</attribute>
+      <attribute persist="true" config_key="[Tango],always_visible_eject">0</attribute>
+      <attribute persist="true" config_key="[Tango],always_visible_slipMode">0</attribute>
+      <attribute persist="true" config_key="[Tango],always_visible_repeat">0</attribute>
+      <attribute persist="true" config_key="[Tango],always_visible_cfOrientation">0</attribute>
+      <attribute persist="true" config_key="[Tango],always_visible_quantize">0</attribute>
       <attribute persist="true" config_key="[Tango],eq_knobs">1</attribute>
       <attribute persist="true" config_key="[Tango],hotcues">1</attribute>
       <attribute persist="true" config_key="[Tango],key_controls">1</attribute>
