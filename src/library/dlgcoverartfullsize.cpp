@@ -167,10 +167,16 @@ void DlgCoverArtFullSize::resizeEvent(QResizeEvent* event) {
 }
 
 void DlgCoverArtFullSize::wheelEvent(QWheelEvent* event) {
-    int newWidth = width() + (0.2 * event->delta());
-    int newHeight = height() + (0.2 * event->delta());
+    QPoint oldOrigin = frameGeometry().topLeft();
+    int oldWidth = frameGeometry().width();
+    int oldHeight = frameGeometry().height();
+    int newWidth = oldWidth + (0.2 * event->delta());
+    int newHeight = oldHeight + (0.2 * event->delta());
     QSize newSize = size();
     newSize.scale(newWidth, newHeight, Qt::KeepAspectRatio);
     resize(newSize);
+    QPoint newOrigin = QPoint(oldOrigin.x() + (oldWidth - frameGeometry().width()) / 2,
+                              oldOrigin.y() + (oldHeight - frameGeometry().height()) / 2 );
+    move(newOrigin);
     event->accept();
 }
