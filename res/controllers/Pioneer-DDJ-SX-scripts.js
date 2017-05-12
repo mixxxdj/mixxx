@@ -10,7 +10,7 @@ var PioneerDDJSX = function() {};
 
 /*
 	Author: 		DJMaxergy
-	Version: 		1.06, 05/12/2017
+	Version: 		1.07, 05/12/2017
 	Description: 	Pioneer DDJ-SX Controller Mapping for Mixxx
     Source: 		http://github.com/DJMaxergy/mixxx/tree/pioneerDDJSX_mapping
     
@@ -67,9 +67,6 @@ PioneerDDJSX.autoPFL = true;
 // If true, new in Mixxx 2.1 introduced library controls will be used,
 // else old playlist controls will be used (default: false).
 PioneerDDJSX.useNewLibraryControls = false;
-
-// If true, SHIFT has to be pressed to activate needle search control (default: false).
-PioneerDDJSX.needleSearchShiftEnable = false;
 
 
 ///////////////////////////////////////////////////////////////
@@ -1468,7 +1465,7 @@ PioneerDDJSX.quantizeButton = function(channel, control, value, status, group) {
 
 PioneerDDJSX.needleSearchTouch = function(channel, control, value, status, group) {
     var deck = PioneerDDJSX.channelGroups[group];
-    if (PioneerDDJSX.needleSearchShiftEnable) {
+    if (engine.getValue(group, "play")) {
         PioneerDDJSX.needleSearchTouched[deck] = PioneerDDJSX.shiftPressed && (value ? true : false);
     } else {
         PioneerDDJSX.needleSearchTouched[deck] = value ? true : false;
@@ -2316,6 +2313,7 @@ PioneerDDJSX.shiftFxBeatsKnob = function(channel, control, value, status, group)
 ///////////////////////////////////////////////////////////////
 
 PioneerDDJSX.slicerBeatActive = function(value, group, control) {
+    // This slicer implementation will work for constant beatgrids only!
     var deck = PioneerDDJSX.channelGroups[group],
         bpm = engine.getValue(group, "bpm"),
         playposition = engine.getValue(group, "playposition"),
