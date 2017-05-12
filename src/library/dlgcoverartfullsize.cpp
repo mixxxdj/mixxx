@@ -157,6 +157,9 @@ void DlgCoverArtFullSize::slotCoverMenu(const QPoint& pos) {
 
 void DlgCoverArtFullSize::resizeEvent(QResizeEvent* event) {
     Q_UNUSED(event);
+    if (m_pixmap.isNull()) {
+        return;
+    }
     qDebug() << "DlgCoverArtFullSize::resizeEvent" << size();
     QPixmap resizedPixmap = m_pixmap.scaled(size(),
         Qt::KeepAspectRatio, Qt::SmoothTransformation);
