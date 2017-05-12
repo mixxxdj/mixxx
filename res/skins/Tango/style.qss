@@ -149,6 +149,19 @@ WWidgetGroup {
   #SkinSettingsButton:hover {
     background: #151515;
   }
+  #DeckIndicatorSettings {
+    margin-left: 17px;
+  }
+  #DeckButtonVisibility {
+    margin-right: 1px;
+  }
+  #DeckButtonVisibility[displayValue="0"]:hover,
+  #DeckButtonVisibility[displayValue="1"] {
+    background-color: #151515;
+  }
+  #DeckButtonVisibility[displayValue="1"]:hover {
+    border: 1px solid #d2d2d2;
+  }
 
 
 
