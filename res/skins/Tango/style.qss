@@ -1584,8 +1584,8 @@ QToolTip {
     }
 
 QTableView, QTextBrowser, QTreeView {
-  border: 1px solid #585858;
-  font-family: Ubuntu;
+  border: 1px solid #585858;  /*
+  font-family: Ubuntu;  */
   font-weight: normal;
   color: #9E9E9E;
   background-color: #0f0f0f;
