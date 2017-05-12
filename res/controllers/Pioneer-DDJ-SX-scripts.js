@@ -349,6 +349,11 @@ PioneerDDJSX.init = function(id) {
         'djAppConnect': 0x09
     };
 
+    PioneerDDJSX.wheelLedCircle = {
+        'minVal': 0x00,
+        'maxVal': 0x48
+    };
+
     PioneerDDJSX.valueVuMeter = {
         '[Channel1]_current': 0,
         '[Channel2]_current': 0,
@@ -370,7 +375,7 @@ PioneerDDJSX.init = function(id) {
 
     // initiate control status request:
     midi.sendShortMsg(0x9B, 0x08, 0x7F);
-    
+
     // bind controls and init deck parameters:
     PioneerDDJSX.bindNonDeckControlConnections(true);
     for (var index in PioneerDDJSX.channelGroups) {
@@ -385,7 +390,7 @@ PioneerDDJSX.shutdown = function() {
     PioneerDDJSX.resetDeck("[Channel2]");
     PioneerDDJSX.resetDeck("[Channel3]");
     PioneerDDJSX.resetDeck("[Channel4]");
-    
+
     PioneerDDJSX.resetNonDeckLeds();
 };
 
@@ -683,7 +688,7 @@ PioneerDDJSX.initDeck = function(group) {
         PioneerDDJSX.illuminationControl["unknownDeck" + (deck + 1)],
         false
     );
-    PioneerDDJSX.wheelLedControl(group, 0x00);
+    PioneerDDJSX.wheelLedControl(group, PioneerDDJSX.wheelLedCircle.minVal);
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.hotCueMode, true); // set HOT CUE Pad-Mode
 };
 
@@ -691,7 +696,7 @@ PioneerDDJSX.resetDeck = function(group) {
     PioneerDDJSX.bindDeckControlConnections(group, false);
 
     PioneerDDJSX.VuMeterLeds(0x00, group, 0x00); // reset VU meter Leds
-    PioneerDDJSX.wheelLedControl(group, 0x00); // reset jogwheel Leds
+    PioneerDDJSX.wheelLedControl(group, PioneerDDJSX.wheelLedCircle.minVal); // reset jogwheel Leds
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.hotCueMode, true); // reset HOT CUE Pad-Mode
     // pad Leds:
     for (var i = 0; i < 8; i++) {
@@ -992,7 +997,7 @@ PioneerDDJSX.toggleSlicerMode = function(channel, control, value, status, group)
     var deck = PioneerDDJSX.channelGroups[group];
     //SLICER
     if (value) {
-        if (PioneerDDJSX.activePadMode[deck] === PioneerDDJSX.padModes.slicer && 
+        if (PioneerDDJSX.activePadMode[deck] === PioneerDDJSX.padModes.slicer &&
             PioneerDDJSX.activeSlicerMode[deck] === PioneerDDJSX.slicerModes.contSlice) {
             PioneerDDJSX.activeSlicerMode[deck] = PioneerDDJSX.slicerModes.loopSlice;
             engine.setValue(group, "slip_enabled", true);
@@ -1757,24 +1762,24 @@ PioneerDDJSX.wheelLeds = function(value, group, control) {
         duration = engine.getValue(group, "duration"),
         elapsedTime = value * duration,
         remainingTime = duration - elapsedTime,
-        refsPerSecond = PioneerDDJSX.scratchSettings.vinylSpeed / 60,
-        speed = parseInt(refsPerSecond * 0x48),
-        wheelPos = 0x00;
+        revsPerSecond = PioneerDDJSX.scratchSettings.vinylSpeed / 60,
+        speed = parseInt(revsPerSecond * PioneerDDJSX.wheelLedCircle.maxVal),
+        wheelPos = PioneerDDJSX.wheelLedCircle.minVal;
 
     // wheelPos = 0x48 : all LEDs are lit, wheelPos = 0x00 : all LEDs off
     if (value >= 0) {
-        wheelPos = 0x01 + ((speed * elapsedTime) % 0x48);
+        wheelPos = PioneerDDJSX.wheelLedCircle.minVal + 0x01 + ((speed * elapsedTime) % PioneerDDJSX.wheelLedCircle.maxVal);
     } else {
-        wheelPos = 0x49 + ((speed * elapsedTime) % 0x48);
+        wheelPos = PioneerDDJSX.wheelLedCircle.maxVal + 0x01 + ((speed * elapsedTime) % PioneerDDJSX.wheelLedCircle.maxVal);
     }
     // let wheel LEDs blink if remaining time is less than 30s:
     if (remainingTime > 0 && remainingTime < 30 && !engine.isScratching(deck + 1)) {
         var blinkInterval = parseInt(remainingTime / 3); //increase blinking according time left
         if (blinkInterval < 3) {
-    	    blinkInterval = 3;
+            blinkInterval = 3;
         }
         if (PioneerDDJSX.wheelLedsBlinkStatus[deck] < blinkInterval) {
-            wheelPos = 0x00;
+            wheelPos = PioneerDDJSX.wheelLedCircle.minVal;
         } else if (PioneerDDJSX.wheelLedsBlinkStatus[deck] > (blinkInterval - parseInt(6 / blinkInterval))) {
             PioneerDDJSX.wheelLedsBlinkStatus[deck] = 0;
         }
@@ -1791,12 +1796,12 @@ PioneerDDJSX.cueLed = function(value, group, control) {
 PioneerDDJSX.loadLed = function(value, group, control) {
     var deck = PioneerDDJSX.channelGroups[group];
     if (value > 0) {
-        PioneerDDJSX.wheelLedControl(group, 0x48);
+        PioneerDDJSX.wheelLedControl(group, PioneerDDJSX.wheelLedCircle.maxVal);
         PioneerDDJSX.generalLedControl(PioneerDDJSX.nonPadLeds["loadDeck" + (deck + 1)], true);
         PioneerDDJSX.illuminateFunctionControl(PioneerDDJSX.illuminationControl["loadedDeck" + (deck + 1)], true);
         engine.trigger(group, "playposition");
     } else {
-        PioneerDDJSX.wheelLedControl(group, 0x00);
+        PioneerDDJSX.wheelLedControl(group, PioneerDDJSX.wheelLedCircle.minVal);
     }
 };
 
@@ -1959,7 +1964,7 @@ PioneerDDJSX.hotCueLeds = function(value, group, control) {
 };
 
 PioneerDDJSX.VuMeterLeds = function(value, group, control) {
-	// Remark: Only deck vu meters can be controlled! Master vu meter is handled by hardware!
+    // Remark: Only deck vu meters can be controlled! Master vu meter is handled by hardware!
     var midiBaseAdress = 0xB0,
         channel = 0x02,
         midiOut = 0x00;
@@ -2331,8 +2336,8 @@ PioneerDDJSX.slicerBeatActive = function(value, group, control) {
         }
         if (PioneerDDJSX.activeSlicerMode[deck] === PioneerDDJSX.slicerModes.loopSlice) {
             ledBeatState = false;
-            if (((PioneerDDJSX.slicerBeatsPassed[deck] - 1) % 8) === 7 && 
-                  !PioneerDDJSX.slicerAlreadyJumped[deck] && 
+            if (((PioneerDDJSX.slicerBeatsPassed[deck] - 1) % 8) === 7 &&
+                  !PioneerDDJSX.slicerAlreadyJumped[deck] &&
                   PioneerDDJSX.slicerPreviousBeatsPassed[deck] < PioneerDDJSX.slicerBeatsPassed[deck]) {
                 engine.setValue(group, "beatjump", -8);
                 PioneerDDJSX.slicerAlreadyJumped[deck] = true;
