@@ -85,11 +85,13 @@ void AnalyzerSilence::finalize(TrackPointer tio) {
     QList<CuePointer> cues = tio->getCuePoints();
     foreach (CuePointer pCue, cues) {
         if (pCue->getType() == Cue::BEGIN) {
+            pCue->setSource(Cue::AUTOMATIC);
             pCue->setHotCue(-1);
             pCue->setLength(0);
             pCue->setPosition(kChannelCount * m_iSignalBegin);
             bBeginPointFoundAndSet = true;
         } else if (pCue->getType() == Cue::END) {
+            pCue->setSource(Cue::AUTOMATIC);
             pCue->setHotCue(-1);
             pCue->setLength(0);
             pCue->setPosition(kChannelCount * m_iSignalEnd);
@@ -99,6 +101,7 @@ void AnalyzerSilence::finalize(TrackPointer tio) {
 
     if (!bBeginPointFoundAndSet) {
         CuePointer pCue = tio->createAndAddCue();
+        pCue->setSource(Cue::AUTOMATIC);
         pCue->setType(Cue::BEGIN);
         pCue->setHotCue(-1);
         pCue->setLength(0);
@@ -107,6 +110,7 @@ void AnalyzerSilence::finalize(TrackPointer tio) {
 
     if (!bEndPointFoundAndSet) {
         CuePointer pCue = tio->createAndAddCue();
+        pCue->setSource(Cue::AUTOMATIC);
         pCue->setType(Cue::END);
         pCue->setHotCue(-1);
         pCue->setLength(0);

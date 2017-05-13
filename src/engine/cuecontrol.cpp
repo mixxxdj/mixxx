@@ -356,6 +356,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     pCue->setHotCue(hotcue);
     pCue->setLabel("");
     pCue->setType(Cue::CUE);
+    pCue->setSource(Cue::MANUAL);
     // TODO(XXX) deal with spurious signals
     attachCue(pCue, hotcue);
 

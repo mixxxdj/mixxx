@@ -182,6 +182,7 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
             }
             if (!pLoopCue) {
                 pLoopCue = m_pLoadedTrack->createAndAddCue();
+                pLoopCue->setSource(Cue::MANUAL);
                 pLoopCue->setType(Cue::LOOP);
             }
             pLoopCue->setPosition(loopStart);

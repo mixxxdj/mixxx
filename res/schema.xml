@@ -426,4 +426,13 @@ METADATA
       ALTER TABLE cues ADD COLUMN color INTEGER DEFAULT 4294901760 NOT NULL;
     </sql>
   </revision>
+  <revision version="28" min_compatible="3">
+    <description>
+      Add source to cue. Default is MANUAL.
+      See library/dao/cue.h.
+    </description>
+    <sql>
+      ALTER TABLE cues ADD COLUMN source INTEGER DEFAULT 2 NOT NULL;
+    </sql>
+  </revision>
 </schema>

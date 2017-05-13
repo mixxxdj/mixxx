@@ -712,6 +712,7 @@ void Track::setCuePoint(double cue) {
             if (!pLoadCue) {
                 pLoadCue = CuePointer(new Cue(m_id));
                 pLoadCue->setType(Cue::LOAD);
+                pLoadCue->setSource(Cue::MANUAL);
                 connect(pLoadCue.get(), SIGNAL(updated()),
                         this, SLOT(slotCueUpdated()));
                 m_cuePoints.push_back(pLoadCue);
