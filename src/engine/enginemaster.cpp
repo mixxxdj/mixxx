@@ -374,15 +374,15 @@ void EngineMaster::process(const int iBufferSize) {
     m_headphoneGain.setGain(chead_gain);
 
     if (m_bRampingGain) {
-        ChannelMixer::applyEffectsAndMixChannelsRamping(
+        ChannelMixer::mixChannelsRamping(
                 m_headphoneGain, &m_activeHeadphoneChannels,
-                &m_channelHeadphoneGainCache, m_pHead,
-                iBufferSize, iSampleRate, m_pEngineEffectsManager);
+                &m_channelHeadphoneGainCache,
+                m_pHead, iBufferSize);
     } else {
-        ChannelMixer::applyEffectsAndMixChannels(
+        ChannelMixer::mixChannels(
                 m_headphoneGain, &m_activeHeadphoneChannels,
-                &m_channelHeadphoneGainCache, m_pHead,
-                iBufferSize, iSampleRate, m_pEngineEffectsManager);
+                &m_channelHeadphoneGainCache,
+                m_pHead, iBufferSize);
     }
 
     // Mix all the talkover enabled channels together.
