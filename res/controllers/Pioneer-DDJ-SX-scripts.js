@@ -10,7 +10,7 @@ var PioneerDDJSX = function() {};
 
 /*
 	Author: 		DJMaxergy
-	Version: 		1.07, 05/12/2017
+	Version: 		1.08, 05/13/2017
 	Description: 	Pioneer DDJ-SX Controller Mapping for Mixxx
     Source: 		http://github.com/DJMaxergy/mixxx/tree/pioneerDDJSX_mapping
     
@@ -1066,7 +1066,6 @@ PioneerDDJSX.slicerButtons = function(channel, control, value, status, group) {
     var index = control - 0x20,
         padNum = index % 8,
         deck = PioneerDDJSX.channelGroups[group],
-        startPos = 0,
         beatsToJump = 0;
 
     if (PioneerDDJSX.activeSlicerMode[deck] === PioneerDDJSX.slicerModes.loopSlice) {
@@ -1078,12 +1077,12 @@ PioneerDDJSX.slicerButtons = function(channel, control, value, status, group) {
     PioneerDDJSX.slicerButton[deck] = index % 8;
 
     if (value) {
-        startPos = PioneerDDJSX.slicerBeatsPassed[deck];
-        beatsToJump = PioneerDDJSX.slicerButton[deck] - ((startPos % 8) + 1);
+        beatsToJump = PioneerDDJSX.slicerButton[deck] - ((PioneerDDJSX.slicerBeatsPassed[deck] % 8) + 1);
         if (PioneerDDJSX.slicerButton[deck] === 0 && beatsToJump === -8) {
             beatsToJump = 0;
         }
-        if (startPos >= Math.abs(beatsToJump) && PioneerDDJSX.slicerPreviousBeatsPassed[deck] !== PioneerDDJSX.slicerBeatsPassed[deck]) {
+        if (PioneerDDJSX.slicerBeatsPassed[deck] >= Math.abs(beatsToJump) && 
+        	PioneerDDJSX.slicerPreviousBeatsPassed[deck] !== PioneerDDJSX.slicerBeatsPassed[deck]) {
             PioneerDDJSX.slicerPreviousBeatsPassed[deck] = PioneerDDJSX.slicerBeatsPassed[deck];
             if (Math.abs(beatsToJump) > 0) {
                 engine.setValue(group, "beatjump", beatsToJump);
@@ -1759,11 +1758,10 @@ PioneerDDJSX.wheelLeds = function(value, group, control) {
         duration = engine.getValue(group, "duration"),
         elapsedTime = value * duration,
         remainingTime = duration - elapsedTime,
-        revsPerSecond = PioneerDDJSX.scratchSettings.vinylSpeed / 60,
-        speed = parseInt(revsPerSecond * PioneerDDJSX.wheelLedCircle.maxVal),
+        revolutionsPerSecond = PioneerDDJSX.scratchSettings.vinylSpeed / 60,
+        speed = parseInt(revolutionsPerSecond * PioneerDDJSX.wheelLedCircle.maxVal),
         wheelPos = PioneerDDJSX.wheelLedCircle.minVal;
 
-    // wheelPos = 0x48 : all LEDs are lit, wheelPos = 0x00 : all LEDs off
     if (value >= 0) {
         wheelPos = PioneerDDJSX.wheelLedCircle.minVal + 0x01 + ((speed * elapsedTime) % PioneerDDJSX.wheelLedCircle.maxVal);
     } else {
