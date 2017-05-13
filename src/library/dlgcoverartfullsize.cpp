@@ -133,7 +133,7 @@ void DlgCoverArtFullSize::slotReloadCoverArt() {
 }
 
 void DlgCoverArtFullSize::slotCoverInfoSelected(const CoverInfo& coverInfo) {
-    qDebug() << "DlgCoverArtFullSize::slotCoverInfoSelected" << coverInfo;
+    // qDebug() << "DlgCoverArtFullSize::slotCoverInfoSelected" << coverInfo;
     if (m_pLoadedTrack != nullptr) {
         m_pLoadedTrack->setCoverInfo(coverInfo);
     }
@@ -160,7 +160,7 @@ void DlgCoverArtFullSize::resizeEvent(QResizeEvent* event) {
     if (m_pixmap.isNull()) {
         return;
     }
-    qDebug() << "DlgCoverArtFullSize::resizeEvent" << size();
+    // qDebug() << "DlgCoverArtFullSize::resizeEvent" << size();
     QPixmap resizedPixmap = m_pixmap.scaled(size(),
         Qt::KeepAspectRatio, Qt::SmoothTransformation);
     coverArt->setPixmap(resizedPixmap);
