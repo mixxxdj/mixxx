@@ -10,7 +10,7 @@ var PioneerDDJSX = function() {};
 
 /*
 	Author: 		DJMaxergy
-	Version: 		1.09, 05/14/2017
+	Version: 		1.10, 05/14/2017
 	Description: 	Pioneer DDJ-SX Controller Mapping for Mixxx
     Source: 		http://github.com/DJMaxergy/mixxx/tree/pioneerDDJSX_mapping
     
@@ -33,9 +33,6 @@ PioneerDDJSX.jogwheelSensivity = 1;
 // Sets how much more sensitive the jogwheels get when holding shift.
 // Set to 1 to disable jogwheel sensitivity increase when holding shift (default: 10).
 PioneerDDJSX.jogwheelShiftMultiplier = 10;
-
-// Sets the default speed slider range (default: 0.08 = 8%).
-PioneerDDJSX.speedSliderRange = 0.08;
 
 // If true, vu meters twinkle if AutoDJ is enabled (default: true).
 PioneerDDJSX.twinkleVumeterAutodjOn = true;
@@ -394,10 +391,6 @@ PioneerDDJSX.shutdown = function() {
     PioneerDDJSX.resetNonDeckLeds();
 };
 
-PioneerDDJSX.setDefaultSpeedSliderRange = function(group, range) {
-    engine.setValue(group, "rateRange", range);
-};
-
 
 ///////////////////////////////////////////////////////////////
 //                      VU - METER                           //
@@ -679,7 +672,6 @@ PioneerDDJSX.initDeck = function(group) {
         PioneerDDJSX.selectedSlicerDomainParam[deck]
     );
     PioneerDDJSX.triggerVinylLed(deck);
-    PioneerDDJSX.setDefaultSpeedSliderRange(group, PioneerDDJSX.speedSliderRange);
 
     PioneerDDJSX.illuminateFunctionControl(
         PioneerDDJSX.illuminationControl["loadedDeck" + (deck + 1)],
@@ -1171,9 +1163,9 @@ PioneerDDJSX.changeParameters = function(group, ctrl, increment) {
         }
         // change parameter set:
         if (ctrl === PioneerDDJSX.nonPadLeds.parameterLeftRollMode && PioneerDDJSX.selectedLoopRollParam[deck] > 0) {
-            PioneerDDJSX.selectedLoopRollParam[deck] = PioneerDDJSX.selectedLoopRollParam[deck] - 1;
+            PioneerDDJSX.selectedLoopRollParam[deck] -= 1;
         } else if (ctrl === PioneerDDJSX.nonPadLeds.parameterRightRollMode && PioneerDDJSX.selectedLoopRollParam[deck] < 3) {
-            PioneerDDJSX.selectedLoopRollParam[deck] = PioneerDDJSX.selectedLoopRollParam[deck] + 1;
+            PioneerDDJSX.selectedLoopRollParam[deck] += 1;
         }
         PioneerDDJSX.selectedLooprollIntervals[deck] = PioneerDDJSX.loopIntervals[PioneerDDJSX.selectedLoopRollParam[deck]];
         // bind new controls:
@@ -1204,9 +1196,9 @@ PioneerDDJSX.changeParameters = function(group, ctrl, increment) {
         }
         // change parameter set:
         if (ctrl === PioneerDDJSX.nonPadLeds.parameterLeftGroup2Mode && PioneerDDJSX.selectedLoopParam[deck] > 0) {
-            PioneerDDJSX.selectedLoopParam[deck] = PioneerDDJSX.selectedLoopParam[deck] - 1;
+            PioneerDDJSX.selectedLoopParam[deck] -= 1;
         } else if (ctrl === PioneerDDJSX.nonPadLeds.parameterRightGroup2Mode && PioneerDDJSX.selectedLoopParam[deck] < 3) {
-            PioneerDDJSX.selectedLoopParam[deck] = PioneerDDJSX.selectedLoopParam[deck] + 1;
+            PioneerDDJSX.selectedLoopParam[deck] += 1;
         }
         PioneerDDJSX.selectedLoopIntervals[deck] = PioneerDDJSX.loopIntervals[PioneerDDJSX.selectedLoopParam[deck]];
         // bind new controls:
@@ -1245,9 +1237,9 @@ PioneerDDJSX.changeParameters = function(group, ctrl, increment) {
         }
         // change sampler bank:
         if (ctrl === PioneerDDJSX.nonPadLeds.parameterLeftSamplerMode && PioneerDDJSX.selectedSamplerBank > 0) {
-            PioneerDDJSX.selectedSamplerBank = PioneerDDJSX.selectedSamplerBank - 1;
+            PioneerDDJSX.selectedSamplerBank -= 1;
         } else if (ctrl === PioneerDDJSX.nonPadLeds.parameterRightSamplerMode && PioneerDDJSX.selectedSamplerBank < 3) {
-            PioneerDDJSX.selectedSamplerBank = PioneerDDJSX.selectedSamplerBank + 1;
+            PioneerDDJSX.selectedSamplerBank += 1;
         }
         // bind new controls:
         for (index in PioneerDDJSX.samplerGroups) {
@@ -1275,9 +1267,9 @@ PioneerDDJSX.changeParameters = function(group, ctrl, increment) {
     if (ctrl === PioneerDDJSX.nonPadLeds.parameterLeftSlicerMode || ctrl === PioneerDDJSX.nonPadLeds.parameterRightSlicerMode) {
         // change parameter set:
         if (ctrl === PioneerDDJSX.nonPadLeds.parameterLeftSlicerMode && PioneerDDJSX.selectedSlicerQuantizeParam[deck] > 0) {
-            PioneerDDJSX.selectedSlicerQuantizeParam[deck] = PioneerDDJSX.selectedSlicerQuantizeParam[deck] - 1;
+            PioneerDDJSX.selectedSlicerQuantizeParam[deck] -= 1;
         } else if (ctrl === PioneerDDJSX.nonPadLeds.parameterRightSlicerMode && PioneerDDJSX.selectedSlicerQuantizeParam[deck] < 3) {
-            PioneerDDJSX.selectedSlicerQuantizeParam[deck] = PioneerDDJSX.selectedSlicerQuantizeParam[deck] + 1;
+            PioneerDDJSX.selectedSlicerQuantizeParam[deck] += 1;
         }
         PioneerDDJSX.selectedSlicerQuantization[deck] = PioneerDDJSX.slicerQuantizations[PioneerDDJSX.selectedSlicerQuantizeParam[deck]];
     }
@@ -1285,9 +1277,9 @@ PioneerDDJSX.changeParameters = function(group, ctrl, increment) {
     if (ctrl === PioneerDDJSX.nonPadLeds.shiftParameterLeftSlicerMode || ctrl === PioneerDDJSX.nonPadLeds.shiftParameterRightSlicerMode) {
         // change parameter set:
         if (ctrl === PioneerDDJSX.nonPadLeds.shiftParameterLeftSlicerMode && PioneerDDJSX.selectedSlicerDomainParam[deck] > 0) {
-            PioneerDDJSX.selectedSlicerDomainParam[deck] = PioneerDDJSX.selectedSlicerDomainParam[deck] - 1;
+            PioneerDDJSX.selectedSlicerDomainParam[deck] -= 1;
         } else if (ctrl === PioneerDDJSX.nonPadLeds.shiftParameterRightSlicerMode && PioneerDDJSX.selectedSlicerDomainParam[deck] < 3) {
-            PioneerDDJSX.selectedSlicerDomainParam[deck] = PioneerDDJSX.selectedSlicerDomainParam[deck] + 1;
+            PioneerDDJSX.selectedSlicerDomainParam[deck] += 1;
         }
         PioneerDDJSX.selectedSlicerDomain[deck] = PioneerDDJSX.slicerDomains[PioneerDDJSX.selectedSlicerDomainParam[deck]];
     }
@@ -1344,7 +1336,7 @@ PioneerDDJSX.keyLockButton = function(channel, control, value, status, group) {
 };
 
 PioneerDDJSX.shiftKeyLockButton = function(channel, control, value, status, group) {
-    var range = PioneerDDJSX.speedSliderRange;
+    var range = engine.getValue(group, "rateRange");
 
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.shiftKeyLock, value);
 
@@ -1358,7 +1350,6 @@ PioneerDDJSX.shiftKeyLockButton = function(channel, control, value, status, grou
 
     if (value) {
         engine.setValue(group, "rateRange", range);
-        PioneerDDJSX.speedSliderRange = range;
     }
 };
 
