@@ -1012,11 +1012,7 @@ void LoopingControl::slotBeatLoopSizeChangeRequest(double beats) {
 
 void LoopingControl::slotBeatLoopToggle(double pressed) {
     if (pressed > 0) {
-        if (m_bLoopingEnabled) {
-            setLoopingEnabled(false);
-        } else {
-            slotBeatLoop(m_pCOBeatLoopSize->get());
-        }
+        slotBeatLoop(m_pCOBeatLoopSize->get());
     }
 }
 
