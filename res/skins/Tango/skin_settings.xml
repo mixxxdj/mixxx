@@ -49,9 +49,9 @@ Description:
               </Template>
 
               <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      Stacked Overviews</SetVariable>
-                <SetVariable name="state_1_text"> &#10004; Stacked Overviews</SetVariable>
-                <SetVariable name="Setting">[Tango],stacked_overviews</SetVariable>
+                <SetVariable name="state_0_text">      Symmetric Decks</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Symmetric Decks</SetVariable>
+                <SetVariable name="Setting">[Tango],symmetric_decks</SetVariable>
               </Template>
 
               <Template src="skin:skin_settings_button_2state.xml">
@@ -116,7 +116,7 @@ Description:
                 <Children>
                   <Label>
                     <Size>182f,15f</Size>
-                    <Text>Permanent deck controls:</Text>
+                    <Text>Permanent Deck controls:</Text>
                     <Alignment>left</Alignment>
                   </Label>
                   <WidgetGroup>

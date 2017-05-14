@@ -164,8 +164,7 @@
             <Size>1me,1f</Size>
             <Children/>
             <Connection>
-              <ConfigKey persist="true">[Tango],stacked_overviews</ConfigKey>
-              <Transform><Not/></Transform>
+              <ConfigKey persist="true">[Tango],symmetric_decks</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>

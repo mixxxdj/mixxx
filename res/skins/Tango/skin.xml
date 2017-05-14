@@ -88,7 +88,7 @@
       <attribute persist="true" config_key="[SamplerRow6],expanded">0</attribute>
       <attribute persist="true" config_key="[SamplerRow7],expanded">0</attribute>
       <attribute persist="true" config_key="[SamplerRow8],expanded">0</attribute>
-      <attribute persist="true" config_key="[Tango],stacked_overviews">1</attribute>
+      <attribute persist="true" config_key="[Tango],symmetric_decks">1</attribute>
       <attribute persist="true" config_key="[Tango],stacked_waveforms">1</attribute>
       <attribute persist="true" config_key="[Tango],stars">1</attribute>
       <attribute persist="true" config_key="[Tango],trackComment">1</attribute>

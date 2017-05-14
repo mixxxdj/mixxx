@@ -124,7 +124,7 @@ WWidgetGroup {
 
 #SkinSettingsCategory {
   margin: 0px 10px 0px 0px;
-  padding: 2px 2px 3px 2px;
+  padding: 2px 2px 5px 2px;
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   border-top: 1px solid #000000;
   border-right: 1px solid #000000;

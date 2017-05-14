@@ -19,7 +19,8 @@ Variables:
         <Size>1min,1f</Size>
         <Children/>
         <Connection>
-          <ConfigKey persist="true">[Tango],stacked_overviews</ConfigKey>
+          <ConfigKey persist="true">[Tango],symmetric_decks</ConfigKey>
+          <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
@@ -108,8 +109,7 @@ Variables:
         <Size>1min,1f</Size>
         <Children/>
         <Connection>
-          <ConfigKey persist="true">[Tango],stacked_overviews</ConfigKey>
-          <Transform><Not/></Transform>
+          <ConfigKey persist="true">[Tango],symmetric_decks</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
@@ -128,7 +128,8 @@ Variables:
           </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Tango],stacked_overviews</ConfigKey>
+          <ConfigKey persist="true">[Tango],symmetric_decks</ConfigKey>
+          <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
