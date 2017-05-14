@@ -100,19 +100,7 @@
       <attribute persist="true" config_key="[Tango],vinylControlsDeck3">0</attribute>
       <attribute persist="true" config_key="[Tango],vinylControlsDeck4">0</attribute>
       <attribute persist="true" config_key="[Tango],vumeter">1</attribute>
-    <!-- Next two COs are pre-set and must never be changed!
-        Otherwise SizeAwareStack in netbook_trigger.xml won't work properly.
-        See description there.
-        netbook_normal_stack0 = 0 means netbook mode with < 1260px width
-        netbook_normal_stack1 = 1 means normal mode with >= 1260px width -->
-      <attribute config_key="[Tango],netbook_normal_stack0">0</attribute>
-      <attribute config_key="[Tango],netbook_normal_stack1">1</attribute>
-  <!-- Manually trigger netbook_mode from skin settings -->
       <attribute persist="true" config_key="[Tango],enforce_netbook_mode">0</attribute>
-  <!-- Similiar mechanism to detect if star rating fits into deck button row as well
-      (see deck_buttons_right.xml) and to avoid ugly states in  on small screens. -->
-      <attribute config_key="[Tango],stars_fit_stack0">0</attribute>
-      <attribute config_key="[Tango],stars_fit_stack1">1</attribute>
     </attributes>
   </manifest>
 
@@ -442,7 +430,7 @@
                               </Children>
                             </WidgetGroup><!-- /2 FX + Decks, 4 FX + Decks, Samplers_Library -->
 
-                            <Template src="skin:netbook_trigger.xml"/>
+                            <Template src="skin:size_detector_netbook.xml"/>
 
                           </Children>
                         </WidgetGroup><!-- /Decks + size-aware triggers in the back -->
