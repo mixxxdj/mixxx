@@ -231,15 +231,14 @@ Variables:
 
           <WidgetGroup><Size>1me,1min</Size><Children/></WidgetGroup>
 
-          <Template src="skin:button_2state.xml">
-            <SetVariable name="TooltipId">sync_enabled</SetVariable>
+          <Template src="skin:button_1state_right.xml">
+            <SetVariable name="TooltipId">beatsync_beatsync_tempo</SetVariable>
             <SetVariable name="ObjectName">SamplerSyncButton</SetVariable>
             <SetVariable name="Size">18f,18f</SetVariable>
             <SetVariable name="state_0_unpressed">sampler_sync_off.svg</SetVariable>
-            <SetVariable name="state_0_pressed">sampler_sync_off.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">sampler_sync_on.svg</SetVariable>
-            <SetVariable name="state_1_pressed">sampler_sync_on.svg</SetVariable>
-            <SetVariable name="ConfigKey"><Variable name="group"/>,sync_enabled</SetVariable>
+            <SetVariable name="state_0_pressed">sampler_sync_on.svg</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,beatsync</SetVariable>
+            <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatsync_tempo</SetVariable>
           </Template>
 
           <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>

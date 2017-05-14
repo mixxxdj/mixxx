@@ -123,8 +123,8 @@ WWidgetGroup {
     }
 
 #SkinSettingsCategory {
-  margin: 0px 10px 7px 0px;
-  padding: 2px 2px 0px 2px;
+  margin: 0px 10px 0px 0px;
+  padding: 2px 2px 3px 2px;
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   border-top: 1px solid #000000;
   border-right: 1px solid #000000;
@@ -132,7 +132,7 @@ WWidgetGroup {
   #CategoryLabel {
     font-size: 16px/16px;
     text-align: left;
-    margin-top: 5px;
+    margin-top: 3px;
     padding-left: 13px;
     color: #eeeeee;
     background-color: none;
@@ -155,9 +155,13 @@ WWidgetGroup {
   #DeckButtonVisibility {
     margin-right: 1px;
   }
+  #DeckButtonVisibility[displayValue="0"] {
+    color: #888888;
+  }
   #DeckButtonVisibility[displayValue="0"]:hover,
   #DeckButtonVisibility[displayValue="1"] {
     background-color: #151515;
+    color: #d2d2d2;
   }
   #DeckButtonVisibility[displayValue="1"]:hover {
     border: 1px solid #d2d2d2;
@@ -455,6 +459,10 @@ WWidgetGroup {
   padding: 1px 1px 1px 0px;
   background-color: #333333;
   }
+  #DeckButtonTogglerLeft[displayValue="1"],
+  #DeckButtonTogglerRight[displayValue="1"] {
+    background-color: #0f0f0f;
+  }
   #DeckButtonTogglerLeft[displayValue="0"],
   #DeckButtonTogglerRight[displayValue="1"] {
     background: transparent url(skin:/buttons/btn_arrow_right_thin.svg) no-repeat center center;
@@ -533,12 +541,13 @@ WWidgetGroup {
     border: 1px solid #eeeeee;
     }
 
+/* Actual Play button. Receives click events, turns red
+  when playing regularly, not from Cue or HotCue */
 #PlayCue[displayValue="0"], #SamplerPlayCue[displayValue="0"] {
     background: none url(skin:/buttons/btn_paused.svg) no-repeat center center;
     }
   #PlayCue[displayValue="0"]:hover {
-    background: none url(skin:/buttons/btn_paused_hover.svg) no-repeat center center;
-    background-color: #555555;
+    background: #555555 url(skin:/buttons/btn_paused_hover.svg) no-repeat center center;
     border: 1px solid #888888;
     }
   #PlayCue[displayValue="1"] {
@@ -548,12 +557,26 @@ WWidgetGroup {
   #PlayCue[displayValue="1"]:hover {
     border: 1px solid #ff0000;
     }
-  /* The button which signals 'playFromCue'	*/
-  #PlayCueUnderlay[displayValue="0"] {
+  /* The button which signals alternate play status when
+    playing from Cue/HotCue */
+  #PlayUnderlay[displayValue="1"] {
+    background-color: #ffa601;
+    }
+  #CueUnderlay {
     background-color: #333333;
     }
-  #PlayCueUnderlay[displayValue="1"] {
-    background-color: #ffa601;
+    #CueUnderlay[displayValue="1"] {
+      border: 2px solid #ffa601;
+    }
+  /* The one lights up if play position is at main Cue point	*/
+  #CueButton {
+    background-color: #333333;
+    font-weight: bold;
+    font-size: 14px/16px;
+    color: #d2d2d2;
+  }
+  #CueButton[displayValue="1"] {
+    background-color: #a90000;
     }
 
 /*################################################################
@@ -1533,6 +1556,11 @@ QToolTip {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   margin-left: 2000px;
 }
+#SizeTest {
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 #0f0f0f,
+    stop: 1 #006596);
+  }
 #AlignLeft{
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
   }

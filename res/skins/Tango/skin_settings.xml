@@ -43,15 +43,15 @@ Description:
             <Children>
 
               <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      Stacked Overviews</SetVariable>
-                <SetVariable name="state_1_text"> &#10004; Stacked Overviews</SetVariable>
-                <SetVariable name="Setting">[Tango],stacked_overviews</SetVariable>
+                <SetVariable name="state_0_text">      Compact mode</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Compact mode</SetVariable>
+                <SetVariable name="Setting">[Tango],enforce_netbook_mode</SetVariable>
               </Template>
 
               <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      Star Rating</SetVariable>
-                <SetVariable name="state_1_text"> &#10004; Star Rating</SetVariable>
-                <SetVariable name="Setting">[Tango],stars</SetVariable>
+                <SetVariable name="state_0_text">      Stacked Overviews</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Stacked Overviews</SetVariable>
+                <SetVariable name="Setting">[Tango],stacked_overviews</SetVariable>
               </Template>
 
               <Template src="skin:skin_settings_button_2state.xml">
@@ -112,16 +112,17 @@ Description:
               <WidgetGroup>
                 <ObjectName>DeckIndicatorSettings</ObjectName>
                 <Layout>vertical</Layout>
-                <SizePolicy>min,min</SizePolicy>
+                <Size>182f,30f</Size>
                 <Children>
                   <Label>
-                    <Text>Deck indicators always visible:</Text>
+                    <Size>182f,15f</Size>
+                    <Text>Permanent deck controls:</Text>
                     <Alignment>left</Alignment>
                   </Label>
                   <WidgetGroup>
                     <ObjectName>AlignTopLeft</ObjectName>
+                    <Size>182f,15f</Size>
                     <Layout>horizontal</Layout>
-                    <SizePolicy>min,min</SizePolicy>
                     <Children>
                       <Template src="skin:button_2state_persist.xml"><!-- Keylock -->
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
@@ -187,6 +188,30 @@ Description:
                         <SetVariable name="state_1_pressed">quantize_visible.svg</SetVariable>
                         <SetVariable name="state_1_unpressed">quantize_visible.svg</SetVariable>
                         <SetVariable name="ConfigKeyPerm">[Tango],always_visible_quantize</SetVariable>
+                      </Template>
+
+                      <WidgetGroup><Size>4f,0f</Size></WidgetGroup>
+
+                      <Template src="skin:button_2state_persist.xml">
+                        <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
+                        <SetVariable name="Size">16f,15f</SetVariable>
+                        <SetVariable name="TooltipId">orientation</SetVariable>
+                        <SetVariable name="state_0_pressed">stars_off.svg</SetVariable>
+                        <SetVariable name="state_0_unpressed">stars_off.svg</SetVariable>
+                        <SetVariable name="state_1_pressed">stars_visible.svg</SetVariable>
+                        <SetVariable name="state_1_unpressed">stars_visible.svg</SetVariable>
+                        <SetVariable name="ConfigKeyPerm">[Tango],stars</SetVariable>
+                      </Template>
+
+                      <WidgetGroup><Size>4f,0f</Size></WidgetGroup>
+
+                      <Template src="skin:button_2state_persist.xml">
+                        <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
+                        <SetVariable name="Size">28f,15f</SetVariable>
+                        <SetVariable name="TooltipId">orientation</SetVariable>
+                        <SetVariable name="state_0_text">CUE</SetVariable>
+                        <SetVariable name="state_1_text">CUE</SetVariable>
+                        <SetVariable name="ConfigKeyPerm">[Tango],separate_cue_button</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup>
@@ -425,12 +450,6 @@ Description:
                   </Template>
                 </Children>
               </WidgetGroup>
-
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      Enforce compact mode</SetVariable>
-                <SetVariable name="state_1_text"> &#10004; Enforce compact mode</SetVariable>
-                <SetVariable name="Setting">[Tango],enforce_netbook_mode</SetVariable>
-              </Template>
 
             </Children>
           </WidgetGroup><!-- /Extras -->

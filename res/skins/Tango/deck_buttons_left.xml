@@ -326,7 +326,7 @@ Variables:
                 </Connection>
               </WidgetGroup>
             </Children>
-            <!-- visibilty controlled by SizeAwareStack in deck_buttons_right.xml -->
+            <!-- visibilty controlled by SizeAwareStack in size_detector_stars.xml -->
             <Connection>
               <ConfigKey>[Tango],stars_fit</ConfigKey>
               <BindProperty>visible</BindProperty>
@@ -340,7 +340,7 @@ Variables:
 
       <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
-      <WidgetGroup><!-- Play -->
+      <WidgetGroup><!-- Play button incl. Cue (right click) -->
         <ObjectName>Spacer0f</ObjectName>
         <Layout>stacked</Layout>
         <Size>50f,24f</Size>
@@ -353,15 +353,77 @@ Variables:
             <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
             <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
           </Template>
-      <!--	Turns Orange when playing from Cue/HotCue position.
+      <!--	Play indicator: turns Orange when playing from Cue/HotCue position.
           Only visible when play_indicator above is zero0, otherwise it's covered. -->
           <Template src="skin:button_2state.xml">
-            <SetVariable name="ObjectName">PlayCueUnderlay</SetVariable>
+            <SetVariable name="ObjectName">PlayUnderlay</SetVariable>
             <SetVariable name="Size">50f,24f</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
           </Template>
+      <!--	Cue indicator: shows coloured border i.e. if play position is at cue point.
+          See Cue settings in Preferences > Interface > Deck Options -->
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="ObjectName">CueUnderlay</SetVariable>
+            <SetVariable name="Size">50f,24f</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,cue_indicator</SetVariable>
+          </Template>
         </Children>
-      </WidgetGroup><!-- /Play -->
+        <Connection>
+          <ConfigKey persist="true">[Tango],separate_cue_button</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Play button incl. Cue (right click) -->
+
+      <WidgetGroup><!-- Play button, separate Cue button -->
+        <ObjectName>Spacer0f</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>75f,24f</Size>
+        <Children>
+      <!--	Cue button -->
+          <Template src="skin:button_2state_right_display.xml">
+            <SetVariable name="TooltipId">cue_default_cue_gotoandstop</SetVariable>
+            <SetVariable name="ObjectName">CueButton</SetVariable>
+            <SetVariable name="Size">24f,24f</SetVariable>
+            <SetVariable name="state_0_text">C</SetVariable>
+            <SetVariable name="state_1_text">C</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,cue_default</SetVariable>
+            <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_gotoandstop</SetVariable>
+            <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,cue_indicator</SetVariable>
+          </Template>
+            <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+          <WidgetGroup><!-- Play button with playFromCue underlay -->
+            <ObjectName>Spacer0f</ObjectName>
+            <Layout>stacked</Layout>
+            <Size>50f,24f</Size>
+            <Children>
+              <Template src="skin:button_2state_right_display.xml"><!-- Play -->
+                <SetVariable name="ObjectName">PlayCue</SetVariable>
+                <SetVariable name="TooltipId">play_cue_set</SetVariable>
+                <SetVariable name="Size">50f,24f</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,play</SetVariable>
+                <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
+              </Template>
+              <!--	Play indicator: turns Orange when playing from Cue/HotCue position.
+              Only visible when play_indicator above is zero0, otherwise it's covered. -->
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="ObjectName">PlayUnderlay</SetVariable>
+                <SetVariable name="Size">50f,24f</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
+              </Template>
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="ObjectName">CueButton</SetVariable>
+                <SetVariable name="Size">50f,24f</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- Play button with playFromCue underlay -->
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Tango],separate_cue_button</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Play button, separate Cue button -->
     </Children>
   </WidgetGroup><!-- /Play + deck controls -->
 </Template>

@@ -100,6 +100,7 @@
       <attribute persist="true" config_key="[Tango],vinylControlsDeck3">0</attribute>
       <attribute persist="true" config_key="[Tango],vinylControlsDeck4">0</attribute>
       <attribute persist="true" config_key="[Tango],vumeter">1</attribute>
+      <!-- Manually trigger netbook_mode from skin settings -->
       <attribute persist="true" config_key="[Tango],enforce_netbook_mode">0</attribute>
     </attributes>
   </manifest>
