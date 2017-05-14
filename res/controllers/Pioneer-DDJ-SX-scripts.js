@@ -10,7 +10,7 @@ var PioneerDDJSX = function() {};
 
 /*
 	Author: 		DJMaxergy
-	Version: 		1.08, 05/13/2017
+	Version: 		1.09, 05/14/2017
 	Description: 	Pioneer DDJ-SX Controller Mapping for Mixxx
     Source: 		http://github.com/DJMaxergy/mixxx/tree/pioneerDDJSX_mapping
     
@@ -140,6 +140,9 @@ PioneerDDJSX.loopIntervals = [
 PioneerDDJSX.selectedSlicerQuantizeParam = [1, 1, 1, 1];
 PioneerDDJSX.selectedSlicerQuantization = [1 / 4, 1 / 4, 1 / 4, 1 / 4];
 PioneerDDJSX.slicerQuantizations = [1 / 8, 1 / 4, 1 / 2, 1];
+PioneerDDJSX.selectedSlicerDomainParam = [0, 0, 0, 0];
+PioneerDDJSX.selectedSlicerDomain = [8, 8, 8, 8];
+PioneerDDJSX.slicerDomains = [8, 16, 32, 64];
 
 // slicer storage:
 PioneerDDJSX.slicerBeatsPassed = [0, 0, 0, 0];
@@ -672,7 +675,8 @@ PioneerDDJSX.initDeck = function(group) {
         PioneerDDJSX.selectedLoopRollParam[deck],
         PioneerDDJSX.selectedLoopParam[deck],
         PioneerDDJSX.selectedSamplerBank,
-        PioneerDDJSX.selectedSlicerQuantizeParam[deck]
+        PioneerDDJSX.selectedSlicerQuantizeParam[deck],
+        PioneerDDJSX.selectedSlicerDomainParam[deck]
     );
     PioneerDDJSX.triggerVinylLed(deck);
     PioneerDDJSX.setDefaultSpeedSliderRange(group, PioneerDDJSX.speedSliderRange);
@@ -740,10 +744,12 @@ PioneerDDJSX.resetDeck = function(group) {
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.takeoverMinus, false);
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.parameterLeftRollMode, false);
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.parameterLeftSlicerMode, false);
+    PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.shiftParameterLeftSlicerMode, false);
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.parameterLeftSamplerMode, false);
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.parameterLeftGroup2Mode, false);
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.parameterRightRollMode, false);
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.parameterRightSlicerMode, false);
+    PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.shiftParameterRightSlicerMode, false);
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.parameterRightSamplerMode, false);
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.parameterRightGroup2Mode, false);
 };
@@ -1064,21 +1070,21 @@ PioneerDDJSX.beatloopButtons = function(channel, control, value, status, group) 
 
 PioneerDDJSX.slicerButtons = function(channel, control, value, status, group) {
     var index = control - 0x20,
-        padNum = index % 8,
         deck = PioneerDDJSX.channelGroups[group],
+        domain = PioneerDDJSX.selectedSlicerDomain[deck],
         beatsToJump = 0;
 
     if (PioneerDDJSX.activeSlicerMode[deck] === PioneerDDJSX.slicerModes.loopSlice) {
-        PioneerDDJSX.padLedControl(group, PioneerDDJSX.ledGroups.slicer, padNum, false, !value);
+        PioneerDDJSX.padLedControl(group, PioneerDDJSX.ledGroups.slicer, index, false, !value);
     } else {
-        PioneerDDJSX.padLedControl(group, PioneerDDJSX.ledGroups.slicer, padNum, false, value);
+        PioneerDDJSX.padLedControl(group, PioneerDDJSX.ledGroups.slicer, index, false, value);
     }
     PioneerDDJSX.slicerActive[deck] = value ? true : false;
-    PioneerDDJSX.slicerButton[deck] = index % 8;
+    PioneerDDJSX.slicerButton[deck] = index;
 
     if (value) {
-        beatsToJump = PioneerDDJSX.slicerButton[deck] - ((PioneerDDJSX.slicerBeatsPassed[deck] % 8) + 1);
-        if (PioneerDDJSX.slicerButton[deck] === 0 && beatsToJump === -8) {
+        beatsToJump = (PioneerDDJSX.slicerButton[deck] * (domain / 8)) - ((PioneerDDJSX.slicerBeatsPassed[deck] % domain) + 1);
+        if (PioneerDDJSX.slicerButton[deck] === 0 && beatsToJump === -domain) {
             beatsToJump = 0;
         }
         if (PioneerDDJSX.slicerBeatsPassed[deck] >= Math.abs(beatsToJump) && 
@@ -1182,7 +1188,8 @@ PioneerDDJSX.changeParameters = function(group, ctrl, increment) {
             }
         }
     }
-    //Beatloop Mode:
+
+    //Group2 (Beatloop) Mode:
     if (ctrl === PioneerDDJSX.nonPadLeds.parameterLeftGroup2Mode || ctrl === PioneerDDJSX.nonPadLeds.parameterRightGroup2Mode) {
         // unbind previous connected controls:
         for (index in PioneerDDJSX.selectedLoopIntervals[deck]) {
@@ -1214,6 +1221,7 @@ PioneerDDJSX.changeParameters = function(group, ctrl, increment) {
             }
         }
     }
+
     //Sampler Mode:
     if (ctrl === PioneerDDJSX.nonPadLeds.parameterLeftSamplerMode || ctrl === PioneerDDJSX.nonPadLeds.parameterRightSamplerMode) {
         // unbind previous connected controls:
@@ -1262,7 +1270,8 @@ PioneerDDJSX.changeParameters = function(group, ctrl, increment) {
             }
         }
     }
-    //Group2 Mode (Slicer):
+
+    //Slicer Mode:
     if (ctrl === PioneerDDJSX.nonPadLeds.parameterLeftSlicerMode || ctrl === PioneerDDJSX.nonPadLeds.parameterRightSlicerMode) {
         // change parameter set:
         if (ctrl === PioneerDDJSX.nonPadLeds.parameterLeftSlicerMode && PioneerDDJSX.selectedSlicerQuantizeParam[deck] > 0) {
@@ -1272,6 +1281,16 @@ PioneerDDJSX.changeParameters = function(group, ctrl, increment) {
         }
         PioneerDDJSX.selectedSlicerQuantization[deck] = PioneerDDJSX.slicerQuantizations[PioneerDDJSX.selectedSlicerQuantizeParam[deck]];
     }
+    //Slicer Mode + SHIFT:
+    if (ctrl === PioneerDDJSX.nonPadLeds.shiftParameterLeftSlicerMode || ctrl === PioneerDDJSX.nonPadLeds.shiftParameterRightSlicerMode) {
+        // change parameter set:
+        if (ctrl === PioneerDDJSX.nonPadLeds.shiftParameterLeftSlicerMode && PioneerDDJSX.selectedSlicerDomainParam[deck] > 0) {
+            PioneerDDJSX.selectedSlicerDomainParam[deck] = PioneerDDJSX.selectedSlicerDomainParam[deck] - 1;
+        } else if (ctrl === PioneerDDJSX.nonPadLeds.shiftParameterRightSlicerMode && PioneerDDJSX.selectedSlicerDomainParam[deck] < 3) {
+            PioneerDDJSX.selectedSlicerDomainParam[deck] = PioneerDDJSX.selectedSlicerDomainParam[deck] + 1;
+        }
+        PioneerDDJSX.selectedSlicerDomain[deck] = PioneerDDJSX.slicerDomains[PioneerDDJSX.selectedSlicerDomainParam[deck]];
+    }
 
     // update parameter status leds:
     PioneerDDJSX.updateParameterStatusLeds(
@@ -1279,7 +1298,8 @@ PioneerDDJSX.changeParameters = function(group, ctrl, increment) {
         PioneerDDJSX.selectedLoopRollParam[deck],
         PioneerDDJSX.selectedLoopParam[deck],
         PioneerDDJSX.selectedSamplerBank,
-        PioneerDDJSX.selectedSlicerQuantizeParam[deck]
+        PioneerDDJSX.selectedSlicerQuantizeParam[deck],
+        PioneerDDJSX.selectedSlicerDomainParam[deck]
     );
 };
 
@@ -1290,6 +1310,18 @@ PioneerDDJSX.parameterLeft = function(channel, control, value, status, group) {
 };
 
 PioneerDDJSX.parameterRight = function(channel, control, value, status, group) {
+    if (value) {
+        PioneerDDJSX.changeParameters(group, control, true);
+    }
+};
+
+PioneerDDJSX.shiftParameterLeft = function(channel, control, value, status, group) {
+    if (value) {
+        PioneerDDJSX.changeParameters(group, control, false);
+    }
+};
+
+PioneerDDJSX.shiftParameterRight = function(channel, control, value, status, group) {
     if (value) {
         PioneerDDJSX.changeParameters(group, control, true);
     }
@@ -1668,15 +1700,17 @@ PioneerDDJSX.generalLedControl = function(ledNumber, active) {
     );
 };
 
-PioneerDDJSX.updateParameterStatusLeds = function(group, statusRoll, statusLoop, statusSampler, statusSlicer) {
+PioneerDDJSX.updateParameterStatusLeds = function(group, statusRoll, statusLoop, statusSampler, statusSlicerQuant, statusSlicerDomain) {
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.parameterLeftRollMode, statusRoll & (1 << 1));
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.parameterRightRollMode, statusRoll & 1);
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.parameterLeftGroup2Mode, statusLoop & (1 << 1));
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.parameterRightGroup2Mode, statusLoop & 1);
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.parameterLeftSamplerMode, statusSampler & (1 << 1));
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.parameterRightSamplerMode, statusSampler & 1);
-    PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.parameterLeftSlicerMode, statusSlicer & (1 << 1));
-    PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.parameterRightSlicerMode, statusSlicer & 1);
+    PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.parameterLeftSlicerMode, statusSlicerQuant & (1 << 1));
+    PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.parameterRightSlicerMode, statusSlicerQuant & 1);
+    PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.shiftParameterLeftSlicerMode, statusSlicerDomain & (1 << 1));
+    PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.shiftParameterRightSlicerMode, statusSlicerDomain & 1);
 };
 
 
@@ -2316,15 +2350,16 @@ PioneerDDJSX.slicerBeatActive = function(value, group, control) {
         bpm = engine.getValue(group, "bpm"),
         playposition = engine.getValue(group, "playposition"),
         duration = engine.getValue(group, "duration"),
-        slicerPos = 0,
-        ledBeatState = true;
+        slicerPosInSection = 0,
+        ledBeatState = true,
+        domain = PioneerDDJSX.selectedSlicerDomain[deck];
 
     if (engine.getValue(group, "beat_closest") === engine.getValue(group, "beat_next")) {
         return;
     }
 
     PioneerDDJSX.slicerBeatsPassed[deck] = Math.round((playposition * duration) * (bpm / 60));
-    slicerPos = PioneerDDJSX.slicerBeatsPassed[deck] % 8;
+    slicerPosInSection = Math.floor((PioneerDDJSX.slicerBeatsPassed[deck] % domain) / (domain / 8));
 
     if (PioneerDDJSX.activePadMode[deck] === PioneerDDJSX.padModes.slicer) {
         if (PioneerDDJSX.activeSlicerMode[deck] === PioneerDDJSX.slicerModes.contSlice) {
@@ -2332,22 +2367,35 @@ PioneerDDJSX.slicerBeatActive = function(value, group, control) {
         }
         if (PioneerDDJSX.activeSlicerMode[deck] === PioneerDDJSX.slicerModes.loopSlice) {
             ledBeatState = false;
-            if (((PioneerDDJSX.slicerBeatsPassed[deck] - 1) % 8) === 7 &&
+            if (((PioneerDDJSX.slicerBeatsPassed[deck] - 1) % domain) === (domain - 1) &&
                   !PioneerDDJSX.slicerAlreadyJumped[deck] &&
                   PioneerDDJSX.slicerPreviousBeatsPassed[deck] < PioneerDDJSX.slicerBeatsPassed[deck]) {
-                engine.setValue(group, "beatjump", -8);
+                engine.setValue(group, "beatjump", -domain);
                 PioneerDDJSX.slicerAlreadyJumped[deck] = true;
             } else {
                 PioneerDDJSX.slicerAlreadyJumped[deck] = false;
             }
         }
+        // PAD Led control:
         for (var i = 0; i < 8; i++) {
             if (PioneerDDJSX.slicerActive[deck]) {
                 if (PioneerDDJSX.slicerButton[deck] !== i) {
-                    PioneerDDJSX.padLedControl(group, PioneerDDJSX.ledGroups.slicer, i, false, (slicerPos === i) ? ledBeatState : !ledBeatState);
+                    PioneerDDJSX.padLedControl(
+                        group, 
+                        PioneerDDJSX.ledGroups.slicer, 
+                        i, 
+                        false, 
+                        (slicerPosInSection === i) ? ledBeatState : !ledBeatState
+                    );
                 }
             } else {
-                PioneerDDJSX.padLedControl(group, PioneerDDJSX.ledGroups.slicer, i, false, (slicerPos === i) ? ledBeatState : !ledBeatState);
+                PioneerDDJSX.padLedControl(
+                    group, 
+                    PioneerDDJSX.ledGroups.slicer, 
+                    i, 
+                    false, 
+                    (slicerPosInSection === i) ? ledBeatState : !ledBeatState
+                );
             }
         }
     } else {
