@@ -383,7 +383,15 @@ P32.Deck = function (deckNumbers, channel) {
     };
 
     this.loopToggleEncoderPress = function (channel, control, value, status, group) {
-        engine.setValue(this.currentDeck, 'beatloop_toggle', value / 127);
+        if (value > 0) {
+            if (engine.getValue(this.currentDeck, 'loop_enabled') === 1) {
+                engine.setValue(this.currentDeck, 'reloop_toggle', 1);
+                engine.setValue(this.currentDeck, 'reloop_toggle', 0);
+            } else {
+                engine.setValue(this.currentDeck, 'beatloop_toggle', 1);
+                engine.setValue(this.currentDeck, 'beatloop_toggle', 0);
+            }
+        }
     };
 
     this.loopEncoderShiftPress = function (channel, control, value, status, group) {
