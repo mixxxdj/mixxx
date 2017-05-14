@@ -82,6 +82,7 @@ PioneerDDJSX.chFaderStart = [null, null, null, null];
 PioneerDDJSX.toggledBrake = [false, false, false, false];
 PioneerDDJSX.scratchMode = [true, true, true, true];
 PioneerDDJSX.wheelLedsBlinkStatus = [0, 0, 0, 0];
+PioneerDDJSX.setUpSpeedSliderRange = [0.08, 0.08, 0.08, 0.08];
 
 // PAD mode storage:
 PioneerDDJSX.padModes = {
@@ -361,9 +362,6 @@ PioneerDDJSX.init = function(id) {
         '[Channel3]_enabled': 1,
         '[Channel4]_enabled': 1
     };
-    
-    // save set up speed slider range from the Mixxx settings:
-    PioneerDDJSX.setUpSpeedSliderRange = engine.getValue(group, "rateRange");
 
     // set 32 Samplers as default:
     engine.setValue("[Master]", "num_samplers", 32);
@@ -663,6 +661,9 @@ PioneerDDJSX.bindNonDeckControlConnections = function(bind) {
 
 PioneerDDJSX.initDeck = function(group) {
     var deck = PioneerDDJSX.channelGroups[group];
+    
+    // save set up speed slider range from the Mixxx settings:
+    PioneerDDJSX.setUpSpeedSliderRange[deck] = engine.getValue(group, "rateRange");
 
     PioneerDDJSX.bindDeckControlConnections(group, true);
 
@@ -1339,12 +1340,13 @@ PioneerDDJSX.keyLockButton = function(channel, control, value, status, group) {
 };
 
 PioneerDDJSX.shiftKeyLockButton = function(channel, control, value, status, group) {
-    var range = engine.getValue(group, "rateRange");
+	var deck = PioneerDDJSX.channelGroups[group],
+	    range = engine.getValue(group, "rateRange");
 
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.shiftKeyLock, value);
 
     if (range === 1.00) {
-        range = PioneerDDJSX.setUpSpeedSliderRange;
+        range = PioneerDDJSX.setUpSpeedSliderRange[deck];
     } else if ((range * 2) > 1.00) {
         range = 1.00;
     } else {
