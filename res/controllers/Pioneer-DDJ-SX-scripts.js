@@ -10,7 +10,7 @@ var PioneerDDJSX = function() {};
 
 /*
 	Author: 		DJMaxergy
-	Version: 		1.10, 05/14/2017
+	Version: 		1.11, 05/14/2017
 	Description: 	Pioneer DDJ-SX Controller Mapping for Mixxx
     Source: 		http://github.com/DJMaxergy/mixxx/tree/pioneerDDJSX_mapping
     
@@ -361,6 +361,9 @@ PioneerDDJSX.init = function(id) {
         '[Channel3]_enabled': 1,
         '[Channel4]_enabled': 1
     };
+    
+    // save set up speed slider range from the Mixxx settings:
+    PioneerDDJSX.setUpSpeedSliderRange = engine.getValue(group, "rateRange");
 
     // set 32 Samplers as default:
     engine.setValue("[Master]", "num_samplers", 32);
@@ -1341,7 +1344,7 @@ PioneerDDJSX.shiftKeyLockButton = function(channel, control, value, status, grou
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.shiftKeyLock, value);
 
     if (range === 1.00) {
-        range = 0.08;
+        range = PioneerDDJSX.setUpSpeedSliderRange;
     } else if ((range * 2) > 1.00) {
         range = 1.00;
     } else {
