@@ -28,8 +28,8 @@ EffectManifest EchoEffect::getManifest() {
     delay->setId("delay_time");
     delay->setName(QObject::tr("Time"));
     delay->setDescription(QObject::tr("Delay time\n"
-        "0 - 2 beats if tempo is detected (decks and samplers) \n"
-        "0 - 2 seconds if no tempo is detected (mic & aux inputs, master mix, headphone mix)."));
+        "0 - 2 beats if sync parameter is enabled and tempo is detected (decks and samplers) \n"
+        "0 - 2 seconds if sync parameter is disabled or no tempo is detected (mic & aux inputs, master mix)"));
     delay->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     delay->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     delay->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
@@ -76,6 +76,17 @@ EffectManifest EchoEffect::getManifest() {
     send->setDefault(1.0);
     send->setMaximum(1.0);
 
+    EffectManifestParameter* sync = manifest.addParameter();
+    sync->setId("sync");
+    sync->setName(QObject::tr("Sync"));
+    sync->setDescription(QObject::tr("Synchronizes the delay time with the tempo if it can be retrieved"));
+    sync->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
+    sync->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    sync->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    sync->setDefault(1);
+    sync->setMinimum(0);
+    sync->setMaximum(1);
+
     return manifest;
 }
 
@@ -83,7 +94,8 @@ EchoEffect::EchoEffect(EngineEffect* pEffect, const EffectManifest& manifest)
         : m_pDelayParameter(pEffect->getParameterById("delay_time")),
           m_pSendParameter(pEffect->getParameterById("send_amount")),
           m_pFeedbackParameter(pEffect->getParameterById("feedback_amount")),
-          m_pPingPongParameter(pEffect->getParameterById("pingpong_amount")) {
+          m_pPingPongParameter(pEffect->getParameterById("pingpong_amount")),
+          m_pSyncParameter(pEffect->getParameterById("sync")) {
     Q_UNUSED(manifest);
 }
 
@@ -107,7 +119,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     double pingpong_frac = m_pPingPongParameter->value();
 
     int delay_samples;
-    if (groupFeatures.has_beat_length) {
+    if (m_pSyncParameter->toBool() && groupFeatures.has_beat_length) {
         delay_samples = beats * groupFeatures.beat_length;
     } else {
         delay_samples = beats * sampleRate * EchoGroupState::kChannelCount;
