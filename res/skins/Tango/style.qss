@@ -533,11 +533,11 @@ WWidgetGroup {
   #HotcueButton[displayValue="0"]:hover {
     border: 1px solid #888888;
     }
-  #HotcueButton[displayValue="1"] {
+  #HotcueButton[displayValue="1"], #CueButton[displayValue="1"] {
     color: #eeeeee;
     background-color: #666666;
     }
-  #HotcueButton[displayValue="1"]:hover {
+  #HotcueButton[displayValue="1"]:hover, #CueButton[displayValue="1"]:hover {
     border: 1px solid #eeeeee;
     }
 
@@ -547,7 +547,7 @@ WWidgetGroup {
     background: none url(skin:/buttons/btn_paused.svg) no-repeat center center;
     }
   #PlayCue[displayValue="0"]:hover {
-    background: #555555 url(skin:/buttons/btn_paused_hover.svg) no-repeat center center;
+    background: none url(skin:/buttons/btn_paused_hover.svg) no-repeat center center;
     border: 1px solid #888888;
     }
   #PlayCue[displayValue="1"] {
@@ -566,7 +566,7 @@ WWidgetGroup {
     background-color: #333333;
     }
     #CueUnderlay[displayValue="1"] {
-      border: 2px solid #ffa601;
+      border: 2px solid #eeeeee;
     }
   /* The one lights up if play position is at main Cue point	*/
   #CueButton {
@@ -575,9 +575,6 @@ WWidgetGroup {
     font-size: 14px/16px;
     color: #d2d2d2;
   }
-  #CueButton[displayValue="1"] {
-    background-color: #a90000;
-    }
 
 /*################################################################
  #######  Loop Controls  ########################################

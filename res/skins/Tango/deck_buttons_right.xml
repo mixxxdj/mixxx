@@ -49,7 +49,7 @@ Variables:
               <!--	Cue indicator: shows coloured border i.e. if play position is at cue point.
               See Cue settings in Preferences > Interface > Deck Options -->
               <Template src="skin:button_2state.xml">
-                <SetVariable name="ObjectName">CueButton</SetVariable>
+                <SetVariable name="ObjectName">CueUnderlay</SetVariable>
                 <SetVariable name="Size">50f,24f</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,cue_indicator</SetVariable>
               </Template>

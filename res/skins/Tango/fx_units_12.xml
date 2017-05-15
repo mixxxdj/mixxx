@@ -59,15 +59,15 @@ Description:
             <SizePolicy>min,min</SizePolicy>
             <Children>
 
-              <!-- Spacer to keep Deck & FX unit aligned -->
-              <WidgetGroup><Size>108f,1min</Size><Children/>
+              <WidgetGroup><!-- Skin Controls spacer -->
+                <Size>108f,1min</Size><Children/>
                 <Connection>
                   <ConfigKey>[Tango],normal_mode</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
 
-              <WidgetGroup> <!-- Spacer to keep Deck & FX unit aligned without Pitch fader-->
+              <WidgetGroup> <!-- Pitch fader spacer -->
                 <Size>106f,1min</Size>
                 <Children/>
                 <Connection>
@@ -96,7 +96,8 @@ Description:
                   <BindProperty>visible</BindProperty>
                   <Transform><Not/></Transform>
                 </Connection>
-              </WidgetGroup><!-- /VU Meter spacer when Channel Mixer is hidden -->
+              </WidgetGroup>
+
             </Children>
             <Connection>
               <ConfigKey>[Tango],normal_mode</ConfigKey>

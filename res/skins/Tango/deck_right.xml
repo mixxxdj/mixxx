@@ -21,11 +21,11 @@ Variables:
 
       <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
 
-      <WidgetGroup><!-- Mixer / [ [Spinny / Cover / none] + VUMeter ] + Pitch + spacer -->
+      <WidgetGroup><!-- Mixer / [ Spinny/Cover/none + VUMeter ] + Pitch + spacer -->
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <WidgetGroup><!-- Mixer / [ [Spinny / Cover / none] + VUMeter ] + Pitch -->
+          <WidgetGroup><!-- Mixer / [ Spinny/Cover/none + VUMeter ] + Pitch -->
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
@@ -43,7 +43,7 @@ Variables:
               </WidgetGroup>
               <!-- /Pitch slider & Key controls -->
               
-              <!-- Mixer / [ [Spinny / Cover] + VUMeter ] -->
+              <!-- Mixer / Spinny/Cover/none + VUMeter ] -->
               <WidgetStack currentpage="[Tango],mixer_spinnyCover" persist="true">
                 <ObjectName>MixerCoverStack</ObjectName>
                 <SizePolicy>f,min</SizePolicy>
@@ -58,7 +58,7 @@ Variables:
                     </Children>
                   </WidgetGroup><!-- /Mixer -->
                   
-                  <WidgetGroup><!-- [Spinny / Cover / none] + VUMeter -->
+                  <WidgetGroup><!-- Spinny/Cover/none + VUMeter -->
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,me</SizePolicy>
                     <Children>
@@ -74,7 +74,7 @@ Variables:
                         </Connection>
                       </WidgetGroup>
                     
-                      <WidgetGroup><!-- [Spinny / Cover / none] -->
+                      <WidgetGroup><!-- Spinny/Cover/none -->
                         <Layout>horizontal</Layout>
                         <SizePolicy>min,min</SizePolicy>
                         <Children>
@@ -82,11 +82,8 @@ Variables:
                             <Layout>horizontal</Layout>
                             <SizePolicy>min,min</SizePolicy>
                             <Children>
-                            
-                                <Template src="skin:spinnyCover.xml"/>
-			
-                                <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
-                                
+                              <Template src="skin:spinnyCover.xml"/>
+                              <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
                             </Children>
                             <Connection>
                               <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
@@ -99,23 +96,23 @@ Variables:
                           <Transform><IsEqual>2</IsEqual><Not/></Transform>
                           <BindProperty>visible</BindProperty>
                         </Connection>
-                      </WidgetGroup>
+                      </WidgetGroup><!-- /Spinny/Cover/none -->
                         
                     </Children>
-                  </WidgetGroup><!-- /[Spinny / Cover / none] + VUMeter -->
+                  </WidgetGroup><!-- /Spinny/Cover/none + VUMeter -->
                     
                 </Children>
-              </WidgetStack><!-- /Mixer / [ [Spinny / Cover / none] + VUMeter ] -->
+              </WidgetStack><!-- /Mixer / [ Spinny/Cover/none + VUMeter ] -->
             
             </Children>
-          </WidgetGroup><!-- /Mixer / [ [Spinny / Cover / none] + VUMeter ] + Pitch -->
+          </WidgetGroup><!-- /Mixer / [ Spinny/Cover/none + VUMeter ] + Pitch -->
           
-          Expanding spacer, necessary because obviously WidgetStack breaks
+          <!-- Expanding spacer, necessary because obviously WidgetStack breaks
           qproperty-layoutAlignment of parent Widget -->
           <WidgetGroup><SizePolicy>min,me</SizePolicy><Children/></WidgetGroup>
           
         </Children>
-      </WidgetGroup><!-- /Mixer / [ [Spinny / Cover] + VUMeter ] + Pitch + spacer -->
+      </WidgetGroup><!-- /Mixer / Spinny/Cover/none + VUMeter ] + Pitch + spacer -->
 
       <WidgetGroup><!-- [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
         <ObjectName>Deck<Variable name="channum"/></ObjectName>
@@ -125,7 +122,7 @@ Variables:
         
           <!-- Packed Waveform & ArtistTitle into a fixed-size container,
           so Deck stays steady while Comment and LoopBeatjump controls can be toggled.
-          On request, I also added the option for symmetrical left & right decks:
+          Symmetrical decks [Waveforn/Artist/Deckbuttons] can be enabled in skin settings.
           1 Waveform
           2 Comment (optional)
           3 Title / Play position
