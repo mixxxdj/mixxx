@@ -129,30 +129,153 @@ Description:
         </Children>
       </WidgetGroup><!-- /Skin controls -->
 
-      <!-- Sections on the left and on the right are expanding,
-          so Crossfader is centered horizontally -->
-      <WidgetGroup><!-- Crossfader -->
+      <!-- Vertical layout:
+          Top row (0px tall): spacers for PitchSlider, VUMeter etc.
+          Bootom row: Crossfader lies on top if enabled -->
+      <WidgetGroup>
+        <ObjectName>AlignHCenter</ObjectName>
         <SizePolicy>min,min</SizePolicy>
-        <Layout>horizontal</Layout>
+        <Layout>vertical</Layout>
         <Children>
-          <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
-          <SliderComposed>
-            <ObjectName>Crossfader</ObjectName>
-            <TooltipId>crossfader</TooltipId>
-            <Handle>skin:/knobs_sliders/slider_crossfader_handle.svg</Handle>
-            <Slider>skin:/knobs_sliders/slider_crossfader_scale.svg</Slider>
-            <Horizontal>true</Horizontal>
+
+          <WidgetGroup><!-- Crossfader -->
+            <ObjectName>AlignHCenter</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup><Size>10f,1min</Size><Children/></WidgetGroup>
+              <SliderComposed>
+                <ObjectName>Crossfader</ObjectName>
+                <TooltipId>crossfader</TooltipId>
+                <Handle>skin:/knobs_sliders/slider_crossfader_handle.svg</Handle>
+                <Slider>skin:/knobs_sliders/slider_crossfader_scale.svg</Slider>
+                <Horizontal>true</Horizontal>
+                <Connection>
+                  <ConfigKey>[Master],crossfader</ConfigKey>
+                </Connection>
+              </SliderComposed>
+              <WidgetGroup><Size>10f,1min</Size><Children/></WidgetGroup>
+            </Children>
             <Connection>
-              <ConfigKey>[Master],crossfader</ConfigKey>
+              <ConfigKey persist="true">[Tango],crossfader</ConfigKey>
+              <BindProperty>visible</BindProperty>
             </Connection>
-          </SliderComposed>
-          <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
+          </WidgetGroup><!-- /Crossfader -->
+
+          <!-- Spacers instead of Crossfader -->
+          <WidgetGroup>
+            <SizePolicy>max,1f</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+
+              <WidgetGroup><!-- Spacer between decks -->
+                <Size>6f,0f</Size>
+                <Children/>
+              </WidgetGroup>
+
+              <WidgetGroup><!-- Pitch fader spacer -->
+                <Size>106f,0f</Size>
+                <Children/>
+                <Connection>
+                  <ConfigKey>[Tango],pitch_fader</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup><!-- VU Meter spacer when Channel Mixer is hidden -->
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <Size>22f,0f</Size>
+                    <Children/>
+                    <Connection>
+                      <ConfigKey>[Tango],vumeter</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <Size>228f,0f</Size>
+                        <Children/>
+                        <Connection>
+                          <ConfigKey>[Tango],spinny_cover_none</ConfigKey>
+                          <Transform><IsEqual>2</IsEqual><Not/></Transform>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Tango],spinnyCoverBIG</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Tango],channel_mixer</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                  <Transform><Not/></Transform>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup><!-- Channel Mixer, optional VU meter, EQs and Filter knobs -->
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <WidgetGroup><!-- Basic mixer -->
+                    <Layout>horizontal</Layout>
+                    <Size>88f,0f</Size>
+                    <Children/>
+                  </WidgetGroup>
+                  <WidgetGroup><!-- VU meter -->
+                    <Layout>horizontal</Layout>
+                    <Size>24f,0f</Size>
+                    <Children/>
+                    <Connection>
+                      <ConfigKey>[Tango],vumeter</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                  <WidgetGroup><!-- EQ knobs, optional Filter knob -->
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <WidgetGroup>
+                        <Size>108f,0f</Size>
+                        <Children/>
+                      </WidgetGroup>
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <Size>12f,0f</Size>
+                        <Children/>
+                        <Connection>
+                          <ConfigKey>[Tango],filter_knob</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Tango],eq_knobs</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup><!-- /EQ knobs, optional Filter knob -->
+                </Children>
+                <Connection>
+                  <ConfigKey>[Tango],channel_mixer</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup><!-- /Spacers instead of Crossfader -->
+
         </Children>
-        <Connection>
-          <ConfigKey persist="true">[Tango],crossfader</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup><!-- /Crossfader -->
+      </WidgetGroup><!-- Stack of spacers for PitchSlider, VUMeter etc.
+                      Crossfader lies on top if enabled -->
       
       <WidgetGroup><!-- Logo, Rec, Broadcast, Clock, Skinsettings -->
         <Layout>horizontal</Layout>
@@ -171,6 +294,35 @@ Description:
           </Template>
 
           <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
+
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="ObjectName">SkinSettingsToggler</SetVariable>
+            <SetVariable name="Size">24f,24f</SetVariable>
+            <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+
+          <Time>
+            <TooltipId>time</TooltipId>
+            <ObjectName>Clock</ObjectName>
+            <Size>30min,20f</Size>
+            <ShowSeconds>false</ShowSeconds>
+            <!-- This has no effect, neither has 'text-align' in qss.
+            <Align>center</Align>   -->
+          </Time>
+
+          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+
+          <Template src="skin:button_4state_display.xml">
+            <SetVariable name="TooltipId">broadcast_enabled</SetVariable>
+            <SetVariable name="ObjectName">BroadcastButtonNetbook</SetVariable>
+            <SetVariable name="Size">24f,24f</SetVariable>
+            <SetVariable name="ConfigKey">[Shoutcast],enabled</SetVariable>
+            <SetVariable name="ConfigKeyDisp">[Shoutcast],status</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
 
           <WidgetGroup><!-- Recording button & recording duration label -->
             <Layout>stacked</Layout>
@@ -191,37 +343,6 @@ Description:
               </RecordingDuration>
             </Children>
           </WidgetGroup><!-- /Recording button & recording duration label -->
-
-          <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
-
-          <Template src="skin:button_4state_display.xml">
-            <SetVariable name="TooltipId">broadcast_enabled</SetVariable>
-            <SetVariable name="ObjectName">BroadcastButtonNetbook</SetVariable>
-            <SetVariable name="Size">24f,24f</SetVariable>
-            <SetVariable name="ConfigKey">[Shoutcast],enabled</SetVariable>
-            <SetVariable name="ConfigKeyDisp">[Shoutcast],status</SetVariable>
-          </Template>
-
-          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
-
-          <Time>
-            <TooltipId>time</TooltipId>
-            <ObjectName>Clock</ObjectName>
-            <Size>30min,20f</Size>
-            <ShowSeconds>false</ShowSeconds>
-            <!-- This has no effect, neither has 'text-align' in qss.
-            <Align>center</Align>   -->
-          </Time>
-
-          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
-
-          <Template src="skin:button_2state.xml">
-            <SetVariable name="ObjectName">SkinSettingsToggler</SetVariable>
-            <SetVariable name="Size">24f,24f</SetVariable>
-            <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>
-          </Template>
-
-          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
 
         </Children>
       </WidgetGroup><!-- /Logo, Rec, Broadcast, Clock, Skinsettings -->

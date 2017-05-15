@@ -834,10 +834,10 @@ WBeatSpinBox {
   }
 
 #SkinControlsBarLeft {
-  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
 }
 #SkinControlsBarRight {
-  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
 }
 
 #GuiToggleButton, #GuiToggleButton2, #RecordingButton {
