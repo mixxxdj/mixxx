@@ -15,7 +15,7 @@
       <WidgetGroup>
         <ObjectName>DeckPFLButton2Decks</ObjectName>
         <Layout>horizontal</Layout>
-        <Size>-1me,35f</Size>
+        <Size>40f,35f</Size>
         <Children>
           <Template src="skin:left_2state_button.xml">
             <SetVariable name="TooltipId">pfl</SetVariable>
@@ -43,7 +43,7 @@
 
       <WidgetGroup>
         <ObjectName>DeckPFLButton4Decks</ObjectName>
-        <Size>-1me,25f</Size>
+        <Size>40f,25f</Size>
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:left_2state_button.xml">
