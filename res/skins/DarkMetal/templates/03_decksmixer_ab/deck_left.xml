@@ -381,7 +381,7 @@
 						</CoverArt>						
 						</Children>
 						<Connection>
-						<ConfigKey>[CoverArtBigDeck<Variable name="audiochannel"/>],show</ConfigKey>
+						<ConfigKey>[DarkMetal],coverart_big_deck<Variable name="audiochannel"/>_show</ConfigKey>
 						<BindProperty>visible</BindProperty>
 						</Connection>
 					</WidgetGroup>
@@ -646,7 +646,7 @@
 					<Unpressed>gfx_hifi/btn_expand_deck_<Variable name="audiochannel"/>.svg</Unpressed>
 					</State>
 					<Connection>
-					<ConfigKey>[Deck<Variable name="decktohide"/>],show</ConfigKey>    
+					<ConfigKey>[DarkMetal],deck<Variable name="decktohide"/>_show</ConfigKey>    
 					<ButtonState>LeftButton</ButtonState>
 					</Connection>
 					</PushButton>
@@ -695,7 +695,7 @@
 					<Unpressed>gfx_hifi/btn_buttons_row_over.svg</Unpressed>
 					</State>
 					<Connection>
-					<ConfigKey>[ButtonsRowDeck<Variable name="audiochannel"/>],show</ConfigKey>
+					<ConfigKey>[DarkMetal],buttons_row_deck<Variable name="audiochannel"/>_show</ConfigKey>
 					<ButtonState>LeftButton</ButtonState>							
 					</Connection>					
 					</PushButton>					
@@ -719,7 +719,7 @@
 							<Unpressed>gfx_hifi/btn_coverart_over.svg</Unpressed>
 						</State>					
 						<Connection>
-							<ConfigKey>[CoverArtBigDeck<Variable name="audiochannel"/>],show</ConfigKey>
+							<ConfigKey>[DarkMetal],coverart_big_deck<Variable name="audiochannel"/>_show</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
@@ -1102,7 +1102,7 @@
 				
 			</Children>
 			<Connection><!-- Show/Hide above full row with buttons -->			
-			<ConfigKey>[ButtonsRowDeck<Variable name="audiochannel"/>],show</ConfigKey>            
+			<ConfigKey>[DarkMetal],buttons_row_deck<Variable name="audiochannel"/>_show</ConfigKey>            
             <!-- <Transform><Not/></Transform> --> <!-- Important: INVERSE !!! -->
 			<BindProperty>visible</BindProperty>
 			</Connection>
@@ -1765,7 +1765,7 @@
 				
 			</Children>
 			<Connection><!-- Show/Hide above full row with buttons -->			
-			<ConfigKey>[ButtonsRowDeck<Variable name="audiochannel"/>],show</ConfigKey>            
+			<ConfigKey>[DarkMetal],buttons_row_deck<Variable name="audiochannel"/>_show</ConfigKey>            
             <Transform><Not/></Transform> <!-- Important: INVERSE !!! -->
 			<BindProperty>visible</BindProperty>
 			</Connection>
@@ -1785,7 +1785,7 @@
 
 	</Children>
 	<Connection><!-- Show/Hide the other deck, so this one will be expanded -->
-	<ConfigKey>[Deck<Variable name="audiochannel"/>],show</ConfigKey>
+	<ConfigKey>[DarkMetal],deck<Variable name="audiochannel"/>_show</ConfigKey>
 	<BindProperty>visible</BindProperty>
 	</Connection>
 	</WidgetGroup>

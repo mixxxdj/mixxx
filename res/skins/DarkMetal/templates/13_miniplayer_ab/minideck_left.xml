@@ -44,7 +44,7 @@
 					<Unpressed>gfx_hifi/btn_expand_deck_<Variable name="audiochannel"/>.svg</Unpressed>
 					</State>
 					<Connection>
-					<ConfigKey>[MiniDeck<Variable name="minidecktohide"/>],show</ConfigKey>    
+					<ConfigKey>[DarkMetal],mini_deck<Variable name="minidecktohide"/>_show</ConfigKey>    
 					<ButtonState>LeftButton</ButtonState>
 					</Connection>
 					</PushButton>					
@@ -407,7 +407,7 @@
 
 			</Children>
 			<Connection><!-- Show/Hide the other mini deck, so this one will be expanded -->
-			<ConfigKey>[MiniDeck<Variable name="audiochannel"/>],show</ConfigKey>
+			<ConfigKey>[DarkMetal],mini_deck<Variable name="audiochannel"/>_show</ConfigKey>
 			<BindProperty>visible</BindProperty>
 			</Connection>
 			</WidgetGroup>	

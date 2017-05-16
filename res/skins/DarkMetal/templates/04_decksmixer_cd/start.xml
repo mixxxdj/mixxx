@@ -27,7 +27,7 @@
 	</Template>
 	</Children>
 	<Connection>
-	<ConfigKey>[DecksAndMixerRack2],show</ConfigKey>
+	<ConfigKey>[DarkMetal],decks_and_mixer_rack2_show</ConfigKey>
 	<BindProperty>visible</BindProperty>
 	</Connection>
 	</WidgetGroup>

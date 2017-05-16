@@ -546,7 +546,7 @@
 			
 		</Children>
 		<Connection>
-		<ConfigKey>[SamplerModule<Variable name="samplernum"/>],show</ConfigKey>
+		<ConfigKey>[DarkMetal],sampler_module<Variable name="samplernum"/>_show</ConfigKey>
 		<BindProperty>visible</BindProperty>
 		</Connection>			
 		</WidgetGroup>	

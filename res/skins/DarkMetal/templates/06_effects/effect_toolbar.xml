@@ -30,7 +30,7 @@
 		<Unpressed>gfx_hifi/btn_view1_over.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[EffectsRack<Variable name="toolbarnum_a"/>],show</ConfigKey>
+		<ConfigKey>[DarkMetal],effects_rack<Variable name="toolbarnum_a"/>_show</ConfigKey>
 		</Connection>
 		</PushButton>
 
@@ -48,7 +48,7 @@
 		<Unpressed>gfx_hifi/btn_view2_over.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[EffectsRack<Variable name="toolbarnum_b"/>],show</ConfigKey>
+		<ConfigKey>[DarkMetal],effects_rack<Variable name="toolbarnum_a"/>_show</ConfigKey>
 		</Connection>
 		</PushButton>
 		
@@ -80,7 +80,7 @@
 		<Unpressed>gfx_hifi/btn_view_over.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey><!-- [EffectsModule<Variable name="unit_a"/>],show --></ConfigKey>
+		<ConfigKey><!-- [DarkMetal],effects_module<Variable name="unit"/>_show --></ConfigKey>
 		</Connection>	
 		</PushButton>
 		</Children>
@@ -105,7 +105,7 @@
 		<Unpressed>gfx_hifi/btn_view_over.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[EffectsModule<Variable name="unit_b"/>],show</ConfigKey>
+		<ConfigKey>[DarkMetal],effects_module<Variable name="unit"/>_show</ConfigKey>
 		</Connection>	
 		</PushButton>
 		</Children>

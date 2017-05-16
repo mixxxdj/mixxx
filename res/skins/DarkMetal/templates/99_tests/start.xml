@@ -109,7 +109,7 @@
 		<Unpressed>gfx_hifi/tab_auxiliaries_over.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[DecksAndMixerRack1],raise</ConfigKey>
+		<ConfigKey>[DarkMetal],decks_and_mixer_rack1_show</ConfigKey>
 		</Connection>	
 		</PushButton>
 			
@@ -127,7 +127,7 @@
 		<Unpressed>gfx_hifi/btn_view_over.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[Hifi],show</ConfigKey>
+		<ConfigKey>[DarkMetal],hifi_show</ConfigKey>
 		</Connection>	
 		</PushButton>
 

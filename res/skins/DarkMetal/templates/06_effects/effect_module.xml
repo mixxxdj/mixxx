@@ -68,7 +68,7 @@
 
 		</Children>
 		<Connection>
-		<ConfigKey>[EffectsModule<Variable name="unit"/>],show</ConfigKey>
+		<ConfigKey>[DarkMetal],effects_module<Variable name="unit"/>_show</ConfigKey>
 		<BindProperty>visible</BindProperty>
 		</Connection>			
 		</WidgetGroup>			

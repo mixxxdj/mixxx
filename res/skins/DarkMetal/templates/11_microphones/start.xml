@@ -584,7 +584,7 @@
 	</Children>	
 	<!-- Show/Hide -->
 	<Connection>
-	<ConfigKey>[ToolBarMicros],show</ConfigKey>
+	<ConfigKey>[DarkMetal],tool_bar_micros_show</ConfigKey>
 	<BindProperty>visible</BindProperty>
 	</Connection>
 	</WidgetGroup>

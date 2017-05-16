@@ -37,7 +37,7 @@
 	<Unpressed>gfx_hifi/btn_view1_over.svg</Unpressed>
 	</State>		
 	<Connection>
-	<ConfigKey>[SamplersRack<Variable name="toolbarnum_a"/>],show</ConfigKey>
+	<ConfigKey>[DarkMetal],samplers_rack<Variable name="toolbarnum_a"/>_show</ConfigKey>
 	</Connection>
 	</PushButton>	
 
@@ -55,7 +55,7 @@
 	<Unpressed>gfx_hifi/btn_view2_over.svg</Unpressed>
 	</State>		
 	<Connection>
-	<ConfigKey>[SamplersRack<Variable name="toolbarnum_b"/>],show</ConfigKey>
+	<ConfigKey>[DarkMetal],samplers_rack<Variable name="toolbarnum_a"/>_show</ConfigKey>
 	</Connection>
 	</PushButton>	
 	
@@ -145,7 +145,7 @@
 	<Unpressed>gfx_hifi/btn_view_over.svg</Unpressed>
 	</State>		
 	<Connection>
-	<ConfigKey><!-- [SamplerModule<Variable name="samplernum_a"/>],show --></ConfigKey>
+	<ConfigKey><!-- [DarkMetal],sampler_module<Variable name="samplernum"/>_show --></ConfigKey>
 	</Connection>	
 	</PushButton>		
 
@@ -163,7 +163,7 @@
 	<Unpressed>gfx_hifi/btn_view_over.svg</Unpressed>
 	</State>		
 	<Connection>
-	<ConfigKey>[SamplerModule<Variable name="samplernum_b"/>],show</ConfigKey>
+	<ConfigKey>[DarkMetal],sampler_module<Variable name="samplernum"/>_show</ConfigKey>
 	</Connection>	
 	</PushButton>
 	
@@ -181,7 +181,7 @@
 	<Unpressed>gfx_hifi/btn_view_over.svg</Unpressed>
 	</State>		
 	<Connection>
-	<ConfigKey>[SamplerModule<Variable name="samplernum_c"/>],show</ConfigKey>
+	<ConfigKey>[DarkMetal],sampler_module<Variable name="samplernum"/>_show</ConfigKey>
 	</Connection>	
 	</PushButton>
 	
@@ -199,7 +199,7 @@
 	<Unpressed>gfx_hifi/btn_view_over.svg</Unpressed>
 	</State>		
 	<Connection>
-	<ConfigKey>[SamplerModule<Variable name="samplernum_d"/>],show</ConfigKey>
+	<ConfigKey>[DarkMetal],sampler_module<Variable name="samplernum"/>_show</ConfigKey>
 	</Connection>	
 	</PushButton>
 	

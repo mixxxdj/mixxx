@@ -41,7 +41,6 @@
 	</WidgetGroup>  
 	
 	<WidgetGroup>
-	<MinimumSize>-1,-1</MinimumSize>
 	<SizePolicy>me,me</SizePolicy>
 	<Children><!-- Pusher --></Children>
 	</WidgetGroup>
@@ -66,7 +65,7 @@
 		
 		</Children>
 		<Connection>
-		<ConfigKey>[EffectsModulesRow1],show</ConfigKey>
+		<ConfigKey>[DarkMetal],effects_modules_row1_show</ConfigKey>
 		<BindProperty>visible</BindProperty>
 		</Connection>
 		</WidgetGroup>
@@ -76,7 +75,6 @@
 	</WidgetGroup>
 	
 	<WidgetGroup>
-	<MinimumSize>-1,-1</MinimumSize>
 	<SizePolicy>me,me</SizePolicy>
 	<Children><!-- Pusher --></Children>
 	</WidgetGroup> 
@@ -96,7 +94,7 @@
 	</Children>
 	<!-- Show/Hide this Group: -->
 	<Connection>
-	<ConfigKey>[EffectsRack1],show</ConfigKey>
+	<ConfigKey>[DarkMetal],effects_rack1_show</ConfigKey>
 	<BindProperty>visible</BindProperty>
 	</Connection>
 	</WidgetGroup>

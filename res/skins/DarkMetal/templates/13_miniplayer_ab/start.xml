@@ -64,7 +64,7 @@
 	</Children>
 	<!-- Show/Hide this Group: -->
 	<Connection>
-	<ConfigKey>[MiniPlayer1],show</ConfigKey>
+	<ConfigKey>[DarkMetal],mini_player1_show</ConfigKey>
 	<BindProperty>visible</BindProperty>
 	</Connection>
 	</WidgetGroup>

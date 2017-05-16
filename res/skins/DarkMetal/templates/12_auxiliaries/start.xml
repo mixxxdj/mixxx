@@ -561,7 +561,7 @@
 	</Children>	
 	<!-- Show/Hide -->
 	<Connection>
-	<ConfigKey>[ToolBarAuxiliaries],show</ConfigKey>
+	<ConfigKey>[DarkMetal],tool_bar_auxiliaries_show</ConfigKey>
 	<BindProperty>visible</BindProperty>
 	</Connection>
 	</WidgetGroup>

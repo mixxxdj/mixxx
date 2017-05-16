@@ -69,66 +69,64 @@
 	<attribute config_key="[EffectRack1],num_effectunits">4</attribute>
 	
 	<!-- Make these ITEMS visible, or not, by default: -->
-	<attribute persist="true" config_key="[Deck1],show">1</attribute>
-	<attribute persist="true" config_key="[Deck2],show">1</attribute>
-	<attribute persist="true" config_key="[Deck3],show">1</attribute>
-	<attribute persist="true" config_key="[Deck4],show">1</attribute>
-	<attribute persist="true" config_key="[MiniDeck1],show">1</attribute>
-	<attribute persist="true" config_key="[MiniDeck2],show">1</attribute>
-	<attribute persist="true" config_key="[MiniDeck3],show">1</attribute>
-	<attribute persist="true" config_key="[MiniDeck4],show">1</attribute>
-	<attribute persist="true" config_key="[ButtonsRowDeck1],show">1</attribute>
-	<attribute persist="true" config_key="[ButtonsRowDeck2],show">1</attribute>
-	<attribute persist="true" config_key="[ButtonsRowDeck3],show">1</attribute>
-	<attribute persist="true" config_key="[ButtonsRowDeck4],show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],deck1_show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],deck2_show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],deck3_show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],deck4_show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],mini_deck1_show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],mini_deck2_show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],mini_deck3_show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],mini_deck4_show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],buttons_row_deck1_show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],buttons_row_deck2_show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],buttons_row_deck3_show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],buttons_row_deck4_show">1</attribute>
 	<attribute persist="true" config_key="[Spinny1],show_spinny">1</attribute>
 	<attribute persist="true" config_key="[Spinny2],show_spinny">1</attribute>
 	<attribute persist="true" config_key="[Spinny3],show_spinny">1</attribute>
 	<attribute persist="true" config_key="[Spinny4],show_spinny">1</attribute>
-	<attribute persist="true" config_key="[CoverArtBigDeck1],show">0</attribute>
-	<attribute persist="true" config_key="[CoverArtBigDeck2],show">0</attribute>
-	<attribute persist="true" config_key="[CoverArtBigDeck3],show">0</attribute>
-	<attribute persist="true" config_key="[CoverArtBigDeck4],show">0</attribute>
-	<attribute persist="true" config_key="[PreviewD1],show">0</attribute>
-	<attribute persist="true" config_key="[SearchTextBox1],show">0</attribute>
+	<attribute persist="true" config_key="[DarkMetal],coverart_big_deck1_show">0</attribute>
+	<attribute persist="true" config_key="[DarkMetal],coverart_big_deck2_show">0</attribute>
+	<attribute persist="true" config_key="[DarkMetal],coverart_big_deck3_show">0</attribute>
+	<attribute persist="true" config_key="[DarkMetal],coverart_big_deck4_show">0</attribute>
+	<attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
+	<attribute persist="true" config_key="[DarkMetal],search_text_box1_show">0</attribute>
 	<attribute persist="true" config_key="[Library],show_coverart">1</attribute>
 	<attribute persist="true" config_key="[Library],show_current">1</attribute>	
-	<!-- <attribute persist="true" config_key="[Library],show_library">1</attribute> -->
+	<attribute config_key="[Library],show_library">1</attribute>
 	
 	<!-- Make these ROWS (RACKS) visible, or not, by default: -->
-	<attribute persist="true" config_key="[ToolBar1],show">1</attribute>
-	<attribute persist="true" config_key="[ToolBar2],show">1</attribute>
-	<attribute persist="true" config_key="[ToolBarMicros],show">0</attribute>
-	<attribute persist="true" config_key="[DecksAndMixerRack1],show">0</attribute>
-	<attribute persist="true" config_key="[DecksAndMixerRack2],show">0</attribute>
-	<attribute persist="true" config_key="[MiniPlayer1],show">1</attribute>
-	<attribute persist="true" config_key="[MiniPlayer2],show">0</attribute>
-	<attribute persist="true" config_key="[ToolBarAuxiliaries],show">0</attribute>
-	<attribute persist="true" config_key="[LongWavesRack1],show">1</attribute>
-	<attribute persist="true" config_key="[LongWavesRack2],show">0</attribute>
-	<attribute persist="true" config_key="[Hifi],show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],tool_bar_micros_show">0</attribute>
+	<attribute persist="true" config_key="[DarkMetal],decks_and_mixer_rack1_show">0</attribute>
+	<attribute persist="true" config_key="[DarkMetal],decks_and_mixer_rack2_show">0</attribute>
+	<attribute persist="true" config_key="[DarkMetal],mini_player1_show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],mini_player2_show">0</attribute>
+	<attribute persist="true" config_key="[DarkMetal],tool_bar_auxiliaries_show">0</attribute>
+	<attribute persist="true" config_key="[DarkMetal],long_waves_rack1_show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],long_waves_rack2_show">0</attribute>
+	<attribute persist="true" config_key="[DarkMetal],hifi_show">1</attribute>
 	
 	<!-- Samplers: (Racks + Modules) -->
-	<attribute persist="true" config_key="[SamplersRack1],show">0</attribute>
-	<attribute persist="true" config_key="[SamplersRack2],show">0</attribute>
-	<attribute persist="true" config_key="[SamplerModule1],show">1</attribute>
-	<attribute persist="true" config_key="[SamplerModule2],show">1</attribute>
-	<attribute persist="true" config_key="[SamplerModule3],show">1</attribute>
-	<attribute persist="true" config_key="[SamplerModule4],show">0</attribute>
-	<attribute persist="true" config_key="[SamplerModule5],show">1</attribute>
-	<attribute persist="true" config_key="[SamplerModule6],show">1</attribute>
-	<attribute persist="true" config_key="[SamplerModule7],show">1</attribute>
-	<attribute persist="true" config_key="[SamplerModule8],show">0</attribute>
+	<attribute persist="true" config_key="[DarkMetal],samplers_rack1_show">0</attribute>
+	<attribute persist="true" config_key="[DarkMetal],samplers_rack2_show">0</attribute>
+	<attribute persist="true" config_key="[DarkMetal],sampler_module1_show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],sampler_module2_show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],sampler_module3_show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],sampler_module4_show">0</attribute>
+	<attribute persist="true" config_key="[DarkMetal],sampler_module5_show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],sampler_module6_show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],sampler_module7_show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],sampler_module8_show">0</attribute>
 	
 	<!-- Effects: (Racks + Modules) -->
-	<attribute persist="true" config_key="[EffectsRack1],show">0</attribute>
-	<attribute persist="true" config_key="[EffectsRack2],show">0</attribute>
-	<attribute persist="true" config_key="[EffectsModulesRow1],show">1</attribute>
-	<attribute persist="true" config_key="[EffectsModulesRow2],show">1</attribute>
-	<attribute persist="true" config_key="[EffectsModule1],show">1</attribute>
-	<attribute persist="true" config_key="[EffectsModule2],show">0</attribute>
-	<attribute persist="true" config_key="[EffectsModule3],show">1</attribute>
-	<attribute persist="true" config_key="[EffectsModule4],show">0</attribute>	
+	<attribute persist="true" config_key="[DarkMetal],effects_rack1_show">0</attribute>
+	<attribute persist="true" config_key="[DarkMetal],effects_rack2_show">0</attribute>
+	<attribute persist="true" config_key="[DarkMetal],effects_modules_row1_show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],effects_modules_row2_show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],effects_module1_show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],effects_module2_show">0</attribute>
+	<attribute persist="true" config_key="[DarkMetal],effects_module3_show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],effects_module4_show">0</attribute>	
 
 	<!-- Effects: (By default, the FX buttons are off) -->
 	<attribute config_key="[EffectRack1_EffectUnit1_Effect1],enabled">0</attribute>
@@ -423,7 +421,6 @@
 	<BackPath>gfx_hifi/background_main.svg</BackPath>
 	<Style src="skin:styles.qss"/> <!-- Includes the QT styles -->
 	<MinimumSize>980,350</MinimumSize>
-	<MaximumSize>-1,-1</MaximumSize>
 	<SizePolicy>me,me</SizePolicy>
 	<Layout>vertical</Layout>
 	<!-- STARTS - ALL THE LAYOUT: -->
@@ -469,7 +466,7 @@
 	<Template src="skin:templates/09_samplers/start.xml"></Template>	
 	</Children>
 	<Connection>
-	<ConfigKey>[Hifi],show</ConfigKey>
+	<ConfigKey>[DarkMetal],hifi_show</ConfigKey>
 	<BindProperty>visible</BindProperty>
 	</Connection>
 	</WidgetGroup>	

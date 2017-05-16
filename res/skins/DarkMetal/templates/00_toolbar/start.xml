@@ -60,7 +60,7 @@
 		<Unpressed>gfx_hifi/tab_microphones_over.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[ToolBarMicros],show</ConfigKey>
+		<ConfigKey>[DarkMetal],tool_bar_micros_show</ConfigKey>
 		</Connection>	
 		</PushButton>
 		
@@ -92,7 +92,7 @@
 		<Unpressed>gfx_hifi/tab_auxiliaries_over.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[ToolBarAuxiliaries],show</ConfigKey>
+		<ConfigKey>[DarkMetal],tool_bar_auxiliaries_show</ConfigKey>
 		</Connection>	
 		</PushButton>
 		
@@ -124,7 +124,7 @@
 		<Unpressed>gfx_hifi/tab_decks_ab_over.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[DecksAndMixerRack1],show</ConfigKey>
+		<ConfigKey>[DarkMetal],decks_and_mixer_rack1_show</ConfigKey>
 		</Connection>	
 		</PushButton>
 		
@@ -156,7 +156,7 @@
 		<Unpressed>gfx_hifi/tab_decks_cd_over.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[DecksAndMixerRack2],show</ConfigKey>
+		<ConfigKey>[DarkMetal],decks_and_mixer_rack2_show</ConfigKey>
 		</Connection>	
 		</PushButton>
 		
@@ -188,7 +188,7 @@
 		<Unpressed>gfx_hifi/tab_miniplayer1_over.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[MiniPlayer1],show</ConfigKey>
+		<ConfigKey>[DarkMetal],mini_player1_show</ConfigKey>
 		</Connection>	
 		</PushButton>
 		
@@ -220,7 +220,7 @@
 		<Unpressed>gfx_hifi/tab_miniplayer2_over.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[MiniPlayer2],show</ConfigKey>
+		<ConfigKey>[DarkMetal],mini_player2_show</ConfigKey>
 		</Connection>	
 		</PushButton>
 		
@@ -252,7 +252,7 @@
 		<Unpressed>gfx_hifi/tab_longwaves1_over.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[LongWavesRack1],show</ConfigKey>
+		<ConfigKey>[DarkMetal],long_waves_rack1_show</ConfigKey>
 		</Connection>	
 		</PushButton>
 		
@@ -284,7 +284,7 @@
 		<Unpressed>gfx_hifi/tab_longwaves2_over.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[LongWavesRack2],show</ConfigKey>
+		<ConfigKey>[DarkMetal],long_waves_rack2_show</ConfigKey>
 		</Connection>	
 		</PushButton>
 		
@@ -316,7 +316,7 @@
 		<Unpressed>gfx_hifi/tab_effects1_over.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[EffectsRack1],show</ConfigKey>
+		<ConfigKey>[DarkMetal],effects_rack1_show</ConfigKey>
 		</Connection>
 		</PushButton>
 		
@@ -348,7 +348,7 @@
 		<Unpressed>gfx_hifi/tab_effects2_over.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[EffectsRack2],show</ConfigKey>
+		<ConfigKey>[DarkMetal],effects_rack2_show</ConfigKey>
 		</Connection>
 		</PushButton>
 		
@@ -380,7 +380,7 @@
 		<Unpressed>gfx_hifi/tab_samplers_1_over.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[SamplersRack1],show</ConfigKey>
+		<ConfigKey>[DarkMetal],samplers_rack1_show</ConfigKey>
 		</Connection>
 		</PushButton>
 		
@@ -412,7 +412,7 @@
 		<Unpressed>gfx_hifi/tab_samplers_2_over.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[SamplersRack2],show</ConfigKey>
+		<ConfigKey>[DarkMetal],samplers_rack2_show</ConfigKey>
 		</Connection>
 		</PushButton>
 

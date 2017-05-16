@@ -71,7 +71,7 @@
 	</Children>	
 	<!-- Show/Hide this Group: -->
 	<Connection>
-	<ConfigKey>[SamplersRack2],show</ConfigKey>
+	<ConfigKey>[DarkMetal],samplers_rack2_show</ConfigKey>
 	<BindProperty>visible</BindProperty>
 	</Connection>					
 	</WidgetGroup>	

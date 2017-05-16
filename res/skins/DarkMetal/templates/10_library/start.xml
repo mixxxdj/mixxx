@@ -81,7 +81,7 @@
 		<Unpressed>gfx_hifi/btn_view_over.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[SearchTextBox1],show</ConfigKey>
+		<ConfigKey>[DarkMetal],search_text_box1_show</ConfigKey>
 		</Connection>	
 		</PushButton>
 		</Children>
@@ -121,7 +121,7 @@
 		<Unpressed>gfx_hifi/btn_library_more.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[Hifi],show</ConfigKey>
+		<ConfigKey>[DarkMetal],hifi_show</ConfigKey>
 		<!-- <ConfigKey>[Library],show_library</ConfigKey> -->
 		</Connection>	
 		</PushButton>
@@ -462,7 +462,7 @@
 		
 		</Children>
 		<Connection>
-		<ConfigKey>[PreviewD1],show</ConfigKey>
+		<ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
 		<BindProperty>visible</BindProperty>
 		</Connection>
 		</WidgetGroup>		
@@ -478,7 +478,7 @@
 		<SearchBox> <!-- THE Search Box !!! --> </SearchBox>
 		</Children>
 		<Connection>
-		<ConfigKey>[SearchTextBox1],show</ConfigKey>
+		<ConfigKey>[DarkMetal],search_text_box1_show</ConfigKey>
 		<BindProperty>visible</BindProperty>
 		</Connection>
 		</WidgetGroup>		 

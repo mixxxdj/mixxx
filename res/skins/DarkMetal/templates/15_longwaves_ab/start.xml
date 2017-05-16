@@ -270,7 +270,7 @@
 	
 	<!-- Show/Hide this Group: -->
 	<Connection>
-	<ConfigKey>[LongWavesRack1],show</ConfigKey>
+	<ConfigKey>[DarkMetal],long_waves_rack1_show</ConfigKey>
 	<BindProperty>visible</BindProperty>
 	</Connection>
 	
