@@ -58,7 +58,7 @@ Variables:
             <Children>
               <Label>
                 <ObjectName>TrackBy</ObjectName>
-                <Size>20f,20f</Size>
+                <Size>20f,20me</Size>
                 <Text>by </Text>
                 <Alignment>left</Alignment>
               </Label>
@@ -66,7 +66,7 @@ Variables:
               <TrackProperty>
                 <ObjectName>TrackArtist</ObjectName>
                 <Elide>right</Elide>
-                <Size>1me,20f</Size>
+                <Size>1me,20me</Size>
                 <TooltipId>track_artist</TooltipId>
                 <Property>artist</Property>
                 <Channel><Variable name="channum"/></Channel>
@@ -74,7 +74,7 @@ Variables:
 
               <TrackProperty>
                 <ObjectName>TrackDuration</ObjectName>
-                <Size>50f,20f</Size>
+                <Size>50f,20me</Size>
                 <TooltipId>track_duration</TooltipId>
                 <Property>durationFormatted</Property>
                 <Alignment>right</Alignment>

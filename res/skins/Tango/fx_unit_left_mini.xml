@@ -142,46 +142,6 @@
         </Connection>
       </WidgetGroup><!-- /Effect _selector_meta_s * no highlight -->
 
-      <WidgetGroup><!-- GroupButtons -->
-        <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <WidgetGroup><!-- Group buttons CH1, CH3, Master -->
-            <ObjectName>EffectUnitGroupColumnMini</ObjectName>
-            <Layout>vertical</Layout>
-            <Children>
-              <Template src="skin:fx_unit_group_button.xml">
-                <SetVariable name="Size">16f,1me</SetVariable>
-                <SetVariable name="LabelText">1</SetVariable>
-                <SetVariable name="GroupName">[Channel1]</SetVariable>
-              </Template>
-              <Template src="skin:fx_unit_group_button.xml">
-                <SetVariable name="Size">16f,1me</SetVariable>
-                <SetVariable name="LabelText">3</SetVariable>
-                <SetVariable name="GroupName">[Channel3]</SetVariable>
-              </Template>
-            </Children>
-          </WidgetGroup><!-- /Group buttons CH1, CH3, Master -->
-
-          <WidgetGroup><!-- Group buttons CH2, CH4, Headphone -->
-            <ObjectName>EffectUnitGroupColumnMini</ObjectName>
-            <Layout>vertical</Layout>
-            <Children>
-              <Template src="skin:fx_unit_group_button.xml">
-                <SetVariable name="Size">16f,1me</SetVariable>
-                <SetVariable name="LabelText">2</SetVariable>
-                <SetVariable name="GroupName">[Channel2]</SetVariable>
-              </Template>
-              <Template src="skin:fx_unit_group_button.xml">
-                <SetVariable name="Size">16f,1me</SetVariable>
-                <SetVariable name="LabelText">4</SetVariable>
-                <SetVariable name="GroupName">[Channel4]</SetVariable>
-              </Template>
-            </Children>
-          </WidgetGroup><!-- /Group buttons CH2, CH4, Headphone -->
-        </Children>
-      </WidgetGroup><!-- /GroupButtons -->
-
       <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
       <WidgetGroup>
@@ -209,30 +169,27 @@
         </Children>
       </WidgetGroup><!-- /SuperWetDryContainer -->
 
-      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+      <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
-      <WidgetGroup><!-- FX Unit _selector_meta_ & miniMaxi button -->
-        <ObjectName>AlignTopLeft</ObjectName>
-        <SizePolicy>min,min</SizePolicy>
+      <WidgetGroup>
         <Layout>vertical</Layout>
+        <Size>28f,30f</Size>
         <Children>
           <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="ObjectName">FxMiniMaxiButton</SetVariable>
-            <SetVariable name="Size">22f,13f</SetVariable>
+            <SetVariable name="ObjectName">FXSamplersMiniMaxiButton</SetVariable>
+            <SetVariable name="Size">28f,13f</SetVariable>
             <SetVariable name="ConfigKeyPerm">[<Variable name="fxGroup"/>],show_parameters</SetVariable>
           </Template>
-            <WidgetGroup><Size>1min,1f</Size><Children/></WidgetGroup>
           <Template src="skin:button_2state.xml">
             <SetVariable name="TooltipId">EffectUnit_enabled</SetVariable>
-            <SetVariable name="ObjectName">EffectUnitToggleButton</SetVariable>
-            <SetVariable name="Size">22f,1me</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">28f,17f</SetVariable>
+            <SetVariable name="state_0_text">FX<Variable name="EffectUnit"/></SetVariable>
+            <SetVariable name="state_1_text">FX<Variable name="EffectUnit"/></SetVariable>
             <SetVariable name="ConfigKey">[<Variable name="fxGroup"/>],enabled</SetVariable>
           </Template>
         </Children>
-      </WidgetGroup><!-- /FX Unit _selector_meta_ & miniMaxi button -->
-
-      <!-- This is necessary to compensate 1px left offset of right FX unit -->
-      <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
+      </WidgetGroup>
 
     </Children>
   </WidgetGroup><!-- /EffectUnit -->

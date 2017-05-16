@@ -12,30 +12,43 @@ Variables:
   LabelOn   : backpath in state 1
 -->
 <Template>
-  <PushButton>
-    <TooltipId>EffectUnit_group_enabled</TooltipId>
-    <ObjectName>EffectUnitGroupButton</ObjectName>
+  <WidgetGroup>
     <Size><Variable name="Size"/></Size>
-    <NumberStates>2</NumberStates>
-    <RightClickIsPushButton>false</RightClickIsPushButton>
-    <State>
-      <Number>0</Number>
-      <Text><Variable name="LabelText"/></Text>
-      <Alignment>center</Alignment>
-      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="LabelOff"/>.svg</Pressed>
-      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="LabelOff"/>.svg</Unpressed>
-    </State>
-    <State>
-      <Number>1</Number>
-      <Text><Variable name="LabelText"/></Text>
-      <Alignment>center</Alignment>
-      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="LabelOn"/>.svg</Pressed>
-      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="LabelOn"/>.svg</Unpressed>
-    </State>
-    <Connection>
-      <ConfigKey>[<Variable name="fxGroup"/>],group_<Variable name="GroupName"/>_enable</ConfigKey>
-      <ButtonState>LeftButton</ButtonState>
-    </Connection>
-  </PushButton>
+    <Layout>stacked</Layout>
+    <Children>
+      <PushButton>
+        <TooltipId>EffectUnit_group_enabled</TooltipId>
+        <ObjectName>EffectUnitGroupButton</ObjectName>
+        <Size><Variable name="Size"/></Size>
+        <NumberStates>2</NumberStates>
+        <RightClickIsPushButton>false</RightClickIsPushButton>
+        <State>
+          <Number>0</Number>
+          <Text><Variable name="LabelText"/></Text>
+          <Alignment>center</Alignment>
+          <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="LabelOff"/>.svg</Pressed>
+          <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="LabelOff"/>.svg</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text><Variable name="LabelText"/></Text>
+          <Alignment>center</Alignment>
+          <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="LabelOn"/>.svg</Pressed>
+          <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="LabelOn"/>.svg</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey>[<Variable name="fxGroup"/>],group_<Variable name="GroupName"/>_enable</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+
+      <Template src="skin:button_2state.xml">
+        <SetVariable name="TooltipId">EffectUnit_enabled</SetVariable>
+        <SetVariable name="ObjectName">EffectUnitGroupButtonUnderlay</SetVariable>
+        <SetVariable name="Size"><Variable name="Size"/></SetVariable>
+        <SetVariable name="ConfigKey">[<Variable name="fxGroup"/>],enabled</SetVariable>
+      </Template>
+    </Children>
+  </WidgetGroup>
 </Template>
 

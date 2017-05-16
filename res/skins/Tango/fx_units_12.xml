@@ -60,11 +60,7 @@ Description:
             <Children>
 
               <WidgetGroup><!-- Skin Controls spacer -->
-                <Size>108f,1min</Size><Children/>
-                <Connection>
-                  <ConfigKey>[Tango],normal_mode</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
+                <Size>110f,1min</Size>
               </WidgetGroup>
 
               <WidgetGroup> <!-- Pitch fader spacer -->
@@ -106,7 +102,7 @@ Description:
           </WidgetGroup><!-- /Spacers for normal width -->
 
           <WidgetGroup><!-- Spacer for netbook mode -->
-            <Size>4f,1min</Size>
+            <Size>6f,1min</Size>
             <Children/>
             <Connection>
               <ConfigKey>[Tango],netbook_mode</ConfigKey>

@@ -39,7 +39,7 @@ Variables:
             <Children>
               <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
               <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ObjectName">SamplersMiniMaxiButton</SetVariable>
+                <SetVariable name="ObjectName">FXSamplersMiniMaxiButton</SetVariable>
                 <SetVariable name="Size">22f,13f</SetVariable>
                 <SetVariable name="ConfigKeyPerm">[SamplerRow<Variable name="row"/>],expanded</SetVariable>
               </Template>
@@ -97,7 +97,7 @@ Variables:
             <Children>
               <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
               <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ObjectName">SamplersMiniMaxiButton</SetVariable>
+                <SetVariable name="ObjectName">FXSamplersMiniMaxiButton</SetVariable>
                 <SetVariable name="Size">22f,13f</SetVariable>
                 <SetVariable name="ConfigKeyPerm">[SamplerRow<Variable name="row"/>],expanded</SetVariable>
               </Template>

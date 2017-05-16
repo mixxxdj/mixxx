@@ -138,7 +138,7 @@ Variables:
 
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],symmetric_decks</ConfigKey>
+              <ConfigKey persist="true">[Tango],symmetric_overviews</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /Overview, Comment, ArtistTitle -->
@@ -154,7 +154,7 @@ Variables:
 
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],symmetric_decks</ConfigKey>
+              <ConfigKey persist="true">[Tango],symmetric_overviews</ConfigKey>
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>

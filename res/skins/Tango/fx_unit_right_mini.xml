@@ -12,31 +12,27 @@
     <SizePolicy>me,max</SizePolicy>
     <Children>
 
-      <!-- This is necessary to compensate 1px left offset of right FX unit,
-          which again is compensated by smaller spacer in netbook mode. Yawn... -->
-      <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
-
-      <WidgetGroup><!-- FX Unit toggler & miniMaxi button -->
-        <ObjectName>AlignTopLeft</ObjectName>
-        <SizePolicy>min,min</SizePolicy>
+      <WidgetGroup>
         <Layout>vertical</Layout>
+        <Size>28f,30f</Size>
         <Children>
           <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="ObjectName">FxMiniMaxiButton</SetVariable>
-            <SetVariable name="Size">22f,13f</SetVariable>
+            <SetVariable name="ObjectName">FXSamplersMiniMaxiButton</SetVariable>
+            <SetVariable name="Size">28f,13f</SetVariable>
             <SetVariable name="ConfigKeyPerm">[<Variable name="fxGroup"/>],show_parameters</SetVariable>
           </Template>
-            <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1min,1f</Size><Children/></WidgetGroup>
           <Template src="skin:button_2state.xml">
             <SetVariable name="TooltipId">EffectUnit_enabled</SetVariable>
-            <SetVariable name="ObjectName">EffectUnitToggleButton</SetVariable>
-            <SetVariable name="Size">22f,1me</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">28f,17f</SetVariable>
+            <SetVariable name="state_0_text">FX<Variable name="EffectUnit"/></SetVariable>
+            <SetVariable name="state_1_text">FX<Variable name="EffectUnit"/></SetVariable>
             <SetVariable name="ConfigKey">[<Variable name="fxGroup"/>],enabled</SetVariable>
           </Template>
         </Children>
-      </WidgetGroup><!-- /FX Unit toggler & miniMaxi button -->
+      </WidgetGroup>
 
-      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+      <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>SuperWetDryContainer</ObjectName>
@@ -63,54 +59,13 @@
         </Children>
       </WidgetGroup><!-- /SuperWetDryContainer -->
 
-      <WidgetGroup><!-- GroupButtons -->
-        <ObjectName>Spacer0f</ObjectName>
-        <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <WidgetGroup><!-- Group buttons CH1, CH3, Master -->
-            <ObjectName>EffectUnitGroupColumnMini</ObjectName>
-            <Layout>vertical</Layout>
-            <Children>
-              <Template src="skin:fx_unit_group_button.xml">
-                <SetVariable name="Size">16f,1me</SetVariable>
-                <SetVariable name="LabelText">1</SetVariable>
-                <SetVariable name="GroupName">[Channel1]</SetVariable>
-              </Template>
-              <Template src="skin:fx_unit_group_button.xml">
-                <SetVariable name="Size">16f,1me</SetVariable>
-                <SetVariable name="LabelText">3</SetVariable>
-                <SetVariable name="GroupName">[Channel3]</SetVariable>
-              </Template>
-            </Children>
-          </WidgetGroup><!-- /Group buttons CH1, CH3, Master -->
-
-          <WidgetGroup><!-- Group buttons CH2, CH4, Headphone -->
-            <ObjectName>EffectUnitGroupColumnMini</ObjectName>
-            <Layout>vertical</Layout>
-            <Children>
-              <Template src="skin:fx_unit_group_button.xml">
-                <SetVariable name="Size">16f,1me</SetVariable>
-                <SetVariable name="LabelText">2</SetVariable>
-                <SetVariable name="GroupName">[Channel2]</SetVariable>
-              </Template>
-              <Template src="skin:fx_unit_group_button.xml">
-                <SetVariable name="Size">16f,1me</SetVariable>
-                <SetVariable name="LabelText">4</SetVariable>
-                <SetVariable name="GroupName">[Channel4]</SetVariable>
-              </Template>
-            </Children>
-          </WidgetGroup><!-- /Group buttons CH2, CH4, Headphone -->
-        </Children>
-      </WidgetGroup>
+      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
       <WidgetGroup><!-- Effect togglers * highlightable -->
         <ObjectName>AlignRightCenter</ObjectName>
         <SizePolicy>me,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
-
-          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
           <WidgetGroup>
             <ObjectName>EffectSlotRightHighlight</ObjectName>
@@ -183,8 +138,6 @@
         <SizePolicy>me,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
-
-          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
           <WidgetGroup>
             <ObjectName>EffectSlotRight</ObjectName>

@@ -981,30 +981,47 @@ WBeatSpinBox {
   }
   #EffectUnitLeft {
     qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-    background-color: #0f0f0f;
     }
   #EffectUnitRight {
     qproperty-layoutAlignment: 'AlignRight | AlignTop';
-    background-color: #0f0f0f;
     }
   #EffectUnitLeftMini {
-    qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-    background-color: #0f0f0f;
+    qproperty-layoutAlignment: 'AlignRight | AlignTop';
     }
   #EffectUnitRightMini {
     qproperty-layoutAlignment: 'AlignRight | AlignTop';
-    background-color: #0f0f0f;
     }
 
 #EffectUnitControlsLeft {
-  qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+  qproperty-layoutAlignment: 'AlignRight;
 }
 #EffectUnitControlsRight {
   qproperty-layoutAlignment: 'AlignRight | AlignBottom';	/*
   This eliminates 1 black px left...	*/
   border-left: 1px solid #1e1e1e; /*
   ...but works only if we define background-color
-  (the same as whole EffectUnit) */
+  (the same as whole EffectUnit)
+  background-color: #0f0f0f; */
+  background-color: #1e1e1e;
+}
+
+#EffectUnitMixerLeft {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  padding-left:1px;
+  background-color: #0f0f0f;
+}
+#EffectUnitMixerRight {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  padding-right:1px;
+  background-color: #0f0f0f;
+}
+
+#SuperWetDryContainer {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  background-color: #333333;
+  }
+
+#EffectSlots {
   background-color: #0f0f0f;
 }
 
@@ -1038,6 +1055,10 @@ WBeatSpinBox {
   #EffectSlotRightHighlight[highlight="1"] {
     background-color: #0f0f0f;
   }
+
+#EffectSlotParameters {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+}
 
 #EffectFocusButton {
   border-radius: 2px;
@@ -1142,10 +1163,6 @@ WBeatSpinBox {
       background-color: transparent;
     }
 
-#EffectSlotParameters {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-}
-
 #EffectKnobParameter {
   qproperty-layoutAlignment: 'AlignCenter';
   margin-right: 1px;
@@ -1221,16 +1238,6 @@ WBeatSpinBox {
       stop: 1 #006596);
   }
 
-#EffectUnitMixer {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
-  margin-left: 1px;
-  }
-
-#SuperWetDryContainer {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  background-color: #333333;
-  }
-
 #EffectUnitToggleButton[displayValue="0"] {
   background: #333333 url(skin:/buttons/btn_off.svg) no-repeat center center;
   }
@@ -1245,44 +1252,44 @@ WBeatSpinBox {
       border: 1px solid #eeeeee;
     }
 
-#EffectUnitGroupColumn {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
-}
-#EffectUnitGroupColumnMini {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
-  margin-top: -1px;
-}
-  #EffectUnitGroupButton {
-    font-size: 13px/13px;
-    font-weight: bold;
-    text-align: center;
-    margin-top: 1px;
-    margin-left: 1px;
-    /* this has no effect on Backpath <Pressed>/<Unpressed> */
-    background-position: center;
-    }
-    #EffectUnitGroupButton[displayValue="0"] {
-      background-color: #333333;
-      color: #888888;
-      }
-      #EffectUnitGroupButton[displayValue="0"]:hover {
-        border: 1px solid #ffb401;
-      }
-    #EffectUnitGroupButton[displayValue="1"] {
-      background-color: #ffb401;	/* yellow2 	*/
-      color: #000000;
-      }
-      #EffectUnitGroupButton[displayValue="1"]:hover {
-        border: 1px solid #FFFFFF;
-      }
-
-  #EffectEject {
+#EffectUnitGroupButton {
+  font-size: 13px/13px;
+  font-weight: bold;
+  text-align: center;
+  /* this has no effect on Backpath <Pressed>/<Unpressed> */
+  background-position: center;
+  }
+  #EffectUnitGroupButton[displayValue="0"] {
+    color: #888888;
     background-color: #333333;
     }
-    #EffectEject:hover {
-      background-color: #ca0000;
-      border: 1px solid #ff0000;
+    #EffectUnitGroupButton[displayValue="0"]:hover {
+      border: 1px solid #ffb401;
     }
+  #EffectUnitGroupButton[displayValue="1"] {	/*
+    background-color: #ffb401; yellow2 	*/
+    color: #000000;
+    }
+    #EffectUnitGroupButton[displayValue="1"]:hover {
+      border: 1px solid #FFFFFF;
+    }
+
+#EffectUnitGroupButtonUnderlay {
+  }
+  #EffectUnitGroupButtonUnderlay[displayValue="0"] {
+    background-color: #666666;
+    }
+  #EffectUnitGroupButtonUnderlay[displayValue="1"] {
+    background-color: #ffb401;	/* yellow2 	*/
+    }
+
+#EffectEject {
+  background-color: #333333;
+  }
+  #EffectEject:hover {
+    background-color: #ca0000;
+    border: 1px solid #ff0000;
+  }
 
 /*################################################################
  ######  Samplers  ##############################################
@@ -1301,36 +1308,17 @@ WBeatSpinBox {
   margin-top: 3px;
 }
 
-#FxMiniMaxiButton {
-  background-color: #333333;
-}
-#SamplersMiniMaxiButton {
-}
-
-#SamplersMiniMaxiButton[displayValue="0"], #FxMiniMaxiButton[displayValue="0"] {
-  image: url(skin:/buttons/btn_arrow_down_thin.svg) no-repeat top;
+#FXSamplersMiniMaxiButton[displayValue="0"] {
+  image: url(skin:/buttons/btn_arrow_down_thin.svg) no-repeat top center;
   }
-  #SamplersMiniMaxiButton[displayValue="0"]:hover, #FxMiniMaxiButton[displayValue="0"]:hover {
-    image: url(skin:/buttons/btn_arrow_down_thin_hover.svg) no-repeat top;
+  #FXSamplersMiniMaxiButton[displayValue="0"]:hover {
+    image: url(skin:/buttons/btn_arrow_down_thin_hover.svg) no-repeat top center;
   }
-#SamplersMiniMaxiButton[displayValue="1"], #FxMiniMaxiButton[displayValue="1"] {
-  image: url(skin:/buttons/btn_arrow_up_thin.svg) no-repeat top;
+#FXSamplersMiniMaxiButton[displayValue="1"] {
+  image: url(skin:/buttons/btn_arrow_up_thin.svg) no-repeat top center;
   }
-  #SamplersMiniMaxiButton[displayValue="1"]:hover, #FxMiniMaxiButton[displayValue="1"]:hover {
-    image: url(skin:/buttons/btn_arrow_up_thin_hover.svg) no-repeat top;
-  }
-
-#SamplersLoadButton {
-  image: url(skin:/buttons/btn_samplers_load.svg) no-repeat center center;
-  }
-  #SamplersLoadButton:hover {
-    image: url(skin:/buttons/btn_samplers_load_hover.svg) no-repeat center center;
-  }
-#SamplersSaveButton {
-  image: url(skin:/buttons/btn_samplers_save.svg) no-repeat center center;
-  }
-  #SamplersSaveButton:hover {
-    image: url(skin:/buttons/btn_samplers_save_hover.svg) no-repeat center center;
+  #FXSamplersMiniMaxiButton[displayValue="1"]:hover {
+    image: url(skin:/buttons/btn_arrow_up_thin_hover.svg) no-repeat top center;
   }
 
 #SamplerPlayBox {
