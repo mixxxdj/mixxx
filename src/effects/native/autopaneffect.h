@@ -65,16 +65,13 @@ struct AutoPanGroupState {
     AutoPanGroupState() {
         time = 0;
         delay = new EngineFilterPanSingle<panMaxDelay>();
-        m_pDelayBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
         m_dPreviousPeriod = -1.0;
     }
     ~AutoPanGroupState() {
-        SampleUtil::free(m_pDelayBuf);
     }
     unsigned int time;
     RampedSample frac;
     EngineFilterPanSingle<panMaxDelay>* delay;
-    CSAMPLE* m_pDelayBuf;
     double m_dPreviousPeriod;
 };
 
