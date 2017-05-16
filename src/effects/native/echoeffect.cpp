@@ -3,6 +3,7 @@
 #include <QtDebug>
 
 #include "util/sample.h"
+#include "util/math.h"
 
 #define INCREMENT_RING(index, increment, length) index = (index + increment) % length
 
@@ -28,8 +29,8 @@ EffectManifest EchoEffect::getManifest() {
     delay->setId("delay_time");
     delay->setName(QObject::tr("Time"));
     delay->setDescription(QObject::tr("Delay time\n"
-        "0 - 2 beats if sync parameter is enabled and tempo is detected (decks and samplers) \n"
-        "0 - 2 seconds if sync parameter is disabled or no tempo is detected (mic & aux inputs, master mix)"));
+        "1/4 - 2 beats rounded down to nearest 1/4 beat if sync parameter is enabled and tempo is detected (decks and samplers) \n"
+        "1/4 - 2 seconds if sync parameter is disabled or no tempo is detected (mic & aux inputs, master mix)"));
     delay->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     delay->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     delay->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
@@ -113,16 +114,18 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     DEBUG_ASSERT(0 == (numSamples % EchoGroupState::kChannelCount));
     EchoGroupState& gs = *pGroupState;
     // The minimum of the parameter is zero so the exact center of the knob is 1 beat.
-    double beats = std::max(m_pDelayParameter->value(), 0.03);
+    double period = std::max(m_pDelayParameter->value(), 0.25);
     double send_amount = m_pSendParameter->value();
     double feedback_amount = m_pFeedbackParameter->value();
     double pingpong_frac = m_pPingPongParameter->value();
 
     int delay_samples;
     if (m_pSyncParameter->toBool() && groupFeatures.has_beat_length) {
-        delay_samples = beats * groupFeatures.beat_length;
+        // period is a number of beats
+        delay_samples = roundToFraction(period, 4) * groupFeatures.beat_length;
     } else {
-        delay_samples = beats * sampleRate * EchoGroupState::kChannelCount;
+        // period is a number of seconds
+        delay_samples = period * sampleRate * EchoGroupState::kChannelCount;
     }
     VERIFY_OR_DEBUG_ASSERT(delay_samples > 0) {
         delay_samples = 1;
@@ -131,10 +134,10 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         delay_samples = gs.delay_buf.size();
     }
 
-    if (beats < gs.prev_beats) {
+    if (period < gs.prev_period) {
         // If the delay time has shrunk, we may need to wrap the write position.
         gs.write_position = gs.write_position % delay_samples;
-    } else if (beats > gs.prev_beats) {
+    } else if (period > gs.prev_period) {
         // If the delay time has grown, we need to zero out the new portion
         // of the buffer we are using.
         SampleUtil::applyGain(gs.delay_buf.data(gs.prev_delay_samples), 0,
@@ -142,7 +145,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     }
 
     int read_position = gs.write_position;
-    gs.prev_beats = beats;
+    gs.prev_period = period;
     gs.prev_delay_samples = delay_samples;
 
     // Feedback the delay buffer and then add the new input.
