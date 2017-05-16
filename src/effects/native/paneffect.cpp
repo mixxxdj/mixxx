@@ -39,12 +39,25 @@ EffectManifest PanEffect::getManifest() {
     right->setMaximum(1.0);
     right->setDefault(1.0);
 
+    EffectManifestParameter* midSide = manifest.addParameter();
+    midSide->setId("midSide");
+    midSide->setName(QObject::tr("Mid/Side"));
+    midSide->setDescription(QObject::tr("Balance of Mid and Side"));
+    midSide->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    midSide->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    midSide->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    midSide->setDefaultLinkType(EffectManifestParameter::LinkType::NONE);
+    midSide->setMinimum(0);
+    midSide->setMaximum(1.0);
+    midSide->setDefault(0.5);
+
     return manifest;
 }
 
 PanEffect::PanEffect(EngineEffect* pEffect, const EffectManifest& manifest)
           : m_pLeftParameter(pEffect->getParameterById("left")),
-            m_pRightParameter(pEffect->getParameterById("right")) {
+            m_pRightParameter(pEffect->getParameterById("right")),
+            m_pMidSideParameter(pEffect->getParameterById("midSide")) {
     Q_UNUSED(manifest);
 }
 
@@ -66,9 +79,17 @@ void PanEffect::processChannel(const ChannelHandle& handle,
 
     CSAMPLE left = m_pLeftParameter->value();
     CSAMPLE right = m_pRightParameter->value();
+    CSAMPLE midSide = m_pMidSideParameter->value();
 
     for (unsigned int i = 0; i < numSamples; i += 2) {
-        pOutput[i] = pInput[i] * left;
-        pOutput[i + 1] = pInput[i + 1] * right;
+        double mid = (pInput[i]  + pInput[i+1]) / 2.0f;
+        double side = (pInput[i+1] - pInput[i]) / 2.0f;
+        if (midSide > 0.5) {
+            mid *= 2 * (1 - midSide);
+        } else {
+            side *= 2 * midSide;
+        }
+        pOutput[i] = (mid - side) * left;
+        pOutput[i + 1] = (mid + side) * right;
     }
 }

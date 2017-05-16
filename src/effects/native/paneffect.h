@@ -34,6 +34,7 @@ class PanEffect : public PerChannelEffectProcessor<PanGroupState> {
 
     EngineEffectParameter* m_pLeftParameter;
     EngineEffectParameter* m_pRightParameter;
+    EngineEffectParameter* m_pMidSideParameter;
 
     DISALLOW_COPY_AND_ASSIGN(PanEffect);
 };
