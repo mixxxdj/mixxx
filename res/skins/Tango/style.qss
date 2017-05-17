@@ -1596,6 +1596,20 @@ QToolTip {
       image: url(skin:/buttons/btn_lib_mini_hover.svg) no-repeat center top;
     }
 
+#LibCoverbutton {
+  margin: 0px 0px 4px 2px;
+  }
+  #LibCoverbutton[displayValue="0"] {
+    image: url(skin:/buttons/btn_lib_cover_off.svg) no-repeat center center;
+    }
+    #LibCoverbutton[displayValue="1"], #LibCoverbutton[displayValue="0"]:hover {
+      image: url(skin:/buttons/btn_lib_cover_on.svg) no-repeat center center;
+      background-color: #0f0f0f;
+    }
+    #LibCoverbutton[displayValue="1"]:hover {
+      border: 1px solid #d2d2d2;
+    }
+
 QTableView, QTextBrowser, QTreeView {
   border: 1px solid #585858;  /*
   font-family: Ubuntu;  */
