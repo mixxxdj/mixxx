@@ -16,7 +16,7 @@
             <Size>1me,16f</Size>
             <Property>comment</Property>
             <Elide>right</Elide>
-            <Channel><Variable name="channum"/></Channel>
+            <Channel><Variable name="chanNum"/></Channel>
             <Connection>
               <ConfigKey persist="true">[Tango],trackComment</ConfigKey>
               <BindProperty>visible</BindProperty>
@@ -24,6 +24,7 @@
           </TrackProperty>
 
           <WidgetGroup>
+            <ObjectName>Spacer33</ObjectName>
             <Size>1me,16f</Size>
             <Connection>
               <ConfigKey persist="true">[Tango],trackComment</ConfigKey>
@@ -32,20 +33,28 @@
             </Connection>
           </WidgetGroup>
 
-            <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
-          <Template src="skin:deck_fx_toggler.xml">
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:fx_assign_button.xml">
+            <SetVariable name="Size">32f,16f</SetVariable>
+            <SetVariable name="labelText">FX1</SetVariable>
             <SetVariable name="fxUnit">1</SetVariable>
           </Template>
-            <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
-          <Template src="skin:deck_fx_toggler.xml">
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:fx_assign_button.xml">
+            <SetVariable name="Size">32f,16f</SetVariable>
+            <SetVariable name="labelText">FX2</SetVariable>
             <SetVariable name="fxUnit">2</SetVariable>
           </Template>
-            <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
-          <Template src="skin:deck_fx_toggler.xml">
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:fx_assign_button.xml">
+            <SetVariable name="Size">32f,16f</SetVariable>
+            <SetVariable name="labelText">FX3</SetVariable>
             <SetVariable name="fxUnit">3</SetVariable>
           </Template>
-            <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
-          <Template src="skin:deck_fx_toggler.xml">
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:fx_assign_button.xml">
+            <SetVariable name="Size">32f,16f</SetVariable>
+            <SetVariable name="labelText">FX4</SetVariable>
             <SetVariable name="fxUnit">4</SetVariable>
           </Template>
 
@@ -53,7 +62,6 @@
       </WidgetGroup><!-- /Track comment + FX indicators -->
 
       <WidgetGroup>
-        <ObjectName>Spacer0f</ObjectName>
         <Size>1me,1f</Size>
       </WidgetGroup>
 

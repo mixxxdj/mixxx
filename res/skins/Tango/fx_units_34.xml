@@ -20,8 +20,8 @@ Description:
           <!-- margin not respected, workaround -->
           <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
           <Template src="skin:fx_unit_left.xml">
-              <SetVariable name="EffectRack">1</SetVariable>
-              <SetVariable name="EffectUnit">3</SetVariable>
+              <SetVariable name="fxRack">1</SetVariable>
+              <SetVariable name="fxUnit">3</SetVariable>
               <SetVariable name="fxGroup">EffectRack1_EffectUnit3</SetVariable>
           </Template>
         </Children>
@@ -39,8 +39,8 @@ Description:
           <!-- margin not respected, workaround -->
           <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
           <Template src="skin:fx_unit_left_mini.xml">
-              <SetVariable name="EffectRack">1</SetVariable>
-              <SetVariable name="EffectUnit">3</SetVariable>
+              <SetVariable name="fxRack">1</SetVariable>
+              <SetVariable name="fxUnit">3</SetVariable>
               <SetVariable name="fxGroup">EffectRack1_EffectUnit3</SetVariable>
           </Template>
           <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
@@ -115,8 +115,8 @@ Description:
           <!-- margin not respected, workaround -->
           <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
           <Template src="skin:fx_unit_right.xml">
-              <SetVariable name="EffectRack">1</SetVariable>
-              <SetVariable name="EffectUnit">4</SetVariable>
+              <SetVariable name="fxRack">1</SetVariable>
+              <SetVariable name="fxUnit">4</SetVariable>
               <SetVariable name="fxGroup">EffectRack1_EffectUnit4</SetVariable>
           </Template>
         </Children>
@@ -134,8 +134,8 @@ Description:
           <!-- margin not respected, workaround -->
           <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
           <Template src="skin:fx_unit_right_mini.xml">
-              <SetVariable name="EffectRack">1</SetVariable>
-              <SetVariable name="EffectUnit">4</SetVariable>
+              <SetVariable name="fxRack">1</SetVariable>
+              <SetVariable name="fxUnit">4</SetVariable>
               <SetVariable name="fxGroup">EffectRack1_EffectUnit4</SetVariable>
           </Template>
           <WidgetGroup><Size>1min,0me</Size></WidgetGroup>

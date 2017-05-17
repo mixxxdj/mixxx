@@ -18,19 +18,19 @@ Variables:
         <Children>
             <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler.xml">
-            <SetVariable name="samplernum"><Variable name="sampler1"/></SetVariable>
+            <SetVariable name="samNum"><Variable name="sampler1"/></SetVariable>
           </Template>
             <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler.xml">
-            <SetVariable name="samplernum"><Variable name="sampler2"/></SetVariable>
+            <SetVariable name="samNum"><Variable name="sampler2"/></SetVariable>
           </Template>
             <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler.xml">
-            <SetVariable name="samplernum"><Variable name="sampler3"/></SetVariable>
+            <SetVariable name="samNum"><Variable name="sampler3"/></SetVariable>
           </Template>
             <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler.xml">
-            <SetVariable name="samplernum"><Variable name="sampler4"/></SetVariable>
+            <SetVariable name="samNum"><Variable name="sampler4"/></SetVariable>
           </Template>
 
           <WidgetGroup>
@@ -48,19 +48,19 @@ Variables:
           </WidgetGroup>
 
           <Template src="skin:sampler.xml">
-            <SetVariable name="samplernum"><Variable name="sampler5"/></SetVariable>
+            <SetVariable name="samNum"><Variable name="sampler5"/></SetVariable>
           </Template>
             <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler.xml">
-            <SetVariable name="samplernum"><Variable name="sampler6"/></SetVariable>
+            <SetVariable name="samNum"><Variable name="sampler6"/></SetVariable>
           </Template>
             <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler.xml">
-            <SetVariable name="samplernum"><Variable name="sampler7"/></SetVariable>
+            <SetVariable name="samNum"><Variable name="sampler7"/></SetVariable>
           </Template>
             <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler.xml">
-            <SetVariable name="samplernum"><Variable name="sampler8"/></SetVariable>
+            <SetVariable name="samNum"><Variable name="sampler8"/></SetVariable>
           </Template>
         </Children>
         <Connection>
@@ -76,19 +76,19 @@ Variables:
         <Children>
             <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler_mini.xml">
-            <SetVariable name="samplernum"><Variable name="sampler1"/></SetVariable>
+            <SetVariable name="samNum"><Variable name="sampler1"/></SetVariable>
           </Template>
             <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler_mini.xml">
-            <SetVariable name="samplernum"><Variable name="sampler2"/></SetVariable>
+            <SetVariable name="samNum"><Variable name="sampler2"/></SetVariable>
           </Template>
             <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler_mini.xml">
-            <SetVariable name="samplernum"><Variable name="sampler3"/></SetVariable>
+            <SetVariable name="samNum"><Variable name="sampler3"/></SetVariable>
           </Template>
             <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler_mini.xml">
-            <SetVariable name="samplernum"><Variable name="sampler4"/></SetVariable>
+            <SetVariable name="samNum"><Variable name="sampler4"/></SetVariable>
           </Template>
 
           <WidgetGroup>
@@ -106,19 +106,19 @@ Variables:
           </WidgetGroup>
 
           <Template src="skin:sampler_mini.xml">
-            <SetVariable name="samplernum"><Variable name="sampler5"/></SetVariable>
+            <SetVariable name="samNum"><Variable name="sampler5"/></SetVariable>
           </Template>
             <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler_mini.xml">
-            <SetVariable name="samplernum"><Variable name="sampler6"/></SetVariable>
+            <SetVariable name="samNum"><Variable name="sampler6"/></SetVariable>
           </Template>
             <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler_mini.xml">
-            <SetVariable name="samplernum"><Variable name="sampler7"/></SetVariable>
+            <SetVariable name="samNum"><Variable name="sampler7"/></SetVariable>
           </Template>
             <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
           <Template src="skin:sampler_mini.xml">
-            <SetVariable name="samplernum"><Variable name="sampler8"/></SetVariable>
+            <SetVariable name="samNum"><Variable name="sampler8"/></SetVariable>
           </Template>
         </Children>
         <Connection>

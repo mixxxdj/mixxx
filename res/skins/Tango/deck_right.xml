@@ -9,10 +9,10 @@ Description:
     * track comment (if enabled)
     * deck buttons
 Variables:
-  channum : [ChannelN]
+  chanNum : [ChannelN]
 -->
 <Template>
-  <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
+  <SetVariable name="group">[Channel<Variable name="chanNum"/>]</SetVariable>
   <WidgetGroup>
     <ObjectName>DeckContainer</ObjectName>
     <Layout>horizontal</Layout>
@@ -115,7 +115,7 @@ Variables:
       </WidgetGroup><!-- /Mixer / Spinny/Cover/none + VUMeter ] + Pitch + spacer -->
 
       <WidgetGroup><!-- [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
-        <ObjectName>Deck<Variable name="channum"/></ObjectName>
+        <ObjectName>Deck<Variable name="chanNum"/></ObjectName>
         <Size>250me,136min</Size>
         <Layout>vertical</Layout>
         <Children>
@@ -149,8 +149,8 @@ Variables:
             <Children>
 
               <Template src="skin:deck_artist_title_right.xml"/>
-              <Template src="skin:deck_overview_right.xml"/>
               <Template src="skin:deck_comment_right.xml"/>
+              <Template src="skin:deck_overview_right.xml"/>
 
             </Children>
             <Connection>

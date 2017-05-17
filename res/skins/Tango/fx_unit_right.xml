@@ -1,9 +1,12 @@
 <!--
-  Description:
-    An effect chain widget.
-  Variables:
-    EffectRack: Number of effect rack.
-    EffectUnit: Number of effect unit.
+Description:
+  An effect chain widget.
+  * EffectSlots, with or without highlight/focus option
+  * mixer with Wet/Dry knob and Super knob
+  * Enable button
+Variables:
+  fxRack: Number of effect rack.
+  fxUnit: Number of effect unit.
 -->
 <Template>
   <WidgetGroup><!-- EffectUnit -->
@@ -33,8 +36,8 @@
                 <SetVariable name="TooltipId">EffectUnit_enabled</SetVariable>
                 <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
                 <SetVariable name="Size">34me,18f</SetVariable>
-                <SetVariable name="state_0_text">FX<Variable name="EffectUnit"/></SetVariable>
-                <SetVariable name="state_1_text">FX<Variable name="EffectUnit"/></SetVariable>
+                <SetVariable name="state_0_text">FX<Variable name="fxUnit"/></SetVariable>
+                <SetVariable name="state_1_text">FX<Variable name="fxUnit"/></SetVariable>
                 <SetVariable name="ConfigKey">[<Variable name="fxGroup"/>],enabled</SetVariable>
               </Template>
 
@@ -70,18 +73,18 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Template src="skin:fx_unit_group_button.xml">
+                  <Template src="skin:fx_assign_button.xml">
                     <SetVariable name="Size">21f,21f</SetVariable>
-                    <SetVariable name="LabelOff">fx_master_off</SetVariable>
-                    <SetVariable name="LabelOn">fx_master_on</SetVariable>
-                    <SetVariable name="GroupName">[Master]</SetVariable>
+                    <SetVariable name="labelOff">fx_master_off</SetVariable>
+                    <SetVariable name="labelOn">fx_master_on</SetVariable>
+                    <SetVariable name="group">[Master]</SetVariable>
                   </Template>
                     <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
-                  <Template src="skin:fx_unit_group_button.xml">
+                  <Template src="skin:fx_assign_button.xml">
                     <SetVariable name="Size">21f,21f</SetVariable>
-                    <SetVariable name="LabelOff">fx_head_off</SetVariable>
-                    <SetVariable name="LabelOn">fx_head_on</SetVariable>
-                    <SetVariable name="GroupName">[Headphone]</SetVariable>
+                    <SetVariable name="labelOff">fx_head_off</SetVariable>
+                    <SetVariable name="labelOn">fx_head_on</SetVariable>
+                    <SetVariable name="group">[Headphone]</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup><!-- /Master, Headphone -->
@@ -102,11 +105,11 @@
             <Layout>horizontal</Layout>
             <Children>
               <Template src="skin:fx_selector_meta_right.xml">
-                <SetVariable name="EffectNum">1</SetVariable>
+                <SetVariable name="fxNum">1</SetVariable>
               </Template>
               <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
               <Template src="skin:fx_parameter_row.xml">
-                <SetVariable name="EffectNum">1</SetVariable>
+                <SetVariable name="fxNum">1</SetVariable>
               </Template>
             </Children>
             <Connection>
@@ -126,11 +129,11 @@
             <Layout>horizontal</Layout>
             <Children>
               <Template src="skin:fx_selector_meta_right.xml">
-                <SetVariable name="EffectNum">2</SetVariable>
+                <SetVariable name="fxNum">2</SetVariable>
               </Template>
               <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
               <Template src="skin:fx_parameter_row.xml">
-                <SetVariable name="EffectNum">2</SetVariable>
+                <SetVariable name="fxNum">2</SetVariable>
               </Template>
             </Children>
             <Connection>
@@ -150,11 +153,11 @@
             <Layout>horizontal</Layout>
             <Children>
               <Template src="skin:fx_selector_meta_right.xml">
-                <SetVariable name="EffectNum">3</SetVariable>
+                <SetVariable name="fxNum">3</SetVariable>
               </Template>
               <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
               <Template src="skin:fx_parameter_row.xml">
-                <SetVariable name="EffectNum">3</SetVariable>
+                <SetVariable name="fxNum">3</SetVariable>
               </Template>
             </Children>
             <Connection>
@@ -183,11 +186,11 @@
             <Layout>horizontal</Layout>
             <Children>
               <Template src="skin:fx_selector_meta_right.xml">
-                <SetVariable name="EffectNum">1</SetVariable>
+                <SetVariable name="fxNum">1</SetVariable>
               </Template>
               <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
               <Template src="skin:fx_parameter_row.xml">
-                <SetVariable name="EffectNum">1</SetVariable>
+                <SetVariable name="fxNum">1</SetVariable>
               </Template>
             </Children>
           </WidgetGroup><!-- /EffectSlot 1 -->
@@ -200,11 +203,11 @@
             <Layout>horizontal</Layout>
             <Children>
               <Template src="skin:fx_selector_meta_right.xml">
-                <SetVariable name="EffectNum">2</SetVariable>
+                <SetVariable name="fxNum">2</SetVariable>
               </Template>
               <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
               <Template src="skin:fx_parameter_row.xml">
-                <SetVariable name="EffectNum">2</SetVariable>
+                <SetVariable name="fxNum">2</SetVariable>
               </Template>
             </Children>
           </WidgetGroup><!-- /EffectSlot 2 -->
@@ -217,11 +220,11 @@
             <Layout>horizontal</Layout>
             <Children>
               <Template src="skin:fx_selector_meta_right.xml">
-                <SetVariable name="EffectNum">3</SetVariable>
+                <SetVariable name="fxNum">3</SetVariable>
               </Template>
               <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
               <Template src="skin:fx_parameter_row.xml">
-                <SetVariable name="EffectNum">3</SetVariable>
+                <SetVariable name="fxNum">3</SetVariable>
               </Template>
             </Children>
           </WidgetGroup><!-- /EffectSlot 3 -->

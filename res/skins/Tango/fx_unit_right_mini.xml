@@ -25,8 +25,8 @@
             <SetVariable name="TooltipId">EffectUnit_enabled</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">28f,17f</SetVariable>
-            <SetVariable name="state_0_text">FX<Variable name="EffectUnit"/></SetVariable>
-            <SetVariable name="state_1_text">FX<Variable name="EffectUnit"/></SetVariable>
+            <SetVariable name="state_0_text">FX<Variable name="fxUnit"/></SetVariable>
+            <SetVariable name="state_1_text">FX<Variable name="fxUnit"/></SetVariable>
             <SetVariable name="ConfigKey">[<Variable name="fxGroup"/>],enabled</SetVariable>
           </Template>
         </Children>
@@ -73,7 +73,7 @@
             <SizePolicy>min,me</SizePolicy>
             <Children>
               <Template src="skin:fx_selector_meta_right.xml">
-                <SetVariable name="EffectNum">1</SetVariable>
+                <SetVariable name="fxNum">1</SetVariable>
               </Template>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
             </Children>
@@ -92,7 +92,7 @@
             <SizePolicy>min,me</SizePolicy>
             <Children>
               <Template src="skin:fx_selector_meta_right.xml">
-                <SetVariable name="EffectNum">2</SetVariable>
+                <SetVariable name="fxNum">2</SetVariable>
               </Template>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
             </Children>
@@ -111,7 +111,7 @@
             <SizePolicy>min,me</SizePolicy>
             <Children>
               <Template src="skin:fx_selector_meta_right.xml">
-                <SetVariable name="EffectNum">3</SetVariable>
+                <SetVariable name="fxNum">3</SetVariable>
               </Template>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
             </Children>
@@ -145,7 +145,7 @@
             <SizePolicy>min,me</SizePolicy>
             <Children>
               <Template src="skin:fx_selector_meta_right.xml">
-                <SetVariable name="EffectNum">1</SetVariable>
+                <SetVariable name="fxNum">1</SetVariable>
               </Template>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
             </Children>
@@ -159,7 +159,7 @@
             <SizePolicy>min,me</SizePolicy>
             <Children>
               <Template src="skin:fx_selector_meta_right.xml">
-                <SetVariable name="EffectNum">2</SetVariable>
+                <SetVariable name="fxNum">2</SetVariable>
               </Template>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
             </Children>
@@ -173,7 +173,7 @@
             <SizePolicy>min,me</SizePolicy>
             <Children>
               <Template src="skin:fx_selector_meta_right.xml">
-                <SetVariable name="EffectNum">3</SetVariable>
+                <SetVariable name="fxNum">3</SetVariable>
               </Template>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
             </Children>

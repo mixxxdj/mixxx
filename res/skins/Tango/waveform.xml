@@ -5,7 +5,7 @@ Description:
   Expanded beat grid buttons make the waveform grow to 50px.
 Variables:
   group   : [ChannelN]
-  channum : channel number
+  chanNum : channel number
   SignalBgColor       : defined in skin.xml
   SignalColor         :
   SignalRGBLowColor   :
@@ -13,16 +13,16 @@ Variables:
   SignalRGBHighColor  :
 -->
 <Template>
-  <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
+  <SetVariable name="group">[Channel<Variable name="chanNum"/>]</SetVariable>
   <WidgetGroup>
-    <ObjectName>WaveformContainer<Variable name="channum"/></ObjectName>
+    <ObjectName>WaveformContainer<Variable name="chanNum"/></ObjectName>
     <Layout>horizontal</Layout>
     <Children>
       <Visual><!-- Waveform * Netbook mode-->
         <TooltipId>waveform_display</TooltipId>
         <ObjectName>Waveform</ObjectName>
         <Size>0me,22me</Size>
-        <Channel><Variable name="channum"/></Channel>
+        <Channel><Variable name="chanNum"/></Channel>
         <BgColor><Variable name="SignalBgColor"/></BgColor>
         <SignalColor><Variable name="SignalColor"/></SignalColor>
         <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>

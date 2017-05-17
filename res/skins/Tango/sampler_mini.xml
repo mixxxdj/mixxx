@@ -8,12 +8,12 @@ Description:
   * Volume knob
   Switches to light grey background when playing.
 Variables:
-  samplernum  : sampler deck number
+  samNum  : sampler deck number
   group       : [ChannelXY]
   PlayedOverlayColor  : defined in skin.xml
 -->
 <Template>
-  <SetVariable name="group">[Sampler<Variable name="samplernum"/>]</SetVariable>
+  <SetVariable name="group">[Sampler<Variable name="samNum"/>]</SetVariable>
   <WidgetGroup><!-- SamplerDeck -->
     <Layout>horizontal</Layout>
     <ObjectName>SamplerDeck</ObjectName>

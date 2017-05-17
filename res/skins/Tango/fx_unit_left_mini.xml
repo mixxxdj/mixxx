@@ -1,9 +1,12 @@
 <!--
-  Description:
-    An effect chain widget.
-  Variables:
-    EffectRack: Number of effect rack.
-    EffectUnit: Number of effect unit.
+Description:
+  An effect chain widget.
+  * EffectSlots, with or without highlight/focus option
+  * mixer with Wet/Dry knob and Super knob
+  * Enable button
+Variables:
+  fxRack: Number of effect rack.
+  fxUnit: Number of effect unit.
 -->
 <Template>
   <WidgetGroup><!-- EffectUnit -->
@@ -29,7 +32,7 @@
             <Children>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
               <Template src="skin:fx_selector_meta_left.xml">
-                <SetVariable name="EffectNum">1</SetVariable>
+                <SetVariable name="fxNum">1</SetVariable>
               </Template>
             </Children>
             <Connection>
@@ -48,7 +51,7 @@
             <Children>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
               <Template src="skin:fx_selector_meta_left.xml">
-                <SetVariable name="EffectNum">2</SetVariable>
+                <SetVariable name="fxNum">2</SetVariable>
               </Template>
             </Children>
             <Connection>
@@ -67,7 +70,7 @@
             <Children>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
               <Template src="skin:fx_selector_meta_left.xml">
-                <SetVariable name="EffectNum">3</SetVariable>
+                <SetVariable name="fxNum">3</SetVariable>
               </Template>
             </Children>
             <Connection>
@@ -101,7 +104,7 @@
             <Children>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
               <Template src="skin:fx_selector_meta_left.xml">
-                <SetVariable name="EffectNum">1</SetVariable>
+                <SetVariable name="fxNum">1</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
@@ -115,7 +118,7 @@
             <Children>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
               <Template src="skin:fx_selector_meta_left.xml">
-                <SetVariable name="EffectNum">2</SetVariable>
+                <SetVariable name="fxNum">2</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
@@ -129,7 +132,7 @@
             <Children>
               <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
               <Template src="skin:fx_selector_meta_left.xml">
-                <SetVariable name="EffectNum">3</SetVariable>
+                <SetVariable name="fxNum">3</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
@@ -184,8 +187,8 @@
             <SetVariable name="TooltipId">EffectUnit_enabled</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">28f,17f</SetVariable>
-            <SetVariable name="state_0_text">FX<Variable name="EffectUnit"/></SetVariable>
-            <SetVariable name="state_1_text">FX<Variable name="EffectUnit"/></SetVariable>
+            <SetVariable name="state_0_text">FX<Variable name="fxUnit"/></SetVariable>
+            <SetVariable name="state_1_text">FX<Variable name="fxUnit"/></SetVariable>
             <SetVariable name="ConfigKey">[<Variable name="fxGroup"/>],enabled</SetVariable>
           </Template>
         </Children>

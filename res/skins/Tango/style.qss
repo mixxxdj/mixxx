@@ -382,7 +382,7 @@ WWidgetGroup {
 
   #TrackCommentContainer {
     qproperty-layoutAlignment: 'AlignVCenter';
-    background-color: #333333;
+    background-color: #0f0f0f;
   }
   WLabel#TrackComment {
   /* defining font-size here breaks top alignment	*/
@@ -559,8 +559,9 @@ WWidgetGroup {
     }
   /* The button which signals alternate play status when
     playing from Cue/HotCue */
-  #PlayUnderlay[displayValue="1"] {
-    background-color: #ffa601;
+  #PlayUnderlay[displayValue="1"] { /*
+    background-color: #ffa601;  */
+    background-color: #ff8f00;
     }
   #CueUnderlay {
     background-color: #333333;
@@ -871,8 +872,9 @@ WBeatSpinBox {
     border: 1px solid #a90000;
   }
   #RecordingButton[displayValue="1"] {
-    color: #d2d2d2;
-    border: 1px solid #FFA601;
+    color: #d2d2d2; /*
+    border: 1px solid #FFA601;  */
+    border: 1px solid #ff8f00;
   }
   #RecordingButton[displayValue="2"]:hover {
     border: 1px solid #dddddd;
@@ -1082,8 +1084,9 @@ WBeatSpinBox {
 
 #EffectToggleButton {
   }
-  #EffectToggleButton[displayValue="0"]:hover {
-    border: 1px solid #ffb401;
+  #EffectToggleButton[displayValue="0"]:hover { /*
+    border: 1px solid #ffb401;  */
+    border: 1px solid #ff8f00;
     }
   #EffectToggleButton[displayValue="1"]:hover {
     border: 1px solid #FFFFFF;
@@ -1091,8 +1094,9 @@ WBeatSpinBox {
   #EffectToggleButtonUnderlay[displayValue="0"] {
     background-color: #777777;
     }
-  #EffectToggleButtonUnderlay[displayValue="1"] {
-    background-color: #ffb401;	/* yellow2 	*/
+  #EffectToggleButtonUnderlay[displayValue="1"] { /*
+    background-color: #ffa601;*/
+    background-color: #ff8f00;	/* yellow2 	*/
     }
   #fxNameContainer {
     padding: 1px;
@@ -1252,35 +1256,37 @@ WBeatSpinBox {
       border: 1px solid #eeeeee;
     }
 
-#EffectUnitGroupButton {
+#FxAssignButton {
   font-size: 13px/13px;
   font-weight: bold;
   text-align: center;
   /* this has no effect on Backpath <Pressed>/<Unpressed> */
   background-position: center;
   }
-  #EffectUnitGroupButton[displayValue="0"] {
+  #FxAssignButton[displayValue="0"] {
     color: #888888;
     background-color: #333333;
     }
-    #EffectUnitGroupButton[displayValue="0"]:hover {
-      border: 1px solid #ffb401;
+    #FxAssignButton[displayValue="0"]:hover { /*
+      border: 1px solid #ffb401;  */
+      border: 1px solid #ff8f00;
     }
-  #EffectUnitGroupButton[displayValue="1"] {	/*
+  #FxAssignButton[displayValue="1"] {	/*
     background-color: #ffb401; yellow2 	*/
     color: #000000;
     }
-    #EffectUnitGroupButton[displayValue="1"]:hover {
+    #FxAssignButton[displayValue="1"]:hover {
       border: 1px solid #FFFFFF;
     }
 
-#EffectUnitGroupButtonUnderlay {
+#FxAssignButtonUnderlay {
   }
-  #EffectUnitGroupButtonUnderlay[displayValue="0"] {
+  #FxAssignButtonUnderlay[displayValue="0"] {
     background-color: #666666;
     }
-  #EffectUnitGroupButtonUnderlay[displayValue="1"] {
-    background-color: #ffb401;	/* yellow2 	*/
+  #FxAssignButtonUnderlay[displayValue="1"] {	/*
+    background-color: #ffb401; yellow2 	*/
+    background-color: #ff8f00;
     }
 
 #EffectEject {
@@ -1406,26 +1412,6 @@ WTrackProperty#SamplerTitle_mini {
   #SamplerKeylock {
     margin-left: 3px;
   }
-
-#SamplerFxAssignButton {
-  font-size: 13px/13px;
-  font-weight: bold;
-  text-align: center;
-  }
-  #SamplerFxAssignButton[displayValue="0"] {
-    background-color: #333333;
-    color: #888888;
-    }
-    #SamplerFxAssignButton[displayValue="0"]:hover {
-      border: 1px solid #ffb401;
-    }
-  #SamplerFxAssignButton[displayValue="1"] {
-    background-color: #ffb401;	/* yellow2 	*/
-    color: #000000;
-    }
-    #SamplerFxAssignButton[displayValue="1"]:hover {
-      border: 1px solid #FFFFFF;
-    }
 
 #SamplerVU, #SamplerPitchSlider {
   background-color: #333333;

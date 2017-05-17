@@ -3,8 +3,8 @@ Description:
   A button that displays focus state of an effect slot.
   Left-click sets focus, right-click removes focus from all effects
 Variables:
-  fxGroup   : [EffectRack1_EffectUnitN]
-  Effectnum : effect number
+  fxGroup : [EffectRack1_EffectUnitN]
+  fxNum   : effect number
 -->
 <Template>
   <PushButton>
@@ -23,13 +23,13 @@ Variables:
       <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
       <ButtonState>LeftButton</ButtonState>
       <EmitOnDownPress>true</EmitOnDownPress>
-      <Transform><IsEqual><Variable name="EffectNum"/></IsEqual></Transform>
+      <Transform><IsEqual><Variable name="fxNum"/></IsEqual></Transform>
     </Connection>
     <Connection>
       <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
       <ButtonState>RightButton</ButtonState>
       <EmitOnDownPress>true</EmitOnDownPress>
-      <Transform><IsEqual><Variable name="EffectNum"/></IsEqual><Not/></Transform>
+      <Transform><IsEqual><Variable name="fxNum"/></IsEqual><Not/></Transform>
     </Connection>
     <Connection>
       <ConfigKey>[<Variable name="fxGroup"/>],show_focus</ConfigKey>

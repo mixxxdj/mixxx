@@ -8,7 +8,7 @@ Description:
   * Play/Cue
 Variables:
   group   : [ChannelN]
-  channum : channel number
+  chanNum : channel number
 -->
 <Template>
   <WidgetGroup><!-- Play + deck controls -->
@@ -315,7 +315,7 @@ Variables:
                     <ObjectName>DeckStars</ObjectName>
                     <Size>83min,22f</Size>
                     <TooltipId>starrating</TooltipId>
-                    <Channel><Variable name="channum"/></Channel>
+                    <Channel><Variable name="chanNum"/></Channel>
                   </StarRating>
 
                   <WidgetGroup><Size>1f,1min</Size></WidgetGroup>

@@ -12,11 +12,11 @@ Description:
   * Keylock button
   Switches to light grey background when playing.
 Variables:
-  samplernum          : sampler deck number
+  samNum          : sampler deck number
   PlayedOverlayColor  : defined in skin.xml
 -->
 <Template>
-  <SetVariable name="group">[Sampler<Variable name="samplernum"/>]</SetVariable>
+  <SetVariable name="group">[Sampler<Variable name="samNum"/>]</SetVariable>
   <WidgetGroup>
     <ObjectName>SamplerDeck</ObjectName>
     <Layout>vertical</Layout>
@@ -269,19 +269,27 @@ Variables:
             <Size>117me,16f</Size>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:sampler_fx_button.xml">
+              <Template src="skin:fx_assign_button.xml">
+                <SetVariable name="Size">28me,16f</SetVariable>
+                <SetVariable name="labelText">FX1</SetVariable>
                 <SetVariable name="fxUnit">1</SetVariable>
               </Template>
                 <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
-              <Template src="skin:sampler_fx_button.xml">
+              <Template src="skin:fx_assign_button.xml">
+                <SetVariable name="Size">28me,16f</SetVariable>
+                <SetVariable name="labelText">FX2</SetVariable>
                 <SetVariable name="fxUnit">2</SetVariable>
               </Template>
                 <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
-              <Template src="skin:sampler_fx_button.xml">
+              <Template src="skin:fx_assign_button.xml">
+                <SetVariable name="Size">28me,16f</SetVariable>
+                <SetVariable name="labelText">FX3</SetVariable>
                 <SetVariable name="fxUnit">3</SetVariable>
               </Template>
                 <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
-              <Template src="skin:sampler_fx_button.xml">
+              <Template src="skin:fx_assign_button.xml">
+                <SetVariable name="Size">28me,16f</SetVariable>
+                <SetVariable name="labelText">FX4</SetVariable>
                 <SetVariable name="fxUnit">4</SetVariable>
               </Template>
             </Children>

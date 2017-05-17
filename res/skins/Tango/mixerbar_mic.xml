@@ -6,10 +6,10 @@ Description:
   * Volume slider with level meter
 Variables:
   Label     : text shown on talkover button
-  MicNumber : internal microphone number (empty for Mic1)
+  micNum : internal microphone number (empty for Mic1)
 -->
 <Template>
-  <SetVariable name="group">[Microphone<Variable name="MicNumber"/>]</SetVariable>
+  <SetVariable name="group">[Microphone<Variable name="micNum"/>]</SetVariable>
   <WidgetGroup>
     <Layout>horizontal</Layout>
     <Size>-1min,32f</Size>
@@ -103,11 +103,15 @@ Variables:
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Template src="skin:mixerbar_fx_button.xml">
+              <Template src="skin:fx_assign_button.xml">
+                <SetVariable name="Size">26f,15f</SetVariable>
+                <SetVariable name="labelText">FX1</SetVariable>
                 <SetVariable name="fxUnit">1</SetVariable>
               </Template>
                 <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
-              <Template src="skin:mixerbar_fx_button.xml">
+              <Template src="skin:fx_assign_button.xml">
+                <SetVariable name="Size">26f,15f</SetVariable>
+                <SetVariable name="labelText">FX2</SetVariable>
                 <SetVariable name="fxUnit">2</SetVariable>
               </Template>
                 <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
@@ -120,11 +124,15 @@ Variables:
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Template src="skin:mixerbar_fx_button.xml">
+              <Template src="skin:fx_assign_button.xml">
+                <SetVariable name="Size">26f,15f</SetVariable>
+                <SetVariable name="labelText">FX3</SetVariable>
                 <SetVariable name="fxUnit">3</SetVariable>
               </Template>
                 <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
-              <Template src="skin:mixerbar_fx_button.xml">
+              <Template src="skin:fx_assign_button.xml">
+                <SetVariable name="Size">26f,15f</SetVariable>
+                <SetVariable name="labelText">FX</SetVariable>
                 <SetVariable name="fxUnit">4</SetVariable>
               </Template>
                 <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>

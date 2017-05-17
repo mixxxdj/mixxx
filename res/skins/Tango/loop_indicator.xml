@@ -3,7 +3,7 @@ Description:
   An indicator displayed in decks' artist/title container when loop is enabled.
 Variables:
   group   : [ChannelN]
-  channum : channel number
+  chanNum : channel number
 -->
 <Template>
   <WidgetGroup>
@@ -23,7 +23,7 @@ Variables:
           </Template>
         </Children>
         <Connection>
-          <ConfigKey>[Channel<Variable name="channum"/>],loop_enabled</ConfigKey>
+          <ConfigKey>[Channel<Variable name="chanNum"/>],loop_enabled</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>

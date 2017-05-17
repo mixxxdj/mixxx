@@ -214,7 +214,7 @@
               <Size>1008me,136min</Size>
               <Children>
                 <Template src="skin:deck_left.xml">
-                  <SetVariable name="channum">1</SetVariable>
+                  <SetVariable name="chanNum">1</SetVariable>
                   <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_1"/></SetVariable>
                   <SetVariable name="SignalColor"><Variable name="SignalColor_1"/></SetVariable>
                   <SetVariable name="SignalRGBHighColor"><Variable name="SignalRGBHighColor"/></SetVariable>
@@ -225,7 +225,7 @@
                 <Template src="skin:crossfader12_skincontrols.xml"/>
 
                 <Template src="skin:deck_right.xml">
-                  <SetVariable name="channum">2</SetVariable>
+                  <SetVariable name="chanNum">2</SetVariable>
                   <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_2"/></SetVariable>
                   <SetVariable name="SignalColor"><Variable name="SignalColor_2"/></SetVariable>
                   <SetVariable name="SignalRGBHighColor"><Variable name="SignalRGBHighColor"/></SetVariable>
@@ -257,7 +257,7 @@
               <Children>
 
                 <Template src="skin:deck_left.xml">
-                  <SetVariable name="channum">3</SetVariable>
+                  <SetVariable name="chanNum">3</SetVariable>
                   <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_3"/></SetVariable>
                   <SetVariable name="SignalColor"><Variable name="SignalColor_3"/></SetVariable>
                   <SetVariable name="SignalRGBHighColor"><Variable name="SignalRGBHighColor"/></SetVariable>
@@ -268,7 +268,7 @@
                 <Template src="skin:crossfader34.xml"/>
 
                 <Template src="skin:deck_right.xml">
-                  <SetVariable name="channum">4</SetVariable>
+                  <SetVariable name="chanNum">4</SetVariable>
                   <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_4"/></SetVariable>
                   <SetVariable name="SignalColor"><Variable name="SignalColor_4"/></SetVariable>
                   <SetVariable name="SignalRGBHighColor"><Variable name="SignalRGBHighColor"/></SetVariable>
