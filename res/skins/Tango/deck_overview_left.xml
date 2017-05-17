@@ -64,27 +64,16 @@ Variables:
             </Connection>
           </Overview><!-- /Overview -->
 
-          <WidgetGroup><!-- Vinyl Controls -->
-            <Layout>horizontal</Layout>
-            <Children>
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
 
-              <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
+          <Template src="skin:vinyl_controls_left.xml"/>
 
-              <Template src="skin:vinyl_controls_left.xml"/>
-
-              <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
-                <SetVariable name="ObjectName">VinylTogglerLeft</SetVariable>
-                <SetVariable name="Size">11f,50f</SetVariable>
-                <SetVariable name="TooltipId"></SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
-              </Template>
-
-            </Children>
-            <Connection>
-              <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup><!-- /Vinyl Controls -->
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="ObjectName">VinylTogglerLeft</SetVariable>
+            <SetVariable name="Size">11f,50f</SetVariable>
+            <SetVariable name="TooltipId"></SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
+          </Template>
 
           <WidgetGroup><!-- [Spinny / Cover / none] -->
             <Layout>vertical</Layout>

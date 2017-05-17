@@ -114,26 +114,6 @@ Variables:
         </Connection>
       </WidgetGroup>
 
-      <WidgetGroup>
-        <SizePolicy>min,min</SizePolicy>
-        <Layout>vertical</Layout>
-        <Children>
-          <WidgetGroup>
-            <Size>1min,1f</Size>
-            <Children/>
-            <Connection>
-              <ConfigKey persist="true">[Tango],trackComment</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-        </Children>
-        <Connection>
-          <ConfigKey persist="true">[Tango],symmetric_overviews</ConfigKey>
-          <Transform><Not/></Transform>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
-
     </Children>
     <Connection>
       <ConfigKey persist="true">[Tango],vinylControlsDeck<Variable name="chanNum"/></ConfigKey>
