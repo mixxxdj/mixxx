@@ -102,6 +102,10 @@ WWidgetGroup {
  #######  Skin Settings  ########################################
 ##############################################################*/
 
+#SkinSettingsContainer{
+  margin-left: 5px;
+}
+
 #SkinSettings {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   padding: 2px 0px 0px 10px;
@@ -123,11 +127,10 @@ WWidgetGroup {
     }
 
 #SkinSettingsCategory {
-  margin: 0px 10px 0px 0px;
   padding: 2px 2px 5px 2px;
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   border-top: 1px solid #000000;
-  border-right: 1px solid #000000;
+  border-left: 1px solid #000000;
 }
   #CategoryLabel {
     font-size: 16px/16px;
@@ -1569,10 +1572,6 @@ QToolTip {
 }
 #Spacer58 {
   background-color: #585858;
-}
-/* righthand drop-shadow of skinsettings */
-#FadeRight {
-  background: none url(skin:/graphics/fadeRight.png) repeat-y;
 }
 
 /*################################################################

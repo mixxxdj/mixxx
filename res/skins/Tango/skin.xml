@@ -291,172 +291,166 @@
 <!--  ################################################################
        SkinContainer  ###############################################
      ############################################################### -->
-    <WidgetGroup><!-- extra wrapper, may help with Skin Settings on Mac. TEST! -->
-      <Layout>vertical</Layout>
+    <WidgetGroup>
+      <ObjectName>SkinContainer</ObjectName>
+      <Layout>horizontal</Layout>
       <SizePolicy>me,me</SizePolicy>
       <Children>
 
-        <WidgetGroup>
-          <ObjectName>SkinContainer</ObjectName>
-          <Layout>stacked</Layout>
+        <WidgetGroup><!-- Lib normal, stacked resizable waveforms, skin settings menu -->
+          <Layout>horizontal</Layout>
           <SizePolicy>me,me</SizePolicy>
           <Children>
-            <!--
-            Workaround due to https://bugs.launchpad.net/mixxx/+bug/1627859
-            Without this, SkinSettings would be visible at every launch -->
-            <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-            <!--
-            SkinSettings is stacked on top of the skin.
-            This way it doesn't affect available screen size
-            and we can activate all desired controls, without
-            horizontal SizeAwareStacks going mad...  -->
-            <Template src="skin:skin_settings.xml"/>
 
-            <!-- Select between either the full UI or maximized Library -->
-            <WidgetStack currentpage="[Master],maximize_library">
+            <WidgetGroup><!-- Lib normal, stacked resizable waveforms -->
+              <Layout>vertical</Layout>
               <SizePolicy>me,me</SizePolicy>
               <Children>
 
-                <WidgetGroup><!-- Lib normal, stacked resizable waveforms -->
-                  <Layout>vertical</Layout>
+                <Splitter>
+                  <ObjectName>WaveformSplitter</ObjectName>
                   <SizePolicy>me,me</SizePolicy>
+                  <Orientation>vertical</Orientation>
+                  <SplitSizes>100,10000</SplitSizes>
+                  <SplitSizesConfigKey>[Tango],waveform_splitSize</SplitSizesConfigKey>
+                  <Collapsible>0,0</Collapsible>
                   <Children>
 
-                    <Template src="skin:crossfader_skincontrols_netbook.xml"/>
-
-                    <Splitter>
-                      <ObjectName>WaveformSplitter</ObjectName>
-                      <SizePolicy>me,me</SizePolicy>
-                      <Orientation>vertical</Orientation>
-                      <SplitSizes>100,10000</SplitSizes>
-                      <SplitSizesConfigKey>[Tango],waveform_splitSize</SplitSizesConfigKey>
-                      <Collapsible>0,0</Collapsible>
+                    <WidgetGroup>
+                      <Layout>vertical</Layout>
+                      <SizePolicy>me,max</SizePolicy>
                       <Children>
+                        <Template src="skin:waveforms_container.xml"/>
+                      </Children>
+                      <Connection>
+                        <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
+                        <BindProperty>visible</BindProperty>
+                      </Connection>
+                    </WidgetGroup>
 
-                        <WidgetGroup>
+                    <WidgetGroup><!-- Decks + size-aware triggers in the back -->
+                      <Layout>stacked</Layout>
+                      <SizePolicy>me,min</SizePolicy>
+                      <Children>
+                        <WidgetGroup><!-- [Decks + 2 FX / Decks + 4 FX] + Samplers_Library -->
                           <Layout>vertical</Layout>
-                          <SizePolicy>me,max</SizePolicy>
-                          <Children>
-                            <Template src="skin:waveforms_container.xml"/>
-                          </Children>
-                          <Connection>
-                            <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
-                            <BindProperty>visible</BindProperty>
-                          </Connection>
-                        </WidgetGroup>
-
-                        <WidgetGroup><!-- Decks + size-aware triggers in the back -->
-                          <Layout>stacked</Layout>
                           <SizePolicy>me,min</SizePolicy>
                           <Children>
-                            <WidgetGroup><!-- [Decks + 2 FX / Decks + 4 FX] + Samplers_Library -->
+
+                            <Template src="skin:crossfader_skincontrols_netbook.xml"/>
+
+                            <WidgetGroup><!-- Decks + 2 FX Units -->
                               <Layout>vertical</Layout>
                               <SizePolicy>me,min</SizePolicy>
                               <Children>
 
-                                <WidgetGroup><!-- Decks + 2 FX Units -->
-                                  <Layout>vertical</Layout>
-                                  <SizePolicy>me,min</SizePolicy>
-                                  <Children>
-
-                                    <SingletonContainer>
-                                      <ObjectName>Decks12_Singleton</ObjectName>
-                                    </SingletonContainer>
-                                    <SingletonContainer>
-                                      <ObjectName>Decks34_Singleton</ObjectName>
-                                      <Connection>
-                                        <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
-                                        <BindProperty>visible</BindProperty>
-                                      </Connection>
-                                    </SingletonContainer>
-
-                                    <Template src="skin:fx_units_12.xml"/>
-
-                                  </Children>
-                                  <Connection>
-                                    <ConfigKey persist="true">[Tango],2or4_fxUnits</ConfigKey>
-                                    <Transform><Not/></Transform>
-                                    <BindProperty>visible</BindProperty>
-                                  </Connection>
-                                </WidgetGroup><!-- /Decks + 2 FX Units +  -->
-
-                                <WidgetGroup><!-- Decks + 4  FX Units -->
-                                  <Layout>vertical</Layout>
-                                  <SizePolicy>me,min</SizePolicy>
-                                  <Children>
-
-                                    <SingletonContainer>
-                                      <ObjectName>Decks12_Singleton</ObjectName>
-                                    </SingletonContainer>
-
-                                    <Template src="skin:fx_units_12.xml"/>
-
-                                    <SingletonContainer>
-                                      <ObjectName>Decks34_Singleton</ObjectName>
-                                      <Connection>
-                                        <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
-                                        <BindProperty>visible</BindProperty>
-                                      </Connection>
-                                    </SingletonContainer>
-
-                                    <Template src="skin:fx_units_34.xml"/>
-
-                                  </Children>
-                                  <Connection>
-                                    <ConfigKey persist="true">[Tango],2or4_fxUnits</ConfigKey>
-                                    <BindProperty>visible</BindProperty>
-                                  </Connection>
-                                </WidgetGroup><!-- /Decks + 4 FX Units -->
-
-                                <Template src="skin:sample_decks.xml"/>
-
                                 <SingletonContainer>
-                                  <ObjectName>Library_Singleton</ObjectName>
+                                  <ObjectName>Decks12_Singleton</ObjectName>
+                                </SingletonContainer>
+                                <SingletonContainer>
+                                  <ObjectName>Decks34_Singleton</ObjectName>
+                                  <Connection>
+                                    <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+                                    <BindProperty>visible</BindProperty>
+                                  </Connection>
                                 </SingletonContainer>
 
-                                <WidgetGroup><!-- MixerBar when Library is not shown -->
-                                  <ObjectName>MixerBar_Container_skin</ObjectName>
-                                  <Layout>horizontal</Layout>
-                                  <SizePolicy>min,max</SizePolicy>
-                                  <Children>
-                                    <Template src="skin:mixerbar.xml"/>
-                                  </Children>
-                                  <Connection>
-                                    <ConfigKey>[Library],show_library</ConfigKey>
-                                    <Transform><Not/></Transform>
-                                    <BindProperty>visible</BindProperty>
-                                  </Connection>
-                                </WidgetGroup><!-- /MixerBar when Library is not shown -->
+                                <Template src="skin:fx_units_12.xml"/>
 
                               </Children>
-                            </WidgetGroup><!-- /2 FX + Decks, 4 FX + Decks, Samplers_Library -->
+                              <Connection>
+                                <ConfigKey persist="true">[Tango],2or4_fxUnits</ConfigKey>
+                                <Transform><Not/></Transform>
+                                <BindProperty>visible</BindProperty>
+                              </Connection>
+                            </WidgetGroup><!-- /Decks + 2 FX Units +  -->
 
-                            <Template src="skin:size_detector_netbook.xml"/>
+                            <WidgetGroup><!-- Decks + 4  FX Units -->
+                              <Layout>vertical</Layout>
+                              <SizePolicy>me,min</SizePolicy>
+                              <Children>
+
+                                <SingletonContainer>
+                                  <ObjectName>Decks12_Singleton</ObjectName>
+                                </SingletonContainer>
+
+                                <Template src="skin:fx_units_12.xml"/>
+
+                                <SingletonContainer>
+                                  <ObjectName>Decks34_Singleton</ObjectName>
+                                  <Connection>
+                                    <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+                                    <BindProperty>visible</BindProperty>
+                                  </Connection>
+                                </SingletonContainer>
+
+                                <Template src="skin:fx_units_34.xml"/>
+
+                              </Children>
+                              <Connection>
+                                <ConfigKey persist="true">[Tango],2or4_fxUnits</ConfigKey>
+                                <BindProperty>visible</BindProperty>
+                              </Connection>
+                            </WidgetGroup><!-- /Decks + 4 FX Units -->
+
+                            <Template src="skin:sample_decks.xml"/>
+
+                            <SingletonContainer>
+                              <ObjectName>Library_Singleton</ObjectName>
+                            </SingletonContainer>
+
+                            <WidgetGroup><!-- MixerBar when Library is not shown -->
+                              <ObjectName>MixerBar_Container_skin</ObjectName>
+                              <Layout>horizontal</Layout>
+                              <SizePolicy>min,max</SizePolicy>
+                              <Children>
+                                <Template src="skin:mixerbar.xml"/>
+                              </Children>
+                              <Connection>
+                                <ConfigKey>[Library],show_library</ConfigKey>
+                                <Transform><Not/></Transform>
+                                <BindProperty>visible</BindProperty>
+                              </Connection>
+                            </WidgetGroup><!-- /MixerBar when Library is not shown -->
 
                           </Children>
-                        </WidgetGroup><!-- /Decks + size-aware triggers in the back -->
+                        </WidgetGroup><!-- /2 FX + Decks, 4 FX + Decks, Samplers_Library -->
+
+                        <Template src="skin:size_detector_netbook.xml"/>
+
                       </Children>
-                    </Splitter>
+                    </WidgetGroup><!-- /Decks + size-aware triggers in the back -->
                   </Children>
-                </WidgetGroup><!-- /Lib normal, stacked resizable waveforms -->
-
-                <WidgetGroup><!-- Lib maximized -->
-                  <Layout>vertical</Layout>
-                  <SizePolicy>me,me</SizePolicy>
-                  <Children>
-                    <SingletonContainer>
-                      <ObjectName>Library_Singleton</ObjectName>
-                    </SingletonContainer>
-                  </Children>
-                </WidgetGroup><!-- /Lib maximized -->
-
+                </Splitter>
               </Children>
-            </WidgetStack><!-- /full UI or Library maximized -->
+            </WidgetGroup>
+
+            <Template src="skin:skin_settings.xml"/>
 
           </Children>
-        </WidgetGroup><!-- /SkinContainer -->
+          <Connection>
+            <ConfigKey>[Master],maximize_library</ConfigKey>
+            <Transform><Not/></Transform>
+            <BindProperty>visible</BindProperty>
+          </Connection>
+        </WidgetGroup><!-- /Lib normal, stacked resizable waveforms, skin settings menu -->
+
+        <WidgetGroup><!-- Lib maximized -->
+          <Layout>vertical</Layout>
+          <SizePolicy>me,me</SizePolicy>
+          <Children>
+            <SingletonContainer>
+              <ObjectName>Library_Singleton</ObjectName>
+            </SingletonContainer>
+          </Children>
+          <Connection>
+            <ConfigKey>[Master],maximize_library</ConfigKey>
+            <BindProperty>visible</BindProperty>
+          </Connection>
+        </WidgetGroup><!-- /Lib maximized -->
 
       </Children>
-    </WidgetGroup><!-- /extra wrapper, may help with Skin Settings on Mac -->
+    </WidgetGroup><!-- /SkinContainer -->
+
   </Children>
 </skin>

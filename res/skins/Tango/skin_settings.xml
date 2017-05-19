@@ -4,16 +4,21 @@ Description:
 
   Bug: qss 'qproperty-layoutAlignment' is not respected for stacked layout.
   No way to push SkinSettings to the right edge while keeping the area underneath clickable.
+
+  https://bugs.launchpad.net/mixxx/+bug/1689196
+  On OSX this widget is drawn behind main skin instead on top of it.
+  I removed the stacked layout and placed skin settings on the right hand side of main skin.
 -->
 <Template>
   <WidgetGroup>
+    <ObjectName>SkinSettingsContainer</ObjectName>
     <Layout>horizontal</Layout>
-    <Size>225f,1me</Size>
+    <Size>205f,1me</Size>
     <Children>
       <WidgetGroup>
         <ObjectName>SkinSettings</ObjectName>
         <Layout>vertical</Layout>
-        <Size>210f,1me</Size>
+        <Size>200f,1me</Size>
         <Children>
           <WidgetGroup>
             <ObjectName>SkinSettingsHeader</ObjectName>
@@ -461,12 +466,6 @@ Description:
           </WidgetGroup><!-- /Extras -->
         </Children>
       </WidgetGroup><!-- SkinSettings -->
-      <!-- Add a fading shadow to the right edge -->
-      <WidgetGroup>
-        <ObjectName>FadeRight</ObjectName>
-        <Size>15f,1me</Size>
-        <Children/>
-      </WidgetGroup>
     </Children>
     <Connection>
       <ConfigKey>[Tango],skin_settings</ConfigKey>
