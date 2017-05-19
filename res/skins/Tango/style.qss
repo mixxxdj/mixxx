@@ -970,12 +970,14 @@ WBeatSpinBox {
 ##############################################################*/
 
 #EffectUnits12 {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  margin-top: 3px;
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop'; /*
+  margin-top: 3px;  */
+  margin-top: 5px;
 }
 #EffectUnits34 {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  margin-top: 3px;
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop'; /*
+  margin-top: 3px;  */
+  margin-top: 5px;
 }
 
 #EffectRack {
@@ -1311,8 +1313,9 @@ WBeatSpinBox {
 }
 
 #SamplerDeck {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  margin-top: 3px;
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop'; /*
+  margin-top: 3px;  */
+  margin-top: 5px;
 }
 
 #FXSamplersMiniMaxiButton[displayValue="0"] {

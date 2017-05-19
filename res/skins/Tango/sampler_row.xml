@@ -2,8 +2,7 @@
 Description:
   Container for 8 samplers and a centered mini/Maxi toggler.
 Variables:
-  Samplers_miniMAXI_Stack : stores mini/Maxi state of Samplers
-  Samplers_miniMAXI       : stores mini/Maxi state of Samplers
+  row   : number of sampler row
 -->
 <Template>
   <WidgetGroup>
@@ -20,15 +19,15 @@ Variables:
           <Template src="skin:sampler.xml">
             <SetVariable name="samNum"><Variable name="sampler1"/></SetVariable>
           </Template>
-            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+            <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
           <Template src="skin:sampler.xml">
             <SetVariable name="samNum"><Variable name="sampler2"/></SetVariable>
           </Template>
-            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+            <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
           <Template src="skin:sampler.xml">
             <SetVariable name="samNum"><Variable name="sampler3"/></SetVariable>
           </Template>
-            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+            <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
           <Template src="skin:sampler.xml">
             <SetVariable name="samNum"><Variable name="sampler4"/></SetVariable>
           </Template>
@@ -50,15 +49,15 @@ Variables:
           <Template src="skin:sampler.xml">
             <SetVariable name="samNum"><Variable name="sampler5"/></SetVariable>
           </Template>
-            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+            <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
           <Template src="skin:sampler.xml">
             <SetVariable name="samNum"><Variable name="sampler6"/></SetVariable>
           </Template>
-            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+            <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
           <Template src="skin:sampler.xml">
             <SetVariable name="samNum"><Variable name="sampler7"/></SetVariable>
           </Template>
-            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+            <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
           <Template src="skin:sampler.xml">
             <SetVariable name="samNum"><Variable name="sampler8"/></SetVariable>
           </Template>
@@ -78,15 +77,15 @@ Variables:
           <Template src="skin:sampler_mini.xml">
             <SetVariable name="samNum"><Variable name="sampler1"/></SetVariable>
           </Template>
-            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+            <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
           <Template src="skin:sampler_mini.xml">
             <SetVariable name="samNum"><Variable name="sampler2"/></SetVariable>
           </Template>
-            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+            <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
           <Template src="skin:sampler_mini.xml">
             <SetVariable name="samNum"><Variable name="sampler3"/></SetVariable>
           </Template>
-            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+            <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
           <Template src="skin:sampler_mini.xml">
             <SetVariable name="samNum"><Variable name="sampler4"/></SetVariable>
           </Template>
@@ -108,15 +107,15 @@ Variables:
           <Template src="skin:sampler_mini.xml">
             <SetVariable name="samNum"><Variable name="sampler5"/></SetVariable>
           </Template>
-            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+            <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
           <Template src="skin:sampler_mini.xml">
             <SetVariable name="samNum"><Variable name="sampler6"/></SetVariable>
           </Template>
-            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+            <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
           <Template src="skin:sampler_mini.xml">
             <SetVariable name="samNum"><Variable name="sampler7"/></SetVariable>
           </Template>
-            <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+            <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
           <Template src="skin:sampler_mini.xml">
             <SetVariable name="samNum"><Variable name="sampler8"/></SetVariable>
           </Template>

@@ -17,8 +17,9 @@ Description:
     <Layout>vertical</Layout>
     <Children>
 
-      <!-- margin-top has no effect -->
-      <WidgetGroup><Size>1me,3f</Size></WidgetGroup>
+      <!-- margin-top has no effect
+      <WidgetGroup><Size>1me,3f</Size></WidgetGroup> -->
+      <WidgetGroup><Size>1me,5f</Size></WidgetGroup>
 
       <Splitter>
         <ObjectName>LibrarySplitter</ObjectName>
