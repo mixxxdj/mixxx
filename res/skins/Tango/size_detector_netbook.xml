@@ -8,33 +8,26 @@ Description:
   Modes are flipping as soon as FX units have enough space to host effects
   with 6 parameters (knobs plus buttons)
 
-Controls:
-  [Tango],netbook_normal_stack0
-    This is set to '0' in skin.xml so that 'netbook_mode' is triggered
-    for widths up to 1259px.
-  [Tango],netbook_normal_stack1
-    This is set to '1' in skin.xml so that 'normal_mode' is triggered
-    for widths from 1260px up.
-
 -->
 <Template>
   <WidgetGroup>
     <Layout>horizontal</Layout>
+    <Size>1me,0f</Size>
     <Children>
       <SizeAwareStack><!-- Netbook trigger -->
         <Children>
 
           <WidgetStack><!-- 0  show skin controls at top edge of window -->
             <SizePolicy>me,max</SizePolicy>
-            <MinimumSize>1,2</MinimumSize>
-            <MaximumSize>1259,2</MaximumSize>
+            <MinimumSize>1,0</MinimumSize>
+            <MaximumSize>1259,0</MaximumSize>
             <Children>
               <WidgetGroup trigger="[Tango],netbook_mode">
-                <Size>2f,2f</Size>
+                <Size>2f,0f</Size>
                 <Children/>
               </WidgetGroup>
               <WidgetGroup trigger="[Tango],normal_mode">
-                <Size>2f,2f</Size>
+                <Size>2f,0f</Size>
                 <Children/>
               </WidgetGroup>
             </Children>
@@ -42,14 +35,14 @@ Controls:
 
           <WidgetStack><!-- 1  show skin controls in the center between decks -->
             <SizePolicy>me,me</SizePolicy>
-            <MinimumSize>1260,2</MinimumSize>
+            <MinimumSize>1260,0</MinimumSize>
             <Children>
               <WidgetGroup trigger="[Tango],normal_mode">
-                <Size>2f,2f</Size>
+                <Size>2f,0f</Size>
                 <Children/>
               </WidgetGroup>
               <WidgetGroup trigger="[Tango],netbook_mode">
-                <Size>2f,2f</Size>
+                <Size>2f,0f</Size>
                 <Children/>
               </WidgetGroup>
             </Children>
@@ -59,7 +52,7 @@ Controls:
       
       <WidgetGroup><!-- Spacer to enforce netbook mode -->
         <ObjectName>EnforceNetbookMode</ObjectName>
-        <Size>10000f,1f</Size>
+        <Size>10000f,0f</Size>
         <Children/>
         <Connection>
           <ConfigKey persist="true">[Tango],enforce_netbook_mode</ConfigKey>
