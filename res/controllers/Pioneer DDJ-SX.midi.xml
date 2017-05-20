@@ -7,8 +7,10 @@
         <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=8310</forums>
         <wiki>http://mixxx.org/wiki/doku.php/pioneer_ddj-sx</wiki>
     </info>
-    <controller id="PIONEER">
+    <controller id="DDJ-SX">
         <scriptfiles>
+            <file filename="lodash.mixxx.js"/>
+            <file filename="midi-components-0.0.js"/>
             <file functionprefix="PioneerDDJSX" filename="Pioneer-DDJ-SX-scripts.js"/>
         </scriptfiles>
         <controls>
@@ -5794,48 +5796,8 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSX.fxTabButton</key>
-                <description>Enable/Disable EffectUnit 1, Button: FX1 TAP</description>
-                <status>0x94</status>
-                <midino>0x4A</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSX.shiftFxTabButton</key>
-                <description>Switch to next EffectChain preset in Effect Unit 1, Button: SHIFT &amp; FX1 TAP</description>
-                <status>0x94</status>
-                <midino>0x66</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSX.fxBeatsKnob</key>
-                <description>Super1 Parameter of Effect Unit 1, Knob: FX1 BEATS</description>
-                <status>0xB4</status>
-                <midino>0x00</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSX.shiftFxBeatsKnob</key>
-                <description>Dry/Wet Mixing Ratio of Effect Unit 1, Knob: SHIFT &amp; FX1 BEATS</description>
-                <status>0xB4</status>
-                <midino>0x10</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSX.fxButton</key>
-                <description>Enable Effect 1 of Effect Unit 1, Button: FX1-1 ON</description>
+                <key>PioneerDDJSX.effectUnit[1].enableButtons[1].input</key>
+                <description>Enable (if effectFocusButton pressed: Focus) Effect 1 of Effect Unit 1, Button: FX1-1 ON</description>
                 <status>0x94</status>
                 <midino>0x47</midino>
                 <options>
@@ -5844,8 +5806,8 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSX.fxButton</key>
-                <description>Enable Effect 2 of Effect Unit 1, Button: FX1-2 ON</description>
+                <key>PioneerDDJSX.effectUnit[1].enableButtons[2].input</key>
+                <description>Enable (if effectFocusButton pressed: Focus) Effect 2 of Effect Unit 1, Button: FX1-2 ON</description>
                 <status>0x94</status>
                 <midino>0x48</midino>
                 <options>
@@ -5854,8 +5816,8 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSX.fxButton</key>
-                <description>Enable Effect 3 of Effect Unit 1, Button: FX1-3 ON</description>
+                <key>PioneerDDJSX.effectUnit[1].enableButtons[3].input</key>
+                <description>Enable (if effectFocusButton pressed: Focus) Effect 3 of Effect Unit 1, Button: FX1-3 ON</description>
                 <status>0x94</status>
                 <midino>0x49</midino>
                 <options>
@@ -5864,37 +5826,47 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSX.shiftFxButton</key>
-                <description>Switch to next Effect in EffectSlot 1 of Effect Unit 1, Button: SHIFT &amp; FX1-1 ON</description>
+                <key>PioneerDDJSX.effectUnit[1].effectFocusButton.input</key>
+                <description>Press hold: Enables effect focus selection, Shortpress: Toggles effect focus mode of EffectUnit 1, Button: FX1 TAP</description>
                 <status>0x94</status>
-                <midino>0x63</midino>
+                <midino>0x4A</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSX.shiftFxButton</key>
-                <description>Switch to next Effect in EffectSlot 2 of Effect Unit 1, Button: SHIFT &amp; FX1-2 ON</description>
+                <key>PioneerDDJSX.effectUnit[1].effectFocusButton.input</key>
+                <description>Switch between EffectUnits, Button: SHIFT &amp; FX1 TAP</description>
                 <status>0x94</status>
-                <midino>0x64</midino>
+                <midino>0x66</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSX.shiftFxButton</key>
-                <description>Switch to next Effect in EffectSlot 3 of Effect Unit 1, Button: SHIFT &amp; FX1-3 ON</description>
-                <status>0x94</status>
-                <midino>0x65</midino>
+                <key>PioneerDDJSX.effectUnit[1].dryWetKnob.input</key>
+                <description>Dry/Wet Mixing Ratio of Effect Unit 1, Knob: FX1 BEATS</description>
+                <status>0xB4</status>
+                <midino>0x00</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSX.fxKnobMSB</key>
+                <key>PioneerDDJSX.effectUnit[1].dryWetKnob.input</key>
+                <description>Super1 Parameter of Effect Unit 1, Knob: SHIFT &amp; FX1 BEATS</description>
+                <status>0xB4</status>
+                <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJSX.effectUnit[1].knobs[1].inputMSB</key>
                 <description>FX1 Effect 1 Meta (MSB), Knob: FX1-1</description>
                 <status>0xB4</status>
                 <midino>0x02</midino>
@@ -5904,7 +5876,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSX.fxKnobLSB</key>
+                <key>PioneerDDJSX.effectUnit[1].knobs[1].inputLSB</key>
                 <description>FX1 Effect 1 Meta (LSB), Knob: FX1-1</description>
                 <status>0xB4</status>
                 <midino>0x22</midino>
@@ -5914,8 +5886,8 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSX.shiftFxKnobMSB</key>
-                <description>FX1 Effect-Parameter 1 (MSB), Knob: FX1-1</description>
+                <key>PioneerDDJSX.effectUnit[1].knobs[1].inputMSB</key>
+                <description>FX1 Effect 1 Select (MSB), Knob: SHIFT + FX1-1</description>
                 <status>0xB4</status>
                 <midino>0x12</midino>
                 <options>
@@ -5924,8 +5896,8 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSX.shiftFxKnobLSB</key>
-                <description>FX1 Effect-Parameter 1 (LSB), Knob: FX1-1</description>
+                <key>PioneerDDJSX.effectUnit[1].knobs[1].inputLSB</key>
+                <description>FX1 Effect 1 Select (LSB), Knob: SHIFT + FX1-1</description>
                 <status>0xB4</status>
                 <midino>0x32</midino>
                 <options>
@@ -5934,7 +5906,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSX.fxKnobMSB</key>
+                <key>PioneerDDJSX.effectUnit[1].knobs[2].inputMSB</key>
                 <description>FX1 Effect 2 Meta (MSB), Knob: FX1-2</description>
                 <status>0xB4</status>
                 <midino>0x04</midino>
@@ -5944,7 +5916,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSX.fxKnobLSB</key>
+                <key>PioneerDDJSX.effectUnit[1].knobs[2].inputLSB</key>
                 <description>FX1 Effect 2 Meta (LSB), Knob: FX1-2</description>
                 <status>0xB4</status>
                 <midino>0x24</midino>
@@ -5954,8 +5926,8 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSX.shiftFxKnobMSB</key>
-                <description>FX1 Effect-Parameter 2 (MSB), Knob: FX1-2</description>
+                <key>PioneerDDJSX.effectUnit[1].knobs[2].inputMSB</key>
+                <description>FX1 Effect 2 Select (MSB), Knob: SHIFT + FX1-2</description>
                 <status>0xB4</status>
                 <midino>0x14</midino>
                 <options>
@@ -5964,8 +5936,8 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSX.shiftFxKnobLSB</key>
-                <description>FX1 Effect-Parameter 2 (LSB), Knob: FX1-2</description>
+                <key>PioneerDDJSX.effectUnit[1].knobs[2].inputLSB</key>
+                <description>FX1 Effect 2 Select (LSB), Knob: SHIFT + FX1-2</description>
                 <status>0xB4</status>
                 <midino>0x34</midino>
                 <options>
@@ -5974,7 +5946,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSX.fxKnobMSB</key>
+                <key>PioneerDDJSX.effectUnit[1].knobs[3].inputMSB</key>
                 <description>FX1 Effect 3 Meta (MSB), Knob: FX1-3</description>
                 <status>0xB4</status>
                 <midino>0x06</midino>
@@ -5984,7 +5956,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSX.fxKnobLSB</key>
+                <key>PioneerDDJSX.effectUnit[1].knobs[3].inputLSB</key>
                 <description>FX1 Effect 3 Meta (LSB), Knob: FX1-3</description>
                 <status>0xB4</status>
                 <midino>0x26</midino>
@@ -5994,8 +5966,8 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSX.shiftFxKnobMSB</key>
-                <description>FX1 Effect-Parameter 3 (MSB), Knob: FX1-3</description>
+                <key>PioneerDDJSX.effectUnit[1].knobs[3].inputMSB</key>
+                <description>FX1 Effect 3 Select (MSB), Knob: SHIFT + FX1-3</description>
                 <status>0xB4</status>
                 <midino>0x16</midino>
                 <options>
@@ -6004,8 +5976,8 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSX.shiftFxKnobLSB</key>
-                <description>FX1 Effect-Parameter 3 (LSB), Knob: FX1-3</description>
+                <key>PioneerDDJSX.effectUnit[1].knobs[3].inputLSB</key>
+                <description>FX1 Effect 3 Select (LSB), Knob: SHIFT + FX1-3</description>
                 <status>0xB4</status>
                 <midino>0x36</midino>
                 <options>
@@ -6014,48 +5986,8 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSX.fxTabButton</key>
-                <description>Enable/Disable EffectUnit 2, Button: FX2 TAP</description>
-                <status>0x95</status>
-                <midino>0x4A</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSX.shiftFxTabButton</key>
-                <description>Switch to next EffectChain preset in Effect Unit 2, Button: SHIFT &amp; FX2 TAP</description>
-                <status>0x95</status>
-                <midino>0x66</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSX.fxBeatsKnob</key>
-                <description>Super1 Parameter of Effect Unit 2, Knob: FX2 BEATS</description>
-                <status>0xB5</status>
-                <midino>0x00</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSX.shiftFxBeatsKnob</key>
-                <description>Dry/Wet Mixing Ratio of Effect Unit 2, Knob: SHIFT &amp; FX2 BEATS</description>
-                <status>0xB5</status>
-                <midino>0x10</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSX.fxButton</key>
-                <description>Enable Effect 1 of Effect Unit 2, Button: FX2-1 ON</description>
+                <key>PioneerDDJSX.effectUnit[2].enableButtons[1].input</key>
+                <description>Enable (if effectFocusButton pressed: Focus) Effect 1 of Effect Unit 2, Button: FX2-1 ON</description>
                 <status>0x95</status>
                 <midino>0x47</midino>
                 <options>
@@ -6064,8 +5996,8 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSX.fxButton</key>
-                <description>Enable Effect 2 of Effect Unit 2, Button: FX2-2 ON</description>
+                <key>PioneerDDJSX.effectUnit[2].enableButtons[2].input</key>
+                <description>Enable (if effectFocusButton pressed: Focus) Effect 2 of Effect Unit 2, Button: FX2-2 ON</description>
                 <status>0x95</status>
                 <midino>0x48</midino>
                 <options>
@@ -6074,8 +6006,8 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSX.fxButton</key>
-                <description>Enable Effect 3 of Effect Unit 2, Button: FX2-3 ON</description>
+                <key>PioneerDDJSX.effectUnit[2].enableButtons[3].input</key>
+                <description>Enable (if effectFocusButton pressed: Focus) Effect 3 of Effect Unit 2, Button: FX2-3 ON</description>
                 <status>0x95</status>
                 <midino>0x49</midino>
                 <options>
@@ -6084,37 +6016,47 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSX.shiftFxButton</key>
-                <description>Switch to next Effect in EffectSlot 1 of Effect Unit 2, Button: SHIFT &amp; FX2-1 ON</description>
+                <key>PioneerDDJSX.effectUnit[2].effectFocusButton.input</key>
+                <description>Press hold: Enables effect focus selection, Shortpress: Toggles effect focus mode of EffectUnit 2, Button: FX2 TAP</description>
                 <status>0x95</status>
-                <midino>0x63</midino>
+                <midino>0x4A</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSX.shiftFxButton</key>
-                <description>Switch to next Effect in EffectSlot 2 of Effect Unit 2, Button: SHIFT &amp; FX2-2 ON</description>
+                <key>PioneerDDJSX.effectUnit[2].effectFocusButton.input</key>
+                <description>Switch between EffectUnits, Button: SHIFT &amp; FX2 TAP</description>
                 <status>0x95</status>
-                <midino>0x64</midino>
+                <midino>0x66</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSX.shiftFxButton</key>
-                <description>Switch to next Effect in EffectSlot 2 of Effect Unit 2, Button: SHIFT &amp; FX2-3 ON</description>
-                <status>0x95</status>
-                <midino>0x65</midino>
+                <key>PioneerDDJSX.effectUnit[2].dryWetKnob.input</key>
+                <description>Dry/Wet Mixing Ratio of Effect Unit 2, Knob: FX2 BEATS</description>
+                <status>0xB5</status>
+                <midino>0x00</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSX.fxKnobMSB</key>
+                <key>PioneerDDJSX.effectUnit[2].dryWetKnob.input</key>
+                <description>Super1 Parameter of Effect Unit 2, Knob: SHIFT &amp; FX2 BEATS</description>
+                <status>0xB5</status>
+                <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>PioneerDDJSX.effectUnit[2].knobs[1].inputMSB</key>
                 <description>FX2 Effect 1 Meta (MSB), Knob: FX2-1</description>
                 <status>0xB5</status>
                 <midino>0x02</midino>
@@ -6124,7 +6066,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSX.fxKnobLSB</key>
+                <key>PioneerDDJSX.effectUnit[2].knobs[1].inputLSB</key>
                 <description>FX2 Effect 1 Meta (LSB), Knob: FX2-1</description>
                 <status>0xB5</status>
                 <midino>0x22</midino>
@@ -6134,8 +6076,8 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSX.shiftFxKnobMSB</key>
-                <description>FX2 Effect-Parameter 1 (MSB), Knob: FX2-1</description>
+                <key>PioneerDDJSX.effectUnit[2].knobs[1].inputMSB</key>
+                <description>FX2 Effect 1 Select (MSB), Knob: SHIFT + FX2-1</description>
                 <status>0xB5</status>
                 <midino>0x12</midino>
                 <options>
@@ -6144,8 +6086,8 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSX.shiftFxKnobLSB</key>
-                <description>FX2 Effect-Parameter 1 (LSB), Knob: FX2-1</description>
+                <key>PioneerDDJSX.effectUnit[2].knobs[1].inputLSB</key>
+                <description>FX2 Effect 1 Select (LSB), Knob: SHIFT + FX2-1</description>
                 <status>0xB5</status>
                 <midino>0x32</midino>
                 <options>
@@ -6154,7 +6096,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSX.fxKnobMSB</key>
+                <key>PioneerDDJSX.effectUnit[2].knobs[2].inputMSB</key>
                 <description>FX2 Effect 2 Meta (MSB), Knob: FX2-2</description>
                 <status>0xB5</status>
                 <midino>0x04</midino>
@@ -6164,7 +6106,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSX.fxKnobLSB</key>
+                <key>PioneerDDJSX.effectUnit[2].knobs[2].inputLSB</key>
                 <description>FX2 Effect 2 Meta (LSB), Knob: FX2-2</description>
                 <status>0xB5</status>
                 <midino>0x24</midino>
@@ -6174,8 +6116,8 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSX.shiftFxKnobMSB</key>
-                <description>FX2 Effect-Parameter 2 (MSB), Knob: FX2-2</description>
+                <key>PioneerDDJSX.effectUnit[2].knobs[2].inputMSB</key>
+                <description>FX2 Effect 2 Select (MSB), Knob: SHIFT + FX2-2</description>
                 <status>0xB5</status>
                 <midino>0x14</midino>
                 <options>
@@ -6184,8 +6126,8 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSX.shiftFxKnobLSB</key>
-                <description>FX2 Effect-Parameter 2 (LSB), Knob: FX2-2</description>
+                <key>PioneerDDJSX.effectUnit[2].knobs[2].inputLSB</key>
+                <description>FX2 Effect 2 Select (LSB), Knob: SHIFT + FX2-2</description>
                 <status>0xB5</status>
                 <midino>0x34</midino>
                 <options>
@@ -6194,7 +6136,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSX.fxKnobMSB</key>
+                <key>PioneerDDJSX.effectUnit[2].knobs[3].inputMSB</key>
                 <description>FX2 Effect 3 Meta (MSB), Knob: FX2-3</description>
                 <status>0xB5</status>
                 <midino>0x06</midino>
@@ -6204,7 +6146,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSX.fxKnobLSB</key>
+                <key>PioneerDDJSX.effectUnit[2].knobs[3].inputLSB</key>
                 <description>FX2 Effect 3 Meta (LSB), Knob: FX2-3</description>
                 <status>0xB5</status>
                 <midino>0x26</midino>
@@ -6214,8 +6156,8 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSX.shiftFxKnobMSB</key>
-                <description>FX2 Effect-Parameter 3 (MSB), Knob: FX2-3</description>
+                <key>PioneerDDJSX.effectUnit[2].knobs[3].inputMSB</key>
+                <description>FX2 Effect 3 Select (MSB), Knob: SHIFT + FX2-3</description>
                 <status>0xB5</status>
                 <midino>0x16</midino>
                 <options>
@@ -6224,8 +6166,8 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSX.shiftFxKnobLSB</key>
-                <description>FX2 Effect-Parameter 3 (LSB), Knob: FX2-3</description>
+                <key>PioneerDDJSX.effectUnit[2].knobs[3].inputLSB</key>
+                <description>FX2 Effect 3 Select (LSB), Knob: SHIFT + FX2-3</description>
                 <status>0xB5</status>
                 <midino>0x36</midino>
                 <options>
