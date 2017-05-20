@@ -434,7 +434,7 @@ PioneerDDJSX.init = function(id) {
     PioneerDDJSX.effectUnit[2].enableButtons[3].midi = [0x95, PioneerDDJSX.nonPadLeds.fx3on];
     PioneerDDJSX.effectUnit[2].effectFocusButton.midi = [0x95, PioneerDDJSX.nonPadLeds.fxTab];
     PioneerDDJSX.effectUnit[2].dryWetKnob.input = function(channel, control, value, status, group) {
-        this.setParameterIn(this.getParameterIn() + PioneerDDJSX.getRotaryDelta(value) / 30);
+        this.inSetParameter(this.inGetParameter() + PioneerDDJSX.getRotaryDelta(value) / 30);
     };
     PioneerDDJSX.effectUnit[2].init();
 };
