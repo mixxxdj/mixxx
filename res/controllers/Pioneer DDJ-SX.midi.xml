@@ -5836,6 +5836,16 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJSX.effectUnit[1].effectFocusButton.input</key>
+                <description>Switch between EffectUnits, Button: SHIFT &amp; FX1 TAP</description>
+                <status>0x94</status>
+                <midino>0x66</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJSX.effectUnit[1].dryWetKnob.input</key>
                 <description>Dry/Wet Mixing Ratio of Effect Unit 1, Knob: FX1 BEATS</description>
                 <status>0xB4</status>
@@ -6010,6 +6020,16 @@
                 <description>Press hold: Enables effect focus selection, Shortpress: Toggles effect focus mode of EffectUnit 2, Button: FX2 TAP</description>
                 <status>0x95</status>
                 <midino>0x4A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>PioneerDDJSX.effectUnit[2].effectFocusButton.input</key>
+                <description>Switch between EffectUnits, Button: SHIFT &amp; FX2 TAP</description>
+                <status>0x95</status>
+                <midino>0x66</midino>
                 <options>
                     <script-binding/>
                 </options>
