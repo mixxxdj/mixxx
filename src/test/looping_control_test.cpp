@@ -596,8 +596,8 @@ TEST_F(LoopingControlTest, BeatLoopSize_SetAndToggle) {
 
     m_pButtonBeatLoopToggle->set(1.0);
     m_pButtonBeatLoopToggle->set(0.0);
-    EXPECT_FALSE(m_pLoopEnabled->toBool());
-    EXPECT_FALSE(m_pBeatLoop2Enabled->toBool());
+    EXPECT_TRUE(m_pLoopEnabled->toBool());
+    EXPECT_TRUE(m_pBeatLoop2Enabled->toBool());
 }
 
 TEST_F(LoopingControlTest, BeatLoopSize_SetWithoutTrackLoaded) {
@@ -642,8 +642,8 @@ TEST_F(LoopingControlTest, BeatLoopSize_IsSetByNumberedControl) {
 
     m_pButtonBeatLoopToggle->set(1.0);
     m_pButtonBeatLoopToggle->set(0.0);
-    EXPECT_FALSE(m_pBeatLoop2Enabled->toBool());
-    EXPECT_FALSE(m_pLoopEnabled->toBool());
+    EXPECT_TRUE(m_pBeatLoop2Enabled->toBool());
+    EXPECT_TRUE(m_pLoopEnabled->toBool());
     EXPECT_EQ(2.0, m_pBeatLoopSize->get());
 }
 
@@ -677,8 +677,8 @@ TEST_F(LoopingControlTest, BeatLoopSize_ValueChangeDoesNotActivateLoop) {
     m_pButtonBeatLoopToggle->set(0.0);
     EXPECT_TRUE(m_pLoopEnabled->toBool());
 
-    m_pButtonBeatLoopToggle->set(1.0);
-    m_pButtonBeatLoopToggle->set(0.0);
+    m_pButtonReloopToggle->set(1.0);
+    m_pButtonReloopToggle->set(0.0);
     EXPECT_FALSE(m_pLoopEnabled->toBool());
     m_pBeatLoopSize->set(4.0);
     EXPECT_FALSE(m_pLoopEnabled->toBool());
@@ -696,8 +696,8 @@ TEST_F(LoopingControlTest, BeatLoopSize_ValueChangeResizesBeatLoop) {
     double oldLoopEnd = m_pLoopEndPoint->get();
     double oldLoopLength = oldLoopEnd - oldLoopStart;
 
-    m_pButtonBeatLoopToggle->set(1.0);
-    m_pButtonBeatLoopToggle->set(0.0);
+    m_pButtonReloopToggle->set(1.0);
+    m_pButtonReloopToggle->set(0.0);
     EXPECT_FALSE(m_pLoopEnabled->toBool());
     m_pBeatLoopSize->set(4.0);
 
