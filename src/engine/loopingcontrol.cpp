@@ -110,7 +110,7 @@ LoopingControl::LoopingControl(QString group,
     m_pTrackSamples = ControlObject::getControl(ConfigKey(group, "track_samples"));
     m_pSlipEnabled = ControlObject::getControl(ConfigKey(group, "slip_enabled"));
 
-    // DEPRECATED: Use beatloop_size and beatloop_toggle instead.
+    // DEPRECATED: Use beatloop_size and beatloop_set instead.
     // Activates a beatloop of a specified number of beats.
     m_pCOBeatLoop = new ControlObject(ConfigKey(group, "beatloop"), false);
     connect(m_pCOBeatLoop, SIGNAL(valueChanged(double)), this,
@@ -120,8 +120,8 @@ LoopingControl::LoopingControl(QString group,
                                           true, false, false, 4.0);
     m_pCOBeatLoopSize->connectValueChangeRequest(this,
             SLOT(slotBeatLoopSizeChangeRequest(double)), Qt::DirectConnection);
-    m_pCOBeatLoopToggle = new ControlPushButton(ConfigKey(group, "beatloop_toggle"));
-    connect(m_pCOBeatLoopToggle, SIGNAL(valueChanged(double)),
+    m_pCOBeatLoopSet = new ControlPushButton(ConfigKey(group, "beatloop_set"));
+    connect(m_pCOBeatLoopSet, SIGNAL(valueChanged(double)),
             this, SLOT(slotBeatLoopToggle(double)));
     m_pCOBeatLoopRollActivate = new ControlPushButton(ConfigKey(group, "beatlooproll_activate"));
     connect(m_pCOBeatLoopRollActivate, SIGNAL(valueChanged(double)),
@@ -228,7 +228,7 @@ LoopingControl::~LoopingControl() {
         delete pBeatLoop;
     }
     delete m_pCOBeatLoopSize;
-    delete m_pCOBeatLoopToggle;
+    delete m_pCOBeatLoopSet;
     delete m_pCOBeatLoopRollActivate;
 
     delete m_pCOBeatJump;
