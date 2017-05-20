@@ -1165,7 +1165,7 @@ void EngineBuffer::processSeek(bool paused) {
     }
 
     if ((seekType & SEEK_PHASE) && !paused && m_pQuantize->toBool()) {
-        position += m_pBpmControl->getPhaseOffset(position);
+        position = m_pBpmControl->getNearestPositionInPhase(position);
     }
 
     double newPlayFrame = position / kSamplesPerFrame;

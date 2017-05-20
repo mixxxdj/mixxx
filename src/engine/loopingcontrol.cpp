@@ -739,7 +739,9 @@ void LoopingControl::slotLoopEndPos(double pos) {
 void LoopingControl::notifySeek(double dNewPlaypos) {
     LoopSamples loopSamples = m_loopSamples.getValue();
     if (m_bLoopingEnabled) {
-        if (dNewPlaypos < loopSamples.start || dNewPlaypos > loopSamples.end) {
+        // Disable loop when we jump after it, using hot cues or waveform overview
+        // If we jump before, the loop it is kept enabled as catching loop
+        if (dNewPlaypos > loopSamples.end) {
             setLoopingEnabled(false);
         }
     }
