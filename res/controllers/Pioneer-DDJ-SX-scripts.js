@@ -11,7 +11,7 @@ var PioneerDDJSX = function() {};
 
 /*
 	Author: 		DJMaxergy
-	Version: 		1.12, 05/20/2017
+	Version: 		1.13, 05/20/2017
 	Description: 	Pioneer DDJ-SX Controller Mapping for Mixxx
     Source: 		http://github.com/DJMaxergy/mixxx/tree/pioneerDDJSX_mapping
     
@@ -419,17 +419,23 @@ PioneerDDJSX.init = function(id) {
 
     // init effects section:
     PioneerDDJSX.effectUnit = [];
-    PioneerDDJSX.effectUnit[1] = new PioneerDDJSX.EffectUnit(1);
-    PioneerDDJSX.effectUnit[2] = new PioneerDDJSX.EffectUnit(2);
+    PioneerDDJSX.effectUnit[1] = new components.EffectUnit([1, 3]);
+    PioneerDDJSX.effectUnit[2] = new components.EffectUnit([2, 4]);
     PioneerDDJSX.effectUnit[1].enableButtons[1].midi = [0x94, PioneerDDJSX.nonPadLeds.fx1on];
     PioneerDDJSX.effectUnit[1].enableButtons[2].midi = [0x94, PioneerDDJSX.nonPadLeds.fx2on];
     PioneerDDJSX.effectUnit[1].enableButtons[3].midi = [0x94, PioneerDDJSX.nonPadLeds.fx3on];
     PioneerDDJSX.effectUnit[1].effectFocusButton.midi = [0x94, PioneerDDJSX.nonPadLeds.fxTab];
+    PioneerDDJSX.effectUnit[1].dryWetKnob.input = function(channel, control, value, status, group) {
+        this.inSetParameter(this.inGetParameter() + PioneerDDJSX.getRotaryDelta(value) / 30);
+    };
     PioneerDDJSX.effectUnit[1].init();
     PioneerDDJSX.effectUnit[2].enableButtons[1].midi = [0x95, PioneerDDJSX.nonPadLeds.fx1on];
     PioneerDDJSX.effectUnit[2].enableButtons[2].midi = [0x95, PioneerDDJSX.nonPadLeds.fx2on];
     PioneerDDJSX.effectUnit[2].enableButtons[3].midi = [0x95, PioneerDDJSX.nonPadLeds.fx3on];
     PioneerDDJSX.effectUnit[2].effectFocusButton.midi = [0x95, PioneerDDJSX.nonPadLeds.fxTab];
+    PioneerDDJSX.effectUnit[2].dryWetKnob.input = function(channel, control, value, status, group) {
+        this.setParameterIn(this.getParameterIn() + PioneerDDJSX.getRotaryDelta(value) / 30);
+    };
     PioneerDDJSX.effectUnit[2].init();
 };
 
@@ -2243,33 +2249,6 @@ PioneerDDJSX.fxAssignButton = function(channel, control, value, status, group) {
         }
     }
 };
-
-PioneerDDJSX.EffectUnit = function(unitNumber) {
-    this.group = '[EffectRack1_EffectUnit' + unitNumber + ']';
-    components.EffectUnit.call(this, unitNumber);
-
-    this.dryWetKnob = new components.Encoder({
-        group: this.group,
-        unshift: function() {
-            this.inKey = 'mix';
-            this.disconnect();
-            this.connect();
-            this.input = function(channel, control, value, status, group) {
-                engine.setParameter(group, 'mix', engine.getValue(group, 'mix') + PioneerDDJSX.getRotaryDelta(value) / 30);
-            };
-        },
-        shift: function() {
-            this.inKey = 'super1';
-            this.disconnect();
-            this.connect();
-            this.input = function(channel, control, value, status, group) {
-                engine.setParameter(group, 'super1', engine.getValue(group, 'super1') + PioneerDDJSX.getRotaryDelta(value) / 30);
-            };
-        },
-        outConnect: false,
-    });
-};
-PioneerDDJSX.EffectUnit.prototype = new components.ComponentContainer();
 
 
 ///////////////////////////////////////////////////////////////
