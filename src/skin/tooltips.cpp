@@ -30,6 +30,8 @@ void Tooltips::addStandardTooltips() {
     QString leftClick = tr("Left-click");
     QString rightClick = tr("Right-click");
     QString scrollWheel = tr("Scroll-wheel");
+    QString loopActive = "(" + tr("loop active") + ")";
+    QString loopInactive = "(" + tr("loop inactive") + ")";
     QString effectsWithinChain = tr("Effects within the chain must be enabled to hear them.");
 
     add("waveform_overview")
@@ -554,19 +556,19 @@ void Tooltips::addStandardTooltips() {
 
     add("loop_in")
             << tr("Loop-In Marker")
-            << QString("%1: %2").arg(leftClick + " (" + tr("loop inactive") + ")",
+            << QString("%1: %2").arg(leftClick + " " + loopInactive,
                       tr("Sets the track Loop-In Marker to the current play position."))
             << quantizeSnap
-            << QString("%1: %2").arg(leftClick + " (" + tr("loop active") + ")",
+            << QString("%1: %2").arg(leftClick + " " + loopActive,
                       tr("Press and hold to move Loop-In Marker."))
             << QString("%1: %2").arg(rightClick, tr("Jump to Loop-In Marker."));
 
     add("loop_out")
             << tr("Loop-Out Marker")
-            << QString("%1: %2").arg(leftClick + " (" + tr("loop inactive") + ")",
+            << QString("%1: %2").arg(leftClick + " " + loopInactive,
                       tr("Sets the track Loop-Out Marker to the current play position."))
             << quantizeSnap
-            << QString("%1: %2").arg(leftClick + " (" + tr("loop active") + ")",
+            << QString("%1: %2").arg(leftClick + " " + loopActive,
                       tr("Press and hold to move Loop-Out Marker."))
             << QString("%1: %2").arg(rightClick, tr("Jump to Loop-Out Marker."));
 
@@ -591,7 +593,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Double the size of an existing beatloop, or double the size of the next beatloop set with the Beatloop button.");
 
     //beatloop and beatlooproll
-    add("beatloop_toggle")
+    add("beatloop_set")
             << tr("Beatloop")
             << QString("%1: %2").arg(leftClick, tr("Start a loop over the set number of beats."))
             << quantizeSnap
@@ -616,12 +618,14 @@ void Tooltips::addStandardTooltips() {
 
     add("beatjump_forward")
             << tr("Beatjump Forward")
-            << QString("%1: %2").arg(leftClick, tr("Jump forward by the set number of beats."))
+            << QString("%1: %2").arg(leftClick + " " + loopInactive, tr("Jump forward by the set number of beats."))
+            << QString("%1: %2").arg(leftClick + " " + loopActive, tr("Move the loop forward by the set number of beats."))
             << QString("%1: %2").arg(rightClick, tr("Jump forward by 1 beat."));
 
     add("beatjump_backward")
             << tr("Beatjump Backward")
-            << QString("%1: %2").arg(leftClick, tr("Jump backward by the set number of beats."))
+            << QString("%1: %2").arg(leftClick + " " + loopInactive, tr("Jump backward by the set number of beats."))
+            << QString("%1: %2").arg(leftClick + " " + loopActive, tr("Move the loop backward by the set number of beats."))
             << QString("%1: %2").arg(rightClick, tr("Jump backward by 1 beat."));
 
     add("loop_exit")
