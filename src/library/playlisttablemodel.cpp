@@ -29,7 +29,7 @@ void PlaylistTableModel::setTableModel(int playlistId) {
         // in the library (mixxx_deleted = 0) from playlists.
         // These invisible tracks, consuming a playlist position number where
         // a source user of confusion in the past.
-    	m_pTrackCollection->getPlaylistDAO().removeHiddenTracks(m_iPlaylistId);
+        m_pTrackCollection->getPlaylistDAO().removeHiddenTracks(m_iPlaylistId);
     }
 
     QString playlistTableName = "playlist_" + QString::number(m_iPlaylistId);

@@ -10,6 +10,7 @@
 #include "engine/enginedeck.h"
 #include "mixer/baseplayer.h"
 #include "track/track.h"
+#include "util/memory.h"
 
 class EngineMaster;
 class ControlObject;
@@ -58,7 +59,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
                         bool defaultHeadphones);
     virtual ~BaseTrackPlayerImpl();
 
-    TrackPointer getLoadedTrack() const;
+    TrackPointer getLoadedTrack() const override;
 
     // TODO(XXX): Only exposed to let the passthrough AudioInput get
     // connected. Delete me when EngineMaster supports AudioInput assigning.
@@ -90,41 +91,41 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     UserSettingsPointer m_pConfig;
     EngineMaster* m_pEngineMaster;
     TrackPointer m_pLoadedTrack;
+    EngineDeck* m_pChannel;
+    bool m_replaygainPending;
 
     // Waveform display related controls
-    ControlObject* m_pWaveformZoom;
-    ControlPushButton* m_pWaveformZoomUp;
-    ControlPushButton* m_pWaveformZoomDown;
-    ControlPushButton* m_pWaveformZoomSetDefault;
-    ControlObject* m_pEndOfTrack;
+    std::unique_ptr<ControlObject> m_pWaveformZoom;
+    std::unique_ptr<ControlPushButton> m_pWaveformZoomUp;
+    std::unique_ptr<ControlPushButton> m_pWaveformZoomDown;
+    std::unique_ptr<ControlPushButton> m_pWaveformZoomSetDefault;
 
-    ControlProxy* m_pLoopInPoint;
-    ControlProxy* m_pLoopOutPoint;
-    ControlObject* m_pDuration;
+
+    std::unique_ptr<ControlProxy> m_pLoopInPoint;
+    std::unique_ptr<ControlProxy> m_pLoopOutPoint;
+    std::unique_ptr<ControlObject> m_pDuration;
+    std::unique_ptr<ControlObject> m_pEndOfTrack;
 
     // TODO() these COs are reconnected during runtime
     // This may lock the engine
-    ControlProxy* m_pBPM;
-    ControlProxy* m_pKey;
+    std::unique_ptr<ControlProxy> m_pBPM;
+    std::unique_ptr<ControlProxy> m_pKey;
 
-    ControlProxy* m_pReplayGain;
-    ControlProxy* m_pPlay;
-    ControlProxy* m_pLowFilter;
-    ControlProxy* m_pMidFilter;
-    ControlProxy* m_pHighFilter;
-    ControlProxy* m_pLowFilterKill;
-    ControlProxy* m_pMidFilterKill;
-    ControlProxy* m_pHighFilterKill;
-    ControlProxy* m_pPreGain;
-    ControlProxy* m_pRateSlider;
-    ControlProxy* m_pPitchAdjust;
-    QScopedPointer<ControlProxy> m_pInputConfigured;
-    QScopedPointer<ControlProxy> m_pPassthroughEnabled;
-    QScopedPointer<ControlProxy> m_pVinylControlEnabled;
-    QScopedPointer<ControlProxy> m_pVinylControlStatus;
-    EngineDeck* m_pChannel;
-
-    bool m_replaygainPending;
+    std::unique_ptr<ControlProxy> m_pReplayGain;
+    std::unique_ptr<ControlProxy> m_pPlay;
+    std::unique_ptr<ControlProxy> m_pLowFilter;
+    std::unique_ptr<ControlProxy> m_pMidFilter;
+    std::unique_ptr<ControlProxy> m_pHighFilter;
+    std::unique_ptr<ControlProxy> m_pLowFilterKill;
+    std::unique_ptr<ControlProxy> m_pMidFilterKill;
+    std::unique_ptr<ControlProxy> m_pHighFilterKill;
+    std::unique_ptr<ControlProxy> m_pPreGain;
+    std::unique_ptr<ControlProxy> m_pRateSlider;
+    std::unique_ptr<ControlProxy> m_pPitchAdjust;
+    std::unique_ptr<ControlProxy> m_pInputConfigured;
+    std::unique_ptr<ControlProxy> m_pPassthroughEnabled;
+    std::unique_ptr<ControlProxy> m_pVinylControlEnabled;
+    std::unique_ptr<ControlProxy> m_pVinylControlStatus;
 };
 
 #endif // MIXER_BASETRACKPLAYER_H

@@ -1,0 +1,37 @@
+<!--
+Description:
+  Shows Logo if 4 decks and crossfader are enabled (in normal mode)
+-->
+<Template>
+  <WidgetGroup><!-- Skin Controls -->
+    <Layout>vertical</Layout>
+    <ObjectName>SkinControls</ObjectName>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      
+      <WidgetGroup><Size>1min,1me</Size></WidgetGroup>
+      
+      <WidgetGroup>
+        <ObjectName>LogoMaxiBox</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>104f,26f</Size>
+        <Children>
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="ObjectName">LogoMaxi</SetVariable>
+            <SetVariable name="Size">102f,26f</SetVariable>
+            <SetVariable name="state_0_pressed">logo_104x26_grey.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">logo_104x26_grey.svg</SetVariable>
+            <SetVariable name="state_1_pressed">logo_104x26.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">logo_104x26.svg</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Tango],colorLogo</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+      
+    </Children>
+    <Connection>
+      <ConfigKey>[Tango],normal_mode</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

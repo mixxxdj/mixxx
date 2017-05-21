@@ -28,9 +28,9 @@ EffectManifest EchoEffect::getManifest() {
     delay->setId("delay_time");
     delay->setName(QObject::tr("Delay"));
     delay->setDescription(QObject::tr("Delay time (seconds)"));
-    delay->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    delay->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    delay->setUnitsHint(EffectManifestParameter::UNITS_TIME);
+    delay->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    delay->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    delay->setUnitsHint(EffectManifestParameter::UnitsHint::TIME);
     delay->setMinimum(0.1);
     delay->setDefault(1.0);
     delay->setMaximum(EchoGroupState::kMaxDelaySeconds);
@@ -40,9 +40,9 @@ EffectManifest EchoEffect::getManifest() {
     feedback->setName(QObject::tr("Feedback"));
     feedback->setDescription(
             QObject::tr("Amount the echo fades each time it loops"));
-    feedback->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    feedback->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    feedback->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    feedback->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+    feedback->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    feedback->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     feedback->setMinimum(0.00);
     feedback->setDefault(0.5);
     feedback->setMaximum(1.0);
@@ -54,9 +54,9 @@ EffectManifest EchoEffect::getManifest() {
             QObject::tr("As the ping-pong amount increases, increasing amounts "
                         "of the echoed signal is bounced between the left and "
                         "right speakers."));
-    pingpong->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    pingpong->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    pingpong->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    pingpong->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    pingpong->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    pingpong->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     pingpong->setMinimum(0.0);
     pingpong->setDefault(0.0);
     pingpong->setMaximum(1.0);
@@ -66,10 +66,10 @@ EffectManifest EchoEffect::getManifest() {
     send->setName(QObject::tr("Send"));
     send->setDescription(
             QObject::tr("How much of the signal to send into the delay buffer"));
-    send->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    send->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    send->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    send->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    send->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    send->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    send->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    send->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     send->setMinimum(0.0);
     send->setDefault(1.0);
     send->setMaximum(1.0);
@@ -95,7 +95,6 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
                                 const EffectProcessor::EnableState enableState,
                                 const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
-    Q_UNUSED(enableState);
     Q_UNUSED(groupFeatures);
     DEBUG_ASSERT(0 == (numSamples % EchoGroupState::kChannelCount));
     EchoGroupState& gs = *pGroupState;
@@ -175,5 +174,9 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         if (read_position == 0) {
             gs.ping_pong_left = !gs.ping_pong_left;
         }
+    }
+
+    if (enableState == EffectProcessor::DISABLING) {
+        gs.delay_buf.clear();
     }
 }

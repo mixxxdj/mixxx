@@ -56,10 +56,12 @@ double ControlPotmeterBehavior::valueToParameter(double dValue) {
     if (m_dValueRange == 0.0) {
         return 0;
     }
-    if (dValue > m_dMaxValue) {
-        dValue = m_dMaxValue;
-    } else if (dValue < m_dMinValue) {
-        dValue = m_dMinValue;
+    if (!m_bAllowOutOfBounds) {
+        if (dValue > m_dMaxValue) {
+            dValue = m_dMaxValue;
+        } else if (dValue < m_dMinValue) {
+            dValue = m_dMinValue;
+        }
     }
     return (dValue - m_dMinValue) / m_dValueRange;
 }
@@ -116,10 +118,12 @@ double ControlLogPotmeterBehavior::valueToParameter(double dValue) {
     if (m_dValueRange == 0.0) {
         return 0;
     }
-    if (dValue > m_dMaxValue) {
-        dValue = m_dMaxValue;
-    } else if (dValue < m_dMinValue) {
-        dValue = m_dMinValue;
+    if (!m_bAllowOutOfBounds) {
+        if (dValue > m_dMaxValue) {
+            dValue = m_dMaxValue;
+        } else if (dValue < m_dMinValue) {
+            dValue = m_dMinValue;
+        }
     }
     double linPrameter = (dValue - m_dMinValue) / m_dValueRange;
     double dbParamter = ratio2db(linPrameter + m_minOffset * (1 - linPrameter));

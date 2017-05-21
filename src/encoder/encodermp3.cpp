@@ -13,7 +13,7 @@
     http://lame.cvs.sourceforge.net/viewvc/lame/lame/Dll/BladeMP3EncDLL.h?view=markup
 
 *****************************************************************************/
- 
+
 #include <QtDebug>
 #include <QObject>
 #include <limits.h>
@@ -39,8 +39,8 @@ const int EncoderMp3::MONO_VBR_OFFSET = 4;
 
 EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
   : m_lameFlags(nullptr),
-    m_bufferOut(nullptr),
     m_bitrate(128),
+    m_bufferOut(nullptr),
     m_bufferOutSize(0),
     /*
      * @ Author: Tobias Rafreider
@@ -159,9 +159,9 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
     lame_set_VBR_q              = (lame_set_VBR_q__)m_library->resolve("lame_set_VBR_q");
     lame_set_VBR_quality        = (lame_set_VBR_quality__)m_library->resolve("lame_set_VBR_quality");
 
-    lame_set_VBR_mean_bitrate_kbps = 
+    lame_set_VBR_mean_bitrate_kbps =
               (lame_set_VBR_mean_bitrate_kbps__)m_library->resolve("lame_set_VBR_mean_bitrate_kbps");
-    lame_encode_buffer_interleaved_ieee_float = 
+    lame_encode_buffer_interleaved_ieee_float =
               (lame_encode_buffer_interleaved_ieee_float__)m_library->resolve("lame_encode_buffer_interleaved_ieee_float");
     lame_get_lametag_frame      = (lame_get_lametag_frame__)m_library->resolve("lame_get_lametag_frame");
 
@@ -238,7 +238,7 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
     }
     qDebug() << "Loaded libmp3lame version " << get_lame_version();
     qDebug() << "lame_set_VBR_quality: " << QString((lame_set_VBR_quality == nullptr) ? "missing" : "present")
-        << " lame_encode_buffer_interleaved_ieee_float: " 
+        << " lame_encode_buffer_interleaved_ieee_float: "
         << QString((lame_encode_buffer_interleaved_ieee_float == nullptr) ? "missing" : "present")
         << " id3tag_add_v2: " << QString((id3tag_add_v2 == nullptr) ? "missing" : "present");
 }
@@ -264,7 +264,7 @@ EncoderMp3::~EncoderMp3() {
 void EncoderMp3::setEncoderSettings(const EncoderSettings& settings)
 {
     m_bitrate = settings.getQuality();
-    
+
     int modeoption = settings.getSelectedOption(EncoderMp3Settings::ENCODING_MODE_GROUP);
     m_encoding_mode = (modeoption==0) ? vbr_off : (modeoption==1) ? vbr_abr : vbr_default;
 

@@ -1,0 +1,34 @@
+<!--
+Description:
+	An effect parameter knob with a 5 state button below
+	that controls SuperKnob linking type.
+Variables:
+	ToolTip/TooltipId
+	ObjectName
+	Size
+	PotiMinAngle:	see skin.xml
+	PotiMaxAngle: see skin.xml
+	Color: The knob's notch colour.
+	group: The affected group.
+	ConfigKey: The control to connect to.
+-->
+<Template>
+	<WidgetGroup>
+		<ObjectName>KnobTextless</ObjectName>
+		<Layout>horizontal</Layout>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>
+			<KnobComposed>
+				<TooltipId><Variable name="TooltipId"/></TooltipId>
+				<ObjectName><Variable name="ObjectName"/></ObjectName>
+				<Size><Variable name="Size"/></Size>
+				<Knob>skin:/knobs_sliders/knob_<Variable name="Color"/>.svg</Knob>
+				<MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+				<MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+				<Connection>
+					<ConfigKey><Variable name="group"/>,<Variable name="ConfigKey"/></ConfigKey>
+				</Connection>
+			</KnobComposed>
+		</Children>
+	</WidgetGroup>
+</Template>

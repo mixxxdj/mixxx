@@ -112,18 +112,18 @@ bool hasAPETag(TagLib::WavPack::File& file) {
 namespace {
 
 // Preferred picture types for cover art sorted by priority
-const std::array<TagLib::ID3v2::AttachedPictureFrame::Type, 4> kPreferredID3v2PictureTypes = {
+const std::array<TagLib::ID3v2::AttachedPictureFrame::Type, 4> kPreferredID3v2PictureTypes = {{
         TagLib::ID3v2::AttachedPictureFrame::FrontCover, // Front cover image of the album
         TagLib::ID3v2::AttachedPictureFrame::Media, // Image from the album itself
         TagLib::ID3v2::AttachedPictureFrame::Illustration, // Illustration related to the track
         TagLib::ID3v2::AttachedPictureFrame::Other
-};
-const std::array<TagLib::FLAC::Picture::Type, 4> kPreferredVorbisCommentPictureTypes = {
+}};
+const std::array<TagLib::FLAC::Picture::Type, 4> kPreferredVorbisCommentPictureTypes = {{
         TagLib::FLAC::Picture::FrontCover, // Front cover image of the album
         TagLib::FLAC::Picture::Media, // Image from the album itself
         TagLib::FLAC::Picture::Illustration, // Illustration related to the track
         TagLib::FLAC::Picture::Other
-};
+}};
 
 // Deduce the file type from the file name
 FileType getFileTypeFromFileName(QString fileName) {
@@ -1123,10 +1123,10 @@ void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
         // so the number reads as 1352 or 14525 when it is 135.2 or 145.25
         double bpmValueOriginal = bpmValue;
         while (bpmValue > Bpm::kValueMax) {
-            bpmValue /= 10.0;  
+            bpmValue /= 10.0;
         }
         if (bpmValue != bpmValueOriginal) {
-            qWarning() << " Changing BPM on " << pTrackMetadata->getArtist() << " - " << 
+            qWarning() << " Changing BPM on " << pTrackMetadata->getArtist() << " - " <<
                 pTrackMetadata->getTitle() << " from " << bpmValueOriginal << " to " << bpmValue;
         }
         pTrackMetadata->setBpm(Bpm(bpmValue));

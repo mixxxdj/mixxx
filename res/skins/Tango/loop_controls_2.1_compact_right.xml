@@ -1,0 +1,42 @@
+<!--
+Description:
+    Basic looping controls: spinbox for beatloop size, reloop, reloop cue, beatloop
+Variables:
+    group : The group for the controls.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>LoopBeatJumpContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      <Template src="skin:button_2state_right_display.xml">
+        <SetVariable name="TooltipId">reloop_toggle</SetVariable>
+        <SetVariable name="ObjectName">ReloopButton</SetVariable>
+        <SetVariable name="Size">34f,22f</SetVariable>
+        <SetVariable name="state_0_pressed">reloop_pressed.svg</SetVariable>
+        <SetVariable name="state_0_unpressed">reloop.svg</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="group"/>,reloop_toggle</SetVariable>
+        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reloop_andstop</SetVariable>
+        <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,loop_enabled</SetVariable>
+      </Template>
+        <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+      <Template src="skin:button_1state_right.xml">
+        <SetVariable name="TooltipId">beatloop_toggle</SetVariable>
+        <SetVariable name="ObjectName">LoopEnabledbutton</SetVariable>
+        <SetVariable name="Size">35f,22f</SetVariable>
+        <SetVariable name="state_0_pressed">loop_disabled.svg</SetVariable>
+        <SetVariable name="state_0_unpressed">loop_disabled.svg</SetVariable>
+        <SetVariable name="state_1_pressed">loop_enabled.svg</SetVariable>
+        <SetVariable name="state_1_unpressed">loop_enabled.svg</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="group"/>,beatloop_toggle</SetVariable>
+        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatlooproll_toggle</SetVariable>
+      </Template>
+        <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+      <BeatSpinBox><!-- 70x22 -->
+        <TooltipId>beatloop_size</TooltipId>
+        <Value><Variable name="group"/>,beatloop_size</Value>
+      </BeatSpinBox>
+    </Children>
+  </WidgetGroup>
+</Template>
