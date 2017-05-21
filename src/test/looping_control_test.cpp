@@ -52,6 +52,10 @@ class LoopingControlTest : public MockedEngineBackendTest {
         m_pBeatLoop = std::make_unique<ControlProxy>(m_sGroup1, "beatloop");
         m_pBeatLoopSize = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_size");
         m_pButtonBeatLoopSet = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_set");
+        m_pBeatJumpSize = std::make_unique<ControlProxy>(m_sGroup1, "beatjump_size");
+        m_pButtonBeatJumpForward = std::make_unique<ControlProxy>(m_sGroup1, "beatjump_forward");
+        m_pButtonBeatJumpBackward = std::make_unique<ControlProxy>(m_sGroup1, "beatjump_backward");
+        m_pButtonBeatLoopToggle = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_toggle");
     }
 
     bool isLoopEnabled() {
@@ -91,6 +95,10 @@ class LoopingControlTest : public MockedEngineBackendTest {
     std::unique_ptr<ControlProxy> m_pBeatLoop;
     std::unique_ptr<ControlProxy> m_pBeatLoopSize;
     std::unique_ptr<ControlProxy> m_pButtonBeatLoopSet;
+    std::unique_ptr<ControlProxy> m_pBeatJumpSize;
+    std::unique_ptr<ControlProxy> m_pButtonBeatJumpForward;
+    std::unique_ptr<ControlProxy> m_pButtonBeatJumpBackward;
+    std::unique_ptr<ControlProxy> m_pButtonBeatLoopToggle;
 };
 
 TEST_F(LoopingControlTest, LoopSet) {
@@ -191,16 +199,6 @@ TEST_F(LoopingControlTest, LoopInButton_QuantizeEnabledNoBeats) {
     EXPECT_EQ(50, m_pLoopStartPoint->get());
 }
 
-TEST_F(LoopingControlTest, LoopInButton_QuantizeEnabledClosestBeat) {
-    m_pQuantizeEnabled->set(1);
-    m_pClosestBeat->set(100);
-    m_pNextBeat->set(110);
-    seekToSampleAndProcess(50);
-    m_pButtonLoopIn->slotSet(1);
-    m_pButtonLoopIn->slotSet(0);
-    EXPECT_EQ(100, m_pLoopStartPoint->get());
-}
-
 TEST_F(LoopingControlTest, LoopInButton_AdjustLoopInPointOutsideLoop) {
     m_pLoopStartPoint->slotSet(1000);
     m_pLoopEndPoint->slotSet(2000);
@@ -245,17 +243,6 @@ TEST_F(LoopingControlTest, LoopOutButton_QuantizeEnabledNoBeats) {
     EXPECT_EQ(500, m_pLoopEndPoint->get());
 }
 
-TEST_F(LoopingControlTest, LoopOutButton_QuantizeEnabledClosestBeat) {
-    m_pQuantizeEnabled->set(1);
-    m_pClosestBeat->set(1000);
-    m_pNextBeat->set(1100);
-    seekToSampleAndProcess(500);
-    m_pLoopStartPoint->slotSet(0);
-    m_pButtonLoopOut->slotSet(1);
-    m_pButtonLoopOut->slotSet(0);
-    EXPECT_EQ(1000, m_pLoopEndPoint->get());
-}
-
 TEST_F(LoopingControlTest, LoopOutButton_AdjustLoopOutPointOutsideLoop) {
     m_pLoopStartPoint->slotSet(1000);
     m_pLoopEndPoint->slotSet(2000);
@@ -278,6 +265,23 @@ TEST_F(LoopingControlTest, LoopOutButton_AdjustLoopOutPointInsideLoop) {
     EXPECT_EQ(1500, m_pLoopEndPoint->get());
 }
 
+TEST_F(LoopingControlTest, LoopInOutButtons_QuantizeEnabled) {
+    m_pTrack1->setBpm(60.0);
+    m_pQuantizeEnabled->set(1);
+    seekToSampleAndProcess(500);
+    m_pButtonLoopIn->slotSet(1);
+    m_pButtonLoopIn->slotSet(0);
+    EXPECT_EQ(m_pClosestBeat->get(), m_pLoopStartPoint->get());
+    m_pBeatJumpSize->set(13);
+    m_pButtonBeatJumpForward->set(1);
+    m_pButtonBeatJumpForward->set(0);
+    ProcessBuffer();
+    m_pButtonLoopOut->slotSet(1);
+    m_pButtonLoopOut->slotSet(0);
+    ProcessBuffer();
+    EXPECT_EQ(m_pClosestBeat->get(), m_pLoopEndPoint->get());
+    // FIXME: EXPECT_EQ(13.0, m_pBeatLoopSize->get());
+}
 
 TEST_F(LoopingControlTest, ReloopToggleButton_TogglesLoop) {
     m_pQuantizeEnabled->set(0);
