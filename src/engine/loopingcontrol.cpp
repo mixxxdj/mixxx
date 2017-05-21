@@ -120,8 +120,8 @@ LoopingControl::LoopingControl(QString group,
                                           true, false, false, 4.0);
     m_pCOBeatLoopSize->connectValueChangeRequest(this,
             SLOT(slotBeatLoopSizeChangeRequest(double)), Qt::DirectConnection);
-    m_pCOBeatLoopSet = new ControlPushButton(ConfigKey(group, "beatloop_set"));
-    connect(m_pCOBeatLoopSet, SIGNAL(valueChanged(double)),
+    m_pCOBeatLoopActivate = new ControlPushButton(ConfigKey(group, "beatloop_activate"));
+    connect(m_pCOBeatLoopActivate, SIGNAL(valueChanged(double)),
             this, SLOT(slotBeatLoopToggle(double)));
     m_pCOBeatLoopRollActivate = new ControlPushButton(ConfigKey(group, "beatlooproll_activate"));
     connect(m_pCOBeatLoopRollActivate, SIGNAL(valueChanged(double)),
@@ -228,7 +228,7 @@ LoopingControl::~LoopingControl() {
         delete pBeatLoop;
     }
     delete m_pCOBeatLoopSize;
-    delete m_pCOBeatLoopSet;
+    delete m_pCOBeatLoopActivate;
     delete m_pCOBeatLoopRollActivate;
 
     delete m_pCOBeatJump;

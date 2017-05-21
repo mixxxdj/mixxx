@@ -117,7 +117,7 @@ class LoopingControl : public EngineControl {
     void seekInsideAdjustedLoop(int old_loop_in, int old_loop_out,
                                 int new_loop_in, int new_loop_out);
 
-    ControlPushButton* m_pCOBeatLoopSet;
+    ControlPushButton* m_pCOBeatLoopActivate;
     ControlPushButton* m_pCOBeatLoopRollActivate;
     ControlObject* m_pCOLoopStartPosition;
     ControlObject* m_pCOLoopEndPosition;
