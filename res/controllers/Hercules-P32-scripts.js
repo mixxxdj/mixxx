@@ -388,8 +388,8 @@ P32.Deck = function (deckNumbers, channel) {
                 engine.setValue(this.currentDeck, 'reloop_toggle', 1);
                 engine.setValue(this.currentDeck, 'reloop_toggle', 0);
             } else {
-                engine.setValue(this.currentDeck, 'beatloop_toggle', 1);
-                engine.setValue(this.currentDeck, 'beatloop_toggle', 0);
+                engine.setValue(this.currentDeck, 'beatloop_activate', 1);
+                engine.setValue(this.currentDeck, 'beatloop_activate', 0);
             }
         }
     };
