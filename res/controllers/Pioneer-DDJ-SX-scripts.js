@@ -11,7 +11,7 @@ var PioneerDDJSX = function() {};
 
 /*
 	Author: 		DJMaxergy
-	Version: 		1.13, 05/20/2017
+	Version: 		1.14, 05/21/2017
 	Description: 	Pioneer DDJ-SX Controller Mapping for Mixxx
     Source: 		http://github.com/DJMaxergy/mixxx/tree/pioneerDDJSX_mapping
     
@@ -974,6 +974,10 @@ PioneerDDJSX.cueButton = function(channel, control, value, status, group) {
     script.toggleControl(group, "cue_default");
 };
 
+PioneerDDJSX.jumpToBeginningButton = function(channel, control, value, status, group) {
+    script.toggleControl(group, "start_stop");
+};
+
 PioneerDDJSX.headphoneCueButton = function(channel, control, value, status, group) {
     if (value) {
         script.toggleControl(group, "pfl");
@@ -1492,10 +1496,6 @@ PioneerDDJSX.gridSlideButton = function(channel, control, value, status, group) 
 
     PioneerDDJSX.gridSlideSelected[deck] = value ? true : false;
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.gridSlide, value);
-};
-
-PioneerDDJSX.spinbackButton = function(channel, control, value, status, group) {
-    script.spinback(channel, control, value, status, group);
 };
 
 PioneerDDJSX.syncButton = function(channel, control, value, status, group) {
