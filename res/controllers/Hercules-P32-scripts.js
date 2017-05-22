@@ -370,14 +370,14 @@ P32.Deck = function (deckNumbers, channel) {
 
     this.loopMoveEncoder = function (channel, control, value, status, group) {
         if (value > 64) { // left turn
-            engine.setValue(this.currentDeck, 'loop_move_backward', 1);
+            engine.setValue(this.currentDeck, 'beatjump_1_backward', 1);
             engine.beginTimer(200, function () {
-                engine.setValue(this.currentDeck, 'loop_move_backward', 0);
+                engine.setValue(this.currentDeck, 'beatjump_1_backward', 0);
             }, true);
         } else { // right turn
-            engine.setValue(this.currentDeck, 'loop_move_forward', 1);
+            engine.setValue(this.currentDeck, 'beatjump_1_forward', 1);
             engine.beginTimer(200, function () {
-                engine.setValue(this.currentDeck, 'loop_move_forward', 0);
+                engine.setValue(this.currentDeck, 'beatjump_1_forward', 0);
             }, true);
         }
     };
