@@ -103,7 +103,32 @@ CueControl::CueControl(QString group,
     m_pPlayIndicator = new ControlIndicator(ConfigKey(group, "play_indicator"));
 
     m_pAutoDJStartPosition = new ControlObject(ConfigKey(group, "autodj_start_position"));
+
+    m_pAutoDJStartSet = new ControlPushButton(ConfigKey(group, "autodj_start_set"));
+    m_pAutoDJStartSet->setButtonMode(ControlPushButton::TRIGGER);
+    connect(m_pAutoDJStartSet, SIGNAL(valueChanged(double)),
+            this, SLOT(autoDJStartSet(double)),
+            Qt::DirectConnection);
+
+    m_pAutoDJStartClear = new ControlPushButton(ConfigKey(group, "autodj_start_clear"));
+    m_pAutoDJStartClear->setButtonMode(ControlPushButton::TRIGGER);
+    connect(m_pAutoDJStartClear, SIGNAL(valueChanged(double)),
+            this, SLOT(autoDJStartClear(double)),
+            Qt::DirectConnection);
+
     m_pAutoDJEndPosition = new ControlObject(ConfigKey(group, "autodj_end_position"));
+
+    m_pAutoDJEndSet = new ControlPushButton(ConfigKey(group, "autodj_end_set"));
+    m_pAutoDJEndSet->setButtonMode(ControlPushButton::TRIGGER);
+    connect(m_pAutoDJEndSet, SIGNAL(valueChanged(double)),
+            this, SLOT(autoDJEndSet(double)),
+            Qt::DirectConnection);
+
+    m_pAutoDJEndClear = new ControlPushButton(ConfigKey(group, "autodj_end_clear"));
+    m_pAutoDJEndClear->setButtonMode(ControlPushButton::TRIGGER);
+    connect(m_pAutoDJEndClear, SIGNAL(valueChanged(double)),
+            this, SLOT(autoDJEndClear(double)),
+            Qt::DirectConnection);
 
     m_pVinylControlEnabled = new ControlProxy(group, "vinylcontrol_enabled");
     m_pVinylControlMode = new ControlProxy(group, "vinylcontrol_mode");
@@ -124,7 +149,11 @@ CueControl::~CueControl() {
     delete m_pCueIndicator;
     delete m_pPlayIndicator;
     delete m_pAutoDJStartPosition;
+    delete m_pAutoDJStartSet;
+    delete m_pAutoDJStartClear;
     delete m_pAutoDJEndPosition;
+    delete m_pAutoDJEndSet;
+    delete m_pAutoDJEndClear;
     delete m_pVinylControlEnabled;
     delete m_pVinylControlMode;
     qDeleteAll(m_hotcueControls);
@@ -225,12 +254,6 @@ void CueControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
         if (pCue->getType() == Cue::LOAD) {
             DEBUG_ASSERT(!pLoadCue);
             pLoadCue = pCue;
-        }
-        if (pCue->getType() == Cue::BEGIN) {
-            m_pAutoDJStartPosition->set(pCue->getPosition());
-        }
-        if (pCue->getType() == Cue::END) {
-            m_pAutoDJEndPosition->set(pCue->getPosition());
         }
         int hotcue = pCue->getHotCue();
         if (hotcue != -1) {
@@ -864,6 +887,86 @@ void CueControl::playStutter(double v) {
             cueGoto(1.0);
         } else {
             m_pPlay->set(1.0);
+        }
+    }
+}
+
+void CueControl::autoDJStartSet(double v) {
+    if (!v) {
+        return;
+    }
+
+    QMutexLocker lock(&m_mutex);
+    double position = getCurrentSample();
+    m_pAutoDJStartPosition->set(position);
+    TrackPointer pLoadedTrack = m_pLoadedTrack;
+    lock.unlock();
+
+    if (pLoadedTrack) {
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::BEGIN);
+        if (!pCue) {
+            pCue = pLoadedTrack->createAndAddCue();
+            pCue->setType(Cue::BEGIN);
+        }
+        pCue->setSource(Cue::MANUAL);
+        pCue->setPosition(position);
+    }
+}
+
+void CueControl::autoDJStartClear(double v) {
+    if (!v) {
+        return;
+    }
+
+    QMutexLocker lock(&m_mutex);
+    m_pAutoDJStartPosition->set(-1.0);
+    TrackPointer pLoadedTrack = m_pLoadedTrack;
+    lock.unlock();
+
+    if (pLoadedTrack) {
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::BEGIN);
+        if (pCue) {
+            pLoadedTrack->removeCue(pCue);
+        }
+    }
+}
+
+void CueControl::autoDJEndSet(double v) {
+    if (!v) {
+        return;
+    }
+
+    QMutexLocker lock(&m_mutex);
+    double position = getCurrentSample();
+    m_pAutoDJEndPosition->set(position);
+    TrackPointer pLoadedTrack = m_pLoadedTrack;
+    lock.unlock();
+
+    if (pLoadedTrack) {
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::END);
+        if (!pCue) {
+            pCue = pLoadedTrack->createAndAddCue();
+            pCue->setType(Cue::END);
+        }
+        pCue->setSource(Cue::MANUAL);
+        pCue->setPosition(position);
+    }
+}
+
+void CueControl::autoDJEndClear(double v) {
+    if (!v) {
+        return;
+    }
+
+    QMutexLocker lock(&m_mutex);
+    m_pAutoDJEndPosition->set(-1.0);
+    TrackPointer pLoadedTrack = m_pLoadedTrack;
+    lock.unlock();
+
+    if (pLoadedTrack) {
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::END);
+        if (pCue) {
+            pLoadedTrack->removeCue(pCue);
         }
     }
 }

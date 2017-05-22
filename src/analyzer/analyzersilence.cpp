@@ -19,22 +19,36 @@ AnalyzerSilence::~AnalyzerSilence() {
 }
 
 bool AnalyzerSilence::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
-    Q_UNUSED(tio);
     Q_UNUSED(sampleRate);
-    Q_UNUSED(totalSamples);
 
     m_iFramesProcessed = 0;
     m_bPrevSilence = true;
     m_iSignalBegin = -1;
     m_iSignalEnd = -1;
 
-    return true;
+    m_pBeginCue = tio->findCueByType(Cue::BEGIN);
+    if (!m_pBeginCue) {
+        m_pBeginCue = tio->createAndAddCue();
+        m_pBeginCue->setType(Cue::BEGIN);
+        m_pBeginCue->setSource(Cue::AUTOMATIC);
+        m_pBeginCue->setPosition(0);
+    }
+
+    m_pEndCue = tio->findCueByType(Cue::END);
+    if (!m_pEndCue) {
+        m_pEndCue = tio->createAndAddCue();
+        m_pEndCue->setType(Cue::END);
+        m_pEndCue->setSource(Cue::AUTOMATIC);
+        m_pEndCue->setPosition(totalSamples);
+    }
+
+    return !isDisabledOrLoadStoredSuccess(tio);
 }
 
 bool AnalyzerSilence::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
     Q_UNUSED(tio);
 
-    return false;
+    return m_pBeginCue->getSource() == Cue::MANUAL && m_pEndCue->getSource() == Cue::MANUAL;
 }
 
 void AnalyzerSilence::process(const CSAMPLE *pIn, const int iLen) {
@@ -67,6 +81,8 @@ void AnalyzerSilence::cleanup(TrackPointer tio) {
 }
 
 void AnalyzerSilence::finalize(TrackPointer tio) {
+    Q_UNUSED(tio);
+
     if (m_iSignalBegin < 0) {
         m_iSignalBegin = 0;
     }
@@ -80,40 +96,11 @@ void AnalyzerSilence::finalize(TrackPointer tio) {
         m_iSignalEnd = m_iFramesProcessed;
     }
 
-    bool bBeginPointFoundAndSet = false;
-    bool bEndPointFoundAndSet = false;
-    QList<CuePointer> cues = tio->getCuePoints();
-    foreach (CuePointer pCue, cues) {
-        if (pCue->getType() == Cue::BEGIN) {
-            pCue->setSource(Cue::AUTOMATIC);
-            pCue->setHotCue(-1);
-            pCue->setLength(0);
-            pCue->setPosition(kChannelCount * m_iSignalBegin);
-            bBeginPointFoundAndSet = true;
-        } else if (pCue->getType() == Cue::END) {
-            pCue->setSource(Cue::AUTOMATIC);
-            pCue->setHotCue(-1);
-            pCue->setLength(0);
-            pCue->setPosition(kChannelCount * m_iSignalEnd);
-            bEndPointFoundAndSet = true;
-        }
+    if (m_pBeginCue->getSource() != Cue::MANUAL) {
+        m_pBeginCue->setPosition(kChannelCount * m_iSignalBegin);
     }
 
-    if (!bBeginPointFoundAndSet) {
-        CuePointer pCue = tio->createAndAddCue();
-        pCue->setSource(Cue::AUTOMATIC);
-        pCue->setType(Cue::BEGIN);
-        pCue->setHotCue(-1);
-        pCue->setLength(0);
-        pCue->setPosition(kChannelCount * m_iSignalBegin);
-    }
-
-    if (!bEndPointFoundAndSet) {
-        CuePointer pCue = tio->createAndAddCue();
-        pCue->setSource(Cue::AUTOMATIC);
-        pCue->setType(Cue::END);
-        pCue->setHotCue(-1);
-        pCue->setLength(0);
-        pCue->setPosition(kChannelCount * m_iSignalEnd);
+    if (m_pEndCue->getSource() != Cue::MANUAL) {
+        m_pEndCue->setPosition(kChannelCount * m_iSignalEnd);
     }
 }

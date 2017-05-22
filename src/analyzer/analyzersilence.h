@@ -4,6 +4,8 @@
 #include "analyzer/analyzer.h"
 #include "preferences/usersettings.h"
 
+class CuePointer;
+
 class AnalyzerSilence : public Analyzer {
   public:
     AnalyzerSilence(UserSettingsPointer pConfig);
@@ -22,6 +24,9 @@ class AnalyzerSilence : public Analyzer {
     bool m_bPrevSilence;
     int m_iSignalBegin;
     int m_iSignalEnd;
+
+    CuePointer m_pBeginCue;
+    CuePointer m_pEndCue;
 };
 
 #endif // ANALYZER_ANALYZERSILENCE_H

@@ -748,6 +748,16 @@ CuePointer Track::createAndAddCue() {
     return pCue;
 }
 
+CuePointer Track::findCueByType(Cue::CueType type) const {
+    QMutexLocker lock(&m_qMutex);
+    for (const CuePointer& pCue: m_cuePoints) {
+        if (pCue->getType() == type) {
+            return pCue;
+        }
+    }
+    return CuePointer();
+}
+
 void Track::removeCue(const CuePointer& pCue) {
     QMutexLocker lock(&m_qMutex);
     disconnect(pCue.get(), 0, this, 0);

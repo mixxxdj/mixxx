@@ -122,6 +122,11 @@ class CueControl : public EngineControl {
     void pause(double v);
     void playStutter(double v);
 
+    void autoDJStartSet(double v);
+    void autoDJStartClear(double v);
+    void autoDJEndSet(double v);
+    void autoDJEndClear(double v);
+
   private:
     // These methods are not thread safe, only call them when the lock is held.
     void createControls();
@@ -156,7 +161,12 @@ class CueControl : public EngineControl {
     ControlPushButton* m_pCuePreview;
 
     ControlObject* m_pAutoDJStartPosition;
+    ControlPushButton* m_pAutoDJStartSet;
+    ControlPushButton* m_pAutoDJStartClear;
+
     ControlObject* m_pAutoDJEndPosition;
+    ControlPushButton* m_pAutoDJEndSet;
+    ControlPushButton* m_pAutoDJEndClear;
 
     ControlProxy* m_pVinylControlEnabled;
     ControlProxy* m_pVinylControlMode;
