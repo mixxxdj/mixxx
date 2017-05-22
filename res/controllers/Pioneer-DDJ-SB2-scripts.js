@@ -250,10 +250,16 @@ PioneerDDJSB2.Deck = function (deckNumber) {
         unshift: function () {
             this.inKey = 'beatloop_activate';
             this.outKey = 'beatloop_activate';
+            this.disconnect();
+            this.connect();
+            this.trigger();
         },
         shift: function () {
             this.inKey = 'beatlooproll_activate';
             this.outKey = 'beatlooproll_activate';
+            this.disconnect();
+            this.connect();
+            this.trigger();
         },
     });
 
@@ -262,10 +268,16 @@ PioneerDDJSB2.Deck = function (deckNumber) {
         unshift: function () {
             this.inKey = 'loop_halve';
             this.outKey = 'loop_halve';
+            this.disconnect();
+            this.connect();
+            this.trigger();
         },
         shift: function () {
             this.inKey = 'beatjump_backward';
             this.outKey = 'beatjump_backward';
+            this.disconnect();
+            this.connect();
+            this.trigger();
         },
     });
 
@@ -274,10 +286,16 @@ PioneerDDJSB2.Deck = function (deckNumber) {
         unshift: function () {
             this.inKey = 'loop_double';
             this.outKey = 'loop_double';
+            this.disconnect();
+            this.connect();
+            this.trigger();
         },
         shift: function () {
             this.inKey = 'beatjump_forward';
             this.outKey = 'beatjump_forward';
+            this.disconnect();
+            this.connect();
+            this.trigger();
         },
     });
 
