@@ -567,7 +567,7 @@ bool BpmControl::getBeatContextNoLookup(
     return true;
 }
 
-double BpmControl::getNearestPositionInPhase(double dThisPosition, bool respectLoops) {
+double BpmControl::getNearestPositionInPhase(double dThisPosition, bool respectLoops, bool playing) {
     // Without a beatgrid, we don't know the phase offset.
     if (!m_pBeats) {
         return dThisPosition;
@@ -607,6 +607,14 @@ double BpmControl::getNearestPositionInPhase(double dThisPosition, bool respectL
         EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
         if (pOtherEngineBuffer == NULL) {
             return dThisPosition;
+        }
+
+        if (playing) {
+            // "this" track is playing, or just starting
+            // only match phase if the sync target is playing as well
+            if (pOtherEngineBuffer->getSpeed() == 0.0) {
+                return dThisPosition;
+            }
         }
 
         TrackPointer otherTrack = pOtherEngineBuffer->getLoadedTrack();
@@ -693,7 +701,7 @@ double BpmControl::getNearestPositionInPhase(double dThisPosition, bool respectL
                 // Move new position after loop jump into phase as well.
                 // This is a recursive call, called only twice because of
                 // respectLoops = false
-                dNewPlaypos = getNearestPositionInPhase(dNewPlaypos, false);
+                dNewPlaypos = getNearestPositionInPhase(dNewPlaypos, false, playing);
             }
 
             // Note: Syncing to before the loop beginning is allowed, because
@@ -706,7 +714,7 @@ double BpmControl::getNearestPositionInPhase(double dThisPosition, bool respectL
 
 double BpmControl::getPhaseOffset(double dThisPosition) {
     // This does not respect looping
-    double dNewPlaypos = getNearestPositionInPhase(dThisPosition, false);
+    double dNewPlaypos = getNearestPositionInPhase(dThisPosition, false, false);
     return dNewPlaypos - dThisPosition;
 }
 
