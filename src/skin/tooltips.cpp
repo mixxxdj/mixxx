@@ -600,33 +600,23 @@ void Tooltips::addStandardTooltips() {
             << QString("%1: %2").arg(rightClick, tr("Temporarily enable a rolling loop over the set number of beats."))
             << tr("Playback will resume where the track would have been if it had not entered the loop.");
 
-    add("loop_move_forward")
-            << tr("Loop Move Forward")
-            << QString("%1: %2").arg(leftClick, tr("Move the loop forward by 1 beat."))
-            << tr("If the loop is shorter than 1 beat, move the loop forward by its size.")
-            << QString("%1: %2").arg(rightClick, tr("Move the loop forward by its size."));
-
-    add("loop_move_backward")
-            << tr("Loop Move Backward")
-            << QString("%1: %2").arg(leftClick, tr("Move the loop backward by 1 beat."))
-            << tr("If the loop is shorter than 1 beat, move the loop backward by its size.")
-            << QString("%1: %2").arg(rightClick, tr("Move the loop backward by its size."));
-
     add("beatjump_size")
-            << tr("Beatjump Size")
-            << tr("Select the number of beats to jump with the Beatjump Forward/Backward buttons.");
+            << tr("Beatjump/Loop Move Size")
+            << tr("Select the number of beats to jump or move the loop with the Beatjump Forward/Backward buttons.");
 
     add("beatjump_forward")
             << tr("Beatjump Forward")
             << QString("%1: %2").arg(leftClick + " " + loopInactive, tr("Jump forward by the set number of beats."))
             << QString("%1: %2").arg(leftClick + " " + loopActive, tr("Move the loop forward by the set number of beats."))
-            << QString("%1: %2").arg(rightClick, tr("Jump forward by 1 beat."));
+            << QString("%1: %2").arg(rightClick + " " + loopInactive, tr("Jump forward by 1 beat."))
+            << QString("%1: %2").arg(rightClick + " " + loopActive, tr("Move the loop forward by 1 beat."));
 
     add("beatjump_backward")
             << tr("Beatjump Backward")
             << QString("%1: %2").arg(leftClick + " " + loopInactive, tr("Jump backward by the set number of beats."))
             << QString("%1: %2").arg(leftClick + " " + loopActive, tr("Move the loop backward by the set number of beats."))
-            << QString("%1: %2").arg(rightClick, tr("Jump backward by 1 beat."));
+            << QString("%1: %2").arg(rightClick + " " + loopInactive, tr("Jump backward by 1 beat."))
+            << QString("%1: %2").arg(rightClick + " " + loopActive, tr("Move the loop backward by 1 beat."));
 
     add("loop_exit")
             << tr("Loop Exit")
