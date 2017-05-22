@@ -55,7 +55,6 @@ class LoopingControlTest : public MockedEngineBackendTest {
         m_pBeatJumpSize = std::make_unique<ControlProxy>(m_sGroup1, "beatjump_size");
         m_pButtonBeatJumpForward = std::make_unique<ControlProxy>(m_sGroup1, "beatjump_forward");
         m_pButtonBeatJumpBackward = std::make_unique<ControlProxy>(m_sGroup1, "beatjump_backward");
-        m_pButtonBeatLoopToggle = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_toggle");
     }
 
     bool isLoopEnabled() {
@@ -98,7 +97,6 @@ class LoopingControlTest : public MockedEngineBackendTest {
     std::unique_ptr<ControlProxy> m_pBeatJumpSize;
     std::unique_ptr<ControlProxy> m_pButtonBeatJumpForward;
     std::unique_ptr<ControlProxy> m_pButtonBeatJumpBackward;
-    std::unique_ptr<ControlProxy> m_pButtonBeatLoopToggle;
 };
 
 TEST_F(LoopingControlTest, LoopSet) {
@@ -751,4 +749,72 @@ TEST_F(LoopingControlTest, LegacyBeatLoopControl) {
     m_pBeatLoop->set(6.0);
     EXPECT_TRUE(m_pLoopEnabled->toBool());
     EXPECT_EQ(6.0, m_pBeatLoopSize->get());
+}
+
+TEST_F(LoopingControlTest, Beatjump_JumpsByBeats) {
+    m_pTrack1->setBpm(120.0);
+    double beatLength = m_pNextBeat->get();
+    EXPECT_NE(0, beatLength);
+
+    m_pBeatJumpSize->set(4.0);
+    m_pButtonBeatJumpForward->set(1.0);
+    m_pButtonBeatJumpForward->set(0.0);
+    ProcessBuffer();
+    EXPECT_EQ(beatLength * 4, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    m_pButtonBeatJumpBackward->set(1.0);
+    m_pButtonBeatJumpBackward->set(0.0);
+    ProcessBuffer();
+    EXPECT_EQ(0, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+}
+
+TEST_F(LoopingControlTest, Beatjump_MovesActiveLoop) {
+    m_pTrack1->setBpm(120.0);
+    m_pBeatLoopSize->set(4.0);
+    m_pButtonBeatLoopActivate->set(1.0);
+    m_pButtonBeatLoopActivate->set(0.0);
+    double beatLength = m_pNextBeat->get();
+    EXPECT_EQ(0, m_pLoopStartPoint->get());
+    EXPECT_EQ(beatLength * 4, m_pLoopEndPoint->get());
+
+    m_pBeatJumpSize->set(1.0);
+    m_pButtonBeatJumpForward->set(1.0);
+    m_pButtonBeatJumpForward->set(0.0);
+    EXPECT_EQ(beatLength, m_pLoopStartPoint->get());
+    EXPECT_EQ(beatLength * 5, m_pLoopEndPoint->get());
+
+    m_pButtonBeatJumpBackward->set(1.0);
+    m_pButtonBeatJumpBackward->set(0.0);
+    EXPECT_EQ(0, m_pLoopStartPoint->get());
+    EXPECT_EQ(beatLength * 4, m_pLoopEndPoint->get());
+}
+
+TEST_F(LoopingControlTest, Beatjump_MovesLoopBoundaries) {
+    // Holding down the loop in/out buttons and using beatjump should
+    // move only the loop in/out point, but not shift the entire loop forward/backward
+    m_pTrack1->setBpm(120.0);
+    m_pBeatLoopSize->set(4.0);
+    m_pButtonBeatLoopActivate->set(1.0);
+    m_pButtonBeatLoopActivate->set(0.0);
+    double beatLength = m_pNextBeat->get();
+    EXPECT_EQ(0, m_pLoopStartPoint->get());
+    EXPECT_EQ(beatLength * 4, m_pLoopEndPoint->get());
+
+    m_pButtonLoopIn->set(1.0);
+    m_pBeatJumpSize->set(1.0);
+    m_pButtonBeatJumpForward->set(1.0);
+    m_pButtonBeatJumpForward->set(0.0);
+    ProcessBuffer();
+    m_pButtonLoopIn->set(0.0);
+    ProcessBuffer();
+    EXPECT_EQ(beatLength, m_pLoopStartPoint->get());
+    EXPECT_EQ(beatLength * 4, m_pLoopEndPoint->get());
+
+    m_pButtonLoopOut->set(1.0);
+    m_pButtonBeatJumpForward->set(1.0);
+    m_pButtonBeatJumpForward->set(0.0);
+    ProcessBuffer();
+    m_pButtonLoopOut->set(0.0);
+    ProcessBuffer();
+    EXPECT_EQ(beatLength, m_pLoopStartPoint->get());
+    EXPECT_EQ(beatLength * 2, m_pLoopEndPoint->get());
 }

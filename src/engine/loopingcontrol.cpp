@@ -1049,7 +1049,7 @@ void LoopingControl::slotBeatJump(double beats) {
         return;
     }
 
-    if (m_bLoopingEnabled) {
+    if (m_bLoopingEnabled && !m_bAdjustingLoopIn && !m_bAdjustingLoopOut) {
         slotLoopMove(beats);
     } else {
         seekAbs(m_pBeats->findNBeatsFromSample(getCurrentSample(), beats));
