@@ -1049,10 +1049,6 @@ void LoopingControl::slotBeatJump(double beats) {
         return;
     }
 
-    if (m_pCOBeatJumpSize->get() != abs(beats)) {
-        m_pCOBeatJumpSize->set(abs(beats));
-    }
-
     if (m_bLoopingEnabled) {
         slotLoopMove(beats);
     } else {
