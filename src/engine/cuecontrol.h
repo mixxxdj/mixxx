@@ -154,8 +154,10 @@ class CueControl : public EngineControl {
     ControlPushButton* m_pCuePlay;
     ControlPushButton* m_pCueGotoAndStop;
     ControlPushButton* m_pCuePreview;
-    ControlObject* m_pSignalBeginPosition;
-    ControlObject* m_pSignalEndPosition;
+
+    ControlObject* m_pAutoDJStartPosition;
+    ControlObject* m_pAutoDJEndPosition;
+
     ControlProxy* m_pVinylControlEnabled;
     ControlProxy* m_pVinylControlMode;
 
