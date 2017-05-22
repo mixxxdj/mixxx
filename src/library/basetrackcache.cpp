@@ -33,7 +33,7 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
           m_bIsCaching(isCaching),
           m_trackDAO(pTrackCollection->getTrackDAO()),
           m_database(pTrackCollection->database()),
-          m_pQueryParser(new SearchQueryParser(pTrackCollection->database())) {
+          m_pQueryParser(new SearchQueryParser(pTrackCollection)) {
     m_searchColumns << "artist"
                     << "album"
                     << "album_artist"
