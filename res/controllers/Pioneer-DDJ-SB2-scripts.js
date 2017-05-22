@@ -264,8 +264,8 @@ PioneerDDJSB2.Deck = function (deckNumber) {
             this.outKey = 'loop_halve';
         },
         shift: function () {
-            this.inKey = 'loop_move_backward';
-            this.outKey = 'loop_move_backward';
+            this.inKey = 'beatjump_backward';
+            this.outKey = 'beatjump_backward';
         },
     });
 
@@ -276,8 +276,8 @@ PioneerDDJSB2.Deck = function (deckNumber) {
             this.outKey = 'loop_double';
         },
         shift: function () {
-            this.inKey = 'loop_move_forward';
-            this.outKey = 'loop_move_forward';
+            this.inKey = 'beatjump_forward';
+            this.outKey = 'beatjump_forward';
         },
     });
 
