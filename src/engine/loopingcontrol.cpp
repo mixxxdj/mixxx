@@ -106,6 +106,7 @@ LoopingControl::LoopingControl(QString group,
 
     m_pQuantizeEnabled = ControlObject::getControl(ConfigKey(group, "quantize"));
     m_pNextBeat = ControlObject::getControl(ConfigKey(group, "beat_next"));
+    m_pPreviousBeat = ControlObject::getControl(ConfigKey(group, "beat_prev"));
     m_pClosestBeat = ControlObject::getControl(ConfigKey(group, "beat_closest"));
     m_pTrackSamples = ControlObject::getControl(ConfigKey(group, "track_samples"));
     m_pSlipEnabled = ControlObject::getControl(ConfigKey(group, "slip_enabled"));
@@ -423,13 +424,21 @@ void LoopingControl::setLoopInToCurrentPosition() {
 
     // set loop-in position
     LoopSamples loopSamples = m_loopSamples.getValue();
-    double closestBeat = -1;
+    double quantizedBeat = -1;
     int pos = m_iCurrentSample;
     if (m_pQuantizeEnabled->toBool() && m_pBeats != nullptr) {
-        closestBeat = m_pClosestBeat->get();
-        if (closestBeat != -1) {
-            pos = static_cast<int>(floor(closestBeat));
+        if (m_bAdjustingLoopIn) {
+            quantizedBeat = m_pPreviousBeat->get();
+        } else {
+            quantizedBeat = m_pClosestBeat->get();
         }
+        if (quantizedBeat != -1) {
+            pos = static_cast<int>(floor(quantizedBeat));
+        }
+    }
+
+    if (pos != -1 && !even(pos)) {
+        pos--;
     }
 
     // Reset the loop out position if it is before the loop in so that loops
@@ -445,18 +454,14 @@ void LoopingControl::setLoopInToCurrentPosition() {
     //  pre-defined beatloop size instead (when possible)
     if (loopSamples.end != kNoTrigger &&
             (loopSamples.end - pos) < MINIMUM_AUDIBLE_LOOP_SIZE) {
-        if (closestBeat != -1 && m_pBeats) {
-            pos = static_cast<int>(floor(m_pBeats->findNthBeat(closestBeat, -2)));
+        if (quantizedBeat != -1 && m_pBeats) {
+            pos = static_cast<int>(floor(m_pBeats->findNthBeat(quantizedBeat, -2)));
             if (pos == -1 || (loopSamples.end - pos) < MINIMUM_AUDIBLE_LOOP_SIZE) {
                 pos = loopSamples.end - MINIMUM_AUDIBLE_LOOP_SIZE;
             }
         } else {
             pos = loopSamples.end - MINIMUM_AUDIBLE_LOOP_SIZE;
         }
-    }
-
-    if (pos != -1 && !even(pos)) {
-        pos--;
     }
 
     loopSamples.start = pos;
@@ -486,8 +491,8 @@ void LoopingControl::slotLoopIn(double pressed) {
             // Adjusting both the in and out point at the same time makes no sense
             m_bAdjustingLoopOut = false;
         } else {
-            m_bAdjustingLoopIn = false;
             setLoopInToCurrentPosition();
+            m_bAdjustingLoopIn = false;
         }
     } else {
         if (pressed > 0.0) {
@@ -506,13 +511,21 @@ void LoopingControl::slotLoopInGoto(double pressed) {
 
 void LoopingControl::setLoopOutToCurrentPosition() {
     LoopSamples loopSamples = m_loopSamples.getValue();
-    double closestBeat = -1;
+    double quantizedBeat = -1;
     int pos = m_iCurrentSample;
     if (m_pQuantizeEnabled->toBool() && m_pBeats != nullptr) {
-        closestBeat = m_pClosestBeat->get();
-        if (closestBeat != -1) {
-            pos = static_cast<int>(floor(closestBeat));
+        if (m_bAdjustingLoopOut) {
+            quantizedBeat = m_pNextBeat->get();
+        } else {
+            quantizedBeat = m_pClosestBeat->get();
         }
+        if (quantizedBeat != -1) {
+            pos = static_cast<int>(floor(quantizedBeat));
+        }
+    }
+
+    if (pos != -1 && !even(pos)) {
+        pos++;  // Increment to avoid shortening too-short loops
     }
 
     // If the user is trying to set a loop-out before the loop in or without
@@ -525,18 +538,14 @@ void LoopingControl::setLoopOutToCurrentPosition() {
     //  inaudible (which can happen easily with quantize-to-beat enabled,)
     //  use the smallest pre-defined beatloop instead (when possible)
     if ((pos - loopSamples.start) < MINIMUM_AUDIBLE_LOOP_SIZE) {
-        if (closestBeat != -1 && m_pBeats) {
-            pos = static_cast<int>(floor(m_pBeats->findNthBeat(closestBeat, 2)));
+        if (quantizedBeat != -1 && m_pBeats) {
+            pos = static_cast<int>(floor(m_pBeats->findNthBeat(quantizedBeat, 2)));
             if (pos == -1 || (pos - loopSamples.start) < MINIMUM_AUDIBLE_LOOP_SIZE) {
                 pos = loopSamples.start + MINIMUM_AUDIBLE_LOOP_SIZE;
             }
         } else {
             pos = loopSamples.start + MINIMUM_AUDIBLE_LOOP_SIZE;
         }
-    }
-
-    if (pos != -1 && !even(pos)) {
-        pos++;  // Increment to avoid shortening too-short loops
     }
 
     clearActiveBeatLoop();
@@ -575,8 +584,8 @@ void LoopingControl::slotLoopOut(double pressed) {
             // was disabled, that will enable looping, so avoid moving the
             // loop out point when the button is released.
             if (!m_bLoopOutPressedWhileLoopDisabled) {
-                m_bAdjustingLoopOut = false;
                 setLoopOutToCurrentPosition();
+                m_bAdjustingLoopOut = false;
             } else {
                 m_bLoopOutPressedWhileLoopDisabled = false;
             }

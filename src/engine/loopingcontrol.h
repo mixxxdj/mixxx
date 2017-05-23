@@ -143,6 +143,7 @@ class LoopingControl : public EngineControl {
     QAtomicInt m_iCurrentSample;
     ControlObject* m_pQuantizeEnabled;
     ControlObject* m_pNextBeat;
+    ControlObject* m_pPreviousBeat;
     ControlObject* m_pClosestBeat;
     ControlObject* m_pTrackSamples;
     QAtomicPointer<BeatLoopingControl> m_pActiveBeatLoop;
