@@ -72,7 +72,7 @@ void WaveformRendererRGB::draw(QPainter* painter,
     const int breadth = m_waveformRenderer->getBreadth();
     const float halfBreadth = (float)breadth / 2.0;
 
-    const float heightFactor = allGain * halfBreadth / 255.0;
+    const float heightFactor = allGain * halfBreadth / sqrtf(255 * 255 * 3);
 
     // Draw reference line
     painter->setPen(m_pColors->getAxesColor());
@@ -112,19 +112,25 @@ void WaveformRendererRGB::draw(QPainter* painter,
         unsigned char maxLow  = 0;
         unsigned char maxMid  = 0;
         unsigned char maxHigh = 0;
-        unsigned char maxAllA = 0;
-        unsigned char maxAllB = 0;
+        float maxAll = 0.;
+        float maxAllNext = 0.;
 
         for (int i = visualIndexStart;
              i >= 0 && i + 1 < dataSize && i + 1 <= visualIndexStop; i += 2) {
-            const WaveformData& waveformData = *(data + i);
-            const WaveformData& waveformDataNext = *(data + i + 1);
+            const WaveformData& waveformData = data[i];
+            const WaveformData& waveformDataNext = data[i + 1];
 
             maxLow  = math_max3(maxLow,  waveformData.filtered.low,  waveformDataNext.filtered.low);
             maxMid  = math_max3(maxMid,  waveformData.filtered.mid,  waveformDataNext.filtered.mid);
             maxHigh = math_max3(maxHigh, waveformData.filtered.high, waveformDataNext.filtered.high);
-            maxAllA = math_max(maxAllA, waveformData.filtered.all);
-            maxAllB = math_max(maxAllB, waveformDataNext.filtered.all);
+            float all = pow(waveformData.filtered.low * lowGain, 2) +
+                pow(waveformData.filtered.mid * midGain, 2) +
+                pow(waveformData.filtered.high * highGain, 2);
+            maxAll = math_max(maxAll, all);
+            float allNext = pow(waveformDataNext.filtered.low * lowGain, 2) +
+                pow(waveformDataNext.filtered.mid * midGain, 2) +
+                pow(waveformDataNext.filtered.high * highGain, 2);
+            maxAllNext = math_max(maxAllNext, allNext);
         }
 
         qreal maxLowF = maxLow * lowGain;
@@ -145,22 +151,22 @@ void WaveformRendererRGB::draw(QPainter* painter,
 
             painter->setPen(color);
             switch (m_alignment) {
-                case Qt::AlignBottom :
-                case Qt::AlignRight :
+                case Qt::AlignBottom:
+                case Qt::AlignRight:
                     painter->drawLine(
                         x, breadth,
-                        x, breadth - (int)(heightFactor * (float)math_max(maxAllA, maxAllB)));
+                        x, breadth - (int)(heightFactor * sqrtf(math_max(maxAll, maxAllNext))));
                     break;
-                case Qt::AlignTop :
-                case Qt::AlignLeft :
+                case Qt::AlignTop:
+                case Qt::AlignLeft:
                     painter->drawLine(
                         x, 0,
-                        x, (int)(heightFactor * (float)math_max(maxAllA, maxAllB)));
+                        x, (int)(heightFactor * sqrtf(math_max(maxAll, maxAllNext))));
                     break;
-                default :
+                default:
                     painter->drawLine(
-                        x, (int)(halfBreadth - heightFactor * (float)maxAllA),
-                        x, (int)(halfBreadth + heightFactor * (float)maxAllB));
+                        x, (int)(halfBreadth - heightFactor * sqrtf(maxAll)),
+                        x, (int)(halfBreadth + heightFactor * sqrtf(maxAllNext)));
             }
         }
     }
