@@ -428,7 +428,12 @@ void LoopingControl::setLoopInToCurrentPosition() {
     int pos = m_iCurrentSample;
     if (m_pQuantizeEnabled->toBool() && m_pBeats != nullptr) {
         if (m_bAdjustingLoopIn) {
-            quantizedBeat = m_pPreviousBeat->get();
+            double closestBeat = m_pClosestBeat->get();
+            if (closestBeat == getCurrentSample()) {
+                quantizedBeat = closestBeat;
+            } else {
+                quantizedBeat = m_pPreviousBeat->get();
+            }
         } else {
             quantizedBeat = m_pClosestBeat->get();
         }
@@ -515,7 +520,12 @@ void LoopingControl::setLoopOutToCurrentPosition() {
     int pos = m_iCurrentSample;
     if (m_pQuantizeEnabled->toBool() && m_pBeats != nullptr) {
         if (m_bAdjustingLoopOut) {
-            quantizedBeat = m_pNextBeat->get();
+            double closestBeat = m_pClosestBeat->get();
+            if (closestBeat == getCurrentSample()) {
+                quantizedBeat = closestBeat;
+            } else {
+                quantizedBeat = m_pNextBeat->get();
+            }
         } else {
             quantizedBeat = m_pClosestBeat->get();
         }
