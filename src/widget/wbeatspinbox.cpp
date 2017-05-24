@@ -6,7 +6,7 @@
 #include "control/controlproxy.h"
 #include "util/math.h"
 
-QRegExp WBeatSpinBox::s_regexpBlacklist("[^0-9./ ]");
+QRegExp WBeatSpinBox::s_regexpBlacklist("[^0-9.,/ ]");
 
 WBeatSpinBox::WBeatSpinBox(QWidget * parent, ControlObject* pValueControl,
                            int decimals, double minimum, double maximum)
@@ -155,15 +155,15 @@ QString WBeatSpinBox::textFromValue(double value) const {
     if (dWholePart > 0) {
         if (sFracPart.isEmpty()) {
             if (dFracPart == 0.00000) {
-                return QString::number(dWholePart, 'f', 0);
+                return locale().toString(dWholePart, 'f', 0);
             } else {
-                return QString::number(value, 'f', 5);
+                return locale().toString(value, 'f', 5);
             }
         }
-        return QString::number(dWholePart, 'f', 0) + " " + sFracPart;
+        return locale().toString(dWholePart, 'f', 0) + " " + sFracPart;
     } else {
         if (sFracPart.isEmpty() ) {
-            return QString::number(value, 'f', 5);
+            return locale().toString(value, 'f', 5);
         }
         return sFracPart;
     }
@@ -176,7 +176,7 @@ double WBeatSpinBox::valueFromText(const QString& text) const {
 
     bool conversionWorked = false;
     double dValue;
-    dValue = text.toDouble(&conversionWorked);
+    dValue = locale().toDouble(text, &conversionWorked);
     if (conversionWorked) {
         return dValue;
     }
@@ -195,7 +195,8 @@ double WBeatSpinBox::valueFromText(const QString& text) const {
     sNumerator = splitFraction.at(0);
     sDenominator = splitFraction.at(1);
 
-    return sIntPart.toDouble() + sNumerator.toDouble() / sDenominator.toDouble();
+    return locale().toDouble(sIntPart)
+            + locale().toDouble(sNumerator) / locale().toDouble(sDenominator);
 }
 
 QValidator::State WBeatSpinBox::validate(QString& input, int& pos) const {
@@ -212,7 +213,7 @@ QValidator::State WBeatSpinBox::validate(QString& input, int& pos) const {
     }
 
     bool conversionWorked = false;
-    input.toDouble(&conversionWorked);
+    locale().toDouble(input, &conversionWorked);
     if (conversionWorked) {
         return QValidator::Acceptable;
     }
