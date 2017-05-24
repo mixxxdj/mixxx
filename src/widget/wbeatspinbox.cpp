@@ -1,3 +1,5 @@
+#include <QLineEdit>
+
 #include "widget/wbeatspinbox.h"
 
 #include "control/controlobject.h"
@@ -34,21 +36,31 @@ void WBeatSpinBox::setup(const QDomNode& node, const SkinContext& context) {
 }
 
 void WBeatSpinBox::stepBy(int steps) {
-    double newValue = value() * pow(2, steps);
-    if (newValue < minimum()) {
-        newValue = minimum();
-    } else if (newValue > maximum()) {
-        newValue = maximum();
+    double oldValue = m_valueControl.get();
+    double newValue;
+    QString temp = text();
+    int cursorPos = lineEdit()->cursorPosition();
+    if (validate(temp, cursorPos) == QValidator::Acceptable) {
+        double editValue = valueFromText(temp);
+        newValue = editValue * pow(2, steps);
+        if (newValue < minimum() || newValue > maximum()) {
+            // don't clamp the value here to not fall out of a measure
+            newValue = editValue;
+        }
+    } else {
+        // here we have an unacceptable edit, going back to the old value first
+        newValue = oldValue;
     }
     // Do not call QDoubleSpinBox::setValue directly in case
     // the new value of the ControlObject needs to be confirmed.
     // Curiously, m_valueControl.set() does not cause slotControlValueChanged
     // to execute for beatjump_size, so call QDoubleSpinBox::setValue in this function.
-    double oldValue = m_valueControl.get();
     m_valueControl.set(newValue);
-    if (m_valueControl.get() != oldValue) {
-        setValue(newValue);
+    double coValue = m_valueControl.get();
+    if (coValue != value()) {
+        setValue(coValue);
     }
+    selectAll();
 }
 
 void WBeatSpinBox::slotSpinboxValueChanged(double newValue) {
