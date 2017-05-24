@@ -150,23 +150,14 @@ QString WBeatSpinBox::textFromValue(double value) const {
         sFracPart = fractionString(29, 32);
     } else if (dFracPart == 0.96875) {
         sFracPart = fractionString(31, 32);
+    } else {
+        return locale().toString(value, 'g', 5);
     }
 
     if (dWholePart > 0) {
-        if (sFracPart.isEmpty()) {
-            if (dFracPart == 0.00000) {
-                return locale().toString(dWholePart, 'f', 0);
-            } else {
-                return locale().toString(value, 'f', 5);
-            }
-        }
         return locale().toString(dWholePart, 'f', 0) + " " + sFracPart;
-    } else {
-        if (sFracPart.isEmpty() ) {
-            return locale().toString(value, 'f', 5);
-        }
-        return sFracPart;
     }
+    return sFracPart;
 }
 
 double WBeatSpinBox::valueFromText(const QString& text) const {
