@@ -15,6 +15,7 @@
 #include <QtDebug>
 #include <QtGlobal>
 
+#include "controllers/controllerdebug.h"
 #include "util/assert.h"
 
 namespace mixxx {
@@ -67,11 +68,11 @@ void MessageHandler(QtMsgType type,
             tag = "Debug [";
             baSize += strlen(tag);
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-            isControllerDebug = strncmp(input, Logging::kControllerDebugPrefix,
-                                        strlen(Logging::kControllerDebugPrefix)) == 0;
+            isControllerDebug = strncmp(input, ControllerDebug::kLogMessagePrefix,
+                                        strlen(ControllerDebug::kLogMessagePrefix)) == 0;
 #else
             isControllerDebug = input.startsWith(QLatin1String(
-                Logging::kControllerDebugPrefix));
+                ControllerDebug::kLogMessagePrefix));
 #endif
             shouldPrint = g_logLevel >= Logging::LogLevel::Debug ||
                     isControllerDebug;
@@ -118,13 +119,13 @@ void MessageHandler(QtMsgType type,
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     const char* inputOffset = input;
     if (isControllerDebug) {
-        inputOffset += strlen(Logging::kControllerDebugPrefix) + 1;
+        inputOffset += strlen(ControllerDebug::kLogMessagePrefix) + 1;
     }
     baSize += strlen(inputOffset);
 #else
     QByteArray input8Bit;
     if (isControllerDebug) {
-        input8Bit = input.mid(strlen(Logging::kControllerDebugPrefix) + 1).toLocal8Bit();
+        input8Bit = input.mid(strlen(ControllerDebug::kLogMessagePrefix) + 1).toLocal8Bit();
     } else {
         input8Bit = input.toLocal8Bit();
     }

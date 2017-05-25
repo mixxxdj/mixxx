@@ -4,10 +4,13 @@
 #include <QDebug>
 
 #include "util/cmdlineargs.h"
-#include "util/logging.h"
 
 class ControllerDebug {
   public:
+    // Any debug statement starting with this prefix bypasses the --logLevel
+    // command line flags.
+    static constexpr const char* kLogMessagePrefix = "CDBG";
+
       static ControllerDebug& instance() {
           static ControllerDebug instance;
           return instance;
@@ -40,7 +43,7 @@ class ControllerDebug {
 #define controllerDebug(stream)       \
 {                                     \
     if (ControllerDebug::enabled()) { \
-        QDebug(QtDebugMsg) << mixxx::Logging::kControllerDebugPrefix << stream; \
+        QDebug(QtDebugMsg) << ControllerDebug::kLogMessagePrefix << stream; \
     }                                 \
 }                                     \
 

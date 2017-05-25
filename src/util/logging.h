@@ -14,9 +14,6 @@ class Logging {
         Debug = 3
     };
     static constexpr LogLevel kLogLevelDefault = LogLevel::Warning;
-    // Any debug statement starting with this prefix bypasses the --logLevel
-    // command line flags.
-    static constexpr const char* kControllerDebugPrefix = "CDBG";
 
     // These are not thread safe. Only call them on Mixxx startup and shutdown.
     static void initialize(const QString& settingsPath,
