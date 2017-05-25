@@ -19,6 +19,10 @@
 #include "util/assert.h"
 
 namespace mixxx {
+
+// Initialize the log level with the default value
+LogLevel Logging::s_logLevel = LogLevel::Default;
+
 namespace {
 
 // Mutex guarding g_logfile.
@@ -26,7 +30,6 @@ QMutex g_mutexLogfile;
 // The file handle for Mixxx's log file.
 QFile g_logfile;
 // The log level.
-Logging::LogLevel g_logLevel = Logging::kLogLevelDefault;
 // Whether to break on debug assertions.
 bool g_debugAssertBreak = false;
 
@@ -74,20 +77,20 @@ void MessageHandler(QtMsgType type,
             isControllerDebug = input.startsWith(QLatin1String(
                 ControllerDebug::kLogMessagePrefix));
 #endif
-            shouldPrint = g_logLevel >= Logging::LogLevel::Debug ||
+            shouldPrint = Logging::enabled(LogLevel::Debug) ||
                     isControllerDebug;
             break;
 #if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
         case QtInfoMsg:
             tag = "Info [";
             baSize += strlen(tag);
-            shouldPrint = g_logLevel >= Logging::LogLevel::Info;
+            shouldPrint = Logging::enabled(LogLevel::Info);
             break;
 #endif
         case QtWarningMsg:
             tag = "Warning [";
             baSize += strlen(tag);
-            shouldPrint = g_logLevel >= Logging::LogLevel::Warning;
+            shouldPrint = Logging::enabled(LogLevel::Warning);
             break;
         case QtCriticalMsg:
             tag = "Critical [";
@@ -162,9 +165,9 @@ void MessageHandler(QtMsgType type,
 #else
         // The "%s" is intentional. See -Werror=format-security.
         qFatal("%s", input8Bit.constData());
-#endif
+#endif // QT_VERSION
         return;
-#endif
+#endif // MIXXX_DEBUG_ASSERTIONS_FATAL
     }
 
     writeToLog(ba, shouldPrint, shouldFlush);
@@ -173,15 +176,14 @@ void MessageHandler(QtMsgType type,
 }  // namespace
 
 // static
-constexpr Logging::LogLevel Logging::kLogLevelDefault;
-
-// static
 void Logging::initialize(const QString& settingsPath, LogLevel logLevel,
                          bool debugAssertBreak) {
     VERIFY_OR_DEBUG_ASSERT(!g_logfile.isOpen()) {
         // Somebody already called Logging::initialize.
         return;
     }
+
+    s_logLevel = logLevel;
 
     QString logFileName;
     QDir settingsDir(settingsPath);
@@ -212,7 +214,6 @@ void Logging::initialize(const QString& settingsPath, LogLevel logLevel,
     // without the lock.
     g_logfile.setFileName(logFileName);
     g_logfile.open(QIODevice::WriteOnly | QIODevice::Text);
-    g_logLevel = logLevel;
     g_debugAssertBreak = debugAssertBreak;
 
     // Install the Qt message handler.
