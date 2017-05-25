@@ -40,6 +40,7 @@ class WBeatSpinBox : public QDoubleSpinBox, public WBaseWidget {
     double m_scaleFactor;
 };
 
+// This is an inherited class that supports font scaling
 class WBeatLineEdit : public QLineEdit {
     Q_OBJECT
   public:
