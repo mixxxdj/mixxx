@@ -27,7 +27,7 @@ Variables:
         <SizePolicy>me,f</SizePolicy>
         <Children>
 
-          <WidgetGroup><!-- Spinny / CoverArt -->
+          <WidgetGroup><!-- [Spinny / Cover / none] -->
             <Layout>vertical</Layout>
             <!-- Do not declare Size/Policy here. Otherwise this widget will always occupy 50x50px,
                 even when set invible. Maybe too many Connections... WidgetStack was buggy. -->
@@ -71,10 +71,11 @@ Variables:
 
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],empty_spinny_cover</ConfigKey>
+              <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
+              <Transform><IsEqual>2</IsEqual><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
-          </WidgetGroup><!-- /Spinny / CoverArt -->
+          </WidgetGroup><!-- /[Spinny / Cover / none] -->
 
           <WidgetGroup><!-- Vinyl Controls -->
             <Layout>horizontal</Layout>

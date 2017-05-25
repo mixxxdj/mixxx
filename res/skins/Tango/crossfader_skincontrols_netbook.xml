@@ -53,13 +53,13 @@ Description:
             <SetVariable name="TooltipId">show_spinny</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton2</SetVariable>
             <SetVariable name="Size">20f,20f</SetVariable>
-            <SetVariable name="state_0_pressed">spinny.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">spinny.svg</SetVariable>
-            <SetVariable name="state_1_pressed">cover.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">cover.svg</SetVariable>
-            <SetVariable name="state_2_pressed">cover_off.svg</SetVariable>
-            <SetVariable name="state_2_unpressed">cover_off.svg</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[Tango],empty_spinny_cover</SetVariable>
+            <SetVariable name="state_0_pressed">cover.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">cover.svg</SetVariable>
+            <SetVariable name="state_1_pressed">cover_off.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">cover_off.svg</SetVariable>
+            <SetVariable name="state_2_pressed">spinny.svg</SetVariable>
+            <SetVariable name="state_2_unpressed">spinny.svg</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Tango],spinny_cover_none</SetVariable>
           </Template>
 
           <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>

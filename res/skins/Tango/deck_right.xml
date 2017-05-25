@@ -21,11 +21,11 @@ Variables:
 
       <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
 
-      <WidgetGroup><!-- Mixer / [ [Spinny / Cover] + VUMeter ] + Pitch + spacer -->
+      <WidgetGroup><!-- Mixer / [ [Spinny / Cover / none] + VUMeter ] + Pitch + spacer -->
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <WidgetGroup><!-- Mixer / [ [Spinny / Cover] + VUMeter ] + Pitch -->
+          <WidgetGroup><!-- Mixer / [ [Spinny / Cover / none] + VUMeter ] + Pitch -->
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
@@ -58,7 +58,7 @@ Variables:
                     </Children>
                   </WidgetGroup><!-- /Mixer -->
                   
-                  <WidgetGroup><!-- [Spinny / Cover] + VUMeter -->
+                  <WidgetGroup><!-- [Spinny / Cover / none] + VUMeter -->
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,me</SizePolicy>
                     <Children>
@@ -74,7 +74,7 @@ Variables:
                         </Connection>
                       </WidgetGroup>
                     
-                      <WidgetGroup><!-- Spinny/Cover -->
+                      <WidgetGroup><!-- [Spinny / Cover / none] -->
                         <Layout>horizontal</Layout>
                         <SizePolicy>min,min</SizePolicy>
                         <Children>
@@ -95,22 +95,20 @@ Variables:
                           </WidgetGroup>
                         </Children>
                         <Connection>
-                          <ConfigKey persist="true">[Tango],empty_spinny_cover</ConfigKey>
+                          <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
+                          <Transform><IsEqual>2</IsEqual><Not/></Transform>
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </WidgetGroup>
                         
                     </Children>
-                  </WidgetGroup><!-- /[Spinny / Cover] + VUMeter -->
+                  </WidgetGroup><!-- /[Spinny / Cover / none] + VUMeter -->
                     
                 </Children>
-              </WidgetStack><!-- /Mixer / [ [Spinny / Cover] + VUMeter ] -->
+              </WidgetStack><!-- /Mixer / [ [Spinny / Cover / none] + VUMeter ] -->
             
             </Children>
-          </WidgetGroup><!-- /Mixer / [ [Spinny / Cover] + VUMeter ] + Pitch -->
-          
-          <!-- This was working and somehow necessary, but now (v38++) causes left decks
-          to grow by 3px (right decks shrink by 3px) when enabling extra deck buttons.
+          </WidgetGroup><!-- /Mixer / [ [Spinny / Cover / none] + VUMeter ] + Pitch -->
           
           Expanding spacer, necessary because obviously WidgetStack breaks
           qproperty-layoutAlignment of parent Widget -->

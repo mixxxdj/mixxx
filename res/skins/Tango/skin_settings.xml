@@ -221,10 +221,10 @@ Description:
             <Children>
 
               <Template src="skin:skin_settings_button_3state.xml">
-                <SetVariable name="state_0_text">      Spinny  /  Cover</SetVariable>
-                <SetVariable name="state_1_text"> &#10004; Spinny&#9668; Cover</SetVariable>
-                <SetVariable name="state_2_text"> &#10004; Spinny &#9658;Cover</SetVariable>
-                <SetVariable name="Setting">[Tango],empty_spinny_cover</SetVariable>
+                <SetVariable name="state_0_text"> &#10004; Spinny &#9668; Cover</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Spinny &#9658; Cover</SetVariable>
+                <SetVariable name="state_2_text">      Spinny  /  Cover</SetVariable>
+                <SetVariable name="Setting">[Tango],spinny_cover_none</SetVariable>
               </Template>
 
               <WidgetGroup><!-- SpinnyCover submenu -->
@@ -240,9 +240,9 @@ Description:
                     <SizePolicy>me,me</SizePolicy>
                     <Children/>
                     <Connection>
-                      <ConfigKey persist="true">[Tango],empty_spinny_cover</ConfigKey>
+                      <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
                       <BindProperty>visible</BindProperty>
-                      <Transform><Not/></Transform>
+                      <Transform><IsEqual>2</IsEqual></Transform>
                     </Connection>
                   </WidgetGroup>
 
@@ -252,8 +252,8 @@ Description:
                     <Children>
 
                     <Template src="skin:skin_settings_button_2state.xml">
-                        <SetVariable name="state_0_text">      °&#9668; O</SetVariable>
-                        <SetVariable name="state_1_text">      ° &#9658;O</SetVariable>
+                        <SetVariable name="state_0_text">      ° &#9668; O</SetVariable>
+                        <SetVariable name="state_1_text">      ° &#9658; O</SetVariable>
                         <SetVariable name="Setting">[Tango],spinnyCoverBIG</SetVariable>
                       </Template>
 
@@ -281,8 +281,8 @@ Description:
             <Children>
 
               <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      2&#9668; 4  Effect Units</SetVariable>
-                <SetVariable name="state_1_text">      2 &#9658;4  Effect Units</SetVariable>
+                <SetVariable name="state_0_text">      2 &#9668; 4  Effect Units</SetVariable>
+                <SetVariable name="state_1_text">      2 &#9658; 4  Effect Units</SetVariable>
                 <SetVariable name="Setting">[Tango],2or4_fxUnits</SetVariable>
               </Template>
 
