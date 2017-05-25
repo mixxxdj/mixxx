@@ -26,6 +26,8 @@ class CmdlineArgs final {
     bool getSafeMode() const { return m_safeMode; }
     bool getDebugAssertBreak() const { return m_debugAssertBreak; }
     bool getSettingsPathSet() const { return m_settingsPathSet; }
+    bool isSettingsPathValid() const;
+    int getDebugLevel() const { return m_debugLevel; }
     mixxx::Logging::LogLevel getLogLevel() const { return m_logLevel; }
     bool getTimelineEnabled() const { return !m_timelinePath.isEmpty(); }
     const QString& getLocale() const { return m_locale; }
