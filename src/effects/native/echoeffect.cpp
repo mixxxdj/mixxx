@@ -95,7 +95,6 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
                                 const EffectProcessor::EnableState enableState,
                                 const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
-    Q_UNUSED(enableState);
     Q_UNUSED(groupFeatures);
     DEBUG_ASSERT(0 == (numSamples % EchoGroupState::kChannelCount));
     EchoGroupState& gs = *pGroupState;
@@ -175,5 +174,9 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         if (read_position == 0) {
             gs.ping_pong_left = !gs.ping_pong_left;
         }
+    }
+
+    if (enableState == EffectProcessor::DISABLING) {
+        gs.delay_buf.clear();
     }
 }
