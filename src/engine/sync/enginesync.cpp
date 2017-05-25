@@ -381,7 +381,7 @@ EngineChannel* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const
             EngineBuffer* pBuffer = pChannel->getEngineBuffer();
             if (pBuffer && pBuffer->getBpm() > 0) {
                 // If the deck is playing then go with it immediately.
-                if (fabs(pBuffer->getSpeed()) > 0) {
+                if (pBuffer->getSpeed() != 0.0) {
                     return pChannel;
                 }
                 // Otherwise hold out for a deck that might be playing but
