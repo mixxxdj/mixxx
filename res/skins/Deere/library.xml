@@ -134,9 +134,9 @@
                     <Layout>horizontal</Layout>
                     <Children>
                       <Template src="skin:hide_show_button.xml">
-                        <SetVariable name="TooltipId">show_library</SetVariable>
+                        <SetVariable name="TooltipId">maximize_library</SetVariable>
                         <SetVariable name="object_name">LibraryToggle</SetVariable>
-                        <SetVariable name="control">[Library],show_library</SetVariable>
+                        <SetVariable name="control">[Master],maximize_library</SetVariable>
                       </Template>
                       <SearchBox>
                       </SearchBox>
@@ -176,20 +176,13 @@
         </Children>
       </WidgetGroup>
 
-      <!-- Collapsed Library -->
+      <!-- Hidden Library -->
       <WidgetGroup>
         <ObjectName>LibraryCollapsed</ObjectName>
         <Layout>vertical</Layout>
         <MinimumSize>-1,20</MinimumSize>
         <MaximumSize>-1,20</MaximumSize>
         <SizePolicy>me,min</SizePolicy>
-        <Children>
-          <Template src="skin:hide_show_button.xml">
-            <SetVariable name="TooltipId">show_library</SetVariable>
-            <SetVariable name="object_name">LibraryToggle</SetVariable>
-            <SetVariable name="control">[Library],show_library</SetVariable>
-          </Template>
-        </Children>
       </WidgetGroup>
 
     </Children>
