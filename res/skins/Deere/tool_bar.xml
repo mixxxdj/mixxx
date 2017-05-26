@@ -155,9 +155,20 @@
               </PushButton>
               -->
 
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Connection>
+                  <ConfigKey>[Recording],status</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+                <Children>
+                  <RecordingDuration/>
+                </Children>
+              </WidgetGroup>
+
               <Template src="skin:statuslight_3state.xml">
-              <SetVariable name="TooltipId"></SetVariable>
-              <SetVariable name="Tooltip">Recording active</SetVariable>
+                <SetVariable name="TooltipId"></SetVariable>
+                <SetVariable name="Tooltip">Recording active</SetVariable>
                 <SetVariable name="ObjectName">RecordingNotification</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -175,8 +186,8 @@
                 just displaying the AutoDJ status here.
               -->
               <Template src="skin:statuslight_3state.xml">
-              <SetVariable name="TooltipId"></SetVariable>
-              <SetVariable name="Tooltip">AutoDJ active</SetVariable>
+                <SetVariable name="TooltipId"></SetVariable>
+                <SetVariable name="Tooltip">AutoDJ active</SetVariable>
                 <SetVariable name="ObjectName">AutoDjNotification</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -192,8 +203,8 @@
                 Display only status for now.
               -->
               <Template src="skin:statuslight_3state.xml">
-              <SetVariable name="TooltipId"></SetVariable>
-              <SetVariable name="Tooltip">Live Broadcasting active</SetVariable>
+                <SetVariable name="TooltipId"></SetVariable>
+                <SetVariable name="Tooltip">Live Broadcasting active</SetVariable>
                 <SetVariable name="ObjectName">LiveBroadcastingNotification</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -205,8 +216,8 @@
               </Template>
 
               <Template src="skin:statuslight_3state.xml">
-              <SetVariable name="TooltipId">vinylcontrol_status</SetVariable>
-              <SetVariable name="Tooltip">Vinyl Control 1 active</SetVariable>
+                <SetVariable name="TooltipId">vinylcontrol_status</SetVariable>
+                <SetVariable name="Tooltip">Vinyl Control 1 active</SetVariable>
                 <SetVariable name="ObjectName">VinylControlNotification</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -218,8 +229,8 @@
               </Template>
 
               <Template src="skin:statuslight_3state.xml">
-              <SetVariable name="TooltipId">vinylcontrol_status</SetVariable>
-              <SetVariable name="Tooltip">Vinyl Control 2 active</SetVariable>
+                <SetVariable name="TooltipId">vinylcontrol_status</SetVariable>
+                <SetVariable name="Tooltip">Vinyl Control 2 active</SetVariable>
                 <SetVariable name="ObjectName">VinylControlNotification</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -231,8 +242,8 @@
               </Template>
 
               <Template src="skin:statuslight_3state.xml">
-              <SetVariable name="TooltipId">vinylcontrol_status</SetVariable>
-              <SetVariable name="Tooltip">Vinyl Control 3 active</SetVariable>
+                <SetVariable name="TooltipId">vinylcontrol_status</SetVariable>
+                <SetVariable name="Tooltip">Vinyl Control 3 active</SetVariable>
                 <SetVariable name="ObjectName">VinylControlNotification</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -244,8 +255,8 @@
               </Template>
 
               <Template src="skin:statuslight_3state.xml">
-              <SetVariable name="TooltipId">vinylcontrol_status</SetVariable>
-              <SetVariable name="Tooltip">Vinyl Control 4 active</SetVariable>
+                <SetVariable name="TooltipId">vinylcontrol_status</SetVariable>
+                <SetVariable name="Tooltip">Vinyl Control 4 active</SetVariable>
                 <SetVariable name="ObjectName">VinylControlNotification</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
