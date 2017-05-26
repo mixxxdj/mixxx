@@ -107,7 +107,6 @@
 
       <Template src="skin:spacer_h.xml"/>
 
-
       <WidgetGroup>
         <ObjectName>ToolBarRight</ObjectName>
         <Layout>horizontal</Layout>
@@ -268,6 +267,33 @@
               </Template>
             </Children>
           </WidgetGroup>
+
+          <Template src="skin:left_2state_button.xml">
+            <SetVariable name="MinimumSize"><Variable name="SkinSectionToggleButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SkinSectionToggleButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SkinSectionToggleButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text">EFFECTS</SetVariable>
+            <SetVariable name="state_1_text">EFFECTS</SetVariable>
+            <SetVariable name="left_connection_control">[EffectRack1],show</SetVariable>
+          </Template>
+
+          <Template src="skin:left_2state_button.xml">
+            <SetVariable name="MinimumSize"><Variable name="SkinSectionToggleButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SkinSectionToggleButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SkinSectionToggleButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text">SAMPLERS</SetVariable>
+            <SetVariable name="state_1_text">SAMPLERS</SetVariable>
+            <SetVariable name="left_connection_control">[Samplers],show_samplers</SetVariable>
+          </Template>
+
+          <Template src="skin:left_2state_button.xml">
+            <SetVariable name="MinimumSize"><Variable name="SkinSectionToggleButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SkinSectionToggleButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SkinSectionToggleButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text">MIC &amp; AUX</SetVariable>
+            <SetVariable name="state_1_text">MIC &amp; AUX</SetVariable>
+            <SetVariable name="left_connection_control">[Microphone],show_microphone</SetVariable>
+          </Template>
 
           <WidgetGroup>
             <Size>107f,25f</Size>
