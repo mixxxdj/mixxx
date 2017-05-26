@@ -70,15 +70,6 @@ public:
         return log(qCritical());
     }
 
-    QDebug fatal() const {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-        return log(qFatal());
-#else
-        // Qt4 does not support QDebug for log level Fatal, use Critical instead
-        return critical();
-#endif
-    }
-
 private:
     QByteArray m_preambleChars;
 };
