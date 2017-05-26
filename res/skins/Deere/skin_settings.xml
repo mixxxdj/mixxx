@@ -43,21 +43,21 @@
         <Children>
 
           <PushButton>
-            <TooltipId>toggle_waveforms_stacked</TooltipId>
+            <TooltipId>toggle_parallel_waveforms</TooltipId>
             <Size>80me,20f</Size>
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9898; Stacked Waveforms</Text>
+              <Text>&#9898; Parallel Waveforms</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9899; Stacked Waveforms</Text>
+              <Text>&#9899; Parallel Waveforms</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey>[Deere],show_stacked_waveforms</ConfigKey>
+              <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
             </Connection>
           </PushButton>
 

@@ -14,7 +14,7 @@
       <attribute config_key="[Library],show_library">1</attribute>
 
       <!--Skin settings-->
-      <attribute persist="true" config_key="[Deere],show_stacked_waveforms">0</attribute>
+      <attribute persist="true" config_key="[Deere],show_parallel_waveforms">0</attribute>
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
 
@@ -272,7 +272,7 @@
               </Children>
               <Connection>
                 <BindProperty>visible</BindProperty>
-                <ConfigKey>[Deere],show_stacked_waveforms</ConfigKey>
+                <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
                 <Transform>
                   <Not/>
                 </Transform>
@@ -316,7 +316,7 @@
               </Children>
               <Connection>
                 <BindProperty>visible</BindProperty>
-                <ConfigKey>[Deere],show_stacked_waveforms</ConfigKey>
+                <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
               </Connection>
             </WidgetGroup>
 
@@ -373,7 +373,7 @@
               </Children>
               <Connection>
                 <BindProperty>visible</BindProperty>
-                <ConfigKey>[Deere],show_stacked_waveforms</ConfigKey>
+                <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
                 <Transform>
                   <Not/>
                 </Transform>
@@ -417,7 +417,7 @@
               </Children>
               <Connection>
                 <BindProperty>visible</BindProperty>
-                <ConfigKey>[Deere],show_stacked_waveforms</ConfigKey>
+                <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
               </Connection>
             </WidgetGroup>
 

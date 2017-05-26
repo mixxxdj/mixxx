@@ -52,7 +52,7 @@ Use smaller spinny sizes for 4 decks than 2 decks.
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Connection>
-              <ConfigKey>[Deere],show_stacked_waveforms</ConfigKey>
+              <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
             <Children>
@@ -66,7 +66,7 @@ Use smaller spinny sizes for 4 decks than 2 decks.
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Connection>
-              <ConfigKey>[Deere],show_stacked_waveforms</ConfigKey>
+              <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform>
                 <Not/>
@@ -126,7 +126,7 @@ Use smaller spinny sizes for 4 decks than 2 decks.
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Connection>
-              <ConfigKey>[Deere],show_stacked_waveforms</ConfigKey>
+              <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
             <Children>
@@ -140,7 +140,7 @@ Use smaller spinny sizes for 4 decks than 2 decks.
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Connection>
-              <ConfigKey>[Deere],show_stacked_waveforms</ConfigKey>
+              <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform>
                 <Not/>
