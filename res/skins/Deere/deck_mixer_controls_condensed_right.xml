@@ -53,6 +53,10 @@
             <GroupName>CondensedVolumeAndMonoMeter</GroupName>
             <Layout>horizontal</Layout>
             <MaximumSize>60,141</MaximumSize>
+            <Connection>
+              <ConfigKey>[Master],show_faders</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
             <Children>
               <SliderComposed>
                 <TooltipId>channel_volume</TooltipId>
@@ -80,6 +84,46 @@
                   </Template>
                 </Children>
               </WidgetGroup>
+
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>4DecksMixerCondensedStereoMeterRight</ObjectName>
+            <Layout>horizontal</Layout>
+            <MaximumSize>60,141</MaximumSize>
+            <Connection>
+              <ConfigKey>[Master],show_faders</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform>
+                <Not/>
+              </Transform>
+            </Connection>
+            <Children>
+
+              <WidgetGroup>
+                <ObjectName>channel_VuMeter_Group</ObjectName>
+                <Layout>horizontal</Layout>
+                <MaximumSize>22,141</MaximumSize>
+                <Children>
+                  <Template src="skin:vumeter_v.xml">
+                    <SetVariable name="group"><Variable name="group"/></SetVariable>
+                    <SetVariable name="side">L</SetVariable>
+                    <SetVariable name="tooltip_meter">channel_VuMeterL</SetVariable>
+                    <SetVariable name="tooltip_clip">channel_PeakIndicatorL</SetVariable>
+                  </Template>
+                  <Template src="skin:vumeter_v.xml">
+                    <SetVariable name="group"><Variable name="group"/></SetVariable>
+                    <SetVariable name="side">R</SetVariable>
+                    <SetVariable name="tooltip_meter">channel_VuMeterR</SetVariable>
+                    <SetVariable name="tooltip_clip">channel_PeakIndicatorR</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <Template src="skin:spacer_hx.xml">
+                <SetVariable name="width">15</SetVariable>
+              </Template>
 
             </Children>
           </WidgetGroup>

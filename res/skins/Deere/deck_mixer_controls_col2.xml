@@ -9,6 +9,10 @@
     <ObjectName>DeckMixer<Variable name="i"/>_Column2</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>max,me</SizePolicy>
+    <Connection>
+      <ConfigKey>[Master],show_faders</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
     <Children>
 
       <!-- PFL buttons need different spacing in 2 and 4 deck mixers. -->
