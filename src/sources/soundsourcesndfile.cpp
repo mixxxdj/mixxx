@@ -1,3 +1,5 @@
+#include <QDir>
+
 #include "sources/soundsourcesndfile.h"
 
 #include "util/logging.h"
