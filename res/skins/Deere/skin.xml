@@ -85,9 +85,9 @@
     <SetVariable name="WideButtonMaximumSize">40,22</SetVariable>
     <SetVariable name="WideButtonSizePolicy">f,f</SetVariable>
 
-    <SetVariable name="SkinSectionToggleButtonMinimumSize">65,22</SetVariable>
-    <SetVariable name="SkinSectionToggleButtonMaximumSize">65,22</SetVariable>
-    <SetVariable name="SkinSectionToggleButtonSizePolicy">f,f</SetVariable>
+    <SetVariable name="ToolbarButtonMinimumSize">75,22</SetVariable>
+    <SetVariable name="ToolbarButtonMaximumSize">75,22</SetVariable>
+    <SetVariable name="ToolbarButtonSizePolicy">f,f</SetVariable>
 
     <SetVariable name="HorizontalStretchButtonMinimumSize">-1,22</SetVariable>
     <SetVariable name="HorizontalStretchButtonMaximumSize">-1,22</SetVariable>

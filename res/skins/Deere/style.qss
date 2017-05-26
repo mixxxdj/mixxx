@@ -736,7 +736,7 @@ WBeatSpinBox {
 }
 
 #ToolBarLeft {
-  qproperty-layoutSpacing: 40;
+  qproperty-layoutSpacing: 0;
 }
 
 #ToolBarRight {
@@ -1314,14 +1314,28 @@ WPushButton[value="1"]:hover {
 */
 WPushButton[value="2"] {
     color: #FDFDFD;
-    background-color: #006596;
+    background-color: #4B4B4B;
     border: 0px solid #006596;
 }
 
 WPushButton[value="2"]:hover {
     color: #FDFDFD;
-    background-color: #0080BE;
+    background-color: #4B4B4B;
     border: 0px solid #0080BE;
+}
+
+#ToolbarButton[value="1"] {
+    color: #D2D2D2;
+    background-color: #5a5a5a;
+    border: 3px solid #006596;
+    border-radius: 3px;
+}
+
+#SkinSectionToggleButton[value="1"]:hover {
+    color: #D2D2D2;
+    background-color: #5F5F5F;
+    border: 3px solid #0080BE;
+    border-radius: 3px;
 }
 
 /* Special case "orientation" controls
