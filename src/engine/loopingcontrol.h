@@ -105,6 +105,7 @@ class LoopingControl : public EngineControl {
     void setLoopInToCurrentPosition();
     void setLoopOutToCurrentPosition();
     void clearActiveBeatLoop();
+    void updateBeatLoopingControls();
     int calculateEndOfBeatloop(int startSample, double beatloopSizeInBeats);
     bool currentLoopMatchesBeatloopSize();
     // When a loop changes size such that the playposition is outside of the loop,
