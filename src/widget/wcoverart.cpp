@@ -178,7 +178,15 @@ QPixmap WCoverArt::scaledCoverArt(const QPixmap& normal) {
     if (normal.isNull()) {
         return QPixmap();
     }
-    return normal.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QPixmap result = normal.scaled(size()
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+                * devicePixelRatioF()
+#endif
+                         , Qt::KeepAspectRatio, Qt::SmoothTransformation);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    result.setDevicePixelRatio(devicePixelRatioF());
+#endif
+    return result;
 }
 
 void WCoverArt::paintEvent(QPaintEvent* /*unused*/) {
@@ -198,7 +206,11 @@ void WCoverArt::paintEvent(QPaintEvent* /*unused*/) {
 
     if (!toDraw.isNull()) {
         QSize widgetSize = size();
-        QSize pixmapSize = toDraw.size();
+        QSize pixmapSize = toDraw.size()
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+            / toDraw.devicePixelRatio()
+#endif
+            ;
 
         int x = math_max(0, (widgetSize.width() - pixmapSize.width()) / 2);
         int y = math_max(0, (widgetSize.height() - pixmapSize.height()) / 2);

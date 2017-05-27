@@ -308,8 +308,16 @@ void WSpinny::paintEvent(QPaintEvent *e) {
 
     if (m_bShowCover && !m_loadedCoverScaled.isNull()) {
         // Some covers aren't square, so center them.
-        int x = (width() - m_loadedCoverScaled.width()) / 2;
-        int y = (height() - m_loadedCoverScaled.height()) / 2;
+        int x = (width() - m_loadedCoverScaled.width()
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+            / m_loadedCoverScaled.devicePixelRatio()
+#endif
+            ) / 2;
+        int y = (height() - m_loadedCoverScaled.height()
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+            / m_loadedCoverScaled.devicePixelRatio()
+#endif
+            ) / 2;
         p.drawPixmap(x, y, m_loadedCoverScaled);
     }
 
@@ -378,11 +386,15 @@ QPixmap WSpinny::scaledCoverArt(const QPixmap& normal) {
     if (normal.isNull()) {
         return QPixmap();
     }
-    return normal.scaled(size()
+    QPixmap result = normal.scaled(size()
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
                 * devicePixelRatioF()
 #endif
                          , Qt::KeepAspectRatio, Qt::SmoothTransformation);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    result.setDevicePixelRatio(devicePixelRatioF());
+#endif
+    return result;
 }
 
 void WSpinny::resizeEvent(QResizeEvent* /*unused*/) {
@@ -394,6 +406,9 @@ void WSpinny::resizeEvent(QResizeEvent* /*unused*/) {
                 * devicePixelRatioF()
 #endif
                 , Qt::KeepAspectRatio, Qt::SmoothTransformation);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    m_fgImageScaled.setDevicePixelRatio(devicePixelRatioF());
+#endif
     }
     if (m_pGhostImage && !m_pGhostImage->isNull()) {
         m_ghostImageScaled = m_pGhostImage->scaled(
@@ -403,6 +418,9 @@ void WSpinny::resizeEvent(QResizeEvent* /*unused*/) {
 #endif
                 , Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    m_ghostImageScaled.setDevicePixelRatio(devicePixelRatioF());
+#endif
 }
 
 /* Convert between a normalized playback position (0.0 - 1.0) and an angle
