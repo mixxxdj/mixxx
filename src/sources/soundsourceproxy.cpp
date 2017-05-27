@@ -202,19 +202,21 @@ void SoundSourceProxy::loadPlugins() {
 
     const QStringList supportedFileExtensions(
             s_soundSourceProviders.getRegisteredFileExtensions());
-    for (const auto &supportedFileExtension: supportedFileExtensions) {
-        kLogger.debug() << "SoundSource providers for file extension" << supportedFileExtension;
-        const QList<mixxx::SoundSourceProviderRegistration> registrationsForFileExtension(
-                s_soundSourceProviders.getRegistrationsForFileExtension(
-                        supportedFileExtension));
-        for (const auto& registration: registrationsForFileExtension) {
-            if (registration.getPluginLibrary()) {
-                kLogger.debug() << " " << static_cast<int>(registration.getProviderPriority())
-                        << ":" << registration.getProvider()->getName()
-                        << "@" << registration.getPluginLibrary()->getFilePath();
-            } else {
-                kLogger.debug() << " " << static_cast<int>(registration.getProviderPriority())
-                        << ":" << registration.getProvider()->getName();
+    if (kLogger.infoEnabled()) {
+        for (const auto &supportedFileExtension: supportedFileExtensions) {
+            kLogger.info() << "SoundSource providers for file extension" << supportedFileExtension;
+            const QList<mixxx::SoundSourceProviderRegistration> registrationsForFileExtension(
+                    s_soundSourceProviders.getRegistrationsForFileExtension(
+                            supportedFileExtension));
+            for (const auto& registration: registrationsForFileExtension) {
+                if (registration.getPluginLibrary()) {
+                    kLogger.info() << " " << static_cast<int>(registration.getProviderPriority())
+                            << ":" << registration.getProvider()->getName()
+                            << "@" << registration.getPluginLibrary()->getFilePath();
+                } else {
+                    kLogger.info() << " " << static_cast<int>(registration.getProviderPriority())
+                            << ":" << registration.getProvider()->getName();
+                }
             }
         }
     }
