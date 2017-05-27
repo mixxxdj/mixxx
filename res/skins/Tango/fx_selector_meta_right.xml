@@ -16,14 +16,14 @@ Variables:
   <WidgetGroup>
     <ObjectName>EffectTogglerMetaKnob</ObjectName>
     <Layout>horizontal</Layout>
-    <MinimunSize>115,30</MinimunSize>
-    <MaximumSize>130,39</MaximumSize>
+    <MinimunSize>122,30</MinimunSize>
+    <MaximumSize>133,39</MaximumSize>
     <SizePolicy>max,me</SizePolicy>
     <Children>
-
-      <Template src="skin:fx_focus_button.xml"/>
       
       <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+      <Template src="skin:fx_focus_button.xml"/>
 
       <Template src="skin:knob_textless.xml">
         <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
@@ -72,9 +72,7 @@ Variables:
           </Template>
 
           <EffectSelector>
-            <MinimunSize>72,20</MinimunSize>
-            <MaximumSize>87,20</MaximumSize>
-            <SizePolicy>me,f</SizePolicy>
+            <Size>90f,20f</Size>
             <EffectRack><Variable name="fxRack"/></EffectRack>
             <EffectUnit><Variable name="fxUnit"/></EffectUnit>
             <Effect><Variable name="fxNum"/></Effect>

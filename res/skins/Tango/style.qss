@@ -1068,109 +1068,115 @@ WBeatSpinBox {
 }
 
 #EffectFocusButton {
-  border-radius: 2px;
+  background-color: transparent;
 }
   #EffectFocusButton[displayValue="0"] {
-    border: 1px solid #585858;
+    image: url(skin:/buttons/btn_fx_focus_off.svg) no-repeat center center;
     }
     #EffectFocusButton[displayValue="0"]:hover {
-      background-color: #989898;
+      image: url(skin:/buttons/btn_fx_focus_on.svg) no-repeat center center;
     }
   #EffectFocusButton[displayValue="1"] {
-    background-color: #989898;
+    image: url(skin:/buttons/btn_fx_focus_on.svg) no-repeat center center;
     }
     #EffectFocusButton[displayValue="1"]:hover {
-      background-color: #cccccc;
+      image: url(skin:/buttons/btn_fx_focus_on_hover.svg) no-repeat center center;
     }
 
 #EffectTogglerMetaKnob, #EffectToggler {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
 }
+#EffectToggler {
+  border-radius: 3px;
+}
 
-#EffectToggleButton {
-  }
-  #EffectToggleButton[displayValue="0"]:hover { /*
-    border: 1px solid #ffb401;  */
-    border: 1px solid #ff8f00;
+  #EffectToggleButton {
     }
-  #EffectToggleButton[displayValue="1"]:hover {
-    border: 1px solid #FFFFFF;
-    }
-  #EffectToggleButtonUnderlay[displayValue="0"] {
-    background-color: #777777;
-    }
-  #EffectToggleButtonUnderlay[displayValue="1"] { /*
-    background-color: #ffa601;*/
-    background-color: #ff8f00;	/* yellow2 	*/
-    }
-  #fxNameContainer {
-    padding: 1px;
-    qproperty-layoutAlignment: 'AlignLeft';
-    }
-    #fxName {
-      qproperty-alignment: 'AlignLeft | AlignVCenter';
-      color: #000000;
-      text-align: left;
-    }
-  /* TODO: copied from Deere */
-  WEffectSelector {
-    font-family: Ubuntu;
-    font-weight: normal;
-    font-size: 12px/12px;
-    color: #c1cabe;
-    background-color: #333333;
-    /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
-    margin: 0px;
-    /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
-    * names start getting cut off. Adding explicit padding improves this. */
-    padding: 0px;
-    /* The 3D frame on the combo box becomes flat when you give it a border */
-    border: 1px solid #666666;
-    border-radius: 2px;
-    }
-    WEffectSelector::drop-down {
-      /* This causes the Qt theme's widget style to magically not apply. Go figure. */
-      border: 0;
-    }
-    WEffectSelector::down-arrow {
-      width: 16px;
-      height: 16px;
-      margin-right: -3px;
-      image: url(skin:/buttons/btn_arrow_down.svg);
+    #EffectToggleButton[displayValue="0"]:hover { /*
+      border: 1px solid #ffb401;  */
+      border: 1px solid #ff8f00;
       }
-      WEffectSelector::down-arrow:hover {
-        width: 16px;
-        height: 16px;
-        image: url(skin:/buttons/btn_arrow_down_hover.svg);
+    #EffectToggleButton[displayValue="1"]:hover {
+      border: 1px solid #FFFFFF;
       }
-
-    WEffectSelector QAbstractItemView {
-      background-color: #202020;
-      padding-left: 5px;
+    #EffectToggleButtonUnderlay[displayValue="0"] {
+      background-color: #777777;
+      }
+    #EffectToggleButtonUnderlay[displayValue="1"] { /*
+      background-color: #ffa601;*/
+      background-color: #ff8f00;	/* yellow2 	*/
+      }
+    #fxNameContainer {
+      padding: 1px;
+      qproperty-layoutAlignment: 'AlignLeft';
+      }
+      #fxName {
+        qproperty-alignment: 'AlignLeft | AlignVCenter';
+        color: #000000;
+        text-align: left;
+      }
+    /* TODO: copied from Deere */
+    WEffectSelector {
       font-family: Ubuntu;
       font-weight: normal;
       font-size: 12px/12px;
-      color: #cccccc;
-    }
-    /* selected item */
-    WEffectSelector::checked {
-      /* not applied
-      padding-left: 5px;
-      font-weight: bold;	*/
-      color: #00B4FF;
-    }
-    /* hovered items */
-    WEffectSelector::item:selected {
-      background-color: #0f0f0f;
-    /* This moves the tick mark behind item text,
-      text sits at left border now */
-      border: 0;
-    }
-  /* This is sufficient to completely hide the tick mark, but
-    this alone would show an empty, shadowed box instead of tick mark */
-    WEffectSelector::indicator {
+      color: #c1cabe;
       background-color: transparent;
-    }
+      /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
+      margin: 0px;
+      /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
+      * names start getting cut off. Adding explicit padding improves this. */
+      padding: 0px;
+      /* The 3D frame on the combo box becomes flat when you give it a border */
+      border: 0px solid #666666;
+      border-radius: 2px;
+      }
+      WEffectSelector::drop-down {
+        /* This causes the Qt theme's widget style to magically not apply. Go figure. */
+        border: 0;
+      }
+      WEffectSelector::down-arrow {
+        width: 16px;
+        height: 16px; /*
+        margin-right: -2px;
+        image: url(skin:/buttons/btn_arrow_down.svg);
+        background-color: #FF00CA; */
+        image: url(skin:/buttons/btn_fx_selector.svg);
+        }
+        WEffectSelector::down-arrow:hover {
+          width: 16px;
+          height: 16px; /*
+          image: url(skin:/buttons/btn_arrow_down_hover.svg); */
+          image: url(skin:/buttons/btn_fx_selector_hover.svg);
+        }
+
+      WEffectSelector QAbstractItemView {
+        background-color: #202020;
+        padding-left: 5px;
+        font-family: Ubuntu;
+        font-weight: normal;
+        font-size: 12px/12px;
+        color: #cccccc;
+      }
+      /* selected item */
+      WEffectSelector::checked {
+        /* not applied
+        padding-left: 5px;
+        font-weight: bold;	*/
+        color: #00B4FF;
+      }
+      /* hovered items */
+      WEffectSelector::item:selected {
+        background-color: #0f0f0f;
+      /* This moves the tick mark behind item text,
+        text sits at left border now */
+        border: 0;
+      }
+    /* This is sufficient to completely hide the tick mark, but
+      this alone would show an empty, shadowed box instead of tick mark */
+      WEffectSelector::indicator {
+        background-color: transparent;
+      }
 
 #EffectKnobParameter {
   qproperty-layoutAlignment: 'AlignCenter';

@@ -10,7 +10,7 @@ Variables:
   <PushButton>
     <TooltipId>EffectSlot_focus</TooltipId>
     <ObjectName>EffectFocusButton</ObjectName>
-    <Size>11f,30me</Size>
+    <Size>12f,30me</Size>
     <NumberStates>2</NumberStates>
     <RightClickIsPushButton>true</RightClickIsPushButton>
     <State>

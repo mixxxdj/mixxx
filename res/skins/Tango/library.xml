@@ -51,11 +51,12 @@ Description:
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </CoverArt>
-                  <WidgetGroup>
+
+                  <WidgetGroup><!-- Preview Deck, Search, Tree View -->
                     <Layout>vertical</Layout>
                     <SizePolicy>me,min</SizePolicy>
                     <Children>
-                      <WidgetGroup>
+                      <WidgetGroup><!-- Search, Cover button, Maxi button -->
                         <Layout>horizontal</Layout>
                         <SizePolicy>me,min</SizePolicy>
                         <Children>
@@ -72,10 +73,13 @@ Description:
                             <SetVariable name="ConfigKeyPerm">[Master],maximize_library</SetVariable>
                           </Template>
                         </Children>
-                      </WidgetGroup>
+                      </WidgetGroup><!-- /Search, Cover button, Maxi button -->
+
+                      <!-- Tree View -->
                       <LibrarySidebar></LibrarySidebar>
                       <!-- Draw a 1px line with Library border color if Mixerbar
                           is displayed below Library -->
+
                       <WidgetGroup>
                         <ObjectName>Spacer58</ObjectName>
                         <Size>1me,1f</Size>
@@ -86,7 +90,7 @@ Description:
                       </WidgetGroup>
 
                     </Children>
-                  </WidgetGroup>
+                  </WidgetGroup><!-- /Preview Deck, Search, Tree View -->
                 </Children>
               </Splitter><!-- /Splitter to make CoverArt resizeable -->
             </Children>
