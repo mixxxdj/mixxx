@@ -1630,6 +1630,8 @@ QTableView, QTextBrowser, QTreeView {
 }
 
 QTreeView {
+  min-height: 90px;
+  min-width: 90px;
   border-width: 1px 1px 0px 0px;
   border-style: solid;
   border-color: #585858;
@@ -1639,7 +1641,9 @@ QTreeView {
   margin: 0px;
 }
 QTreeView:focus, QTableView:focus { /*
-  Helps me with my current controller mapping  */
+  New Library navigation COs only work if TreeView or TableView have focus.
+  Clicking on buttons, sliders and visuals removes focus from Library.
+  In conjuction with [Library],MoveFocusBackward/..Forward, this helps a lot. */
   border-color: #dddddd;
 }
 

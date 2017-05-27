@@ -22,10 +22,6 @@ Description:
         <SizePolicy>me,min</SizePolicy>
         <Children>
 
-          <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
-
-          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
-
           <Template src="skin:button_2state_persist.xml"><!-- FX -->
             <SetVariable name="TooltipId">show_effects</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
@@ -57,7 +53,7 @@ Description:
             <SetVariable name="ConfigKeyPerm">[Library],show_library</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><Size>10f,1min</Size><Children/></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml"><!-- 4 Decks -->
             <SetVariable name="ObjectName">GuiToggleButton2</SetVariable>
@@ -70,7 +66,7 @@ Description:
             <SetVariable name="ConfigKeyPerm">[Master],show_4decks</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>10f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml"><!-- Waveforms -->
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>

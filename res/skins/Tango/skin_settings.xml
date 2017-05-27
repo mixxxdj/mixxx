@@ -248,7 +248,7 @@ Description:
                 <SetVariable name="Setting">[Tango],channel_mixer</SetVariable>
               </Template>
 
-              <WidgetGroup><!-- EQ & Filter knobs submenu -->
+              <WidgetGroup><!-- EQ & QuickEffect knobs submenu -->
                 <Layout>stacked</Layout>
                 <Size>182f,30f</Size>
                 <Children>
@@ -298,8 +298,8 @@ Description:
                           </WidgetGroup>
 
                           <Template src="skin:skin_settings_button_2state.xml">
-                            <SetVariable name="state_0_text">      Filter Knob</SetVariable>
-                            <SetVariable name="state_1_text"> &#10004; Filter Knob</SetVariable>
+                            <SetVariable name="state_0_text">      Quick Effect Knob</SetVariable>
+                            <SetVariable name="state_1_text"> &#10004; Quick Effect Knob</SetVariable>
                             <SetVariable name="Setting">[Tango],filter_knob</SetVariable>
                           </Template>
                         </Children>
