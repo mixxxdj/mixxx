@@ -57,7 +57,12 @@
         // default attributes
         // You should probably overwrite at least some of these.
         inValueScale: function (value) {
-            return value / this.max;
+            // Hack to get exact center of pots to return 0.5
+            if (value > (this.max / 2)) {
+                return (value - 1) / (this.max - 1);
+            } else {
+                return value / (this.max + 1);
+            }
         },
         // map input in the XML file, not inValueScale
         input: function (channel, control, value, status, group) {
@@ -358,7 +363,6 @@
     };
     Pot.prototype = new Component({
         relative: false,
-        inValueScale: function (value) { return value / this.max; },
         shift: function () {
             if (this.relative) {
                 this.input = function (channel, control, value, status, group) {
