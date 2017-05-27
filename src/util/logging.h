@@ -32,6 +32,9 @@ class Logging {
     static bool debugEnabled() {
         return enabled(LogLevel::Debug);
     }
+    static bool infoEnabled() {
+        return enabled(LogLevel::Info);
+    }
 
   private:
     Logging() = delete;
@@ -53,6 +56,10 @@ public:
         return log(qDebug());
     }
 
+    bool debugEnabled() const {
+        return Logging::debugEnabled();
+    }
+
     QDebug info() const {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
         return log(qInfo());
@@ -60,6 +67,10 @@ public:
         // Qt4 does not support log level Info, use Debug instead
         return debug();
 #endif
+    }
+
+    bool infoEnabled() const {
+        return Logging::infoEnabled();
     }
 
     QDebug warning() const {
