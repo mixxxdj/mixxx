@@ -35,12 +35,9 @@
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup>
-            <ObjectName>ToolbarShrinkingSpacer</ObjectName>
-            <Layout>horizontal</Layout>
-            <Size>40min,30f</Size>
-            <Children/>
-          </WidgetGroup>
+          <Template src="skin:spacer_hx.xml">
+            <SetVariable name="width">15</SetVariable>
+          </Template>
 
           <WidgetGroup>
             <ObjectName>HeadphoneControls</ObjectName>
@@ -78,12 +75,9 @@
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup>
-            <ObjectName>ToolbarShrinkingSpacer</ObjectName>
-            <Layout>horizontal</Layout>
-            <Size>40max,30f</Size>
-            <Children/>
-          </WidgetGroup>
+          <Template src="skin:spacer_hx.xml">
+            <SetVariable name="width">15</SetVariable>
+          </Template>
 
           <WidgetGroup>
             <ObjectName>MasterControls</ObjectName>
