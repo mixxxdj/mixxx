@@ -22,11 +22,9 @@ bool prepareQuery(QSqlQuery& query, const QString& statement) {
     }
     if (query.prepare(statement)) {
         if (kLogger.traceEnabled()) {
-            kLogger.trace() << "Preparing"
-                    << statement
-                    << "took"
-                    << timer.elapsed().toIntegerMicros()
-                    << "us";
+            kLogger.tracePerformance(
+                    QString("Preparing \"%1\"").arg(statement),
+                    timer);
         }
         return true;
     } else {
@@ -59,11 +57,11 @@ bool FwdSqlQuery::execPrepared() {
     }
     if (exec()) {
         if (kLogger.traceEnabled()) {
-            kLogger.trace() << "Executing"
-                    << executedQuery()
-                    << "took"
-                    << timer.elapsed().toIntegerMicros()
-                    << "us";
+            if (kLogger.traceEnabled()) {
+                kLogger.tracePerformance(
+                        QString("Executing \"%1\"").arg(executedQuery()),
+                        timer);
+            }
         }
         DEBUG_ASSERT(!hasError());
         // Verify our assumption that the size of the result set

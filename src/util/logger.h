@@ -7,6 +7,7 @@
 #include <QtDebug>
 
 #include "util/logging.h"
+#include "util/performancetimer.h"
 
 
 namespace mixxx {
@@ -28,6 +29,15 @@ public:
 
     bool traceEnabled() const {
         return Logging::traceEnabled();
+    }
+
+    // Trace the elapsed time of some timed action in microseconds.
+    template<typename T>
+    void tracePerformance(const T& timed, const PerformanceTimer& timer) const {
+        if (traceEnabled()) {
+            trace() << timed << "took"
+                    << timer.elapsed().toIntegerMicros() << "us";
+        }
     }
 
     QDebug debug() const {
