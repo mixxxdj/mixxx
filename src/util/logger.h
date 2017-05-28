@@ -39,6 +39,12 @@ public:
                     << timer.elapsed().toIntegerMicros() << "us";
         }
     }
+    void tracePerformance(const QLatin1String& timed, const PerformanceTimer& timer) const {
+        tracePerformance(timed.latin1(), timer);
+    }
+    void tracePerformance(const QString& timed, const PerformanceTimer& timer) const {
+        tracePerformance(timed.toLocal8Bit().data(), timer);
+    }
 
     QDebug debug() const {
         return log(qDebug());
