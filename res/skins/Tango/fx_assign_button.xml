@@ -8,41 +8,29 @@ Variables:
   group : [ChannelN]
 -->
 <Template>
-  <WidgetGroup>
+  <PushButton>
+    <TooltipId>EffectUnit_group_enabled</TooltipId>
+    <ObjectName>FxAssignButton</ObjectName>
     <Size><Variable name="Size"/></Size>
-    <Layout>stacked</Layout>
-    <Children>
-      <PushButton>
-        <TooltipId>EffectUnit_group_enabled</TooltipId>
-        <ObjectName>FxAssignButton</ObjectName>
-        <Size><Variable name="Size"/></Size>
-        <NumberStates>2</NumberStates>
-        <RightClickIsPushButton>false</RightClickIsPushButton>
-        <State>
-          <Number>0</Number>
-          <Text><Variable name="labelText"/></Text>
-          <Alignment>center</Alignment>
-          <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="labelOff"/>.svg</Pressed>
-          <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="labelOff"/>.svg</Unpressed>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text><Variable name="labelText"/></Text>
-          <Alignment>center</Alignment>
-          <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="labelOn"/>.svg</Pressed>
-          <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="labelOn"/>.svg</Unpressed>
-        </State>
-        <Connection>
-          <ConfigKey>[EffectRack1_EffectUnit<Variable name="fxUnit"/>],group_<Variable name="group"/>_enable</ConfigKey>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
-      </PushButton>
-
-      <Template src="skin:button_2state.xml">
-        <SetVariable name="ObjectName">FxAssignButtonUnderlay</SetVariable>
-        <SetVariable name="Size"><Variable name="Size"/></SetVariable>
-        <SetVariable name="ConfigKey">[EffectRack1_EffectUnit<Variable name="fxUnit"/>],enabled</SetVariable>
-      </Template>
-    </Children>
-  </WidgetGroup>
+    <NumberStates>2</NumberStates>
+    <RightClickIsPushButton>false</RightClickIsPushButton>
+    <State>
+      <Number>0</Number>
+      <Text><Variable name="labelText"/></Text>
+      <Alignment>center</Alignment>
+      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="labelOff"/>.svg</Pressed>
+      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="labelOff"/>.svg</Unpressed>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Text><Variable name="labelText"/></Text>
+      <Alignment>center</Alignment>
+      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="labelOn"/>.svg</Pressed>
+      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="labelOn"/>.svg</Unpressed>
+    </State>
+    <Connection>
+      <ConfigKey>[EffectRack1_EffectUnit<Variable name="fxUnit"/>],group_<Variable name="group"/>_enable</ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+  </PushButton>
 </Template>

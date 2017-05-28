@@ -1283,27 +1283,15 @@ WBeatSpinBox {
     color: #888888;
     background-color: #333333;
     }
-    #FxAssignButton[displayValue="0"]:hover { /*
-      border: 1px solid #ffb401;  */
+    #FxAssignButton[displayValue="0"]:hover {
       border: 1px solid #ff8f00;
     }
-  #FxAssignButton[displayValue="1"] {	/*
-    background-color: #ffb401; yellow2 	*/
-    color: #000000;
+  #FxAssignButton[displayValue="1"] {
+    color: #ff8f00;
+    background-color: #0f0f0f;
     }
     #FxAssignButton[displayValue="1"]:hover {
       border: 1px solid #FFFFFF;
-    }
-
-#FxAssignButtonUnderlay {
-  border-radius: 3px;
-  }
-  #FxAssignButtonUnderlay[displayValue="0"] {
-    background-color: #666666;
-    }
-  #FxAssignButtonUnderlay[displayValue="1"] {	/*
-    background-color: #ffb401; yellow2 	*/
-    background-color: #ff8f00;
     }
 
 #EffectEject {
