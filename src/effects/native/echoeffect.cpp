@@ -29,8 +29,8 @@ EffectManifest EchoEffect::getManifest() {
     delay->setId("delay_time");
     delay->setName(QObject::tr("Time"));
     delay->setDescription(QObject::tr("Delay time\n"
-        "1/4 - 2 beats rounded down to nearest 1/4 beat if sync parameter is enabled and tempo is detected (decks and samplers) \n"
-        "1/4 - 2 seconds if sync parameter is disabled or no tempo is detected (mic & aux inputs, master mix)"));
+        "1/8 - 2 beats rounded to 1/4 beat if sync parameter is enabled and tempo is detected (decks and samplers) \n"
+        "1/8 - 2 seconds if sync parameter is disabled or no tempo is detected (mic & aux inputs, master mix)"));
     delay->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     delay->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     delay->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
@@ -114,7 +114,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     DEBUG_ASSERT(0 == (numSamples % EchoGroupState::kChannelCount));
     EchoGroupState& gs = *pGroupState;
     // The minimum of the parameter is zero so the exact center of the knob is 1 beat.
-    double period = std::max(m_pDelayParameter->value(), 0.25);
+    double period = m_pDelayParameter->value();
     double send_amount = m_pSendParameter->value();
     double feedback_amount = m_pFeedbackParameter->value();
     double pingpong_frac = m_pPingPongParameter->value();
@@ -122,9 +122,19 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     int delay_samples;
     if (m_pSyncParameter->toBool() && groupFeatures.has_beat_length) {
         // period is a number of beats
-        delay_samples = roundToFraction(period, 4) * groupFeatures.beat_length;
+        if (period < 0.125) {
+            period = 0.125;
+        } else {
+            period = roundToFraction(period, 4);
+        }
+        delay_samples = period * groupFeatures.beat_length;
     } else {
         // period is a number of seconds
+        if (period < 0.125) {
+            period = 0.125;
+        } else {
+            period = roundToFraction(period, 4);
+        }
         delay_samples = period * sampleRate * EchoGroupState::kChannelCount;
     }
     VERIFY_OR_DEBUG_ASSERT(delay_samples > 0) {
