@@ -21,15 +21,6 @@ inline QByteArray preambleChars(const char* logContext) {
     return preamble;
 }
 
-inline QByteArray preambleChars(const QString& logContext) {
-    QByteArray preamble;
-    if (!logContext.isEmpty()) {
-        preamble = logContext.toLocal8Bit();
-        preamble.append(kLogPreambleSuffix, kLogPreambleSuffixLen);
-    }
-    return preamble;
-}
-
 } // anonymous namespace
 
 namespace mixxx {
@@ -37,8 +28,9 @@ namespace mixxx {
 Logger::Logger(const char* logContext)
     : m_preambleChars(preambleChars(logContext)) {
 }
-Logger::Logger(const QString& logContext)
-    : m_preambleChars(preambleChars(logContext)) {
+
+Logger::Logger(const QLatin1String& logContext)
+    : m_preambleChars(preambleChars(logContext.latin1())) {
 }
 
 }  // namespace mixxx

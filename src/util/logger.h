@@ -3,6 +3,7 @@
 
 
 #include <QByteArray>
+#include <QLatin1String>
 #include <QtDebug>
 
 #include "util/logging.h"
@@ -14,7 +15,7 @@ class Logger final {
 public:
     Logger() = default;
     explicit Logger(const char* logContext);
-    explicit Logger(const QString& logContext);
+    explicit Logger(const QLatin1String& logContext);
 
     QDebug log(QDebug stream) const {
         return stream << m_preambleChars.data();
