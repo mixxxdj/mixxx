@@ -248,8 +248,6 @@
           <SizePolicy>me,f</SizePolicy>
           <Children>
 
-            <WidgetGroup><Size>1me,3f</Size><Children/></WidgetGroup>
-
             <WidgetGroup><!-- LEFT decks + ToolbarTop + RIGHT decks -->
               <ObjectName>DecksMixer34</ObjectName>
               <Layout>horizontal</Layout>
@@ -341,6 +339,16 @@
                         <SingletonContainer>
                           <ObjectName>Decks12_Singleton</ObjectName>
                         </SingletonContainer>
+
+                        <WidgetGroup>
+                          <Size>1me,5f</Size>
+                          <Children/>
+                          <Connection>
+                            <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+                            <BindProperty>visible</BindProperty>
+                          </Connection>
+                        </WidgetGroup>
+
                         <SingletonContainer>
                           <ObjectName>Decks34_Singleton</ObjectName>
                           <Connection>
@@ -348,6 +356,16 @@
                             <BindProperty>visible</BindProperty>
                           </Connection>
                         </SingletonContainer>
+
+                        <WidgetGroup>
+                          <Size>1me,5f</Size>
+                          <Children/>
+                          <Connection>
+                            <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+                            <BindProperty>visible</BindProperty>
+                          </Connection>
+                        </WidgetGroup>
+
 
                         <Template src="skin:fx_units_12.xml"/>
 
@@ -368,7 +386,25 @@
                           <ObjectName>Decks12_Singleton</ObjectName>
                         </SingletonContainer>
 
+                        <WidgetGroup>
+                          <Size>1me,5f</Size>
+                          <Children/>
+                          <Connection>
+                            <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+                            <BindProperty>visible</BindProperty>
+                          </Connection>
+                        </WidgetGroup>
+
                         <Template src="skin:fx_units_12.xml"/>
+
+                        <WidgetGroup>
+                          <Size>1me,5f</Size>
+                          <Children/>
+                          <Connection>
+                            <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+                            <BindProperty>visible</BindProperty>
+                          </Connection>
+                        </WidgetGroup>
 
                         <SingletonContainer>
                           <ObjectName>Decks34_Singleton</ObjectName>
@@ -377,6 +413,15 @@
                             <BindProperty>visible</BindProperty>
                           </Connection>
                         </SingletonContainer>
+
+                        <WidgetGroup>
+                          <Size>1me,5f</Size>
+                          <Children/>
+                          <Connection>
+                            <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+                            <BindProperty>visible</BindProperty>
+                          </Connection>
+                        </WidgetGroup>
 
                         <Template src="skin:fx_units_34.xml"/>
 

@@ -17,8 +17,8 @@ Variables:
 
       <WidgetGroup><!-- Effect _selector_meta_s * highlightable -->
         <ObjectName>AlignRightCenter</ObjectName>
-        <SizePolicy>me,min</SizePolicy>
         <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
 
           <WidgetGroup><ObjectName>Spacer33</ObjectName><Size>0me,1min</Size></WidgetGroup>
@@ -89,8 +89,8 @@ Variables:
 
       <WidgetGroup><!-- Effect _selector_meta_s * no highlight -->
         <ObjectName>AlignRightCenter</ObjectName>
-        <SizePolicy>me,min</SizePolicy>
         <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
 
           <WidgetGroup><ObjectName>Spacer33</ObjectName><Size>0me,1min</Size></WidgetGroup>

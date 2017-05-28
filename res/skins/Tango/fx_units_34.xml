@@ -17,8 +17,6 @@ Description:
         <Layout>vertical</Layout>
         <SizePolicy>min,max</SizePolicy>
         <Children>
-          <!-- margin not respected, workaround -->
-          <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
           <Template src="skin:fx_unit_left.xml">
               <SetVariable name="fxRack">1</SetVariable>
               <SetVariable name="fxUnit">3</SetVariable>
@@ -36,8 +34,6 @@ Description:
         <Layout>vertical</Layout>
         <SizePolicy>min,me</SizePolicy>
         <Children>
-          <!-- margin not respected, workaround -->
-          <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
           <Template src="skin:fx_unit_left_mini.xml">
               <SetVariable name="fxRack">1</SetVariable>
               <SetVariable name="fxUnit">3</SetVariable>
@@ -99,7 +95,7 @@ Description:
       </WidgetGroup><!-- /Spacers for normal width -->
 
       <WidgetGroup><!-- Spacer for netbook mode -->
-        <Size>6f,1min</Size>
+        <Size>10f,1min</Size>
         <Children/>
         <Connection>
           <ConfigKey>[Tango],netbook_mode</ConfigKey>
@@ -112,8 +108,6 @@ Description:
         <Layout>vertical</Layout>
         <SizePolicy>min,max</SizePolicy>
         <Children>
-          <!-- margin not respected, workaround -->
-          <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
           <Template src="skin:fx_unit_right.xml">
               <SetVariable name="fxRack">1</SetVariable>
               <SetVariable name="fxUnit">4</SetVariable>
@@ -131,8 +125,6 @@ Description:
         <Layout>vertical</Layout>
         <SizePolicy>min,me</SizePolicy>
         <Children>
-          <!-- margin not respected, workaround -->
-          <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
           <Template src="skin:fx_unit_right_mini.xml">
               <SetVariable name="fxRack">1</SetVariable>
               <SetVariable name="fxUnit">4</SetVariable>

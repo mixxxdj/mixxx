@@ -972,14 +972,10 @@ WBeatSpinBox {
 ##############################################################*/
 
 #EffectUnits12 {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop'; /*
-  margin-top: 3px;  */
-  margin-top: 5px;
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 #EffectUnits34 {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop'; /*
-  margin-top: 3px;  */
-  margin-top: 5px;
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
 #EffectRack {
