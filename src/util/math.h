@@ -68,7 +68,7 @@ inline int roundUpToPowerOf2(int v) {
 inline double roundToFraction(double value, int denominator) {
     int wholePart = value;
     double fractionPart = value - wholePart;
-    int numerator = fractionPart * denominator;
+    int numerator = std::lround(fractionPart * denominator);
     return wholePart + (double) numerator / (double) denominator;
 }
 
