@@ -10,7 +10,7 @@ Variables:
   <WidgetGroup>
     <ObjectName>EffectSlotParameters</ObjectName>
     <Layout>horizontal</Layout>
-    <Size>max,39f</Size>
+    <Size>max,45f</Size>
     <Children>
     
       <Template src="skin:fx_parameter_knob.xml">

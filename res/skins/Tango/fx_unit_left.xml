@@ -188,6 +188,7 @@ Variables:
                 <Layout>vertical</Layout>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
+                    <WidgetGroup><Size>1min,0me</Size><Children/></WidgetGroup>
                   <Template src="skin:knob_textless.xml">
                     <TooltipId>EffectUnit_mix</TooltipId>
                     <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
@@ -196,6 +197,7 @@ Variables:
                     <SetVariable name="ConfigKey">mix</SetVariable>
                     <SetVariable name="Color">red</SetVariable>
                   </Template>
+                    <WidgetGroup><Size>1min,0me</Size><Children/></WidgetGroup>
                   <Template src="skin:knob_textless.xml">
                     <TooltipId>EffectUnit_super1</TooltipId>
                     <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
@@ -204,6 +206,7 @@ Variables:
                     <SetVariable name="ConfigKey">super1</SetVariable>
                     <SetVariable name="Color">blue</SetVariable>
                   </Template>
+                    <WidgetGroup><Size>1min,0me</Size><Children/></WidgetGroup>
                 </Children>
               </WidgetGroup><!-- SuperWetDryContainer -->
 

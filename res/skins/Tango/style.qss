@@ -1188,7 +1188,7 @@ WBeatSpinBox {
     font-size: 10px/10px;
     font-weight: bold;
     color: #999999;
-    margin-top: 23px;
+    margin-top: 19px;
   }
 
 #EffectButtonParameter {
@@ -1199,7 +1199,7 @@ WBeatSpinBox {
     border: 1px solid #eeeeee;
     }
   #EffectButtonParameterUnderlay[displayValue="0"] {
-    background-color: #4B4B4B;
+    background-color: #4b4b4b;
     }
   #EffectButtonParameterUnderlay[displayValue="1"] {
     background-color: #006596;
@@ -1211,48 +1211,76 @@ WBeatSpinBox {
     qproperty-alignment: 'AlignLeft | AlignVCenter';
     margin-left: 1px;
     }
-    
-#EffectLinkTypeButton, #EffectLinkTypeButtonUnderlay {
-  margin-top: 26px;
-  }
-  #EffectLinkTypeButton:hover {
-    border: 1px solid #eeeeee;
-    border-bottom: none;
+
+  #EffectLinkTypeButton[value="0"],
+  #EffectLinkInvertButton[displayValue="0"] {
+    background-color: #4b4b4b;
     }
-  #EffectLinkTypeButtonUnderlay[value="0"] {
-    background-color: #4B4B4B;
+    #EffectLinkTypeButton[value="0"]:hover,
+    #EffectLinkInvertButton[displayValue="0"]:hover {
+      background-color: #888888;
     }
-  #EffectLinkTypeButtonUnderlay[value="1"] {
+  #EffectLinkTypeButton[value="1"] {
     background-color: #006596;
     }
-  #EffectLinkTypeButtonUnderlay[value="2"] {	/*
+    #EffectLinkTypeButton[value="1"]:hover {
+      background-color: #078DCD;
+    }
+  #EffectLinkTypeButton[value="2"] {	/*
     a simple way to achive a partitioning in thirds	*/
     background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
       stop: 0 #006596,
       stop: 0.33 #006596,
-      stop: 0.34 #4B4B4B,
-      stop: 0.66 #4B4B4B,
-      stop: 0.67 #4B4B4B,
-      stop: 1 #4B4B4B);
+      stop: 0.34 #4b4b4b,
+      stop: 1 #4b4b4b);
     }
-  #EffectLinkTypeButtonUnderlay[value="3"] {
+    #EffectLinkTypeButton[value="2"]:hover {	/*
+      a simple way to achive a partitioning in thirds	*/
+      background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+        stop: 0 #078dcd,
+        stop: 0.33 #078dcd,
+        stop: 0.34 #4b4b4b,
+        stop: 1 #4b4b4b);
+      }
+  #EffectLinkTypeButton[value="3"] {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
-      stop: 0 #4B4B4B,
-      stop: 0.33 #4B4B4B,
-      stop: 0.34 #4B4B4B,
-      stop: 0.66 #4B4B4B,
+      stop: 0 #4b4b4b,
+      stop: 0.66 #4b4b4b,
       stop: 0.67 #006596,
       stop: 1 #006596);
     }
-  #EffectLinkTypeButtonUnderlay[value="4"] {
+    #EffectLinkTypeButton[value="3"]:hover {
+      background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+        stop: 0 #4b4b4b,
+        stop: 0.66 #4b4b4b,
+        stop: 0.67 #078dcd,
+        stop: 1 #078dcd);
+      }
+  #EffectLinkTypeButton[value="4"] {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
       stop: 0 #006596,
       stop: 0.330000 #006596,
-      stop: 0.340000 #4B4B4B,
-      stop: 0.660000 #4B4B4B,
+      stop: 0.340000 #4b4b4b,
+      stop: 0.660000 #4b4b4b,
       stop: 0.670000 #006596,
       stop: 1 #006596);
-  }
+    }
+    #EffectLinkTypeButton[value="4"]:hover {
+      background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+        stop: 0 #078dcd,
+        stop: 0.330000 #078dcd,
+        stop: 0.340000 #4b4b4b,
+        stop: 0.660000 #4b4b4b,
+        stop: 0.670000 #078dcd,
+        stop: 1 #078dcd);
+    }
+
+  #EffectLinkInvertButton[displayValue="1"] {
+    background-color: #a90000;
+    }
+    #EffectLinkInvertButton[displayValue="1"]:hover {
+      background-color: #ff0000;
+    }
 
 #EffectUnitToggleButton[displayValue="0"] {
   background: #333333 url(skin:/buttons/btn_off.svg) no-repeat center center;
