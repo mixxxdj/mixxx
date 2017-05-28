@@ -9,20 +9,22 @@ namespace {
 
 const QLatin1String kLogPreambleSuffix(" -");
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-const std::size_t kLogPreambleSuffixLen = std::strlen(kLogPreambleSuffix.latin1());
+const int kLogPreambleSuffixLen = std::strlen(kLogPreambleSuffix.latin1());
+#else
+const int kLogPreambleSuffixLen = kLogPreambleSuffix.size();
 #endif
 
 inline QByteArray preambleChars(const QLatin1String& logContext) {
     QByteArray preamble;
-    std::size_t logContextLen = std::strlen(logContext.latin1());
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    const int logContextLen = std::strlen(logContext.latin1());
+#else
+    const int logContextLen = logContext.size();
+#endif
     if (logContextLen > 0) {
         preamble.reserve(logContextLen + kLogPreambleSuffixLen);
         preamble.append(logContext.latin1(), logContextLen);
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
         preamble.append(kLogPreambleSuffix.latin1(), kLogPreambleSuffixLen);
-#else
-        preamble.append(kLogPreambleSuffix.latin1(), kLogPreambleSuffix.size());
-#endif
     }
     return preamble;
 }
