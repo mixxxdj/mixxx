@@ -21,6 +21,15 @@ public:
         return stream << m_preambleChars.data();
     }
 
+    QDebug trace() const {
+        // Trace logs just provide more details than debug logs
+        return log(qDebug());
+    }
+
+    bool traceEnabled() const {
+        return Logging::traceEnabled();
+    }
+
     QDebug debug() const {
         return log(qDebug());
     }

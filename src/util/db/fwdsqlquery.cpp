@@ -4,16 +4,33 @@
 
 #include <QtDebug>
 
+#include "util/performancetimer.h"
+#include "util/logger.h"
 #include "util/assert.h"
 
 
 namespace {
 
-inline
+const mixxx::Logger kLogger("FwdSqlQuery");
+
 bool prepareQuery(QSqlQuery& query, const QString& statement) {
     DEBUG_ASSERT(!query.isActive());
     query.setForwardOnly(true);
-    return query.prepare(statement);
+    PerformanceTimer timer;
+    if (kLogger.traceEnabled()) {
+        timer.start();
+    }
+    if (query.prepare(statement)) {
+        if (kLogger.traceEnabled()) {
+            kLogger.trace() << "Preparing"
+                    << statement
+                    << "took"
+                    << timer.elapsed();
+        }
+        return true;
+    } else {
+        return false;
+    }
 }
 
 } // anonymous namespace
@@ -35,7 +52,17 @@ FwdSqlQuery::FwdSqlQuery(
 bool FwdSqlQuery::execPrepared() {
     DEBUG_ASSERT(isPrepared());
     DEBUG_ASSERT(!hasError());
+    PerformanceTimer timer;
+    if (kLogger.traceEnabled()) {
+        timer.start();
+    }
     if (exec()) {
+        if (kLogger.traceEnabled()) {
+            kLogger.trace() << "Executing"
+                    << executedQuery()
+                    << "took"
+                    << timer.elapsed();
+        }
         DEBUG_ASSERT(!hasError());
         // Verify our assumption that the size of the result set
         // is unavailable for forward-only queries. Otherwise we

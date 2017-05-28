@@ -11,6 +11,7 @@ enum class LogLevel {
     Warning = 1,
     Info = 2,
     Debug = 3,
+    Trace = 4, // for profiling etc.
     Default = Warning,
 };
 
@@ -28,6 +29,9 @@ class Logging {
     }
     static bool enabled(LogLevel logLevel) {
         return s_logLevel >= logLevel;
+    }
+    static bool traceEnabled() {
+        return enabled(LogLevel::Trace);
     }
     static bool debugEnabled() {
         return enabled(LogLevel::Debug);
