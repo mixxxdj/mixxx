@@ -2,7 +2,7 @@
 
 #include "util/math.h"
 #include "util/sample.h"
-#include "util/logging.h"
+#include "util/logger.h"
 
 namespace mixxx {
 

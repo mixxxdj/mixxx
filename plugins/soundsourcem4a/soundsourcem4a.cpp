@@ -1,7 +1,7 @@
 #include "soundsourcem4a.h"
 
 #include "util/sample.h"
-#include "util/logging.h"
+#include "util/logger.h"
 
 #ifdef __WINDOWS__
 #include <io.h>

@@ -1,6 +1,6 @@
 #include "soundsourceproviderregistry.h"
 
-#include "util/logging.h"
+#include "util/logger.h"
 
 namespace mixxx {
 

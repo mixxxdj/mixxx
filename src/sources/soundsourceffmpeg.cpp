@@ -2,7 +2,7 @@
 
 #include "encoder/encoderffmpegresample.h"
 
-#include "util/logging.h"
+#include "util/logger.h"
 
 #include <mutex>
 #include <vector>

@@ -3,7 +3,7 @@
 #include "track/trackmetadata.h"
 #include "util/timer.h"
 #include "util/sample.h"
-#include "util/logging.h"
+#include "util/logger.h"
 
 #include <QFile>
 

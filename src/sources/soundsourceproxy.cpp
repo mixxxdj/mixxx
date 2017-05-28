@@ -28,7 +28,7 @@
 #include "library/coverartcache.h"
 #include "util/cmdlineargs.h"
 #include "util/regex.h"
-#include "util/logging.h"
+#include "util/logger.h"
 
 //Static memory allocation
 /*static*/ mixxx::SoundSourceProviderRegistry SoundSourceProxy::s_soundSourceProviders;

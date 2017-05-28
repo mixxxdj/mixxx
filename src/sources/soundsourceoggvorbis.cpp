@@ -2,7 +2,7 @@
 
 #include "sources/soundsourceoggvorbis.h"
 
-#include "util/logging.h"
+#include "util/logger.h"
 
 namespace mixxx {
 

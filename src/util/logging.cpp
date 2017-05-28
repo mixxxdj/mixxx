@@ -176,7 +176,7 @@ void MessageHandler(QtMsgType type,
 }  // namespace
 
 // static
-void Logging::initialize(const QString& settingsPath, LogLevel logLevel,
+void Logging::initialize(const QDir& settingsDir, LogLevel logLevel,
                          bool debugAssertBreak) {
     VERIFY_OR_DEBUG_ASSERT(!g_logfile.isOpen()) {
         // Somebody already called Logging::initialize.
@@ -186,7 +186,6 @@ void Logging::initialize(const QString& settingsPath, LogLevel logLevel,
     s_logLevel = logLevel;
 
     QString logFileName;
-    QDir settingsDir(settingsPath);
 
     // Rotate old logfiles.
     for (int i = 9; i >= 0; --i) {
@@ -239,33 +238,6 @@ void Logging::shutdown() {
     if (g_logfile.isOpen()) {
         g_logfile.close();
     }
-}
-
-namespace {
-
-inline QString preambleString(const char* logContext) {
-    if ((logContext == nullptr) || (strlen(logContext) == 0)) {
-        return QString();
-    } else {
-        return QString("%1 -").arg(logContext);
-    }
-}
-
-inline QString preambleString(const QString& logContext) {
-    if (logContext.isEmpty()) {
-        return QString();
-    } else {
-        return QString("%1 -").arg(logContext);
-    }
-}
-
-} // anonymous namespace
-
-Logger::Logger(const char* logContext)
-    : m_preambleChars(preambleString(logContext).toLocal8Bit()) {
-}
-Logger::Logger(const QString& logContext)
-    : m_preambleChars(preambleString(logContext).toLocal8Bit()) {
 }
 
 }  // namespace mixxx

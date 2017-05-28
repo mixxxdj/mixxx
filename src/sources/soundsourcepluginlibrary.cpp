@@ -1,6 +1,6 @@
 #include "soundsourcepluginlibrary.h"
 
-#include "util/logging.h"
+#include "util/logger.h"
 
 #include <QMutexLocker>
 

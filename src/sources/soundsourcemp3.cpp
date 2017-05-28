@@ -2,7 +2,7 @@
 #include "sources/mp3decoding.h"
 
 #include "util/math.h"
-#include "util/logging.h"
+#include "util/logger.h"
 
 #include <id3tag.h>
 
