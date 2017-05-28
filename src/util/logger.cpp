@@ -5,20 +5,29 @@
 
 namespace {
 
-inline QString preambleString(const char* logContext) {
-    if ((logContext == nullptr) || (std::strlen(logContext) == 0)) {
-        return QString();
-    } else {
-        return QString("%1 -").arg(logContext);
+const char* const kLogPreambleSuffix = " -";
+const std::size_t kLogPreambleSuffixLen = std::strlen(kLogPreambleSuffix);
+
+inline QByteArray preambleChars(const char* logContext) {
+    QByteArray preamble;
+    if (logContext != nullptr) {
+        std::size_t logContextLen = std::strlen(logContext);
+        if (logContextLen > 0) {
+            preamble.reserve(logContextLen + kLogPreambleSuffixLen);
+            preamble.append(logContext, logContextLen);
+            preamble.append(kLogPreambleSuffix, kLogPreambleSuffixLen);
+        }
     }
+    return preamble;
 }
 
-inline QString preambleString(const QString& logContext) {
-    if (logContext.isEmpty()) {
-        return QString();
-    } else {
-        return QString("%1 -").arg(logContext);
+inline QByteArray preambleChars(const QString& logContext) {
+    QByteArray preamble;
+    if (!logContext.isEmpty()) {
+        preamble = logContext.toLocal8Bit();
+        preamble.append(kLogPreambleSuffix, kLogPreambleSuffixLen);
     }
+    return preamble;
 }
 
 } // anonymous namespace
@@ -26,10 +35,10 @@ inline QString preambleString(const QString& logContext) {
 namespace mixxx {
 
 Logger::Logger(const char* logContext)
-    : m_preambleChars(preambleString(logContext).toLocal8Bit()) {
+    : m_preambleChars(preambleChars(logContext)) {
 }
 Logger::Logger(const QString& logContext)
-    : m_preambleChars(preambleString(logContext).toLocal8Bit()) {
+    : m_preambleChars(preambleChars(logContext)) {
 }
 
 }  // namespace mixxx
