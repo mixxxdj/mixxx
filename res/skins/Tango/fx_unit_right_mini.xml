@@ -21,14 +21,15 @@
             <SetVariable name="Size">28f,13f</SetVariable>
             <SetVariable name="ConfigKeyPerm">[<Variable name="fxGroup"/>],show_parameters</SetVariable>
           </Template>
-          <Template src="skin:button_2state.xml">
-            <SetVariable name="TooltipId">EffectUnit_enabled</SetVariable>
-            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">28f,17f</SetVariable>
-            <SetVariable name="state_0_text">FX<Variable name="fxUnit"/></SetVariable>
-            <SetVariable name="state_1_text">FX<Variable name="fxUnit"/></SetVariable>
-            <SetVariable name="ConfigKey">[<Variable name="fxGroup"/>],enabled</SetVariable>
-          </Template>
+
+          <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
+
+          <Label>
+            <ObjectName>EffectUnitLabel</ObjectName>
+            <Size>28f,12f</Size>
+            <Text>FX<Variable name="fxUnit"/></Text>
+            <Alignment>center</Alignment>
+          </Label>
         </Children>
       </WidgetGroup>
 

@@ -529,14 +529,15 @@ WWidgetGroup {
     font-size: 13px/15px;
     font-weight: bold;
     }
-  #HotcueButton[displayValue="0"] {
+  #HotcueButton[displayValue="0"], #CueUnderlay {
     color: #888888;
     background-color: #333333;
     }
   #HotcueButton[displayValue="0"]:hover {
     border: 1px solid #888888;
     }
-  #HotcueButton[displayValue="1"], #CueButton[displayValue="1"] {
+  #HotcueButton[displayValue="1"], #CueButton[displayValue="1"],
+  #CueUnderlay[displayValue="1"] {
     color: #eeeeee;
     background-color: #666666;
     }
@@ -567,13 +568,11 @@ WWidgetGroup {
     background-color: #ff8f00;
     }
   #CueUnderlay {
-    background-color: #333333;
+  /* is styled like #HotcueButton */
     }
-    #CueUnderlay[displayValue="1"] {
-      border: 2px solid #eeeeee;
-    }
-  /* The one lights up if play position is at main Cue point	*/
   #CueButton {
+  /* is styled like #HotcueButton, lights up if play position
+    is at main Cue point	*/
     background-color: #333333;
     font-weight: bold;
     font-size: 14px/16px;
@@ -999,6 +998,12 @@ WBeatSpinBox {
     qproperty-layoutAlignment: 'AlignRight | AlignTop';
     }
 
+#EffectUnitLabel {
+  font-size: 14px/14px;
+  font-weight: bold;
+  color: #888888;
+}
+
 #EffectUnitControlsLeft {
   qproperty-layoutAlignment: 'AlignRight;
 }
@@ -1074,7 +1079,7 @@ WBeatSpinBox {
     image: url(skin:/buttons/btn_fx_focus_off.svg) no-repeat center center;
     }
     #EffectFocusButton[displayValue="0"]:hover {
-      image: url(skin:/buttons/btn_fx_focus_on.svg) no-repeat center center;
+      image: url(skin:/buttons/btn_fx_focus_off_hover.svg) no-repeat center center;
     }
   #EffectFocusButton[displayValue="1"] {
     image: url(skin:/buttons/btn_fx_focus_on.svg) no-repeat center center;

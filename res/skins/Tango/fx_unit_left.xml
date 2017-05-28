@@ -170,22 +170,18 @@ Variables:
             <SetVariable name="ConfigKeyPerm">[<Variable name="fxGroup"/>],show_parameters</SetVariable>
           </Template>
 
+          <Label>
+            <ObjectName>EffectUnitLabel</ObjectName>
+            <Size>44f,18f</Size>
+            <Text>FX<Variable name="fxUnit"/></Text>
+            <Alignment>center</Alignment>
+          </Label>
+
           <WidgetGroup><!-- EffectUnitMixer -->
             <ObjectName>EffectUnitMixerLeft</ObjectName>
             <Layout>vertical</Layout>
             <Size>44f,1me</Size>
             <Children>
-
-              <Template src="skin:button_2state.xml">
-                <SetVariable name="TooltipId">EffectUnit_enabled</SetVariable>
-                <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-                <SetVariable name="Size">34me,18f</SetVariable>
-                <SetVariable name="state_0_text">FX<Variable name="fxUnit"/></SetVariable>
-                <SetVariable name="state_1_text">FX<Variable name="fxUnit"/></SetVariable>
-                <SetVariable name="ConfigKey">[<Variable name="fxGroup"/>],enabled</SetVariable>
-              </Template>
-
-              <WidgetGroup><Size>1min,1f</Size><Children/></WidgetGroup>
 
               <WidgetGroup>
                 <ObjectName>SuperWetDryContainer</ObjectName>
