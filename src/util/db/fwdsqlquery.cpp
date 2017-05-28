@@ -25,7 +25,8 @@ bool prepareQuery(QSqlQuery& query, const QString& statement) {
             kLogger.trace() << "Preparing"
                     << statement
                     << "took"
-                    << timer.elapsed();
+                    << timer.elapsed().toIntegerMicros()
+                    << "us";
         }
         return true;
     } else {
@@ -61,7 +62,8 @@ bool FwdSqlQuery::execPrepared() {
             kLogger.trace() << "Executing"
                     << executedQuery()
                     << "took"
-                    << timer.elapsed();
+                    << timer.elapsed().toIntegerMicros()
+                    << "us";
         }
         DEBUG_ASSERT(!hasError());
         // Verify our assumption that the size of the result set
