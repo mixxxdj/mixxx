@@ -130,11 +130,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         delay_samples = period * groupFeatures.beat_length;
     } else {
         // period is a number of seconds
-        if (period < 0.125) {
-            period = 0.125;
-        } else {
-            period = roundToFraction(period, 4);
-        }
+        period = std::max(period, 0.125);
         delay_samples = period * sampleRate * EchoGroupState::kChannelCount;
     }
     VERIFY_OR_DEBUG_ASSERT(delay_samples > 0) {
