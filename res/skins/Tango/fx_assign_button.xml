@@ -9,7 +9,7 @@ Variables:
 -->
 <Template>
   <PushButton>
-    <TooltipId>EffectUnit_group_enabled</TooltipId>
+    <TooltipId>EffectUnit_<Variable name="group"/>_enabled</TooltipId>
     <ObjectName>FxAssignButton</ObjectName>
     <Size><Variable name="Size"/></Size>
     <NumberStates>2</NumberStates>

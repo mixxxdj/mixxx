@@ -166,6 +166,7 @@ Variables:
         <Children>
           <Template src="skin:button_2state_persist.xml">
             <SetVariable name="ObjectName">FXSamplersMiniMaxiButton</SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
             <SetVariable name="Size">22me,14f</SetVariable>
             <SetVariable name="ConfigKeyPerm">[<Variable name="fxGroup"/>],show_parameters</SetVariable>
           </Template>
@@ -190,7 +191,7 @@ Variables:
                 <Children>
                     <WidgetGroup><Size>1min,0me</Size><Children/></WidgetGroup>
                   <Template src="skin:knob_textless.xml">
-                    <TooltipId>EffectUnit_mix</TooltipId>
+                    <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
                     <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
                     <SetVariable name="Size">32f,32f</SetVariable>
                     <SetVariable name="group">[<Variable name="fxGroup"/>]</SetVariable>
@@ -199,7 +200,7 @@ Variables:
                   </Template>
                     <WidgetGroup><Size>1min,0me</Size><Children/></WidgetGroup>
                   <Template src="skin:knob_textless.xml">
-                    <TooltipId>EffectUnit_super1</TooltipId>
+                    <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
                     <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
                     <SetVariable name="Size">32f,32f</SetVariable>
                     <SetVariable name="group">[<Variable name="fxGroup"/>]</SetVariable>
