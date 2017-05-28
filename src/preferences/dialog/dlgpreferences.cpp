@@ -359,6 +359,7 @@ void DlgPreferences::onShow() {
         m_geometry = m_pConfig->getValue(
                     ConfigKey("[Preferences]", "geometry")).split(",");
         if (m_geometry.length() < 4) {
+            // Warning! geometry does NOT include the frame/title.
             QRect defaultGeometry = getDefaultGeometry();
             m_geometry.clear();
             m_geometry.append(QString::number(defaultGeometry.left()));
@@ -368,11 +369,14 @@ void DlgPreferences::onShow() {
         }
     }
 
+    //qDebug() << "setGeometry to " << m_geometry;
     // Update geometry with last values
     setGeometry(m_geometry[0].toInt(),  // x position
                 m_geometry[1].toInt(),  // y position
                 m_geometry[2].toInt(),  // width
                 m_geometry[3].toInt()); // heigth
+    // I tried fixing the geometry values to avoid calling move, but that didn't work.
+    move(m_geometry[0].toInt(), m_geometry[1].toInt());
 
     // Notify children that we are about to show.
     emit(showDlg());
