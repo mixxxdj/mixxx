@@ -31,7 +31,7 @@ class AnalysisDao : public DAO {
         QByteArray data;
     };
 
-    AnalysisDao(QSqlDatabase& database, UserSettingsPointer pConfig);
+    AnalysisDao(const QSqlDatabase& database, UserSettingsPointer pConfig);
     virtual ~AnalysisDao();
 
     virtual void initialize();

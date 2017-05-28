@@ -16,7 +16,7 @@ enum ReturnCodes {
 class DirectoryDAO : public DAO {
   public:
 
-    DirectoryDAO(QSqlDatabase& database);
+    explicit DirectoryDAO(const QSqlDatabase& database);
     virtual ~DirectoryDAO();
 
     void initialize();
@@ -28,7 +28,7 @@ class DirectoryDAO : public DAO {
 
   private:
     bool isChildDir(QString testDir, QString dirStr);
-    QSqlDatabase& m_database;
+    QSqlDatabase m_database;
 };
 
 #endif //DIRECTORYDAO_H

@@ -46,7 +46,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
         REPLACE,
     };
 
-    PlaylistDAO(QSqlDatabase& database);
+    explicit PlaylistDAO(const QSqlDatabase& database);
     virtual ~PlaylistDAO();
 
     void initialize();
@@ -140,7 +140,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
                                  int* pTrackDistance);
     void populatePlaylistMembershipCache();
 
-    QSqlDatabase& m_database;
+    QSqlDatabase m_database;
     QMultiHash<TrackId, int> m_playlistsTrackIsIn;
     AutoDJProcessor* m_pAutoDJProcessor;
     DISALLOW_COPY_AND_ASSIGN(PlaylistDAO);

@@ -3,7 +3,7 @@
 
 #include "library/dao/settingsdao.h"
 
-SettingsDAO::SettingsDAO(QSqlDatabase& db)
+SettingsDAO::SettingsDAO(const QSqlDatabase& db)
         : m_db(db) {
 }
 

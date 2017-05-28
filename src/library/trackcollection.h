@@ -38,7 +38,7 @@ class TrackCollection : public QObject {
 
     void resetLibaryCancellation();
 
-    QSqlDatabase& database() {
+    QSqlDatabase database() {
         return m_dbConnection.database();
     }
 

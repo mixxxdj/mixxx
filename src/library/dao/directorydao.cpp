@@ -11,7 +11,7 @@
 #include "util/db/sqllikewildcardescaper.h"
 
 
-DirectoryDAO::DirectoryDAO(QSqlDatabase& database)
+DirectoryDAO::DirectoryDAO(const QSqlDatabase& database)
             : m_database(database) {
 }
 

@@ -16,7 +16,7 @@ class Cue;
 
 class CueDAO : public DAO {
   public:
-    CueDAO(QSqlDatabase& database);
+    explicit CueDAO(const QSqlDatabase& database);
     virtual ~CueDAO();
     void setDatabase(QSqlDatabase& database) { m_database = database; }
 
@@ -34,7 +34,7 @@ class CueDAO : public DAO {
   private:
     CuePointer cueFromRow(const QSqlQuery& query) const;
 
-    QSqlDatabase& m_database;
+    QSqlDatabase m_database;
     mutable QMap<int, CuePointer> m_cues;
 };
 

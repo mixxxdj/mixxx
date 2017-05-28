@@ -14,7 +14,7 @@
 // All library-specific preferences go in the library settings table
 class SettingsDAO : public QObject {
   public:
-    SettingsDAO(QSqlDatabase &db);
+    SettingsDAO(const QSqlDatabase& db);
     virtual ~SettingsDAO();
 
     virtual void initialize();

@@ -201,7 +201,6 @@ DbConnection::DbConnection(const QString& dirPath)
         qWarning() << "Failed to open database connection:"
             << *this
             << m_database.lastError();
-        DEBUG_ASSERT(!*this); // failure
         return; // early exit
     }
 
@@ -216,7 +215,6 @@ DbConnection::DbConnection(const QString& dirPath)
         VERIFY_OR_DEBUG_ASSERT(handle != nullptr) {
             qWarning() << "Could not get sqlite3 handle";
             m_database.close();
-            DEBUG_ASSERT(!*this); // failure
             return; // early exit
         }
 
@@ -253,9 +251,6 @@ DbConnection::DbConnection(const QString& dirPath)
         VERIFY_OR_DEBUG_ASSERT(result == SQLITE_OK) {
             qWarning() << "Failed to install like 3 function:" << result;
         }
-
-        DEBUG_ASSERT(*this); // success
-        return; // early exit
     } else {
         qWarning() << "localecompare requires a SQLite3 database driver, found:"
                    << v.typeName();
@@ -264,7 +259,7 @@ DbConnection::DbConnection(const QString& dirPath)
 }
 
 DbConnection::~DbConnection() {
-    VERIFY_OR_DEBUG_ASSERT(*this) {
+    VERIFY_OR_DEBUG_ASSERT(m_database.isOpen()) {
         qWarning()
             << "Database connection has already been closed:"
             << *this;
@@ -278,12 +273,10 @@ DbConnection::~DbConnection() {
             << "Rolled back open transaction before closing database connection:"
             << *this;
     }
-    DEBUG_ASSERT(*this);
     qDebug()
         << "Closing database connection:"
         << *this;
     m_database.close();
-    DEBUG_ASSERT(!*this);
 }
 
 QDebug operator<<(QDebug debug, const DbConnection& dbConnection) {

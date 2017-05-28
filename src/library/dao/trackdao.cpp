@@ -68,7 +68,7 @@ RecentTrackCacheItem::~RecentTrackCacheItem() {
 // expensive.
 const int kRecentTracksCacheSize = 5;
 
-TrackDAO::TrackDAO(QSqlDatabase& database,
+TrackDAO::TrackDAO(const QSqlDatabase& database,
                    CueDAO& cueDao,
                    PlaylistDAO& playlistDao,
                    AnalysisDao& analysisDao,

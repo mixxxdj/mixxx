@@ -12,11 +12,7 @@ class DbConnection final {
         const QString& dirPath);
     ~DbConnection();
 
-    operator bool() const {
-        return m_database.isOpen();
-    }
-
-    QSqlDatabase& database() {
+    QSqlDatabase database() const {
         return m_database;
     }
 

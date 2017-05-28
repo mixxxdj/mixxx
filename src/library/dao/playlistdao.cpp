@@ -8,7 +8,7 @@
 #include "library/autodj/autodjprocessor.h"
 #include "util/math.h"
 
-PlaylistDAO::PlaylistDAO(QSqlDatabase& database)
+PlaylistDAO::PlaylistDAO(const QSqlDatabase& database)
         : m_database(database),
           m_pAutoDJProcessor(nullptr) {
 }

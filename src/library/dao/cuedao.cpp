@@ -12,7 +12,7 @@
 #include "util/assert.h"
 #include "util/performancetimer.h"
 
-CueDAO::CueDAO(QSqlDatabase& database)
+CueDAO::CueDAO(const QSqlDatabase& database)
         : m_database(database) {
 }
 

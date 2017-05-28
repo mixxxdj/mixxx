@@ -8,7 +8,7 @@
 #include "libraryhashdao.h"
 #include "library/queryutil.h"
 
-LibraryHashDAO::LibraryHashDAO(QSqlDatabase& database)
+LibraryHashDAO::LibraryHashDAO(const QSqlDatabase& database)
         : m_database(database) {
 
 }

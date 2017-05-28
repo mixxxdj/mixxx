@@ -54,11 +54,12 @@ class TrackDAO : public QObject, public virtual DAO {
   public:
     // The 'config object' is necessary because users decide ID3 tags get
     // synchronized on track metadata change
-    TrackDAO(QSqlDatabase& database, CueDAO& cueDao,
-             PlaylistDAO& playlistDao,
-             AnalysisDao& analysisDao,
-             LibraryHashDAO& libraryHashDao,
-             UserSettingsPointer pConfig);
+    TrackDAO(const QSqlDatabase& database,
+            CueDAO& cueDao,
+            PlaylistDAO& playlistDao,
+            AnalysisDao& analysisDao,
+            LibraryHashDAO& libraryHashDao,
+            UserSettingsPointer pConfig);
     virtual ~TrackDAO();
 
     void finish();

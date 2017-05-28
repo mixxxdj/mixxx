@@ -19,7 +19,7 @@ class SchemaManager {
     };
 
     static Result upgradeToSchemaVersion(const QString& schemaFilename,
-                                         QSqlDatabase& db, const int targetVersion);
+                                         const QSqlDatabase& db, const int targetVersion);
 
     static const QString SETTINGS_VERSION_STRING;
     static const QString SETTINGS_MINCOMPATIBLE_STRING;

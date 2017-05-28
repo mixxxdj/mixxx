@@ -38,7 +38,7 @@ TrackCollection::~TrackCollection() {
 }
 
 bool TrackCollection::checkForTables() {
-    if (!m_dbConnection) {
+    if (!m_dbConnection.database().isOpen()) {
         QMessageBox::critical(0, tr("Cannot open database"),
                             tr("Unable to establish a database connection.\n"
                                 "Mixxx requires QT with SQLite support. Please read "
