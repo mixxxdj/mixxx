@@ -1,12 +1,16 @@
-#include <cstring>
-
 #include "util/logger.h"
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#include <cstring>
+#endif
 
 
 namespace {
 
-const char* const kLogPreambleSuffix = " -";
-const std::size_t kLogPreambleSuffixLen = std::strlen(kLogPreambleSuffix);
+const QLatin1String kLogPreambleSuffix(" -");
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+const std::size_t kLogPreambleSuffixLen = std::strlen(kLogPreambleSuffix.latin1());
+#endif
 
 inline QByteArray preambleChars(const QLatin1String& logContext) {
     QByteArray preamble;
@@ -14,7 +18,11 @@ inline QByteArray preambleChars(const QLatin1String& logContext) {
     if (logContextLen > 0) {
         preamble.reserve(logContextLen + kLogPreambleSuffixLen);
         preamble.append(logContext.latin1(), logContextLen);
-        preamble.append(kLogPreambleSuffix, kLogPreambleSuffixLen);
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+        preamble.append(kLogPreambleSuffix.latin1(), kLogPreambleSuffixLen);
+#else
+        preamble.append(kLogPreambleSuffix.latin1(), kLogPreambleSuffix.size());
+#endif
     }
     return preamble;
 }
