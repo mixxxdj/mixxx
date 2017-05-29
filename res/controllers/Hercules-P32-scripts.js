@@ -91,7 +91,6 @@ P32.recordButton = new components.Button({
     midi: [0x90, 0x02],
     group: '[Recording]',
     inKey: 'toggle_recording',
-    onlyOnPress: false,
     outKey: 'status',
     sendShifted: false,
 });
@@ -177,6 +176,7 @@ P32.Deck = function (deckNumbers, channel) {
     this.pfl = new components.Button({
         midi: [0x90 + channel, 0x10],
         sendShifted: false,
+        type: components.Button.prototype.types.toggle,
         unshift: function () {
             this.group = theDeck.currentDeck;
             this.inKey = 'pfl';
@@ -230,14 +230,12 @@ P32.Deck = function (deckNumbers, channel) {
     this.loopIn = new components.Button({
         midi: [0x90 + channel, 0x50],
         key: 'loop_in',
-        onlyOnPress: false,
         on: P32.padColors.red,
         off: P32.padColors.purple,
     });
     this.loopOut = new components.Button({
         midi: [0x90 + channel, 0x51],
         key: 'loop_out',
-        onlyOnPress: false,
         on: P32.padColors.red,
         off: P32.padColors.purple,
     });
@@ -247,9 +245,8 @@ P32.Deck = function (deckNumbers, channel) {
             this.inKey = 'reloop_toggle';
         },
         shift: function () {
-            this.inKey = 'reloop_cue';
+            this.inKey = 'reloop_andstop';
         },
-        onlyOnPress: false,
         on: P32.padColors.red,
         off: P32.padColors.blue,
         outKey: 'loop_enabled',
@@ -258,27 +255,25 @@ P32.Deck = function (deckNumbers, channel) {
     this.tempSlow = new components.Button({
         midi: [0x90 + channel, 0x44],
         key: 'rate_temp_down',
-        onlyOnPress: false,
         on: P32.padColors.red,
         off: P32.padColors.purple,
     });
     this.tempFast = new components.Button({
         midi: [0x90 + channel, 0x45],
         key: 'rate_temp_up',
-        onlyOnPress: false,
         on: P32.padColors.red,
         off: P32.padColors.purple,
     });
     this.alignBeats = new components.Button({
         midi: [0x90 + channel, 0x46],
         key: 'beats_translate_curpos',
-        onlyOnPress: false,
         on: P32.padColors.red,
         off: P32.padColors.blue,
     });
     this.quantize = new components.Button({
         midi: [0x90 + channel, 0x4B],
         key: 'quantize',
+        type: components.Button.prototype.types.toggle,
         on: P32.padColors.red,
         off: P32.padColors.blue,
     });
