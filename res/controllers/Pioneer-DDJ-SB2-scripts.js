@@ -178,9 +178,7 @@ PioneerDDJSB2.init = function(id) {
         PioneerDDJSB2.vu_meter_timer = engine.beginTimer(100, "PioneerDDJSB2.vuMeterTwinkle()");
     }
 
-    // TODO(Be): verify that one of these messages requests the state of the
-    // knobs and faders from the controller.
-    midi.sendShortMsg(0x9B, 0x08, 0x7f);
+    // request the positions of the knobs and faders from the controller
     midi.sendShortMsg(0x9B, 0x09, 0x7f);
 };
 
