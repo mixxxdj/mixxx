@@ -46,9 +46,9 @@ EffectManifest EchoEffect::getManifest() {
     feedback->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     feedback->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     feedback->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    feedback->setMinimum(0.25);
+    feedback->setMinimum(0.00);
     feedback->setDefault(0.75);
-    feedback->setMaximum(0.90);
+    feedback->setMaximum(1.00);
 
     EffectManifestParameter* pingpong = manifest.addParameter();
     pingpong->setId("pingpong_amount");
