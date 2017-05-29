@@ -505,7 +505,9 @@
                 if (typeof component.shift === 'function') {
                     if (component instanceof Button
                         && (component.type === Button.prototype.types.push
-                            || component.type === undefined)) {
+                            || component.type === undefined)
+                        && component.inKey !== undefined
+                        && component.input === Button.prototype.input) {
                         if (engine.getValue(component.group, component.inKey) !== 0) {
                             engine.setValue(component.group, component.inKey, 0);
                         }
@@ -521,7 +523,9 @@
                 if (typeof component.unshift === 'function') {
                     if (component instanceof Button
                         && (component.type === Button.prototype.types.push
-                            || component.type === undefined)) {
+                            || component.type === undefined)
+                        && component.inKey !== undefined
+                        && component.input === Button.prototype.input) {
                         if (engine.getValue(component.group, component.inKey) !== 0) {
                             engine.setValue(component.group, component.inKey, 0);
                         }
