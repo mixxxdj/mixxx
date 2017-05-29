@@ -218,21 +218,61 @@ PioneerDDJSB2.Deck = function (deckNumber) {
         sendShifted: true,
     });
 
+    var effectUnitNumber = deckNumber;
+    if (deckNumber > 2) {
+        effectUnitNumber -= 2;
+    }
+
     this.gainKnob = new components.Pot({
-        inKey: 'pregain',
+        unshift: function () {
+            this.group = '[Channel' + deckNumber + ']';
+            this.inKey = 'pregain';
+            this.disconnect();
+            this.connect();
+        },
+        shift: function () {
+            var focusedEffect = engine.getValue('[EffectRack1_EffectUnit' + effectUnitNumber + ']', 'focused_effect');
+            this.group = '[EffectRack1_EffectUnit' + effectUnitNumber + '_Effect' + focusedEffect + ']';
+            this.inKey = 'parameter1';
+            this.disconnect();
+            this.connect();
+        },
     });
 
     this.eqKnob = [];
     for (var k = 1; k <= 3; k++) {
         this.eqKnob[k] = new components.Pot({
-            group: '[EqualizerRack1_[Channel' + deckNumber + ']_Effect1]',
-            inKey: 'parameter' + k,
+            number: k,
+            unshift: function () {
+                this.group = '[EqualizerRack1_[Channel' + deckNumber + ']_Effect1]';
+                this.inKey = 'parameter' + this.number;
+                this.disconnect();
+                this.connect();
+            },
+            shift: function () {
+                var focusedEffect = engine.getValue('[EffectRack1_EffectUnit' + effectUnitNumber + ']', 'focused_effect');
+                this.group = '[EffectRack1_EffectUnit' + effectUnitNumber + '_Effect' + focusedEffect + ']';
+                this.inKey = 'parameter' + (5 - this.number);
+                this.disconnect();
+                this.connect();
+            },
         });
     }
 
     this.quickEffectKnob = new components.Pot({
-        group: '[QuickEffectRack1_[Channel' + deckNumber + ']]',
-        inKey: 'super1',
+        unshift: function () {
+            this.group = '[QuickEffectRack1_[Channel' + deckNumber + ']]';
+            this.inKey = 'super1';
+            this.disconnect();
+            this.connect();
+        },
+        shift: function () {
+            var focusedEffect = engine.getValue('[EffectRack1_EffectUnit' + effectUnitNumber + ']', 'focused_effect');
+            this.group = '[EffectRack1_EffectUnit' + effectUnitNumber + '_Effect' + focusedEffect + ']';
+            this.inKey = 'parameter5';
+            this.disconnect();
+            this.connect();
+        },
     });
 
     this.tempoFader = new components.Pot({
@@ -1130,7 +1170,7 @@ PioneerDDJSB2.EffectUnit = function (unitNumber) {
                     var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + focusedEffect + ']';
                     engine.setParameter(effectGroup, 'meta', value / this.max);
                 }
-            }
+            };
         },
     });
 
