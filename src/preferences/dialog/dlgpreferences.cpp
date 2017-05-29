@@ -368,15 +368,38 @@ void DlgPreferences::onShow() {
             m_geometry.append(QString::number(defaultGeometry.height()));
         }
     }
+    int newX = m_geometry[0].toInt();
+    int newY = m_geometry[1].toInt();
+    newX = std::max(0, std::min(newX, QApplication::desktop()->screenGeometry().width()- m_geometry[2].toInt()));
+    newY = std::max(0, std::min(newY, QApplication::desktop()->screenGeometry().height() - m_geometry[3].toInt()));
+    m_geometry[0] = QString::number(newX);
+    m_geometry[1] = QString::number(newY);
+    
+//    int offsetX = geometry().left() - frameGeometry().left();
+//    int offsetY = geometry().top() - frameGeometry().top();
+//    qDebug() << "ONSHOW framegeo " << frameGeometry() << " geo " << geometry() << " mgeometry " << m_geometry;
+//    qDebug() << "ONSHOW offsets " << offsetX << " " << offsetY;
+//    qDebug() << "ONSHOW  newxy" << newX << " " << newY;
 
-    //qDebug() << "setGeometry to " << m_geometry;
     // Update geometry with last values
-    setGeometry(m_geometry[0].toInt(),  // x position
-                m_geometry[1].toInt(),  // y position
+#if defined(Q_OS_WIN)
+    resize(m_geometry[2].toInt(), m_geometry[3].toInt());
+#else 
+    // On linux, when the window is opened for the first time by the window manager, QT does not have
+    // information about the frame size so the offset is zero. As such, the first time it opens the window
+    // does not include the offset, so it is moved from the last position it had.
+    // Excluding the offset from the saved value tries to fix that.
+    int offsetX = geometry().left() - frameGeometry().left();
+    int offsetY = geometry().top() - frameGeometry().top();
+    newX+=offsetX;
+    newY+=offsetY;
+    setGeometry(newX,  // x position
+                newY,  // y position
                 m_geometry[2].toInt(),  // width
                 m_geometry[3].toInt()); // heigth
+#endif
     // I tried fixing the geometry values to avoid calling move, but that didn't work.
-    move(m_geometry[0].toInt(), m_geometry[1].toInt());
+    move(newX, newY);
 
     // Notify children that we are about to show.
     emit(showDlg());
@@ -467,8 +490,21 @@ void DlgPreferences::switchToPage(DlgPreferencePage* pWidget) {
 
 void DlgPreferences::moveEvent(QMoveEvent* e) {
     if (m_geometry.length() == 4) {
-        m_geometry[0] = QString::number(e->pos().x());
-        m_geometry[1] = QString::number(e->pos().y());
+        // Warning! geometry does NOT include the frame/title.
+//        int offsetX = geometry().left() - frameGeometry().left();
+//        int offsetY = geometry().top() - frameGeometry().top();
+//        qDebug() << "MOVEEVENT framegeo " << frameGeometry() << " geo " << geometry() << " epos " << e->pos();
+//        qDebug() << "MOVEEVENT offsets " << offsetX << " " << offsetY;
+#if defined(Q_OS_WIN)
+    Q_UNUSED(e);
+        m_geometry[0] = QString::number(frameGeometry().left());
+        m_geometry[1] = QString::number(frameGeometry().top());
+#else
+        int offsetX = geometry().left() - frameGeometry().left();
+        int offsetY = geometry().top() - frameGeometry().top();
+        m_geometry[0] = QString::number(e->pos().x()-offsetX);
+        m_geometry[1] = QString::number(e->pos().y()-offsetY);
+#endif
     }
 }
 
