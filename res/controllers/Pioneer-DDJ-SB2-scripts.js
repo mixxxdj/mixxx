@@ -247,11 +247,7 @@ PioneerDDJSB2.Deck = function (deckNumber) {
     this.topPadRow.autoLoopLayer = new components.ComponentContainer();
     this.topPadRow.autoLoopLayer.beatloopButton = new components.Button({
         midi: [0x96 + deckNumber, 0x10],
-        inValueScale: function (value) { return value / 127; },
         unshift: function () {
-            if (engine.getValue(this.group, 'beatlooproll_activate') === 1) {
-                engine.setValue(this.group, 'beatlooproll_activate', 0);
-            }
             this.inKey = 'beatloop_activate';
             this.outKey = 'beatloop_activate';
             this.disconnect();
@@ -315,7 +311,6 @@ PioneerDDJSB2.Deck = function (deckNumber) {
     });
 
     this.topPadRow.forEachComponent(function (button) {
-        button.onlyOnPress = false;
         button.sendShifted = true;
         button.shiftControl = true;
         button.shiftOffset = 8;
