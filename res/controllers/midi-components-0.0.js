@@ -166,8 +166,7 @@
         types: {
             push: 0,
             toggle: 1,
-            trigger: 2,
-            powerWindow: 3,
+            powerWindow: 2,
         },
         type: 0,
         on: 127,
@@ -186,10 +185,6 @@
             } else if (this.type === this.types.toggle) {
                 if (this.isPress(channel, control, value, status)) {
                     this.inToggle();
-                }
-            } else if (this.type === this.types.trigger) {
-                if (this.isPress(channel, control, value, status)) {
-                    this.inSetValue(1);
                 }
             } else if (this.type === this.types.powerWindow) {
                 if (this.isPress(channel, control, value, status)) {
