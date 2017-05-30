@@ -80,17 +80,14 @@ Description:
 
           <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
 
-          <Template src="skin:button_3state_persist.xml"><!-- Spinny -->
-            <SetVariable name="TooltipId">show_spinny</SetVariable>
-            <SetVariable name="ObjectName">GuiToggleButton2</SetVariable>
+          <Template src="skin:button_2state_persist.xml"><!-- Spinny -->
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">20f,20f</SetVariable>
-            <SetVariable name="state_0_pressed">cover.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">cover.svg</SetVariable>
-            <SetVariable name="state_1_pressed">cover_off.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">cover_off.svg</SetVariable>
-            <SetVariable name="state_2_pressed">spinny.svg</SetVariable>
-            <SetVariable name="state_2_unpressed">spinny.svg</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[Tango],spinny_cover_none</SetVariable>
+            <SetVariable name="state_0_pressed">mixerbar_off.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">mixerbar_off.svg</SetVariable>
+            <SetVariable name="state_1_pressed">mixerbar_on.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">mixerbar_on.svg</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Tango],mixerbar</SetVariable>
           </Template>
 
           <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
