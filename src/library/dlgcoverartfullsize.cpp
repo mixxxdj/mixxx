@@ -167,16 +167,27 @@ void DlgCoverArtFullSize::resizeEvent(QResizeEvent* event) {
 }
 
 void DlgCoverArtFullSize::wheelEvent(QWheelEvent* event) {
-    QPoint oldOrigin = frameGeometry().topLeft();
-    int oldWidth = frameGeometry().width();
-    int oldHeight = frameGeometry().height();
+    // Scale the image size
+    int oldWidth = width();
+    int oldHeight = height();
     int newWidth = oldWidth + (0.2 * event->delta());
     int newHeight = oldHeight + (0.2 * event->delta());
     QSize newSize = size();
     newSize.scale(newWidth, newHeight, Qt::KeepAspectRatio);
-    resize(newSize);
-    QPoint newOrigin = QPoint(oldOrigin.x() + (oldWidth - frameGeometry().width()) / 2,
-                              oldOrigin.y() + (oldHeight - frameGeometry().height()) / 2 );
-    move(newOrigin);
+
+    // To keep the same part of the image under the cursor, shift the
+    // origin (top left point) by the distance the point moves under the cursor.
+    QPoint oldOrigin = geometry().topLeft();
+    QPoint oldPointUnderCursor = event->pos();
+    int newPointX = (double) oldPointUnderCursor.x() / oldWidth * newSize.width();
+    int newPointY = (double) oldPointUnderCursor.y() / oldHeight * newSize.height();
+    QPoint newOrigin = QPoint(
+        oldOrigin.x() + (oldPointUnderCursor.x() - newPointX),
+        oldOrigin.y() + (oldPointUnderCursor.y() - newPointY));
+
+    // Calling resize() then move() causes flickering, so resize and move the window
+    // simultaneously with setGeometry().
+    setGeometry(QRect(newOrigin, newSize));
+
     event->accept();
 }
