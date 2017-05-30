@@ -647,15 +647,6 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.quantize.input</key>
-                <status>0x91</status>
-                <midino>0x4B</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
                 <key>P32.leftDeck.enableEffectUnitButtons[1].input</key>
                 <status>0x91</status>
                 <midino>0x40</midino>
@@ -722,15 +713,6 @@
                 <key>P32.leftDeck.enableEffectUnitButtons[4].input</key>
                 <status>0x94</status>
                 <midino>0x3D</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.quantize.input</key>
-                <status>0x94</status>
-                <midino>0x4B</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -2298,24 +2280,6 @@
                 <key>P32.rightDeck.alignBeats.input</key>
                 <status>0x95</status>
                 <midino>0x46</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.quantize.input</key>
-                <status>0x92</status>
-                <midino>0x4B</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.rightDeck.quantize.input</key>
-                <status>0x95</status>
-                <midino>0x4B</midino>
                 <options>
                     <script-binding/>
                 </options>

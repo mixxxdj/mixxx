@@ -270,13 +270,6 @@ P32.Deck = function (deckNumbers, channel) {
         on: P32.padColors.red,
         off: P32.padColors.blue,
     });
-    this.quantize = new components.Button({
-        midi: [0x90 + channel, 0x4B],
-        key: 'quantize',
-        type: components.Button.prototype.types.toggle,
-        on: P32.padColors.red,
-        off: P32.padColors.blue,
-    });
 
     this.enableEffectUnitButtons = new components.ComponentContainer(); //fii
     this.enableEffectUnitButtons[1] = new components.EffectAssignmentButton({
