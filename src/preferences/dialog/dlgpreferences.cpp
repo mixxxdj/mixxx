@@ -375,14 +375,8 @@ void DlgPreferences::onShow() {
     m_geometry[0] = QString::number(newX);
     m_geometry[1] = QString::number(newY);
     
-//    int offsetX = geometry().left() - frameGeometry().left();
-//    int offsetY = geometry().top() - frameGeometry().top();
-//    qDebug() << "ONSHOW framegeo " << frameGeometry() << " geo " << geometry() << " mgeometry " << m_geometry;
-//    qDebug() << "ONSHOW offsets " << offsetX << " " << offsetY;
-//    qDebug() << "ONSHOW  newxy" << newX << " " << newY;
-
     // Update geometry with last values
-#if defined(Q_OS_WIN)
+#ifdef __WINDOWS__
     resize(m_geometry[2].toInt(), m_geometry[3].toInt());
 #else 
     // On linux, when the window is opened for the first time by the window manager, QT does not have
@@ -391,14 +385,14 @@ void DlgPreferences::onShow() {
     // Excluding the offset from the saved value tries to fix that.
     int offsetX = geometry().left() - frameGeometry().left();
     int offsetY = geometry().top() - frameGeometry().top();
-    newX+=offsetX;
-    newY+=offsetY;
+    newX += offsetX;
+    newY += offsetY;
     setGeometry(newX,  // x position
                 newY,  // y position
                 m_geometry[2].toInt(),  // width
                 m_geometry[3].toInt()); // heigth
 #endif
-    // I tried fixing the geometry values to avoid calling move, but that didn't work.
+    // Move is also needed on linux.
     move(newX, newY);
 
     // Notify children that we are about to show.
@@ -490,20 +484,16 @@ void DlgPreferences::switchToPage(DlgPreferencePage* pWidget) {
 
 void DlgPreferences::moveEvent(QMoveEvent* e) {
     if (m_geometry.length() == 4) {
-        // Warning! geometry does NOT include the frame/title.
-//        int offsetX = geometry().left() - frameGeometry().left();
-//        int offsetY = geometry().top() - frameGeometry().top();
-//        qDebug() << "MOVEEVENT framegeo " << frameGeometry() << " geo " << geometry() << " epos " << e->pos();
-//        qDebug() << "MOVEEVENT offsets " << offsetX << " " << offsetY;
-#if defined(Q_OS_WIN)
+#ifdef __WINDOWS__
     Q_UNUSED(e);
         m_geometry[0] = QString::number(frameGeometry().left());
         m_geometry[1] = QString::number(frameGeometry().top());
 #else
+        // Warning! geometry does NOT include the frame/title.
         int offsetX = geometry().left() - frameGeometry().left();
         int offsetY = geometry().top() - frameGeometry().top();
-        m_geometry[0] = QString::number(e->pos().x()-offsetX);
-        m_geometry[1] = QString::number(e->pos().y()-offsetY);
+        m_geometry[0] = QString::number(e->pos().x() - offsetX);
+        m_geometry[1] = QString::number(e->pos().y() - offsetY);
 #endif
     }
 }

@@ -1068,7 +1068,6 @@ void MixxxMainWindow::slotViewFullScreen(bool toggle) {
 }
 
 void MixxxMainWindow::slotOptionsPreferences() {
-//    m_pPrefDlg->setHidden(false);
     m_pPrefDlg->show();
     m_pPrefDlg->raise();
     m_pPrefDlg->activateWindow();
@@ -1186,11 +1185,8 @@ void MixxxMainWindow::rebootMixxxView() {
         // Not all OSs and/or window managers keep the window inside of the screen, so force it.
         int newX = initPosition.x() + (initSize.width() - m_pWidgetParent->width()) / 2;
         int newY = initPosition.y() + (initSize.height() - m_pWidgetParent->height()) / 2;
-        newX = std::max(0, std::min(newX, QApplication::desktop()->screenGeometry().width()- m_pWidgetParent->width()));
+        newX = std::max(0, std::min(newX, QApplication::desktop()->screenGeometry().width() - m_pWidgetParent->width()));
         newY = std::max(0, std::min(newY, QApplication::desktop()->screenGeometry().height() - m_pWidgetParent->height()));
-//        qDebug() << "rebootMixxxView old pos:" << initPosition << " old size:" << initSize;
-//        qDebug() << "new widdget width/height:" << m_pWidgetParent->width() << m_pWidgetParent->height();
-//        qDebug() << "new x/y target:" << newX << "," << newY;
         move(newX,newY);
     }
 
