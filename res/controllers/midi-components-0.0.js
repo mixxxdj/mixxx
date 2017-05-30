@@ -188,19 +188,17 @@
                 }
             } else if (this.type === this.types.powerWindow) {
                 if (this.isPress(channel, control, value, status)) {
-                    script.toggleControl(this.group, this.inKey);
+                    this.inToggle();
                     this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
                         this.isLongPressed = true;
                     }, true);
                 } else {
                     if (this.isLongPressed) {
-                        script.toggleControl(this.group, this.inKey);
-                    }
-                    if (this.longPressTimer) {
+                        this.inToggle();
+                    } else {
                         engine.stopTimer(this.longPressTimer);
-                        this.isLongPressed = false;
-                        this.longPressTimer = 0;
                     }
+                    this.isLongPressed = false;
                 }
             }
         },
