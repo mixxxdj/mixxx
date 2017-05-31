@@ -657,7 +657,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>PioneerDDJSX.autoLoopButton</key>
-                <description>4-Beat Auto-Loop Deck 1, Button: left AUTOLOOP (Deck 1 active)</description>
+                <description>Set and enable/exit beatloop with length of beatloop_size Deck 1, Button: left AUTOLOOP (Deck 1 active)</description>
                 <status>0x90</status>
                 <midino>0x14</midino>
                 <options>
@@ -720,6 +720,16 @@
                 <description>Manual loop in Deck 1, Button: LOOP IN (Deck 1 active)</description>
                 <status>0x90</status>
                 <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSX.shiftLoopInButton</key>
+                <description>Jump to current loop in point and stop playback Deck 1, Button: SHIFT + LOOP IN (Deck 1 active)</description>
+                <status>0x90</status>
+                <midino>0x4C</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -820,6 +830,46 @@
                 <description>Play track backwards (reverse play) Deck 1, Button: SHIFT &amp; left CENSOR (Deck 1 active)</description>
                 <status>0x90</status>
                 <midino>0x38</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSX.parameterRight</key>
+                <description>Beatjump amount of beatjump_size forwards, Button: PARAMETER1 RIGHT (in HOTCUE-Mode, Deck 1 active)</description>
+                <status>0x90</status>
+                <midino>0x2C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSX.parameterLeft</key>
+                <description>Beatjump amount of beatjump_size backwards, Button: PARAMETER1 LEFT (in HOTCUE-Mode, Deck 1 active)</description>
+                <status>0x90</status>
+                <midino>0x24</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSX.parameterRight</key>
+                <description>Double beatjump_size, Button: PARAMETER2 RIGHT (in HOTCUE-Mode, Deck 1 active)</description>
+                <status>0x90</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSX.parameterLeft</key>
+                <description>Halve beatjump_size, Button: PARAMETER2 LEFT (in HOTCUE-Mode, Deck 1 active)</description>
+                <status>0x90</status>
+                <midino>0x01</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -2077,7 +2127,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>PioneerDDJSX.autoLoopButton</key>
-                <description>4-Beat Auto-Loop Deck 2, Button: right AUTOLOOP (Deck 2 active)</description>
+                <description>Set and enable/exit beatloop with length of beatloop_size Deck 2, Button: right AUTOLOOP (Deck 2 active)</description>
                 <status>0x91</status>
                 <midino>0x14</midino>
                 <options>
@@ -2140,6 +2190,16 @@
                 <description>Manual loop in Deck 2, Button: LOOP IN (Deck 2 active)</description>
                 <status>0x91</status>
                 <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSX.shiftLoopInButton</key>
+                <description>Jump to current loop in point and stop playback Deck 2, Button: SHIFT + LOOP IN (Deck 2 active)</description>
+                <status>0x91</status>
+                <midino>0x4C</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -2240,6 +2300,46 @@
                 <description>Play track backwards (reverse play) Deck 2, Button: SHIFT &amp; right CENSOR (Deck 2 active)</description>
                 <status>0x91</status>
                 <midino>0x38</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSX.parameterRight</key>
+                <description>Beatjump amount of beatjump_size forwards, Button: PARAMETER1 RIGHT (in HOTCUE-Mode, Deck 2 active)</description>
+                <status>0x91</status>
+                <midino>0x2C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSX.parameterLeft</key>
+                <description>Beatjump amount of beatjump_size backwards, Button: PARAMETER1 LEFT (in HOTCUE-Mode, Deck 2 active)</description>
+                <status>0x91</status>
+                <midino>0x24</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSX.parameterRight</key>
+                <description>Double beatjump_size, Button: PARAMETER2 RIGHT (in HOTCUE-Mode, Deck 2 active)</description>
+                <status>0x91</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSX.parameterLeft</key>
+                <description>Halve beatjump_size, Button: PARAMETER2 LEFT (in HOTCUE-Mode, Deck 2 active)</description>
+                <status>0x91</status>
+                <midino>0x01</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -3497,7 +3597,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>PioneerDDJSX.autoLoopButton</key>
-                <description>4-Beat Auto-Loop Deck 3, Button: left AUTOLOOP (Deck 3 active)</description>
+                <description>Set and enable/exit beatloop with length of beatloop_size Deck 3, Button: left AUTOLOOP (Deck 3 active)</description>
                 <status>0x92</status>
                 <midino>0x14</midino>
                 <options>
@@ -3560,6 +3660,16 @@
                 <description>Manual loop in Deck 3, Button: LOOP IN (Deck 3 active)</description>
                 <status>0x92</status>
                 <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>PioneerDDJSX.shiftLoopInButton</key>
+                <description>Jump to current loop in point and stop playback Deck 3, Button: SHIFT + LOOP IN (Deck 3 active)</description>
+                <status>0x92</status>
+                <midino>0x4C</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -3660,6 +3770,46 @@
                 <description>Play track backwards (reverse play) Deck 3, Button: SHIFT &amp; left CENSOR (Deck 3 active)</description>
                 <status>0x92</status>
                 <midino>0x38</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>PioneerDDJSX.parameterRight</key>
+                <description>Beatjump amount of beatjump_size forwards, Button: PARAMETER1 RIGHT (in HOTCUE-Mode, Deck 3 active)</description>
+                <status>0x92</status>
+                <midino>0x2C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>PioneerDDJSX.parameterLeft</key>
+                <description>Beatjump amount of beatjump_size backwards, Button: PARAMETER1 LEFT (in HOTCUE-Mode, Deck 3 active)</description>
+                <status>0x92</status>
+                <midino>0x24</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>PioneerDDJSX.parameterRight</key>
+                <description>Double beatjump_size, Button: PARAMETER2 RIGHT (in HOTCUE-Mode, Deck 3 active)</description>
+                <status>0x92</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>PioneerDDJSX.parameterLeft</key>
+                <description>Halve beatjump_size, Button: PARAMETER2 LEFT (in HOTCUE-Mode, Deck 3 active)</description>
+                <status>0x92</status>
+                <midino>0x01</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -4917,7 +5067,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>PioneerDDJSX.autoLoopButton</key>
-                <description>4-Beat Auto-Loop Deck 4, Button: right AUTOLOOP (Deck 4 active)</description>
+                <description>Set and enable/exit beatloop with length of beatloop_size Deck 4, Button: right AUTOLOOP (Deck 4 active)</description>
                 <status>0x93</status>
                 <midino>0x14</midino>
                 <options>
@@ -4980,6 +5130,16 @@
                 <description>Manual loop in Deck 4, Button: LOOP IN (Deck 4 active)</description>
                 <status>0x93</status>
                 <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>PioneerDDJSX.shiftLoopInButton</key>
+                <description>Jump to current loop in point and stop playback Deck 4, Button: SHIFT + LOOP IN (Deck 4 active)</description>
+                <status>0x93</status>
+                <midino>0x4C</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -5080,6 +5240,46 @@
                 <description>Play track backwards (reverse play) Deck 4, Button: SHIFT &amp; right CENSOR (Deck 4 active)</description>
                 <status>0x93</status>
                 <midino>0x38</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>PioneerDDJSX.parameterRight</key>
+                <description>Beatjump amount of beatjump_size forwards, Button: PARAMETER1 RIGHT (in HOTCUE-Mode, Deck 4 active)</description>
+                <status>0x93</status>
+                <midino>0x2C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>PioneerDDJSX.parameterLeft</key>
+                <description>Beatjump amount of beatjump_size backwards, Button: PARAMETER1 LEFT (in HOTCUE-Mode, Deck 4 active)</description>
+                <status>0x93</status>
+                <midino>0x24</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>PioneerDDJSX.parameterRight</key>
+                <description>Double beatjump_size, Button: PARAMETER2 RIGHT (in HOTCUE-Mode, Deck 4 active)</description>
+                <status>0x93</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>PioneerDDJSX.parameterLeft</key>
+                <description>Halve beatjump_size, Button: PARAMETER2 LEFT (in HOTCUE-Mode, Deck 4 active)</description>
+                <status>0x93</status>
+                <midino>0x01</midino>
                 <options>
                     <script-binding/>
                 </options>

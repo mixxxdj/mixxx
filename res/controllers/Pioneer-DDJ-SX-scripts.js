@@ -11,7 +11,7 @@ var PioneerDDJSX = function() {};
 
 /*
 	Author: 		DJMaxergy
-	Version: 		1.15, 05/31/2017
+	Version: 		1.16, 06/01/2017
 	Description: 	Pioneer DDJ-SX Controller Mapping for Mixxx
     Source: 		http://github.com/DJMaxergy/mixxx/tree/pioneerDDJSX_mapping
     
@@ -628,9 +628,12 @@ PioneerDDJSX.bindDeckControlConnections = function(channelGroup, bind) {
             'loop_enabled': 'PioneerDDJSX.autoLoopLed',
             'loop_double': 'PioneerDDJSX.loopDoubleLed',
             'loop_halve': 'PioneerDDJSX.loopHalveLed',
-            'reloop_exit': 'PioneerDDJSX.loopExitLed',
-            'loop_move_1_forward': 'PioneerDDJSX.loopShiftFWLed',
-            'loop_move_1_backward': 'PioneerDDJSX.loopShiftBKWLed',
+            'reloop_toggle': 'PioneerDDJSX.loopExitLed',
+            'reloop_andstop': 'PioneerDDJSX.shiftLoopInLed',
+            'beatjump_1_forward': 'PioneerDDJSX.loopShiftFWLed',
+            'beatjump_1_backward': 'PioneerDDJSX.loopShiftBKWLed',
+            'beatjump_forward': 'PioneerDDJSX.hotCueParameterRightLed',
+            'beatjump_backward': 'PioneerDDJSX.hotCueParameterLeftLed',
             'reverse': 'PioneerDDJSX.reverseLed',
             'duration': 'PioneerDDJSX.loadLed',
             'sync_enabled': 'PioneerDDJSX.syncLed',
@@ -1114,8 +1117,9 @@ PioneerDDJSX.slicerButtons = function(channel, control, value, status, group) {
     }
 
     if (PioneerDDJSX.activeSlicerMode[deck] === PioneerDDJSX.slicerModes.contSlice) {
-        engine.setValue(group, "beatloop_" + PioneerDDJSX.selectedSlicerQuantization[deck] + "_activate", value);
         engine.setValue(group, "slip_enabled", value);
+        engine.setValue(group, "beatloop_size", PioneerDDJSX.selectedSlicerQuantization[deck]);
+        engine.setValue(group, "beatloop_activate", value);
     }
 };
 
@@ -1167,11 +1171,39 @@ PioneerDDJSX.samplerVelocityVolume = function(channel, control, value, status, g
     }
 };
 
-PioneerDDJSX.changeParameters = function(group, ctrl, increment) {
+PioneerDDJSX.changeParameters = function(group, ctrl, value) {
     var deck = PioneerDDJSX.channelGroups[group],
         index,
         offset = 0,
-        samplerIndex = 0;
+        samplerIndex = 0,
+        beatjumpSize = 0;
+
+    //Hot Cue Mode:
+    if (ctrl === PioneerDDJSX.nonPadLeds.parameterLeftHotCueMode) {
+        engine.setValue(group, "beatjump_backward", value);
+    }
+    if (ctrl === PioneerDDJSX.nonPadLeds.parameterRightHotCueMode) {
+        engine.setValue(group, "beatjump_forward", value);
+    }
+    if (ctrl === PioneerDDJSX.nonPadLeds.shiftParameterLeftHotCueMode) {
+        PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.shiftParameterLeftHotCueMode, value);
+        if (value) {
+            beatjumpSize = engine.getValue(group, "beatjump_size");
+            engine.setValue(group, "beatjump_size", beatjumpSize / 2);
+        }
+    }
+    if (ctrl === PioneerDDJSX.nonPadLeds.shiftParameterRightHotCueMode) {
+        PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.shiftParameterRightHotCueMode, value);
+        if (value) {
+            beatjumpSize = engine.getValue(group, "beatjump_size");
+            engine.setValue(group, "beatjump_size", beatjumpSize * 2);
+        }
+    }
+
+    // ignore other cases if button is released:
+    if (!value) {
+        return;
+    }
 
     //Roll Mode:
     if (ctrl === PioneerDDJSX.nonPadLeds.parameterLeftRollMode || ctrl === PioneerDDJSX.nonPadLeds.parameterRightRollMode) {
@@ -1321,27 +1353,19 @@ PioneerDDJSX.changeParameters = function(group, ctrl, increment) {
 };
 
 PioneerDDJSX.parameterLeft = function(channel, control, value, status, group) {
-    if (value) {
-        PioneerDDJSX.changeParameters(group, control, false);
-    }
+    PioneerDDJSX.changeParameters(group, control, value);
 };
 
 PioneerDDJSX.parameterRight = function(channel, control, value, status, group) {
-    if (value) {
-        PioneerDDJSX.changeParameters(group, control, true);
-    }
+    PioneerDDJSX.changeParameters(group, control, value);
 };
 
 PioneerDDJSX.shiftParameterLeft = function(channel, control, value, status, group) {
-    if (value) {
-        PioneerDDJSX.changeParameters(group, control, false);
-    }
+    PioneerDDJSX.changeParameters(group, control, value);
 };
 
 PioneerDDJSX.shiftParameterRight = function(channel, control, value, status, group) {
-    if (value) {
-        PioneerDDJSX.changeParameters(group, control, true);
-    }
+    PioneerDDJSX.changeParameters(group, control, value);
 };
 
 PioneerDDJSX.vinylButton = function(channel, control, value, status, group) {
@@ -1394,19 +1418,23 @@ PioneerDDJSX.tempoResetButton = function(channel, control, value, status, group)
 PioneerDDJSX.autoLoopButton = function(channel, control, value, status, group) {
     if (value) {
         if (engine.getValue(group, "loop_enabled")) {
-            engine.setValue(group, "reloop_exit", true);
+            engine.setValue(group, "reloop_toggle", true);
         } else {
-            engine.setValue(group, "beatloop_" + 4 + "_toggle", true);
+            engine.setValue(group, "beatloop_activate", true);
         }
     }
 };
 
 PioneerDDJSX.loopActiveButton = function(channel, control, value, status, group) {
-    script.toggleControl(group, "reloop_exit");
+    script.toggleControl(group, "reloop_toggle");
 };
 
 PioneerDDJSX.loopInButton = function(channel, control, value, status, group) {
     script.toggleControl(group, "loop_in");
+};
+
+PioneerDDJSX.shiftLoopInButton = function(channel, control, value, status, group) {
+    script.toggleControl(group, "reloop_andstop");
 };
 
 PioneerDDJSX.loopOutButton = function(channel, control, value, status, group) {
@@ -1414,7 +1442,7 @@ PioneerDDJSX.loopOutButton = function(channel, control, value, status, group) {
 };
 
 PioneerDDJSX.loopExitButton = function(channel, control, value, status, group) {
-    script.toggleControl(group, "reloop_exit");
+    script.toggleControl(group, "reloop_toggle");
 };
 
 PioneerDDJSX.loopHalveButton = function(channel, control, value, status, group) {
@@ -1426,11 +1454,11 @@ PioneerDDJSX.loopDoubleButton = function(channel, control, value, status, group)
 };
 
 PioneerDDJSX.loopMoveBackButton = function(channel, control, value, status, group) {
-    script.toggleControl(group, "loop_move_1_backward");
+    script.toggleControl(group, "beatjump_1_backward");
 };
 
 PioneerDDJSX.loopMoveForwardButton = function(channel, control, value, status, group) {
-    script.toggleControl(group, "loop_move_1_forward");
+    script.toggleControl(group, "beatjump_1_forward");
 };
 
 PioneerDDJSX.loadButton = function(channel, control, value, status, group) {
@@ -1601,24 +1629,26 @@ PioneerDDJSX.resetNonDeckLeds = function() {
     // fx Leds:
     for (indexFxUnit in PioneerDDJSX.fxUnitGroups) {
         if (PioneerDDJSX.fxUnitGroups.hasOwnProperty(indexFxUnit)) {
-            for (var indexFxLed in PioneerDDJSX.fxEffectGroups) {
-                if (PioneerDDJSX.fxEffectGroups.hasOwnProperty(indexFxLed)) {
-                    PioneerDDJSX.fxLedControl(
-                        PioneerDDJSX.fxUnitGroups[indexFxUnit] % 2, //todo
-                        PioneerDDJSX.fxEffectGroups[indexFxLed],
-                        false,
-                        false
-                    );
-                    PioneerDDJSX.fxLedControl(
-                        PioneerDDJSX.fxUnitGroups[indexFxUnit] % 2, //todo
-                        PioneerDDJSX.fxEffectGroups[indexFxLed],
-                        true,
-                        false
-                    );
+            if (PioneerDDJSX.fxUnitGroups[indexFxUnit] < 2) {
+                for (var indexFxLed in PioneerDDJSX.fxEffectGroups) {
+                    if (PioneerDDJSX.fxEffectGroups.hasOwnProperty(indexFxLed)) {
+                        PioneerDDJSX.fxLedControl(
+                            PioneerDDJSX.fxUnitGroups[indexFxUnit],
+                            PioneerDDJSX.fxEffectGroups[indexFxLed],
+                            false,
+                            false
+                        );
+                        PioneerDDJSX.fxLedControl(
+                            PioneerDDJSX.fxUnitGroups[indexFxUnit],
+                            PioneerDDJSX.fxEffectGroups[indexFxLed],
+                            true,
+                            false
+                        );
+                    }
                 }
+                PioneerDDJSX.fxLedControl(PioneerDDJSX.fxUnitGroups[indexFxUnit], 0x03, false, false);
+                PioneerDDJSX.fxLedControl(PioneerDDJSX.fxUnitGroups[indexFxUnit], 0x03, true, false);
             }
-            PioneerDDJSX.fxLedControl(PioneerDDJSX.fxUnitGroups[indexFxUnit] % 2, 0x03, false, false); //todo
-            PioneerDDJSX.fxLedControl(PioneerDDJSX.fxUnitGroups[indexFxUnit] % 2, 0x03, true, false); //todo
         }
     }
 
@@ -1880,6 +1910,10 @@ PioneerDDJSX.loopInLed = function(value, group, control) {
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.loopIn, value);
 };
 
+PioneerDDJSX.shiftLoopInLed = function(value, group, control) {
+    PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.shiftLoopIn, value);
+};
+
 PioneerDDJSX.loopOutLed = function(value, group, control) {
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.loopOut, value);
 };
@@ -1903,6 +1937,14 @@ PioneerDDJSX.loopShiftFWLed = function(value, group, control) {
 
 PioneerDDJSX.loopShiftBKWLed = function(value, group, control) {
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.shiftLoopHalve, value);
+};
+
+PioneerDDJSX.hotCueParameterRightLed = function(value, group, control) {
+    PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.parameterRightHotCueMode, value);
+};
+
+PioneerDDJSX.hotCueParameterLeftLed = function(value, group, control) {
+    PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.parameterLeftHotCueMode, value);
 };
 
 PioneerDDJSX.samplerLeds = function(value, group, control) {
