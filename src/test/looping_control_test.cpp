@@ -267,18 +267,30 @@ TEST_F(LoopingControlTest, LoopInOutButtons_QuantizeEnabled) {
     m_pTrack1->setBpm(60.0);
     m_pQuantizeEnabled->set(1);
     seekToSampleAndProcess(500);
-    m_pButtonLoopIn->slotSet(1);
-    m_pButtonLoopIn->slotSet(0);
+    m_pButtonLoopIn->set(1);
+    m_pButtonLoopIn->set(0);
     EXPECT_EQ(m_pClosestBeat->get(), m_pLoopStartPoint->get());
-    m_pBeatJumpSize->set(13);
+
+    m_pBeatJumpSize->set(4);
     m_pButtonBeatJumpForward->set(1);
     m_pButtonBeatJumpForward->set(0);
     ProcessBuffer();
-    m_pButtonLoopOut->slotSet(1);
-    m_pButtonLoopOut->slotSet(0);
+    m_pButtonLoopOut->set(1);
+    m_pButtonLoopOut->set(0);
     ProcessBuffer();
     EXPECT_EQ(m_pClosestBeat->get(), m_pLoopEndPoint->get());
-    // FIXME: EXPECT_EQ(13.0, m_pBeatLoopSize->get());
+    EXPECT_EQ(4, m_pBeatLoopSize->get());
+    EXPECT_TRUE(m_pBeatLoop4Enabled->toBool());
+
+    // Check that beatloop_4_enabled is reset to 0 when changing the loop size.
+    m_pBeatJumpSize->set(1);
+    m_pButtonLoopOut->set(1);
+    m_pButtonBeatJumpForward->set(1);
+    m_pButtonBeatJumpForward->set(0);
+    m_pButtonLoopOut->set(0);
+    ProcessBuffer();
+    EXPECT_EQ(m_pClosestBeat->get(), m_pLoopEndPoint->get());
+    EXPECT_FALSE(m_pBeatLoop4Enabled->toBool());
 }
 
 TEST_F(LoopingControlTest, ReloopToggleButton_TogglesLoop) {

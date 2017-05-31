@@ -420,8 +420,6 @@ void LoopingControl::hintReader(HintVector* pHintList) {
 }
 
 void LoopingControl::setLoopInToCurrentPosition() {
-    clearActiveBeatLoop();
-
     // set loop-in position
     LoopSamples loopSamples = m_loopSamples.getValue();
     double quantizedBeat = -1;
@@ -477,6 +475,9 @@ void LoopingControl::setLoopInToCurrentPosition() {
             && m_pBeats != nullptr) {
         m_pCOBeatLoopSize->setAndConfirm(
             m_pBeats->numBeatsInRange(loopSamples.start, loopSamples.end));
+        updateBeatLoopingControls();
+    } else {
+        clearActiveBeatLoop();
     }
 
     m_loopSamples.setValue(loopSamples);
@@ -558,21 +559,23 @@ void LoopingControl::setLoopOutToCurrentPosition() {
         }
     }
 
-    clearActiveBeatLoop();
-
     // set loop out position
     loopSamples.end = pos;
     m_pCOLoopEndPosition->set(loopSamples.end);
     m_loopSamples.setValue(loopSamples);
-    if (m_pQuantizeEnabled->toBool() && m_pBeats != nullptr) {
-        m_pCOBeatLoopSize->setAndConfirm(
-            m_pBeats->numBeatsInRange(loopSamples.start, loopSamples.end));
-    }
 
     // start looping
     if (loopSamples.start != kNoTrigger &&
             loopSamples.end != kNoTrigger) {
         setLoopingEnabled(true);
+    }
+
+    if (m_pQuantizeEnabled->toBool() && m_pBeats != nullptr) {
+        m_pCOBeatLoopSize->setAndConfirm(
+            m_pBeats->numBeatsInRange(loopSamples.start, loopSamples.end));
+        updateBeatLoopingControls();
+    } else {
+        clearActiveBeatLoop();
     }
     //qDebug() << "set loop_out to " << loopSamples.end;
 }
@@ -854,6 +857,28 @@ bool LoopingControl::currentLoopMatchesBeatloopSize() {
     return loopSamples.end == beatLoopOutPoint;
 }
 
+void LoopingControl::updateBeatLoopingControls() {
+    // O(n) search, but there are only ~10-ish beatloop controls so this is
+    // fine.
+    double dBeatloopSize = m_pCOBeatLoopSize->get();
+    for (BeatLoopingControl* pBeatLoopControl: m_beatLoops) {
+        if (pBeatLoopControl->getSize() == dBeatloopSize) {
+            if (m_bLoopingEnabled) {
+                pBeatLoopControl->activate();
+            }
+            BeatLoopingControl* pOldBeatLoop =
+                    m_pActiveBeatLoop.fetchAndStoreRelease(pBeatLoopControl);
+            if (pOldBeatLoop != nullptr && pOldBeatLoop != pBeatLoopControl) {
+                pOldBeatLoop->deactivate();
+            }
+            return;
+        }
+    }
+    // If the loop did not return from the function yet, dBeatloopSize does
+    // not match any of the BeatLoopingControls' sizes.
+    clearActiveBeatLoop();
+}
+
 void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable) {
     double maxBeatSize = s_dBeatSizes[sizeof(s_dBeatSizes)/sizeof(s_dBeatSizes[0]) - 1];
     double minBeatSize = s_dBeatSizes[0];
@@ -978,22 +1003,6 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         return;
     }
 
-    // O(n) search, but there are only ~10-ish beatloop controls so this is
-    // fine.
-    for (BeatLoopingControl* pBeatLoopControl: m_beatLoops) {
-        if (pBeatLoopControl->getSize() == beats) {
-            if (enable || m_bLoopingEnabled) {
-                pBeatLoopControl->activate();
-            }
-            BeatLoopingControl* pOldBeatLoop =
-                    m_pActiveBeatLoop.fetchAndStoreRelease(pBeatLoopControl);
-            if (pOldBeatLoop != nullptr && pOldBeatLoop != pBeatLoopControl) {
-                pOldBeatLoop->deactivate();
-            }
-            break;
-        }
-    }
-
     // If resizing an inactive loop by changing beatloop_size,
     // do not seek to the adjusted loop.
     if (keepStartPoint && (enable || m_bLoopingEnabled)) {
@@ -1007,6 +1016,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     if (enable) {
         setLoopingEnabled(true);
     }
+    updateBeatLoopingControls();
 }
 
 void LoopingControl::slotBeatLoopSizeChangeRequest(double beats) {

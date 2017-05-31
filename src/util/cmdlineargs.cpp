@@ -13,7 +13,7 @@ CmdlineArgs::CmdlineArgs()
       m_safeMode(false),
       m_debugAssertBreak(false),
       m_settingsPathSet(false),
-      m_logLevel(mixxx::Logging::kLogLevelDefault),
+      m_logLevel(mixxx::LogLevel::Default),
 // We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see lp:1463273
 #ifdef __LINUX__
     m_settingsPath(QDir::homePath().append("/").append(SETTINGS_PATH)) {
@@ -59,13 +59,13 @@ bool CmdlineArgs::Parse(int &argc, char **argv) {
             logLevelSet = true;
             auto level = QLatin1String(argv[i+1]);
             if (level == "debug") {
-                m_logLevel = mixxx::Logging::LogLevel::Debug;
+                m_logLevel = mixxx::LogLevel::Debug;
             } else if (level == "info") {
-                m_logLevel = mixxx::Logging::LogLevel::Info;
+                m_logLevel = mixxx::LogLevel::Info;
             } else if (level == "warning") {
-                m_logLevel = mixxx::Logging::LogLevel::Warning;
+                m_logLevel = mixxx::LogLevel::Warning;
             } else if (level == "critical") {
-                m_logLevel = mixxx::Logging::LogLevel::Critical;
+                m_logLevel = mixxx::LogLevel::Critical;
             } else {
                 fputs("\nlogLevel argument wasn't 'debug', 'info', 'warning', or 'critical'! Mixxx will only output\n\
 warnings and errors to the console unless this is set properly.\n", stdout);
@@ -88,7 +88,7 @@ warnings and errors to the console unless this is set properly.\n", stdout);
     // If --logLevel was unspecified and --developer is enabled then set
     // logLevel to debug.
     if (m_developer && !logLevelSet) {
-        m_logLevel = mixxx::Logging::LogLevel::Debug;
+        m_logLevel = mixxx::LogLevel::Debug;
     }
 
     return true;
