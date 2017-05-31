@@ -66,6 +66,16 @@
             </control>
             <control>
                 <group>[Master]</group>
+                <key>PioneerDDJSX.shiftPanelSelectButton</key>
+                <description>Enable/show EffectUnit 3 and 4 assignment on FX ASSIGN buttons, Button: left SHIFT + PANEL SELECT</description>
+                <status>0x96</status>
+                <midino>0x79</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
                 <key>PioneerDDJSX.shiftBackButton</key>
                 <description>Toggle maximized view of Library, Button: SHIFT &amp; BACK</description>
                 <status>0x96</status>
@@ -390,6 +400,26 @@
                 <description>Effect Unit 2 assignment Deck 1, Button: FX2 assign Deck 1</description>
                 <status>0x96</status>
                 <midino>0x50</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSX.fxAssignButton</key>
+                <description>Effect Unit 3 assignment Deck 1, Button: FX1 assign Deck 1</description>
+                <status>0x96</status>
+                <midino>0x70</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSX.fxAssignButton</key>
+                <description>Effect Unit 4 assignment Deck 1, Button: FX2 assign Deck 1</description>
+                <status>0x96</status>
+                <midino>0x54</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1796,6 +1826,26 @@
             </control>
             <control>
                 <group>[Channel2]</group>
+                <key>PioneerDDJSX.fxAssignButton</key>
+                <description>Effect Unit 3 assignment Deck 2, Button: FX1 assign Deck 2</description>
+                <status>0x96</status>
+                <midino>0x71</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSX.fxAssignButton</key>
+                <description>Effect Unit 4 assignment Deck 2, Button: FX2 assign Deck 2</description>
+                <status>0x96</status>
+                <midino>0x55</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
                 <key>PioneerDDJSX.playButton</key>
                 <description>Toggles Play/Pause Deck 2, Button: right PLAY (Deck 2 active)</description>
                 <status>0x91</status>
@@ -3196,6 +3246,26 @@
             </control>
             <control>
                 <group>[Channel3]</group>
+                <key>PioneerDDJSX.fxAssignButton</key>
+                <description>Effect Unit 3 assignment Deck 3, Button: FX1 assign Deck 3</description>
+                <status>0x96</status>
+                <midino>0x72</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>PioneerDDJSX.fxAssignButton</key>
+                <description>Effect Unit 4 assignment Deck 3, Button: FX2 assign Deck 3</description>
+                <status>0x96</status>
+                <midino>0x56</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
                 <key>PioneerDDJSX.playButton</key>
                 <description>Toggles Play/Pause Deck 3, Button: left PLAY (Deck 3 active)</description>
                 <status>0x92</status>
@@ -4590,6 +4660,26 @@
                 <description>Effect Unit 2 assignment Deck 4, Button: FX2 assign Deck 4</description>
                 <status>0x96</status>
                 <midino>0x53</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>PioneerDDJSX.fxAssignButton</key>
+                <description>Effect Unit 3 assignment Deck 4, Button: FX1 assign Deck 4</description>
+                <status>0x96</status>
+                <midino>0x73</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>PioneerDDJSX.fxAssignButton</key>
+                <description>Effect Unit 4 assignment Deck 4, Button: FX2 assign Deck 4</description>
+                <status>0x96</status>
+                <midino>0x57</midino>
                 <options>
                     <script-binding/>
                 </options>

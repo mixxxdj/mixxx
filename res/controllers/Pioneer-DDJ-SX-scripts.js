@@ -11,7 +11,7 @@ var PioneerDDJSX = function() {};
 
 /*
 	Author: 		DJMaxergy
-	Version: 		1.14, 05/21/2017
+	Version: 		1.15, 05/31/2017
 	Description: 	Pioneer DDJ-SX Controller Mapping for Mixxx
     Source: 		http://github.com/DJMaxergy/mixxx/tree/pioneerDDJSX_mapping
     
@@ -223,7 +223,9 @@ PioneerDDJSX.init = function(id) {
 
     PioneerDDJSX.fxUnitGroups = {
         '[EffectRack1_EffectUnit1]': 0x00,
-        '[EffectRack1_EffectUnit2]': 0x01
+        '[EffectRack1_EffectUnit2]': 0x01,
+        '[EffectRack1_EffectUnit3]': 0x02,
+        '[EffectRack1_EffectUnit4]': 0x03
     };
 
     PioneerDDJSX.fxEffectGroups = {
@@ -233,13 +235,6 @@ PioneerDDJSX.init = function(id) {
         '[EffectRack1_EffectUnit2_Effect1]': 0x00,
         '[EffectRack1_EffectUnit2_Effect2]': 0x01,
         '[EffectRack1_EffectUnit2_Effect3]': 0x02
-    };
-
-    PioneerDDJSX.fxAssign = {
-        'group_[Channel1]_enable': 0x00,
-        'group_[Channel2]_enable': 0x01,
-        'group_[Channel3]_enable': 0x02,
-        'group_[Channel4]_enable': 0x03
     };
 
     PioneerDDJSX.ledGroups = {
@@ -662,9 +657,11 @@ PioneerDDJSX.bindDeckControlConnections = function(channelGroup, bind) {
 
     for (index in PioneerDDJSX.fxUnitGroups) {
         if (PioneerDDJSX.fxUnitGroups.hasOwnProperty(index)) {
-            engine.connectControl(index, "group_" + channelGroup + "_enable", "PioneerDDJSX.fxAssignLeds", !bind);
-            if (bind) {
-                engine.trigger(index, "group_" + channelGroup + "_enable");
+            if (PioneerDDJSX.fxUnitGroups[index] < 2) {
+                engine.connectControl(index, "group_" + channelGroup + "_enable", "PioneerDDJSX.fxAssignLeds", !bind);
+                if (bind) {
+                    engine.trigger(index, "group_" + channelGroup + "_enable");
+                }
             }
         }
     }
@@ -1544,6 +1541,36 @@ PioneerDDJSX.panelSelectButton = function(channel, control, value, status, group
     }
 };
 
+PioneerDDJSX.shiftPanelSelectButton = function(channel, control, value, status, group) {
+    var channelGroup;
+    for (var index in PioneerDDJSX.fxUnitGroups) {
+        if (PioneerDDJSX.fxUnitGroups.hasOwnProperty(index)) {
+            if (PioneerDDJSX.fxUnitGroups[index] < 2) {
+                for (channelGroup in PioneerDDJSX.channelGroups) {
+                    if (PioneerDDJSX.channelGroups.hasOwnProperty(channelGroup)) {
+                        engine.connectControl(index, "group_" + channelGroup + "_enable", "PioneerDDJSX.fxAssignLeds", value);
+                        if (value) {
+                            engine.trigger(index, "group_" + channelGroup + "_enable");
+                        }
+                    }
+                }
+            }
+            if (PioneerDDJSX.fxUnitGroups[index] >= 2) {
+                for (channelGroup in PioneerDDJSX.channelGroups) {
+                    if (PioneerDDJSX.channelGroups.hasOwnProperty(channelGroup)) {
+                        engine.connectControl(index, "group_" + channelGroup + "_enable", "PioneerDDJSX.fxAssignLeds", !value);
+                        if (value) {
+                            engine.trigger(index, "group_" + channelGroup + "_enable");
+                        } else {
+                            PioneerDDJSX.fxAssignLedControl(index, PioneerDDJSX.channelGroups[channelGroup], false);
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
 
 ///////////////////////////////////////////////////////////////
 //                          LED HELPERS                      //
@@ -1569,48 +1596,40 @@ PioneerDDJSX.flashLed = function(deck, ledNumber) {
 };
 
 PioneerDDJSX.resetNonDeckLeds = function() {
-    var indexFxUnit,
-        indexFxLed;
+    var indexFxUnit;
 
     // fx Leds:
     for (indexFxUnit in PioneerDDJSX.fxUnitGroups) {
         if (PioneerDDJSX.fxUnitGroups.hasOwnProperty(indexFxUnit)) {
-            for (indexFxLed in PioneerDDJSX.fxEffectGroups) {
+            for (var indexFxLed in PioneerDDJSX.fxEffectGroups) {
                 if (PioneerDDJSX.fxEffectGroups.hasOwnProperty(indexFxLed)) {
                     PioneerDDJSX.fxLedControl(
-                        PioneerDDJSX.fxUnitGroups[indexFxUnit],
+                        PioneerDDJSX.fxUnitGroups[indexFxUnit] % 2, //todo
                         PioneerDDJSX.fxEffectGroups[indexFxLed],
                         false,
                         false
                     );
                     PioneerDDJSX.fxLedControl(
-                        PioneerDDJSX.fxUnitGroups[indexFxUnit],
+                        PioneerDDJSX.fxUnitGroups[indexFxUnit] % 2, //todo
                         PioneerDDJSX.fxEffectGroups[indexFxLed],
                         true,
                         false
                     );
                 }
             }
-            PioneerDDJSX.fxLedControl(PioneerDDJSX.fxUnitGroups[indexFxUnit], 0x03, false, false);
-            PioneerDDJSX.fxLedControl(PioneerDDJSX.fxUnitGroups[indexFxUnit], 0x03, true, false);
+            PioneerDDJSX.fxLedControl(PioneerDDJSX.fxUnitGroups[indexFxUnit] % 2, 0x03, false, false); //todo
+            PioneerDDJSX.fxLedControl(PioneerDDJSX.fxUnitGroups[indexFxUnit] % 2, 0x03, true, false); //todo
         }
     }
 
     // fx assign Leds:
     for (indexFxUnit in PioneerDDJSX.fxUnitGroups) {
         if (PioneerDDJSX.fxUnitGroups.hasOwnProperty(indexFxUnit)) {
-            for (indexFxLed in PioneerDDJSX.fxAssign) {
-                if (PioneerDDJSX.fxAssign.hasOwnProperty(indexFxLed)) {
+            for (var channelGroup in PioneerDDJSX.channelGroups) {
+                if (PioneerDDJSX.channelGroups.hasOwnProperty(channelGroup)) {
                     PioneerDDJSX.fxAssignLedControl(
-                        PioneerDDJSX.fxUnitGroups[indexFxUnit],
-                        PioneerDDJSX.fxAssign[indexFxLed],
-                        false,
-                        false
-                    );
-                    PioneerDDJSX.fxAssignLedControl(
-                        PioneerDDJSX.fxUnitGroups[indexFxUnit],
-                        PioneerDDJSX.fxAssign[indexFxLed],
-                        true,
+                        indexFxUnit,
+                        PioneerDDJSX.channelGroups[channelGroup],
                         false
                     );
                 }
@@ -1630,12 +1649,21 @@ PioneerDDJSX.resetNonDeckLeds = function() {
     PioneerDDJSX.generalLedControl(PioneerDDJSX.nonPadLeds.shiftLoadDeck4, false);
 };
 
-PioneerDDJSX.fxAssignLedControl = function(unit, ledNumber, shift, active) {
+PioneerDDJSX.fxAssignLedControl = function(unit, ledNumber, active) {
     var fxAssignLedsBaseChannel = 0x96,
-        fxAssignLedsBaseControl = (shift ? 0x70 : 0x4C);
+        fxAssignLedsBaseControl = 0;
 
-    if (unit === PioneerDDJSX.fxUnitGroups["[EffectRack1_EffectUnit2]"]) {
-        fxAssignLedsBaseControl = (shift ? 0x54 : 0x50);
+    if (unit === "[EffectRack1_EffectUnit1]") {
+        fxAssignLedsBaseControl = PioneerDDJSX.nonPadLeds.fx1assignDeck1;
+    }
+    if (unit === "[EffectRack1_EffectUnit2]") {
+        fxAssignLedsBaseControl = PioneerDDJSX.nonPadLeds.fx2assignDeck1;
+    }
+    if (unit === "[EffectRack1_EffectUnit3]") {
+        fxAssignLedsBaseControl = PioneerDDJSX.nonPadLeds.shiftFx1assignDeck1;
+    }
+    if (unit === "[EffectRack1_EffectUnit4]") {
+        fxAssignLedsBaseControl = PioneerDDJSX.nonPadLeds.shiftFx2assignDeck1;
     }
 
     midi.sendShortMsg(
@@ -1735,50 +1763,8 @@ PioneerDDJSX.updateParameterStatusLeds = function(group, statusRoll, statusLoop,
 ///////////////////////////////////////////////////////////////
 
 PioneerDDJSX.fxAssignLeds = function(value, group, control) {
-    var unit = PioneerDDJSX.fxUnitGroups[group],
-        ledNumber = PioneerDDJSX.fxAssign[control];
-
-    PioneerDDJSX.fxAssignLedControl(unit, ledNumber, PioneerDDJSX.shiftPressed, value);
-};
-
-PioneerDDJSX.fxUnitLeds = function(value, group, control) {
-    PioneerDDJSX.fxLedControl(PioneerDDJSX.fxUnitGroups[group], 0x03, false, value);
-};
-
-PioneerDDJSX.fxNextChainLeds = function(value, group, control) {
-    PioneerDDJSX.fxLedControl(PioneerDDJSX.fxUnitGroups[group], 0x03, true, value);
-};
-
-PioneerDDJSX.fxEffectLeds = function(value, group, control) {
-    for (var index in PioneerDDJSX.fxUnitGroups) {
-        if (PioneerDDJSX.fxUnitGroups.hasOwnProperty(index)) {
-            var searchStr = index.replace(']', '_');
-            if (group.indexOf(searchStr) !== -1) {
-                PioneerDDJSX.fxLedControl(
-                    PioneerDDJSX.fxUnitGroups[index],
-                    PioneerDDJSX.fxEffectGroups[group],
-                    false,
-                    value
-                );
-            }
-        }
-    }
-};
-
-PioneerDDJSX.fxNextEffectLeds = function(value, group, control) {
-    for (var index in PioneerDDJSX.fxUnitGroups) {
-        if (PioneerDDJSX.fxUnitGroups.hasOwnProperty(index)) {
-            var searchStr = index.replace(']', '_');
-            if (group.indexOf(searchStr) !== -1) {
-                PioneerDDJSX.fxLedControl(
-                    PioneerDDJSX.fxUnitGroups[index],
-                    PioneerDDJSX.fxEffectGroups[group],
-                    true,
-                    value
-                );
-            }
-        }
-    }
+    var channelGroup = control.replace("group_", '').replace("_enable", '');
+    PioneerDDJSX.fxAssignLedControl(group, PioneerDDJSX.channelGroups[channelGroup], value);
 };
 
 PioneerDDJSX.headphoneCueLed = function(value, group, control) {
@@ -2246,6 +2232,10 @@ PioneerDDJSX.fxAssignButton = function(channel, control, value, status, group) {
             script.toggleControl("[EffectRack1_EffectUnit1]", "group_" + group + "_enable");
         } else if ((control >= 0x50) && (control <= 0x53)) {
             script.toggleControl("[EffectRack1_EffectUnit2]", "group_" + group + "_enable");
+        } else if ((control >= 0x70) && (control <= 0x73)) {
+            script.toggleControl("[EffectRack1_EffectUnit3]", "group_" + group + "_enable");
+        } else if ((control >= 0x54) && (control <= 0x57)) {
+            script.toggleControl("[EffectRack1_EffectUnit4]", "group_" + group + "_enable");
         }
     }
 };
