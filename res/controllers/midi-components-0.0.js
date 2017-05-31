@@ -163,7 +163,12 @@
         Component.call(this, options);
     };
     Button.prototype = new Component({
-        onlyOnPress: true,
+        types: {
+            push: 0,
+            toggle: 1,
+            powerWindow: 2,
+        },
+        type: 0,
         on: 127,
         off: 0,
         // Time in milliseconds to distinguish a short press from a long press.
@@ -174,31 +179,26 @@
         isPress: function (channel, control, value, status) {
             return value > 0;
         },
-        inValueScale: function () { return ! this.inGetValue(); },
         input: function (channel, control, value, status, group) {
-            if (this.powerWindow) {
+            if (this.type === undefined || this.type === this.types.push) {
+                this.inSetValue(this.isPress(channel, control, value, status));
+            } else if (this.type === this.types.toggle) {
                 if (this.isPress(channel, control, value, status)) {
-                    script.toggleControl(this.group, this.inKey);
+                    this.inToggle();
+                }
+            } else if (this.type === this.types.powerWindow) {
+                if (this.isPress(channel, control, value, status)) {
+                    this.inToggle();
                     this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
                         this.isLongPressed = true;
                     }, true);
                 } else {
                     if (this.isLongPressed) {
-                        script.toggleControl(this.group, this.inKey);
-                    }
-                    if (this.longPressTimer) {
+                        this.inToggle();
+                    } else {
                         engine.stopTimer(this.longPressTimer);
-                        this.isLongPressed = false;
-                        this.longPressTimer = 0;
                     }
-                }
-            } else {
-                if (this.onlyOnPress) {
-                    if (this.isPress(channel, control, value, status)) {
-                        this.inSetValue(this.inValueScale(value));
-                    }
-                } else {
-                    this.inSetValue(this.inValueScale(value));
+                    this.isLongPressed = false;
                 }
             }
         },
@@ -217,6 +217,7 @@
         shift: function () {
             this.inKey = 'reverse';
         },
+        type: Button.prototype.types.toggle,
         outKey: 'play_indicator',
     });
 
@@ -229,9 +230,6 @@
         },
         shift: function () {
             this.inKey = 'start_stop';
-        },
-        input: function (channel, control, value, status, group) {
-            this.inSetValue(this.isPress(channel, control, value, status));
         },
         outKey: 'cue_indicator',
     });
@@ -258,6 +256,7 @@
         },
         shift: function () {
             this.inKey = 'quantize';
+            this.type = Button.prototype.types.toggle;
             this.input = Button.prototype.input;
         },
         outKey: 'sync_enabled',
@@ -290,7 +289,6 @@
         shift: function () {
             this.inKey = 'hotcue_' + this.number + '_clear';
         },
-        onlyOnPress: false,
     });
 
     var SamplerButton = function (options) {
@@ -369,7 +367,9 @@
         options.group = '[EffectRack1_EffectUnit' + options.effectUnit + ']';
         Button.call(this, options);
     };
-    EffectAssignmentButton.prototype = new Button();
+    EffectAssignmentButton.prototype = new Button({
+        type: Button.prototype.types.toggle,
+    });
 
     var Pot = function (options) {
         Component.call(this, options);
@@ -511,6 +511,15 @@
         shift: function () {
             this.forEachComponent(function (component) {
                 if (typeof component.shift === 'function') {
+                    if (component instanceof Button
+                        && (component.type === Button.prototype.types.push
+                            || component.type === undefined)
+                        && component.inKey !== undefined
+                        && component.input === Button.prototype.input) {
+                        if (engine.getValue(component.group, component.inKey) !== 0) {
+                            engine.setValue(component.group, component.inKey, 0);
+                        }
+                    }
                     component.shift();
                 }
                 // Set isShifted for child ComponentContainers forEachComponent is iterating through recursively
@@ -520,6 +529,15 @@
         unshift: function () {
             this.forEachComponent(function (component) {
                 if (typeof component.unshift === 'function') {
+                    if (component instanceof Button
+                        && (component.type === Button.prototype.types.push
+                            || component.type === undefined)
+                        && component.inKey !== undefined
+                        && component.input === Button.prototype.input) {
+                        if (engine.getValue(component.group, component.inKey) !== 0) {
+                            engine.setValue(component.group, component.inKey, 0);
+                        }
+                    }
                     component.unshift();
                 }
                 // Set isShifted for child ComponentContainers forEachComponent is iterating through recursively
@@ -736,6 +754,7 @@
             this[channel] = new Button({
                 group: eu.group,
                 key: 'group_[' + channel + ']_enable',
+                type: Button.prototype.types.toggle,
                 outConnect: false,
             });
         };
@@ -822,7 +841,7 @@
         this.EffectEnableButton.prototype = new Button({
             stopEffectFocusChooseMode: function () {
                 this.inKey = 'enabled';
-                this.powerWindow = true;
+                this.type = Button.prototype.types.powerWindow;
                 this.input = Button.prototype.input;
 
                 this.outKey = 'enabled';
