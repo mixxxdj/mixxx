@@ -1,0 +1,161 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Condensed mixer controls, for 4 decks with stacked waveforms and EQs.
+-->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>DeckMixer<Variable name="i"/>_ColumnCondensed</ObjectName>
+    <Layout>vertical</Layout>
+    <Children>
+
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <Children>
+
+          <Template src="skin:deck_mixer_controls_col1_right.xml" />
+
+        </Children>
+        <Connection>
+          <ConfigKey>[Master],show_eqs</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>CondensedButtonContainerRight</ObjectName>
+            <Size>-1me,30f</Size>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="TooltipId">pfl</SetVariable>
+                <SetVariable name="ObjectName">DeckPFLButton</SetVariable>
+                <SetVariable name="MinimumSize">22,22</SetVariable>
+                <SetVariable name="MaximumSize">22,22</SetVariable>
+                <SetVariable name="SizePolicy">f,f</SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_headphones_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+                <SetVariable name="state_1_text"></SetVariable>
+                <SetVariable name="state_1_pressed">icon/ic_headphones_48px.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,pfl</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <GroupName>CondensedVolumeAndMonoMeter</GroupName>
+            <Layout>horizontal</Layout>
+            <MaximumSize>60,141</MaximumSize>
+            <Connection>
+              <ConfigKey>[Master],show_faders</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+            <Children>
+              <SliderComposed>
+                <TooltipId>channel_volume</TooltipId>
+                <SizePolicy>min,me</SizePolicy>
+                <MinimumSize>40,50</MinimumSize>
+                <MaximumSize>40,-1</MaximumSize>
+                <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+                <Handle scalemode="STRETCH_ASPECT">handle-vertical.svg</Handle>
+                <Horizontal>false</Horizontal>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,volume</ConfigKey>
+                  <EmitOnDownPress>false</EmitOnDownPress>
+                </Connection>
+              </SliderComposed>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <ObjectName>4DecksMixerCondensedMonoMeterRight</ObjectName>
+                <Children>
+                  <Template src="skin:vumeter_v.xml">
+                    <SetVariable name="group"><Variable name="group"/></SetVariable>
+                    <SetVariable name="side">L</SetVariable>
+                    <SetVariable name="tooltip_meter">channel_VuMeter</SetVariable>
+                    <SetVariable name="tooltip_clip">channel_PeakIndicator</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>4DecksMixerCondensedStereoMeterRight</ObjectName>
+            <Layout>horizontal</Layout>
+            <MaximumSize>60,141</MaximumSize>
+            <Connection>
+              <ConfigKey>[Master],show_faders</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform>
+                <Not/>
+              </Transform>
+            </Connection>
+            <Children>
+
+              <WidgetGroup>
+                <ObjectName>channel_VuMeter_Group</ObjectName>
+                <Layout>horizontal</Layout>
+                <MaximumSize>22,141</MaximumSize>
+                <Children>
+                  <Template src="skin:vumeter_v.xml">
+                    <SetVariable name="group"><Variable name="group"/></SetVariable>
+                    <SetVariable name="side">L</SetVariable>
+                    <SetVariable name="tooltip_meter">channel_VuMeterL</SetVariable>
+                    <SetVariable name="tooltip_clip">channel_PeakIndicatorL</SetVariable>
+                  </Template>
+                  <Template src="skin:vumeter_v.xml">
+                    <SetVariable name="group"><Variable name="group"/></SetVariable>
+                    <SetVariable name="side">R</SetVariable>
+                    <SetVariable name="tooltip_meter">channel_VuMeterR</SetVariable>
+                    <SetVariable name="tooltip_clip">channel_PeakIndicatorR</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <Template src="skin:spacer_hx.xml">
+                <SetVariable name="width">15</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>CondensedButtonContainerRight</ObjectName>
+            <Size>-1me,25f</Size>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:left_3state_button.xml">
+                <SetVariable name="TooltipId">orientation</SetVariable>
+                <SetVariable name="ObjectName">OrientationButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_orientation_left_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_orientation_left_48px.svg</SetVariable>
+                <SetVariable name="state_1_text"></SetVariable>
+                <SetVariable name="state_1_pressed">icon/ic_orientation_48px.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">icon/ic_orientation_48px.svg</SetVariable>
+                <SetVariable name="state_2_text"></SetVariable>
+                <SetVariable name="state_2_pressed">icon/ic_orientation_right_48px.svg</SetVariable>
+                <SetVariable name="state_2_unpressed">icon/ic_orientation_right_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,orientation</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

@@ -11,6 +11,7 @@
     <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
+
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
@@ -24,13 +25,8 @@
           </CoverArt>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Deere],show_coverart</ConfigKey>
+          <ConfigKey persist="true">[Master],show_coverart</ConfigKey>
           <BindProperty>visible</BindProperty>
-          <!-- Needed for the show/hide logic to work when circling through
-               the cover art display options: none/vinyl cover/text row -->
-          <Transform>
-            <Add>-1</Add>
-          </Transform>
         </Connection>
       </WidgetGroup>
 
@@ -61,11 +57,8 @@
                     <Group><Variable name="group"/></Group>
                     <Elide>right</Elide>
                     <Connection>
-                      <ConfigKey>[Deere],show_no_track_info</ConfigKey>
+                      <ConfigKey>[Deere],show_track_info</ConfigKey>
                       <BindProperty>visible</BindProperty>
-                      <Transform>
-                        <Not/>
-                      </Transform>
                     </Connection>
                   </TrackProperty>
 
@@ -75,8 +68,11 @@
                     <ObjectName>HiddenTrackTitleInfo</ObjectName>
                     <Text>***</Text>
                     <Connection>
-                      <ConfigKey>[Deere],show_no_track_info</ConfigKey>
+                      <ConfigKey>[Deere],show_track_info</ConfigKey>
                       <BindProperty>visible</BindProperty>
+                      <Transform>
+                        <Not/>
+                      </Transform>
                     </Connection>
                   </Label>
 
@@ -267,11 +263,8 @@
                                   <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
                                 </Connection>
                                 <Connection>
-                                  <ConfigKey>[Deere],show_no_bpm_info</ConfigKey>
+                                  <ConfigKey>[Deere],show_bpm_info</ConfigKey>
                                   <BindProperty>visible</BindProperty>
-                                  <Transform>
-                                    <Not/>
-                                  </Transform>
                                 </Connection>
                               </NumberBpm>
 
@@ -281,8 +274,11 @@
                                 <ObjectName>HiddenBpmInfo</ObjectName>
                                 <Text>***.**</Text>
                                 <Connection>
-                                  <ConfigKey>[Deere],show_no_bpm_info</ConfigKey>
+                                  <ConfigKey>[Deere],show_bpm_info</ConfigKey>
                                   <BindProperty>visible</BindProperty>
+                                  <Transform>
+                                    <Not/>
+                                  </Transform>
                                 </Connection>
                               </Label>
 
@@ -330,30 +326,6 @@
                                 <MinimumSize>100,20</MinimumSize>
                                 <MaximumSize>180,30</MaximumSize>
                                 <Children>
-                                  <Template src="skin:left_right_1state_button.xml">
-                                    <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
-                                    <SetVariable name="ObjectName">BeatsTranslateCurposButton</SetVariable>
-                                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-                                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-                                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-                                    <SetVariable name="state_0_text"></SetVariable>
-                                    <SetVariable name="state_0_pressed">icon/ic_beats_translate_curpos_48px.svg</SetVariable>
-                                    <SetVariable name="state_0_unpressed">icon/ic_beats_translate_curpos_48px.svg</SetVariable>
-                                    <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_curpos</SetVariable>
-                                  </Template>
-
-                                  <Template src="skin:left_right_1state_button.xml">
-                                    <SetVariable name="TooltipId">beats_translate_match_alignment</SetVariable>
-                                    <SetVariable name="ObjectName">BeatsTranslateAlignmentButton</SetVariable>
-                                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-                                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-                                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-                                    <SetVariable name="state_0_text"></SetVariable>
-                                    <SetVariable name="state_0_pressed">icon/ic_beats_translate_alignment_48px.svg</SetVariable>
-                                    <SetVariable name="state_0_unpressed">icon/ic_beats_translate_alignment_48px.svg</SetVariable>
-                                    <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_match_alignment</SetVariable>
-                                  </Template>
-
 
                                   <Template src="skin:left_right_1state_button.xml">
                                     <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
@@ -454,11 +426,8 @@
                     <Elide>right</Elide>
                     <Group><Variable name="group"/></Group>
                     <Connection>
-                      <ConfigKey>[Deere],show_no_track_info</ConfigKey>
+                      <ConfigKey>[Deere],show_track_info</ConfigKey>
                       <BindProperty>visible</BindProperty>
-                      <Transform>
-                        <Not/>
-                      </Transform>
                     </Connection>
                   </TrackProperty>
 
@@ -468,8 +437,11 @@
                     <ObjectName>HiddenTrackArtistInfo</ObjectName>
                     <Text>***</Text>
                     <Connection>
-                      <ConfigKey>[Deere],show_no_track_info</ConfigKey>
+                      <ConfigKey>[Deere],show_track_info</ConfigKey>
                       <BindProperty>visible</BindProperty>
+                      <Transform>
+                        <Not/>
+                      </Transform>
                     </Connection>
                   </Label>
 
@@ -484,7 +456,7 @@
                       </StarRating>
                     </Children>
                     <Connection>
-                      <ConfigKey persist="true">[Deere],show_starrating</ConfigKey>
+                      <ConfigKey>[Deere],show_starrating</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
