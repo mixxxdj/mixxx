@@ -366,15 +366,17 @@ PioneerDDJSB2.Deck.prototype = components.ComponentContainer.prototype;
 
 PioneerDDJSB2.shutdown = function() {
     // turn off button LEDs
+    var skip = [0x72, 0x1B, 0x69, 0x1E, 0x6B, 0x20, 0x6D, 0x22, 0x6F, 0x70, 0x75];
     for (var channel = 0; channel <= 10; channel++) {
         for (var control = 0; control <= 127; control++) {
-            // skip deck toggle buttons for now
-            if (control === 0x72) {
+            // skip deck toggle buttons and pad mode buttons
+            if (skip.indexOf(control) > -1) {
                 continue;
             }
             midi.sendShortMsg(0x90 + channel, control, 0);
         }
     }
+
 
     // switch to decks 1 and 2 to turn off deck indication lights
     midi.sendShortMsg(0x90, 0x72, 0x7f);
