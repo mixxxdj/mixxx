@@ -7,107 +7,366 @@
   <WidgetGroup>
     <ObjectName>MainDeckContainer</ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>me,f</SizePolicy>
+    <SizePolicy>me,me</SizePolicy>
     <Children>
 
-      <!-- Is displayed if the stacked waveforms option is activated in the skin settings -->
+      <!-- If the Quick Effect superknob is showing, the minimum height for the
+      mixer needs to be higher to prevent knobs from getting cut off. -->
       <WidgetGroup>
-        <ObjectName>StackedWaveformsContainer</ObjectName>
+        <ObjectName>2DecksNoQuickEffect</ObjectName>
         <Layout>vertical</Layout>
         <Children>
-          <!-- In 2-deck mode, we show 2 waveforms -->
+
           <WidgetGroup>
             <Layout>vertical</Layout>
             <Children>
-              <Template src="skin:deck_visual_row.xml">
-                <SetVariable name="i">1</SetVariable>
-                <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
-                <!-- Traditional Blue -->
-                <SetVariable name="DeckSignalColor">#007BCD</SetVariable>
-                <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
-                <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
-              </Template>
-              <Template src="skin:deck_visual_row.xml">
-                <SetVariable name="i">2</SetVariable>
-                <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
-                <!-- Violet -->
-                <SetVariable name="DeckSignalColor">#B500B5</SetVariable>
-                <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
-                <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
-              </Template>
+
+              <!-- 2 decks stacked no QuickEffect -->
+              <Splitter>
+                <ObjectName>DeckSplitter</ObjectName>
+                <Orientation>vertical</Orientation>
+                <Size>-1me,-1me</Size>
+                <SplitSizesConfigKey>[Deere],WaveformSplitter2DecksNoQE</SplitSizesConfigKey>
+                <SplitSizes>166,230</SplitSizes>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>StackedWaveformsContainer</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Children>
+
+                      <SingletonContainer>
+                        <ObjectName>DeckVisualRow1</ObjectName>
+                      </SingletonContainer>
+                      <SingletonContainer>
+                        <ObjectName>DeckVisualRow2</ObjectName>
+                      </SingletonContainer>
+
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <Size>-1,150min</Size>
+                    <MaximumSize>-1,230</MaximumSize>
+                    <Children>
+                      <SingletonContainer>
+                        <ObjectName>DecksMixerSingleton</ObjectName>
+                      </SingletonContainer>
+                    </Children>
+                  </WidgetGroup>
+
+                </Children>
+              </Splitter>
+
             </Children>
-              <Connection>
-              <ConfigKey>[Master],show_4decks</ConfigKey>
+            <Connection>
+              <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <!-- 2 decks split no QuickEffect -->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <ObjectName>DeckSplitter</ObjectName>
+            <Orientation>vertical</Orientation>
+            <Size>-1,155max</Size>
+            <MaximumSize>-1,330</MaximumSize>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>DecksMixerSingleton</ObjectName>
+              </SingletonContainer>
+            </Children>
+            <Connection>
+              <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform>
                 <Not/>
               </Transform>
             </Connection>
           </WidgetGroup>
-          <!-- In 4-deck mode, we show 4 waveforms in the 3-2-1-4 order just like the mixer columns-->
-          <WidgetGroup>
-            <Layout>vertical</Layout>
-            <Children>
-              <Template src="skin:deck_visual_row.xml">
-                <SetVariable name="i">3</SetVariable>
-                <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
-                <!-- Traditional Orange -->
-                <SetVariable name="DeckSignalColor">#E67A00</SetVariable>
-                <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
-                <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
-              </Template>
-              <Template src="skin:deck_visual_row.xml">
-                <SetVariable name="i">1</SetVariable>
-                <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
-                <!-- Traditional Blue -->
-                <SetVariable name="DeckSignalColor">#007BCD</SetVariable>
-                <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
-                <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
-              </Template>
-              <Template src="skin:deck_visual_row.xml">
-                <SetVariable name="i">2</SetVariable>
-                <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
-                <!-- Violet -->
-                <SetVariable name="DeckSignalColor">#B500B5</SetVariable>
-                <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
-                <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
-              </Template>
-              <Template src="skin:deck_visual_row.xml">
-                <SetVariable name="i">4</SetVariable>
-                <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
-                <!-- Lime -->
-                <SetVariable name="DeckSignalColor">#AABD00</SetVariable>
-                <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
-                <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
-              </Template>
-            </Children>
-              <Connection>
-              <ConfigKey>[Master],show_4decks</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
+
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Deere],show_stacked_waveforms</ConfigKey>
+          <ConfigKey>[QuickEffectRack1_[Channel1]_Effect1],loaded</ConfigKey>
           <BindProperty>visible</BindProperty>
+          <Transform>
+            <Not/>
+          </Transform>
         </Connection>
       </WidgetGroup>
 
       <WidgetGroup>
-        <Layout>horizontal</Layout>
+        <ObjectName>2DecksWithQuickEffect</ObjectName>
+        <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:left_gutter.xml"/>
-          <Template src="skin:mixer.xml"/>
-          <Template src="skin:right_gutter.xml"/>
+
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Children>
+
+              <!-- 2 decks stacked with QuickEffect -->
+              <Splitter>
+                <ObjectName>DeckSplitter</ObjectName>
+                <Orientation>vertical</Orientation>
+                <Size>-1me,-1me</Size>
+                <SplitSizesConfigKey>[Deere],WaveformSplitter2DecksWithQE</SplitSizesConfigKey>
+                <SplitSizes>158,230</SplitSizes>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>StackedWaveformsContainer</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Children>
+
+                      <SingletonContainer>
+                        <ObjectName>DeckVisualRow1</ObjectName>
+                      </SingletonContainer>
+                      <SingletonContainer>
+                        <ObjectName>DeckVisualRow2</ObjectName>
+                      </SingletonContainer>
+
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <Size>-1,185min</Size>
+                    <MaximumSize>-1,230</MaximumSize>
+                    <Children>
+                      <SingletonContainer>
+                        <ObjectName>DecksMixerSingleton</ObjectName>
+                      </SingletonContainer>
+                    </Children>
+                  </WidgetGroup>
+
+                </Children>
+              </Splitter>
+
+            </Children>
+            <Connection>
+              <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <!-- 2 decks split with QuickEffect -->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Size>-1,160max</Size>
+            <MaximumSize>-1,260</MaximumSize>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>DecksMixerSingleton</ObjectName>
+              </SingletonContainer>
+            </Children>
+            <Connection>
+              <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform>
+                <Not/>
+              </Transform>
+            </Connection>
+          </WidgetGroup>
+
         </Children>
+        <Connection>
+          <ConfigKey>[QuickEffectRack1_[Channel1]_Effect1],loaded</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
       </WidgetGroup>
+
     </Children>
     <Connection>
-      <ConfigKey>[Master],maximize_library</ConfigKey>
+      <ConfigKey>[Master],show_4decks</ConfigKey>
       <BindProperty>visible</BindProperty>
       <Transform>
         <Not/>
       </Transform>
+    </Connection>
+  </WidgetGroup>
+
+  <WidgetGroup>
+    <ObjectName>MainDeckContainer</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,me</SizePolicy>
+    <Children>
+
+      <!-- If the Quick Effect superknob is showing, the minimum height for the
+      mixer needs to be higher to prevent knobs from getting cut off. -->
+      <WidgetGroup>
+        <ObjectName>4DecksNoQuickEffect</ObjectName>
+        <Layout>vertical</Layout>
+        <Children>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Children>
+
+              <!-- 4 decks stacked no QuickEffect -->
+              <Splitter>
+                <ObjectName>DeckSplitter</ObjectName>
+                <Orientation>vertical</Orientation>
+                <Size>-1me,-1me</Size>
+                <SplitSizesConfigKey>[Deere],WaveformSplitter4DecksNoQE</SplitSizesConfigKey>
+                <SplitSizes>220,362</SplitSizes>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>StackedWaveformsContainer</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Children>
+
+                      <SingletonContainer>
+                        <ObjectName>DeckVisualRow3</ObjectName>
+                      </SingletonContainer>
+                      <SingletonContainer>
+                        <ObjectName>DeckVisualRow1</ObjectName>
+                      </SingletonContainer>
+                      <SingletonContainer>
+                        <ObjectName>DeckVisualRow2</ObjectName>
+                      </SingletonContainer>
+                      <SingletonContainer>
+                        <ObjectName>DeckVisualRow4</ObjectName>
+                      </SingletonContainer>
+
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <Size>-1,310min</Size>
+                    <MaximumSize>-1,460</MaximumSize>
+                    <Children>
+                      <SingletonContainer>
+                        <ObjectName>DecksMixerSingleton</ObjectName>
+                      </SingletonContainer>
+                    </Children>
+                  </WidgetGroup>
+
+                </Children>
+              </Splitter>
+
+            </Children>
+            <Connection>
+              <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <!-- 4 decks split no QuickEffect -->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Size>-1me,-1me</Size>
+            <MaximumSize>-1,630</MaximumSize>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>DecksMixerSingleton</ObjectName>
+              </SingletonContainer>
+            </Children>
+            <Connection>
+              <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform>
+                <Not/>
+              </Transform>
+            </Connection>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey>[QuickEffectRack1_[Channel1]_Effect1],loaded</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform>
+            <Not/>
+          </Transform>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>4DecksWithQuickEffect</ObjectName>
+        <Layout>vertical</Layout>
+        <Children>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Children>
+
+              <!-- 4 decks stacked with QuickEffect -->
+              <Splitter>
+                <ObjectName>DeckSplitter</ObjectName>
+                <Orientation>vertical</Orientation>
+                <Size>-1me,-1me</Size>
+                <SplitSizesConfigKey>[Deere],WaveformSplitter4DecksWithQE</SplitSizesConfigKey>
+                <SplitSizes>149,350</SplitSizes>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>StackedWaveformsContainer</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Children>
+
+                      <SingletonContainer>
+                        <ObjectName>DeckVisualRow3</ObjectName>
+                      </SingletonContainer>
+                      <SingletonContainer>
+                        <ObjectName>DeckVisualRow1</ObjectName>
+                      </SingletonContainer>
+                      <SingletonContainer>
+                        <ObjectName>DeckVisualRow2</ObjectName>
+                      </SingletonContainer>
+                      <SingletonContainer>
+                        <ObjectName>DeckVisualRow4</ObjectName>
+                      </SingletonContainer>
+
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <Size>-1,350min</Size>
+                    <MaximumSize>-1,460</MaximumSize>
+                    <Children>
+                      <SingletonContainer>
+                        <ObjectName>DecksMixerSingleton</ObjectName>
+                      </SingletonContainer>
+                    </Children>
+                  </WidgetGroup>
+
+                </Children>
+              </Splitter>
+
+            </Children>
+            <Connection>
+              <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <!-- 4 decks split with QuickEffect -->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <MaximumSize>-1,630</MaximumSize>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>DecksMixerSingleton</ObjectName>
+              </SingletonContainer>
+            </Children>
+            <Connection>
+              <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform>
+                <Not/>
+              </Transform>
+            </Connection>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey>[QuickEffectRack1_[Channel1]_Effect1],loaded</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+    <Connection>
+      <ConfigKey>[Master],show_4decks</ConfigKey>
+      <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>
 </Template>

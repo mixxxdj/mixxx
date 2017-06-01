@@ -8,63 +8,138 @@
   <WidgetGroup>
     <ObjectName>DeckMixer<Variable name="i"/>_Column2</ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>me,min</SizePolicy>
+    <SizePolicy>max,me</SizePolicy>
+    <Connection>
+      <ConfigKey>[Master],show_faders</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
     <Children>
+
+      <!-- PFL buttons need different spacing in 2 and 4 deck mixers. -->
       <WidgetGroup>
-        <Size>22min,-1me</Size>
-        <MaximumSize>-1,91</MaximumSize>
+        <ObjectName>DeckPFLButton2Decks</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>40f,35f</Size>
+        <Children>
+          <Template src="skin:left_2state_button.xml">
+            <SetVariable name="TooltipId">pfl</SetVariable>
+            <SetVariable name="ObjectName">DeckPFLButton</SetVariable>
+            <SetVariable name="MinimumSize">22,22</SetVariable>
+            <SetVariable name="MaximumSize">22,22</SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_headphones_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+            <SetVariable name="state_1_text"></SetVariable>
+            <SetVariable name="state_1_pressed">icon/ic_headphones_48px.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,pfl</SetVariable>
+          </Template>
+        </Children>
+        <Connection>
+          <ConfigKey>[Master],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform>
+            <Not/>
+          </Transform>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>DeckPFLButton4Decks</ObjectName>
+        <Size>40f,25f</Size>
         <Layout>horizontal</Layout>
         <Children>
+          <Template src="skin:left_2state_button.xml">
+            <SetVariable name="TooltipId">pfl</SetVariable>
+            <SetVariable name="ObjectName">DeckPFLButton</SetVariable>
+            <!-- make Pfl button bigger because it's important and space is occupied anyway -->
+            <SetVariable name="MinimumSize">22,22</SetVariable>
+            <SetVariable name="MaximumSize">22,22</SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_headphones_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+            <SetVariable name="state_1_text"></SetVariable>
+            <SetVariable name="state_1_pressed">icon/ic_headphones_48px.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,pfl</SetVariable>
+          </Template>
+        </Children>
+        <Connection>
+          <ConfigKey>[Master],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>VolumeSlider</ObjectName>
+        <Layout>vertical</Layout>
+        <Children>
+
           <WidgetGroup>
-            <ObjectName>channel_VuMeter_Group</ObjectName>
-            <Layout>horizontal</Layout>
-            <MaximumSize>22,91</MaximumSize>
+            <ObjectName>Channel<Variable name="i"/>Volume</ObjectName>
+            <Layout>vertical</Layout>
             <Children>
-              <Template src="skin:vumeter_v.xml">
-                <SetVariable name="group"><Variable name="group"/></SetVariable>
-                <SetVariable name="side">L</SetVariable>
-                <SetVariable name="tooltip_meter">channel_VuMeterL</SetVariable>
-                <SetVariable name="tooltip_clip">channel_PeakIndicatorL</SetVariable>
-              </Template>
-              <Template src="skin:vumeter_v.xml">
-                <SetVariable name="group"><Variable name="group"/></SetVariable>
-                <SetVariable name="side">R</SetVariable>
-                <SetVariable name="tooltip_meter">channel_VuMeterR</SetVariable>
-                <SetVariable name="tooltip_clip">channel_PeakIndicatorR</SetVariable>
-              </Template>
+              <SliderComposed>
+                <TooltipId>channel_volume</TooltipId>
+                <SizePolicy>min,me</SizePolicy>
+                <MinimumSize>40,50</MinimumSize>
+                <MaximumSize>40,130</MaximumSize>
+                <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+                <Handle scalemode="STRETCH_ASPECT">handle-vertical.svg</Handle>
+                <Horizontal>false</Horizontal>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,volume</ConfigKey>
+                  <EmitOnDownPress>false</EmitOnDownPress>
+                </Connection>
+              </SliderComposed>
             </Children>
+            <Connection>
+              <ConfigKey>[Master],show_4decks</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform>
+                <Not/>
+              </Transform>
+            </Connection>
           </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>Channel<Variable name="i"/>Volume</ObjectName>
+            <Layout>vertical</Layout>
+            <Children>
+              <SliderComposed>
+                <TooltipId>channel_volume</TooltipId>
+                <SizePolicy>min,me</SizePolicy>
+                <MinimumSize>40,110</MinimumSize>
+                <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+                <Handle scalemode="STRETCH_ASPECT">handle-vertical.svg</Handle>
+                <Horizontal>false</Horizontal>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,volume</ConfigKey>
+                  <EmitOnDownPress>false</EmitOnDownPress>
+                </Connection>
+              </SliderComposed>
+            </Children>
+            <Connection>
+              <ConfigKey>[Master],show_4decks</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
         </Children>
       </WidgetGroup>
-      <Template src="skin:left_2state_button.xml">
-        <SetVariable name="TooltipId">pfl</SetVariable>
-        <SetVariable name="ObjectName">DeckPFLButton</SetVariable>
-        <SetVariable name="MinimumSize"><Variable name="WideButtonMinimumSize"/></SetVariable>
-        <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
-        <SetVariable name="SizePolicy"><Variable name="WideButtonSizePolicy"/></SetVariable>
-        <SetVariable name="state_0_text"></SetVariable>
-        <SetVariable name="state_0_pressed">icon/ic_headphones_48px.svg</SetVariable>
-        <SetVariable name="state_0_unpressed">icon/ic_headphones_48px.svg</SetVariable>
-        <SetVariable name="state_1_text"></SetVariable>
-        <SetVariable name="state_1_pressed">icon/ic_headphones_48px.svg</SetVariable>
-        <SetVariable name="state_1_unpressed">icon/ic_headphones_48px.svg</SetVariable>
-        <SetVariable name="left_connection_control"><Variable name="group"/>,pfl</SetVariable>
-      </Template>
 
-      <SliderComposed>
-        <TooltipId>channel_volume</TooltipId>
-        <SizePolicy>min,me</SizePolicy>
-        <MinimumSize>40,100</MinimumSize>
-        <MaximumSize>40,-1</MaximumSize>
-        <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
-        <Handle scalemode="STRETCH_ASPECT">handle-vertical.svg</Handle>
-        <Horizontal>false</Horizontal>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:crossfader_orientation_button.xml" />
+        </Children>
         <Connection>
-          <ConfigKey><Variable name="group"/>,volume</ConfigKey>
-          <EmitOnDownPress>false</EmitOnDownPress>
+          <ConfigKey>[Master],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
         </Connection>
-      </SliderComposed>
-
+      </WidgetGroup>
     </Children>
   </WidgetGroup>
 </Template>

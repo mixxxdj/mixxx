@@ -11,22 +11,25 @@
   <WidgetGroup>
     <ObjectName>Deck<Variable name="i"/></ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,min</SizePolicy>
+    <SizePolicy>me,me</SizePolicy>
+    <MinimumSize>-1,150</MinimumSize>
     <Children>
       <WidgetGroup>
         <ObjectName>DeckRows</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>me,min</SizePolicy>
+        <SizePolicy>me,me</SizePolicy>
         <Children>
           <Template src="skin:deck_text_row.xml"/>
           <!--Hides if the stacked waveforms option is activated in the skin settings -->
           <WidgetGroup>
             <Layout>vertical</Layout>
             <Children>
-              <Template src="skin:deck_visual_row.xml"/>
+              <SingletonContainer>
+                <ObjectName>DeckVisualRow<Variable name="i" /></ObjectName>
+              </SingletonContainer>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Deere],show_stacked_waveforms</ConfigKey>
+              <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform>
                 <Not/>
@@ -37,8 +40,9 @@
           <Template src="skin:deck_controls_row.xml"/>
         </Children>
       </WidgetGroup>
+
       <WidgetGroup>
-        <ObjectName>DeckInnerColumn</ObjectName>
+        <ObjectName>DeckRateSlider</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
