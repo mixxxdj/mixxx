@@ -10,7 +10,7 @@
 class LibraryTest : public MixxxTest {
   protected:
     LibraryTest() {
-        m_pTrackCollection = std::make_unique<TrackCollection>(config());
+        m_pTrackCollection = std::make_unique<TrackCollection>(config(), TrackCollection::kDefaultSchemaFile);
     }
     ~LibraryTest() override {
     }

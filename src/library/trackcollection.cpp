@@ -24,7 +24,9 @@ namespace {
     mixxx::Logger kLogger("TrackCollection");
 } // anonymous namespace
 
-TrackCollection::TrackCollection(UserSettingsPointer pConfig)
+TrackCollection::TrackCollection(
+        UserSettingsPointer pConfig,
+        const QString& schemaFile)
         : m_pConfig(pConfig),
           m_dbConnection(m_pConfig->getSettingsPath()),
           m_playlistDao(database()),
@@ -35,7 +37,7 @@ TrackCollection::TrackCollection(UserSettingsPointer pConfig)
           m_trackDao(database(), m_cueDao, m_playlistDao,
                      m_analysisDao, m_libraryHashDao, pConfig) {
     // Check for tables and create them if missing
-    if (!upgradeDatabaseSchema(kDefaultSchemaFile, kRequiredSchemaVersion)) {
+    if (!upgradeDatabaseSchema(schemaFile, kRequiredSchemaVersion)) {
         // TODO(XXX) something a little more elegant
         exit(-1);
     }

@@ -1,7 +1,5 @@
 #include <gtest/gtest.h>
 
-#include <QSqlDatabase>
-#include <QTemporaryFile>
 #include <QtDebug>
 
 #include "test/mixxxtest.h"
@@ -13,17 +11,11 @@
 class SchemaManagerTest : public MixxxTest {
   protected:
     SchemaManagerTest()
-            : m_dbFile("mixxxdb.sqlite") {
-        RELEASE_ASSERT(m_dbFile.open());
-        m_db = QSqlDatabase::addDatabase("QSQLITE");
-        m_db.setHostName("localhost");
-        m_db.setUserName("mixxx");
-        m_db.setPassword("mixxx");
-        m_db.setDatabaseName(m_dbFile.fileName());
-        RELEASE_ASSERT(m_db.open());
+            : m_trackCollection(config()),
+              m_db(m_trackCollection.database()) {
     }
 
-    QTemporaryFile m_dbFile;
+    TrackCollection m_trackCollection;
     QSqlDatabase m_db;
 };
 

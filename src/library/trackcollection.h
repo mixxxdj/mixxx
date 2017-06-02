@@ -32,7 +32,9 @@ class TrackCollection : public QObject {
     static const QString kDefaultSchemaFile;
     static const int kRequiredSchemaVersion;
 
-    explicit TrackCollection(UserSettingsPointer pConfig);
+    explicit TrackCollection(
+            UserSettingsPointer pConfig,
+            const QString& schemaFile = QString());
     ~TrackCollection() override;
 
     void resetLibaryCancellation();

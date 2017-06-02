@@ -47,7 +47,7 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
                  RecordingManager* pRecordingManager) :
         m_pConfig(pConfig),
         m_pSidebarModel(new SidebarModel(parent)),
-        m_pTrackCollection(new TrackCollection(pConfig)),
+        m_pTrackCollection(new TrackCollection(pConfig, TrackCollection::kDefaultSchemaFile)),
         m_pLibraryControl(new LibraryControl(this)),
         m_pRecordingManager(pRecordingManager),
         m_scanner(m_pTrackCollection, pConfig) {
