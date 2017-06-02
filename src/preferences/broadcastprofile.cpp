@@ -1,0 +1,445 @@
+// broadcastprofile.cpp
+// Create June 2nd 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
+
+#include <QtCore>
+#include "util/xml.h"
+
+#include "broadcastprofile.h"
+
+namespace {
+const char* kDocumentName = "BroadcastProfile";
+const char* kBitrate = "bitrate";
+const char* kChannels = "channels";
+const char* kCustomArtist = "custom_artist";
+const char* kCustomTitle = "custom_title";
+const char* kEnableMetadata = "enable_metadata";
+const char* kEnableReconnect = "enable_reconnect";
+const char* kEnabled = "enabled";
+const char* kFormat = "format";
+const char* kHost = "host";
+const char* kLimitReconnects = "limit_reconnects";
+const char* kLogin = "login";
+const char* kMaximumRetries = "maximum_retries";
+const char* kMetadataCharset = "metadata_charset";
+const char* kMetadataFormat = "metadata_format";
+const char* kMountPoint = "mountpoint";
+const char* kNoDelayFirstReconnect = "no_delay_first_reconnect";
+const char* kOggDynamicUpdate = "ogg_dynamicupdate";
+const char* kPassword = "password";
+const char* kPort = "port";
+const char* kReconnectFirstDelay = "reconnect_first_delay";
+const char* kReconnectPeriod = "reconnect_period";
+const char* kServertype = "servertype";
+const char* kStreamDesc = "stream_desc";
+const char* kStreamGenre = "stream_genre";
+const char* kStreamName = "stream_name";
+const char* kStreamPublic = "stream_public";
+const char* kStreamWebsite = "stream_website";
+
+const double kDefaultBitrate = 128;
+const int kDefaultChannels = 2;
+const bool kDefaultEnableMetadata = false;
+const bool kDefaultEnableReconnect = true;
+const bool kDefaultLimitReconnects = true;
+const int kDefaultMaximumRetries = 10;
+// No tr() here, see https://bugs.launchpad.net/mixxx/+bug/1419500
+const QString kDefaultMetadataFormat("$artist - $title");
+const bool kDefaultNoDelayFirstReconnect = true;
+const bool kDefaultOggDynamicupdate = false;
+double kDefaultReconnectFirstDelay = 0.0;
+double kDefaultReconnectPeriod = 5.0;
+const QString kDefaultStreamDesc =
+        QObject::tr("This stream is online for testing purposes!");
+const QString kDefaultStreamGenre = QObject::tr("Live Mix");
+const bool kDefaultStreamPublic = false;
+} // anonymous namespace
+
+BroadcastProfile::BroadcastProfile(const QString& profileName) {
+    // TODO(Palakis, June 2nd 2017):
+    //   Strip forbidden characters from the profile name
+    m_profileName = QString(profileName);
+
+    // Try to load values from XML file, use default values otherwise
+    loadValues();
+}
+
+void BroadcastProfile::getFilename()
+{
+    return QString("broadcast_profile/") + m_profileName + QString(".bcp.xml");
+}
+
+void BroadcastProfile::fileExists() {
+    return QFile::exists(getFilename());
+}
+
+void BroadcastProfile::deleteFile() {
+    QFile::remove(getFilename());
+}
+
+void BroadcastProfile::setDefaultValues() {
+    m_enabled = true;
+
+    m_host = QString(),
+    m_port = BROADCAST_DEFAULT_PORT;
+    m_serverType = QString();
+    m_login = QString();
+    m_password = QString();
+
+    m_enableReconnect = kDefaultEnableReconnect;
+    m_reconnectPeriod = kDefaultReconnectPeriod;
+    m_limitReconnects = kDefaultLimitReconnects;
+
+    m_mountpoint = QString();
+    m_streamDesc = kDefaultStreamDesc;
+    m_streamGenre = kDefaultStreamGenre;
+    m_streamName = QString();
+    m_streamPublic = kDefaultStreamPublic;
+    m_streamWebsite = MIXXX_WEBSITE_URL;
+
+    m_enableMetadata = kDefaultEnableMetadata;
+    m_metadataCharset = QString();
+    m_customArtist = QString();
+    m_customTitle = QString();
+    m_metadataFormat = kDefaultMetadataFormat;
+    m_oggDynamicUpdate = kDefaultOggDynamicUpdate;
+
+    m_bitrate = kDefaultBitrate;
+    m_channels = kDefaultChannels;
+    m_format = QString();
+
+    m_noDelayFirstReconnect = kDefaultNoDelayFirstReconnect;
+    m_reconnectFirstDelay = kDefaultReconnectFirstDelay;
+    m_maximumRetries = kDefaultMaximumRetries;
+}
+
+void BroadcastProfile::loadValues() {
+    if(!fileExists()) {
+        setDefaultValues();
+        return;
+    }
+
+    QDomElement xmlRoot = XmlParse::openXMLFile(filename, kDocumentName);
+
+    m_enabled = (bool)XmlParse::selectNodeInt(xmlRoot, kEnabled);
+
+    m_host = XmlParse::selectNodeQString(xmlRoot, kHost);
+    m_port = XmlParse::selectNodeInt(xmlRoot, kPort);
+    m_serverType = XmlParse::selectNodeQString(xmlRoot, kServertype);
+    m_login = XmlParse::selectNodeQString(xmlRoot, kLogin);
+    m_password = XmlParse::selectNodeQString(xmlRoot, kPassword);
+
+    m_enableReconnect =
+            (bool)XmlParse::selectNodeInt(xmlRoot, kEnableReconnect);
+    m_reconnectPeriod =
+            XmlParse::selectNodeDouble(xmlRoot, kReconnectPeriod);
+
+    m_limitReconnects =
+            (bool)XmlParse::selectNodeInt(xmlRoot, kLimitReconnects);
+    m_maximumRetries =
+            XmlParse::selectNodeInt(xmlRoot, kMaximumRetries);
+
+    m_noDelayFirstReconnect =
+            (bool)XmlParse::selectNodeInt(xmlRoot, kNoDelayFirstReconnect);
+    m_reconnectFirstDelay =
+            XmlParse::selectNodeDouble(xmlRoot, kReconnectFirstDelay);
+
+    m_mountpoint = XmlParse::selectNodeQString(xmlRoot, kMountPoint);
+    m_streamName = XmlParse::selectNodeQString(xmlRoot, kStreamName);
+    m_streamDesc = XmlParse::selectNodeQString(xmlRoot, kStreamDesc);
+    m_streamGenre = XmlParse::selectNodeQString(xmlRoot, kStreamGenre);
+    m_streamPublic = (bool)XmlParse::selectNodeInt(xmlRoot, kStreamPublic);
+    m_streamWebsite = XmlParse::selectNodeQString(xmlRoot, kStreamWebsite);
+
+    m_format = XmlParse::selectNodeQString(xmlRoot, kFormat);
+    m_bitrate = XmlParse::selectNodeInt(xmlRoot, kBitrate);
+    m_channels = XmlParse::selectNodeInt(xmlRoot, kChannels);
+
+    m_enableMetadata = (bool)XmlParse::selectNodeInt(xmlRoot, kEnableMetadata);
+    m_metadataCharset = XmlParse::selectNodeQString(xmlRoot, kMetadataCharset);
+    m_customArtist = XmlParse::selectNodeQString(xmlRoot, kCustomArtist);
+    m_customTitle = XmlParse::selectNodeQString(xmlRoot, kCustomTitle);
+    m_metadataFormat = XmlParse::selectNodeQString(xmlRoot, kMetadataFormat);
+    m_oggDynamicUpdate =
+            (bool)XmlParse::selectNodeInt(xmlRoot, kMetadataFormat);
+}
+
+void BroadcastProfile::save() {
+    QDomDocument doc();
+    QDomElement docRoot = document.documentElement();
+
+    XmlParse::addElement(doc, docRoot, kEnabled, (int)m_enabled);
+
+    XmlParse::addElement(doc, docRoot, kHost, m_host);
+    XmlParse::addElement(doc, docRoot, kPort, m_port);
+    XmlParse::addElement(doc, docRoot, kServertype, m_serverType);
+    XmlParse::addElement(doc, docRoot, kLogin, m_login);
+    XmlParse::addElement(doc, docRoot, kPassword, m_password);
+
+    XmlParse::addElement(doc, docRoot,
+                         kEnableReconnect, (int)m_enableReconnect);
+    XmlParse::addElement(doc, docRoot,
+                         kReconnectPeriod, m_reconnectPeriod);
+
+    XmlParse::addElement(doc, docRoot,
+                         kLimitReconnects, (int)m_limitReconnects);
+    XmlParse::addElement(doc, docRoot,
+                         kMaximumRetries, m_maximumRetries);
+
+    XmlParse::addElement(doc, docRoot,
+                         kNoDelayFirstReconnect, (int)m_noDelayFirstReconnect);
+    XmlParse::addElement(doc, docRoot,
+                         kReconnectFirstDelay, m_reconnectFirstDelay);
+
+    XmlParse::addElement(doc, docRoot, kMountPoint, m_mountpoint);
+    XmlParse::addElement(doc, docRoot, kStreamName, m_streamName);
+    XmlParse::addElement(doc, docRoot, kStreamDesc, m_streamDesc);
+    XmlParse::addElement(doc, docRoot, kStreamGenre, m_streamGenre);
+    XmlParse::addElement(doc, docRoot, kStreamPublic, (int)m_streamPublic);
+    XmlParse::addElement(doc, docRoot, kStreamWebsite, m_streamWebsite);
+
+    XmlParse::addElement(doc, docRoot, kFormat, m_format);
+    XmlParse::addElement(doc, docRoot, kBitrate, m_bitrate);
+    XmlParse::addElement(doc, docRoot, kChannels, m_channels);
+
+    XmlParse::addElement(doc, docRoot, kEnableMetadata, (int)m_enableMetadata);
+    XmlParse::addElement(doc, docRoot, kMetadataCharset, m_metadataCharset);
+    XmlParse::addElement(doc, docRoot, kCustomArtist, m_customArtist);
+    XmlParse::addElement(doc, docRoot, kCustomTitle, m_customTitle);
+    XmlParse::addElement(doc, docRoot, kMetadataFormat, m_metadataFormat);
+    XmlParse::addElement(doc, docRoot, kOggDynamicUpdate, (int)m_oggDynamicUpdate);
+
+    QTextStream xmlFile(getFilename(), QDomNode::EncodingFromTextStream);
+    xmlFile.setCodec(QTextCodec::codecForName("UTF-8"));
+    doc.save(xmlFile, 4);
+}
+
+void BroadcastProfile::setProfileName(const QString &profileName) {
+    m_profileName = QString(profileName);
+}
+
+QString BroadcastProfile::getProfileName() {
+    return m_profileName;
+}
+
+// Unused, but we keep this to reserve the name
+bool BroadcastProfile::getEnabled() const {
+    return m_enabled;
+}
+
+void BroadcastProfile::setEnabled(bool value) {
+    m_enabled = value;
+}
+
+QString BroadcastProfile::getHost() const {
+    return m_host;
+}
+
+void BroadcastProfile::setHost(const QString& value) {
+    m_host = QString(value);
+}
+
+int BroadcastProfile::getPort() const {
+    // Valid port numbers are 0 .. 65535 (16 bit unsigned)
+    if (m_port < 0 || m_port > 0xFFFF) {
+        return BROADCAST_DEFAULT_PORT;
+    }
+
+    return m_port;
+}
+
+void BroadcastProfile::setPort(int value) {
+    m_port = value;
+}
+
+QString BroadcastProfile::getServertype() const {
+    return m_serverType;
+}
+
+void BroadcastProfile::setServertype(const QString& value) {
+    m_serverType = QString(value);
+}
+
+QString BroadcastProfile::getLogin() const {
+    return m_login;
+}
+
+void BroadcastProfile::setLogin(const QString& value) {
+    m_login = QString(value);
+}
+
+// TODO(Palakis, June 2nd 2017): implement secure password storage
+QString BroadcastProfile::getPassword() const {
+    return m_password;
+}
+
+void BroadcastProfile::setPassword(const QString& value) {
+    m_password = QString(value);
+}
+
+bool BroadcastProfile::getEnableReconnect() const {
+    return m_enableReconnect;
+}
+
+void BroadcastProfile::setEnableReconnect(bool value) {
+    m_enableReconnect = value;
+}
+
+double BroadcastProfile::getReconnectPeriod() const {
+    return m_reconnectPeriod;
+}
+
+void BroadcastProfile::setReconnectPeriod(double value) {
+    m_reconnectPeriod = value;
+}
+
+bool BroadcastProfile::getLimitReconnects() const {
+    return m_limitReconnects;
+}
+
+void BroadcastProfile::setLimitReconnects(bool value) {
+    m_limitReconnects = value;
+}
+
+int BroadcastProfile::getMaximumRetries() const {
+    return m_maximumRetries;
+}
+
+void BroadcastProfile::setMaximumRetries(int value) {
+    m_maximumRetries = value;
+}
+
+bool BroadcastProfile::getNoDelayFirstReconnect() const {
+    return m_noDelayFirstReconnect;
+}
+
+void BroadcastProfile::setNoDelayFirstReconnect(bool value) {
+    m_noDelayFirstReconnect = value;
+}
+
+double BroadcastProfile::getReconnectFirstDelay() const {
+    return m_reconnectFirstDelay;
+}
+
+void BroadcastProfile::setReconnectFirstDelay(double value) {
+    m_reconnectFirstDelay = value;
+}
+
+QString BroadcastProfile::getMountpoint() const {
+    return m_mountpoint;
+}
+
+void BroadcastProfile::setMountPoint(const QString& value) {
+    m_mountpoint = QString(value);
+}
+
+QString BroadcastProfile::getStreamName() const {
+    return m_streamName;
+}
+
+void BroadcastProfile::setStreamName(const QString& value) {
+    m_streamName = QString(value);
+}
+
+QString BroadcastProfile::getStreamDesc() const {
+    return m_streamDesc;
+}
+
+void BroadcastProfile::setStreamDesc(const QString& value) {
+    m_streamDesc = QString(value);
+}
+
+QString BroadcastProfile::getStreamGenre() const {
+    return m_streamGenre;
+}
+
+void BroadcastProfile::setStreamGenre(const QString& value) {
+    m_streamGenre = QString(value);
+}
+
+bool BroadcastProfile::getStreamPublic() const {
+    return m_streamPublic;
+}
+
+void BroadcastProfile::setStreamPublic(bool value) {
+    m_streamPublic = value;
+}
+
+QString BroadcastProfile::getStreamWebsite() const {
+    return m_streamWebsite;
+}
+
+void BroadcastProfile::setStreamWebsite(const QString& value) {
+    m_streamWebsite = QString(value);
+}
+
+QString BroadcastProfile::getFormat() const {
+    return m_format;
+}
+
+void BroadcastProfile::setFormat(const QString& value) {
+    m_format = QString(value);
+}
+
+int BroadcastProfile::getBitrate() const {
+    return m_bitrate;
+}
+
+void BroadcastProfile::setBitrate(int value) {
+    m_bitrate = value;
+}
+
+int BroadcastProfile::getChannels() {
+    return m_channels;
+}
+
+void BroadcastProfile::setChannels(int value) {
+    m_channels = value;
+}
+
+bool BroadcastProfile::getEnableMetadata() const {
+    return m_enableMetadata;
+}
+
+void BroadcastProfile::setEnableMetadata(bool value) {
+    m_enableMetadata = value;
+}
+
+QString BroadcastProfile::getMetadataCharset() const {
+    return m_metadataCharset;
+}
+
+void BroadcastProfile::setMetadataCharset(const QString& value) {
+    m_metadataCharset = QString(value);
+}
+
+QString BroadcastProfile::getCustomArtist() const {
+    return m_customArtist
+}
+
+void BroadcastProfile::setCustomArtist(const QString& value) {
+    m_customArtist = QString(value);
+}
+
+QString BroadcastProfile::getCustomTitle() const {
+    return m_customTitle
+}
+
+void BroadcastProfile::setCustomTitle(const QString& value) {
+    m_customTitle = QString(value);
+}
+
+QString BroadcastProfile::getMetadataFormat() const {
+    return m_metadataFormat;
+}
+
+void BroadcastProfile::setMetadataFormat(const QString& value) {
+    m_metadataFormat = QString(value);
+}
+
+bool BroadcastProfile::getOggDynamicUpdate() const {
+    return m_oggDynamicUpdate;
+}
+
+void BroadcastProfile::setOggDynamicUpdate(bool value) {
+    m_oggDynamicUpdate = value;
+}
