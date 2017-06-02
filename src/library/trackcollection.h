@@ -88,7 +88,9 @@ class TrackCollection : public QObject {
             const QSet<CrateId>& crates);
 
   private:
-    bool checkForTables(const QString& schemaFile);
+    bool upgradeDatabaseSchema(
+            const QString& schemaFile,
+            int schemaVersion);
 
     UserSettingsPointer m_pConfig;
     DbConnection m_dbConnection;

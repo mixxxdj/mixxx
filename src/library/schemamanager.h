@@ -4,13 +4,16 @@
 #ifndef SCHEMAMANAGER_H
 #define SCHEMAMANAGER_H
 
-#include <QtSql>
+#include <QSqlDatabase>
 
 #include "preferences/usersettings.h"
 #include "library/dao/settingsdao.h"
 
 class SchemaManager {
   public:
+    static const QString SETTINGS_VERSION_STRING;
+    static const QString SETTINGS_MINCOMPATIBLE_STRING;
+
     enum Result {
         RESULT_OK,
         RESULT_BACKWARDS_INCOMPATIBLE,
@@ -18,19 +21,23 @@ class SchemaManager {
         RESULT_SCHEMA_ERROR
     };
 
-    static Result upgradeToSchemaVersion(
-            const QSqlDatabase& db,
+    explicit SchemaManager(const QSqlDatabase& database);
+
+    int getCurrentVersion() const {
+        return m_currentVersion;
+    }
+
+    bool isBackwardsCompatibleWithVersion(int targetVersion) const;
+
+    Result upgradeToSchemaVersion(
             const QString& schemaFilename,
             int targetVersion);
 
-    static const QString SETTINGS_VERSION_STRING;
-    static const QString SETTINGS_MINCOMPATIBLE_STRING;
-
   private:
-    static bool isBackwardsCompatible(SettingsDAO& settings,
-                                      int currentVersion,
-                                      int targetVersion);
-    static int getCurrentSchemaVersion(SettingsDAO& settings);
+    QSqlDatabase m_database;
+    SettingsDAO m_settingsDao;
+
+    int m_currentVersion;
 };
 
 #endif /* SCHEMAMANAGER_H */
