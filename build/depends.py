@@ -1129,6 +1129,7 @@ class MixxxCore(Feature):
                    "util/singularsamplebuffer.cpp",
                    "util/circularsamplebuffer.cpp",
                    "util/rotary.cpp",
+                   "util/logger.cpp",
                    "util/logging.cpp",
                    "util/cmdlineargs.cpp",
                    "util/audiosignal.cpp",

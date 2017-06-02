@@ -176,7 +176,7 @@ void MessageHandler(QtMsgType type,
 }  // namespace
 
 // static
-void Logging::initialize(const QString& settingsPath, LogLevel logLevel,
+void Logging::initialize(const QDir& settingsDir, LogLevel logLevel,
                          bool debugAssertBreak) {
     VERIFY_OR_DEBUG_ASSERT(!g_logfile.isOpen()) {
         // Somebody already called Logging::initialize.
@@ -186,7 +186,6 @@ void Logging::initialize(const QString& settingsPath, LogLevel logLevel,
     s_logLevel = logLevel;
 
     QString logFileName;
-    QDir settingsDir(settingsPath);
 
     // Rotate old logfiles.
     for (int i = 9; i >= 0; --i) {

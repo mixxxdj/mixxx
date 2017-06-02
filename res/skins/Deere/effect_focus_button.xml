@@ -12,7 +12,7 @@ Variables:
     <Layout>horizontal</Layout>
     <Children>
       <PushButton>
-        <TooltipId><Variable name="button_TooltipId"/></TooltipId>
+        <TooltipId>EffectSlot_focus</TooltipId>
         <ObjectName>CircleButton</ObjectName>
         <Size>15f,15f</Size>
         <NumberStates>2</NumberStates>
@@ -31,7 +31,7 @@ Variables:
         <Connection>
           <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],focused_effect</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
-          <EmitOnPressAndRelease>false</EmitOnPressAndRelease>
+          <EmitOnDownPress>true</EmitOnDownPress>
           <Transform>
             <IsEqual><Variable name="Effect"/></IsEqual>
           </Transform>
@@ -39,7 +39,7 @@ Variables:
         <Connection>
           <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],focused_effect</ConfigKey>
           <ButtonState>RightButton</ButtonState>
-          <EmitOnPressAndRelease>false</EmitOnPressAndRelease>
+          <EmitOnDownPress>true</EmitOnDownPress>
           <Transform>
             <IsEqual><Variable name="Effect"/></IsEqual>
             <Not/>
