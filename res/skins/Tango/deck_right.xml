@@ -161,7 +161,7 @@ Variables:
           </WidgetGroup><!-- /ArtistTitle, Overview, Comment -->
 
           <Template src="skin:deck_buttons_right.xml" /><!-- 24f -->
-          <Template src="skin:deck_loop_beatjump_right.xml"/><!-- 50+1 -->
+          <Template src="skin:loop_controls_right.xml"/><!-- 50+1 -->
           
         </Children>
       </WidgetGroup><!-- / [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->

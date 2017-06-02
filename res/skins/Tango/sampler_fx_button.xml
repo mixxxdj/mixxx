@@ -1,0 +1,30 @@
+<!--
+Description:
+  A button that toggles sampler's assignment to effect units. 
+Variables:
+  fxUnit  : [EffectRack1_EffectUnitN]
+  group   : [SamplerN]
+-->
+<Template>
+  <PushButton>
+    <TooltipId>EffectUnit_group_enabled</TooltipId>
+    <ObjectName>SamplerFxAssignButton</ObjectName>
+    <Size>28me,16f</Size>
+    <NumberStates>2</NumberStates>
+    <RightClickIsPushButton>false</RightClickIsPushButton>
+    <State>
+      <Number>0</Number>
+      <Alignment>center</Alignment>
+      <Text>FX<Variable name="fxUnit"/></Text>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Alignment>center</Alignment>
+      <Text>FX<Variable name="fxUnit"/></Text>
+    </State>
+    <Connection>
+      <ConfigKey>[EffectRack1_EffectUnit<Variable name="fxUnit"/>],group_<Variable name="group"/>_enable</ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+  </PushButton>
+</Template>

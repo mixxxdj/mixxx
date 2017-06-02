@@ -1,0 +1,21 @@
+<!--
+Description:
+  A simple indicator for usage in decks' artist/duration row,
+  showing if an effect unit is assigned to parent deck.
+  Visible only if assigned.
+Variables:
+  fxGroup : [EffectRack1_EffectUnitN]
+  channum : [ChannelN]
+-->
+<Template>
+  <Label>
+    <ObjectName>DeckFxIndicator</ObjectName>
+    <Size>24f,12f</Size>
+    <Text>FX<Variable name="fxUnit"/></Text>
+    <Alignment>center</Alignment>
+    <Connection>
+      <ConfigKey>[EffectRack1_EffectUnit<Variable name="fxUnit"/>],group_[Channel<Variable name="channum"/>]_enable</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </Label>
+</Template>

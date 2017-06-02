@@ -28,7 +28,7 @@ Variables:
             <SetVariable name="ConfigKey"><Variable name="group"/>,sync_enabled</SetVariable>
             <SetVariable name="ConfigKeyRight"><Variable name="group"/>,rate_set_default</SetVariable>
           </Template>
-          <NumberBpm>
+          <Number>
             <ObjectName>Bpm</ObjectName>
             <Size>50f,16me</Size>
             <TooltipId>visual_bpm</TooltipId>
@@ -37,7 +37,7 @@ Variables:
             <Connection>
               <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
             </Connection>
-          </NumberBpm>
+          </Number>
         </Children>
       </WidgetGroup><!-- /BpmContainer -->
       
