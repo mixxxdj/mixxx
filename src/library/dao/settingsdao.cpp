@@ -14,7 +14,7 @@ SettingsDAO::~SettingsDAO() {
 void SettingsDAO::initialize() {
 }
 
-QString SettingsDAO::getValue(const QString& name, QString defaultValue) {
+QString SettingsDAO::getValue(const QString& name, QString defaultValue) const {
     QSqlQuery query(m_db);
 
     query.prepare("SELECT value FROM settings WHERE name = :name");

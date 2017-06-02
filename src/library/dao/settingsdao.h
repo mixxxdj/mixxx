@@ -19,7 +19,7 @@ class SettingsDAO : public QObject {
 
     virtual void initialize();
 
-    QString getValue(const QString& name, QString defaultValue = QString());
+    QString getValue(const QString& name, QString defaultValue = QString()) const;
     bool setValue(const QString& name, const QVariant& value);
 
   private:
