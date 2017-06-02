@@ -18,12 +18,14 @@
 #define TEMPOTRACKV2_H
 
 #include <vector>
+#include "maths/MathAliases.h"
+
 using namespace std;
 
 //!!! Question: how far is this actually sample rate dependent?  I
 // think it does produce plausible results for e.g. 48000 as well as
 // 44100, but surely the fixed window sizes and comb filtering will
-// make it prefer double or half time when run at e.g. 96000?
+// make it prefer fl_t or half time when run at e.g. 96000?
 
 class TempoTrackV2
 {
@@ -40,51 +42,51 @@ public:
     ~TempoTrackV2();
 
     // Returned beat periods are given in df increment units; inputtempo and tempi in bpm
-    void calculateBeatPeriod(const vector<double> &df,
-                             vector<double> &beatPeriod,
-                             vector<double> &tempi) {
+    void calculateBeatPeriod(const vector<fl_t> &df,
+                             vector<fl_t> &beatPeriod,
+                             vector<fl_t> &tempi) {
         calculateBeatPeriod(df, beatPeriod, tempi, 120.0, false);
     }
 
     // Returned beat periods are given in df increment units; inputtempo and tempi in bpm
     // MEPD 28/11/12 Expose inputtempo and constraintempo parameters
     // Note, if inputtempo = 120 and constraintempo = false, then functionality is as it was before
-    void calculateBeatPeriod(const vector<double> &df,
-                             vector<double> &beatPeriod,
-                             vector<double> &tempi,
-                             double inputtempo, bool constraintempo);
+    void calculateBeatPeriod(const vector<fl_t> &df,
+                             vector<fl_t> &beatPeriod,
+                             vector<fl_t> &tempi,
+                             fl_t inputtempo, bool constraintempo);
 
     // Returned beat positions are given in df increment units
-    void calculateBeats(const vector<double> &df,
-                        const vector<double> &beatPeriod,
-                        vector<double> &beats) {
+    void calculateBeats(const vector<fl_t> &df,
+                        const vector<fl_t> &beatPeriod,
+                        vector<fl_t> &beats) {
         calculateBeats(df, beatPeriod, beats, 0.9, 4.0);
     }
 
     // Returned beat positions are given in df increment units
     // MEPD 28/11/12 Expose alpha and tightness parameters
     // Note, if alpha = 0.9 and tightness = 4, then functionality is as it was before
-    void calculateBeats(const vector<double> &df,
-                        const vector<double> &beatPeriod,
-                        vector<double> &beats,
-                        double alpha, double tightness);
+    void calculateBeats(const vector<fl_t> &df,
+                        const vector<fl_t> &beatPeriod,
+                        vector<fl_t> &beats,
+                        fl_t alpha, fl_t tightness);
 
 private:
     typedef vector<int> i_vec_t;
     typedef vector<vector<int> > i_mat_t;
-    typedef vector<double> d_vec_t;
-    typedef vector<vector<double> > d_mat_t;
+    typedef vector<fl_t> d_vec_t;
+    typedef vector<vector<fl_t> > d_mat_t;
 
     float m_rate;
     size_t m_increment;
 
     void adapt_thresh(d_vec_t &df);
-    double mean_array(const d_vec_t &dfin, int start, int end);
+    fl_t mean_array(const d_vec_t &dfin, int start, int end);
     void filter_df(d_vec_t &df);
     void get_rcf(const d_vec_t &dfframe, const d_vec_t &wv, d_vec_t &rcf);
     void viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv,
                         d_vec_t &bp, d_vec_t &tempi);
-    double get_max_val(const d_vec_t &df);
+    fl_t get_max_val(const d_vec_t &df);
     int get_max_ind(const d_vec_t &df);
     void normalise_vec(d_vec_t &df);
 };

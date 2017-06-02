@@ -19,9 +19,14 @@
 #include <cmath>
 #include <complex>
 
-using namespace std;
-typedef complex<double> ComplexData;
+#ifdef VAMP_FLOAT_MATH
+typedef float fl_t;
+#else
+typedef double fl_t;
+#endif
 
+using namespace std;
+typedef complex<fl_t> ComplexData;
 
 #ifndef PI
 #define PI (3.14159265358979232846)

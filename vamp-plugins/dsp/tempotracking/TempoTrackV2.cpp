@@ -42,10 +42,10 @@ TempoTrackV2::filter_df(d_vec_t &df)
     b[1] = 0.4131;
     b[2] = 0.2066;
 
-    double inp1 = 0.;
-    double inp2 = 0.;
-    double out1 = 0.;
-    double out2 = 0.;
+    fl_t inp1 = 0.;
+    fl_t inp2 = 0.;
+    fl_t out1 = 0.;
+    fl_t out2 = 0.;
 
 
     // forwards filtering
@@ -98,10 +98,10 @@ TempoTrackV2::filter_df(d_vec_t &df)
 // Note, if inputtempo = 120 and constraintempo = false, then functionality is
 // as it was before
 void
-TempoTrackV2::calculateBeatPeriod(const vector<double> &df,
-                                  vector<double> &beat_period,
-                                  vector<double> &tempi,
-                                  double inputtempo, bool constraintempo)
+TempoTrackV2::calculateBeatPeriod(const vector<fl_t> &df,
+                                  vector<fl_t> &beat_period,
+                                  vector<fl_t> &tempi,
+                                  fl_t inputtempo, bool constraintempo)
 {
     // to follow matlab.. split into 512 sample frames with a 128 hop size
     // calculate the acf,
@@ -117,7 +117,7 @@ TempoTrackV2::calculateBeatPeriod(const vector<double> &df,
     // accordingly.
     // note: 60*44100/512 is a magic number
     // this might (will?) break if a user specifies a different frame rate for the onset detection function
-    double rayparam = (60*44100/512)/inputtempo;
+    fl_t rayparam = (60*44100/512)/inputtempo;
 
     // these debug statements can be removed.
 //    std::cerr << "inputtempo" << inputtempo << std::endl;
@@ -135,7 +135,7 @@ TempoTrackV2::calculateBeatPeriod(const vector<double> &df,
         {
             // MEPD 28/11/12
             // do a gaussian weighting instead of rayleigh
-            wv[i] = exp( (-1.*pow((static_cast<double> (i)-rayparam),2.)) / (2.*pow(rayparam/4.,2.)) );
+            wv[i] = exp( (-1.*pow((static_cast<fl_t> (i)-rayparam),2.)) / (2.*pow(rayparam/4.,2.)) );
         }
     }
     else
@@ -144,7 +144,7 @@ TempoTrackV2::calculateBeatPeriod(const vector<double> &df,
         {
             // MEPD 28/11/12
             // standard rayleigh weighting over periodicities
-            wv[i] = (static_cast<double> (i) / pow(rayparam,2.)) * exp((-1.*pow(-static_cast<double> (i),2.)) / (2.*pow(rayparam,2.)));
+            wv[i] = (static_cast<fl_t> (i) / pow(rayparam,2.)) * exp((-1.*pow(-static_cast<fl_t> (i),2.)) / (2.*pow(rayparam,2.)));
         }
     }
 
@@ -200,15 +200,15 @@ TempoTrackV2::get_rcf(const d_vec_t &dfframe_in, const d_vec_t &wv, d_vec_t &rcf
 
     for (unsigned int lag=0; lag<dfframe.size(); lag++)
     {
-        double sum = 0.;
-        double tmp = 0.;
+        fl_t sum = 0.;
+        fl_t tmp = 0.;
 
         for (unsigned int n=0; n<(dfframe.size()-lag); n++)
         {
             tmp = dfframe[n] * dfframe[n+lag];
             sum += tmp;
         }
-        acf[lag] = static_cast<double> (sum/ (dfframe.size()-lag));
+        acf[lag] = static_cast<fl_t> (sum/ (dfframe.size()-lag));
     }
 
     // now apply comb filtering
@@ -228,7 +228,7 @@ TempoTrackV2::get_rcf(const d_vec_t &dfframe_in, const d_vec_t &wv, d_vec_t &rcf
     // apply adaptive threshold to rcf
     MathUtilities::adaptiveThreshold(rcf);
 
-    double rcfsum =0.;
+    fl_t rcfsum =0.;
     for (unsigned int i=0; i<rcf.size(); i++)
     {
         rcf[i] += EPS ;
@@ -261,13 +261,13 @@ TempoTrackV2::viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, d_vec_t &
 
     // variance of Gaussians in transition matrix
     // formed of Gaussians on diagonal - implies slow tempo change
-    double sigma = 8.;
+    fl_t sigma = 8.;
     // don't want really short beat periods, or really long ones
     for (unsigned int i=20;i <wv.size()-20; i++)
     {
         for (unsigned int j=20; j<wv.size()-20; j++)
         {
-            double mu = static_cast<double>(i);
+            fl_t mu = static_cast<fl_t>(i);
             tmat[i][j] = exp( (-1.*pow((j-mu),2.)) / (2.*pow(sigma,2.)) );
         }
     }
@@ -302,7 +302,7 @@ TempoTrackV2::viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, d_vec_t &
         psi[0][j] = 0;
     }
 
-    double deltasum = 0.;
+    fl_t deltasum = 0.;
     for (unsigned int i=0; i<Q; i++)
     {
         deltasum += delta[0][i];
@@ -332,7 +332,7 @@ TempoTrackV2::viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, d_vec_t &
         }
 
         // normalise current delta column
-        double deltasum = 0.;
+        fl_t deltasum = 0.;
         for (unsigned int i=0; i<Q; i++)
         {
             deltasum += delta[t][i];
@@ -386,10 +386,10 @@ TempoTrackV2::viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, d_vec_t &
     }
 }
 
-double
+fl_t
 TempoTrackV2::get_max_val(const d_vec_t &df)
 {
-    double maxval = 0.;
+    fl_t maxval = 0.;
     for (unsigned int i=0; i<df.size(); i++)
     {
         if (maxval < df[i])
@@ -404,7 +404,7 @@ TempoTrackV2::get_max_val(const d_vec_t &df)
 int
 TempoTrackV2::get_max_ind(const d_vec_t &df)
 {
-    double maxval = 0.;
+    fl_t maxval = 0.;
     int ind = 0;
     for (unsigned int i=0; i<df.size(); i++)
     {
@@ -421,7 +421,7 @@ TempoTrackV2::get_max_ind(const d_vec_t &df)
 void
 TempoTrackV2::normalise_vec(d_vec_t &df)
 {
-    double sum = 0.;
+    fl_t sum = 0.;
     for (unsigned int i=0; i<df.size(); i++)
     {
         sum += df[i];
@@ -438,9 +438,9 @@ TempoTrackV2::normalise_vec(d_vec_t &df)
 // of the dynamic program to be set by the user
 // the default value of alpha = 0.9 and tightness = 4
 void
-TempoTrackV2::calculateBeats(const vector<double> &df,
-                             const vector<double> &beat_period,
-                             vector<double> &beats, double alpha, double tightness)
+TempoTrackV2::calculateBeats(const vector<fl_t> &df,
+                             const vector<fl_t> &beat_period,
+                             vector<fl_t> &beats, fl_t alpha, fl_t tightness)
 {
     if (df.empty() || beat_period.empty()) return;
 
@@ -454,8 +454,8 @@ TempoTrackV2::calculateBeats(const vector<double> &df,
         backlink[i] = -1;
     }
 
-    //double tightness = 4.;
-    //double alpha = 0.9;
+    //fl_t tightness = 4.;
+    //fl_t alpha = 0.9;
     // MEPD 28/11/12
     // debug statements that can be removed.
 //    std::cerr << "alpha" << alpha << std::endl;
@@ -473,7 +473,7 @@ TempoTrackV2::calculateBeats(const vector<double> &df,
 
         for (unsigned int j=0;j<txwt.size();j++)
         {
-            double mu = static_cast<double> (beat_period[i]);
+            fl_t mu = static_cast<fl_t> (beat_period[i]);
             txwt[j] = exp( -0.5*pow(tightness * log((round(2*mu)-j)/mu),2));
 
             // IF IN THE ALLOWED RANGE, THEN LOOK AT CUMSCORE[I+PRANGE_MIN+J
@@ -487,7 +487,7 @@ TempoTrackV2::calculateBeats(const vector<double> &df,
         }
 
         // find max value and index of maximum value
-        double vv = get_max_val(scorecands);
+        fl_t vv = get_max_val(scorecands);
         int xx = get_max_ind(scorecands);
 
         cumscore[i] = alpha*vv + (1.-alpha)*localscore[i];
@@ -524,7 +524,7 @@ TempoTrackV2::calculateBeats(const vector<double> &df,
     // REVERSE SEQUENCE OF IBEATS AND STORE AS BEATS
     for (unsigned int i=0; i<ibeats.size(); i++)
     {
-        beats.push_back( static_cast<double>(ibeats[ibeats.size()-i-1]) );
+        beats.push_back( static_cast<fl_t>(ibeats[ibeats.size()-i-1]) );
     }
 }
 

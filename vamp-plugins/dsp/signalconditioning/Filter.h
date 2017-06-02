@@ -16,6 +16,8 @@
 #ifndef FILTER_H
 #define FILTER_H
 
+#include "maths/MathAliases.h"
+
 #ifndef NULL
 #define NULL 0
 #endif
@@ -28,8 +30,8 @@
  */
 struct FilterConfig{
     unsigned int ord;
-    double* ACoeffs;
-    double* BCoeffs;
+    fl_t* ACoeffs;
+    fl_t* BCoeffs;
 };
 
 /**
@@ -43,7 +45,7 @@ public:
 
     void reset();
 
-    void process( double *src, double *dst, unsigned int length );
+    void process( fl_t *src, fl_t *dst, unsigned int length );
 
 private:
     void initialise( FilterConfig Config );
@@ -51,11 +53,11 @@ private:
 
     unsigned int m_ord;
 
-    double* m_inBuffer;
-    double* m_outBuffer;
+    fl_t* m_inBuffer;
+    fl_t* m_outBuffer;
 
-    double* m_ACoeffs;
-    double* m_BCoeffs;
+    fl_t* m_ACoeffs;
+    fl_t* m_BCoeffs;
 };
 
 #endif

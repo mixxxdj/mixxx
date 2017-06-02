@@ -37,10 +37,10 @@ public:
     }
 
     void process(bool inverse,
-                 const double *ri,
-                 const double *ii,
-                 double *ro,
-                 double *io) {
+                 const fl_t *ri,
+                 const fl_t *ii,
+                 fl_t *ro,
+                 fl_t *io) {
 
         for (int i = 0; i < m_n; ++i) {
             m_kin[i].r = ri[i];
@@ -60,7 +60,7 @@ public:
 
             kiss_fft(m_plani, m_kin, m_kout);
 
-            double scale = 1.0 / m_n;
+            fl_t scale = 1.0 / m_n;
 
             for (int i = 0; i < m_n; ++i) {
                 ro[i] = m_kout[i].r * scale;
@@ -89,8 +89,8 @@ FFT::~FFT()
 
 void
 FFT::process(bool inverse,
-             const double *p_lpRealIn, const double *p_lpImagIn,
-             double *p_lpRealOut, double *p_lpImagOut)
+             const fl_t *p_lpRealIn, const fl_t *p_lpImagIn,
+             fl_t *p_lpRealOut, fl_t *p_lpImagOut)
 {
     m_d->process(inverse,
                  p_lpRealIn, p_lpImagIn,
@@ -116,7 +116,7 @@ public:
         delete[] m_c;
     }
 
-    void forward(const double *ri, double *ro, double *io) {
+    void forward(const fl_t *ri, fl_t *ro, fl_t *io) {
 
         kiss_fftr(m_planf, ri, m_c);
 
@@ -131,9 +131,9 @@ public:
         }
     }
 
-    void forwardMagnitude(const double *ri, double *mo) {
+    void forwardMagnitude(const fl_t *ri, fl_t *mo) {
 
-        double *io = new double[m_n];
+        fl_t *io = new fl_t[m_n];
 
         forward(ri, mo, io);
 
@@ -144,7 +144,7 @@ public:
         delete[] io;
     }
 
-    void inverse(const double *ri, const double *ii, double *ro) {
+    void inverse(const fl_t *ri, const fl_t *ii, fl_t *ro) {
 
         // kiss_fftr.h says
         // "input freqdata has nfft/2+1 complex points"
@@ -156,7 +156,7 @@ public:
         
         kiss_fftri(m_plani, m_c, ro);
 
-        double scale = 1.0 / m_n;
+        fl_t scale = 1.0 / m_n;
 
         for (int i = 0; i < m_n; ++i) {
             ro[i] *= scale;
@@ -181,19 +181,19 @@ FFTReal::~FFTReal()
 }
 
 void
-FFTReal::forward(const double *ri, double *ro, double *io)
+FFTReal::forward(const fl_t *ri, fl_t *ro, fl_t *io)
 {
     m_d->forward(ri, ro, io);
 }
 
 void
-FFTReal::forwardMagnitude(const double *ri, double *mo)
+FFTReal::forwardMagnitude(const fl_t *ri, fl_t *mo)
 {
     m_d->forwardMagnitude(ri, mo);
 }
 
 void
-FFTReal::inverse(const double *ri, const double *ii, double *ro)
+FFTReal::inverse(const fl_t *ri, const fl_t *ii, fl_t *ro)
 {
     m_d->inverse(ri, ii, ro);
 }

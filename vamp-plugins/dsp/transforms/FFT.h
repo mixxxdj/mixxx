@@ -9,6 +9,8 @@
 #ifndef FFT_H
 #define FFT_H
 
+#include "maths/MathAliases.h"
+
 class FFT  
 {
 public:
@@ -35,8 +37,8 @@ public:
      * The inverse transform is scaled by 1/nsamples.
      */
     void process(bool inverse,
-                 const double *realIn, const double *imagIn,
-                 double *realOut, double *imagOut);
+                 const fl_t *realIn, const fl_t *imagIn,
+                 fl_t *realOut, fl_t *imagOut);
     
 private:
     class D;
@@ -65,8 +67,8 @@ public:
      * compatibility with existing code, the conjugate half of the
      * output is returned even though it is redundant.
      */
-    void forward(const double *realIn,
-                 double *realOut, double *imagOut);
+    void forward(const fl_t *realIn,
+                 fl_t *realOut, fl_t *imagOut);
 
     /**
      * Carry out a forward real-to-complex transform of size nsamples,
@@ -78,7 +80,7 @@ public:
      * compatibility with existing code, the conjugate half of the
      * output is returned even though it is redundant.
      */
-    void forwardMagnitude(const double *realIn, double *magOut);
+    void forwardMagnitude(const fl_t *realIn, fl_t *magOut);
 
     /**
      * Carry out an inverse real transform (i.e. complex-to-real) of
@@ -94,8 +96,8 @@ public:
      *
      * The inverse transform is scaled by 1/nsamples.
      */
-    void inverse(const double *realIn, const double *imagIn,
-                 double *realOut);
+    void inverse(const fl_t *realIn, const fl_t *imagIn,
+                 fl_t *realOut);
 
 private:
     class D;

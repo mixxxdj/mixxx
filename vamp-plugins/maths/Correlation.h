@@ -16,12 +16,14 @@
 #ifndef CORRELATION_H
 #define CORRELATION_H
 
+#include "MathAliases.h"
+
 #define  EPS  2.2204e-016
 
 class Correlation  
 {
 public:
-    void doAutoUnBiased( double* src, double* dst, unsigned int length );
+    void doAutoUnBiased( fl_t* src, fl_t* dst, unsigned int length );
     Correlation();
     virtual ~Correlation();
 

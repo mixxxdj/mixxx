@@ -49,7 +49,7 @@ void FiltFilt::deInitialise()
 }
 
 
-void FiltFilt::process(double *src, double *dst, unsigned int length)
+void FiltFilt::process(fl_t *src, fl_t *dst, unsigned int length)
 {	
     unsigned int i;
 
@@ -59,8 +59,8 @@ void FiltFilt::process(double *src, double *dst, unsigned int length)
     unsigned int nFact = 3 * ( nFilt - 1);
     unsigned int nExt	= length + 2 * nFact;
 
-    m_filtScratchIn = new double[ nExt ];
-    m_filtScratchOut = new double[ nExt ];
+    m_filtScratchIn = new fl_t[ nExt ];
+    m_filtScratchOut = new fl_t[ nExt ];
 
 	
     for( i = 0; i< nExt; i++ ) 
@@ -70,8 +70,8 @@ void FiltFilt::process(double *src, double *dst, unsigned int length)
     }
 
     // Edge transients reflection
-    double sample0 = 2 * src[ 0 ];
-    double sampleN = 2 * src[ length - 1 ];
+    fl_t sample0 = 2 * src[ 0 ];
+    fl_t sampleN = 2 * src[ length - 1 ];
 
     unsigned int index = 0;
     for( i = nFact; i > 0; i-- )

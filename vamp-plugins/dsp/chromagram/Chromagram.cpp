@@ -37,7 +37,7 @@ int Chromagram::initialise( ChromaConfig Config )
     m_uK = ( unsigned int ) ceil( m_BPO * log(m_FMax/m_FMin)/log(2.0));	
 
     // Create array for chroma result
-    m_chromadata = new double[ m_BPO ];
+    m_chromadata = new fl_t[ m_BPO ];
 
     // Create Config Structure for ConstantQ operator
     CQConfig ConstantQConfig;
@@ -60,10 +60,10 @@ int Chromagram::initialise( ChromaConfig Config )
     // Initialise FFT object	
     m_FFT = new FFTReal(m_frameSize);
 
-    m_FFTRe = new double[ m_frameSize ];
-    m_FFTIm = new double[ m_frameSize ];
-    m_CQRe  = new double[ m_uK ];
-    m_CQIm  = new double[ m_uK ];
+    m_FFTRe = new fl_t[ m_frameSize ];
+    m_FFTIm = new fl_t[ m_frameSize ];
+    m_CQRe  = new fl_t[ m_uK ];
+    m_CQIm  = new fl_t[ m_uK ];
 
     m_window = 0;
     m_windowbuf = 0;
@@ -96,19 +96,19 @@ int Chromagram::deInitialise()
 
 //----------------------------------------------------------------------------------
 // returns the absolute value of complex number xx + i*yy
-double Chromagram::kabs(double xx, double yy)
+fl_t Chromagram::kabs(fl_t xx, fl_t yy)
 {
-    double ab = sqrt(xx*xx + yy*yy);
+    fl_t ab = sqrt(xx*xx + yy*yy);
     return(ab);
 }
 //-----------------------------------------------------------------------------------
 
 
-void Chromagram::unityNormalise(double *src)
+void Chromagram::unityNormalise(fl_t *src)
 {
-    double min, max;
+    fl_t min, max;
 
-    double val = 0;
+    fl_t val = 0;
 
     MathUtilities::getFrameMinMax( src, m_BPO, & min, &max );
 
@@ -121,7 +121,7 @@ void Chromagram::unityNormalise(double *src)
 }
 
 
-double* Chromagram::process( const double *data )
+fl_t* Chromagram::process( const fl_t *data )
 {
     if (!m_skGenerated) {
         // Generate CQ Kernel 
@@ -130,8 +130,8 @@ double* Chromagram::process( const double *data )
     }
 
     if (!m_window) {
-        m_window = new Window<double>(HammingWindow, m_frameSize);
-        m_windowbuf = new double[m_frameSize];
+        m_window = new Window<fl_t>(HammingWindow, m_frameSize);
+        m_windowbuf = new fl_t[m_frameSize];
     }
 
     for (int i = 0; i < m_frameSize; ++i) {
@@ -144,7 +144,7 @@ double* Chromagram::process( const double *data )
     return process(m_FFTRe, m_FFTIm);
 }
 
-double* Chromagram::process( const double *real, const double *imag )
+fl_t* Chromagram::process( const fl_t *real, const fl_t *imag )
 {
     if (!m_skGenerated) {
         // Generate CQ Kernel 
@@ -155,13 +155,13 @@ double* Chromagram::process( const double *real, const double *imag )
     // initialise chromadata to 0
     for (unsigned i = 0; i < m_BPO; i++) m_chromadata[i] = 0;
 
-    double cmax = 0.0;
-    double cval = 0;
+    fl_t cmax = 0.0;
+    fl_t cval = 0;
     // Calculate ConstantQ frame
     m_ConstantQ->process( real, imag, m_CQRe, m_CQIm );
 	
     // add each octave of cq data into Chromagram
-    const unsigned octaves = (int)floor(double( m_uK/m_BPO))-1;
+    const unsigned octaves = (int)floor(fl_t( m_uK/m_BPO))-1;
     for (unsigned octave = 0; octave <= octaves; octave++) 
     {
 	unsigned firstBin = octave*m_BPO;

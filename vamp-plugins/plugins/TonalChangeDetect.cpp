@@ -15,6 +15,7 @@
 #include "TonalChangeDetect.h"
 
 #include <base/Pitch.h>
+#include "maths/MathAliases.h"
 #include <dsp/chromagram/Chromagram.h>
 #include <dsp/tonal/ChangeDetectionFunction.h>
 
@@ -290,7 +291,7 @@ TonalChangeDetect::OutputList TonalChangeDetect::getOutputDescriptors() const
     d.hasKnownExtents = false;
     d.isQuantized = false;
     d.sampleType = OutputDescriptor::VariableSampleRate;
-    double dStepSecs = double(getPreferredStepSize()) / m_inputSampleRate;
+    fl_t dStepSecs = fl_t(getPreferredStepSize()) / m_inputSampleRate;
     d.sampleRate = 1.0f / dStepSecs;
 	
     OutputDescriptor changes;
@@ -325,6 +326,9 @@ TonalChangeDetect::process(const float *const *inputBuffers,
 
     if (!m_haveOrigin) m_origin = timestamp;
 
+#ifdef VAMP_FLOAT_MATH
+    float *output = m_chromagram->process(inputBuffers[0]);
+#else
     // convert float* to double*
     double *tempBuffer = new double[m_block];
     for (size_t i = 0; i < m_block; ++i) {
@@ -333,6 +337,7 @@ TonalChangeDetect::process(const float *const *inputBuffers,
 
     double *output = m_chromagram->process(tempBuffer);
     delete[] tempBuffer;
+#endif
 
     for (size_t i = 0; i < 12; i++)
     {
@@ -403,7 +408,7 @@ TonalChangeDetect::FeatureSet TonalChangeDetect::getRemainingFeatures()
     }
 	
     ChangeDFConfig dfc;
-    dfc.smoothingWidth = double(m_iSmoothingWidth);
+    dfc.smoothingWidth = fl_t(m_iSmoothingWidth);
     ChangeDetectionFunction df(dfc);
     ChangeDistance d = df.process(m_TCSGram);
 	
@@ -411,9 +416,9 @@ TonalChangeDetect::FeatureSet TonalChangeDetect::getRemainingFeatures()
 	
     for (int i = 0; i < d.size(); i++)
     {
-        double dCurrent = d[i];
-        double dPrevious = d[i > 0 ? i - 1 : i];
-        double dNext = d[i < d.size()-1 ? i + 1 : i];
+        fl_t dCurrent = d[i];
+        fl_t dPrevious = d[i > 0 ? i - 1 : i];
+        fl_t dNext = d[i < d.size()-1 ? i + 1 : i];
 		
         Feature feature;
         feature.label = "";

@@ -57,8 +57,8 @@ void DFProcess::initialise( DFProcConfig Config )
 
     m_isMedianPositive = Config.isMedianPositive;
 
-    filtSrc = new double[ m_length ];
-    filtDst = new double[ m_length ];
+    filtSrc = new fl_t[ m_length ];
+    filtDst = new fl_t[ m_length ];
 
 	
     //Low Pass Smoothing Filter Config
@@ -85,7 +85,7 @@ void DFProcess::deInitialise()
     delete m_FiltFilt;
 }
 
-void DFProcess::process(double *src, double* dst)
+void DFProcess::process(fl_t *src, fl_t* dst)
 {
     if (m_length == 0) return;
 
@@ -97,17 +97,17 @@ void DFProcess::process(double *src, double* dst)
 }
 
 
-void DFProcess::medianFilter(double *src, double *dst)
+void DFProcess::medianFilter(fl_t *src, fl_t *dst)
 {
     int i,k,j,l;
     int index = 0;
 
-    double val = 0;
+    fl_t val = 0;
 
-    double* y = new double[ m_winPost + m_winPre + 1];
-    memset( y, 0, sizeof( double ) * ( m_winPost + m_winPre + 1) );
+    fl_t* y = new fl_t[ m_winPost + m_winPre + 1];
+    memset( y, 0, sizeof( fl_t ) * ( m_winPost + m_winPre + 1) );
 
-    double* scratch = new double[ m_length ];
+    fl_t* scratch = new fl_t[ m_length ];
 
     for( i = 0; i < m_winPre; i++)
     {
@@ -184,11 +184,11 @@ void DFProcess::medianFilter(double *src, double *dst)
 }
 
 
-void DFProcess::removeDCNormalize( double *src, double*dst )
+void DFProcess::removeDCNormalize( fl_t *src, fl_t*dst )
 {
-    double DFmax = 0;
-    double DFMin = 0;
-    double DFAlphaNorm = 0;
+    fl_t DFmax = 0;
+    fl_t DFMin = 0;
+    fl_t DFAlphaNorm = 0;
 
     MathUtilities::getFrameMinMax( src, m_length, &DFMin, &DFmax );
 

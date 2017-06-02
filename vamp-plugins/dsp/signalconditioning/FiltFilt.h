@@ -16,6 +16,7 @@
 #ifndef FILTFILT_H
 #define FILTFILT_H
 
+#include "maths/MathAliases.h"
 #include "Filter.h"
 
 /**
@@ -30,7 +31,7 @@ public:
     virtual ~FiltFilt();
 
     void reset();
-    void process( double* src, double* dst, unsigned int length );
+    void process( fl_t* src, fl_t* dst, unsigned int length );
 
 private:
     void initialise( FilterConfig Config );
@@ -40,8 +41,8 @@ private:
 
     Filter* m_filter;
 
-    double* m_filtScratchIn;
-    double* m_filtScratchOut;
+    fl_t* m_filtScratchIn;
+    fl_t* m_filtScratchOut;
 
     FilterConfig m_filterConfig;
 };

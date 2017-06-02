@@ -168,7 +168,7 @@ KeyDetector::initialise(size_t channels, size_t stepSize, size_t blockSize)
         return false;
     }
 
-    m_inputFrame = new double[m_blockSize];
+    m_inputFrame = new fl_t[m_blockSize];
 
     m_prevKey = -1;
     m_first = true;
@@ -285,7 +285,7 @@ KeyDetector::process(const float *const *inputBuffers,
     FeatureSet returnFeatures;
 
     for ( unsigned int i = 0 ; i < m_blockSize; i++ ) {
-        m_inputFrame[i] = (double)inputBuffers[0][i];
+        m_inputFrame[i] = (fl_t)inputBuffers[0][i];
     }
 
 //    int key = (m_getKeyMode->process(m_inputFrame) % 24);
@@ -330,7 +330,7 @@ KeyDetector::process(const float *const *inputBuffers,
 
     Feature ksf;
     ksf.values.reserve(25);
-    double *keystrengths = m_getKeyMode->getKeyStrengths();
+    fl_t *keystrengths = m_getKeyMode->getKeyStrengths();
     for (int i = 0; i < 24; ++i) {
         if (i == 12) ksf.values.push_back(-1);
         ksf.values.push_back(keystrengths[conversion[i]-1]);

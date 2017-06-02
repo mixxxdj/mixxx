@@ -41,17 +41,18 @@ E-mail:    davidtaylor@writeme.com
  ///////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
+#include "MathAliases.h"
 
 using std::vector;
 
 class TPolyFit
 {
-    typedef vector<vector<double> > Matrix;
+    typedef vector<vector<fl_t> > Matrix;
 public:
 
-    static double PolyFit2 (const vector<double> &x,  // does the work
-			    const vector<double> &y,
-			    vector<double> &coef);
+    static fl_t PolyFit2 (const vector<fl_t> &x,  // does the work
+			    const vector<fl_t> &y,
+			    vector<fl_t> &coef);
 
                    
 private:
@@ -61,19 +62,19 @@ private:
 
   
     static void Square (const Matrix &x,              // Matrix multiplication routine
-			const vector<double> &y,
+			const vector<fl_t> &y,
 			Matrix &a,                    // A = transpose X times X
-			vector<double> &g,         // G = Y times X
+			vector<fl_t> &g,         // G = Y times X
 			const int nrow, const int ncol);
     // Forms square coefficient matrix
 
     static bool GaussJordan (Matrix &b,                  // square matrix of coefficients
-			     const vector<double> &y, // constant vector
-			     vector<double> &coef);   // solution vector
+			     const vector<fl_t> &y, // constant vector
+			     vector<fl_t> &coef);   // solution vector
     // returns false if matrix singular
 
     static bool GaussJordan2(Matrix &b,
-			     const vector<double> &y,
+			     const vector<fl_t> &y,
 			     Matrix &w,
 			     vector<vector<int> > &index);
 };
@@ -82,12 +83,12 @@ private:
 
 namespace NSUtility
 {
-    inline void swap(double &a, double &b) {double t = a; a = b; b = t;}
-    void zeroise(vector<double> &array, int n);
+    inline void swap(fl_t &a, fl_t &b) {fl_t t = a; a = b; b = t;}
+    void zeroise(vector<fl_t> &array, int n);
     void zeroise(vector<int> &array, int n);
-    void zeroise(vector<vector<double> > &matrix, int m, int n);
+    void zeroise(vector<vector<fl_t> > &matrix, int m, int n);
     void zeroise(vector<vector<int> > &matrix, int m, int n);
-    inline double sqr(const double &x) {return x * x;}
+    inline fl_t sqr(const fl_t &x) {return x * x;}
 };
 
 //---------------------------------------------------------------------------
@@ -99,20 +100,20 @@ using namespace NSUtility;
 
 // main PolyFit routine
 
-double TPolyFit::PolyFit2 (const vector<double> &x,
-			   const vector<double> &y,
-			   vector<double> &coefs)
+fl_t TPolyFit::PolyFit2 (const vector<fl_t> &x,
+			   const vector<fl_t> &y,
+			   vector<fl_t> &coefs)
 // nterms = coefs.size()
 // npoints = x.size()
 {
     int i, j;
-    double xi, yi, yc, srs, sum_y, sum_y2;
+    fl_t xi, yi, yc, srs, sum_y, sum_y2;
     Matrix xmatr;        // Data matrix
     Matrix a;
-    vector<double> g;      // Constant vector
+    vector<fl_t> g;      // Constant vector
     const int npoints(x.size());
     const int nterms(coefs.size());
-    double correl_coef;
+    fl_t correl_coef;
     zeroise(g, nterms);
     zeroise(a, nterms, nterms);
     zeroise(xmatr, npoints, nterms);
@@ -175,9 +176,9 @@ double TPolyFit::PolyFit2 (const vector<double> &x,
 // Form square coefficient matrix
 
 void TPolyFit::Square (const Matrix &x,
-		       const vector<double> &y,
+		       const vector<fl_t> &y,
 		       Matrix &a,
-		       vector<double> &g,
+		       vector<fl_t> &g,
 		       const int nrow,
 		       const int ncol)
 {
@@ -203,8 +204,8 @@ void TPolyFit::Square (const Matrix &x,
 
 
 bool TPolyFit::GaussJordan (Matrix &b,
-			    const vector<double> &y,
-			    vector<double> &coef)
+			    const vector<fl_t> &y,
+			    vector<fl_t> &coef)
 //b square matrix of coefficients
 //y constant vector
 //coef solution vector
@@ -268,16 +269,16 @@ bool TPolyFit::GaussJordan (Matrix &b,
 
 
 bool TPolyFit::GaussJordan2(Matrix &b,
-			    const vector<double> &y,
+			    const vector<fl_t> &y,
 			    Matrix &w,
 			    vector<vector<int> > &index)
 {
     //GaussJordan2;         // first half of GaussJordan
     // actual start of gaussj
  
-    double big, t;
-    double pivot;
-    double determ;
+    fl_t big, t;
+    fl_t pivot;
+    fl_t determ;
     int irow, icol;
     int ncol(b.size());
     int nv = 1;                  // single constant vector
@@ -363,7 +364,7 @@ bool TPolyFit::GaussJordan2(Matrix &b,
 //--------------------------------------------------------------------------
 
 // fills a vector with zeros.
-void NSUtility::zeroise(vector<double> &array, int n)
+void NSUtility::zeroise(vector<fl_t> &array, int n)
 {
     array.clear();
     for(int j = 0; j < n; ++j)
@@ -381,9 +382,9 @@ void NSUtility::zeroise(vector<int> &array, int n)
 //--------------------------------------------------------------------------
 
 // fills a (m by n) matrix with zeros.
-void NSUtility::zeroise(vector<vector<double> > &matrix, int m, int n)
+void NSUtility::zeroise(vector<vector<fl_t> > &matrix, int m, int n)
 {
-    vector<double> zero;
+    vector<fl_t> zero;
     zeroise(zero, n);
     matrix.clear();
     for(int j = 0; j < m; ++j)

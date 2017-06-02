@@ -26,6 +26,29 @@ class OpenGLES(Feature):
     def sources(self, build):
         return []
 
+
+class VampFloat(Feature):
+    def description(self):
+        return "Vamp single precision [Experimental]"
+
+    def enabled(self, build):
+        build.flags['vampfloatmath'] = util.get_flags(build.env, 'vampfloatmath', 0)
+        return int(build.flags['vampfloatmath'])
+
+    def add_options(self, build, vars):
+        vars.Add('vampfloatmath', 'Set to 1 to force single precision for vamp analysers [Experimental]', 0)
+
+    def configure(self, build, conf):
+        if self.enabled(build):
+            build.env.Append(CPPDEFINES='VAMP_FLOAT_MATH')
+            build.env.Append(CPPDEFINES='kiss_fft_scalar=float')
+        else:
+            build.env.Append(CPPDEFINES='kiss_fft_scalar=double')
+
+    def sources(self, build):
+        return []
+
+
 class HSS1394(Feature):
     def description(self):
         return "HSS1394 MIDI device support"
@@ -390,7 +413,6 @@ class Vamp(Feature):
             return
 
         build.env.Append(CPPDEFINES='__VAMP__')
-        build.env.Append(CPPDEFINES='kiss_fft_scalar=double')
 
         # If there is no system vamp-hostdk installed, then we'll directly link
         # the vamp-hostsdk.

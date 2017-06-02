@@ -17,6 +17,7 @@
 #define KLDIVERGENCE_H
 
 #include <vector>
+#include "MathAliases.h"
 
 using std::vector;
 
@@ -34,10 +35,10 @@ public:
      * models based on mean and variance vectors.  All input vectors
      * must be of equal size.
      */
-    double distanceGaussian(const vector<double> &means1,
-                            const vector<double> &variances1,
-                            const vector<double> &means2,
-                            const vector<double> &variances2);
+    fl_t distanceGaussian(const vector<fl_t> &means1,
+                            const vector<fl_t> &variances1,
+                            const vector<fl_t> &means2,
+                            const vector<fl_t> &variances2);
 
     /**
      * Calculate a Kullback-Leibler divergence of two probability
@@ -45,8 +46,8 @@ public:
      * symmetrised is true, the result will be the symmetrised
      * distance (equal to KL(d1, d2) + KL(d2, d1)).
      */
-    double distanceDistribution(const vector<double> &d1,
-                                const vector<double> &d2,
+    fl_t distanceDistribution(const vector<fl_t> &d1,
+                                const vector<fl_t> &d2,
                                 bool symmetrised);
 };
 
