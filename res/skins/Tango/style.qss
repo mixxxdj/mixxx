@@ -1147,7 +1147,9 @@ WBeatSpinBox {
         qproperty-alignment: 'AlignLeft | AlignVCenter';
         color: #000000;
         text-align: left;
+        font-size: 13px/12px;
       }
+
     /* TODO: copied from Deere */
     WEffectSelector {
       font-family: Ubuntu;
@@ -1164,7 +1166,16 @@ WBeatSpinBox {
       border: 0px solid #666666;
       border-radius: 2px;
       }
+    #EffectTogglerLeft > WEffectSelector {
+      margin: 0px -67px 0px 2px;
+      }
       WEffectSelector::drop-down {
+        /* This causes the Qt theme's widget style to magically not apply. Go figure. */
+        border: 0;
+      }
+      #EffectTogglerLeft > WEffectSelector::drop-down {
+        subcontrol-origin: margin;
+        subcontrol-position: bottom left;
         /* This causes the Qt theme's widget style to magically not apply. Go figure. */
         border: 0;
       }
@@ -1184,11 +1195,13 @@ WBeatSpinBox {
         }
 
       WEffectSelector QAbstractItemView {
+        min-width: 90px;
+        max-width: 90px;
         background-color: #202020;
-        padding-left: 5px;
+        padding-left: 6px;
         font-family: Ubuntu;
         font-weight: normal;
-        font-size: 12px/12px;
+        font-size: 13px/12px;
         color: #cccccc;
       }
       /* selected item */
