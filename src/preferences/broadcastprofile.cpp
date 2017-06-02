@@ -1,8 +1,12 @@
 // broadcastprofile.cpp
 // Create June 2nd 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
 
-#include <QtCore>
+#include <QFile>
+#include <QTextStream>
+#include <QDebug>
 #include "util/xml.h"
+#include "broadcast/defs_broadcast.h"
+#include "defs_urls.h"
 
 #include "broadcastprofile.h"
 
@@ -63,12 +67,12 @@ BroadcastProfile::BroadcastProfile(const QString& profileName) {
     loadValues();
 }
 
-void BroadcastProfile::getFilename()
+QString BroadcastProfile::getFilename()
 {
     return QString("broadcast_profile/") + m_profileName + QString(".bcp.xml");
 }
 
-void BroadcastProfile::fileExists() {
+bool BroadcastProfile::fileExists() {
     return QFile::exists(getFilename());
 }
 
@@ -101,7 +105,7 @@ void BroadcastProfile::setDefaultValues() {
     m_customArtist = QString();
     m_customTitle = QString();
     m_metadataFormat = kDefaultMetadataFormat;
-    m_oggDynamicUpdate = kDefaultOggDynamicUpdate;
+    m_oggDynamicUpdate = kDefaultOggDynamicupdate;
 
     m_bitrate = kDefaultBitrate;
     m_channels = kDefaultChannels;
@@ -118,7 +122,7 @@ void BroadcastProfile::loadValues() {
         return;
     }
 
-    QDomElement xmlRoot = XmlParse::openXMLFile(filename, kDocumentName);
+    QDomElement xmlRoot = XmlParse::openXMLFile(getFilename(), kDocumentName);
 
     m_enabled = (bool)XmlParse::selectNodeInt(xmlRoot, kEnabled);
 
@@ -164,60 +168,70 @@ void BroadcastProfile::loadValues() {
 }
 
 void BroadcastProfile::save() {
-    QDomDocument doc();
-    QDomElement docRoot = document.documentElement();
+    QDomDocument doc(kDocumentName);
+    QDomElement docRoot = doc.documentElement();
 
-    XmlParse::addElement(doc, docRoot, kEnabled, (int)m_enabled);
+    XmlParse::addElement(doc, docRoot,
+                         kEnabled, QString::number((int)m_enabled));
 
     XmlParse::addElement(doc, docRoot, kHost, m_host);
-    XmlParse::addElement(doc, docRoot, kPort, m_port);
+    XmlParse::addElement(doc, docRoot, kPort, QString::number(m_port));
     XmlParse::addElement(doc, docRoot, kServertype, m_serverType);
     XmlParse::addElement(doc, docRoot, kLogin, m_login);
     XmlParse::addElement(doc, docRoot, kPassword, m_password);
 
-    XmlParse::addElement(doc, docRoot,
-                         kEnableReconnect, (int)m_enableReconnect);
-    XmlParse::addElement(doc, docRoot,
-                         kReconnectPeriod, m_reconnectPeriod);
+    XmlParse::addElement(doc, docRoot, kEnableReconnect,
+                         QString::number((int)m_enableReconnect));
+    XmlParse::addElement(doc, docRoot, kReconnectPeriod,
+                         QString::number(m_reconnectPeriod));
 
-    XmlParse::addElement(doc, docRoot,
-                         kLimitReconnects, (int)m_limitReconnects);
-    XmlParse::addElement(doc, docRoot,
-                         kMaximumRetries, m_maximumRetries);
+    XmlParse::addElement(doc, docRoot, kLimitReconnects,
+                         QString::number((int)m_limitReconnects));
+    XmlParse::addElement(doc, docRoot, kMaximumRetries,
+                         QString::number(m_maximumRetries));
 
-    XmlParse::addElement(doc, docRoot,
-                         kNoDelayFirstReconnect, (int)m_noDelayFirstReconnect);
-    XmlParse::addElement(doc, docRoot,
-                         kReconnectFirstDelay, m_reconnectFirstDelay);
+    XmlParse::addElement(doc, docRoot, kNoDelayFirstReconnect,
+                         QString::number((int)m_noDelayFirstReconnect));
+    XmlParse::addElement(doc, docRoot, kReconnectFirstDelay,
+                         QString::number(m_reconnectFirstDelay));
 
     XmlParse::addElement(doc, docRoot, kMountPoint, m_mountpoint);
     XmlParse::addElement(doc, docRoot, kStreamName, m_streamName);
     XmlParse::addElement(doc, docRoot, kStreamDesc, m_streamDesc);
     XmlParse::addElement(doc, docRoot, kStreamGenre, m_streamGenre);
-    XmlParse::addElement(doc, docRoot, kStreamPublic, (int)m_streamPublic);
+    XmlParse::addElement(doc, docRoot, kStreamPublic,
+                         QString::number((int)m_streamPublic));
     XmlParse::addElement(doc, docRoot, kStreamWebsite, m_streamWebsite);
 
     XmlParse::addElement(doc, docRoot, kFormat, m_format);
-    XmlParse::addElement(doc, docRoot, kBitrate, m_bitrate);
-    XmlParse::addElement(doc, docRoot, kChannels, m_channels);
+    XmlParse::addElement(doc, docRoot, kBitrate,
+                         QString::number(m_bitrate));
+    XmlParse::addElement(doc, docRoot, kChannels,
+                         QString::number(m_channels));
 
-    XmlParse::addElement(doc, docRoot, kEnableMetadata, (int)m_enableMetadata);
+    XmlParse::addElement(doc, docRoot, kEnableMetadata,
+                         QString::number((int)m_enableMetadata));
     XmlParse::addElement(doc, docRoot, kMetadataCharset, m_metadataCharset);
     XmlParse::addElement(doc, docRoot, kCustomArtist, m_customArtist);
     XmlParse::addElement(doc, docRoot, kCustomTitle, m_customTitle);
     XmlParse::addElement(doc, docRoot, kMetadataFormat, m_metadataFormat);
-    XmlParse::addElement(doc, docRoot, kOggDynamicUpdate, (int)m_oggDynamicUpdate);
+    XmlParse::addElement(doc, docRoot, kOggDynamicUpdate,
+                         QString::number((int)m_oggDynamicUpdate));
 
-    QTextStream xmlFile(getFilename(), QDomNode::EncodingFromTextStream);
-    xmlFile.setCodec(QTextCodec::codecForName("UTF-8"));
-    doc.save(xmlFile, 4);
+
+    QFile xmlFile(getFilename());
+    xmlFile.open(QIODevice::WriteOnly | QIODevice::Text);
+
+    QTextStream fileStream(&xmlFile);
+    doc.save(fileStream, 4);
+    xmlFile.close();
 }
 
 void BroadcastProfile::setProfileName(const QString &profileName) {
     m_profileName = QString(profileName);
 }
 
-QString BroadcastProfile::getProfileName() {
+QString BroadcastProfile::getProfileName() const {
     return m_profileName;
 }
 
@@ -388,7 +402,7 @@ void BroadcastProfile::setBitrate(int value) {
     m_bitrate = value;
 }
 
-int BroadcastProfile::getChannels() {
+int BroadcastProfile::getChannels() const {
     return m_channels;
 }
 
@@ -413,7 +427,7 @@ void BroadcastProfile::setMetadataCharset(const QString& value) {
 }
 
 QString BroadcastProfile::getCustomArtist() const {
-    return m_customArtist
+    return m_customArtist;
 }
 
 void BroadcastProfile::setCustomArtist(const QString& value) {
@@ -421,7 +435,7 @@ void BroadcastProfile::setCustomArtist(const QString& value) {
 }
 
 QString BroadcastProfile::getCustomTitle() const {
-    return m_customTitle
+    return m_customTitle;
 }
 
 void BroadcastProfile::setCustomTitle(const QString& value) {

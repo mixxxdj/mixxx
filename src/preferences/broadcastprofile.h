@@ -6,8 +6,7 @@
 
 #include <QString>
 
-class BroadcastProfile
-{
+class BroadcastProfile {
     public:
       explicit BroadcastProfile(const QString& profileName);
       void save();
