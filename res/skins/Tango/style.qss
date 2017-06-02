@@ -1332,10 +1332,10 @@ WBeatSpinBox {
   font-size: 13px/13px;
   font-weight: bold;
   text-align: center;
+  background-color: #333333;
   }
   #FxAssignButton[displayValue="0"] {
     color: #888888;
-    background-color: #333333;
     }
     #FxAssignButton[displayValue="0"]:hover {
       border: 1px solid #ff8f00;
