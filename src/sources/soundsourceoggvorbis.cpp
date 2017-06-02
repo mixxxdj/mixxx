@@ -1,10 +1,14 @@
+#include <QFile>
+
 #include "sources/soundsourceoggvorbis.h"
 
-#include <QFile>
+#include "util/logger.h"
 
 namespace mixxx {
 
 namespace {
+
+const Logger kLogger("SoundSourceOggVorbis");
 
 // Parameter for ov_info()
 // See also: https://xiph.org/vorbis/doc/vorbisfile/ov_info.html
@@ -37,7 +41,7 @@ SoundSourceOggVorbis::~SoundSourceOggVorbis() {
 SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     m_pFile = std::make_unique<QFile>(getLocalFileName());
     if(!m_pFile->open(QFile::ReadOnly)) {
-        qWarning() << "SoundSourceOggVorbis:"
+        kLogger.warning()
                 << "Failed to open file for"
                 << getUrlString();
         return OpenResult::FAILED;
@@ -50,19 +54,19 @@ SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /
         break;
     case OV_ENOTVORBIS:
     case OV_EVERSION:
-        qWarning() << "SoundSourceOggVorbis:"
+        kLogger.warning()
             << "Unsupported format in"
             << getUrlString();
         return OpenResult::ABORTED;
     default:
-        qWarning() << "SoundSourceOggVorbis:"
+        kLogger.warning()
             << "Failed to initialize decoder for"
             << getUrlString();
         return OpenResult::FAILED;
     }
 
     if (!ov_seekable(&m_vf)) {
-        qWarning() << "SoundSourceOggVorbis:"
+        kLogger.warning()
                 << "Stream in"
                 << getUrlString()
                 << "is not seekable";
@@ -72,7 +76,7 @@ SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /
     // lookup the ogg's channels and sample rate
     const vorbis_info* vi = ov_info(&m_vf, kCurrentBitstreamLink);
     if (!vi) {
-        qWarning() << "SoundSourceOggVorbis:"
+        kLogger.warning()
                 << "Failed to read stream info from"
                 << getUrlString();
         return OpenResult::FAILED;
@@ -91,7 +95,7 @@ SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /
     if (0 <= pcmTotal) {
         setFrameCount(pcmTotal);
     } else {
-        qWarning() << "SoundSourceOggVorbis:"
+        kLogger.warning()
                 << "Failed to read read total length of"
                 << getUrlString();
         return OpenResult::FAILED;
@@ -103,7 +107,7 @@ SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /
 void SoundSourceOggVorbis::close() {
     const int clearResult = ov_clear(&m_vf);
     if (0 != clearResult) {
-        qWarning() << "Failed to close OggVorbis file" << clearResult;
+        kLogger.warning() << "Failed to close file" << clearResult;
     }
     m_pFile.reset();
 }
@@ -126,7 +130,7 @@ SINT SoundSourceOggVorbis::seekSampleFrame(
     if (0 == seekResult) {
         m_curFrameIndex = frameIndex;
     } else {
-        qWarning() << "Failed to seek OggVorbis file:" << seekResult;
+        kLogger.warning() << "Failed to seek file:" << seekResult;
         const ogg_int64_t pcmOffset = ov_pcm_tell(&m_vf);
         if (0 <= pcmOffset) {
             m_curFrameIndex = pcmOffset;
@@ -202,7 +206,7 @@ SINT SoundSourceOggVorbis::readSampleFrames(
             }
             numberOfFramesRemaining -= readResult;
         } else {
-            qWarning() << "Failed to read from OggVorbis file:" << readResult;
+            kLogger.warning() << "Failed to read from file:" << readResult;
             break; // abort
         }
     }

@@ -1,0 +1,58 @@
+<!--
+Description:
+  An EQ knob with a Kill button next to it.
+  A 'button' underneath the knob turns grey when EQ range is killed.
+Variables:
+  group     : [ChannelN]
+  parameter : EQ parameter number
+-->
+<Template>
+  <SetVariable name="EqualizerEffectGroup">[EqualizerRack1_<Variable name="group"/>_Effect1]</SetVariable>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup><!-- EQ knob + Kill button -->
+        <ObjectName>EQKnobLeft</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>54f,34f</Size><!-- 42f,30f + [4 12 0 0] margin -->
+        <Children>
+          <WidgetGroup><!-- EQ knob + Kill indicator underneath -->
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>stacked</Layout>
+            <Children>
+              <Template src="skin:knob_textless.xml">
+                <SetVariable name="Size">30f,30f</SetVariable>
+                <SetVariable name="Color">white</SetVariable>
+                <SetVariable name="group"><Variable name="EqualizerEffectGroup"/></SetVariable>
+                <SetVariable name="ConfigKey">parameter<Variable name="parameter"/></SetVariable>
+              </Template>
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="ObjectName">EQKillButtonUnderlayLeft</SetVariable>
+                <SetVariable name="Size">30f,30f</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="EqualizerEffectGroup"/>,button_parameter<Variable name="parameter"/></SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- /EQ knob + Kill indicator underneath -->
+
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="ObjectName">EQKillButton</SetVariable>
+            <SetVariable name="TooltipId"><Variable name="TooltipId"/>Kill</SetVariable>
+            <SetVariable name="Size">12f,30f</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="EqualizerEffectGroup"/>,button_parameter<Variable name="parameter"/></SetVariable>
+          </Template><!-- Kill button -->
+        </Children>
+      </WidgetGroup><!-- /EQ knob + Kill button -->
+
+      <WidgetGroup><!-- create margin when Filter knob is visible -->
+        <Size>6f,1min</Size>
+        <Connection>
+          <ConfigKey persist="true">[Tango],filter_knob</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

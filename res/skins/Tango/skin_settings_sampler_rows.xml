@@ -1,0 +1,104 @@
+<!--
+Description:
+  The skin settings menu, floating on top of main skin window.
+
+  Bug: qss 'qproperty-layoutAlignment' is not respected for stacked layout.
+  No way to push SkinSettings to the right edge while keeping the area underneath clickable.
+-->
+<Template>
+  <WidgetStack currentpage="[Tango],sampler_rows" persist="true">
+    <NextControl>[Tango],sampler_bank_next</NextControl>
+    <PrevControl>[Tango],sampler_bank_prev</PrevControl>
+    <Children>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:skin_settings_button_sampler_rows.xml">
+            <SetVariable name="current">1</SetVariable>
+            <SetVariable name="next">2</SetVariable>
+            <SetVariable name="prev">8</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:skin_settings_button_sampler_rows.xml">
+            <SetVariable name="current">2</SetVariable>
+            <SetVariable name="next">3</SetVariable>
+            <SetVariable name="prev">1</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:skin_settings_button_sampler_rows.xml">
+            <SetVariable name="current">3</SetVariable>
+            <SetVariable name="next">4</SetVariable>
+            <SetVariable name="prev">2</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:skin_settings_button_sampler_rows.xml">
+            <SetVariable name="current">4</SetVariable>
+            <SetVariable name="next">5</SetVariable>
+            <SetVariable name="prev">3</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:skin_settings_button_sampler_rows.xml">
+            <SetVariable name="current">5</SetVariable>
+            <SetVariable name="next">6</SetVariable>
+            <SetVariable name="prev">4</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:skin_settings_button_sampler_rows.xml">
+            <SetVariable name="current">6</SetVariable>
+            <SetVariable name="next">7</SetVariable>
+            <SetVariable name="prev">5</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:skin_settings_button_sampler_rows.xml">
+            <SetVariable name="current">7</SetVariable>
+            <SetVariable name="next">8</SetVariable>
+            <SetVariable name="prev">6</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:skin_settings_button_sampler_rows.xml">
+            <SetVariable name="current">8</SetVariable>
+            <SetVariable name="next">1</SetVariable>
+            <SetVariable name="prev">7</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetStack>
+</Template>

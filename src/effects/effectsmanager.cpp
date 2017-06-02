@@ -219,6 +219,18 @@ EffectRackPointer EffectsManager::getEffectRack(const QString& group) {
 }
 
 void EffectsManager::setup() {
+    // These controls are used inside EQ Effects
+    m_pLoEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);
+    m_pHiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);
+
+    // Add an EqualizerRack.
+    EqualizerRackPointer pEqRack = addEqualizerRack();
+    // Add Master EQ here, because EngineMaster is already up
+    pEqRack->addEffectChainSlotForGroup("[Master]");
+
+    // Add a QuickEffectRack
+    addQuickEffectRack();
+
     // Add a general purpose rack
     QList<std::pair<EffectChainPointer, QDomElement>> savedChains;
     savedChains = m_pEffectChainManager->loadEffectChains();
@@ -272,18 +284,6 @@ void EffectsManager::setup() {
     pEffect = instantiateEffect("org.mixxx.effects.autopan");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
-
-    // These controls are used inside EQ Effects
-    m_pLoEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);
-    m_pHiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);
-
-    // Add an EqualizerRack.
-    EqualizerRackPointer pEqRack = addEqualizerRack();
-    // Add Master EQ here, because EngineMaster is already up
-    pEqRack->addEffectChainSlotForGroup("[Master]");
-
-    // Add a QuickEffectRack
-    addQuickEffectRack();
 }
 
 bool EffectsManager::writeRequest(EffectsRequest* request) {

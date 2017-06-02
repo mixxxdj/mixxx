@@ -33,7 +33,8 @@ class BpmControl : public EngineControl {
     // out of sync.
     double calcSyncedRate(double userTweak);
     // Get the phase offset from the specified position.
-    double getPhaseOffset(double reference_position);
+    double getNearestPositionInPhase(double dThisPosition, bool respectLoops, bool playing);
+    double getPhaseOffset(double dThisPosition);
     double getBeatDistance(double dThisPosition) const;
     double getPreviousSample() const { return m_dPreviousSample; }
 

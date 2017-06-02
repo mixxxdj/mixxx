@@ -779,6 +779,7 @@ class MixxxCore(Feature):
                    "analyzer/analyzerebur128.cpp",
 
                    "controllers/controller.cpp",
+                   "controllers/controllerdebug.cpp",
                    "controllers/controllerengine.cpp",
                    "controllers/controllerenumerator.cpp",
                    "controllers/controllerlearningeventfilter.cpp",
@@ -826,6 +827,7 @@ class MixxxCore(Feature):
                    "widget/wlabel.cpp",
                    "widget/wtracktext.cpp",
                    "widget/wnumber.cpp",
+                   "widget/wbeatspinbox.cpp",
                    "widget/wnumberdb.cpp",
                    "widget/wnumberpos.cpp",
                    "widget/wnumberrate.cpp",
@@ -1126,6 +1128,7 @@ class MixxxCore(Feature):
                    "util/singularsamplebuffer.cpp",
                    "util/circularsamplebuffer.cpp",
                    "util/rotary.cpp",
+                   "util/logger.cpp",
                    "util/logging.cpp",
                    "util/cmdlineargs.cpp",
                    "util/audiosignal.cpp",

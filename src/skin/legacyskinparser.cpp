@@ -60,6 +60,7 @@
 #include "widget/weffectparameter.h"
 #include "widget/weffectbuttonparameter.h"
 #include "widget/weffectparameterbase.h"
+#include "widget/wbeatspinbox.h"
 #include "widget/woverviewlmh.h"
 #include "widget/woverviewhsv.h"
 #include "widget/woverviewrgb.h"
@@ -517,6 +518,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseStandardWidget<WStatusLight>(node));
     } else if (nodeName == "Display") {
         result = wrapWidget(parseStandardWidget<WDisplay>(node));
+    } else if (nodeName == "BeatSpinBox") {
+        result = wrapWidget(parseBeatSpinBox(node));
     } else if (nodeName == "NumberRate") {
         result = wrapWidget(parseNumberRate(node));
     } else if (nodeName == "NumberPos") {
@@ -1094,6 +1097,21 @@ QWidget* LegacySkinParser::parseEngineKey(const QDomElement& node) {
     WKey* pEngineKey = new WKey(pSafeChannelStr, m_pParent);
     setupLabelWidget(node, pEngineKey);
     return pEngineKey;
+}
+
+QWidget* LegacySkinParser::parseBeatSpinBox(const QDomElement& node) {
+    bool createdValueControl = false;
+    ControlObject* valueControl = controlFromConfigNode(node.toElement(), "Value", &createdValueControl);
+
+    WBeatSpinBox* pSpinbox = new WBeatSpinBox(m_pParent, valueControl);
+    commonWidgetSetup(node, pSpinbox);
+    pSpinbox->setup(node, *m_pContext);
+
+    if (createdValueControl && valueControl != nullptr) {
+        valueControl->setParent(pSpinbox);
+    }
+
+    return pSpinbox;
 }
 
 QWidget* LegacySkinParser::parseBattery(const QDomElement& node) {
