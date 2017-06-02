@@ -56,7 +56,16 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFact
         } else {
             m_pSvg->load(source.getData());
         }
+#ifdef __APPLE__
+        // Apple does Retina scaling behind the sceens, so we also pass a
+        // Paintable::FIXED image. On the other targets, it is better to
+        // cache the pixmap. We do not do this for TILE and color schemas.
+        // which can result in a correct but possibly blurry picture at a
+        // Retina display. This can be fixed when switching to QT5
+        if (mode == TILE || WPixmapStore::willCorrectColors()) {
+#else
         if (mode == TILE || mode == Paintable::FIXED || WPixmapStore::willCorrectColors()) {
+#endif
             // The SVG renderer doesn't directly support tiling, so we render
             // it to a pixmap which will then get tiled.
             QImage copy_buffer(m_pSvg->defaultSize() * scaleFactor, QImage::Format_ARGB32);
