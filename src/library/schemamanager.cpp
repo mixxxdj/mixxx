@@ -13,8 +13,9 @@ const QString SchemaManager::SETTINGS_MINCOMPATIBLE_STRING = "mixxx.schema.min_c
 
 // static
 SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
+        const QSqlDatabase& db,
         const QString& schemaFilename,
-        const QSqlDatabase& db, const int targetVersion) {
+        int targetVersion) {
     SettingsDAO settings(db);
     int currentVersion = getCurrentSchemaVersion(settings);
     VERIFY_OR_DEBUG_ASSERT(currentVersion >= 0) {

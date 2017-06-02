@@ -29,12 +29,11 @@ class TrackCollection : public QObject {
     Q_OBJECT
 
   public:
+    static const QString kDefaultSchemaFile;
     static const int kRequiredSchemaVersion;
 
     explicit TrackCollection(UserSettingsPointer pConfig);
     ~TrackCollection() override;
-
-    bool checkForTables();
 
     void resetLibaryCancellation();
 
@@ -89,6 +88,8 @@ class TrackCollection : public QObject {
             const QSet<CrateId>& crates);
 
   private:
+    bool checkForTables(const QString& schemaFile);
+
     UserSettingsPointer m_pConfig;
     DbConnection m_dbConnection;
     QSharedPointer<BaseTrackCache> m_defaultTrackSource;

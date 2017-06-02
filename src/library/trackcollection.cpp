@@ -7,12 +7,22 @@
 #include "library/schemamanager.h"
 #include "library/crate/cratestorage.h"
 #include "track/track.h"
+#include "util/logger.h"
 #include "util/db/sqltransaction.h"
 
 #include "util/assert.h"
 
+
+// The schema XML is baked into the binary via Qt resources.
+//static
+const QString TrackCollection::kDefaultSchemaFile(":/schema.xml");
+
 // static
 const int TrackCollection::kRequiredSchemaVersion = 27;
+
+namespace {
+    mixxx::Logger kLogger("TrackCollection");
+} // anonymous namespace
 
 TrackCollection::TrackCollection(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
@@ -25,7 +35,7 @@ TrackCollection::TrackCollection(UserSettingsPointer pConfig)
           m_trackDao(database(), m_cueDao, m_playlistDao,
                      m_analysisDao, m_libraryHashDao, pConfig) {
     // Check for tables and create them if missing
-    if (!checkForTables()) {
+    if (!checkForTables(kDefaultSchemaFile)) {
         // TODO(XXX) something a little more elegant
         exit(-1);
     }
@@ -37,8 +47,8 @@ TrackCollection::~TrackCollection() {
     m_crates.detachDatabase();
 }
 
-bool TrackCollection::checkForTables() {
-    if (!m_dbConnection.database().isOpen()) {
+bool TrackCollection::checkForTables(const QString& schemaFile) {
+    if (!m_database.isOpen()) {
         QMessageBox::critical(0, tr("Cannot open database"),
                             tr("Unable to establish a database connection.\n"
                                 "Mixxx requires QT with SQLite support. Please read "
@@ -48,48 +58,50 @@ bool TrackCollection::checkForTables() {
         return false;
     }
 
-    // The schema XML is baked into the binary via Qt resources.
-    QString schemaFilename(":/schema.xml");
-    QString okToExit = tr("Click OK to exit.");
-    QString upgradeFailed = tr("Cannot upgrade database schema");
-    QString upgradeToVersionFailed =
-            tr("Unable to upgrade your database schema to version %1")
-            .arg(QString::number(kRequiredSchemaVersion));
-    QString helpEmail = tr("For help with database issues contact:") + "\n" +
-                           "mixxx-devel@lists.sourceforge.net";
+    if (schemaFile.isEmpty()) {
+        kLogger.debug() << "Skipping database schema upgrade";
+    } else {
+        QString okToExit = tr("Click OK to exit.");
+        QString upgradeFailed = tr("Cannot upgrade database schema");
+        QString upgradeToVersionFailed =
+                tr("Unable to upgrade your database schema to version %1")
+                .arg(QString::number(kRequiredSchemaVersion));
+        QString helpEmail = tr("For help with database issues contact:") + "\n" +
+                               "mixxx-devel@lists.sourceforge.net";
 
-    SchemaManager::Result result = SchemaManager::upgradeToSchemaVersion(
-            schemaFilename, database(), kRequiredSchemaVersion);
-    switch (result) {
-        case SchemaManager::RESULT_BACKWARDS_INCOMPATIBLE:
-            QMessageBox::warning(
-                    0, upgradeFailed,
-                    upgradeToVersionFailed + "\n" +
-                    tr("Your mixxxdb.sqlite file was created by a newer "
-                       "version of Mixxx and is incompatible.") +
-                    "\n\n" + okToExit,
-                    QMessageBox::Ok);
-            return false;
-        case SchemaManager::RESULT_UPGRADE_FAILED:
-            QMessageBox::warning(
-                    0, upgradeFailed,
-                    upgradeToVersionFailed + "\n" +
-                    tr("Your mixxxdb.sqlite file may be corrupt.") + "\n" +
-                    tr("Try renaming it and restarting Mixxx.") + "\n" +
-                    helpEmail + "\n\n" + okToExit,
-                    QMessageBox::Ok);
-            return false;
-        case SchemaManager::RESULT_SCHEMA_ERROR:
-            QMessageBox::warning(
-                    0, upgradeFailed,
-                    upgradeToVersionFailed + "\n" +
-                    tr("The database schema file is invalid.") + "\n" +
-                    helpEmail + "\n\n" + okToExit,
-                    QMessageBox::Ok);
-            return false;
-        case SchemaManager::RESULT_OK:
-        default:
-            break;
+        SchemaManager::Result result = SchemaManager::upgradeToSchemaVersion(
+                database(), schemaFile, kRequiredSchemaVersion);
+        switch (result) {
+            case SchemaManager::RESULT_BACKWARDS_INCOMPATIBLE:
+                QMessageBox::warning(
+                        0, upgradeFailed,
+                        upgradeToVersionFailed + "\n" +
+                        tr("Your mixxxdb.sqlite file was created by a newer "
+                           "version of Mixxx and is incompatible.") +
+                        "\n\n" + okToExit,
+                        QMessageBox::Ok);
+                return false;
+            case SchemaManager::RESULT_UPGRADE_FAILED:
+                QMessageBox::warning(
+                        0, upgradeFailed,
+                        upgradeToVersionFailed + "\n" +
+                        tr("Your mixxxdb.sqlite file may be corrupt.") + "\n" +
+                        tr("Try renaming it and restarting Mixxx.") + "\n" +
+                        helpEmail + "\n\n" + okToExit,
+                        QMessageBox::Ok);
+                return false;
+            case SchemaManager::RESULT_SCHEMA_ERROR:
+                QMessageBox::warning(
+                        0, upgradeFailed,
+                        upgradeToVersionFailed + "\n" +
+                        tr("The database schema file is invalid.") + "\n" +
+                        helpEmail + "\n\n" + okToExit,
+                        QMessageBox::Ok);
+                return false;
+            case SchemaManager::RESULT_OK:
+            default:
+                break;
+        }
     }
 
     m_trackDao.initialize();
@@ -98,6 +110,7 @@ bool TrackCollection::checkForTables() {
     m_directoryDao.initialize();
     m_libraryHashDao.initialize();
     m_crates.attachDatabase(database());
+
     return true;
 }
 
