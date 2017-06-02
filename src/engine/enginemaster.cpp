@@ -387,15 +387,17 @@ void EngineMaster::process(const int iBufferSize) {
 
     // Mix all the talkover enabled channels together.
     if (m_bRampingGain) {
-        ChannelMixer::mixChannelsRamping(
+        ChannelMixer::applyEffectsAndMixChannelsRamping(
                 m_talkoverGain, &m_activeTalkoverChannels,
                 &m_channelTalkoverGainCache,
-                m_pTalkover, iBufferSize);
+                m_pTalkover,
+                iBufferSize, iSampleRate, m_pEngineEffectsManager);
     } else {
-        ChannelMixer::mixChannels(
+        ChannelMixer::applyEffectsAndMixChannels(
                 m_talkoverGain, &m_activeTalkoverChannels,
                 &m_channelTalkoverGainCache,
-                m_pTalkover, iBufferSize);
+                m_pTalkover,
+                iBufferSize, iSampleRate, m_pEngineEffectsManager);
     }
 
     // Clear talkover compressor for the next round of gain calculation.
