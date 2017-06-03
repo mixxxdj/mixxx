@@ -79,14 +79,14 @@ namespace
 
         uint32_p fprint = NULL;
         int size = 0;
-        int ret = chromaprint_get_raw_fingerprint(ctx, &fprint, &size);
+        int ret = chromaprint_get_raw_fingerprint(ctx, reinterpret_cast<unsigned int**>(&fprint), &size);
         QByteArray fingerprint;
         if (ret == 1) {
             char_p encoded = NULL;
             int encoded_size = 0;
-            chromaprint_encode_fingerprint(fprint, size,
+            chromaprint_encode_fingerprint(reinterpret_cast<unsigned int*>(fprint), size,
                                            CHROMAPRINT_ALGORITHM_DEFAULT,
-                                           &encoded,
+                                           reinterpret_cast<char**>(&encoded),
                                            &encoded_size, 1);
 
             fingerprint.append(reinterpret_cast<char*>(encoded), encoded_size);
