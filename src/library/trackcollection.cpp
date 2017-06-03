@@ -1,11 +1,6 @@
-#include <QtSql>
-#include <QtDebug>
-
 #include "library/trackcollection.h"
 
-#include "library/librarytablemodel.h"
 #include "library/schemamanager.h"
-#include "library/crate/cratestorage.h"
 #include "track/track.h"
 #include "util/logger.h"
 #include "util/db/sqltransaction.h"
@@ -27,8 +22,7 @@ namespace {
 TrackCollection::TrackCollection(
         UserSettingsPointer pConfig,
         const QString& schemaFile)
-        : m_pConfig(pConfig),
-          m_dbConnection(m_pConfig->getSettingsPath()),
+        : m_dbConnection(pConfig->getSettingsPath()),
           m_playlistDao(database()),
           m_cueDao(database()),
           m_directoryDao(database()),
@@ -51,7 +45,7 @@ TrackCollection::TrackCollection(
 }
 
 TrackCollection::~TrackCollection() {
-    qDebug() << "~TrackCollection()";
+    kLogger.debug() << "~TrackCollection()";
     m_trackDao.finish();
     m_crates.detachDatabase();
 }
@@ -115,27 +109,11 @@ bool TrackCollection::upgradeDatabaseSchema(
     return false;
 }
 
-TrackDAO& TrackCollection::getTrackDAO() {
-    return m_trackDao;
-}
-
-PlaylistDAO& TrackCollection::getPlaylistDAO() {
-    return m_playlistDao;
-}
-
-DirectoryDAO& TrackCollection::getDirectoryDAO() {
-    return m_directoryDao;
-}
-
-QSharedPointer<BaseTrackCache> TrackCollection::getTrackSource() {
-    return m_defaultTrackSource;
-}
-
-void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache> trackSource) {
-    VERIFY_OR_DEBUG_ASSERT(m_defaultTrackSource.isNull()) {
+void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache> pTrackSource) {
+    VERIFY_OR_DEBUG_ASSERT(m_pTrackSource.isNull()) {
         return;
     }
-    m_defaultTrackSource = trackSource;
+    m_pTrackSource = pTrackSource;
 }
 
 void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {

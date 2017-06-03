@@ -45,19 +45,25 @@ class TrackCollection : public QObject {
         return m_crates;
     }
 
-    TrackDAO& getTrackDAO();
-    PlaylistDAO& getPlaylistDAO();
-    DirectoryDAO& getDirectoryDAO();
+    TrackDAO& getTrackDAO() {
+        return m_trackDao;
+    }
+    PlaylistDAO& getPlaylistDAO() {
+        return m_playlistDao;
+    }
+    DirectoryDAO& getDirectoryDAO() {
+        return m_directoryDao;
+    }
     AnalysisDao& getAnalysisDAO() {
         return m_analysisDao;
     }
-    QSharedPointer<BaseTrackCache> getTrackSource();
-    void setTrackSource(QSharedPointer<BaseTrackCache> trackSource);
-    void cancelLibraryScan();
 
-    UserSettingsPointer getConfig() {
-        return m_pConfig;
+    QSharedPointer<BaseTrackCache> getTrackSource() const {
+        return m_pTrackSource;
     }
+    void setTrackSource(QSharedPointer<BaseTrackCache> pTrackSource);
+
+    void cancelLibraryScan();
 
     void relocateDirectory(QString oldDir, QString newDir);
 
@@ -92,9 +98,8 @@ class TrackCollection : public QObject {
             const QString& schemaFile,
             int schemaVersion) const;
 
-    UserSettingsPointer m_pConfig;
     DbConnection m_dbConnection;
-    QSharedPointer<BaseTrackCache> m_defaultTrackSource;
+
     PlaylistDAO m_playlistDao;
     CrateStorage m_crates;
     CueDAO m_cueDao;
@@ -102,6 +107,8 @@ class TrackCollection : public QObject {
     AnalysisDao m_analysisDao;
     LibraryHashDAO m_libraryHashDao;
     TrackDAO m_trackDao;
+
+    QSharedPointer<BaseTrackCache> m_pTrackSource;
 };
 
 #endif // TRACKCOLLECTION_H
