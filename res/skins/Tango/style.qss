@@ -1154,7 +1154,7 @@ WBeatSpinBox {
     WEffectSelector {
       font-family: Ubuntu;
       font-weight: normal;
-      font-size: 12px/12px;
+      font-size: 13px/13px;
       color: #c1cabe;
       background-color: transparent;
       /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
