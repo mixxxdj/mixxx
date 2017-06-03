@@ -442,10 +442,10 @@ WWidgetGroup {
       border: 1px solid #ffffff;
     }
     #LoopIndicator[displayValue="0"] {
-      background: #333333 url(skin:/buttons/btn_loop_indicator_off.svg) no-repeat center center;
+      background: #333333 url(skin:/buttons/btn_reloop_off.svg) no-repeat center center;
     }
     #LoopIndicator[displayValue="1"] {
-      background: #FF8F00 url(skin:/buttons/btn_loop_indicator_on.svg) no-repeat center center;
+      background: #FF8F00 url(skin:/buttons/btn_reloop_on.svg) no-repeat center center;
     }
     
 #DeckButtonsPlay {
@@ -1167,7 +1167,7 @@ WBeatSpinBox {
       border-radius: 2px;
       }
     #EffectTogglerLeft > WEffectSelector {
-      margin: 0px -67px 0px 2px;
+      margin: 0px -73px 0px 2px;
       }
       WEffectSelector::drop-down {
         /* This causes the Qt theme's widget style to magically not apply. Go figure. */

@@ -16,7 +16,7 @@
    inkscape:version="0.48.4 r9939"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90"
-   sodipodi:docname="btn_sampler_repeat_off.svg">
+   sodipodi:docname="btn_sampler_repeat_on.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -55,7 +55,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -68,7 +68,7 @@
     <g
        id="g3989"
        style="fill:#dc0000;fill-opacity:1"
-       transform="matrix(0.80596688,0,0,0.80596688,0.74629805,203.44681)">
+       transform="matrix(-0.80596688,0,0,0.80596688,15.253702,203.44681)">
       <path
          id="path3832-5"
          transform="translate(0,1034.3622)"

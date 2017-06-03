@@ -26,7 +26,7 @@ Variables:
             <Value><Variable name="group"/>,beatjump_size</Value>
           </BeatSpinBox>
 
-          <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
+          <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_1state.xml">
             <SetVariable name="TooltipId">beatjump_backward</SetVariable>
@@ -61,7 +61,7 @@ Variables:
             <Value><Variable name="group"/>,beatloop_size</Value>
           </BeatSpinBox>
 
-          <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+          <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state_right.xml">
             <SetVariable name="TooltipId">beatloop_activate</SetVariable>
@@ -82,7 +82,7 @@ Variables:
             <SetVariable name="ObjectName">ReloopButton</SetVariable>
             <SetVariable name="Size">30f,22f</SetVariable>
             <SetVariable name="state_0_pressed">reloop_on.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">reloop.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">reloop_off.svg</SetVariable>
             <SetVariable name="state_1_pressed">reloop_on.svg</SetVariable>
             <SetVariable name="state_1_unpressed">reloop_on.svg</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,reloop_toggle</SetVariable>
@@ -106,7 +106,7 @@ Variables:
 
           <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
-          <Template src="skin:button_2state_right.xml">
+          <Template src="skin:button_1state_right.xml">
             <SetVariable name="TooltipId">loop_out</SetVariable>
             <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
             <SetVariable name="Size">22f,22f</SetVariable>

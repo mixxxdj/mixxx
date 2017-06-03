@@ -14,7 +14,7 @@
    height="22"
    id="svg2"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_reloop_on.svg">
+   sodipodi:docname="btn_reloop_off.svg">
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -29,9 +29,9 @@
      id="namedview4353"
      showgrid="false"
      inkscape:snap-page="true"
-     inkscape:zoom="8"
-     inkscape:cx="14.057526"
-     inkscape:cy="0.32448485"
+     inkscape:zoom="16"
+     inkscape:cx="-0.95539"
+     inkscape:cy="6.867224"
      inkscape:window-x="0"
      inkscape:window-y="21"
      inkscape:window-maximized="1"
@@ -39,9 +39,10 @@
      inkscape:snap-object-midpoints="false"
      inkscape:snap-center="false"
      inkscape:object-nodes="true"
-     inkscape:snap-grids="true"
-     inkscape:object-paths="false"
-     inkscape:snap-smooth-nodes="true">
+     inkscape:object-paths="true"
+     inkscape:snap-intersection-paths="true"
+     showguides="false"
+     inkscape:guide-bbox="true">
     <inkscape:grid
        empspacing="5"
        visible="true"
@@ -49,6 +50,18 @@
        snapvisiblegridlinesonly="true"
        type="xygrid"
        id="grid2985" />
+    <sodipodi:guide
+       orientation="0,1"
+       position="-15,18"
+       id="guide3836" />
+    <sodipodi:guide
+       orientation="1,0"
+       position="15,12.64"
+       id="guide3838" />
+    <sodipodi:guide
+       orientation="0,1"
+       position="-2.2097087,4"
+       id="guide3924" />
   </sodipodi:namedview>
   <defs
      id="defs4" />
@@ -60,7 +73,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -95,18 +108,16 @@
      inkscape:label="Layer#1"
      style="display:inline">
     <path
-       style="color:#000000;fill:#0f0f0f;fill-opacity:1;fill-rule:nonzero;stroke:none;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-       d="M 11.6875,4 C 7.9910756,4 5,6.9910756 5,10.6875 c 0,1.062731 0.2387007,2.080053 0.6875,2.96875 l 0.03125,0 1.75,-1.015625 C 7.2069286,12.075231 7,11.350205 7,10.6875 7,8.2232169 9,6 11.6875,6 l 4.5,0 C 17.640702,6 19.46655,6.690203 20,8 L 17,8 21,14.96875 25,8 22.34375,8 C 21.307005,5.6454462 18.92532,4 16.1875,4 z"
-       id="path3016-5-9-3"
+       style="color:#000000;fill:#0f0f0f;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:4;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="m 9.094,4.999875 c -1.644703,5.26e-5 -3,1.3552971 -3,3 l 0,7.00025 c 0,1.644705 1.355294,3.000023 3,3 l 7.93725,0 0,3 3.46875,-2 3.46875,-2 -3.46875,-2 -3.46875,-2 0,3 -7.93725,0 c -0.571302,0 -1.0000215,-0.428707 -1,-1 l 0,-7.00025 c 0,-0.5712971 0.428703,-0.9999817 1,-1 L 13,6.99975 l 0,-2 z M 17,4.99975 l 0,2 3.90625,1.25e-4 c 0.571297,1.83e-5 1.000025,0.4287029 1,1 l -2.5e-4,5.656 c 0.6663,0.386051 1.333233,0.771007 2,1.15625 l 2.5e-4,-6.81225 c 6e-5,-1.6447029 -1.355297,-2.9999474 -3,-3 z"
+       id="path2995-3-7"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cscccsccccccccc" />
+       sodipodi:nodetypes="sssscccccccscssccsccssccssc" />
     <path
-       style="fill:#0f0f0f;fill-opacity:1;stroke:none;display:inline"
-       d="m 12,20 0,-3 16,0 0,-2 -16,0 0,-3 -6.9375,4 z"
-       id="path3016-5-9-1"
+       style="color:#000000;fill:#0f0f0f;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="m 14,1.99975 2,0 0,8 -2,0 z"
+       id="rect3980"
        inkscape:connector-curvature="0"
-       inkscape:transform-center-y="2.796875"
-       inkscape:transform-center-x="-0.03125"
-       sodipodi:nodetypes="cccccccc" />
+       sodipodi:nodetypes="ccccc" />
   </g>
 </svg>
