@@ -1,48 +1,63 @@
 #include <gtest/gtest.h>
 
-#include <QtDebug>
-
 #include "test/mixxxtest.h"
+
 #include "library/trackcollection.h"
 #include "library/schemamanager.h"
 #include "library/dao/settingsdao.h"
+
+#include "util/db/dbconnection.h"
 #include "util/assert.h"
+
 
 class SchemaManagerTest : public MixxxTest {
   protected:
     SchemaManagerTest()
-            : m_trackCollection(config()),
-              m_db(m_trackCollection.database()) {
+            : m_dbConnection(config()->getSettingsPath()) {
     }
 
-    TrackCollection m_trackCollection;
-    QSqlDatabase m_db;
+    QSqlDatabase database() const {
+        return m_dbConnection.database();
+    }
+
+  private:
+    DbConnection m_dbConnection;
 };
 
 TEST_F(SchemaManagerTest, CanUpgradeFreshDatabaseToRequiredVersion) {
-    SchemaManager schemaManager(m_db);
-    SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
-            TrackCollection::kDefaultSchemaFile, TrackCollection::kRequiredSchemaVersion);
-    EXPECT_EQ(SchemaManager::RESULT_OK, result);
+    // Initial upgrade
+    {
+        SchemaManager schemaManager(database());
+        SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
+                TrackCollection::kDefaultSchemaFile, TrackCollection::kRequiredSchemaVersion);
+        EXPECT_EQ(SchemaManager::Result::UpgradeSucceeded, result);
+    }
+    // Subsequent upgrade(s)
+    {
+        SchemaManager schemaManager(database());
+        SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
+                TrackCollection::kDefaultSchemaFile, TrackCollection::kRequiredSchemaVersion);
+        EXPECT_EQ(SchemaManager::Result::CurrentVersion, result);
+    }
 }
 
 TEST_F(SchemaManagerTest, NonExistentSchema) {
-    SchemaManager schemaManager(m_db);
+    SchemaManager schemaManager(database());
     SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
             ":file_doesnt_exist.xml", TrackCollection::kRequiredSchemaVersion);
-    EXPECT_EQ(SchemaManager::RESULT_SCHEMA_ERROR, result);
+    EXPECT_EQ(SchemaManager::Result::SchemaError, result);
 }
 
 TEST_F(SchemaManagerTest, BackwardsCompatibleVersion) {
     // Establish preconditions for test
     {
         // Upgrade to version 1 to get the settings table.
-        SchemaManager schemaManager(m_db);
+        SchemaManager schemaManager(database());
         SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
                 TrackCollection::kDefaultSchemaFile, 1);
-        EXPECT_EQ(SchemaManager::RESULT_OK, result);
+        EXPECT_EQ(SchemaManager::Result::UpgradeSucceeded, result);
 
-        SettingsDAO settings(m_db);
+        SettingsDAO settings(database());
         settings.initialize();
 
         // Pretend the database version is one past the required version but
@@ -53,22 +68,22 @@ TEST_F(SchemaManagerTest, BackwardsCompatibleVersion) {
                           TrackCollection::kRequiredSchemaVersion);
     }
 
-    SchemaManager schemaManager(m_db);
+    SchemaManager schemaManager(database());
     SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
             TrackCollection::kDefaultSchemaFile, TrackCollection::kRequiredSchemaVersion);
-    EXPECT_EQ(SchemaManager::RESULT_OK, result);
+    EXPECT_EQ(SchemaManager::Result::NewerVersionBackwardsCompatible, result);
 }
 
 TEST_F(SchemaManagerTest, BackwardsIncompatibleVersion) {
     // Establish preconditions for test
     {
         // Upgrade to version 1 to get the settings table.
-        SchemaManager schemaManager(m_db);
+        SchemaManager schemaManager(database());
         SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
                 TrackCollection::kDefaultSchemaFile, 1);
-        EXPECT_EQ(SchemaManager::RESULT_OK, result);
+        EXPECT_EQ(SchemaManager::Result::UpgradeSucceeded, result);
 
-        SettingsDAO settings(m_db);
+        SettingsDAO settings(database());
         settings.initialize();
 
         // Pretend the database version is one past the required version and
@@ -79,29 +94,29 @@ TEST_F(SchemaManagerTest, BackwardsIncompatibleVersion) {
                           TrackCollection::kRequiredSchemaVersion + 1);
     }
 
-    SchemaManager schemaManager(m_db);
+    SchemaManager schemaManager(database());
     SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
             TrackCollection::kDefaultSchemaFile, TrackCollection::kRequiredSchemaVersion);
-    EXPECT_EQ(SchemaManager::RESULT_BACKWARDS_INCOMPATIBLE, result);
+    EXPECT_EQ(SchemaManager::Result::NewerVersionIncompatible, result);
 }
 
 TEST_F(SchemaManagerTest, FailedUpgrade) {
     // Establish preconditions for test
     {
         // Upgrade to version 3 to get the modern library table.
-        SchemaManager schemaManager(m_db);
+        SchemaManager schemaManager(database());
         SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
                 TrackCollection::kDefaultSchemaFile, 3);
-        EXPECT_EQ(SchemaManager::RESULT_OK, result);
+        EXPECT_EQ(SchemaManager::Result::UpgradeSucceeded, result);
     }
 
     // Add a column that is added in verison 24.
-    QSqlQuery query(m_db);
+    QSqlQuery query(database());
     EXPECT_TRUE(query.exec(
             "ALTER TABLE library ADD COLUMN coverart_source TEXT"));
 
-    SchemaManager schemaManager(m_db);
+    SchemaManager schemaManager(database());
     SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
             TrackCollection::kDefaultSchemaFile, TrackCollection::kRequiredSchemaVersion);
-    EXPECT_EQ(SchemaManager::RESULT_UPGRADE_FAILED, result);
+    EXPECT_EQ(SchemaManager::Result::UpgradeFailed, result);
 }

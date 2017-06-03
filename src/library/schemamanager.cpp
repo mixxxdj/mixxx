@@ -4,7 +4,8 @@
 #include <QtDebug>
 
 #include "library/schemamanager.h"
-#include "library/queryutil.h"
+#include "util/db/fwdsqlquery.h"
+#include "util/db/sqltransaction.h"
 #include "util/xml.h"
 #include "util/logger.h"
 #include "util/assert.h"
@@ -70,44 +71,46 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
         const QString& schemaFilename,
         int targetVersion) {
     VERIFY_OR_DEBUG_ASSERT(m_currentVersion >= 0) {
-        return RESULT_UPGRADE_FAILED;
+        return Result::UpgradeFailed;
     }
 
     if (m_currentVersion == targetVersion) {
         kLogger.info()
-                << "Current database schema version is"
-                << m_currentVersion;
-        return RESULT_OK;
+                << "Database schema is up-to-date"
+                << "at version" << m_currentVersion;
+        return Result::CurrentVersion;
     } else if (m_currentVersion < targetVersion) {
         kLogger.info()
-                << "Upgrading database schema from version"
-                << m_currentVersion
-                << "to version"
-                << targetVersion;
+                << "Upgrading database schema"
+                << "from version" << m_currentVersion
+                << "to version" << targetVersion;
     } else {
         if (isBackwardsCompatibleWithVersion(targetVersion)) {
             kLogger.info()
-                    << "Current database schema version is"
-                    << m_currentVersion
-                    << "and backwards compatible with version"
-                    << targetVersion;
-            return RESULT_OK;
+                    << "Current database schema is newer"
+                    << "at version" << m_currentVersion
+                    << "and backwards compatible"
+                    << "with version" << targetVersion;
+            return Result::NewerVersionBackwardsCompatible;
         } else {
             kLogger.warning()
-                    << "Current database schema version is"
-                    << m_currentVersion
-                    << "and incompatible with version"
-                    << targetVersion;
-            return RESULT_BACKWARDS_INCOMPATIBLE;
+                    << "Current database schema is newer"
+                    << "at version" << m_currentVersion
+                    << "and incompatible"
+                    << "with version" << targetVersion;
+            return Result::NewerVersionIncompatible;
         }
     }
 
-    kLogger.debug() << "Loading schema" << schemaFilename;
+    kLogger.debug()
+            << "Loading database schema migrations from"
+            << schemaFilename;
     QDomElement schemaRoot = XmlParse::openXMLFile(schemaFilename, "schema");
-
     if (schemaRoot.isNull()) {
-        // Error parsing xml file
-        return RESULT_SCHEMA_ERROR;
+        kLogger.critical()
+                << "Failed to load database schema migrations from"
+                << schemaFilename;
+        return Result::SchemaError;
     }
 
     QDomNodeList revisions = schemaRoot.childNodes();
@@ -118,8 +121,10 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
         QDomElement revision = revisions.at(i).toElement();
         QString version = revision.attribute("version");
         VERIFY_OR_DEBUG_ASSERT(!version.isNull()) {
-            // xml file is not valid
-            return RESULT_SCHEMA_ERROR;
+            kLogger.critical()
+                    << "Failed to parse database schema migrations from"
+                    << schemaFilename;
+            return Result::SchemaError;
         }
         int iVersion = version.toInt();
         revisionMap[iVersion] = revision;
@@ -128,19 +133,21 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
     // The checks above guarantee that currentVersion < targetVersion when we
     // get here.
     while (m_currentVersion < targetVersion) {
-        int thisTarget = m_currentVersion + 1;
+        int nextVersion = m_currentVersion + 1;
 
         // Now that we bake the schema.xml into the binary it is a programming
         // error if we include a schema.xml that does not have information on
         // how to get all the way to targetVersion.
-        if (!revisionMap.contains(thisTarget)) {
-            kLogger.warning() << "upgradeToSchemaVersion"
-                     << "Don't know how to get to"
-                     << thisTarget << "from" << m_currentVersion;
-            return RESULT_SCHEMA_ERROR;
+        VERIFY_OR_DEBUG_ASSERT(revisionMap.contains(nextVersion)) {
+            kLogger.critical()
+                     << "Migration path for upgrading database schema"
+                     << "from version" << m_currentVersion
+                     << "to version" << nextVersion
+                     << "is missing";
+            return Result::SchemaError;
         }
 
-        QDomElement revision = revisionMap[thisTarget];
+        QDomElement revision = revisionMap[nextVersion];
         QDomElement eDescription = revision.firstChildElement("description");
         QDomElement eSql = revision.firstChildElement("sql");
         QString minCompatibleVersion = revision.attribute("min_compatible");
@@ -148,21 +155,25 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
         // Default the min-compatible version to the current version string if
         // it's not in the schema.xml
         if (minCompatibleVersion.isNull()) {
-            minCompatibleVersion = QString::number(thisTarget);
+            minCompatibleVersion = QString::number(nextVersion);
         }
 
         VERIFY_OR_DEBUG_ASSERT(!eSql.isNull()) {
-            // xml file is not valid
-            return RESULT_SCHEMA_ERROR;
+            kLogger.critical()
+                    << "Failed to parse database schema migrations from"
+                    << schemaFilename;
+            return Result::SchemaError;
         }
 
         QString description = eDescription.text();
         QString sql = eSql.text();
 
-        kLogger.debug() << "Applying version" << thisTarget << ":"
-                 << description.trimmed();
+        kLogger.info()
+                << "Upgrading to database schema to version"
+                << nextVersion << ":"
+                << description.trimmed();
 
-        ScopedTransaction transaction(m_database);
+        SqlTransaction transaction(m_database);
 
         // TODO(XXX) We can't have semicolons in schema.xml for anything other
         // than statement separators.
@@ -170,32 +181,32 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
 
         QStringListIterator it(sqlStatements);
 
-        QSqlQuery query(m_database);
         bool result = true;
         while (result && it.hasNext()) {
             QString statement = it.next().trimmed();
             if (statement.isEmpty()) {
+                // skip blank lines
                 continue;
             }
-            result = result && query.exec(statement);
-            if (!result) {
-                kLogger.warning() << "Failed query:"
-                         << statement
-                         << query.lastError();
-            }
+            FwdSqlQuery query(m_database, statement);
+            result = query.isPrepared() && query.execPrepared();
         }
 
         if (result) {
-            m_settingsDao.setValue(SETTINGS_VERSION_STRING, thisTarget);
+            m_settingsDao.setValue(SETTINGS_VERSION_STRING, nextVersion);
             m_settingsDao.setValue(SETTINGS_MINCOMPATIBLE_STRING, minCompatibleVersion);
             transaction.commit();
-            m_currentVersion = thisTarget;
+            m_currentVersion = nextVersion;
+            kLogger.info()
+                    << "Upgraded database schema"
+                    << "to version" << m_currentVersion;
         } else {
-            kLogger.warning() << "Failed to move from version" << m_currentVersion
-                     << "to version" << thisTarget;
+            kLogger.critical()
+                    << "Failed to upgrade database schema from version"
+                    << m_currentVersion << "to version" << nextVersion;
             transaction.rollback();
-            return RESULT_UPGRADE_FAILED;
+            return Result::UpgradeFailed;
         }
     }
-    return RESULT_OK;
+    return Result::UpgradeSucceeded;
 }

@@ -78,26 +78,12 @@ bool TrackCollection::upgradeDatabaseSchema(
                            "mixxx-devel@lists.sourceforge.net";
 
     SchemaManager schemaManager(database());
-    SchemaManager::Result result =
-            schemaManager.upgradeToSchemaVersion(schemaFile, schemaVersion);
-    switch (result) {
-        case SchemaManager::RESULT_BACKWARDS_INCOMPATIBLE:
-            kLogger.critical()
-                    << "Actual version of the database schema is more recent"
-                    << "and not backwards compatible with schema version"
-                    << schemaVersion;
-            QMessageBox::warning(
-                    0, upgradeFailed,
-                    upgradeToVersionFailed + "\n" +
-                    tr("Your mixxxdb.sqlite file was created by a newer "
-                       "version of Mixxx and is incompatible.") +
-                    "\n\n" + okToExit,
-                    QMessageBox::Ok);
-            return false; // abort
-        case SchemaManager::RESULT_UPGRADE_FAILED:
-            kLogger.critical()
-                    << "Failed to upgrade database schema to schema version"
-                    << schemaVersion;
+    switch (schemaManager.upgradeToSchemaVersion(schemaFile, schemaVersion)) {
+        case SchemaManager::Result::CurrentVersion:
+        case SchemaManager::Result::UpgradeSucceeded:
+        case SchemaManager::Result::NewerVersionBackwardsCompatible:
+            return true; // done
+        case SchemaManager::Result::UpgradeFailed:
             QMessageBox::warning(
                     0, upgradeFailed,
                     upgradeToVersionFailed + "\n" +
@@ -106,10 +92,16 @@ bool TrackCollection::upgradeDatabaseSchema(
                     helpEmail + "\n\n" + okToExit,
                     QMessageBox::Ok);
             return false; // abort
-        case SchemaManager::RESULT_SCHEMA_ERROR:
-            kLogger.critical()
-                    << "Failed to recognize database schema while upgrading to schema version"
-                    << schemaVersion;
+        case SchemaManager::Result::NewerVersionIncompatible:
+            QMessageBox::warning(
+                    0, upgradeFailed,
+                    upgradeToVersionFailed + "\n" +
+                    tr("Your mixxxdb.sqlite file was created by a newer "
+                       "version of Mixxx and is incompatible.") +
+                    "\n\n" + okToExit,
+                    QMessageBox::Ok);
+            return false; // abort
+        case SchemaManager::Result::SchemaError:
             QMessageBox::warning(
                     0, upgradeFailed,
                     upgradeToVersionFailed + "\n" +
@@ -117,13 +109,10 @@ bool TrackCollection::upgradeDatabaseSchema(
                     helpEmail + "\n\n" + okToExit,
                     QMessageBox::Ok);
             return false; // abort
-        case SchemaManager::RESULT_OK:
-            kLogger.info()
-                    << "Database schema is up-to-date or backwards compatible with schema version"
-                    << schemaVersion;
     }
-
-    return true;
+    // Suppress compiler warning
+    DEBUG_ASSERT(!"unhandled switch/case");
+    return false;
 }
 
 TrackDAO& TrackCollection::getTrackDAO() {

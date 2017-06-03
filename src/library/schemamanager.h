@@ -14,11 +14,13 @@ class SchemaManager {
     static const QString SETTINGS_VERSION_STRING;
     static const QString SETTINGS_MINCOMPATIBLE_STRING;
 
-    enum Result {
-        RESULT_OK,
-        RESULT_BACKWARDS_INCOMPATIBLE,
-        RESULT_UPGRADE_FAILED,
-        RESULT_SCHEMA_ERROR
+    enum class Result {
+        CurrentVersion,
+        NewerVersionBackwardsCompatible,
+        NewerVersionIncompatible,
+        UpgradeSucceeded,
+        UpgradeFailed,
+        SchemaError
     };
 
     explicit SchemaManager(const QSqlDatabase& database);
