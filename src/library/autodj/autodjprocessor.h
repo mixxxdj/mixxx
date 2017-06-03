@@ -61,11 +61,29 @@ class DeckAttributes : public QObject {
         m_repeat.set(enabled ? 1.0 : 0.0);
     }
 
+    double startPosition() const {
+        return m_startPos.get();
+    }
+
+    double endPosition() const {
+        return m_endPos.get();
+    }
+
+    int samples() const {
+        return m_samples.get();
+    }
+
+    int sampleRate() const {
+        return m_sampleRate.get();
+    }
+
     TrackPointer getLoadedTrack() const;
 
   signals:
     void playChanged(DeckAttributes* pDeck, bool playing);
     void playPositionChanged(DeckAttributes* pDeck, double playPosition);
+    void startPositionChanged(DeckAttributes* pDeck, double startPosition);
+    void endPositionChanged(DeckAttributes* pDeck, double endPosition);
     void trackLoaded(DeckAttributes* pDeck, TrackPointer pTrack);
     void loadingTrack(DeckAttributes* pDeck, TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty(DeckAttributes* pDeck);
@@ -73,6 +91,8 @@ class DeckAttributes : public QObject {
   private slots:
     void slotPlayPosChanged(double v);
     void slotPlayChanged(double v);
+    void slotStartPositionChanged(double v);
+    void slotEndPositionChanged(double v);
     void slotTrackLoaded(TrackPointer pTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotPlayerEmpty();
@@ -80,6 +100,7 @@ class DeckAttributes : public QObject {
   public:
     int index;
     QString group;
+    double startPos;
     double posThreshold;
     double fadeDuration;
 
@@ -88,6 +109,10 @@ class DeckAttributes : public QObject {
     ControlProxy m_playPos;
     ControlProxy m_play;
     ControlProxy m_repeat;
+    ControlProxy m_startPos;
+    ControlProxy m_endPos;
+    ControlProxy m_samples;
+    ControlProxy m_sampleRate;
     BaseTrackPlayer* m_pPlayer;
 };
 
@@ -160,6 +185,8 @@ class AutoDJProcessor : public QObject {
   private slots:
     void playerPositionChanged(DeckAttributes* pDeck, double position);
     void playerPlayChanged(DeckAttributes* pDeck, bool playing);
+    void playerStartChanged(DeckAttributes* pDeck, double position);
+    void playerEndChanged(DeckAttributes* pDeck, double position);
     void playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTrack);
     void playerLoadingTrack(DeckAttributes* pDeck, TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty(DeckAttributes* pDeck);
@@ -176,6 +203,10 @@ class AutoDJProcessor : public QObject {
     // every time)
     double getCrossfader() const;
     void setCrossfader(double value, bool right);
+
+    double getDuration(DeckAttributes* pDeck);
+    double getStartPosition(DeckAttributes* pDeck);
+    double getEndPosition(DeckAttributes* pDeck);
 
     TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue(const DeckAttributes& pDeck, bool play = false);
@@ -198,7 +229,6 @@ class AutoDJProcessor : public QObject {
 
     AutoDJState m_eState;
     double m_transitionTime; // the desired value set by the user
-    double m_nextTransitionTime; // the tweaked value actually used
 
     QList<DeckAttributes*> m_decks;
 
