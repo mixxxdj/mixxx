@@ -1736,13 +1736,6 @@ QTreeView::item:selected {
   background-color: #333333;
   color: #cfcfcf;
   }
-  QTreeView::QScrollBar:vertical {
-    min-height: 12px;
-    width: 5px;
-    background: #1a1a1a;
-    border-radius: 2px;
-    margin-top: 5px;
-  }
 
 QTableView {	/*
   padding-top: 1px;
@@ -1775,13 +1768,13 @@ QHeaderView {
 /* Scroll bars */
 QScrollBar:horizontal {
   min-width: 12px;
-  height: 5px;
+  height: 8px;
   background: #1a1a1a;
   border-radius: 2px;
   }
   QScrollBar:vertical {
     min-height: 12px;
-    width: 5px;
+    width: 8px;
     background: #1a1a1a;
     border-radius: 2px;
     }
@@ -1795,9 +1788,15 @@ QScrollBar:horizontal {
     min-width: 25px;
     background: #595959;
     }
+    QScrollBar::handle:horizontal:hover {
+      background: #888888;
+    }
   QScrollBar::handle:vertical {
     min-height: 25px;
     background: #595959;
+    }
+    QScrollBar::handle:vertical:hover {
+      background: #888888;
     }
   /* Turn off scroll buttons */
   QScrollBar::add-line:horizontal, QScrollBar::add-line:vertical {
