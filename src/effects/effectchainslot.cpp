@@ -244,6 +244,17 @@ EffectChainPointer EffectChainSlot::getEffectChain() const {
     return m_pEffectChain;
 }
 
+EffectChainPointer EffectChainSlot::getAndEndsureEffectChain(
+        EffectsManager* pEffectsManager) {
+    if (!m_pEffectChain) {
+        auto pEffectChain = EffectChainPointer(
+                new EffectChain(pEffectsManager, QString()));
+        pEffectChain->setName(QObject::tr("Empty Chain"));
+        loadEffectChain(pEffectChain);
+    }
+    return m_pEffectChain;
+}
+
 void EffectChainSlot::clear() {
     // Stop listening to signals from any loaded effect
     if (m_pEffectChain) {
