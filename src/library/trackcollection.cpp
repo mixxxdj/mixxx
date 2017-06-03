@@ -58,7 +58,7 @@ TrackCollection::~TrackCollection() {
 
 bool TrackCollection::upgradeDatabaseSchema(
         const QString& schemaFile,
-        int schemaVersion) {
+        int schemaVersion) const {
     if (!database().isOpen()) {
         QMessageBox::critical(0, tr("Cannot open database"),
                             tr("Unable to establish a database connection.\n"

@@ -37,9 +37,7 @@ class TrackCollection : public QObject {
             const QString& schemaFile = QString());
     ~TrackCollection() override;
 
-    void resetLibaryCancellation();
-
-    QSqlDatabase database() {
+    QSqlDatabase database() const {
         return m_dbConnection.database();
     }
 
@@ -92,7 +90,7 @@ class TrackCollection : public QObject {
   private:
     bool upgradeDatabaseSchema(
             const QString& schemaFile,
-            int schemaVersion);
+            int schemaVersion) const;
 
     UserSettingsPointer m_pConfig;
     DbConnection m_dbConnection;
