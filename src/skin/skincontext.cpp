@@ -167,8 +167,6 @@ QString SkinContext::nodeToString(const QDomNode& node) const {
 }
 
 PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
-    PixmapSource source;
-
     const SvgParser svgParser(*this);
 
     if (!pixmapNode.isNull()) {
@@ -177,19 +175,19 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
             // inline svg
             const QByteArray rslt = svgParser.saveToQByteArray(
                     svgParser.parseSvgTree(svgNode, m_xmlPath));
+            PixmapSource source;
             source.setSVG(rslt);
         } else {
             // filename.
-            source = getPixmapSourceInner(nodeToString(pixmapNode), svgParser);
+            return getPixmapSourceInner(nodeToString(pixmapNode));
         }
     }
 
-    return source;
+    return PixmapSource();
 }
 
 PixmapSource SkinContext::getPixmapSource(const QString& filename) const {
-    const SvgParser svgParser(*this);
-    return getPixmapSourceInner(filename, svgParser);
+    return getPixmapSourceInner(filename);
 }
 
 QDomElement SkinContext::loadSvg(const QString& filename) const {
@@ -208,19 +206,11 @@ QDomElement SkinContext::loadSvg(const QString& filename) const {
     return cachedSvg;
 }
 
-PixmapSource SkinContext::getPixmapSourceInner(const QString& filename,
-                                               const SvgParser& svgParser) const {
-    PixmapSource source;
+PixmapSource SkinContext::getPixmapSourceInner(const QString& filename) const {
     if (!filename.isEmpty()) {
-        source.setPath(getSkinPath(filename));
-        if (source.isSVG()) {
-            QDomElement svgElement = loadSvg(filename);
-            const QByteArray rslt = svgParser.saveToQByteArray(
-                svgParser.parseSvgTree(svgElement, filename));
-            source.setSVG(rslt);
-        }
+        return PixmapSource(getSkinPath(filename));
     }
-    return source;
+    return PixmapSource();
 }
 
 /**
