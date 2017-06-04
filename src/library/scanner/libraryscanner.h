@@ -1,34 +1,10 @@
-/***************************************************************************
-                          libraryscanner.h  -  scans library in a thread
-                             -------------------
-    begin                : 11/27/2007
-    copyright            : (C) 2007 Albert Santoni
-    email                : gamegod \a\t users.sf.net
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
-#ifndef LIBRARYSCANNER_H
-#define LIBRARYSCANNER_H
+#ifndef MIXXX_LIBRARYSCANNER_H
+#define MIXXX_LIBRARYSCANNER_H
 
 #include <QThread>
 #include <QThreadPool>
-#include <QList>
 #include <QString>
-#include <QList>
-#include <QObject>
-#include <QSqlDatabase>
 #include <QStringList>
-#include <QRegExp>
-#include <QFileInfo>
-#include <QLinkedList>
 #include <QSemaphore>
 #include <QScopedPointer>
 
@@ -39,11 +15,11 @@
 #include "library/dao/trackdao.h"
 #include "library/dao/analysisdao.h"
 #include "library/scanner/scannerglobal.h"
-#include "library/scanner/scannertask.h"
-#include "util/sandbox.h"
 #include "track/track.h"
+
 #include <gtest/gtest.h>
 
+class ScannerTask;
 class LibraryScannerDlg;
 class TrackCollection;
 
@@ -51,9 +27,9 @@ class LibraryScanner : public QThread {
     FRIEND_TEST(LibraryScannerTest, ScannerRoundtrip);
     Q_OBJECT
   public:
-    LibraryScanner(TrackCollection* collection,
+    LibraryScanner(TrackCollection* pTrackCollection,
                    UserSettingsPointer pConfig);
-    virtual ~LibraryScanner();
+    ~LibraryScanner() override;
 
   public slots:
     // Call from any thread to start a scan. Does nothing if a scan is already
@@ -121,7 +97,7 @@ class LibraryScanner : public QThread {
 
     // The library trackcollection. Do not touch this from the library scanner
     // thread.
-    TrackCollection* m_pCollection;
+    TrackCollection* m_pTrackCollection;
 
     // The library scanner thread's database connection.
     QSqlDatabase m_database;
@@ -151,4 +127,4 @@ class LibraryScanner : public QThread {
     QScopedPointer<LibraryScannerDlg> m_pProgressDlg;
 };
 
-#endif
+#endif // MIXXX_LIBRARYSCANNER_H
