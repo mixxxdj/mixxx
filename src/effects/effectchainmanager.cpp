@@ -188,10 +188,12 @@ void EffectChainManager::loadEffectChains(
             QDomElement chainElement = chainNode.toElement();
             EffectChainPointer pChain = EffectChain::createFromXml(
                     m_pEffectsManager, chainElement);
-            EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(i);
-            if (pChainSlot) {
-                pChainSlot->loadEffectChain(pChain);
-                pChainSlot->loadChainSlotFromXml(chainElement);
+            if (!pChain->name().isEmpty()) { // skip unnamed = ejected chains.
+                EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(i);
+                if (pChainSlot) {
+                    pChainSlot->loadEffectChain(pChain);
+                    pChainSlot->loadChainSlotFromXml(chainElement);
+                }
             }
         }
     }
