@@ -810,3 +810,65 @@ TEST_F(SearchQueryParserTest, CrateFilterWithOther){
                             ") AND ((artist LIKE '%asdf%') OR (album_artist LIKE '%asdf%'))"),
                  qPrintable(pQuery->toSql()));
 }
+
+TEST_F(SearchQueryParserTest, CrateFilterWithCrateFilterAndNegation){
+    // User's search term
+    QString searchTermA = "testA";
+    QString searchTermB = "testB";
+
+    // Parse the user query
+    auto pQueryA(m_parser.parseQuery(QString("crate: %1 crate: %2").arg(searchTermA, searchTermB),
+                                    QStringList(), ""));
+
+    // locations for test tracks
+    const QString kTrackALocationTest(QDir::currentPath() %
+                  "/src/test/id3-test-data/cover-test-jpg.mp3");
+    const QString kTrackBLocationTest(QDir::currentPath() %
+                  "/src/test/id3-test-data/cover-test-png.mp3");
+
+    // Create new crates and add them to the collection
+    Crate testCrateA;
+    testCrateA.setName(searchTermA);
+    CrateId testCrateAId;
+    collection()->insertCrate(testCrateA, &testCrateAId);
+    Crate testCrateB;
+    testCrateB.setName(searchTermB);
+    CrateId testCrateBId;
+    collection()->insertCrate(testCrateB, &testCrateBId);
+
+    // Add the tracks in the collection
+    TrackId trackAId = addTrackToCollection(kTrackALocationTest);
+    TrackPointer pTrackA(Track::newDummy(kTrackALocationTest, trackAId));
+    TrackId trackBId = addTrackToCollection(kTrackBLocationTest);
+    TrackPointer pTrackB(Track::newDummy(kTrackBLocationTest, trackBId));
+
+    // Add trackA and trackB to crate A
+    QList<TrackId> trackIdsA;
+    trackIdsA << trackAId << trackBId;
+    collection()->addCrateTracks(testCrateAId, trackIdsA);
+
+    // Add trackA to crate B
+    QList<TrackId> trackIdsB;
+    trackIdsB << trackAId;
+    collection()->addCrateTracks(testCrateBId, trackIdsB);
+
+    EXPECT_TRUE(pQueryA->match(pTrackA));
+    EXPECT_FALSE(pQueryA->match(pTrackB));
+
+    EXPECT_STREQ(
+                 qPrintable("(" + m_crateFilterQuery.arg(searchTermA) +
+                            ") AND (" + m_crateFilterQuery.arg(searchTermB) + ")"),
+                 qPrintable(pQueryA->toSql()));
+
+    // parse again to test negation
+    auto pQueryB(m_parser.parseQuery(QString("crate: %1 -crate: %2").arg(searchTermA, searchTermB),
+                                     QStringList(), ""));
+
+    EXPECT_FALSE(pQueryB->match(pTrackA));
+    EXPECT_TRUE(pQueryB->match(pTrackB));
+
+    EXPECT_STREQ(
+                 qPrintable("(" + m_crateFilterQuery.arg(searchTermA) +
+                            ") AND (NOT (" + m_crateFilterQuery.arg(searchTermB) + "))"),
+                 qPrintable(pQueryB->toSql()));
+}
