@@ -7,6 +7,7 @@
 
 #include "library/searchqueryparser.h"
 #include "util/assert.h"
+#include "track/track.h"
 
 class SearchQueryParserTest : public LibraryTest {
   protected:
@@ -17,7 +18,17 @@ class SearchQueryParserTest : public LibraryTest {
     virtual ~SearchQueryParserTest() {
     }
 
+    TrackId addTrackToCollection(const QString& trackLocation) {
+        TrackPointer pTrack(collection()->getTrackDAO().addSingleTrack(trackLocation, false));
+        return pTrack ? pTrack->getId() : TrackId();
+    }
+
     SearchQueryParser m_parser;
+
+    // The expected query to be returned by CrateFilterNode
+    const QString m_crateFilterQuery =
+        "id IN (SELECT DISTINCT track_id FROM crate_tracks"
+        " JOIN crates ON crate_id=id WHERE name LIKE '%%1%' ORDER BY track_id)";
 };
 
 TEST_F(SearchQueryParserTest, EmptySearch) {
@@ -659,4 +670,144 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {
     EXPECT_STREQ(
         qPrintable(QString("(duration >= 150) AND (duration <= 200)")),
         qPrintable(pQuery->toSql()));
+}
+
+TEST_F(SearchQueryParserTest, CrateFilter) {
+    // User's search term
+    QString searchTerm = "test";
+
+    // Parse the user query
+    auto pQuery(m_parser.parseQuery(QString("crate: %1").arg(searchTerm),
+                                    QStringList(), ""));
+
+    // locations for test tracks
+    const QString kTrackALocationTest(QDir::currentPath() %
+                  "/src/test/id3-test-data/cover-test-jpg.mp3");
+    const QString kTrackBLocationTest(QDir::currentPath() %
+                  "/src/test/id3-test-data/cover-test-png.mp3");
+
+    // Create new crate and add it to the collection
+    Crate testCrate;
+    testCrate.setName(searchTerm);
+    CrateId testCrateId;
+    collection()->insertCrate(testCrate, &testCrateId);
+
+    // Add the track in the collection
+    TrackId trackAId = addTrackToCollection(kTrackALocationTest);
+    TrackPointer pTrackA(Track::newDummy(kTrackALocationTest, trackAId));
+    TrackId trackBId = addTrackToCollection(kTrackBLocationTest);
+    TrackPointer pTrackB(Track::newDummy(kTrackBLocationTest, trackBId));
+
+    // Add track A to the newly created crate
+    QList<TrackId> trackIds;
+    trackIds << trackAId;
+    collection()->addCrateTracks(testCrateId, trackIds);
+
+    EXPECT_TRUE(pQuery->match(pTrackA));
+    EXPECT_FALSE(pQuery->match(pTrackB));
+
+    EXPECT_STREQ(
+                 qPrintable(m_crateFilterQuery.arg(searchTerm)),
+                 qPrintable(pQuery->toSql()));
+}
+
+TEST_F(SearchQueryParserTest, CrateFilterEmpty) {
+    // Empty should match everything
+    auto pQuery(m_parser.parseQuery(QString("crate: "), QStringList(), ""));
+
+    TrackPointer pTrackA(Track::newTemporary());
+
+    EXPECT_TRUE(pQuery->match(pTrackA));
+
+    EXPECT_STREQ(
+                 qPrintable(""),
+                 qPrintable(pQuery->toSql()));
+}
+
+// Checks if the crate filter works with quoted text with whitespaces
+TEST_F(SearchQueryParserTest, CrateFilterQuote){
+    // User's search term
+    QString searchTerm = "test with whitespace";
+
+    // Parse the user query
+    auto pQuery(m_parser.parseQuery(QString("crate: \"%1\"").arg(searchTerm),
+                                    QStringList(), ""));
+
+    // locations for test tracks
+    const QString kTrackALocationTest(QDir::currentPath() %
+                  "/src/test/id3-test-data/cover-test-jpg.mp3");
+    const QString kTrackBLocationTest(QDir::currentPath() %
+                  "/src/test/id3-test-data/cover-test-png.mp3");
+
+    // Create new crate and add it to the collection
+    Crate testCrate;
+    testCrate.setName(searchTerm);
+    CrateId testCrateId;
+    collection()->insertCrate(testCrate, &testCrateId);
+
+    // Add the tracks in the collection
+    TrackId trackAId = addTrackToCollection(kTrackALocationTest);
+    TrackPointer pTrackA(Track::newDummy(kTrackALocationTest, trackAId));
+    TrackId trackBId = addTrackToCollection(kTrackBLocationTest);
+    TrackPointer pTrackB(Track::newDummy(kTrackBLocationTest, trackBId));
+
+    // Add track A to the newly created crate
+    QList<TrackId> trackIds;
+    trackIds << trackAId;
+    collection()->addCrateTracks(testCrateId, trackIds);
+
+    EXPECT_TRUE(pQuery->match(pTrackA));
+    EXPECT_FALSE(pQuery->match(pTrackB));
+
+    EXPECT_STREQ(
+                 qPrintable(m_crateFilterQuery.arg(searchTerm)),
+                 qPrintable(pQuery->toSql()));
+}
+
+// Tests if the crate filter works along with other filters (artist)
+TEST_F(SearchQueryParserTest, CrateFilterWithOther){
+    QStringList searchColumns;
+    searchColumns << "artist"
+                  << "album";
+
+    // User's search term
+    QString searchTerm = "test";
+
+    // Parse the user query
+    auto pQuery(m_parser.parseQuery(QString("crate: %1 artist: asdf").arg(searchTerm),
+                                    QStringList(), ""));
+
+    // locations for test tracks
+    const QString kTrackALocationTest(QDir::currentPath() %
+                  "/src/test/id3-test-data/cover-test-jpg.mp3");
+    const QString kTrackBLocationTest(QDir::currentPath() %
+                  "/src/test/id3-test-data/cover-test-png.mp3");
+
+    // Create new crate and add it to the collection
+    Crate testCrate;
+    testCrate.setName(searchTerm);
+    CrateId testCrateId;
+    collection()->insertCrate(testCrate, &testCrateId);
+
+    // Add the tracks in the collection
+    TrackId trackAId = addTrackToCollection(kTrackALocationTest);
+    TrackPointer pTrackA(Track::newDummy(kTrackALocationTest, trackAId));
+    TrackId trackBId = addTrackToCollection(kTrackBLocationTest);
+    TrackPointer pTrackB(Track::newDummy(kTrackBLocationTest, trackBId));
+
+    // Add trackA to the newly created crate
+    QList<TrackId> trackIds;
+    trackIds << trackAId;
+    collection()->addCrateTracks(testCrateId, trackIds);
+
+    pTrackA->setArtist("asdf");
+    pTrackB->setArtist("asdf");
+
+    EXPECT_TRUE(pQuery->match(pTrackA));
+    EXPECT_FALSE(pQuery->match(pTrackB));
+
+    EXPECT_STREQ(
+                 qPrintable("(" + m_crateFilterQuery.arg(searchTerm) +
+                            ") AND ((artist LIKE '%asdf%') OR (album_artist LIKE '%asdf%'))"),
+                 qPrintable(pQuery->toSql()));
 }
