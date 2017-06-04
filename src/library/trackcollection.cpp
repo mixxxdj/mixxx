@@ -20,8 +20,7 @@ namespace {
 } // anonymous namespace
 
 TrackCollection::TrackCollection(
-        UserSettingsPointer pConfig,
-        const QString& schemaFile)
+        UserSettingsPointer pConfig)
         : m_dbConnection(pConfig->getSettingsPath()),
           m_playlistDao(database()),
           m_cueDao(database()),
@@ -30,18 +29,6 @@ TrackCollection::TrackCollection(
           m_libraryHashDao(database()),
           m_trackDao(database(), m_cueDao, m_playlistDao,
                      m_analysisDao, m_libraryHashDao, pConfig) {
-    // Check for tables and create them if missing
-    if (!upgradeDatabaseSchema(schemaFile, kRequiredSchemaVersion)) {
-        // TODO(XXX) something a little more elegant
-        exit(-1);
-    }
-
-    m_trackDao.initialize();
-    m_playlistDao.initialize();
-    m_cueDao.initialize();
-    m_directoryDao.initialize();
-    m_libraryHashDao.initialize();
-    m_crates.attachDatabase(database());
 }
 
 TrackCollection::~TrackCollection() {
@@ -50,9 +37,9 @@ TrackCollection::~TrackCollection() {
     m_crates.detachDatabase();
 }
 
-bool TrackCollection::upgradeDatabaseSchema(
+bool TrackCollection::initDatabaseSchema(
         const QString& schemaFile,
-        int schemaVersion) const {
+        int schemaVersion) {
     if (!database().isOpen()) {
         QMessageBox::critical(0, tr("Cannot open database"),
                             tr("Unable to establish a database connection.\n"
@@ -76,6 +63,11 @@ bool TrackCollection::upgradeDatabaseSchema(
         case SchemaManager::Result::CurrentVersion:
         case SchemaManager::Result::UpgradeSucceeded:
         case SchemaManager::Result::NewerVersionBackwardsCompatible:
+            m_trackDao.initialize();
+            m_playlistDao.initialize();
+            m_cueDao.initialize();
+            m_directoryDao.initialize();
+            m_libraryHashDao.initialize();
             return true; // done
         case SchemaManager::Result::UpgradeFailed:
             QMessageBox::warning(

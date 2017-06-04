@@ -1,14 +1,26 @@
 #include <gtest/gtest.h>
 
-#include "test/librarytest.h"
+#include "test/mixxxtest.h"
+
+#include "library/trackcollection.h"
 
 #include "library/queryutil.h"
 #include "util/db/sqllikewildcardescaper.h"
 
-class QueryUtilTest : public LibraryTest {};
+class QueryUtilTest : public MixxxTest {
+  protected:
+    QueryUtilTest()
+          : m_trackCollection(config()) {
+        // This test only needs a connection to an empty database
+        // without any particular schema. No need to initialize the
+        // database schema.
+    }
+
+    TrackCollection m_trackCollection;
+};
 
 TEST_F(QueryUtilTest, FieldEscaperEscapesQuotes) {
-    FieldEscaper fieldEscaper(collection()->database());
+    FieldEscaper fieldEscaper(m_trackCollection.database());
     EXPECT_STREQ(qPrintable(QString("'foobar'")),
                  qPrintable(fieldEscaper.escapeString("foobar")));
     EXPECT_STREQ(qPrintable(QString("'foobar''s'")),

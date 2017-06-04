@@ -363,7 +363,8 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         QString currentFolder = config->getValueString(PREF_LEGACY_LIBRARY_DIR);
         // to migrate the DB just add the current directory to the new
         // directories table
-        TrackCollection tc(config, TrackCollection::kDefaultSchemaFile);
+        TrackCollection tc(config);
+        tc.initDatabaseSchema();
         DirectoryDAO directoryDAO = tc.getDirectoryDAO();
 
         // NOTE(rryan): We don't have to ask for sandbox permission to this

@@ -33,9 +33,12 @@ class TrackCollection : public QObject {
     static const int kRequiredSchemaVersion;
 
     explicit TrackCollection(
-            UserSettingsPointer pConfig,
-            const QString& schemaFile = QString());
+            UserSettingsPointer pConfig);
     ~TrackCollection() override;
+
+    bool initDatabaseSchema(
+            const QString& schemaFile = kDefaultSchemaFile,
+            int schemaVersion = kRequiredSchemaVersion);
 
     QSqlDatabase database() const {
         return m_dbConnection.database();
@@ -94,10 +97,6 @@ class TrackCollection : public QObject {
             const QSet<CrateId>& crates);
 
   private:
-    bool upgradeDatabaseSchema(
-            const QString& schemaFile,
-            int schemaVersion) const;
-
     DbConnection m_dbConnection;
 
     PlaylistDAO m_playlistDao;

@@ -4,23 +4,23 @@
 #include "test/mixxxtest.h"
 
 #include "library/trackcollection.h"
-#include "util/memory.h"
 
 
 class LibraryTest : public MixxxTest {
   protected:
-    LibraryTest() {
-        m_pTrackCollection = std::make_unique<TrackCollection>(config(), TrackCollection::kDefaultSchemaFile);
+    LibraryTest()
+        : m_trackCollection(config()) {
+        m_trackCollection.initDatabaseSchema();
     }
     ~LibraryTest() override {
     }
 
-    TrackCollection* collection() const {
-        return m_pTrackCollection.get();
+    TrackCollection* collection() {
+        return &m_trackCollection;
     }
 
   private:
-    std::unique_ptr<TrackCollection> m_pTrackCollection;
+    TrackCollection m_trackCollection;
 };
 
 

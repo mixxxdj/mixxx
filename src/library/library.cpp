@@ -47,10 +47,15 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
                  RecordingManager* pRecordingManager) :
         m_pConfig(pConfig),
         m_pSidebarModel(new SidebarModel(parent)),
-        m_pTrackCollection(new TrackCollection(pConfig, TrackCollection::kDefaultSchemaFile)),
+        m_pTrackCollection(new TrackCollection(pConfig)),
         m_pLibraryControl(new LibraryControl(this)),
         m_pRecordingManager(pRecordingManager),
         m_scanner(m_pTrackCollection, pConfig) {
+    if (!m_pTrackCollection->initDatabaseSchema()) {
+        // TODO(XXX) something a little more elegant
+        exit(-1);
+    }
+
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
 
     m_pKeyNotation.reset(new ControlObject(ConfigKey("[Library]", "key_notation")));
