@@ -7,7 +7,6 @@
 
 #include "library/searchqueryparser.h"
 #include "util/assert.h"
-#include "track/track.h"
 
 class SearchQueryParserTest : public LibraryTest {
   protected:
