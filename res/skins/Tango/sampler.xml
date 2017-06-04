@@ -16,6 +16,7 @@ Variables:
   PlayedOverlayColor  : defined in skin.xml
 -->
 <Template>
+  <SetVariable name="sourceType">sampler</SetVariable>
   <SetVariable name="group">[Sampler<Variable name="samNum"/>]</SetVariable>
   <WidgetGroup>
     <ObjectName>SamplerDeck</ObjectName>

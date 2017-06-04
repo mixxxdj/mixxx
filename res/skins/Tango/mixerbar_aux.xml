@@ -8,6 +8,7 @@ Variables:
   auxNum : text shown on talkover button and internal auxiliary number
 -->
 <Template>
+  <SetVariable name="sourceType">auxiliary</SetVariable>
   <SetVariable name="group">[Auxiliary<Variable name="auxNum"/>]</SetVariable>
   <WidgetGroup>
     <Layout>horizontal</Layout>

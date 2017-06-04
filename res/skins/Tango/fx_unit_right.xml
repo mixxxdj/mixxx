@@ -75,6 +75,7 @@ Variables:
                 <Children>
                   <Template src="skin:fx_assign_button.xml">
                     <SetVariable name="Size">21f,21f</SetVariable>
+                    <SetVariable name="sourceType">master</SetVariable>
                     <SetVariable name="labelOff">fx_master_off</SetVariable>
                     <SetVariable name="labelOn">fx_master_on</SetVariable>
                     <SetVariable name="group">[Master]</SetVariable>
@@ -82,6 +83,7 @@ Variables:
                     <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
                   <Template src="skin:fx_assign_button.xml">
                     <SetVariable name="Size">21f,21f</SetVariable>
+                    <SetVariable name="sourceType">headphones</SetVariable>
                     <SetVariable name="labelOff">fx_head_off</SetVariable>
                     <SetVariable name="labelOn">fx_head_on</SetVariable>
                     <SetVariable name="group">[Headphone]</SetVariable>

@@ -9,6 +9,7 @@ Variables:
   micNum : internal microphone number (empty for Mic1)
 -->
 <Template>
+  <SetVariable name="sourceType">microphone</SetVariable>
   <SetVariable name="group">[Microphone<Variable name="micNum"/>]</SetVariable>
   <WidgetGroup>
     <Layout>horizontal</Layout>
