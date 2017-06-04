@@ -94,7 +94,7 @@ class FieldEscaper final {
         }
     }
 
-    const QSqlDatabase& m_database;
+    QSqlDatabase m_database;
     mutable QSqlField m_stringField;
 };
 
