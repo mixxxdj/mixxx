@@ -123,13 +123,17 @@
         },
         disconnect: function () {
             if (this.connections[0] !== undefined) {
-                this.connections.forEach(function (connection) {
-                    connection.disconnect();
+                this.connections.forEach(function (conn) {
+                    conn.disconnect();
                 });
             }
         },
         trigger: function() {
-            engine.trigger(this.group, this.outKey);
+            if (this.connections[0] !== undefined) {
+                this.connections.forEach(function (conn) {
+                    conn.trigger();
+                });
+            }
         },
         shiftOffset: 0,
         sendShifted: false,
