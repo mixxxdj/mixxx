@@ -300,16 +300,13 @@ EffectChainPointer EffectChain::createFromXml(EffectsManager* pEffectsManager,
     QString insertionTypeStr = XmlParse::selectNodeQString(element,
                                                            EffectXml::ChainInsertionType);
 
-    EffectChain* pChain = new EffectChain(pEffectsManager, id);
+    EffectChainPointer pChain = EffectChainPointer(new EffectChain(pEffectsManager, id));
     pChain->setName(name);
     pChain->setDescription(description);
     InsertionType insertionType = insertionTypeFromString(insertionTypeStr);
     if (insertionType != NUM_INSERTION_TYPES) {
         pChain->setInsertionType(insertionType);
     }
-
-    EffectChainPointer pChainWrapped(pChain);
-    pEffectsManager->getEffectChainManager()->addEffectChain(pChainWrapped);
 
     QDomElement effects = XmlParse::selectElement(element, EffectXml::EffectsRoot);
     QDomNodeList effectChildren = effects.childNodes();
@@ -323,5 +320,5 @@ EffectChainPointer EffectChain::createFromXml(EffectsManager* pEffectsManager,
         }
     }
 
-    return pChainWrapped;
+    return pChain;
 }
