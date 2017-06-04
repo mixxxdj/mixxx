@@ -209,8 +209,7 @@ StandardEffectRack::StandardEffectRack(EffectsManager* pEffectsManager,
                      formatGroupString(iRackNumber)) {
 }
 
-EffectChainSlotPointer StandardEffectRack::addEffectChainSlot(EffectChainPointer pChain,
-                                                              const QDomElement& effectChainElement) {
+EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
     int iChainSlotNumber = numEffectChainSlots();
 
     QString group = formatEffectChainSlotGroupString(getRackNumber(),
@@ -220,8 +219,8 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot(EffectChainPointer
 
     for (int i = 0; i < EffectChainManager::kNumEffectsPerUnit; ++i) {
         pChainSlot->addEffectSlot(
-            StandardEffectRack::formatEffectSlotGroupString(
-                getRackNumber(), iChainSlotNumber, i));
+                StandardEffectRack::formatEffectSlotGroupString(
+                        getRackNumber(), iChainSlotNumber, i));
     }
 
     connect(pChainSlot, SIGNAL(nextChain(unsigned int, EffectChainPointer)),
@@ -243,10 +242,6 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot(EffectChainPointer
 
     EffectChainSlotPointer pChainSlotPointer = EffectChainSlotPointer(pChainSlot);
     addEffectChainSlotInternal(pChainSlotPointer);
-
-    pChainSlotPointer->loadEffectChain(pChain);
-
-    pChainSlot->loadChainSlotFromXml(effectChainElement);
 
     return pChainSlotPointer;
 }

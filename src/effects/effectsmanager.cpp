@@ -232,13 +232,13 @@ void EffectsManager::setup() {
     addQuickEffectRack();
 
     // Add a general purpose rack
-    QList<std::pair<EffectChainPointer, QDomElement>> savedChains;
-    savedChains = m_pEffectChainManager->loadEffectChains();
-
     StandardEffectRackPointer pStandardRack = addStandardEffectRack();
-    for (auto chain : savedChains) {
-        pStandardRack->addEffectChainSlot(chain.first, chain.second);
+    for (int i = 0; i < EffectChainManager::kNumStandardEffectChains; ++i) {
+        pStandardRack->addEffectChainSlot();
     }
+
+    // populate rack and restore state from effects.xml
+    m_pEffectChainManager->loadEffectChains(pStandardRack.data());
 
     EffectChainPointer pChain = EffectChainPointer(new EffectChain(
            this, "org.mixxx.effectchain.flanger"));
