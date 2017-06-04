@@ -244,7 +244,7 @@ EffectChainPointer EffectChainSlot::getEffectChain() const {
     return m_pEffectChain;
 }
 
-EffectChainPointer EffectChainSlot::getAndEndsureEffectChain(
+EffectChainPointer EffectChainSlot::getAndEnsureEffectChain(
         EffectsManager* pEffectsManager) {
     if (!m_pEffectChain) {
         auto pEffectChain = EffectChainPointer(
