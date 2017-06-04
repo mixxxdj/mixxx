@@ -644,14 +644,17 @@ WWidgetGroup {
 WBeatSpinBox {
   /* make it 2px smaller in each dimension,
     border is added for actual size */
-  min-width: 45px;
-  max-width: 45px;
+  min-width: 52px;
+  max-width: 52px;
   min-height: 20px;
   max-height: 20px;
-  border: 1px solid #333333; /* = 40x20px */
-  border-radius: 2px;
+  border: 1px solid #666666; /* = 40x20px */
+  border-radius: 5px;
   background-color: #0f0f0f;
-  color: #888888;
+  color: #aaaaaa;
+  selection-background-color: #d2d2d2;
+  selection-color: #0f0f0f;
+  font-size: 13px/13px;
   padding: 0;
 }
   WBeatSpinBox:hover { /* */
@@ -659,6 +662,7 @@ WBeatSpinBox {
   }
   WBeatSpinBox:focus { /* */
     border-color: #d2d2d2;
+    color: #cccccc;
   }
 
   WBeatSpinBox::up-button, WBeatSpinBox::down-button {
@@ -666,21 +670,24 @@ WBeatSpinBox {
     position: relative;
     /* as with spinbox: border is added to size.
       define it with same width as hover border, otherwise size jumps */
-    width: 16px;
-    height: 16px;
-    border: 1px solid #333333; /* = 18x18px */
+    width: 18px;
+    height: 18px;
+    border: 0px solid #777777; /* = 18x18px */
     border-radius: 8px;
     background-color: #333333;
-    }
-    WBeatSpinBox::up-button:hover, WBeatSpinBox::down-button:hover {
-      border-color: #999999;
     }
 
   WBeatSpinBox::up-button {
     image: url(skin:/buttons/btn_arrow_up.svg);
     }
+    WBeatSpinBox::up-button:hover {
+      image: url(skin:/buttons/btn_arrow_up_hover.svg);
+    }
   WBeatSpinBox::down-button {
     image: url(skin:/buttons/btn_arrow_down.svg);
+    }
+    WBeatSpinBox::down-button:hover {
+      image: url(skin:/buttons/btn_arrow_down_hover.svg);
     }
 
   #LoopBeatJumpContainer_Right > WBeatSpinBox {
@@ -691,11 +698,10 @@ WBeatSpinBox {
     }
     #LoopBeatJumpContainer_Right > WBeatSpinBox::up-button {
       subcontrol-position: center right;
-      left: -13px;
       }
     #LoopBeatJumpContainer_Right > WBeatSpinBox::down-button {
       subcontrol-position: center right;
-      border-width: 1px 1px 1px 0;
+      left: -13px;
     }
 
   #LoopBeatJumpContainer_Left > WBeatSpinBox {
@@ -706,10 +712,9 @@ WBeatSpinBox {
     #LoopBeatJumpContainer_Left > WBeatSpinBox::up-button {
       subcontrol-position: center left;
       right: -13px;
-    }
+      }
     #LoopBeatJumpContainer_Left > WBeatSpinBox::down-button {
       subcontrol-position: center left;
-      border-width: 1px 0 1px 1px;
     }
 
 /*################################################################
@@ -1944,6 +1949,8 @@ WLibrary QSpinBox {
   WLibrary QSpinBox:editable {
     background: transparent;
     color: #FFA600;
+    selection-background-color: #d2d2d2;
+    selection-color: #0f0f0f;
   }
   WLibrary QSpinBox:editable:focus {
     border: 1px solid #FF6600;
@@ -1954,11 +1961,13 @@ WSearchLineEdit {
   padding: 2px;
   border: 1px solid #656565;
   border-left: 0px;
-  background: #0f0f0f;
   font-family: Ubuntu;
   font-weight: normal;
   font-size: 12px/12px;
+  background: #0f0f0f;
   color: #CFCFCF;
+  selection-background-color: #d2d2d2;
+  selection-color: #0f0f0f;
   margin-bottom: 5px;
   }
   WSearchLineEdit:focus {
