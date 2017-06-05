@@ -23,8 +23,9 @@ HistoryTreeModel::HistoryTreeModel(HistoryFeature* pFeature,
 }
 
 QModelIndex HistoryTreeModel::reloadListsTree(int playlistId) {
-    VERIFY_OR_DEBUG_ASSERT (m_pFeature.isNull())
+    VERIFY_OR_DEBUG_ASSERT (m_pFeature) {
         return QModelIndex();
+    }
     
     TreeItem* pRootItem = setRootItem(std::make_unique<TreeItem>(m_pFeature.data()));
     QString trackCountName = "TrackCount";

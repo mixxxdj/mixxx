@@ -78,6 +78,8 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     void slotSetRateRamp(bool);
     void slotSetRateRampSensitivity(int);
     void slotSetLocale(int);
+    void slotSetScaleFactor(int index);
+    void slotSetScaleFactorAuto(bool checked);
     void slotSetStartInFullScreen(bool b);
 
     void slotNumDecksChanged(double);
@@ -117,6 +119,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     bool m_pitchAutoReset;
     int m_keylockMode;
     int m_keyunlockMode;
+    double m_autoScaleFactor;
 };
 
 #endif

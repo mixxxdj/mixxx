@@ -18,14 +18,17 @@
 #include "widget/wpixmapstore.h"
 
 #include <QIcon>
+#include <QDir>
 #include <QString>
 #include <QtDebug>
 
 #include "util/math.h"
+#include "skin/imgloader.h"
 
 // static
 QHash<QString, WeakPaintablePointer> WPixmapStore::m_paintableCache;
-QSharedPointer<ImgSource> WPixmapStore::m_pLoader = QSharedPointer<ImgSource>();
+QSharedPointer<ImgSource> WPixmapStore::m_pLoader
+        = QSharedPointer<ImgSource>(new ImgLoader());
 QSharedPointer<ImgSource> WPixmapStore::m_pIconLoader = QSharedPointer<ImgSource>();
 
 // static
@@ -75,27 +78,6 @@ Paintable::Paintable(QImage* pImage, DrawMode mode)
     delete pImage;
 }
 
-Paintable::Paintable(const QString& fileName, DrawMode mode)
-        : m_draw_mode(mode) {
-    if (fileName.endsWith(".svg", Qt::CaseInsensitive)) {
-        if (mode == TILE) {
-            // The SVG renderer doesn't directly support tiling, so we render
-            // it to a pixmap which will then get tiled.
-            QSvgRenderer renderer(fileName);
-            QImage copy_buffer(renderer.defaultSize(), QImage::Format_ARGB32);
-            copy_buffer.fill(0x00000000);  // Transparent black.
-            m_pPixmap.reset(new QPixmap(renderer.defaultSize()));
-            QPainter painter(&copy_buffer);
-            renderer.render(&painter);
-            m_pPixmap->convertFromImage(copy_buffer);
-        } else {
-            m_pSvg.reset(new QSvgRenderer(fileName));
-        }
-    } else {
-        m_pPixmap.reset(new QPixmap(fileName));
-    }
-}
-
 Paintable::Paintable(const PixmapSource& source, DrawMode mode)
         : m_draw_mode(mode) {
     if (source.isSVG()) {
@@ -128,7 +110,6 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode)
         m_pPixmap.reset(pPixmap);
     }
 }
-
 
 bool Paintable::isNull() const {
     if (!m_pPixmap.isNull()) {
@@ -303,10 +284,34 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
 }
 
 // static
+QString Paintable::getAltFileName(const QString& fileName) {
+    // Detect if the alternate image file exists and, if it does,
+    // return its path instead
+    QStringList temp = fileName.split('.');
+    if (temp.length() != 2) {
+        return fileName;
+    }
+
+    QString newFileName = temp[0] + QString::fromAscii("@2x.") + temp[1];
+    QFile file(newFileName);
+    if (QFileInfo(file).exists()) {
+        return newFileName;
+    } else {
+        return fileName;
+    }
+}
+
+
+// static
 PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
-                                            Paintable::DrawMode mode) {
+                                            Paintable::DrawMode mode,
+                                            double scaleFactor) {
+    QString key = source.getId() + QString::number(scaleFactor);
+
     // See if we have a cached value for the pixmap.
-    PaintablePointer pPaintable = m_paintableCache.value(source.getId(), PaintablePointer());
+    PaintablePointer pPaintable = m_paintableCache.value(
+            key,
+            PaintablePointer());
     if (pPaintable) {
         return pPaintable;
     }
@@ -314,14 +319,14 @@ PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
     // Otherwise, construct it with the pixmap loader.
     //qDebug() << "WPixmapStore Loading pixmap from file" << source.getPath();
 
-    if (m_pLoader) {
-        QImage* pImage = m_pLoader->getImage(source.getPath());
+    if (mode == Paintable::FIXED || mode == Paintable::TILE || !source.isSVG()) {
+        QImage* pImage = m_pLoader->getImage(source.getPath(), scaleFactor);
         pPaintable = PaintablePointer(new Paintable(pImage, mode));
     } else {
         pPaintable = PaintablePointer(new Paintable(source, mode));
     }
 
-    if (pPaintable.isNull() || pPaintable->isNull()) {
+    if (pPaintable->isNull()) {
         // Only log if it looks like the user tried to specify a
         // pixmap. Otherwise we probably just have a widget that is calling
         // getPaintable without checking that the skinner actually wanted one.
@@ -332,28 +337,23 @@ PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
         return PaintablePointer();
     }
 
-    m_paintableCache[source.getId()] = pPaintable;
+    m_paintableCache.insert(key, pPaintable);
     return pPaintable;
 }
 
-
-
-
 // static
-QPixmap* WPixmapStore::getPixmapNoCache(const QString& fileName) {
+QPixmap* WPixmapStore::getPixmapNoCache(
+        const QString& fileName,
+        double scaleFactor) {
     QPixmap* pPixmap = nullptr;
-    if (m_pLoader) {
-        QImage* img = m_pLoader->getImage(fileName);
+    QImage* img = m_pLoader->getImage(fileName, scaleFactor);
 #if QT_VERSION >= 0x040700
-        pPixmap = new QPixmap();
-        pPixmap->convertFromImage(*img);
+    pPixmap = new QPixmap();
+    pPixmap->convertFromImage(*img);
 #else
-        pPixmap = new QPixmap(QPixmap::fromImage(*img));
+    pPixmap = new QPixmap(QPixmap::fromImage(*img));
 #endif
-        delete img;
-    } else {
-        pPixmap = new QPixmap(fileName);
-    }
+    delete img;
     return pPixmap;
 }
 
@@ -379,7 +379,7 @@ QPixmap WPixmapStore::getLibraryPixmap(const QString& fileName) {
         return QPixmap(fileName);
     }
 
-    QImage* image = m_pIconLoader->getImage(fileName);
+    QImage* image = m_pIconLoader->getImage(fileName, 1.0);
 
     if (!m_pLoader.isNull()) {
         m_pLoader->correctImageColors(image);

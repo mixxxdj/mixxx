@@ -214,8 +214,9 @@ class SkinContext {
     PixmapSource getPixmapSource(const QDomNode& pixmapNode) const;
     PixmapSource getPixmapSource(const QString& filename) const;
 
-    inline Paintable::DrawMode selectScaleMode(const QDomElement& element,
-                                               Paintable::DrawMode defaultDrawMode) const {
+    inline Paintable::DrawMode selectScaleMode(
+            const QDomElement& element,
+            Paintable::DrawMode defaultDrawMode) const {
         QString drawModeStr;
         if (hasAttributeSelectString(element, "scalemode", &drawModeStr)) {
             return Paintable::DrawModeFromString(drawModeStr);
@@ -242,6 +243,12 @@ class SkinContext {
 
     const QRegExp& getHookRegex() const {
         return m_hookRx;
+    }
+
+    int scaleToWidgetSize(QString& size) const;
+
+    double getScaleFactor() const {
+        return m_scaleFactor;
     }
 
   private:
@@ -271,6 +278,7 @@ class SkinContext {
     // The SingletonContainer map is passed to child SkinContexts, so that all
     // templates in the tree can share a single map.
     QSharedPointer<SingletonMap> m_pSingletons;
+    double m_scaleFactor;
 };
 
 #endif /* SKINCONTEXT_H */

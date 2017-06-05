@@ -24,7 +24,7 @@ class ImgAdd : public ImgColorProcessor {
 
 public:
     ImgAdd(const QSharedPointer<ImgSource>& parent, int amt);
-    virtual QColor doColorCorrection(QColor c);
+    QColor doColorCorrection(const QColor& c) const override;
 
 private:
     int m_amt;
@@ -34,7 +34,7 @@ class ImgMax : public ImgColorProcessor {
 
 public:
     ImgMax(const QSharedPointer<ImgSource>& parent, int amt);
-    virtual QColor doColorCorrection(QColor c);
+    QColor doColorCorrection(const QColor& c) const override;
 
 private:
     int m_amt;
@@ -44,7 +44,7 @@ class ImgMonoColor : public ImgColorProcessor {
     
   public:
     ImgMonoColor(const QSharedPointer<ImgSource>& parent, const QColor &baseColor);
-    virtual QColor doColorCorrection(QColor c);
+    QColor doColorCorrection(const QColor& c) const override;
   private:
     QColor m_baseColor;
 };
@@ -54,7 +54,7 @@ class ImgScaleWhite : public ImgColorProcessor {
 public:
     inline ImgScaleWhite(const QSharedPointer<ImgSource>& parent, float amt)
         : ImgColorProcessor(parent), m_amt(amt) {}
-    virtual QColor doColorCorrection(QColor c);
+    QColor doColorCorrection(const QColor& c) const override;
 private:
     float m_amt;
 };
@@ -64,7 +64,7 @@ class ImgHueRot : public ImgColorProcessor {
 public:
     inline ImgHueRot(QSharedPointer<ImgSource> parent, int amt)
         : ImgColorProcessor(parent), m_amt(amt) {}
-    virtual QColor doColorCorrection(QColor c);
+    QColor doColorCorrection(const QColor& c) const override;
 
 private:
     int m_amt;
@@ -74,7 +74,7 @@ class ImgHueInv : public ImgColorProcessor {
 
 public:
     inline ImgHueInv(const QSharedPointer<ImgSource>& parent) : ImgColorProcessor(parent) {}
-    virtual QColor doColorCorrection(QColor c);
+    QColor doColorCorrection(const QColor& c) const override;
 };
 
 class ImgHSVTweak : public ImgColorProcessor {
@@ -88,7 +88,7 @@ class ImgHSVTweak : public ImgColorProcessor {
               m_vmin(vmin), m_vmax(vmax),
               m_hconst(hconst), m_sconst(sconst), m_vconst(vconst),
               m_hfact(hfact), m_sfact(sfact), m_vfact(vfact) {}
-    virtual QColor doColorCorrection(QColor c);
+    QColor doColorCorrection(const QColor& c) const override;
 
   private:
     int m_hmin, m_hmax,

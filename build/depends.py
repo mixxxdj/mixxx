@@ -1144,6 +1144,7 @@ class MixxxCore(Feature):
                    "util/cmdlineargs.cpp",
                    "util/audiosignal.cpp",
                    "util/stringhelper.cpp",
+                   "util/autohidpi.cpp",
 
                    '#res/mixxx.qrc'
                    ]

@@ -120,6 +120,7 @@ class WaveformWidgetRenderer {
     double m_gain;
     ControlProxy* m_pTrackSamplesControlObject;
     int m_trackSamples;
+    double m_scaleFactor;
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     PerformanceTimer* m_timer;

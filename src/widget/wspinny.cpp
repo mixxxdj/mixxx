@@ -127,7 +127,8 @@ void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report)
 void WSpinny::setup(const QDomNode& node, const SkinContext& context) {
     // Set images
     QDomElement backPathElement = context.selectElement(node, "PathBackground");
-    m_pBgImage = WImageStore::getImage(context.getPixmapSource(backPathElement));
+    m_pBgImage = WImageStore::getImage(context.getPixmapSource(backPathElement),
+                                       context.getScaleFactor());
     Paintable::DrawMode bgmode = context.selectScaleMode(backPathElement,
                                                          Paintable::FIXED);
     if (m_pBgImage && !m_pBgImage->isNull() && bgmode == Paintable::FIXED) {
@@ -135,16 +136,19 @@ void WSpinny::setup(const QDomNode& node, const SkinContext& context) {
     } else {
         setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     }
-    m_pMaskImage = WImageStore::getImage(context.getPixmapSource(
-                        context.selectNode(node, "PathMask")));
-    m_pFgImage = WImageStore::getImage(context.getPixmapSource(
-                        context.selectNode(node,"PathForeground")));
+    m_pMaskImage = WImageStore::getImage(
+            context.getPixmapSource(context.selectNode(node, "PathMask")),
+            context.getScaleFactor());
+    m_pFgImage = WImageStore::getImage(
+            context.getPixmapSource(context.selectNode(node,"PathForeground")),
+            context.getScaleFactor());
     if (m_pFgImage && !m_pFgImage->isNull()) {
         m_fgImageScaled = m_pFgImage->scaled(
                 size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
-    m_pGhostImage = WImageStore::getImage(context.getPixmapSource(
-                        context.selectNode(node,"PathGhost")));
+    m_pGhostImage = WImageStore::getImage(
+            context.getPixmapSource(context.selectNode(node,"PathGhost")),
+            context.getScaleFactor());
     if (m_pGhostImage && !m_pGhostImage->isNull()) {
         m_ghostImageScaled = m_pGhostImage->scaled(
                 size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);

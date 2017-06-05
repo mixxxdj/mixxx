@@ -18,15 +18,13 @@ RecordingFeature::RecordingFeature(UserSettingsPointer pConfig,
         : LibraryFeature(pConfig, pLibrary, pTrackCollection, parent),
           m_pTrackCollection(pTrackCollection),
           m_pRecordingManager(pRecordingManager),
-          m_pRecordingView(nullptr),
-          m_pBrowseModel(nullptr),
-          m_pProxyModel(nullptr) {
+          m_pRecordingView(nullptr) {
     
     m_childModel.setRootItem(std::make_unique<TreeItem>(this));
     
     m_pBrowseModel = make_parented<BrowseTableModel>(this, 
             m_pTrackCollection, m_pRecordingManager);
-    m_pProxyModel = make_parented<ProxyTrackModel>(m_pBrowseModel.get());
+    m_pProxyModel = std::make_unique<ProxyTrackModel>(m_pBrowseModel.get());
 }
 
 RecordingFeature::~RecordingFeature() {

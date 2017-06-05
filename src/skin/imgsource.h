@@ -28,11 +28,11 @@
 class ImgSource {
   public:
     virtual ~ImgSource() {}
-    virtual QImage* getImage(QString img) = 0;
-    virtual inline QColor getCorrectColor(QColor c) { return c; }
-    virtual void correctImageColors(QImage*) = 0;
+    virtual QImage* getImage(const QString& fileName, double scaleFactor) const = 0;
+    virtual QColor getCorrectColor(const QColor& c) const { return c; }
+    virtual void correctImageColors(QImage* p) const { (void)p; };
   protected:
-    virtual void correctImageColorsInner(QImage*) {}
+    virtual void correctImageColorsInner(QImage*) const {}
 };
 
 class ImgProcessor : public ImgSource {
@@ -40,16 +40,15 @@ class ImgProcessor : public ImgSource {
   public:
     ~ImgProcessor() override {}
     inline ImgProcessor(const QSharedPointer<ImgSource>& parent) : m_parent(parent) {}
-    virtual QColor doColorCorrection(QColor) = 0;
-    QColor getCorrectColor(QColor c) override {
+    virtual QColor doColorCorrection(const QColor& c) const = 0;
+    QColor getCorrectColor(const QColor& c) const override {
         return doColorCorrection(m_parent->getCorrectColor(c));
     }
-    void correctImageColors(QImage* pImg) override {
+    void correctImageColors(QImage* pImg) const override {
         m_parent->correctImageColors(pImg);
         correctImageColorsInner(pImg);
     }
-  protected:
-    void correctImageColorsInner(QImage*) override {};
+ protected:
     QSharedPointer<ImgSource> m_parent;
 };
 
@@ -61,14 +60,14 @@ class ImgColorProcessor : public ImgProcessor {
     inline ImgColorProcessor(const QSharedPointer<ImgSource>& parent)
             : ImgProcessor(parent) {}
 
-    virtual QImage* getImage(QString img) override {
-        QImage* i = m_parent->getImage(img);
+    QImage* getImage(const QString& fileName, double scaleFactor) const override {
+        QImage* i = m_parent->getImage(fileName, scaleFactor);
         correctImageColorsInner(i);
         return i;
     }
 
   protected:
-    void correctImageColorsInner(QImage* i) override {
+    void correctImageColorsInner(QImage* i) const override {
         if (i == NULL || i->isNull()) {
             return;
         }

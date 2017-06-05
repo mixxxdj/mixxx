@@ -13,6 +13,7 @@
 #include "library/libraryfeature.h"
 #include "library/proxytrackmodel.h"
 #include "recording/recordingmanager.h"
+#include "util/memory.h"
 
 class TrackCollection;
 class WTrackTableView;
@@ -56,7 +57,7 @@ class RecordingFeature : public LibraryFeature {
     
     QPointer<DlgRecording> m_pRecordingView;
     parented_ptr<BrowseTableModel> m_pBrowseModel;
-    parented_ptr<ProxyTrackModel> m_pProxyModel;
+    std::unique_ptr<ProxyTrackModel> m_pProxyModel;
 };
 
 #endif
