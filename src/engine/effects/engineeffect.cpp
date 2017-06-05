@@ -6,7 +6,7 @@ EngineEffect::EngineEffect(const EffectManifest& manifest,
                            const QSet<ChannelHandleAndGroup>& registeredChannels,
                            EffectInstantiatorPointer pInstantiator)
         : m_manifest(manifest),
-          m_enableState(EffectProcessor::DISABLED),
+          m_bEffectSlotEnabled(false),
           m_parameters(manifest.parameters().size()) {
     const QList<EffectManifestParameter>& parameters = m_manifest.parameters();
     for (int i = 0; i < parameters.size(); ++i) {
@@ -48,11 +48,7 @@ bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
                          << "enabled" << message.SetEffectParameters.enabled;
             }
 
-            if (m_enableState != EffectProcessor::DISABLED && !message.SetEffectParameters.enabled) {
-                m_enableState = EffectProcessor::DISABLING;
-            } else if (m_enableState == EffectProcessor::DISABLED && message.SetEffectParameters.enabled) {
-                m_enableState = EffectProcessor::ENABLING;
-            }
+            m_bEffectSlotEnabled = message.SetEffectParameters.enabled;
 
             response.success = true;
             pResponsePipe->writeMessages(&response, 1);
@@ -87,31 +83,41 @@ bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
     return false;
 }
 
-void EngineEffect::process(const ChannelHandle& handle,
+bool EngineEffect::process(const ChannelHandle& handle,
                            const CSAMPLE* pInput, CSAMPLE* pOutput,
                            const unsigned int numSamples,
                            const unsigned int sampleRate,
-                           const EffectProcessor::EnableState enableState,
+                           const EffectProcessor::EnableState chainEnableState,
                            const GroupFeatureState& groupFeatures) {
-    EffectProcessor::EnableState effectiveEnableState = m_enableState;
-    if (enableState == EffectProcessor::DISABLING) {
-        effectiveEnableState = EffectProcessor::DISABLING;
-    } else if (enableState == EffectProcessor::ENABLING) {
-        effectiveEnableState = EffectProcessor::ENABLING;
+    if (!m_channelEnableState.contains(handle)) {
+        m_channelEnableState[handle] = EffectProcessor::DISABLED;
     }
 
-    m_pProcessor->process(handle, pInput, pOutput, numSamples, sampleRate,
-            effectiveEnableState, groupFeatures);
-    if (!m_effectRampsFromDry) {
-        // the effect does not fade, so we care for it
-        if (effectiveEnableState == EffectProcessor::DISABLING) {
-            DEBUG_ASSERT(pInput != pOutput); // Fade to dry only works if pInput is not touched by pOutput
-            // Fade out (fade to dry signal)
-            SampleUtil::copy2WithRampingGain(pOutput,
-                    pInput, 0.0, 1.0,
-                    pOutput, 1.0, 0.0,
-                    numSamples);
-        } else if (effectiveEnableState == EffectProcessor::ENABLING) {
+    EffectProcessor::EnableState effectiveEnableState = m_channelEnableState.value(handle);
+
+    // Does the enabled state need to change from the last callback?
+    if (effectiveEnableState == EffectProcessor::DISABLED) {
+        if (m_bEffectSlotEnabled
+               && (chainEnableState == EffectProcessor::ENABLING
+                   || chainEnableState == EffectProcessor::ENABLED)) {
+            effectiveEnableState = EffectProcessor::ENABLING;
+            m_channelEnableState[handle] = EffectProcessor::ENABLED;
+        } else {
+            // Nothing to do, skip processing.
+            return false;
+        }
+    } else if (effectiveEnableState == EffectProcessor::ENABLED
+                  && (!m_bEffectSlotEnabled
+                      || chainEnableState == EffectProcessor::DISABLING)) {
+        effectiveEnableState = EffectProcessor::DISABLING;
+        m_channelEnableState[handle] = EffectProcessor::DISABLING;
+    }
+
+    // Do processing.
+    if (effectiveEnableState == EffectProcessor::ENABLING) {
+        m_pProcessor->process(handle, pInput, pOutput, numSamples, sampleRate,
+            EffectProcessor::ENABLING, groupFeatures);
+        if (!m_effectRampsFromDry) {
             DEBUG_ASSERT(pInput != pOutput); // Fade to dry only works if pInput is not touched by pOutput
             // Fade in (fade to wet signal)
             SampleUtil::copy2WithRampingGain(pOutput,
@@ -119,11 +125,38 @@ void EngineEffect::process(const ChannelHandle& handle,
                     pOutput, 0.0, 1.0,
                     numSamples);
         }
-    }
+    } else if (effectiveEnableState == EffectProcessor::DISABLING) {
+        CSAMPLE* silence = SampleUtil::alloc(numSamples);
+        SampleUtil::fill(silence, CSAMPLE_ZERO, numSamples);
 
-    if (m_enableState == EffectProcessor::DISABLING) {
-        m_enableState = EffectProcessor::DISABLED;
-    } else if (m_enableState == EffectProcessor::ENABLING) {
-        m_enableState = EffectProcessor::ENABLED;
+        m_pProcessor->process(handle, silence, pOutput, numSamples, sampleRate,
+            EffectProcessor::DISABLING, groupFeatures);
+
+        // When output level becomes inaudible, stop processing. This allows
+        // temporal effects like Echo to continue outputting their tail.
+        // NOTE: The 1 threshold is totally arbitrary.
+        CSAMPLE fVolSumL, fVolSumR;
+        SampleUtil::sumAbsPerChannel(&fVolSumL, &fVolSumR, pOutput, numSamples);
+        if (fVolSumL < 1 && fVolSumR < 1) {
+            m_channelEnableState[handle] = EffectProcessor::DISABLED;
+            if (!m_effectRampsFromDry) {
+                // Fade out (fade to dry signal)
+                // Fading to dry only works if pInput is not touched by pOutput
+                DEBUG_ASSERT(pInput != pOutput);
+                SampleUtil::copy2WithRampingGain(pOutput,
+                    pInput, 0.0, 1.0,
+                    pOutput, 1.0, 0.0,
+                    numSamples);
+            } else {
+                // Just copy
+                SampleUtil::addWithGain(pOutput, pInput, 1.0, numSamples);
+            }
+        } else {
+            SampleUtil::addWithGain(pOutput, pInput, 1.0, numSamples);
+        }
+    } else if (effectiveEnableState == EffectProcessor::ENABLED) {
+        m_pProcessor->process(handle, pInput, pOutput, numSamples, sampleRate,
+            EffectProcessor::ENABLED, groupFeatures);
     }
+    return true;
 }
