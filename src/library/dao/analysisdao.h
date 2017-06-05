@@ -31,11 +31,12 @@ class AnalysisDao : public DAO {
         QByteArray data;
     };
 
-    AnalysisDao(const QSqlDatabase& database, UserSettingsPointer pConfig);
-    virtual ~AnalysisDao();
+    explicit AnalysisDao(UserSettingsPointer pConfig);
+    ~AnalysisDao() override {}
 
-    virtual void initialize();
-    void setDatabase(QSqlDatabase& database);
+    void initialize(const QSqlDatabase& database) override {
+        m_db = database;
+    }
 
     bool getWaveform(Track& tio);
     bool saveWaveform(const Track& tio);

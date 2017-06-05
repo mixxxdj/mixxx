@@ -68,14 +68,12 @@ RecentTrackCacheItem::~RecentTrackCacheItem() {
 // expensive.
 const int kRecentTracksCacheSize = 5;
 
-TrackDAO::TrackDAO(const QSqlDatabase& database,
-                   CueDAO& cueDao,
+TrackDAO::TrackDAO(CueDAO& cueDao,
                    PlaylistDAO& playlistDao,
                    AnalysisDao& analysisDao,
                    LibraryHashDAO& libraryHashDao,
                    UserSettingsPointer pConfig)
-        : m_database(database),
-          m_cueDao(cueDao),
+        : m_cueDao(cueDao),
           m_playlistDao(playlistDao),
           m_analysisDao(analysisDao),
           m_libraryHashDao(libraryHashDao),
@@ -150,10 +148,6 @@ void TrackDAO::finish() {
         markTrackLocationsAsDeleted(dir);
     }
     transaction.commit();
-}
-
-void TrackDAO::initialize() {
-    qDebug() << "TrackDAO::initialize" << QThread::currentThread() << m_database.connectionName();
 }
 
 /** Retrieve the track id for the track that's located at "location" on disk.

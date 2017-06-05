@@ -46,11 +46,11 @@ class PlaylistDAO : public QObject, public virtual DAO {
         REPLACE,
     };
 
-    explicit PlaylistDAO(const QSqlDatabase& database);
-    virtual ~PlaylistDAO();
+    PlaylistDAO();
+    ~PlaylistDAO() override {}
 
-    void initialize();
-    void setDatabase(QSqlDatabase& database) { m_database = database; }
+    void initialize(const QSqlDatabase& database);
+
     // Create a playlist, fails with -1 if already exists
     int createPlaylist(const QString& name, const HiddenType type = PLHT_NOT_HIDDEN);
     // Create a playlist, appends "(n)" if already exists, name becomes the new name

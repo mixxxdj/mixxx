@@ -22,12 +22,8 @@ namespace {
 TrackCollection::TrackCollection(
         UserSettingsPointer pConfig)
         : m_dbConnection(pConfig->getSettingsPath()),
-          m_playlistDao(database()),
-          m_cueDao(database()),
-          m_directoryDao(database()),
-          m_analysisDao(database(), pConfig),
-          m_libraryHashDao(database()),
-          m_trackDao(database(), m_cueDao, m_playlistDao,
+          m_analysisDao(pConfig),
+          m_trackDao(m_cueDao, m_playlistDao,
                      m_analysisDao, m_libraryHashDao, pConfig) {
 }
 
@@ -63,11 +59,11 @@ bool TrackCollection::initDatabaseSchema(
         case SchemaManager::Result::CurrentVersion:
         case SchemaManager::Result::UpgradeSucceeded:
         case SchemaManager::Result::NewerVersionBackwardsCompatible:
-            m_trackDao.initialize();
-            m_playlistDao.initialize();
-            m_cueDao.initialize();
-            m_directoryDao.initialize();
-            m_libraryHashDao.initialize();
+            m_trackDao.initialize(database());
+            m_playlistDao.initialize(database());
+            m_cueDao.initialize(database());
+            m_directoryDao.initialize(database());
+            m_libraryHashDao.initialize(database());
             m_crates.attachDatabase(database());
             return true; // done
         case SchemaManager::Result::UpgradeFailed:

@@ -23,13 +23,8 @@ namespace {
 LibraryScanner::LibraryScanner(TrackCollection* pTrackCollection,
                                UserSettingsPointer pConfig)
               : m_pTrackCollection(pTrackCollection),
-                m_libraryHashDao(m_database),
-                m_cueDao(m_database),
-                m_playlistDao(m_database),
-                m_directoryDao(m_database),
-                m_analysisDao(m_database, pConfig),
-                m_trackDao(m_database,
-                           m_cueDao, m_playlistDao,
+                m_analysisDao(pConfig),
+                m_trackDao(m_cueDao, m_playlistDao,
                            m_analysisDao, m_libraryHashDao,
                            pConfig),
                 m_stateSema(1), // only one transaction is possible at a time
@@ -120,19 +115,12 @@ void LibraryScanner::run() {
         }
     }
 
-    m_libraryHashDao.setDatabase(m_database);
-    m_cueDao.setDatabase(m_database);
-    m_trackDao.setDatabase(m_database);
-    m_playlistDao.setDatabase(m_database);
-    m_analysisDao.setDatabase(m_database);
-    m_directoryDao.setDatabase(m_database);
-
-    m_libraryHashDao.initialize();
-    m_cueDao.initialize();
-    m_trackDao.initialize();
-    m_playlistDao.initialize();
-    m_analysisDao.initialize();
-    m_directoryDao.initialize();
+    m_libraryHashDao.initialize(m_database);
+    m_cueDao.initialize(m_database);
+    m_trackDao.initialize(m_database);
+    m_playlistDao.initialize(m_database);
+    m_analysisDao.initialize(m_database);
+    m_directoryDao.initialize(m_database);
 
     // Start the event loop.
     kLogger.debug() << "Event loop starting";

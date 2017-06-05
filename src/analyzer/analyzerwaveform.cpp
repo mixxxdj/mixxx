@@ -43,7 +43,8 @@ AnalyzerWaveform::AnalyzerWaveform(UserSettingsPointer pConfig) :
         }
     }
 
-    m_pAnalysisDao = std::make_unique<AnalysisDao>(m_database, pConfig);
+    m_pAnalysisDao = std::make_unique<AnalysisDao>(pConfig);
+    m_pAnalysisDao->initialize(m_database);
 }
 
 AnalyzerWaveform::~AnalyzerWaveform() {
