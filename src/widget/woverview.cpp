@@ -335,6 +335,16 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
             }
 
             painter.drawImage(rect(), m_waveformImageScaled);
+
+            // Overlay the played part of the overview-waveform with a skin defined color
+            QColor playedOverlayColor = m_signalColors.getPlayedOverlayColor();
+            if (playedOverlayColor.alpha() > 0) {
+                if (m_orientation == Qt::Vertical) {
+                    painter.fillRect(0, 0, m_waveformImageScaled.width(),  m_iPos, playedOverlayColor);
+                } else {
+                    painter.fillRect(0, 0, m_iPos, m_waveformImageScaled.height(), playedOverlayColor);
+                }
+            }
         }
 
         if (m_dAnalyzerProgress < 1.0) {

@@ -754,10 +754,12 @@ void PlaylistDAO::removeTracksFromPlaylists(const QList<TrackId>& trackIds) {
     // copy the hash, because there is no guarantee that "it" is valid after remove
     QMultiHash<TrackId, int> playlistsTrackIsInCopy = m_playlistsTrackIsIn;
     for (const auto& trackId: trackIds) {
-    	const auto it = playlistsTrackIsInCopy.find(trackId);
-    	while (it != playlistsTrackIsInCopy.end() && it.key() == trackId) {
-    		removeTrackFromPlaylist(it.value(), trackId);
-    	}
+        for (auto it = playlistsTrackIsInCopy.constBegin();
+                it != playlistsTrackIsInCopy.constEnd(); ++it) {
+            if (it.key() == trackId) {
+                removeTrackFromPlaylist(it.value(), trackId);
+            }
+        }
     }
 }
 

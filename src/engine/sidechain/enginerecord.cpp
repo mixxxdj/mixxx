@@ -379,7 +379,7 @@ bool EngineRecord::openFile() {
 
             if (!m_baAlbum.isEmpty()) {
                 int strType = SF_STR_ALBUM;
-                if (ENCODING_AIFF) {
+                if (m_encoding == ENCODING_AIFF) {
                     // There is no AIFF text chunk for "Album". But libsndfile is able to
                     // write the SF_STR_COMMENT string into the text chunk with id "ANNO".
                     strType = SF_STR_COMMENT;

@@ -9,6 +9,9 @@ WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManag
         : QComboBox(pParent),
           WBaseWidget(pParent),
           m_pEffectsManager(pEffectsManager) {
+    // Prevent this widget from getting focused to avoid
+    // interfering with using the library via keyboard.
+    setFocusPolicy(Qt::NoFocus);
 
     // TODO(xxx): filter out blacklisted effects
     // https://bugs.launchpad.net/mixxx/+bug/1653140
