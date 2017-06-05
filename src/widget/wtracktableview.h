@@ -113,7 +113,9 @@ class WTrackTableView : public WLibraryTableView {
 
     // Returns the current TrackModel, or returns NULL if none is set.
     TrackModel* getTrackModel() const;
-    bool modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities);
+    bool modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) const;
+
+    QList<TrackId> getSelectedTrackIds() const;
 
     bool insert(const QMimeData* pMimeData, const QModelIndex& destIndex);
     bool move(const QMimeData* pMimeData, const QModelIndex& destIndex);

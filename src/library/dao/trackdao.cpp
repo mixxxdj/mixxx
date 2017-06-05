@@ -1381,6 +1381,9 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     // default value "//".
     // See also: Schema revision 26 in schema.xml
     if (pTrack->getTrackTotal() == "//") {
+        qDebug() << "Reloading value for 'tracktotal' once-only from file"
+                " to replace the default value introduced with a previous"
+                " schema upgrade";
         // Reload track total from file tags into a temporary
         // track object, if the special track total migration
         // value "//" indicates that the track total is missing
@@ -1407,7 +1410,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
                 pTrack->setTrackNumber(pTempTrack->getTrackNumber());
             }
         } else {
-            qWarning() << "Failed to reload track total from file tags:"
+            qWarning() << "Failed to reload value for 'tracktotal' from file tags:"
                     << trackLocation;
         }
     }
