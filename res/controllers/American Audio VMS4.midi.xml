@@ -694,9 +694,12 @@
          </control>
          <control>
             <group>[Channel1]</group>
-            <key>playposition</key>
+            <key>VMS4.touch_strip</key>
             <status>0xB0</status>
             <midino>0x28</midino>
+            <options>
+               <Script-Binding/>
+            </options>
          </control>
 
          <!-- Deck B -->
@@ -1340,9 +1343,12 @@
          </control>
          <control>
             <group>[Channel2]</group>
-            <key>playposition</key>
+            <key>VMS4.touch_strip</key>
             <status>0xB0</status>
             <midino>0x2D</midino>
+            <options>
+               <Script-Binding/>
+            </options>
          </control>
 
          <!-- Mixer main-->
