@@ -16,6 +16,7 @@
 #include "mixer/playerinfo.h"
 #include "track/keyutils.h"
 #include "track/trackmetadata.h"
+#include "util/db/dbconnection.h"
 #include "util/duration.h"
 #include "util/dnd.h"
 #include "util/assert.h"

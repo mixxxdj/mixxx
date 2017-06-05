@@ -15,6 +15,7 @@
 #include "library/parser.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "sources/soundsourceproxy.h"
+#include "util/db/dbconnection.h"
 #include "util/dnd.h"
 #include "util/duration.h"
 

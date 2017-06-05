@@ -1,7 +1,6 @@
 #ifndef TRACKCOLLECTION_H
 #define TRACKCOLLECTION_H
 
-#include <QtSql>
 #include <QList>
 #include <QSharedPointer>
 #include <QSqlDatabase>
@@ -15,7 +14,6 @@
 #include "library/dao/analysisdao.h"
 #include "library/dao/directorydao.h"
 #include "library/dao/libraryhashdao.h"
-#include "util/db/dbconnection.h"
 
 // forward declaration(s)
 class Track;
@@ -29,19 +27,14 @@ class TrackCollection : public QObject {
     Q_OBJECT
 
   public:
-    static const QString kDefaultSchemaFile;
-    static const int kRequiredSchemaVersion;
-
     explicit TrackCollection(
             UserSettingsPointer pConfig);
     ~TrackCollection() override;
 
-    bool initDatabaseSchema(
-            const QString& schemaFile = kDefaultSchemaFile,
-            int schemaVersion = kRequiredSchemaVersion);
+    void setDatabase(const QSqlDatabase& database);
 
     QSqlDatabase database() const {
-        return m_dbConnection.database();
+        return m_database;
     }
 
     const CrateStorage& crates() const {
@@ -97,7 +90,7 @@ class TrackCollection : public QObject {
             const QSet<CrateId>& crates);
 
   private:
-    DbConnection m_dbConnection;
+    QSqlDatabase m_database;
 
     PlaylistDAO m_playlistDao;
     CrateStorage m_crates;

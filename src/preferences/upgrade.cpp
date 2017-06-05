@@ -24,6 +24,7 @@
 #include <QScopedPointer>
 
 #include "preferences/usersettings.h"
+#include "database/mixxxdb.h"
 #include "controllers/defs_controllers.h"
 #include "defs_version.h"
 #include "library/library_preferences.h"
@@ -359,21 +360,22 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
     if (configVersion.startsWith("1.11")) {
         qDebug() << "Upgrading from v1.11.x...";
 
+        MixxxDB dataSource(config);
+        dataSource.initDatabaseSchema();
+        TrackCollection tc(config);
+        tc.setDatabase(dataSource.database());
+
         // upgrade to the multi library folder settings
         QString currentFolder = config->getValueString(PREF_LEGACY_LIBRARY_DIR);
         // to migrate the DB just add the current directory to the new
         // directories table
-        TrackCollection tc(config);
-        tc.initDatabaseSchema();
-        DirectoryDAO directoryDAO = tc.getDirectoryDAO();
-
         // NOTE(rryan): We don't have to ask for sandbox permission to this
         // directory because the normal startup integrity check in Library will
         // notice if we don't have permission and ask for access. Also, the
         // Sandbox isn't setup yet at this point in startup because it relies on
         // the config settings path and this function is what loads the config
         // so it's not ready yet.
-        bool successful = directoryDAO.addDirectory(currentFolder);
+        bool successful = tc.getDirectoryDAO().addDirectory(currentFolder);
 
         // ask for library rescan to activate cover art. We can later ask for
         // this variable when the library scanner is constructed.

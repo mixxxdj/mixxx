@@ -3,14 +3,17 @@
 
 #include "test/mixxxtest.h"
 
+#include "database/mixxxdb.h"
 #include "library/trackcollection.h"
 
 
 class LibraryTest : public MixxxTest {
   protected:
     LibraryTest()
-        : m_trackCollection(config()) {
-        m_trackCollection.initDatabaseSchema();
+        : m_dataSource(config()),
+          m_trackCollection(config()) {
+        m_dataSource.initDatabaseSchema();
+        m_trackCollection.setDatabase(m_dataSource.database());
     }
     ~LibraryTest() override {
     }
@@ -20,6 +23,7 @@ class LibraryTest : public MixxxTest {
     }
 
   private:
+    MixxxDB m_dataSource;
     TrackCollection m_trackCollection;
 };
 
