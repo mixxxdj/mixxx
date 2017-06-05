@@ -204,7 +204,7 @@
       <item row="6" column="2">
        <widget class="QCheckBox" name="checkBoxScaleFactorAuto">
         <property name="toolTip">
-         <string>Adopt scale factor from the Os </string>
+         <string>Adopt scale factor from the operating system</string>
         </property>
         <property name="text">
          <string>Auto Scaling</string>
@@ -217,7 +217,7 @@
    <item row="1" column="0">
     <widget class="QGroupBox" name="groupBoxDeckOptions">
      <property name="title">
-      <string>Deck option</string>
+      <string>Deck options</string>
      </property>
      <layout class="QGridLayout" name="GridLayout1">
       <item row="0" column="0">

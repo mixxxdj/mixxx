@@ -79,6 +79,10 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
   private slots:
     void slotPassthroughEnabled(double v);
     void slotVinylControlEnabled(double v);
+    void slotWaveformZoomValueChangeRequest(double pressed);
+    void slotWaveformZoomUp(double pressed);
+    void slotWaveformZoomDown(double pressed);
+    void slotWaveformZoomSetDefault(double pressed);
 
   private:
     void setReplayGain(double value);
@@ -88,7 +92,10 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     TrackPointer m_pLoadedTrack;
 
     // Waveform display related controls
-    ControlPotmeter* m_pWaveformZoom;
+    ControlObject* m_pWaveformZoom;
+    ControlPushButton* m_pWaveformZoomUp;
+    ControlPushButton* m_pWaveformZoomDown;
+    ControlPushButton* m_pWaveformZoomSetDefault;
     ControlObject* m_pEndOfTrack;
 
     ControlProxy* m_pLoopInPoint;
