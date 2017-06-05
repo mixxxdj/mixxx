@@ -750,23 +750,31 @@ double AutoDJProcessor::getDuration(DeckAttributes* pDeck) {
     if (samplerate <= 0.0) {
         return 0.0;
     }
-    return samples / (kChannelCount * samplerate);  // Convert to seconds
+    return samples / samplerate;  // Convert to seconds
 }
 
 double AutoDJProcessor::getStartPosition(DeckAttributes* pDeck) {
-    double position = pDeck->startPosition();
+    double samplerate = pDeck->sampleRate();
+    if (samplerate <= 0.0) {
+        return 0.0;
+    }
+    double position = pDeck->startPosition() / kChannelCount;
     if (position < 0.0) {
         position = 0.0;
     }
-    return position / (kChannelCount * pDeck->sampleRate());  // Convert to seconds
+    return position / samplerate;  // Convert to seconds
 }
 
 double AutoDJProcessor::getEndPosition(DeckAttributes* pDeck) {
-    double position = pDeck->endPosition();
-    if (position < 0.0) {
+    double samplerate = pDeck->sampleRate();
+    if (samplerate <= 0.0) {
+        return 0.0;
+    }
+    double position = pDeck->endPosition() / kChannelCount;
+    if (position <= 0.0) {
         position = pDeck->samples();
     }
-    return position / (kChannelCount * pDeck->sampleRate());  // Convert to seconds
+    return position / samplerate;  // Convert to seconds
 }
 
 void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
@@ -813,8 +821,6 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         // We don't set pToDeck->startPos here because it is only needed
         // for pause transition.
     } else {  // Pause transition (transition time <= 0)
-        qDebug() << "Pause transition";
-
         if (fromTrackDuration > 0.0) {
             pFromDeck->posThreshold = fromTrackEnd / fromTrackDuration;
             pFromDeck->fadeDuration = m_transitionTime / fromTrackDuration;
