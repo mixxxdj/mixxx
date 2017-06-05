@@ -124,6 +124,7 @@ WTrackTableView::~WTrackTableView() {
     delete m_pPropertiesAct;
     delete m_pMenu;
     delete m_pPlaylistMenu;
+    delete m_pCoverMenu;
     delete m_pCrateMenu;
     delete m_pBpmLockAction;
     delete m_pBpmUnlockAction;
@@ -134,6 +135,8 @@ WTrackTableView::~WTrackTableView() {
     delete m_pBpmFourThirdsAction;
     delete m_pBpmThreeHalvesAction;
     delete m_pBPMMenu;
+    delete m_pClearBeatsAction;
+    delete m_pClearWaveformAction;
     delete m_pReplayGainResetAction;
     delete m_pPurgeAct;
     delete m_pFileBrowserAct;
@@ -455,6 +458,10 @@ void WTrackTableView::createActions() {
     m_pClearBeatsAction = new QAction(tr("Clear BPM and Beatgrid"), this);
     connect(m_pClearBeatsAction, SIGNAL(triggered()),
             this, SLOT(slotClearBeats()));
+
+    m_pClearWaveformAction = new QAction(tr("Clear Waveform"), this);
+    connect(m_pClearWaveformAction, SIGNAL(triggered()),
+            this, SLOT(slotClearWaveform()));
 
     m_pReplayGainResetAction = new QAction(tr("Reset ReplayGain"), this);
     connect(m_pReplayGainResetAction, SIGNAL(triggered()),
@@ -932,6 +939,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pClearBeatsAction->setEnabled(allowClear);
         m_pBPMMenu->addAction(m_pClearBeatsAction);
     }
+
+    m_pMenu->addAction(m_pClearWaveformAction);
 
     m_pMenu->addAction(m_pReplayGainResetAction);
 
@@ -1533,6 +1542,25 @@ void WTrackTableView::slotClearBeats() {
         if (!track->isBpmLocked()) {
             track->setBeats(BeatsPointer());
         }
+    }
+}
+
+void WTrackTableView::slotClearWaveform() {
+    TrackModel* trackModel = getTrackModel();
+    if (trackModel == nullptr) {
+        return;
+    }
+
+    AnalysisDao& analysisDao = m_pTrackCollection->getAnalysisDAO();
+    QModelIndexList indices = selectionModel()->selectedRows();
+    for (const QModelIndex& index : indices) {
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (!pTrack) {
+            continue;
+        }
+        analysisDao.deleteAnalysesForTrack(pTrack->getId());
+        pTrack->setWaveform(WaveformPointer());
+        pTrack->setWaveformSummary(WaveformPointer());
     }
 }
 

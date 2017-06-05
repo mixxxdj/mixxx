@@ -508,6 +508,11 @@ void Tooltips::addStandardTooltips() {
             << tr("Record Mix")
             << tr("Toggle mix recording.");
 
+    // Status displays and toggle buttons
+    add("recording_duration")
+            << tr("Recording Duration")
+            << tr("Displays the duration of the running recording.");
+
     // For legacy reasons also add tooltips for "shoutcast_enabled".
     for (const char* key : {"shoutcast_enabled", "broadcast_enabled"}) {
         add(key)
@@ -598,8 +603,8 @@ void Tooltips::addStandardTooltips() {
 
     add("track_time")
             << tr("Track Time")
-            << tr("Displays the elapsed or remaining time of the track loaded.")
-            << tr("Click to toggle between time elapsed/remaining time.");
+            << tr("Displays the elapsed and/or remaining time of the track loaded.")
+            << tr("Click to toggle between time elapsed/remaining time/both.");
 
     add("track_duration")
             << tr("Track Duration")
