@@ -586,7 +586,7 @@ WWidgetGroup {
 #LoopBeatJumpContainer_Left, #LoopBeatJumpContainer_Right {
   qproperty-layoutAlignment: 'AlignCenter'; /*
   border-radius: 3px; */
-  background-color: #1e1e1e;
+  background-color: #333333;
 }
   #LoopBeatJumpButton, #LoopSizeButton, #LoopRollButton {
     font-weight: bold;
@@ -649,7 +649,7 @@ WBeatSpinBox {
   min-height: 20px;
   max-height: 20px;
   border: 1px solid #666666; /* = 40x20px */
-  border-radius: 5px;
+  border-radius: 2px;
   background-color: #0f0f0f;
   color: #aaaaaa;
   selection-background-color: #d2d2d2;

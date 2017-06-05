@@ -41,7 +41,18 @@ Variables:
           </WidgetGroup><!-- /Overview, Comment, ArtistTitle -->
 
           <Template src="skin:deck_buttons_left.xml" />
-          <Template src="skin:loop_controls_left.xml"/>
+
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Children>
+              <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,3f</Size></WidgetGroup>
+              <Template src="skin:loop_controls_left.xml"/>
+            </Children>
+            <Connection>
+              <ConfigKey>[Tango],loop_beatjump_controls</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
 
         </Children>
       </WidgetGroup><!-- / [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
