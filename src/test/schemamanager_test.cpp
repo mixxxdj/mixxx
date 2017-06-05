@@ -2,8 +2,9 @@
 
 #include "test/mixxxtest.h"
 
+#include "database/schemamanager.h"
+
 #include "library/trackcollection.h"
-#include "library/schemamanager.h"
 #include "library/dao/settingsdao.h"
 
 #include "util/db/dbconnection.h"

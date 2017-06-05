@@ -1,6 +1,3 @@
-// schemamanager.h
-// Created 12/29/2009 by RJ Ryan (rryan@mit.edu)
-
 #ifndef SCHEMAMANAGER_H
 #define SCHEMAMANAGER_H
 

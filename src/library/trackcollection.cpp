@@ -1,6 +1,6 @@
 #include "library/trackcollection.h"
 
-#include "library/schemamanager.h"
+#include "database/schemamanager.h"
 #include "track/track.h"
 #include "util/logger.h"
 #include "util/db/sqltransaction.h"

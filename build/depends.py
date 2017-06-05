@@ -885,6 +885,9 @@ class MixxxCore(Feature):
                    "widget/wlibrarytableview.cpp",
                    "widget/wanalysislibrarytableview.cpp",
                    "widget/wlibrarytextbrowser.cpp",
+
+                   "database/schemamanager.cpp",
+
                    "library/trackcollection.cpp",
                    "library/basesqltablemodel.cpp",
                    "library/basetrackcache.cpp",
@@ -969,7 +972,6 @@ class MixxxCore(Feature):
                    "library/dao/autodjcratesdao.cpp",
 
                    "library/librarycontrol.cpp",
-                   "library/schemamanager.cpp",
                    "library/songdownloader.cpp",
                    "library/starrating.cpp",
                    "library/stardelegate.cpp",

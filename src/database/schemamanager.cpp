@@ -1,14 +1,11 @@
-// schemamanager.cpp
-// Created 12/29/2009 by RJ Ryan (rryan@mit.edu)
+#include "database/schemamanager.h"
 
-#include <QtDebug>
-
-#include "library/schemamanager.h"
 #include "util/db/fwdsqlquery.h"
 #include "util/db/sqltransaction.h"
 #include "util/xml.h"
 #include "util/logger.h"
 #include "util/assert.h"
+
 
 const QString SchemaManager::SETTINGS_VERSION_STRING = "mixxx.schema.version";
 const QString SchemaManager::SETTINGS_MINCOMPATIBLE_STRING = "mixxx.schema.min_compatible_version";
