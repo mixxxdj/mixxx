@@ -68,6 +68,7 @@ bool TrackCollection::initDatabaseSchema(
             m_cueDao.initialize();
             m_directoryDao.initialize();
             m_libraryHashDao.initialize();
+            m_crates.attachDatabase(database());
             return true; // done
         case SchemaManager::Result::UpgradeFailed:
             QMessageBox::warning(
