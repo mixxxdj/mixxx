@@ -886,8 +886,8 @@ class MixxxCore(Feature):
                    "widget/wanalysislibrarytableview.cpp",
                    "widget/wlibrarytextbrowser.cpp",
 
-                   "database/mixxxdb.cpp",
-                   "database/schemamanager.cpp",
+                   "repository/repository.cpp",
+                   "repository/schemamanager.cpp",
 
                    "library/trackcollection.cpp",
                    "library/basesqltablemodel.cpp",

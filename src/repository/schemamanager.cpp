@@ -1,4 +1,4 @@
-#include "database/schemamanager.h"
+#include "repository/schemamanager.h"
 
 #include "util/db/fwdsqlquery.h"
 #include "util/db/sqltransaction.h"

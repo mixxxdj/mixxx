@@ -24,7 +24,7 @@
 #include <QScopedPointer>
 
 #include "preferences/usersettings.h"
-#include "database/mixxxdb.h"
+#include "repository/repository.h"
 #include "controllers/defs_controllers.h"
 #include "defs_version.h"
 #include "library/library_preferences.h"
@@ -360,10 +360,10 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
     if (configVersion.startsWith("1.11")) {
         qDebug() << "Upgrading from v1.11.x...";
 
-        MixxxDB dataSource(config);
-        dataSource.initDatabaseSchema();
+        mixxx::Repository repository(config);
+        repository.initDatabaseSchema();
         TrackCollection tc(config);
-        tc.setDatabase(dataSource.database());
+        tc.setDatabase(repository.database());
 
         // upgrade to the multi library folder settings
         QString currentFolder = config->getValueString(PREF_LEGACY_LIBRARY_DIR);

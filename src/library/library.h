@@ -20,7 +20,12 @@
 #include "library/setlogfeature.h"
 #include "library/scanner/libraryscanner.h"
 
-class MixxxDB;
+namespace mixxx {
+
+class Repository;
+
+} // namespace mixxx
+
 class TrackModel;
 class TrackCollection;
 class SidebarModel;
@@ -122,7 +127,7 @@ public:
   private:
     UserSettingsPointer m_pConfig;
     SidebarModel* m_pSidebarModel;
-    MixxxDB* m_pDatabase;
+    mixxx::Repository* m_pRepository;
     TrackCollection* m_pTrackCollection;
     QList<LibraryFeature*> m_features;
     const static QString m_sTrackViewName;

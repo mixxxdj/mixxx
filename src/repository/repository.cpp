@@ -1,28 +1,30 @@
-#include "database/mixxxdb.h"
+#include "repository/repository.h"
 
-#include "database/schemamanager.h"
+#include "repository/schemamanager.h"
 
 #include "util/assert.h"
 #include "util/logger.h"
 
 
+namespace mixxx {
+
 // The schema XML is baked into the binary via Qt resources.
 //static
-const QString MixxxDB::kDefaultSchemaFile(":/schema.xml");
+const QString Repository::kDefaultSchemaFile(":/schema.xml");
 
 // static
-const int MixxxDB::kRequiredSchemaVersion = 27;
+const int Repository::kRequiredSchemaVersion = 27;
 
 namespace {
-    mixxx::Logger kLogger("MixxxDB");
+    mixxx::Logger kLogger("Repository");
 } // anonymous namespace
 
-MixxxDB::MixxxDB(
+Repository::Repository(
         UserSettingsPointer pConfig)
     : m_dbConnection(pConfig->getSettingsPath()) {
 }
 
-bool MixxxDB::initDatabaseSchema(
+bool Repository::initDatabaseSchema(
         const QString& schemaFile,
         int schemaVersion) {
     if (!database().isOpen()) {
@@ -80,3 +82,5 @@ bool MixxxDB::initDatabaseSchema(
     DEBUG_ASSERT(!"unhandled switch/case");
     return false;
 }
+
+} // namespace mixxx

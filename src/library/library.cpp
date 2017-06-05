@@ -6,7 +6,7 @@
 #include <QTranslator>
 #include <QDir>
 
-#include "database/mixxxdb.h"
+#include "repository/repository.h"
 
 #include "mixer/playermanager.h"
 #include "library/library.h"
@@ -49,16 +49,16 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
                  RecordingManager* pRecordingManager) :
         m_pConfig(pConfig),
         m_pSidebarModel(new SidebarModel(parent)),
-        m_pDatabase(new MixxxDB(pConfig)),
+        m_pRepository(new mixxx::Repository(pConfig)),
         m_pTrackCollection(new TrackCollection(pConfig)),
         m_pLibraryControl(new LibraryControl(this)),
         m_pRecordingManager(pRecordingManager),
         m_scanner(m_pTrackCollection, pConfig) {
-    if (!m_pDatabase->initDatabaseSchema()) {
+    if (!m_pRepository->initDatabaseSchema()) {
         // TODO(XXX) something a little more elegant
         exit(-1);
     }
-    m_pTrackCollection->setDatabase(m_pDatabase->database());
+    m_pTrackCollection->setDatabase(m_pRepository->database());
 
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
 

@@ -1,5 +1,5 @@
-#ifndef MIXXXDB_H
-#define MIXXXDB_H
+#ifndef MIXXX_REPOSITORY_H
+#define MIXXX_REPOSITORY_H
 
 
 #include <QSqlDatabase>
@@ -9,14 +9,16 @@
 #include "util/db/dbconnection.h"
 
 
-class MixxxDB : public QObject {
+namespace mixxx {
+
+class Repository : public QObject {
     Q_OBJECT
 
   public:
     static const QString kDefaultSchemaFile;
     static const int kRequiredSchemaVersion;
 
-    explicit MixxxDB(
+    explicit Repository(
             UserSettingsPointer pConfig);
 
     bool initDatabaseSchema(
@@ -31,5 +33,7 @@ class MixxxDB : public QObject {
     DbConnection m_dbConnection;
 };
 
+} // namespace mixxx
 
-#endif //  MIXXXDB_H
+
+#endif //  MIXXX_REPOSITORY_H
