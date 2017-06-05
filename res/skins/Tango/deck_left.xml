@@ -44,6 +44,7 @@ Variables:
 
           <WidgetGroup>
             <Layout>vertical</Layout>
+            <Size>1me,25f</Size>
             <Children>
               <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,3f</Size></WidgetGroup>
               <Template src="skin:loop_controls_left.xml"/>
@@ -73,10 +74,23 @@ Variables:
 
                   <!-- Mixer -->
                   <WidgetGroup trigger="[Tango],channel_mixer" persist="true" on-hide-select="1">
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>f,f</SizePolicy>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>f,min</SizePolicy>
                     <Children>
                       <Template src="skin:mixer_channel_left.xml"/>
+
+                      <WidgetGroup>
+                        <Layout>vertical</Layout>
+                        <Size>1me,25f</Size>
+                        <Children>
+                          <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,3f</Size></WidgetGroup>
+                          <WidgetGroup><ObjectName>Spacer25</ObjectName><Size>1me,22f</Size></WidgetGroup>
+                        </Children>
+                        <Connection>
+                          <ConfigKey>[Tango],loop_beatjump_controls</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
                     </Children>
                   </WidgetGroup><!-- /Mixer -->
 

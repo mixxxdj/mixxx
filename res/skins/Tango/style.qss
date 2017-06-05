@@ -331,7 +331,7 @@ WWidgetGroup {
 }
 
 #DeckContainer {
-    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   }
   #Deck1, #Deck3, #Deck2, #Deck4 {
     background-color: #0f0f0f
@@ -584,9 +584,8 @@ WWidgetGroup {
 ##############################################################*/
 
 #LoopBeatJumpContainer_Left, #LoopBeatJumpContainer_Right {
-  qproperty-layoutAlignment: 'AlignCenter'; /*
-  border-radius: 3px; */
-  background-color: #333333;
+  qproperty-layoutAlignment: 'AlignCenter';
+  background-color: #252525;
 }
   #LoopBeatJumpButton, #LoopSizeButton, #LoopRollButton {
     font-weight: bold;
@@ -648,7 +647,7 @@ WBeatSpinBox {
   max-width: 52px;
   min-height: 20px;
   max-height: 20px;
-  border: 1px solid #666666; /* = 40x20px */
+  border: 1px solid #666666; /* = 54x22px */
   border-radius: 2px;
   background-color: #0f0f0f;
   color: #aaaaaa;
@@ -657,10 +656,10 @@ WBeatSpinBox {
   font-size: 13px/13px;
   padding: 0;
 }
-  WBeatSpinBox:hover { /* */
+  WBeatSpinBox:hover {
     border-color: #888888;
   }
-  WBeatSpinBox:focus { /* */
+  WBeatSpinBox:focus {
     border-color: #d2d2d2;
     color: #cccccc;
   }
@@ -787,12 +786,10 @@ WBeatSpinBox {
 }
 #MixerChannelLeft {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
-  border-left: 1px solid #0f0f0f;
   background-color: #333333;
 }
 #MixerChannelRight {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
-  border-right: 1px solid #0f0f0f;
   background-color: #333333;
 }
 
@@ -1637,6 +1634,9 @@ QToolTip {
 }
 #Spacer1e {
   background-color: #1e1e1e;
+}
+#Spacer25 {
+  background-color: #252525;
 }
 #Spacer33 {
   background-color: #333333;

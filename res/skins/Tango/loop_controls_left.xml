@@ -13,7 +13,7 @@ Variables:
     <Children>
       <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
 
-      <!-- Loop In/Out -->
+      <!-- Beatloop controls -->
       <WidgetGroup>
         <ObjectName>Spacer0f</ObjectName>
         <Layout>horizontal</Layout>
@@ -41,11 +41,9 @@ Variables:
             <SetVariable name="ConfigKey"><Variable name="group"/>,loop_out</SetVariable>
             <SetVariable name="ConfigKeyRight"><Variable name="group"/>,loop_out_goto</SetVariable>
           </Template>
-          <!-- /Loop In/Out -->
 
           <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
-          <!-- Spinbox + looptoggle/reloop -->
           <Template src="skin:button_2state_right_display.xml">
             <SetVariable name="TooltipId">reloop_toggle</SetVariable>
             <SetVariable name="ObjectName">ReloopButton</SetVariable>
@@ -69,13 +67,13 @@ Variables:
         <TooltipId>beatloop_size</TooltipId>
         <Value><Variable name="group"/>,beatloop_size</Value>
       </BeatSpinBox>
-      <!-- /Spinbox + looptoggle/reloop -->
+
+      <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>3f,1min</Size></WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>Spacer0f</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
-          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state_right.xml">
             <SetVariable name="TooltipId">beatloop_activate</SetVariable>
@@ -90,24 +88,25 @@ Variables:
           </Template>
         </Children>
       </WidgetGroup>
+      <!-- /Beatloop controls -->
 
       <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>3f,1min</Size></WidgetGroup>
 
+      <!-- Loopmove / beatjump controls -->
       <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
-      <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
+      <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
 
       <BeatSpinBox>
         <TooltipId>beatjump_size</TooltipId>
         <Value><Variable name="group"/>,beatjump_size</Value>
       </BeatSpinBox>
-      <!-- /Spinbox + beatjump/loopmove buttons -->
 
-      <!-- Spinbox + beatjump/loopmove buttons -->
+      <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>3f,1min</Size></WidgetGroup>
+
       <WidgetGroup>
         <ObjectName>Spacer0f</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
-          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_1state_right.xml">
             <SetVariable name="TooltipId">beatjump_backward</SetVariable>
@@ -134,6 +133,7 @@ Variables:
       </WidgetGroup>
 
       <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>3f,1min</Size></WidgetGroup>
+      <!-- /Loopmove / beatjump controls -->
 
     </Children>
   </WidgetGroup>

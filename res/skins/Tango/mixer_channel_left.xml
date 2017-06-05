@@ -14,8 +14,9 @@ Variables:
   <WidgetGroup>
     <ObjectName>MixerChannelLeft</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>min,min</SizePolicy>
+    <SizePolicy>min,me</SizePolicy>
     <Children>
+      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1me</Size></WidgetGroup>
 
       <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
 
