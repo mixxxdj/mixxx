@@ -22,6 +22,7 @@ class Repository : public QObject {
             const UserSettingsPointer& pConfig);
 
     bool initDatabaseSchema(
+            const QSqlDatabase& database,
             const QString& schemaFile = kDefaultSchemaFile,
             int schemaVersion = kRequiredSchemaVersion);
 

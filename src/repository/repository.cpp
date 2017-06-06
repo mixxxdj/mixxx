@@ -31,9 +31,9 @@ Repository::Repository(
 }
 
 bool Repository::initDatabaseSchema(
+        const QSqlDatabase& database,
         const QString& schemaFile,
         int schemaVersion) {
-    QSqlDatabase database = m_dbConnection.database();
     if (!database.isOpen()) {
         QMessageBox::critical(0, tr("Cannot open database"),
                             tr("Unable to establish a database connection.\n"
