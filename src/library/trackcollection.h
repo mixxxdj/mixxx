@@ -19,17 +19,22 @@
 // forward declaration(s)
 class Track;
 
-
 // Manages everything around tracks.
-class TrackCollection : public QObject {
+class TrackCollection : public QObject,
+    public virtual /*implements*/ SqlStorage {
     Q_OBJECT
 
   public:
     explicit TrackCollection(
-            UserSettingsPointer pConfig);
+            const UserSettingsPointer& pConfig);
     ~TrackCollection() override;
 
-    void setDatabase(const QSqlDatabase& database);
+    void repairDatabase(
+            QSqlDatabase database) override;
+
+    void connectDatabase(
+            QSqlDatabase database) override;
+    void disconnectDatabase() override;
 
     QSqlDatabase database() const {
         return m_database;

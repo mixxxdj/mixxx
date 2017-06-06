@@ -13,9 +13,10 @@ class LibraryTest : public MixxxTest {
         : m_repository(config()),
           m_trackCollection(config()) {
         m_repository.initDatabaseSchema();
-        m_trackCollection.setDatabase(m_repository.database());
+        m_trackCollection.connectDatabase(m_repository.database());
     }
     ~LibraryTest() override {
+        m_trackCollection.disconnectDatabase();
     }
 
     TrackCollection* collection() {

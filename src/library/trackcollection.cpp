@@ -14,7 +14,7 @@ namespace {
 } // anonymous namespace
 
 TrackCollection::TrackCollection(
-        UserSettingsPointer pConfig)
+        const UserSettingsPointer& pConfig)
         : m_analysisDao(pConfig),
           m_trackDao(m_cueDao, m_playlistDao,
                      m_analysisDao, m_libraryHashDao, pConfig) {
@@ -22,18 +22,28 @@ TrackCollection::TrackCollection(
 
 TrackCollection::~TrackCollection() {
     kLogger.debug() << "~TrackCollection()";
-    m_trackDao.finish();
-    m_crates.detachDatabase();
+    // The database should have been detached earlier
+    DEBUG_ASSERT(!m_database.isOpen());
 }
 
-void TrackCollection::setDatabase(const QSqlDatabase& database) {
+void TrackCollection::repairDatabase(QSqlDatabase database) {
+    m_crates.repairDatabase(database);
+}
+
+void TrackCollection::connectDatabase(QSqlDatabase database) {
     m_database = database;
-    m_trackDao.initialize(m_database);
-    m_playlistDao.initialize(m_database);
-    m_cueDao.initialize(m_database);
-    m_directoryDao.initialize(m_database);
-    m_libraryHashDao.initialize(m_database);
-    m_crates.attachDatabase(m_database);
+    m_trackDao.initialize(database);
+    m_playlistDao.initialize(database);
+    m_cueDao.initialize(database);
+    m_directoryDao.initialize(database);
+    m_libraryHashDao.initialize(database);
+    m_crates.connectDatabase(database);
+}
+
+void TrackCollection::disconnectDatabase() {
+    m_database = QSqlDatabase();
+    m_trackDao.finish();
+    m_crates.disconnectDatabase();
 }
 
 void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache> pTrackSource) {
@@ -99,7 +109,7 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
      }
 
     // Transactional
-    SqlTransaction transaction(database());
+    SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
@@ -127,7 +137,7 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
 
 bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
     // Transactional
-    SqlTransaction transaction(database());
+    SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
@@ -155,7 +165,7 @@ bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
 bool TrackCollection::purgeTracks(
         const QList<TrackId>& trackIds) {
     // Transactional
-    SqlTransaction transaction(database());
+    SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
@@ -199,7 +209,7 @@ bool TrackCollection::insertCrate(
         const Crate& crate,
         CrateId* pCrateId) {
     // Transactional
-    SqlTransaction transaction(database());
+    SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
@@ -224,7 +234,7 @@ bool TrackCollection::insertCrate(
 bool TrackCollection::updateCrate(
         const Crate& crate) {
     // Transactional
-    SqlTransaction transaction(database());
+    SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
@@ -244,7 +254,7 @@ bool TrackCollection::updateCrate(
 bool TrackCollection::deleteCrate(
         CrateId crateId) {
     // Transactional
-    SqlTransaction transaction(database());
+    SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
@@ -265,7 +275,7 @@ bool TrackCollection::addCrateTracks(
         CrateId crateId,
         const QList<TrackId>& trackIds) {
     // Transactional
-    SqlTransaction transaction(database());
+    SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
@@ -286,7 +296,7 @@ bool TrackCollection::removeCrateTracks(
         CrateId crateId,
         const QList<TrackId>& trackIds) {
     // Transactional
-    SqlTransaction transaction(database());
+    SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }

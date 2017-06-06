@@ -9,9 +9,9 @@
 #include "library/crate/cratesummary.h"
 #include "track/trackid.h"
 
-#include "util/db/sqlstorage.h"
 #include "util/db/fwdsqlqueryselectresult.h"
 #include "util/db/sqlsubselectmode.h"
+#include "util/db/sqlstorage.h"
 
 
 // forward declaration(s)
@@ -179,21 +179,17 @@ private:
     CrateTrackQueryFields m_queryFields;
 };
 
-class CrateStorage: public SqlStorage {
+class CrateStorage: public virtual /*implements*/ SqlStorage {
   public:
-    ~CrateStorage() final = default;
+    CrateStorage() = default;
+    ~CrateStorage() override = default;
 
+    void repairDatabase(
+            QSqlDatabase database) override;
 
-    /////////////////////////////////////////////////////////////////////////
-    // Inherited operations (non-const)
-    // Only invoked by TrackCollection!
-    /////////////////////////////////////////////////////////////////////////
-
-    void repairDatabase(QSqlDatabase database) final;
-
-    void attachDatabase(QSqlDatabase database) final;
-    void detachDatabase() final;
-
+    void connectDatabase(
+            QSqlDatabase database) override;
+    void disconnectDatabase() override;
 
     /////////////////////////////////////////////////////////////////////////
     // Crate write operations (transactional, non-const)

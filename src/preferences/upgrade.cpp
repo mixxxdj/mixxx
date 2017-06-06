@@ -359,23 +359,27 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 
     if (configVersion.startsWith("1.11")) {
         qDebug() << "Upgrading from v1.11.x...";
+        bool successful = false;
+        {
+            mixxx::Repository repository(config);
+            repository.initDatabaseSchema();
+            TrackCollection tc(config);
+            tc.connectDatabase(repository.database());
 
-        mixxx::Repository repository(config);
-        repository.initDatabaseSchema();
-        TrackCollection tc(config);
-        tc.setDatabase(repository.database());
+            // upgrade to the multi library folder settings
+            QString currentFolder = config->getValueString(PREF_LEGACY_LIBRARY_DIR);
+            // to migrate the DB just add the current directory to the new
+            // directories table
+            // NOTE(rryan): We don't have to ask for sandbox permission to this
+            // directory because the normal startup integrity check in Library will
+            // notice if we don't have permission and ask for access. Also, the
+            // Sandbox isn't setup yet at this point in startup because it relies on
+            // the config settings path and this function is what loads the config
+            // so it's not ready yet.
+            successful = tc.getDirectoryDAO().addDirectory(currentFolder);
 
-        // upgrade to the multi library folder settings
-        QString currentFolder = config->getValueString(PREF_LEGACY_LIBRARY_DIR);
-        // to migrate the DB just add the current directory to the new
-        // directories table
-        // NOTE(rryan): We don't have to ask for sandbox permission to this
-        // directory because the normal startup integrity check in Library will
-        // notice if we don't have permission and ask for access. Also, the
-        // Sandbox isn't setup yet at this point in startup because it relies on
-        // the config settings path and this function is what loads the config
-        // so it's not ready yet.
-        bool successful = tc.getDirectoryDAO().addDirectory(currentFolder);
+            tc.disconnectDatabase();
+        }
 
         // ask for library rescan to activate cover art. We can later ask for
         // this variable when the library scanner is constructed.

@@ -19,7 +19,7 @@ class Repository : public QObject {
     static const int kRequiredSchemaVersion;
 
     explicit Repository(
-            UserSettingsPointer pConfig);
+            const UserSettingsPointer& pConfig);
 
     bool initDatabaseSchema(
             const QString& schemaFile = kDefaultSchemaFile,

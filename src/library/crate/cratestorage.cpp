@@ -206,13 +206,16 @@ void CrateStorage::repairDatabase(QSqlDatabase database) {
 }
 
 
-void CrateStorage::attachDatabase(QSqlDatabase database) {
+void CrateStorage::connectDatabase(QSqlDatabase database) {
     m_database = database;
     createViews();
 }
 
 
-void CrateStorage::detachDatabase() {
+void CrateStorage::disconnectDatabase() {
+    // Ensure that we don't use the current database connection
+    // any longer.
+    m_database = QSqlDatabase();
 }
 
 

@@ -29,6 +29,7 @@
 #include "library/librarycontrol.h"
 #include "library/setlogfeature.h"
 #include "util/sandbox.h"
+#include "util/logger.h"
 #include "util/assert.h"
 
 #include "widget/wtracktableview.h"
@@ -36,6 +37,13 @@
 #include "widget/wlibrarysidebar.h"
 
 #include "controllers/keyboard/keyboardeventfilter.h"
+
+
+namespace {
+
+const mixxx::Logger kLogger("Library");
+
+} // anonymous namespace
 
 // This is is the name which we use to register the WTrackTableView with the
 // WLibrary
@@ -54,11 +62,19 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
         m_pLibraryControl(new LibraryControl(this)),
         m_pRecordingManager(pRecordingManager),
         m_scanner(m_pTrackCollection, pConfig) {
+    kLogger.info() << "Initializing datbase schema";
     if (!m_pRepository->initDatabaseSchema()) {
         // TODO(XXX) something a little more elegant
         exit(-1);
     }
-    m_pTrackCollection->setDatabase(m_pRepository->database());
+
+    QSqlDatabase database = m_pRepository->database();
+
+    kLogger.info() << "Repairing database";
+    m_pTrackCollection->repairDatabase(database);
+
+    kLogger.info() << "Connecting database";
+    m_pTrackCollection->connectDatabase(database);
 
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
 
@@ -156,6 +172,10 @@ Library::~Library() {
     }
 
     delete m_pLibraryControl;
+
+    kLogger.info() << "Disconnecting database";
+    m_pTrackCollection->disconnectDatabase();
+
     //IMPORTANT: m_pTrackCollection gets destroyed via the QObject hierarchy somehow.
     //           Qt does it for us due to the way RJ wrote all this stuff.
     //Update:  - OR NOT! As of Dec 8, 2009, this pointer must be destroyed manually otherwise
