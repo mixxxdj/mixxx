@@ -95,12 +95,12 @@ class CoreServices(Dependence):
         build.env.Append(LINKFLAGS='-framework CoreServices')
 
 class IOKit(Dependence):
-    """IOKit is used to get battery measurements on OS X and iOS."""
+    """Used for battery measurements and controlling the screensaver on OS X and iOS."""
     def configure(self, build, conf):
         if not build.platform_is_osx:
             return
         build.env.Append(
-            CPPPATH='/Library/Frameworks/IOKit.framework/Headers/')
+            CPPPATH='/System/Library/Frameworks/IOKit.framework/Headers/')
         build.env.Append(LINKFLAGS='-framework IOKit')
 
 class UPower(Dependence):
@@ -284,7 +284,7 @@ class Qt(Dependence):
                 raise Exception('Qt >= 5.0 not found')
             elif not qt5 and not conf.CheckForPKG('QtCore', '4.6'):
                 raise Exception('QT >= 4.6 not found')
-            
+
             qt_modules.extend(['QtDBus'])
             # This automatically converts QtXXX to Qt5XXX where appropriate.
             if qt5:
@@ -1436,7 +1436,7 @@ class MixxxCore(Feature):
     def depends(self, build):
         return [SoundTouch, ReplayGain, Ebur128Mit, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
-                Chromaprint, RubberBand, SecurityFramework, CoreServices,
+                Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
                 QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer]
 
     def post_dependency_check_configure(self, build, conf):

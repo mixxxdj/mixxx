@@ -153,9 +153,11 @@ void MessageHandler(QtMsgType type,
                     // re-send as fatal
                     locker.unlock();
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-                    qFatal(input);
+                    // The "%s" is intentional. See -Werror=format-security.
+                    qFatal("%s", input);
 #else
-                    qFatal(input.toLocal8Bit());
+                    // The "%s" is intentional. See -Werror=format-security.
+                    qFatal("%s", input.toLocal8Bit().constData());
 #endif
                     return;
 #else

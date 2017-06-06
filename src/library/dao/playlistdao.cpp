@@ -382,18 +382,18 @@ bool PlaylistDAO::isHidden(const int playlistId) const {
 
 
 void PlaylistDAO::removeHiddenTracks(const int playlistId) {
-	ScopedTransaction transaction(m_database);
+    ScopedTransaction transaction(m_database);
     // This query deletes all tracks marked as deleted and all
     // phantom track_ids with no match in the library table
     QString queryString = QString(
-            "SELECT position FROM PlaylistTracks "
-            "WHERE PlaylistTracks.id NOT IN ("
-                "SELECT PlaylistTracks.id "
-                "FROM PlaylistTracks "
-                "INNER JOIN library ON library.id = PlaylistTracks.track_id "
-                "WHERE PlaylistTracks.playlist_id = %1 "
-                "AND library.mixxx_deleted = 0 ) "
-            "AND PlaylistTracks.playlist_id = %1")
+        "SELECT position FROM PlaylistTracks "
+        "WHERE PlaylistTracks.id NOT IN ("
+        "SELECT PlaylistTracks.id "
+        "FROM PlaylistTracks "
+        "INNER JOIN library ON library.id = PlaylistTracks.track_id "
+        "WHERE PlaylistTracks.playlist_id = %1 "
+        "AND library.mixxx_deleted = 0 ) "
+        "AND PlaylistTracks.playlist_id = %1")
             .arg(QString::number(playlistId));
 
     QSqlQuery query(m_database);
