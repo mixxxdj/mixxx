@@ -3,15 +3,18 @@
 #include "library/crate/crateschema.h"
 #include "library/dao/trackschema.h"
 
-#include "util/db/sqllikewildcards.h"
 #include "util/db/dbconnection.h"
+
 #include "util/db/sqltransaction.h"
+#include "util/db/sqllikewildcards.h"
 #include "util/db/fwdsqlquery.h"
 
-#include <QtDebug>
+#include "util/logger.h"
 
 
 namespace {
+
+const mixxx::Logger kLogger("CrateStorage");
 
 const QString CRATETABLE_LOCKED = "locked";
 
@@ -82,6 +85,7 @@ class CrateQueryBinder {
 } // anonymous namespace
 
 
+
 CrateQueryFields::CrateQueryFields(const FwdSqlQuery& query)
     : m_iId(query.fieldIndex(CRATETABLE_ID)),
       m_iName(query.fieldIndex(CRATETABLE_NAME)),
@@ -145,7 +149,8 @@ void CrateStorage::repairDatabase(QSqlDatabase database) {
                         CRATE_TABLE,
                         CRATETABLE_NAME));
         if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            qWarning() << "Deleted" << query.numRowsAffected()
+            kLogger.warning()
+                    << "Deleted" << query.numRowsAffected()
                     << "crates with empty names";
         }
     }
@@ -156,8 +161,8 @@ void CrateStorage::repairDatabase(QSqlDatabase database) {
                         CRATE_TABLE,
                         CRATETABLE_LOCKED));
         if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            qWarning() << "Fixed boolean values in"
-                    "table" << CRATE_TABLE
+            kLogger.warning()
+                    << "Fixed boolean values in table" << CRATE_TABLE
                     << "column" << CRATETABLE_LOCKED
                     << "for" << query.numRowsAffected() << "crates";
         }
@@ -169,8 +174,8 @@ void CrateStorage::repairDatabase(QSqlDatabase database) {
                         CRATE_TABLE,
                         CRATETABLE_AUTODJ_SOURCE));
         if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            qWarning() << "Fixed boolean values in"
-                    "table" << CRATE_TABLE
+            kLogger.warning()
+                    << "Fixed boolean values in table" << CRATE_TABLE
                     << "column" << CRATETABLE_AUTODJ_SOURCE
                     << "for" << query.numRowsAffected() << "crates";
         }
@@ -186,7 +191,8 @@ void CrateStorage::repairDatabase(QSqlDatabase database) {
                         CRATETABLE_ID,
                         CRATE_TABLE));
         if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            qWarning() << "Removed" << query.numRowsAffected()
+            kLogger.warning()
+                    << "Removed" << query.numRowsAffected()
                     << "crate tracks from non-existent crates";
         }
     }
@@ -199,7 +205,8 @@ void CrateStorage::repairDatabase(QSqlDatabase database) {
                         LIBRARYTABLE_ID,
                         LIBRARY_TABLE));
         if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            qWarning() << "Removed" << query.numRowsAffected()
+            kLogger.warning()
+                    << "Removed" << query.numRowsAffected()
                     << "library purged tracks from crates";
         }
     }
@@ -221,7 +228,8 @@ void CrateStorage::disconnectDatabase() {
 
 void CrateStorage::createViews() {
     VERIFY_OR_DEBUG_ASSERT(FwdSqlQuery(m_database, kCrateSummaryViewQuery).execPrepared()) {
-        qCritical() << "Failed to create database view for crate summaries!";
+        kLogger.critical()
+                << "Failed to create database view for crate summaries!";
     }
 }
 
@@ -250,11 +258,13 @@ bool CrateStorage::readCrateById(CrateId id, Crate* pCrate) const {
         CrateSelectResult crates(std::move(query));
         if ((pCrate != nullptr) ? crates.populateNext(pCrate) : crates.next()) {
             VERIFY_OR_DEBUG_ASSERT(!crates.next()) {
-                qWarning() << "Ambiguous crate id:" << id;
+                kLogger.warning()
+                        << "Ambiguous crate id:" << id;
             }
             return true;
         } else {
-            qWarning() << "Crate not found by id:" << id;
+            kLogger.warning()
+                    << "Crate not found by id:" << id;
         }
     }
     return false;
@@ -271,11 +281,13 @@ bool CrateStorage::readCrateByName(const QString& name, Crate* pCrate) const {
         CrateSelectResult crates(std::move(query));
         if ((pCrate != nullptr) ? crates.populateNext(pCrate) : crates.next()) {
             VERIFY_OR_DEBUG_ASSERT(!crates.next()) {
-                qWarning() << "Ambiguous crate name:" << name;
+                kLogger.warning()
+                        << "Ambiguous crate name:" << name;
             }
             return true;
         } else {
-            qDebug() << "Crate not found by name:" << name;
+            kLogger.debug()
+                    << "Crate not found by name:" << name;
         }
     }
     return false;
@@ -376,11 +388,13 @@ bool CrateStorage::readCrateSummaryById(CrateId id, CrateSummary* pCrateSummary)
         CrateSummarySelectResult crateSummaries(std::move(query));
         if ((pCrateSummary != nullptr) ? crateSummaries.populateNext(pCrateSummary) : crateSummaries.next()) {
             VERIFY_OR_DEBUG_ASSERT(!crateSummaries.next()) {
-                qWarning() << "Ambiguous crate id:" << id;
+                kLogger.warning()
+                        << "Ambiguous crate id:" << id;
             }
             return true;
         } else {
-            qWarning() << "Crate summary not found by id:" << id;
+            kLogger.warning()
+                    << "Crate summary not found by id:" << id;
         }
     }
     return false;
@@ -503,7 +517,8 @@ bool CrateStorage::onInsertingCrate(
         CrateId* pCrateId) {
     DEBUG_ASSERT(transaction);
     VERIFY_OR_DEBUG_ASSERT(!crate.getId().isValid()) {
-        qWarning() << "Cannot insert crate with a valid id:" << crate.getId();
+        kLogger.warning()
+                << "Cannot insert crate with a valid id:" << crate.getId();
         return false;
     }
     FwdSqlQuery query(m_database, QString(
@@ -540,7 +555,8 @@ bool CrateStorage::onUpdatingCrate(
         const Crate& crate) {
     DEBUG_ASSERT(transaction);
     VERIFY_OR_DEBUG_ASSERT(crate.getId().isValid()) {
-        qWarning() << "Cannot update crate without a valid id";
+        kLogger.warning()
+                << "Cannot update crate without a valid id";
         return false;
     }
     FwdSqlQuery query(m_database, QString(
@@ -563,11 +579,13 @@ bool CrateStorage::onUpdatingCrate(
     }
     if (query.numRowsAffected() > 0) {
         VERIFY_OR_DEBUG_ASSERT(query.numRowsAffected() <= 1) {
-            qWarning() << "Updated multiple crates with the same id" << crate.getId();
+            kLogger.warning()
+                    << "Updated multiple crates with the same id" << crate.getId();
         }
         return true;
     } else {
-        qWarning() << "Cannot update non-existent crate with id" << crate.getId();
+        kLogger.warning()
+                << "Cannot update non-existent crate with id" << crate.getId();
         return false;
     }
 }
@@ -580,7 +598,8 @@ bool CrateStorage::onDeletingCrate(
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
-        qWarning() << "Cannot delete crate without a valid id";
+        kLogger.warning()
+                << "Cannot delete crate without a valid id";
         return false;
     }
     {
@@ -596,7 +615,8 @@ bool CrateStorage::onDeletingCrate(
             return false;
         }
         if (query.numRowsAffected() <= 0) {
-            qDebug() << "Deleting empty crate with id" << crateId;
+            kLogger.debug()
+                    << "Deleting empty crate with id" << crateId;
         }
     }
     {
@@ -613,11 +633,13 @@ bool CrateStorage::onDeletingCrate(
         }
         if (query.numRowsAffected() > 0) {
             VERIFY_OR_DEBUG_ASSERT(query.numRowsAffected() <= 1) {
-                qWarning() << "Deleted multiple crates with the same id" << crateId;
+                kLogger.warning()
+                        << "Deleted multiple crates with the same id" << crateId;
             }
             return true;
         } else {
-            qWarning() << "Cannot delete non-existent crate with id" << crateId;
+            kLogger.warning()
+                    << "Cannot delete non-existent crate with id" << crateId;
             return false;
         }
     }
@@ -647,7 +669,9 @@ bool CrateStorage::onAddingCrateTracks(
         }
         if (query.numRowsAffected() == 0) {
             // track is already in crate
-            qDebug() << "Track" << trackId << "not added to crate" << crateId;
+            kLogger.debug()
+                    << "Track" << trackId
+                    << "not added to crate" << crateId;
         } else {
             DEBUG_ASSERT(query.numRowsAffected() == 1);
         }
@@ -681,7 +705,9 @@ bool CrateStorage::onRemovingCrateTracks(
         }
         if (query.numRowsAffected() == 0) {
             // track not found in crate
-            qDebug() << "Track" << trackId << "not removed from crate" << crateId;
+            kLogger.debug()
+                    << "Track" << trackId
+                    << "not removed from crate" << crateId;
         } else {
             DEBUG_ASSERT(query.numRowsAffected() == 1);
         }
