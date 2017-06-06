@@ -1,0 +1,54 @@
+<!--
+Description:
+    BasicLooping controls: in/got, out/got, reloop.
+Variables:
+    group : [ChannelN]
+-->
+<Template>
+  <WidgetGroup>
+  <ObjectName>LoopBeatJumpContainer</ObjectName>
+      <Layout>horizontal</Layout>
+      <SizePolicy>min,min</SizePolicy>
+      <Children>
+          
+        <Template src="skin:button_1state_right.xml">
+          <SetVariable name="TooltipId">loop_in</SetVariable>
+          <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
+          <SetVariable name="Size">22f,45f</SetVariable>
+          <SetVariable name="state_0_pressed">loop_in.svg</SetVariable>
+          <SetVariable name="state_0_unpressed">loop_in.svg</SetVariable>
+          <SetVariable name="ConfigKey"><Variable name="group"/>,loop_in</SetVariable>
+          <SetVariable name="ConfigKeyRight"><Variable name="group"/>,loop_in_goto</SetVariable>
+        </Template>
+          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+        <!-- ToDo(ronso0) uncomment as soon as #1187 is merged
+        <Template src="skin:button_2state_right_display.xml">
+          <SetVariable name="TooltipId">reloop_toggle</SetVariable>
+          <SetVariable name="ObjectName">LoopIndicator</SetVariable>
+          <SetVariable name="Size">45f,45f</SetVariable>
+          <SetVariable name="ConfigKey"><Variable name="group"/>,reloop_toggle</SetVariable>
+          <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reloop_andstop</SetVariable>
+          <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,loop_enabled</SetVariable>
+        </Template> -->
+        <Template src="skin:button_2state_right_display.xml">
+          <SetVariable name="TooltipId">reloop_exit</SetVariable>
+          <SetVariable name="ObjectName">LoopIndicator</SetVariable>
+          <SetVariable name="Size">45f,45f</SetVariable>
+          <SetVariable name="ConfigKey"><Variable name="group"/>,reloop_exit</SetVariable>
+          <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reloop_exit</SetVariable>
+          <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,loop_enabled</SetVariable>
+        </Template>
+          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+        <Template src="skin:button_1state_right.xml">
+          <SetVariable name="TooltipId">loop_out</SetVariable>
+          <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
+          <SetVariable name="Size">22f,45f</SetVariable>
+          <SetVariable name="state_0_pressed">loop_out.svg</SetVariable>
+          <SetVariable name="state_0_unpressed">loop_out.svg</SetVariable>
+          <SetVariable name="ConfigKey"><Variable name="group"/>,loop_out</SetVariable>
+          <SetVariable name="ConfigKeyRight"><Variable name="group"/>,loop_out_goto</SetVariable>
+        </Template>
+      
+      </Children>
+  </WidgetGroup>
+</Template>

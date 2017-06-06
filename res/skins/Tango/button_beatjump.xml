@@ -1,0 +1,55 @@
+<!--
+Description:
+  An individual beatjump button:
+  * size display
+    left-click  : double beatjump size
+    right-click : halve beatjump size
+  * button to jump backward by beatjump size
+  * button to jump forward by beatjump size
+Variables:
+  group                 : [ChannelN]
+  BeatjumpLength_Text   : jump distance as text
+  BeatjumpLength_Control: jump distance as config value
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>LoopBeatJumpContainer</ObjectName>
+    <Layout>vertical</Layout>
+    <Children>
+    
+      <Template src="skin:button_1state_right.xml">
+        <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
+        <SetVariable name="Size">50f,22f</SetVariable>
+        <SetVariable name="state_0_text"><Variable name="BeatjumpLength_Text"/></SetVariable>
+        <SetVariable name="ConfigKey">[BeatJump],next</SetVariable>
+        <SetVariable name="ConfigKeyRight">[BeatJump],prev</SetVariable>
+      </Template>
+      
+        <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
+      
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:button_1state.xml">
+            <SetVariable name="TooltipId">beatjump_backward</SetVariable>
+            <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
+            <SetVariable name="Size">24f,22f</SetVariable>
+            <SetVariable name="state_0_pressed">backward_pressed.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">backward.svg</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,beatjump_<Variable name="BeatjumpLength_Control"/>_backward</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:button_1state.xml">
+            <SetVariable name="TooltipId">beatjump_forward</SetVariable>
+            <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
+            <SetVariable name="Size">25f,22f</SetVariable>
+            <SetVariable name="state_0_pressed">forward_pressed.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">forward.svg</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,beatjump_<Variable name="BeatjumpLength_Control"/>_forward</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

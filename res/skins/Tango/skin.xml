@@ -1,0 +1,471 @@
+<!--
+    Tango - a flat, super-minimizable, nightime-compatible skin for mixxx
+
+    This skin acts as an extension for your controller, meaning (almost) all duplicate
+    controls can be removed. See skin settings menu (next to clock) for all controls.
+
+    Main focus was to make every control easily and quickly recognizable,
+    especially when your eyes are mostly on your controller and your hands.
+    I started with LateNight -like most of the mods- and I got much inspiration
+    from Deere and how templates and variables can be used.
+
+    I suppose everything is self-explaining, just try out.
+    - Play buttons: RED when track is playing normally,
+                    ORANGE when 'previewing' from Cue/HotCue.
+    - right-clicking Play button when playing will stop/reset track to Cue point,
+      right-clicking when stopped will set Cue point to current position.
+    - when keylock is OFF, keylock button turns RED
+    - how to use comments row: insert a blank line in track's comment with
+      <space><shift-return> and add your notes in front of that.
+
+    Mixxx forum link for updates, bugs & hugs, feature requests and changelog:
+    http://www.mixxx.org/forums/viewtopic.php?f=8&t=8578
+
+    Enjoy!
+    Big   U	  U   P P P
+          U	  U   P     P
+          U	  U   P P P
+            U	U	  P        to mixxx devs for their work over the past years!!
+
+-->
+
+<skin>
+  <manifest>
+    <title>Tango</title>
+    <author>Ronny Sandig</author>
+    <version>0.9.X</version>
+    <description>A flat, super-minimizable, nightime-compatible skin</description>
+    <language>en</language>
+    <license>Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International</license>
+
+  <!--    ################################################################
+          Control Objects  ##############################################
+        ###############################################################
+  -->
+    <attributes>
+      <!-- Set skin defaults. -->
+      <attribute config_key="[Master],num_decks">4</attribute>
+      <attribute config_key="[Master],num_samplers">64</attribute>
+      <attribute persist="true" config_key="[Master],show_mixer">0</attribute>
+      <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
+      <attribute persist="true" config_key="[Master],maximize_library">0</attribute>
+      <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
+      <attribute persist="true" config_key="[Library],show_library">1</attribute>
+      <attribute persist="true" config_key="[EffectRack1],show">0</attribute>
+      <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
+      <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
+      <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
+      <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">1</attribute>
+      <!-- [Tango] specific defaults -->
+      <attribute persist="true" config_key="[Tango],2or4_fxUnits">0</attribute>
+      <attribute persist="true" config_key="[Tango],sampler_fx_buttons">1</attribute>
+      <attribute persist="true" config_key="[Tango],micaux_fx_buttons">1</attribute>
+      <attribute persist="true" config_key="[Tango],beatgrid_buttons">0</attribute>
+      <attribute persist="true" config_key="[Tango],channel_mixer">1</attribute>
+      <attribute persist="true" config_key="[Tango],crossfader">1</attribute>
+      <attribute persist="true" config_key="[Tango],crossfader_logo_Stack">1</attribute>
+      <attribute persist="true" config_key="[Tango],deck_controls">1</attribute>
+      <attribute persist="true" config_key="[Tango],eq_knobs">1</attribute>
+      <attribute persist="true" config_key="[Tango],hotcues">1</attribute>
+      <attribute persist="true" config_key="[Tango],key_controls">1</attribute>
+      <attribute persist="true" config_key="[Tango],loop_beatjump_controls">1</attribute>
+      <attribute persist="true" config_key="[Tango],mixerbar">1</attribute>
+      <attribute persist="true" config_key="[Tango],mixerbar_headphone">1</attribute>
+      <attribute persist="true" config_key="[Tango],mixerbar_mic">1</attribute>
+      <attribute persist="true" config_key="[Tango],mixerbar_aux">1</attribute>
+      <attribute persist="true" config_key="[Tango],mixerbar_below_library">0</attribute>
+      <attribute persist="true" config_key="[Tango],mixer_spinnyCover">0</attribute>
+      <attribute persist="true" config_key="[Tango],pitch_fader">1</attribute>
+      <!-- item index in skin_settings_sampler_rows.xml, sets 2 sampler rows -->
+      <attribute persist="true" config_key="[Tango],sampler_rows">1</attribute>
+      <attribute persist="true" config_key="[SamplerRow1],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow2],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow3],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow4],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow5],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow6],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow7],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow8],expanded">0</attribute>
+      <attribute persist="true" config_key="[Tango],stacked_overviews">1</attribute>
+      <attribute persist="true" config_key="[Tango],stacked_waveforms">1</attribute>
+      <attribute persist="true" config_key="[Tango],stars">1</attribute>
+      <attribute persist="true" config_key="[Tango],trackComment">1</attribute>
+      <attribute persist="true" config_key="[Tango],spinny_cover_none">1</attribute>
+      <attribute persist="true" config_key="[Tango],spinnyCoverBIG">1</attribute>
+      <attribute persist="true" config_key="[Tango],spinnyWithCoverArt">1</attribute>
+      <attribute persist="true" config_key="[Tango],vinylControlsDeck1">0</attribute>
+      <attribute persist="true" config_key="[Tango],vinylControlsDeck2">0</attribute>
+      <attribute persist="true" config_key="[Tango],vinylControlsDeck3">0</attribute>
+      <attribute persist="true" config_key="[Tango],vinylControlsDeck4">0</attribute>
+      <attribute persist="true" config_key="[Tango],vumeter">1</attribute>
+    <!-- Next two COs are pre-set and must never be changed!
+        Otherwise SizeAwareStack in netbook_trigger.xml won't work properly.
+        See description there.
+        netbook_normal_stack0 = 0 means netbook mode with < 1260px width
+        netbook_normal_stack1 = 1 means normal mode with >= 1260px width -->
+      <attribute config_key="[Tango],netbook_normal_stack0">0</attribute>
+      <attribute config_key="[Tango],netbook_normal_stack1">1</attribute>
+  <!-- Manually trigger netbook_mode from skin settings -->
+      <attribute persist="true" config_key="[Tango],enforce_netbook_mode">0</attribute>
+  <!-- Similiar mechanism to detect if star rating fits into deck button row as well
+      (see deck_buttons_right.xml) and to avoid ugly states in  on small screens. -->
+      <attribute config_key="[Tango],stars_fit_stack0">0</attribute>
+      <attribute config_key="[Tango],stars_fit_stack1">1</attribute>
+    </attributes>
+  </manifest>
+
+  <ObjectName>Mixxx</ObjectName>
+  <Style src="skin:style.qss"/>
+  <MinimumSize>1008,500</MinimumSize>
+  <SizePolicy>me,me</SizePolicy>
+  <Layout>vertical</Layout>
+
+<!--  ################################################################
+       Launch Image  ################################################
+     ###############################################################
+-->
+  <LaunchImageStyle>
+    LaunchImage {
+      background-color: #0f0f0f;
+    }
+    QLabel {
+      image: url(skin:/buttons/btn_logo_104x26.svg);
+      padding: 0;
+      margin: 0;
+      border: none;
+      min-width: 160px;
+      min-height: 40px;
+      max-width: 160px;
+      max-height: 40px;
+    }
+    QProgressBar {
+      background-color: #333333;
+      border:none;
+      min-width: 162px;
+      min-height: 3px;
+      max-width: 162px;
+      max-height: 3px;
+    }
+    QProgressBar::chunk {
+      background-color: #FF6100;
+    }
+  </LaunchImageStyle>
+  <Children>
+
+<!--  ################################################################
+      Variables #####################################################
+     ###############################################################
+      Put these variable definitions at the beginning so SingletonDefinitions
+      have all Variables available. -->
+        
+<!--  Initially I was trying to match 'active angle' on Reloop TerminalMix 2.
+      Values beyond -150/150 might interfere with some knob labels. -->
+    <SetVariable name="PotiMinAngle">-130</SetVariable>
+    <SetVariable name="PotiMaxAngle">130</SetVariable>
+
+    <SetVariable name="SignalBgColor_1">#001D33</SetVariable>
+    <SetVariable name="SignalBgColor_2">#2F290a</SetVariable>
+    <SetVariable name="SignalBgColor_3">#032603</SetVariable>
+    <SetVariable name="SignalBgColor_4">#3A0440</SetVariable>
+
+    <SetVariable name="SignalColor_1">#5EBAFF</SetVariable>
+    <SetVariable name="SignalColor_2">#8A750C</SetVariable>
+    <SetVariable name="SignalColor_3">#366E00</SetVariable>
+    <SetVariable name="SignalColor_4">#DF4DF0</SetVariable>
+
+    <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
+    <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
+    <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
+
+    <SetVariable name="PlayedOverlayColor">#AA000000</SetVariable>
+
+<!--################################################################
+     Singleton definitions  #######################################
+   ############################################################### -->
+    <SingletonDefinition>
+      <ObjectName>Library_Singleton</ObjectName>
+      <Children>
+        <Template src="skin:library.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+<!-- Decks appear multiple times due to [2/4 FX Units] switch, so make them
+     Singletons to save memory. TEST! -->
+    <SingletonDefinition><!-- Decks 12 -->
+      <ObjectName>Decks12_Singleton</ObjectName>
+      <Children>
+        <WidgetGroup>
+          <Layout>vertical</Layout>
+          <SizePolicy>me,f</SizePolicy>
+          <Children>
+
+            <!-- spacer when stacked waveforms are hidden -->
+            <WidgetGroup>
+              <Layout>vertical</Layout>
+              <Children>
+                <WidgetGroup><Size>1me,3f</Size><Children/>
+                  <Connection>
+                    <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
+                    <Transform><Not/></Transform>
+                    <BindProperty>visible</BindProperty>
+                  </Connection>
+                </WidgetGroup>
+              </Children>
+              <Connection>
+                <ConfigKey persist="true">[Tango],normal_mode</ConfigKey>
+                <BindProperty>visible</BindProperty>
+              </Connection>
+            </WidgetGroup>
+
+            <WidgetGroup><!-- LEFT decks + Skin Controls + RIGHT decks -->
+              <ObjectName>DecksMixer12</ObjectName>
+              <Layout>horizontal</Layout>
+              <Size>1008me,136min</Size>
+              <Children>
+                <Template src="skin:deck_left.xml">
+                  <SetVariable name="channum">1</SetVariable>
+                  <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_1"/></SetVariable>
+                  <SetVariable name="SignalColor"><Variable name="SignalColor_1"/></SetVariable>
+                  <SetVariable name="SignalRGBHighColor"><Variable name="SignalRGBHighColor"/></SetVariable>
+                  <SetVariable name="SignalRGBMidColor"><Variable name="SignalRGBMidColor"/></SetVariable>
+                  <SetVariable name="SignalRGBLowColor"><Variable name="SignalRGBLowColor"/></SetVariable>
+                </Template>
+
+                <Template src="skin:crossfader12_skincontrols.xml"/>
+
+                <Template src="skin:deck_right.xml">
+                  <SetVariable name="channum">2</SetVariable>
+                  <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_2"/></SetVariable>
+                  <SetVariable name="SignalColor"><Variable name="SignalColor_2"/></SetVariable>
+                  <SetVariable name="SignalRGBHighColor"><Variable name="SignalRGBHighColor"/></SetVariable>
+                  <SetVariable name="SignalRGBMidColor"><Variable name="SignalRGBMidColor"/></SetVariable>
+                  <SetVariable name="SignalRGBLowColor"><Variable name="SignalRGBLowColor"/></SetVariable>
+                </Template>
+              </Children>
+            </WidgetGroup><!-- LEFT decks + Skin Controls + RIGHT decks -->
+
+          </Children>
+        </WidgetGroup>
+      </Children>
+    </SingletonDefinition><!-- /Decks 12 -->
+
+    <SingletonDefinition><!-- Decks 34 -->
+      <ObjectName>Decks34_Singleton</ObjectName>
+      <Children>
+        <WidgetGroup>
+          <Layout>vertical</Layout>
+          <SizePolicy>me,f</SizePolicy>
+          <Children>
+
+            <WidgetGroup><Size>1me,3f</Size><Children/></WidgetGroup>
+
+            <WidgetGroup><!-- LEFT decks + ToolbarTop + RIGHT decks -->
+              <ObjectName>DecksMixer34</ObjectName>
+              <Layout>horizontal</Layout>
+              <Size>1008me,136min</Size>
+              <Children>
+
+                <Template src="skin:deck_left.xml">
+                  <SetVariable name="channum">3</SetVariable>
+                  <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_3"/></SetVariable>
+                  <SetVariable name="SignalColor"><Variable name="SignalColor_3"/></SetVariable>
+                  <SetVariable name="SignalRGBHighColor"><Variable name="SignalRGBHighColor"/></SetVariable>
+                  <SetVariable name="SignalRGBMidColor"><Variable name="SignalRGBMidColor"/></SetVariable>
+                  <SetVariable name="SignalRGBLowColor"><Variable name="SignalRGBLowColor"/></SetVariable>
+                </Template>
+
+                <Template src="skin:crossfader34.xml"/>
+
+                <Template src="skin:deck_right.xml">
+                  <SetVariable name="channum">4</SetVariable>
+                  <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_4"/></SetVariable>
+                  <SetVariable name="SignalColor"><Variable name="SignalColor_4"/></SetVariable>
+                  <SetVariable name="SignalRGBHighColor"><Variable name="SignalRGBHighColor"/></SetVariable>
+                  <SetVariable name="SignalRGBMidColor"><Variable name="SignalRGBMidColor"/></SetVariable>
+                  <SetVariable name="SignalRGBLowColor"><Variable name="SignalRGBLowColor"/></SetVariable>
+                </Template>
+
+              </Children>
+              <Connection>
+                <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+                <BindProperty>visible</BindProperty>
+              </Connection>
+            </WidgetGroup><!-- LEFT decks + ToolbarTop + RIGHT decks -->
+
+          </Children>
+        </WidgetGroup>
+      </Children>
+    </SingletonDefinition><!-- /Decks 34 -->
+
+<!--  ################################################################
+       SkinContainer  ###############################################
+     ############################################################### -->
+    <WidgetGroup><!-- extra wrapper, may help with Skin Settings on Mac. TEST! -->
+      <Layout>vertical</Layout>
+      <SizePolicy>me,me</SizePolicy>
+      <Children>
+
+        <WidgetGroup>
+          <ObjectName>SkinContainer</ObjectName>
+          <Layout>stacked</Layout>
+          <SizePolicy>me,me</SizePolicy>
+          <Children>
+            <!--
+            Workaround due to https://bugs.launchpad.net/mixxx/+bug/1627859
+            Without this, SkinSettings would be visible at every launch -->
+            <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+            <!--
+            SkinSettings is stacked on top of the skin.
+            This way it doesn't affect available screen size
+            and we can activate all desired controls, without
+            horizontal SizeAwareStacks going mad...  -->
+            <Template src="skin:skin_settings.xml"/>
+
+            <!-- Select between either the full UI or maximized Library -->
+            <WidgetStack currentpage="[Master],maximize_library">
+              <SizePolicy>me,me</SizePolicy>
+              <Children>
+
+                <WidgetGroup><!-- Lib normal, stacked resizable waveforms -->
+                  <Layout>vertical</Layout>
+                  <SizePolicy>me,me</SizePolicy>
+                  <Children>
+
+                    <Template src="skin:crossfader_skincontrols_netbook.xml"/>
+
+                    <Splitter>
+                      <ObjectName>WaveformSplitter</ObjectName>
+                      <SizePolicy>me,me</SizePolicy>
+                      <Orientation>vertical</Orientation>
+                      <SplitSizes>100,10000</SplitSizes>
+                      <SplitSizesConfigKey>[Tango],waveform_splitSize</SplitSizesConfigKey>
+                      <Collapsible>0,0</Collapsible>
+                      <Children>
+
+                        <WidgetGroup>
+                          <Layout>vertical</Layout>
+                          <SizePolicy>me,max</SizePolicy>
+                          <Children>
+                            <Template src="skin:waveforms_container.xml"/>
+                          </Children>
+                          <Connection>
+                            <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
+                            <BindProperty>visible</BindProperty>
+                          </Connection>
+                        </WidgetGroup>
+
+                        <WidgetGroup><!-- Decks + size-aware triggers in the back -->
+                          <Layout>stacked</Layout>
+                          <SizePolicy>me,min</SizePolicy>
+                          <Children>
+                            <WidgetGroup><!-- [Decks + 2 FX / Decks + 4 FX] + Samplers_Library -->
+                              <Layout>vertical</Layout>
+                              <SizePolicy>me,min</SizePolicy>
+                              <Children>
+
+                                <WidgetGroup><!-- Decks + 2 FX Units -->
+                                  <Layout>vertical</Layout>
+                                  <SizePolicy>me,min</SizePolicy>
+                                  <Children>
+
+                                    <SingletonContainer>
+                                      <ObjectName>Decks12_Singleton</ObjectName>
+                                    </SingletonContainer>
+                                    <SingletonContainer>
+                                      <ObjectName>Decks34_Singleton</ObjectName>
+                                      <Connection>
+                                        <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+                                        <BindProperty>visible</BindProperty>
+                                      </Connection>
+                                    </SingletonContainer>
+
+                                    <Template src="skin:fx_units_12.xml"/>
+
+                                  </Children>
+                                  <Connection>
+                                    <ConfigKey persist="true">[Tango],2or4_fxUnits</ConfigKey>
+                                    <Transform><Not/></Transform>
+                                    <BindProperty>visible</BindProperty>
+                                  </Connection>
+                                </WidgetGroup><!-- /Decks + 2 FX Units +  -->
+
+                                <WidgetGroup><!-- Decks + 4  FX Units -->
+                                  <Layout>vertical</Layout>
+                                  <SizePolicy>me,min</SizePolicy>
+                                  <Children>
+
+                                    <SingletonContainer>
+                                      <ObjectName>Decks12_Singleton</ObjectName>
+                                    </SingletonContainer>
+
+                                    <Template src="skin:fx_units_12.xml"/>
+
+                                    <SingletonContainer>
+                                      <ObjectName>Decks34_Singleton</ObjectName>
+                                      <Connection>
+                                        <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+                                        <BindProperty>visible</BindProperty>
+                                      </Connection>
+                                    </SingletonContainer>
+
+                                    <Template src="skin:fx_units_34.xml"/>
+
+                                  </Children>
+                                  <Connection>
+                                    <ConfigKey persist="true">[Tango],2or4_fxUnits</ConfigKey>
+                                    <BindProperty>visible</BindProperty>
+                                  </Connection>
+                                </WidgetGroup><!-- /Decks + 4 FX Units -->
+
+                                <Template src="skin:sample_decks.xml"/>
+
+                                <SingletonContainer>
+                                  <ObjectName>Library_Singleton</ObjectName>
+                                </SingletonContainer>
+
+                                <WidgetGroup><!-- MixerBar when Library is not shown -->
+                                  <ObjectName>MixerBar_Container_skin</ObjectName>
+                                  <Layout>horizontal</Layout>
+                                  <SizePolicy>min,max</SizePolicy>
+                                  <Children>
+                                    <Template src="skin:mixerbar.xml"/>
+                                  </Children>
+                                  <Connection>
+                                    <ConfigKey>[Library],show_library</ConfigKey>
+                                    <Transform><Not/></Transform>
+                                    <BindProperty>visible</BindProperty>
+                                  </Connection>
+                                </WidgetGroup><!-- /MixerBar when Library is not shown -->
+
+                              </Children>
+                            </WidgetGroup><!-- /2 FX + Decks, 4 FX + Decks, Samplers_Library -->
+
+                            <Template src="skin:netbook_trigger.xml"/>
+
+                          </Children>
+                        </WidgetGroup><!-- /Decks + size-aware triggers in the back -->
+                      </Children>
+                    </Splitter>
+                  </Children>
+                </WidgetGroup><!-- /Lib normal, stacked resizable waveforms -->
+
+                <WidgetGroup><!-- Lib maximized -->
+                  <Layout>vertical</Layout>
+                  <SizePolicy>me,me</SizePolicy>
+                  <Children>
+                    <SingletonContainer>
+                      <ObjectName>Library_Singleton</ObjectName>
+                    </SingletonContainer>
+                  </Children>
+                </WidgetGroup><!-- /Lib maximized -->
+
+              </Children>
+            </WidgetStack><!-- /full UI or Library maximized -->
+
+          </Children>
+        </WidgetGroup><!-- /SkinContainer -->
+
+      </Children>
+    </WidgetGroup><!-- /extra wrapper, may help with Skin Settings on Mac -->
+  </Children>
+</skin>

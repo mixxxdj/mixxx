@@ -21,6 +21,11 @@ class SampleUtil {
     };
     Q_DECLARE_FLAGS(CLIP_STATUS, CLIP_FLAG);
 
+    // The PlayPosition, Loops and Cue Points used in the Database and
+    // Mixxx CO interface are expressed as a floating point number of stereo samples.
+    // This is some legacy, we cannot easily revert.
+    static constexpr double kPlayPositionChannels = 2.0;
+
     // Allocated a buffer of CSAMPLE's with length size. Ensures that the buffer
     // is 16-byte aligned for SSE enhancement.
     static CSAMPLE* alloc(SINT size);
@@ -106,6 +111,23 @@ class SampleUtil {
     inline static SINT ceilPlayPosToFrameStart(double playPos, int numChannels) {
         SINT playPosFrames = static_cast<SINT>(ceil(playPos / numChannels));
         return playPosFrames * numChannels;
+    }
+
+    inline static SINT roundPlayPosToFrame(double playPos) {
+        return static_cast<SINT>(round(playPos / kPlayPositionChannels));
+    }
+
+    inline static SINT truncPlayPosToFrame(double playPos) {
+        return static_cast<SINT>(playPos / kPlayPositionChannels);
+    }
+
+    inline static SINT floorPlayPosToFrame(double playPos) {
+        return static_cast<SINT>(floor(playPos / kPlayPositionChannels));
+
+    }
+
+    inline static SINT ceilPlayPosToFrame(double playPos) {
+        return static_cast<SINT>(ceil(playPos / kPlayPositionChannels));
     }
 
     // Multiply every sample in pBuffer by gain

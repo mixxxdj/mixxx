@@ -1,0 +1,261 @@
+<!--
+Description:
+  Container for deck buttons:
+  * Play/Cue
+  * HotCues
+  * indicators for assigned effect unit(s)
+  * Star rating
+  * deck controls
+
+  There's also a SizeAwareStack that detects if star rating can be displayed.
+  This is 'outsourced' to background because there were too many interferences
+  with expanding HotCue buttons and filling spacers.
+
+Variables:
+  group   : [ChannelN]
+  channum : channel number
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>DeckButtonsPlay</ObjectName>
+    <SizePolicy>1me,24f</SizePolicy>
+    <Layout>stacked</Layout>
+    <Children>
+      <WidgetGroup><!-- Play + deck controls -->
+        <ObjectName>Spacer33</ObjectName>
+        <Size>1me,24f</Size>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup><!-- Play -->
+            <ObjectName>Spacer0f</ObjectName>
+            <Layout>stacked</Layout>
+            <Size>50f,24f</Size>
+            <Children>
+              <Template src="skin:button_2state_right_display.xml"><!-- Play -->
+                <SetVariable name="ObjectName">PlayCue</SetVariable>
+                <SetVariable name="TooltipId">play_cue_set</SetVariable>
+                <SetVariable name="Size">50f,24f</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
+                <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
+              </Template>
+          <!--	Turns Orange when playing from Cue/HotCue position.
+              Only visible when play_indicator above is zero0, otherwise it's covered. -->
+              <Template src="skin:button_2state.xml"><!-- PlayUnderlay -->
+                <SetVariable name="ObjectName">PlayCueUnderlay</SetVariable>
+                <SetVariable name="Size">50f,24f</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- /Play -->
+
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+
+          <Template src="skin:hotcues_deck_right.xml"/>
+
+          <WidgetGroup><!-- Deck Controls + Star rating -->
+            <ObjectName>DeckControlsRight</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <WidgetGroup>
+                    <Size>84f,22f</Size>
+                    <Layout>horizontal</Layout>
+                    <Children>
+
+                      <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+                      <StarRating>
+                        <ObjectName>DeckStars</ObjectName>
+                        <Size>83min,22f</Size>
+                        <TooltipId>starrating</TooltipId>
+                        <Channel><Variable name="channum"/></Channel>
+                      </StarRating>
+                    </Children>
+                    <Connection>
+                      <ConfigKey persist="true">[Tango],stars</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Tango],stars_fit</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- /Stars -->
+
+              <WidgetGroup><!-- Deck controls -->
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                    <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+                  <Template src="skin:button_2state_persist.xml">
+                    <SetVariable name="ObjectName">DeckButton</SetVariable>
+                    <SetVariable name="Size">22f,22f</SetVariable>
+                    <SetVariable name="TooltipId">quantize</SetVariable>
+                    <SetVariable name="state_0_pressed">quantize_off.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">quantize_off.svg</SetVariable>
+                    <SetVariable name="state_1_pressed">quantize_on.svg</SetVariable>
+                    <SetVariable name="state_1_unpressed">quantize_on.svg</SetVariable>
+                    <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,quantize</SetVariable>
+                  </Template>
+                  <Template src="skin:button_3state.xml">
+                    <SetVariable name="ObjectName">DeckButton</SetVariable>
+                    <SetVariable name="Size">20f,22f</SetVariable>
+                    <SetVariable name="TooltipId">orientation</SetVariable>
+                    <SetVariable name="state_0_pressed">cf_left_attention.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">cf_left_attention.svg</SetVariable>
+                    <SetVariable name="state_1_pressed">cf_center_attention.svg</SetVariable>
+                    <SetVariable name="state_1_unpressed">cf_center_attention.svg</SetVariable>
+                    <SetVariable name="state_2_pressed">cf_right.svg</SetVariable>
+                    <SetVariable name="state_2_unpressed">cf_right.svg</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
+                  </Template>
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="ObjectName">DeckButton</SetVariable>
+                    <SetVariable name="Size">22f,22f</SetVariable>
+                    <SetVariable name="TooltipId">repeat</SetVariable>
+                    <SetVariable name="state_0_pressed">repeat_off.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">repeat_off.svg</SetVariable>
+                    <SetVariable name="state_1_pressed">repeat_on.svg</SetVariable>
+                    <SetVariable name="state_1_unpressed">repeat_on.svg</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,repeat</SetVariable>
+                  </Template>
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="ObjectName">DeckButton</SetVariable>
+                    <SetVariable name="Size">22f,22f</SetVariable>
+                    <SetVariable name="TooltipId">slip_mode</SetVariable>
+                    <SetVariable name="state_0_pressed">slipmode_off.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">slipmode_off.svg</SetVariable>
+                    <SetVariable name="state_1_pressed">slipmode_on.svg</SetVariable>
+                    <SetVariable name="state_1_unpressed">slipmode_on.svg</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,slip_enabled</SetVariable>
+                  </Template>
+                  <Template src="skin:button_1state.xml">
+                    <SetVariable name="ObjectName">DeckButton</SetVariable>
+                    <SetVariable name="Size">20f,22f</SetVariable>
+                    <SetVariable name="TooltipId">eject</SetVariable>
+                    <SetVariable name="state_0_pressed">eject_pressed.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">eject.svg</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,eject</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],deck_controls</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- /Deck controls -->
+
+              <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
+                <SetVariable name="ObjectName">DeckButtonTogglerRight</SetVariable>
+                <SetVariable name="Size">11f,22f</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Tango],deck_controls</SetVariable>
+              </Template>
+
+              <Template src="skin:button_2state_persist.xml"><!-- Keylock -->
+                <SetVariable name="ObjectName">DeckButton</SetVariable>
+                <SetVariable name="Size">22f,22f</SetVariable>
+                <SetVariable name="TooltipId">keylock</SetVariable>
+                <SetVariable name="state_0_pressed">keylock_off.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">keylock_off.svg</SetVariable>
+                <SetVariable name="state_1_pressed">keylock_on.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">keylock_on.svg</SetVariable>
+                <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,keylock</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup><!-- /Deck Controls + Star rating -->
+        </Children>
+      </WidgetGroup><!-- /Play + deck controls -->
+
+      <WidgetGroup><!-- hidden size detector for rating stars -->
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,f</SizePolicy>
+        <Children>
+          <WidgetGroup><!-- fixed sizes: Play, toggler, keylock -->
+            <Size>84f,12f</Size>
+            <Children/>
+          </WidgetGroup>
+          <WidgetGroup><!-- HotCues 1-4 at minimum size -->
+            <Size>64f,12f</Size>
+            <Children/>
+            <Connection>
+              <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
+              <Transform><IsEqual>1</IsEqual></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <WidgetGroup><!-- HotCues 5-8 at minimum size -->
+            <Size>128f,12f</Size>
+            <Children/>
+            <Connection>
+              <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
+              <Transform><IsEqual>2</IsEqual></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <WidgetGroup><!-- Deck controls -->
+            <Size>107f,12f</Size>
+            <Children/>
+            <Connection>
+              <ConfigKey persist="true">[Tango],deck_controls</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <SizeAwareStack><!-- Size detector -->
+            <Children>
+              <WidgetGroup><!-- Not enough space for stars -->
+                <Layout>vertical</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <MinimumSize>0,12</MinimumSize>
+                <MaximumSize>82,12</MaximumSize>
+                <Children>
+                  <WidgetStack currentpage="[Tango],stars_fit_stack0">
+                    <Children>
+                      <WidgetGroup trigger="[Tango],stars_wont_fit">
+                        <Size>1f,12min</Size>
+                        <Children/>
+                      </WidgetGroup>
+                      <WidgetGroup trigger="[Tango],stars_fit">
+                        <Size>1f,12min</Size>
+                        <Children/>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetStack>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup><!-- when there is enough space for stars (min 83px) show them. -->
+                <Layout>vertical</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <MinimumSize>83,12</MinimumSize>
+                <MaximumSize>-1,12</MaximumSize>
+                <Children>
+                  <WidgetStack currentpage="[Tango],stars_fit_stack1">
+                    <Children>
+                      <WidgetGroup trigger="[Tango],stars_wont_fit">
+                        <Size>1f,12min</Size>
+                        <Children/>
+                      </WidgetGroup>
+                      <WidgetGroup trigger="[Tango],stars_fit">
+                        <Size>1f,12min</Size>
+                        <Children/>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetStack><!-- Stars -->
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </SizeAwareStack>
+
+        </Children>
+      </WidgetGroup><!-- /hidden size detector -->
+
+    </Children>
+  </WidgetGroup>
+</Template>
