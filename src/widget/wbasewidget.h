@@ -52,7 +52,7 @@ class WBaseWidget {
     double getControlParameter() const;
     double getControlParameterLeft() const;
     double getControlParameterRight() const;
-    double getControlParameterDisplay() const;
+    virtual double getControlParameterDisplay() const;
 
   protected:
     // Whenever a connected control is changed, onConnectedControlChanged is

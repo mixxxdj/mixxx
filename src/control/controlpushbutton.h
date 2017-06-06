@@ -33,6 +33,7 @@ class ControlPushButton : public ControlObject {
          POWERWINDOW,
          LONGPRESSLATCHING,
          TRIGGER,
+         SELECTMULTI,
     };
 
     static QString buttonModeToString(int mode) {
@@ -47,6 +48,8 @@ class ControlPushButton : public ControlObject {
                 return "LONGPRESSLATCHING";
             case ControlPushButton::TRIGGER:
                 return "TRIGGER";
+            case ControlPushButton::SELECTMULTI:
+                return "SELECTMULTI";
             default:
                 return "UNKNOWN";
         }
