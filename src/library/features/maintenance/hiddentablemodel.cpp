@@ -14,7 +14,7 @@ HiddenTableModel::~HiddenTableModel() {
 
 void HiddenTableModel::setTableModel(int id) {
     Q_UNUSED(id);
-    QSqlQuery query;
+    QSqlQuery query(m_database);
     const QString tableName("hidden_songs");
 
     QStringList columns;
