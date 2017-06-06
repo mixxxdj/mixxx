@@ -1,6 +1,3 @@
-#include "util/db/dbconnection.h"
-
-#include <QDir>
 #include <QSqlDriver>
 #include <QSqlError>
 
@@ -8,23 +5,65 @@
 #include <sqlite3.h>
 #endif // __SQLITE3__
 
-#include "util/db/sqllikewildcards.h"
+#include "util/db/dbconnection.h"
 
-#include "util/string.h"
+#include "util/db/sqllikewildcards.h"
+#include "util/memory.h"
+#include "util/logger.h"
 #include "util/assert.h"
 
 
 // Originally from public domain code:
 // http://www.archivum.info/qt-interest@trolltech.com/2008-12/00584/Re-%28Qt-interest%29-Qt-Sqlite-UserDefinedFunction.html
 
+namespace mixxx {
+
 namespace {
+
+const mixxx::Logger kLogger("DbConnection");
 
 const QString kDatabaseType = "QSQLITE";
 
 const QString kDatabaseHostName = "localhost";
-const QString kDatabaseFileName = "mixxxdb.sqlite";
 const QString kDatabaseUserName = "mixxx";
 const QString kDatabasePassword = "mixxx";
+
+QSqlDatabase createDatabase(
+        const QDir& dirPath,
+        const QString fileName,
+        const QString connectionName) {
+    kLogger.debug()
+        << "Available drivers for database connections:"
+        << QSqlDatabase::drivers();
+
+    QSqlDatabase database =
+            QSqlDatabase::addDatabase(kDatabaseType, connectionName);
+    database.setHostName(kDatabaseHostName);
+    QString filePath = dirPath.filePath(fileName);
+    database.setDatabaseName(filePath);
+    database.setUserName(kDatabaseUserName);
+    database.setPassword(kDatabasePassword);
+    return database;
+}
+
+QSqlDatabase cloneDatabase(
+        const QSqlDatabase& database,
+        const QString connectionName) {
+    DEBUG_ASSERT(!database.isOpen());
+    return QSqlDatabase::cloneDatabase(database, connectionName);
+}
+
+void removeDatabase(
+        const QSqlDatabase& database) {
+    DEBUG_ASSERT(!database.isOpen());
+    QSqlDatabase::removeDatabase(database.connectionName());
+}
+
+// The default comparison of strings for sorting.
+inline int compareLocaleAwareCaseInsensitive(
+        const QString& first, const QString& second) {
+    return QString::localeAwareCompare(first.toLower(), second.toLower());
+}
 
 void makeLatinLow(QChar* c, int count) {
     for (int i = 0; i < count; ++i) {
@@ -184,103 +223,123 @@ void sqliteLike(sqlite3_context *context,
 
 #endif // __SQLITE3__
 
-} // anonymous namespace
-
-DbConnection::DbConnection(const QString& dirPath)
-    : m_filePath(QDir(dirPath).filePath(kDatabaseFileName)),
-      m_database(QSqlDatabase::addDatabase(kDatabaseType)) {
-    qDebug()
-        << "Available drivers for database connection:"
-        << QSqlDatabase::drivers();
-
-    m_database.setHostName(kDatabaseHostName);
-    m_database.setDatabaseName(m_filePath);
-    m_database.setUserName(kDatabaseUserName);
-    m_database.setPassword(kDatabasePassword);
-    if (!m_database.open()) {
-        qWarning() << "Failed to open database connection:"
-            << *this
-            << m_database.lastError();
-        return; // early exit
-    }
-
-    QVariant v = m_database.driver()->handle();
-    VERIFY_OR_DEBUG_ASSERT(v.isValid()) {
-        return; // early exit
-    }
+bool initDatabase(QSqlDatabase database) {
+    DEBUG_ASSERT(database.isOpen());
 #ifdef __SQLITE3__
-    if (strcmp(v.typeName(), "sqlite3*") == 0) {
-        // v.data() returns a pointer to the handle
-        sqlite3* handle = *static_cast<sqlite3**>(v.data());
-        VERIFY_OR_DEBUG_ASSERT(handle != nullptr) {
-            qWarning() << "Could not get sqlite3 handle";
-            m_database.close();
-            return; // early exit
-        }
+    QVariant v = database.driver()->handle();
+    VERIFY_OR_DEBUG_ASSERT(v.isValid()) {
+        kLogger.debug() << "Driver handle is invalid";
+        return false; // abort
+    }
+    if (strcmp(v.typeName(), "sqlite3*") != 0) {
+        kLogger.warning()
+                << "Unsupported database driver:"
+               << v.typeName();
+        return false; // abort
+    }
+    // v.data() returns a pointer to the handle
+    sqlite3* handle = *static_cast<sqlite3**>(v.data());
+    VERIFY_OR_DEBUG_ASSERT(handle != nullptr) {
+        kLogger.warning()
+                << "SQLite3 handle is invalid";
+        return false; // abort
+    }
 
-        int result = sqlite3_create_collation(
-                        handle,
-                        kLexicographicalCollationFunc,
-                        SQLITE_UTF16,
-                        nullptr,
-                        sqliteStringCompareUTF16);
-        VERIFY_OR_DEBUG_ASSERT(result == SQLITE_OK) {
-            qWarning() << "Failed to install lexicographical collation function:" << result;
-        }
+    int result = sqlite3_create_collation(
+                    handle,
+                    kLexicographicalCollationFunc,
+                    SQLITE_UTF16,
+                    nullptr,
+                    sqliteStringCompareUTF16);
+    VERIFY_OR_DEBUG_ASSERT(result == SQLITE_OK) {
+        kLogger.warning()
+                << "Failed to install locale-aware lexicographical collation function for SQLite3:"
+                << result;
+    }
 
-        result = sqlite3_create_function(
-                        handle,
-                        "like",
-                        2,
-                        SQLITE_ANY,
-                        nullptr,
-                        sqliteLike,
-                        nullptr, nullptr);
-        VERIFY_OR_DEBUG_ASSERT(result == SQLITE_OK) {
-            qWarning() << "Failed to install like 2 function:" << result;
-        }
+    result = sqlite3_create_function(
+                    handle,
+                    "like",
+                    2,
+                    SQLITE_ANY,
+                    nullptr,
+                    sqliteLike,
+                    nullptr, nullptr);
+    VERIFY_OR_DEBUG_ASSERT(result == SQLITE_OK) {
+        kLogger.warning()
+                << "Failed to install custom 2-arg LIKE function for SQLite3:"
+                << result;
+    }
 
-        result = sqlite3_create_function(
-                        handle,
-                        "like",
-                        3,
-                        SQLITE_UTF8, // No conversion, Data is stored as UTF8
-                        nullptr,
-                        sqliteLike,
-                        nullptr, nullptr);
-        VERIFY_OR_DEBUG_ASSERT(result == SQLITE_OK) {
-            qWarning() << "Failed to install like 3 function:" << result;
-        }
-    } else {
-        qWarning() << "localecompare requires a SQLite3 database driver, found:"
-                   << v.typeName();
+    result = sqlite3_create_function(
+                    handle,
+                    "like",
+                    3,
+                    SQLITE_UTF8, // No conversion, Data is stored as UTF8
+                    nullptr,
+                    sqliteLike,
+                    nullptr, nullptr);
+    VERIFY_OR_DEBUG_ASSERT(result == SQLITE_OK) {
+        kLogger.warning()
+                << "Failed to install custom 3-arg LIKE function for SQLite3:"
+                << result;
     }
 #endif // __SQLITE3__
+    return true;
+}
+
+} // anonymous namespace
+
+DbConnection::DbConnection(
+        const QDir& dirPath,
+        const QString& fileName,
+        const QString& connectionName)
+    : m_database(createDatabase(dirPath, fileName, connectionName)) {
+}
+
+DbConnection::DbConnection(
+        const DbConnection& prototype,
+        const QString& connectionName)
+    : m_database(cloneDatabase(prototype.m_database, connectionName)) {
 }
 
 DbConnection::~DbConnection() {
-    VERIFY_OR_DEBUG_ASSERT(m_database.isOpen()) {
-        qWarning()
-            << "Database connection has already been closed:"
+    if (m_database.isOpen()) {
+        // There should never be an outstanding transaction when this code is
+        // called. If there is, it means we probably aren't committing a
+        // transaction somewhere that should be.
+        VERIFY_OR_DEBUG_ASSERT(!m_database.rollback()) {
+            kLogger.warning()
+                << "Rolled back open transaction before closing database connection:"
+                << *this;
+        }
+        kLogger.debug()
+            << "Closing database connection:"
             << *this;
-        return; // early exit
+        m_database.close();
     }
-    // There should never be an outstanding transaction when this code is
-    // called. If there is, it means we probably aren't committing a
-    // transaction somewhere that should be.
-    VERIFY_OR_DEBUG_ASSERT(!m_database.rollback()) {
-        qWarning()
-            << "Rolled back open transaction before closing database connection:"
-            << *this;
-    }
-    qDebug()
-        << "Closing database connection:"
-        << *this;
-    m_database.close();
+    removeDatabase(m_database);
 }
 
-QDebug operator<<(QDebug debug, const DbConnection& dbConnection) {
-    return debug << kDatabaseType << dbConnection.m_filePath;
+bool DbConnection::open() {
+    kLogger.debug()
+            << "Opening database connection"
+            << *this;
+    if (!m_database.open()) {
+        kLogger.warning()
+                << "Failed to open database connection"
+                << *this
+                << m_database.lastError();
+        return false; // abort
+    }
+    if (!initDatabase(m_database)) {
+        kLogger.warning()
+                << "Failed to initialize database connection"
+                << *this;
+        m_database.close();
+        return false; // abort
+    }
+    return true;
 }
 
 //static
@@ -304,3 +363,11 @@ int DbConnection::likeCompareLatinLow(
             string->data(), string->length(),
             esc);
 }
+
+QDebug operator<<(QDebug debug, const DbConnection& connection) {
+    return debug
+            << connection.database().connectionName()
+            << connection.database();
+}
+
+} // namespace mixxx

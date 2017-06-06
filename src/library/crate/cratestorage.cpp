@@ -284,7 +284,7 @@ bool CrateStorage::readCrateByName(const QString& name, Crate* pCrate) const {
 
 CrateSelectResult CrateStorage::selectCrates() const {
     FwdSqlQuery query(m_database,
-            DbConnection::collateLexicographically(QString(
+            mixxx::DbConnection::collateLexicographically(QString(
                     "SELECT * FROM %1 ORDER BY %2").arg(
                             CRATE_TABLE,
                             CRATETABLE_NAME)));
@@ -321,7 +321,7 @@ CrateSelectResult CrateStorage::selectCratesByIds(
     DEBUG_ASSERT(!subselectForCrateIds.isEmpty());
 
     FwdSqlQuery query(m_database,
-            DbConnection::collateLexicographically(QString(
+            mixxx::DbConnection::collateLexicographically(QString(
                     "SELECT * FROM %1 WHERE %2 %3 (%4) ORDER BY %5").arg(
                             CRATE_TABLE,
                             CRATETABLE_ID,
@@ -339,7 +339,7 @@ CrateSelectResult CrateStorage::selectCratesByIds(
 
 CrateSelectResult CrateStorage::selectAutoDjCrates(bool autoDjSource) const {
     FwdSqlQuery query(m_database,
-            DbConnection::collateLexicographically(QString(
+            mixxx::DbConnection::collateLexicographically(QString(
                     "SELECT * FROM %1 WHERE %2=:autoDjSource ORDER BY %3").arg(
                             CRATE_TABLE,
                             CRATETABLE_AUTODJ_SOURCE,
@@ -355,7 +355,7 @@ CrateSelectResult CrateStorage::selectAutoDjCrates(bool autoDjSource) const {
 
 CrateSummarySelectResult CrateStorage::selectCrateSummaries() const {
     FwdSqlQuery query(m_database,
-            DbConnection::collateLexicographically(QString(
+            mixxx::DbConnection::collateLexicographically(QString(
                     "SELECT * FROM %1 ORDER BY %2").arg(
                             CRATE_SUMMARY_VIEW,
                             CRATETABLE_NAME)));

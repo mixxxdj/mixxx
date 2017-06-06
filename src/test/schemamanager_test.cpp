@@ -2,8 +2,8 @@
 
 #include "test/mixxxtest.h"
 
-#include "repository/schemamanager.h"
 #include "repository/repository.h"
+#include "repository/schemamanager.h"
 
 #include "library/dao/settingsdao.h"
 
@@ -13,15 +13,15 @@
 class SchemaManagerTest : public MixxxTest {
   protected:
     SchemaManagerTest()
-            : m_dbConnection(config()->getSettingsPath()) {
+            : m_repository(config()) {
     }
 
     QSqlDatabase database() const {
-        return m_dbConnection.database();
+        return m_repository.database();
     }
 
   private:
-    DbConnection m_dbConnection;
+    mixxx::Repository m_repository;
 };
 
 TEST_F(SchemaManagerTest, CanUpgradeFreshDatabaseToRequiredVersion) {

@@ -16,18 +16,25 @@ const QString Repository::kDefaultSchemaFile(":/schema.xml");
 const int Repository::kRequiredSchemaVersion = 27;
 
 namespace {
-    mixxx::Logger kLogger("Repository");
+
+const Logger kLogger("Repository");
+
+const QString kDatabaseFileName = "mixxxdb.sqlite";
+const QString kDatabaseConnectionName = "MIXXX";
+
 } // anonymous namespace
 
 Repository::Repository(
-        UserSettingsPointer pConfig)
-    : m_dbConnection(pConfig->getSettingsPath()) {
+        const UserSettingsPointer& pConfig)
+    : m_dbConnection(pConfig->getSettingsPath(), kDatabaseFileName, kDatabaseConnectionName) {
+    m_dbConnection.open();
 }
 
 bool Repository::initDatabaseSchema(
         const QString& schemaFile,
         int schemaVersion) {
-    if (!database().isOpen()) {
+    QSqlDatabase database = m_dbConnection.database();
+    if (!database.isOpen()) {
         QMessageBox::critical(0, tr("Cannot open database"),
                             tr("Unable to establish a database connection.\n"
                                 "Mixxx requires QT with SQLite support. Please read "
@@ -45,8 +52,7 @@ bool Repository::initDatabaseSchema(
     QString helpEmail = tr("For help with database issues contact:") + "\n" +
                            "mixxx-devel@lists.sourceforge.net";
 
-    SchemaManager schemaManager(database());
-    switch (schemaManager.upgradeToSchemaVersion(schemaFile, schemaVersion)) {
+    switch (SchemaManager(database).upgradeToSchemaVersion(schemaFile, schemaVersion)) {
         case SchemaManager::Result::CurrentVersion:
         case SchemaManager::Result::UpgradeSucceeded:
         case SchemaManager::Result::NewerVersionBackwardsCompatible:

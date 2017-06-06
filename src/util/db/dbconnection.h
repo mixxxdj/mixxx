@@ -2,20 +2,16 @@
 #define MIXXX_DBCONNECTION_H
 
 
+#include <QDir>
 #include <QSqlDatabase>
+
 #include <QtDebug>
 
 
+namespace mixxx {
+
 class DbConnection final {
   public:
-    explicit DbConnection(
-        const QString& dirPath);
-    ~DbConnection();
-
-    QSqlDatabase database() const {
-        return m_database;
-    }
-
     // Order string fields lexicographically with a
     // custom collation function if available (SQLite3).
     // Otherwise the query is returned unmodified.
@@ -27,14 +23,32 @@ class DbConnection final {
         QString* string,
         QChar esc);
 
-    friend QDebug operator<<(
-        QDebug debug,
-        const DbConnection& dbConnection);
+    // All constructors are reserved for DbConnectionPool!!
+    DbConnection(
+            const QDir& dirPath,
+            const QString& fileName,
+            const QString& connectionName);
+    DbConnection(
+            const DbConnection& prototype,
+            const QString& connectionName);
+    ~DbConnection();
+
+    bool open();
+
+    QSqlDatabase database() const {
+        return m_database;
+    }
 
   private:
-    QString m_filePath;
+    DbConnection(const DbConnection&) = delete;
+    DbConnection(const DbConnection&&) = delete;
+
     QSqlDatabase m_database;
 };
+
+QDebug operator<<(QDebug debug, const DbConnection& connection);
+
+} // namespace mixxx
 
 
 #endif // MIXXX_DBCONNECTION_H
