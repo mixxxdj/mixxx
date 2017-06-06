@@ -31,6 +31,7 @@ class ImgSource {
     virtual QImage* getImage(const QString& fileName, double scaleFactor) const = 0;
     virtual QColor getCorrectColor(const QColor& c) const { return c; }
     virtual void correctImageColors(QImage* p) const { (void)p; };
+    virtual bool willCorrectColors() const { return false; };
   protected:
     virtual void correctImageColorsInner(QImage*) const {}
 };
@@ -48,6 +49,7 @@ class ImgProcessor : public ImgSource {
         m_parent->correctImageColors(pImg);
         correctImageColorsInner(pImg);
     }
+bool willCorrectColors() const override { return false; }
  protected:
     QSharedPointer<ImgSource> m_parent;
 };
@@ -138,6 +140,8 @@ class ImgColorProcessor : public ImgProcessor {
             }
         }
     }
+
+    bool willCorrectColors() const override { return true; }
 };
 
 #endif
