@@ -134,7 +134,8 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
                  << filename << "\", unlocked reader lock";
         m_pReaderStatusFIFO->writeBlocking(&status, 1);
         emit(trackLoadFailed(
-            pTrack, QString("The file '%1' could not be found.").arg(filename)));
+            pTrack, QString("The file '%1' could not be found.")
+                    .arg(QDir::toNativeSeparators(filename))));
         return;
     }
 

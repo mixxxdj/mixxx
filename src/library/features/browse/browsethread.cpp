@@ -238,9 +238,11 @@ void BrowseThread::populateModel() {
         item->setData(pTrack->getBitrate(), Qt::UserRole);
         row_data.insert(COLUMN_BITRATE, item);
 
-        item = new QStandardItem(pTrack->getLocation());
-        item->setToolTip(item->text());
-        item->setData(item->text(), Qt::UserRole);
+        QString location = pTrack->getLocation();
+        QString locationNative = QDir::toNativeSeparators(location);
+        item = new QStandardItem(locationNative);
+        item->setToolTip(locationNative);
+        item->setData(location, Qt::UserRole);
         row_data.insert(COLUMN_LOCATION, item);
 
         QDateTime modifiedTime = pTrack->getFileModifiedTime().toLocalTime();
