@@ -28,6 +28,8 @@ const QString PLAYLISTTRACKSTABLE_ARTIST = "artist";
 const QString PLAYLISTTRACKSTABLE_TITLE = "title";
 const QString PLAYLISTTRACKSTABLE_DATETIMEADDED = "pl_datetime_added";
 
+#define AUTODJ_TABLE "Auto DJ"
+
 class AutoDJProcessor;
 
 class PlaylistDAO : public QObject, public virtual DAO {

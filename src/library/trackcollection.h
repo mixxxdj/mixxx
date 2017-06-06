@@ -15,12 +15,10 @@
 #include "library/dao/directorydao.h"
 #include "library/dao/libraryhashdao.h"
 
+
 // forward declaration(s)
 class Track;
 
-#define AUTODJ_TABLE "Auto DJ"
-
-class BpmDetector;
 
 // Manages everything around tracks.
 class TrackCollection : public QObject {
