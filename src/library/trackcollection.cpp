@@ -113,7 +113,7 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_trackDao.onHidingTracks(transaction, trackIds)) {
+    VERIFY_OR_DEBUG_ASSERT(m_trackDao.onHidingTracks(trackIds)) {
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
@@ -141,7 +141,7 @@ bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_trackDao.onUnhidingTracks(transaction, trackIds)) {
+    VERIFY_OR_DEBUG_ASSERT(m_trackDao.onUnhidingTracks(trackIds)) {
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
@@ -169,7 +169,7 @@ bool TrackCollection::purgeTracks(
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_trackDao.onPurgingTracks(transaction, trackIds)) {
+    VERIFY_OR_DEBUG_ASSERT(m_trackDao.onPurgingTracks(trackIds)) {
         return false;
     }
     // Collect crates of tracks that will be purged before actually purging
@@ -177,7 +177,7 @@ bool TrackCollection::purgeTracks(
     // all crates on purging.
     QSet<CrateId> modifiedCrateSummaries(
             m_crates.collectCrateIdsOfTracks(trackIds));
-    VERIFY_OR_DEBUG_ASSERT(m_crates.onPurgingTracks(transaction, trackIds)) {
+    VERIFY_OR_DEBUG_ASSERT(m_crates.onPurgingTracks(trackIds)) {
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
@@ -214,7 +214,7 @@ bool TrackCollection::insertCrate(
         return false;
     }
     CrateId crateId;
-    VERIFY_OR_DEBUG_ASSERT(m_crates.onInsertingCrate(transaction, crate, &crateId)) {
+    VERIFY_OR_DEBUG_ASSERT(m_crates.onInsertingCrate(crate, &crateId)) {
         return false;
     }
     DEBUG_ASSERT(crateId.isValid());
@@ -238,7 +238,7 @@ bool TrackCollection::updateCrate(
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_crates.onUpdatingCrate(transaction, crate)) {
+    VERIFY_OR_DEBUG_ASSERT(m_crates.onUpdatingCrate(crate)) {
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
@@ -258,7 +258,7 @@ bool TrackCollection::deleteCrate(
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_crates.onDeletingCrate(transaction, crateId)) {
+    VERIFY_OR_DEBUG_ASSERT(m_crates.onDeletingCrate(crateId)) {
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
@@ -279,7 +279,7 @@ bool TrackCollection::addCrateTracks(
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_crates.onAddingCrateTracks(transaction, crateId, trackIds)) {
+    VERIFY_OR_DEBUG_ASSERT(m_crates.onAddingCrateTracks(crateId, trackIds)) {
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
@@ -300,7 +300,7 @@ bool TrackCollection::removeCrateTracks(
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_crates.onRemovingCrateTracks(transaction, crateId, trackIds)) {
+    VERIFY_OR_DEBUG_ASSERT(m_crates.onRemovingCrateTracks(crateId, trackIds)) {
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {

@@ -5,7 +5,6 @@
 
 #include "util/db/dbconnection.h"
 
-#include "util/db/sqltransaction.h"
 #include "util/db/sqllikewildcards.h"
 #include "util/db/fwdsqlquery.h"
 
@@ -126,8 +125,6 @@ void CrateSummaryQueryFields::populateFromQuery(
 
 
 void CrateStorage::repairDatabase(QSqlDatabase database) {
-    DEBUG_ASSERT(!m_database.isOpen());
-
     // NOTE(uklotzde): No transactions
     // All queries are independent so there is no need to enclose some
     // or all of them in a transaction. Grouping into transactions would
@@ -512,10 +509,8 @@ QSet<CrateId> CrateStorage::collectCrateIdsOfTracks(const QList<TrackId>& trackI
 
 
 bool CrateStorage::onInsertingCrate(
-        SqlTransaction& transaction,
         const Crate& crate,
         CrateId* pCrateId) {
-    DEBUG_ASSERT(transaction);
     VERIFY_OR_DEBUG_ASSERT(!crate.getId().isValid()) {
         kLogger.warning()
                 << "Cannot insert crate with a valid id:" << crate.getId();
@@ -551,9 +546,7 @@ bool CrateStorage::onInsertingCrate(
 
 
 bool CrateStorage::onUpdatingCrate(
-        SqlTransaction& transaction,
         const Crate& crate) {
-    DEBUG_ASSERT(transaction);
     VERIFY_OR_DEBUG_ASSERT(crate.getId().isValid()) {
         kLogger.warning()
                 << "Cannot update crate without a valid id";
@@ -592,11 +585,7 @@ bool CrateStorage::onUpdatingCrate(
 
 
 bool CrateStorage::onDeletingCrate(
-        SqlTransaction& transaction,
         CrateId crateId) {
-    VERIFY_OR_DEBUG_ASSERT(transaction) {
-        return false;
-    }
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         kLogger.warning()
                 << "Cannot delete crate without a valid id";
@@ -647,12 +636,8 @@ bool CrateStorage::onDeletingCrate(
 
 
 bool CrateStorage::onAddingCrateTracks(
-        SqlTransaction& transaction,
         CrateId crateId,
         const QList<TrackId>& trackIds) {
-    VERIFY_OR_DEBUG_ASSERT(transaction) {
-        return false;
-    }
     FwdSqlQuery query(m_database, QString(
             "INSERT OR IGNORE INTO %1 (%2, %3) VALUES (:crateId,:trackId)").arg(
                     CRATE_TRACKS_TABLE,
@@ -681,14 +666,10 @@ bool CrateStorage::onAddingCrateTracks(
 
 
 bool CrateStorage::onRemovingCrateTracks(
-        SqlTransaction& transaction,
         CrateId crateId,
         const QList<TrackId>& trackIds) {
-    // NOTE(uklotzde): We remove tracks in a transaction and loop
+    // NOTE(uklotzde): We remove tracks in a loop
     // analogously to adding tracks (see above).
-    VERIFY_OR_DEBUG_ASSERT(transaction) {
-        return false;
-    }
     FwdSqlQuery query(m_database, QString(
             "DELETE FROM %1 WHERE %2=:crateId AND %3=:trackId").arg(
                     CRATE_TRACKS_TABLE,
@@ -717,10 +698,7 @@ bool CrateStorage::onRemovingCrateTracks(
 
 
 bool CrateStorage::onPurgingTracks(
-        SqlTransaction& transaction,
         const QList<TrackId>& trackIds) {
-    DEBUG_ASSERT(transaction);
-
     // NOTE(uklotzde): Remove tracks from crates one-by-one.
     // This might be optimized by deleting multiple track ids
     // at once in chunks with a maximum size.

@@ -834,9 +834,7 @@ QList<TrackId> TrackDAO::addMultipleTracks(
 }
 
 bool TrackDAO::onHidingTracks(
-        SqlTransaction& transaction,
         const QList<TrackId>& trackIds) {
-    DEBUG_ASSERT(transaction);
     QStringList idList;
     for (const auto& trackId: trackIds) {
         idList.append(trackId.toString());
@@ -860,9 +858,7 @@ void TrackDAO::afterHidingTracks(
 // This function should get called if you drag-and-drop a file that's been
 // "hidden" from Mixxx back into the library view.
 bool TrackDAO::onUnhidingTracks(
-        SqlTransaction& transaction,
         const QList<TrackId>& trackIds) {
-    DEBUG_ASSERT(transaction);
     QStringList idList;
     for (const auto& trackId: trackIds) {
         idList.append(trackId.toString());
@@ -905,9 +901,7 @@ QList<TrackId> TrackDAO::getTrackIds(const QDir& dir) {
 }
 
 bool TrackDAO::onPurgingTracks(
-        SqlTransaction& transaction,
         const QList<TrackId>& trackIds) {
-    DEBUG_ASSERT(transaction);
     if (trackIds.empty()) {
         return true; // nothing to do
     }

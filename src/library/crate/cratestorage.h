@@ -14,9 +14,6 @@
 #include "util/db/sqlstorage.h"
 
 
-// forward declaration(s)
-class SqlTransaction;
-
 class CrateQueryFields {
   public:
     CrateQueryFields() {}
@@ -209,30 +206,24 @@ class CrateStorage: public virtual /*implements*/ SqlStorage {
     /////////////////////////////////////////////////////////////////////////
 
     bool onInsertingCrate(
-            SqlTransaction& transaction,
             const Crate& crate,
             CrateId* pCrateId = nullptr);
 
     bool onUpdatingCrate(
-            SqlTransaction& transaction,
             const Crate& crate);
 
     bool onDeletingCrate(
-            SqlTransaction& transaction,
             CrateId crateId);
 
     bool onAddingCrateTracks(
-            SqlTransaction& transaction,
             CrateId crateId,
             const QList<TrackId>& trackIds);
 
     bool onRemovingCrateTracks(
-            SqlTransaction& transaction,
             CrateId crateId,
             const QList<TrackId>& trackIds);
 
     bool onPurgingTracks(
-            SqlTransaction& transaction,
             const QList<TrackId>& trackIds);
 
 

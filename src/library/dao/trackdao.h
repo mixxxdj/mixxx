@@ -89,19 +89,16 @@ class TrackDAO : public QObject, public virtual DAO {
     void addTracksFinish(bool rollback = false);
 
     bool onHidingTracks(
-            SqlTransaction& transaction,
             const QList<TrackId>& trackIds);
     void afterHidingTracks(
             const QList<TrackId>& trackIds);
 
     bool onUnhidingTracks(
-            SqlTransaction& transaction,
             const QList<TrackId>& trackIds);
     void afterUnhidingTracks(
             const QList<TrackId>& trackIds);
 
     bool onPurgingTracks(
-            SqlTransaction& transaction,
             const QList<TrackId>& trackIds);
     void afterPurgingTracks(
             const QList<TrackId>& trackIds);
