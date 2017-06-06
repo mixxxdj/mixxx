@@ -19,6 +19,7 @@ class WTrackProperty : public WLabel {
 
   signals:
     void trackDropped(QString filename, QString group);
+    void ejectTrack(TrackPointer track, QString group);
 
   public slots:
     void slotTrackLoaded(TrackPointer track);
@@ -30,6 +31,7 @@ class WTrackProperty : public WLabel {
   private:
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
 
     const char* m_pGroup;
