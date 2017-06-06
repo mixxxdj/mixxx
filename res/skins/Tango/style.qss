@@ -1402,47 +1402,34 @@ WBeatSpinBox {
     image: url(skin:/buttons/btn_arrow_up_thin_hover.svg) no-repeat top center;
   }
 
-#SamplerPlayBox {
+#SamplerPlayBox, #SamplerPlayBox_mini {
   border-color: #0f0f0f;
-  border-style: solid;
+  background-color: #333333;
+}
+#SamplerPlayBox {
   border-width: 1px 1px 1px 0px;
 }
 #SamplerPlayBox_mini {
   padding: 0px 1px 0px 0px;
 }
-  #SamplerPlayCue, #SamplerPlayCueUnderlay, #SamplerCover {
-  }
-  #SamplerPlayCue[displayValue="0"] {
-    background: none url(skin:/buttons/btn_sampler_paused.svg) no-repeat center center;
+  #SamplerPlayCue, #SamplerPlayCueUnderlay {
+    border-radius: 0px;
   }
   #SamplerPlayCue[displayValue="0"]:hover {
-    border: 1px solid #888888;
+    border: 1px solid #666666;
+    background-color: #333333;
   }
   #SamplerPlayCue[displayValue="1"] {
-    background: none url(skin:/buttons/btn_sampler_playing.svg) no-repeat center center;
     border: 1px solid #ca0000;
+    background-color: #a90000;
   }
   #SamplerPlayCue[displayValue="1"]:hover {
     border: 1px solid #ff0000;
   }
-  #SamplerPlayCueUnderlay[displayValue="0"] {
-    background-color: #333333;
-    }
+
   #SamplerPlayCueUnderlay[displayValue="1"] {
     background: #a90000;
     }
-
-#Sampler_PlayIndicatorUnderlay[displayValue="0"],
-#Sampler_mini_PlayIndicatorUnderlay[displayValue="0"],
-#Sampler_mini_empty {
-  background-color: #333333;
-}
-#Sampler_PlayIndicatorUnderlay[displayValue="1"] {
-  background-color: #666666;
-}
-#Sampler_mini_PlayIndicatorUnderlay[displayValue="1"] {
-  background-color: #888888;
-}
 
 WTrackProperty#SamplerTitle {
   font-size: 14px/18px;
@@ -1504,10 +1491,6 @@ WTrackProperty#SamplerTitle_mini {
 }
         
 #SamplerSyncButton {
-  font-size: 11px/13px;
-  font-weight: bold;
-  text-align: left;
-  color: #999999;
   background-color: #0f0f0f;
 }
   #SamplerSyncButton:hover {

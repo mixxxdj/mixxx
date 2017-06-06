@@ -57,7 +57,11 @@ Variables:
                       <Template src="skin:button_2state_right_display.xml">
                         <SetVariable name="ObjectName">SamplerPlayCue</SetVariable>
                         <SetVariable name="Size">34f,34f</SetVariable>
-                        <SetVariable name="TooltipId">play_cue_set</SetVariable>
+                        <SetVariable name="state_0_pressed">sampler_paused.png</SetVariable>
+                        <SetVariable name="state_0_unpressed">sampler_paused.png</SetVariable>
+                        <SetVariable name="state_0_pressed">sampler_paused.png</SetVariable>
+                        <SetVariable name="state_1_pressed">sampler_playing.svg</SetVariable>
+                        <SetVariable name="state_1_unpressed">sampler_playing.svg</SetVariable>
                         <SetVariable name="ConfigKey"><Variable name="group"/>,cue_gotoandplay</SetVariable>
                         <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
                         <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
