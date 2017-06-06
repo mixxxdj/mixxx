@@ -11,7 +11,7 @@ var PioneerDDJSX = function() {};
 
 /*
 	Author: 		DJMaxergy
-	Version: 		1.16, 06/01/2017
+	Version: 		1.17, 06/06/2017
 	Description: 	Pioneer DDJ-SX Controller Mapping for Mixxx
     Source: 		http://github.com/DJMaxergy/mixxx/tree/pioneerDDJSX_mapping
     
@@ -108,6 +108,7 @@ PioneerDDJSX.useNewLibraryControls = false;
 PioneerDDJSX.shiftPressed = false;
 PioneerDDJSX.rotarySelectorChanged = false;
 PioneerDDJSX.panels = [false, false]; // view state of effect and sampler panel
+PioneerDDJSX.shiftPanelSelectPressed = false;
 
 PioneerDDJSX.syncRate = [0, 0, 0, 0];
 PioneerDDJSX.gridAdjustSelected = [false, false, false, false];
@@ -1571,6 +1572,8 @@ PioneerDDJSX.panelSelectButton = function(channel, control, value, status, group
 
 PioneerDDJSX.shiftPanelSelectButton = function(channel, control, value, status, group) {
     var channelGroup;
+    PioneerDDJSX.shiftPanelSelectPressed = value ? true : false;
+    
     for (var index in PioneerDDJSX.fxUnitGroups) {
         if (PioneerDDJSX.fxUnitGroups.hasOwnProperty(index)) {
             if (PioneerDDJSX.fxUnitGroups[index] < 2) {
@@ -2274,9 +2277,9 @@ PioneerDDJSX.fxAssignButton = function(channel, control, value, status, group) {
             script.toggleControl("[EffectRack1_EffectUnit1]", "group_" + group + "_enable");
         } else if ((control >= 0x50) && (control <= 0x53)) {
             script.toggleControl("[EffectRack1_EffectUnit2]", "group_" + group + "_enable");
-        } else if ((control >= 0x70) && (control <= 0x73)) {
+        } else if ((control >= 0x70) && (control <= 0x73) && PioneerDDJSX.shiftPanelSelectPressed) {
             script.toggleControl("[EffectRack1_EffectUnit3]", "group_" + group + "_enable");
-        } else if ((control >= 0x54) && (control <= 0x57)) {
+        } else if ((control >= 0x54) && (control <= 0x57) && PioneerDDJSX.shiftPanelSelectPressed) {
             script.toggleControl("[EffectRack1_EffectUnit4]", "group_" + group + "_enable");
         }
     }
