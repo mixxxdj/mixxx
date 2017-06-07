@@ -51,7 +51,7 @@ bool AnalyzerSilence::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
     return m_pBeginCue->getSource() == Cue::MANUAL && m_pEndCue->getSource() == Cue::MANUAL;
 }
 
-void AnalyzerSilence::process(const CSAMPLE *pIn, const int iLen) {
+void AnalyzerSilence::process(const CSAMPLE* pIn, const int iLen) {
     for (int i = 0; i < iLen; i += kChannelCount) {
         // Compute max of channels in this sample frame
         CSAMPLE fMax = CSAMPLE_ZERO;
