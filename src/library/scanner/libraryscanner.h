@@ -16,6 +16,7 @@
 #include "library/dao/analysisdao.h"
 #include "library/scanner/scannerglobal.h"
 #include "track/track.h"
+#include "repository/repository.h"
 
 #include <gtest/gtest.h>
 
@@ -99,8 +100,7 @@ class LibraryScanner : public QThread {
     // thread.
     TrackCollection* m_pTrackCollection;
 
-    // The library scanner thread's database connection.
-    QSqlDatabase m_database;
+    mixxx::Repository m_repository;
 
     // The pool of threads used for worker tasks.
     QThreadPool m_pool;

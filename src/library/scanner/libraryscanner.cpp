@@ -13,6 +13,7 @@
 #include "util/timer.h"
 #include "library/scanner/scannerutil.h"
 
+
 namespace {
     // TODO(rryan) make configurable
     const int kScannerThreadPoolSize = 1;
@@ -23,18 +24,16 @@ namespace {
 LibraryScanner::LibraryScanner(TrackCollection* pTrackCollection,
                                UserSettingsPointer pConfig)
               : m_pTrackCollection(pTrackCollection),
+                m_repository(pConfig, "LIBRARY_SCANNER"),
                 m_analysisDao(pConfig),
                 m_trackDao(m_cueDao, m_playlistDao,
                            m_analysisDao, m_libraryHashDao,
                            pConfig),
                 m_stateSema(1), // only one transaction is possible at a time
                 m_state(IDLE) {
-    // Don't initialize m_database here, we need to do it in run() so the DB
-    // conn is in the right thread.
-    kLogger.debug() << "Starting thread";
-
     // Move LibraryScanner to its own thread so that our signals/slots will
     // queue to our event loop.
+    kLogger.debug() << "Starting thread";
     moveToThread(this);
     m_pool.moveToThread(this);
 
@@ -82,50 +81,36 @@ LibraryScanner::LibraryScanner(TrackCollection* pTrackCollection,
 
 LibraryScanner::~LibraryScanner() {
     cancelAndQuit();
-
-    // There should never be an outstanding transaction when this code is
-    // called. If there is, it means we probably aren't committing a transaction
-    // somewhere that should be.
-    if (m_database.isOpen()) {
-        qDebug() << "Closing database" << m_database.connectionName();
-
-        // Rollback any uncommitted transaction
-        if (m_database.rollback()) {
-            qDebug() << "ERROR: There was a transaction in progress while closing the library scanner connection."
-                     << "There is a logic error somewhere.";
-        }
-        // Close our database connection
-        m_database.close();
-    }
-    kLogger.debug() << "Exiting thread";
 }
 
 void LibraryScanner::run() {
+    kLogger.debug() << "Entering thread";
+
     Trace trace("LibraryScanner");
 
-    if (!m_database.isValid()) {
-        m_database = QSqlDatabase::cloneDatabase(m_pTrackCollection->database(), "LIBRARY_SCANNER");
+    if (!m_repository.openDatabaseConnection()) {
+        kLogger.warning()
+                << "Failed to open database connection for library scanner";
+        return;
     }
 
-    if (!m_database.isOpen()) {
-        // Open the database connection in this thread.
-        if (!m_database.open()) {
-            qDebug() << "Failed to open database from library scanner thread." << m_database.lastError();
-            return;
-        }
-    }
-
-    m_libraryHashDao.initialize(m_database);
-    m_cueDao.initialize(m_database);
-    m_trackDao.initialize(m_database);
-    m_playlistDao.initialize(m_database);
-    m_analysisDao.initialize(m_database);
-    m_directoryDao.initialize(m_database);
+    QSqlDatabase database = m_repository.database();
+    DEBUG_ASSERT(database.isOpen());
+    m_libraryHashDao.initialize(database);
+    m_cueDao.initialize(database);
+    m_trackDao.initialize(database);
+    m_playlistDao.initialize(database);
+    m_analysisDao.initialize(database);
+    m_directoryDao.initialize(database);
 
     // Start the event loop.
     kLogger.debug() << "Event loop starting";
     exec();
     kLogger.debug() << "Event loop stopped";
+
+    m_repository.closeDatabaseConnection();
+
+    kLogger.debug() << "Exiting thread";
 }
 
 void LibraryScanner::slotStartScan() {
@@ -249,7 +234,7 @@ void LibraryScanner::cleanUpScan() {
 
     // Start a transaction for all the library hashing (moved file
     // detection) stuff.
-    ScopedTransaction transaction(m_database);
+    ScopedTransaction transaction(m_repository.database());
 
     kLogger.debug() << "Marking tracks in changed directories as verified";
     m_trackDao.markTrackLocationsAsVerified(m_scannerGlobal->verifiedTracks());
