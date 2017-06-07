@@ -38,10 +38,6 @@ class AnalysisDao : public DAO {
         m_db = database;
     }
 
-    bool getWaveform(Track& tio);
-    bool saveWaveform(const Track& tio);
-    bool removeWaveform(const Track& tio);
-
     QList<AnalysisInfo> getAnalysesForTrackByType(TrackId trackId, AnalysisType type);
     QList<AnalysisInfo> getAnalysesForTrack(TrackId trackId);
     bool saveAnalysis(AnalysisInfo* analysis);
