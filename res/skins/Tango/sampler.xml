@@ -21,24 +21,25 @@ Variables:
   <WidgetGroup>
     <ObjectName>SamplerDeck</ObjectName>
     <Layout>vertical</Layout>
-    <Size>120me,-1min</Size>
+    <Size>119me,75min</Size>
     <Children>
+
       <WidgetGroup><!-- [ Title + [Play / Overview] ] + VU / Tempo -->
         <ObjectName></ObjectName>
         <Layout>horizontal</Layout>
-        <Size>117me,54f</Size>
+        <Size>119me,54f</Size>
         <Children>
 
           <WidgetGroup><!-- Title + [Play / Overview] -->
             <ObjectName></ObjectName>
             <Layout>vertical</Layout>
-            <Size>70min,54f</Size>
+            <Size>89me,54f</Size>
             <Children>
 
               <TrackProperty>
                 <ObjectName>SamplerTitle</ObjectName>
                 <TooltipId>text</TooltipId>
-                <Size>1me,18f</Size>
+                <Size>i,18f</Size>
                 <Group><Variable name="group"/></Group>
                 <Property>title</Property>
                 <Elide>right</Elide>

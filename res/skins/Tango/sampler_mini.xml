@@ -17,7 +17,7 @@ Variables:
   <WidgetGroup><!-- SamplerDeck -->
     <Layout>horizontal</Layout>
     <ObjectName>SamplerDeck</ObjectName>
-    <Size>120me,39f</Size>
+    <Size>119me,39f</Size>
     <Children>
 
       <WidgetGroup><!-- Play -->
@@ -58,7 +58,7 @@ Variables:
       <WidgetGroup><!-- Title + [Sync, CF assign, Volume] -->
         <ObjectName>Spacer33</ObjectName>
         <Layout>vertical</Layout>
-        <Size>82me,34f</Size>
+        <Size>84me,34f</Size>
         <Children>
 
           <TrackProperty>
