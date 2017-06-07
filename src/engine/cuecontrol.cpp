@@ -898,6 +898,13 @@ void CueControl::autoDJStartSet(double v) {
 
     QMutexLocker lock(&m_mutex);
     double position = getCurrentSample();
+
+    // Make sure user is not trying to place start cue on or after end cue.
+    if (position >= m_pAutoDJEndPosition->get()) {
+        qWarning() << "Trying to place start cue on or after end cue.";
+        return;
+    }
+
     m_pAutoDJStartPosition->set(position);
     TrackPointer pLoadedTrack = m_pLoadedTrack;
     lock.unlock();
@@ -938,6 +945,13 @@ void CueControl::autoDJEndSet(double v) {
 
     QMutexLocker lock(&m_mutex);
     double position = getCurrentSample();
+
+    // Make sure user is not trying to place end cue on or before start cue.
+    if (position <= m_pAutoDJStartPosition->get()) {
+        qWarning() << "Trying to place end cue on or before start cue.";
+        return;
+    }
+
     m_pAutoDJEndPosition->set(position);
     TrackPointer pLoadedTrack = m_pLoadedTrack;
     lock.unlock();
