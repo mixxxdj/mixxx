@@ -48,6 +48,9 @@ const mixxx::Logger kLogger("Library");
 //static
 const QString Library::kConfigGroup("[Library]");
 
+//static
+const ConfigKey Library::kConfigKeyRepairDatabaseOnNextRestart(kConfigGroup, "RepairDatabaseOnNextRestart");
+
 // This is is the name which we use to register the WTrackTableView with the
 // WLibrary
 const QString Library::m_sTrackViewName = QString("WTrackTableView");
@@ -85,8 +88,14 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
         exit(-1);
     }
 
-    kLogger.info() << "Checking and repairing database (if necessary)";
-    m_pTrackCollection->repairDatabase(database);
+    // TODO(XXX): Add a checkbox in the library preferences for checking
+    // and repairing the database on the next restart of the application.
+    if (pConfig->getValue(kConfigKeyRepairDatabaseOnNextRestart, false)) {
+        kLogger.info() << "Checking and repairing database (if necessary)";
+        m_pTrackCollection->repairDatabase(database);
+        // Reset config value
+        pConfig->setValue(kConfigKeyRepairDatabaseOnNextRestart, false);
+    }
 
     kLogger.info() << "Connecting database";
     m_pTrackCollection->connectDatabase(database);

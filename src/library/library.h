@@ -46,6 +46,8 @@ class Library : public QObject {
 public:
     static const QString kConfigGroup;
 
+    static const ConfigKey kConfigKeyRepairDatabaseOnNextRestart;
+
     Library(QObject* parent,
             UserSettingsPointer pConfig,
             PlayerManagerInterface* pPlayerManager,
