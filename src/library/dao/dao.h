@@ -1,6 +1,8 @@
 #ifndef DAO_H
 #define DAO_H
 
+#include <QSqlDatabase>
+
 class DAO {
   public:
     virtual ~DAO() {}
