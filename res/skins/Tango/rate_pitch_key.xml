@@ -20,37 +20,11 @@ Variables:
         <Layout>vertical</Layout>
         <Size>50f,29f</Size>
         <Children>
-          <WidgetGroup><!-- BpmContainer -->
-            <ObjectName>BpmContainer</ObjectName>
-            <Layout>stacked</Layout>
-            <Size>50f,16me</Size>
-            <Children>
-              <Template src="skin:button_2state_right.xml">
-                <SetVariable name="TooltipId">sync_enabled</SetVariable>
-                <SetVariable name="ObjectName">SyncButtonOverlay</SetVariable>
-                <SetVariable name="Size">50f,16me</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="group"/>,sync_enabled</SetVariable>
-                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,rate_set_default</SetVariable>
-              </Template>
-              <Number>
-                <ObjectName>Bpm</ObjectName>
-                <Size>50f,16me</Size>
-                <TooltipId>visual_bpm</TooltipId>
-                <Channel><Variable name="chanNum" /></Channel>
-                <NumberOfDigits>1</NumberOfDigits>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
-                </Connection>
-              </Number>
-            </Children>
-          </WidgetGroup><!-- /BpmContainer -->
-
           <WidgetGroup><!-- KeyContainer -->
             <ObjectName>KeyContainer</ObjectName>
             <Layout>stacked</Layout>
             <Size>50f,13f</Size>
             <Children>
-
               <WidgetGroup><!-- Overlay buttons: down, reset, up -->
                 <ObjectName>KeyDisplayReset</ObjectName>
                 <Layout>horizontal</Layout>
@@ -80,20 +54,20 @@ Variables:
                 </Children>
               </WidgetGroup><!-- /Overlay buttons: down, reset, up -->
 
-              <!-- Show/light up if key is not original, like with script.
-                   Not working, only once per skin load.
-                  Tried different controls: pitch (from script), pitch_adjust, ...
-              <WidgetGroup>
-                <ObjectName>KeyOffsetWarning</ObjectName>
-                <Size>50f,13f</Size>
-                <Layout>horizontal</Layout>
-                <Children/>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
-                  <Transform><Not/><IsEqual>1</IsEqual></Transform>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup> -->
+                        <!-- Show/light up if key is not original, like with script.
+                             Not working, only once per skin load.
+                            Tried different controls: pitch (from script), pitch_adjust, ...
+                        <WidgetGroup>
+                          <ObjectName>KeyOffsetWarning</ObjectName>
+                          <Size>50f,13f</Size>
+                          <Layout>horizontal</Layout>
+                          <Children/>
+                          <Connection>
+                            <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+                            <Transform><Not/><IsEqual>1</IsEqual></Transform>
+                            <BindProperty>visible</BindProperty>
+                          </Connection>
+                        </WidgetGroup> -->
 
               <Key><!-- Actual Key display -->
                 <TooltipId>visual_key</TooltipId>
@@ -125,13 +99,37 @@ Variables:
                   </WidgetGroup>
                 </Children>
               </WidgetGroup><!-- /Underlays to mark key_up/down buttons -->
-
             </Children>
             <Connection>
               <ConfigKey persist="true">[Tango],key_controls</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /KeyContainer -->
+
+          <WidgetGroup><!-- BpmContainer -->
+            <ObjectName>BpmContainer</ObjectName>
+            <Layout>stacked</Layout>
+            <Size>50f,16me</Size>
+            <Children>
+              <Template src="skin:button_2state_right.xml">
+                <SetVariable name="TooltipId">sync_enabled</SetVariable>
+                <SetVariable name="ObjectName">SyncButtonOverlay</SetVariable>
+                <SetVariable name="Size">50f,16me</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,sync_enabled</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,rate_set_default</SetVariable>
+              </Template>
+              <Number>
+                <ObjectName>Bpm</ObjectName>
+                <Size>50f,16me</Size>
+                <TooltipId>visual_bpm</TooltipId>
+                <Channel><Variable name="chanNum" /></Channel>
+                <NumberOfDigits>1</NumberOfDigits>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+                </Connection>
+              </Number>
+            </Children>
+          </WidgetGroup><!-- /BpmContainer -->
         </Children>
       </WidgetGroup><!-- /BPM + Key controls -->
 
@@ -150,6 +148,7 @@ Variables:
       </SliderComposed><!-- /PitchSlider -->
 
       <WidgetGroup>
+        <ObjectName>Spacer1e</ObjectName>
         <Size>1me,25f</Size>
         <Children/>
         <Connection>
