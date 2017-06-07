@@ -304,20 +304,7 @@ DbConnection::DbConnection(
 }
 
 DbConnection::~DbConnection() {
-    if (m_database.isOpen()) {
-        // There should never be an outstanding transaction when this code is
-        // called. If there is, it means we probably aren't committing a
-        // transaction somewhere that should be.
-        VERIFY_OR_DEBUG_ASSERT(!m_database.rollback()) {
-            kLogger.warning()
-                << "Rolled back open transaction before closing database connection:"
-                << *this;
-        }
-        kLogger.debug()
-            << "Closing database connection:"
-            << *this;
-        m_database.close();
-    }
+    close();
     removeDatabase(m_database);
 }
 
@@ -340,6 +327,23 @@ bool DbConnection::open() {
         return false; // abort
     }
     return true;
+}
+
+void DbConnection::close() {
+    if (m_database.isOpen()) {
+        // There should never be an outstanding transaction when this code is
+        // called. If there is, it means we probably aren't committing a
+        // transaction somewhere that should be.
+        VERIFY_OR_DEBUG_ASSERT(!m_database.rollback()) {
+            kLogger.warning()
+                << "Rolled back open transaction before closing database connection:"
+                << *this;
+        }
+        kLogger.debug()
+            << "Closing database connection:"
+            << *this;
+        m_database.close();
+    }
 }
 
 //static

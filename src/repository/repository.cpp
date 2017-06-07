@@ -27,7 +27,6 @@ const QString kDatabaseConnectionName = "MIXXX";
 Repository::Repository(
         const UserSettingsPointer& pConfig)
     : m_dbConnection(pConfig->getSettingsPath(), kDatabaseFileName, kDatabaseConnectionName) {
-    m_dbConnection.open();
 }
 
 bool Repository::initDatabaseSchema(

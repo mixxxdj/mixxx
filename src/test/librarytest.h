@@ -12,8 +12,9 @@ class LibraryTest : public MixxxTest {
     LibraryTest()
         : m_repository(config()),
           m_trackCollection(config()) {
+        m_repository.openDatabaseConnection();
         QSqlDatabase database = m_repository.database();
-        m_repository.initDatabaseSchema(database);
+        mixxx::Repository::initDatabaseSchema(database);
         m_trackCollection.connectDatabase(database);
     }
     ~LibraryTest() override {

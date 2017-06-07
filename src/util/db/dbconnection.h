@@ -34,6 +34,7 @@ class DbConnection final {
     ~DbConnection();
 
     bool open();
+    void close();
 
     QSqlDatabase database() const {
         return m_database;

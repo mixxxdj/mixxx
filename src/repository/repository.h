@@ -18,13 +18,20 @@ class Repository : public QObject {
     static const QString kDefaultSchemaFile;
     static const int kRequiredSchemaVersion;
 
-    explicit Repository(
-            const UserSettingsPointer& pConfig);
-
-    bool initDatabaseSchema(
+    static bool initDatabaseSchema(
             const QSqlDatabase& database,
             const QString& schemaFile = kDefaultSchemaFile,
             int schemaVersion = kRequiredSchemaVersion);
+
+    explicit Repository(
+            const UserSettingsPointer& pConfig);
+
+    bool openDatabaseConnection() {
+        return m_dbConnection.open();
+    }
+    void closeDatabaseConnection() {
+        m_dbConnection.close();
+    }
 
     QSqlDatabase database() const {
         return m_dbConnection.database();

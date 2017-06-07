@@ -14,6 +14,7 @@ class SchemaManagerTest : public MixxxTest {
   protected:
     SchemaManagerTest()
             : m_repository(config()) {
+        m_repository.openDatabaseConnection();
     }
 
     QSqlDatabase database() const {
