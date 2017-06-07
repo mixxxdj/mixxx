@@ -1434,15 +1434,16 @@ WBeatSpinBox {
 WTrackProperty#SamplerTitle {
   font-size: 14px/18px;
   font-weight: bold;
-  color: #bababa;
+  color: #999999;
   text-align: left;
   background-color: #333333;
+  padding: 0 0 0 1px;
 }
 
 WTrackProperty#SamplerTitle_mini {
   font-size: 14px/14px;
   font-weight: bold;
-  color: #d2d2d2;
+  color: #888888;
   text-align: left;
   padding: 0px 2px 0px 0px;
 }
