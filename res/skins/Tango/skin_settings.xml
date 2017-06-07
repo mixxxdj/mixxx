@@ -342,9 +342,9 @@ Description:
             <Children>
 
               <Template src="skin:skin_settings_button_3state.xml">
-                <SetVariable name="state_0_text">      Spinny &#58338;  Cover    Off</SetVariable>
-                <SetVariable name="state_1_text">      Spinny  &#58337; Cover    Off</SetVariable>
-                <SetVariable name="state_2_text">      Spinny    Cover  &#58337; Off</SetVariable>
+                <SetVariable name="state_0_text">      Spinny &#9664;  Cover    Off</SetVariable>
+                <SetVariable name="state_1_text">      Spinny  &#9654; Cover    Off</SetVariable>
+                <SetVariable name="state_2_text">      Spinny    Cover  &#9654; Off</SetVariable>
                 <SetVariable name="Setting">[Tango],spinny_cover_none</SetVariable>
               </Template>
 
@@ -372,8 +372,8 @@ Description:
                     <Size>182f,15f</Size>
                     <Children>
                       <Template src="skin:skin_settings_button_2state.xml">
-                        <SetVariable name="state_0_text">      ° &#58338;  O</SetVariable>
-                        <SetVariable name="state_1_text">      °  &#58337; O</SetVariable>
+                        <SetVariable name="state_0_text">      ° &#9664;  O</SetVariable>
+                        <SetVariable name="state_1_text">      °  &#9654; O</SetVariable>
                         <SetVariable name="Setting">[Tango],spinnyCoverBIG</SetVariable>
                       </Template>
                     </Children>
@@ -389,8 +389,8 @@ Description:
                     <Size>182f,15f</Size>
                     <Children>
                       <Template src="skin:skin_settings_button_2state.xml">
-                        <SetVariable name="state_0_text">      ° &#58338;  O</SetVariable>
-                        <SetVariable name="state_1_text">      °  &#58337; O  [ hide Channel mixer! ]</SetVariable>
+                        <SetVariable name="state_0_text">      ° &#9664;  O</SetVariable>
+                        <SetVariable name="state_1_text">      °  &#9654; O  [ hide Channel mixer! ]</SetVariable>
                         <SetVariable name="Setting">[Tango],spinnyCoverBIG</SetVariable>
                       </Template>
                     </Children>
@@ -449,8 +449,8 @@ Description:
             <Children>
 
               <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      2 &#58338;  4  Effect Units</SetVariable>
-                <SetVariable name="state_1_text">      2  &#58337; 4  Effect Units</SetVariable>
+                <SetVariable name="state_0_text">      2 &#9664;  4  Effect Units</SetVariable>
+                <SetVariable name="state_1_text">      2  &#9654; 4  Effect Units</SetVariable>
                 <SetVariable name="Setting">[Tango],2or4_fxUnits</SetVariable>
               </Template>
 
