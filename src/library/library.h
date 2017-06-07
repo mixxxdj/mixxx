@@ -44,6 +44,8 @@ class PlayerManagerInterface;
 class Library : public QObject {
     Q_OBJECT
 public:
+    static const QString kConfigGroup;
+
     Library(QObject* parent,
             UserSettingsPointer pConfig,
             PlayerManagerInterface* pPlayerManager,

@@ -45,6 +45,9 @@ const mixxx::Logger kLogger("Library");
 
 } // anonymous namespace
 
+//static
+const QString Library::kConfigGroup("[Library]");
+
 // This is is the name which we use to register the WTrackTableView with the
 // WLibrary
 const QString Library::m_sTrackViewName = QString("WTrackTableView");
@@ -90,7 +93,7 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
 
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
 
-    m_pKeyNotation.reset(new ControlObject(ConfigKey("[Library]", "key_notation")));
+    m_pKeyNotation.reset(new ControlObject(ConfigKey(kConfigGroup, "key_notation")));
 
     connect(&m_scanner, SIGNAL(scanStarted()),
             this, SIGNAL(scanStarted()));
@@ -132,21 +135,21 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
     //messagebox popup when you select them. (This forces you to reach for your
     //mouse or keyboard if you're using MIDI control and you scroll through them...)
     if (RhythmboxFeature::isSupported() &&
-        pConfig->getValue(ConfigKey("[Library]","ShowRhythmboxLibrary"), true)) {
+        pConfig->getValue(ConfigKey(kConfigGroup,"ShowRhythmboxLibrary"), true)) {
         addFeature(new RhythmboxFeature(this, m_pTrackCollection));
     }
-    if (pConfig->getValue(ConfigKey("[Library]","ShowBansheeLibrary"), true)) {
+    if (pConfig->getValue(ConfigKey(kConfigGroup,"ShowBansheeLibrary"), true)) {
         BansheeFeature::prepareDbPath(pConfig);
         if (BansheeFeature::isSupported()) {
             addFeature(new BansheeFeature(this, m_pTrackCollection, pConfig));
         }
     }
     if (ITunesFeature::isSupported() &&
-        pConfig->getValue(ConfigKey("[Library]","ShowITunesLibrary"), true)) {
+        pConfig->getValue(ConfigKey(kConfigGroup,"ShowITunesLibrary"), true)) {
         addFeature(new ITunesFeature(this, m_pTrackCollection));
     }
     if (TraktorFeature::isSupported() &&
-        pConfig->getValue(ConfigKey("[Library]","ShowTraktorLibrary"), true)) {
+        pConfig->getValue(ConfigKey(kConfigGroup,"ShowTraktorLibrary"), true)) {
         addFeature(new TraktorFeature(this, m_pTrackCollection));
     }
 
@@ -163,8 +166,8 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
     }
 
     m_iTrackTableRowHeight = m_pConfig->getValue(
-            ConfigKey("[Library]", "RowHeight"), kDefaultRowHeightPx);
-    QString fontStr = m_pConfig->getValueString(ConfigKey("[Library]", "Font"));
+            ConfigKey(kConfigGroup, "RowHeight"), kDefaultRowHeightPx);
+    QString fontStr = m_pConfig->getValueString(ConfigKey(kConfigGroup, "Font"));
     if (!fontStr.isEmpty()) {
         m_trackTableFont.fromString(fontStr);
     } else {
