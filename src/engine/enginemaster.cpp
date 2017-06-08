@@ -360,29 +360,49 @@ void EngineMaster::process(const int iBufferSize) {
 
     // Compute headphone mix
     // Head phone left/right mix
-    CSAMPLE chead_gain = 1;
-    CSAMPLE cmaster_gain = 0;
+    CSAMPLE pflMixGainInHeadphones = 1;
+    CSAMPLE masterMixGainInHeadphones = 0;
     if (masterEnabled) {
         CSAMPLE cf_val = m_pHeadMix->get();
-        chead_gain = 0.5 * (-cf_val + 1.);
-        cmaster_gain = 0.5 * (cf_val + 1.);
+        pflMixGainInHeadphones = 0.5 * (-cf_val + 1.);
+        masterMixGainInHeadphones = 0.5 * (cf_val + 1.);
         // qDebug() << "head val " << cf_val << ", head " << chead_gain
         //          << ", master " << cmaster_gain;
     }
 
     // Mix all the PFL enabled channels together.
-    m_headphoneGain.setGain(chead_gain);
+    m_headphoneGain.setGain(pflMixGainInHeadphones);
 
-    if (m_bRampingGain) {
-        ChannelMixer::mixChannelsRamping(
-                m_headphoneGain, &m_activeHeadphoneChannels,
-                &m_channelHeadphoneGainCache,
-                m_pHead, iBufferSize);
-    } else {
-        ChannelMixer::mixChannels(
-                m_headphoneGain, &m_activeHeadphoneChannels,
-                &m_channelHeadphoneGainCache,
-                m_pHead, iBufferSize);
+    if (headphoneEnabled) {
+        if (m_bRampingGain) {
+            ChannelMixer::mixChannelsRamping(
+                    m_headphoneGain, &m_activeHeadphoneChannels,
+                    &m_channelHeadphoneGainCache,
+                    m_pHead, iBufferSize);
+        } else {
+            ChannelMixer::mixChannels(
+                    m_headphoneGain, &m_activeHeadphoneChannels,
+                    &m_channelHeadphoneGainCache,
+                    m_pHead, iBufferSize);
+        }
+
+        // Process headphone channel effects
+        if (m_pEngineEffectsManager) {
+            GroupFeatureState headphoneFeatures;
+            // If there is only one channel in the headphone mix, use its features
+            // for effects processing. This allows for previewing how an effect will
+            // sound on a playing deck before turning up the dry/wet knob to make it
+            // audible on the master mix. Without this, the effect would sound different
+            // in headphones than how it would sound if it was enabled on the deck,
+            // for example with tempo synced effects.
+            if (m_activeHeadphoneChannels.size() == 1) {
+                headphoneFeatures = m_activeHeadphoneChannels.at(0)->m_features;
+            }
+            m_pEngineEffectsManager->process(m_headphoneHandle.handle(),
+                                             m_pHead,
+                                             iBufferSize, iSampleRate,
+                                             headphoneFeatures);
+        }
     }
 
     // Mix all the talkover enabled channels together.
@@ -487,6 +507,39 @@ void EngineMaster::process(const int iBufferSize) {
                                              masterFeatures);
         }
 
+        if (headphoneEnabled) {
+            // Add master mix to headphone buffer with gain determined by headMix knob
+            if (m_bRampingGain) {
+                SampleUtil::addWithRampingGain(m_pHead, m_pMaster,
+                                               m_headphoneMasterGainOld,
+                                               masterMixGainInHeadphones, iBufferSize);
+            } else {
+                SampleUtil::addWithGain(m_pHead, m_pMaster, masterMixGainInHeadphones, iBufferSize);
+            }
+            m_headphoneMasterGainOld = masterMixGainInHeadphones;
+
+            if (m_pHeadSplitEnabled->get()) {
+                // If split cue mode is enabled, replace the
+                // left channel of the headphone buffer with the PFL mix in mono, and the
+                // right channel of the headphone buffer with the master mix in mono.
+                // note: NOT VECTORIZED because of in place copy
+                for (int i = 0; i + 1 < iBufferSize; i += 2) {
+                    m_pHead[i] = (m_pHead[i] + m_pHead[i + 1]) / 2;
+                    m_pHead[i + 1] = (m_pMaster[i] + m_pMaster[i + 1]) / 2;
+                }
+            }
+
+            // Headphone gain
+            CSAMPLE headphoneGain = m_pHeadGain->get();
+            if (m_bRampingGain) {
+                SampleUtil::applyRampingGain(m_pHead, m_headphoneGainOld,
+                                            headphoneGain, iBufferSize);
+            } else {
+                SampleUtil::applyGain(m_pHead, headphoneGain, iBufferSize);
+            }
+            m_headphoneGainOld = headphoneGain;
+        }
+
         // Apply master gain after effects.
         CSAMPLE master_gain = m_pMasterGain->get();
         if (m_bRampingGain) {
@@ -534,60 +587,6 @@ void EngineMaster::process(const int iBufferSize) {
         // master balance and talkover is reflected in the VU meter.
         if (m_pVumeter != NULL) {
             m_pVumeter->process(*m_ppSidechain, iBufferSize);
-        }
-
-        // Add master to headphone with appropriate gain
-        if (headphoneEnabled) {
-            if (m_bRampingGain) {
-                SampleUtil::addWithRampingGain(m_pHead, m_pMaster,
-                                               m_headphoneMasterGainOld,
-                                               cmaster_gain, iBufferSize);
-            } else {
-                SampleUtil::addWithGain(m_pHead, m_pMaster, cmaster_gain, iBufferSize);
-            }
-            m_headphoneMasterGainOld = cmaster_gain;
-        }
-    }
-
-    if (headphoneEnabled) {
-        // Process headphone channel effects
-        if (m_pEngineEffectsManager) {
-            GroupFeatureState headphoneFeatures;
-            // If there is only one channel in the headphone mix, use its features
-            // for effects processing. This allows for previewing how an effect will
-            // sound on a playing deck before turning up the dry/wet knob to make it
-            // audible on the master mix. Without this, the effect would sound different
-            // in headphones than how it would sound if it was enabled on the deck,
-            // for example with tempo synced effects.
-            if (m_activeHeadphoneChannels.size() == 1) {
-                headphoneFeatures = m_activeHeadphoneChannels.at(0)->m_features;
-            }
-            m_pEngineEffectsManager->process(m_headphoneHandle.handle(),
-                                             m_pHead,
-                                             iBufferSize, iSampleRate,
-                                             headphoneFeatures);
-        }
-        // Head volume
-        CSAMPLE headphoneGain = m_pHeadGain->get();
-        if (m_bRampingGain) {
-            SampleUtil::applyRampingGain(m_pHead, m_headphoneGainOld,
-                                         headphoneGain, iBufferSize);
-        } else {
-            SampleUtil::applyGain(m_pHead, headphoneGain, iBufferSize);
-        }
-        m_headphoneGainOld = headphoneGain;
-    }
-
-    if (masterEnabled && headphoneEnabled) {
-        // If Head Split is enabled, replace the left channel of the pfl buffer
-        // with a mono mix of the headphone buffer, and the right channel of the pfl
-        // buffer with a mono mix of the master output buffer.
-        if (m_pHeadSplitEnabled->get()) {
-            // note: NOT VECTORIZED because of in place copy
-            for (int i = 0; i + 1 < iBufferSize; i += 2) {
-                m_pHead[i] = (m_pHead[i] + m_pHead[i + 1]) / 2;
-                m_pHead[i + 1] = (m_pMaster[i] + m_pMaster[i + 1]) / 2;
-            }
         }
     }
 
