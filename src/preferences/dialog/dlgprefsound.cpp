@@ -120,6 +120,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     headDelaySpinBox->setValue(m_pHeadDelay->get());
     masterDelaySpinBox->setValue(m_pMasterDelay->get());
 
+    // TODO: remove this option by automatically disabling/enabling the master mix
+    // when recording, broadcasting, headphone, and master outputs are enabled/disabled
     m_pMasterEnabled = new ControlProxy("[Master]", "enabled", this);
     masterMixComboBox->addItem(tr("Disabled"));
     masterMixComboBox->addItem(tr("Enabled"));

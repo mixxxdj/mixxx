@@ -186,29 +186,31 @@ class EngineMaster : public QObject, public AudioSource {
         OrientationVolumeGainCalculator()
                 : m_dLeftGain(1.0),
                   m_dCenterGain(1.0),
-                  m_dRightGain(1.0) {
+                  m_dRightGain(1.0),
+                  m_dTalkoverDuckingGain(1.0) {
         }
 
         inline double getGain(ChannelInfo* pChannelInfo) const {
-            const double channelVolume = pChannelInfo->m_pVolumeControl->get();
+            const double channelGain = pChannelInfo->m_pVolumeControl->get();
             const double orientationGain = EngineMaster::gainForOrientation(
                     pChannelInfo->m_pChannel->getOrientation(),
                     m_dLeftGain, m_dCenterGain, m_dRightGain);
-            return channelVolume * orientationGain;
+            return channelGain * orientationGain * m_dTalkoverDuckingGain;
         }
 
-        inline void setGains(double leftGain,
-                double centerGain, double rightGain) {
+        inline void setGains(double leftGain, double centerGain, double rightGain,
+                             double talkoverDuckingGain) {
             m_dLeftGain = leftGain;
             m_dCenterGain = centerGain;
             m_dRightGain = rightGain;
+            m_dTalkoverDuckingGain = talkoverDuckingGain;
         }
 
       private:
-        double m_dVolume;
         double m_dLeftGain;
         double m_dCenterGain;
         double m_dRightGain;
+        double m_dTalkoverDuckingGain;
     };
     template<typename T, unsigned int CAPACITY>
     class FastVector {
@@ -293,12 +295,11 @@ class EngineMaster : public QObject, public AudioSource {
     CSAMPLE* m_pHead;
     CSAMPLE* m_pTalkover;
 
-    CSAMPLE** m_ppSidechain; // points to master or to talkover buffer
-
     EngineWorkerScheduler* m_pWorkerScheduler;
     EngineSync* m_pMasterSync;
 
     ControlObject* m_pMasterGain;
+    ControlObject* m_pBoothGain;
     ControlObject* m_pHeadGain;
     ControlObject* m_pMasterSampleRate;
     ControlObject* m_pMasterLatency;
@@ -327,6 +328,7 @@ class EngineMaster : public QObject, public AudioSource {
     TalkoverGainCalculator m_talkoverGain;
     OrientationVolumeGainCalculator m_masterGain;
     CSAMPLE m_masterGainOld;
+    CSAMPLE m_boothGainOld;
     CSAMPLE m_headphoneMasterGainOld;
     CSAMPLE m_headphoneGainOld;
 
@@ -339,6 +341,7 @@ class EngineMaster : public QObject, public AudioSource {
     // Produce the Master Mixxx, not Required if connected to left
     // and right Bus and no recording and broadcast active
     ControlObject* m_pMasterEnabled;
+    ControlObject* m_pBoothEnabled;
     // Mix two Mono channels. This is useful for outdoor gigs
     ControlObject* m_pMasterMonoMixdown;
     ControlObject* m_pBoothTalkoverMix;
