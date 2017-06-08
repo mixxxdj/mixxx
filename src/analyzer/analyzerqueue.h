@@ -13,6 +13,8 @@
 #include "preferences/usersettings.h"
 #include "sources/audiosource.h"
 #include "track/track.h"
+#include "repository/repository.h"
+#include "library/dao/analysisdao.h"
 #include "util/samplebuffer.h"
 
 class TrackCollection;
@@ -21,7 +23,9 @@ class AnalyzerQueue : public QThread {
     Q_OBJECT
 
   public:
-    AnalyzerQueue(TrackCollection* pTrackCollection);
+    AnalyzerQueue(
+            UserSettingsPointer pConfig,
+            TrackCollection* pTrackCollection);
     virtual ~AnalyzerQueue();
 
     void stop();
@@ -67,6 +71,10 @@ class AnalyzerQueue : public QThread {
 
     bool m_exit;
     QAtomicInt m_aiCheckPriorities;
+
+    mixxx::Repository m_repository;
+
+    AnalysisDao m_analysisDao;
 
     SampleBuffer m_sampleBuffer;
 

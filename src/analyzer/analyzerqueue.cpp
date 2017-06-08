@@ -39,12 +39,24 @@ const SINT kAnalysisChannels = mixxx::AudioSource::kChannelCountStereo;
 const SINT kAnalysisFramesPerBlock = 4096;
 const SINT kAnalysisSamplesPerBlock =
         kAnalysisFramesPerBlock * kAnalysisChannels;
+
+QAtomicInt dbIndex(0);
+
+QString nextDatabaseConnectioName() {
+    const int idx = ::dbIndex.fetchAndAddAcquire(1);
+    return QString("ANALYZER_QUEUE-%1").arg(QString::number(idx));
+}
+
 } // anonymous namespace
 
-AnalyzerQueue::AnalyzerQueue(TrackCollection* pTrackCollection)
+AnalyzerQueue::AnalyzerQueue(
+        UserSettingsPointer pConfig,
+        TrackCollection* pTrackCollection)
         : m_aq(),
           m_exit(false),
           m_aiCheckPriorities(false),
+          m_repository(pConfig, nextDatabaseConnectioName()),
+          m_analysisDao(pConfig),
           m_sampleBuffer(kAnalysisSamplesPerBlock),
           m_tioq(),
           m_qm(),
@@ -289,12 +301,25 @@ void AnalyzerQueue::stop() {
 }
 
 void AnalyzerQueue::run() {
+    // If there are no analyzers, don't waste time running.
+    if (m_aq.isEmpty()) {
+        return;
+    }
+
     unsigned static id = 0; // the id of this thread, for debugging purposes
     QThread::currentThread()->setObjectName(QString("AnalyzerQueue %1").arg(++id));
 
-    // If there are no analyzers, don't waste time running.
-    if (m_aq.size() == 0)
+    kLogger.debug() << "Entering thread";
+
+    if (!m_repository.openDatabaseConnection()) {
+        kLogger.warning()
+                << "Failed to open database connection for analyzer queue";
+        kLogger.debug() << "Exiting thread";
         return;
+    }
+
+    QSqlDatabase database = m_repository.database();
+    m_analysisDao.initialize(database);
 
     m_progressInfo.current_track.reset();
     m_progressInfo.track_progress = 0;
@@ -373,6 +398,10 @@ void AnalyzerQueue::run() {
         emptyCheck();
     }
     emit(queueEmpty()); // emit in case of exit;
+
+    m_repository.closeDatabaseConnection();
+
+    kLogger.debug() << "Exiting thread";
 }
 
 void AnalyzerQueue::emptyCheck() {
@@ -438,9 +467,9 @@ void AnalyzerQueue::queueAnalyseTrack(TrackPointer tio) {
 // static
 AnalyzerQueue* AnalyzerQueue::createDefaultAnalyzerQueue(
         UserSettingsPointer pConfig, TrackCollection* pTrackCollection) {
-    AnalyzerQueue* ret = new AnalyzerQueue(pTrackCollection);
+    AnalyzerQueue* ret = new AnalyzerQueue(pConfig, pTrackCollection);
 
-    ret->addAnalyzer(new AnalyzerWaveform(pConfig));
+    ret->addAnalyzer(new AnalyzerWaveform(&ret->m_analysisDao));
     ret->addAnalyzer(new AnalyzerGain(pConfig));
     ret->addAnalyzer(new AnalyzerEbur128(pConfig));
 #ifdef __VAMP__
@@ -455,10 +484,10 @@ AnalyzerQueue* AnalyzerQueue::createDefaultAnalyzerQueue(
 // static
 AnalyzerQueue* AnalyzerQueue::createAnalysisFeatureAnalyzerQueue(
         UserSettingsPointer pConfig, TrackCollection* pTrackCollection) {
-    AnalyzerQueue* ret = new AnalyzerQueue(pTrackCollection);
+    AnalyzerQueue* ret = new AnalyzerQueue(pConfig, pTrackCollection);
 
     if (pConfig->getValue<bool>(ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"))) {
-        ret->addAnalyzer(new AnalyzerWaveform(pConfig));
+        ret->addAnalyzer(new AnalyzerWaveform(&ret->m_analysisDao));
     }
     ret->addAnalyzer(new AnalyzerGain(pConfig));
     ret->addAnalyzer(new AnalyzerEbur128(pConfig));

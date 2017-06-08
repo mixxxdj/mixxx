@@ -6,16 +6,14 @@
 #include <limits>
 
 #include "analyzer/analyzer.h"
-#include "preferences/usersettings.h"
 #include "util/math.h"
 #include "waveform/waveform.h"
 #include "util/performancetimer.h"
-#include "library/dao/analysisdao.h"
-#include "repository/repository.h"
 
 //NOTS vrince some test to segment sound, to apply color in the waveform
 //#define TEST_HEAT_MAP
 
+class AnalysisDao;
 class EngineFilterIIRBase;
 class Waveform;
 
@@ -139,7 +137,7 @@ struct WaveformStride {
 
 class AnalyzerWaveform : public Analyzer {
   public:
-    explicit AnalyzerWaveform(UserSettingsPointer pConfig);
+    explicit AnalyzerWaveform(AnalysisDao* pAnalysisDao);
     ~AnalyzerWaveform() override;
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
@@ -155,6 +153,8 @@ class AnalyzerWaveform : public Analyzer {
     void createFilters(int sampleRate);
     void destroyFilters();
     void storeIfGreater(float* pDest, float source);
+
+    AnalysisDao* m_pAnalysisDao;
 
     bool m_skipProcessing;
 
@@ -172,8 +172,6 @@ class AnalyzerWaveform : public Analyzer {
     std::vector<float> m_buffers[FilterCount];
 
     PerformanceTimer m_timer;
-    mixxx::Repository m_repository;
-    mutable AnalysisDao m_analysisDao;
 
 #ifdef TEST_HEAT_MAP
     QImage* test_heatMap;

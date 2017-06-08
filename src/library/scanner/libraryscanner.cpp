@@ -91,6 +91,7 @@ void LibraryScanner::run() {
     if (!m_repository.openDatabaseConnection()) {
         kLogger.warning()
                 << "Failed to open database connection for library scanner";
+        kLogger.debug() << "Exiting thread";
         return;
     }
 
