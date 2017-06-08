@@ -40,10 +40,12 @@ const SINT kAnalysisFramesPerBlock = 4096;
 const SINT kAnalysisSamplesPerBlock =
         kAnalysisFramesPerBlock * kAnalysisChannels;
 
+QAtomicInt threadCounter(0);
+
 QAtomicInt dbIndex(0);
 
 QString nextDatabaseConnectioName() {
-    const int idx = ::dbIndex.fetchAndAddAcquire(1);
+    const int idx = dbIndex.fetchAndAddAcquire(1);
     return QString("ANALYZER_QUEUE-%1").arg(QString::number(idx));
 }
 
@@ -306,8 +308,8 @@ void AnalyzerQueue::run() {
         return;
     }
 
-    unsigned static id = 0; // the id of this thread, for debugging purposes
-    QThread::currentThread()->setObjectName(QString("AnalyzerQueue %1").arg(++id));
+    const int threadId = threadCounter.fetchAndAddAcquire(1) + 1;
+    QThread::currentThread()->setObjectName(QString("AnalyzerQueue %1").arg(threadId));
 
     kLogger.debug() << "Entering thread";
 
