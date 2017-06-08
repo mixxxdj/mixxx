@@ -2,7 +2,6 @@
 
 #include <typeinfo>
 
-#include <QtDebug>
 #include <QMutexLocker>
 
 #ifdef __VAMP__
@@ -20,6 +19,7 @@
 #include "util/event.h"
 #include "util/timer.h"
 #include "util/trace.h"
+#include "util/logger.h"
 
 // Measured in 0.1%,
 // 0 for no progress during finalize
@@ -28,14 +28,17 @@
 #define FINALIZE_PROMILLE 1
 
 namespace {
-    // Analysis is done in blocks.
-    // We need to use a smaller block size, because on Linux the AnalyzerQueue
-    // can starve the CPU of its resources, resulting in xruns. A block size
-    // of 4096 frames per block seems to do fine.
-    const SINT kAnalysisChannels = mixxx::AudioSource::kChannelCountStereo;
-    const SINT kAnalysisFramesPerBlock = 4096;
-    const SINT kAnalysisSamplesPerBlock =
-            kAnalysisFramesPerBlock * kAnalysisChannels;
+
+mixxx::Logger kLogger("AnalyzerWaveform");
+
+// Analysis is done in blocks.
+// We need to use a smaller block size, because on Linux the AnalyzerQueue
+// can starve the CPU of its resources, resulting in xruns. A block size
+// of 4096 frames per block seems to do fine.
+const SINT kAnalysisChannels = mixxx::AudioSource::kChannelCountStereo;
+const SINT kAnalysisFramesPerBlock = 4096;
+const SINT kAnalysisSamplesPerBlock =
+        kAnalysisFramesPerBlock * kAnalysisChannels;
 } // anonymous namespace
 
 AnalyzerQueue::AnalyzerQueue(TrackCollection* pTrackCollection)
@@ -60,10 +63,10 @@ AnalyzerQueue::~AnalyzerQueue() {
     QListIterator<Analyzer*> it(m_aq);
     while (it.hasNext()) {
         Analyzer* an = it.next();
-        //qDebug() << "AnalyzerQueue: deleting " << typeid(an).name();
+        //kLogger.debug() << "deleting " << typeid(an).name();
         delete an;
     }
-    //qDebug() << "AnalyzerQueue::~AnalyzerQueue()";
+    //kLogger.debug() << "~AnalyzerQueue()";
 }
 
 void AnalyzerQueue::addAnalyzer(Analyzer* an) {
@@ -154,7 +157,7 @@ TrackPointer AnalyzerQueue::dequeueNextBlocking() {
         }
         // Prioritize tracks that are loaded.
         if (info.isTrackLoaded(pTrack)) {
-            qDebug() << "Prioritizing" << pTrack->getTitle() << pTrack->getLocation();
+            kLogger.debug() << "Prioritizing" << pTrack->getTitle() << pTrack->getLocation();
             pLoadTrack = pTrack;
             it.remove();
             break;
@@ -169,7 +172,7 @@ TrackPointer AnalyzerQueue::dequeueNextBlocking() {
     m_qm.unlock();
 
     if (pLoadTrack) {
-        qDebug() << "Analyzing" << pLoadTrack->getTitle() << pLoadTrack->getLocation();
+        kLogger.debug() << "Analyzing" << pLoadTrack->getTitle() << pLoadTrack->getLocation();
     }
     // pTrack might be NULL, up to the caller to check.
     return pLoadTrack;
@@ -209,9 +212,9 @@ bool AnalyzerQueue::doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAudi
             QListIterator<Analyzer*> it(m_aq);
             while (it.hasNext()) {
                 Analyzer* an =  it.next();
-                //qDebug() << typeid(*an).name() << ".process()";
+                //kLogger.debug() << typeid(*an).name() << ".process()";
                 an->process(m_sampleBuffer.data(), m_sampleBuffer.size());
-                //qDebug() << "Done " << typeid(*an).name() << ".process()";
+                //kLogger.debug() << "Done " << typeid(*an).name() << ".process()";
             }
         } else {
             // Partial analysis block of audio samples has been read.
@@ -219,7 +222,7 @@ bool AnalyzerQueue::doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAudi
             // otherwise a decoding error must have occurred.
             if (frameIndex < pAudioSource->getMaxFrameIndex()) {
                 // EOF not reached -> Maybe a corrupt file?
-                qWarning() << "Failed to read sample data from file:"
+                kLogger.warning() << "Failed to read sample data from file:"
                         << tio->getLocation()
                         << "@" << frameIndex;
                 if (0 >= framesRead) {
@@ -258,7 +261,7 @@ bool AnalyzerQueue::doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAudi
         // has something new entered the queue?
         if (m_aiCheckPriorities.fetchAndStoreAcquire(false)) {
             if (isLoadedTrackWaiting(tio)) {
-                qDebug() << "Interrupting analysis to give preference to a loaded track.";
+                kLogger.debug() << "Interrupting analysis to give preference to a loaded track.";
                 dieflag = true;
                 cancelled = true;
             }
@@ -323,7 +326,7 @@ void AnalyzerQueue::run() {
         audioSrcCfg.setChannelCount(kAnalysisChannels);
         mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource(audioSrcCfg));
         if (!pAudioSource) {
-            qWarning() << "Failed to open file for analyzing:" << nextTrack->getLocation();
+            kLogger.warning() << "Failed to open file for analyzing:" << nextTrack->getLocation();
             emptyCheck();
             continue;
         }
@@ -365,7 +368,7 @@ void AnalyzerQueue::run() {
             }
         } else {
             emitUpdateProgress(nextTrack, 1000); // 100%
-            qDebug() << "Skipping track analysis because no analyzer initialized.";
+            kLogger.debug() << "Skipping track analysis because no analyzer initialized.";
         }
         emptyCheck();
     }
