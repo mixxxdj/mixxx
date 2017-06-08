@@ -126,6 +126,7 @@ class EngineMaster : public QObject, public AudioSource {
 
     // These are really only exposed for tests to use.
     const CSAMPLE* getMasterBuffer() const;
+    const CSAMPLE* getBoothBuffer() const;
     const CSAMPLE* getHeadphoneBuffer() const;
     const CSAMPLE* getOutputBusBuffer(unsigned int i) const;
     const CSAMPLE* getDeckBuffer(unsigned int i) const;
@@ -183,8 +184,7 @@ class EngineMaster : public QObject, public AudioSource {
     class OrientationVolumeGainCalculator : public GainCalculator {
       public:
         OrientationVolumeGainCalculator()
-                : m_dVolume(1.0),
-                  m_dLeftGain(1.0),
+                : m_dLeftGain(1.0),
                   m_dCenterGain(1.0),
                   m_dRightGain(1.0) {
         }
@@ -194,12 +194,11 @@ class EngineMaster : public QObject, public AudioSource {
             const double orientationGain = EngineMaster::gainForOrientation(
                     pChannelInfo->m_pChannel->getOrientation(),
                     m_dLeftGain, m_dCenterGain, m_dRightGain);
-            return m_dVolume * channelVolume * orientationGain;
+            return channelVolume * orientationGain;
         }
 
-        inline void setGains(double dVolume, double leftGain,
+        inline void setGains(double leftGain,
                 double centerGain, double rightGain) {
-            m_dVolume = dVolume;
             m_dLeftGain = leftGain;
             m_dCenterGain = centerGain;
             m_dRightGain = rightGain;
@@ -290,6 +289,7 @@ class EngineMaster : public QObject, public AudioSource {
 
     // Mixing buffers for each output.
     CSAMPLE* m_pOutputBusBuffers[3];
+    CSAMPLE* m_pBooth;
     CSAMPLE* m_pHead;
     CSAMPLE* m_pTalkover;
 
@@ -341,7 +341,7 @@ class EngineMaster : public QObject, public AudioSource {
     ControlObject* m_pMasterEnabled;
     // Mix two Mono channels. This is useful for outdoor gigs
     ControlObject* m_pMasterMonoMixdown;
-    ControlObject* m_pMasterTalkoverMix;
+    ControlObject* m_pBoothTalkoverMix;
     ControlObject* m_pHeadphoneEnabled;
 
     volatile bool m_bBusOutputConnected[3];

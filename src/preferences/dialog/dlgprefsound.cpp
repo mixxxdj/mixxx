@@ -136,13 +136,13 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(masterOutputModeComboBoxChanged(int)));
     m_pMasterMonoMixdown->connectValueChanged(SLOT(masterMonoMixdownChanged(double)));
 
-    m_pMasterTalkoverMix = new ControlProxy("[Master]", "talkover_mix", this);
-    micMixComboBox->addItem(tr("Master output"));
-    micMixComboBox->addItem(tr("Broadcast and Recording only"));
-    micMixComboBox->setCurrentIndex((int)m_pMasterTalkoverMix->get());
+    m_pBoothTalkoverMix = new ControlProxy("[Master]", "talkover_mix", this);
+    micMixComboBox->addItem(tr("Master output only"));
+    micMixComboBox->addItem(tr("Master and booth outputs"));
+    micMixComboBox->setCurrentIndex((int)m_pBoothTalkoverMix->get());
     connect(micMixComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(talkoverMixComboBoxChanged(int)));
-    m_pMasterTalkoverMix->connectValueChanged(SLOT(talkoverMixChanged(double)));
+    m_pBoothTalkoverMix->connectValueChanged(SLOT(talkoverMixChanged(double)));
 
 
     m_pKeylockEngine =
@@ -540,7 +540,7 @@ void DlgPrefSound::slotResetToDefaults() {
     m_pHeadDelay->set(0.0);
 
     // Enable talkover master output
-    m_pMasterTalkoverMix->set(0.0);
+    m_pBoothTalkoverMix->set(0.0);
     micMixComboBox->setCurrentIndex(0);
 
     settingChanged(); // force the apply button to enable
@@ -581,7 +581,7 @@ void DlgPrefSound::masterMonoMixdownChanged(double value) {
 }
 
 void DlgPrefSound::talkoverMixComboBoxChanged(int value) {
-    m_pMasterTalkoverMix->set((double)value);
+    m_pBoothTalkoverMix->set((double)value);
 }
 
 void DlgPrefSound::talkoverMixChanged(double value) {

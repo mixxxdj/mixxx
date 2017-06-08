@@ -155,6 +155,8 @@ QString AudioPath::getStringFromType(AudioPathType type) {
         return QString::fromAscii("Invalid");
     case MASTER:
         return QString::fromAscii("Master");
+    case BOOTH:
+        return QString::fromAscii("Booth");
     case HEADPHONES:
         return QString::fromAscii("Headphones");
     case BUS:
@@ -185,6 +187,8 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
         return QObject::tr("Invalid");
     case MASTER:
         return QObject::tr("Master");
+    case BOOTH:
+        return QObject::tr("Booth");
     case HEADPHONES:
         return QObject::tr("Headphones");
     case BUS:
@@ -224,6 +228,8 @@ AudioPathType AudioPath::getTypeFromString(QString string) {
     string = string.toLower();
     if (string == AudioPath::getStringFromType(AudioPath::MASTER).toLower()) {
         return AudioPath::MASTER;
+    } else if (string == AudioPath::getStringFromType(AudioPath::BOOTH).toLower()) {
+        return AudioPath::BOOTH;
     } else if (string == AudioPath::getStringFromType(AudioPath::HEADPHONES).toLower()) {
         return AudioPath::HEADPHONES;
     } else if (string == AudioPath::getStringFromType(AudioPath::BUS).toLower()) {
@@ -350,6 +356,7 @@ AudioOutput AudioOutput::fromXML(const QDomElement &xml) {
 QList<AudioPathType> AudioOutput::getSupportedTypes() {
     QList<AudioPathType> types;
     types.append(MASTER);
+    types.append(BOOTH);
     types.append(HEADPHONES);
     types.append(BUS);
     types.append(DECK);

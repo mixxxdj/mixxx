@@ -56,6 +56,7 @@ public:
     // (if necessary), etc. -- bkgood
     enum AudioPathType {
         MASTER,
+        BOOTH,
         HEADPHONES,
         BUS,
         DECK,

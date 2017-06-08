@@ -121,9 +121,11 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pMaster = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_pBooth = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pTalkover = SampleUtil::alloc(MAX_BUFFER_LEN);
     SampleUtil::clear(m_pHead, MAX_BUFFER_LEN);
     SampleUtil::clear(m_pMaster, MAX_BUFFER_LEN);
+    SampleUtil::clear(m_pBooth, MAX_BUFFER_LEN);
     SampleUtil::clear(m_pTalkover, MAX_BUFFER_LEN);
 
     // Setup the output buses
@@ -159,7 +161,7 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
             true, false, true);  // persist = true
     m_pMasterMonoMixdown = new ControlObject(ConfigKey(group, "mono_mixdown"),
             true, false, true);  // persist = true
-    m_pMasterTalkoverMix = new ControlObject(ConfigKey(group, "talkover_mix"),
+    m_pBoothTalkoverMix = new ControlObject(ConfigKey(group, "talkover_mix"),
             true, false, true);  // persist = true
     m_pHeadphoneEnabled = new ControlObject(ConfigKey(group, "headEnabled"));
     m_pHeadphoneEnabled = new ControlObject(ConfigKey(group, "sidechainEnabled"));
@@ -197,11 +199,12 @@ EngineMaster::~EngineMaster() {
 
     delete m_pMasterEnabled;
     delete m_pMasterMonoMixdown;
-    delete m_pMasterTalkoverMix;
+    delete m_pBoothTalkoverMix;
     delete m_pHeadphoneEnabled;
 
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);
+    SampleUtil::free(m_pBooth);
     SampleUtil::free(m_pTalkover);
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
         SampleUtil::free(m_pOutputBusBuffers[o]);
@@ -221,6 +224,10 @@ EngineMaster::~EngineMaster() {
 
 const CSAMPLE* EngineMaster::getMasterBuffer() const {
     return m_pMaster;
+}
+
+const CSAMPLE* EngineMaster::getBoothBuffer() const {
+    return m_pBooth;
 }
 
 const CSAMPLE* EngineMaster::getHeadphoneBuffer() const {
@@ -398,20 +405,18 @@ void EngineMaster::process(const int iBufferSize) {
     }
 
     // Calculate the crossfader gains for left and right side of the crossfader
-    double c1_gain, c2_gain;
+    double crossfaderLeftGain, crossfaderRightGain;
     EngineXfader::getXfadeGains(m_pCrossfader->get(), m_pXFaderCurve->get(),
                                 m_pXFaderCalibration->get(),
                                 m_pXFaderMode->get(),
                                 m_pXFaderReverse->toBool(),
-                                &c1_gain, &c2_gain);
+                                &crossfaderLeftGain, &crossfaderRightGain);
 
-    // All other channels should be adjusted by ducking gain.
-    // The talkover channels are mixed in later
-    m_masterGain.setGains(m_pTalkoverDucking->getGain(iBufferSize / 2),
-                          c1_gain, 1.0, c2_gain);
+    m_masterGain.setGains(crossfaderLeftGain, 1.0, crossfaderRightGain);
 
-    // Make the mix for each output bus. m_masterGain takes care of applying the
-    // master volume, the channel volume, and the orientation gain.
+    // Make the mix for each crossfader orientation output bus.
+    // m_masterGain takes care of applying the
+    // master gain, channel volume fader attenuation, and crossfader attenuation.
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
         if (m_bRampingGain) {
             ChannelMixer::mixChannelsRamping(
@@ -428,7 +433,7 @@ void EngineMaster::process(const int iBufferSize) {
         }
     }
 
-    // Process master channel effects
+    // Process crossfader orientation bus channel effects
     if (m_pEngineEffectsManager) {
         GroupFeatureState busFeatures;
         m_pEngineEffectsManager->process(m_busLeftHandle.handle(),
@@ -443,21 +448,27 @@ void EngineMaster::process(const int iBufferSize) {
     }
 
     if (masterEnabled) {
-        // Mix the three channels together. We already mixed the busses together
-        // with the channel gains and overall master gain.
-        if (!m_pMasterTalkoverMix->toBool()) {
-            // Add Talkover to Master output
-            SampleUtil::copy4WithGain(m_pMaster,
-                    m_pOutputBusBuffers[EngineChannel::LEFT], 1.0,
-                    m_pOutputBusBuffers[EngineChannel::CENTER], 1.0,
-                    m_pOutputBusBuffers[EngineChannel::RIGHT], 1.0,
+        // Mix the three crossfader bus orientation buffers together
+        SampleUtil::copy3WithGain(m_pMaster,
+            m_pOutputBusBuffers[EngineChannel::LEFT], 1.0,
+            m_pOutputBusBuffers[EngineChannel::CENTER], 1.0,
+            m_pOutputBusBuffers[EngineChannel::RIGHT], 1.0,
+            iBufferSize);
+
+        if (m_pBoothTalkoverMix->toBool()) {
+            // Include the talkover mix in the booth output
+            SampleUtil::copy2WithGain(m_pMaster,
+                    m_pMaster, m_pTalkoverDucking->getGain(iBufferSize / 2),
                     m_pTalkover, 1.0,
                     iBufferSize);
+            SampleUtil::copy(m_pBooth, m_pMaster, iBufferSize);
         } else {
-            SampleUtil::copy3WithGain(m_pMaster,
-                    m_pOutputBusBuffers[EngineChannel::LEFT], 1.0,
-                    m_pOutputBusBuffers[EngineChannel::CENTER], 1.0,
-                    m_pOutputBusBuffers[EngineChannel::RIGHT], 1.0,
+            // Mix the talkover mix with the master output, but exclude it from
+            // the booth output.
+            SampleUtil::copy(m_pBooth, m_pMaster, iBufferSize);
+            SampleUtil::copy2WithGain(m_pMaster,
+                    m_pMaster, m_pTalkoverDucking->getGain(iBufferSize / 2),
+                    m_pTalkover, 1.0,
                     iBufferSize);
         }
 
@@ -502,20 +513,9 @@ void EngineMaster::process(const int iBufferSize) {
         // Submit master samples to the side chain to do broadcasting, recording,
         // etc. (cpu intensive non-realtime tasks)
         if (m_pEngineSideChain != NULL) {
-            if (m_pMasterTalkoverMix->toBool()) {
-                // Add Master and Talkover to Sidechain output, re-use the
-                // talkover buffer
-                // Note: m_ppSidechain = &m_pTalkover;
-                SampleUtil::addWithGain(m_pTalkover,
-                        m_pMaster, 1.0,
-                        iBufferSize);
-            } else {
-                // Just Copy Master to Sidechain since we have already added
-                // Talkover above
-                SampleUtil::copy(*m_ppSidechain,
-                        m_pMaster,
-                        iBufferSize);
-            }
+            // Just copy Master to Sidechain since we have already added
+            // Talkover above
+            SampleUtil::copy(*m_ppSidechain, m_pMaster, iBufferSize);
             m_pEngineSideChain->writeSamples(*m_ppSidechain, iBufferSize);
         }
 
@@ -659,6 +659,9 @@ const CSAMPLE* EngineMaster::buffer(AudioOutput output) const {
     switch (output.getType()) {
     case AudioOutput::MASTER:
         return getMasterBuffer();
+        break;
+    case AudioOutput::BOOTH:
+        return getBoothBuffer();
         break;
     case AudioOutput::HEADPHONES:
         return getHeadphoneBuffer();
