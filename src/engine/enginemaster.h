@@ -317,7 +317,7 @@ class EngineMaster : public QObject, public AudioSource {
     ControlObject* m_pMasterLatency;
     ControlObject* m_pMasterAudioBufferSize;
     ControlObject* m_pAudioLatencyOverloadCount;
-    ControlObject* m_pInputLatencyOffset;
+    ControlObject* m_pRoundTripLatency;
     ControlObject* m_pNumMicsConfigured;
     ControlPotmeter* m_pAudioLatencyUsage;
     ControlPotmeter* m_pAudioLatencyOverload;

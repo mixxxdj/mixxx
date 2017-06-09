@@ -116,11 +116,11 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
 
     m_pHeadDelay = new ControlProxy("[Master]", "headDelay", this);
     m_pMasterDelay = new ControlProxy("[Master]", "delay", this);
-    m_pInputLatencyOffset = new ControlProxy("[Master]", "inputOffset", this);
+    m_pRoundTripLatency = new ControlProxy("[Master]", "roundTripLatency", this);
 
     headDelaySpinBox->setValue(m_pHeadDelay->get());
     masterDelaySpinBox->setValue(m_pMasterDelay->get());
-    inputOffsetSpinBox->setValue(m_pInputLatencyOffset->get());
+    roundTripLatencySpinBox->setValue(m_pRoundTripLatency->get());
 
     // TODO: remove this option by automatically disabling/enabling the master mix
     // when recording, broadcasting, headphone, and master outputs are enabled/disabled
@@ -157,8 +157,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(headDelayChanged(double)));
     connect(masterDelaySpinBox, SIGNAL(valueChanged(double)),
             this, SLOT(masterDelayChanged(double)));
-    connect(inputOffsetSpinBox, SIGNAL(valueChanged(double)),
-            this, SLOT(inputOffsetChanged(double)));
+    connect(roundTripLatencySpinBox, SIGNAL(valueChanged(double)),
+            this, SLOT(roundTripLatencyChanged(double)));
 
 
 #ifdef __LINUX__
@@ -571,8 +571,8 @@ void DlgPrefSound::masterDelayChanged(double value) {
     m_pMasterDelay->set(value);
 }
 
-void DlgPrefSound::inputOffsetChanged(double value) {
-    m_pInputLatencyOffset->set(value);
+void DlgPrefSound::roundTripLatencyChanged(double value) {
+    m_pRoundTripLatency->set(value);
 }
 
 void DlgPrefSound::masterMixChanged(int value) {

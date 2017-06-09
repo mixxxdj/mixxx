@@ -104,7 +104,7 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
         ConfigKey(group, "inputLatency"));
     m_pInputLatencyCompensationHeadphonesDelay = new EngineDelay(group,
         ConfigKey(group, "headMixDelay"));
-    m_pInputLatencyOffset = new ControlObject(ConfigKey(group, "inputOffset"),
+    m_pRoundTripLatency = new ControlObject(ConfigKey(group, "roundTripLatency"),
         true, false, true);
     m_pNumMicsConfigured = new ControlObject(ConfigKey(group, "num_mics_configured"));
 
@@ -203,7 +203,7 @@ EngineMaster::~EngineMaster() {
     delete m_pHeadDelay;
     delete m_pInputLatencyCompensationDelay;
     delete m_pInputLatencyCompensationHeadphonesDelay;
-    delete m_pInputLatencyOffset;
+    delete m_pRoundTripLatency;
     delete m_pNumMicsConfigured;
 
     delete m_pXFaderReverse;
@@ -419,10 +419,19 @@ void EngineMaster::process(const int iBufferSize) {
     // If no microphone inputs are configured, avoid adding this extra latency.
     TalkoverMixMode configuredTalkoverMixMode = static_cast<TalkoverMixMode>(
         static_cast<int>(m_pTalkoverMixMode->get()));
-    double inputLatencyCompensationMilliseconds =
-        (double)iBufferSize / iSampleRate * 1000.0 / 2.0 + m_pInputLatencyOffset->get();
-    m_pInputLatencyCompensationDelay->setDelay(inputLatencyCompensationMilliseconds);
-    m_pInputLatencyCompensationHeadphonesDelay->setDelay(inputLatencyCompensationMilliseconds);
+    // These latency values are in milliseconds as required by EngineDelay.
+    double inputLatencyCompensation;
+    double measuredRoundTripLatency = m_pRoundTripLatency->get();
+    // iBufferSize / iSampleRate gives double Mixxx's processing latency because
+    // there are 2 channels per buffer. FIXME when removing the assumption of stereo channels.
+    double processingLatency = (double)iBufferSize / iSampleRate / 2.0 * 1000.0;
+    if (measuredRoundTripLatency == 0.0) {
+        inputLatencyCompensation = processingLatency;
+    } else {
+        inputLatencyCompensation = (measuredRoundTripLatency - (processingLatency * 2)) / 2.0;
+    }
+    m_pInputLatencyCompensationDelay->setDelay(inputLatencyCompensation);
+    m_pInputLatencyCompensationHeadphonesDelay->setDelay(inputLatencyCompensation);
 
     if (headphoneEnabled) {
         if (m_bRampingGain) {

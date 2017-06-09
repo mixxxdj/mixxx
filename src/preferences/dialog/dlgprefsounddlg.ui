@@ -155,14 +155,14 @@
       <widget class="QComboBox" name="masterMixComboBox"/>
      </item>
      <item row="10" column="0">
-      <widget class="QLabel" name="inputOffsetLabel">
+      <widget class="QLabel" name="roundTripLatencyLabel">
        <property name="text">
-        <string>Measured Input Latency Offset</string>
+        <string>Measured Round Trip Latency</string>
        </property>
       </widget>
      </item>
      <item row="10" column="1">
-      <widget class="QDoubleSpinBox" name="inputOffsetSpinBox">
+      <widget class="QDoubleSpinBox" name="roundTripLatencySpinBox">
        <property name="suffix">
         <string> ms</string>
        </property>
