@@ -31,9 +31,10 @@ BroadcastSettings::~BroadcastSettings() {
 void BroadcastSettings::loadProfiles() {
     QDir profilesFolder(getProfilesFolder());
     if(!profilesFolder.exists()) {
+        qDebug() << "Profiles folder doesn't exist. Creating it." << endl;
+
         // TODO(Palakis, June 9th 2017):
         // Is there a better way to do this?
-        qDebug() << "Profiles folder doesn't exist. Creating it." << endl;
         profilesFolder.mkpath(profilesFolder.absolutePath());
     }
 
