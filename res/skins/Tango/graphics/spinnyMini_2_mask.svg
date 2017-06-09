@@ -15,7 +15,7 @@
    id="svg2"
    style="enable-background:new"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="spinnyMini_2_mask.svg">
+   sodipodi:docname="spinnyMini_1_mask.svg">
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -27,17 +27,26 @@
      inkscape:pageshadow="2"
      inkscape:window-width="1366"
      inkscape:window-height="746"
-     id="namedview28"
+     id="namedview24"
      showgrid="false"
-     inkscape:snap-bbox="true"
-     inkscape:snap-page="true"
-     inkscape:zoom="2.4583333"
-     inkscape:cx="48"
-     inkscape:cy="48"
+     inkscape:zoom="4.9166667"
+     inkscape:cx="42.025436"
+     inkscape:cy="22.498101"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg2" />
+     inkscape:current-layer="layer7"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-nodes="true"
+     inkscape:snap-bbox-edge-midpoints="true"
+     inkscape:snap-bbox-midpoints="true"
+     inkscape:object-paths="true"
+     inkscape:snap-intersection-paths="true"
+     inkscape:object-nodes="true"
+     inkscape:snap-smooth-nodes="true"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:snap-page="true" />
   <defs
      id="defs4">
     <linearGradient
@@ -66,23 +75,23 @@
        id="linearGradient3851-7">
       <stop
          id="stop3853-0"
-         style="stop-color:#eece33;stop-opacity:1"
-         offset="0" />
+         offset="0"
+         style="stop-color:#eece33;stop-opacity:1;" />
       <stop
          id="stop3855-9"
-         style="stop-color:#eece33;stop-opacity:0"
-         offset="1" />
+         offset="1"
+         style="stop-color:#eece33;stop-opacity:0;" />
     </linearGradient>
     <linearGradient
        id="linearGradient3861-9">
       <stop
          id="stop3863-1"
-         style="stop-color:#eece33;stop-opacity:1"
-         offset="0" />
+         offset="0"
+         style="stop-color:#eece33;stop-opacity:1;" />
       <stop
          id="stop3865-2"
-         style="stop-color:#eece33;stop-opacity:0"
-         offset="1" />
+         offset="1"
+         style="stop-color:#eece33;stop-opacity:0;" />
     </linearGradient>
   </defs>
   <metadata
@@ -93,7 +102,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -137,23 +146,24 @@
        inkscape:connector-curvature="0" />
   </g>
   <g
-     id="g3919"
+     inkscape:groupmode="layer"
+     id="layer1"
+     inkscape:label="Mask1"
      style="display:inline"
-     transform="scale(0.52083333,0.52083333)">
+     transform="translate(0,-46)">
     <g
-       id="g3921"
-       style="enable-background:new">
+       style="enable-background:new"
+       id="layer7">
       <path
-         d="M 0,0 0,96 96,96 96,0 0,0 z M 48,2 C 73.405099,2 94,22.594902 94,48 94,73.405099 73.405099,94 48,94 22.594902,94 2,73.405099 2,48 2,22.594902 22.594902,2 48,2 z"
-         id="path3923"
-         style="fill:#2f290a;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
-         inkscape:connector-curvature="0" />
+         inkscape:connector-curvature="0"
+         d="m 0,46 0,50 50,0 0,-50 -50,0 z m 24.999999,1.041667 c 13.231823,0 23.958334,10.726511 23.958334,23.958334 0,13.231821 -10.726511,23.958332 -23.958334,23.958332 -13.231821,0 -23.9583323,-10.726511 -23.9583323,-23.958332 0,-13.231823 10.7265113,-23.958334 23.9583323,-23.958334 z"
+         id="rect3842-3"
+         style="fill:#001d33;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline" />
       <path
-         d="m 89.524769,48.144024 a 42.110733,45.330597 0 1 1 -84.2214662,0 42.110733,45.330597 0 1 1 84.2214662,0 z"
-         transform="matrix(1.0923581,0,0,1.0147671,-3.7931057,-0.85497323)"
-         id="path3925"
-         style="fill:none;stroke:#585858;stroke-width:0.94980466;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
-         inkscape:connector-curvature="0" />
+         inkscape:connector-curvature="0"
+         d="m 48.958333,70.999999 a 23.958334,23.958333 0 0 1 -47.9166663,0 23.958334,23.958333 0 1 1 47.9166663,0 z"
+         id="path4919-6"
+         style="fill:none;stroke:#585858;stroke-width:0.52083331;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline" />
     </g>
   </g>
 </svg>

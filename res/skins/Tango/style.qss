@@ -54,45 +54,29 @@ WWidgetGroup {
 ####### Colors ##################################################
 ###############################################################*/
     
-#Deck1 WLabel, #RateContainer1 WLabel {
+#Deck1 WLabel, #RateContainer1 WLabel,
+#Deck2 WLabel, #RateContainer2 WLabel {
   color: #33a8ff;	/* SignalColor: #159bff		> decks_left.xml */
 }
-#Deck2 WLabel, #RateContainer2 WLabel {
-  color: #cc7400;	/* SignalColor: #e7c413		> decks_right.xml */
-}
-#Deck3 WLabel, #RateContainer3 WLabel {
-  color: #0fbf0f;	/* SignalColor: #2cb02c		> decks_left.xml */
-}
+#Deck3 WLabel, #RateContainer3 WLabel,
 #Deck4 WLabel, #RateContainer4 WLabel {
   color: #d910f0;	/* SignalColor: #df4df0		> decks_right.xml */
 }
 
-#WaveformContainer1 {
+#WaveformContainer1, #WaveformContainer2 {
   background-color: #001D33;
 }
-#WaveformContainer2 {
-  background-color: #2F290a;
-}
-#WaveformContainer3 {
-  background-color: #032603;
-}
-#WaveformContainer4 {
+#WaveformContainer3, #WaveformContainer4 {
   background-color: #3A0440;
 }
 
 /*	Define background-color here to make VinylToggler match
   the waveforms background-color.
   spinnyMini_Xmask.svg must match as well. */
-#DeckOverview1 {
+#DeckOverview1, #DeckOverview2 {
   background-color: #001D33;
 }
-#DeckOverview2 {
-  background-color: #2F290a;
-}
-#DeckOverview3 {
-  background-color: #032603;
-}
-#DeckOverview4 {
+#DeckOverview3, #DeckOverview4 {
   background-color: #3A0440;
 }
 
