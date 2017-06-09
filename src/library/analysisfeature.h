@@ -13,17 +13,18 @@
 #include <QList>
 
 #include "library/libraryfeature.h"
-#include "preferences/usersettings.h"
-#include "treeitemmodel.h"
 #include "library/dlganalysis.h"
+#include "library/treeitemmodel.h"
+#include "preferences/usersettings.h"
 
-class AnalyzerQueue;
+class Library;
 class TrackCollection;
+class AnalyzerQueue;
 
 class AnalysisFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    AnalysisFeature(QObject* parent,
+    AnalysisFeature(Library* parent,
                     UserSettingsPointer pConfig,
                     TrackCollection* pTrackCollection);
     virtual ~AnalysisFeature();

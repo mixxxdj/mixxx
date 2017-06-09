@@ -4,6 +4,7 @@
 
 #include <QtDebug>
 
+#include "library/library.h"
 #include "library/analysisfeature.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
@@ -17,7 +18,7 @@
 
 const QString AnalysisFeature::m_sAnalysisViewName = QString("Analysis");
 
-AnalysisFeature::AnalysisFeature(QObject* parent,
+AnalysisFeature::AnalysisFeature(Library* parent,
                                UserSettingsPointer pConfig,
                                TrackCollection* pTrackCollection) :
         LibraryFeature(parent),
