@@ -28,27 +28,34 @@ BroadcastSettings::~BroadcastSettings() {
 }
 
 void BroadcastSettings::loadProfiles() {
-    QDir profilesFolder(m_pConfig->getSettingsPath());
-    bool folderCreated = profilesFolder.mkdir(kProfilesSubfolder);
-    profilesFolder.cd(kProfilesSubfolder);
-
-    if(folderCreated) {
-        BroadcastProfile* defaultProfile =
-                new BroadcastProfile(kDefaultProfile);
-        saveProfile(defaultProfile);
-        setCurrentProfile(defaultProfile);
+    QDir profilesFolder(getProfilesFolder());
+    if(!profilesFolder.exists()) {
+        // TODO(Palakis, June 9th 2017):
+        // Is there a better way to do this?
+        profilesFolder.mkpath(profilesFolder.absolutePath());
     }
 
     QStringList nameFilters("*.bcp.xml");
     QFileInfoList files =
             profilesFolder.entryInfoList(nameFilters, QDir::Files, QDir::Name);
 
-    for(QFileInfo fileInfo : files) {
-        BroadcastProfile* profile =
-                BroadcastProfile::loadFromFile(fileInfo.absoluteFilePath());
+    if(files.count() > 0) {
+        // Load profiles from filesystem
+        for(QFileInfo fileInfo : files) {
+            BroadcastProfile* profile =
+                    BroadcastProfile::loadFromFile(fileInfo.absoluteFilePath());
 
-        if(profile)
-           m_profiles.push_back(profile);
+            if(profile)
+               m_profiles.push_back(profile);
+        }
+    } else {
+        // Create default profile
+        BroadcastProfile* defaultProfile =
+                new BroadcastProfile(kDefaultProfile);
+        saveProfile(defaultProfile);
+
+        m_profiles.push_back(defaultProfile);
+        setCurrentProfile(defaultProfile);
     }
 }
 
@@ -59,17 +66,22 @@ void BroadcastSettings::saveProfile(BroadcastProfile* profile) {
     profile->save(filenameForProfile(profile));
 }
 
+QString BroadcastSettings::filenameForProfile(const QString& profileName) {
+    QString filename = profileName + QString(".bcp.xml");
+    return QDir(getProfilesFolder()).absoluteFilePath(filename);
+}
+
 QString BroadcastSettings::filenameForProfile(BroadcastProfile* profile) {
     if(!profile)
         return QString();
 
+    return filenameForProfile(profile->getProfileName());
+}
+
+QString BroadcastSettings::getProfilesFolder() {
     QString profilesPath(m_pConfig->getSettingsPath());
     profilesPath.append(QDir::separator() + QString(kProfilesSubfolder));
-
-    QDir profilesFolder(profilesPath);
-
-    QString filename = profile->getProfileName() + QString(".bcp.xml");
-    return profilesFolder.absoluteFilePath(filename);
+    return profilesPath;
 }
 
 void BroadcastSettings::setCurrentProfile(BroadcastProfile *profile) {
@@ -102,8 +114,7 @@ void BroadcastSettings::saveAll() {
     }
 }
 
-void BroadcastSettings::deleteProfile(BroadcastProfile* profile)
-{
+void BroadcastSettings::deleteProfile(BroadcastProfile* profile) {
     if(!profile)
         return;
 

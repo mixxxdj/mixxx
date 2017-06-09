@@ -23,6 +23,8 @@ class BroadcastSettings {
     void loadProfiles();
     void saveProfile(BroadcastProfile* profile);
     QString filenameForProfile(BroadcastProfile* profile);
+    QString filenameForProfile(const QString& profileName);
+    QString getProfilesFolder();
 
     // Pointer to config object
     UserSettingsPointer m_pConfig;
