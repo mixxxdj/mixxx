@@ -11,9 +11,9 @@
 
 <MixxxMIDIPreset mixxxVersion="1.9.0+" schemaVersion="1">
     <info>
-		<name>Numark Mixtrack VirtualDJ</name>
-		<author>Scolari Mauricio (mauricio@scolari.org)</author>
-		<description>Numark Mixtrack mapping like VirtualDJ</description>
+        <name>Numark Mixtrack VirtualDJ</name>
+        <author>Scolari Mauricio (mauricio@scolari.org)</author>
+        <description>Numark Mixtrack mapping like VirtualDJ</description>
     </info>
     
     <controller id="Numark Mixtrack VirtualDJ">
