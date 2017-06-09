@@ -15,8 +15,9 @@ mixxx::Logger kLogger("AnalyzerWaveform");
 
 } // anonymous
 
-AnalyzerWaveform::AnalyzerWaveform(AnalysisDao* pAnalysisDao) :
-        m_pAnalysisDao(pAnalysisDao),
+AnalyzerWaveform::AnalyzerWaveform(
+        const UserSettingsPointer& pConfig) :
+        m_analysisDao(pConfig),
         m_skipProcessing(false),
         m_waveformData(nullptr),
         m_waveformSummaryData(nullptr),
@@ -101,7 +102,7 @@ bool AnalyzerWaveform::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
 
     if (trackId.isValid() && (missingWaveform || missingWavesummary)) {
         QList<AnalysisDao::AnalysisInfo> analyses =
-                m_pAnalysisDao->getAnalysesForTrack(trackId);
+                m_analysisDao.getAnalysesForTrack(trackId);
 
         QListIterator<AnalysisDao::AnalysisInfo> it(analyses);
         while (it.hasNext()) {
@@ -116,7 +117,7 @@ bool AnalyzerWaveform::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
                     missingWaveform = false;
                 } else if (vc != WaveformFactory::VC_KEEP) {
                     // remove all other Analysis except that one we should keep
-                    m_pAnalysisDao->deleteAnalysis(analysis.analysisId);
+                    m_analysisDao.deleteAnalysis(analysis.analysisId);
                 }
             } if (analysis.type == AnalysisDao::TYPE_WAVESUMMARY) {
                 vc = WaveformFactory::waveformSummaryVersionToVersionClass(analysis.version);
@@ -126,7 +127,7 @@ bool AnalyzerWaveform::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
                     missingWavesummary = false;
                 } else if (vc != WaveformFactory::VC_KEEP) {
                     // remove all other Analysis except that one we should keep
-                    m_pAnalysisDao->deleteAnalysis(analysis.analysisId);
+                    m_analysisDao.deleteAnalysis(analysis.analysisId);
                 }
             }
         }
@@ -308,7 +309,7 @@ void AnalyzerWaveform::finalize(TrackPointer tio) {
     // waveforms (i.e. if the config setting was disabled in a previous scan)
     // and then it is not called. The other analyzers have signals which control
     // the update of their data.
-    m_pAnalysisDao->saveTrackAnalyses(*tio);
+    m_analysisDao.saveTrackAnalyses(*tio);
 
     kLogger.debug() << "Waveform generation for track" << tio->getId() << "done"
              << m_timer.elapsed().debugSecondsWithUnit();

@@ -52,7 +52,6 @@ AnalyzerQueue::AnalyzerQueue(
         : m_exit(false),
           m_aiCheckPriorities(false),
           m_repository(pConfig, nextDatabaseConnectioName()),
-          m_analysisDao(pConfig),
           m_sampleBuffer(kAnalysisSamplesPerBlock),
           m_tioq(),
           m_qm(),
@@ -60,7 +59,7 @@ AnalyzerQueue::AnalyzerQueue(
           m_queue_size(0) {
 
     if (mode != Mode::WithoutWaveform) {
-        m_pAnalyzers.push_back(std::make_unique<AnalyzerWaveform>(&m_analysisDao));
+        m_pAnalyzers.push_back(std::make_unique<AnalyzerWaveform>(pConfig));
     }
     m_pAnalyzers.push_back(std::make_unique<AnalyzerGain>(pConfig));
     m_pAnalyzers.push_back(std::make_unique<AnalyzerEbur128>(pConfig));
@@ -309,8 +308,15 @@ void AnalyzerQueue::run() {
         return;
     }
 
+    // TODO(uklotzde): Remove after introducing connection pool
     QSqlDatabase database = m_repository.database();
-    m_analysisDao.initialize(database);
+    for (auto const& pAnalyzer: m_pAnalyzers) {
+        AnalyzerWaveform* pWaveformAnalyzer = dynamic_cast<AnalyzerWaveform*>(pAnalyzer.get());
+        if (pWaveformAnalyzer != nullptr) {
+            pWaveformAnalyzer->initializeDatabase(database);
+            break;
+        }
+    }
 
     m_progressInfo.current_track.reset();
     m_progressInfo.track_progress = 0;

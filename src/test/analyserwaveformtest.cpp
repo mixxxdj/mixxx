@@ -18,8 +18,7 @@ namespace {
 class AnalyzerWaveformTest: public MixxxTest {
   protected:
     AnalyzerWaveformTest()
-      : m_analysisDao(config()),
-        aw(&m_analysisDao),
+      : aw(config()),
         bigbuf(nullptr),
         canaryBigBuf(nullptr) {
     }
@@ -48,9 +47,6 @@ class AnalyzerWaveformTest: public MixxxTest {
         delete [] bigbuf;
         delete [] canaryBigBuf;
     }
-
-  private:
-    AnalysisDao m_analysisDao;
 
   protected:
     AnalyzerWaveform aw;

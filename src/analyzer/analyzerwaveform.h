@@ -6,16 +6,15 @@
 #include <limits>
 
 #include "analyzer/analyzer.h"
-#include "util/math.h"
 #include "waveform/waveform.h"
+#include "library/dao/analysisdao.h"
+#include "util/math.h"
 #include "util/performancetimer.h"
 
 //NOTS vrince some test to segment sound, to apply color in the waveform
 //#define TEST_HEAT_MAP
 
-class AnalysisDao;
 class EngineFilterIIRBase;
-class Waveform;
 
 inline CSAMPLE scaleSignal(CSAMPLE invalue, FilterIndex index = FilterCount) {
     if (invalue == 0.0) {
@@ -137,8 +136,14 @@ struct WaveformStride {
 
 class AnalyzerWaveform : public Analyzer {
   public:
-    explicit AnalyzerWaveform(AnalysisDao* pAnalysisDao);
+    explicit AnalyzerWaveform(
+            const UserSettingsPointer& pConfig);
     ~AnalyzerWaveform() override;
+
+    // TODO(uklotzde): Remove after introducing connection pool
+    void initializeDatabase(const QSqlDatabase& database) {
+        m_analysisDao.initialize(database);
+    }
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
     bool isDisabledOrLoadStoredSuccess(TrackPointer tio) const override;
@@ -154,7 +159,7 @@ class AnalyzerWaveform : public Analyzer {
     void destroyFilters();
     void storeIfGreater(float* pDest, float source);
 
-    AnalysisDao* m_pAnalysisDao;
+    mutable AnalysisDao m_analysisDao;
 
     bool m_skipProcessing;
 

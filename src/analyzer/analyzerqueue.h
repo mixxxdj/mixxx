@@ -12,7 +12,6 @@
 #include "sources/audiosource.h"
 #include "track/track.h"
 #include "repository/repository.h"
-#include "library/dao/analysisdao.h"
 #include "util/samplebuffer.h"
 #include "util/memory.h"
 
@@ -71,8 +70,6 @@ class AnalyzerQueue : public QThread {
     QAtomicInt m_aiCheckPriorities;
 
     mixxx::Repository m_repository;
-
-    AnalysisDao m_analysisDao;
 
     SampleBuffer m_sampleBuffer;
 
