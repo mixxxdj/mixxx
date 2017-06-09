@@ -31,6 +31,8 @@ class EngineDelay : public EngineObject {
 
     void process(CSAMPLE* pInOut, const int iBufferSize);
 
+    void setDelay(double newDelay);
+
   public slots:
     void slotDelayChanged();
 

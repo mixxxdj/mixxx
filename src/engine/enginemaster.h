@@ -97,6 +97,8 @@ class EngineMaster : public QObject, public AudioSource {
     // in the future.
     virtual void onOutputConnected(AudioOutput output);
     virtual void onOutputDisconnected(AudioOutput output);
+    void onInputConnected(AudioInput input);
+    void onInputDisconnected(AudioInput input);
 
     void process(const int iBufferSize);
 
@@ -212,6 +214,13 @@ class EngineMaster : public QObject, public AudioSource {
         double m_dRightGain;
         double m_dTalkoverDuckingGain;
     };
+
+    enum class TalkoverMixMode {
+        MASTER = 0,
+        MASTER_AND_BOOTH,
+        DIRECT_MONITOR,
+    };
+
     template<typename T, unsigned int CAPACITY>
     class FastVector {
       public:
@@ -288,12 +297,15 @@ class EngineMaster : public QObject, public AudioSource {
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeBusChannels[3];
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeHeadphoneChannels;
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeTalkoverChannels;
+    QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeTalkoverHeadphoneChannels;
 
     // Mixing buffers for each output.
     CSAMPLE* m_pOutputBusBuffers[3];
     CSAMPLE* m_pBooth;
     CSAMPLE* m_pHead;
     CSAMPLE* m_pTalkover;
+    CSAMPLE* m_pTalkoverHeadphones;
+    CSAMPLE* m_pSidechain;
 
     EngineWorkerScheduler* m_pWorkerScheduler;
     EngineSync* m_pMasterSync;
@@ -305,11 +317,15 @@ class EngineMaster : public QObject, public AudioSource {
     ControlObject* m_pMasterLatency;
     ControlObject* m_pMasterAudioBufferSize;
     ControlObject* m_pAudioLatencyOverloadCount;
+    ControlObject* m_pInputLatencyOffset;
+    ControlObject* m_pNumMicsConfigured;
     ControlPotmeter* m_pAudioLatencyUsage;
     ControlPotmeter* m_pAudioLatencyOverload;
     EngineTalkoverDucking* m_pTalkoverDucking;
     EngineDelay* m_pMasterDelay;
     EngineDelay* m_pHeadDelay;
+    EngineDelay* m_pInputLatencyCompensationDelay;
+    EngineDelay* m_pInputLatencyCompensationHeadphonesDelay;
 
     EngineVuMeter* m_pVumeter;
     EngineSideChain* m_pEngineSideChain;
@@ -344,7 +360,7 @@ class EngineMaster : public QObject, public AudioSource {
     ControlObject* m_pBoothEnabled;
     // Mix two Mono channels. This is useful for outdoor gigs
     ControlObject* m_pMasterMonoMixdown;
-    ControlObject* m_pBoothTalkoverMix;
+    ControlObject* m_pTalkoverMixMode;
     ControlObject* m_pHeadphoneEnabled;
 
     volatile bool m_bBusOutputConnected[3];

@@ -179,6 +179,7 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
                          m_registeredDestinations.find(in);
                  it != m_registeredDestinations.end() && it.key() == in; ++it) {
                 it.value()->onInputUnconfigured(in);
+                m_pMaster->onInputDisconnected(in);
             }
         }
         foreach (AudioOutput out, pDevice->outputs()) {
@@ -381,6 +382,7 @@ SoundDeviceError SoundManager::setupDevices() {
                     it != m_registeredDestinations.end() && it.key() == in;
                     ++it) {
                 it.value()->onInputConfigured(in);
+                m_pMaster->onInputConnected(in);
             }
         }
         QList<AudioOutput> outputs =

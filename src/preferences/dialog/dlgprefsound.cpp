@@ -116,9 +116,11 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
 
     m_pHeadDelay = new ControlProxy("[Master]", "headDelay", this);
     m_pMasterDelay = new ControlProxy("[Master]", "delay", this);
+    m_pInputLatencyOffset = new ControlProxy("[Master]", "inputOffset", this);
 
     headDelaySpinBox->setValue(m_pHeadDelay->get());
     masterDelaySpinBox->setValue(m_pMasterDelay->get());
+    inputOffsetSpinBox->setValue(m_pInputLatencyOffset->get());
 
     // TODO: remove this option by automatically disabling/enabling the master mix
     // when recording, broadcasting, headphone, and master outputs are enabled/disabled
@@ -138,13 +140,14 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(masterOutputModeComboBoxChanged(int)));
     m_pMasterMonoMixdown->connectValueChanged(SLOT(masterMonoMixdownChanged(double)));
 
-    m_pBoothTalkoverMix = new ControlProxy("[Master]", "talkover_mix", this);
+    m_pTalkoverMixMode = new ControlProxy("[Master]", "talkover_mix", this);
     micMixComboBox->addItem(tr("Master output only"));
     micMixComboBox->addItem(tr("Master and booth outputs"));
-    micMixComboBox->setCurrentIndex((int)m_pBoothTalkoverMix->get());
+    micMixComboBox->addItem(tr("Direct monitor (recording and broadcasting only)"));
+    micMixComboBox->setCurrentIndex((int)m_pTalkoverMixMode->get());
     connect(micMixComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(talkoverMixComboBoxChanged(int)));
-    m_pBoothTalkoverMix->connectValueChanged(SLOT(talkoverMixChanged(double)));
+    m_pTalkoverMixMode->connectValueChanged(SLOT(talkoverMixChanged(double)));
 
 
     m_pKeylockEngine =
@@ -154,6 +157,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(headDelayChanged(double)));
     connect(masterDelaySpinBox, SIGNAL(valueChanged(double)),
             this, SLOT(masterDelayChanged(double)));
+    connect(inputOffsetSpinBox, SIGNAL(valueChanged(double)),
+            this, SLOT(inputOffsetChanged(double)));
 
 
 #ifdef __LINUX__
@@ -542,7 +547,7 @@ void DlgPrefSound::slotResetToDefaults() {
     m_pHeadDelay->set(0.0);
 
     // Enable talkover master output
-    m_pBoothTalkoverMix->set(0.0);
+    m_pTalkoverMixMode->set(0.0);
     micMixComboBox->setCurrentIndex(0);
 
     settingChanged(); // force the apply button to enable
@@ -566,6 +571,10 @@ void DlgPrefSound::masterDelayChanged(double value) {
     m_pMasterDelay->set(value);
 }
 
+void DlgPrefSound::inputOffsetChanged(double value) {
+    m_pInputLatencyOffset->set(value);
+}
+
 void DlgPrefSound::masterMixChanged(int value) {
     m_pMasterEnabled->set(value);
 }
@@ -583,7 +592,7 @@ void DlgPrefSound::masterMonoMixdownChanged(double value) {
 }
 
 void DlgPrefSound::talkoverMixComboBoxChanged(int value) {
-    m_pBoothTalkoverMix->set((double)value);
+    m_pTalkoverMixMode->set((double)value);
 }
 
 void DlgPrefSound::talkoverMixChanged(double value) {

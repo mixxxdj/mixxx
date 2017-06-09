@@ -81,3 +81,7 @@ void EngineDelay::process(CSAMPLE* pInOut, const int iBufferSize) {
         }
     }
 }
+
+void EngineDelay::setDelay(double newDelay) {
+    m_pDelayPot->set(newDelay);
+}
