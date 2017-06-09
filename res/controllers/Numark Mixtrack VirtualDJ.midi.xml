@@ -1,37 +1,37 @@
 <!--
-	Numark Mixtrack Mixxx Mapping
-	Release 06/08/2017
-	Scolari Mauricio mauricio@scolari.org
-	http://mauricio.scolari.org
-	
-	https://www.mixxx.org/wiki/doku.php/contributing_mappings
-	https://www.mixxx.org/wiki/doku.php/midi_controller_mapping_file_format
-	https://www.mixxx.org/wiki/doku.php/mixxxcontrols
+    Numark Mixtrack Mixxx Mapping
+    Release 06/08/2017
+    Scolari Mauricio mauricio@scolari.org
+    http://mauricio.scolari.org
+    
+    https://www.mixxx.org/wiki/doku.php/contributing_mappings
+    https://www.mixxx.org/wiki/doku.php/midi_controller_mapping_file_format
+    https://www.mixxx.org/wiki/doku.php/mixxxcontrols
 -->
 
 <MixxxMIDIPreset mixxxVersion="1.9.0+" schemaVersion="1">
     <info>
-      <name>Numark Mixtrack VirtualDJ</name>
-      <author>Scolari Mauricio (mauricio@scolari.org)</author>
-      <description>Numark Mixtrack mapping like VirtualDJ</description>
+		<name>Numark Mixtrack VirtualDJ</name>
+		<author>Scolari Mauricio (mauricio@scolari.org)</author>
+		<description>Numark Mixtrack mapping like VirtualDJ</description>
     </info>
-	
+    
     <controller id="Numark Mixtrack VirtualDJ">
         <scriptfiles>
             <file functionprefix="Mixtrack" filename="Numark-Mixtrack-VirtualDJ-scripts.js"/>
         </scriptfiles>
-		
+        
         <controls>
-			<control>
+            <control>
                 <group>[EffectRack1]</group>
                 <key>num_effectunits</key>
-				<midino>0x08</midino>
-				<on>0x7F</on>
-				<off>0xFF</off>
-				<minimum>2</minimum>
+                <midino>0x08</midino>
+                <on>0x7F</on>
+                <off>0xFF</off>
+                <minimum>2</minimum>
             </control>
-			
-			<control>
+            
+            <control>
                 <status>0xb0</status>
                 <midino>0xc</midino>
                 <group>[Master]</group>
@@ -96,7 +96,7 @@
             </control>
 
 
-			<!-- CHANNEL 1 -->
+            <!-- CHANNEL 1 -->
             <control>
                 <status>0x90</status>
                 <midino>0x3b</midino>
@@ -151,8 +151,8 @@
                     <normal/>
                 </options>
             </control>
-			
-			<!-- Hot Cue's -->
+            
+            <!-- Hot Cue's -->
             <control>
                 <status>0x90</status>
                 <midino>0x59</midino>
@@ -189,7 +189,7 @@
                     <script-binding/>
                 </options>
             </control>
-			
+            
             <control>
                 <status>0xb0</status>
                 <midino>0x10</midino>
@@ -217,7 +217,7 @@
                     <normal/>
                 </options>
             </control>
-			
+            
             <control>
                 <status>0x90</status>
                 <midino>0x61</midino>
@@ -254,7 +254,7 @@
                     <script-binding/>
                 </options>
             </control>
-			
+            
             <control>
                 <status>0x90</status>
                 <midino>0x4b</midino>
@@ -327,7 +327,7 @@
                     <script-binding/>
                 </options>
             </control>
-			
+            
             <control>
                 <status>0x90</status>
                 <midino>0x63</midino>
@@ -375,7 +375,7 @@
             </control>
 
 
-			<!-- CHANNEL 2 -->
+            <!-- CHANNEL 2 -->
             <control>
                 <status>0x90</status>
                 <midino>0x42</midino>
@@ -420,7 +420,7 @@
                 <options>
                     <script-binding/>
                 </options>
-			</control>
+            </control>
             <control>
                 <status>0x90</status>
                 <midino>0x66</midino>
@@ -430,8 +430,8 @@
                     <normal/>
                 </options>
             </control>
-			
-			<!-- Hot Cue's -->
+            
+            <!-- Hot Cue's -->
             <control>
                 <status>0x90</status>
                 <midino>0x5d</midino>
@@ -468,7 +468,7 @@
                     <script-binding/>
                 </options>
             </control>
-			
+            
             <control>
                 <status>0xb0</status>
                 <midino>0x11</midino>
@@ -496,7 +496,7 @@
                     <normal/>
                 </options>
             </control>
-			
+            
             <control>
                 <status>0x90</status>
                 <midino>0x62</midino>
@@ -533,7 +533,7 @@
                     <script-binding/>
                 </options>
             </control>
-			
+            
             <control>
                 <status>0x90</status>
                 <midino>0x34</midino>
@@ -588,7 +588,7 @@
                     <script-binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x4d</midino>
                 <group>[Channel2]</group>
@@ -606,7 +606,7 @@
                     <script-binding/>
                 </options>
             </control>
-			
+            
             <control>
                 <status>0x90</status>
                 <midino>0x64</midino>
@@ -745,9 +745,9 @@
                 <on>0x64</on>
                 <off>0x0</off>
             </output>
-			
-			
-			<!-- CHANNEL 2 -->
+            
+            
+            <!-- CHANNEL 2 -->
             <output>
                 <group>[Channel2]</group>
                 <key>play</key>
@@ -828,16 +828,16 @@
                 <on>0x0</on>
                 <off>0x64</off>
             </output>
-			<output>
-				<group>[Channel2]</group>
-				<key>rate</key>
-				<minimum>-0.1</minimum>
-				<maximum>0.1</maximum>
-				<status>0x90</status>
-				<midino>0x71</midino>
-				<on>0x64</on>
-				<off>0x0</off>
-			</output>
-		</outputs>
+            <output>
+                <group>[Channel2]</group>
+                <key>rate</key>
+                <minimum>-0.1</minimum>
+                <maximum>0.1</maximum>
+                <status>0x90</status>
+                <midino>0x71</midino>
+                <on>0x64</on>
+                <off>0x0</off>
+            </output>
+        </outputs>
     </controller>
 </MixxxMIDIPreset>
