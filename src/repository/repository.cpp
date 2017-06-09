@@ -36,16 +36,6 @@ bool Repository::initDatabaseSchema(
         const QSqlDatabase& database,
         const QString& schemaFile,
         int schemaVersion) {
-    if (!database.isOpen()) {
-        QMessageBox::critical(0, tr("Cannot open database"),
-                            tr("Unable to establish a database connection.\n"
-                                "Mixxx requires QT with SQLite support. Please read "
-                                "the Qt SQL driver documentation for information on how "
-                                "to build it.\n\n"
-                                "Click OK to exit."), QMessageBox::Ok);
-        return false; // abort
-    }
-
     QString okToExit = tr("Click OK to exit.");
     QString upgradeFailed = tr("Cannot upgrade database schema");
     QString upgradeToVersionFailed =
