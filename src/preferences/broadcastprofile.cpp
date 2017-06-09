@@ -13,7 +13,8 @@
 #include "broadcastprofile.h"
 
 namespace {
-const char* kDocumentName = "BroadcastProfile";
+const char* kDoctype = "broadcastprofile";
+const char* kDocumentRoot = "BroadcastProfile";
 const char* kBitrate = "Bitrate";
 const char* kChannels = "Channels";
 const char* kCustomArtist = "CustomArtist";
@@ -125,54 +126,55 @@ void BroadcastProfile::loadValues(const QString& filename) {
         return;
     }
 
-    QDomElement xmlRoot = XmlParse::openXMLFile(filename, kDocumentName);
+    QDomElement doc = XmlParse::openXMLFile(filename, kDoctype);
+    QDomElement docRoot = doc.firstChildElement(kDocumentRoot);
 
-    m_enabled = (bool)XmlParse::selectNodeInt(xmlRoot, kEnabled);
+    m_enabled = (bool)XmlParse::selectNodeInt(docRoot, kEnabled);
 
-    m_host = XmlParse::selectNodeQString(xmlRoot, kHost);
-    m_port = XmlParse::selectNodeInt(xmlRoot, kPort);
-    m_serverType = XmlParse::selectNodeQString(xmlRoot, kServertype);
-    m_login = XmlParse::selectNodeQString(xmlRoot, kLogin);
-    m_password = XmlParse::selectNodeQString(xmlRoot, kPassword);
+    m_host = XmlParse::selectNodeQString(docRoot, kHost);
+    m_port = XmlParse::selectNodeInt(docRoot, kPort);
+    m_serverType = XmlParse::selectNodeQString(docRoot, kServertype);
+    m_login = XmlParse::selectNodeQString(docRoot, kLogin);
+    m_password = XmlParse::selectNodeQString(docRoot, kPassword);
 
     m_enableReconnect =
-            (bool)XmlParse::selectNodeInt(xmlRoot, kEnableReconnect);
+            (bool)XmlParse::selectNodeInt(docRoot, kEnableReconnect);
     m_reconnectPeriod =
-            XmlParse::selectNodeDouble(xmlRoot, kReconnectPeriod);
+            XmlParse::selectNodeDouble(docRoot, kReconnectPeriod);
 
     m_limitReconnects =
-            (bool)XmlParse::selectNodeInt(xmlRoot, kLimitReconnects);
+            (bool)XmlParse::selectNodeInt(docRoot, kLimitReconnects);
     m_maximumRetries =
-            XmlParse::selectNodeInt(xmlRoot, kMaximumRetries);
+            XmlParse::selectNodeInt(docRoot, kMaximumRetries);
 
     m_noDelayFirstReconnect =
-            (bool)XmlParse::selectNodeInt(xmlRoot, kNoDelayFirstReconnect);
+            (bool)XmlParse::selectNodeInt(docRoot, kNoDelayFirstReconnect);
     m_reconnectFirstDelay =
-            XmlParse::selectNodeDouble(xmlRoot, kReconnectFirstDelay);
+            XmlParse::selectNodeDouble(docRoot, kReconnectFirstDelay);
 
-    m_mountpoint = XmlParse::selectNodeQString(xmlRoot, kMountPoint);
-    m_streamName = XmlParse::selectNodeQString(xmlRoot, kStreamName);
-    m_streamDesc = XmlParse::selectNodeQString(xmlRoot, kStreamDesc);
-    m_streamGenre = XmlParse::selectNodeQString(xmlRoot, kStreamGenre);
-    m_streamPublic = (bool)XmlParse::selectNodeInt(xmlRoot, kStreamPublic);
-    m_streamWebsite = XmlParse::selectNodeQString(xmlRoot, kStreamWebsite);
+    m_mountpoint = XmlParse::selectNodeQString(docRoot, kMountPoint);
+    m_streamName = XmlParse::selectNodeQString(docRoot, kStreamName);
+    m_streamDesc = XmlParse::selectNodeQString(docRoot, kStreamDesc);
+    m_streamGenre = XmlParse::selectNodeQString(docRoot, kStreamGenre);
+    m_streamPublic = (bool)XmlParse::selectNodeInt(docRoot, kStreamPublic);
+    m_streamWebsite = XmlParse::selectNodeQString(docRoot, kStreamWebsite);
 
-    m_format = XmlParse::selectNodeQString(xmlRoot, kFormat);
-    m_bitrate = XmlParse::selectNodeInt(xmlRoot, kBitrate);
-    m_channels = XmlParse::selectNodeInt(xmlRoot, kChannels);
+    m_format = XmlParse::selectNodeQString(docRoot, kFormat);
+    m_bitrate = XmlParse::selectNodeInt(docRoot, kBitrate);
+    m_channels = XmlParse::selectNodeInt(docRoot, kChannels);
 
-    m_enableMetadata = (bool)XmlParse::selectNodeInt(xmlRoot, kEnableMetadata);
-    m_metadataCharset = XmlParse::selectNodeQString(xmlRoot, kMetadataCharset);
-    m_customArtist = XmlParse::selectNodeQString(xmlRoot, kCustomArtist);
-    m_customTitle = XmlParse::selectNodeQString(xmlRoot, kCustomTitle);
-    m_metadataFormat = XmlParse::selectNodeQString(xmlRoot, kMetadataFormat);
+    m_enableMetadata = (bool)XmlParse::selectNodeInt(docRoot, kEnableMetadata);
+    m_metadataCharset = XmlParse::selectNodeQString(docRoot, kMetadataCharset);
+    m_customArtist = XmlParse::selectNodeQString(docRoot, kCustomArtist);
+    m_customTitle = XmlParse::selectNodeQString(docRoot, kCustomTitle);
+    m_metadataFormat = XmlParse::selectNodeQString(docRoot, kMetadataFormat);
     m_oggDynamicUpdate =
-            (bool)XmlParse::selectNodeInt(xmlRoot, kMetadataFormat);
+            (bool)XmlParse::selectNodeInt(docRoot, kMetadataFormat);
 }
 
 void BroadcastProfile::save(const QString& filename) {
-    QDomDocument doc(kDocumentName);
-    QDomElement docRoot = doc.documentElement();
+    QDomDocument doc(kDoctype);
+    QDomElement docRoot = doc.createElement(kDocumentRoot);
 
     XmlParse::addElement(doc, docRoot,
                          kEnabled, QString::number((int)m_enabled));
@@ -221,6 +223,7 @@ void BroadcastProfile::save(const QString& filename) {
     XmlParse::addElement(doc, docRoot, kOggDynamicUpdate,
                          QString::number((int)m_oggDynamicUpdate));
 
+    doc.appendChild(docRoot);
 
     QFile xmlFile(filename);
     xmlFile.open(QIODevice::WriteOnly | QIODevice::Text);
