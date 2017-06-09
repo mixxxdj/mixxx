@@ -53,9 +53,6 @@ AnalyzerQueue::AnalyzerQueue(
           m_aiCheckPriorities(false),
           m_repository(pConfig, nextDatabaseConnectioName()),
           m_sampleBuffer(kAnalysisSamplesPerBlock),
-          m_tioq(),
-          m_qm(),
-          m_qwait(),
           m_queue_size(0) {
 
     if (mode != Mode::WithoutWaveform) {

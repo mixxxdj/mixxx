@@ -34,7 +34,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         m_pEngine(pEngine),
         // NOTE(XXX) LegacySkinParser relies on these controls being Controls
         // and not ControlProxies.
-        m_pAnalyzerQueue(NULL),
+        m_pAnalyzerQueue(nullptr),
         m_pCONumDecks(new ControlObject(
             ConfigKey("[Master]", "num_decks"), true, true)),
         m_pCONumSamplers(new ControlObject(

@@ -23,10 +23,10 @@ AnalysisFeature::AnalysisFeature(QObject* parent,
         LibraryFeature(parent),
         m_pConfig(pConfig),
         m_pTrackCollection(pTrackCollection),
-        m_pAnalyzerQueue(NULL),
+        m_pAnalyzerQueue(nullptr),
         m_iOldBpmEnabled(0),
         m_analysisTitleName(tr("Analyze")),
-        m_pAnalysisView(NULL) {
+        m_pAnalysisView(nullptr) {
     setTitleDefault();
 }
 
