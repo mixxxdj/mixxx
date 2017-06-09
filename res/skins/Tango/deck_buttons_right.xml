@@ -151,7 +151,8 @@ Variables:
                 </Connection>
               </WidgetGroup><!-- /Stars -->
 
-              <WidgetGroup><!-- Deck controls -->
+              <WidgetGroup><!-- Expandable Deck controls -->
+                <ObjectName>DeckControlsExpanded</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
@@ -160,7 +161,7 @@ Variables:
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
                       <Template src="skin:button_2state_persist.xml">
-                        <SetVariable name="ObjectName">DeckButton</SetVariable>
+                        <SetVariable name="ObjectName">DeckButtonExpanded</SetVariable>
                         <SetVariable name="Size">22f,22f</SetVariable>
                         <SetVariable name="TooltipId">quantize</SetVariable>
                         <SetVariable name="state_0_pressed">quantize_off.svg</SetVariable>
@@ -182,7 +183,7 @@ Variables:
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
                       <Template src="skin:button_3state.xml">
-                        <SetVariable name="ObjectName">DeckButton</SetVariable>
+                        <SetVariable name="ObjectName">DeckButtonExpanded</SetVariable>
                         <SetVariable name="Size">20f,22f</SetVariable>
                         <SetVariable name="TooltipId">orientation</SetVariable>
                         <SetVariable name="state_0_pressed">cf_left_attention.svg</SetVariable>
@@ -206,7 +207,7 @@ Variables:
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
                       <Template src="skin:button_2state.xml">
-                        <SetVariable name="ObjectName">DeckButton</SetVariable>
+                        <SetVariable name="ObjectName">DeckButtonExpanded</SetVariable>
                         <SetVariable name="Size">22f,22f</SetVariable>
                         <SetVariable name="TooltipId">repeat</SetVariable>
                         <SetVariable name="state_0_pressed">repeat_off.svg</SetVariable>
@@ -228,7 +229,7 @@ Variables:
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
                       <Template src="skin:button_2state.xml">
-                        <SetVariable name="ObjectName">DeckButton</SetVariable>
+                        <SetVariable name="ObjectName">DeckButtonExpanded</SetVariable>
                         <SetVariable name="Size">22f,22f</SetVariable>
                         <SetVariable name="TooltipId">slip_mode</SetVariable>
                         <SetVariable name="state_0_pressed">slipmode_off.svg</SetVariable>
@@ -250,7 +251,7 @@ Variables:
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
                       <Template src="skin:button_1state.xml">
-                        <SetVariable name="ObjectName">DeckButton</SetVariable>
+                        <SetVariable name="ObjectName">DeckButtonExpanded</SetVariable>
                         <SetVariable name="Size">20f,22f</SetVariable>
                         <SetVariable name="TooltipId">eject</SetVariable>
                         <SetVariable name="state_0_pressed">eject_pressed.svg</SetVariable>
@@ -270,7 +271,7 @@ Variables:
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
                       <Template src="skin:button_2state_persist.xml"><!-- Keylock -->
-                        <SetVariable name="ObjectName">DeckButton</SetVariable>
+                        <SetVariable name="ObjectName">DeckButtonExpanded</SetVariable>
                         <SetVariable name="Size">20f,22f</SetVariable>
                         <SetVariable name="TooltipId">keylock</SetVariable>
                         <SetVariable name="state_0_pressed">keylock_off.svg</SetVariable>
@@ -292,7 +293,7 @@ Variables:
                   <ConfigKey persist="true">[Tango],deck_controls</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup><!-- /Deck controls -->
+              </WidgetGroup><!-- /Expandable Deck controls -->
 
               <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
                 <SetVariable name="ObjectName">DeckButtonTogglerRight</SetVariable>
@@ -302,7 +303,7 @@ Variables:
 
               <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
-              <!-- Deckbuttons which are always visible -->
+          <!-- Deck controls which are always visible -->
               <WidgetGroup>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
@@ -428,7 +429,7 @@ Variables:
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
-              <!-- /Deckbuttons which are always visible -->
+          <!-- /Deck controls which are always visible -->
 
             </Children>
           </WidgetGroup><!-- /Deck Controls + Star rating -->

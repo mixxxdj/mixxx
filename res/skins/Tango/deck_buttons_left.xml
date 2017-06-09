@@ -159,7 +159,8 @@ Variables:
             <SetVariable name="ConfigKeyPerm">[Tango],deck_controls</SetVariable>
           </Template>
 
-          <WidgetGroup><!-- Deck controls -->
+          <WidgetGroup><!-- Expandable Deck controls -->
+            <ObjectName>DeckControlsExpanded</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
@@ -168,7 +169,7 @@ Variables:
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                   <Template src="skin:button_2state_persist.xml"><!-- Keylock -->
-                    <SetVariable name="ObjectName">DeckButton</SetVariable>
+                    <SetVariable name="ObjectName">DeckButtonExpanded</SetVariable>
                     <SetVariable name="Size">20f,22f</SetVariable>
                     <SetVariable name="TooltipId">keylock</SetVariable>
                     <SetVariable name="state_0_pressed">keylock_off.svg</SetVariable>
@@ -190,7 +191,7 @@ Variables:
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                   <Template src="skin:button_1state.xml">
-                    <SetVariable name="ObjectName">DeckButton</SetVariable>
+                    <SetVariable name="ObjectName">DeckButtonExpanded</SetVariable>
                     <SetVariable name="Size">20f,22f</SetVariable>
                     <SetVariable name="TooltipId">eject</SetVariable>
                     <SetVariable name="state_0_pressed">eject_pressed.svg</SetVariable>
@@ -210,7 +211,7 @@ Variables:
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                   <Template src="skin:button_2state.xml">
-                    <SetVariable name="ObjectName">DeckButton</SetVariable>
+                    <SetVariable name="ObjectName">DeckButtonExpanded</SetVariable>
                     <SetVariable name="Size">22f,22f</SetVariable>
                     <SetVariable name="TooltipId">slip_mode</SetVariable>
                     <SetVariable name="state_0_pressed">slipmode_off.svg</SetVariable>
@@ -232,7 +233,7 @@ Variables:
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                   <Template src="skin:button_2state.xml">
-                    <SetVariable name="ObjectName">DeckButton</SetVariable>
+                    <SetVariable name="ObjectName">DeckButtonExpanded</SetVariable>
                     <SetVariable name="Size">22f,22f</SetVariable>
                     <SetVariable name="TooltipId">repeat</SetVariable>
                     <SetVariable name="state_0_pressed">repeat_off.svg</SetVariable>
@@ -254,7 +255,7 @@ Variables:
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                   <Template src="skin:button_3state.xml">
-                    <SetVariable name="ObjectName">DeckButton</SetVariable>
+                    <SetVariable name="ObjectName">DeckButtonExpanded</SetVariable>
                     <SetVariable name="Size">20f,22f</SetVariable>
                     <SetVariable name="TooltipId">orientation</SetVariable>
                     <SetVariable name="state_0_pressed">cf_left.svg</SetVariable>
@@ -278,7 +279,7 @@ Variables:
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                   <Template src="skin:button_2state_persist.xml">
-                    <SetVariable name="ObjectName">DeckButton</SetVariable>
+                    <SetVariable name="ObjectName">DeckButtonExpanded</SetVariable>
                     <SetVariable name="Size">22f,22f</SetVariable>
                     <SetVariable name="TooltipId">quantize</SetVariable>
                     <SetVariable name="state_0_pressed">quantize_off.svg</SetVariable>
@@ -300,7 +301,7 @@ Variables:
               <ConfigKey persist="true">[Tango],deck_controls</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
-          </WidgetGroup><!-- /Deck controls -->
+          </WidgetGroup><!-- /Expandable Deck controls -->
 
           <WidgetGroup><!-- Stars -->
             <Layout>horizontal</Layout>

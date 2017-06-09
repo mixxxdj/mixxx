@@ -462,30 +462,44 @@ WWidgetGroup {
   padding: 1px 1px 1px 0px;
   background-color: #333333;
   }
-  #DeckButtonTogglerLeft[displayValue="1"],
-  #DeckButtonTogglerRight[displayValue="1"] {
-    background-color: #0f0f0f;
+
+#DeckControlsExpanded,
+#Keylock[displayValue="0"]:hover, #Keylock[displayValue="1"],
+#PflButton[displayValue="0"]:hover, #PflButton[displayValue="1"],
+#DeckButton:hover {
+  background-color: #151515;
   }
-  #DeckButtonTogglerLeft[displayValue="0"],
-  #DeckButtonTogglerRight[displayValue="1"] {
+  /* there's been trouble defining bg-color to several IDs at once,
+  so we do it pre ID...yaaawn */
+  #DeckButtonExpanded:hover {
+    background-color: #000000;
+  }
+  #DeckButtonTogglerLeft[displayValue="0"] {
     background: transparent url(skin:/buttons/btn_arrow_right_thin.svg) no-repeat center center;
-  }
-  #DeckButtonTogglerLeft[displayValue="0"]:hover,
-  #DeckButtonTogglerRight[displayValue="1"]:hover {
-    background: transparent url(skin:/buttons/btn_arrow_right_thin_hover.svg) no-repeat center center;
-  }
-  #DeckButtonTogglerLeft[displayValue="1"],
+    }
+    #DeckButtonTogglerLeft[displayValue="0"]:hover {
+      background: #151515 url(skin:/buttons/btn_arrow_right_thin_hover.svg) no-repeat center center;
+    }
+    #DeckButtonTogglerLeft[displayValue="1"] {
+      background: #151515 url(skin:/buttons/btn_arrow_left_thin.svg) no-repeat center center;
+    }
+    #DeckButtonTogglerLeft[displayValue="1"]:hover {
+      background: #000000 url(skin:/buttons/btn_arrow_left_thin_hover.svg) no-repeat center center;
+    }
+
   #DeckButtonTogglerRight[displayValue="0"] {
     background: transparent url(skin:/buttons/btn_arrow_left_thin.svg) no-repeat center center;
-  }
-  #DeckButtonTogglerLeft[displayValue="1"]:hover,
-  #DeckButtonTogglerRight[displayValue="0"]:hover {
-    background: transparent url(skin:/buttons/btn_arrow_left_thin_hover.svg) no-repeat center center;
-  }
-  #DeckButton:hover, #Keylock[displayValue="0"]:hover, #Keylock[displayValue="1"],
-  #PflButton[displayValue="0"]:hover, #PflButton[displayValue="1"] {
-    background-color: #151515;
-  }
+    }
+    #DeckButtonTogglerRight[displayValue="0"]:hover {
+      background: #151515 url(skin:/buttons/btn_arrow_left_thin_hover.svg) no-repeat center center;
+    }
+    #DeckButtonTogglerRight[displayValue="1"] {
+      background: #151515 url(skin:/buttons/btn_arrow_right_thin.svg) no-repeat center center;
+    }
+    #DeckButtonTogglerRight[displayValue="1"]:hover {
+      background: #000000 url(skin:/buttons/btn_arrow_right_thin_hover.svg) no-repeat center center;
+    }
+
   #Keylock[displayValue="1"]:hover, #PflButton[displayValue="1"]:hover {
     border: 1px solid #d2d2d2;
   }
