@@ -13,6 +13,7 @@
 #include <QFont>
 
 #include "preferences/usersettings.h"
+#include "repository/repository.h"
 #include "track/track.h"
 #include "recording/recordingmanager.h"
 #include "analysisfeature.h"
@@ -20,11 +21,6 @@
 #include "library/setlogfeature.h"
 #include "library/scanner/libraryscanner.h"
 
-namespace mixxx {
-
-class Repository;
-
-} // namespace mixxx
 
 class TrackModel;
 class TrackCollection;
@@ -53,6 +49,10 @@ public:
             PlayerManagerInterface* pPlayerManager,
             RecordingManager* pRecordingManager);
     virtual ~Library();
+
+    const mixxx::Repository& repository() const {
+        return m_repository;
+    }
 
     void bindWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* pKeyboard);
@@ -130,8 +130,8 @@ public:
 
   private:
     UserSettingsPointer m_pConfig;
+    mixxx::Repository m_repository;
     SidebarModel* m_pSidebarModel;
-    mixxx::Repository* m_pRepository;
     TrackCollection* m_pTrackCollection;
     QList<LibraryFeature*> m_features;
     const static QString m_sTrackViewName;
