@@ -62,7 +62,7 @@ const QRegExp kForbiddenChars = QRegExp("[<>:\"/\\\|\?\*]");
 } // anonymous namespace
 
 BroadcastProfile::BroadcastProfile(const QString& profileName) {
-    defaultValues();
+    setDefaultValues();
     setProfileName(profileName);
 }
 
@@ -83,7 +83,7 @@ BroadcastProfile* BroadcastProfile::loadFromFile(const QString& filename) {
     return profile;
 }
 
-void BroadcastProfile::defaultValues() {
+void BroadcastProfile::setDefaultValues() {
     m_enabled = true;
 
     m_host = QString(),

@@ -63,8 +63,10 @@ QString BroadcastSettings::filenameForProfile(BroadcastProfile* profile) {
     if(!profile)
         return QString();
 
-    QDir profilesFolder(m_pConfig->getSettingsPath());
-    profilesFolder.cd(kProfilesSubfolder);
+    QString profilesPath(m_pConfig->getSettingsPath());
+    profilesPath.append(QDir::separator() + QString(kProfilesSubfolder));
+
+    QDir profilesFolder(profilesPath);
 
     QString filename = profile->getProfileName() + QString(".bcp.xml");
     return profilesFolder.absoluteFilePath(filename);
