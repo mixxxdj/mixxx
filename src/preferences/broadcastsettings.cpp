@@ -2,8 +2,8 @@
 #include <QStringList>
 #include <QFileInfoList>
 #include <QFileInfo>
-#include <QDebug>
 
+#include "util/logger.h"
 #include "preferences/broadcastsettings.h"
 #include "broadcast/defs_broadcast.h"
 #include "defs_urls.h"
@@ -13,6 +13,7 @@ const char* kConfigKey = "[Shoutcast]";
 const char* kCurrentProfile = "current_profile";
 const char* kProfilesSubfolder = "broadcast_profiles";
 const char* kDefaultProfile = "Default Profile";
+const mixxx::Logger kLogger("BroadcastSettings");
 } // anonymous namespace
 
 BroadcastSettings::BroadcastSettings(UserSettingsPointer pConfig)
@@ -31,7 +32,8 @@ BroadcastSettings::~BroadcastSettings() {
 void BroadcastSettings::loadProfiles() {
     QDir profilesFolder(getProfilesFolder());
     if(!profilesFolder.exists()) {
-        qDebug() << "Profiles folder doesn't exist. Creating it." << endl;
+        kLogger.warning()
+                << "Profiles folder doesn't exist. Creating it.";
 
         // TODO(Palakis, June 9th 2017):
         // Is there a better way to do this?
@@ -43,7 +45,7 @@ void BroadcastSettings::loadProfiles() {
             profilesFolder.entryInfoList(nameFilters, QDir::Files, QDir::Name);
 
     if(files.count() > 0) {
-        qDebug() << "Found " << files.count() << " profiles.";
+        kLogger.warning() << "Found " << files.count() << " profiles.";
         // Load profiles from filesystem
         for(QFileInfo fileInfo : files) {
             BroadcastProfile* profile =
@@ -53,7 +55,8 @@ void BroadcastSettings::loadProfiles() {
                m_profiles.push_back(profile);
         }
     } else {
-        qDebug() << "No profiles found. Creating default profile." << endl;
+        kLogger.warning()
+                << "No profiles found. Creating default profile.";
 
         // Create default profile
         BroadcastProfile* defaultProfile =
