@@ -11,7 +11,6 @@
 #include "analyzer/analyzergain.h"
 #include "analyzer/analyzerebur128.h"
 #include "analyzer/analyzerwaveform.h"
-#include "library/trackcollection.h"
 #include "mixer/playerinfo.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
@@ -52,8 +51,7 @@ QString nextDatabaseConnectioName() {
 } // anonymous namespace
 
 AnalyzerQueue::AnalyzerQueue(
-        UserSettingsPointer pConfig,
-        TrackCollection* pTrackCollection)
+        UserSettingsPointer pConfig)
         : m_aq(),
           m_exit(false),
           m_aiCheckPriorities(false),
@@ -64,7 +62,6 @@ AnalyzerQueue::AnalyzerQueue(
           m_qm(),
           m_qwait(),
           m_queue_size(0) {
-    Q_UNUSED(pTrackCollection);
     connect(this, SIGNAL(updateProgress()),
             this, SLOT(slotUpdateProgress()));
 }
@@ -468,8 +465,8 @@ void AnalyzerQueue::queueAnalyseTrack(TrackPointer tio) {
 
 // static
 AnalyzerQueue* AnalyzerQueue::createDefaultAnalyzerQueue(
-        UserSettingsPointer pConfig, TrackCollection* pTrackCollection) {
-    AnalyzerQueue* ret = new AnalyzerQueue(pConfig, pTrackCollection);
+        UserSettingsPointer pConfig) {
+    AnalyzerQueue* ret = new AnalyzerQueue(pConfig);
 
     ret->addAnalyzer(new AnalyzerWaveform(&ret->m_analysisDao));
     ret->addAnalyzer(new AnalyzerGain(pConfig));
@@ -485,8 +482,8 @@ AnalyzerQueue* AnalyzerQueue::createDefaultAnalyzerQueue(
 
 // static
 AnalyzerQueue* AnalyzerQueue::createAnalysisFeatureAnalyzerQueue(
-        UserSettingsPointer pConfig, TrackCollection* pTrackCollection) {
-    AnalyzerQueue* ret = new AnalyzerQueue(pConfig, pTrackCollection);
+        UserSettingsPointer pConfig) {
+    AnalyzerQueue* ret = new AnalyzerQueue(pConfig);
 
     if (pConfig->getValue<bool>(ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"))) {
         ret->addAnalyzer(new AnalyzerWaveform(&ret->m_analysisDao));

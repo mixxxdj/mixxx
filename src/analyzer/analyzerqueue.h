@@ -17,24 +17,21 @@
 #include "library/dao/analysisdao.h"
 #include "util/samplebuffer.h"
 
-class TrackCollection;
-
 class AnalyzerQueue : public QThread {
     Q_OBJECT
 
   public:
-    AnalyzerQueue(
-            UserSettingsPointer pConfig,
-            TrackCollection* pTrackCollection);
+    explicit AnalyzerQueue(
+            UserSettingsPointer pConfig);
     virtual ~AnalyzerQueue();
 
     void stop();
     void queueAnalyseTrack(TrackPointer tio);
 
     static AnalyzerQueue* createDefaultAnalyzerQueue(
-            UserSettingsPointer pConfig, TrackCollection* pTrackCollection);
+            UserSettingsPointer pConfig);
     static AnalyzerQueue* createAnalysisFeatureAnalyzerQueue(
-            UserSettingsPointer pConfig, TrackCollection* pTrackCollection);
+            UserSettingsPointer pConfig);
 
   public slots:
     void slotAnalyseTrack(TrackPointer tio);

@@ -11,7 +11,6 @@
 #include "engine/enginedeck.h"
 #include "engine/enginemaster.h"
 #include "library/library.h"
-#include "library/trackcollection.h"
 #include "mixer/auxiliary.h"
 #include "mixer/deck.h"
 #include "mixer/microphone.h"
@@ -125,8 +124,7 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
     connect(this, SIGNAL(loadLocationToPlayer(QString, QString)),
             pLibrary, SLOT(slotLoadLocationToPlayer(QString, QString)));
 
-    m_pAnalyzerQueue = AnalyzerQueue::createDefaultAnalyzerQueue(m_pConfig,
-            pLibrary->getTrackCollection());
+    m_pAnalyzerQueue = AnalyzerQueue::createDefaultAnalyzerQueue(m_pConfig);
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analysed.
