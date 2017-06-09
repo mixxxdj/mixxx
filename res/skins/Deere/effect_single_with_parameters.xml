@@ -9,7 +9,7 @@ Variables:
 <!DOCTYPE template>
 <Template>
   <WidgetGroup>
-    <ObjectName>EffectHighlightable</ObjectName>
+    <ObjectName>EffectHighlightableContainer</ObjectName>
     <Layout>horizontal</Layout>
     <Children>
 

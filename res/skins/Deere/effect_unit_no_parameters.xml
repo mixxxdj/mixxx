@@ -47,15 +47,25 @@ Variables:
           <WidgetGroup>
             <ObjectName>EffectUnitControls</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>max,min</SizePolicy>
             <MaximumSize>100,50</MaximumSize>
             <Children>
-              <Template src="skin:knob_with_label.xml">
-                <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
-                <SetVariable name="control">super1</SetVariable>
-                <SetVariable name="label">Super</SetVariable>
-                <SetVariable name="color">yellow</SetVariable>
-              </Template>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Connection>
+                  <ConfigKey>[Master],show_superknobs</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+                <Children>
+                  <Template src="skin:knob_with_label.xml">
+                    <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
+                    <SetVariable name="control">super1</SetVariable>
+                    <SetVariable name="label">Super</SetVariable>
+                    <SetVariable name="color">yellow</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
 
               <Template src="skin:knob_with_label.xml">
                 <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>

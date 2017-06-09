@@ -5,10 +5,11 @@
 #include <propvarutil.h>
 
 #include "util/sample.h"
+#include "util/logger.h"
 
 namespace {
 
-const char* const kLogPreamble = "SoundSourceMediaFoundation:";
+const mixxx::Logger kLogger("SoundSourceMediaFoundation");
 
 const SINT kBytesPerSample = sizeof(CSAMPLE);
 const SINT kBitsPerSample = kBytesPerSample * 8;
@@ -54,7 +55,7 @@ SoundSourceMediaFoundation::~SoundSourceMediaFoundation() {
 
 SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     VERIFY_OR_DEBUG_ASSERT(!SUCCEEDED(m_hrCoInitialize)) {
-        qWarning() << kLogPreamble
+        kLogger.warning()
                 << "Cannot reopen file"
                 << getUrlString();
         return OpenResult::FAILED;
@@ -66,14 +67,14 @@ SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(const AudioSourceCon
     m_hrCoInitialize = CoInitializeEx(nullptr,
             COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
     if (FAILED(m_hrCoInitialize)) {
-        qWarning() << kLogPreamble
+        kLogger.warning()
                 << "failed to initialize COM";
         return OpenResult::FAILED;
     }
     // Initialize the Media Foundation platform.
     m_hrMFStartup = MFStartup(MF_VERSION);
     if (FAILED(m_hrCoInitialize)) {
-        qWarning() << kLogPreamble
+        kLogger.warning()
                 << "failed to initialize Media Foundation";
         return OpenResult::FAILED;
     }
@@ -89,14 +90,14 @@ SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(const AudioSourceCon
             &m_pSourceReader);
 
     if (FAILED(hr)) {
-        qWarning() << kLogPreamble
+        kLogger.warning()
                 << "Error opening input file:"
                 << fileName;
         return OpenResult::FAILED;
     }
 
     if (!configureAudioStream(audioSrcCfg)) {
-        qWarning() << kLogPreamble
+        kLogger.warning()
                 << "Failed to configure audio stream";
         return OpenResult::FAILED;
     }
@@ -104,7 +105,7 @@ SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(const AudioSourceCon
     m_streamUnitConverter = StreamUnitConverter(getSamplingRate());
 
     if (!readProperties()) {
-        qWarning() << kLogPreamble
+        kLogger.warning()
                 << "Failed to read file properties";
         return OpenResult::FAILED;
     }
@@ -208,7 +209,7 @@ SINT SoundSourceMediaFoundation::seekSampleFrame(
                 skipSampleFrames(frameIndex - m_currentFrameIndex);
             }
             if (m_currentFrameIndex != frameIndex) {
-                qWarning() << kLogPreamble
+                kLogger.warning()
                         << "Seek to frame"
                         << frameIndex
                         << "failed";
@@ -223,7 +224,7 @@ SINT SoundSourceMediaFoundation::seekSampleFrame(
             m_currentFrameIndex = frameIndex;
         }
     } else {
-        qWarning() << kLogPreamble
+        kLogger.warning()
                 << "IMFSourceReader::SetCurrentPosition() failed"
                 << hrSetCurrentPosition;
         safeRelease(&m_pSourceReader); // kill the reader
@@ -279,7 +280,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
                         &streamPos,   // [out] LONGLONG *pllTimestamp,
                         &pSample);    // [out] IMFSample **ppSample
         if (FAILED(hrReadSample)) {
-            qWarning() << kLogPreamble
+            kLogger.warning()
                     << "IMFSourceReader::ReadSample() failed"
                     << hrReadSample
                     << "-> abort decoding";
@@ -287,7 +288,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
             break; // abort
         }
         if (dwFlags & MF_SOURCE_READERF_ERROR) {
-            qWarning() << kLogPreamble
+            kLogger.warning()
                     << "IMFSourceReader::ReadSample()"
                     << "detected stream errors"
                     << "(MF_SOURCE_READERF_ERROR)"
@@ -299,7 +300,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
             DEBUG_ASSERT(pSample == nullptr);
             break; // finished reading
         } else if (dwFlags & MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED) {
-            qWarning() << kLogPreamble
+            kLogger.warning()
                     << "IMFSourceReader::ReadSample()"
                     << "detected that the media type has changed"
                     << "(MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED)"
@@ -318,7 +319,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
         HRESULT hrGetBufferCount =
                 pSample->GetBufferCount(&dwSampleBufferCount);
         if (FAILED(hrGetBufferCount)) {
-            qWarning() << kLogPreamble
+            kLogger.warning()
                     << "IMFSample::GetBufferCount() failed"
                     << hrGetBufferCount
                     << "-> abort decoding";
@@ -329,7 +330,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
         DWORD dwSampleTotalLengthInBytes = 0;
         HRESULT hrGetTotalLength = pSample->GetTotalLength(&dwSampleTotalLengthInBytes);
         if (FAILED(hrGetTotalLength)) {
-            qWarning() << kLogPreamble
+            kLogger.warning()
                     << "IMFSample::GetTotalLength() failed"
                     << hrGetTotalLength
                     << "-> abort decoding";
@@ -346,7 +347,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
             sampleBufferCapacity *= 2;
         }
         if (m_sampleBuffer.getCapacity() < sampleBufferCapacity) {
-            qDebug() << kLogPreamble
+            kLogger.debug()
                     << "Enlarging sample buffer capacity"
                     << m_sampleBuffer.getCapacity()
                     << "->"
@@ -359,7 +360,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
             IMFMediaBuffer* pMediaBuffer = nullptr;
             HRESULT hrGetBufferByIndex = pSample->GetBufferByIndex(dwSampleBufferIndex, &pMediaBuffer);
             if (FAILED(hrGetBufferByIndex)) {
-                qWarning() << kLogPreamble
+                kLogger.warning()
                         << "IMFSample::GetBufferByIndex() failed"
                         << hrGetBufferByIndex
                         << "-> abort decoding";
@@ -374,7 +375,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
                     nullptr,
                     &lockedSampleBufferLengthInBytes);
             if (FAILED(hrLock)) {
-                qWarning() << kLogPreamble
+                kLogger.warning()
                         << "IMFMediaBuffer::Lock() failed"
                         << hrLock
                         << "-> abort decoding";
@@ -413,7 +414,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
                     writableChunk.size());
             HRESULT hrUnlock = pMediaBuffer->Unlock();
             VERIFY_OR_DEBUG_ASSERT(SUCCEEDED(hrUnlock)) {
-                qWarning() << kLogPreamble
+                kLogger.warning()
                         << "IMFMediaBuffer::Unlock() failed"
                         << hrUnlock;
                 // ignore and continue
@@ -424,7 +425,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
         safeRelease(&pSample);
         if (dwSampleBufferIndex < dwSampleBufferCount) {
             // Failed to read data from all buffers -> kill the reader
-            qWarning() << kLogPreamble
+            kLogger.warning()
                     << "Failed to read all buffered samples"
                     << "-> abort and stop decoding";
             safeRelease(&m_pSourceReader);
@@ -456,7 +457,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     hr = m_pSourceReader->SetStreamSelection(
             MF_SOURCE_READER_ALL_STREAMS, false);
     if (FAILED(hr)) {
-        qWarning() << kLogPreamble << hr
+        kLogger.warning() << hr
                 << "failed to deselect all streams";
         return false;
     }
@@ -464,7 +465,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     hr = m_pSourceReader->SetStreamSelection(
             kStreamIndex, true);
     if (FAILED(hr)) {
-        qWarning() << kLogPreamble << hr
+        kLogger.warning() << hr
                 << "failed to select first audio stream";
         return false;
     }
@@ -474,7 +475,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     hr = m_pSourceReader->GetCurrentMediaType(
             kStreamIndex, &pAudioType);
     if (FAILED(hr)) {
-        qWarning() << kLogPreamble << hr
+        kLogger.warning() << hr
                 << "failed to get current media type from stream";
         return false;
     }
@@ -484,7 +485,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
 
     hr = pAudioType->GetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND, &avgBytesPerSecond);
     if (FAILED(hr)) {
-        qWarning() << kLogPreamble << hr
+        kLogger.warning() << hr
                 << "error getting MF_MT_AUDIO_AVG_BYTES_PER_SECOND";
         return false;
     }
@@ -494,7 +495,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
 
     hr = pAudioType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
     if (FAILED(hr)) {
-        qWarning() << kLogPreamble << hr
+        kLogger.warning() << hr
                 << "failed to set major type to audio";
         safeRelease(&pAudioType);
         return false;
@@ -502,7 +503,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
 
     hr = pAudioType->SetGUID(MF_MT_SUBTYPE, MFAudioFormat_Float);
     if (FAILED(hr)) {
-        qWarning() << kLogPreamble << hr
+        kLogger.warning() << hr
                 << "failed to set subtype format to float";
         safeRelease(&pAudioType);
         return false;
@@ -510,7 +511,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
 
     hr = pAudioType->SetUINT32(MF_MT_ALL_SAMPLES_INDEPENDENT, true);
     if (FAILED(hr)) {
-        qWarning() << kLogPreamble << hr
+        kLogger.warning() << hr
                 << "failed to set all samples independent";
         safeRelease(&pAudioType);
         return false;
@@ -518,7 +519,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
 
     hr = pAudioType->SetUINT32(MF_MT_FIXED_SIZE_SAMPLES, true);
     if (FAILED(hr)) {
-        qWarning() << kLogPreamble << hr
+        kLogger.warning() << hr
                 << "failed to set fixed size samples";
         safeRelease(&pAudioType);
         return false;
@@ -527,7 +528,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     hr = pAudioType->SetUINT32(
             MF_MT_AUDIO_BITS_PER_SAMPLE, kBitsPerSample);
     if (FAILED(hr)) {
-        qWarning() << kLogPreamble << hr
+        kLogger.warning() << hr
                 << "failed to set bits per sample:"
                 << kBitsPerSample;
         safeRelease(&pAudioType);
@@ -538,7 +539,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     hr = pAudioType->SetUINT32(
             MF_MT_SAMPLE_SIZE, sampleSize);
     if (FAILED(hr)) {
-        qWarning() << kLogPreamble << hr
+        kLogger.warning() << hr
                 << "failed to set sample size:"
                 << sampleSize;
         safeRelease(&pAudioType);
@@ -549,7 +550,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     hr = pAudioType->GetUINT32(
             MF_MT_AUDIO_NUM_CHANNELS, &numChannels);
     if (FAILED(hr)) {
-        qWarning() << kLogPreamble << hr
+        kLogger.warning() << hr
                 << "failed to get actual number of channels";
         return false;
     } else {
@@ -560,7 +561,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
         hr = pAudioType->SetUINT32(
                 MF_MT_AUDIO_NUM_CHANNELS, numChannels);
         if (FAILED(hr)) {
-            qWarning() << kLogPreamble << hr
+            kLogger.warning() << hr
                     << "failed to set number of channels:"
                     << numChannels;
             safeRelease(&pAudioType);
@@ -573,7 +574,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     hr = pAudioType->GetUINT32(
             MF_MT_AUDIO_SAMPLES_PER_SECOND, &samplesPerSecond);
     if (FAILED(hr)) {
-        qWarning() << kLogPreamble << hr
+        kLogger.warning() << hr
                 << "failed to get samples per second";
         return false;
     } else {
@@ -584,7 +585,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
         hr = pAudioType->SetUINT32(
                 MF_MT_AUDIO_SAMPLES_PER_SECOND, samplesPerSecond);
         if (FAILED(hr)) {
-            qWarning() << kLogPreamble << hr
+            kLogger.warning() << hr
                     << "failed to set samples per second:"
                     << samplesPerSecond;
             safeRelease(&pAudioType);
@@ -598,7 +599,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     hr = m_pSourceReader->SetCurrentMediaType(
             kStreamIndex, nullptr, pAudioType);
     if (FAILED(hr)) {
-        qWarning() << kLogPreamble << hr
+        kLogger.warning() << hr
                 << "failed to set media type";
         safeRelease(&pAudioType);
         return false;
@@ -611,7 +612,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     hr = m_pSourceReader->GetCurrentMediaType(
             kStreamIndex, &pAudioType);
     if (FAILED(hr)) {
-        qWarning() << kLogPreamble << hr
+        kLogger.warning() << hr
                 << "failed to retrieve completed media type";
         return false;
     }
@@ -620,7 +621,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     hr = m_pSourceReader->SetStreamSelection(
             kStreamIndex, true);
     if (FAILED(hr)) {
-        qWarning() << kLogPreamble << hr
+        kLogger.warning() << hr
                 << "failed to select first audio stream (again)";
         return false;
     }
@@ -628,7 +629,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     hr = pAudioType->GetUINT32(
             MF_MT_AUDIO_NUM_CHANNELS, &numChannels);
     if (FAILED(hr)) {
-        qWarning() << kLogPreamble << hr
+        kLogger.warning() << hr
                 << "failed to get actual number of channels";
         return false;
     }
@@ -637,7 +638,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     hr = pAudioType->GetUINT32(
             MF_MT_AUDIO_SAMPLES_PER_SECOND, &samplesPerSecond);
     if (FAILED(hr)) {
-        qWarning() << kLogPreamble << hr
+        kLogger.warning() << hr
                 << "failed to get the actual sample rate";
         return false;
     }
@@ -646,14 +647,14 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     UINT32 leftoverBufferSizeInBytes = 0;
     hr = pAudioType->GetUINT32(MF_MT_SAMPLE_SIZE, &leftoverBufferSizeInBytes);
     if (FAILED(hr)) {
-        qWarning() << kLogPreamble << hr
+        kLogger.warning() << hr
                 << "failed to get sample buffer size (in bytes)";
         return false;
     }
     DEBUG_ASSERT((leftoverBufferSizeInBytes % kBytesPerSample) == 0);
     m_sampleBuffer.resetCapacity(leftoverBufferSizeInBytes / kBytesPerSample);
     DEBUG_ASSERT(m_sampleBuffer.getCapacity() > 0);
-    qDebug() << kLogPreamble
+    kLogger.debug()
             << "Sample buffer capacity"
             << m_sampleBuffer.getCapacity();
 
@@ -672,11 +673,11 @@ bool SoundSourceMediaFoundation::readProperties() {
     hr = m_pSourceReader->GetPresentationAttribute(MF_SOURCE_READER_MEDIASOURCE,
         MF_PD_DURATION, &prop);
     if (FAILED(hr)) {
-        qWarning() << kLogPreamble << "error getting duration";
+        kLogger.warning() << "error getting duration";
         return false;
     }
     setFrameCount(m_streamUnitConverter.toFrameIndex(prop.hVal.QuadPart));
-    qDebug() << kLogPreamble << "Frame count" << getFrameCount();
+    kLogger.debug() << "Frame count" << getFrameCount();
     PropVariantClear(&prop);
 
    

@@ -14,38 +14,184 @@
         <SizePolicy>min,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
+
           <WidgetGroup>
+            <ObjectName>DeckControlsSplitWaveforms</ObjectName>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:left_deck_mixer_controls.xml">
-                <SetVariable name="i">3</SetVariable>
-              </Template>
+
+              <WidgetGroup>
+                <ObjectName>DeckControlsSplitWaveforms2Decks</ObjectName>
+                <Layout>horizontal</Layout>
+                <Children>
+
+                  <Template src="skin:left_deck_mixer_controls.xml">
+                    <SetVariable name="i">1</SetVariable>
+                  </Template>
+
+                  <Template src="skin:vumeter_master.xml"/>
+
+                  <Template src="skin:right_deck_mixer_controls.xml">
+                    <SetVariable name="i">2</SetVariable>
+                  </Template>
+
+                </Children>
+                <Connection>
+                  <ConfigKey>[Master],show_4decks</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                  <Transform>
+                    <Not/>
+                  </Transform>
+                </Connection>
+              </WidgetGroup> <!-- DeckControlsSplitWaveforms2Decks -->
+
+              <WidgetGroup>
+                <ObjectName>DeckControlsSplitWaveforms4Decks</ObjectName>
+                <Layout>horizontal</Layout>
+                <Children>
+
+                  <Template src="skin:left_deck_mixer_controls.xml">
+                    <SetVariable name="i">3</SetVariable>
+                  </Template>
+                  <Template src="skin:left_deck_mixer_controls.xml">
+                    <SetVariable name="i">1</SetVariable>
+                  </Template>
+
+                  <Template src="skin:vumeter_master.xml"/>
+
+                  <Template src="skin:right_deck_mixer_controls.xml">
+                    <SetVariable name="i">2</SetVariable>
+                  </Template>
+                  <Template src="skin:right_deck_mixer_controls.xml">
+                    <SetVariable name="i">4</SetVariable>
+                  </Template>
+
+                </Children>
+                <Connection>
+                  <ConfigKey>[Master],show_4decks</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup> <!-- DeckControlsSplitWaveforms4Decks -->
+
             </Children>
             <Connection>
-              <ConfigKey>[Master],show_4decks</ConfigKey>
+              <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform>
+                <Not/>
+              </Transform>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>DeckControlsStackedWaveforms</ObjectName>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>DeckControlsStackedWaveforms2Decks</ObjectName>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:left_deck_mixer_controls.xml">
+                    <SetVariable name="i">1</SetVariable>
+                  </Template>
+
+                  <Template src="skin:vumeter_master.xml"/>
+
+                  <Template src="skin:right_deck_mixer_controls.xml">
+                    <SetVariable name="i">2</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Master],show_4decks</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                  <Transform>
+                    <Not/>
+                  </Transform>
+                </Connection>
+              </WidgetGroup> <!-- DeckControlsStackedWaveforms2Decks -->
+
+              <WidgetGroup>
+                <ObjectName>DeckControlsStackedWaveforms4Decks</ObjectName>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <Children>
+
+                      <WidgetGroup>
+                        <ObjectName>DeckControlsStackedWaveforms4DecksNoEQs</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <Children>
+                          <Template src="skin:left_deck_mixer_controls.xml">
+                            <SetVariable name="i">3</SetVariable>
+                          </Template>
+                          <Template src="skin:left_deck_mixer_controls.xml">
+                            <SetVariable name="i">1</SetVariable>
+                          </Template>
+
+                          <Template src="skin:vumeter_master.xml"/>
+
+                          <Template src="skin:right_deck_mixer_controls.xml">
+                            <SetVariable name="i">2</SetVariable>
+                          </Template>
+                          <Template src="skin:right_deck_mixer_controls.xml">
+                            <SetVariable name="i">4</SetVariable>
+                          </Template>
+                        </Children>
+                        <Connection>
+                          <ConfigKey>[Master],show_eqs</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                          <Transform>
+                            <Not/>
+                          </Transform>
+                        </Connection>
+                      </WidgetGroup> <!-- DeckControlsStackedWaveforms4DecksNoEQs -->
+
+                      <WidgetGroup>
+                        <ObjectName>DeckControlsStackedWaveforms4DecksWithEQs</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <Children>
+                          <Template src="skin:deck_mixer_controls_condensed_left.xml">
+                            <SetVariable name="i">3</SetVariable>
+                          </Template>
+                          <Template src="skin:deck_mixer_controls_condensed_left.xml">
+                            <SetVariable name="i">1</SetVariable>
+                          </Template>
+
+                          <Template src="skin:vumeter_master.xml"/>
+
+                          <Template src="skin:deck_mixer_controls_condensed_right.xml">
+                            <SetVariable name="i">2</SetVariable>
+                          </Template>
+                          <Template src="skin:deck_mixer_controls_condensed_right.xml">
+                            <SetVariable name="i">4</SetVariable>
+                          </Template>
+                        </Children>
+                        <Connection>
+                          <ConfigKey>[Master],show_eqs</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup> <!-- DeckControlsStackedWaveforms4DecksWithEQs -->
+
+                    </Children>
+                  </WidgetGroup> <!-- DeckControlsStackedWaveforms4Decks -->
+
+                </Children>
+                <Connection>
+                  <ConfigKey>[Master],show_4decks</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+            </Children>
+            <Connection>
+              <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
-          <Template src="skin:left_deck_mixer_controls.xml">
-            <SetVariable name="i">1</SetVariable>
-          </Template>
-          <Template src="skin:right_deck_mixer_controls.xml">
-            <SetVariable name="i">2</SetVariable>
-          </Template>
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <Children>
-              <Template src="skin:right_deck_mixer_controls.xml">
-                <SetVariable name="i">4</SetVariable>
-              </Template>
-            </Children>
-            <Connection>
-              <ConfigKey>[Master],show_4decks</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
+
         </Children>
-      </WidgetGroup>
+      </WidgetGroup> <!-- DeckControlsStackedWaveforms -->
 
       <WidgetGroup>
         <ObjectName>CrossfaderContainer</ObjectName>
@@ -108,21 +254,15 @@
 
           </Children>
           <Connection>
-            <ConfigKey>[Deere],hide_crossfader</ConfigKey>
+            <ConfigKey>[Deere],show_crossfader</ConfigKey>
             <BindProperty>visible</BindProperty>
-            <Transform>
-              <Not/>
-            </Transform>
           </Connection>
       </WidgetGroup>
 
     </Children>
     <Connection>
-      <ConfigKey>[Master],hide_mixer</ConfigKey>
+      <ConfigKey>[Master],show_mixer</ConfigKey>
       <BindProperty>visible</BindProperty>
-      <Transform>
-        <Not/>
-      </Transform>
     </Connection>
   </WidgetGroup>
 </Template>
