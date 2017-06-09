@@ -85,7 +85,15 @@ Variables:
                 <SetVariable name="Color">tiny_red</SetVariable>
               </Template>
 
-              <WidgetGroup><Size>1me,1min</Size><Children/></WidgetGroup>
+              <!-- Instead of a plain spacer I chose <TrackProperty> here,
+                  so that tracks from library can be dropped on 'empty space' -->
+              <TrackProperty>
+                <ObjectName>Text33</ObjectName>
+                <TooltipId>text</TooltipId>
+                <Size>1me,1min</Size>
+                <Group><Variable name="group"/></Group>
+                <Property>durationFormatted</Property>
+              </TrackProperty>
 
               <Template src="skin:button_3state.xml">
                 <SetVariable name="TooltipId">orientation</SetVariable>

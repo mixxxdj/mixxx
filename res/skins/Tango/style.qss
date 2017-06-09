@@ -1628,6 +1628,10 @@ QToolTip {
 #Spacer58 {
   background-color: #585858;
 }
+#Text33 {
+  color: #333333;
+  font-size: 1px/1px;
+}
 
 /*################################################################
  ######  Library styling is hard  ###############################
