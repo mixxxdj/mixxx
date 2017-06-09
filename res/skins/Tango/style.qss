@@ -189,18 +189,20 @@ WWidgetGroup {
 }
 
 #BeatgridButtonToggler {
+  background-color: #333333;
+  border-top: 1px solid #0f0f0f;
 }
   #BeatgridButtonToggler[displayValue="0"] {
-    background: transparent url(skin:/buttons/btn_arrow_left_thin.svg) no-repeat top center;
+    image: url(skin:/buttons/btn_arrow_left_thin.svg) no-repeat center center;
   }
   #BeatgridButtonToggler[displayValue="0"]:hover {
-    background: transparent url(skin:/buttons/btn_arrow_left_thin_hover.svg) no-repeat top center;
+    image: url(skin:/buttons/btn_arrow_left_thin_hover.svg) no-repeat center center;
   }
 #BeatgridButtonToggler[displayValue="1"] {
-  background: transparent url(skin:/buttons/btn_arrow_right_thin.svg) no-repeat top center;
+  image: url(skin:/buttons/btn_arrow_right_thin.svg) no-repeat center center;
 }
   #BeatgridButtonToggler[displayValue="1"]:hover {
-    background: transparent url(skin:/buttons/btn_arrow_right_thin_hover.svg) no-repeat top center;
+    image: url(skin:/buttons/btn_arrow_right_thin_hover.svg) no-repeat center center;
   }
 
 #BeatgridButtonGridBox {

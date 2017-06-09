@@ -18,7 +18,7 @@ Variables:
     <ObjectName>WaveformContainer<Variable name="chanNum"/></ObjectName>
     <Layout>horizontal</Layout>
     <Children>
-      <Visual><!-- Waveform * Netbook mode-->
+      <Visual>
         <TooltipId>waveform_display</TooltipId>
         <ObjectName>Waveform</ObjectName>
         <Size>0me,22me</Size>
@@ -78,7 +78,7 @@ Variables:
           <Color>#FF001C</Color>
           <TextColor>#FFFFFF</TextColor>
         </Mark>
-      </Visual><!-- /Waveform * Netbook mode-->
+      </Visual>
 
       <WidgetGroup><!-- Container for beatgrid buttons -->
         <ObjectName>BeatgridButtonGridBox</ObjectName>
@@ -163,7 +163,7 @@ Variables:
 
       <Template src="skin:button_2state_persist.xml">
         <SetVariable name="ObjectName">BeatgridButtonToggler</SetVariable>
-        <SetVariable name="Size">11f,22me</SetVariable>
+        <SetVariable name="Size">20f,22me</SetVariable>
         <SetVariable name="ConfigKeyPerm">[Tango],beatgrid_buttons</SetVariable>
       </Template>
 
