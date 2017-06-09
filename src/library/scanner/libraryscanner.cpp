@@ -15,10 +15,14 @@
 
 
 namespace {
-    // TODO(rryan) make configurable
-    const int kScannerThreadPoolSize = 1;
 
-    mixxx::Logger kLogger("LibraryScanner");
+// TODO(rryan) make configurable
+const int kScannerThreadPoolSize = 1;
+
+mixxx::Logger kLogger("LibraryScanner");
+
+QAtomicInt instanceCounter(0);
+
 } // anonymous namespace
 
 LibraryScanner::LibraryScanner(TrackCollection* pTrackCollection,
@@ -37,8 +41,8 @@ LibraryScanner::LibraryScanner(TrackCollection* pTrackCollection,
     moveToThread(this);
     m_pool.moveToThread(this);
 
-    unsigned static id = 0; // the id of this LibraryScanner, for debugging purposes
-    setObjectName(QString("LibraryScanner %1").arg(++id));
+    const int instanceId = instanceCounter.fetchAndAddAcquire(1) + 1;
+    setObjectName(QString("LibraryScanner %1").arg(instanceId));
 
     m_pool.setMaxThreadCount(kScannerThreadPoolSize);
 
