@@ -2,6 +2,7 @@
 #include <QStringList>
 #include <QFileInfoList>
 #include <QFileInfo>
+#include <QDebug>
 
 #include "preferences/broadcastsettings.h"
 #include "broadcast/defs_broadcast.h"
@@ -32,6 +33,7 @@ void BroadcastSettings::loadProfiles() {
     if(!profilesFolder.exists()) {
         // TODO(Palakis, June 9th 2017):
         // Is there a better way to do this?
+        qDebug() << "Profiles folder doesn't exist. Creating it." << endl;
         profilesFolder.mkpath(profilesFolder.absolutePath());
     }
 
@@ -40,6 +42,7 @@ void BroadcastSettings::loadProfiles() {
             profilesFolder.entryInfoList(nameFilters, QDir::Files, QDir::Name);
 
     if(files.count() > 0) {
+        qDebug() << "Found " << files.count() << " profiles.";
         // Load profiles from filesystem
         for(QFileInfo fileInfo : files) {
             BroadcastProfile* profile =
@@ -49,6 +52,8 @@ void BroadcastSettings::loadProfiles() {
                m_profiles.push_back(profile);
         }
     } else {
+        qDebug() << "No profiles found. Creating default profile." << endl;
+
         // Create default profile
         BroadcastProfile* defaultProfile =
                 new BroadcastProfile(kDefaultProfile);
