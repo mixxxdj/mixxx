@@ -9,8 +9,11 @@
 class BroadcastProfile {
     public:
       explicit BroadcastProfile(const QString& profileName);
-      void save();
-      void deleteFile();
+      void save(const QString& filename);
+
+      static BroadcastProfile* BroadcastProfile::loadFromFile(const QString& filename);
+      static bool BroadcastProfile::checkNameCompliance(const QString& str);
+
       void setProfileName(const QString& profileName);
       QString getProfileName() const;
 
@@ -97,9 +100,8 @@ class BroadcastProfile {
 
     private:
       void setDefaultValues();
-      void loadValues();
-      QString getFilename();
-      bool fileExists();
+      void loadValues(const QString& filename);
+      void defaultValues();
 
       QString m_profileName;
 

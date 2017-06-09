@@ -1,8 +1,10 @@
 // broadcastprofile.cpp
-// Create June 2nd 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
+// Created June 2nd 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
 
 #include <QFile>
+#include <QFileInfo>
 #include <QTextStream>
+#include <QRegExp>
 #include <QDebug>
 #include "util/xml.h"
 #include "broadcast/defs_broadcast.h"
@@ -56,31 +58,32 @@ const QString kDefaultStreamDesc =
         QObject::tr("This stream is online for testing purposes!");
 const QString kDefaultStreamGenre = QObject::tr("Live Mix");
 const bool kDefaultStreamPublic = false;
+const QRegExp kForbiddenChars = QRegExp("[<>:\"/\\\|\?\*]");
 } // anonymous namespace
 
 BroadcastProfile::BroadcastProfile(const QString& profileName) {
-    // TODO(Palakis, June 2nd 2017):
-    //   Strip forbidden characters from the profile name
-    m_profileName = QString(profileName);
-
-    // Try to load values from XML file, use default values otherwise
-    loadValues();
+    defaultValues();
+    setProfileName(profileName);
 }
 
-QString BroadcastProfile::getFilename()
-{
-    return QString("broadcast_profile/") + m_profileName + QString(".bcp.xml");
+bool BroadcastProfile::checkNameCompliance(const QString& str) {
+    return str.contains(kForbiddenChars);
 }
 
-bool BroadcastProfile::fileExists() {
-    return QFile::exists(getFilename());
+BroadcastProfile* BroadcastProfile::loadFromFile(const QString& filename) {
+    QFileInfo xmlFile(filename);
+    if(!xmlFile.exists())
+        return nullptr;
+
+    QString profileName = xmlFile.baseName();
+
+    BroadcastProfile* profile = new BroadcastProfile(profileName);
+    profile->loadValues(filename);
+
+    return profile;
 }
 
-void BroadcastProfile::deleteFile() {
-    QFile::remove(getFilename());
-}
-
-void BroadcastProfile::setDefaultValues() {
+void BroadcastProfile::defaultValues() {
     m_enabled = true;
 
     m_host = QString(),
@@ -116,13 +119,13 @@ void BroadcastProfile::setDefaultValues() {
     m_maximumRetries = kDefaultMaximumRetries;
 }
 
-void BroadcastProfile::loadValues() {
-    if(!fileExists()) {
+void BroadcastProfile::loadValues(const QString& filename) {
+    if(!QFile::exists(filename)) {
         setDefaultValues();
         return;
     }
 
-    QDomElement xmlRoot = XmlParse::openXMLFile(getFilename(), kDocumentName);
+    QDomElement xmlRoot = XmlParse::openXMLFile(filename, kDocumentName);
 
     m_enabled = (bool)XmlParse::selectNodeInt(xmlRoot, kEnabled);
 
@@ -167,7 +170,7 @@ void BroadcastProfile::loadValues() {
             (bool)XmlParse::selectNodeInt(xmlRoot, kMetadataFormat);
 }
 
-void BroadcastProfile::save() {
+void BroadcastProfile::save(const QString& filename) {
     QDomDocument doc(kDocumentName);
     QDomElement docRoot = doc.documentElement();
 
@@ -219,7 +222,7 @@ void BroadcastProfile::save() {
                          QString::number((int)m_oggDynamicUpdate));
 
 
-    QFile xmlFile(getFilename());
+    QFile xmlFile(filename);
     xmlFile.open(QIODevice::WriteOnly | QIODevice::Text);
 
     QTextStream fileStream(&xmlFile);
@@ -229,13 +232,17 @@ void BroadcastProfile::save() {
 
 void BroadcastProfile::setProfileName(const QString &profileName) {
     m_profileName = QString(profileName);
+
+    // Replace occurences of forbidden characters with a space
+    // to avoid problems with the underlying filesystem.
+    // Char list comes from MSDN article "Naming Files, Paths, and Namespaces".
+    m_profileName.replace(kForbiddenChars, " ");
 }
 
 QString BroadcastProfile::getProfileName() const {
     return m_profileName;
 }
 
-// Unused, but we keep this to reserve the name
 bool BroadcastProfile::getEnabled() const {
     return m_enabled;
 }

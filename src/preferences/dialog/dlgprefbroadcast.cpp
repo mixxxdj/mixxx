@@ -11,6 +11,8 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
           m_settings(_config) {
     setupUi(this);
 
+    BroadcastProfile* profile = m_settings.getCurrentProfile();
+
     m_pBroadcastEnabled = new ControlProxy(
             BROADCAST_PREF_KEY, "enabled", this);
     m_pBroadcastEnabled->connectValueChanged(
@@ -26,31 +28,31 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
     comboBoxServerType->addItem(tr("Shoutcast 1"), BROADCAST_SERVER_SHOUTCAST);
     comboBoxServerType->addItem(tr("Icecast 1"), BROADCAST_SERVER_ICECAST1);
 
-    int tmp_index = comboBoxServerType->findData(m_settings.getServertype());
+    int tmp_index = comboBoxServerType->findData(profile->getServertype());
     if (tmp_index < 0) { // Set default if invalid.
         tmp_index = 0;
     }
     comboBoxServerType->setCurrentIndex(tmp_index);
 
     // Mountpoint
-    mountpoint->setText(m_settings.getMountpoint());
+    mountpoint->setText(profile->getMountpoint());
 
     // Host
-    host->setText(m_settings.getHost());
+    host->setText(profile->getHost());
 
     // Port
-    QString portString = QString::number(m_settings.getPort());
+    QString portString = QString::number(profile->getPort());
     port->setText(portString);
 
     // Login
-    login->setText(m_settings.getLogin());
+    login->setText(profile->getLogin());
 
     // Password
-    password->setText(m_settings.getPassword());
+    password->setText(profile->getPassword());
 
 
     // Enable automatic reconnect
-    bool enableReconnect = m_settings.getEnableReconnect();
+    bool enableReconnect = profile->getEnableReconnect();
     checkBoxEnableReconnect->setChecked(enableReconnect);
     widgetReconnectControls->setEnabled(enableReconnect);
     connect(checkBoxEnableReconnect, SIGNAL(stateChanged(int)),
@@ -58,13 +60,13 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
 
 
     // Wait until first attempt
-    spinBoxFirstDelay->setValue(m_settings.getReconnectFirstDelay());
+    spinBoxFirstDelay->setValue(profile->getReconnectFirstDelay());
 
     // Retry Delay
-    spinBoxReconnectPeriod->setValue(m_settings.getReconnectPeriod());
+    spinBoxReconnectPeriod->setValue(profile->getReconnectPeriod());
 
     // Use Maximum Retries
-    bool limitConnects = m_settings.getLimitReconnects();
+    bool limitConnects = profile->getLimitReconnects();
     checkBoxLimitReconnects->setChecked(
             limitConnects);
     spinBoxMaximumRetries->setEnabled(limitConnects);
@@ -72,23 +74,23 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
             this, SLOT(checkBoxLimitReconnectsChanged(int)));
 
     // Maximum Retries
-    spinBoxMaximumRetries->setValue(m_settings.getMaximumRetries());
+    spinBoxMaximumRetries->setValue(profile->getMaximumRetries());
 
 
     // Stream "public" checkbox
-    stream_public->setChecked(m_settings.getStreamPublic());
+    stream_public->setChecked(profile->getStreamPublic());
 
     // Stream name
-    stream_name->setText(m_settings.getStreamName());
+    stream_name->setText(profile->getStreamName());
 
     // Stream website
-    stream_website->setText(m_settings.getStreamWebsite());
+    stream_website->setText(profile->getStreamWebsite());
 
     // Stream description
-    stream_desc->setText(m_settings.getStreamDesc());
+    stream_desc->setText(profile->getStreamDesc());
 
     // Stream genre
-    stream_genre->setText(m_settings.getStreamGenre());
+    stream_genre->setText(profile->getStreamGenre());
 
     // Encoding bitrate combobox
     QString kbps_pattern = QString("%1 kbps");
@@ -110,7 +112,7 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
                 kbps_pattern.arg(QString::number(kbps)), kbps);
     }
 
-    tmp_index = comboBoxEncodingBitrate->findData(m_settings.getBitrate());
+    tmp_index = comboBoxEncodingBitrate->findData(profile->getBitrate());
     if (tmp_index < 0) {
         tmp_index = comboBoxEncodingBitrate->findData(BROADCAST_BITRATE_128KBPS);
     }
@@ -119,7 +121,7 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
     // Encoding format combobox
     comboBoxEncodingFormat->addItem(tr("MP3"), BROADCAST_FORMAT_MP3);
     comboBoxEncodingFormat->addItem(tr("Ogg Vorbis"), BROADCAST_FORMAT_OV);
-    tmp_index = comboBoxEncodingFormat->findData(m_settings.getFormat());
+    tmp_index = comboBoxEncodingFormat->findData(profile->getFormat());
     if (tmp_index < 0) {
         // Set default of MP3 if invalid.
         tmp_index = 0;
@@ -133,23 +135,23 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
         static_cast<int>(EncoderSettings::ChannelMode::MONO));
     comboBoxEncodingChannels->addItem(tr("Stereo"),
         static_cast<int>(EncoderSettings::ChannelMode::STEREO));
-    tmp_index = comboBoxEncodingChannels->findData(m_settings.getChannels());
+    tmp_index = comboBoxEncodingChannels->findData(profile->getChannels());
     if (tmp_index < 0) { // Set default to automatic if invalid.
         tmp_index = 0;
     }
     comboBoxEncodingChannels->setCurrentIndex(tmp_index);
 
     // Metadata format
-    metadata_format->setText(m_settings.getMetadataFormat());
+    metadata_format->setText(profile->getMetadataFormat());
 
     // Static artist
-    custom_artist->setText(m_settings.getCustomArtist());
+    custom_artist->setText(profile->getCustomArtist());
 
     // Static title
-    custom_title->setText(m_settings.getCustomTitle());
+    custom_title->setText(profile->getCustomTitle());
 
     // "Enable static artist and title" checkbox
-    bool enableMetadata = m_settings.getEnableMetadata();
+    bool enableMetadata = profile->getEnableMetadata();
     enableCustomMetadata->setChecked(enableMetadata);
     custom_artist->setEnabled(enableMetadata);
     custom_title->setEnabled(enableMetadata);
@@ -158,11 +160,11 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
 
     // "Enable UTF-8 metadata" checkbox
     // TODO(rryan): allow arbitrary codecs in the future?
-    QString charset = m_settings.getMetadataCharset();
+    QString charset = profile->getMetadataCharset();
     enableUtf8Metadata->setChecked(charset == "UTF-8");
 
     // OGG "dynamicupdate" checkbox
-    ogg_dynamicupdate->setChecked(m_settings.getOggDynamicUpdate());
+    ogg_dynamicupdate->setChecked(profile->getOggDynamicUpdate());
 
     slotApply();
 }
@@ -171,42 +173,44 @@ DlgPrefBroadcast::~DlgPrefBroadcast() {
 }
 
 void DlgPrefBroadcast::slotResetToDefaults() {
+    BroadcastProfile dProfile("dontsave");
+
     // Make sure to keep these values in sync with the constructor.
     enableLiveBroadcasting->setChecked(false);
     comboBoxServerType->setCurrentIndex(0);
-    mountpoint->setText(m_settings.getDefaultMountpoint());
-    host->setText(m_settings.getDefaultHost());
-    int iPort = m_settings.getDefaultPort();
+    mountpoint->setText(dProfile.getMountpoint());
+    host->setText(dProfile.getHost());
+    int iPort = dProfile.getPort();
     VERIFY_OR_DEBUG_ASSERT(iPort != 0 && iPort <= 0xffff) {
         port->setText(QString());
     } else {
         port->setText(QString::number(iPort));
     }
-    login->setText(m_settings.getDefaultLogin());
-    password->setText(m_settings.getDefaultPassword());
+    login->setText(dProfile.getLogin());
+    password->setText(dProfile.getPassword());
 
-    checkBoxEnableReconnect->setChecked(m_settings.getDefaultEnableReconnect());
+    checkBoxEnableReconnect->setChecked(dProfile.getEnableReconnect());
     widgetReconnectControls->setEnabled(true);
-    spinBoxFirstDelay->setValue(m_settings.getDefaultReconnectFirstDelay());
-    spinBoxReconnectPeriod->setValue(m_settings.getDefaultReconnectPeriod());
-    checkBoxLimitReconnects->setChecked(m_settings.getDefaultLimitReconnects());
-    spinBoxMaximumRetries->setValue(m_settings.getDefaultMaximumRetries());
+    spinBoxFirstDelay->setValue(dProfile.getReconnectFirstDelay());
+    spinBoxReconnectPeriod->setValue(dProfile.getReconnectPeriod());
+    checkBoxLimitReconnects->setChecked(dProfile.getLimitReconnects());
+    spinBoxMaximumRetries->setValue(dProfile.getMaximumRetries());
     spinBoxMaximumRetries->setEnabled(true);
-    stream_name->setText(m_settings.getDefaultStreamName());
-    stream_website->setText(m_settings.getDefaultStreamWebsite());
-    stream_desc->setText(m_settings.getDefaultStreamDesc());
-    stream_genre->setText(m_settings.getDefaultStreamGenre());
-    stream_public->setChecked(m_settings.getDefaultStreamPublic());
-    ogg_dynamicupdate->setChecked(m_settings.getDefaultOggDynamicUpdate());
+    stream_name->setText(dProfile.getStreamName());
+    stream_website->setText(dProfile.getStreamWebsite());
+    stream_desc->setText(dProfile.getStreamDesc());
+    stream_genre->setText(dProfile.getStreamGenre());
+    stream_public->setChecked(dProfile.getStreamPublic());
+    ogg_dynamicupdate->setChecked(dProfile.getOggDynamicUpdate());
     comboBoxEncodingBitrate->setCurrentIndex(comboBoxEncodingBitrate->findData(
-            m_settings.getDefaultBitrate()));
+            dProfile.getBitrate()));
     comboBoxEncodingFormat->setCurrentIndex(0);
     comboBoxEncodingChannels->setCurrentIndex(0);
     enableUtf8Metadata->setChecked(false);
     enableCustomMetadata->setChecked(false);
-    metadata_format->setText(m_settings.getDefaultMetadataFormat());
-    custom_artist->setText(m_settings.getDefaultCustomArtist());
-    custom_title->setText(m_settings.getDefaultCustomTitle());
+    metadata_format->setText(dProfile.getMetadataFormat());
+    custom_artist->setText(dProfile.getCustomArtist());
+    custom_title->setText(dProfile.getCustomTitle());
     custom_artist->setEnabled(false);
     custom_title->setEnabled(false);
 }
@@ -235,52 +239,56 @@ void DlgPrefBroadcast::slotApply()
         this->setEnabled(true);
     }
 
+    BroadcastProfile* profile = m_settings.getCurrentProfile();
+
     // Combo boxes, make sure to load their data not their display strings.
-    m_settings.setServertype(comboBoxServerType->itemData(
+    profile->setServertype(comboBoxServerType->itemData(
             comboBoxServerType->currentIndex()).toString());
-    m_settings.setBitrate(comboBoxEncodingBitrate->itemData(
+    profile->setBitrate(comboBoxEncodingBitrate->itemData(
             comboBoxEncodingBitrate->currentIndex()).toInt());
-    m_settings.setFormat(comboBoxEncodingFormat->itemData(
+    profile->setFormat(comboBoxEncodingFormat->itemData(
             comboBoxEncodingFormat->currentIndex()).toString());
-    m_settings.setChannels(comboBoxEncodingChannels->itemData(
+    profile->setChannels(comboBoxEncodingChannels->itemData(
             comboBoxEncodingChannels->currentIndex()).toInt());
 
     mountpoint->setText(mountpoint->text().trimmed());
-    m_settings.setMountPoint(mountpoint->text());
-    m_settings.setHost(host->text());
-    m_settings.setPort(port->text().toInt());
-    m_settings.setLogin(login->text());
-    m_settings.setPassword(password->text());
-    m_settings.setEnableReconnect(checkBoxEnableReconnect->isChecked());
-    m_settings.setReconnectFirstDelay(spinBoxFirstDelay->value());
-    m_settings.setReconnectPeriod(spinBoxReconnectPeriod->value());
-    m_settings.setLimitReconnects(checkBoxLimitReconnects->isChecked());
-    m_settings.setMaximumRetries(spinBoxMaximumRetries->value());
-    m_settings.setStreamName(stream_name->text());
-    m_settings.setStreamWebsite(stream_website->text());
-    m_settings.setStreamDesc(stream_desc->toPlainText());
-    m_settings.setStreamGenre(stream_genre->text());
-    m_settings.setStreamPublic(stream_public->isChecked());
-    m_settings.setOggDynamicUpdate(ogg_dynamicupdate->isChecked());
+    profile->setMountPoint(mountpoint->text());
+    profile->setHost(host->text());
+    profile->setPort(port->text().toInt());
+    profile->setLogin(login->text());
+    profile->setPassword(password->text());
+    profile->setEnableReconnect(checkBoxEnableReconnect->isChecked());
+    profile->setReconnectFirstDelay(spinBoxFirstDelay->value());
+    profile->setReconnectPeriod(spinBoxReconnectPeriod->value());
+    profile->setLimitReconnects(checkBoxLimitReconnects->isChecked());
+    profile->setMaximumRetries(spinBoxMaximumRetries->value());
+    profile->setStreamName(stream_name->text());
+    profile->setStreamWebsite(stream_website->text());
+    profile->setStreamDesc(stream_desc->toPlainText());
+    profile->setStreamGenre(stream_genre->text());
+    profile->setStreamPublic(stream_public->isChecked());
+    profile->setOggDynamicUpdate(ogg_dynamicupdate->isChecked());
 
     QString charset = "";
     if (enableUtf8Metadata->isChecked()) {
         charset = "UTF-8";
     }
-    QString current_charset = m_settings.getMetadataCharset();
+    QString current_charset = profile->getMetadataCharset();
 
     // Only allow setting the config value if the current value is either empty
     // or "UTF-8". This way users can customize the charset to something else by
     // setting the value in their mixxx.cfg. Not sure if this will be useful but
     // it's good to leave the option open.
     if (current_charset.length() == 0 || current_charset == "UTF-8") {
-        m_settings.setMetadataCharset(charset);
+        profile->setMetadataCharset(charset);
     }
 
-    m_settings.setEnableMetadata(enableCustomMetadata->isChecked());
-    m_settings.setCustomArtist(custom_artist->text());
-    m_settings.setCustomTitle(custom_title->text());
-    m_settings.setMetadataFormat(metadata_format->text());
+    profile->setEnableMetadata(enableCustomMetadata->isChecked());
+    profile->setCustomArtist(custom_artist->text());
+    profile->setCustomTitle(custom_title->text());
+    profile->setMetadataFormat(metadata_format->text());
+
+    m_settings.saveAll();
 }
 
 void DlgPrefBroadcast::broadcastEnabledChanged(double value) {
