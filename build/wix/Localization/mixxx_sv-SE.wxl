@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="sv-se" Codepage="1252"
+                 xmlns="http://schemas.microsoft.com/wix/2006/localization">
+
+  <!-- ..................................................... -->
+  <!-- This wxl file has been auto generated from a po file  -->
+  <!-- using https://github.com/sblaisot/wxl-po-tools        -->
+  <!-- Source File: po/sv-SE.po                              -->
+  <!-- ..................................................... -->
+
+  <!-- This contains the LangID and should be translated to reflect the correct LangID. -->
+  <!-- Supported language and codepage codes can be found here: https://msdn.microsoft.com/en-us/goglobal/bb964664.aspx -->
+  <String Id="Language">1053</String>
+
+
+  <!-- Programm informations -->
+  <String Id="ApplicationName">Mixxx</String>
+  <String Id="ManufacturerName">Mixxx</String>
+  <String Id="ManufacturerFullName">Mixxx-utvecklingsteamet</String>
+  <String Id="ProductDescription">Open-source digital DJ-mjukvara</String>
+  <String Id="Comments">Installerar Mixxx</String>
+
+  <!-- Error messages -->
+  <!-- DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE -->
+  <String Id="OS2Old">Denna produkt kräver Windows XP eller högre.</String>
+  <String Id="NewerInstalled">Samma eller en nyare version av denna produkt är redan installerad.</String>
+  <String Id="x64VersionRequired">Du behöver installera 64-bitars-versionen utav denna produkt på 64-bitars Windows.</String>
+  <String Id="x86VersionRequired">Du behöver installera 32-bitars-versionen utav denna produkt på 32-bitars Windows.</String>
+  <String Id="x86VersionWarning">You are about to install the 32-bit version on a 64-bit operating system.&#13;&#10;We recommend using the 64-bit version for better performance.&#13;&#10;You can download the 64-bit installation package from http://mixxx.org/download/</String>
+  <String Id="XPWarning">You are installing Mixxx on an outdated operating system. Some functions may not work well or at all. We recommend upgrading your operating system.</String>
+  <String Id="bitWidthMismatch32">You are about to install the 32-bit version but a 64-bit one is already installed. This can lead to undesired behavior. Please un-install the existing Mixxx first, or download the 64-bit installation package to upgrade (unless you know exactly what you are doing.)</String>
+  <String Id="bitWidthMismatch64">You are about to install the 64-bit version but a 32-bit one is already installed. This can lead to undesired behavior. Please un-install the existing Mixxx first, or download the 32-bit installation package to upgrade (unless you know exactly what you are doing.)</String>
+  <String Id="OlderVersionFound">An older version of Mixxx has been detected. As we changed installer, we can not smoothly upgrade. Please uninstall older version before installing this one.</String>
+
+  <!-- Custom Warning Dialog -->
+  <String Id="WarningDlgTitle">{\WixUI_Font_Title}Varning</String>
+
+  <!-- Custom exit dialog -->
+  <String Id="StartOnExit">Starta Mixxx när installationen avslutar.</String>
+
+  <!-- Features translations -->
+  <String Id="FeatureCompleteDescription">Hela paketet.</String>
+  <String Id="FeatureMainProgramTitle">Kärnapplikation</String>
+  <String Id="FeatureMainProgramDescription">Kärn-Mixxx-applikationen inklusive controller-förval.</String>
+  <String Id="FeaturePDBTitle">PDB-debugfiler</String>
+  <String Id="FeaturePDBDescription">Install Mixxx PDB files to use with a debugger. This is useful to debug Mixxx and provide readable backtraces to the development team.</String>
+  <String Id="FeatureDesktopShortcutTitle">Skrivbordsgenväg</String>
+  <String Id="FeatureDesktopShortcutDescription">Lägg till en genväg till Mixxx på ditt skrivbord</String>
+  <String Id="FeatureManualTitle">Användarmanual</String>
+  <String Id="FeatureManualDescription">Mixxx användarmanual i PDF-format, även tillgänglig på http://mixxx.org/manual/</String>
+  <String Id="FeatureTranslationsTitle">Översättningar</String>
+  <String Id="FeatureTranslationsDescription">Resursfiler som tillåter Mixxx att visas i alternativa språk, andra än amerikansk engelska</String>
+</WixLocalization>
