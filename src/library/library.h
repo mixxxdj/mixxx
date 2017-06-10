@@ -21,7 +21,6 @@
 #include "library/setlogfeature.h"
 #include "library/scanner/libraryscanner.h"
 
-
 class TrackModel;
 class TrackCollection;
 class SidebarModel;
@@ -50,8 +49,8 @@ public:
             RecordingManager* pRecordingManager);
     virtual ~Library();
 
-    const mixxx::Repository& repository() const {
-        return m_repository;
+    mixxx::DbConnectionPoolPtr dbConnectionPool() const {
+        return m_repository.dbConnectionPool();
     }
 
     void bindWidget(WLibrary* libraryWidget,
@@ -131,6 +130,7 @@ public:
   private:
     UserSettingsPointer m_pConfig;
     mixxx::Repository m_repository;
+    const mixxx::DbConnectionPool::ThreadLocalScope m_mainDbConnectionScope;
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
     QList<LibraryFeature*> m_features;

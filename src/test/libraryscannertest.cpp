@@ -8,7 +8,7 @@
 class LibraryScannerTest : public LibraryTest {
   protected:
     LibraryScannerTest()
-        : m_libraryScanner(collection(), config()) {
+        : m_libraryScanner(dbConnectionPool(), collection(), config()) {
     }
     LibraryScanner m_libraryScanner;
 };

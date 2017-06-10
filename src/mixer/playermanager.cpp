@@ -124,7 +124,7 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
     connect(this, SIGNAL(loadLocationToPlayer(QString, QString)),
             pLibrary, SLOT(slotLoadLocationToPlayer(QString, QString)));
 
-    m_pAnalyzerQueue = new AnalyzerQueue(m_pConfig);
+    m_pAnalyzerQueue = new AnalyzerQueue(pLibrary->dbConnectionPool(), m_pConfig);
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analysed.

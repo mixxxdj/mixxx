@@ -37,21 +37,15 @@ const SINT kAnalysisSamplesPerBlock =
 
 QAtomicInt instanceCounter(0);
 
-QAtomicInt dbIndex(0);
-
-QString nextDatabaseConnectioName() {
-    const int idx = dbIndex.fetchAndAddAcquire(1);
-    return QString("ANALYZER_QUEUE-%1").arg(QString::number(idx));
-}
-
 } // anonymous namespace
 
 AnalyzerQueue::AnalyzerQueue(
-        UserSettingsPointer pConfig,
+        mixxx::DbConnectionPoolPtr pDbConnectionPool,
+        const UserSettingsPointer& pConfig,
         Mode mode)
-        : m_exit(false),
+        : m_pDbConnectionPool(std::move(pDbConnectionPool)),
+          m_exit(false),
           m_aiCheckPriorities(false),
-          m_repository(pConfig, nextDatabaseConnectioName()),
           m_sampleBuffer(kAnalysisSamplesPerBlock),
           m_queue_size(0) {
 
@@ -298,21 +292,18 @@ void AnalyzerQueue::run() {
 
     kLogger.debug() << "Entering thread";
 
-    if (!m_repository.openDatabaseConnection()) {
+    execThread();
+
+    kLogger.debug() << "Exiting thread";
+}
+
+void AnalyzerQueue::execThread() {
+    const mixxx::DbConnectionPool::ThreadLocalScope dbConnectionScope(m_pDbConnectionPool);
+    if (!dbConnectionScope) {
         kLogger.warning()
                 << "Failed to open database connection for analyzer queue";
         kLogger.debug() << "Exiting thread";
         return;
-    }
-
-    // TODO(uklotzde): Remove after introducing connection pool
-    QSqlDatabase database = m_repository.database();
-    for (auto const& pAnalyzer: m_pAnalyzers) {
-        AnalyzerWaveform* pWaveformAnalyzer = dynamic_cast<AnalyzerWaveform*>(pAnalyzer.get());
-        if (pWaveformAnalyzer != nullptr) {
-            pWaveformAnalyzer->initializeDatabase(database);
-            break;
-        }
     }
 
     m_progressInfo.current_track.reset();
@@ -389,10 +380,6 @@ void AnalyzerQueue::run() {
         emptyCheck();
     }
     emit(queueEmpty()); // emit in case of exit;
-
-    m_repository.closeDatabaseConnection();
-
-    kLogger.debug() << "Exiting thread";
 }
 
 void AnalyzerQueue::emptyCheck() {

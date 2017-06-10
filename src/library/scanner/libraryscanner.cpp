@@ -25,16 +25,18 @@ QAtomicInt instanceCounter(0);
 
 } // anonymous namespace
 
-LibraryScanner::LibraryScanner(TrackCollection* pTrackCollection,
-                               UserSettingsPointer pConfig)
-              : m_pTrackCollection(pTrackCollection),
-                m_repository(pConfig, "LIBRARY_SCANNER"),
-                m_analysisDao(pConfig),
-                m_trackDao(m_cueDao, m_playlistDao,
-                           m_analysisDao, m_libraryHashDao,
-                           pConfig),
-                m_stateSema(1), // only one transaction is possible at a time
-                m_state(IDLE) {
+LibraryScanner::LibraryScanner(
+        mixxx::DbConnectionPoolPtr pDbConnectionPool,
+        TrackCollection* pTrackCollection,
+        const UserSettingsPointer& pConfig)
+        : m_pDbConnectionPool(std::move(pDbConnectionPool)),
+          m_pTrackCollection(pTrackCollection),
+          m_analysisDao(pConfig),
+          m_trackDao(m_cueDao, m_playlistDao,
+                  m_analysisDao, m_libraryHashDao,
+                  pConfig),
+          m_stateSema(1), // only one transaction is possible at a time
+          m_state(IDLE) {
     // Move LibraryScanner to its own thread so that our signals/slots will
     // queue to our event loop.
     kLogger.debug() << "Starting thread";
@@ -89,32 +91,31 @@ LibraryScanner::~LibraryScanner() {
 
 void LibraryScanner::run() {
     kLogger.debug() << "Entering thread";
+    {
+        Trace trace("LibraryScanner");
 
-    Trace trace("LibraryScanner");
+        const mixxx::DbConnectionPool::ThreadLocalScope dbConnectionScope(m_pDbConnectionPool);
+        if (!dbConnectionScope) {
+            kLogger.warning()
+                    << "Failed to open database connection for library scanner";
+            kLogger.debug() << "Exiting thread";
+            return;
+        }
 
-    if (!m_repository.openDatabaseConnection()) {
-        kLogger.warning()
-                << "Failed to open database connection for library scanner";
-        kLogger.debug() << "Exiting thread";
-        return;
+        QSqlDatabase database = dbConnectionScope.database();
+        DEBUG_ASSERT(database.isOpen());
+        m_libraryHashDao.initialize(database);
+        m_cueDao.initialize(database);
+        m_trackDao.initialize(database);
+        m_playlistDao.initialize(database);
+        m_analysisDao.initialize(database);
+        m_directoryDao.initialize(database);
+
+        // Start the event loop.
+        kLogger.debug() << "Event loop starting";
+        exec();
+        kLogger.debug() << "Event loop stopped";
     }
-
-    QSqlDatabase database = m_repository.database();
-    DEBUG_ASSERT(database.isOpen());
-    m_libraryHashDao.initialize(database);
-    m_cueDao.initialize(database);
-    m_trackDao.initialize(database);
-    m_playlistDao.initialize(database);
-    m_analysisDao.initialize(database);
-    m_directoryDao.initialize(database);
-
-    // Start the event loop.
-    kLogger.debug() << "Event loop starting";
-    exec();
-    kLogger.debug() << "Event loop stopped";
-
-    m_repository.closeDatabaseConnection();
-
     kLogger.debug() << "Exiting thread";
 }
 
@@ -239,7 +240,8 @@ void LibraryScanner::cleanUpScan() {
 
     // Start a transaction for all the library hashing (moved file
     // detection) stuff.
-    ScopedTransaction transaction(m_repository.database());
+    QSqlDatabase database = m_pDbConnectionPool->threadLocalDatabase();
+    ScopedTransaction transaction(database);
 
     kLogger.debug() << "Marking tracks in changed directories as verified";
     m_trackDao.markTrackLocationsAsVerified(m_scannerGlobal->verifiedTracks());

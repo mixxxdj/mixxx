@@ -6,6 +6,8 @@
 
 #include "library/library.h"
 #include "library/analysisfeature.h"
+
+#include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
 #include "library/dlganalysis.h"
@@ -23,6 +25,7 @@ AnalysisFeature::AnalysisFeature(Library* parent,
                                TrackCollection* pTrackCollection) :
         LibraryFeature(parent),
         m_pConfig(pConfig),
+        m_pDbConnectionPool(parent->dbConnectionPool()),
         m_pTrackCollection(pTrackCollection),
         m_pAnalyzerQueue(nullptr),
         m_iOldBpmEnabled(0),
@@ -129,7 +132,10 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
         m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(1));
         // Note: this sucks... we should refactor the prefs/analyzer to fix this hacky bit ^^^^.
 
-        m_pAnalyzerQueue = new AnalyzerQueue(m_pConfig, getAnalyzerQueueMode(m_pConfig));
+        m_pAnalyzerQueue = new AnalyzerQueue(
+                m_pDbConnectionPool,
+                m_pConfig,
+                getAnalyzerQueueMode(m_pConfig));
 
         connect(m_pAnalyzerQueue, SIGNAL(trackProgress(int)),
                 m_pAnalysisView, SLOT(trackAnalysisProgress(int)));

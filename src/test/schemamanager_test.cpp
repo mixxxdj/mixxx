@@ -13,16 +13,17 @@
 class SchemaManagerTest : public MixxxTest {
   protected:
     SchemaManagerTest()
-            : m_repository(config()) {
-        m_repository.openDatabaseConnection();
+            : m_repository(config()),
+              m_dbConnectionScope(m_repository.dbConnectionPool()) {
     }
 
     QSqlDatabase database() const {
-        return m_repository.database();
+        return m_dbConnectionScope.database();
     }
 
   private:
     mixxx::Repository m_repository;
+    const mixxx::DbConnectionPool::ThreadLocalScope m_dbConnectionScope;
 };
 
 TEST_F(SchemaManagerTest, CanUpgradeFreshDatabaseToRequiredVersion) {

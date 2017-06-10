@@ -362,8 +362,10 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         bool successful = false;
         {
             mixxx::Repository repository(config);
-            if (repository.openDatabaseConnection()) {
-                QSqlDatabase database = repository.database();
+            const mixxx::DbConnectionPool::ThreadLocalScope dbConnectionScope(
+                    repository.dbConnectionPool());
+            if (dbConnectionScope) {
+                QSqlDatabase database = dbConnectionScope.database();
                 if (mixxx::Repository::initDatabaseSchema(database)) {
                     TrackCollection tc(config);
                     tc.connectDatabase(database);

@@ -140,11 +140,6 @@ class AnalyzerWaveform : public Analyzer {
             const UserSettingsPointer& pConfig);
     ~AnalyzerWaveform() override;
 
-    // TODO(uklotzde): Remove after introducing connection pool
-    void initializeDatabase(const QSqlDatabase& database) {
-        m_analysisDao.initialize(database);
-    }
-
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
     bool isDisabledOrLoadStoredSuccess(TrackPointer tio) const override;
     void process(const CSAMPLE *buffer, const int bufferLength) override;

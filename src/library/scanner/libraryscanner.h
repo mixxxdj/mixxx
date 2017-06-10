@@ -16,7 +16,7 @@
 #include "library/dao/analysisdao.h"
 #include "library/scanner/scannerglobal.h"
 #include "track/track.h"
-#include "repository/repository.h"
+#include "util/db/dbconnectionpool.h"
 
 #include <gtest/gtest.h>
 
@@ -28,8 +28,10 @@ class LibraryScanner : public QThread {
     FRIEND_TEST(LibraryScannerTest, ScannerRoundtrip);
     Q_OBJECT
   public:
-    LibraryScanner(TrackCollection* pTrackCollection,
-                   UserSettingsPointer pConfig);
+    LibraryScanner(
+            mixxx::DbConnectionPoolPtr pDbConnectionPool,
+            TrackCollection* pTrackCollection,
+            const UserSettingsPointer& pConfig);
     ~LibraryScanner() override;
 
   public slots:
@@ -96,11 +98,11 @@ class LibraryScanner : public QThread {
 
     void cleanUpScan();
 
+    mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
+
     // The library trackcollection. Do not touch this from the library scanner
     // thread.
     TrackCollection* m_pTrackCollection;
-
-    mixxx::Repository m_repository;
 
     // The pool of threads used for worker tasks.
     QThreadPool m_pool;

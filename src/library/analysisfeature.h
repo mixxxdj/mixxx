@@ -16,6 +16,7 @@
 #include "library/dlganalysis.h"
 #include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
+#include "util/db/dbconnectionpool.h"
 
 class Library;
 class TrackCollection;
@@ -64,6 +65,7 @@ class AnalysisFeature : public LibraryFeature {
     void setTitleProgress(int trackNum, int totalNum);
 
     UserSettingsPointer m_pConfig;
+    mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
     TrackCollection* m_pTrackCollection;
     AnalyzerQueue* m_pAnalyzerQueue;
     // Used to temporarily enable BPM detection in the prefs before we analyse

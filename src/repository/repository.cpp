@@ -29,7 +29,7 @@ const QString kDatabaseFileName = "mixxxdb.sqlite";
 Repository::Repository(
         const UserSettingsPointer& pConfig,
         const QString& dbConnectionName)
-    : m_dbConnection(pConfig->getSettingsPath(), kDatabaseFileName, dbConnectionName) {
+    : m_pDbConnectionPool(std::make_shared<DbConnectionPool>(pConfig->getSettingsPath(), kDatabaseFileName, dbConnectionName)) {
 }
 
 bool Repository::initDatabaseSchema(

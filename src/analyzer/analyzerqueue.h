@@ -11,7 +11,7 @@
 #include "preferences/usersettings.h"
 #include "sources/audiosource.h"
 #include "track/track.h"
-#include "repository/repository.h"
+#include "util/db/dbconnectionpool.h"
 #include "util/samplebuffer.h"
 #include "util/memory.h"
 
@@ -26,10 +26,11 @@ class AnalyzerQueue : public QThread {
         WithoutWaveform,
     };
 
-    explicit AnalyzerQueue(
-            UserSettingsPointer pConfig,
+    AnalyzerQueue(
+            mixxx::DbConnectionPoolPtr pDbConnectionPool,
+            const UserSettingsPointer& pConfig,
             Mode mode = Mode::Default);
-    virtual ~AnalyzerQueue();
+    ~AnalyzerQueue() override;
 
     void stop();
     void queueAnalyseTrack(TrackPointer tio);
@@ -57,8 +58,12 @@ class AnalyzerQueue : public QThread {
         QSemaphore sema;
     };
 
+    mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
+
     typedef std::unique_ptr<Analyzer> AnalyzerPtr;
     std::vector<AnalyzerPtr> m_pAnalyzers;
+
+    void execThread();
 
     bool isLoadedTrackWaiting(TrackPointer analysingTrack);
     TrackPointer dequeueNextBlocking();
@@ -68,8 +73,6 @@ class AnalyzerQueue : public QThread {
 
     bool m_exit;
     QAtomicInt m_aiCheckPriorities;
-
-    mixxx::Repository m_repository;
 
     SampleBuffer m_sampleBuffer;
 

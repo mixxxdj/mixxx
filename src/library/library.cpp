@@ -63,13 +63,14 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
                  RecordingManager* pRecordingManager) :
         m_pConfig(pConfig),
         m_repository(pConfig),
+        m_mainDbConnectionScope(m_repository.dbConnectionPool()),
         m_pSidebarModel(new SidebarModel(parent)),
         m_pTrackCollection(new TrackCollection(pConfig)),
         m_pLibraryControl(new LibraryControl(this)),
         m_pRecordingManager(pRecordingManager),
-        m_scanner(m_pTrackCollection, pConfig) {
+        m_scanner(m_repository.dbConnectionPool(), m_pTrackCollection, pConfig) {
     kLogger.info() << "Opening datbase connection";
-    if (!m_repository.openDatabaseConnection()) {
+    if (!m_mainDbConnectionScope) {
         QMessageBox::critical(0, tr("Cannot open database"),
                             tr("Unable to establish a database connection.\n"
                                 "Mixxx requires QT with SQLite support. Please read "
@@ -80,7 +81,7 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
         exit(-1);
     }
 
-    QSqlDatabase database = m_repository.database();
+    QSqlDatabase database = m_mainDbConnectionScope.database();
 
     kLogger.info() << "Initializing or upgrading database schema";
     if (!mixxx::Repository::initDatabaseSchema(database)) {

@@ -6,7 +6,7 @@
 
 #include "preferences/usersettings.h"
 
-#include "util/db/dbconnection.h"
+#include "util/db/dbconnectionpool.h"
 
 
 namespace mixxx {
@@ -18,6 +18,7 @@ class Repository : public QObject {
     static const QString kDefaultDatabaseConnectionName;
 
     static const QString kDefaultSchemaFile;
+
     static const int kRequiredSchemaVersion;
 
     static bool initDatabaseSchema(
@@ -29,19 +30,12 @@ class Repository : public QObject {
             const UserSettingsPointer& pConfig,
             const QString& dbConnectionName = kDefaultDatabaseConnectionName);
 
-    bool openDatabaseConnection() {
-        return m_dbConnection.open();
-    }
-    void closeDatabaseConnection() {
-        m_dbConnection.close();
-    }
-
-    QSqlDatabase database() const {
-        return m_dbConnection.database();
+    DbConnectionPoolPtr dbConnectionPool() const {
+        return m_pDbConnectionPool;
     }
 
   private:
-    DbConnection m_dbConnection;
+    DbConnectionPoolPtr m_pDbConnectionPool;
 };
 
 } // namespace mixxx

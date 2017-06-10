@@ -1120,6 +1120,7 @@ class MixxxCore(Feature):
                    "util/movinginterquartilemean.cpp",
                    "util/console.cpp",
                    "util/db/dbconnection.cpp",
+                   "util/db/dbconnectionpool.cpp",
                    "util/db/dbid.cpp",
                    "util/db/fwdsqlquery.cpp",
                    "util/db/fwdsqlqueryselectresult.cpp",
