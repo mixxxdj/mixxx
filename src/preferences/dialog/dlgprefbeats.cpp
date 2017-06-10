@@ -3,11 +3,10 @@
  *      Author: vittorio
  */
 
-#include <vamp-hostsdk/vamp-hostsdk.h>
-
-#include "analyzer/vamp/vampanalyzer.h"
-#include "control/controlobject.h"
 #include "preferences/dialog/dlgprefbeats.h"
+
+#include "analyzer/vamp/vamppluginloader.h"
+#include "control/controlobject.h"
 #include "track/beat_preferences.h"
 
 using Vamp::Plugin;
@@ -218,7 +217,6 @@ void DlgPrefBeats::slotApply() {
 }
 
 void DlgPrefBeats::populate() {
-    VampAnalyzer::initializePluginPaths();
     m_listIdentifier.clear();
     m_listName.clear();
     m_listLibrary.clear();

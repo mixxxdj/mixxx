@@ -11,7 +11,6 @@
 #ifndef ANALYZER_VAMP_VAMPPLUGINLOADER_H
 #define ANALYZER_VAMP_VAMPPLUGINLOADER_H
 
-#include <QMutex>
 #include <vamp-hostsdk/vamp-hostsdk.h>
 #include <string>
 
@@ -23,13 +22,13 @@ using Vamp::HostExt::PluginLoader;
 using Vamp::HostExt::PluginWrapper;
 using Vamp::HostExt::PluginInputDomainAdapter;
 
-class VampPluginLoader {
+class VampPluginLoader final {
   private:
     VampPluginLoader();
-    virtual ~VampPluginLoader();
 
   public:
     static VampPluginLoader* getInstance();
+
     PluginLoader::PluginKeyList listPlugins();
     Vamp::Plugin *loadPlugin(Vamp::HostExt::PluginLoader::PluginKey,
                              float inputSampleRate, int adapterFlags = 0);
@@ -37,10 +36,6 @@ class VampPluginLoader {
                                              std::string identifier);
     PluginLoader::PluginCategoryHierarchy getPluginCategory(
         Vamp::HostExt::PluginLoader::PluginKey plugin);
-
-  private:
-    static VampPluginLoader* s_instance;
-    static QMutex s_mutex;
     Vamp::HostExt::PluginLoader* m_pVampPluginLoader;
     DISALLOW_COPY_AND_ASSIGN(VampPluginLoader);
 };
