@@ -279,6 +279,8 @@ class CrateStorage: public SqlStorage {
     static QString formatSubselectQueryForCrateTrackIds(
             CrateId crateId); // no db access
 
+    static QString formatQueryForTrackIdsByCrateNameLike(
+            const QString& crateNameLike); // no db access
     // Select the track ids of a crate or the crate ids of a track respectively.
     // The results are sorted (ascending) by the target id, i.e. the id that is
     // not provided for filtering. This enables the caller to perform efficient
@@ -287,6 +289,8 @@ class CrateStorage: public SqlStorage {
             CrateId crateId) const;
     CrateTrackSelectResult selectTrackCratesSorted(
             TrackId trackId) const;
+    CrateTrackSelectResult selectTracksSortedByCrateNameLike(
+            const QString& crateNameLike) const;
 
     // Returns the set of crate ids for crates that contain any of the
     // provided track ids.

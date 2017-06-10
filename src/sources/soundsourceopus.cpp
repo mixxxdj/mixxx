@@ -1,5 +1,7 @@
 #include "sources/soundsourceopus.h"
 
+#include "util/logger.h"
+
 namespace mixxx {
 
 // Depends on kNumberOfPrefetchFrames (see below)
@@ -7,6 +9,8 @@ namespace mixxx {
 const CSAMPLE SoundSourceOpus::kMaxDecodingError = 0.01f;
 
 namespace {
+
+const Logger kLogger("SoundSourceOpus");
 
 // Decoded output of opusfile has a fixed sample rate of 48 kHz (fullband)
 constexpr SINT kSamplingRate = 48000;
@@ -142,10 +146,6 @@ Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
                 pTrackMetadata->setReplayGain(trackGain);
             }
         }
-
-        // This is left fot debug reasons!!
-        //qDebug() << "Comment" << i << l_ptrOpusTags->comment_lengths[i] <<
-        //" (" << l_ptrOpusTags->user_comments[i] << ")" << l_STag << "*" << l_SPayload;
     }
 
     return OK;
@@ -168,13 +168,13 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(const AudioSourceConfig& audioS
     DEBUG_ASSERT(!m_pOggOpusFile);
     m_pOggOpusFile = op_open_file(qBAFilename.constData(), &errorCode);
     if (!m_pOggOpusFile) {
-        qWarning() << "Failed to open OggOpus file:" << getUrlString()
+        kLogger.warning() << "Failed to open OggOpus file:" << getUrlString()
                 << "errorCode" << errorCode;
         return OpenResult::FAILED;
     }
 
     if (!op_seekable(m_pOggOpusFile)) {
-        qWarning() << "SoundSourceOpus:"
+        kLogger.warning() << "SoundSourceOpus:"
                 << "Stream in"
                 << getUrlString()
                 << "is not seekable";
@@ -197,7 +197,7 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(const AudioSourceConfig& audioS
             setChannelCount(streamChannelCount);
         }
     } else {
-        qWarning() << "Failed to read channel configuration of OggOpus file:" << getUrlString();
+        kLogger.warning() << "Failed to read channel configuration of OggOpus file:" << getUrlString();
         return OpenResult::FAILED;
     }
 
@@ -209,7 +209,7 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(const AudioSourceConfig& audioS
     if (0 <= pcmTotal) {
         setFrameCount(pcmTotal);
     } else {
-        qWarning() << "Failed to read total length of OggOpus file:" << getUrlString();
+        kLogger.warning() << "Failed to read total length of OggOpus file:" << getUrlString();
         return OpenResult::FAILED;
     }
 
@@ -217,7 +217,7 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(const AudioSourceConfig& audioS
     if (0 < bitrate) {
         setBitrate(bitrate / 1000);
     } else {
-        qWarning() << "Failed to determine bitrate of OggOpus file:" << getUrlString();
+        kLogger.warning() << "Failed to determine bitrate of OggOpus file:" << getUrlString();
         return OpenResult::FAILED;
     }
 
@@ -262,7 +262,7 @@ SINT SoundSourceOpus::seekSampleFrame(SINT frameIndex) {
         // Skip prefetched frames
         skipSampleFrames(frameIndex - seekIndex);
     } else {
-        qWarning() << "Failed to seek OggOpus file:" << seekResult;
+        kLogger.warning() << "Failed to seek OggOpus file:" << seekResult;
         const ogg_int64_t pcmOffset = op_pcm_tell(m_pOggOpusFile);
         if (0 <= pcmOffset) {
             m_curFrameIndex = pcmOffset;
@@ -317,7 +317,7 @@ SINT SoundSourceOpus::readSampleFrames(
             pSampleBuffer += frames2samples(readResult);
             numberOfFramesRemaining -= readResult;
         } else {
-            qWarning() << "Failed to read sample data from OggOpus file:"
+            kLogger.warning() << "Failed to read sample data from OggOpus file:"
                     << readResult;
             break; // abort
         }
@@ -363,7 +363,7 @@ SINT SoundSourceOpus::readSampleFramesStereo(
             pSampleBuffer += readResult * kChannelCountStereo;
             numberOfFramesRemaining -= readResult;
         } else {
-            qWarning() << "Failed to read sample data from OggOpus file:"
+            kLogger.warning() << "Failed to read sample data from OggOpus file:"
                     << readResult;
             break; // abort
         }

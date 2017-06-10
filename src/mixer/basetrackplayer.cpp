@@ -203,6 +203,30 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
 
     m_pLoadedTrack = pNewTrack;
     if (m_pLoadedTrack) {
+        // Clear loop
+        // It seems that the trick is to first clear the loop out point, and then
+        // the loop in point. If we first clear the loop in point, the loop out point
+        // does not get cleared.
+        m_pLoopOutPoint->set(-1);
+        m_pLoopInPoint->set(-1);
+
+        // The loop in and out points must be set here and not in slotTrackLoaded
+        // so LoopingControl::trackLoaded can access them.
+        const QList<CuePointer> trackCues(pNewTrack->getCuePoints());
+        QListIterator<CuePointer> it(trackCues);
+        while (it.hasNext()) {
+            CuePointer pCue(it.next());
+            if (pCue->getType() == Cue::LOOP) {
+                double loopStart = pCue->getPosition();
+                double loopEnd = loopStart + pCue->getLength();
+                if (loopStart != -1 && loopEnd != -1) {
+                    m_pLoopInPoint->set(loopStart);
+                    m_pLoopOutPoint->set(loopEnd);
+                    break;
+                }
+            }
+        }
+
         // Listen for updates to the file's BPM
         connect(m_pLoadedTrack.get(), SIGNAL(bpmUpdated(double)),
                 m_pBPM.get(), SLOT(set(double)));
@@ -279,27 +303,6 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         m_pKey->set(m_pLoadedTrack->getKey());
         setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
 
-        // Clear loop
-        // It seems that the trick is to first clear the loop out point, and then
-        // the loop in point. If we first clear the loop in point, the loop out point
-        // does not get cleared.
-        m_pLoopOutPoint->set(-1);
-        m_pLoopInPoint->set(-1);
-
-        const QList<CuePointer> trackCues(pNewTrack->getCuePoints());
-        QListIterator<CuePointer> it(trackCues);
-        while (it.hasNext()) {
-            CuePointer pCue(it.next());
-            if (pCue->getType() == Cue::LOOP) {
-                double loopStart = pCue->getPosition();
-                double loopEnd = loopStart + pCue->getLength();
-                if (loopStart != -1 && loopEnd != -1) {
-                    m_pLoopInPoint->set(loopStart);
-                    m_pLoopOutPoint->set(loopEnd);
-                    break;
-                }
-            }
-        }
         if(m_pConfig->getValue(
                 ConfigKey("[Mixer Profile]", "EqAutoReset"), false)) {
             if (m_pLowFilter != NULL) {

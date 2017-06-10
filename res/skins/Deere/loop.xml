@@ -1,67 +1,113 @@
 <!DOCTYPE template>
 <!--
   Description:
-    Looping controls (in, out, reloop, loop move).
+    A grid of beatloop controls with a loop double and halve on the left and right.
   Variables:
     group: The group for the controls.
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>LoopingContainer</ObjectName>
-    <Layout>vertical</Layout>
+    <ObjectName>LoopContainer</ObjectName>
+    <Layout>horizontal</Layout>
+
+    <MinimumSize>-1,-1</MinimumSize>
     <SizePolicy>max,max</SizePolicy>
+
     <Children>
+
+      <BeatSpinBox>
+        <ObjectName>BeatloopSizeSpinBox</ObjectName>
+        <TooltipId>beatloop_size</TooltipId>
+        <Value><Variable name="group"/>,beatloop_size</Value>
+      </BeatSpinBox>
+
+      <Template src="skin:spacer_hx.xml">
+        <SetVariable name="width">2</SetVariable>
+      </Template>
+
       <WidgetGroup>
-        <Layout>horizontal</Layout>
+        <ObjectName>LoopButtons</ObjectName>
+        <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:left_1state_button.xml">
-            <SetVariable name="TooltipId">loop_in</SetVariable>
-            <SetVariable name="ObjectName">LoopIn</SetVariable>
-            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text"></SetVariable>
-            <SetVariable name="state_0_pressed">icon/ic_loop_in_48px.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">icon/ic_loop_in_48px.svg</SetVariable>
-            <SetVariable name="left_connection_control"><Variable name="group"/>,loop_in</SetVariable>
-          </Template>
 
-          <Template src="skin:left_1state_button.xml">
-            <SetVariable name="TooltipId">loop_out</SetVariable>
-            <SetVariable name="ObjectName">LoopOut</SetVariable>
-            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text"></SetVariable>
-            <SetVariable name="state_0_pressed">icon/ic_loop_out_48px.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">icon/ic_loop_out_48px.svg</SetVariable>
-            <SetVariable name="left_connection_control"><Variable name="group"/>,loop_out</SetVariable>
-          </Template>
+          <WidgetGroup>
+            <ObjectName>LoopButtonsTopRow</ObjectName>
+            <Layout>horizontal</Layout>
+            <Children>
 
-          <Template src="skin:left_display_2state_button.xml">
-            <SetVariable name="TooltipId">reloop_exit</SetVariable>
-            <SetVariable name="ObjectName">ReloopExit</SetVariable>
-            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text"></SetVariable>
-            <SetVariable name="state_0_pressed">icon/ic_loop_48px.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">icon/ic_loop_48px.svg</SetVariable>
-            <SetVariable name="state_1_text"></SetVariable>
-            <SetVariable name="state_1_pressed">icon/ic_loop_48px.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">icon/ic_loop_48px.svg</SetVariable>
-            <SetVariable name="left_connection_control"><Variable name="group"/>,reloop_exit</SetVariable>
-            <SetVariable name="display_connection_control"><Variable name="group"/>,loop_enabled</SetVariable>
-          </Template>
+              <Template src="skin:left_right_2state_button.xml">
+                <SetVariable name="TooltipId">beatloop_activate</SetVariable>
+                <SetVariable name="ObjectName">BeatloopActivate</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_beatloop_activate_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_beatloop_activate_48px.svg</SetVariable>
+                <SetVariable name="state_1_text"></SetVariable>
+                <SetVariable name="state_1_pressed">icon/ic_beatloop_activate_48px.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">icon/ic_beatloop_activate_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,beatloop_activate</SetVariable>
+                <SetVariable name="right_connection_control"><Variable name="group"/>,beatlooproll_activate</SetVariable>
+              </Template>
+
+              <Template src="skin:left_right_display_2state_button.xml">
+                <SetVariable name="TooltipId">reloop_toggle</SetVariable>
+                <SetVariable name="ObjectName">Reloop</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_loop_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_loop_48px.svg</SetVariable>
+                <SetVariable name="state_1_text"></SetVariable>
+                <SetVariable name="state_1_pressed">icon/ic_loop_48px.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">icon/ic_loop_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,reloop_toggle</SetVariable>
+                <SetVariable name="right_connection_control"><Variable name="group"/>,reloop_andstop</SetVariable>
+                <SetVariable name="display_connection_control"><Variable name="group"/>,loop_enabled</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>LoopButtonsBottomRow</ObjectName>
+            <Layout>horizontal</Layout>
+            <Children>
+
+              <Template src="skin:left_right_1state_button.xml">
+                <SetVariable name="TooltipId">loop_in</SetVariable>
+                <SetVariable name="ObjectName">LoopIn</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_loop_in_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_loop_in_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,loop_in</SetVariable>
+                <SetVariable name="right_connection_control"><Variable name="group"/>,loop_in_goto</SetVariable>
+              </Template>
+
+              <Template src="skin:left_right_1state_button.xml">
+                <SetVariable name="TooltipId">loop_out</SetVariable>
+                <SetVariable name="ObjectName">LoopOut</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_loop_out_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_loop_out_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,loop_out</SetVariable>
+                <SetVariable name="right_connection_control"><Variable name="group"/>,loop_out_goto</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup>
+
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup>
-        <Layout>horizontal</Layout>
-        <Children>
-          <Template src="skin:loopmove.xml"/>
-        </Children>
-      </WidgetGroup>
     </Children>
   </WidgetGroup>
 </Template>

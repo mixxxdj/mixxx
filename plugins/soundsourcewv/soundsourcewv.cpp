@@ -1,8 +1,16 @@
-#include "soundsourcewv.h"
-
 #include <QFile>
 
+#include "soundsourcewv.h"
+
+#include "util/logger.h"
+
 namespace mixxx {
+
+namespace {
+
+const Logger kLogger("SoundSourceWV");
+
+} // anonymous namespace
 
 //static
 WavpackStreamReader SoundSourceWV::s_streamReader = {
@@ -52,7 +60,7 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrc
     m_wpc = WavpackOpenFileInputEx(&s_streamReader, m_pWVFile, m_pWVCFile,
             msg, openFlags, 0);
     if (!m_wpc) {
-        qDebug() << "SSWV::open: failed to open file : " << msg;
+        kLogger.debug() << "failed to open file : " << msg;
         return OpenResult::FAILED;
     }
 
@@ -107,7 +115,7 @@ SINT SoundSourceWV::seekSampleFrame(SINT frameIndex) {
         m_curFrameIndex = frameIndex;
         return frameIndex;
     } else {
-        qDebug() << "SSWV::seek : could not seek to frame #" << frameIndex;
+        kLogger.debug() << "could not seek to frame #" << frameIndex;
         return WavpackGetSampleIndex(m_wpc);
     }
 }

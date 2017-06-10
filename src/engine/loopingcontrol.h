@@ -59,10 +59,13 @@ class LoopingControl : public EngineControl {
     virtual void notifySeek(double dNewPlaypos);
 
   public slots:
-    void slotLoopIn(double);
-    void slotLoopOut(double);
+    void slotLoopIn(double pressed);
+    void slotLoopInGoto(double);
+    void slotLoopOut(double pressed);
+    void slotLoopOutGoto(double);
     void slotLoopExit(double);
-    void slotReloopExit(double);
+    void slotReloopToggle(double);
+    void slotReloopAndStop(double);
     void slotLoopStartPos(double);
     void slotLoopEndPos(double);
     virtual void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
@@ -70,7 +73,10 @@ class LoopingControl : public EngineControl {
 
     // Generate a loop of 'beats' length. It can also do fractions for a
     // beatslicing effect.
-    void slotBeatLoop(double loopSize, bool keepStartPoint=false);
+    void slotBeatLoop(double loopSize, bool keepStartPoint=false, bool enable=true);
+    void slotBeatLoopSizeChangeRequest(double beats);
+    void slotBeatLoopToggle(double pressed);
+    void slotBeatLoopRollActivate(double pressed);
     void slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl);
     void slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopControl);
     void slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl);
@@ -78,13 +84,15 @@ class LoopingControl : public EngineControl {
 
     // Jump forward or backward by beats.
     void slotBeatJump(double beats);
+    void slotBeatJumpForward(double pressed);
+    void slotBeatJumpBackward(double pressed);
 
     // Move the loop by beats.
     void slotLoopMove(double beats);
 
-    void slotLoopScale(double);
-    void slotLoopDouble(double);
-    void slotLoopHalve(double);
+    void slotLoopScale(double scaleFactor);
+    void slotLoopDouble(double pressed);
+    void slotLoopHalve(double pressed);
 
   private:
 
@@ -94,44 +102,65 @@ class LoopingControl : public EngineControl {
     };
 
     void setLoopingEnabled(bool enabled);
+    void setLoopInToCurrentPosition();
+    void setLoopOutToCurrentPosition();
     void clearActiveBeatLoop();
+    void updateBeatLoopingControls();
+    int calculateEndOfBeatloop(int startSample, double beatloopSizeInBeats);
+    bool currentLoopMatchesBeatloopSize();
     // When a loop changes size such that the playposition is outside of the loop,
     // we can figure out the best place in the new loop to seek to maintain
     // the beat.  It will even keep multi-bar phrasing correct with 4/4 tracks.
     void seekInsideAdjustedLoop(int old_loop_in, int old_loop_out,
                                 int new_loop_in, int new_loop_out);
 
+    ControlPushButton* m_pCOBeatLoopActivate;
+    ControlPushButton* m_pCOBeatLoopRollActivate;
     ControlObject* m_pCOLoopStartPosition;
     ControlObject* m_pCOLoopEndPosition;
     ControlObject* m_pCOLoopEnabled;
     ControlPushButton* m_pLoopInButton;
+    ControlPushButton* m_pLoopInGotoButton;
     ControlPushButton* m_pLoopOutButton;
+    ControlPushButton* m_pLoopOutGotoButton;
     ControlPushButton* m_pLoopExitButton;
-    ControlPushButton* m_pReloopExitButton;
+    ControlPushButton* m_pReloopToggleButton;
+    ControlPushButton* m_pReloopAndStopButton;
     ControlObject* m_pCOLoopScale;
     ControlPushButton* m_pLoopHalveButton;
     ControlPushButton* m_pLoopDoubleButton;
     ControlObject* m_pSlipEnabled;
+    ControlObject* m_pPlayButton;
 
-    bool m_bLoopingEnabled;
-    bool m_bLoopRollActive;
+    bool m_bLoopingEnabled = false;
+    bool m_bLoopRollActive = false;
+    bool m_bLoopManualTogglePressedToExitLoop = false;
+    bool m_bReloopCatchUpcomingLoop = false;
+    bool m_bAdjustingLoopIn = false;
+    bool m_bAdjustingLoopOut = false;
+    bool m_bLoopOutPressedWhileLoopDisabled = false;
     // TODO(DSC) Make the following values double
     ControlValueAtomic<LoopSamples> m_loopSamples;
     QAtomicInt m_iCurrentSample;
     ControlObject* m_pQuantizeEnabled;
     ControlObject* m_pNextBeat;
+    ControlObject* m_pPreviousBeat;
     ControlObject* m_pClosestBeat;
     ControlObject* m_pTrackSamples;
     QAtomicPointer<BeatLoopingControl> m_pActiveBeatLoop;
 
     // Base BeatLoop Control Object.
     ControlObject* m_pCOBeatLoop;
+    ControlObject* m_pCOBeatLoopSize;
     // Different sizes for Beat Loops/Seeks.
     static double s_dBeatSizes[];
     // Array of BeatLoopingControls, one for each size.
     QList<BeatLoopingControl*> m_beatLoops;
 
     ControlObject* m_pCOBeatJump;
+    ControlObject* m_pCOBeatJumpSize;
+    ControlPushButton* m_pCOBeatJumpForward;
+    ControlPushButton* m_pCOBeatJumpBackward;
     QList<BeatJumpControl*> m_beatJumps;
 
     ControlObject* m_pCOLoopMove;
@@ -174,8 +203,8 @@ class BeatJumpControl : public QObject {
     void beatJump(double beats);
 
   public slots:
-    void slotJumpForward(double value);
-    void slotJumpBackward(double value);
+    void slotJumpForward(double pressed);
+    void slotJumpBackward(double pressed);
 
   private:
     double m_dBeatJumpSize;

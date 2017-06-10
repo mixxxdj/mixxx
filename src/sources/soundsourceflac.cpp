@@ -2,10 +2,13 @@
 
 #include "util/math.h"
 #include "util/sample.h"
+#include "util/logger.h"
 
 namespace mixxx {
 
 namespace {
+
+const Logger kLogger("SoundSourceFLAC");
 
 // The maximum number of retries to fix seek errors. On a seek error
 // the next seek will start one (or more) sample blocks before the
@@ -79,13 +82,13 @@ SoundSourceFLAC::~SoundSourceFLAC() {
 SoundSource::OpenResult SoundSourceFLAC::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     DEBUG_ASSERT(!m_file.isOpen());
     if (!m_file.open(QIODevice::ReadOnly)) {
-        qWarning() << "Failed to open FLAC file:" << m_file.fileName();
+        kLogger.warning() << "Failed to open FLAC file:" << m_file.fileName();
         return OpenResult::FAILED;
     }
 
     m_decoder = FLAC__stream_decoder_new();
     if (m_decoder == nullptr) {
-        qWarning() << "Failed to create FLAC decoder!";
+        kLogger.warning() << "Failed to create FLAC decoder!";
         return OpenResult::FAILED;
     }
     FLAC__stream_decoder_set_md5_checking(m_decoder, false);
@@ -94,11 +97,11 @@ SoundSource::OpenResult SoundSourceFLAC::tryOpen(const AudioSourceConfig& /*audi
                     FLAC_seek_cb, FLAC_tell_cb, FLAC_length_cb, FLAC_eof_cb,
                     FLAC_write_cb, FLAC_metadata_cb, FLAC_error_cb, this));
     if (initStatus != FLAC__STREAM_DECODER_INIT_STATUS_OK) {
-        qWarning() << "Failed to initialize FLAC decoder:" << initStatus;
+        kLogger.warning() << "Failed to initialize FLAC decoder:" << initStatus;
         return OpenResult::FAILED;
     }
     if (!FLAC__stream_decoder_process_until_end_of_metadata(m_decoder)) {
-        qWarning() << "Failed to process FLAC metadata:"
+        kLogger.warning() << "Failed to process FLAC metadata:"
                 << FLAC__stream_decoder_get_state(m_decoder);
         return OpenResult::FAILED;
     }
@@ -143,12 +146,12 @@ SINT SoundSourceFLAC::seekSampleFrame(SINT frameIndex) {
             DEBUG_ASSERT(FLAC__STREAM_DECODER_SEEK_ERROR != FLAC__stream_decoder_get_state(m_decoder));
         } else {
             // Failure
-            qWarning() << "Seek error at" << seekFrameIndex << "in" << m_file.fileName();
+            kLogger.warning() << "Seek error at" << seekFrameIndex << "in" << m_file.fileName();
             if (FLAC__STREAM_DECODER_SEEK_ERROR == FLAC__stream_decoder_get_state(m_decoder)) {
                 // Flush the input stream of the decoder according to the
                 // documentation of FLAC__stream_decoder_seek_absolute()
                 if (!FLAC__stream_decoder_flush(m_decoder)) {
-                    qWarning() << "Failed to flush input buffer of the FLAC decoder after seek failure in"
+                    kLogger.warning() << "Failed to flush input buffer of the FLAC decoder after seek failure in"
                             << m_file.fileName();
                     // Invalidate the current position again...
                     m_curFrameIndex = getMaxFrameIndex();
@@ -220,7 +223,7 @@ SINT SoundSourceFLAC::readSampleFrames(
             // will be called with the decoded metadata block or audio frame."
             // See also: https://xiph.org/flac/api/group__flac__stream__decoder.html#ga9d6df4a39892c05955122cf7f987f856
             if (!FLAC__stream_decoder_process_single(m_decoder)) {
-                qWarning() << "Failed to decode FLAC file"
+                kLogger.warning() << "Failed to decode FLAC file"
                         << m_file.fileName();
                 break; // abort
             }
@@ -228,13 +231,13 @@ SINT SoundSourceFLAC::readSampleFrames(
             // complained that it has lost sync for some malformed(?) files
             if (curFrameIndexBeforeProcessing != m_curFrameIndex) {
                 if (curFrameIndexBeforeProcessing > m_curFrameIndex) {
-                    qWarning() << "Trying to adjust frame index"
+                    kLogger.warning() << "Trying to adjust frame index"
                             << m_curFrameIndex << "<>" << curFrameIndexBeforeProcessing
                             << "while decoding FLAC file"
                             << m_file.fileName();
                     skipSampleFrames(curFrameIndexBeforeProcessing - m_curFrameIndex);
                 } else {
-                    qWarning() << "Unexpected frame index"
+                    kLogger.warning() << "Unexpected frame index"
                             << m_curFrameIndex << "<>" << curFrameIndexBeforeProcessing
                             << "while decoding FLAC file"
                             << m_file.fileName();
@@ -304,7 +307,7 @@ FLAC__StreamDecoderSeekStatus SoundSourceFLAC::flacSeek(FLAC__uint64 absolute_by
     if (m_file.seek(absolute_byte_offset)) {
         return FLAC__STREAM_DECODER_SEEK_STATUS_OK;
     } else {
-        qWarning() << "SoundSourceFLAC: An unrecoverable error occurred ("
+        kLogger.warning() << "SoundSourceFLAC: An unrecoverable error occurred ("
                 << m_file.fileName() << ")";
         return FLAC__STREAM_DECODER_SEEK_STATUS_ERROR;
     }
@@ -338,20 +341,20 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
         const FLAC__Frame* frame, const FLAC__int32* const buffer[]) {
     const SINT numChannels = frame->header.channels;
     if (getChannelCount() > numChannels) {
-        qWarning() << "Corrupt or unsupported FLAC file:"
+        kLogger.warning() << "Corrupt or unsupported FLAC file:"
                 << "Invalid number of channels in FLAC frame header"
                 << frame->header.channels << "<>" << getChannelCount();
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
     if (getSamplingRate() != SINT(frame->header.sample_rate)) {
-        qWarning() << "Corrupt or unsupported FLAC file:"
+        kLogger.warning() << "Corrupt or unsupported FLAC file:"
                 << "Invalid sample rate in FLAC frame header"
                 << frame->header.sample_rate << "<>" << getSamplingRate();
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
     const SINT numReadableFrames = frame->header.blocksize;
     if (numReadableFrames > m_maxBlocksize) {
-        qWarning() << "Corrupt or unsupported FLAC file:"
+        kLogger.warning() << "Corrupt or unsupported FLAC file:"
                 << "Block size in FLAC frame header exceeds the maximum block size"
                 << frame->header.blocksize << ">" << m_maxBlocksize;
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
@@ -370,7 +373,7 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
     const SINT numWritableFrames = samples2frames(writableChunk.size());
     DEBUG_ASSERT(numWritableFrames <= numReadableFrames);
     if (numWritableFrames < numReadableFrames) {
-        qWarning() << "Sample buffer has not enough free space for all decoded FLAC samples:"
+        kLogger.warning() << "Sample buffer has not enough free space for all decoded FLAC samples:"
                 << numWritableFrames << "<" << numReadableFrames;
     }
 
@@ -418,7 +421,7 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
             if (hasValidChannelCount()) {
                 // already set before -> check for consistency
                 if (getChannelCount() != channelCount) {
-                    qWarning() << "Unexpected channel count:"
+                    kLogger.warning() << "Unexpected channel count:"
                             << channelCount << " <> " << getChannelCount();
                 }
             } else {
@@ -426,7 +429,7 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
                 setChannelCount(channelCount);
             }
         } else {
-            qWarning() << "Invalid channel count:"
+            kLogger.warning() << "Invalid channel count:"
                     << channelCount;
         }
         const SINT samplingRate = metadata->data.stream_info.sample_rate;
@@ -434,7 +437,7 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
             if (hasValidSamplingRate()) {
                 // already set before -> check for consistency
                 if (getSamplingRate() != samplingRate) {
-                    qWarning() << "Unexpected sampling rate:"
+                    kLogger.warning() << "Unexpected sampling rate:"
                             << samplingRate << " <> " << getSamplingRate();
                 }
             } else {
@@ -442,7 +445,7 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
                 setSamplingRate(samplingRate);
             }
         } else {
-            qWarning() << "Invalid sampling rate:"
+            kLogger.warning() << "Invalid sampling rate:"
                     << samplingRate;
         }
         const SINT frameCount = metadata->data.stream_info.total_samples;
@@ -453,7 +456,7 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
         } else {
             // already set before -> check for consistency
             if (getFrameCount() != frameCount) {
-                qWarning() << "Unexpected frame count:"
+                kLogger.warning() << "Unexpected frame count:"
                         << frameCount << " <> " << getFrameCount();
             }
         }
@@ -467,13 +470,13 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
         } else {
             // already set before -> check for consistency
             if (bitsPerSample != m_bitsPerSample) {
-                qWarning() << "Unexpected bits per sample:"
+                kLogger.warning() << "Unexpected bits per sample:"
                         << bitsPerSample << " <> " << m_bitsPerSample;
             }
         }
         m_maxBlocksize = metadata->data.stream_info.max_blocksize;
         if (0 >= m_maxBlocksize) {
-            qWarning() << "Invalid max. blocksize" << m_maxBlocksize;
+            kLogger.warning() << "Invalid max. blocksize" << m_maxBlocksize;
         }
         const SINT sampleBufferCapacity =
                 m_maxBlocksize * getChannelCount();
@@ -504,7 +507,7 @@ void SoundSourceFLAC::flacError(FLAC__StreamDecoderErrorStatus status) {
         error = "STREAM_DECODER_ERROR_STATUS_UNPARSEABLE_STREAM";
         break;
     }
-    qWarning() << "FLAC decoding error" << error << "in file"
+    kLogger.warning() << "FLAC decoding error" << error << "in file"
             << m_file.fileName();
     // not much else to do here... whatever function that initiated whatever
     // decoder method resulted in this error will return an error, and the caller

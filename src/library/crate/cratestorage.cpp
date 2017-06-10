@@ -3,6 +3,7 @@
 #include "library/crate/crateschema.h"
 #include "library/dao/trackschema.h"
 
+#include "util/db/sqllikewildcards.h"
 #include "util/db/dbconnection.h"
 #include "util/db/sqltransaction.h"
 #include "util/db/fwdsqlquery.h"
@@ -12,7 +13,6 @@
 
 namespace {
 
-const QString CRATETABLE_NAME = "name";
 const QString CRATETABLE_LOCKED = "locked";
 
 const QString CRATE_SUMMARY_VIEW = "crate_summary";
@@ -411,6 +411,20 @@ QString CrateStorage::formatSubselectQueryForCrateTrackIds(
 }
 
 
+//static
+QString CrateStorage::formatQueryForTrackIdsByCrateNameLike(
+        const QString& crateNameLike) {
+    return QString("SELECT DISTINCT %1 FROM %2 JOIN %3 ON %4=%5 WHERE %6 LIKE '%7' ORDER BY %1").arg(
+            CRATETRACKSTABLE_TRACKID,
+            CRATE_TRACKS_TABLE,
+            CRATE_TABLE,
+            CRATETRACKSTABLE_CRATEID,
+            CRATETABLE_ID,
+            CRATETABLE_NAME,
+            kSqlLikeMatchAll + crateNameLike + kSqlLikeMatchAll);
+}
+
+
 CrateTrackSelectResult CrateStorage::selectCrateTracksSorted(CrateId crateId) const {
     FwdSqlQuery query(m_database, QString(
             "SELECT * FROM %1 WHERE %2=:crateId ORDER BY %3").arg(
@@ -433,6 +447,26 @@ CrateTrackSelectResult CrateStorage::selectTrackCratesSorted(TrackId trackId) co
                     CRATETRACKSTABLE_TRACKID,
                     CRATETRACKSTABLE_CRATEID));
     query.bindValue(":trackId", trackId);
+    if (query.execPrepared()) {
+        return CrateTrackSelectResult(std::move(query));
+    } else {
+        return CrateTrackSelectResult();
+    }
+}
+
+
+CrateTrackSelectResult CrateStorage::selectTracksSortedByCrateNameLike(const QString& crateNameLike) const {
+    FwdSqlQuery query(m_database, QString(
+            "SELECT %1,%2 FROM %3 JOIN %4 ON %5 = %6 WHERE %7 LIKE :crateNameLike ORDER BY %1").arg(
+                    CRATETRACKSTABLE_TRACKID,
+                    CRATETRACKSTABLE_CRATEID,
+                    CRATE_TRACKS_TABLE,
+                    CRATE_TABLE,
+                    CRATETABLE_ID,
+                    CRATETRACKSTABLE_CRATEID,
+                    CRATETABLE_NAME));
+    query.bindValue(":crateNameLike", kSqlLikeMatchAll + crateNameLike + kSqlLikeMatchAll);
+
     if (query.execPrepared()) {
         return CrateTrackSelectResult(std::move(query));
     } else {
