@@ -11,7 +11,7 @@ var PioneerDDJSX = function() {};
 
 /*
 	Author: 		DJMaxergy
-	Version: 		1.17, 06/06/2017
+	Version: 		1.18, 06/10/2017
 	Description: 	Pioneer DDJ-SX Controller Mapping for Mixxx
     Source: 		http://github.com/DJMaxergy/mixxx/tree/pioneerDDJSX_mapping
     
@@ -629,7 +629,6 @@ PioneerDDJSX.bindDeckControlConnections = function(channelGroup, bind) {
             'loop_enabled': 'PioneerDDJSX.autoLoopLed',
             'loop_double': 'PioneerDDJSX.loopDoubleLed',
             'loop_halve': 'PioneerDDJSX.loopHalveLed',
-            'reloop_toggle': 'PioneerDDJSX.loopExitLed',
             'reloop_andstop': 'PioneerDDJSX.shiftLoopInLed',
             'beatjump_1_forward': 'PioneerDDJSX.loopShiftFWLed',
             'beatjump_1_backward': 'PioneerDDJSX.loopShiftBKWLed',
@@ -1417,17 +1416,15 @@ PioneerDDJSX.tempoResetButton = function(channel, control, value, status, group)
 };
 
 PioneerDDJSX.autoLoopButton = function(channel, control, value, status, group) {
-    if (value) {
-        if (engine.getValue(group, "loop_enabled")) {
-            engine.setValue(group, "reloop_toggle", true);
-        } else {
-            engine.setValue(group, "beatloop_activate", true);
-        }
+    if (engine.getValue(group, "loop_enabled")) {
+        engine.setValue(group, "reloop_toggle", value);
+    } else {
+        engine.setValue(group, "beatloop_activate", value);
     }
 };
 
 PioneerDDJSX.loopActiveButton = function(channel, control, value, status, group) {
-    script.toggleControl(group, "reloop_toggle");
+    engine.setValue(group, "reloop_toggle", value);
 };
 
 PioneerDDJSX.loopInButton = function(channel, control, value, status, group) {
@@ -1443,7 +1440,7 @@ PioneerDDJSX.loopOutButton = function(channel, control, value, status, group) {
 };
 
 PioneerDDJSX.loopExitButton = function(channel, control, value, status, group) {
-    script.toggleControl(group, "reloop_toggle");
+    engine.setValue(group, "reloop_toggle", value);
 };
 
 PioneerDDJSX.loopHalveButton = function(channel, control, value, status, group) {
@@ -1907,6 +1904,8 @@ PioneerDDJSX.syncLed = function(value, group, control) {
 
 PioneerDDJSX.autoLoopLed = function(value, group, control) {
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.autoLoop, value);
+    PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.shiftLoopOut, value);
+    PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.shiftAutoLoop, value);
 };
 
 PioneerDDJSX.loopInLed = function(value, group, control) {
@@ -1919,11 +1918,6 @@ PioneerDDJSX.shiftLoopInLed = function(value, group, control) {
 
 PioneerDDJSX.loopOutLed = function(value, group, control) {
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.loopOut, value);
-};
-
-PioneerDDJSX.loopExitLed = function(value, group, control) {
-    PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.shiftLoopOut, value);
-    PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.shiftAutoLoop, value);
 };
 
 PioneerDDJSX.loopHalveLed = function(value, group, control) {
