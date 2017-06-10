@@ -18,17 +18,26 @@ EffectChainManager::~EffectChainManager() {
     //qDebug() << debugString() << "destroyed";
 }
 
-void EffectChainManager::registerChannel(const ChannelHandleAndGroup& handle_group) {
-    if (m_registeredChannels.contains(handle_group)) {
-        qWarning() << debugString() << "WARNING: Channel already registered:"
+void EffectChainManager::registerInputChannel(const ChannelHandleAndGroup& handle_group) {
+    if (m_registeredInputChannels.contains(handle_group)) {
+        qWarning() << debugString() << "WARNING: Input channel already registered:"
                    << handle_group.name();
         return;
     }
-    m_registeredChannels.insert(handle_group);
+    m_registeredInputChannels.insert(handle_group);
 
     foreach (StandardEffectRackPointer pRack, m_standardEffectRacks) {
-        pRack->registerChannel(handle_group);
+        pRack->registerInputChannel(handle_group);
     }
+}
+
+void EffectChainManager::registerOutputChannel(const ChannelHandleAndGroup& handle_group) {
+    if (m_registeredOutputChannels.contains(handle_group)) {
+        qWarning() << debugString() << "WARNING: Output channel already registered:"
+                   << handle_group.name();
+        return;
+    }
+    m_registeredOutputChannels.insert(handle_group);
 }
 
 StandardEffectRackPointer EffectChainManager::addStandardEffectRack() {

@@ -19,7 +19,8 @@
 class EngineEffect : public EffectsRequestHandler {
   public:
     EngineEffect(const EffectManifest& manifest,
-                 const QSet<ChannelHandleAndGroup>& registeredChannels,
+                 const QSet<ChannelHandleAndGroup>& registeredInputChannels,
+                 const QSet<ChannelHandleAndGroup>& registeredOutputChannels,
                  EffectInstantiatorPointer pInstantiator);
     virtual ~EngineEffect();
 
@@ -35,7 +36,7 @@ class EngineEffect : public EffectsRequestHandler {
         const EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe);
 
-    void process(const ChannelHandle& handle,
+    void process(const ChannelHandle& inputHandle, const ChannelHandle& outputHandle,
                  const CSAMPLE* pInput, CSAMPLE* pOutput,
                  const unsigned int numSamples,
                  const unsigned int sampleRate,

@@ -1,9 +1,12 @@
 #include "engine/effects/engineeffectrack.h"
-
 #include "engine/effects/engineeffectchain.h"
+#include "util/defs.h"
+#include "util/sample.h"
 
 EngineEffectRack::EngineEffectRack(int iRackNumber)
-        : m_iRackNumber(iRackNumber) {
+        : m_iRackNumber(iRackNumber),
+          m_buffer1(MAX_BUFFER_LEN),
+          m_buffer2(MAX_BUFFER_LEN) {
     // Try to prevent memory allocation.
     m_chains.reserve(256);
 }
@@ -41,15 +44,38 @@ bool EngineEffectRack::processEffectsRequest(const EffectsRequest& message,
     return true;
 }
 
-void EngineEffectRack::process(const ChannelHandle& handle,
-                               CSAMPLE* pInOut,
+bool EngineEffectRack::process(const ChannelHandle& inputHandle,
+                               const ChannelHandle& outputHandle,
+                               CSAMPLE* pIn, CSAMPLE* pOut,
                                const unsigned int numSamples,
                                const unsigned int sampleRate,
                                const GroupFeatureState& groupFeatures) {
-    foreach (EngineEffectChain* pChain, m_chains) {
-        if (pChain != NULL) {
-            pChain->process(handle, pInOut, numSamples, sampleRate, groupFeatures);
+    int chainsProcessed = 0;
+    CSAMPLE* pIntermediateInput = pIn;
+    CSAMPLE* pIntermediateOutput = m_buffer1.data();
+
+    for (EngineEffectChain* pChain : m_chains) {
+        if (pChain != nullptr) {
+            if (pChain->process(inputHandle, outputHandle,
+                                pIntermediateInput, pIntermediateOutput,
+                                numSamples, sampleRate, groupFeatures)) {
+                ++chainsProcessed;
+                if (chainsProcessed % 2) {
+                    pIntermediateInput = m_buffer1.data();
+                    pIntermediateOutput = m_buffer2.data();
+                } else {
+                    pIntermediateInput = m_buffer2.data();
+                    pIntermediateOutput = m_buffer1.data();
+                }
+            }
         }
+    }
+
+    if (chainsProcessed == 0) {
+        return false;
+    } else {
+        SampleUtil::copy(pOut, pIntermediateInput, numSamples);
+        return true;
     }
 }
 

@@ -24,7 +24,8 @@ class EffectProcessor {
     virtual ~EffectProcessor() { }
 
     virtual void initialize(
-            const QSet<ChannelHandleAndGroup>& registeredChannels) = 0;
+            const QSet<ChannelHandleAndGroup>& registeredInputChannels,
+            const QSet<ChannelHandleAndGroup>& registeredOutputChannels) = 0;
 
     // Take a buffer of numSamples samples of audio from a channel, provided as
     // pInput, process the buffer according to Effect-specific logic, and output
@@ -35,7 +36,7 @@ class EffectProcessor {
     // samples. The provided channel handle allows the effect to maintain state
     // on a per-channel basis. This is important because one Effect instance may
     // be used to process the audio of multiple channels.
-    virtual void process(const ChannelHandle& handle,
+    virtual void process(const ChannelHandle& inputHandle, const ChannelHandle& outputHandle,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples,
                          const unsigned int sampleRate,
@@ -55,33 +56,44 @@ class PerChannelEffectProcessor : public EffectProcessor {
     PerChannelEffectProcessor() {
     }
     virtual ~PerChannelEffectProcessor() {
-        for (typename ChannelHandleMap<ChannelStateHolder>::iterator it =
-                     m_channelState.begin();
-             it != m_channelState.end(); ++it) {
-            T* pState = it->state;
-            delete pState;
+        for (ChannelHandleMap<ChannelStateHolder> outputsMap : m_channelStateMatrix) {
+            for (typename ChannelHandleMap<ChannelStateHolder>::iterator it =
+                        outputsMap.begin();
+                it != outputsMap.end(); ++it) {
+                T* pState = it->state;
+                delete pState;
+            }
+            outputsMap.clear();
         }
-        m_channelState.clear();
+        m_channelStateMatrix.clear();
     }
 
     virtual void initialize(
-            const QSet<ChannelHandleAndGroup>& registeredChannels) {
-        foreach (const ChannelHandleAndGroup& channel, registeredChannels) {
-            getOrCreateChannelState(channel.handle());
+            const QSet<ChannelHandleAndGroup>& registeredInputChannels,
+            const QSet<ChannelHandleAndGroup>& registeredOutputChannels) {
+        for (const ChannelHandleAndGroup& inputChannel : registeredInputChannels) {
+            ChannelHandleMap<ChannelStateHolder> outputChannelMap;
+            m_channelStateMatrix.insert(inputChannel.handle(), outputChannelMap);
+            for (const ChannelHandleAndGroup& outputChannel : registeredOutputChannels) {
+                getOrCreateChannelState(inputChannel.handle(), outputChannel.handle());
+            }
         }
     }
 
-    virtual void process(const ChannelHandle& handle,
+    virtual void process(const ChannelHandle& inputHandle, const ChannelHandle& outputHandle,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples,
                          const unsigned int sampleRate,
                          const EffectProcessor::EnableState enableState,
                          const GroupFeatureState& groupFeatures) {
-        T* pState = getOrCreateChannelState(handle);
-        processChannel(handle, pState, pInput, pOutput, numSamples, sampleRate,
+        T* pState = getOrCreateChannelState(inputHandle, outputHandle);
+        processChannel(inputHandle, pState, pInput, pOutput, numSamples, sampleRate,
                        enableState, groupFeatures);
     }
 
+    // TODO(Be): remove ChannelHandle& argument? No (native) effects use it. Why should
+    // effects be concerned with the ChannelHandle& when process() takes care of giving
+    // it the appropriate ChannelStateHolder?
     virtual void processChannel(const ChannelHandle& handle,
                                 T* channelState,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
@@ -91,15 +103,16 @@ class PerChannelEffectProcessor : public EffectProcessor {
                                 const GroupFeatureState& groupFeatures) = 0;
 
   private:
-    inline T* getOrCreateChannelState(const ChannelHandle& handle) {
-        ChannelStateHolder& holder = m_channelState[handle];
+    inline T* getOrCreateChannelState(const ChannelHandle& inputHandle,
+                                      const ChannelHandle& outputHandle) {
+        ChannelStateHolder& holder = m_channelStateMatrix[inputHandle][outputHandle];
         if (holder.state == NULL) {
             holder.state = new T();
         }
         return holder.state;
     }
 
-    ChannelHandleMap<ChannelStateHolder> m_channelState;
+    ChannelHandleMap<ChannelHandleMap<ChannelStateHolder>> m_channelStateMatrix;
 };
 
 #endif /* EFFECTPROCESSOR_H */

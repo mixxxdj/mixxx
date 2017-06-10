@@ -3,6 +3,7 @@
 
 #include <QScopedPointer>
 
+#include "util/samplebuffer.h"
 #include "util/types.h"
 #include "util/fifo.h"
 #include "engine/effects/message.h"
@@ -27,8 +28,9 @@ class EngineEffectsManager : public EffectsRequestHandler {
     // represented as stereo interleaved samples. There are numSamples total
     // samples, so numSamples/2 left channel samples and numSamples/2 right
     // channel samples.
-    virtual void process(const ChannelHandle& handle,
-                         CSAMPLE* pInOut,
+    virtual void process(const ChannelHandle& inputHandle,
+                         const ChannelHandle& outputHandle,
+                         CSAMPLE* pIn, CSAMPLE* pOut,
                          const unsigned int numSamples,
                          const unsigned int sampleRate,
                          const GroupFeatureState& groupFeatures);
@@ -49,6 +51,9 @@ class EngineEffectsManager : public EffectsRequestHandler {
     QList<EngineEffectRack*> m_racks;
     QList<EngineEffectChain*> m_chains;
     QList<EngineEffect*> m_effects;
+
+    SampleBuffer m_buffer1;
+    SampleBuffer m_buffer2;
 };
 
 

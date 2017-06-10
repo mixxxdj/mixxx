@@ -25,8 +25,9 @@ class EngineEffectChain : public EffectsRequestHandler {
         const EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe);
 
-    void process(const ChannelHandle& handle,
-                 CSAMPLE* pInOut,
+    bool process(const ChannelHandle& inputHandle,
+                 const ChannelHandle& outputHandle,
+                 CSAMPLE* pIn, CSAMPLE* pOut,
                  const unsigned int numSamples,
                  const unsigned int sampleRate,
                  const GroupFeatureState& groupFeatures);

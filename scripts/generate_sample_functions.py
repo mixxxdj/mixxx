@@ -140,6 +140,7 @@ def write_channelmixer_autogen(output, num_channels):
                 'QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>* activeChannels',
                 'QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache',
                 'CSAMPLE* pOutput',
+                'const ChannelHandle& outputHandle',
                 'unsigned int iBufferSize', 'unsigned int iSampleRate',
                 'EngineEffectsManager* pEngineEffectsManager']
         output.extend(hanging_indent(header, args, ',', ') {'))
@@ -182,15 +183,15 @@ def write_channelmixer_autogen(output, num_channels):
 
             write('if (pEngineEffectsManager) {', depth=2)
             for j in xrange(i):
-              write('pEngineEffectsManager->process(pChannel%(j)d->m_handle, pBuffer%(j)d, iBufferSize, iSampleRate, pChannel%(j)d->m_features);' % {'j': j}, depth=3)
-            write('}', depth=2)
-
-            write('for (unsigned int i = 0; i < iBufferSize; ++i) {', depth=2)
+              write('pEngineEffectsManager->process(pChannel%(j)d->m_handle, outputHandle, pBuffer%(j)d, pOutput, iBufferSize, iSampleRate, pChannel%(j)d->m_features);' % {'j': j}, depth=3)
+            write('} else {', depth=2)
+            write('for (unsigned int i = 0; i < iBufferSize; ++i) {', depth=3)
             line = 'pOutput[i] = pBuffer0[i]'
             for j in xrange(1, i):
                 line += ' + pBuffer%(j)d[i]' % {'j': j}
             line += ';'
-            write(line, depth=3)
+            write(line, depth=4)
+            write('}', depth=3)
             write('}', depth=2)
 
         write('} else {', depth=1)
@@ -219,10 +220,10 @@ def write_channelmixer_autogen(output, num_channels):
             write('SampleUtil::applyRampingGain(pBuffer, oldGain, newGain, iBufferSize);', depth=3)
         else:
             write('SampleUtil::applyGain(pBuffer, newGain, iBufferSize);', depth=3)
-        write('pEngineEffectsManager->process(pChannelInfo->m_handle, pBuffer, iBufferSize, iSampleRate, pChannelInfo->m_features);' % {'j': j}, depth=3)
-        write('for (unsigned int i = 0; i < iBufferSize; ++i) {', depth=3)
-        write('pOutput[i] += pBuffer[i];', depth=4)
-        write('}', depth=3)
+        write('pEngineEffectsManager->process(pChannelInfo->m_handle, outputHandle, pBuffer, pOutput, iBufferSize, iSampleRate, pChannelInfo->m_features);' % {'j': j}, depth=3)
+        #write('for (unsigned int i = 0; i < iBufferSize; ++i) {', depth=3)
+        #write('pOutput[i] += pBuffer[i];', depth=4)
+        #write('}', depth=3)
         write('}', depth=2)
         write('}', depth=1)
         output.append('}')

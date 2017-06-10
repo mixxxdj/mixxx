@@ -52,11 +52,14 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
     m_pWorkerScheduler->start(QThread::HighPriority);
 
     if (pEffectsManager) {
-        pEffectsManager->registerChannel(m_masterHandle);
-        pEffectsManager->registerChannel(m_headphoneHandle);
-        pEffectsManager->registerChannel(m_busLeftHandle);
-        pEffectsManager->registerChannel(m_busCenterHandle);
-        pEffectsManager->registerChannel(m_busRightHandle);
+        pEffectsManager->registerInputChannel(m_masterHandle);
+        pEffectsManager->registerInputChannel(m_headphoneHandle);
+        pEffectsManager->registerInputChannel(m_busLeftHandle);
+        pEffectsManager->registerInputChannel(m_busCenterHandle);
+        pEffectsManager->registerInputChannel(m_busRightHandle);
+
+        pEffectsManager->registerOutputChannel(m_masterHandle);
+        pEffectsManager->registerOutputChannel(m_headphoneHandle);
     }
 
     // Master sample rate
@@ -375,15 +378,17 @@ void EngineMaster::process(const int iBufferSize) {
 
     if (headphoneEnabled) {
         if (m_bRampingGain) {
-            ChannelMixer::mixChannelsRamping(
+            ChannelMixer::applyEffectsAndMixChannelsRamping(
                     m_headphoneGain, &m_activeHeadphoneChannels,
                     &m_channelHeadphoneGainCache,
-                    m_pHead, iBufferSize);
+                    m_pHead, m_headphoneHandle.handle(),
+                    iBufferSize, iSampleRate, m_pEngineEffectsManager);
         } else {
-            ChannelMixer::mixChannels(
+            ChannelMixer::applyEffectsAndMixChannels(
                     m_headphoneGain, &m_activeHeadphoneChannels,
                     &m_channelHeadphoneGainCache,
-                    m_pHead, iBufferSize);
+                    m_pHead, m_headphoneHandle.handle(),
+                    iBufferSize, iSampleRate, m_pEngineEffectsManager);
         }
 
         // Process headphone channel effects
@@ -399,6 +404,8 @@ void EngineMaster::process(const int iBufferSize) {
                 headphoneFeatures = m_activeHeadphoneChannels.at(0)->m_features;
             }
             m_pEngineEffectsManager->process(m_headphoneHandle.handle(),
+                                             m_headphoneHandle.handle(),
+                                             m_pHead,
                                              m_pHead,
                                              iBufferSize, iSampleRate,
                                              headphoneFeatures);
@@ -410,13 +417,13 @@ void EngineMaster::process(const int iBufferSize) {
         ChannelMixer::applyEffectsAndMixChannelsRamping(
                 m_talkoverGain, &m_activeTalkoverChannels,
                 &m_channelTalkoverGainCache,
-                m_pTalkover,
+                m_pTalkover, m_masterHandle.handle(),
                 iBufferSize, iSampleRate, m_pEngineEffectsManager);
     } else {
         ChannelMixer::applyEffectsAndMixChannels(
                 m_talkoverGain, &m_activeTalkoverChannels,
                 &m_channelTalkoverGainCache,
-                m_pTalkover,
+                m_pTalkover, m_masterHandle.handle(),
                 iBufferSize, iSampleRate, m_pEngineEffectsManager);
     }
 
@@ -447,14 +454,14 @@ void EngineMaster::process(const int iBufferSize) {
                     m_masterGain,
                     &m_activeBusChannels[o],
                     &m_channelMasterGainCache, // no [o] because the old gain follows an orientation switch
-                    m_pOutputBusBuffers[o],
+                    m_pOutputBusBuffers[o], m_masterHandle.handle(),
                     iBufferSize, iSampleRate, m_pEngineEffectsManager);
         } else {
             ChannelMixer::applyEffectsAndMixChannels(
                     m_masterGain,
                     &m_activeBusChannels[o],
                     &m_channelMasterGainCache,
-                    m_pOutputBusBuffers[o],
+                    m_pOutputBusBuffers[o], m_masterHandle.handle(),
                     iBufferSize, iSampleRate, m_pEngineEffectsManager);
         }
     }
@@ -462,13 +469,16 @@ void EngineMaster::process(const int iBufferSize) {
     // Process master channel effects
     if (m_pEngineEffectsManager) {
         GroupFeatureState busFeatures;
-        m_pEngineEffectsManager->process(m_busLeftHandle.handle(),
+        m_pEngineEffectsManager->process(m_busLeftHandle.handle(), m_masterHandle.handle(),
+                                         m_pOutputBusBuffers[EngineChannel::LEFT],
                                          m_pOutputBusBuffers[EngineChannel::LEFT],
                                          iBufferSize, iSampleRate, busFeatures);
-        m_pEngineEffectsManager->process(m_busCenterHandle.handle(),
+        m_pEngineEffectsManager->process(m_busCenterHandle.handle(), m_masterHandle.handle(),
+                                         m_pOutputBusBuffers[EngineChannel::CENTER],
                                          m_pOutputBusBuffers[EngineChannel::CENTER],
                                          iBufferSize, iSampleRate, busFeatures);
-        m_pEngineEffectsManager->process(m_busRightHandle.handle(),
+        m_pEngineEffectsManager->process(m_busRightHandle.handle(), m_masterHandle.handle(),
+                                         m_pOutputBusBuffers[EngineChannel::RIGHT],
                                          m_pOutputBusBuffers[EngineChannel::RIGHT],
                                          iBufferSize, iSampleRate, busFeatures);
     }
@@ -502,7 +512,10 @@ void EngineMaster::process(const int iBufferSize) {
             }
             masterFeatures.has_gain = true;
             masterFeatures.gain = m_pMasterGain->get();
-            m_pEngineEffectsManager->process(m_masterHandle.handle(), m_pMaster,
+            m_pEngineEffectsManager->process(m_masterHandle.handle(),
+                                             m_masterHandle.handle(),
+                                             m_pMaster,
+                                             m_pMaster,
                                              iBufferSize, iSampleRate,
                                              masterFeatures);
         }

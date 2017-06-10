@@ -21,8 +21,8 @@ class EffectSlotTest : public BaseEffectTest {
     EffectSlotTest()
             : m_master(m_factory.getOrCreateHandle("[Master]"), "[Master]"),
               m_headphone(m_factory.getOrCreateHandle("[Headphone]"), "[Headphone]") {
-        m_pEffectsManager->registerChannel(m_master);
-        m_pEffectsManager->registerChannel(m_headphone);
+        m_pEffectsManager->registerInputChannel(m_master);
+        m_pEffectsManager->registerInputChannel(m_headphone);
         registerTestBackend();
     }
 

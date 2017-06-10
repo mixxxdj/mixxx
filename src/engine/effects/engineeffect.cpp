@@ -3,7 +3,8 @@
 #include "util/sample.h"
 
 EngineEffect::EngineEffect(const EffectManifest& manifest,
-                           const QSet<ChannelHandleAndGroup>& registeredChannels,
+                           const QSet<ChannelHandleAndGroup>& registeredInputChannels,
+                           const QSet<ChannelHandleAndGroup>& registeredOutputChannels,
                            EffectInstantiatorPointer pInstantiator)
         : m_manifest(manifest),
           m_enableState(EffectProcessor::DISABLED),
@@ -19,7 +20,7 @@ EngineEffect::EngineEffect(const EffectManifest& manifest,
 
     // Creating the processor must come last.
     m_pProcessor = pInstantiator->instantiate(this, manifest);
-    m_pProcessor->initialize(registeredChannels);
+    m_pProcessor->initialize(registeredInputChannels, registeredOutputChannels);
     m_effectRampsFromDry = manifest.effectRampsFromDry();
 }
 
@@ -87,7 +88,8 @@ bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
     return false;
 }
 
-void EngineEffect::process(const ChannelHandle& handle,
+void EngineEffect::process(const ChannelHandle& inputHandle,
+                           const ChannelHandle& outputHandle,
                            const CSAMPLE* pInput, CSAMPLE* pOutput,
                            const unsigned int numSamples,
                            const unsigned int sampleRate,
@@ -100,8 +102,9 @@ void EngineEffect::process(const ChannelHandle& handle,
         effectiveEnableState = EffectProcessor::ENABLING;
     }
 
-    m_pProcessor->process(handle, pInput, pOutput, numSamples, sampleRate,
-            effectiveEnableState, groupFeatures);
+    m_pProcessor->process(inputHandle, outputHandle, pInput, pOutput,
+                          numSamples, sampleRate,
+                          effectiveEnableState, groupFeatures);
     if (!m_effectRampsFromDry) {
         // the effect does not fade, so we care for it
         if (effectiveEnableState == EffectProcessor::DISABLING) {

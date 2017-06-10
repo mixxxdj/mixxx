@@ -67,9 +67,9 @@ void EffectRack::removeFromEngine() {
     m_pEngineEffectRack = NULL;
 }
 
-void EffectRack::registerChannel(const ChannelHandleAndGroup& handle_group) {
+void EffectRack::registerInputChannel(const ChannelHandleAndGroup& handle_group) {
     foreach (EffectChainSlotPointer pChainSlot, m_effectChainSlots) {
-        pChainSlot->registerChannel(handle_group);
+        pChainSlot->registerInputChannel(handle_group);
     }
 }
 
@@ -252,9 +252,9 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot(EffectChainPointer
 
     // Register all the existing channels with the new EffectChain.
     const QSet<ChannelHandleAndGroup>& registeredChannels =
-            m_pEffectChainManager->registeredChannels();
+            m_pEffectChainManager->registeredInputChannels();
     for (const ChannelHandleAndGroup& handle_group : registeredChannels) {
-        pChainSlot->registerChannel(handle_group);
+        pChainSlot->registerInputChannel(handle_group);
     }
 
     EffectChainSlotPointer pChainSlotPointer = EffectChainSlotPointer(pChainSlot);
@@ -292,7 +292,7 @@ EffectChainSlotPointer PerGroupRack::addEffectChainSlotForGroup(const QString& g
 
     // TODO(rryan): remove.
     foreach (const ChannelHandleAndGroup& handle_group,
-             m_pEffectChainManager->registeredChannels()) {
+             m_pEffectChainManager->registeredInputChannels()) {
         if (handle_group.name() == groupName) {
             configureEffectChainSlotForGroup(pChainSlotPointer, handle_group);
             return pChainSlotPointer;
@@ -319,7 +319,7 @@ QuickEffectRack::QuickEffectRack(EffectsManager* pEffectsManager,
 void QuickEffectRack::configureEffectChainSlotForGroup(
         EffectChainSlotPointer pSlot, const ChannelHandleAndGroup& handle_group) {
     // Register this channel alone with the chain slot.
-    pSlot->registerChannel(handle_group);
+    pSlot->registerInputChannel(handle_group);
 
     // Add a single EffectSlot for the quick effect.
     pSlot->addEffectSlot(QuickEffectRack::formatEffectSlotGroupString(
@@ -357,7 +357,7 @@ bool QuickEffectRack::loadEffectToGroup(const QString& groupName,
         pChainSlot->loadEffectChain(pChain);
         // TODO(rryan): remove.
         foreach (const ChannelHandleAndGroup& handle_group,
-                 m_pEffectChainManager->registeredChannels()) {
+                 m_pEffectChainManager->registeredInputChannels()) {
             if (handle_group.name() == groupName) {
                 pChain->enableForChannel(handle_group);
             }
@@ -397,7 +397,7 @@ bool EqualizerRack::loadEffectToGroup(const QString& groupName,
         pChainSlot->loadEffectChain(pChain);
         // TODO(rryan): remove.
         foreach (const ChannelHandleAndGroup& handle_group,
-                 m_pEffectChainManager->registeredChannels()) {
+                 m_pEffectChainManager->registeredInputChannels()) {
             if (handle_group.name() == groupName) {
                 pChain->enableForChannel(handle_group);
             }
@@ -418,7 +418,7 @@ void EqualizerRack::configureEffectChainSlotForGroup(EffectChainSlotPointer pSlo
     const QString& groupName = handle_group.name();
 
     // Register this channel alone with the chain slot.
-    pSlot->registerChannel(handle_group);
+    pSlot->registerInputChannel(handle_group);
 
     // Add a single EffectSlot for the equalizer effect.
     pSlot->addEffectSlot(EqualizerRack::formatEffectSlotGroupString(

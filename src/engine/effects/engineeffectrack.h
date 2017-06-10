@@ -6,6 +6,7 @@
 #include "engine/channelhandle.h"
 #include "engine/effects/message.h"
 #include "engine/effects/groupfeaturestate.h"
+#include "util/samplebuffer.h"
 
 class EngineEffectChain;
 
@@ -18,8 +19,9 @@ class EngineEffectRack : public EffectsRequestHandler {
         const EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe);
 
-    void process(const ChannelHandle& handle,
-                 CSAMPLE* pInOut,
+    bool process(const ChannelHandle& inputHandle,
+                 const ChannelHandle& outputHandle,
+                 CSAMPLE* pIn, CSAMPLE* pOut,
                  const unsigned int numSamples,
                  const unsigned int sampleRate,
                  const GroupFeatureState& groupFeatures);
@@ -38,6 +40,9 @@ class EngineEffectRack : public EffectsRequestHandler {
 
     int m_iRackNumber;
     QList<EngineEffectChain*> m_chains;
+
+    SampleBuffer m_buffer1;
+    SampleBuffer m_buffer2;
 
     DISALLOW_COPY_AND_ASSIGN(EngineEffectRack);
 };

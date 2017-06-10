@@ -36,7 +36,7 @@ class EffectChainSlot : public QObject {
     void loadEffectChain(EffectChainPointer pEffectChain);
     EffectChainPointer getEffectChain() const;
 
-    void registerChannel(const ChannelHandleAndGroup& handle_group);
+    void registerInputChannel(const ChannelHandleAndGroup& handle_group);
 
     double getSuperParameter() const;
     void setSuperParameter(double value, bool force = false);

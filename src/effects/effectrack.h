@@ -36,7 +36,7 @@ class EffectRack : public QObject {
     void removeFromEngine();
     EngineEffectRack* getEngineEffectRack();
 
-    void registerChannel(const ChannelHandleAndGroup& handle_group);
+    void registerInputChannel(const ChannelHandleAndGroup& handle_group);
     int numEffectChainSlots() const;
     EffectChainSlotPointer getEffectChainSlot(int i);
 

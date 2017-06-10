@@ -22,7 +22,7 @@ EngineAux::EngineAux(const ChannelHandleAndGroup& handle_group, EffectsManager* 
           m_sampleBuffer(NULL),
           m_wasActive(false) {
     if (pEffectsManager != NULL) {
-        pEffectsManager->registerChannel(handle_group);
+        pEffectsManager->registerInputChannel(handle_group);
     }
 
     // Make input_configured read-only.

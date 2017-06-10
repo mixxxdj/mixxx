@@ -4,8 +4,13 @@
 #include "engine/effects/engineeffectchain.h"
 #include "engine/effects/engineeffect.h"
 
+#include "util/defs.h"
+#include "util/sample.h"
+
 EngineEffectsManager::EngineEffectsManager(EffectsResponsePipe* pResponsePipe)
-        : m_pResponsePipe(pResponsePipe) {
+        : m_pResponsePipe(pResponsePipe),
+          m_buffer1(MAX_BUFFER_LEN),
+          m_buffer2(MAX_BUFFER_LEN) {
     // Try to prevent memory allocation.
     m_racks.reserve(256);
     m_chains.reserve(256);
@@ -130,14 +135,34 @@ void EngineEffectsManager::onCallbackStart() {
     }
 }
 
-void EngineEffectsManager::process(const ChannelHandle& handle,
-                                   CSAMPLE* pInOut,
+void EngineEffectsManager::process(const ChannelHandle& inputHandle,
+                                   const ChannelHandle& outputHandle,
+                                   CSAMPLE* pIn, CSAMPLE* pOut,
                                    const unsigned int numSamples,
                                    const unsigned int sampleRate,
                                    const GroupFeatureState& groupFeatures) {
-    foreach (EngineEffectRack* pRack, m_racks) {
-        pRack->process(handle, pInOut, numSamples, sampleRate, groupFeatures);
+    int racksProcessed = 0;
+    CSAMPLE* pIntermediateInput = pIn;
+    CSAMPLE* pIntermediateOutput = m_buffer1.data();
+
+    for (EngineEffectRack* pRack : m_racks) {
+        if (pRack != nullptr) {
+            if (pRack->process(inputHandle, outputHandle,
+                               pIntermediateInput, pIntermediateOutput,
+                               numSamples, sampleRate, groupFeatures)) {
+                ++racksProcessed;
+                if (racksProcessed % 2) {
+                    pIntermediateInput = m_buffer1.data();
+                    pIntermediateOutput = m_buffer2.data();
+                } else {
+                    pIntermediateInput = m_buffer2.data();
+                    pIntermediateOutput = m_buffer1.data();
+                }
+            }
+        }
     }
+
+    SampleUtil::copy(pOut, pIntermediateInput, numSamples);
 }
 
 bool EngineEffectsManager::addEffectRack(EngineEffectRack* pRack) {

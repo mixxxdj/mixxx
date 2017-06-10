@@ -18,8 +18,8 @@ class MetaLinkTest : public BaseEffectTest {
               m_headphone(m_factory.getOrCreateHandle("[Headphone]"), "[Headphone]") {
         mixxx::Time::setTestMode(true);
         mixxx::Time::setTestElapsedTime(mixxx::Duration::fromNanos(0));
-        m_pEffectsManager->registerChannel(m_master);
-        m_pEffectsManager->registerChannel(m_headphone);
+        m_pEffectsManager->registerInputChannel(m_master);
+        m_pEffectsManager->registerInputChannel(m_headphone);
         registerTestBackend();
 
         EffectChainPointer pChain(new EffectChain(m_pEffectsManager.data(),

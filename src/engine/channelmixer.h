@@ -25,7 +25,7 @@ class ChannelMixer {
         const EngineMaster::GainCalculator& gainCalculator,
         QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>* activeChannels,
         QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache,
-        CSAMPLE* pOutput,
+        CSAMPLE* pOutput, const ChannelHandle& outputHandle,
         unsigned int iBufferSize,
         unsigned int iSampleRate,
         EngineEffectsManager* pEngineEffectsManager);
@@ -33,7 +33,7 @@ class ChannelMixer {
         const EngineMaster::GainCalculator& gainCalculator,
         QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>* activeChannels,
         QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache,
-        CSAMPLE* pOutput,
+        CSAMPLE* pOutput, const ChannelHandle& outputHandle,
         unsigned int iBufferSize,
         unsigned int iSampleRate,
         EngineEffectsManager* pEngineEffectsManager);

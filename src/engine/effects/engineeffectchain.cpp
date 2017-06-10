@@ -149,18 +149,19 @@ EngineEffectChain::ChannelStatus& EngineEffectChain::getChannelStatus(
     return m_channelStatus[handle];
 }
 
-void EngineEffectChain::process(const ChannelHandle& handle,
-                                CSAMPLE* pInOut,
+bool EngineEffectChain::process(const ChannelHandle& inputHandle,
+                                const ChannelHandle& outputHandle,
+                                CSAMPLE* pIn, CSAMPLE* pOut,
                                 const unsigned int numSamples,
                                 const unsigned int sampleRate,
                                 const GroupFeatureState& groupFeatures) {
-    ChannelStatus& channel_info = getChannelStatus(handle);
+    ChannelStatus& channel_info = getChannelStatus(inputHandle);
 
     if (m_enableState == EffectProcessor::DISABLED
             || channel_info.enable_state == EffectProcessor::DISABLED) {
         // If the chain is not enabled and the channel is not enabled and we are not
         // ramping out then do nothing.
-        return;
+        return false;
     }
 
     EffectProcessor::EnableState effectiveEnableState = channel_info.enable_state;
@@ -193,7 +194,7 @@ void EngineEffectChain::process(const ChannelHandle& handle,
     // after writing to the output buffer. This requires not to use the same buffer
     // for in and output:
     int enabledEffectCount = 0;
-    CSAMPLE* pIntermediateInput = pInOut;
+    CSAMPLE* pIntermediateInput = pIn;
     CSAMPLE* pIntermediateOutput = m_buffer1.data();
 
     for (EngineEffect* pEffect: m_effects) {
@@ -201,7 +202,7 @@ void EngineEffectChain::process(const ChannelHandle& handle,
             continue;
         }
         pEffect->process(
-                handle,
+                inputHandle, outputHandle,
                 pIntermediateInput, pIntermediateOutput,
                 numSamples, sampleRate,
                 effectiveEnableState, groupFeatures);
@@ -222,19 +223,24 @@ void EngineEffectChain::process(const ChannelHandle& handle,
         if (m_insertionType == EffectChain::INSERT) {
             // INSERT mode: output = input * (1-wet) + effect(input) * wet
             SampleUtil::copy2WithRampingGain(
-                    pInOut,
-                    pInOut, 1.0 - wet_gain_old, 1.0 - wet_gain,
+                    pOut,
+                    pIn, 1.0 - wet_gain_old, 1.0 - wet_gain,
                     pIntermediateInput, wet_gain_old, wet_gain,
                     numSamples);
         } else {
             // SEND mode: output = input + effect(input) * wet
-            SampleUtil::addWithRampingGain(
-                    pInOut,
+            SampleUtil::copy2WithRampingGain(
+                    pOut,
+                    pIn, 1.0, 1.0,
                     pIntermediateInput, wet_gain_old, wet_gain,
                     numSamples);
         }
-    }
 
-    // Update ChannelStatus with the latest values.
-    channel_info.old_gain = wet_gain;
+        // Update ChannelStatus with the latest values.
+        channel_info.old_gain = wet_gain;
+        return true;
+    } else {
+        channel_info.old_gain = wet_gain;
+        return false;
+    }
 }

@@ -93,12 +93,20 @@ void EffectsManager::slotBackendRegisteredEffect(EffectManifest manifest) {
     m_pNumEffectsAvailable->forceSet(m_availableEffectManifests.size());
 }
 
-void EffectsManager::registerChannel(const ChannelHandleAndGroup& handle_group) {
-    m_pEffectChainManager->registerChannel(handle_group);
+void EffectsManager::registerInputChannel(const ChannelHandleAndGroup& handle_group) {
+    m_pEffectChainManager->registerInputChannel(handle_group);
 }
 
-const QSet<ChannelHandleAndGroup>& EffectsManager::registeredChannels() const {
-    return m_pEffectChainManager->registeredChannels();
+const QSet<ChannelHandleAndGroup>& EffectsManager::registeredInputChannels() const {
+    return m_pEffectChainManager->registeredInputChannels();
+}
+
+void EffectsManager::registerOutputChannel(const ChannelHandleAndGroup& handle_group) {
+    m_pEffectChainManager->registerOutputChannel(handle_group);
+}
+
+const QSet<ChannelHandleAndGroup>& EffectsManager::registeredOutputChannels() const {
+    return m_pEffectChainManager->registeredOutputChannels();
 }
 
 const QList<EffectManifest> EffectsManager::getAvailableEffectManifestsFiltered(

@@ -35,7 +35,7 @@ void benchmarkNativeEffectDefaultParameters(const unsigned int sampleRate,
     registeredChannels.insert(ChannelHandleAndGroup(channel1, channel1_group));
     EffectInstantiatorPointer pInstantiator = EffectInstantiatorPointer(
         new EffectProcessorInstantiator<EffectType>());
-    EngineEffect effect(manifest, registeredChannels, pInstantiator);
+    EngineEffect effect(manifest, registeredChannels, registeredChannels, pInstantiator);
 
     GroupFeatureState featureState;
     EffectProcessor::EnableState enableState = EffectProcessor::ENABLED;
@@ -44,7 +44,7 @@ void benchmarkNativeEffectDefaultParameters(const unsigned int sampleRate,
     SampleBuffer output(numSamples);
 
     while (pState->KeepRunning()) {
-        effect.process(channel1, input.data(), output.data(), numSamples,
+        effect.process(channel1, channel1, input.data(), output.data(), numSamples,
                        sampleRate, enableState, featureState);
     }
 }

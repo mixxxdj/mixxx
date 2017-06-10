@@ -34,14 +34,17 @@ class MockEffectProcessor : public EffectProcessor {
   public:
     MockEffectProcessor() {}
 
-    MOCK_METHOD7(process, void(const ChannelHandle& group, const CSAMPLE* pInput,
+    MOCK_METHOD8(process, void(const ChannelHandle& inputHandle,
+                               const ChannelHandle& outputHandle,
+                               const CSAMPLE* pInput,
                                CSAMPLE* pOutput,
                                const unsigned int numSamples,
                                const unsigned int sampleRate,
                                const EffectProcessor::EnableState enableState,
                                const GroupFeatureState& groupFeatures));
 
-    MOCK_METHOD1(initialize, void(const QSet<ChannelHandleAndGroup>& registeredChannels));
+    MOCK_METHOD2(initialize, void(const QSet<ChannelHandleAndGroup>& registeredInputChannels,
+                                  const QSet<ChannelHandleAndGroup>& registeredOutputChannels));
 };
 
 class MockEffectInstantiator : public EffectInstantiator {
