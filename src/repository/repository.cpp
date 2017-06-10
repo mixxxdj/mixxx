@@ -8,9 +8,6 @@
 
 namespace mixxx {
 
-//static
-const QString Repository::kDefaultDatabaseConnectionName = "MIXXX";
-
 // The schema XML is baked into the binary via Qt resources.
 //static
 const QString Repository::kDefaultSchemaFile(":/schema.xml");
@@ -22,14 +19,23 @@ namespace {
 
 const Logger kLogger("Repository");
 
-const QString kDatabaseFileName = "mixxxdb.sqlite";
+// The connection parameters for the main Mixxx DB
+DbConnection::Params dbConnectionParams(
+        const UserSettingsPointer& pConfig) {
+    DbConnection::Params params;
+    params.type = "QSQLITE";
+    params.hostName = "localhost";
+    params.filePath = QDir(pConfig->getSettingsPath()).filePath("mixxxdb.sqlite");
+    params.userName = "mixxx";
+    params.password = "mixxx";
+    return params;
+}
 
 } // anonymous namespace
 
 Repository::Repository(
-        const UserSettingsPointer& pConfig,
-        const QString& dbConnectionName)
-    : m_pDbConnectionPool(std::make_shared<DbConnectionPool>(pConfig->getSettingsPath(), kDatabaseFileName, dbConnectionName)) {
+        const UserSettingsPointer& pConfig)
+    : m_pDbConnectionPool(std::make_shared<DbConnectionPool>(dbConnectionParams(pConfig), "MIXXX")) {
 }
 
 bool Repository::initDatabaseSchema(

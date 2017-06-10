@@ -18,15 +18,13 @@ typedef std::shared_ptr<DbConnectionPool> DbConnectionPoolPtr;
 class DbConnectionPool final {
   public:
     static DbConnectionPoolPtr create(
-            const QDir& dirPath,
-            const QString& fileName,
+            const DbConnection::Params& params,
             const QString& connectionName) {
-        return std::make_shared<DbConnectionPool>(dirPath, fileName, connectionName);
+        return std::make_shared<DbConnectionPool>(params, connectionName);
     }
 
     DbConnectionPool(
-            const QDir& dirPath,
-            const QString& fileName,
+            const DbConnection::Params& params,
             const QString& connectionName);
 
     // Returns a database connection for the current thread, that has

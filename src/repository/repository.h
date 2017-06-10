@@ -15,8 +15,6 @@ class Repository : public QObject {
     Q_OBJECT
 
   public:
-    static const QString kDefaultDatabaseConnectionName;
-
     static const QString kDefaultSchemaFile;
 
     static const int kRequiredSchemaVersion;
@@ -27,8 +25,7 @@ class Repository : public QObject {
             int schemaVersion = kRequiredSchemaVersion);
 
     explicit Repository(
-            const UserSettingsPointer& pConfig,
-            const QString& dbConnectionName = kDefaultDatabaseConnectionName);
+            const UserSettingsPointer& pConfig);
 
     DbConnectionPoolPtr dbConnectionPool() const {
         return m_pDbConnectionPool;

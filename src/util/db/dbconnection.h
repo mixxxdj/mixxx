@@ -23,10 +23,17 @@ class DbConnection final {
         QString* string,
         QChar esc);
 
+    struct Params {
+        QString type;
+        QString hostName;
+        QString filePath;
+        QString userName;
+        QString password;
+    };
+
     // All constructors are reserved for DbConnectionPool!!
     DbConnection(
-            const QDir& dirPath,
-            const QString& fileName,
+            const Params& params,
             const QString& connectionName);
     DbConnection(
             const DbConnection& prototype,

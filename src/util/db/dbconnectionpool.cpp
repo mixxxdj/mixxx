@@ -65,10 +65,9 @@ QSqlDatabase DbConnectionPool::threadLocalDatabase() const {
 }
 
 DbConnectionPool::DbConnectionPool(
-        const QDir& dirPath,
-        const QString& fileName,
+        const DbConnection::Params& params,
         const QString& connectionName)
-    : m_prototypeConnection(dirPath, fileName, connectionName),
+    : m_prototypeConnection(params, connectionName),
       m_connectionCounter(0) {
 }
 

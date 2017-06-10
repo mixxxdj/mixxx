@@ -22,27 +22,19 @@ namespace {
 
 const mixxx::Logger kLogger("DbConnection");
 
-const QString kDatabaseType = "QSQLITE";
-
-const QString kDatabaseHostName = "localhost";
-const QString kDatabaseUserName = "mixxx";
-const QString kDatabasePassword = "mixxx";
-
 QSqlDatabase createDatabase(
-        const QDir& dirPath,
-        const QString fileName,
+        const DbConnection::Params& params,
         const QString connectionName) {
     kLogger.debug()
         << "Available drivers for database connections:"
         << QSqlDatabase::drivers();
 
     QSqlDatabase database =
-            QSqlDatabase::addDatabase(kDatabaseType, connectionName);
-    database.setHostName(kDatabaseHostName);
-    QString filePath = dirPath.filePath(fileName);
-    database.setDatabaseName(filePath);
-    database.setUserName(kDatabaseUserName);
-    database.setPassword(kDatabasePassword);
+            QSqlDatabase::addDatabase(params.type, connectionName);
+    database.setHostName(params.hostName);
+    database.setDatabaseName(params.filePath);
+    database.setUserName(params.userName);
+    database.setPassword(params.password);
     return database;
 }
 
@@ -179,7 +171,7 @@ int sqliteStringCompareUTF16(void* pArg,
     return compareLocaleAwareCaseInsensitive(string1, string2);
 }
 
-const char* const kLexicographicalCollationFunc = "mixxxLexicographicalCollation";
+const char* const kLexicographicalCollationFunc = "mixxxLexicographicalCollationFunc";
 
 // This implements the like() SQL function. This is used by the LIKE operator.
 // The SQL statement 'A LIKE B' is implemented as 'like(B, A)', and if there is
@@ -291,10 +283,9 @@ bool initDatabase(QSqlDatabase database) {
 } // anonymous namespace
 
 DbConnection::DbConnection(
-        const QDir& dirPath,
-        const QString& fileName,
+        const Params& params,
         const QString& connectionName)
-    : m_database(createDatabase(dirPath, fileName, connectionName)) {
+    : m_database(createDatabase(params, connectionName)) {
 }
 
 DbConnection::DbConnection(
