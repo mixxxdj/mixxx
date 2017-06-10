@@ -8,7 +8,7 @@ namespace {
     const mixxx::Logger kLogger("SqlTransaction");
 
     inline
-    bool beginTransaction(QSqlDatabase& database) {
+    bool beginTransaction(QSqlDatabase database) {
         if (!database.isOpen()) {
             // Should only happen during tests
             kLogger.warning()
@@ -31,12 +31,14 @@ namespace {
 
 } // anonymous namespace
 
-SqlTransaction::SqlTransaction(QSqlDatabase database)
+SqlTransaction::SqlTransaction(
+        const QSqlDatabase& database)
     : m_database(database), // implicitly shared (not copied)
       m_active(beginTransaction(m_database)) {
 }
 
-SqlTransaction::SqlTransaction(SqlTransaction&& other)
+SqlTransaction::SqlTransaction(
+        SqlTransaction&& other)
     : m_database(std::move(other.m_database)), // implicitly shared (not moved)
       m_active(other.m_active) {
     other.release();

@@ -1,6 +1,7 @@
 #include "preferences/dialog/dlgprefwaveform.h"
 
 #include "mixxx.h"
+#include "library/library.h"
 #include "preferences/waveformsettings.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
@@ -217,27 +218,23 @@ void DlgPrefWaveform::slotWaveformMeasured(float frameRate, int droppedFrames) {
 }
 
 void DlgPrefWaveform::slotClearCachedWaveforms() {
-    TrackCollection* pTrackCollection = m_pLibrary->getTrackCollection();
-    if (pTrackCollection != nullptr) {
-        AnalysisDao& analysisDao = pTrackCollection->getAnalysisDAO();
-        analysisDao.deleteAnalysesByType(AnalysisDao::TYPE_WAVEFORM);
-        analysisDao.deleteAnalysesByType(AnalysisDao::TYPE_WAVESUMMARY);
-        calculateCachedWaveformDiskUsage();
-    }
+    AnalysisDao analysisDao(m_pConfig);
+    QSqlDatabase sqlDatabase(m_pLibrary->dbConnectionPool()->threadLocalConnection());
+    analysisDao.deleteAnalysesByType(sqlDatabase, AnalysisDao::TYPE_WAVEFORM);
+    analysisDao.deleteAnalysesByType(sqlDatabase, AnalysisDao::TYPE_WAVESUMMARY);
+    calculateCachedWaveformDiskUsage();
 }
 
 void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {
-    TrackCollection* pTrackCollection = m_pLibrary->getTrackCollection();
-    if (pTrackCollection != nullptr) {
-        AnalysisDao& analysisDao = pTrackCollection->getAnalysisDAO();
-        size_t waveformBytes = analysisDao.getDiskUsageInBytes(AnalysisDao::TYPE_WAVEFORM);
-        size_t wavesummaryBytes = analysisDao.getDiskUsageInBytes(AnalysisDao::TYPE_WAVESUMMARY);
+    AnalysisDao analysisDao(m_pConfig);
+    QSqlDatabase sqlDatabase(m_pLibrary->dbConnectionPool()->threadLocalConnection());
+    size_t numBytes = analysisDao.getDiskUsageInBytes(sqlDatabase, AnalysisDao::TYPE_WAVEFORM) +
+            analysisDao.getDiskUsageInBytes(sqlDatabase, AnalysisDao::TYPE_WAVESUMMARY);
 
-        // Display total cached waveform size in mebibytes with 2 decimals.
-        QString sizeMebibytes = QString::number(
-                (waveformBytes + wavesummaryBytes) / (1024.0 * 1024.0), 'f', 2);
+    // Display total cached waveform size in mebibytes with 2 decimals.
+    QString sizeMebibytes = QString::number(
+            numBytes / (1024.0 * 1024.0), 'f', 2);
 
-        waveformDiskUsage->setText(
-                tr("Cached waveforms occupy %1 MiB on disk.").arg(sizeMebibytes));
-    }
+    waveformDiskUsage->setText(
+            tr("Cached waveforms occupy %1 MiB on disk.").arg(sizeMebibytes));
 }

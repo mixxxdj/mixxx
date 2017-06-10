@@ -38,7 +38,8 @@ class PlayerManagerInterface;
 
 class Library : public QObject {
     Q_OBJECT
-public:
+
+  public:
     static const QString kConfigGroup;
 
     static const ConfigKey kConfigKeyRepairDatabaseOnNextRestart;
@@ -59,14 +60,6 @@ public:
 
     void addFeature(LibraryFeature* feature);
     QStringList getDirs();
-
-    // TODO(rryan) Transitionary only -- the only reason this is here is so the
-    // waveform widgets can signal to a player to load a track. This can be
-    // fixed by moving the waveform renderers inside player and connecting the
-    // signals directly.
-    TrackCollection* getTrackCollection() {
-        return m_pTrackCollection;
-    }
 
     inline int getTrackTableRowHeight() const {
         return m_iTrackTableRowHeight;
@@ -129,8 +122,12 @@ public:
 
   private:
     UserSettingsPointer m_pConfig;
+
+    // The Mixxx repository in a SQLite3 database
     mixxx::Repository m_repository;
-    const mixxx::DbConnectionPool::ThreadLocalScope m_mainDbConnectionScope;
+    // The Mixxx database connection for this (and only this!) thread
+    const mixxx::DbConnectionPool::ThreadLocalScope m_dbConnectionScope;
+
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
     QList<LibraryFeature*> m_features;

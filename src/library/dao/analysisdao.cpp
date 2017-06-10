@@ -358,10 +358,12 @@ void AnalysisDao::saveTrackAnalyses(const Track& track) {
              << "analysisId" << analysis.analysisId;
 }
 
-size_t AnalysisDao::getDiskUsageInBytes(AnalysisType type) {
+size_t AnalysisDao::getDiskUsageInBytes(
+        const QSqlDatabase& database,
+        AnalysisType type) const {
     QDir analysisPath(getAnalysisStoragePath());
 
-    QSqlQuery query(m_db);
+    QSqlQuery query(database);
     query.prepare(QString("SELECT id FROM %1 WHERE type=:type").arg(s_analysisTableName));
     query.bindValue(":type", type);
 
@@ -379,10 +381,12 @@ size_t AnalysisDao::getDiskUsageInBytes(AnalysisType type) {
     return total;
 }
 
-bool AnalysisDao::deleteAnalysesByType(AnalysisType type) {
+bool AnalysisDao::deleteAnalysesByType(
+        const QSqlDatabase& database,
+        AnalysisType type) const {
     QDir analysisPath(getAnalysisStoragePath());
 
-    QSqlQuery query(m_db);
+    QSqlQuery query(database);
     query.prepare(QString("SELECT id FROM %1 WHERE type=:type").arg(s_analysisTableName));
     query.bindValue(":type", type);
 

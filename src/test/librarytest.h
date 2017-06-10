@@ -13,9 +13,9 @@ class LibraryTest : public MixxxTest {
         : m_repository(config()),
           m_dbConnectionScope(m_repository.dbConnectionPool()),
           m_trackCollection(config()) {
-        QSqlDatabase database = m_dbConnectionScope.database();
-        mixxx::Repository::initDatabaseSchema(database);
-        m_trackCollection.connectDatabase(database);
+        QSqlDatabase sqlDatabase(m_dbConnectionScope);
+        mixxx::Repository::initDatabaseSchema(sqlDatabase);
+        m_trackCollection.connectDatabase(sqlDatabase);
     }
     ~LibraryTest() override {
         m_trackCollection.disconnectDatabase();
@@ -23,6 +23,10 @@ class LibraryTest : public MixxxTest {
 
     mixxx::DbConnectionPoolPtr dbConnectionPool() const {
         return m_repository.dbConnectionPool();
+    }
+
+    const mixxx::DbConnectionPool::ThreadLocalScope& dbConnectionScope() const {
+        return m_dbConnectionScope;
     }
 
     TrackCollection* collection() {

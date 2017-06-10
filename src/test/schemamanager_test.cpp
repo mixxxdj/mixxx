@@ -17,8 +17,8 @@ class SchemaManagerTest : public MixxxTest {
               m_dbConnectionScope(m_repository.dbConnectionPool()) {
     }
 
-    QSqlDatabase database() const {
-        return m_dbConnectionScope.database();
+    const mixxx::DbConnectionPool::ThreadLocalScope& dbConnectionScope() const {
+        return m_dbConnectionScope;
     }
 
   private:
@@ -29,14 +29,14 @@ class SchemaManagerTest : public MixxxTest {
 TEST_F(SchemaManagerTest, CanUpgradeFreshDatabaseToRequiredVersion) {
     // Initial upgrade
     {
-        SchemaManager schemaManager(database());
+        SchemaManager schemaManager(dbConnectionScope());
         SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
                 mixxx::Repository::kDefaultSchemaFile, mixxx::Repository::kRequiredSchemaVersion);
         EXPECT_EQ(SchemaManager::Result::UpgradeSucceeded, result);
     }
     // Subsequent upgrade(s)
     {
-        SchemaManager schemaManager(database());
+        SchemaManager schemaManager(dbConnectionScope());
         SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
                 mixxx::Repository::kDefaultSchemaFile, mixxx::Repository::kRequiredSchemaVersion);
         EXPECT_EQ(SchemaManager::Result::CurrentVersion, result);
@@ -44,7 +44,7 @@ TEST_F(SchemaManagerTest, CanUpgradeFreshDatabaseToRequiredVersion) {
 }
 
 TEST_F(SchemaManagerTest, NonExistentSchema) {
-    SchemaManager schemaManager(database());
+    SchemaManager schemaManager(dbConnectionScope());
     SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
             ":file_doesnt_exist.xml", mixxx::Repository::kRequiredSchemaVersion);
     EXPECT_EQ(SchemaManager::Result::SchemaError, result);
@@ -54,12 +54,12 @@ TEST_F(SchemaManagerTest, BackwardsCompatibleVersion) {
     // Establish preconditions for test
     {
         // Upgrade to version 1 to get the settings table.
-        SchemaManager schemaManager(database());
+        SchemaManager schemaManager(dbConnectionScope());
         SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
                 mixxx::Repository::kDefaultSchemaFile, 1);
         EXPECT_EQ(SchemaManager::Result::UpgradeSucceeded, result);
 
-        SettingsDAO settings(database());
+        SettingsDAO settings(dbConnectionScope());
         settings.initialize();
 
         // Pretend the database version is one past the required version but
@@ -70,7 +70,7 @@ TEST_F(SchemaManagerTest, BackwardsCompatibleVersion) {
                           mixxx::Repository::kRequiredSchemaVersion);
     }
 
-    SchemaManager schemaManager(database());
+    SchemaManager schemaManager(dbConnectionScope());
     SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
             mixxx::Repository::kDefaultSchemaFile, mixxx::Repository::kRequiredSchemaVersion);
     EXPECT_EQ(SchemaManager::Result::NewerVersionBackwardsCompatible, result);
@@ -80,12 +80,12 @@ TEST_F(SchemaManagerTest, BackwardsIncompatibleVersion) {
     // Establish preconditions for test
     {
         // Upgrade to version 1 to get the settings table.
-        SchemaManager schemaManager(database());
+        SchemaManager schemaManager(dbConnectionScope());
         SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
                 mixxx::Repository::kDefaultSchemaFile, 1);
         EXPECT_EQ(SchemaManager::Result::UpgradeSucceeded, result);
 
-        SettingsDAO settings(database());
+        SettingsDAO settings(dbConnectionScope());
         settings.initialize();
 
         // Pretend the database version is one past the required version and
@@ -96,7 +96,7 @@ TEST_F(SchemaManagerTest, BackwardsIncompatibleVersion) {
                           mixxx::Repository::kRequiredSchemaVersion + 1);
     }
 
-    SchemaManager schemaManager(database());
+    SchemaManager schemaManager(dbConnectionScope());
     SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
             mixxx::Repository::kDefaultSchemaFile, mixxx::Repository::kRequiredSchemaVersion);
     EXPECT_EQ(SchemaManager::Result::NewerVersionIncompatible, result);
@@ -106,18 +106,18 @@ TEST_F(SchemaManagerTest, FailedUpgrade) {
     // Establish preconditions for test
     {
         // Upgrade to version 3 to get the modern library table.
-        SchemaManager schemaManager(database());
+        SchemaManager schemaManager(dbConnectionScope());
         SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
                 mixxx::Repository::kDefaultSchemaFile, 3);
         EXPECT_EQ(SchemaManager::Result::UpgradeSucceeded, result);
     }
 
     // Add a column that is added in verison 24.
-    QSqlQuery query(database());
+    QSqlQuery query(dbConnectionScope());
     EXPECT_TRUE(query.exec(
             "ALTER TABLE library ADD COLUMN coverart_source TEXT"));
 
-    SchemaManager schemaManager(database());
+    SchemaManager schemaManager(dbConnectionScope());
     SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
             mixxx::Repository::kDefaultSchemaFile, mixxx::Repository::kRequiredSchemaVersion);
     EXPECT_EQ(SchemaManager::Result::UpgradeFailed, result);

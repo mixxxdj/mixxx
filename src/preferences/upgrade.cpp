@@ -365,10 +365,11 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
             const mixxx::DbConnectionPool::ThreadLocalScope dbConnectionScope(
                     repository.dbConnectionPool());
             if (dbConnectionScope) {
-                QSqlDatabase database = dbConnectionScope.database();
-                if (mixxx::Repository::initDatabaseSchema(database)) {
+                QSqlDatabase sqlDatabase(dbConnectionScope);
+                DEBUG_ASSERT(sqlDatabase.isOpen());
+                if (mixxx::Repository::initDatabaseSchema(sqlDatabase)) {
                     TrackCollection tc(config);
-                    tc.connectDatabase(database);
+                    tc.connectDatabase(sqlDatabase);
 
                     // upgrade to the multi library folder settings
                     QString currentFolder = config->getValueString(PREF_LEGACY_LIBRARY_DIR);

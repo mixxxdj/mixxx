@@ -30,7 +30,7 @@ class DbConnectionPool final {
     // Returns a database connection for the current thread, that has
     // previously been created (see above). The returned connection
     // is only valid within the current thread!
-    QSqlDatabase threadLocalDatabase() const;
+    QSqlDatabase threadLocalConnection() const;
 
     // Temporarily creates and destroys a thread-local database connection
     class ThreadLocalScope final {
@@ -38,28 +38,24 @@ class DbConnectionPool final {
         explicit ThreadLocalScope(
                 DbConnectionPoolPtr pDbConnectionPool = DbConnectionPoolPtr());
         ThreadLocalScope(
-                ThreadLocalScope&& other);
+                ThreadLocalScope&& other) = default;
         ~ThreadLocalScope();
-
-        ThreadLocalScope& operator=(
-                ThreadLocalScope&& other);
 
         operator bool() const {
             return m_pDbConnectionPool != nullptr;
         }
 
-        QSqlDatabase database() const {
-            VERIFY_OR_DEBUG_ASSERT(m_pDbConnectionPool) {
-                return QSqlDatabase(); // safety fallback
-            }
-            return m_pDbConnectionPool->threadLocalDatabase();
+        operator QSqlDatabase() const {
+            return m_sqlDatabase;
         }
 
       private:
         ThreadLocalScope(const ThreadLocalScope&) = delete;
         ThreadLocalScope& operator=(const ThreadLocalScope&) = delete;
+        ThreadLocalScope& operator=(ThreadLocalScope&&) = delete;
 
         DbConnectionPoolPtr m_pDbConnectionPool;
+        QSqlDatabase m_sqlDatabase;
     };
 
   private:

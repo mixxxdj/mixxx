@@ -47,7 +47,7 @@ void DbConnectionPool::destroyThreadLocalConnection() {
     m_threadLocalConnections.setLocalData(nullptr);
 }
 
-QSqlDatabase DbConnectionPool::threadLocalDatabase() const {
+QSqlDatabase DbConnectionPool::threadLocalConnection() const {
     VERIFY_OR_DEBUG_ASSERT(m_threadLocalConnections.hasLocalData()) {
         kLogger.critical()
                 << "Thread-local database connection not available";
@@ -75,31 +75,14 @@ DbConnectionPool::ThreadLocalScope::ThreadLocalScope(
         DbConnectionPoolPtr pDbConnectionPool) {
     if (pDbConnectionPool && pDbConnectionPool->createThreadLocalConnection()) {
         m_pDbConnectionPool = std::move(pDbConnectionPool);
+        m_sqlDatabase = m_pDbConnectionPool->threadLocalConnection();
     }
-}
-
-DbConnectionPool::ThreadLocalScope::ThreadLocalScope(
-        ThreadLocalScope&& other)
-    : m_pDbConnectionPool(std::move(other.m_pDbConnectionPool)) {
-    DEBUG_ASSERT(!other.m_pDbConnectionPool);
 }
 
 DbConnectionPool::ThreadLocalScope::~ThreadLocalScope() {
     if (m_pDbConnectionPool) {
         m_pDbConnectionPool->destroyThreadLocalConnection();
     }
-}
-
-DbConnectionPool::ThreadLocalScope& DbConnectionPool::ThreadLocalScope::operator=(
-        ThreadLocalScope&& other) {
-    if (this != &other) {
-        if (m_pDbConnectionPool) {
-            m_pDbConnectionPool->destroyThreadLocalConnection();
-        }
-        m_pDbConnectionPool = std::move(other.m_pDbConnectionPool);
-        DEBUG_ASSERT(!other.m_pDbConnectionPool);
-    }
-    return *this;
 }
 
 } // namespace mixxx

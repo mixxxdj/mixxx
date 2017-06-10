@@ -34,6 +34,16 @@ class AnalysisDao : public DAO {
     explicit AnalysisDao(UserSettingsPointer pConfig);
     ~AnalysisDao() override {}
 
+    // The following functions can be used with a custom database
+    // connection and independent of whether the DAO has been
+    // initialized or not.
+    bool deleteAnalysesByType(
+            const QSqlDatabase& database,
+            AnalysisType type) const;
+    size_t getDiskUsageInBytes(
+            const QSqlDatabase& database,
+            AnalysisType type) const;
+
     void initialize(const QSqlDatabase& database) override {
         m_db = database;
     }
@@ -44,11 +54,8 @@ class AnalysisDao : public DAO {
     bool deleteAnalysis(const int analysisId);
     void deleteAnalyses(const QList<TrackId>& trackIds);
     bool deleteAnalysesForTrack(TrackId trackId);
-    bool deleteAnalysesByType(AnalysisType type);
 
     void saveTrackAnalyses(const Track& track);
-
-    size_t getDiskUsageInBytes(AnalysisType type);
 
   private:
     bool saveWaveform(const Track& tio,

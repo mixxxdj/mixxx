@@ -63,14 +63,14 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
                  RecordingManager* pRecordingManager) :
         m_pConfig(pConfig),
         m_repository(pConfig),
-        m_mainDbConnectionScope(m_repository.dbConnectionPool()),
+        m_dbConnectionScope(m_repository.dbConnectionPool()),
         m_pSidebarModel(new SidebarModel(parent)),
         m_pTrackCollection(new TrackCollection(pConfig)),
         m_pLibraryControl(new LibraryControl(this)),
         m_pRecordingManager(pRecordingManager),
         m_scanner(m_repository.dbConnectionPool(), m_pTrackCollection, pConfig) {
     kLogger.info() << "Opening datbase connection";
-    if (!m_mainDbConnectionScope) {
+    if (!m_dbConnectionScope) {
         QMessageBox::critical(0, tr("Cannot open database"),
                             tr("Unable to establish a database connection.\n"
                                 "Mixxx requires QT with SQLite support. Please read "
@@ -80,11 +80,11 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
         // TODO(XXX) something a little more elegant
         exit(-1);
     }
-
-    QSqlDatabase database = m_mainDbConnectionScope.database();
+    QSqlDatabase sqlDatabase(m_dbConnectionScope);
+    DEBUG_ASSERT(sqlDatabase.isOpen());
 
     kLogger.info() << "Initializing or upgrading database schema";
-    if (!mixxx::Repository::initDatabaseSchema(database)) {
+    if (!mixxx::Repository::initDatabaseSchema(sqlDatabase)) {
         // TODO(XXX) something a little more elegant
         exit(-1);
     }
@@ -93,13 +93,13 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
     // and repairing the database on the next restart of the application.
     if (pConfig->getValue(kConfigKeyRepairDatabaseOnNextRestart, false)) {
         kLogger.info() << "Checking and repairing database (if necessary)";
-        m_pTrackCollection->repairDatabase(database);
+        m_pTrackCollection->repairDatabase(sqlDatabase);
         // Reset config value
         pConfig->setValue(kConfigKeyRepairDatabaseOnNextRestart, false);
     }
 
     kLogger.info() << "Connecting database";
-    m_pTrackCollection->connectDatabase(database);
+    m_pTrackCollection->connectDatabase(sqlDatabase);
 
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
 

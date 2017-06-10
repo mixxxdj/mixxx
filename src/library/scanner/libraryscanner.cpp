@@ -101,15 +101,15 @@ void LibraryScanner::run() {
             kLogger.debug() << "Exiting thread";
             return;
         }
+        QSqlDatabase sqlDatabase(dbConnectionScope);
+        DEBUG_ASSERT(sqlDatabase.isOpen());
 
-        QSqlDatabase database = dbConnectionScope.database();
-        DEBUG_ASSERT(database.isOpen());
-        m_libraryHashDao.initialize(database);
-        m_cueDao.initialize(database);
-        m_trackDao.initialize(database);
-        m_playlistDao.initialize(database);
-        m_analysisDao.initialize(database);
-        m_directoryDao.initialize(database);
+        m_libraryHashDao.initialize(sqlDatabase);
+        m_cueDao.initialize(sqlDatabase);
+        m_trackDao.initialize(sqlDatabase);
+        m_playlistDao.initialize(sqlDatabase);
+        m_analysisDao.initialize(sqlDatabase);
+        m_directoryDao.initialize(sqlDatabase);
 
         // Start the event loop.
         kLogger.debug() << "Event loop starting";
@@ -240,7 +240,7 @@ void LibraryScanner::cleanUpScan() {
 
     // Start a transaction for all the library hashing (moved file
     // detection) stuff.
-    QSqlDatabase database = m_pDbConnectionPool->threadLocalDatabase();
+    QSqlDatabase database = m_pDbConnectionPool->threadLocalConnection();
     ScopedTransaction transaction(database);
 
     kLogger.debug() << "Marking tracks in changed directories as verified";
