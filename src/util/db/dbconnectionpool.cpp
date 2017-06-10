@@ -24,7 +24,7 @@ bool DbConnectionPool::createThreadLocalConnection() {
             m_connectionCounter.fetchAndAddAcquire(1) + 1;
     const QString indexedConnectionName =
             QString("%1-%2").arg(
-                    m_prototypeConnection.database().connectionName(),
+                    m_prototypeConnection.name(),
                     QString::number(connectionIndex));
     auto pConnection = std::make_unique<DbConnection>(m_prototypeConnection, indexedConnectionName);
     if (!pConnection->open()) {
@@ -61,7 +61,7 @@ QSqlDatabase DbConnectionPool::threadLocalConnection() const {
     kLogger.debug()
             << "Found thread-local database connection"
             << *pConnection;;
-    return pConnection->database();
+    return *pConnection;
 }
 
 DbConnectionPool::DbConnectionPool(

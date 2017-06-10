@@ -2,7 +2,7 @@
 
 #include "test/mixxxtest.h"
 
-#include "library/trackcollection.h"
+#include "repository/repository.h"
 
 #include "library/queryutil.h"
 #include "util/db/sqllikewildcardescaper.h"
@@ -10,17 +10,19 @@
 class QueryUtilTest : public MixxxTest {
   protected:
     QueryUtilTest()
-          : m_trackCollection(config()) {
+          : m_repository(config()),
+            m_dbConnectionScope(m_repository.dbConnectionPool()) {
         // This test only needs a connection to an empty database
         // without any particular schema. No need to initialize the
         // database schema.
     }
 
-    TrackCollection m_trackCollection;
+    mixxx::Repository m_repository;
+    const mixxx::DbConnectionPool::ThreadLocalScope m_dbConnectionScope;
 };
 
 TEST_F(QueryUtilTest, FieldEscaperEscapesQuotes) {
-    FieldEscaper fieldEscaper(m_trackCollection.database());
+    FieldEscaper fieldEscaper(m_dbConnectionScope);
     EXPECT_STREQ(qPrintable(QString("'foobar'")),
                  qPrintable(fieldEscaper.escapeString("foobar")));
     EXPECT_STREQ(qPrintable(QString("'foobar''s'")),

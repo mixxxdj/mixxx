@@ -361,8 +361,8 @@ int DbConnection::likeCompareLatinLow(
 
 QDebug operator<<(QDebug debug, const DbConnection& connection) {
     return debug
-            << connection.database().connectionName()
-            << connection.database();
+            << connection.name()
+            << connection.m_database;
 }
 
 } // namespace mixxx
