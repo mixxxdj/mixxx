@@ -10,12 +10,9 @@
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "engine/enginechannel.h"
-#include "engine/enginevumeter.h"
 #include "util/circularbuffer.h"
 #include "soundio/soundmanagerutil.h"
 
-class EffectsManager;
-class EngineEffectsManager;
 class ControlAudioTaperPot;
 
 // EngineAux is an EngineChannel that implements a mixing source whose
@@ -50,12 +47,8 @@ class EngineAux : public EngineChannel, public AudioDestination {
     virtual void onInputUnconfigured(AudioInput input);
 
   private:
-    EngineEffectsManager* m_pEngineEffectsManager;
-    EngineVuMeter m_vuMeter;
     QScopedPointer<ControlObject> m_pInputConfigured;
     ControlAudioTaperPot* m_pPregain;
-    ControlProxy* m_pSampleRate;
-    const CSAMPLE* volatile m_sampleBuffer;
     bool m_wasActive;
 };
 

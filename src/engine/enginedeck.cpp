@@ -31,22 +31,12 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
                        EngineMaster* pMixingEngine,
                        EffectsManager* pEffectsManager,
                        EngineChannel::ChannelOrientation defaultOrientation)
-        : EngineChannel(handle_group, defaultOrientation),
+        : EngineChannel(handle_group, defaultOrientation, pEffectsManager),
           m_pConfig(pConfig),
-          m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
-          m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),
           m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
-          m_sampleBuffer(NULL),
           m_wasActive(false) {
-    if (pEffectsManager != NULL) {
-        pEffectsManager->registerInputChannel(handle_group);
-    }
-
-    // Make input_configured read-only.
-    m_pInputConfigured->setReadOnly();
-
     // Set up passthrough utilities and fields
     m_pPassing->setButtonMode(ControlPushButton::POWERWINDOW);
     m_bPassthroughIsActive = false;
@@ -57,21 +47,14 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
             this, SLOT(slotPassingToggle(double)),
             Qt::DirectConnection);
 
-    m_pSampleRate = new ControlProxy("[Master]", "samplerate");
-
-    // Set up additional engines
     m_pPregain = new EnginePregain(getGroup());
-    m_pVUMeter = new EngineVuMeter(getGroup());
     m_pBuffer = new EngineBuffer(getGroup(), pConfig, this, pMixingEngine);
 }
 
 EngineDeck::~EngineDeck() {
     delete m_pPassing;
-
     delete m_pBuffer;
     delete m_pPregain;
-    delete m_pVUMeter;
-    delete m_pSampleRate;
 }
 
 void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
@@ -100,13 +83,20 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
 
     // Apply pregain
     m_pPregain->process(pOut, iBufferSize);
+
+    EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager->getEngineEffectsManager();
+    if (pEngineEffectsManager != nullptr) {
+        pEngineEffectsManager->processPreFader(
+            m_group.handle(), pOut, iBufferSize, m_pSampleRate->get());
+    }
+
     // Update VU meter
-    m_pVUMeter->process(pOut, iBufferSize);
+    m_vuMeter.process(pOut, iBufferSize);
 }
 
 void EngineDeck::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     m_pBuffer->collectFeatures(pGroupFeatures);
-    m_pVUMeter->collectFeatures(pGroupFeatures);
+    m_vuMeter.collectFeatures(pGroupFeatures);
     m_pPregain->collectFeatures(pGroupFeatures);
 }
 
@@ -127,7 +117,7 @@ bool EngineDeck::isActive() {
     }
 
     if (!active && m_wasActive) {
-        m_pVUMeter->reset();
+        m_vuMeter.reset();
     }
     m_wasActive = active;
     return active;

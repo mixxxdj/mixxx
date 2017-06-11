@@ -88,9 +88,11 @@ struct EffectsRequest {
     union {
         struct {
             EngineEffectRack* pRack;
+            bool preFader;
         } AddEffectRack;
         struct {
             EngineEffectRack* pRack;
+            bool preFader;
         } RemoveEffectRack;
         struct {
             EngineEffectChain* pChain;

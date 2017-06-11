@@ -183,7 +183,7 @@ def write_channelmixer_autogen(output, num_channels):
 
             write('if (pEngineEffectsManager) {', depth=2)
             for j in xrange(i):
-              write('pEngineEffectsManager->process(pChannel%(j)d->m_handle, outputHandle, pBuffer%(j)d, pOutput, iBufferSize, iSampleRate, pChannel%(j)d->m_features);' % {'j': j}, depth=3)
+              write('pEngineEffectsManager->processPostFader(pChannel%(j)d->m_handle, outputHandle, pBuffer%(j)d, pOutput, iBufferSize, iSampleRate, pChannel%(j)d->m_features);' % {'j': j}, depth=3)
             write('} else {', depth=2)
             write('for (unsigned int i = 0; i < iBufferSize; ++i) {', depth=3)
             line = 'pOutput[i] = pBuffer0[i]'
@@ -221,7 +221,7 @@ def write_channelmixer_autogen(output, num_channels):
         else:
             write('SampleUtil::applyGain(pBuffer, newGain, iBufferSize);', depth=3)
         write('if (pEngineEffectsManager) {', depth=3)
-        write('pEngineEffectsManager->process(pChannelInfo->m_handle, outputHandle, pBuffer, pOutput, iBufferSize, iSampleRate, pChannelInfo->m_features);' % {'j': j}, depth=4)
+        write('pEngineEffectsManager->processPostFader(pChannelInfo->m_handle, outputHandle, pBuffer, pOutput, iBufferSize, iSampleRate, pChannelInfo->m_features);' % {'j': j}, depth=4)
         write('} else {', depth=3)
         write('for (unsigned int i = 0; i < iBufferSize; ++i) {', depth=4)
         write('pOutput[i] += pBuffer[i];', depth=5)

@@ -12,7 +12,8 @@ EngineEffectsManager::EngineEffectsManager(EffectsResponsePipe* pResponsePipe)
           m_buffer1(MAX_BUFFER_LEN),
           m_buffer2(MAX_BUFFER_LEN) {
     // Try to prevent memory allocation.
-    m_racks.reserve(256);
+    m_preFaderRacks.reserve(256);
+    m_postFaderRacks.reserve(256);
     m_chains.reserve(256);
     m_effects.reserve(256);
 }
@@ -34,7 +35,8 @@ void EngineEffectsManager::onCallbackStart() {
                 break;
             case EffectsRequest::ADD_CHAIN_TO_RACK:
             case EffectsRequest::REMOVE_CHAIN_FROM_RACK:
-                if (!m_racks.contains(request->pTargetRack)) {
+                if (!m_preFaderRacks.contains(request->pTargetRack)
+                    && !m_postFaderRacks.contains(request->pTargetRack)) {
                     if (kEffectDebugOutput) {
                         qDebug() << debugString()
                                  << "WARNING: message for unloaded rack"
@@ -135,17 +137,46 @@ void EngineEffectsManager::onCallbackStart() {
     }
 }
 
-void EngineEffectsManager::process(const ChannelHandle& inputHandle,
+void EngineEffectsManager::processPreFader(const ChannelHandle& handle,
+                                           CSAMPLE* pInOut,
+                                           const unsigned int numSamples,
+                                           const unsigned int sampleRate) {
+    // Feature state is gathered after prefader effects processing.
+    // This is okay because the equalizer and filter effects do not make use of it.
+    // However, if an effect is loaded into a QuickEffectRack that could make use
+    // of the GroupFeatureState, it will not sound the same as if it is loaded into
+    // a StandardEffectRack.
+    GroupFeatureState featureState;
+    processInner(m_preFaderRacks,
+                 handle, handle,
+                 pInOut, pInOut,
+                 numSamples, sampleRate, featureState);
+}
+
+void EngineEffectsManager::processPostFader(const ChannelHandle& inputHandle,
                                    const ChannelHandle& outputHandle,
                                    CSAMPLE* pIn, CSAMPLE* pOut,
                                    const unsigned int numSamples,
                                    const unsigned int sampleRate,
                                    const GroupFeatureState& groupFeatures) {
+    processInner(m_postFaderRacks,
+                inputHandle, outputHandle,
+                pIn, pOut,
+                numSamples, sampleRate, groupFeatures);
+}
+
+void EngineEffectsManager::processInner(const QList<EngineEffectRack*>& racks,
+                                        const ChannelHandle& inputHandle,
+                                        const ChannelHandle& outputHandle,
+                                        CSAMPLE* pIn, CSAMPLE* pOut,
+                                        const unsigned int numSamples,
+                                        const unsigned int sampleRate,
+                                        const GroupFeatureState& groupFeatures) {
     int racksProcessed = 0;
     CSAMPLE* pIntermediateInput = pIn;
     CSAMPLE* pIntermediateOutput = m_buffer1.data();
 
-    for (EngineEffectRack* pRack : m_racks) {
+    for (EngineEffectRack* pRack : racks) {
         if (pRack != nullptr) {
             if (pRack->process(inputHandle, outputHandle,
                                pIntermediateInput, pIntermediateOutput,
@@ -177,20 +208,36 @@ void EngineEffectsManager::process(const ChannelHandle& inputHandle,
     }
 }
 
-bool EngineEffectsManager::addEffectRack(EngineEffectRack* pRack) {
-    if (m_racks.contains(pRack)) {
+bool EngineEffectsManager::addPostFaderEffectRack(EngineEffectRack* pRack) {
+    if (m_postFaderRacks.contains(pRack)) {
         if (kEffectDebugOutput) {
             qDebug() << debugString() << "WARNING: EffectRack already added to EngineEffectsManager:"
                      << pRack->number();
         }
         return false;
     }
-    m_racks.append(pRack);
+    m_postFaderRacks.append(pRack);
     return true;
 }
 
-bool EngineEffectsManager::removeEffectRack(EngineEffectRack* pRack) {
-    return m_racks.removeAll(pRack) > 0;
+bool EngineEffectsManager::removePostFaderEffectRack(EngineEffectRack* pRack) {
+    return m_postFaderRacks.removeAll(pRack) > 0;
+}
+
+bool EngineEffectsManager::addPreFaderEffectRack(EngineEffectRack* pRack) {
+    if (m_preFaderRacks.contains(pRack)) {
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << "WARNING: EffectRack already added to EngineEffectsManager:"
+                     << pRack->number();
+        }
+        return false;
+    }
+    m_preFaderRacks.append(pRack);
+    return true;
+}
+
+bool EngineEffectsManager::removePreFaderEffectRack(EngineEffectRack* pRack) {
+    return m_preFaderRacks.removeAll(pRack) > 0;
 }
 
 bool EngineEffectsManager::processEffectsRequest(const EffectsRequest& message,
@@ -202,14 +249,22 @@ bool EngineEffectsManager::processEffectsRequest(const EffectsRequest& message,
                 qDebug() << debugString() << "ADD_EFFECT_RACK"
                          << message.AddEffectRack.pRack;
             }
-            response.success = addEffectRack(message.AddEffectRack.pRack);
+            if (message.AddEffectRack.preFader) {
+                response.success = addPreFaderEffectRack(message.AddEffectRack.pRack);
+            } else {
+                response.success = addPostFaderEffectRack(message.AddEffectRack.pRack);
+            }
             break;
         case EffectsRequest::REMOVE_EFFECT_RACK:
             if (kEffectDebugOutput) {
                 qDebug() << debugString() << "REMOVE_EFFECT_RACK"
                          << message.RemoveEffectRack.pRack;
             }
-            response.success = removeEffectRack(message.RemoveEffectRack.pRack);
+            if (message.AddEffectRack.preFader) {
+                response.success = removePreFaderEffectRack(message.AddEffectRack.pRack);
+            } else {
+                response.success = removePostFaderEffectRack(message.AddEffectRack.pRack);
+            }
             break;
         default:
             return false;

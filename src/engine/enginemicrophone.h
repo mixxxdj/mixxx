@@ -14,7 +14,6 @@
 
 #include "soundio/soundmanagerutil.h"
 
-class EffectsManager;
 class EngineEffectsManager;
 class ControlAudioTaperPot;
 
@@ -54,12 +53,8 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
     double getSoloDamping();
 
   private:
-    EngineEffectsManager* m_pEngineEffectsManager;
-    EngineVuMeter m_vuMeter;
     QScopedPointer<ControlObject> m_pInputConfigured;
     ControlAudioTaperPot* m_pPregain;
-    ControlProxy* m_pSampleRate;
-    const CSAMPLE* volatile m_sampleBuffer;
 
     bool m_wasActive;
 };

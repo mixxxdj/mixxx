@@ -34,7 +34,6 @@ class EnginePregain;
 class EngineBuffer;
 class EngineMaster;
 class EngineVuMeter;
-class EffectsManager;
 class EngineEffectsManager;
 class ControlPushButton;
 
@@ -81,14 +80,10 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     UserSettingsPointer m_pConfig;
     EngineBuffer* m_pBuffer;
     EnginePregain* m_pPregain;
-    EngineVuMeter* m_pVUMeter;
-    EngineEffectsManager* m_pEngineEffectsManager;
-    ControlProxy* m_pSampleRate;
 
     // Begin vinyl passthrough fields
     QScopedPointer<ControlObject> m_pInputConfigured;
     ControlPushButton* m_pPassing;
-    const CSAMPLE* volatile m_sampleBuffer;
     bool m_bPassthroughIsActive;
     bool m_bPassthroughWasActive;
     bool m_wasActive;

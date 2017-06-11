@@ -7,9 +7,10 @@
 EffectRack::EffectRack(EffectsManager* pEffectsManager,
                        EffectChainManager* pEffectChainManager,
                        const unsigned int iRackNumber,
-                       const QString& group)
+                       const QString& group, bool preFader)
         : m_pEffectsManager(pEffectsManager),
           m_pEffectChainManager(pEffectChainManager),
+          m_bPreFader(preFader),
           m_iRackNumber(iRackNumber),
           m_group(group),
           m_controlNumEffectChainSlots(ConfigKey(m_group, "num_effectunits")),
@@ -34,6 +35,7 @@ void EffectRack::addToEngine() {
     m_pEngineEffectRack = new EngineEffectRack(m_iRackNumber);
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::ADD_EFFECT_RACK;
+    pRequest->AddEffectRack.preFader = m_bPreFader;
     pRequest->AddEffectRack.pRack = m_pEngineEffectRack;
     m_pEffectsManager->writeRequest(pRequest);
 
@@ -62,6 +64,7 @@ void EffectRack::removeFromEngine() {
 
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::REMOVE_EFFECT_RACK;
+    pRequest->RemoveEffectRack.preFader = m_bPreFader;
     pRequest->RemoveEffectRack.pRack = m_pEngineEffectRack;
     m_pEffectsManager->writeRequest(pRequest);
     m_pEngineEffectRack = NULL;
@@ -222,7 +225,7 @@ StandardEffectRack::StandardEffectRack(EffectsManager* pEffectsManager,
                                        EffectChainManager* pChainManager,
                                        const unsigned int iRackNumber)
         : EffectRack(pEffectsManager, pChainManager, iRackNumber,
-                     formatGroupString(iRackNumber)) {
+                     formatGroupString(iRackNumber), false) {
 }
 
 EffectChainSlotPointer StandardEffectRack::addEffectChainSlot(EffectChainPointer pChain,
@@ -271,7 +274,7 @@ PerGroupRack::PerGroupRack(EffectsManager* pEffectsManager,
                            EffectChainManager* pChainManager,
                            const unsigned int iRackNumber,
                            const QString& group)
-        : EffectRack(pEffectsManager, pChainManager, iRackNumber, group) {
+        : EffectRack(pEffectsManager, pChainManager, iRackNumber, group, true) {
 }
 
 EffectChainSlotPointer PerGroupRack::addEffectChainSlotForGroup(const QString& groupName) {

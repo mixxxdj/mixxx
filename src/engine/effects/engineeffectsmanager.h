@@ -28,12 +28,17 @@ class EngineEffectsManager : public EffectsRequestHandler {
     // represented as stereo interleaved samples. There are numSamples total
     // samples, so numSamples/2 left channel samples and numSamples/2 right
     // channel samples.
-    virtual void process(const ChannelHandle& inputHandle,
-                         const ChannelHandle& outputHandle,
-                         CSAMPLE* pIn, CSAMPLE* pOut,
+    void processPreFader(const ChannelHandle& handle,
+                         CSAMPLE* pInOut,
                          const unsigned int numSamples,
-                         const unsigned int sampleRate,
-                         const GroupFeatureState& groupFeatures);
+                         const unsigned int sampleRate);
+
+    void processPostFader(const ChannelHandle& inputHandle,
+                          const ChannelHandle& outputHandle,
+                          CSAMPLE* pIn, CSAMPLE* pOut,
+                          const unsigned int numSamples,
+                          const unsigned int sampleRate,
+                          const GroupFeatureState& groupFeatures);
 
     bool processEffectsRequest(
         const EffectsRequest& message,
@@ -44,11 +49,23 @@ class EngineEffectsManager : public EffectsRequestHandler {
         return QString("EngineEffectsManager");
     }
 
-    bool addEffectRack(EngineEffectRack* pRack);
-    bool removeEffectRack(EngineEffectRack* pRack);
+    bool addPreFaderEffectRack(EngineEffectRack* pRack);
+    bool removePreFaderEffectRack(EngineEffectRack* pRack);
+
+    bool addPostFaderEffectRack(EngineEffectRack* pRack);
+    bool removePostFaderEffectRack(EngineEffectRack* pRack);
+
+    void processInner(const QList<EngineEffectRack*>& racks,
+                      const ChannelHandle& inputHandle,
+                      const ChannelHandle& outputHandle,
+                      CSAMPLE* pIn, CSAMPLE* pOut,
+                      const unsigned int numSamples,
+                      const unsigned int sampleRate,
+                      const GroupFeatureState& groupFeatures);
 
     QScopedPointer<EffectsResponsePipe> m_pResponsePipe;
-    QList<EngineEffectRack*> m_racks;
+    QList<EngineEffectRack*> m_preFaderRacks;
+    QList<EngineEffectRack*> m_postFaderRacks;
     QList<EngineEffectChain*> m_chains;
     QList<EngineEffect*> m_effects;
 

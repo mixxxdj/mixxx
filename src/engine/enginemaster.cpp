@@ -403,12 +403,11 @@ void EngineMaster::process(const int iBufferSize) {
             if (m_activeHeadphoneChannels.size() == 1) {
                 headphoneFeatures = m_activeHeadphoneChannels.at(0)->m_features;
             }
-            m_pEngineEffectsManager->process(m_headphoneHandle.handle(),
-                                             m_headphoneHandle.handle(),
-                                             m_pHead,
-                                             m_pHead,
-                                             iBufferSize, iSampleRate,
-                                             headphoneFeatures);
+            m_pEngineEffectsManager->processPostFader(
+                  m_headphoneHandle.handle(), m_headphoneHandle.handle(),
+                  m_pHead, m_pHead,
+                  iBufferSize, iSampleRate,
+                  headphoneFeatures);
         }
     }
 
@@ -469,18 +468,20 @@ void EngineMaster::process(const int iBufferSize) {
     // Process master channel effects
     if (m_pEngineEffectsManager) {
         GroupFeatureState busFeatures;
-        m_pEngineEffectsManager->process(m_busLeftHandle.handle(), m_masterHandle.handle(),
-                                         m_pOutputBusBuffers[EngineChannel::LEFT],
-                                         m_pOutputBusBuffers[EngineChannel::LEFT],
-                                         iBufferSize, iSampleRate, busFeatures);
-        m_pEngineEffectsManager->process(m_busCenterHandle.handle(), m_masterHandle.handle(),
-                                         m_pOutputBusBuffers[EngineChannel::CENTER],
-                                         m_pOutputBusBuffers[EngineChannel::CENTER],
-                                         iBufferSize, iSampleRate, busFeatures);
-        m_pEngineEffectsManager->process(m_busRightHandle.handle(), m_masterHandle.handle(),
-                                         m_pOutputBusBuffers[EngineChannel::RIGHT],
-                                         m_pOutputBusBuffers[EngineChannel::RIGHT],
-                                         iBufferSize, iSampleRate, busFeatures);
+        m_pEngineEffectsManager->processPostFader(
+            m_busLeftHandle.handle(), m_masterHandle.handle(),
+            m_pOutputBusBuffers[EngineChannel::LEFT], m_pOutputBusBuffers[EngineChannel::LEFT],
+            iBufferSize, iSampleRate, busFeatures);
+        m_pEngineEffectsManager->processPostFader(
+            m_busCenterHandle.handle(), m_masterHandle.handle(),
+            m_pOutputBusBuffers[EngineChannel::CENTER],
+            m_pOutputBusBuffers[EngineChannel::CENTER],
+            iBufferSize, iSampleRate, busFeatures);
+        m_pEngineEffectsManager->processPostFader(
+            m_busRightHandle.handle(), m_masterHandle.handle(),
+            m_pOutputBusBuffers[EngineChannel::RIGHT],
+            m_pOutputBusBuffers[EngineChannel::RIGHT],
+            iBufferSize, iSampleRate, busFeatures);
     }
 
     if (masterEnabled) {
@@ -512,12 +513,11 @@ void EngineMaster::process(const int iBufferSize) {
             }
             masterFeatures.has_gain = true;
             masterFeatures.gain = m_pMasterGain->get();
-            m_pEngineEffectsManager->process(m_masterHandle.handle(),
-                                             m_masterHandle.handle(),
-                                             m_pMaster,
-                                             m_pMaster,
-                                             iBufferSize, iSampleRate,
-                                             masterFeatures);
+            m_pEngineEffectsManager->processPostFader(
+                m_masterHandle.handle(), m_masterHandle.handle(),
+                m_pMaster, m_pMaster,
+                iBufferSize, iSampleRate,
+                masterFeatures);
         }
 
         if (headphoneEnabled) {

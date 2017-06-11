@@ -29,7 +29,7 @@ class EffectRack : public QObject {
     EffectRack(EffectsManager* pEffectsManager,
                EffectChainManager* pChainManager,
                const unsigned int iRackNumber,
-               const QString& group);
+               const QString& group, bool preFader=false);
     virtual ~EffectRack();
 
     void addToEngine();
@@ -79,6 +79,7 @@ class EffectRack : public QObject {
     EffectChainManager* m_pEffectChainManager;
 
   private:
+    bool m_bPreFader;
     const unsigned int m_iRackNumber;
     const QString m_group;
     QList<EffectChainSlotPointer> m_effectChainSlots;
