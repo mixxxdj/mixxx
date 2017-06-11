@@ -20,6 +20,7 @@ AnalyzerSilence::~AnalyzerSilence() {
 
 bool AnalyzerSilence::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
     Q_UNUSED(sampleRate);
+    Q_UNUSED(totalSamples);
 
     m_iFramesProcessed = 0;
     m_bPrevSilence = true;
@@ -31,7 +32,7 @@ bool AnalyzerSilence::initialize(TrackPointer tio, int sampleRate, int totalSamp
         m_pBeginCue = tio->createAndAddCue();
         m_pBeginCue->setType(Cue::BEGIN);
         m_pBeginCue->setSource(Cue::AUTOMATIC);
-        m_pBeginCue->setPosition(0);
+        m_pBeginCue->setPosition(-1.0);
     }
 
     m_pEndCue = tio->findCueByType(Cue::END);
@@ -39,7 +40,7 @@ bool AnalyzerSilence::initialize(TrackPointer tio, int sampleRate, int totalSamp
         m_pEndCue = tio->createAndAddCue();
         m_pEndCue->setType(Cue::END);
         m_pEndCue->setSource(Cue::AUTOMATIC);
-        m_pEndCue->setPosition(totalSamples);
+        m_pEndCue->setPosition(-1.0);
     }
 
     return !isDisabledOrLoadStoredSuccess(tio);

@@ -37,7 +37,7 @@ class FakeDeck : public BaseTrackPlayer {
   public:
     FakeDeck(const QString& group)
             : BaseTrackPlayer(NULL, group),
-              samples(ConfigKey(group, "track_samples")),
+              duration(ConfigKey(group, "duration")),
               samplerate(ConfigKey(group, "track_samplerate")),
               playposition(ConfigKey(group, "playposition"), 0.0, 1.0, true),
               play(ConfigKey(group, "play")),
@@ -48,7 +48,7 @@ class FakeDeck : public BaseTrackPlayer {
 
     void fakeTrackLoadedEvent(TrackPointer pTrack) {
         loadedTrack = pTrack;
-        samples.set(pTrack->getDuration() * pTrack->getSampleRate());
+        duration.set(pTrack->getDuration());
         samplerate.set(pTrack->getSampleRate());
         emit(newTrackLoaded(pTrack));
     }
@@ -78,13 +78,13 @@ class FakeDeck : public BaseTrackPlayer {
     // fakeTrackLoadFailedEvent.
     void slotLoadTrack(TrackPointer pTrack, bool bPlay) override {
         loadedTrack = pTrack;
-        samples.set(pTrack->getDuration() * pTrack->getSampleRate());
+        duration.set(pTrack->getDuration());
         samplerate.set(pTrack->getSampleRate());
         play.set(bPlay);
     }
 
     TrackPointer loadedTrack;
-    ControlObject samples;
+    ControlObject duration;
     ControlObject samplerate;
     ControlLinPotmeter playposition;
     ControlPushButton play;

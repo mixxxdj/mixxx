@@ -29,8 +29,8 @@ DeckAttributes::DeckAttributes(int index,
           m_repeat(group, "repeat"),
           m_startPos(group, "autodj_start_position"),
           m_endPos(group, "autodj_end_position"),
-          m_samples(group, "track_samples"),
           m_sampleRate(group, "track_samplerate"),
+          m_duration(group, "duration"),
           m_pPlayer(pPlayer) {
     connect(m_pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             this, SLOT(slotTrackLoaded(TrackPointer)));
@@ -744,35 +744,20 @@ void AutoDJProcessor::playerEndChanged(DeckAttributes* pAttributes,
     }
 }
 
-double AutoDJProcessor::getDuration(DeckAttributes* pDeck) {
-    double samples = pDeck->samples();
-    double samplerate = pDeck->sampleRate();
-    if (samplerate <= 0.0) {
-        return 0.0;
-    }
-    return samples / samplerate;  // Convert to seconds
-}
-
 double AutoDJProcessor::getStartPosition(DeckAttributes* pDeck) {
-    double samplerate = pDeck->sampleRate();
-    if (samplerate <= 0.0) {
-        return 0.0;
-    }
     double position = pDeck->startPosition() / kChannelCount;
-    if (position < 0.0) {
-        position = 0.0;
+    double samplerate = pDeck->sampleRate();
+    if (position <= 0.0 || samplerate <= 0.0) {
+        return -1.0;
     }
     return position / samplerate;  // Convert to seconds
 }
 
 double AutoDJProcessor::getEndPosition(DeckAttributes* pDeck) {
-    double samplerate = pDeck->sampleRate();
-    if (samplerate <= 0.0) {
-        return 0.0;
-    }
     double position = pDeck->endPosition() / kChannelCount;
-    if (position <= 0.0) {
-        position = pDeck->samples();
+    double samplerate = pDeck->sampleRate();
+    if (position <= 0.0 || samplerate <= 0.0) {
+        return -1.0;
     }
     return position / samplerate;  // Convert to seconds
 }
@@ -795,11 +780,18 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         return;
     }
 
-    double fromTrackDuration = getDuration(pFromDeck);
-    double toTrackDuration = getDuration(pToDeck);
+    double fromTrackDuration = pFromDeck->duration();
+    double toTrackDuration = pToDeck->duration();
 
     double fromTrackEnd = getEndPosition(pFromDeck);
+    if (fromTrackEnd <= 0.0) {
+        fromTrackEnd = fromTrackDuration;
+    }
+
     double toTrackStart = getStartPosition(pToDeck);
+    if (toTrackStart <= 0.0) {
+        toTrackStart = 0.0;
+    }
 
     if (m_transitionTime > 0.0) {  // Crossfade transition
         // Guard against tracks shorter than the transition period. Use a

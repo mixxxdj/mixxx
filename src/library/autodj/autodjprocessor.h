@@ -69,12 +69,12 @@ class DeckAttributes : public QObject {
         return m_endPos.get();
     }
 
-    int samples() const {
-        return m_samples.get();
-    }
-
     int sampleRate() const {
         return m_sampleRate.get();
+    }
+
+    double duration() const {
+        return m_duration.get();
     }
 
     TrackPointer getLoadedTrack() const;
@@ -111,8 +111,8 @@ class DeckAttributes : public QObject {
     ControlProxy m_repeat;
     ControlProxy m_startPos;
     ControlProxy m_endPos;
-    ControlProxy m_samples;
     ControlProxy m_sampleRate;
+    ControlProxy m_duration;
     BaseTrackPlayer* m_pPlayer;
 };
 
@@ -204,7 +204,8 @@ class AutoDJProcessor : public QObject {
     double getCrossfader() const;
     void setCrossfader(double value, bool right);
 
-    double getDuration(DeckAttributes* pDeck);
+    // Following functions return seconds computed from samples or -1 if
+    // track in deck has invalid sample rate (<= 0)
     double getStartPosition(DeckAttributes* pDeck);
     double getEndPosition(DeckAttributes* pDeck);
 

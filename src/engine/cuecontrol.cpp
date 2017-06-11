@@ -103,6 +103,7 @@ CueControl::CueControl(QString group,
     m_pPlayIndicator = new ControlIndicator(ConfigKey(group, "play_indicator"));
 
     m_pAutoDJStartPosition = new ControlObject(ConfigKey(group, "autodj_start_position"));
+    m_pAutoDJStartPosition->set(-1.0);
 
     m_pAutoDJStartSet = new ControlPushButton(ConfigKey(group, "autodj_start_set"));
     m_pAutoDJStartSet->setButtonMode(ControlPushButton::TRIGGER);
@@ -117,6 +118,7 @@ CueControl::CueControl(QString group,
             Qt::DirectConnection);
 
     m_pAutoDJEndPosition = new ControlObject(ConfigKey(group, "autodj_end_position"));
+    m_pAutoDJEndPosition->set(-1.0);
 
     m_pAutoDJEndSet = new ControlPushButton(ConfigKey(group, "autodj_end_set"));
     m_pAutoDJEndSet->setButtonMode(ControlPushButton::TRIGGER);
