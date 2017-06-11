@@ -150,10 +150,10 @@ def write_channelmixer_autogen(output, num_channels):
 
         write('int totalActive = activeChannels->size();', depth=1)
 
+        write('SampleUtil::clear(pOutput, iBufferSize);', depth=1)
         write('if (totalActive == 0) {', depth=1)
         write('ScopedTimer t("EngineMaster::applyEffectsAndMixChannels%(variant)s_0active");' %
               {'variant': 'Ramping' if ramping else ''}, depth=2)
-        write('SampleUtil::clear(pOutput, iBufferSize);', depth=2)
         for i in xrange(1, num_channels+1):
             write('} else if (totalActive == %d) {' % i, depth=1)
             write('ScopedTimer t("EngineMaster::applyEffectsAndMixChannels%(variant)s_%(i)dactive");' %
@@ -220,10 +220,13 @@ def write_channelmixer_autogen(output, num_channels):
             write('SampleUtil::applyRampingGain(pBuffer, oldGain, newGain, iBufferSize);', depth=3)
         else:
             write('SampleUtil::applyGain(pBuffer, newGain, iBufferSize);', depth=3)
-        write('pEngineEffectsManager->process(pChannelInfo->m_handle, outputHandle, pBuffer, pOutput, iBufferSize, iSampleRate, pChannelInfo->m_features);' % {'j': j}, depth=3)
-        #write('for (unsigned int i = 0; i < iBufferSize; ++i) {', depth=3)
-        #write('pOutput[i] += pBuffer[i];', depth=4)
-        #write('}', depth=3)
+        write('if (pEngineEffectsManager) {', depth=3)
+        write('pEngineEffectsManager->process(pChannelInfo->m_handle, outputHandle, pBuffer, pOutput, iBufferSize, iSampleRate, pChannelInfo->m_features);' % {'j': j}, depth=4)
+        write('} else {', depth=3)
+        write('for (unsigned int i = 0; i < iBufferSize; ++i) {', depth=4)
+        write('pOutput[i] += pBuffer[i];', depth=5)
+        write('}', depth=4)
+        write('}', depth=3)
         write('}', depth=2)
         write('}', depth=1)
         output.append('}')

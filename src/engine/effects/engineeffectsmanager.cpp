@@ -162,7 +162,19 @@ void EngineEffectsManager::process(const ChannelHandle& inputHandle,
         }
     }
 
-    SampleUtil::copy(pOut, pIntermediateInput, numSamples);
+    if (pIn != pOut) {
+        // Mix effects output into output buffer.
+        // ChannelMixer::applyEffectsAndMixChannels(Ramping) use this to mix channels
+        // regardless of whether any effects were processsed.
+        SampleUtil::copy2WithGain(pOut,
+                                  pOut, 1.0,
+                                  pIntermediateInput, 1.0,
+                                  numSamples);
+    } else if (pIn == pOut && racksProcessed > 0) {
+        // Replace output buffer with effects output. If no effects were processed,
+        // nothing needs to be done.
+        SampleUtil::copy(pOut, pIntermediateInput, numSamples);
+    }
 }
 
 bool EngineEffectsManager::addEffectRack(EngineEffectRack* pRack) {

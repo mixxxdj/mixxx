@@ -14509,9 +14509,9 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
                                               unsigned int iSampleRate,
                                               EngineEffectsManager* pEngineEffectsManager) {
     int totalActive = activeChannels->size();
+    SampleUtil::clear(pOutput, iBufferSize);
     if (totalActive == 0) {
         ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_0active");
-        SampleUtil::clear(pOutput, iBufferSize);
     } else if (totalActive == 1) {
         ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_1active");
         CSAMPLE_GAIN newGain[1];
@@ -21682,7 +21682,13 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
             gainCache.m_gain = newGain;
             CSAMPLE* pBuffer = pChannelInfo->m_pBuffer;
             SampleUtil::applyGain(pBuffer, newGain, iBufferSize);
-            pEngineEffectsManager->process(pChannelInfo->m_handle, outputHandle, pBuffer, pOutput, iBufferSize, iSampleRate, pChannelInfo->m_features);
+            if (pEngineEffectsManager) {
+                pEngineEffectsManager->process(pChannelInfo->m_handle, outputHandle, pBuffer, pOutput, iBufferSize, iSampleRate, pChannelInfo->m_features);
+            } else {
+                for (unsigned int i = 0; i < iBufferSize; ++i) {
+                    pOutput[i] += pBuffer[i];
+                }
+            }
         }
     }
 }
@@ -21695,9 +21701,9 @@ void ChannelMixer::applyEffectsAndMixChannelsRamping(const EngineMaster::GainCal
                                                      unsigned int iSampleRate,
                                                      EngineEffectsManager* pEngineEffectsManager) {
     int totalActive = activeChannels->size();
+    SampleUtil::clear(pOutput, iBufferSize);
     if (totalActive == 0) {
         ScopedTimer t("EngineMaster::applyEffectsAndMixChannelsRamping_0active");
-        SampleUtil::clear(pOutput, iBufferSize);
     } else if (totalActive == 1) {
         ScopedTimer t("EngineMaster::applyEffectsAndMixChannelsRamping_1active");
         CSAMPLE_GAIN oldGain[1];
@@ -29429,7 +29435,13 @@ void ChannelMixer::applyEffectsAndMixChannelsRamping(const EngineMaster::GainCal
             gainCache.m_gain = newGain;
             CSAMPLE* pBuffer = pChannelInfo->m_pBuffer;
             SampleUtil::applyRampingGain(pBuffer, oldGain, newGain, iBufferSize);
-            pEngineEffectsManager->process(pChannelInfo->m_handle, outputHandle, pBuffer, pOutput, iBufferSize, iSampleRate, pChannelInfo->m_features);
+            if (pEngineEffectsManager) {
+                pEngineEffectsManager->process(pChannelInfo->m_handle, outputHandle, pBuffer, pOutput, iBufferSize, iSampleRate, pChannelInfo->m_features);
+            } else {
+                for (unsigned int i = 0; i < iBufferSize; ++i) {
+                    pOutput[i] += pBuffer[i];
+                }
+            }
         }
     }
 }
