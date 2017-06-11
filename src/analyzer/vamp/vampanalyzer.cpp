@@ -49,7 +49,6 @@ bool VampAnalyzer::Init(const QString pluginlibrary, const QString pluginid,
         qDebug() << "VampAnalyzer: kill plugin";
     }
 
-    VampPluginLoader *loader = VampPluginLoader::getInstance();
     QStringList pluginlist = pluginid.split(":");
     if (pluginlist.size() != 2) {
         qDebug() << "VampAnalyzer: got malformed pluginid: " << pluginid;
@@ -64,22 +63,23 @@ bool VampAnalyzer::Init(const QString pluginlibrary, const QString pluginid,
     }
 
     QString plugin = pluginlist.at(0);
-    m_key = loader->composePluginKey(pluginlibrary.toStdString(),
+    mixxx::VampPluginLoader pluginLoader;
+    m_key = pluginLoader.composePluginKey(pluginlibrary.toStdString(),
                                      plugin.toStdString());
-    m_plugin = loader->loadPlugin(m_key, m_rate,
+    m_plugin = pluginLoader.loadPlugin(m_key, m_rate,
                                   Vamp::HostExt::PluginLoader::ADAPT_ALL_SAFE);
 
     if (!m_plugin) {
         qDebug() << "VampAnalyzer: Cannot load Vamp Plug-in.";
         qDebug() << "Please copy libmixxxminimal.so from build dir to one of the following:";
 
-        std::vector<std::string> path = PluginHostAdapter::getPluginPath();
+        std::vector<std::string> path = Vamp::PluginHostAdapter::getPluginPath();
         for (unsigned int i = 0; i < path.size(); i++) {
             qDebug() << QString::fromStdString(path[i]);
         }
         return false;
     }
-    Plugin::OutputList outputs = m_plugin->getOutputDescriptors();
+    Vamp::Plugin::OutputList outputs = m_plugin->getOutputDescriptors();
     if (outputs.empty()) {
         qDebug() << "VampAnalyzer: Plugin has no outputs!";
         return false;
@@ -239,7 +239,7 @@ bool VampAnalyzer::SetParameter(const QString parameter, const double value) {
 }
 
 void VampAnalyzer::SelectOutput(const int outputnumber) {
-    Plugin::OutputList outputs = m_plugin->getOutputDescriptors();
+    Vamp::Plugin::OutputList outputs = m_plugin->getOutputDescriptors();
     if (outputnumber >= 0 && outputnumber < int(outputs.size())) {
         m_iOutput = outputnumber;
     }

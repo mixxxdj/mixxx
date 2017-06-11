@@ -1,21 +1,14 @@
-/*
- * vamppluginloader.cpp
- *
- *  Created on: 23/jan/2012
- *      Author: Tobias Rafreider
- *
- * This is a thread-safe wrapper class around Vamp's
- * PluginLoader class.
- */
 #include "analyzer/vamp/vamppluginloader.h"
+
+#include <mutex>
 
 #include <QCoreApplication>
 #include <QDesktopServices>
 #include <QDir>
-#include <QMutex>
 #include <QStringList>
+#include <QStringBuilder>
 
-#include <QtDebug>
+#include "util/logger.h"
 
 #ifdef __WINDOWS__
     #include <windows.h>
@@ -24,40 +17,35 @@
     #define PATH_SEPARATOR ":"
 #endif
 
-using Vamp::Plugin;
-using Vamp::PluginHostAdapter;
+
+namespace mixxx {
 
 namespace {
 
-QMutex singletonMutex;
+Logger kLogger("VampPluginLoader");
 
-VampPluginLoader* pSingletonInstance = nullptr;
+Vamp::HostExt::PluginLoader* pPluginLoader = nullptr;
+
+std::once_flag initPluginLoaderOnceFlag;
 
 // Initialize the VAMP_PATH environment variable to point to the default
 // places that Mixxx VAMP plugins are deployed on installation. If a
 // VAMP_PATH environment variable is already set by the user, then this
 // method appends to that.
-void initializePluginPaths() {
-    const char* pVampPath = getenv("VAMP_PATH");
-    QString vampPath = "";
-    if (pVampPath) {
-        vampPath = QString(pVampPath);
-    }
-
-    // TODO(XXX) use correct split separator here.
-    QStringList pathElements = vampPath.length() > 0 ? vampPath.split(PATH_SEPARATOR)
-            : QStringList();
+void initPluginPaths() {
+    const QLatin1String pathEnv(getenv("VAMP_PATH"));
+    QStringList pathElements = QString(pathEnv).split(PATH_SEPARATOR, QString::SkipEmptyParts);
 
     const QString dataLocation = QDesktopServices::storageLocation(
             QDesktopServices::DataLocation);
     const QString applicationPath = QCoreApplication::applicationDirPath();
 
 #ifdef __WINDOWS__
-    QDir winVampPath(applicationPath);
-    if (winVampPath.cd("plugins") && winVampPath.cd("vamp")) {
-        pathElements << winVampPath.absolutePath().replace("/","\\");
+    QDir winPath(applicationPath);
+    if (winPath.cd("plugins") && winPath.cd("vamp")) {
+        pathElements << winPath.absolutePath().replace("/","\\");
     } else {
-        qDebug() << winVampPath.absolutePath() << "does not exist!";
+        kLogger.debug() << winPath.absolutePath() << "does not exist!";
     }
 #elif __APPLE__
     // Location within the OS X bundle that we store plugins.
@@ -104,55 +92,46 @@ void initializePluginPaths() {
 #endif
 
     QString newPath = pathElements.join(PATH_SEPARATOR);
-    qDebug() << "Setting VAMP_PATH to: " << newPath;
-    QByteArray newPathBA = newPath.toLocal8Bit();
-#ifndef __WINDOWS__
-    setenv("VAMP_PATH", newPathBA.constData(), 1);
+    kLogger.info() << "Setting VAMP_PATH to:" << newPath;
+#ifdef __WINDOWS__
+    QString winPathEnv = "VAMP_PATH=" % newPath;
+    putenv(winPathEnv.toLocal8Bit().constData());
 #else
-    QString winpath = "VAMP_PATH=" + newPath;
-    QByteArray winpathBA = winpath.toLocal8Bit();
-    putenv(winpathBA.constData());
+    setenv("VAMP_PATH", newPath.toLocal8Bit().constData(), 1);
 #endif
+}
+
+void initPluginLoader() {
+    initPluginPaths();
+    pPluginLoader = Vamp::HostExt::PluginLoader::getInstance();
 }
 
 } // anonymous namespace
 
-VampPluginLoader* VampPluginLoader::getInstance() {
-    QMutexLocker lock(&singletonMutex);
-    if (pSingletonInstance == nullptr) {
-        initializePluginPaths();
-        pSingletonInstance = new VampPluginLoader();
-    }
-    return pSingletonInstance;
-}
-
 VampPluginLoader::VampPluginLoader() {
-    m_pVampPluginLoader = Vamp::HostExt::PluginLoader::getInstance();
+    std::call_once(initPluginLoaderOnceFlag, initPluginLoader);
 }
 
-PluginLoader::PluginKey VampPluginLoader::composePluginKey(
+Vamp::HostExt::PluginLoader::PluginKey VampPluginLoader::composePluginKey(
     std::string libraryName, std::string identifier) {
-    QMutexLocker lock(&singletonMutex);
-    PluginLoader::PluginKey key = m_pVampPluginLoader->composePluginKey(
+    return pPluginLoader->composePluginKey(
         libraryName, identifier);
-    return key;
 }
 
-PluginLoader::PluginCategoryHierarchy VampPluginLoader::getPluginCategory(
+Vamp::HostExt::PluginLoader::PluginCategoryHierarchy VampPluginLoader::getPluginCategory(
     Vamp::HostExt::PluginLoader::PluginKey plugin) {
-    QMutexLocker lock(&singletonMutex);
-    return m_pVampPluginLoader->getPluginCategory(plugin);
+    return pPluginLoader->getPluginCategory(plugin);
 }
 
-PluginLoader::PluginKeyList VampPluginLoader::listPlugins() {
-    QMutexLocker lock(&singletonMutex);
-    return m_pVampPluginLoader->listPlugins();
+Vamp::HostExt::PluginLoader::PluginKeyList VampPluginLoader::listPlugins() {
+    return pPluginLoader->listPlugins();
 }
 
 Vamp::Plugin* VampPluginLoader::loadPlugin(
     Vamp::HostExt::PluginLoader::PluginKey key,
     float inputSampleRate, int adapterFlags) {
-    QMutexLocker lock(&singletonMutex);
-    return m_pVampPluginLoader->loadPlugin(
+    return pPluginLoader->loadPlugin(
         key, inputSampleRate, adapterFlags);
 }
+
+} // namespace mixxx

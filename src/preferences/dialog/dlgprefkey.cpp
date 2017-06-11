@@ -283,12 +283,12 @@ void DlgPrefKey::populate() {
    m_listLibrary.clear();
    plugincombo->clear();
    plugincombo->setDuplicatesEnabled(false);
-   VampPluginLoader* loader = VampPluginLoader::getInstance();
-   std::vector<PluginLoader::PluginKey> plugins = loader->listPlugins();
+   mixxx::VampPluginLoader vampPluginLoader;
+   std::vector<PluginLoader::PluginKey> plugins = vampPluginLoader.listPlugins();
    qDebug() << "VampPluginLoader::listPlugins() returned" << plugins.size() << "plugins";
    for (unsigned int iplugin=0; iplugin < plugins.size(); iplugin++) {
        // TODO(XXX): WTF, 48000
-       Plugin* plugin = loader->loadPlugin(plugins[iplugin], 48000);
+       Plugin* plugin = vampPluginLoader.loadPlugin(plugins[iplugin], 48000);
        //TODO(XXX): find a general way to add key detectors only
        if (plugin) {
            Plugin::OutputList outputs = plugin->getOutputDescriptors();

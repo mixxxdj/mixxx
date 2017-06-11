@@ -11,6 +11,7 @@
 #include <QString>
 #include <QList>
 #include <QVector>
+
 #include <vamp-hostsdk/vamp-hostsdk.h>
 
 #include "preferences/usersettings.h"
