@@ -28,10 +28,20 @@ Vamp::HostExt::PluginLoader* s_pPluginLoader = nullptr;
 
 std::once_flag s_initPluginLoaderOnceFlag;
 
+inline
+QString toNativeEnvPath(const QDir& dir) {
+    return QDir::toNativeSeparators(dir.absolutePath());
+}
+
+inline
+void logIgnoringNonExistentPath(const QDir& dir) {
+    kLogger.debug() << "Ignoring non-existent path:" << toNativeEnvPath(dir);
+}
+
 QString composeEnvPathList(
         const QString& envPathList,
         const QDir& appendDir) {
-    QString nativePath = QDir::toNativeSeparators(appendDir.absolutePath());
+    QString nativePath = toNativeEnvPath(appendDir);
     if (envPathList.isEmpty()) {
         return nativePath;
     } else {
@@ -57,7 +67,7 @@ void initPluginPaths() {
     if (appDir.cd("plugins") && appDir.cd("vamp")) {
         envPathList = composeEnvPathList(envPathList, appDir);
     } else {
-        kLogger.debug() << "Ignoring non-existent path:" << appDir;
+        logIgnoringNonExistentPath(appDir);
     }
 #elif __APPLE__
     // Location within the OS X bundle that we store plugins.
@@ -66,7 +76,7 @@ void initPluginPaths() {
     if (bundlePluginDir.cdUp() && bundlePluginDir.cd("PlugIns")) {
         envPathList = composeEnvPathList(envPathList, bundlePluginDir);
     } else {
-        kLogger.debug() << "Ignoring non-existent path:" << bundlePluginDir;
+        logIgnoringNonExistentPath(bundlePluginDir);
     }
 
     // For people who build from source.
@@ -74,34 +84,34 @@ void initPluginPaths() {
     if (developer32Root.cd("osx32_build") && developer32Root.cd("vamp-plugins")) {
         envPathList = composeEnvPathList(envPathList, developer32Root);
     } else {
-        kLogger.debug() << "Ignoring non-existent path:" << developer32Root;
+        logIgnoringNonExistentPath(developer32Root);
     }
     QDir developer64Root(applicationPath);
     if (developer64Root.cd("osx64_build") && developer64Root.cd("vamp-plugins")) {
         envPathList = composeEnvPathList(envPathList, developer64Root);
     } else {
-        kLogger.debug() << "Ignoring non-existent path:" << developer64Root;
+        logIgnoringNonExistentPath(developer64Root);
     }
 
     QDir dataPluginDir(dataLocation);
     if (dataPluginDir.cd("Plugins") && dataPluginDir.cd("vamp")) {
         envPathList = composeEnvPathList(envPathList, dataPluginDir);
     } else {
-        kLogger.debug() << "Ignoring non-existent path:" << dataPluginDir;
+        logIgnoringNonExistentPath(dataPluginDir);
     }
 #elif __LINUX__
     QDir libPath(UNIX_LIB_PATH);
     if (libPath.cd("plugins") && libPath.cd("vamp")) {
         envPathList = composeEnvPathList(envPathList, libPath);
     } else {
-        kLogger.debug() << "Ignoring non-existent path:" << libPath;
+        logIgnoringNonExistentPath(libPath);
     }
 
     QDir dataPluginDir(dataLocation);
     if (dataPluginDir.cd("plugins") && dataPluginDir.cd("vamp")) {
         envPathList = composeEnvPathList(envPathList, dataPluginDir);
     } else {
-        kLogger.debug() << "Ignoring non-existent path:" << dataPluginDir;
+        logIgnoringNonExistentPath(dataPluginDir);
     }
 
     // For people who build from source.
@@ -109,13 +119,13 @@ void initPluginPaths() {
     if (developer32Root.cd("lin32_build") && developer32Root.cd("vamp-plugins")) {
         envPathList = composeEnvPathList(envPathList, developer32Root);
     } else {
-        kLogger.debug() << "Ignoring non-existent path:" << developer32Root;
+        logIgnoringNonExistentPath(developer32Root);
     }
     QDir developer64Root(applicationPath);
     if (developer64Root.cd("lin64_build") && developer64Root.cd("vamp-plugins")) {
         envPathList = composeEnvPathList(envPathList, developer64Root);
     } else {
-        kLogger.debug() << "Ignoring non-existent path:" << developer64Root;
+        logIgnoringNonExistentPath(developer64Root);
     }
 #endif
 
