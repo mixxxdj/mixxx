@@ -24,9 +24,9 @@ namespace {
 
 Logger kLogger("VampPluginLoader");
 
-Vamp::HostExt::PluginLoader* pPluginLoader = nullptr;
+Vamp::HostExt::PluginLoader* s_pPluginLoader = nullptr;
 
-std::once_flag initPluginLoaderOnceFlag;
+std::once_flag s_initPluginLoaderOnceFlag;
 
 QString composeEnvPathList(
         const QString& envPathList,
@@ -46,6 +46,7 @@ QString composeEnvPathList(
 void initPluginPaths() {
     QString envPathList =
             QString::fromLocal8Bit(qgetenv("VAMP_PATH").constData());
+    kLogger.info() << "Current VAMP_PATH is:" << envPathList;
 
     const QString dataLocation = QDesktopServices::storageLocation(
             QDesktopServices::DataLocation);
@@ -129,34 +130,34 @@ void initPluginPaths() {
 
 void initPluginLoader() {
     initPluginPaths();
-    pPluginLoader = Vamp::HostExt::PluginLoader::getInstance();
+    s_pPluginLoader = Vamp::HostExt::PluginLoader::getInstance();
 }
 
 } // anonymous namespace
 
 VampPluginLoader::VampPluginLoader() {
-    std::call_once(initPluginLoaderOnceFlag, initPluginLoader);
+    std::call_once(s_initPluginLoaderOnceFlag, initPluginLoader);
 }
 
 Vamp::HostExt::PluginLoader::PluginKey VampPluginLoader::composePluginKey(
     std::string libraryName, std::string identifier) {
-    return pPluginLoader->composePluginKey(
+    return s_pPluginLoader->composePluginKey(
         libraryName, identifier);
 }
 
 Vamp::HostExt::PluginLoader::PluginCategoryHierarchy VampPluginLoader::getPluginCategory(
     Vamp::HostExt::PluginLoader::PluginKey plugin) {
-    return pPluginLoader->getPluginCategory(plugin);
+    return s_pPluginLoader->getPluginCategory(plugin);
 }
 
 Vamp::HostExt::PluginLoader::PluginKeyList VampPluginLoader::listPlugins() {
-    return pPluginLoader->listPlugins();
+    return s_pPluginLoader->listPlugins();
 }
 
 Vamp::Plugin* VampPluginLoader::loadPlugin(
     Vamp::HostExt::PluginLoader::PluginKey key,
     float inputSampleRate, int adapterFlags) {
-    return pPluginLoader->loadPlugin(
+    return s_pPluginLoader->loadPlugin(
         key, inputSampleRate, adapterFlags);
 }
 
