@@ -12,9 +12,9 @@
 
 #ifdef __WINDOWS__
     #include <windows.h>
-    #define PATH_SEPARATOR ";"
+    #define ENV_PATH_LIST_SEPARATOR ";"
 #else
-    #define PATH_SEPARATOR ":"
+    #define ENV_PATH_LIST_SEPARATOR ":"
 #endif
 
 
@@ -28,76 +28,102 @@ Vamp::HostExt::PluginLoader* pPluginLoader = nullptr;
 
 std::once_flag initPluginLoaderOnceFlag;
 
+QString composeEnvPathList(
+        const QString& envPathList,
+        const QDir& appendDir) {
+    QString nativePath = QDir::toNativeSeparators(appendDir.absolutePath());
+    if (envPathList.isEmpty()) {
+        return nativePath;
+    } else {
+        return envPathList % ENV_PATH_LIST_SEPARATOR % nativePath;
+    }
+}
+
 // Initialize the VAMP_PATH environment variable to point to the default
 // places that Mixxx VAMP plugins are deployed on installation. If a
 // VAMP_PATH environment variable is already set by the user, then this
 // method appends to that.
 void initPluginPaths() {
-    const QLatin1String pathEnv(getenv("VAMP_PATH"));
-    QStringList pathElements = QString(pathEnv).split(PATH_SEPARATOR, QString::SkipEmptyParts);
+    QString envPathList =
+            QString::fromLocal8Bit(qgetenv("VAMP_PATH").constData());
 
     const QString dataLocation = QDesktopServices::storageLocation(
             QDesktopServices::DataLocation);
     const QString applicationPath = QCoreApplication::applicationDirPath();
 
 #ifdef __WINDOWS__
-    QDir winPath(applicationPath);
-    if (winPath.cd("plugins") && winPath.cd("vamp")) {
-        pathElements << winPath.absolutePath().replace("/","\\");
+    QDir appDir(applicationPath);
+    if (appDir.cd("plugins") && appDir.cd("vamp")) {
+        envPathList = composeEnvPathList(envPathList, appDir);
     } else {
-        kLogger.debug() << winPath.absolutePath() << "does not exist!";
+        kLogger.debug() << "Ignoring non-existent path:" << appDir;
     }
 #elif __APPLE__
     // Location within the OS X bundle that we store plugins.
     // blah/Mixxx.app/Contents/MacOS/
     QDir bundlePluginDir(applicationPath);
     if (bundlePluginDir.cdUp() && bundlePluginDir.cd("PlugIns")) {
-        pathElements << bundlePluginDir.absolutePath();
+        envPathList = composeEnvPathList(envPathList, bundlePluginDir);
+    } else {
+        kLogger.debug() << "Ignoring non-existent path:" << bundlePluginDir;
     }
 
     // For people who build from source.
     QDir developer32Root(applicationPath);
     if (developer32Root.cd("osx32_build") && developer32Root.cd("vamp-plugins")) {
-        pathElements << developer32Root.absolutePath();
+        envPathList = composeEnvPathList(envPathList, developer32Root);
+    } else {
+        kLogger.debug() << "Ignoring non-existent path:" << developer32Root;
     }
     QDir developer64Root(applicationPath);
     if (developer64Root.cd("osx64_build") && developer64Root.cd("vamp-plugins")) {
-        pathElements << developer64Root.absolutePath();
+        envPathList = composeEnvPathList(envPathList, developer64Root);
+    } else {
+        kLogger.debug() << "Ignoring non-existent path:" << developer64Root;
     }
 
     QDir dataPluginDir(dataLocation);
     if (dataPluginDir.cd("Plugins") && dataPluginDir.cd("vamp")) {
-        pathElements << dataPluginDir.absolutePath();
+        envPathList = composeEnvPathList(envPathList, dataPluginDir);
+    } else {
+        kLogger.debug() << "Ignoring non-existent path:" << dataPluginDir;
     }
 #elif __LINUX__
     QDir libPath(UNIX_LIB_PATH);
     if (libPath.cd("plugins") && libPath.cd("vamp")) {
-        pathElements << libPath.absolutePath();
+        envPathList = composeEnvPathList(envPathList, libPath);
+    } else {
+        kLogger.debug() << "Ignoring non-existent path:" << libPath;
     }
 
     QDir dataPluginDir(dataLocation);
     if (dataPluginDir.cd("plugins") && dataPluginDir.cd("vamp")) {
-        pathElements << dataPluginDir.absolutePath();
+        envPathList = composeEnvPathList(envPathList, dataPluginDir);
+    } else {
+        kLogger.debug() << "Ignoring non-existent path:" << dataPluginDir;
     }
 
     // For people who build from source.
     QDir developer32Root(applicationPath);
     if (developer32Root.cd("lin32_build") && developer32Root.cd("vamp-plugins")) {
-        pathElements << developer32Root.absolutePath();
+        envPathList = composeEnvPathList(envPathList, developer32Root);
+    } else {
+        kLogger.debug() << "Ignoring non-existent path:" << developer32Root;
     }
     QDir developer64Root(applicationPath);
     if (developer64Root.cd("lin64_build") && developer64Root.cd("vamp-plugins")) {
-        pathElements << developer64Root.absolutePath();
+        envPathList = composeEnvPathList(envPathList, developer64Root);
+    } else {
+        kLogger.debug() << "Ignoring non-existent path:" << developer64Root;
     }
 #endif
 
-    QString newPath = pathElements.join(PATH_SEPARATOR);
-    kLogger.info() << "Setting VAMP_PATH to:" << newPath;
+    kLogger.info() << "Setting VAMP_PATH to:" << envPathList;
 #ifdef __WINDOWS__
-    QString winPathEnv = "VAMP_PATH=" % newPath;
-    putenv(winPathEnv.toLocal8Bit().constData());
+    envPathList = "VAMP_PATH=" % envPathList;
+    putenv(envPathList.toLocal8Bit().constData());
 #else
-    setenv("VAMP_PATH", newPath.toLocal8Bit().constData(), 1);
+    setenv("VAMP_PATH", envPathList.toLocal8Bit().constData(), 1);
 #endif
 }
 
