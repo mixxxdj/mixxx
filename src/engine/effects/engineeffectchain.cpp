@@ -220,6 +220,8 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
     // Mix the effected signal, unless no effects are enabled
     // or the chain is fully dry and not ramping.
     if (enabledEffectCount > 0 && !(wet_gain == 0.0 && wet_gain_old == 0.0)) {
+        // pIntermediateInput is the output of the last processed effect. It would be the
+        // intermediate input of the next effect if there was one.
         if (m_insertionType == EffectChain::INSERT) {
             // INSERT mode: output = input * (1-wet) + effect(input) * wet
             SampleUtil::copy2WithRampingGain(

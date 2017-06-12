@@ -21,6 +21,22 @@ class ChannelMixer {
         QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache,
         CSAMPLE* pOutput,
         unsigned int iBufferSize);
+    static void applyEffectsInPlaceAndMixChannels(
+        const EngineMaster::GainCalculator& gainCalculator,
+        QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>* activeChannels,
+        QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache,
+        CSAMPLE* pOutput, const ChannelHandle& outputHandle,
+        unsigned int iBufferSize,
+        unsigned int iSampleRate,
+        EngineEffectsManager* pEngineEffectsManager);
+    static void applyEffectsInPlaceAndMixChannelsRamping(
+        const EngineMaster::GainCalculator& gainCalculator,
+        QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>* activeChannels,
+        QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache,
+        CSAMPLE* pOutput, const ChannelHandle& outputHandle,
+        unsigned int iBufferSize,
+        unsigned int iSampleRate,
+        EngineEffectsManager* pEngineEffectsManager);
     static void applyEffectsAndMixChannels(
         const EngineMaster::GainCalculator& gainCalculator,
         QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>* activeChannels,

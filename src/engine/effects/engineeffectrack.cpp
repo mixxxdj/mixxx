@@ -51,32 +51,47 @@ bool EngineEffectRack::process(const ChannelHandle& inputHandle,
                                const unsigned int sampleRate,
                                const GroupFeatureState& groupFeatures) {
     int chainsProcessed = 0;
-    CSAMPLE* pIntermediateInput = pIn;
-    CSAMPLE* pIntermediateOutput = m_buffer1.data();
-
-    for (EngineEffectChain* pChain : m_chains) {
-        if (pChain != nullptr) {
-            if (pChain->process(inputHandle, outputHandle,
-                                pIntermediateInput, pIntermediateOutput,
-                                numSamples, sampleRate, groupFeatures)) {
-                ++chainsProcessed;
-                if (chainsProcessed % 2) {
-                    pIntermediateInput = m_buffer1.data();
-                    pIntermediateOutput = m_buffer2.data();
-                } else {
-                    pIntermediateInput = m_buffer2.data();
-                    pIntermediateOutput = m_buffer1.data();
+    if (pIn == pOut) {
+        // Effects are applied to the buffer in place
+        for (EngineEffectChain* pChain : m_chains) {
+            if (pChain != nullptr) {
+                if (pChain->process(inputHandle, outputHandle,
+                                    pIn, pOut,
+                                    numSamples, sampleRate, groupFeatures)) {
+                    ++chainsProcessed;
                 }
             }
         }
-    }
-
-    if (chainsProcessed == 0) {
-        return false;
     } else {
-        SampleUtil::copy(pOut, pIntermediateInput, numSamples);
-        return true;
+        // Do not modify the input buffer; only fill the output buffer.
+        // ChannelMixer::applyEffectsAndMixChannels(Ramping) use
+        // this to mix channels regardless of whether any effects were processsed.
+        CSAMPLE* pIntermediateInput = pIn;
+        CSAMPLE* pIntermediateOutput = m_buffer1.data();
+
+        for (EngineEffectChain* pChain : m_chains) {
+            if (pChain != nullptr) {
+                if (pChain->process(inputHandle, outputHandle,
+                                    pIntermediateInput, pIntermediateOutput,
+                                    numSamples, sampleRate, groupFeatures)) {
+                    ++chainsProcessed;
+                    if (chainsProcessed % 2) {
+                        pIntermediateInput = m_buffer1.data();
+                        pIntermediateOutput = m_buffer2.data();
+                    } else {
+                        pIntermediateInput = m_buffer2.data();
+                        pIntermediateOutput = m_buffer1.data();
+                    }
+                }
+            }
+        }
+        // pIntermediateInput is the output of the last processed chain. It would be the
+        // intermediate input of the next chain if there was one.
+        if (chainsProcessed > 0) {
+            SampleUtil::copy(pOut, pIntermediateInput, numSamples);
+        }
     }
+    return chainsProcessed;
 }
 
 bool EngineEffectRack::addEffectChain(EngineEffectChain* pChain, int iIndex) {

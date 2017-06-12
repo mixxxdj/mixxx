@@ -289,6 +289,9 @@ class EngineMaster : public QObject, public AudioSource {
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeHeadphoneChannels;
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeTalkoverChannels;
 
+    unsigned int m_iSampleRate;
+    unsigned int m_iBufferSize;
+
     // Mixing buffers for each output.
     CSAMPLE* m_pOutputBusBuffers[3];
     CSAMPLE* m_pHead;
@@ -336,6 +339,7 @@ class EngineMaster : public QObject, public AudioSource {
     const ChannelHandleAndGroup m_busLeftHandle;
     const ChannelHandleAndGroup m_busCenterHandle;
     const ChannelHandleAndGroup m_busRightHandle;
+    const ChannelHandleAndGroup m_unmixedDeckOutputHandle;
 
     // Produce the Master Mixxx, not Required if connected to left
     // and right Bus and no recording and broadcast active

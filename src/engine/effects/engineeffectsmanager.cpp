@@ -172,39 +172,43 @@ void EngineEffectsManager::processInner(const QList<EngineEffectRack*>& racks,
                                         const unsigned int numSamples,
                                         const unsigned int sampleRate,
                                         const GroupFeatureState& groupFeatures) {
-    int racksProcessed = 0;
-    CSAMPLE* pIntermediateInput = pIn;
-    CSAMPLE* pIntermediateOutput = m_buffer1.data();
-
-    for (EngineEffectRack* pRack : racks) {
-        if (pRack != nullptr) {
-            if (pRack->process(inputHandle, outputHandle,
-                               pIntermediateInput, pIntermediateOutput,
-                               numSamples, sampleRate, groupFeatures)) {
-                ++racksProcessed;
-                if (racksProcessed % 2) {
-                    pIntermediateInput = m_buffer1.data();
-                    pIntermediateOutput = m_buffer2.data();
-                } else {
-                    pIntermediateInput = m_buffer2.data();
-                    pIntermediateOutput = m_buffer1.data();
+    if (pIn == pOut) {
+        // Effects are applied to the buffer in place
+        for (EngineEffectRack* pRack : racks) {
+            if (pRack != nullptr) {
+                pRack->process(inputHandle, outputHandle,
+                               pIn, pOut,
+                               numSamples, sampleRate, groupFeatures);
+            }
+        }
+    } else {
+        // Do not modify the input buffer. Mix the output of the effects with
+        // the output buffer. ChannelMixer::applyEffectsAndMixChannels(Ramping) use
+        // this to mix channels regardless of whether any effects were processsed.
+        int racksProcessed = 0;
+        CSAMPLE* pIntermediateInput = pIn;
+        CSAMPLE* pIntermediateOutput = m_buffer1.data();
+        for (EngineEffectRack* pRack : racks) {
+            if (pRack != nullptr) {
+                if (pRack->process(inputHandle, outputHandle,
+                                   pIntermediateInput, pIntermediateOutput,
+                                   numSamples, sampleRate, groupFeatures)) {
+                    ++racksProcessed;
+                    if (racksProcessed % 2) {
+                        pIntermediateInput = m_buffer1.data();
+                        pIntermediateOutput = m_buffer2.data();
+                    } else {
+                        pIntermediateInput = m_buffer2.data();
+                        pIntermediateOutput = m_buffer1.data();
+                    }
                 }
             }
         }
-    }
-
-    if (pIn != pOut) {
-        // Mix effects output into output buffer.
-        // ChannelMixer::applyEffectsAndMixChannels(Ramping) use this to mix channels
-        // regardless of whether any effects were processsed.
-        SampleUtil::copy2WithGain(pOut,
-                                  pOut, 1.0,
-                                  pIntermediateInput, 1.0,
-                                  numSamples);
-    } else if (pIn == pOut && racksProcessed > 0) {
-        // Replace output buffer with effects output. If no effects were processed,
-        // nothing needs to be done.
-        SampleUtil::copy(pOut, pIntermediateInput, numSamples);
+        // pIntermediateInput is the output of the last processed rack. It would be the
+        // intermediate input of the next rack if there was one.
+        for (unsigned int i = 0; i < numSamples; ++i) {
+            pOut[i] += pIntermediateInput[i];
+        }
     }
 }
 

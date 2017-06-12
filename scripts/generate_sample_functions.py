@@ -131,11 +131,8 @@ def write_channelmixer_autogen(output, num_channels):
     write_mixchannels(False, output)
     write_mixchannels(True, output)
 
-    def write_applyeffectsandmixchannels(ramping, output):
-        if ramping:
-            header = 'void ChannelMixer::applyEffectsAndMixChannelsRamping('
-        else:
-            header = 'void ChannelMixer::applyEffectsAndMixChannels('
+    def write_applyeffectsandmixchannels(inplace, ramping, output):
+        header = 'void ChannelMixer::applyEffects%(inplace)sAndMixChannels%(ramping)s(' % {'inplace': 'InPlace' if inplace else '', 'ramping': 'Ramping' if ramping else ''}
         args = ['const EngineMaster::GainCalculator& gainCalculator',
                 'QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>* activeChannels',
                 'QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache',
@@ -149,11 +146,12 @@ def write_channelmixer_autogen(output, num_channels):
             output.append(' ' * (BASIC_INDENT * depth) + data)
 
         write('int totalActive = activeChannels->size();', depth=1)
-
-        write('SampleUtil::clear(pOutput, iBufferSize);', depth=1)
+        if not inplace:
+            write('SampleUtil::clear(pOutput, iBufferSize);', depth=1)
         write('if (totalActive == 0) {', depth=1)
-        write('ScopedTimer t("EngineMaster::applyEffectsAndMixChannels%(variant)s_0active");' %
-              {'variant': 'Ramping' if ramping else ''}, depth=2)
+        write('ScopedTimer t("EngineMaster::applyEffects%(inplace)sAndMixChannels%(variant)s_0active");' %
+              {'inplace': 'InPlace' if inplace else '',
+               'variant': 'Ramping' if ramping else ''}, depth=2)
         for i in xrange(1, num_channels+1):
             write('} else if (totalActive == %d) {' % i, depth=1)
             write('ScopedTimer t("EngineMaster::applyEffectsAndMixChannels%(variant)s_%(i)dactive");' %
@@ -183,16 +181,25 @@ def write_channelmixer_autogen(output, num_channels):
 
             write('if (pEngineEffectsManager) {', depth=2)
             for j in xrange(i):
-              write('pEngineEffectsManager->processPostFader(pChannel%(j)d->m_handle, outputHandle, pBuffer%(j)d, pOutput, iBufferSize, iSampleRate, pChannel%(j)d->m_features);' % {'j': j}, depth=3)
-            write('} else {', depth=2)
-            write('for (unsigned int i = 0; i < iBufferSize; ++i) {', depth=3)
+              if inplace:
+                  write('pEngineEffectsManager->processPostFader(pChannel%(j)d->m_handle, outputHandle, pBuffer%(j)d, pBuffer%(j)d, iBufferSize, iSampleRate, pChannel%(j)d->m_features);' % {'j': j}, depth=3)
+              else:
+                  write('pEngineEffectsManager->processPostFader(pChannel%(j)d->m_handle, outputHandle, pBuffer%(j)d, pOutput, iBufferSize, iSampleRate, pChannel%(j)d->m_features);' % {'j': j}, depth=3)
+            mixingLoopIndent = 0
+            if inplace:
+              write('}', depth=2)
+            else:
+              write('} else {', depth=2)
+              mixingLoopIndent = 1
+            write('for (unsigned int i = 0; i < iBufferSize; ++i) {', depth=2+mixingLoopIndent)
             line = 'pOutput[i] = pBuffer0[i]'
             for j in xrange(1, i):
                 line += ' + pBuffer%(j)d[i]' % {'j': j}
             line += ';'
-            write(line, depth=4)
-            write('}', depth=3)
-            write('}', depth=2)
+            write(line, depth=3+mixingLoopIndent)
+            write('}', depth=2+mixingLoopIndent)
+            if not inplace:
+                write('}', depth=2)
 
         write('} else {', depth=1)
         write('ScopedTimer t("EngineMaster::applyEffectsAndMixChannels%(variant)s_%%1active", activeChannels->size());' %
@@ -221,17 +228,28 @@ def write_channelmixer_autogen(output, num_channels):
         else:
             write('SampleUtil::applyGain(pBuffer, newGain, iBufferSize);', depth=3)
         write('if (pEngineEffectsManager) {', depth=3)
-        write('pEngineEffectsManager->processPostFader(pChannelInfo->m_handle, outputHandle, pBuffer, pOutput, iBufferSize, iSampleRate, pChannelInfo->m_features);' % {'j': j}, depth=4)
-        write('} else {', depth=3)
-        write('for (unsigned int i = 0; i < iBufferSize; ++i) {', depth=4)
-        write('pOutput[i] += pBuffer[i];', depth=5)
-        write('}', depth=4)
-        write('}', depth=3)
+        if inplace:
+            write('pEngineEffectsManager->processPostFader(pChannelInfo->m_handle, outputHandle, pBuffer, pBuffer, iBufferSize, iSampleRate, pChannelInfo->m_features);' % {'j': j}, depth=4)
+            write('}', depth=3)
+            write('for (unsigned int i = 0; i < iBufferSize; ++i) {', depth=3)
+            write('pOutput[i] += pBuffer[i];', depth=4)
+            write('}', depth=3)
+        else:
+            write('pEngineEffectsManager->processPostFader(pChannelInfo->m_handle, outputHandle, pBuffer, pOutput, iBufferSize, iSampleRate, pChannelInfo->m_features);' % {'j': j}, depth=4)
+            write('} else {', depth=3)
+            write('for (unsigned int i = 0; i < iBufferSize; ++i) {', depth=4)
+            write('pOutput[i] += pBuffer[i];', depth=5)
+            write('}', depth=4)
+            write('}', depth=3)
+
         write('}', depth=2)
         write('}', depth=1)
         output.append('}')
-    write_applyeffectsandmixchannels(False, output)
-    write_applyeffectsandmixchannels(True, output)
+
+    write_applyeffectsandmixchannels(False, False, output)
+    write_applyeffectsandmixchannels(False, True, output)
+    write_applyeffectsandmixchannels(True, True, output)
+    write_applyeffectsandmixchannels(True, False, output)
 
 def write_sample_autogen(output, num_channels):
     output.append('#ifndef MIXXX_UTIL_SAMPLEAUTOGEN_H')
