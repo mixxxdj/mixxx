@@ -64,8 +64,6 @@ bool EngineEffectRack::process(const ChannelHandle& inputHandle,
         }
     } else {
         // Do not modify the input buffer; only fill the output buffer.
-        // ChannelMixer::applyEffectsAndMixChannels(Ramping) use
-        // this to mix channels regardless of whether any effects were processsed.
         CSAMPLE* pIntermediateInput = pIn;
         CSAMPLE* pIntermediateOutput = m_buffer1.data();
 

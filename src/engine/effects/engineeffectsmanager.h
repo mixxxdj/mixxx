@@ -28,17 +28,36 @@ class EngineEffectsManager : public EffectsRequestHandler {
     // represented as stereo interleaved samples. There are numSamples total
     // samples, so numSamples/2 left channel samples and numSamples/2 right
     // channel samples.
-    void processPreFader(const ChannelHandle& handle,
-                         CSAMPLE* pInOut,
-                         const unsigned int numSamples,
-                         const unsigned int sampleRate);
+    void processPreFaderInPlace(
+        const ChannelHandle& handle,
+        CSAMPLE* pInOut,
+        const unsigned int numSamples,
+        const unsigned int sampleRate);
 
-    void processPostFader(const ChannelHandle& inputHandle,
-                          const ChannelHandle& outputHandle,
-                          CSAMPLE* pIn, CSAMPLE* pOut,
-                          const unsigned int numSamples,
-                          const unsigned int sampleRate,
-                          const GroupFeatureState& groupFeatures);
+    void processPostFaderInPlace(
+        const ChannelHandle& handle,
+        CSAMPLE* pInOut,
+        const unsigned int numSamples,
+        const unsigned int sampleRate,
+        const GroupFeatureState& groupFeatures);
+
+    void processPostFaderAndMix(
+        const ChannelHandle& inputHandle,
+        const ChannelHandle& outputHandle,
+        CSAMPLE* pIn, CSAMPLE* pOut,
+        const unsigned int numSamples,
+        const unsigned int sampleRate,
+        const GroupFeatureState& groupFeatures,
+        const CSAMPLE_GAIN gain);
+
+    void processPostFaderAndMixRamping(
+        const ChannelHandle& inputHandle,
+        const ChannelHandle& outputHandle,
+        CSAMPLE* pIn, CSAMPLE* pOut,
+        const unsigned int numSamples,
+        const unsigned int sampleRate,
+        const GroupFeatureState& groupFeatures,
+        const CSAMPLE_GAIN oldGain, const CSAMPLE_GAIN newGain);
 
     bool processEffectsRequest(
         const EffectsRequest& message,
@@ -61,7 +80,9 @@ class EngineEffectsManager : public EffectsRequestHandler {
                       CSAMPLE* pIn, CSAMPLE* pOut,
                       const unsigned int numSamples,
                       const unsigned int sampleRate,
-                      const GroupFeatureState& groupFeatures);
+                      const GroupFeatureState& groupFeatures,
+                      bool ramping = false,
+                      const CSAMPLE_GAIN oldGain = 0, const CSAMPLE_GAIN newGain = 0);
 
     QScopedPointer<EffectsResponsePipe> m_pResponsePipe;
     QList<EngineEffectRack*> m_preFaderRacks;

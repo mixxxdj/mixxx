@@ -151,6 +151,16 @@ void SampleUtil::applyAlternatingGain(CSAMPLE* pBuffer, CSAMPLE gain1,
 }
 
 // static
+void SampleUtil::add(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc,
+        SINT numSamples) {
+    // note: LOOP VECTORIZED.
+    for (SINT i = 0; i < numSamples; ++i) {
+        pDest[i] += pSrc[i];
+    }
+}
+
+// static
 void SampleUtil::addWithGain(CSAMPLE* M_RESTRICT pDest,
         const CSAMPLE* M_RESTRICT pSrc,
         CSAMPLE_GAIN gain, SINT numSamples) {

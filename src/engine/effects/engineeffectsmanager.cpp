@@ -137,10 +137,10 @@ void EngineEffectsManager::onCallbackStart() {
     }
 }
 
-void EngineEffectsManager::processPreFader(const ChannelHandle& handle,
-                                           CSAMPLE* pInOut,
-                                           const unsigned int numSamples,
-                                           const unsigned int sampleRate) {
+void EngineEffectsManager::processPreFaderInPlace(const ChannelHandle& handle,
+                                                  CSAMPLE* pInOut,
+                                                  const unsigned int numSamples,
+                                                  const unsigned int sampleRate) {
     // Feature state is gathered after prefader effects processing.
     // This is okay because the equalizer and filter effects do not make use of it.
     // However, if an effect is loaded into a QuickEffectRack that could make use
@@ -153,41 +153,107 @@ void EngineEffectsManager::processPreFader(const ChannelHandle& handle,
                  numSamples, sampleRate, featureState);
 }
 
-void EngineEffectsManager::processPostFader(const ChannelHandle& inputHandle,
-                                   const ChannelHandle& outputHandle,
-                                   CSAMPLE* pIn, CSAMPLE* pOut,
-                                   const unsigned int numSamples,
-                                   const unsigned int sampleRate,
-                                   const GroupFeatureState& groupFeatures) {
+void EngineEffectsManager::processPostFaderInPlace(
+    const ChannelHandle& handle,
+    CSAMPLE* pInOut,
+    const unsigned int numSamples,
+    const unsigned int sampleRate,
+    const GroupFeatureState& groupFeatures) {
+    // ChannelMixer::applyEffectsInPlaceAndMixChannels has
+    // already applied gain to the input buffer
     processInner(m_postFaderRacks,
-                inputHandle, outputHandle,
-                pIn, pOut,
-                numSamples, sampleRate, groupFeatures);
+                 handle, handle,
+                 pInOut, pInOut,
+                 numSamples, sampleRate, groupFeatures);
 }
 
-void EngineEffectsManager::processInner(const QList<EngineEffectRack*>& racks,
-                                        const ChannelHandle& inputHandle,
-                                        const ChannelHandle& outputHandle,
-                                        CSAMPLE* pIn, CSAMPLE* pOut,
-                                        const unsigned int numSamples,
-                                        const unsigned int sampleRate,
-                                        const GroupFeatureState& groupFeatures) {
+void EngineEffectsManager::processPostFaderAndMix(
+    const ChannelHandle& inputHandle,
+    const ChannelHandle& outputHandle,
+    CSAMPLE* pIn, CSAMPLE* pOut,
+    const unsigned int numSamples,
+    const unsigned int sampleRate,
+    const GroupFeatureState& groupFeatures,
+    const CSAMPLE_GAIN gain) {
+    // ChannelMixer::applyEffectsAndMixChannels has
+    // not applied gain to the input buffer, so processInner copies the input
+    // to a temporary buffer and applies gain
+    processInner(m_postFaderRacks,
+                 inputHandle, outputHandle,
+                 pIn, pOut,
+                 numSamples, sampleRate, groupFeatures,
+                 false, gain);
+}
+
+void EngineEffectsManager::processPostFaderAndMixRamping(
+    const ChannelHandle& inputHandle,
+    const ChannelHandle& outputHandle,
+    CSAMPLE* pIn, CSAMPLE* pOut,
+    const unsigned int numSamples,
+    const unsigned int sampleRate,
+    const GroupFeatureState& groupFeatures,
+    const CSAMPLE_GAIN oldGain,
+    const CSAMPLE_GAIN newGain) {
+    // ChannelMixer::applyEffectsAndMixChannelsRamping has
+    // not applied gain to the input buffer, so processInner copies the input
+    // to a temporary buffer and applies gain
+    processInner(m_postFaderRacks,
+                 inputHandle, outputHandle,
+                 pIn, pOut,
+                 numSamples, sampleRate, groupFeatures,
+                 true, newGain, oldGain);
+}
+
+void EngineEffectsManager::processInner(
+    const QList<EngineEffectRack*>& racks,
+    const ChannelHandle& inputHandle,
+    const ChannelHandle& outputHandle,
+    CSAMPLE* pIn, CSAMPLE* pOut,
+    const unsigned int numSamples,
+    const unsigned int sampleRate,
+    const GroupFeatureState& groupFeatures,
+    bool ramping,
+    const CSAMPLE_GAIN newGain,
+    const CSAMPLE_GAIN oldGain) {
     if (pIn == pOut) {
-        // Effects are applied to the buffer in place
+        // Effects are applied to the buffer in place, modifying the original input buffer
         for (EngineEffectRack* pRack : racks) {
             if (pRack != nullptr) {
                 pRack->process(inputHandle, outputHandle,
-                               pIn, pOut,
+                               pIn, pIn,
                                numSamples, sampleRate, groupFeatures);
             }
         }
     } else {
-        // Do not modify the input buffer. Mix the output of the effects with
-        // the output buffer. ChannelMixer::applyEffectsAndMixChannels(Ramping) use
-        // this to mix channels regardless of whether any effects were processsed.
+        // Do not modify the input buffer.
+        // 1. Copy input buffer to a temporary buffer
+        // 2. Apply gain to temporary buffer
+        // 2. Process temporary buffer with each effect rack in series
+        // 3. Mix the temporary buffer into pOut
+        //    ChannelMixer::applyEffectsAndMixChannels(Ramping) use
+        //    this to mix channels into pOut regardless of whether any effects were processsed.
         int racksProcessed = 0;
-        CSAMPLE* pIntermediateInput = pIn;
-        CSAMPLE* pIntermediateOutput = m_buffer1.data();
+        CSAMPLE* pIntermediateInput = m_buffer1.data();
+        if (ramping) {
+            if (oldGain == CSAMPLE_GAIN_ONE && newGain == CSAMPLE_GAIN_ONE) {
+                // Avoid an unnecessary copy. EngineEffectRack::process does not modify the
+                // input buffer when its input & output buffers are different, so this is okay.
+                pIntermediateInput = pIn;
+            } else {
+                SampleUtil::copyWithRampingGain(pIntermediateInput, pIn,
+                                                oldGain, newGain, numSamples);
+            }
+        } else {
+            if (newGain == CSAMPLE_GAIN_ONE) {
+                // Avoid an unnecessary copy. EngineEffectRack::process does not modify the
+                // input buffer when its input & output buffers are different, so this is okay.
+                pIntermediateInput = pIn;
+            } else {
+                SampleUtil::copyWithGain(pIntermediateInput, pIn, newGain, numSamples);
+            }
+        }
+
+        CSAMPLE* pIntermediateOutput = m_buffer2.data();
         for (EngineEffectRack* pRack : racks) {
             if (pRack != nullptr) {
                 if (pRack->process(inputHandle, outputHandle,
@@ -195,20 +261,19 @@ void EngineEffectsManager::processInner(const QList<EngineEffectRack*>& racks,
                                    numSamples, sampleRate, groupFeatures)) {
                     ++racksProcessed;
                     if (racksProcessed % 2) {
-                        pIntermediateInput = m_buffer1.data();
-                        pIntermediateOutput = m_buffer2.data();
-                    } else {
                         pIntermediateInput = m_buffer2.data();
                         pIntermediateOutput = m_buffer1.data();
+                    } else {
+                        pIntermediateInput = m_buffer1.data();
+                        pIntermediateOutput = m_buffer2.data();
                     }
                 }
             }
         }
+
         // pIntermediateInput is the output of the last processed rack. It would be the
         // intermediate input of the next rack if there was one.
-        for (unsigned int i = 0; i < numSamples; ++i) {
-            pOut[i] += pIntermediateInput[i];
-        }
+        SampleUtil::add(pOut, pIntermediateInput, numSamples);
     }
 }
 

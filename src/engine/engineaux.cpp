@@ -77,7 +77,7 @@ void EngineAux::process(CSAMPLE* pOut, const int iBufferSize) {
         SampleUtil::copyWithGain(pOut, sampleBuffer, pregain, iBufferSize);
         EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager->getEngineEffectsManager();
         if (pEngineEffectsManager != nullptr) {
-            pEngineEffectsManager->processPreFader(
+            pEngineEffectsManager->processPreFaderInPlace(
                 m_group.handle(), pOut, iBufferSize, m_pSampleRate->get());
         }
         m_sampleBuffer = NULL;

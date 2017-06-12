@@ -9,23 +9,29 @@
 
 class ChannelMixer {
   public:
-    static void mixChannels(
+    static void applyEffectsAndMixChannels(
         const EngineMaster::GainCalculator& gainCalculator,
         QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>* activeChannels,
         QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache,
         CSAMPLE* pOutput,
-        unsigned int iBufferSize);
-    static void mixChannelsRamping(
+        unsigned int iBufferSize,
+        unsigned int iSampleRate,
+        EngineEffectsManager* pEngineEffectsManager,
+        const ChannelHandle& outputHandle);
+    static void applyEffectsAndMixChannelsRamping(
         const EngineMaster::GainCalculator& gainCalculator,
         QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>* activeChannels,
         QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache,
         CSAMPLE* pOutput,
-        unsigned int iBufferSize);
+        unsigned int iBufferSize,
+        unsigned int iSampleRate,
+        EngineEffectsManager* pEngineEffectsManager,
+        const ChannelHandle& outputHandle);
     static void applyEffectsInPlaceAndMixChannels(
         const EngineMaster::GainCalculator& gainCalculator,
         QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>* activeChannels,
         QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache,
-        CSAMPLE* pOutput, const ChannelHandle& outputHandle,
+        CSAMPLE* pOutput,
         unsigned int iBufferSize,
         unsigned int iSampleRate,
         EngineEffectsManager* pEngineEffectsManager);
@@ -33,23 +39,7 @@ class ChannelMixer {
         const EngineMaster::GainCalculator& gainCalculator,
         QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>* activeChannels,
         QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache,
-        CSAMPLE* pOutput, const ChannelHandle& outputHandle,
-        unsigned int iBufferSize,
-        unsigned int iSampleRate,
-        EngineEffectsManager* pEngineEffectsManager);
-    static void applyEffectsAndMixChannels(
-        const EngineMaster::GainCalculator& gainCalculator,
-        QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>* activeChannels,
-        QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache,
-        CSAMPLE* pOutput, const ChannelHandle& outputHandle,
-        unsigned int iBufferSize,
-        unsigned int iSampleRate,
-        EngineEffectsManager* pEngineEffectsManager);
-    static void applyEffectsAndMixChannelsRamping(
-        const EngineMaster::GainCalculator& gainCalculator,
-        QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>* activeChannels,
-        QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache,
-        CSAMPLE* pOutput, const ChannelHandle& outputHandle,
+        CSAMPLE* pOutput,
         unsigned int iBufferSize,
         unsigned int iSampleRate,
         EngineEffectsManager* pEngineEffectsManager);
