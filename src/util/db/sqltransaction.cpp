@@ -5,29 +5,30 @@
 
 
 namespace {
-    const mixxx::Logger kLogger("SqlTransaction");
 
-    inline
-    bool beginTransaction(QSqlDatabase database) {
-        if (!database.isOpen()) {
-            // Should only happen during tests
-            kLogger.warning()
-                    << "Failed to begin SQL database transaction on"
-                    << database.connectionName();
-            return false;
-        }
-        if (database.transaction()) {
-            kLogger.debug()
-                    << "Started new SQL database transaction on"
-                    << database.connectionName();
-            return true;
-        } else {
-            kLogger.warning()
-                    << "Failed to begin SQL database transaction on"
-                    << database.connectionName();
-            return false;
-        }
+const mixxx::Logger kLogger("SqlTransaction");
+
+inline
+bool beginTransaction(QSqlDatabase database) {
+    if (!database.isOpen()) {
+        // Should only happen during tests
+        kLogger.warning()
+                << "Failed to begin SQL database transaction on"
+                << database.connectionName();
+        return false;
     }
+    if (database.transaction()) {
+        kLogger.debug()
+                << "Started new SQL database transaction on"
+                << database.connectionName();
+        return true;
+    } else {
+        kLogger.warning()
+                << "Failed to begin SQL database transaction on"
+                << database.connectionName();
+        return false;
+    }
+}
 
 } // anonymous namespace
 

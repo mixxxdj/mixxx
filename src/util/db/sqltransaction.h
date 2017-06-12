@@ -12,10 +12,6 @@ class SqlTransaction final {
     SqlTransaction(SqlTransaction&& other);
     ~SqlTransaction();
 
-    QSqlDatabase database() {
-        return m_database;
-    }
-
     operator bool() const {
         return m_active;
     }
