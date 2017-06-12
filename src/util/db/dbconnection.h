@@ -2,7 +2,6 @@
 #define MIXXX_DBCONNECTION_H
 
 
-#include <QDir>
 #include <QSqlDatabase>
 
 #include <QtDebug>
