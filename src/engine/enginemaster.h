@@ -339,7 +339,6 @@ class EngineMaster : public QObject, public AudioSource {
     const ChannelHandleAndGroup m_busLeftHandle;
     const ChannelHandleAndGroup m_busCenterHandle;
     const ChannelHandleAndGroup m_busRightHandle;
-    const ChannelHandleAndGroup m_unmixedDeckOutputHandle;
 
     // Produce the Master Mixxx, not Required if connected to left
     // and right Bus and no recording and broadcast active

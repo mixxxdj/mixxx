@@ -44,8 +44,7 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
           m_headphoneHandle(registerChannelGroup("[Headphone]")),
           m_busLeftHandle(registerChannelGroup("[BusLeft]")),
           m_busCenterHandle(registerChannelGroup("[BusCenter]")),
-          m_busRightHandle(registerChannelGroup("[BusRight]")),
-          m_unmixedDeckOutputHandle(registerChannelGroup("[UnmixedDeck]")) {
+          m_busRightHandle(registerChannelGroup("[BusRight]")) {
     m_bBusOutputConnected[EngineChannel::LEFT] = false;
     m_bBusOutputConnected[EngineChannel::CENTER] = false;
     m_bBusOutputConnected[EngineChannel::RIGHT] = false;
@@ -419,22 +418,19 @@ void EngineMaster::process(const int iBufferSize) {
     }
 
     // Mix all the talkover enabled channels together.
-    // Effects processing does not modify the channel buffers; the output of the
-    // effects are mixed into the output buffer.
+    // Effects processing is done in place to avoid unnecessary buffer copying.
     if (m_bRampingGain) {
-        ChannelMixer::applyEffectsAndMixChannelsRamping(
+        ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(
             m_talkoverGain, &m_activeTalkoverChannels,
             &m_channelTalkoverGainCache,
             m_pTalkover,
-            m_iBufferSize, m_iSampleRate, m_pEngineEffectsManager,
-            m_masterHandle.handle());
+            m_iBufferSize, m_iSampleRate, m_pEngineEffectsManager);
     } else {
-        ChannelMixer::applyEffectsAndMixChannels(
+        ChannelMixer::applyEffectsInPlaceAndMixChannels(
             m_talkoverGain, &m_activeTalkoverChannels,
             &m_channelTalkoverGainCache,
             m_pTalkover,
-            m_iBufferSize, m_iSampleRate, m_pEngineEffectsManager,
-            m_masterHandle.handle());
+            m_iBufferSize, m_iSampleRate, m_pEngineEffectsManager);
     }
 
     // Clear talkover compressor for the next round of gain calculation.

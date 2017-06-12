@@ -75,6 +75,8 @@ def write_channelmixer_autogen(output, num_channels):
         write('ScopedTimer t("EngineMaster::applyEffects%(inplace)sAndMixChannels%(ramp)s_0active");' %
               {'inplace': 'InPlace' if inplace else '',
                'ramp': 'Ramping' if ramping else ''}, depth=2)
+        if inplace:
+            write('SampleUtil::clear(pOutput, iBufferSize);', depth=2)
         for i in xrange(1, num_channels+1):
             write('} else if (totalActive == %d) {' % i, depth=1)
             write('ScopedTimer t("EngineMaster::applyEffects%(inplace)sAndMixChannels%(ramping)s_%(i)dactive");' %

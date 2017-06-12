@@ -15859,6 +15859,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
     int totalActive = activeChannels->size();
     if (totalActive == 0) {
         ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_0active");
+        SampleUtil::clear(pOutput, iBufferSize);
     } else if (totalActive == 1) {
         ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_1active");
         CSAMPLE_GAIN newGain[1];
@@ -23083,6 +23084,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
     int totalActive = activeChannels->size();
     if (totalActive == 0) {
         ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannelsRamping_0active");
+        SampleUtil::clear(pOutput, iBufferSize);
     } else if (totalActive == 1) {
         ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannelsRamping_1active");
         CSAMPLE_GAIN oldGain[1];
