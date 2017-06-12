@@ -1,7 +1,6 @@
 #ifndef ANALYZER_ANALYZERQUEUE_H
 #define ANALYZER_ANALYZERQUEUE_H
 
-#include <QList>
 #include <QThread>
 #include <QQueue>
 #include <QWaitCondition>
@@ -9,29 +8,32 @@
 
 #include <vector>
 
-#include "analyzer/analyzer.h"
 #include "preferences/usersettings.h"
 #include "sources/audiosource.h"
 #include "track/track.h"
 #include "repository/repository.h"
 #include "library/dao/analysisdao.h"
 #include "util/samplebuffer.h"
+#include "util/memory.h"
+
+class Analyzer;
 
 class AnalyzerQueue : public QThread {
     Q_OBJECT
 
   public:
+    enum class Mode {
+        Default,
+        WithoutWaveform,
+    };
+
     explicit AnalyzerQueue(
-            UserSettingsPointer pConfig);
+            UserSettingsPointer pConfig,
+            Mode mode = Mode::Default);
     virtual ~AnalyzerQueue();
 
     void stop();
     void queueAnalyseTrack(TrackPointer tio);
-
-    static AnalyzerQueue* createDefaultAnalyzerQueue(
-            UserSettingsPointer pConfig);
-    static AnalyzerQueue* createAnalysisFeatureAnalyzerQueue(
-            UserSettingsPointer pConfig);
 
   public slots:
     void slotAnalyseTrack(TrackPointer tio);
@@ -56,9 +58,8 @@ class AnalyzerQueue : public QThread {
         QSemaphore sema;
     };
 
-    void addAnalyzer(Analyzer* an);
-
-    QList<Analyzer*> m_aq;
+    typedef std::unique_ptr<Analyzer> AnalyzerPtr;
+    std::vector<AnalyzerPtr> m_pAnalyzers;
 
     bool isLoadedTrackWaiting(TrackPointer analysingTrack);
     TrackPointer dequeueNextBlocking();

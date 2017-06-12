@@ -1,9 +1,5 @@
 #include "analyzer/analyzerqueue.h"
 
-#include <typeinfo>
-
-#include <QMutexLocker>
-
 #ifdef __VAMP__
 #include "analyzer/analyzerbeats.h"
 #include "analyzer/analyzerkey.h"
@@ -28,7 +24,7 @@
 
 namespace {
 
-mixxx::Logger kLogger("AnalyzerWaveform");
+mixxx::Logger kLogger("AnalyzerQueue");
 
 // Analysis is done in blocks.
 // We need to use a smaller block size, because on Linux the AnalyzerQueue
@@ -51,9 +47,9 @@ QString nextDatabaseConnectioName() {
 } // anonymous namespace
 
 AnalyzerQueue::AnalyzerQueue(
-        UserSettingsPointer pConfig)
-        : m_aq(),
-          m_exit(false),
+        UserSettingsPointer pConfig,
+        Mode mode)
+        : m_exit(false),
           m_aiCheckPriorities(false),
           m_repository(pConfig, nextDatabaseConnectioName()),
           m_analysisDao(pConfig),
@@ -62,26 +58,27 @@ AnalyzerQueue::AnalyzerQueue(
           m_qm(),
           m_qwait(),
           m_queue_size(0) {
+
+    if (mode != Mode::WithoutWaveform) {
+        m_pAnalyzers.push_back(std::make_unique<AnalyzerWaveform>(&m_analysisDao));
+    }
+    m_pAnalyzers.push_back(std::make_unique<AnalyzerGain>(pConfig));
+    m_pAnalyzers.push_back(std::make_unique<AnalyzerEbur128>(pConfig));
+#ifdef __VAMP__
+    m_pAnalyzers.push_back(std::make_unique<AnalyzerBeats>(pConfig));
+    m_pAnalyzers.push_back(std::make_unique<AnalyzerKey>(pConfig));
+#endif
+
     connect(this, SIGNAL(updateProgress()),
             this, SLOT(slotUpdateProgress()));
+
+    start(QThread::LowPriority);
 }
 
 AnalyzerQueue::~AnalyzerQueue() {
     stop();
     m_progressInfo.sema.release();
     wait(); //Wait until thread has actually stopped before proceeding.
-
-    QListIterator<Analyzer*> it(m_aq);
-    while (it.hasNext()) {
-        Analyzer* an = it.next();
-        //kLogger.debug() << "deleting " << typeid(an).name();
-        delete an;
-    }
-    //kLogger.debug() << "~AnalyzerQueue()";
-}
-
-void AnalyzerQueue::addAnalyzer(Analyzer* an) {
-    m_aq.push_back(an);
 }
 
 // This is called from the AnalyzerQueue thread
@@ -109,10 +106,9 @@ bool AnalyzerQueue::isLoadedTrackWaiting(TrackPointer analysingTrack) {
         int progress = pTrack->getAnalyzerProgress();
         if (progress < 0) {
             // Load stored analysis
-            QListIterator<Analyzer*> ita(m_aq);
             bool processTrack = false;
-            while (ita.hasNext()) {
-                if (!ita.next()->isDisabledOrLoadStoredSuccess(pTrack)) {
+            for (auto const& pAnalyzer: m_pAnalyzers) {
+                if (!pAnalyzer->isDisabledOrLoadStoredSuccess(pTrack)) {
                     processTrack = true;
                 }
             }
@@ -220,12 +216,8 @@ bool AnalyzerQueue::doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAudi
         // the full block size.
         if (kAnalysisFramesPerBlock == framesRead) {
             // Complete analysis block of audio samples has been read.
-            QListIterator<Analyzer*> it(m_aq);
-            while (it.hasNext()) {
-                Analyzer* an =  it.next();
-                //kLogger.debug() << typeid(*an).name() << ".process()";
-                an->process(m_sampleBuffer.data(), m_sampleBuffer.size());
-                //kLogger.debug() << "Done " << typeid(*an).name() << ".process()";
+            for (auto const& pAnalyzer: m_pAnalyzers) {
+                pAnalyzer->process(m_sampleBuffer.data(), m_sampleBuffer.size());
             }
         } else {
             // Partial analysis block of audio samples has been read.
@@ -301,7 +293,7 @@ void AnalyzerQueue::stop() {
 
 void AnalyzerQueue::run() {
     // If there are no analyzers, don't waste time running.
-    if (m_aq.isEmpty()) {
+    if (m_pAnalyzers.empty()) {
         return;
     }
 
@@ -355,11 +347,10 @@ void AnalyzerQueue::run() {
             continue;
         }
 
-        QListIterator<Analyzer*> it(m_aq);
         bool processTrack = false;
-        while (it.hasNext()) {
+        for (auto const& pAnalyzer: m_pAnalyzers) {
             // Make sure not to short-circuit initialize(...)
-            if (it.next()->initialize(nextTrack, pAudioSource->getSamplingRate(), pAudioSource->getFrameCount() * kAnalysisChannels)) {
+            if (pAnalyzer->initialize(nextTrack, pAudioSource->getSamplingRate(), pAudioSource->getFrameCount() * kAnalysisChannels)) {
                 processTrack = true;
             }
         }
@@ -373,9 +364,8 @@ void AnalyzerQueue::run() {
             bool completed = doAnalysis(nextTrack, pAudioSource);
             if (!completed) {
                 // This track was cancelled
-                QListIterator<Analyzer*> itf(m_aq);
-                while (itf.hasNext()) {
-                    itf.next()->cleanup(nextTrack);
+                for (auto const& pAnalyzer: m_pAnalyzers) {
+                    pAnalyzer->cleanup(nextTrack);
                 }
                 queueAnalyseTrack(nextTrack);
                 emitUpdateProgress(nextTrack, 0);
@@ -383,9 +373,8 @@ void AnalyzerQueue::run() {
                 // 100% - FINALIZE_PERCENT finished
                 emitUpdateProgress(nextTrack, 1000 - FINALIZE_PROMILLE);
                 // This takes around 3 sec on a Atom Netbook
-                QListIterator<Analyzer*> itf(m_aq);
-                while (itf.hasNext()) {
-                    itf.next()->finalize(nextTrack);
+                for (auto const& pAnalyzer: m_pAnalyzers) {
+                    pAnalyzer->finalize(nextTrack);
                 }
                 emit(trackDone(nextTrack));
                 emitUpdateProgress(nextTrack, 1000); // 100%
@@ -461,40 +450,4 @@ void AnalyzerQueue::queueAnalyseTrack(TrackPointer tio) {
         m_qwait.wakeAll();
     }
     m_qm.unlock();
-}
-
-// static
-AnalyzerQueue* AnalyzerQueue::createDefaultAnalyzerQueue(
-        UserSettingsPointer pConfig) {
-    AnalyzerQueue* ret = new AnalyzerQueue(pConfig);
-
-    ret->addAnalyzer(new AnalyzerWaveform(&ret->m_analysisDao));
-    ret->addAnalyzer(new AnalyzerGain(pConfig));
-    ret->addAnalyzer(new AnalyzerEbur128(pConfig));
-#ifdef __VAMP__
-    ret->addAnalyzer(new AnalyzerBeats(pConfig));
-    ret->addAnalyzer(new AnalyzerKey(pConfig));
-#endif
-
-    ret->start(QThread::LowPriority);
-    return ret;
-}
-
-// static
-AnalyzerQueue* AnalyzerQueue::createAnalysisFeatureAnalyzerQueue(
-        UserSettingsPointer pConfig) {
-    AnalyzerQueue* ret = new AnalyzerQueue(pConfig);
-
-    if (pConfig->getValue<bool>(ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"))) {
-        ret->addAnalyzer(new AnalyzerWaveform(&ret->m_analysisDao));
-    }
-    ret->addAnalyzer(new AnalyzerGain(pConfig));
-    ret->addAnalyzer(new AnalyzerEbur128(pConfig));
-#ifdef __VAMP__
-    ret->addAnalyzer(new AnalyzerBeats(pConfig));
-    ret->addAnalyzer(new AnalyzerKey(pConfig));
-#endif
-
-    ret->start(QThread::LowPriority);
-    return ret;
 }
