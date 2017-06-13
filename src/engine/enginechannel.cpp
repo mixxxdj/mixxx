@@ -50,7 +50,6 @@ EngineChannel::EngineChannel(const ChannelHandleAndGroup& handle_group,
 
     if (m_pEffectsManager != nullptr) {
         m_pEffectsManager->registerInputChannel(handle_group);
-        m_pEffectsManager->registerOutputChannel(handle_group);
     }
 }
 

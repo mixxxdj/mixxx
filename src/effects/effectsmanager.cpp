@@ -12,8 +12,10 @@
 const char* kEqualizerRackName = "[EqualizerChain]";
 const char* kQuickEffectRackName = "[QuickEffectChain]";
 
-EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig)
+EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig,
+                               ChannelHandleFactory* pChannelHandleFactory)
         : QObject(pParent),
+          m_pChannelHandleFactory(pChannelHandleFactory),
           m_pEffectChainManager(new EffectChainManager(pConfig, this)),
           m_nextRequestId(0),
           m_pLoEqFreq(NULL),
@@ -29,6 +31,11 @@ EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig)
 
     m_pNumEffectsAvailable = new ControlObject(ConfigKey("[Master]", "num_effectsavailable"));
     m_pNumEffectsAvailable->setReadOnly();
+
+    registerInputChannel(ChannelHandleAndGroup(m_pChannelHandleFactory->getOrCreateHandle("[Master]"), "[Master]"));
+    registerOutputChannel(ChannelHandleAndGroup(m_pChannelHandleFactory->getOrCreateHandle("[Master]"), "[Master]"));
+    registerInputChannel(ChannelHandleAndGroup(m_pChannelHandleFactory->getOrCreateHandle("[Headphone]"), "[Headphone]"));
+    registerOutputChannel(ChannelHandleAndGroup(m_pChannelHandleFactory->getOrCreateHandle("[Headphone]"), "[Headphone]"));
 }
 
 EffectsManager::~EffectsManager() {

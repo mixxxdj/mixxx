@@ -29,13 +29,15 @@ class EngineEffectsManager : public EffectsRequestHandler {
     // samples, so numSamples/2 left channel samples and numSamples/2 right
     // channel samples.
     void processPreFaderInPlace(
-        const ChannelHandle& handle,
+        const ChannelHandle& inputHandle,
+        const ChannelHandle& outputHandle,
         CSAMPLE* pInOut,
         const unsigned int numSamples,
         const unsigned int sampleRate);
 
     void processPostFaderInPlace(
-        const ChannelHandle& handle,
+        const ChannelHandle& inputHandle,
+        const ChannelHandle& outputHandle,
         CSAMPLE* pInOut,
         const unsigned int numSamples,
         const unsigned int sampleRate,

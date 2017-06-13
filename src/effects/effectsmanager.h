@@ -29,7 +29,8 @@ class EffectsManager : public QObject {
   public:
     typedef bool (*EffectManifestFilterFnc)(const EffectManifest& pManifest);
 
-    EffectsManager(QObject* pParent, UserSettingsPointer pConfig);
+    EffectsManager(QObject* pParent, UserSettingsPointer pConfig,
+                   ChannelHandleFactory* pChannelHandleFactory);
     virtual ~EffectsManager();
 
     EngineEffectsManager* getEngineEffectsManager() {
@@ -38,6 +39,10 @@ class EffectsManager : public QObject {
 
     EffectChainManager* getEffectChainManager() {
         return m_pEffectChainManager;
+    }
+
+    const ChannelHandle getMasterHandle() {
+        return m_pChannelHandleFactory->getOrCreateHandle("[Master]");
     }
 
     // Add an effect backend to be managed by EffectsManager. EffectsManager
@@ -93,6 +98,8 @@ class EffectsManager : public QObject {
     }
 
     void processEffectsResponses();
+
+    ChannelHandleFactory* m_pChannelHandleFactory;
 
     EffectChainManager* m_pEffectChainManager;
     QList<EffectsBackend*> m_effectsBackends;

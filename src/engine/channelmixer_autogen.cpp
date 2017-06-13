@@ -11,10 +11,10 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
                                               QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>* activeChannels,
                                               QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache,
                                               CSAMPLE* pOutput,
+                                              const ChannelHandle& outputHandle,
                                               unsigned int iBufferSize,
                                               unsigned int iSampleRate,
-                                              EngineEffectsManager* pEngineEffectsManager,
-                                              const ChannelHandle& outputHandle) {
+                                              EngineEffectsManager* pEngineEffectsManager) {
     // Signal flow overview:
     // 1. Clear pOutput buffer
     // 2. Calculate gains for each channel
@@ -7209,10 +7209,10 @@ void ChannelMixer::applyEffectsAndMixChannelsRamping(const EngineMaster::GainCal
                                                      QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>* activeChannels,
                                                      QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache,
                                                      CSAMPLE* pOutput,
+                                                     const ChannelHandle& outputHandle,
                                                      unsigned int iBufferSize,
                                                      unsigned int iSampleRate,
-                                                     EngineEffectsManager* pEngineEffectsManager,
-                                                     const ChannelHandle& outputHandle) {
+                                                     EngineEffectsManager* pEngineEffectsManager) {
     // Signal flow overview:
     // 1. Clear pOutput buffer
     // 2. Calculate gains for each channel
@@ -15848,6 +15848,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
                                                      QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>* activeChannels,
                                                      QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache,
                                                      CSAMPLE* pOutput,
+                                                     const ChannelHandle& outputHandle,
                                                      unsigned int iBufferSize,
                                                      unsigned int iSampleRate,
                                                      EngineEffectsManager* pEngineEffectsManager) {
@@ -15877,7 +15878,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer0, newGain[0], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -15912,8 +15913,8 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer1, newGain[1], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -15960,9 +15961,9 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer2, newGain[2], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -16021,10 +16022,10 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer3, newGain[3], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -16095,11 +16096,11 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer4, newGain[4], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -16182,12 +16183,12 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer5, newGain[5], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -16282,13 +16283,13 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer6, newGain[6], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -16395,14 +16396,14 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer7, newGain[7], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -16521,15 +16522,15 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer8, newGain[8], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -16660,16 +16661,16 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer9, newGain[9], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -16812,17 +16813,17 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer10, newGain[10], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -16977,18 +16978,18 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer11, newGain[11], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -17155,19 +17156,19 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer12, newGain[12], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -17346,20 +17347,20 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer13, newGain[13], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -17550,21 +17551,21 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer14, newGain[14], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -17767,22 +17768,22 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer15, newGain[15], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -17997,23 +17998,23 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer16, newGain[16], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -18240,24 +18241,24 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer17, newGain[17], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -18496,25 +18497,25 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer18, newGain[18], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -18765,26 +18766,26 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer19, newGain[19], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -19047,27 +19048,27 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer20, newGain[20], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -19342,28 +19343,28 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer21, newGain[21], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -19650,29 +19651,29 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer22, newGain[22], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -19971,30 +19972,30 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer23, newGain[23], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -20305,31 +20306,31 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer24, newGain[24], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -20652,32 +20653,32 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer25, newGain[25], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -21012,33 +21013,33 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer26, newGain[26], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, outputHandle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -21385,34 +21386,34 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer27, newGain[27], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, outputHandle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, outputHandle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -21771,35 +21772,35 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer28, newGain[28], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel28->m_handle, pBuffer28, iBufferSize, iSampleRate, pChannel28->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, outputHandle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, outputHandle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel28->m_handle, outputHandle, pBuffer28, iBufferSize, iSampleRate, pChannel28->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -22170,36 +22171,36 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer29, newGain[29], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel28->m_handle, pBuffer28, iBufferSize, iSampleRate, pChannel28->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel29->m_handle, pBuffer29, iBufferSize, iSampleRate, pChannel29->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, outputHandle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, outputHandle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel28->m_handle, outputHandle, pBuffer28, iBufferSize, iSampleRate, pChannel28->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel29->m_handle, outputHandle, pBuffer29, iBufferSize, iSampleRate, pChannel29->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -22582,37 +22583,37 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer30, newGain[30], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel28->m_handle, pBuffer28, iBufferSize, iSampleRate, pChannel28->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel29->m_handle, pBuffer29, iBufferSize, iSampleRate, pChannel29->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel30->m_handle, pBuffer30, iBufferSize, iSampleRate, pChannel30->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, outputHandle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, outputHandle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel28->m_handle, outputHandle, pBuffer28, iBufferSize, iSampleRate, pChannel28->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel29->m_handle, outputHandle, pBuffer29, iBufferSize, iSampleRate, pChannel29->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel30->m_handle, outputHandle, pBuffer30, iBufferSize, iSampleRate, pChannel30->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -23007,38 +23008,38 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         SampleUtil::applyGain(pBuffer31, newGain[31], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel28->m_handle, pBuffer28, iBufferSize, iSampleRate, pChannel28->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel29->m_handle, pBuffer29, iBufferSize, iSampleRate, pChannel29->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel30->m_handle, pBuffer30, iBufferSize, iSampleRate, pChannel30->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel31->m_handle, pBuffer31, iBufferSize, iSampleRate, pChannel31->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, outputHandle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, outputHandle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel28->m_handle, outputHandle, pBuffer28, iBufferSize, iSampleRate, pChannel28->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel29->m_handle, outputHandle, pBuffer29, iBufferSize, iSampleRate, pChannel29->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel30->m_handle, outputHandle, pBuffer30, iBufferSize, iSampleRate, pChannel30->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel31->m_handle, outputHandle, pBuffer31, iBufferSize, iSampleRate, pChannel31->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -23061,7 +23062,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             CSAMPLE* pBuffer = pChannelInfo->m_pBuffer;
             SampleUtil::applyGain(pBuffer, newGain, iBufferSize);
             if (pEngineEffectsManager) {
-                pEngineEffectsManager->processPostFaderInPlace(pChannelInfo->m_handle, pBuffer, iBufferSize, iSampleRate, pChannelInfo->m_features);
+                pEngineEffectsManager->processPostFaderInPlace(pChannelInfo->m_handle, outputHandle, pBuffer, iBufferSize, iSampleRate, pChannelInfo->m_features);
             }
             for (unsigned int i = 0; i < iBufferSize; ++i) {
                 pOutput[i] += pBuffer[i];
@@ -23073,6 +23074,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
                                                             QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>* activeChannels,
                                                             QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache,
                                                             CSAMPLE* pOutput,
+                                                            const ChannelHandle& outputHandle,
                                                             unsigned int iBufferSize,
                                                             unsigned int iSampleRate,
                                                             EngineEffectsManager* pEngineEffectsManager) {
@@ -23104,7 +23106,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -23142,8 +23144,8 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -23194,9 +23196,9 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -23260,10 +23262,10 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -23340,11 +23342,11 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -23434,12 +23436,12 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -23542,13 +23544,13 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -23664,14 +23666,14 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -23800,15 +23802,15 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer8, oldGain[8], newGain[8], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -23950,16 +23952,16 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer9, oldGain[9], newGain[9], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -24114,17 +24116,17 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer10, oldGain[10], newGain[10], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -24292,18 +24294,18 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer11, oldGain[11], newGain[11], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -24484,19 +24486,19 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer12, oldGain[12], newGain[12], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -24690,20 +24692,20 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer13, oldGain[13], newGain[13], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -24910,21 +24912,21 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer14, oldGain[14], newGain[14], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -25144,22 +25146,22 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer15, oldGain[15], newGain[15], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -25392,23 +25394,23 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer16, oldGain[16], newGain[16], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -25654,24 +25656,24 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer17, oldGain[17], newGain[17], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -25930,25 +25932,25 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer18, oldGain[18], newGain[18], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -26220,26 +26222,26 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer19, oldGain[19], newGain[19], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -26524,27 +26526,27 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer20, oldGain[20], newGain[20], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -26842,28 +26844,28 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer21, oldGain[21], newGain[21], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -27174,29 +27176,29 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer22, oldGain[22], newGain[22], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -27520,30 +27522,30 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer23, oldGain[23], newGain[23], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -27880,31 +27882,31 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer24, oldGain[24], newGain[24], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -28254,32 +28256,32 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer25, oldGain[25], newGain[25], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -28642,33 +28644,33 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer26, oldGain[26], newGain[26], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, outputHandle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -29044,34 +29046,34 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer27, oldGain[27], newGain[27], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, outputHandle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, outputHandle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -29460,35 +29462,35 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer28, oldGain[28], newGain[28], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel28->m_handle, pBuffer28, iBufferSize, iSampleRate, pChannel28->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, outputHandle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, outputHandle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel28->m_handle, outputHandle, pBuffer28, iBufferSize, iSampleRate, pChannel28->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -29890,36 +29892,36 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer29, oldGain[29], newGain[29], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel28->m_handle, pBuffer28, iBufferSize, iSampleRate, pChannel28->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel29->m_handle, pBuffer29, iBufferSize, iSampleRate, pChannel29->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, outputHandle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, outputHandle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel28->m_handle, outputHandle, pBuffer28, iBufferSize, iSampleRate, pChannel28->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel29->m_handle, outputHandle, pBuffer29, iBufferSize, iSampleRate, pChannel29->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -30334,37 +30336,37 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer30, oldGain[30], newGain[30], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel28->m_handle, pBuffer28, iBufferSize, iSampleRate, pChannel28->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel29->m_handle, pBuffer29, iBufferSize, iSampleRate, pChannel29->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel30->m_handle, pBuffer30, iBufferSize, iSampleRate, pChannel30->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, outputHandle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, outputHandle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel28->m_handle, outputHandle, pBuffer28, iBufferSize, iSampleRate, pChannel28->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel29->m_handle, outputHandle, pBuffer29, iBufferSize, iSampleRate, pChannel29->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel30->m_handle, outputHandle, pBuffer30, iBufferSize, iSampleRate, pChannel30->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -30792,38 +30794,38 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
         SampleUtil::applyRampingGain(pBuffer31, oldGain[31], newGain[31], iBufferSize);
         if (pEngineEffectsManager) {
             // Process effects for each channel in place
-            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel28->m_handle, pBuffer28, iBufferSize, iSampleRate, pChannel28->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel29->m_handle, pBuffer29, iBufferSize, iSampleRate, pChannel29->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel30->m_handle, pBuffer30, iBufferSize, iSampleRate, pChannel30->m_features);
-            pEngineEffectsManager->processPostFaderInPlace(pChannel31->m_handle, pBuffer31, iBufferSize, iSampleRate, pChannel31->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, outputHandle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, outputHandle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel28->m_handle, outputHandle, pBuffer28, iBufferSize, iSampleRate, pChannel28->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel29->m_handle, outputHandle, pBuffer29, iBufferSize, iSampleRate, pChannel29->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel30->m_handle, outputHandle, pBuffer30, iBufferSize, iSampleRate, pChannel30->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannel31->m_handle, outputHandle, pBuffer31, iBufferSize, iSampleRate, pChannel31->m_features);
         }
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
@@ -30847,7 +30849,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(const EngineMaster::
             CSAMPLE* pBuffer = pChannelInfo->m_pBuffer;
             SampleUtil::applyRampingGain(pBuffer, oldGain, newGain, iBufferSize);
             if (pEngineEffectsManager) {
-                pEngineEffectsManager->processPostFaderInPlace(pChannelInfo->m_handle, pBuffer, iBufferSize, iSampleRate, pChannelInfo->m_features);
+                pEngineEffectsManager->processPostFaderInPlace(pChannelInfo->m_handle, outputHandle, pBuffer, iBufferSize, iSampleRate, pChannelInfo->m_features);
             }
             for (unsigned int i = 0; i < iBufferSize; ++i) {
                 pOutput[i] += pBuffer[i];

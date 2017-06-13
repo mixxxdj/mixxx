@@ -41,11 +41,9 @@ def write_channelmixer_autogen(output, num_channels):
         args = ['const EngineMaster::GainCalculator& gainCalculator',
                 'QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>* activeChannels',
                 'QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache',
-                'CSAMPLE* pOutput',
+                'CSAMPLE* pOutput', 'const ChannelHandle& outputHandle',
                 'unsigned int iBufferSize', 'unsigned int iSampleRate',
                 'EngineEffectsManager* pEngineEffectsManager']
-        if not inplace:
-            args += ['const ChannelHandle& outputHandle']
         output.extend(hanging_indent(header, args, ',', ') {'))
 
         def write(data, depth=0):
@@ -114,7 +112,7 @@ def write_channelmixer_autogen(output, num_channels):
                 write('// Process effects for each channel and mix the processed signal into pOutput', depth=3)
             for j in xrange(i):
               if inplace:
-                  write('pEngineEffectsManager->processPostFaderInPlace(pChannel%(j)d->m_handle, pBuffer%(j)d, iBufferSize, iSampleRate, pChannel%(j)d->m_features);' % {'j': j}, depth=3)
+                  write('pEngineEffectsManager->processPostFaderInPlace(pChannel%(j)d->m_handle, outputHandle, pBuffer%(j)d, iBufferSize, iSampleRate, pChannel%(j)d->m_features);' % {'j': j}, depth=3)
               else:
                   if ramping:
                       write('pEngineEffectsManager->processPostFaderAndMixRamping(pChannel%(j)d->m_handle, outputHandle, pBuffer%(j)d, pOutput, iBufferSize, iSampleRate, pChannel%(j)d->m_features, oldGain[%(j)d], newGain[%(j)d]);' % {'j': j}, depth=3)
@@ -182,7 +180,7 @@ def write_channelmixer_autogen(output, num_channels):
                 write('SampleUtil::applyGain(pBuffer, newGain, iBufferSize);', depth=3)
         write('if (pEngineEffectsManager) {', depth=3)
         if inplace:
-            write('pEngineEffectsManager->processPostFaderInPlace(pChannelInfo->m_handle, pBuffer, iBufferSize, iSampleRate, pChannelInfo->m_features);' % {'j': j}, depth=4)
+            write('pEngineEffectsManager->processPostFaderInPlace(pChannelInfo->m_handle, outputHandle, pBuffer, iBufferSize, iSampleRate, pChannelInfo->m_features);' % {'j': j}, depth=4)
             write('}', depth=3)
             write('for (unsigned int i = 0; i < iBufferSize; ++i) {', depth=3)
             write('pOutput[i] += pBuffer[i];', depth=4)

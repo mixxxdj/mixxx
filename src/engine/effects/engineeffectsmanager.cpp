@@ -137,7 +137,8 @@ void EngineEffectsManager::onCallbackStart() {
     }
 }
 
-void EngineEffectsManager::processPreFaderInPlace(const ChannelHandle& handle,
+void EngineEffectsManager::processPreFaderInPlace(const ChannelHandle& inputHandle,
+                                                  const ChannelHandle& outputHandle,
                                                   CSAMPLE* pInOut,
                                                   const unsigned int numSamples,
                                                   const unsigned int sampleRate) {
@@ -148,13 +149,14 @@ void EngineEffectsManager::processPreFaderInPlace(const ChannelHandle& handle,
     // a StandardEffectRack.
     GroupFeatureState featureState;
     processInner(m_preFaderRacks,
-                 handle, handle,
+                 inputHandle, outputHandle,
                  pInOut, pInOut,
                  numSamples, sampleRate, featureState);
 }
 
 void EngineEffectsManager::processPostFaderInPlace(
-    const ChannelHandle& handle,
+    const ChannelHandle& inputHandle,
+    const ChannelHandle& outputHandle,
     CSAMPLE* pInOut,
     const unsigned int numSamples,
     const unsigned int sampleRate,
@@ -162,7 +164,7 @@ void EngineEffectsManager::processPostFaderInPlace(
     // ChannelMixer::applyEffectsInPlaceAndMixChannels has
     // already applied gain to the input buffer
     processInner(m_postFaderRacks,
-                 handle, handle,
+                 inputHandle, outputHandle,
                  pInOut, pInOut,
                  numSamples, sampleRate, groupFeatures);
 }

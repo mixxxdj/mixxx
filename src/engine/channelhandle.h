@@ -116,6 +116,8 @@ inline uint qHash(const ChannelHandleAndGroup& handle_group) {
 class ChannelHandleFactory {
   public:
     ChannelHandleFactory() : m_iNextHandle(0) {
+        getOrCreateHandle("[Master]");
+        getOrCreateHandle("[Headphone]");
     }
 
     ChannelHandle getOrCreateHandle(const QString& group) {

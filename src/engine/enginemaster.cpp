@@ -32,9 +32,11 @@
 EngineMaster::EngineMaster(UserSettingsPointer pConfig,
                            const char* group,
                            EffectsManager* pEffectsManager,
+                           ChannelHandleFactory* pChannelHandleFactory,
                            bool bEnableSidechain,
                            bool bRampingGain)
         : m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
+          m_pChannelHandleFactory(pChannelHandleFactory),
           m_bRampingGain(bRampingGain),
           m_ppSidechain(&m_pTalkover),
           m_masterGainOld(0.0),
@@ -50,17 +52,6 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
     m_bBusOutputConnected[EngineChannel::RIGHT] = false;
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
     m_pWorkerScheduler->start(QThread::HighPriority);
-
-    if (pEffectsManager) {
-        pEffectsManager->registerInputChannel(m_masterHandle);
-        pEffectsManager->registerInputChannel(m_headphoneHandle);
-        pEffectsManager->registerInputChannel(m_busLeftHandle);
-        pEffectsManager->registerInputChannel(m_busCenterHandle);
-        pEffectsManager->registerInputChannel(m_busRightHandle);
-
-        pEffectsManager->registerOutputChannel(m_masterHandle);
-        pEffectsManager->registerOutputChannel(m_headphoneHandle);
-    }
 
     // Master sample rate
     m_pMasterSampleRate = new ControlObject(ConfigKey(group, "samplerate"), true, true);
@@ -385,16 +376,16 @@ void EngineMaster::process(const int iBufferSize) {
             ChannelMixer::applyEffectsAndMixChannelsRamping(
                 m_headphoneGain, &m_activeHeadphoneChannels,
                 &m_channelHeadphoneGainCache,
-                m_pHead,
+                m_pHead, m_headphoneHandle.handle(),
                 m_iBufferSize, m_iSampleRate,
-                m_pEngineEffectsManager, m_headphoneHandle.handle());
+                m_pEngineEffectsManager);
         } else {
             ChannelMixer::applyEffectsAndMixChannels(
                 m_headphoneGain, &m_activeHeadphoneChannels,
                 &m_channelHeadphoneGainCache,
-                m_pHead,
+                m_pHead, m_headphoneHandle.handle(),
                 m_iBufferSize, m_iSampleRate,
-                m_pEngineEffectsManager, m_headphoneHandle.handle());
+                m_pEngineEffectsManager);
         }
 
         // Process headphone channel effects
@@ -411,6 +402,7 @@ void EngineMaster::process(const int iBufferSize) {
             }
             m_pEngineEffectsManager->processPostFaderInPlace(
                 m_headphoneHandle.handle(),
+                m_headphoneHandle.handle(),
                 m_pHead,
                 m_iBufferSize, m_iSampleRate,
                 headphoneFeatures);
@@ -423,13 +415,13 @@ void EngineMaster::process(const int iBufferSize) {
         ChannelMixer::applyEffectsInPlaceAndMixChannelsRamping(
             m_talkoverGain, &m_activeTalkoverChannels,
             &m_channelTalkoverGainCache,
-            m_pTalkover,
+            m_pTalkover, m_masterHandle.handle(),
             m_iBufferSize, m_iSampleRate, m_pEngineEffectsManager);
     } else {
         ChannelMixer::applyEffectsInPlaceAndMixChannels(
             m_talkoverGain, &m_activeTalkoverChannels,
             &m_channelTalkoverGainCache,
-            m_pTalkover,
+            m_pTalkover, m_masterHandle.handle(),
             m_iBufferSize, m_iSampleRate, m_pEngineEffectsManager);
     }
 
@@ -463,14 +455,14 @@ void EngineMaster::process(const int iBufferSize) {
                 m_masterGain,
                 &m_activeBusChannels[o],
                 &m_channelMasterGainCache, // no [o] because the old gain follows an orientation switch
-                m_pOutputBusBuffers[o],
+                m_pOutputBusBuffers[o], m_masterHandle.handle(),
                 m_iBufferSize, m_iSampleRate, m_pEngineEffectsManager);
         } else {
             ChannelMixer::applyEffectsInPlaceAndMixChannels(
                 m_masterGain,
                 &m_activeBusChannels[o],
                 &m_channelMasterGainCache,
-                m_pOutputBusBuffers[o],
+                m_pOutputBusBuffers[o], m_masterHandle.handle(),
                 m_iBufferSize, m_iSampleRate, m_pEngineEffectsManager);
         }
     }
@@ -480,14 +472,17 @@ void EngineMaster::process(const int iBufferSize) {
         GroupFeatureState busFeatures;
         m_pEngineEffectsManager->processPostFaderInPlace(
             m_busLeftHandle.handle(),
+            m_masterHandle.handle(),
             m_pOutputBusBuffers[EngineChannel::LEFT],
             m_iBufferSize, m_iSampleRate, busFeatures);
         m_pEngineEffectsManager->processPostFaderInPlace(
             m_busCenterHandle.handle(),
+            m_masterHandle.handle(),
             m_pOutputBusBuffers[EngineChannel::CENTER],
             m_iBufferSize, m_iSampleRate, busFeatures);
         m_pEngineEffectsManager->processPostFaderInPlace(
             m_busRightHandle.handle(),
+            m_masterHandle.handle(),
             m_pOutputBusBuffers[EngineChannel::RIGHT],
             m_iBufferSize, m_iSampleRate, busFeatures);
     }
@@ -521,6 +516,7 @@ void EngineMaster::process(const int iBufferSize) {
             masterFeatures.has_gain = true;
             masterFeatures.gain = m_pMasterGain->get();
             m_pEngineEffectsManager->processPostFaderInPlace(
+                m_masterHandle.handle(),
                 m_masterHandle.handle(),
                 m_pMaster,
                 m_iBufferSize, m_iSampleRate,
@@ -632,7 +628,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     ChannelInfo* pChannelInfo = new ChannelInfo(m_channels.size());
     pChannelInfo->m_pChannel = pChannel;
     const QString& group = pChannel->getGroup();
-    pChannelInfo->m_handle = m_channelHandleFactory.getOrCreateHandle(group);
+    pChannelInfo->m_handle = m_pChannelHandleFactory->getOrCreateHandle(group);
     pChannelInfo->m_pVolumeControl = new ControlAudioTaperPot(
             ConfigKey(group, "volume"), -20, 0, 1);
     pChannelInfo->m_pVolumeControl->setDefaultValue(1.0);
