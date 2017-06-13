@@ -1,5 +1,5 @@
-#ifndef MIXXX_REPOSITORY_H
-#define MIXXX_REPOSITORY_H
+#ifndef MIXXXDB_H
+#define MIXXXDB_H
 
 
 #include <QSqlDatabase>
@@ -9,9 +9,7 @@
 #include "util/db/dbconnectionpool.h"
 
 
-namespace mixxx {
-
-class Repository : public QObject {
+class MixxxDb : public QObject {
     Q_OBJECT
 
   public:
@@ -24,18 +22,16 @@ class Repository : public QObject {
             const QString& schemaFile = kDefaultSchemaFile,
             int schemaVersion = kRequiredSchemaVersion);
 
-    explicit Repository(
+    explicit MixxxDb(
             const UserSettingsPointer& pConfig);
 
-    DbConnectionPoolPtr dbConnectionPool() const {
+    mixxx::DbConnectionPoolPtr connectionPool() const {
         return m_pDbConnectionPool;
     }
 
   private:
-    DbConnectionPoolPtr m_pDbConnectionPool;
+    mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
 };
 
-} // namespace mixxx
 
-
-#endif //  MIXXX_REPOSITORY_H
+#endif //  MIXXXDB_H

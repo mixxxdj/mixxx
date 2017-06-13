@@ -2,7 +2,7 @@
 
 #include "test/mixxxtest.h"
 
-#include "repository/repository.h"
+#include "database/mixxxdb.h"
 
 #include "library/queryutil.h"
 #include "util/db/sqllikewildcardescaper.h"
@@ -10,14 +10,14 @@
 class QueryUtilTest : public MixxxTest {
   protected:
     QueryUtilTest()
-          : m_repository(config()),
-            m_dbConnectionScope(m_repository.dbConnectionPool()) {
+          : m_mixxxDb(config()),
+            m_dbConnectionScope(m_mixxxDb.connectionPool()) {
         // This test only needs a connection to an empty database
         // without any particular schema. No need to initialize the
         // database schema.
     }
 
-    mixxx::Repository m_repository;
+    MixxxDb m_mixxxDb;
     const mixxx::DbConnectionPool::ThreadLocalScope m_dbConnectionScope;
 };
 

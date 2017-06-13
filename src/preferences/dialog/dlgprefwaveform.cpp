@@ -219,17 +219,17 @@ void DlgPrefWaveform::slotWaveformMeasured(float frameRate, int droppedFrames) {
 
 void DlgPrefWaveform::slotClearCachedWaveforms() {
     AnalysisDao analysisDao(m_pConfig);
-    QSqlDatabase sqlDatabase(m_pLibrary->dbConnectionPool()->threadLocalConnection());
-    analysisDao.deleteAnalysesByType(sqlDatabase, AnalysisDao::TYPE_WAVEFORM);
-    analysisDao.deleteAnalysesByType(sqlDatabase, AnalysisDao::TYPE_WAVESUMMARY);
+    QSqlDatabase dbConnection(m_pLibrary->dbConnectionPool()->threadLocalConnection());
+    analysisDao.deleteAnalysesByType(dbConnection, AnalysisDao::TYPE_WAVEFORM);
+    analysisDao.deleteAnalysesByType(dbConnection, AnalysisDao::TYPE_WAVESUMMARY);
     calculateCachedWaveformDiskUsage();
 }
 
 void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {
     AnalysisDao analysisDao(m_pConfig);
-    QSqlDatabase sqlDatabase(m_pLibrary->dbConnectionPool()->threadLocalConnection());
-    size_t numBytes = analysisDao.getDiskUsageInBytes(sqlDatabase, AnalysisDao::TYPE_WAVEFORM) +
-            analysisDao.getDiskUsageInBytes(sqlDatabase, AnalysisDao::TYPE_WAVESUMMARY);
+    QSqlDatabase dbConnection(m_pLibrary->dbConnectionPool()->threadLocalConnection());
+    size_t numBytes = analysisDao.getDiskUsageInBytes(dbConnection, AnalysisDao::TYPE_WAVEFORM) +
+            analysisDao.getDiskUsageInBytes(dbConnection, AnalysisDao::TYPE_WAVESUMMARY);
 
     // Display total cached waveform size in mebibytes with 2 decimals.
     QString sizeMebibytes = QString::number(

@@ -13,7 +13,7 @@
 #include <QFont>
 
 #include "preferences/usersettings.h"
-#include "repository/repository.h"
+#include "database/mixxxdb.h"
 #include "track/track.h"
 #include "recording/recordingmanager.h"
 #include "analysisfeature.h"
@@ -51,7 +51,7 @@ class Library : public QObject {
     virtual ~Library();
 
     mixxx::DbConnectionPoolPtr dbConnectionPool() const {
-        return m_repository.dbConnectionPool();
+        return m_mixxxDb.connectionPool();
     }
 
     void bindWidget(WLibrary* libraryWidget,
@@ -123,8 +123,8 @@ class Library : public QObject {
   private:
     UserSettingsPointer m_pConfig;
 
-    // The Mixxx repository in a SQLite3 database
-    mixxx::Repository m_repository;
+    // The Mixxx SQLite3 database
+    MixxxDb m_mixxxDb;
     // The Mixxx database connection for this (and only this!) thread
     const mixxx::DbConnectionPool::ThreadLocalScope m_dbConnectionScope;
 

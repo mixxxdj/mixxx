@@ -24,7 +24,7 @@
 #include <QScopedPointer>
 
 #include "preferences/usersettings.h"
-#include "repository/repository.h"
+#include "database/mixxxdb.h"
 #include "controllers/defs_controllers.h"
 #include "defs_version.h"
 #include "library/library_preferences.h"
@@ -361,15 +361,15 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         qDebug() << "Upgrading from v1.11.x...";
         bool successful = false;
         {
-            mixxx::Repository repository(config);
+            MixxxDb mixxxDb(config);
             const mixxx::DbConnectionPool::ThreadLocalScope dbConnectionScope(
-                    repository.dbConnectionPool());
+                    mixxxDb.connectionPool());
             if (dbConnectionScope) {
-                QSqlDatabase sqlDatabase(dbConnectionScope);
-                DEBUG_ASSERT(sqlDatabase.isOpen());
-                if (mixxx::Repository::initDatabaseSchema(sqlDatabase)) {
+                QSqlDatabase connection(dbConnectionScope);
+                DEBUG_ASSERT(connection.isOpen());
+                if (MixxxDb::initDatabaseSchema(connection)) {
                     TrackCollection tc(config);
-                    tc.connectDatabase(sqlDatabase);
+                    tc.connectDatabase(connection);
 
                     // upgrade to the multi library folder settings
                     QString currentFolder = config->getValueString(PREF_LEGACY_LIBRARY_DIR);

@@ -75,7 +75,7 @@ DbConnectionPool::ThreadLocalScope::ThreadLocalScope(
         DbConnectionPoolPtr pDbConnectionPool) {
     if (pDbConnectionPool && pDbConnectionPool->createThreadLocalConnection()) {
         m_pDbConnectionPool = std::move(pDbConnectionPool);
-        m_sqlDatabase = m_pDbConnectionPool->threadLocalConnection();
+        m_dbConnection = m_pDbConnectionPool->threadLocalConnection();
     }
 }
 

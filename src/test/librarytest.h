@@ -3,26 +3,26 @@
 
 #include "test/mixxxtest.h"
 
-#include "repository/repository.h"
+#include "database/mixxxdb.h"
 #include "library/trackcollection.h"
 
 
 class LibraryTest : public MixxxTest {
   protected:
     LibraryTest()
-        : m_repository(config()),
-          m_dbConnectionScope(m_repository.dbConnectionPool()),
+        : m_mixxxDb(config()),
+          m_dbConnectionScope(m_mixxxDb.connectionPool()),
           m_trackCollection(config()) {
-        QSqlDatabase sqlDatabase(m_dbConnectionScope);
-        mixxx::Repository::initDatabaseSchema(sqlDatabase);
-        m_trackCollection.connectDatabase(sqlDatabase);
+        QSqlDatabase dbConnection(m_dbConnectionScope);
+        MixxxDb::initDatabaseSchema(dbConnection);
+        m_trackCollection.connectDatabase(dbConnection);
     }
     ~LibraryTest() override {
         m_trackCollection.disconnectDatabase();
     }
 
     mixxx::DbConnectionPoolPtr dbConnectionPool() const {
-        return m_repository.dbConnectionPool();
+        return m_mixxxDb.connectionPool();
     }
 
     const mixxx::DbConnectionPool::ThreadLocalScope& dbConnectionScope() const {
@@ -34,7 +34,7 @@ class LibraryTest : public MixxxTest {
     }
 
   private:
-    mixxx::Repository m_repository;
+    MixxxDb m_mixxxDb;
     const mixxx::DbConnectionPool::ThreadLocalScope m_dbConnectionScope;
     TrackCollection m_trackCollection;
 };

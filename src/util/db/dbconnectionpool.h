@@ -46,7 +46,7 @@ class DbConnectionPool final {
         }
 
         operator QSqlDatabase() const {
-            return m_sqlDatabase;
+            return m_dbConnection;
         }
 
       private:
@@ -55,7 +55,7 @@ class DbConnectionPool final {
         ThreadLocalScope& operator=(ThreadLocalScope&&) = delete;
 
         DbConnectionPoolPtr m_pDbConnectionPool;
-        QSqlDatabase m_sqlDatabase;
+        QSqlDatabase m_dbConnection;
     };
 
   private:

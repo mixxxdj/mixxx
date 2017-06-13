@@ -6,7 +6,7 @@
 #include <QTranslator>
 #include <QDir>
 
-#include "repository/repository.h"
+#include "database/mixxxdb.h"
 
 #include "mixer/playermanager.h"
 #include "library/library.h"
@@ -62,13 +62,13 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
                  PlayerManagerInterface* pPlayerManager,
                  RecordingManager* pRecordingManager) :
         m_pConfig(pConfig),
-        m_repository(pConfig),
-        m_dbConnectionScope(m_repository.dbConnectionPool()),
+        m_mixxxDb(pConfig),
+        m_dbConnectionScope(m_mixxxDb.connectionPool()),
         m_pSidebarModel(new SidebarModel(parent)),
         m_pTrackCollection(new TrackCollection(pConfig)),
         m_pLibraryControl(new LibraryControl(this)),
         m_pRecordingManager(pRecordingManager),
-        m_scanner(m_repository.dbConnectionPool(), m_pTrackCollection, pConfig) {
+        m_scanner(m_mixxxDb.connectionPool(), m_pTrackCollection, pConfig) {
     kLogger.info() << "Opening datbase connection";
     if (!m_dbConnectionScope) {
         QMessageBox::critical(0, tr("Cannot open database"),
@@ -80,11 +80,11 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
         // TODO(XXX) something a little more elegant
         exit(-1);
     }
-    QSqlDatabase sqlDatabase(m_dbConnectionScope);
-    DEBUG_ASSERT(sqlDatabase.isOpen());
+    QSqlDatabase dbConnection(m_dbConnectionScope);
+    DEBUG_ASSERT(dbConnection.isOpen());
 
     kLogger.info() << "Initializing or upgrading database schema";
-    if (!mixxx::Repository::initDatabaseSchema(sqlDatabase)) {
+    if (!MixxxDb::initDatabaseSchema(dbConnection)) {
         // TODO(XXX) something a little more elegant
         exit(-1);
     }
@@ -93,13 +93,13 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
     // and repairing the database on the next restart of the application.
     if (pConfig->getValue(kConfigKeyRepairDatabaseOnNextRestart, false)) {
         kLogger.info() << "Checking and repairing database (if necessary)";
-        m_pTrackCollection->repairDatabase(sqlDatabase);
+        m_pTrackCollection->repairDatabase(dbConnection);
         // Reset config value
         pConfig->setValue(kConfigKeyRepairDatabaseOnNextRestart, false);
     }
 
     kLogger.info() << "Connecting database";
-    m_pTrackCollection->connectDatabase(sqlDatabase);
+    m_pTrackCollection->connectDatabase(dbConnection);
 
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
 

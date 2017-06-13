@@ -1,28 +1,26 @@
-#include "repository/repository.h"
+#include "database/mixxxdb.h"
 
-#include "repository/schemamanager.h"
+#include "database/schemamanager.h"
 
 #include "util/assert.h"
 #include "util/logger.h"
 
 
-namespace mixxx {
-
 // The schema XML is baked into the binary via Qt resources.
 //static
-const QString Repository::kDefaultSchemaFile(":/schema.xml");
+const QString MixxxDb::kDefaultSchemaFile(":/schema.xml");
 
 //static
-const int Repository::kRequiredSchemaVersion = 27;
+const int MixxxDb::kRequiredSchemaVersion = 27;
 
 namespace {
 
-const Logger kLogger("Repository");
+const mixxx::Logger kLogger("MixxxDb");
 
 // The connection parameters for the main Mixxx DB
-DbConnection::Params dbConnectionParams(
+mixxx::DbConnection::Params dbConnectionParams(
         const UserSettingsPointer& pConfig) {
-    DbConnection::Params params;
+    mixxx::DbConnection::Params params;
     params.type = "QSQLITE";
     params.hostName = "localhost";
     params.filePath = QDir(pConfig->getSettingsPath()).filePath("mixxxdb.sqlite");
@@ -33,12 +31,12 @@ DbConnection::Params dbConnectionParams(
 
 } // anonymous namespace
 
-Repository::Repository(
+MixxxDb::MixxxDb(
         const UserSettingsPointer& pConfig)
-    : m_pDbConnectionPool(std::make_shared<DbConnectionPool>(dbConnectionParams(pConfig), "MIXXX")) {
+    : m_pDbConnectionPool(std::make_shared<mixxx::DbConnectionPool>(dbConnectionParams(pConfig), "MIXXX")) {
 }
 
-bool Repository::initDatabaseSchema(
+bool MixxxDb::initDatabaseSchema(
         const QSqlDatabase& database,
         const QString& schemaFile,
         int schemaVersion) {
@@ -86,5 +84,3 @@ bool Repository::initDatabaseSchema(
     DEBUG_ASSERT(!"unhandled switch/case");
     return false;
 }
-
-} // namespace mixxx
