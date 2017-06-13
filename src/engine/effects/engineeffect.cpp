@@ -7,7 +7,6 @@ EngineEffect::EngineEffect(const EffectManifest& manifest,
                            const QSet<ChannelHandleAndGroup>& registeredOutputChannels,
                            EffectInstantiatorPointer pInstantiator)
         : m_manifest(manifest),
-          m_enableState(EffectProcessor::DISABLED),
           m_parameters(manifest.parameters().size()) {
     const QList<EffectManifestParameter>& parameters = m_manifest.parameters();
     for (int i = 0; i < parameters.size(); ++i) {
@@ -16,6 +15,14 @@ EngineEffect::EngineEffect(const EffectManifest& manifest,
                 new EngineEffectParameter(parameter);
         m_parameters[i] = pParameter;
         m_parametersById[parameter.id()] = pParameter;
+    }
+
+    for (const ChannelHandleAndGroup& inputChannel : registeredInputChannels) {
+        ChannelHandleMap<EffectProcessor::EnableState> outputChannelMap;
+        for (const ChannelHandleAndGroup& outputChannel : registeredOutputChannels) {
+            outputChannelMap.insert(outputChannel.handle(), EffectProcessor::DISABLED);
+        }
+        m_enableStateMatrix.insert(inputChannel.handle(), outputChannelMap);
     }
 
     // Creating the processor must come last.
@@ -49,10 +56,16 @@ bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
                          << "enabled" << message.SetEffectParameters.enabled;
             }
 
-            if (m_enableState != EffectProcessor::DISABLED && !message.SetEffectParameters.enabled) {
-                m_enableState = EffectProcessor::DISABLING;
-            } else if (m_enableState == EffectProcessor::DISABLED && message.SetEffectParameters.enabled) {
-                m_enableState = EffectProcessor::ENABLING;
+            for (auto& outputMap : m_enableStateMatrix) {
+                for (auto& enableState : outputMap) {
+                    if (enableState != EffectProcessor::DISABLED
+                        && !message.SetEffectParameters.enabled) {
+                        enableState = EffectProcessor::DISABLING;
+                    } else if (enableState == EffectProcessor::DISABLED
+                               && message.SetEffectParameters.enabled) {
+                        enableState = EffectProcessor::ENABLING;
+                    }
+                }
             }
 
             response.success = true;
@@ -95,7 +108,7 @@ void EngineEffect::process(const ChannelHandle& inputHandle,
                            const unsigned int sampleRate,
                            const EffectProcessor::EnableState enableState,
                            const GroupFeatureState& groupFeatures) {
-    EffectProcessor::EnableState effectiveEnableState = m_enableState;
+    EffectProcessor::EnableState& effectiveEnableState = m_enableStateMatrix[inputHandle][outputHandle];
     if (enableState == EffectProcessor::DISABLING) {
         effectiveEnableState = EffectProcessor::DISABLING;
     } else if (enableState == EffectProcessor::ENABLING) {
@@ -124,9 +137,9 @@ void EngineEffect::process(const ChannelHandle& inputHandle,
         }
     }
 
-    if (m_enableState == EffectProcessor::DISABLING) {
-        m_enableState = EffectProcessor::DISABLED;
-    } else if (m_enableState == EffectProcessor::ENABLING) {
-        m_enableState = EffectProcessor::ENABLED;
+    if (effectiveEnableState == EffectProcessor::DISABLING) {
+        effectiveEnableState = EffectProcessor::DISABLED;
+    } else if (effectiveEnableState == EffectProcessor::ENABLING) {
+        effectiveEnableState = EffectProcessor::ENABLED;
     }
 }

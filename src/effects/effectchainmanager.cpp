@@ -173,8 +173,7 @@ bool EffectChainManager::saveEffectChains() {
     return true;
 }
 
-void EffectChainManager::loadEffectChains(
-        StandardEffectRack* pRack) {
+void EffectChainManager::loadEffectChains() {
     QDir settingsPath(m_pConfig->getSettingsPath());
     QFile file(settingsPath.absoluteFilePath("effects.xml"));
     QDomDocument doc;
@@ -198,7 +197,7 @@ void EffectChainManager::loadEffectChains(
             EffectChainPointer pChain = EffectChain::createFromXml(
                     m_pEffectsManager, chainElement);
             if (!pChain->name().isEmpty()) { // skip unnamed = ejected chains.
-                EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(i);
+                EffectChainSlotPointer pChainSlot = getStandardEffectRack(0)->getEffectChainSlot(i);
                 if (pChainSlot) {
                     pChainSlot->loadEffectChain(pChain);
                     pChainSlot->loadChainSlotFromXml(chainElement);

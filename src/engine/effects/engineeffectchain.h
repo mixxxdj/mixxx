@@ -18,7 +18,9 @@ class EngineEffect;
 
 class EngineEffectChain : public EffectsRequestHandler {
   public:
-    EngineEffectChain(const QString& id);
+    EngineEffectChain(const QString& id,
+                      const QSet<ChannelHandleAndGroup>& registeredInputChannels,
+                      const QSet<ChannelHandleAndGroup>& registeredOutputChannels);
     virtual ~EngineEffectChain();
 
     bool processEffectsRequest(
@@ -55,12 +57,13 @@ class EngineEffectChain : public EffectsRequestHandler {
     bool updateParameters(const EffectsRequest& message);
     bool addEffect(EngineEffect* pEffect, int iIndex);
     bool removeEffect(EngineEffect* pEffect, int iIndex);
-    bool enableForChannel(const ChannelHandle& handle);
-    bool disableForChannel(const ChannelHandle& handle);
+    bool enableForInputChannel(const ChannelHandle& inputHandle);
+    bool disableForInputChannel(const ChannelHandle& inputHandle);
 
     // Gets or creates a ChannelStatus entry in m_channelStatus for the provided
     // handle.
-    ChannelStatus& getChannelStatus(const ChannelHandle& handle);
+    ChannelStatus& getChannelStatus(const ChannelHandle& inputHandle,
+                                    const ChannelHandle& outputHandle);
 
     QString m_id;
     EffectProcessor::EnableState m_enableState;
@@ -69,7 +72,7 @@ class EngineEffectChain : public EffectsRequestHandler {
     QList<EngineEffect*> m_effects;
     SampleBuffer m_buffer1;
     SampleBuffer m_buffer2;
-    ChannelHandleMap<ChannelStatus> m_channelStatus;
+    ChannelHandleMap<ChannelHandleMap<ChannelStatus>> m_channelStatusMatrix;
 
     DISALLOW_COPY_AND_ASSIGN(EngineEffectChain);
 };

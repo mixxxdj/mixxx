@@ -252,9 +252,6 @@ void EffectsManager::setup() {
         pStandardRack->addEffectChainSlot();
     }
 
-    // populate rack and restore state from effects.xml
-    m_pEffectChainManager->loadEffectChains(pStandardRack.data());
-
     EffectChainPointer pChain = EffectChainPointer(new EffectChain(
            this, "org.mixxx.effectchain.flanger"));
     pChain->setName(tr("Flanger"));
@@ -299,6 +296,11 @@ void EffectsManager::setup() {
     pEffect = instantiateEffect("org.mixxx.effects.autopan");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
+}
+
+void EffectsManager::loadEffectChains() {
+    // populate rack and restore state from effects.xml
+    m_pEffectChainManager->loadEffectChains();
 }
 
 bool EffectsManager::writeRequest(EffectsRequest* request) {

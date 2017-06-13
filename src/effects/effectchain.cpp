@@ -31,7 +31,9 @@ EffectChain::~EffectChain() {
 }
 
 void EffectChain::addToEngine(EngineEffectRack* pRack, int iIndex) {
-    m_pEngineEffectChain = new EngineEffectChain(m_id);
+    m_pEngineEffectChain = new EngineEffectChain(m_id,
+        m_pEffectsManager->registeredInputChannels(),
+        m_pEffectsManager->registeredOutputChannels());
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::ADD_CHAIN_TO_RACK;
     pRequest->pTargetRack = pRack;
@@ -158,7 +160,7 @@ void EffectChain::enableForChannel(const ChannelHandleAndGroup& handle_group) {
         m_enabledChannels.insert(handle_group);
 
         EffectsRequest* request = new EffectsRequest();
-        request->type = EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_CHANNEL;
+        request->type = EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL;
         request->pTargetChain = m_pEngineEffectChain;
         request->channel = handle_group.handle();
         m_pEffectsManager->writeRequest(request);
@@ -181,7 +183,7 @@ void EffectChain::disableForChannel(const ChannelHandleAndGroup& handle_group) {
     }
     if (m_enabledChannels.remove(handle_group)) {
         EffectsRequest* request = new EffectsRequest();
-        request->type = EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_CHANNEL;
+        request->type = EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL;
         request->pTargetChain = m_pEngineEffectChain;
         request->channel = handle_group.handle();
         m_pEffectsManager->writeRequest(request);

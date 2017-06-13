@@ -63,6 +63,8 @@ class EffectsManager : public QObject {
     QuickEffectRackPointer addQuickEffectRack();
     QuickEffectRackPointer getQuickEffectRack(int rack);
 
+    void loadEffectChains();
+
     EffectRackPointer getEffectRack(const QString& group);
 
     QString getNextEffectId(const QString& effectId);

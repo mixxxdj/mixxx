@@ -43,8 +43,8 @@ class EngineEffect : public EffectsRequestHandler {
                  const EffectProcessor::EnableState enableState,
                  const GroupFeatureState& groupFeatures);
 
-    bool disabled() const {
-        return m_enableState == EffectProcessor::DISABLED;
+    bool disabled(const ChannelHandle& inputHandle, const ChannelHandle& outputHandle) const {
+        return m_enableStateMatrix.at(inputHandle).at(outputHandle) == EffectProcessor::DISABLED;
     }
 
   private:
@@ -54,7 +54,7 @@ class EngineEffect : public EffectsRequestHandler {
 
     EffectManifest m_manifest;
     EffectProcessor* m_pProcessor;
-    EffectProcessor::EnableState m_enableState;
+    ChannelHandleMap<ChannelHandleMap<EffectProcessor::EnableState>> m_enableStateMatrix;
     bool m_effectRampsFromDry;
     // Must not be modified after construction.
     QVector<EngineEffectParameter*> m_parameters;

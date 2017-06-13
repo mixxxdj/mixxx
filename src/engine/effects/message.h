@@ -29,8 +29,10 @@ struct EffectsRequest {
         SET_EFFECT_CHAIN_PARAMETERS,
         ADD_EFFECT_TO_CHAIN,
         REMOVE_EFFECT_FROM_CHAIN,
-        ENABLE_EFFECT_CHAIN_FOR_CHANNEL,
-        DISABLE_EFFECT_CHAIN_FOR_CHANNEL,
+        // Effects cannot currently be toggled for output channels;
+        // the outputs that effects are applied to are hardwired in EngineMaster
+        ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL,
+        DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL,
 
         // Messages for EngineEffect
         SET_EFFECT_PARAMETERS,
