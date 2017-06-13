@@ -11,7 +11,7 @@ var PioneerDDJSX = function() {};
 
 /*
 	Author: 		DJMaxergy
-	Version: 		1.18, 06/10/2017
+	Version: 		1.18, 06/13/2017
 	Description: 	Pioneer DDJ-SX Controller Mapping for Mixxx
     Source: 		http://github.com/DJMaxergy/mixxx/tree/pioneerDDJSX_mapping
     
@@ -1416,10 +1416,14 @@ PioneerDDJSX.tempoResetButton = function(channel, control, value, status, group)
 };
 
 PioneerDDJSX.autoLoopButton = function(channel, control, value, status, group) {
-    if (engine.getValue(group, "loop_enabled")) {
-        engine.setValue(group, "reloop_toggle", value);
-    } else {
-        engine.setValue(group, "beatloop_activate", value);
+    if (value) {
+        if (engine.getValue(group, "loop_enabled")) {
+            engine.setValue(group, "reloop_toggle", true);
+            engine.setValue(group, "reloop_toggle", false);
+        } else {
+            engine.setValue(group, "beatloop_activate", true);
+            engine.setValue(group, "beatloop_activate", false);
+        }
     }
 };
 
