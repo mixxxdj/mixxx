@@ -21,7 +21,7 @@ const int kScannerThreadPoolSize = 1;
 
 mixxx::Logger kLogger("LibraryScanner");
 
-QAtomicInt instanceCounter(0);
+QAtomicInt s_instanceCounter(0);
 
 } // anonymous namespace
 
@@ -43,7 +43,7 @@ LibraryScanner::LibraryScanner(
     moveToThread(this);
     m_pool.moveToThread(this);
 
-    const int instanceId = instanceCounter.fetchAndAddAcquire(1) + 1;
+    const int instanceId = s_instanceCounter.fetchAndAddAcquire(1) + 1;
     setObjectName(QString("LibraryScanner %1").arg(instanceId));
 
     m_pool.setMaxThreadCount(kScannerThreadPoolSize);

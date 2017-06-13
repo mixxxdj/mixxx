@@ -35,7 +35,7 @@ const SINT kAnalysisFramesPerBlock = 4096;
 const SINT kAnalysisSamplesPerBlock =
         kAnalysisFramesPerBlock * kAnalysisChannels;
 
-QAtomicInt instanceCounter(0);
+QAtomicInt s_instanceCounter(0);
 
 } // anonymous namespace
 
@@ -287,7 +287,7 @@ void AnalyzerQueue::run() {
         return;
     }
 
-    const int instanceId = instanceCounter.fetchAndAddAcquire(1) + 1;
+    const int instanceId = s_instanceCounter.fetchAndAddAcquire(1) + 1;
     QThread::currentThread()->setObjectName(QString("AnalyzerQueue %1").arg(instanceId));
 
     kLogger.debug() << "Entering thread";
