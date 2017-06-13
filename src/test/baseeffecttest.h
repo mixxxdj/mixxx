@@ -57,8 +57,10 @@ class MockEffectInstantiator : public EffectInstantiator {
 
 class BaseEffectTest : public MixxxTest {
   protected:
-    BaseEffectTest() : m_pTestBackend(NULL),
-                       m_pEffectsManager(new EffectsManager(NULL, config())) {
+    BaseEffectTest() : m_pChannelHandleFactory(new ChannelHandleFactory()),
+                       m_pTestBackend(nullptr),
+                       m_pEffectsManager(new EffectsManager(nullptr, config(),
+                                                            m_pChannelHandleFactory)) {
     }
 
     void registerTestBackend() {
@@ -67,6 +69,8 @@ class BaseEffectTest : public MixxxTest {
     }
 
     void registerTestEffect(const EffectManifest& manifest, bool willAddToEngine);
+
+    ChannelHandleFactory* m_pChannelHandleFactory;
 
     // Deleted by EffectsManager. Do not delete.
     TestEffectBackend* m_pTestBackend;

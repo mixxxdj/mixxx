@@ -41,7 +41,9 @@ class EngineChannelMock : public EngineChannel {
 class EngineMasterTest : public MixxxTest {
   protected:
     void SetUp() override {
-        m_pMaster = new EngineMaster(config(), "[Master]", NULL, false, false);
+        m_pChannelHandleFactory = new ChannelHandleFactory();
+        m_pMaster = new EngineMaster(config(), "[Master]", nullptr,
+                                     m_pChannelHandleFactory, false, false);
         m_pMasterEnabled = new ControlProxy(ConfigKey("[Master]", "enabled"));
         m_pMasterEnabled->set(1);
     }
@@ -71,6 +73,7 @@ class EngineMasterTest : public MixxxTest {
         EXPECT_EQ(0, differences);
     }
 
+    ChannelHandleFactory* m_pChannelHandleFactory;
     EngineMaster* m_pMaster;
     ControlProxy* m_pMasterEnabled;
 };

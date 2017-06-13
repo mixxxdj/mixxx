@@ -32,10 +32,14 @@ EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig,
     m_pNumEffectsAvailable = new ControlObject(ConfigKey("[Master]", "num_effectsavailable"));
     m_pNumEffectsAvailable->setReadOnly();
 
-    registerInputChannel(ChannelHandleAndGroup(m_pChannelHandleFactory->getOrCreateHandle("[Master]"), "[Master]"));
-    registerOutputChannel(ChannelHandleAndGroup(m_pChannelHandleFactory->getOrCreateHandle("[Master]"), "[Master]"));
-    registerInputChannel(ChannelHandleAndGroup(m_pChannelHandleFactory->getOrCreateHandle("[Headphone]"), "[Headphone]"));
-    registerOutputChannel(ChannelHandleAndGroup(m_pChannelHandleFactory->getOrCreateHandle("[Headphone]"), "[Headphone]"));
+    ChannelHandleAndGroup master = ChannelHandleAndGroup(
+          m_pChannelHandleFactory->getOrCreateHandle("[Master]"), "[Master]");
+    registerInputChannel(master);
+    registerOutputChannel(master);
+    ChannelHandleAndGroup headphone = ChannelHandleAndGroup(
+          m_pChannelHandleFactory->getOrCreateHandle("[Headphone]"), "[Headphone]");
+    registerInputChannel(headphone);
+    registerOutputChannel(headphone);
 }
 
 EffectsManager::~EffectsManager() {

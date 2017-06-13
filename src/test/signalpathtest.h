@@ -37,9 +37,10 @@ class TestEngineMaster : public EngineMaster {
     TestEngineMaster(UserSettingsPointer _config,
                      const char* group,
                      EffectsManager* pEffectsManager,
+                     ChannelHandleFactory* pChannelHandleFactory,
                      bool bEnableSidechain,
                      bool bRampingGain)
-        : EngineMaster(_config, group, pEffectsManager,
+        : EngineMaster(_config, group, pEffectsManager, pChannelHandleFactory,
                        bEnableSidechain, bRampingGain) { }
 
     CSAMPLE* masterBuffer() {
@@ -51,10 +52,12 @@ class BaseSignalPathTest : public MixxxTest {
   protected:
     BaseSignalPathTest() {
         m_pGuiTick = std::make_unique<GuiTick>();
+        m_pChannelHandleFactory = new ChannelHandleFactory();
         m_pNumDecks = new ControlObject(ConfigKey("[Master]", "num_decks"));
-        m_pEffectsManager = new EffectsManager(NULL, config());
+        m_pEffectsManager = new EffectsManager(NULL, config(), m_pChannelHandleFactory);
         m_pEngineMaster = new TestEngineMaster(m_pConfig, "[Master]",
-                                               m_pEffectsManager, false, false);
+                                               m_pEffectsManager, m_pChannelHandleFactory,
+                                               false, false);
 
         m_pMixerDeck1 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
                                  EngineChannel::CENTER, m_sGroup1);
@@ -195,6 +198,7 @@ class BaseSignalPathTest : public MixxxTest {
         m_pEngineMaster->process(kProcessBufferSize);
     }
 
+    ChannelHandleFactory* m_pChannelHandleFactory;
     ControlObject* m_pNumDecks;
     std::unique_ptr<GuiTick> m_pGuiTick;
     EffectsManager* m_pEffectsManager;
