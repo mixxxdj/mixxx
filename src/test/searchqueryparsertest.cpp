@@ -191,14 +191,21 @@ TEST_F(SearchQueryParserTest, TextFilterEmpty) {
     searchColumns << "artist"
                   << "album";
 
-    // An empty argument should pass "is null" elements.
+    // An empty argument should pass NULL and empty ("") elements.
     auto pQuery(
-        m_parser.parseQuery("comment:", searchColumns, ""));
+        m_parser.parseQuery("album: ", searchColumns, ""));
 
     TrackPointer pTrack(Track::newTemporary());
-    pTrack->setComment("test ASDF test");
-    EXPECT_TRUE(pQuery->match(pTrack));    
-    EXPECT_TRUE(pQuery->toSql().contains(QRegExp(".*IS NULL.*")));
+    pTrack->setAlbum("joe");
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setAlbum(nullptr);
+    EXPECT_TRUE(pQuery->match(pTrack));
+    pTrack->setAlbum("");
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+        qPrintable(QString("(album = \"\") OR (album IS NULL)")),
+        qPrintable(pQuery->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, TextFilterQuote) {
@@ -709,6 +716,7 @@ TEST_F(SearchQueryParserTest, CrateFilter) {
 
 TEST_F(SearchQueryParserTest, CrateFilterEmpty) {
     // Empty should match everything
+    // TODO(gramanas) Empty should match tracks without a crate.
     auto pQuery(m_parser.parseQuery(QString("crate: "), QStringList(), ""));
 
     TrackPointer pTrackA(Track::newTemporary());

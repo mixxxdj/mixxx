@@ -127,8 +127,8 @@ void SearchQueryParser::parseTokens(QStringList tokens,
         if (m_fuzzyMatcher.indexIn(token) != -1) {
             // TODO(XXX): implement this feature.
         } else if (m_textFilterMatcher.indexIn(token) != -1) {
-            QString field = m_textFilterMatcher.cap(1);            
-            QString argument; 
+            QString field = m_textFilterMatcher.cap(1);
+            QString argument;
             if (exact) {
                 argument = getTextArgument(
                             m_exactTextMatcher.cap(2), &tokens).trimmed();
@@ -137,11 +137,17 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                             m_textFilterMatcher.cap(2), &tokens).trimmed();
             }
 
-            if (!argument.isEmpty()) {
-                if (field == "crate") {
+            if (field == "crate") {
+                if (!argument.isEmpty()) {
                     pNode = std::make_unique<CrateFilterNode>(
-                            &m_pTrackCollection->crates(), argument);
-                } else if (exact) {
+                          &m_pTrackCollection->crates(), argument);
+                } else {
+                    //TODO(gramanas) It should generate a query to
+                    //match all the tracks that are not in a crate.
+                }
+            }
+            else {
+                if (exact) {
                     pNode = std::make_unique<ExactFilterNode>(
                             m_pTrackCollection->database(),
                             m_fieldToSqlColumns[field], argument);
@@ -150,10 +156,8 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                             m_pTrackCollection->database(),
                             m_fieldToSqlColumns[field], argument);
                 }
-            } else {
-                pNode = std::make_unique<SqlNode>(
-                        field + " IS NULL");
             }
+
         } else if (m_numericFilterMatcher.indexIn(token) != -1) {
             QString field = m_numericFilterMatcher.cap(1);
             QString argument = getTextArgument(
