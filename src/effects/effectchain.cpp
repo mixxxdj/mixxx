@@ -291,6 +291,11 @@ void EffectChain::sendParameterUpdate() {
 // static
 EffectChainPointer EffectChain::createFromXml(EffectsManager* pEffectsManager,
                                         const QDomElement& element) {
+    if (!element.hasChildNodes()) {
+        // An empty element <EffectChain/> is treated as an ejected Chain (null)
+        return EffectChainPointer();
+    }
+
     QString id = XmlParse::selectNodeQString(element,
                                              EffectXml::ChainId);
     QString name = XmlParse::selectNodeQString(element,

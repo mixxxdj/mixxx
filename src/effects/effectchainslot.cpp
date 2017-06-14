@@ -448,7 +448,7 @@ unsigned int EffectChainSlot::getChainSlotNumber() const {
 QDomElement EffectChainSlot::toXml(QDomDocument* doc) const {
     QDomElement chainElement = doc->createElement(EffectXml::Chain);
     if (m_pEffectChain == nullptr) {
-        // ejected chains are stored with empty names
+        // ejected chains are stored empty <EffectChain/>
         return chainElement;
     }
 
