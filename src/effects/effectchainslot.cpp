@@ -249,7 +249,8 @@ EffectChainPointer EffectChainSlot::getAndEnsureEffectChain(
     if (!m_pEffectChain) {
         EffectChainPointer pEffectChain(
                 new EffectChain(pEffectsManager, QString()));
-        pEffectChain->setName(QObject::tr("Empty Chain"));
+        //: Name for an empty effect chain, that is created after eject
+        pEffectChain->setName(tr("Empty Chain"));
         loadEffectChain(pEffectChain);
     }
     return m_pEffectChain;
