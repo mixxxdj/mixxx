@@ -61,7 +61,12 @@ bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
                     if (enableState != EffectProcessor::DISABLED
                         && !message.SetEffectParameters.enabled) {
                         enableState = EffectProcessor::DISABLING;
-                    } else if (enableState == EffectProcessor::DISABLED
+                    // If an input is not routed to the chain, and the effect gets
+                    // a message to disable, then the effect gets the message to enable,
+                    // process() will not have executed, so the enableState will still be
+                    // DISABLING instead of DISABLED.
+                    } else if ((enableState == EffectProcessor::DISABLED ||
+                               enableState == EffectProcessor::DISABLING)
                                && message.SetEffectParameters.enabled) {
                         enableState = EffectProcessor::ENABLING;
                     }
