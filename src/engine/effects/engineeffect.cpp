@@ -106,12 +106,14 @@ void EngineEffect::process(const ChannelHandle& inputHandle,
                            const CSAMPLE* pInput, CSAMPLE* pOutput,
                            const unsigned int numSamples,
                            const unsigned int sampleRate,
-                           const EffectProcessor::EnableState enableState,
+                           const EffectProcessor::EnableState chainEnableState,
                            const GroupFeatureState& groupFeatures) {
-    EffectProcessor::EnableState& effectiveEnableState = m_enableStateMatrix[inputHandle][outputHandle];
-    if (enableState == EffectProcessor::DISABLING) {
+    // Compute the effective enable state from the combination of the effect's state
+    // and the state passed from the EngineEffectChain
+    EffectProcessor::EnableState effectiveEnableState = m_enableStateMatrix[inputHandle][outputHandle];
+    if (chainEnableState == EffectProcessor::DISABLING) {
         effectiveEnableState = EffectProcessor::DISABLING;
-    } else if (enableState == EffectProcessor::ENABLING) {
+    } else if (chainEnableState == EffectProcessor::ENABLING) {
         effectiveEnableState = EffectProcessor::ENABLING;
     }
 
@@ -137,9 +139,10 @@ void EngineEffect::process(const ChannelHandle& inputHandle,
         }
     }
 
-    if (effectiveEnableState == EffectProcessor::DISABLING) {
-        effectiveEnableState = EffectProcessor::DISABLED;
-    } else if (effectiveEnableState == EffectProcessor::ENABLING) {
-        effectiveEnableState = EffectProcessor::ENABLED;
+    EffectProcessor::EnableState& effectOnChannelState = m_enableStateMatrix[inputHandle][outputHandle];
+    if (effectOnChannelState == EffectProcessor::DISABLING) {
+        effectOnChannelState = EffectProcessor::DISABLED;
+    } else if (effectOnChannelState == EffectProcessor::ENABLING) {
+        effectOnChannelState = EffectProcessor::ENABLED;
     }
 }

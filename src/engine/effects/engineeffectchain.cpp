@@ -171,16 +171,17 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
                                 const unsigned int numSamples,
                                 const unsigned int sampleRate,
                                 const GroupFeatureState& groupFeatures) {
+    // Compute the effective enable state from the channel input routing switch
+    // and the chain's enable state.
     ChannelStatus& channel_info = m_channelStatusMatrix[inputHandle][outputHandle];
+    EffectProcessor::EnableState effectiveEnableState = channel_info.enable_state;
 
     if (m_enableState == EffectProcessor::DISABLED
-            || channel_info.enable_state == EffectProcessor::DISABLED) {
+            || effectiveEnableState == EffectProcessor::DISABLED) {
         // If the chain is not enabled and the channel is not enabled and we are not
         // ramping out then do nothing.
         return false;
     }
-
-    EffectProcessor::EnableState& effectiveEnableState = channel_info.enable_state;
 
     if (channel_info.enable_state == EffectProcessor::DISABLING) {
         channel_info.enable_state = EffectProcessor::DISABLED;

@@ -40,7 +40,7 @@ class EngineEffect : public EffectsRequestHandler {
                  const CSAMPLE* pInput, CSAMPLE* pOutput,
                  const unsigned int numSamples,
                  const unsigned int sampleRate,
-                 const EffectProcessor::EnableState enableState,
+                 const EffectProcessor::EnableState chainEnableState,
                  const GroupFeatureState& groupFeatures);
 
     bool disabled(const ChannelHandle& inputHandle, const ChannelHandle& outputHandle) const {
