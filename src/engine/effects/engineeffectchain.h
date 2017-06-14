@@ -72,7 +72,7 @@ class EngineEffectChain : public EffectsRequestHandler {
     QList<EngineEffect*> m_effects;
     SampleBuffer m_buffer1;
     SampleBuffer m_buffer2;
-    ChannelHandleMap<ChannelHandleMap<ChannelStatus>> m_channelStatusMatrix;
+    ChannelHandleMap<ChannelHandleMap<ChannelStatus>> m_chainStatusForChannelMatrix;
 
     DISALLOW_COPY_AND_ASSIGN(EngineEffectChain);
 };

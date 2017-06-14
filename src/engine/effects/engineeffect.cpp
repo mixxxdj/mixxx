@@ -22,7 +22,7 @@ EngineEffect::EngineEffect(const EffectManifest& manifest,
         for (const ChannelHandleAndGroup& outputChannel : registeredOutputChannels) {
             outputChannelMap.insert(outputChannel.handle(), EffectProcessor::DISABLED);
         }
-        m_enableStateMatrix.insert(inputChannel.handle(), outputChannelMap);
+        m_effectEnableStateForChannelMatrix.insert(inputChannel.handle(), outputChannelMap);
     }
 
     // Creating the processor must come last.
@@ -56,7 +56,7 @@ bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
                          << "enabled" << message.SetEffectParameters.enabled;
             }
 
-            for (auto& outputMap : m_enableStateMatrix) {
+            for (auto& outputMap : m_effectEnableStateForChannelMatrix) {
                 for (auto& enableState : outputMap) {
                     if (enableState != EffectProcessor::DISABLED
                         && !message.SetEffectParameters.enabled) {
@@ -106,7 +106,7 @@ bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
     return false;
 }
 
-void EngineEffect::process(const ChannelHandle& inputHandle,
+bool EngineEffect::process(const ChannelHandle& inputHandle,
                            const ChannelHandle& outputHandle,
                            const CSAMPLE* pInput, CSAMPLE* pOutput,
                            const unsigned int numSamples,
@@ -114,40 +114,85 @@ void EngineEffect::process(const ChannelHandle& inputHandle,
                            const EffectProcessor::EnableState chainEnableState,
                            const GroupFeatureState& groupFeatures) {
     // Compute the effective enable state from the combination of the effect's state
-    // and the state passed from the EngineEffectChain
-    EffectProcessor::EnableState effectiveEnableState = m_enableStateMatrix[inputHandle][outputHandle];
-    if (chainEnableState == EffectProcessor::DISABLING) {
-        effectiveEnableState = EffectProcessor::DISABLING;
-    } else if (chainEnableState == EffectProcessor::ENABLING) {
-        effectiveEnableState = EffectProcessor::ENABLING;
-    }
+    // for the channel and the state passed from the EngineEffectChain.
 
-    m_pProcessor->process(inputHandle, outputHandle, pInput, pOutput,
-                          numSamples, sampleRate,
-                          effectiveEnableState, groupFeatures);
-    if (!m_effectRampsFromDry) {
-        // the effect does not fade, so we care for it
-        if (effectiveEnableState == EffectProcessor::DISABLING) {
-            DEBUG_ASSERT(pInput != pOutput); // Fade to dry only works if pInput is not touched by pOutput
-            // Fade out (fade to dry signal)
-            SampleUtil::copy2WithRampingGain(pOutput,
-                    pInput, 0.0, 1.0,
-                    pOutput, 1.0, 0.0,
-                    numSamples);
-        } else if (effectiveEnableState == EffectProcessor::ENABLING) {
-            DEBUG_ASSERT(pInput != pOutput); // Fade to dry only works if pInput is not touched by pOutput
-            // Fade in (fade to wet signal)
-            SampleUtil::copy2WithRampingGain(pOutput,
-                    pInput, 1.0, 0.0,
-                    pOutput, 0.0, 1.0,
-                    numSamples);
+    // When the chain's input routing switch or chain enable switches are changed,
+    // the chain sends an intermediate enabling/disabling signal. The chain also sends
+    // intermediate enabling/disabling signals when its dry/wet knob is turned down to
+    // fully dry then turned back up to let some wet signal through.
+
+    // Analagously, when the Effect is switched on/off, it sends this EngineEffect an
+    // intermediate enabling/disabling signal.
+
+    // The effective enable state is then passed down to the EffectProcessor, which is
+    // responsible for taking appropriate action when it gets an intermediate
+    // enabling/disabling signal. For example, the Echo effect clears its
+    // internal buffer for the channel when it gets the intermediate disabling signal.
+
+    EffectProcessor::EnableState effectiveEffectEnableState =
+        m_effectEnableStateForChannelMatrix[inputHandle][outputHandle];
+
+    // If the EngineEffect is fully disabled, do not let
+    // intermediate enabling/disabing signals from the chain override
+    // the EngineEffect's state.
+    if (effectiveEffectEnableState != EffectProcessor::DISABLED) {
+        if (chainEnableState == EffectProcessor::DISABLED) {
+            // If the chain is fully disabled, skip calling the EffectProcessor.
+            effectiveEffectEnableState = EffectProcessor::DISABLED;
+        } else if (chainEnableState == EffectProcessor::DISABLING) {
+            // If the chain happens to be in the intermediate disabling state
+            // in the same callback as the effect is in the intermediate enabling
+            // state, the EffectProcessor should get the disabling signal, not the
+            // enabling signal.
+            effectiveEffectEnableState = EffectProcessor::DISABLING;
+        } else if (chainEnableState == EffectProcessor::ENABLING) {
+            // If the chain happens to be in the intermediate enabling state
+            // in the same callback as the effect is in the intermediate disabling
+            // state, the EffectProcessor should get the disabling signal, not the
+            // enabling signal.
+            if (effectiveEffectEnableState != EffectProcessor::DISABLING) {
+                effectiveEffectEnableState = EffectProcessor::ENABLING;
+            }
         }
     }
 
-    EffectProcessor::EnableState& effectOnChannelState = m_enableStateMatrix[inputHandle][outputHandle];
+    bool processingOccured = false;
+
+    if (effectiveEffectEnableState != EffectProcessor::DISABLED) {
+        m_pProcessor->process(inputHandle, outputHandle, pInput, pOutput,
+                              numSamples, sampleRate,
+                              effectiveEffectEnableState, groupFeatures);
+
+        processingOccured = true;
+
+        if (!m_effectRampsFromDry) {
+            // the effect does not fade, so we care for it
+            if (effectiveEffectEnableState == EffectProcessor::DISABLING) {
+                DEBUG_ASSERT(pInput != pOutput); // Fade to dry only works if pInput is not touched by pOutput
+                // Fade out (fade to dry signal)
+                SampleUtil::copy2WithRampingGain(pOutput,
+                        pInput, 0.0, 1.0,
+                        pOutput, 1.0, 0.0,
+                        numSamples);
+            } else if (effectiveEffectEnableState == EffectProcessor::ENABLING) {
+                DEBUG_ASSERT(pInput != pOutput); // Fade to dry only works if pInput is not touched by pOutput
+                // Fade in (fade to wet signal)
+                SampleUtil::copy2WithRampingGain(pOutput,
+                        pInput, 1.0, 0.0,
+                        pOutput, 0.0, 1.0,
+                        numSamples);
+            }
+        }
+    }
+
+    // Now that the EffectProcessor has been sent the intermediate enabling/disabling
+    // signal, set the channel state to fully enabled/disabled for the next engine callback.
+    EffectProcessor::EnableState& effectOnChannelState = m_effectEnableStateForChannelMatrix[inputHandle][outputHandle];
     if (effectOnChannelState == EffectProcessor::DISABLING) {
         effectOnChannelState = EffectProcessor::DISABLED;
     } else if (effectOnChannelState == EffectProcessor::ENABLING) {
         effectOnChannelState = EffectProcessor::ENABLED;
     }
+
+    return processingOccured;
 }

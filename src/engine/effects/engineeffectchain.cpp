@@ -21,7 +21,7 @@ EngineEffectChain::EngineEffectChain(const QString& id,
         for (const ChannelHandleAndGroup& outputChannel : registeredOutputChannels) {
             outputChannelMap.insert(outputChannel.handle(), ChannelStatus());
         }
-        m_channelStatusMatrix.insert(inputChannel.handle(), outputChannelMap);
+        m_chainStatusForChannelMatrix.insert(inputChannel.handle(), outputChannelMap);
     }
 }
 
@@ -139,7 +139,7 @@ bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
 }
 
 bool EngineEffectChain::enableForInputChannel(const ChannelHandle& inputHandle) {
-    auto& outputMap = m_channelStatusMatrix[inputHandle];
+    auto& outputMap = m_chainStatusForChannelMatrix[inputHandle];
     for (auto& outputChannelStatus : outputMap) {
         if (outputChannelStatus.enable_state != EffectProcessor::ENABLED) {
             outputChannelStatus.enable_state = EffectProcessor::ENABLING;
@@ -149,7 +149,7 @@ bool EngineEffectChain::enableForInputChannel(const ChannelHandle& inputHandle) 
 }
 
 bool EngineEffectChain::disableForInputChannel(const ChannelHandle& inputHandle) {
-    auto& outputMap = m_channelStatusMatrix[inputHandle];
+    auto& outputMap = m_chainStatusForChannelMatrix[inputHandle];
     for (auto& outputChannelStatus : outputMap) {
         if (outputChannelStatus.enable_state != EffectProcessor::DISABLED) {
             outputChannelStatus.enable_state = EffectProcessor::DISABLING;
@@ -161,7 +161,7 @@ bool EngineEffectChain::disableForInputChannel(const ChannelHandle& inputHandle)
 EngineEffectChain::ChannelStatus& EngineEffectChain::getChannelStatus(
         const ChannelHandle& inputHandle,
         const ChannelHandle& outputHandle) {
-    ChannelStatus& status = m_channelStatusMatrix[inputHandle][outputHandle];
+    ChannelStatus& status = m_chainStatusForChannelMatrix[inputHandle][outputHandle];
     return status;
 }
 
@@ -171,95 +171,107 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
                                 const unsigned int numSamples,
                                 const unsigned int sampleRate,
                                 const GroupFeatureState& groupFeatures) {
-    // Compute the effective enable state from the channel input routing switch
-    // and the chain's enable state.
-    ChannelStatus& channel_info = m_channelStatusMatrix[inputHandle][outputHandle];
-    EffectProcessor::EnableState effectiveEnableState = channel_info.enable_state;
+    // Compute the effective enable state from the channel input routing switch,
+    // the chain's enable state, and the dry/wet knob. When any of these
+    // are turned on/off, send the effects the intermediate enabling/disabling signal.
+    // If the EngineEffect is not disabled for the channel, it will pass the
+    // intermediate state down to the EffectProcessor, which is then responsible for reacting
+    // appropriately, for example the Echo effect clears its internal buffer for the channel
+    // when it gets the intermediate disabling signal.
 
-    if (m_enableState == EffectProcessor::DISABLED
-            || effectiveEnableState == EffectProcessor::DISABLED) {
-        // If the chain is not enabled and the channel is not enabled and we are not
-        // ramping out then do nothing.
-        return false;
+    ChannelStatus& channelStatus = m_chainStatusForChannelMatrix[inputHandle][outputHandle];
+    EffectProcessor::EnableState effectiveChainEnableState = channelStatus.enable_state;
+
+    if (m_enableState != EffectProcessor::ENABLED) {
+        effectiveChainEnableState = m_enableState;
     }
 
-    if (channel_info.enable_state == EffectProcessor::DISABLING) {
-        channel_info.enable_state = EffectProcessor::DISABLED;
-    } else if (channel_info.enable_state == EffectProcessor::ENABLING) {
-        channel_info.enable_state = EffectProcessor::ENABLED;
+    CSAMPLE currentWetGain = m_dMix;
+    CSAMPLE lastCallbackWetGain = channelStatus.old_gain;
+
+    if (currentWetGain == 0.0) {
+        if (lastCallbackWetGain == 0.0) {
+            effectiveChainEnableState = EffectProcessor::DISABLED;
+        } else if (effectiveChainEnableState != EffectProcessor::DISABLED) {
+            // The dry/wet knob is fully dry and was for the last callback, so
+            // skip processing the effects.
+            // If the input routing switch or chain enable switches are fully disabled,
+            // do not send the intermediate disabling signal.
+            effectiveChainEnableState = EffectProcessor::DISABLING;
+        }
+    }
+
+    bool processingOccured = false;
+    if (effectiveChainEnableState != EffectProcessor::DISABLED) {
+        // Ramping code inside the effects need to access the original samples
+        // after writing to the output buffer. This requires not to use the same buffer
+        // for in and output: Also, ChannelMixer::applyEffectsAndMixChannels(Ramping)
+        // requires that the input buffer does not get modified.
+        int enabledEffectCount = 0;
+        CSAMPLE* pIntermediateInput = pIn;
+        CSAMPLE* pIntermediateOutput = m_buffer1.data();
+
+        for (EngineEffect* pEffect: m_effects) {
+            if (pEffect != nullptr) {
+                if (pEffect->process(
+                        inputHandle, outputHandle,
+                        pIntermediateInput, pIntermediateOutput,
+                        numSamples, sampleRate,
+                            effectiveChainEnableState, groupFeatures)) {
+
+                        ++enabledEffectCount;
+                        if (enabledEffectCount % 2) {
+                            pIntermediateInput = m_buffer1.data();
+                            pIntermediateOutput = m_buffer2.data();
+                        } else {
+                            pIntermediateInput = m_buffer2.data();
+                            pIntermediateOutput = m_buffer1.data();
+                        }
+                }
+            }
+        }
+
+        if (enabledEffectCount > 0) {
+            processingOccured = true;
+
+            // pIntermediateInput is the output of the last processed effect. It would be the
+            // intermediate input of the next effect if there was one.
+            if (m_insertionType == EffectChain::INSERT) {
+                // INSERT mode: output = input * (1-wet) + effect(input) * wet
+                SampleUtil::copy2WithRampingGain(
+                        pOut,
+                        pIn, 1.0 - lastCallbackWetGain, 1.0 - currentWetGain,
+                        pIntermediateInput, lastCallbackWetGain, currentWetGain,
+                        numSamples);
+            } else {
+                // SEND mode: output = input + effect(input) * wet
+                SampleUtil::copy2WithRampingGain(
+                        pOut,
+                        pIn, 1.0, 1.0,
+                        pIntermediateInput, lastCallbackWetGain, currentWetGain,
+                        numSamples);
+            }
+        }
+    }
+
+    channelStatus.old_gain = currentWetGain;
+
+    // If the EffectProcessors have been sent a signal for the intermediate
+    // enabling/disabling state, set the channel state or chain state
+    // to the fully enabled/disabled state for the next engine callback.
+
+    EffectProcessor::EnableState& chainOnChannelEnableState = channelStatus.enable_state;
+    if (chainOnChannelEnableState == EffectProcessor::DISABLING) {
+        chainOnChannelEnableState = EffectProcessor::DISABLED;
+    } else if (chainOnChannelEnableState == EffectProcessor::ENABLING) {
+        chainOnChannelEnableState = EffectProcessor::ENABLED;
     }
 
     if (m_enableState == EffectProcessor::DISABLING) {
-        effectiveEnableState = EffectProcessor::DISABLING;
         m_enableState = EffectProcessor::DISABLED;
     } else if (m_enableState == EffectProcessor::ENABLING) {
-        effectiveEnableState = EffectProcessor::ENABLING;
         m_enableState = EffectProcessor::ENABLED;
     }
 
-    // At this point either the chain and channel are enabled or we are ramping
-    // out. If we are ramping out then ramp to 0 instead of m_dMix.
-    CSAMPLE wet_gain = m_dMix;
-    CSAMPLE wet_gain_old = channel_info.old_gain;
-
-    if (wet_gain_old != 0.0 && wet_gain == 0.0) {
-        // Tell the effects that this is the last call before disabling
-        effectiveEnableState = EffectProcessor::DISABLING;
-    }
-
-    // Ramping code inside the effects need to access the original samples
-    // after writing to the output buffer. This requires not to use the same buffer
-    // for in and output:
-    int enabledEffectCount = 0;
-    CSAMPLE* pIntermediateInput = pIn;
-    CSAMPLE* pIntermediateOutput = m_buffer1.data();
-
-    for (EngineEffect* pEffect: m_effects) {
-        if (pEffect == nullptr || pEffect->disabled(inputHandle, outputHandle)) {
-            continue;
-        }
-        pEffect->process(
-                inputHandle, outputHandle,
-                pIntermediateInput, pIntermediateOutput,
-                numSamples, sampleRate,
-                effectiveEnableState, groupFeatures);
-
-        ++enabledEffectCount;
-        if (enabledEffectCount % 2) {
-            pIntermediateInput = m_buffer1.data();
-            pIntermediateOutput = m_buffer2.data();
-        } else {
-            pIntermediateInput = m_buffer2.data();
-            pIntermediateOutput = m_buffer1.data();
-        }
-    }
-
-    // Mix the effected signal, unless no effects are enabled
-    // or the chain is fully dry and not ramping.
-    if (enabledEffectCount > 0 && !(wet_gain == 0.0 && wet_gain_old == 0.0)) {
-        // pIntermediateInput is the output of the last processed effect. It would be the
-        // intermediate input of the next effect if there was one.
-        if (m_insertionType == EffectChain::INSERT) {
-            // INSERT mode: output = input * (1-wet) + effect(input) * wet
-            SampleUtil::copy2WithRampingGain(
-                    pOut,
-                    pIn, 1.0 - wet_gain_old, 1.0 - wet_gain,
-                    pIntermediateInput, wet_gain_old, wet_gain,
-                    numSamples);
-        } else {
-            // SEND mode: output = input + effect(input) * wet
-            SampleUtil::copy2WithRampingGain(
-                    pOut,
-                    pIn, 1.0, 1.0,
-                    pIntermediateInput, wet_gain_old, wet_gain,
-                    numSamples);
-        }
-
-        // Update ChannelStatus with the latest values.
-        channel_info.old_gain = wet_gain;
-        return true;
-    } else {
-        channel_info.old_gain = wet_gain;
-        return false;
-    }
+    return processingOccured;
 }

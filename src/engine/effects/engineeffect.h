@@ -36,16 +36,12 @@ class EngineEffect : public EffectsRequestHandler {
         const EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe);
 
-    void process(const ChannelHandle& inputHandle, const ChannelHandle& outputHandle,
+    bool process(const ChannelHandle& inputHandle, const ChannelHandle& outputHandle,
                  const CSAMPLE* pInput, CSAMPLE* pOutput,
                  const unsigned int numSamples,
                  const unsigned int sampleRate,
                  const EffectProcessor::EnableState chainEnableState,
                  const GroupFeatureState& groupFeatures);
-
-    bool disabled(const ChannelHandle& inputHandle, const ChannelHandle& outputHandle) const {
-        return m_enableStateMatrix.at(inputHandle).at(outputHandle) == EffectProcessor::DISABLED;
-    }
 
   private:
     QString debugString() const {
@@ -54,7 +50,7 @@ class EngineEffect : public EffectsRequestHandler {
 
     EffectManifest m_manifest;
     EffectProcessor* m_pProcessor;
-    ChannelHandleMap<ChannelHandleMap<EffectProcessor::EnableState>> m_enableStateMatrix;
+    ChannelHandleMap<ChannelHandleMap<EffectProcessor::EnableState>> m_effectEnableStateForChannelMatrix;
     bool m_effectRampsFromDry;
     // Must not be modified after construction.
     QVector<EngineEffectParameter*> m_parameters;
