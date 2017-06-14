@@ -247,7 +247,7 @@ EffectChainPointer EffectChainSlot::getEffectChain() const {
 EffectChainPointer EffectChainSlot::getAndEnsureEffectChain(
         EffectsManager* pEffectsManager) {
     if (!m_pEffectChain) {
-        auto pEffectChain = EffectChainPointer(
+        EffectChainPointer pEffectChain(
                 new EffectChain(pEffectsManager, QString()));
         pEffectChain->setName(QObject::tr("Empty Chain"));
         loadEffectChain(pEffectChain);

@@ -300,7 +300,7 @@ EffectChainPointer EffectChain::createFromXml(EffectsManager* pEffectsManager,
     QString insertionTypeStr = XmlParse::selectNodeQString(element,
                                                            EffectXml::ChainInsertionType);
 
-    EffectChainPointer pChain = EffectChainPointer(new EffectChain(pEffectsManager, id));
+    EffectChainPointer pChain(new EffectChain(pEffectsManager, id));
     pChain->setName(name);
     pChain->setDescription(description);
     InsertionType insertionType = insertionTypeFromString(insertionTypeStr);

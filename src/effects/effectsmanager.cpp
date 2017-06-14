@@ -240,7 +240,7 @@ void EffectsManager::setup() {
     // populate rack and restore state from effects.xml
     m_pEffectChainManager->loadEffectChains(pStandardRack.data());
 
-    EffectChainPointer pChain = EffectChainPointer(new EffectChain(
+    EffectChainPointer pChain(new EffectChain(
            this, "org.mixxx.effectchain.flanger"));
     pChain->setName(tr("Flanger"));
     EffectPointer pEffect = instantiateEffect(
