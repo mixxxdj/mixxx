@@ -25,7 +25,7 @@ class LibraryTest : public MixxxTest {
         return m_mixxxDb.connectionPool();
     }
 
-    const mixxx::DbConnectionPool::ThreadLocalScope& dbConnectionScope() const {
+    const mixxx::DbConnectionPool::ThreadLocalScoped& dbConnectionScope() const {
         return m_dbConnectionScope;
     }
 
@@ -35,7 +35,7 @@ class LibraryTest : public MixxxTest {
 
   private:
     MixxxDb m_mixxxDb;
-    const mixxx::DbConnectionPool::ThreadLocalScope m_dbConnectionScope;
+    const mixxx::DbConnectionPool::ThreadLocalScoped m_dbConnectionScope;
     TrackCollection m_trackCollection;
 };
 

@@ -126,7 +126,7 @@ class Library : public QObject {
     // The Mixxx SQLite3 database
     MixxxDb m_mixxxDb;
     // The Mixxx database connection for this (and only this!) thread
-    const mixxx::DbConnectionPool::ThreadLocalScope m_dbConnectionScope;
+    const mixxx::DbConnectionPool::ThreadLocalScoped m_dbConnectionScope;
 
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;

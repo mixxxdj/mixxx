@@ -22,8 +22,8 @@ const Logger kLogger("SoundSourcePluginLibrary");
     if (s_loadedPluginLibraries.contains(libFilePath)) {
         return s_loadedPluginLibraries.value(libFilePath);
     } else {
-        SoundSourcePluginLibraryPointer pPluginLibrary(
-                std::make_shared<SoundSourcePluginLibrary>(libFilePath));
+        auto pPluginLibrary =
+                std::make_shared<SoundSourcePluginLibrary>(libFilePath);
         if (pPluginLibrary->init()) {
             s_loadedPluginLibraries.insert(libFilePath, pPluginLibrary);
             return pPluginLibrary;

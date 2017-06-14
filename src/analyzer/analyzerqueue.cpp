@@ -298,7 +298,7 @@ void AnalyzerQueue::run() {
 }
 
 void AnalyzerQueue::execThread() {
-    const mixxx::DbConnectionPool::ThreadLocalScope dbConnectionScope(m_pDbConnectionPool);
+    const mixxx::DbConnectionPool::ThreadLocalScoped dbConnectionScope(m_pDbConnectionPool);
     if (!dbConnectionScope) {
         kLogger.warning()
                 << "Failed to open database connection for analyzer queue";

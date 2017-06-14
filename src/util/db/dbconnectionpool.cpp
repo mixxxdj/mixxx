@@ -71,16 +71,20 @@ DbConnectionPool::DbConnectionPool(
       m_connectionCounter(0) {
 }
 
-DbConnectionPool::ThreadLocalScope::ThreadLocalScope(
+DbConnectionPool::ThreadLocalScoped::ThreadLocalScoped(
         DbConnectionPoolPtr pDbConnectionPool) {
     if (pDbConnectionPool && pDbConnectionPool->createThreadLocalConnection()) {
+        // m_pDbConnectionPool indicates if the thread-local connection has actually
+        // been created during construction. Otherwise this instance is non-functional.
         m_pDbConnectionPool = std::move(pDbConnectionPool);
         m_dbConnection = m_pDbConnectionPool->threadLocalConnection();
     }
 }
 
-DbConnectionPool::ThreadLocalScope::~ThreadLocalScope() {
+DbConnectionPool::ThreadLocalScoped::~ThreadLocalScoped() {
     if (m_pDbConnectionPool) {
+        // Only destroy the thread-local connection if it has actually been created
+        // during construction (see above).
         m_pDbConnectionPool->destroyThreadLocalConnection();
     }
 }

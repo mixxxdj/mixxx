@@ -17,13 +17,13 @@ class SchemaManagerTest : public MixxxTest {
               m_dbConnectionScope(m_mixxxDb.connectionPool()) {
     }
 
-    const mixxx::DbConnectionPool::ThreadLocalScope& dbConnectionScope() const {
+    const mixxx::DbConnectionPool::ThreadLocalScoped& dbConnectionScope() const {
         return m_dbConnectionScope;
     }
 
   private:
     MixxxDb m_mixxxDb;
-    const mixxx::DbConnectionPool::ThreadLocalScope m_dbConnectionScope;
+    const mixxx::DbConnectionPool::ThreadLocalScoped m_dbConnectionScope;
 };
 
 TEST_F(SchemaManagerTest, CanUpgradeFreshDatabaseToRequiredVersion) {

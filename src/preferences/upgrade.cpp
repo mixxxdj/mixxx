@@ -362,7 +362,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         bool successful = false;
         {
             MixxxDb mixxxDb(config);
-            const mixxx::DbConnectionPool::ThreadLocalScope dbConnectionScope(
+            const mixxx::DbConnectionPool::ThreadLocalScoped dbConnectionScope(
                     mixxxDb.connectionPool());
             if (dbConnectionScope) {
                 QSqlDatabase connection(dbConnectionScope);

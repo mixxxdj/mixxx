@@ -18,7 +18,7 @@ class QueryUtilTest : public MixxxTest {
     }
 
     MixxxDb m_mixxxDb;
-    const mixxx::DbConnectionPool::ThreadLocalScope m_dbConnectionScope;
+    const mixxx::DbConnectionPool::ThreadLocalScoped m_dbConnectionScope;
 };
 
 TEST_F(QueryUtilTest, FieldEscaperEscapesQuotes) {
