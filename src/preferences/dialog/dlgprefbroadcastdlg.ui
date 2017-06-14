@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>692</width>
-    <height>613</height>
+    <height>683</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Live Broadcasting Preferences</string>
   </property>
-  <layout class="QGridLayout" rowstretch="0,0,0,0,0,0,0,0,0">
+  <layout class="QGridLayout" rowstretch="0,0,0,0,0,0,0">
    <item row="0" column="0" colspan="2">
     <widget class="QCheckBox" name="enableLiveBroadcasting">
      <property name="text">
@@ -644,19 +644,39 @@ p, li { white-space: pre-wrap; }
      <property name="title">
       <string>Broadcasting Profiles</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_10">
-      <item row="0" column="0">
-       <widget class="QTableView" name="tableView">
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
-        </property>
-        <property name="horizontalScrollBarPolicy">
-         <enum>Qt::ScrollBarAsNeeded</enum>
-        </property>
-       </widget>
+     <layout class="QVBoxLayout" name="verticalLayout_7">
+      <item>
+       <widget class="QListView" name="profileList"/>
+      </item>
+      <item>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="1">
+         <widget class="QPushButton" name="btnCreateProfile">
+          <property name="styleSheet">
+           <string notr="true">padding: 4px 7px 4px 7px;</string>
+          </property>
+          <property name="text">
+           <string>Create new profile</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Expanding</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
