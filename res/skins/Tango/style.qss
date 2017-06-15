@@ -169,13 +169,14 @@ WWidgetGroup {
 }
 
 #Waveform {
-  border-right: 1px solid #0f0f0f;
 }
 
 #BeatgridButtonToggler {
   background-color: #333333;
-  border-top: 1px solid #0f0f0f;
-}
+  }
+  #BeatgridButtonToggler:hover {
+    background-color: #1e1e1e;
+  }
   #BeatgridButtonToggler[displayValue="0"] {
     image: url(skin:/buttons/btn_arrow_left_thin.svg) no-repeat center center;
   }
@@ -189,19 +190,15 @@ WWidgetGroup {
     image: url(skin:/buttons/btn_arrow_right_thin_hover.svg) no-repeat center center;
   }
 
-#BeatgridButtonGridBox {
-  qproperty-layoutAlignment: 'AlignVCenter';
-}
-#BeatgridButtonGrid {
-  qproperty-layoutAlignment: 'AlignVCenter';
+#BeatgridButtonBox {
   background-color: #0f0f0f;
   }
   #BeatgridButton {
-    margin: 1px 0px 0px 1px;
     background-color: #333333;
     }
-  #BeatgridButton:hover {
-    background-color: #666666;
+    #BeatgridButton:hover {
+      background-color: #1e1e1e;
+      border: 1px solid #666666;
     }
 
 
