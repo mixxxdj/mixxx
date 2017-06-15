@@ -15,6 +15,10 @@ class BroadcastProfile {
               const QString& filename);
       static bool checkNameCompliance(const QString& str);
 
+      bool hasUnsavedChanges() {
+        return m_hasUnsavedChanges;
+      }
+
       void setProfileName(const QString& profileName);
       QString getProfileName() const;
 
@@ -104,8 +108,9 @@ class BroadcastProfile {
       void loadValues(const QString& filename);
       void defaultValues();
 
-      QString m_profileName;
+      bool m_hasUnsavedChanges;
 
+      QString m_profileName;
       bool m_enabled;
 
       QString m_host;

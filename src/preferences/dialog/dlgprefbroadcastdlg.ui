@@ -27,7 +27,7 @@
    <item row="2" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBoxProfileSettings">
      <property name="title">
-      <string>Settings for &quot;Default Profile&quot;</string>
+      <string>Settings for profile &quot;%s&quot;</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_8">
       <item row="0" column="0" colspan="2">
