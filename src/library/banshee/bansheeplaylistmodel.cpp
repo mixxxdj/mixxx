@@ -208,7 +208,7 @@ bool BansheePlaylistModel::setData(const QModelIndex& index, const QVariant& val
 TrackModel::CapabilitiesFlags BansheePlaylistModel::getCapabilities() const {
     return TRACKMODELCAPS_NONE
             | TRACKMODELCAPS_ADDTOPLAYLIST
-            | TRACKMODELCAPS_ADDTOCRATE
+            | TRACKMODELCAPS_ADDTOREMOVEFROMCRATE
             | TRACKMODELCAPS_ADDTOAUTODJ
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER;
