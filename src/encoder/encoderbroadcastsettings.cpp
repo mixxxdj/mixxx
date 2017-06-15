@@ -11,8 +11,8 @@
 #define DEFAULT_BITRATE 128
 
 EncoderBroadcastSettings::EncoderBroadcastSettings(
-        BroadcastSettingsPointer settings) :
-m_settings(settings) {
+        BroadcastSettingsPointer settings)
+        : m_settings(settings) {
     m_qualList.append(32);
     m_qualList.append(48);
     m_qualList.append(64);
