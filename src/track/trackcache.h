@@ -75,7 +75,14 @@ protected:
 class TrackCacheResolver final: public TrackCacheLocker {
 public:
     TrackCacheResolver(const TrackCacheResolver&) = delete;
+#if defined(_MSC_VER) && (_MSC_VER <= 1900)
+    // Visual Studio 2015 does not support default generated move constructors
+    TrackCacheResolver(TrackCacheResolver&& moveable)
+        : TrackCacheLocker(std::move(moveable)) {
+    }
+#else
     TrackCacheResolver(TrackCacheResolver&&) = default;
+#endif
 
     void updateTrackId(TrackId trackId);
 
@@ -90,7 +97,15 @@ private:
             TrackRef trackRef,
             TrackPointer pTrack);
 
+#if defined(_MSC_VER) && (_MSC_VER <= 1900)
+    // Visual Studio 2015 does not support default generated move assignment operators
+    TrackCacheResolver& operator=(TrackCacheResolver&& moveable) {
+        TrackCacheLocker::operator=(std::move(moveable));
+        return *this;
+    }
+#else
     TrackCacheResolver& operator=(TrackCacheResolver&&) = default;
+#endif
 };
 
 class TrackCache {
