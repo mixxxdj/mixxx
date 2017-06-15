@@ -132,7 +132,7 @@ class MixxxMainWindow : public QMainWindow {
     QWidget* m_pWidgetParent;
     LaunchImage* m_pLaunchImage;
 
-    SettingsManagerPointer m_pSettingsManager;
+    SettingsManager* m_pSettingsManager;
 
     // The effects processing system
     EffectsManager* m_pEffectsManager;

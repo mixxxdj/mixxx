@@ -6,7 +6,7 @@
 #include "engine/sidechain/enginesidechain.h"
 #include "soundio/soundmanager.h"
 
-BroadcastManager::BroadcastManager(SettingsManagerPointer pSettingsManager,
+BroadcastManager::BroadcastManager(SettingsManager* pSettingsManager,
                                    SoundManager* pSoundManager)
         : m_pConfig(pSettingsManager->settings()) {
     QSharedPointer<EngineNetworkStream> pNetworkStream =

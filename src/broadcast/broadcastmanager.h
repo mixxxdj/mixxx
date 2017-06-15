@@ -12,7 +12,7 @@ class SoundManager;
 class BroadcastManager : public QObject {
     Q_OBJECT
   public:
-    BroadcastManager(SettingsManagerPointer pSettingsManager,
+    BroadcastManager(SettingsManager* pSettingsManager,
                      SoundManager* pSoundManager);
     virtual ~BroadcastManager();
 

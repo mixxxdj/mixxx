@@ -119,8 +119,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         StatsManager::create();
     }
 
-    m_pSettingsManager = SettingsManagerPointer(
-                             new SettingsManager(this, args.getSettingsPath()));
+    m_pSettingsManager = new SettingsManager(this, args.getSettingsPath());
 
     initializeKeyboard();
 

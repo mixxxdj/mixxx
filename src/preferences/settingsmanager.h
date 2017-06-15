@@ -38,6 +38,4 @@ class SettingsManager : public QObject {
     BroadcastSettingsPointer m_pBroadcastSettings;
 };
 
-typedef QSharedPointer<SettingsManager> SettingsManagerPointer;
-
 #endif /* PREFERENCES_SETTINGSMANAGER_H */
