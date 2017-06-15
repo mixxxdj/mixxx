@@ -23,10 +23,18 @@ class DbConnectionPooled final {
         : m_pDbConnectionPool(pDbConnectionPooler.m_pDbConnectionPool) {
     }
 
+    // Checks if this instance actually references a connection pool
+    // needed for obtaining thread-local database connections (see below).
     explicit operator bool() const {
         return static_cast<bool>(m_pDbConnectionPool);
     }
 
+    // Tries to obtain an existing thread-local database connection
+    // from the pool. This might fail if either the reference to the
+    // connection pool is missing or if the pool does not contain a
+    // thread-local connection for this thread (previously created
+    // by some DbConnectionPooler). On failure a non-functional default
+    // constructed database commection is returned.
     explicit operator QSqlDatabase() const;
 
   private:

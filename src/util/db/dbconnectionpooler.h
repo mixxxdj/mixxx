@@ -25,8 +25,9 @@ class DbConnectionPooler final {
             DbConnectionPooler&& other) = default;
     ~DbConnectionPooler();
 
-    // Checks if a thread-local connection has actually been created during
-    // construction. Otherwise this instance is non-functional and dead.
+    // Checks if a thread-local connection has actually been created
+    // during construction. Otherwise this instance does not store
+    // any reference to the connection pool and is non-functional.
     explicit operator bool() const {
         return static_cast<bool>(m_pDbConnectionPool);
     }
