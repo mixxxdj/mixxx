@@ -6,20 +6,28 @@
 
 #include "library/queryutil.h"
 #include "util/db/sqllikewildcardescaper.h"
+#include "util/db/dbconnectionpooler.h"
 #include "util/db/dbconnectionpooled.h"
 
 class QueryUtilTest : public MixxxTest {
   protected:
     QueryUtilTest()
           : m_mixxxDb(config()),
-            m_dbConnection(m_mixxxDb.connectionPool()) {
+            m_dbConnectionPooler(m_mixxxDb.connectionPool()),
+            m_dbConnectionPooled(m_dbConnectionPooler),
+            m_dbConnection(m_dbConnectionPooled) {
         // This test only needs a connection to an empty database
         // without any particular schema. No need to initialize the
         // database schema.
     }
 
-    MixxxDb m_mixxxDb;
-    const mixxx::DbConnectionPooled m_dbConnection;
+  private:
+    const MixxxDb m_mixxxDb;
+    const mixxx::DbConnectionPooler m_dbConnectionPooler;
+    const mixxx::DbConnectionPooled m_dbConnectionPooled;
+
+  protected:
+    QSqlDatabase m_dbConnection;
 };
 
 TEST_F(QueryUtilTest, FieldEscaperEscapesQuotes) {

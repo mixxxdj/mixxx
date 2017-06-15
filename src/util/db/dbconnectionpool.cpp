@@ -50,24 +50,6 @@ void DbConnectionPool::destroyThreadLocalConnection() {
     m_threadLocalConnections.setLocalData(nullptr);
 }
 
-QSqlDatabase DbConnectionPool::threadLocalConnection() const {
-    VERIFY_OR_DEBUG_ASSERT(m_threadLocalConnections.hasLocalData()) {
-        kLogger.critical()
-                << "Thread-local database connection not found";
-        return QSqlDatabase(); // abort
-    }
-    DbConnection* pConnection = m_threadLocalConnections.localData();
-    VERIFY_OR_DEBUG_ASSERT(pConnection) {
-        kLogger.critical()
-                << "Thread-local database connection not valid";
-        return QSqlDatabase(); // abort
-    }
-    kLogger.debug()
-            << "Found thread-local database connection"
-            << *pConnection;;
-    return *pConnection;
-}
-
 DbConnectionPool::DbConnectionPool(
         const DbConnection::Params& params,
         const QString& connectionName)

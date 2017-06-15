@@ -31,25 +31,28 @@ class DbConnectionPool final {
     // from std::make_shared()!
     DbConnectionPool(
             const DbConnection::Params& params,
-            const QString& connectionName); // reserver for
-
-    // Returns a database connection for the current thread, that has
-    // previously been created by instantiating DbConnectionPooled. The
-    // returned connection is only valid within the current thread! It
-    // will be closed and removed from the pool upon the destruction of
-    // the owning DbConnectionPooled (see below) or as a very last resort
-    // implicitly when the current thread terminates. Since all connections
-    // need to be created through DbConnectionPooled the latter case should
-    // never happen.
-    QSqlDatabase threadLocalConnection() const;
+            const QString& connectionName);
 
   private:
     DbConnectionPool(const DbConnectionPool&) = delete;
     DbConnectionPool(const DbConnectionPool&&) = delete;
 
-    friend class DbConnectionPooled;
+    friend class DbConnectionPooler;
     bool createThreadLocalConnection();
     void destroyThreadLocalConnection();
+
+    // Returns a database connection for the current thread, that has
+    // previously been created by instantiating DbConnectionPooler. The
+    // returned connection is only valid within the current thread! It
+    // will be closed and removed from the pool upon the destruction of
+    // the owning DbConnectionPooler or as a very last resort implicitly
+    // when the current thread terminates. Since all connections need
+    // to be created through DbConnectionPooler the latter case should
+    // never happen.
+    friend class DbConnectionPooled;
+    const DbConnection* threadLocalConnection() const {
+        return m_threadLocalConnections.localData();
+    }
 
     const DbConnection m_prototypeConnection;
 

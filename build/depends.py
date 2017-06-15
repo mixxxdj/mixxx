@@ -1121,6 +1121,7 @@ class MixxxCore(Feature):
                    "util/console.cpp",
                    "util/db/dbconnection.cpp",
                    "util/db/dbconnectionpool.cpp",
+                   "util/db/dbconnectionpooler.cpp",
                    "util/db/dbconnectionpooled.cpp",
                    "util/db/dbid.cpp",
                    "util/db/fwdsqlquery.cpp",

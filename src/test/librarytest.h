@@ -5,6 +5,7 @@
 
 #include "database/mixxxdb.h"
 #include "library/trackcollection.h"
+#include "util/db/dbconnectionpooler.h"
 #include "util/db/dbconnectionpooled.h"
 
 
@@ -12,9 +13,10 @@ class LibraryTest : public MixxxTest {
   protected:
     LibraryTest()
         : m_mixxxDb(config()),
-          m_dbConnection(m_mixxxDb.connectionPool()),
+          m_dbConnectionPooler(m_mixxxDb.connectionPool()),
+          m_dbConnectionPooled(m_dbConnectionPooler),
           m_trackCollection(config()) {
-        QSqlDatabase dbConnection(m_dbConnection);
+        QSqlDatabase dbConnection(m_dbConnectionPooled);
         MixxxDb::initDatabaseSchema(dbConnection);
         m_trackCollection.connectDatabase(dbConnection);
     }
@@ -26,8 +28,8 @@ class LibraryTest : public MixxxTest {
         return m_mixxxDb.connectionPool();
     }
 
-    const mixxx::DbConnectionPooled& dbConnection() const {
-        return m_dbConnection;
+    QSqlDatabase dbConnection() const {
+        return static_cast<QSqlDatabase>(m_dbConnectionPooled);
     }
 
     TrackCollection* collection() {
@@ -35,8 +37,9 @@ class LibraryTest : public MixxxTest {
     }
 
   private:
-    MixxxDb m_mixxxDb;
-    const mixxx::DbConnectionPooled m_dbConnection;
+    const MixxxDb m_mixxxDb;
+    const mixxx::DbConnectionPooler m_dbConnectionPooler;
+    const mixxx::DbConnectionPooled m_dbConnectionPooled;
     TrackCollection m_trackCollection;
 };
 

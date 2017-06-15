@@ -5,6 +5,7 @@
 #include "preferences/waveformsettings.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
+#include "util/db/dbconnectionpooled.h"
 
 DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
                                  UserSettingsPointer pConfig, Library* pLibrary)
@@ -219,7 +220,8 @@ void DlgPrefWaveform::slotWaveformMeasured(float frameRate, int droppedFrames) {
 
 void DlgPrefWaveform::slotClearCachedWaveforms() {
     AnalysisDao analysisDao(m_pConfig);
-    QSqlDatabase dbConnection(m_pLibrary->dbConnectionPool()->threadLocalConnection());
+    const mixxx::DbConnectionPooled dbConnectionPooled(m_pLibrary->dbConnectionPool());
+    QSqlDatabase dbConnection(dbConnectionPooled);
     analysisDao.deleteAnalysesByType(dbConnection, AnalysisDao::TYPE_WAVEFORM);
     analysisDao.deleteAnalysesByType(dbConnection, AnalysisDao::TYPE_WAVESUMMARY);
     calculateCachedWaveformDiskUsage();
@@ -227,7 +229,8 @@ void DlgPrefWaveform::slotClearCachedWaveforms() {
 
 void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {
     AnalysisDao analysisDao(m_pConfig);
-    QSqlDatabase dbConnection(m_pLibrary->dbConnectionPool()->threadLocalConnection());
+    const mixxx::DbConnectionPooled dbConnectionPooled(m_pLibrary->dbConnectionPool());
+    QSqlDatabase dbConnection(dbConnectionPooled);
     size_t numBytes = analysisDao.getDiskUsageInBytes(dbConnection, AnalysisDao::TYPE_WAVEFORM) +
             analysisDao.getDiskUsageInBytes(dbConnection, AnalysisDao::TYPE_WAVESUMMARY);
 

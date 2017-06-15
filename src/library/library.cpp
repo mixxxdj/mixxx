@@ -28,6 +28,7 @@
 #include "library/traktor/traktorfeature.h"
 #include "library/librarycontrol.h"
 #include "library/setlogfeature.h"
+#include "util/db/dbconnectionpooled.h"
 #include "util/sandbox.h"
 #include "util/logger.h"
 #include "util/assert.h"
@@ -63,14 +64,16 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
                  RecordingManager* pRecordingManager) :
         m_pConfig(pConfig),
         m_mixxxDb(pConfig),
-        m_dbConnection(m_mixxxDb.connectionPool()),
+        m_dbConnectionPooler(m_mixxxDb.connectionPool()),
         m_pSidebarModel(new SidebarModel(parent)),
         m_pTrackCollection(new TrackCollection(pConfig)),
         m_pLibraryControl(new LibraryControl(this)),
         m_pRecordingManager(pRecordingManager),
         m_scanner(m_mixxxDb.connectionPool(), m_pTrackCollection, pConfig) {
     kLogger.info() << "Opening datbase connection";
-    if (!m_dbConnection) {
+
+    const mixxx::DbConnectionPooled dbConnectionPooled(m_dbConnectionPooler);
+    if (!dbConnectionPooled) {
         QMessageBox::critical(0, tr("Cannot open database"),
                             tr("Unable to establish a database connection.\n"
                                 "Mixxx requires QT with SQLite support. Please read "
@@ -80,7 +83,7 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
         // TODO(XXX) something a little more elegant
         exit(-1);
     }
-    QSqlDatabase dbConnection(m_dbConnection);
+    QSqlDatabase dbConnection(dbConnectionPooled);
     DEBUG_ASSERT(dbConnection.isOpen());
 
     kLogger.info() << "Initializing or upgrading database schema";

@@ -20,7 +20,7 @@
 #include "library/coverartcache.h"
 #include "library/setlogfeature.h"
 #include "library/scanner/libraryscanner.h"
-#include "util/db/dbconnectionpooled.h"
+#include "util/db/dbconnectionpooler.h"
 
 class TrackModel;
 class TrackCollection;
@@ -122,12 +122,16 @@ class Library : public QObject {
     void scanFinished();
 
   private:
-    UserSettingsPointer m_pConfig;
+    const UserSettingsPointer m_pConfig;
 
     // The Mixxx SQLite3 database
-    MixxxDb m_mixxxDb;
-    // The Mixxx database connection for this (and only this!) thread
-    const mixxx::DbConnectionPooled m_dbConnection;
+    const MixxxDb m_mixxxDb;
+
+    // The Mixxx database connection for the thread that creates
+    // and owns this library instance. TODO(XXX): Move database
+    // related code out of the GUI into multiple, dedicated
+    // worker threads.
+    const mixxx::DbConnectionPooler m_dbConnectionPooler;
 
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;

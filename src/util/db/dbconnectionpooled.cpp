@@ -11,36 +11,25 @@ const Logger kLogger("DbConnectionPooled");
 
 } // anonymous namespace
 
-DbConnectionPooled::DbConnectionPooled(
-        DbConnectionPoolPtr pDbConnectionPool) {
-    if (pDbConnectionPool && pDbConnectionPool->createThreadLocalConnection()) {
-        // m_pDbConnectionPool indicates if the thread-local connection has actually
-        // been created during construction. Otherwise this instance is non-functional.
-        m_pDbConnectionPool = std::move(pDbConnectionPool);
-        m_sqlDatabase = m_pDbConnectionPool->threadLocalConnection();
+DbConnectionPooled::operator QSqlDatabase() const {
+    VERIFY_OR_DEBUG_ASSERT(m_pDbConnectionPool) {
+        kLogger.critical()
+                << "No connection pool";
+        return QSqlDatabase(); // abort
     }
-    VERIFY_OR_DEBUG_ASSERT(isOpen()) {
-        kLogger.warning()
-                << "Failed to create and open database connection";
+    const DbConnection* pDbConnection = m_pDbConnectionPool->threadLocalConnection();
+    // The return pointer is at least valid until leaving this
+    // function, because only the current thread is able to
+    // remove this connection from the pool.
+    VERIFY_OR_DEBUG_ASSERT(pDbConnection) {
+        kLogger.critical()
+                << "Thread-local database connection not found";
+        return QSqlDatabase(); // abort
     }
-}
-
-DbConnectionPooled::~DbConnectionPooled() {
-    if (m_pDbConnectionPool) {
-        VERIFY_OR_DEBUG_ASSERT(isOpen()) {
-            kLogger.warning()
-                    << "Database connection has been closed prematurely";
-        }
-        // Only destroy the thread-local connection if it has actually been created
-        // during construction (see above).
-        m_pDbConnectionPool->destroyThreadLocalConnection();
-    }
-}
-
-QDebug operator<<(QDebug debug, const DbConnectionPooled& connection) {
-    return debug
-            << connection.name()
-            << connection.m_sqlDatabase;
+    kLogger.debug()
+            << "Found thread-local database connection"
+            << *pDbConnection;;
+    return *pDbConnection;
 }
 
 } // namespace mixxx

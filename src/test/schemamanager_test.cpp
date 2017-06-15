@@ -4,6 +4,7 @@
 
 #include "database/mixxxdb.h"
 #include "database/schemamanager.h"
+#include "util/db/dbconnectionpooler.h"
 #include "util/db/dbconnectionpooled.h"
 
 #include "library/dao/settingsdao.h"
@@ -15,16 +16,22 @@ class SchemaManagerTest : public MixxxTest {
   protected:
     SchemaManagerTest()
             : m_mixxxDb(config()),
-              m_dbConnection(m_mixxxDb.connectionPool()) {
+              m_dbConnectionPooler(m_mixxxDb.connectionPool()),
+              m_dbConnectionPooled(m_dbConnectionPooler),
+              m_dbConnection(m_dbConnectionPooled) {
     }
 
-    const mixxx::DbConnectionPooled& dbConnection() const {
-        return m_dbConnection;
+    QSqlDatabase dbConnection() const {
+        return static_cast<QSqlDatabase>(m_dbConnectionPooled);
     }
 
   private:
-    MixxxDb m_mixxxDb;
-    const mixxx::DbConnectionPooled m_dbConnection;
+    const MixxxDb m_mixxxDb;
+    const mixxx::DbConnectionPooler m_dbConnectionPooler;
+    const mixxx::DbConnectionPooled m_dbConnectionPooled;
+
+  protected:
+    QSqlDatabase m_dbConnection;
 };
 
 TEST_F(SchemaManagerTest, CanUpgradeFreshDatabaseToRequiredVersion) {

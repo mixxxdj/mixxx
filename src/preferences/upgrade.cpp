@@ -32,6 +32,7 @@
 #include "track/beat_preferences.h"
 #include "util/cmdlineargs.h"
 #include "util/math.h"
+#include "util/db/dbconnectionpooler.h"
 #include "util/db/dbconnectionpooled.h"
 
 Upgrade::Upgrade()
@@ -363,14 +364,15 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         bool successful = false;
         {
             MixxxDb mixxxDb(config);
-            const mixxx::DbConnectionPooled dbConnection(
+            const mixxx::DbConnectionPooler dbConnectionPooler(
                     mixxxDb.connectionPool());
-            if (dbConnection) {
-                QSqlDatabase connection(dbConnection);
-                DEBUG_ASSERT(connection.isOpen());
-                if (MixxxDb::initDatabaseSchema(connection)) {
+            if (dbConnectionPooler) {
+                const mixxx::DbConnectionPooled dbConnectionPooled(dbConnectionPooler);
+                QSqlDatabase dbConnection(dbConnectionPooled);
+                DEBUG_ASSERT(dbConnection.isOpen());
+                if (MixxxDb::initDatabaseSchema(dbConnection)) {
                     TrackCollection tc(config);
-                    tc.connectDatabase(connection);
+                    tc.connectDatabase(dbConnection);
 
                     // upgrade to the multi library folder settings
                     QString currentFolder = config->getValueString(PREF_LEGACY_LIBRARY_DIR);
