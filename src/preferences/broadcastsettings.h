@@ -17,12 +17,12 @@ class BroadcastSettings {
     void setCurrentProfile(BroadcastProfile* profile);
     BroadcastProfile* getCurrentProfile();
     BroadcastProfile* getProfileByName(const QString& profileName);
-    void deleteProfile(BroadcastProfile* profile);
+    void saveProfile(BroadcastProfile* profile);
     void saveAll();
+    void deleteProfile(BroadcastProfile* profile);
 
   private:
     void loadProfiles();
-    void saveProfile(BroadcastProfile* profile);
     QString filenameForProfile(BroadcastProfile* profile);
     QString filenameForProfile(const QString& profileName);
     QString getProfilesFolder();

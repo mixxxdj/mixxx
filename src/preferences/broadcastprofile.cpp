@@ -6,6 +6,8 @@
 #include <QTextStream>
 #include <QRegExp>
 #include <QDebug>
+#include <QStringList>
+
 #include "util/xml.h"
 #include "broadcast/defs_broadcast.h"
 #include "defs_urls.h"
@@ -13,53 +15,84 @@
 #include "broadcastprofile.h"
 
 namespace {
-const char* kDoctype = "broadcastprofile";
-const char* kDocumentRoot = "BroadcastProfile";
-const char* kBitrate = "Bitrate";
-const char* kChannels = "Channels";
-const char* kCustomArtist = "CustomArtist";
-const char* kCustomTitle = "CustomTitle";
-const char* kEnableMetadata = "EnableMetadata";
-const char* kEnableReconnect = "EnableReconnect";
-const char* kEnabled = "Enabled";
-const char* kFormat = "Format";
-const char* kHost = "Host";
-const char* kLimitReconnects = "LimitReconnects";
-const char* kLogin = "Login";
-const char* kMaximumRetries = "MaximumRetries";
-const char* kMetadataCharset = "MetadataCharset";
-const char* kMetadataFormat = "MetadataFormat";
-const char* kMountPoint = "Mountpoint";
-const char* kNoDelayFirstReconnect = "NoDelayFirstReconnect";
-const char* kOggDynamicUpdate = "OggDynamicUpdate";
-const char* kPassword = "Password";
-const char* kPort = "Port";
-const char* kReconnectFirstDelay = "ReconnectFirstDelay";
-const char* kReconnectPeriod = "ReconnectPeriod";
-const char* kServertype = "Servertype";
-const char* kStreamDesc = "StreamDesc";
-const char* kStreamGenre = "StreamGenre";
-const char* kStreamName = "StreamName";
-const char* kStreamPublic = "StreamPublic";
-const char* kStreamWebsite = "StreamWebsite";
+    const char* kDoctype = "broadcastprofile";
+    const char* kDocumentRoot = "BroadcastProfile";
+    const char* kBitrate = "Bitrate";
+    const char* kChannels = "Channels";
+    const char* kCustomArtist = "CustomArtist";
+    const char* kCustomTitle = "CustomTitle";
+    const char* kEnableMetadata = "EnableMetadata";
+    const char* kEnableReconnect = "EnableReconnect";
+    const char* kEnabled = "Enabled";
+    const char* kFormat = "Format";
+    const char* kHost = "Host";
+    const char* kLimitReconnects = "LimitReconnects";
+    const char* kLogin = "Login";
+    const char* kMaximumRetries = "MaximumRetries";
+    const char* kMetadataCharset = "MetadataCharset";
+    const char* kMetadataFormat = "MetadataFormat";
+    const char* kMountPoint = "Mountpoint";
+    const char* kNoDelayFirstReconnect = "NoDelayFirstReconnect";
+    const char* kOggDynamicUpdate = "OggDynamicUpdate";
+    const char* kPassword = "Password";
+    const char* kPort = "Port";
+    const char* kReconnectFirstDelay = "ReconnectFirstDelay";
+    const char* kReconnectPeriod = "ReconnectPeriod";
+    const char* kServertype = "Servertype";
+    const char* kStreamDesc = "StreamDesc";
+    const char* kStreamGenre = "StreamGenre";
+    const char* kStreamName = "StreamName";
+    const char* kStreamPublic = "StreamPublic";
+    const char* kStreamWebsite = "StreamWebsite";
 
-const double kDefaultBitrate = 128;
-const int kDefaultChannels = 2;
-const bool kDefaultEnableMetadata = false;
-const bool kDefaultEnableReconnect = true;
-const bool kDefaultLimitReconnects = true;
-const int kDefaultMaximumRetries = 10;
-// No tr() here, see https://bugs.launchpad.net/mixxx/+bug/1419500
-const QString kDefaultMetadataFormat("$artist - $title");
-const bool kDefaultNoDelayFirstReconnect = true;
-const bool kDefaultOggDynamicupdate = false;
-double kDefaultReconnectFirstDelay = 0.0;
-double kDefaultReconnectPeriod = 5.0;
-const QString kDefaultStreamDesc =
+    const double kDefaultBitrate = 128;
+    const int kDefaultChannels = 2;
+    const bool kDefaultEnableMetadata = false;
+    const bool kDefaultEnableReconnect = true;
+    const bool kDefaultLimitReconnects = true;
+    const int kDefaultMaximumRetries = 10;
+    // No tr() here, see https://bugs.launchpad.net/mixxx/+bug/1419500
+    const QString kDefaultMetadataFormat("$artist - $title");
+    const bool kDefaultNoDelayFirstReconnect = true;
+    const bool kDefaultOggDynamicupdate = false;
+    double kDefaultReconnectFirstDelay = 0.0;
+    double kDefaultReconnectPeriod = 5.0;
+    const QString kDefaultStreamDesc =
         QObject::tr("This stream is online for testing purposes!");
-const QString kDefaultStreamGenre = QObject::tr("Live Mix");
-const bool kDefaultStreamPublic = false;
-const QRegExp kForbiddenChars = QRegExp("[<>:\"/\\\|\?\*]");
+    const QString kDefaultStreamGenre = QObject::tr("Live Mix");
+    const bool kDefaultStreamPublic = false;
+    const QRegExp kForbiddenChars = QRegExp("[<>:\"/\\\|\?\*]");
+
+    namespace LegacyKeys {
+        const char* kConfigKey = "[Shoutcast]";
+        const char* kBitrate = "bitrate";
+        const char* kChannels = "channels";
+        const char* kCustomArtist = "custom_artist";
+        const char* kCustomTitle = "custom_title";
+        const char* kEnableMetadata = "enable_metadata";
+        const char* kEnableReconnect = "enable_reconnect";
+        const char* kEnabled = "enabled";
+        const char* kFormat = "format";
+        const char* kHost = "host";
+        const char* kLimitReconnects = "limit_reconnects";
+        const char* kLogin = "login";
+        const char* kMaximumRetries = "maximum_retries";
+        const char* kMetadataCharset = "metadata_charset";
+        const char* kMetadataFormat = "metadata_format";
+        const char* kMountPoint = "mountpoint";
+        const char* kNoDelayFirstReconnect = "no_delay_first_reconnect";
+        const char* kOggDynamicUpdate = "ogg_dynamicupdate";
+        const char* kPassword = "password";
+        const char* kPort = "port";
+        const char* kReconnectFirstDelay = "reconnect_first_delay";
+        const char* kReconnectPeriod = "reconnect_period";
+        const char* kServertype = "servertype";
+        const char* kStreamDesc = "stream_desc";
+        const char* kStreamGenre = "stream_genre";
+        const char* kStreamName = "stream_name";
+        const char* kStreamPublic = "stream_public";
+        const char* kStreamWebsite = "stream_website";
+    }
 } // anonymous namespace
 
 BroadcastProfile::BroadcastProfile(const QString& profileName) {
@@ -87,7 +120,7 @@ BroadcastProfile* BroadcastProfile::loadFromFile(const QString& filename) {
 void BroadcastProfile::setDefaultValues() {
     m_enabled = true;
 
-    m_host = QString(),
+    m_host = QString();
     m_port = BROADCAST_DEFAULT_PORT;
     m_serverType = QString();
     m_login = QString();
@@ -225,6 +258,237 @@ void BroadcastProfile::save(const QString& filename) {
     QTextStream fileStream(&xmlFile);
     doc.save(fileStream, 4);
     xmlFile.close();
+}
+
+// (Palakis) This normally falls under the responsibility of BroadcastSettings
+// but I feel that this code is easier to read when using attributes directly
+// instead of calling the setters. Since the aforementioned setters don't have
+// any special logic, this isn't a problem right now.
+void BroadcastProfile::loadLegacySettings(
+        UserSettingsPointer pConfig, BroadcastProfile* profile) {
+    if(!profile)
+        return;
+
+    // TODO(Palakis): Make that code less redundant. But how?
+
+    // For each value, the current value is kept if it can't be found in the
+    // general settings file.
+    profile->m_enabled = pConfig->getValue(
+                    ConfigKey(LegacyKeys::kConfigKey, LegacyKeys::kEnabled),
+                    profile->m_enabled);
+
+    profile->m_host = pConfig->getValue(
+                 ConfigKey(LegacyKeys::kConfigKey, LegacyKeys::kHost),
+                 profile->m_host);
+
+    profile->m_port = pConfig->getValue(
+                 ConfigKey(LegacyKeys::kConfigKey, LegacyKeys::kPort),
+                 profile->m_port);
+
+    profile->m_serverType = pConfig->getValue(
+                       ConfigKey(LegacyKeys::kConfigKey,
+                                 LegacyKeys::kServertype),
+                       profile->m_serverType);
+
+    profile->m_login = pConfig->getValue(
+                  ConfigKey(LegacyKeys::kConfigKey, LegacyKeys::kLogin),
+                  profile->m_login);
+
+    profile->m_password = pConfig->getValue(
+                     ConfigKey(LegacyKeys::kConfigKey, LegacyKeys::kPassword),
+                     profile->m_password);
+
+    profile->m_enableReconnect = pConfig->getValue(
+                            ConfigKey(LegacyKeys::kConfigKey,
+                                      LegacyKeys::kEnableReconnect),
+                            profile->m_enableReconnect);
+
+    profile->m_reconnectPeriod = pConfig->getValue(
+                            ConfigKey(LegacyKeys::kConfigKey,
+                                      LegacyKeys::kReconnectPeriod),
+                            profile->m_reconnectPeriod);
+
+    profile->m_limitReconnects = pConfig->getValue(
+                            ConfigKey(LegacyKeys::kConfigKey,
+                                      LegacyKeys::kLimitReconnects),
+                            profile->m_limitReconnects);
+
+    profile->m_mountpoint = pConfig->getValue(
+                       ConfigKey(LegacyKeys::kConfigKey,
+                                 LegacyKeys::kMountPoint),
+                       profile->m_mountpoint);
+
+    profile->m_streamDesc = pConfig->getValue(
+                       ConfigKey(LegacyKeys::kConfigKey,
+                                 LegacyKeys::kStreamDesc),
+                       profile->m_streamDesc);
+
+    profile->m_streamGenre = pConfig->getValue(
+                        ConfigKey(LegacyKeys::kConfigKey,
+                                  LegacyKeys::kStreamGenre),
+                        profile->m_streamGenre);
+
+    profile->m_streamName = pConfig->getValue(
+                       ConfigKey(LegacyKeys::kConfigKey,
+                                 LegacyKeys::kStreamName),
+                       profile->m_streamName);
+
+    profile->m_streamPublic = pConfig->getValue(
+                         ConfigKey(LegacyKeys::kConfigKey,
+                                   LegacyKeys::kStreamPublic),
+                         profile->m_streamPublic);
+
+    profile->m_streamWebsite = pConfig->getValue(
+                          ConfigKey(LegacyKeys::kConfigKey,
+                                    LegacyKeys::kStreamWebsite),
+                          profile->m_streamWebsite);
+
+    profile->m_enableMetadata = pConfig->getValue(
+                           ConfigKey(LegacyKeys::kConfigKey,
+                                     LegacyKeys::kEnableMetadata),
+                           profile->m_enableMetadata);
+
+    profile->m_metadataCharset = pConfig->getValue(
+                            ConfigKey(LegacyKeys::kConfigKey,
+                                      LegacyKeys::kMetadataCharset),
+                            profile->m_metadataCharset);
+
+    profile->m_customArtist = pConfig->getValue(
+                         ConfigKey(LegacyKeys::kConfigKey,
+                                   LegacyKeys::kCustomArtist),
+                         profile->m_customArtist);
+
+    profile->m_customTitle = pConfig->getValue(
+                        ConfigKey(LegacyKeys::kConfigKey,
+                                  LegacyKeys::kCustomTitle),
+                        profile->m_customTitle);
+
+    profile->m_metadataFormat = pConfig->getValue(
+                           ConfigKey(LegacyKeys::kConfigKey,
+                                     LegacyKeys::kMetadataFormat),
+                           profile->m_metadataFormat);
+
+    profile->m_oggDynamicUpdate = pConfig->getValue(
+                             ConfigKey(LegacyKeys::kConfigKey,
+                                       LegacyKeys::kOggDynamicUpdate),
+                             profile->m_oggDynamicUpdate);
+
+    profile->m_bitrate = pConfig->getValue(
+                    ConfigKey(LegacyKeys::kConfigKey,
+                              LegacyKeys::kBitrate),
+                    profile->m_bitrate);
+
+    profile->m_channels = pConfig->getValue(
+                     ConfigKey(LegacyKeys::kConfigKey,
+                               LegacyKeys::kChannels),
+                     profile->m_channels);
+
+    profile->m_format = pConfig->getValue(
+                   ConfigKey(LegacyKeys::kConfigKey,
+                             LegacyKeys::kFormat),
+                   profile->m_format);
+
+    profile->m_noDelayFirstReconnect =
+            pConfig->getValue(
+                ConfigKey(LegacyKeys::kConfigKey,
+                          LegacyKeys::kNoDelayFirstReconnect),
+                profile->m_noDelayFirstReconnect);
+
+    profile->m_reconnectFirstDelay =
+            pConfig->getValue(
+                ConfigKey(LegacyKeys::kConfigKey,
+                          LegacyKeys::kReconnectFirstDelay),
+                profile->m_reconnectFirstDelay);
+
+    profile->m_maximumRetries = pConfig->getValue(
+                           ConfigKey(LegacyKeys::kConfigKey,
+                                     LegacyKeys::kMaximumRetries),
+                           profile->m_maximumRetries);
+
+    // Remove values from general settings file
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kBitrate));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kChannels));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kCustomArtist));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kCustomTitle));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kEnableMetadata));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kEnableReconnect));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kEnabled));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kFormat));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kHost));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kLimitReconnects));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kLogin));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kMaximumRetries));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kMetadataCharset));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kMetadataFormat));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kMountPoint));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kNoDelayFirstReconnect));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kOggDynamicUpdate));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kPassword));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kPort));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kReconnectFirstDelay));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kReconnectPeriod));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kServertype));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kStreamDesc));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kStreamGenre));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kStreamName));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kStreamPublic));
+    pConfig->remove(ConfigKey(
+                        LegacyKeys::kConfigKey,
+                        LegacyKeys::kStreamWebsite));
+
+    pConfig->save();
 }
 
 void BroadcastProfile::setProfileName(const QString &profileName) {

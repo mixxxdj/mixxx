@@ -58,6 +58,9 @@ void BroadcastSettings::loadProfiles() {
         // Create default profile
         BroadcastProfile* defaultProfile =
                 new BroadcastProfile(kDefaultProfile);
+        // Upgrade from mixxx.cfg format to XML (if required)
+        BroadcastProfile::loadLegacySettings(m_pConfig, defaultProfile);
+
         saveProfile(defaultProfile);
 
         m_profiles.push_back(defaultProfile);

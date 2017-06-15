@@ -6,6 +6,8 @@
 
 #include <QString>
 
+#include "preferences/usersettings.h"
+
 class BroadcastProfile {
     public:
       explicit BroadcastProfile(const QString& profileName);
@@ -13,6 +15,8 @@ class BroadcastProfile {
 
       static BroadcastProfile* loadFromFile(
               const QString& filename);
+      static void loadLegacySettings(
+              UserSettingsPointer pConfig, BroadcastProfile* profile);
       static bool checkNameCompliance(const QString& str);
 
       void setProfileName(const QString& profileName);
