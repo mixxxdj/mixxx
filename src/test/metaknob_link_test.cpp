@@ -29,10 +29,8 @@ class MetaLinkTest : public BaseEffectTest {
         int iEffectNumber = 0;
 
         StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
-        m_pChainSlot = pRack->addEffectChainSlot(pChain, QDomElement());
-        // StandardEffectRack::addEffectChainSlot automatically adds 4 effect
-        // slots. In the future we will probably remove this so this will just
-        // start segfaulting.
+        m_pChainSlot = pRack->addEffectChainSlot();
+        m_pChainSlot->loadEffectChain(pChain);
         m_pEffectSlot = m_pChainSlot->getEffectSlot(0);
 
         QString group = StandardEffectRack::formatEffectSlotGroupString(

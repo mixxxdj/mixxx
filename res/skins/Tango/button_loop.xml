@@ -1,0 +1,20 @@
+<!--
+Description:
+  An individual beatloop button.
+Variables:
+  group             : [ChannelN]
+  LoopLength_Text   : length of the beat loop as text
+  LoopLength_Control: length of the beatloop as config value
+-->
+<Template>
+  <Template src="skin:button_2state_right_display.xml">
+    <SetVariable name="TooltipId">beatloop_toggle</SetVariable>
+    <SetVariable name="ObjectName">LoopSizeButton</SetVariable>
+    <SetVariable name="Size">22f,22f</SetVariable>
+    <SetVariable name="state_0_text"><Variable name="LoopLength_Text"/></SetVariable>
+    <SetVariable name="state_1_text"><Variable name="LoopLength_Text"/></SetVariable>
+    <SetVariable name="ConfigKey"><Variable name="group"/>,beatloop_<Variable name="LoopLength_Control"/>_toggle</SetVariable>
+    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatlooproll_<Variable name="LoopLength_Control"/>_activate</SetVariable>
+    <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,beatloop_<Variable name="LoopLength_Control"/>_enabled</SetVariable>
+  </Template>
+</Template>

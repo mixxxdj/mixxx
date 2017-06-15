@@ -32,18 +32,6 @@
                 <Layout>vertical</Layout>
                 <Children>
                   <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <Children>
-                      <Template src="skin:hide_show_button.xml">
-                        <SetVariable name="TooltipId">show_library</SetVariable>
-                        <SetVariable name="object_name">LibraryToggle</SetVariable>
-                        <SetVariable name="control">[Library],show_library</SetVariable>
-                      </Template>
-                      <SearchBox>
-                      </SearchBox>
-                    </Children>
-                  </WidgetGroup>
-                  <WidgetGroup>
                     <ObjectName>PreviewDeckContainer</ObjectName>
                     <Layout>vertical</Layout>
                     <!-- When TextRow is laid out, we need to ignore our children.
@@ -138,11 +126,22 @@
                       </WidgetGroup>
                     </Children>
                     <Connection>
-                      <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
+                      <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
-
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <Template src="skin:hide_show_button.xml">
+                        <SetVariable name="TooltipId">maximize_library</SetVariable>
+                        <SetVariable name="object_name">LibraryToggle</SetVariable>
+                        <SetVariable name="control">[Master],maximize_library</SetVariable>
+                      </Template>
+                      <SearchBox>
+                      </SearchBox>
+                    </Children>
+                  </WidgetGroup>
                   <!-- QSplitter between LibrarySidebar and CoverArt -->
                   <Splitter>
                     <ObjectName>LibraryCoverArtSplitter</ObjectName>
@@ -162,7 +161,7 @@
                         <SizePolicy>me,me</SizePolicy>
                         <MinimumSize>30,30</MinimumSize>
                         <Connection>
-                          <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+                          <ConfigKey>[Library],show_coverart</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </CoverArt>
@@ -177,20 +176,13 @@
         </Children>
       </WidgetGroup>
 
-      <!-- Collapsed Library -->
+      <!-- Hidden Library -->
       <WidgetGroup>
         <ObjectName>LibraryCollapsed</ObjectName>
         <Layout>vertical</Layout>
         <MinimumSize>-1,20</MinimumSize>
         <MaximumSize>-1,20</MaximumSize>
         <SizePolicy>me,min</SizePolicy>
-        <Children>
-          <Template src="skin:hide_show_button.xml">
-            <SetVariable name="TooltipId">show_library</SetVariable>
-            <SetVariable name="object_name">LibraryToggle</SetVariable>
-            <SetVariable name="control">[Library],show_library</SetVariable>
-          </Template>
-        </Children>
       </WidgetGroup>
 
     </Children>

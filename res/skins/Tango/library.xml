@@ -1,0 +1,132 @@
+<!--
+Description:
+  The Library container.
+  Left side contains preview deck, CoverArt and tree view.
+  Right side contains table view and mixerbar at the bottom.
+  Mixerbar can be diplayed below tracks table so that tree pane has maximum
+  space. With a toggler it can be set use full screen width below library
+  if necessary.
+-->
+<Template>
+  <WidgetGroup>
+<!-- Finally fixed: library can shrink to noting!
+    Solution was to define SizePolicy as 'xx,i'.
+    Found this in Deere-2.1 -->
+    <ObjectName>Library</ObjectName>
+    <SizePolicy>me,i</SizePolicy>
+    <Layout>vertical</Layout>
+    <Children>
+
+      <!-- margin-top has no effect -->
+      <WidgetGroup><Size>1me,3f</Size></WidgetGroup>
+
+      <Splitter>
+        <ObjectName>LibrarySplitter</ObjectName>
+        <SizePolicy>me,me</SizePolicy>
+        <SplitSizes>1,6</SplitSizes>
+        <SplitSizesConfigKey>[Tango],splitter__tree_lib</SplitSizesConfigKey>
+        <Orientation>horizontal</Orientation>
+        <Collapsible>1,0</Collapsible>
+        <Children>
+
+          <WidgetGroup><!-- Preview Search Cover Tree -->
+            <Layout>vertical</Layout>
+            <!-- minSize so that 8 Preview HotCues fit nicely, 23+1px each -->
+            <Size>159min,74me</Size>
+            <Children>
+              <Template src="skin:preview_deck.xml"/>
+              <Splitter><!-- Splitter to make CoverArt resizeable -->
+                <ObjectName>LibrarySplitter</ObjectName>
+                <SizePolicy>me,me</SizePolicy>
+                <SplitSizes>1,3</SplitSizes>
+                <SplitSizesConfigKey>[Tango],splitter__coverArt_tree</SplitSizesConfigKey>
+                <Orientation>vertical</Orientation>
+                <Collapsible>0,0</Collapsible>
+                <Children>
+                  <CoverArt>
+                    <Size>30min,30min</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </CoverArt>
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Children>
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Children>
+                          <SearchBox></SearchBox>
+                          <Template src="skin:button_2state_persist.xml">
+                            <SetVariable name="ObjectName">LibMiniMaxiButton</SetVariable>
+                            <SetVariable name="Size">22f,25f</SetVariable>
+                            <SetVariable name="ConfigKeyPerm">[Master],maximize_library</SetVariable>
+                          </Template>
+                        </Children>
+                      </WidgetGroup>
+                      <LibrarySidebar></LibrarySidebar>
+                      <!-- Draw a 1px line with Library border color if Mixerbar
+                          is displayed below Library -->
+                      <WidgetGroup>
+                        <ObjectName>Spacer58</ObjectName>
+                        <Size>1me,1f</Size>
+                        <Connection>
+                          <ConfigKey>[Tango],mixerbar_below_library</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
+
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </Splitter><!-- /Splitter to make CoverArt resizeable -->
+            </Children>
+          </WidgetGroup><!-- /Preview Search Cover Tree -->
+
+          <WidgetGroup><!-- Library Table -->
+            <Layout>vertical</Layout>
+            <Children>
+              <Library>
+                <BgColor>#585858</BgColor>
+                <FgColor>#eece33</FgColor>
+              </Library>
+          <!-- Display Mixerbar here if it fits.
+              If not, display it below Library -->
+              <WidgetGroup>
+                <SizePolicy>min,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:mixerbar.xml"/>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Tango],mixerbar_below_library</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- /Mixerbar -->
+            </Children>
+          </WidgetGroup><!-- /Library Table -->
+        </Children>
+      </Splitter>
+  <!-- Display Mixerbar here if it needs more h-space.
+      If not, display it next to TreeView -->
+      <WidgetGroup>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skin:mixerbar.xml"/>
+        </Children>
+        <Connection>
+          <ConfigKey>[Tango],mixerbar_below_library</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Mixerbar -->
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Library],show_library</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

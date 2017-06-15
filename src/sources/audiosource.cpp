@@ -1,8 +1,15 @@
 #include "sources/audiosource.h"
 
 #include "util/sample.h"
+#include "util/logger.h"
 
 namespace mixxx {
+
+namespace {
+
+const Logger kLogger("AudioSource");
+
+} // anonymous namespace
 
 /*static*/ constexpr AudioSignal::SampleLayout AudioSource::kSampleLayout;
 
@@ -86,7 +93,7 @@ SINT AudioSource::readSampleFramesStereo(
                 return readFrameCount;
             } else {
                 // inefficient transformation through a temporary buffer
-                qDebug() << "Performance warning:"
+                kLogger.debug() << "Performance warning:"
                         << "Allocating a temporary buffer of size"
                         << numberOfSamplesToRead << "for reading stereo samples."
                         << "The size of the provided sample buffer is"
@@ -106,7 +113,7 @@ bool AudioSource::verifyReadable() const {
     bool result = AudioSignal::verifyReadable();
     if (hasBitrate()) {
         VERIFY_OR_DEBUG_ASSERT(isValidBitrate(m_bitrate)) {
-            qWarning() << "Invalid bitrate [kbps]:"
+            kLogger.warning() << "Invalid bitrate [kbps]:"
                     << getBitrate();
             // Don't set the result to false, because bitrate is only
             // an  informational property that does not effect the ability
@@ -114,7 +121,7 @@ bool AudioSource::verifyReadable() const {
         }
     }
     if (isEmpty()) {
-        qWarning() << "AudioSource is empty and does not provide any audio data!";
+        kLogger.warning() << "No audio data available";
         // Don't set the result to false, even if reading from an empty source
         // is pointless!
     }

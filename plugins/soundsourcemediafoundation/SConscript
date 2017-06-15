@@ -27,6 +27,7 @@ if int(build.flags['mediafoundation']):
          'util/singularsamplebuffer.cpp',
          'util/samplebuffer.cpp',
          'util/sample.cpp',
+         'util/logger.cpp',
          'track/trackmetadata.cpp',
          'track/trackmetadatataglib.cpp',
          'track/tracknumbers.cpp',

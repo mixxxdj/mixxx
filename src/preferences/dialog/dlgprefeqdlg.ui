@@ -372,6 +372,16 @@
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="CheckBoxGainAutoReset">
+         <property name="toolTip">
+          <string>Resets the deck gain to unity when loading a track.</string>
+         </property>
+         <property name="text">
+          <string>Reset gain on track load</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCheckBox" name="CheckBoxBypass">
          <property name="text">
           <string>Bypass EQ effect processing</string>

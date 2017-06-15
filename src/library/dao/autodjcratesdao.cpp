@@ -42,6 +42,7 @@ AutoDJCratesDAO::AutoDJCratesDAO(
         TrackCollection* pTrackCollection,
         UserSettingsPointer a_pConfig)
         : m_pTrackCollection(pTrackCollection),
+          m_database(pTrackCollection->database()),
           m_pConfig (a_pConfig),
           // The database has not been created yet.
           m_bAutoDjCratesDbCreated(false),

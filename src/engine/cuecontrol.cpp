@@ -11,6 +11,7 @@
 #include "control/controlpushbutton.h"
 #include "control/controlindicator.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
+#include "util/sample.h"
 
 // TODO: Convert these doubles to a standard enum
 // and convert elseif logic to switch statements
@@ -549,8 +550,8 @@ void CueControl::hintReader(HintVector* pHintList) {
     Hint cue_hint;
     double cuePoint = m_pCuePoint->get();
     if (cuePoint >= 0) {
-        cue_hint.sample = m_pCuePoint->get();
-        cue_hint.length = 0;
+        cue_hint.frame = SampleUtil::floorPlayPosToFrame(m_pCuePoint->get());
+        cue_hint.frameCount = Hint::kFrameCountForward;
         cue_hint.priority = 10;
         pHintList->append(cue_hint);
     }
@@ -561,10 +562,8 @@ void CueControl::hintReader(HintVector* pHintList) {
     for (const auto& pControl: m_hotcueControls) {
         double position = pControl->getPosition();
         if (position != -1) {
-            cue_hint.sample = position;
-            if (cue_hint.sample % 2 != 0)
-                cue_hint.sample--;
-            cue_hint.length = 0;
+            cue_hint.frame = SampleUtil::floorPlayPosToFrame(position);
+            cue_hint.frameCount = Hint::kFrameCountForward;
             cue_hint.priority = 10;
             pHintList->append(cue_hint);
         }

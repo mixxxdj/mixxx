@@ -1,0 +1,168 @@
+<!--
+Description:
+  Container for
+  * Vinyl controls
+  * CoverArt/Spinny
+  * waveform overview
+Variables:
+  group               : [ChannelN]
+  channum             : channel number
+  SignalBgColor       : defined in skin.xml
+  SignalColor         :
+  SignalRGBLowColor   :
+  SignalRGBMidColor   :
+  SignalRGBHighColor  :
+  SignalBgColor_1     : for hidden scrolling waveform
+  SignalColor_1       :
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>DeckOverview</ObjectName>
+    <Layout>stacked</Layout>
+    <SizePolicy>me,f</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>DeckOverview<Variable name="channum"/></ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,f</SizePolicy>
+        <Children>
+
+          <WidgetGroup><!-- [Spinny / Cover / none] -->
+            <Layout>vertical</Layout>
+            <!-- Do not declare Size/Policy here. Otherwise this widget will always occupy 50x50px,
+                even when set invible. Maybe too many Connections... WidgetStack was buggy. -->
+            <Children>
+
+              <WidgetGroup><!-- mini Cover/Spinny -->
+                <Layout>horizontal</Layout>
+                <Size>50f,50f</Size>
+                <Children>
+                  <Template src="skin:spinnyCover_mini.xml"/>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                  <Transform><Not/></Transform>
+                </Connection>
+              </WidgetGroup><!-- /Mini Cover/Spinny -->
+
+              <!-- Mini Cover/Spinny when it's actually BIG, but Channel Mixer is visible -->
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <Size>50f,50f</Size>
+                    <Children>
+                      <Template src="skin:spinnyCover_mini.xml"/>
+                    </Children>
+                    <Connection>
+                      <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+              <!-- Mini Cover/Spinny when it's actually BIG, but Channel Mixer is visible -->
+
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
+              <Transform><IsEqual>2</IsEqual><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /[Spinny / Cover / none] -->
+
+          <WidgetGroup><!-- Vinyl Controls -->
+            <Layout>horizontal</Layout>
+            <Children>
+
+              <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
+                <SetVariable name="ObjectName">VinylTogglerRight</SetVariable>
+                <SetVariable name="Size">11f,50f</SetVariable>
+                <SetVariable name="ConfigKeyPerm">[Tango],vinylControlsDeck<Variable name="channum"/></SetVariable>
+              </Template>
+
+              <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
+
+              <Template src="skin:vinyl_controls_right.xml"/>
+
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /Vinyl Controls -->
+
+          <Overview>
+            <TooltipId>waveform_overview</TooltipId>
+            <Style></Style>
+            <Channel><Variable name="channum"/></Channel>
+            <Size>1me,50f</Size>
+            <BgColor><Variable name="SignalBgColor"/></BgColor>
+            <SignalColor><Variable name="SignalColor"/></SignalColor>
+            <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
+            <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
+            <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
+            <PlayPosColor>#FF4300</PlayPosColor>
+            <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
+            <EndOfTrackColor>#EA0085</EndOfTrackColor>
+            <DefaultMark>
+                <Align>bottom|right</Align>
+                <Color>#00FF00</Color>
+                <TextColor>#FFFFFF</TextColor>
+                <Text> %1 </Text>
+            </DefaultMark>
+            <MarkRange>
+                <StartControl>loop_start_position</StartControl>
+                <EndControl>loop_end_position</EndControl>
+                <EnabledControl>loop_enabled</EnabledControl>
+                <Color>#00FF00</Color>
+                <DisabledColor>#FFFFFF</DisabledColor>
+            </MarkRange>
+            <Mark>
+                <Control>cue_point</Control>
+                <Text>C</Text>
+                <Align>top|right</Align>
+                <Color>#FF0080</Color>
+                <TextColor>#FFFFFF</TextColor>
+            </Mark>
+            <Connection>
+                <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+            </Connection>
+          </Overview>
+
+        </Children>
+      </WidgetGroup><!-- /Overview Row -->
+
+<!-- 	Invisible Waveform, active when stacked Waveform are disabled.
+      Appearently, they needs to be present in skin somewhere (visible or not)
+      to prevent visual glitches (or crashes). -->
+      <WidgetGroup>
+        <Size>50f,50f</Size>
+        <Children>
+          <!-- Colors contain actually deck-specific Variable "channum" is already
+          but here this is already passed as variable and we can't set a variable name
+          containing another variable.
+          Here it doesn't matter since waveform is invisble.                           
+          -->
+          <Template src="skin:waveform.xml">
+            <SetVariable name="Size">0me,50me</SetVariable>
+            <SetVariable name="channum"><Variable name="channum"/></SetVariable>
+            <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_1"/></SetVariable>
+            <SetVariable name="SignalColor"><Variable name="SignalColor_1"/></SetVariable>
+          </Template>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform><Not/></Transform>
+        </Connection>
+      </WidgetGroup><!-- /Invisible waveform -->
+    </Children>
+  </WidgetGroup>
+</Template>

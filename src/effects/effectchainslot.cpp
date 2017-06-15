@@ -244,6 +244,18 @@ EffectChainPointer EffectChainSlot::getEffectChain() const {
     return m_pEffectChain;
 }
 
+EffectChainPointer EffectChainSlot::getOrCreateEffectChain(
+        EffectsManager* pEffectsManager) {
+    if (!m_pEffectChain) {
+        EffectChainPointer pEffectChain(
+                new EffectChain(pEffectsManager, QString()));
+        //: Name for an empty effect chain, that is created after eject
+        pEffectChain->setName(tr("Empty Chain"));
+        loadEffectChain(pEffectChain);
+    }
+    return m_pEffectChain;
+}
+
 void EffectChainSlot::clear() {
     // Stop listening to signals from any loaded effect
     if (m_pEffectChain) {
@@ -436,21 +448,22 @@ unsigned int EffectChainSlot::getChainSlotNumber() const {
 QDomElement EffectChainSlot::toXml(QDomDocument* doc) const {
     QDomElement chainElement = doc->createElement(EffectXml::Chain);
     if (m_pEffectChain == nullptr) {
+        // ejected chains are stored empty <EffectChain/>
         return chainElement;
     }
 
     XmlParse::addElement(*doc, chainElement, EffectXml::ChainId,
-                         m_pEffectChain->id());
+            m_pEffectChain->id());
     XmlParse::addElement(*doc, chainElement, EffectXml::ChainName,
-                         m_pEffectChain->name());
+            m_pEffectChain->name());
     XmlParse::addElement(*doc, chainElement, EffectXml::ChainDescription,
-                         m_pEffectChain->description());
+            m_pEffectChain->description());
     XmlParse::addElement(*doc, chainElement, EffectXml::ChainInsertionType,
-                         EffectChain::insertionTypeToString(
-                           static_cast<EffectChain::InsertionType>(
-                              static_cast<int>(m_pControlChainInsertionType->get()))));
+            EffectChain::insertionTypeToString(
+                    static_cast<EffectChain::InsertionType>(
+                            static_cast<int>(m_pControlChainInsertionType->get()))));
     XmlParse::addElement(*doc, chainElement, EffectXml::ChainSuperParameter,
-                         QString::number(m_pControlChainSuperParameter->get()));
+            QString::number(m_pControlChainSuperParameter->get()));
 
     QDomElement effectsElement = doc->createElement(EffectXml::EffectsRoot);
     for (const auto& pEffectSlot : m_slots) {

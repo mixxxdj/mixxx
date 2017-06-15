@@ -8,7 +8,6 @@
 #ifdef __VAMP__
 #include "analyzer/analyzerbeats.h"
 #include "analyzer/analyzerkey.h"
-#include "analyzer/vamp/vampanalyzer.h"
 #endif
 #include "analyzer/analyzergain.h"
 #include "analyzer/analyzerebur128.h"
@@ -442,7 +441,6 @@ AnalyzerQueue* AnalyzerQueue::createDefaultAnalyzerQueue(
     ret->addAnalyzer(new AnalyzerGain(pConfig));
     ret->addAnalyzer(new AnalyzerEbur128(pConfig));
 #ifdef __VAMP__
-    VampAnalyzer::initializePluginPaths();
     ret->addAnalyzer(new AnalyzerBeats(pConfig));
     ret->addAnalyzer(new AnalyzerKey(pConfig));
 #endif
@@ -462,7 +460,6 @@ AnalyzerQueue* AnalyzerQueue::createAnalysisFeatureAnalyzerQueue(
     ret->addAnalyzer(new AnalyzerGain(pConfig));
     ret->addAnalyzer(new AnalyzerEbur128(pConfig));
 #ifdef __VAMP__
-    VampAnalyzer::initializePluginPaths();
     ret->addAnalyzer(new AnalyzerBeats(pConfig));
     ret->addAnalyzer(new AnalyzerKey(pConfig));
 #endif
