@@ -298,15 +298,6 @@ class Track : public QObject {
     // files that are still opened for reading.
     void markForMetadataExport();
 
-    // Called when the shared pointer reference count for a library TrackPointer
-    // drops to zero.
-    static void onTrackReferenceExpired(Track* pTrack);
-
-    // Set whether the track should delete itself when its reference count drops
-    // to zero. This happens during shutdown when TrackDAO has already been
-    // destroyed.
-    void setDeleteOnReferenceExpiration(bool deleteOnReferenceExpiration);
-
   public slots:
     void slotCueUpdated();
 
@@ -324,7 +315,6 @@ class Track : public QObject {
     void changed(Track* pTrack);
     void dirty(Track* pTrack);
     void clean(Track* pTrack);
-    void referenceExpired(Track* pTrack);
 
   private slots:
     void slotBeatsUpdated();
@@ -335,7 +325,7 @@ class Track : public QObject {
           TrackId trackId);
 
     // Set a unique identifier for the track. Only used by
-    // TrackDAO!
+    // TrackCacheResolver!
     void initId(TrackId id); // write-once
 
     // Set whether the TIO is dirty or not and unlock before emitting
@@ -367,10 +357,6 @@ class Track : public QObject {
 
     const SecurityTokenPointer m_pSecurityToken;
 
-    // Whether the track should delete itself when its reference count drops to
-    // zero. Used for cleaning up after shutdown.
-    volatile bool m_bDeleteOnReferenceExpiration;
-
     // Mutex protecting access to object
     mutable QMutex m_qMutex;
 
@@ -397,6 +383,8 @@ class Track : public QObject {
     QAtomicInt m_analyzerProgress; // in 0.1%
 
     friend class TrackDAO;
+    friend class TrackCache;
+    friend class TrackCacheResolver;
     friend class SoundSourceProxy;
 };
 
