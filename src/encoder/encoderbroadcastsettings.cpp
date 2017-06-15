@@ -10,9 +10,8 @@
 
 #define DEFAULT_BITRATE 128
 
-EncoderBroadcastSettings::EncoderBroadcastSettings(BroadcastSettings settings) :
-m_settings(settings)
-{
+EncoderBroadcastSettings::EncoderBroadcastSettings(BroadcastSettings* settings) :
+m_pSettings(settings) {
     m_qualList.append(32);
     m_qualList.append(48);
     m_qualList.append(64);
@@ -26,41 +25,40 @@ m_settings(settings)
     m_qualList.append(256);
     m_qualList.append(320);
 }
-EncoderBroadcastSettings::~EncoderBroadcastSettings()
-{
-    
+EncoderBroadcastSettings::~EncoderBroadcastSettings() {
 }
 
-
-QList<int> EncoderBroadcastSettings::getQualityValues() const
-{
+QList<int> EncoderBroadcastSettings::getQualityValues() const {
     return m_qualList;
 }
 
 // Sets the value
-void EncoderBroadcastSettings::setQualityByValue(int qualityValue) 
-{
+void EncoderBroadcastSettings::setQualityByValue(int qualityValue) {
+    BroadcastProfile* profile = m_pSettings->getCurrentProfile();
+
     if (m_qualList.contains(qualityValue)) {
-        m_settings.setBitrate(qualityValue);
+        profile->setBitrate(qualityValue);
     } else {
         qWarning() << "Invalid qualityValue given to EncoderBroadcastSettings: " 
             << qualityValue << ". Ignoring it";
     }
 }
 
-void EncoderBroadcastSettings::setQualityByIndex(int qualityIndex)
-{
+void EncoderBroadcastSettings::setQualityByIndex(int qualityIndex) {
+    BroadcastProfile* profile = m_pSettings->getCurrentProfile();
+
     if (qualityIndex >= 0 && qualityIndex < m_qualList.size()) {
-        m_settings.setBitrate(m_qualList.at(qualityIndex));
+        profile->setBitrate(m_qualList.at(qualityIndex));
     } else {
         qWarning() << "Invalid qualityIndex given to EncoderBroadcastSettings: " 
             << qualityIndex << ". Ignoring it";
     }
 }
 
-int EncoderBroadcastSettings::getQuality() const
-{
-    int bitrate = m_settings.getBitrate();
+int EncoderBroadcastSettings::getQuality() const {
+    BroadcastProfile* profile = m_pSettings->getCurrentProfile();
+
+    int bitrate = profile->getBitrate();
     if (m_qualList.contains(bitrate)) {
         return bitrate;
     }
@@ -70,18 +68,21 @@ int EncoderBroadcastSettings::getQuality() const
     }
     return DEFAULT_BITRATE;
 }
-int EncoderBroadcastSettings::getQualityIndex() const
-{
+
+int EncoderBroadcastSettings::getQualityIndex() const {
     return m_qualList.indexOf(getQuality());
 }
 
 void EncoderBroadcastSettings::setChannelMode(EncoderSettings::ChannelMode mode)
 {
-    m_settings.setChannels(static_cast<int>(mode));
+    BroadcastProfile* profile = m_pSettings->getCurrentProfile();
+    profile->setChannels(static_cast<int>(mode));
 }
-EncoderSettings::ChannelMode EncoderBroadcastSettings::getChannelMode() const
-{
-    switch(m_settings.getChannels()) {
+
+EncoderSettings::ChannelMode EncoderBroadcastSettings::getChannelMode() const {
+    BroadcastProfile* profile = m_pSettings->getCurrentProfile();
+
+    switch(profile->getChannels()) {
         case 1: return EncoderSettings::ChannelMode::MONO;
         case 2: return EncoderSettings::ChannelMode::STEREO;
         case 0: // fallthrough
