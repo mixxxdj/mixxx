@@ -12,6 +12,7 @@
 #include "util/file.h"
 #include "util/timer.h"
 #include "library/scanner/scannerutil.h"
+#include "util/db/dbconnectionpooled.h"
 
 
 namespace {
@@ -94,14 +95,13 @@ void LibraryScanner::run() {
     {
         Trace trace("LibraryScanner");
 
-        const mixxx::DbConnectionPool::ThreadLocalScoped dbConnectionScope(m_pDbConnectionPool);
-        if (!dbConnectionScope) {
+        const mixxx::DbConnectionPooled dbConnection(m_pDbConnectionPool);
+        if (!dbConnection) {
             kLogger.warning()
                     << "Failed to open database connection for library scanner";
             kLogger.debug() << "Exiting thread";
             return;
         }
-        QSqlDatabase dbConnection(dbConnectionScope);
         DEBUG_ASSERT(dbConnection.isOpen());
 
         m_libraryHashDao.initialize(dbConnection);

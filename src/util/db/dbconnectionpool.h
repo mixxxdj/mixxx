@@ -34,54 +34,20 @@ class DbConnectionPool final {
             const QString& connectionName); // reserver for
 
     // Returns a database connection for the current thread, that has
-    // previously been created by instantiating ThreadLocalScoped. The
+    // previously been created by instantiating DbConnectionPooled. The
     // returned connection is only valid within the current thread! It
     // will be closed and removed from the pool upon the destruction of
-    // the owning ThreadLocalScoped (see below) or as a very last resort
+    // the owning DbConnectionPooled (see below) or as a very last resort
     // implicitly when the current thread terminates. Since all connections
-    // need to be created through ThreadLocalScoped the latter case should
+    // need to be created through DbConnectionPooled the latter case should
     // never happen.
     QSqlDatabase threadLocalConnection() const;
-
-    // Temporarily creates and destroys a thread-local database connection
-    // that exists for the lifetime of this instance, which effectively is
-    // its owner. The connection will be closed and removed from the pool upon
-    // destruction, i.e. maybe long before the corresponding thread is actually
-    // terminated. Upon termination of a thread the corresponding connection
-    // would also be closed and removed implicitly, but that should never happen.
-    class ThreadLocalScoped final {
-      public:
-        explicit ThreadLocalScoped(
-                DbConnectionPoolPtr pDbConnectionPool = DbConnectionPoolPtr());
-        ThreadLocalScoped(
-                ThreadLocalScoped&& other) = default;
-        ~ThreadLocalScoped();
-
-        // Checks if a thread-local connection has actually been created during
-        // construction. Otherwise this instance is non-functional and dead.
-        operator bool() const {
-            return m_pDbConnectionPool != nullptr;
-        }
-
-        // The thread-local connection that has been created during construction.
-        operator QSqlDatabase() const {
-            return m_dbConnection;
-        }
-
-      private:
-        ThreadLocalScoped(const ThreadLocalScoped&) = delete;
-        ThreadLocalScoped& operator=(const ThreadLocalScoped&) = delete;
-        ThreadLocalScoped& operator=(ThreadLocalScoped&&) = delete;
-
-        DbConnectionPoolPtr m_pDbConnectionPool;
-        QSqlDatabase m_dbConnection;
-    };
 
   private:
     DbConnectionPool(const DbConnectionPool&) = delete;
     DbConnectionPool(const DbConnectionPool&&) = delete;
 
-    friend class ThreadLocalScoped;
+    friend class DbConnectionPooled;
     bool createThreadLocalConnection();
     void destroyThreadLocalConnection();
 

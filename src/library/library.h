@@ -20,6 +20,7 @@
 #include "library/coverartcache.h"
 #include "library/setlogfeature.h"
 #include "library/scanner/libraryscanner.h"
+#include "util/db/dbconnectionpooled.h"
 
 class TrackModel;
 class TrackCollection;
@@ -126,7 +127,7 @@ class Library : public QObject {
     // The Mixxx SQLite3 database
     MixxxDb m_mixxxDb;
     // The Mixxx database connection for this (and only this!) thread
-    const mixxx::DbConnectionPool::ThreadLocalScoped m_dbConnectionScope;
+    const mixxx::DbConnectionPooled m_dbConnection;
 
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;

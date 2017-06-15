@@ -1,6 +1,5 @@
 #include "util/db/dbconnectionpool.h"
 
-#include "util/memory.h"
 #include "util/logger.h"
 
 
@@ -8,7 +7,7 @@ namespace mixxx {
 
 namespace {
 
-const mixxx::Logger kLogger("DbConnectionPool");
+const Logger kLogger("DbConnectionPool");
 
 } // anonymous namespace
 
@@ -44,13 +43,18 @@ bool DbConnectionPool::createThreadLocalConnection() {
 }
 
 void DbConnectionPool::destroyThreadLocalConnection() {
+    VERIFY_OR_DEBUG_ASSERT(m_threadLocalConnections.hasLocalData()) {
+        kLogger.critical()
+                << "Thread-local database connection not found";
+    }
     m_threadLocalConnections.setLocalData(nullptr);
 }
 
 QSqlDatabase DbConnectionPool::threadLocalConnection() const {
     VERIFY_OR_DEBUG_ASSERT(m_threadLocalConnections.hasLocalData()) {
         kLogger.critical()
-                << "Thread-local database connection not available";
+                << "Thread-local database connection not found";
+        return QSqlDatabase(); // abort
     }
     DbConnection* pConnection = m_threadLocalConnections.localData();
     VERIFY_OR_DEBUG_ASSERT(pConnection) {
@@ -69,24 +73,6 @@ DbConnectionPool::DbConnectionPool(
         const QString& connectionName)
     : m_prototypeConnection(params, connectionName),
       m_connectionCounter(0) {
-}
-
-DbConnectionPool::ThreadLocalScoped::ThreadLocalScoped(
-        DbConnectionPoolPtr pDbConnectionPool) {
-    if (pDbConnectionPool && pDbConnectionPool->createThreadLocalConnection()) {
-        // m_pDbConnectionPool indicates if the thread-local connection has actually
-        // been created during construction. Otherwise this instance is non-functional.
-        m_pDbConnectionPool = std::move(pDbConnectionPool);
-        m_dbConnection = m_pDbConnectionPool->threadLocalConnection();
-    }
-}
-
-DbConnectionPool::ThreadLocalScoped::~ThreadLocalScoped() {
-    if (m_pDbConnectionPool) {
-        // Only destroy the thread-local connection if it has actually been created
-        // during construction (see above).
-        m_pDbConnectionPool->destroyThreadLocalConnection();
-    }
 }
 
 } // namespace mixxx

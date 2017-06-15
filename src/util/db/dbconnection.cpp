@@ -285,47 +285,47 @@ bool initDatabase(QSqlDatabase database) {
 DbConnection::DbConnection(
         const Params& params,
         const QString& connectionName)
-    : m_database(createDatabase(params, connectionName)) {
+    : m_sqlDatabase(createDatabase(params, connectionName)) {
 }
 
 DbConnection::DbConnection(
         const DbConnection& prototype,
         const QString& connectionName)
-    : m_database(cloneDatabase(prototype.m_database, connectionName)) {
+    : m_sqlDatabase(cloneDatabase(prototype.m_sqlDatabase, connectionName)) {
 }
 
 DbConnection::~DbConnection() {
     close();
-    removeDatabase(m_database);
+    removeDatabase(m_sqlDatabase);
 }
 
 bool DbConnection::open() {
     kLogger.debug()
             << "Opening database connection"
             << *this;
-    if (!m_database.open()) {
+    if (!m_sqlDatabase.open()) {
         kLogger.warning()
                 << "Failed to open database connection"
                 << *this
-                << m_database.lastError();
+                << m_sqlDatabase.lastError();
         return false; // abort
     }
-    if (!initDatabase(m_database)) {
+    if (!initDatabase(m_sqlDatabase)) {
         kLogger.warning()
                 << "Failed to initialize database connection"
                 << *this;
-        m_database.close();
+        m_sqlDatabase.close();
         return false; // abort
     }
     return true;
 }
 
 void DbConnection::close() {
-    if (m_database.isOpen()) {
+    if (m_sqlDatabase.isOpen()) {
         // There should never be an outstanding transaction when this code is
         // called. If there is, it means we probably aren't committing a
         // transaction somewhere that should be.
-        VERIFY_OR_DEBUG_ASSERT(!m_database.rollback()) {
+        VERIFY_OR_DEBUG_ASSERT(!m_sqlDatabase.rollback()) {
             kLogger.warning()
                 << "Rolled back open transaction before closing database connection:"
                 << *this;
@@ -333,7 +333,7 @@ void DbConnection::close() {
         kLogger.debug()
             << "Closing database connection:"
             << *this;
-        m_database.close();
+        m_sqlDatabase.close();
     }
 }
 
@@ -362,7 +362,7 @@ int DbConnection::likeCompareLatinLow(
 QDebug operator<<(QDebug debug, const DbConnection& connection) {
     return debug
             << connection.name()
-            << connection.m_database;
+            << connection.m_sqlDatabase;
 }
 
 } // namespace mixxx

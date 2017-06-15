@@ -32,6 +32,7 @@
 #include "track/beat_preferences.h"
 #include "util/cmdlineargs.h"
 #include "util/math.h"
+#include "util/db/dbconnectionpooled.h"
 
 Upgrade::Upgrade()
         : m_bFirstRun(false),
@@ -362,10 +363,10 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         bool successful = false;
         {
             MixxxDb mixxxDb(config);
-            const mixxx::DbConnectionPool::ThreadLocalScoped dbConnectionScope(
+            const mixxx::DbConnectionPooled dbConnection(
                     mixxxDb.connectionPool());
-            if (dbConnectionScope) {
-                QSqlDatabase connection(dbConnectionScope);
+            if (dbConnection) {
+                QSqlDatabase connection(dbConnection);
                 DEBUG_ASSERT(connection.isOpen());
                 if (MixxxDb::initDatabaseSchema(connection)) {
                     TrackCollection tc(config);

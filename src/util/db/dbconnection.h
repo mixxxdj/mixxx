@@ -39,15 +39,19 @@ class DbConnection final {
             const QString& connectionName);
     ~DbConnection();
 
+    QString name() const {
+        return m_sqlDatabase.connectionName();
+    }
+
     bool open();
     void close();
 
-    QString name() const {
-        return m_database.connectionName();
+    bool isOpen() const {
+        return m_sqlDatabase.isOpen();
     }
 
     operator QSqlDatabase() const {
-        return m_database;
+        return m_sqlDatabase;
     }
 
     friend QDebug operator<<(QDebug debug, const DbConnection& connection);
@@ -56,7 +60,7 @@ class DbConnection final {
     DbConnection(const DbConnection&) = delete;
     DbConnection(const DbConnection&&) = delete;
 
-    QSqlDatabase m_database;
+    QSqlDatabase m_sqlDatabase;
 };
 
 } // namespace mixxx

@@ -11,6 +11,7 @@
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/compatibility.h"
+#include "util/db/dbconnectionpooled.h"
 #include "util/event.h"
 #include "util/timer.h"
 #include "util/trace.h"
@@ -298,8 +299,8 @@ void AnalyzerQueue::run() {
 }
 
 void AnalyzerQueue::execThread() {
-    const mixxx::DbConnectionPool::ThreadLocalScoped dbConnectionScope(m_pDbConnectionPool);
-    if (!dbConnectionScope) {
+    const mixxx::DbConnectionPooled dbConnection(m_pDbConnectionPool);
+    if (!dbConnection) {
         kLogger.warning()
                 << "Failed to open database connection for analyzer queue";
         kLogger.debug() << "Exiting thread";

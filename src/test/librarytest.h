@@ -5,15 +5,16 @@
 
 #include "database/mixxxdb.h"
 #include "library/trackcollection.h"
+#include "util/db/dbconnectionpooled.h"
 
 
 class LibraryTest : public MixxxTest {
   protected:
     LibraryTest()
         : m_mixxxDb(config()),
-          m_dbConnectionScope(m_mixxxDb.connectionPool()),
+          m_dbConnection(m_mixxxDb.connectionPool()),
           m_trackCollection(config()) {
-        QSqlDatabase dbConnection(m_dbConnectionScope);
+        QSqlDatabase dbConnection(m_dbConnection);
         MixxxDb::initDatabaseSchema(dbConnection);
         m_trackCollection.connectDatabase(dbConnection);
     }
@@ -25,8 +26,8 @@ class LibraryTest : public MixxxTest {
         return m_mixxxDb.connectionPool();
     }
 
-    const mixxx::DbConnectionPool::ThreadLocalScoped& dbConnectionScope() const {
-        return m_dbConnectionScope;
+    const mixxx::DbConnectionPooled& dbConnection() const {
+        return m_dbConnection;
     }
 
     TrackCollection* collection() {
@@ -35,7 +36,7 @@ class LibraryTest : public MixxxTest {
 
   private:
     MixxxDb m_mixxxDb;
-    const mixxx::DbConnectionPool::ThreadLocalScoped m_dbConnectionScope;
+    const mixxx::DbConnectionPooled m_dbConnection;
     TrackCollection m_trackCollection;
 };
 
