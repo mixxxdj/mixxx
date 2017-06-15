@@ -62,8 +62,9 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
                                SoundManager * soundman, PlayerManager* pPlayerManager,
                                ControllerManager * controllers, VinylControlManager *pVCManager,
                                EffectsManager* pEffectsManager,
-                               UserSettingsPointer pConfig, Library *pLibrary)
-        : m_pConfig(pConfig),
+                               SettingsManagerPointer pSettingsManager,
+                               Library *pLibrary)
+        : m_pConfig(pSettingsManager->settings()),
           m_pageSizeHint(QSize(0, 0)),
           m_preferencesUpdated(ConfigKey("[Preferences]", "updated"), false) {
     setupUi(this);
@@ -123,7 +124,8 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     m_wrecord = new DlgPrefRecord(this, m_pConfig);
     addPageWidget(m_wrecord);
 #ifdef __BROADCAST__
-    m_wbroadcast = new DlgPrefBroadcast(this, m_pConfig);
+    m_wbroadcast = new DlgPrefBroadcast(this, m_pConfig,
+                                        pSettingsManager->broadcastSettings());
     addPageWidget(m_wbroadcast);
 #endif
 #ifdef __MODPLUG__

@@ -41,7 +41,8 @@ class EngineBroadcast
         STATUSCO_FAILURE = 3 // Happens when disconnected by an error
     };
 
-    EngineBroadcast(UserSettingsPointer pConfig);
+    EngineBroadcast(UserSettingsPointer pConfig,
+                    BroadcastSettingsPointer pBroadcastSettings);
     virtual ~EngineBroadcast();
 
     // This is called by the Engine implementation for each sample. Encode and
@@ -123,7 +124,7 @@ class EngineBroadcast
     int m_iMetaDataLife;
     long m_iShoutStatus;
     long m_iShoutFailures;
-    BroadcastSettings m_settings;
+    BroadcastSettingsPointer m_settings;
     UserSettingsPointer m_pConfig;
     EncoderPointer m_encoder;
     ControlPushButton* m_pBroadcastEnabled;

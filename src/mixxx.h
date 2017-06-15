@@ -19,6 +19,7 @@
 #define MIXXX_H
 
 #include <QMainWindow>
+#include <QSharedPointer>
 #include <QString>
 
 #include "preferences/configobject.h"
@@ -47,6 +48,8 @@ class SkinLoader;
 class SoundManager;
 class VinylControlManager;
 class WMainMenuBar;
+
+typedef QSharedPointer<SettingsManager> SettingsManagerPointer;
 
 // This Class is the base class for Mixxx. It sets up the main
 // window and providing a menubar.
@@ -129,7 +132,7 @@ class MixxxMainWindow : public QMainWindow {
     QWidget* m_pWidgetParent;
     LaunchImage* m_pLaunchImage;
 
-    SettingsManager* m_pSettingsManager;
+    SettingsManagerPointer m_pSettingsManager;
 
     // The effects processing system
     EffectsManager* m_pEffectsManager;

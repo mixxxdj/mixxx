@@ -34,9 +34,6 @@ void BroadcastSettings::loadProfiles() {
     if(!profilesFolder.exists()) {
         kLogger.warning()
                 << "Profiles folder doesn't exist. Creating it.";
-
-        // TODO(Palakis, June 9th 2017):
-        // Is there a better way to do this?
         profilesFolder.mkpath(profilesFolder.absolutePath());
     }
 

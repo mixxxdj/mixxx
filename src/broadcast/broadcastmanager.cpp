@@ -6,14 +6,15 @@
 #include "engine/sidechain/enginesidechain.h"
 #include "soundio/soundmanager.h"
 
-BroadcastManager::BroadcastManager(UserSettingsPointer pConfig,
+BroadcastManager::BroadcastManager(SettingsManagerPointer pSettingsManager,
                                    SoundManager* pSoundManager)
-        : m_pConfig(pConfig) {
+        : m_pConfig(pSettingsManager->settings()) {
     QSharedPointer<EngineNetworkStream> pNetworkStream =
             pSoundManager->getNetworkStream();
     if (!pNetworkStream.isNull()) {
         m_pBroadcast = QSharedPointer<EngineBroadcast>(
-                new EngineBroadcast(pConfig));
+                new EngineBroadcast(m_pConfig,
+                                    pSettingsManager->broadcastSettings()));
         pNetworkStream->addWorker(m_pBroadcast);
     }
     m_pBroadcastEnabled = new ControlProxy(

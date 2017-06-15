@@ -1,8 +1,9 @@
 #ifndef PREFERENCES_BROADCASTSETTINGS_H
 #define PREFERENCES_BROADCASTSETTINGS_H
 
-#include <QString>
 #include <QList>
+#include <QSharedPointer>
+#include <QString>
 
 #include "preferences/usersettings.h"
 #include "track/track.h"
@@ -31,5 +32,7 @@ class BroadcastSettings {
     QList<BroadcastProfile*> m_profiles;
     QString m_currentProfile;
 };
+
+typedef QSharedPointer<BroadcastSettings> BroadcastSettingsPointer;
 
 #endif /* PREFERENCES_BROADCASTSETTINGS_H */

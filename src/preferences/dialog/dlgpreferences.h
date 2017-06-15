@@ -27,6 +27,7 @@
 #include "preferences/usersettings.h"
 #include "control/controlpushbutton.h"
 #include "preferences/dlgpreferencepage.h"
+#include "preferences/settingsmanager.h"
 
 class MixxxMainWindow;
 class SoundManager;
@@ -63,7 +64,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman,
                    PlayerManager* pPlayerManager, ControllerManager* controllers,
                    VinylControlManager* pVCManager, EffectsManager* pEffectsManager,
-                   UserSettingsPointer pConfig, Library *pLibrary);
+                   SettingsManagerPointer pSettingsManager, Library *pLibrary);
     virtual ~DlgPreferences();
 
     void addPageWidget(DlgPreferencePage* pWidget);

@@ -30,7 +30,8 @@ static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
 // http://wiki.shoutcast.com/wiki/SHOUTcast_DNAS_Server_2
 static const int kMaxShoutFailures = 3;
 
-EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig)
+EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig,
+                                 BroadcastSettingsPointer pBroadcastSettings)
         : m_pTextCodec(nullptr),
           m_pMetaData(),
           m_pShout(nullptr),
@@ -38,7 +39,7 @@ EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig)
           m_iMetaDataLife(0),
           m_iShoutStatus(0),
           m_iShoutFailures(0),
-          m_settings(pConfig),
+          m_settings(pBroadcastSettings),
           m_pConfig(pConfig),
           m_encoder(nullptr),
           m_pMasterSamplerate(new ControlProxy("[Master]", "samplerate")),
@@ -135,7 +136,7 @@ QByteArray EngineBroadcast::encodeString(const QString& string) {
 }
 
 void EngineBroadcast::updateFromPreferences() {
-    BroadcastProfile* profile = m_settings.getCurrentProfile();
+    BroadcastProfile* profile = m_settings->getCurrentProfile();
 
     qDebug() << "EngineBroadcast: updating from preferences";
     NetworkStreamWorker::debugState();

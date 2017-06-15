@@ -4,6 +4,7 @@
 #include <QObject>
 
 #include "engine/sidechain/enginebroadcast.h"
+#include "preferences/settingsmanager.h"
 #include "preferences/usersettings.h"
 
 class SoundManager;
@@ -11,7 +12,7 @@ class SoundManager;
 class BroadcastManager : public QObject {
     Q_OBJECT
   public:
-    BroadcastManager(UserSettingsPointer pConfig,
+    BroadcastManager(SettingsManagerPointer pSettingsManager,
                      SoundManager* pSoundManager);
     virtual ~BroadcastManager();
 

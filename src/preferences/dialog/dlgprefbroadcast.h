@@ -15,7 +15,9 @@ class ControlProxy;
 class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDlg  {
     Q_OBJECT
   public:
-    DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config);
+    DlgPrefBroadcast(QWidget *parent,
+                     UserSettingsPointer _config,
+                     BroadcastSettingsPointer pBroadcastSettings);
     virtual ~DlgPrefBroadcast();
 
   public slots:
@@ -32,7 +34,7 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     void apply(const QString &);
 
   private:
-    BroadcastSettings m_settings;
+    BroadcastSettingsPointer m_pBroadcastSettings;
     ControlProxy* m_pBroadcastEnabled;
 };
 

@@ -10,7 +10,8 @@
 
 #define DEFAULT_BITRATE 128
 
-EncoderBroadcastSettings::EncoderBroadcastSettings(BroadcastSettings settings) :
+EncoderBroadcastSettings::EncoderBroadcastSettings(
+        BroadcastSettingsPointer settings) :
 m_settings(settings) {
     m_qualList.append(32);
     m_qualList.append(48);
@@ -34,7 +35,7 @@ QList<int> EncoderBroadcastSettings::getQualityValues() const {
 
 // Sets the value
 void EncoderBroadcastSettings::setQualityByValue(int qualityValue) {
-    BroadcastProfile* profile = m_settings.getCurrentProfile();
+    BroadcastProfile* profile = m_settings->getCurrentProfile();
 
     if (m_qualList.contains(qualityValue)) {
         profile->setBitrate(qualityValue);
@@ -45,7 +46,7 @@ void EncoderBroadcastSettings::setQualityByValue(int qualityValue) {
 }
 
 void EncoderBroadcastSettings::setQualityByIndex(int qualityIndex) {
-    BroadcastProfile* profile = m_settings.getCurrentProfile();
+    BroadcastProfile* profile = m_settings->getCurrentProfile();
 
     if (qualityIndex >= 0 && qualityIndex < m_qualList.size()) {
         profile->setBitrate(m_qualList.at(qualityIndex));
@@ -56,8 +57,7 @@ void EncoderBroadcastSettings::setQualityByIndex(int qualityIndex) {
 }
 
 int EncoderBroadcastSettings::getQuality() const {
-    BroadcastProfile* profile =
-            const_cast<BroadcastSettings&>(m_settings).getCurrentProfile();
+    BroadcastProfile* profile = m_settings->getCurrentProfile();
 
     int bitrate = profile->getBitrate();
     if (m_qualList.contains(bitrate)) {
@@ -76,13 +76,12 @@ int EncoderBroadcastSettings::getQualityIndex() const {
 
 void EncoderBroadcastSettings::setChannelMode(EncoderSettings::ChannelMode mode)
 {
-    BroadcastProfile* profile = m_settings.getCurrentProfile();
+    BroadcastProfile* profile = m_settings->getCurrentProfile();
     profile->setChannels(static_cast<int>(mode));
 }
 
 EncoderSettings::ChannelMode EncoderBroadcastSettings::getChannelMode() const {
-    BroadcastProfile* profile =
-            const_cast<BroadcastSettings&>(m_settings).getCurrentProfile();
+    BroadcastProfile* profile = m_settings->getCurrentProfile();
 
     switch(profile->getChannels()) {
         case 1: return EncoderSettings::ChannelMode::MONO;

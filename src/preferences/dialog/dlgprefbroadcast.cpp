@@ -6,18 +6,19 @@
 #include "preferences/dialog/dlgprefbroadcast.h"
 #include "encoder/encodersettings.h"
 
-DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
+DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
+                                   UserSettingsPointer _config,
+                                   BroadcastSettingsPointer pBroadcastSettings)
         : DlgPreferencePage(parent),
-          m_settings(_config) {
+          m_pBroadcastSettings(pBroadcastSettings) {
     setupUi(this);
 
-    BroadcastProfile* profile = m_settings.getCurrentProfile();
+    BroadcastProfile* profile = m_pBroadcastSettings->getCurrentProfile();
 
     m_pBroadcastEnabled = new ControlProxy(
             BROADCAST_PREF_KEY, "enabled", this);
     m_pBroadcastEnabled->connectValueChanged(
             SLOT(broadcastEnabledChanged(double)));
-
 
     // Enable live broadcasting checkbox
     enableLiveBroadcasting->setChecked(
@@ -239,7 +240,7 @@ void DlgPrefBroadcast::slotApply()
         this->setEnabled(true);
     }
 
-    BroadcastProfile* profile = m_settings.getCurrentProfile();
+    BroadcastProfile* profile = m_pBroadcastSettings->getCurrentProfile();
 
     // Combo boxes, make sure to load their data not their display strings.
     profile->setServertype(comboBoxServerType->itemData(
@@ -288,7 +289,7 @@ void DlgPrefBroadcast::slotApply()
     profile->setCustomTitle(custom_title->text());
     profile->setMetadataFormat(metadata_format->text());
 
-    m_settings.saveAll();
+    m_pBroadcastSettings->saveAll();
 }
 
 void DlgPrefBroadcast::broadcastEnabledChanged(double value) {
