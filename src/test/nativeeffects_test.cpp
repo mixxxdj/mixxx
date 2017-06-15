@@ -6,6 +6,7 @@
 #include "effects/native/bessel4lvmixeqeffect.h"
 #include "effects/native/bessel8lvmixeqeffect.h"
 #include "effects/native/bitcrushereffect.h"
+#include "effects/native/customdspeffect.h"
 #include "effects/native/echoeffect.h"
 #include "effects/native/filtereffect.h"
 #include "effects/native/flangereffect.h"
@@ -69,6 +70,7 @@ FOR_COMMON_BUFFER_SIZES(BENCHMARK(BM_NativeEffects_DefaultParameters_##EffectNam
 DECLARE_EFFECT_BENCHMARK(Bessel4LVMixEQEffect)
 DECLARE_EFFECT_BENCHMARK(Bessel8LVMixEQEffect)
 DECLARE_EFFECT_BENCHMARK(BitCrusherEffect)
+DECLARE_EFFECT_BENCHMARK(CustomDspEffect)
 DECLARE_EFFECT_BENCHMARK(EchoEffect)
 DECLARE_EFFECT_BENCHMARK(FilterEffect)
 DECLARE_EFFECT_BENCHMARK(FlangerEffect)
