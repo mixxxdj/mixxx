@@ -48,7 +48,6 @@ Track::Track(
         TrackId trackId)
         : m_fileInfo(fileInfo),
           m_pSecurityToken(openSecurityToken(m_fileInfo, pSecurityToken)),
-          m_bDeleteOnReferenceExpiration(false),
           m_qMutex(QMutex::Recursive),
           m_id(trackId),
           m_bDirty(false),
@@ -82,24 +81,6 @@ TrackPointer Track::newDummy(
                     SecurityTokenPointer(),
                     trackId);
     return TrackPointer(pTrack);
-}
-
-// static
-void Track::onTrackReferenceExpired(Track* pTrack) {
-    VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
-        return;
-    }
-    //qDebug() << "Track::onTrackReferenceExpired"
-    //         << pTrack << pTrack->getId() << pTrack->getInfo();
-    if (pTrack->m_bDeleteOnReferenceExpiration) {
-        delete pTrack;
-    } else {
-        emit(pTrack->referenceExpired(pTrack));
-    }
-}
-
-void Track::setDeleteOnReferenceExpiration(bool deleteOnReferenceExpiration) {
-    m_bDeleteOnReferenceExpiration = deleteOnReferenceExpiration;
 }
 
 void Track::setTrackMetadata(
