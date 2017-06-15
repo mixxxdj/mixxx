@@ -5,7 +5,6 @@
 #include <QSqlDatabase>
 
 #include "util/db/dbconnectionpool.h"
-#include "util/db/dbconnectionpooler.h"
 
 
 namespace mixxx {
@@ -17,10 +16,6 @@ class DbConnectionPooled final {
     explicit DbConnectionPooled(
             DbConnectionPoolPtr pDbConnectionPool = DbConnectionPoolPtr())
         : m_pDbConnectionPool(std::move(pDbConnectionPool)) {
-    }
-    explicit DbConnectionPooled(
-            const DbConnectionPooler& pDbConnectionPooler)
-        : m_pDbConnectionPool(pDbConnectionPooler.m_pDbConnectionPool) {
     }
 
     // Checks if this instance actually references a connection pool

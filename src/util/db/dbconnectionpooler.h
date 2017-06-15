@@ -41,7 +41,6 @@ class DbConnectionPooler final {
     static void * operator new(std::size_t);
     static void * operator new[](std::size_t);
 
-    friend class DbConnectionPooled;
     DbConnectionPoolPtr m_pDbConnectionPool;
 };
 

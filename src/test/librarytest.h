@@ -14,7 +14,7 @@ class LibraryTest : public MixxxTest {
     LibraryTest()
         : m_mixxxDb(config()),
           m_dbConnectionPooler(m_mixxxDb.connectionPool()),
-          m_dbConnectionPooled(m_dbConnectionPooler),
+          m_dbConnectionPooled(m_mixxxDb.connectionPool()),
           m_trackCollection(config()) {
         QSqlDatabase dbConnection(m_dbConnectionPooled);
         MixxxDb::initDatabaseSchema(dbConnection);

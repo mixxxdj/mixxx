@@ -96,7 +96,7 @@ void LibraryScanner::run() {
         Trace trace("LibraryScanner");
 
         const mixxx::DbConnectionPooler dbConnectionPooler(m_pDbConnectionPool);
-        const mixxx::DbConnectionPooled dbConnectionPooled(dbConnectionPooler);
+        const mixxx::DbConnectionPooled dbConnectionPooled(m_pDbConnectionPool);
         if (!dbConnectionPooled) {
             kLogger.warning()
                     << "Failed to open database connection for library scanner";

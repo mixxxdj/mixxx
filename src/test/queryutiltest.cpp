@@ -14,7 +14,7 @@ class QueryUtilTest : public MixxxTest {
     QueryUtilTest()
           : m_mixxxDb(config()),
             m_dbConnectionPooler(m_mixxxDb.connectionPool()),
-            m_dbConnectionPooled(m_dbConnectionPooler),
+            m_dbConnectionPooled(m_mixxxDb.connectionPool()),
             m_dbConnection(m_dbConnectionPooled) {
         // This test only needs a connection to an empty database
         // without any particular schema. No need to initialize the

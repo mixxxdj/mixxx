@@ -72,7 +72,7 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
         m_scanner(m_mixxxDb.connectionPool(), m_pTrackCollection, pConfig) {
     kLogger.info() << "Opening datbase connection";
 
-    const mixxx::DbConnectionPooled dbConnectionPooled(m_dbConnectionPooler);
+    const mixxx::DbConnectionPooled dbConnectionPooled(m_mixxxDb.connectionPool());
     if (!dbConnectionPooled) {
         QMessageBox::critical(0, tr("Cannot open database"),
                             tr("Unable to establish a database connection.\n"

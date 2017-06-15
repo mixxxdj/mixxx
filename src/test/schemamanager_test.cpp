@@ -17,7 +17,7 @@ class SchemaManagerTest : public MixxxTest {
     SchemaManagerTest()
             : m_mixxxDb(config()),
               m_dbConnectionPooler(m_mixxxDb.connectionPool()),
-              m_dbConnectionPooled(m_dbConnectionPooler),
+              m_dbConnectionPooled(m_mixxxDb.connectionPool()),
               m_dbConnection(m_dbConnectionPooled) {
     }
 
