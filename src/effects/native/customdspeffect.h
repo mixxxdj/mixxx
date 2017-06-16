@@ -14,12 +14,10 @@ struct CustomDspGroupState {
     // Default accumulator to 1 so we immediately pick an input value.
     CustomDspGroupState()
             : hold_l(0),
-              hold_r(0),
-              accumulator(1) {
+              hold_r(0) {
     }
     CSAMPLE hold_l, hold_r;
-    // Accumulated fractions of a samplerate period.
-    CSAMPLE accumulator;
+
 };
 
 class CustomDspEffect : public PerChannelEffectProcessor<CustomDspGroupState> {
@@ -44,8 +42,9 @@ class CustomDspEffect : public PerChannelEffectProcessor<CustomDspGroupState> {
         return getId();
     }
 
-    EngineEffectParameter* m_pBitDepthParameter;
-    EngineEffectParameter* m_pDownsampleParameter;
+    EngineEffectParameter* m_pKnobA;
+    EngineEffectParameter* m_pSwitchA;
+
 
     DISALLOW_COPY_AND_ASSIGN(CustomDspEffect);
 };

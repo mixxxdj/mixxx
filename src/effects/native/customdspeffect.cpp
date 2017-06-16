@@ -12,51 +12,49 @@ EffectManifest CustomDspEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
     manifest.setName(QObject::tr("CustomDsp"));
-    manifest.setAuthor("The Mixxx Team");
-    manifest.setVersion("1.0");
+    manifest.setAuthor("sqrwvzblw");
+    manifest.setVersion("0.1");
     manifest.setDescription(QObject::tr(
-        "The CustomDsp is an effect that can be used as a placeholder "
-        "to implement custom dsp effects."));
+        "The CustomDsp is an effect that can be used as an example "
+    	"of how to implement custom dsp effects. A simple level/gain "
+        "effect with mute button is implemented."));
     manifest.setEffectRampsFromDry(true);
 
-    EffectManifestParameter* depth = manifest.addParameter();
-    depth->setId("bit_depth");
-    depth->setName(QObject::tr("Bit Depth"));
-    depth->setDescription(QObject::tr("Adjusts the bit depth of the samples."));
-    depth->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
-    depth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    depth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    depth->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
-    depth->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
-    depth->setNeutralPointOnScale(1.0);
-    depth->setDefault(16);
-    // for values -1 0 +1
-    // we do not allow a 1 bit version because this causes a distortion because of the missing sign bit
-    depth->setMinimum(2);
-    depth->setMaximum(16);
+    EffectManifestParameter* paramA = manifest.addParameter();
+    paramA->setId("knob_A");
+    paramA->setName(QObject::tr("Gain"));
+    paramA->setDescription(QObject::tr("Adjusts Gain."));
+    paramA->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+    paramA->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    paramA->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    paramA->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
+    paramA->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
+    paramA->setNeutralPointOnScale(1.0);
+    paramA->setDefault(1.0);
+    paramA->setMinimum(0.00);
+    paramA->setMaximum(2.0);
 
-    EffectManifestParameter* frequency = manifest.addParameter();
-    frequency->setId("downsample");
-    frequency->setName(QObject::tr("Downsampling"));
-    frequency->setShortName(QObject::tr("Down"));
-    frequency->setDescription(QObject::tr("Adjusts the sample rate, to which the signal is downsampled."));
-    frequency->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
-    frequency->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    frequency->setUnitsHint(EffectManifestParameter::UnitsHint::SAMPLERATE);
-    frequency->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
-    frequency->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
-    frequency->setNeutralPointOnScale(1.0);
-    frequency->setDefault(1.0);
-    frequency->setMinimum(0.02);
-    frequency->setMaximum(1.0);
+    EffectManifestParameter* switchA = manifest.addParameter();
+    switchA->setId("switch_A");
+    switchA->setName(QObject::tr("Mute"));
+    switchA->setDescription(QObject::tr("Mute audio passing through this effect block"));
+    switchA->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
+    switchA->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    switchA->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    switchA->setDefault(1);
+    switchA->setMinimum(0);
+    switchA->setMaximum(1);
+
+
+
 
     return manifest;
 }
 
 CustomDspEffect::CustomDspEffect(EngineEffect* pEffect,
                                    const EffectManifest& manifest)
-        : m_pBitDepthParameter(pEffect->getParameterById("bit_depth")),
-          m_pDownsampleParameter(pEffect->getParameterById("downsample")) {
+        : m_pKnobA(pEffect->getParameterById("knob_A")),
+		  m_pSwitchA(pEffect->getParameterById("switch_A")) {
     Q_UNUSED(manifest);
 }
 
@@ -76,35 +74,22 @@ void CustomDspEffect::processChannel(const ChannelHandle& handle,
     Q_UNUSED(sampleRate); // we are normalized to 1
     Q_UNUSED(enableState); // no need to ramp, it is just a customdsp ;-)
 
-    const CSAMPLE downsample = m_pDownsampleParameter ?
-            m_pDownsampleParameter->value() : 0.0;
 
-    CSAMPLE bit_depth = m_pBitDepthParameter ?
-            m_pBitDepthParameter->value() : 16;
 
-    // divided by two because we use float math which includes the sing bit anyway
-    const CSAMPLE scale = pow(2.0f, bit_depth) / 2;
-    // Gain correction is required, because MSB (values above 0.5) is usually
-    // rarely used, to achieve equal loudness and maximum dynamic
-    const CSAMPLE gainCorrection = (17 - bit_depth) / 8;
+    CSAMPLE effect_gain = m_pKnobA ?
+    		m_pKnobA->value() : 0.0;
+
 
     const int kChannels = 2;
     for (unsigned int i = 0; i < numSamples; i += kChannels) {
-        pState->accumulator += downsample;
 
-        if (pState->accumulator >= 1.0) {
-            pState->accumulator -= 1.0;
-            if (bit_depth < 16) {
-
-                pState->hold_l = floorf(SampleUtil::clampSample(pInput[i] * gainCorrection) * scale + 0.5f) / scale / gainCorrection;
-                pState->hold_r = floorf(SampleUtil::clampSample(pInput[i+1] * gainCorrection) * scale + 0.5f) / scale / gainCorrection;
-            } else {
-                // Mixxx float has 24 bit depth, Audio CDs are 16 bit
-                // here we do not change the depth
-                pState->hold_l = pInput[i];
-                pState->hold_r = pInput[i+1];
-            }
+        // mute switch check
+        if (!m_pSwitchA->toBool()) {
+        	effect_gain = 0.0;
         }
+
+        pState->hold_l = pInput[i] * effect_gain;
+        pState->hold_r = pInput[i+1] * effect_gain;
 
         pOutput[i] = pState->hold_l;
         pOutput[i+1] = pState->hold_r;
