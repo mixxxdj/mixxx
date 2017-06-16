@@ -7,6 +7,8 @@
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 
+#include "util/db/dbconnection.h"
+
 LibraryFolderModel::LibraryFolderModel(LibraryFeature* pFeature,
                                        TrackCollection* pTrackCollection,
                                        UserSettingsPointer pConfig,
@@ -101,7 +103,7 @@ void LibraryFolderModel::createTracksTree() {
                             "library." + LIBRARYTABLE_MIXXXDELETED,
                             "library." + LIBRARYTABLE_ID,
                             "track_locations." + TRACKLOCATIONSTABLE_ID);
-    queryStr += DbConnection::collateLexicographically(TRACKLOCATIONSTABLE_DIRECTORY);
+    queryStr += mixxx::DbConnection::collateLexicographically(TRACKLOCATIONSTABLE_DIRECTORY);
 
     QSqlQuery query(m_pTrackCollection->database());
     query.prepare(queryStr);

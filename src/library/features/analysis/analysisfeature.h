@@ -11,10 +11,12 @@
 #include "library/libraryfeature.h"
 #include "library/features/analysis/dlganalysis.h"
 #include "library/treeitemmodel.h"
+#include "util/db/dbconnectionpool.h"
 
 class AnalyzerQueue;
 class DlgAnalysis;
 class TrackCollection;
+class AnalyzerQueue;
 
 class AnalysisFeature : public LibraryFeature {
     Q_OBJECT
@@ -68,6 +70,7 @@ class AnalysisFeature : public LibraryFeature {
     
     AnalysisLibraryTableModel* getAnalysisTableModel();
 
+    mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
     AnalyzerQueue* m_pAnalyzerQueue;
     // Used to temporarily enable BPM detection in the prefs before we analyse
     int m_iOldBpmEnabled;

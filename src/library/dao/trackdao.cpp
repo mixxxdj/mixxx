@@ -68,14 +68,12 @@ RecentTrackCacheItem::~RecentTrackCacheItem() {
 // expensive.
 const int kRecentTracksCacheSize = 5;
 
-TrackDAO::TrackDAO(QSqlDatabase& database,
-                   CueDAO& cueDao,
+TrackDAO::TrackDAO(CueDAO& cueDao,
                    PlaylistDAO& playlistDao,
                    AnalysisDao& analysisDao,
                    LibraryHashDAO& libraryHashDao,
                    UserSettingsPointer pConfig)
-        : m_database(database),
-          m_cueDao(cueDao),
+        : m_cueDao(cueDao),
           m_playlistDao(playlistDao),
           m_analysisDao(analysisDao),
           m_libraryHashDao(libraryHashDao),
@@ -150,10 +148,6 @@ void TrackDAO::finish() {
         markTrackLocationsAsDeleted(dir);
     }
     transaction.commit();
-}
-
-void TrackDAO::initialize() {
-    qDebug() << "TrackDAO::initialize" << QThread::currentThread() << m_database.connectionName();
 }
 
 /** Retrieve the track id for the track that's located at "location" on disk.
@@ -840,9 +834,7 @@ QList<TrackId> TrackDAO::addMultipleTracks(
 }
 
 bool TrackDAO::onHidingTracks(
-        SqlTransaction& transaction,
         const QList<TrackId>& trackIds) {
-    DEBUG_ASSERT(transaction);
     QStringList idList;
     for (const auto& trackId: trackIds) {
         idList.append(trackId.toString());
@@ -866,9 +858,7 @@ void TrackDAO::afterHidingTracks(
 // This function should get called if you drag-and-drop a file that's been
 // "hidden" from Mixxx back into the library view.
 bool TrackDAO::onUnhidingTracks(
-        SqlTransaction& transaction,
         const QList<TrackId>& trackIds) {
-    DEBUG_ASSERT(transaction);
     QStringList idList;
     for (const auto& trackId: trackIds) {
         idList.append(trackId.toString());
@@ -911,9 +901,7 @@ QList<TrackId> TrackDAO::getTrackIds(const QDir& dir) {
 }
 
 bool TrackDAO::onPurgingTracks(
-        SqlTransaction& transaction,
         const QList<TrackId>& trackIds) {
-    DEBUG_ASSERT(transaction);
     if (trackIds.empty()) {
         return true; // nothing to do
     }
