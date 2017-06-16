@@ -44,7 +44,8 @@ CrateFeature::CrateFeature(UserSettingsPointer pConfig,
         : LibraryFeature(pConfig, pLibrary, pTrackCollection, parent),
           m_cratesIcon(":/images/library/ic_library_crates.png"),
           m_lockedCrateIcon(":/images/library/ic_library_locked.png"),
-          m_pTrackCollection(pTrackCollection) {
+          m_pTrackCollection(pTrackCollection),
+          m_pCrateTableModel(nullptr) {
 
     initActions();
 
