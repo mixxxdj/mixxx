@@ -30,7 +30,12 @@ TEST_F(BroadcastProfileTest, ForbiddenChars) {
     // Test if validName works properly with invalid values
     ASSERT_FALSE(BroadcastProfile::validName("Radio1 / MP3 128k"));
     ASSERT_FALSE(BroadcastProfile::validName("Radio1 \\ AAC+ 96k"));
+    ASSERT_FALSE(BroadcastProfile::validName("Radio1 | OGG 96k"));
     ASSERT_FALSE(BroadcastProfile::validName("Hello ?"));
+    ASSERT_FALSE(BroadcastProfile::validName("3 * 3"));
+    ASSERT_FALSE(BroadcastProfile::validName("Here it is: a profile"));
+    ASSERT_FALSE(BroadcastProfile::validName("<marquee>Scrolltext<marquee/>"));
+    ASSERT_FALSE(BroadcastProfile::validName("It's called a \"profile\"."));
 
     // Create an instance which name contains forbidden chars
     // and test if they have been stripped
