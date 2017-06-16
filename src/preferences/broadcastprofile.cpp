@@ -15,53 +15,54 @@
 #include "broadcastprofile.h"
 
 namespace {
-    const char* kDoctype = "broadcastprofile";
-    const char* kDocumentRoot = "BroadcastProfile";
-    const char* kBitrate = "Bitrate";
-    const char* kChannels = "Channels";
-    const char* kCustomArtist = "CustomArtist";
-    const char* kCustomTitle = "CustomTitle";
-    const char* kEnableMetadata = "EnableMetadata";
-    const char* kEnableReconnect = "EnableReconnect";
-    const char* kEnabled = "Enabled";
-    const char* kFormat = "Format";
-    const char* kHost = "Host";
-    const char* kLimitReconnects = "LimitReconnects";
-    const char* kLogin = "Login";
-    const char* kMaximumRetries = "MaximumRetries";
-    const char* kMetadataCharset = "MetadataCharset";
-    const char* kMetadataFormat = "MetadataFormat";
-    const char* kMountPoint = "Mountpoint";
-    const char* kNoDelayFirstReconnect = "NoDelayFirstReconnect";
-    const char* kOggDynamicUpdate = "OggDynamicUpdate";
-    const char* kPassword = "Password";
-    const char* kPort = "Port";
-    const char* kReconnectFirstDelay = "ReconnectFirstDelay";
-    const char* kReconnectPeriod = "ReconnectPeriod";
-    const char* kServertype = "Servertype";
-    const char* kStreamDesc = "StreamDesc";
-    const char* kStreamGenre = "StreamGenre";
-    const char* kStreamName = "StreamName";
-    const char* kStreamPublic = "StreamPublic";
-    const char* kStreamWebsite = "StreamWebsite";
+const char* kDoctype = "broadcastprofile";
+const char* kDocumentRoot = "BroadcastProfile";
+const char* kBitrate = "Bitrate";
+const char* kChannels = "Channels";
+const char* kCustomArtist = "CustomArtist";
+const char* kCustomTitle = "CustomTitle";
+const char* kEnableMetadata = "EnableMetadata";
+const char* kEnableReconnect = "EnableReconnect";
+const char* kEnabled = "Enabled";
+const char* kFormat = "Format";
+const char* kHost = "Host";
+const char* kLimitReconnects = "LimitReconnects";
+const char* kLogin = "Login";
+const char* kMaximumRetries = "MaximumRetries";
+const char* kMetadataCharset = "MetadataCharset";
+const char* kMetadataFormat = "MetadataFormat";
+const char* kMountPoint = "Mountpoint";
+const char* kNoDelayFirstReconnect = "NoDelayFirstReconnect";
+const char* kOggDynamicUpdate = "OggDynamicUpdate";
+const char* kPassword = "Password";
+const char* kPort = "Port";
+const char* kReconnectFirstDelay = "ReconnectFirstDelay";
+const char* kReconnectPeriod = "ReconnectPeriod";
+const char* kServertype = "Servertype";
+const char* kStreamDesc = "StreamDesc";
+const char* kStreamGenre = "StreamGenre";
+const char* kStreamName = "StreamName";
+const char* kStreamPublic = "StreamPublic";
+const char* kStreamWebsite = "StreamWebsite";
 
-    const double kDefaultBitrate = 128;
-    const int kDefaultChannels = 2;
-    const bool kDefaultEnableMetadata = false;
-    const bool kDefaultEnableReconnect = true;
-    const bool kDefaultLimitReconnects = true;
-    const int kDefaultMaximumRetries = 10;
-    // No tr() here, see https://bugs.launchpad.net/mixxx/+bug/1419500
-    const QString kDefaultMetadataFormat("$artist - $title");
-    const bool kDefaultNoDelayFirstReconnect = true;
-    const bool kDefaultOggDynamicupdate = false;
-    double kDefaultReconnectFirstDelay = 0.0;
-    double kDefaultReconnectPeriod = 5.0;
-    const QString kDefaultStreamDesc =
+const double kDefaultBitrate = 128;
+const int kDefaultChannels = 2;
+const bool kDefaultEnableMetadata = false;
+const bool kDefaultEnableReconnect = true;
+const bool kDefaultLimitReconnects = true;
+const int kDefaultMaximumRetries = 10;
+// No tr() here, see https://bugs.launchpad.net/mixxx/+bug/1419500
+const QString kDefaultMetadataFormat("$artist - $title");
+const bool kDefaultNoDelayFirstReconnect = true;
+const bool kDefaultOggDynamicupdate = false;
+double kDefaultReconnectFirstDelay = 0.0;
+double kDefaultReconnectPeriod = 5.0;
+const QString kDefaultStreamDesc =
         QObject::tr("This stream is online for testing purposes!");
-    const QString kDefaultStreamGenre = QObject::tr("Live Mix");
-    const bool kDefaultStreamPublic = false;
-    const QRegExp kForbiddenChars = QRegExp("[<>:\"/\\\|\?\*]");
+const QString kDefaultStreamGenre = QObject::tr("Live Mix");
+const bool kDefaultStreamPublic = false;
+
+const QRegExp kForbiddenChars = QRegExp("[<>:\"/\\\|\?\*]");
 } // anonymous namespace
 
 BroadcastProfile::BroadcastProfile(const QString& profileName) {
