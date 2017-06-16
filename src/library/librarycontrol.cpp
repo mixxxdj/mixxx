@@ -14,7 +14,7 @@
 #include "widget/wtracktableview.h"
 #include "library/library.h"
 #include "library/libraryview.h"
-#include "util/container.h"
+
 
 LoadToGroupController::LoadToGroupController(QObject* pParent, const QString& group)
         : QObject(pParent),

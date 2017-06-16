@@ -1,7 +1,5 @@
 #include "analyzer/analyzerwaveform.h"
 
-#include <QtDebug>
-
 #include "engine/engineobject.h"
 #include "engine/enginefilterbutterworth8.h"
 #include "engine/enginefilterbessel4.h"
@@ -9,49 +7,31 @@
 #include "library/dao/analysisdao.h"
 #include "track/track.h"
 #include "waveform/waveformfactory.h"
+#include "util/logger.h"
 
-namespace
-{
-    QAtomicInt dbIndex(0);
-}
+namespace {
 
-AnalyzerWaveform::AnalyzerWaveform(UserSettingsPointer pConfig) :
+mixxx::Logger kLogger("AnalyzerWaveform");
+
+} // anonymous
+
+AnalyzerWaveform::AnalyzerWaveform(
+        const UserSettingsPointer& pConfig) :
+        m_analysisDao(pConfig),
         m_skipProcessing(false),
         m_waveformData(nullptr),
         m_waveformSummaryData(nullptr),
         m_stride(0, 0),
         m_currentStride(0),
         m_currentSummaryStride(0) {
-    const int idx = ::dbIndex.fetchAndAddAcquire(1);
-    qDebug() << "AnalyzerWaveform::AnalyzerWaveform() :" << idx;
-
     m_filter[0] = 0;
     m_filter[1] = 0;
     m_filter[2] = 0;
-    //A new connection different for each thread is needed http://doc.qt.io/qt-4.8/threads-modules.html#threads-and-the-sql-module
-    m_database = QSqlDatabase::addDatabase("QSQLITE", "WAVEFORM_ANALYSIS" + QString::number(idx));
-    if (!m_database.isOpen()) {
-        m_database.setHostName("localhost");
-        m_database.setDatabaseName(QDir(pConfig->getSettingsPath()).filePath("mixxxdb.sqlite"));
-        m_database.setUserName("mixxx");
-        m_database.setPassword("mixxx");
-
-        //Open the database connection in this thread.
-        if (!m_database.open()) {
-            qDebug() << "Failed to open database from analyzer thread."
-                     << m_database.lastError();
-        }
-    }
-
-    m_pAnalysisDao = std::make_unique<AnalysisDao>(m_database, pConfig);
 }
 
 AnalyzerWaveform::~AnalyzerWaveform() {
-    QString conname = m_database.connectionName();
-    qDebug() << "AnalyzerWaveform::~AnalyzerWaveform():" << conname;
+    kLogger.debug() << "~AnalyzerWaveform():";
     destroyFilters();
-    m_database.close();
-    QSqlDatabase::removeDatabase(conname);
 }
 
 bool AnalyzerWaveform::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
@@ -122,7 +102,7 @@ bool AnalyzerWaveform::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
 
     if (trackId.isValid() && (missingWaveform || missingWavesummary)) {
         QList<AnalysisDao::AnalysisInfo> analyses =
-                m_pAnalysisDao->getAnalysesForTrack(trackId);
+                m_analysisDao.getAnalysesForTrack(trackId);
 
         QListIterator<AnalysisDao::AnalysisInfo> it(analyses);
         while (it.hasNext()) {
@@ -137,7 +117,7 @@ bool AnalyzerWaveform::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
                     missingWaveform = false;
                 } else if (vc != WaveformFactory::VC_KEEP) {
                     // remove all other Analysis except that one we should keep
-                    m_pAnalysisDao->deleteAnalysis(analysis.analysisId);
+                    m_analysisDao.deleteAnalysis(analysis.analysisId);
                 }
             } if (analysis.type == AnalysisDao::TYPE_WAVESUMMARY) {
                 vc = WaveformFactory::waveformSummaryVersionToVersionClass(analysis.version);
@@ -147,7 +127,7 @@ bool AnalyzerWaveform::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
                     missingWavesummary = false;
                 } else if (vc != WaveformFactory::VC_KEEP) {
                     // remove all other Analysis except that one we should keep
-                    m_pAnalysisDao->deleteAnalysis(analysis.analysisId);
+                    m_analysisDao.deleteAnalysis(analysis.analysisId);
                 }
             }
         }
@@ -155,7 +135,7 @@ bool AnalyzerWaveform::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
 
     // If we don't need to calculate the waveform/wavesummary, skip.
     if (!missingWaveform && !missingWavesummary) {
-        qDebug() << "AnalyzerWaveform::loadStored - Stored waveform loaded";
+        kLogger.debug() << "loadStored - Stored waveform loaded";
         if (pLoadedTrackWaveform) {
             tio->setWaveform(pLoadedTrackWaveform);
         }
@@ -269,8 +249,8 @@ void AnalyzerWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
         }
     }
 
-    //qDebug() << "AnalyzerWaveform::process - m_waveform->getCompletion()" << m_waveform->getCompletion() << "off" << m_waveform->getDataSize();
-    //qDebug() << "AnalyzerWaveform::process - m_waveformSummary->getCompletion()" << m_waveformSummary->getCompletion() << "off" << m_waveformSummary->getDataSize();
+    //kLogger.debug() << "process - m_waveform->getCompletion()" << m_waveform->getCompletion() << "off" << m_waveform->getDataSize();
+    //kLogger.debug() << "process - m_waveformSummary->getCompletion()" << m_waveformSummary->getCompletion() << "off" << m_waveformSummary->getDataSize();
 }
 
 void AnalyzerWaveform::cleanup(TrackPointer tio) {
@@ -329,9 +309,9 @@ void AnalyzerWaveform::finalize(TrackPointer tio) {
     // waveforms (i.e. if the config setting was disabled in a previous scan)
     // and then it is not called. The other analyzers have signals which control
     // the update of their data.
-    m_pAnalysisDao->saveTrackAnalyses(*tio);
+    m_analysisDao.saveTrackAnalyses(*tio);
 
-    qDebug() << "Waveform generation for track" << tio->getId() << "done"
+    kLogger.debug() << "Waveform generation for track" << tio->getId() << "done"
              << m_timer.elapsed().debugSecondsWithUnit();
 }
 

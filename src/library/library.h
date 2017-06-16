@@ -19,6 +19,8 @@
 #include "track/track.h"
 #include "util/parented_ptr.h"
 #include "util/memory.h"
+#include "database/mixxxdb.h"
+#include "util/db/dbconnectionpooler.h"
 
 class AnalysisFeature;
 class CrateFeature;
@@ -54,10 +56,18 @@ public:
     
     static const int kDefaultRowHeightPx;
     
+    static const QString kConfigGroup;
+
+    static const ConfigKey kConfigKeyRepairDatabaseOnNextRestart;
+
     Library(UserSettingsPointer pConfig,
             PlayerManagerInterface* pPlayerManager,
             RecordingManager* pRecordingManager);
     virtual ~Library();
+
+    mixxx::DbConnectionPoolPtr dbConnectionPool() const {
+        return m_mixxxDb.connectionPool();
+    }
     
     void bindSearchBar(WSearchLineEdit* searchLine, int id);
     void bindSidebarButtons(WButtonBar* sidebar);
@@ -75,14 +85,6 @@ public:
     
     void paneCollapsed(int paneId);
     void paneUncollapsed(int paneId);
-
-    // TODO(rryan) Transitionary only -- the only reason this is here is so the
-    // waveform widgets can signal to a player to load a track. This can be
-    // fixed by moving the waveform renderers inside player and connecting the
-    // signals directly.
-    TrackCollection* getTrackCollection() {
-        return m_pTrackCollection;
-    }
 
     inline int getTrackTableRowHeight() const {
         return m_iTrackTableRowHeight;
@@ -161,7 +163,17 @@ public:
     void handleFocus();
     void handlePreselection();
     
-    UserSettingsPointer m_pConfig;
+    const UserSettingsPointer m_pConfig;
+
+    // The Mixxx SQLite3 database
+    const MixxxDb m_mixxxDb;
+
+    // The Mixxx database connection for the thread that creates
+    // and owns this library instance. TODO(XXX): Move database
+    // related code out of the GUI into multiple, dedicated
+    // worker threads.
+    const mixxx::DbConnectionPooler m_dbConnectionPooler;
+
     TrackCollection* m_pTrackCollection;
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;

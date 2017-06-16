@@ -1,6 +1,8 @@
 #ifndef DLGHIDDEN_H
 #define DLGHIDDEN_H
 
+#include <QPointer>
+
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/features/maintenance/ui_dlghidden.h"
 #include "library/trackcollection.h"
