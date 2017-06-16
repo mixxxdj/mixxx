@@ -195,7 +195,6 @@ TEST_F(BroadcastProfileTest, DefaultValues) {
     ASSERT_TRUE(profile.getStreamWebsite() == QString(MIXXX_WEBSITE_URL));
     ASSERT_FALSE(profile.getStreamDesc().isEmpty());
     ASSERT_FALSE(profile.getStreamGenre().isEmpty());
-    ASSERT_FALSE(profile.getStreamName().isEmpty());
     ASSERT_FALSE(profile.getMetadataFormat().isEmpty());
 }
 
