@@ -21,25 +21,25 @@ TEST_F(BroadcastProfileTest, ConstructWithName) {
 }
 
 TEST_F(BroadcastProfileTest, ForbiddenChars) {
-    // Test if checkNameComplicance works properly with valid values
-    ASSERT_TRUE(BroadcastProfile::checkNameCompliance("Default Profile"));
-    ASSERT_TRUE(BroadcastProfile::checkNameCompliance("This is a profile"));
-    ASSERT_TRUE(BroadcastProfile::checkNameCompliance("Radio1 - MP3 128k"));
-    ASSERT_TRUE(BroadcastProfile::checkNameCompliance("Radio1 - AACplus 96k"));
+    // Test if validName works properly with valid values
+    ASSERT_TRUE(BroadcastProfile::validName("Default Profile"));
+    ASSERT_TRUE(BroadcastProfile::validName("This is a profile"));
+    ASSERT_TRUE(BroadcastProfile::validName("Radio1 - MP3 128k"));
+    ASSERT_TRUE(BroadcastProfile::validName("Radio1 - AACplus 96k"));
 
-    // Test if checkNameCompliance works properly with invalid values
-    ASSERT_FALSE(BroadcastProfile::checkNameCompliance("Radio1 / MP3 128k"));
-    ASSERT_FALSE(BroadcastProfile::checkNameCompliance("Radio1 \\ AAC+ 96k"));
-    ASSERT_FALSE(BroadcastProfile::checkNameCompliance("Hello ?"));
+    // Test if validName works properly with invalid values
+    ASSERT_FALSE(BroadcastProfile::validName("Radio1 / MP3 128k"));
+    ASSERT_FALSE(BroadcastProfile::validName("Radio1 \\ AAC+ 96k"));
+    ASSERT_FALSE(BroadcastProfile::validName("Hello ?"));
 
     // Create an instance which name contains forbidden chars
     // and test if they have been stripped
     BroadcastProfile validProfile("This is a valid profile name");
-    ASSERT_TRUE(BroadcastProfile::checkNameCompliance(
+    ASSERT_TRUE(BroadcastProfile::validName(
                     validProfile.getProfileName()));
 
     BroadcastProfile invalidProfile("This is an invalid profile name: ?/");
-    ASSERT_FALSE(BroadcastProfile::checkNameCompliance(
+    ASSERT_FALSE(BroadcastProfile::validName(
                      invalidProfile.getProfileName()));
 }
 

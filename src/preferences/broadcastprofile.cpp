@@ -70,8 +70,8 @@ BroadcastProfile::BroadcastProfile(const QString& profileName) {
     setProfileName(profileName);
 }
 
-bool BroadcastProfile::checkNameCompliance(const QString& str) {
-    return str.contains(kForbiddenChars);
+bool BroadcastProfile::validName(const QString& str) {
+    return !str.contains(kForbiddenChars);
 }
 
 BroadcastProfile* BroadcastProfile::loadFromFile(const QString& filename) {

@@ -15,7 +15,7 @@ class BroadcastProfile {
 
       static BroadcastProfile* loadFromFile(
               const QString& filename);
-      static bool checkNameCompliance(const QString& str);
+      static bool validName(const QString& str);
 
       void setProfileName(const QString& profileName);
       QString getProfileName() const;
