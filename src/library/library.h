@@ -13,12 +13,14 @@
 #include <QFont>
 
 #include "preferences/usersettings.h"
+#include "database/mixxxdb.h"
 #include "track/track.h"
 #include "recording/recordingmanager.h"
 #include "analysisfeature.h"
 #include "library/coverartcache.h"
 #include "library/setlogfeature.h"
 #include "library/scanner/libraryscanner.h"
+#include "util/db/dbconnectionpooler.h"
 
 class TrackModel;
 class TrackCollection;
@@ -37,12 +39,21 @@ class PlayerManagerInterface;
 
 class Library : public QObject {
     Q_OBJECT
-public:
+
+  public:
+    static const QString kConfigGroup;
+
+    static const ConfigKey kConfigKeyRepairDatabaseOnNextRestart;
+
     Library(QObject* parent,
             UserSettingsPointer pConfig,
             PlayerManagerInterface* pPlayerManager,
             RecordingManager* pRecordingManager);
     virtual ~Library();
+
+    mixxx::DbConnectionPoolPtr dbConnectionPool() const {
+        return m_mixxxDb.connectionPool();
+    }
 
     void bindWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* pKeyboard);
@@ -50,14 +61,6 @@ public:
 
     void addFeature(LibraryFeature* feature);
     QStringList getDirs();
-
-    // TODO(rryan) Transitionary only -- the only reason this is here is so the
-    // waveform widgets can signal to a player to load a track. This can be
-    // fixed by moving the waveform renderers inside player and connecting the
-    // signals directly.
-    TrackCollection* getTrackCollection() {
-        return m_pTrackCollection;
-    }
 
     inline int getTrackTableRowHeight() const {
         return m_iTrackTableRowHeight;
@@ -119,7 +122,17 @@ public:
     void scanFinished();
 
   private:
-    UserSettingsPointer m_pConfig;
+    const UserSettingsPointer m_pConfig;
+
+    // The Mixxx SQLite3 database
+    const MixxxDb m_mixxxDb;
+
+    // The Mixxx database connection for the thread that creates
+    // and owns this library instance. TODO(XXX): Move database
+    // related code out of the GUI into multiple, dedicated
+    // worker threads.
+    const mixxx::DbConnectionPooler m_dbConnectionPooler;
+
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
     QList<LibraryFeature*> m_features;

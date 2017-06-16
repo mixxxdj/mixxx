@@ -5,7 +5,6 @@
 #include <QCoreApplication>
 #include <QDesktopServices>
 #include <QDir>
-#include <QStringList>
 #include <QStringBuilder>
 
 #include "util/logger.h"
