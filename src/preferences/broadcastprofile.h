@@ -104,7 +104,6 @@ class BroadcastProfile {
     private:
       void setDefaultValues();
       void loadValues(const QString& filename);
-      void defaultValues();
 
       QString m_profileName;
 
