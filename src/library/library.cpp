@@ -59,20 +59,22 @@ const QString Library::m_sTrackViewName = QString("WTrackTableView");
 // The default row height of the library.
 const int Library::kDefaultRowHeightPx = 20;
 
-Library::Library(QObject* parent, UserSettingsPointer pConfig,
-                 PlayerManagerInterface* pPlayerManager,
-                 RecordingManager* pRecordingManager) :
-        m_pConfig(pConfig),
-        m_mixxxDb(pConfig),
-        m_dbConnectionPooler(m_mixxxDb.connectionPool()),
-        m_pSidebarModel(new SidebarModel(parent)),
-        m_pTrackCollection(new TrackCollection(pConfig)),
-        m_pLibraryControl(new LibraryControl(this)),
-        m_pMixxxLibraryFeature(nullptr),
-        m_pPlaylistFeature(nullptr),
-        m_pCrateFeature(nullptr),
-        m_pAnalysisFeature(nullptr),
-        m_scanner(m_mixxxDb.connectionPool(), m_pTrackCollection, pConfig) {
+Library::Library(
+        QObject* parent,
+        UserSettingsPointer pConfig,
+        PlayerManagerInterface* pPlayerManager,
+        RecordingManager* pRecordingManager)
+    : m_pConfig(pConfig),
+      m_mixxxDb(pConfig),
+      m_dbConnectionPooler(m_mixxxDb.connectionPool()),
+      m_pSidebarModel(new SidebarModel(parent)),
+      m_pTrackCollection(new TrackCollection(pConfig)),
+      m_pLibraryControl(new LibraryControl(this)),
+      m_pMixxxLibraryFeature(nullptr),
+      m_pPlaylistFeature(nullptr),
+      m_pCrateFeature(nullptr),
+      m_pAnalysisFeature(nullptr),
+      m_scanner(m_mixxxDb.connectionPool(), m_pTrackCollection, pConfig) {
     kLogger.info() << "Opening datbase connection";
 
     const mixxx::DbConnectionPooled dbConnectionPooled(m_mixxxDb.connectionPool());

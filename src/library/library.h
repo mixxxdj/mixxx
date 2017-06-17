@@ -49,7 +49,7 @@ class Library : public QObject {
             UserSettingsPointer pConfig,
             PlayerManagerInterface* pPlayerManager,
             RecordingManager* pRecordingManager);
-    virtual ~Library();
+    ~Library() override;
 
     mixxx::DbConnectionPoolPtr dbConnectionPool() const {
         return m_mixxxDb.connectionPool();
