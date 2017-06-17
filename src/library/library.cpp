@@ -62,11 +62,11 @@ const int Library::kDefaultRowHeightPx = 20;
 Library::Library(
         QObject* parent,
         UserSettingsPointer pConfig,
+        mixxx::DbConnectionPoolPtr pDbConnectionPool,
         PlayerManagerInterface* pPlayerManager,
         RecordingManager* pRecordingManager)
     : m_pConfig(pConfig),
-      m_mixxxDb(pConfig),
-      m_dbConnectionPooler(m_mixxxDb.connectionPool()),
+      m_pDbConnectionPool(pDbConnectionPool),
       m_pSidebarModel(new SidebarModel(parent)),
       m_pTrackCollection(new TrackCollection(pConfig)),
       m_pLibraryControl(new LibraryControl(this)),
@@ -74,28 +74,10 @@ Library::Library(
       m_pPlaylistFeature(nullptr),
       m_pCrateFeature(nullptr),
       m_pAnalysisFeature(nullptr),
-      m_scanner(m_mixxxDb.connectionPool(), m_pTrackCollection, pConfig) {
-    kLogger.info() << "Opening datbase connection";
+      m_scanner(pDbConnectionPool, m_pTrackCollection, pConfig) {
 
-    const mixxx::DbConnectionPooled dbConnectionPooled(m_mixxxDb.connectionPool());
-    if (!dbConnectionPooled) {
-        QMessageBox::critical(0, tr("Cannot open database"),
-                            tr("Unable to establish a database connection.\n"
-                                "Mixxx requires QT with SQLite support. Please read "
-                                "the Qt SQL driver documentation for information on how "
-                                "to build it.\n\n"
-                                "Click OK to exit."), QMessageBox::Ok);
-        // TODO(XXX) something a little more elegant
-        exit(-1);
-    }
+    const mixxx::DbConnectionPooled dbConnectionPooled(pDbConnectionPool);
     QSqlDatabase dbConnection(dbConnectionPooled);
-    DEBUG_ASSERT(dbConnection.isOpen());
-
-    kLogger.info() << "Initializing or upgrading database schema";
-    if (!MixxxDb::initDatabaseSchema(dbConnection)) {
-        // TODO(XXX) something a little more elegant
-        exit(-1);
-    }
 
     // TODO(XXX): Add a checkbox in the library preferences for checking
     // and repairing the database on the next restart of the application.

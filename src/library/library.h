@@ -13,14 +13,13 @@
 #include <QFont>
 
 #include "preferences/usersettings.h"
-#include "database/mixxxdb.h"
 #include "track/track.h"
 #include "recording/recordingmanager.h"
 #include "analysisfeature.h"
 #include "library/coverartcache.h"
 #include "library/setlogfeature.h"
 #include "library/scanner/libraryscanner.h"
-#include "util/db/dbconnectionpooler.h"
+#include "util/db/dbconnectionpool.h"
 
 class TrackModel;
 class TrackCollection;
@@ -47,12 +46,13 @@ class Library : public QObject {
 
     Library(QObject* parent,
             UserSettingsPointer pConfig,
+            mixxx::DbConnectionPoolPtr pDbConnectionPool,
             PlayerManagerInterface* pPlayerManager,
             RecordingManager* pRecordingManager);
     ~Library() override;
 
     mixxx::DbConnectionPoolPtr dbConnectionPool() const {
-        return m_mixxxDb.connectionPool();
+        return m_pDbConnectionPool;
     }
 
     void bindWidget(WLibrary* libraryWidget,
@@ -124,14 +124,8 @@ class Library : public QObject {
   private:
     const UserSettingsPointer m_pConfig;
 
-    // The Mixxx SQLite3 database
-    const MixxxDb m_mixxxDb;
-
-    // The Mixxx database connection for the thread that creates
-    // and owns this library instance. TODO(XXX): Move database
-    // related code out of the GUI into multiple, dedicated
-    // worker threads.
-    const mixxx::DbConnectionPooler m_dbConnectionPooler;
+    // The Mixxx database connection pool
+    const mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
 
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
