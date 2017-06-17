@@ -62,7 +62,7 @@ const QString kDefaultStreamDesc =
 const QString kDefaultStreamGenre = QObject::tr("Live Mix");
 const bool kDefaultStreamPublic = false;
 
-const QRegExp kForbiddenChars = QRegExp("[<>:\"/\\|?*]");
+const QRegExp kForbiddenChars = QRegExp("[<>:\"\\/|?*\\\\]");
 } // anonymous namespace
 
 BroadcastProfile::BroadcastProfile(const QString& profileName) {
