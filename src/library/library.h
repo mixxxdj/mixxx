@@ -135,6 +135,7 @@ class Library : public QObject {
 
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
+    LibraryControl* m_pLibraryControl;
     QList<LibraryFeature*> m_features;
     const static QString m_sTrackViewName;
     const static QString m_sAutoDJViewName;
@@ -142,7 +143,6 @@ class Library : public QObject {
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
     AnalysisFeature* m_pAnalysisFeature;
-    LibraryControl* m_pLibraryControl;
     LibraryScanner m_scanner;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
