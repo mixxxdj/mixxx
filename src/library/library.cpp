@@ -68,7 +68,6 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
         m_pSidebarModel(new SidebarModel(parent)),
         m_pTrackCollection(new TrackCollection(pConfig)),
         m_pLibraryControl(new LibraryControl(this)),
-        m_pRecordingManager(pRecordingManager),
         m_scanner(m_mixxxDb.connectionPool(), m_pTrackCollection, pConfig) {
     kLogger.info() << "Opening datbase connection";
 
@@ -127,7 +126,7 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
     m_pCrateFeature = new CrateFeature(this, m_pTrackCollection, m_pConfig);
     addFeature(m_pCrateFeature);
     BrowseFeature* browseFeature = new BrowseFeature(
-        this, pConfig, m_pTrackCollection, m_pRecordingManager);
+        this, pConfig, m_pTrackCollection, pRecordingManager);
     connect(browseFeature, SIGNAL(scanLibrary()),
             &m_scanner, SLOT(scan()));
     connect(&m_scanner, SIGNAL(scanStarted()),
@@ -136,7 +135,7 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
             browseFeature, SLOT(slotLibraryScanFinished()));
 
     addFeature(browseFeature);
-    addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
+    addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, pRecordingManager));
     addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
     m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
     connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<TrackId>)),

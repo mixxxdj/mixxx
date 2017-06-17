@@ -143,7 +143,6 @@ class Library : public QObject {
     CrateFeature* m_pCrateFeature;
     AnalysisFeature* m_pAnalysisFeature;
     LibraryControl* m_pLibraryControl;
-    RecordingManager* m_pRecordingManager;
     LibraryScanner m_scanner;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
