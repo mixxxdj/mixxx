@@ -29,8 +29,11 @@ class DbConnectionPooled final {
     // connection pool is missing or if the pool does not contain a
     // thread-local connection for this thread (previously created
     // by some DbConnectionPooler). On failure a non-functional default
-    // constructed database commection is returned.
-    explicit operator QSqlDatabase() const;
+    // constructed database connection is returned.
+    //
+    // The returned connections is not bound to this instance:
+    // QSqlDatabase dbConnection = DbConnectionPooled(...);
+    /*implicit*/ operator QSqlDatabase() const;
 
   private:
     DbConnectionPoolPtr m_pDbConnectionPool;

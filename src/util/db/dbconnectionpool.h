@@ -33,13 +33,15 @@ class DbConnectionPool final {
             const DbConnection::Params& params,
             const QString& connectionName);
 
+    // Prefer to use DbConnectionPooler instead of the
+    // following functions. Only if there is no appropriate
+    // scoping possible then use these functions directly.
+    bool createThreadLocalConnection();
+    void destroyThreadLocalConnection();
+
   private:
     DbConnectionPool(const DbConnectionPool&) = delete;
     DbConnectionPool(const DbConnectionPool&&) = delete;
-
-    friend class DbConnectionPooler;
-    bool createThreadLocalConnection();
-    void destroyThreadLocalConnection();
 
     // Returns a database connection for the current thread, that has
     // previously been created by instantiating DbConnectionPooler. The
