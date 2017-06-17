@@ -14,11 +14,10 @@ class LibraryTest : public MixxxTest {
     LibraryTest()
         : m_mixxxDb(config()),
           m_dbConnectionPooler(m_mixxxDb.connectionPool()),
-          m_dbConnectionPooled(m_mixxxDb.connectionPool()),
+          m_dbConnection(mixxx::DbConnectionPooled(m_mixxxDb.connectionPool())),
           m_trackCollection(config()) {
-        QSqlDatabase dbConnection(m_dbConnectionPooled);
-        MixxxDb::initDatabaseSchema(dbConnection);
-        m_trackCollection.connectDatabase(dbConnection);
+        MixxxDb::initDatabaseSchema(m_dbConnection);
+        m_trackCollection.connectDatabase(m_dbConnection);
     }
     ~LibraryTest() override {
         m_trackCollection.disconnectDatabase();
@@ -29,7 +28,7 @@ class LibraryTest : public MixxxTest {
     }
 
     QSqlDatabase dbConnection() const {
-        return static_cast<QSqlDatabase>(m_dbConnectionPooled);
+        return m_dbConnection;
     }
 
     TrackCollection* collection() {
@@ -39,7 +38,7 @@ class LibraryTest : public MixxxTest {
   private:
     const MixxxDb m_mixxxDb;
     const mixxx::DbConnectionPooler m_dbConnectionPooler;
-    const mixxx::DbConnectionPooled m_dbConnectionPooled;
+    QSqlDatabase m_dbConnection;
     TrackCollection m_trackCollection;
 };
 

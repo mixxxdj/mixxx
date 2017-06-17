@@ -662,8 +662,8 @@ void MixxxMainWindow::finalize() {
 
 bool MixxxMainWindow::initializeDatabase() {
     kLogger.info() << "Connecting to database";
-    const mixxx::DbConnectionPooled dbConnectionPooled(m_pDbConnectionPool);
-    if (!dbConnectionPooled) {
+    QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
+    if (!dbConnection.isOpen()) {
         QMessageBox::critical(0, tr("Cannot open database"),
                             tr("Unable to establish a database connection.\n"
                                 "Mixxx requires QT with SQLite support. Please read "
@@ -672,8 +672,6 @@ bool MixxxMainWindow::initializeDatabase() {
                                 "Click OK to exit."), QMessageBox::Ok);
         return false;
     }
-    QSqlDatabase dbConnection(dbConnectionPooled);
-    DEBUG_ASSERT(dbConnection.isOpen());
 
     kLogger.info() << "Initializing or upgrading database schema";
     return MixxxDb::initDatabaseSchema(dbConnection);

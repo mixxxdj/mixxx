@@ -76,8 +76,7 @@ Library::Library(
       m_pAnalysisFeature(nullptr),
       m_scanner(pDbConnectionPool, m_pTrackCollection, pConfig) {
 
-    const mixxx::DbConnectionPooled dbConnectionPooled(pDbConnectionPool);
-    QSqlDatabase dbConnection(dbConnectionPooled);
+    QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
 
     // TODO(XXX): Add a checkbox in the library preferences for checking
     // and repairing the database on the next restart of the application.
