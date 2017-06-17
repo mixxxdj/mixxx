@@ -257,19 +257,11 @@ EffectChainPointer EffectChainSlot::getOrCreateEffectChain(
 }
 
 void EffectChainSlot::clear() {
-    // Stop listening to signals from any loaded effect
     if (m_pEffectChain) {
-        m_pEffectChain->removeFromEngine(m_pEffectRack->getEngineEffectRack(),
-                                         m_iChainSlotNumber);
-        foreach (EffectSlotPointer pSlot, m_slots) {
+        for (EffectSlotPointer pSlot: m_slots) {
             pSlot->clear();
         }
-        m_pEffectChain->disconnect(this);
-        m_pEffectChain.clear();
     }
-    m_pControlNumEffects->forceSet(0.0);
-    m_pControlChainLoaded->forceSet(0.0);
-    m_pControlChainInsertionType->set(EffectChain::INSERT);
     emit(updated());
 }
 
