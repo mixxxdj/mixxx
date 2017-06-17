@@ -60,7 +60,6 @@ class MixxxMainWindow : public QMainWindow {
     MixxxMainWindow(QApplication *app, const CmdlineArgs& args);
     ~MixxxMainWindow() override;
 
-    void initialize(QApplication *app, const CmdlineArgs& args);
     void finalize();
 
     // creates the menu_bar and inserts the file Menu
@@ -112,6 +111,8 @@ class MixxxMainWindow : public QMainWindow {
     virtual bool event(QEvent* e);
 
   private:
+    void initialize(QApplication *app, const CmdlineArgs& args);
+
     // progresses the launch image progress bar
     // this must be called from the GUi thread only
     void launchProgress(int progress);
