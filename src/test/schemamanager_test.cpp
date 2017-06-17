@@ -17,20 +17,16 @@ class SchemaManagerTest : public MixxxTest {
     SchemaManagerTest()
             : m_mixxxDb(config()),
               m_dbConnectionPooler(m_mixxxDb.connectionPool()),
-              m_dbConnectionPooled(m_mixxxDb.connectionPool()),
-              m_dbConnection(m_dbConnectionPooled) {
+              m_dbConnection(mixxx::DbConnectionPooled(m_mixxxDb.connectionPool())) {
     }
 
     QSqlDatabase dbConnection() const {
-        return static_cast<QSqlDatabase>(m_dbConnectionPooled);
+        return m_dbConnection;
     }
 
   private:
     const MixxxDb m_mixxxDb;
     const mixxx::DbConnectionPooler m_dbConnectionPooler;
-    const mixxx::DbConnectionPooled m_dbConnectionPooled;
-
-  protected:
     QSqlDatabase m_dbConnection;
 };
 

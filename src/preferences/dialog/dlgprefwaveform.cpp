@@ -220,8 +220,7 @@ void DlgPrefWaveform::slotWaveformMeasured(float frameRate, int droppedFrames) {
 
 void DlgPrefWaveform::slotClearCachedWaveforms() {
     AnalysisDao analysisDao(m_pConfig);
-    const mixxx::DbConnectionPooled dbConnectionPooled(m_pLibrary->dbConnectionPool());
-    QSqlDatabase dbConnection(dbConnectionPooled);
+    QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pLibrary->dbConnectionPool());
     analysisDao.deleteAnalysesByType(dbConnection, AnalysisDao::TYPE_WAVEFORM);
     analysisDao.deleteAnalysesByType(dbConnection, AnalysisDao::TYPE_WAVESUMMARY);
     calculateCachedWaveformDiskUsage();
@@ -229,8 +228,7 @@ void DlgPrefWaveform::slotClearCachedWaveforms() {
 
 void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {
     AnalysisDao analysisDao(m_pConfig);
-    const mixxx::DbConnectionPooled dbConnectionPooled(m_pLibrary->dbConnectionPool());
-    QSqlDatabase dbConnection(dbConnectionPooled);
+    QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pLibrary->dbConnectionPool());
     size_t numBytes = analysisDao.getDiskUsageInBytes(dbConnection, AnalysisDao::TYPE_WAVEFORM) +
             analysisDao.getDiskUsageInBytes(dbConnection, AnalysisDao::TYPE_WAVESUMMARY);
 

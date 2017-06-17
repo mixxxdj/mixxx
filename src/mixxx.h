@@ -27,6 +27,7 @@
 #include "track/track.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
+#include "util/db/dbconnectionpool.h"
 #include "soundio/sounddeviceerror.h"
 
 class ControlPushButton;
@@ -57,9 +58,8 @@ class MixxxMainWindow : public QMainWindow {
   public:
     // Construtor. files is a list of command line arguments
     MixxxMainWindow(QApplication *app, const CmdlineArgs& args);
-    virtual ~MixxxMainWindow();
+    ~MixxxMainWindow() override;
 
-    void initialize(QApplication *app, const CmdlineArgs& args);
     void finalize();
 
     // creates the menu_bar and inserts the file Menu
@@ -111,12 +111,18 @@ class MixxxMainWindow : public QMainWindow {
     virtual bool event(QEvent* e);
 
   private:
+    void initialize(QApplication *app, const CmdlineArgs& args);
+
     // progresses the launch image progress bar
     // this must be called from the GUi thread only
     void launchProgress(int progress);
+
     void initializeWindow();
     void initializeKeyboard();
     void checkDirectRendering();
+
+    bool initializeDatabase();
+
     bool confirmExit();
     QDialog::DialogCode soundDeviceErrorDlg(
             const QString &title, const QString &text, bool* retryClicked);
@@ -158,6 +164,10 @@ class MixxxMainWindow : public QMainWindow {
     VinylControlManager* m_pVCManager;
 
     KeyboardEventFilter* m_pKeyboard;
+
+    // The Mixxx database connection pool
+    mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
+
     // The library management object
     Library* m_pLibrary;
 
