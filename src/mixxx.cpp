@@ -49,6 +49,7 @@
 #include "track/track.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/sharedglcontext.h"
+#include "database/mixxxdb.h"
 #include "util/debug.h"
 #include "util/statsmanager.h"
 #include "util/timer.h"
@@ -67,6 +68,8 @@
 #include "preferences/settingsmanager.h"
 #include "widget/wmainmenubar.h"
 #include "util/screensaver.h"
+#include "util/logger.h"
+#include "util/db/dbconnectionpooled.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrolmanager.h"
@@ -75,6 +78,12 @@
 #ifdef __MODPLUG__
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif
+
+namespace {
+
+const mixxx::Logger kLogger("MixxxMainWindow");
+
+} // anonymous namespace
 
 // static
 const int MixxxMainWindow::kMicrophoneCount = 4;
@@ -258,17 +267,32 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     CoverArtCache::create();
 
-    // (long)
-    m_pLibrary = new Library(pConfig,
-                             m_pPlayerManager,
-                             m_pRecordingManager);
+    m_pDbConnectionPool = MixxxDb(pConfig).connectionPool();
+    if (!m_pDbConnectionPool) {
+        // TODO(XXX) something a little more elegant
+        exit(-1);
+    }
+    // Create a connection for the main thread
+    m_pDbConnectionPool->createThreadLocalConnection();
+    if (!initializeDatabase()) {
+        // TODO(XXX) something a little more elegant
+        exit(-1);
+    }
+
+    launchProgress(35);
+
+    m_pLibrary = new Library(
+            pConfig,
+            m_pDbConnectionPool,
+            m_pPlayerManager,
+            m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
-    
+
     new QShortcut(
             QKeySequence(tr("Ctrl+F", "Search|Focus")),
             this, SLOT(slotFocusSearch()));
 
-    launchProgress(35);
+    launchProgress(40);
 
     // Get Music dir
     bool hasChanged_MusicDir = false;
@@ -547,6 +571,10 @@ void MixxxMainWindow::finalize() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting Library";
     delete m_pLibrary;
 
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "closing database connection(s)";
+    m_pDbConnectionPool->destroyThreadLocalConnection();
+    m_pDbConnectionPool.reset(); // should drop the last reference
+
     // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting PlayerManager";
     delete m_pPlayerManager;
@@ -634,6 +662,23 @@ void MixxxMainWindow::finalize() {
     // Report the total time we have been running.
     m_runtime_timer.elapsed(true);
     StatsManager::destroy();
+}
+
+bool MixxxMainWindow::initializeDatabase() {
+    kLogger.info() << "Connecting to database";
+    QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
+    if (!dbConnection.isOpen()) {
+        QMessageBox::critical(0, tr("Cannot open database"),
+                            tr("Unable to establish a database connection.\n"
+                                "Mixxx requires QT with SQLite support. Please read "
+                                "the Qt SQL driver documentation for information on how "
+                                "to build it.\n\n"
+                                "Click OK to exit."), QMessageBox::Ok);
+        return false;
+    }
+
+    kLogger.info() << "Initializing or upgrading database schema";
+    return MixxxDb::initDatabaseSchema(dbConnection);
 }
 
 void MixxxMainWindow::initializeWindow() {

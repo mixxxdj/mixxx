@@ -62,43 +62,27 @@ const ConfigKey Library::kConfigKeyRepairDatabaseOnNextRestart(kConfigGroup, "Re
 // The default row height of the library.
 const int Library::kDefaultRowHeightPx = 20;
 
-Library::Library(UserSettingsPointer pConfig,
-                 PlayerManagerInterface* pPlayerManager,
-                 RecordingManager* pRecordingManager) :
-        m_pConfig(pConfig),
-        m_mixxxDb(pConfig),
-        m_dbConnectionPooler(m_mixxxDb.connectionPool()),
-        m_pTrackCollection(new TrackCollection(pConfig)),
-        m_pLibraryControl(new LibraryControl(this)),
-        m_pRecordingManager(pRecordingManager),
-        m_scanner(m_mixxxDb.connectionPool(), m_pTrackCollection, pConfig),
-        m_pSidebarExpanded(nullptr),
-        m_hoveredFeature(nullptr),
-        m_focusedFeature(nullptr),
-        m_focusedPaneId(-1),
-        m_preselectedPane(-1),
-        m_previewPreselectedPane(-1) {
-    kLogger.info() << "Opening datbase connection";
-
-    const mixxx::DbConnectionPooled dbConnectionPooled(m_mixxxDb.connectionPool());
-    if (!dbConnectionPooled) {
-        QMessageBox::critical(0, tr("Cannot open database"),
-                            tr("Unable to establish a database connection.\n"
-                                "Mixxx requires QT with SQLite support. Please read "
-                                "the Qt SQL driver documentation for information on how "
-                                "to build it.\n\n"
-                                "Click OK to exit."), QMessageBox::Ok);
-        // TODO(XXX) something a little more elegant
-        exit(-1);
-    }
-    QSqlDatabase dbConnection(dbConnectionPooled);
-    DEBUG_ASSERT(dbConnection.isOpen());
-
-    kLogger.info() << "Initializing or upgrading database schema";
-    if (!MixxxDb::initDatabaseSchema(dbConnection)) {
-        // TODO(XXX) something a little more elegant
-        exit(-1);
-    }
+Library::Library(
+        UserSettingsPointer pConfig,
+        mixxx::DbConnectionPoolPtr pDbConnectionPool,
+        PlayerManagerInterface* pPlayerManager,
+        RecordingManager* pRecordingManager)
+    : m_pConfig(pConfig),
+      m_pDbConnectionPool(pDbConnectionPool),
+      m_pTrackCollection(new TrackCollection(m_pConfig)),
+      m_pMixxxLibraryFeature(nullptr),
+      m_pPlaylistFeature(nullptr),
+      m_pCrateFeature(nullptr),
+      m_pAnalysisFeature(nullptr),
+      m_pLibraryControl(new LibraryControl(this)),
+      m_scanner(m_pDbConnectionPool, m_pTrackCollection, m_pConfig),
+      m_pSidebarExpanded(nullptr),
+      m_hoveredFeature(nullptr),
+      m_focusedFeature(nullptr),
+      m_focusedPaneId(-1),
+      m_preselectedPane(-1),
+      m_previewPreselectedPane(-1) {
+    QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
 
     // TODO(XXX): Add a checkbox in the library preferences for checking
     // and repairing the database on the next restart of the application.
@@ -125,7 +109,7 @@ Library::Library(UserSettingsPointer pConfig,
             this, SLOT(slotRefreshLibraryModels()));
     
     createTrackCache();
-    createFeatures(pConfig, pPlayerManager);
+    createFeatures(pConfig, pPlayerManager, pRecordingManager);
 
     // On startup we need to check if all of the user's library folders are
     // accessible to us. If the user is using a database from <1.12.0 with
@@ -748,8 +732,10 @@ void Library::createTrackCache() {
 
 
 
-void Library::createFeatures(UserSettingsPointer pConfig,
-                             PlayerManagerInterface* pPlayerManager) {
+void Library::createFeatures(
+        UserSettingsPointer pConfig,
+        PlayerManagerInterface* pPlayerManager,
+        RecordingManager* pRecordingManager) {
     m_pMixxxLibraryFeature = new MixxxLibraryFeature(
             pConfig, this, this, m_pTrackCollection);
     addFeature(m_pMixxxLibraryFeature);
@@ -766,7 +752,7 @@ void Library::createFeatures(UserSettingsPointer pConfig,
     addFeature(m_pCrateFeature);
     
     BrowseFeature* browseFeature = new BrowseFeature(
-			pConfig, this, this, m_pTrackCollection, m_pRecordingManager);
+			pConfig, this, this, m_pTrackCollection, pRecordingManager);
     connect(browseFeature, SIGNAL(scanLibrary()),
             &m_scanner, SLOT(scan()));
     connect(&m_scanner, SIGNAL(scanStarted()),
@@ -776,7 +762,7 @@ void Library::createFeatures(UserSettingsPointer pConfig,
     addFeature(browseFeature);
 
     addFeature(new RecordingFeature(
-			pConfig, this, this, m_pTrackCollection, m_pRecordingManager));
+			pConfig, this, this, m_pTrackCollection, pRecordingManager));
     
     addFeature(new HistoryFeature(pConfig, this, this, m_pTrackCollection));
     

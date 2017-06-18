@@ -96,15 +96,13 @@ void LibraryScanner::run() {
         Trace trace("LibraryScanner");
 
         const mixxx::DbConnectionPooler dbConnectionPooler(m_pDbConnectionPool);
-        const mixxx::DbConnectionPooled dbConnectionPooled(m_pDbConnectionPool);
-        if (!dbConnectionPooled) {
+        QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
+        if (!dbConnection.isOpen()) {
             kLogger.warning()
                     << "Failed to open database connection for library scanner";
             kLogger.debug() << "Exiting thread";
             return;
         }
-        QSqlDatabase dbConnection(dbConnectionPooled);
-        DEBUG_ASSERT(dbConnection.isOpen());
 
         m_libraryHashDao.initialize(dbConnection);
         m_cueDao.initialize(dbConnection);
@@ -242,8 +240,7 @@ void LibraryScanner::cleanUpScan() {
 
     // Start a transaction for all the library hashing (moved file
     // detection) stuff.
-    const mixxx::DbConnectionPooled dbConnectionPooled(m_pDbConnectionPool);
-    QSqlDatabase dbConnection(dbConnectionPooled);
+    QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
     ScopedTransaction transaction(dbConnection);
 
     kLogger.debug() << "Marking tracks in changed directories as verified";
