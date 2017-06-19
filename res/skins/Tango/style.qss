@@ -402,7 +402,7 @@ WWidgetGroup {
     WLabel#TrackTime, WLabel#TrackDuration {
       font-family: "Ubuntu Mono";
       font-weight: bold;
-      padding-top: 2px;
+      padding-top: 1px;
       }
       WLabel#TrackTime { /*
         padding-right: -30px; */
