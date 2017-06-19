@@ -379,6 +379,12 @@ WWidgetGroup {
     color: #888888;
     text-align: left;
     background-color: #333333;
+    }
+  WLabel#DeckFxIndicator {
+    font-weight: bold;
+    color: #FF8F00;
+    padding-top: 1px;
+    background-color: #333333;
   }
 
 #DeckArtistTitleLoop, #DeckTitlePassthrough {
@@ -389,7 +395,7 @@ WWidgetGroup {
     qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
     padding: 0px 3px 0px 3px;
     }
-    #TitleTimeRow WLabel {
+    WLabel#TrackTitle, WLabel#TrackTime {
     font-size: 18px/18px;
     font-weight: bold;
     text-align: left;
@@ -399,25 +405,13 @@ WWidgetGroup {
     padding: 0px 2px 0px 2px;
     font-size: 16px/16px;
     }
-    WLabel#TrackBy {
+    WLabel#TrackBy, WLabel#TrackArtist, WLabel#TrackDuration {
       font-size: 16px/16px;
+      font-weight: bold;
       text-align: left;
-      color: #888888;
     }
-    #TrackArtist {
-      font-size: 16px/16px;
-      font-weight: bold;
-      text-align: left;
-      }
-    #TrackDuration {
-      font-size: 13px/15px;
-      text-align: right;
-      }
-    WLabel#DeckFxIndicator {
-      font-weight: bold;
-      color: #FF8F00;
-      padding-top: 1px;
-      background-color: #333333;
+    WLabel#TrackBy {
+      color: #888888;
     }
   #LoopIndicator {
     }
@@ -434,16 +428,16 @@ WWidgetGroup {
 #DeckButtonsPlay {
   margin-top: 1px;
   background-color: #333333;
-}
-#DeckControlsLeft {
-  qproperty-layoutAlignment: 'Alignleft | AlignVCenter';
-  padding: 1px 0px 1px 1px;
-  background-color: #333333;
-}
-#DeckControlsRight {
-  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  padding: 1px 1px 1px 0px;
-  background-color: #333333;
+  }
+  #DeckControlsLeft {
+    qproperty-layoutAlignment: 'Alignleft | AlignVCenter';
+    padding: 1px 0px 1px 1px;
+    background-color: #333333;
+  }
+  #DeckControlsRight {
+    qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+    padding: 1px 1px 1px 0px;
+    background-color: #333333;
   }
 
 #DeckControlsExpanded,

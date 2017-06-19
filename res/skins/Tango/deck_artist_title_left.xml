@@ -55,7 +55,7 @@ Variables:
             <Children>
               <Label>
                 <ObjectName>TrackBy</ObjectName>
-                <Size>20f,20me</Size>
+                <Size>22f,20me</Size>
                 <Text>by </Text>
                 <Alignment>left</Alignment>
               </Label>

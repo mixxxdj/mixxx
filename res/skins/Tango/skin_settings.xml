@@ -59,11 +59,11 @@ Description:
                 <SetVariable name="Setting">[Tango],symmetric_overviews</SetVariable>
               </Template>
 
-              <!--<Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      Symmetric Artist/Time</SetVariable>
-                <SetVariable name="state_1_text"> &#10004; Symmetric Artist/Time</SetVariable>
-                <SetVariable name="Setting">[Tango],symmetric_artist_time</SetVariable>
-              </Template> -->
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="state_0_text">      Symmetric Time/Duration</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Symmetric Time/Duration</SetVariable>
+                <SetVariable name="Setting">[Tango],symmetric_time</SetVariable>
+              </Template>
 
               <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      Track Comment</SetVariable>
