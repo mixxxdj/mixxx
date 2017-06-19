@@ -387,32 +387,50 @@ WWidgetGroup {
     background-color: #333333;
   }
 
-#DeckArtistTitleLoop, #DeckTitlePassthrough {
+#DeckArtistTitleLeft, #DeckArtistTitleRight {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
   background-color: #333333;
-}
-  #TitleTimeRow {
+  }
+  #DeckArtistTitleRight > #TitleTimeRow {
     qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-    padding: 0px 3px 0px 3px;
-    }
-    WLabel#TrackTitle, WLabel#TrackTime {
-    font-size: 18px/18px;
-    font-weight: bold;
-    text-align: left;
-    }
-  #ArtistDurationRow {
+    padding: 0px 3px 0px 1px;
+  }
+  #DeckArtistTitleLeft > #TitleTimeRow {
     qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-    padding: 0px 2px 0px 2px;
-    font-size: 16px/16px;
+    padding: 0px 1px 0px 3px;
     }
-    WLabel#TrackBy, WLabel#TrackArtist, WLabel#TrackDuration {
+    WLabel#TrackTime, WLabel#TrackDuration {
+      font-family: "Ubuntu Mono";
+      font-weight: bold;
+      padding-top: 2px;
+      }
+      WLabel#TrackTime { /*
+        padding-right: -30px; */
+        font-size: 19px/19px;
+      }
+      WLabel#TrackTitle {
+        font-size: 18px/18px;
+        font-weight: bold;
+      }
+  #DeckArtistTitleRight > #ArtistDurationRow {
+    qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+    padding: 0px 2px 0px 1px;
+  }
+  #DeckArtistTitleLeft > #ArtistDurationRow {
+    qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+    padding: 0px 1px 0px 2px;
+    }
+    WLabel#TrackDuration {
+      font-size: 17px/17px;
+    }
+    WLabel#TrackBy, WLabel#TrackArtist {
       font-size: 16px/16px;
       font-weight: bold;
-      text-align: left;
     }
     WLabel#TrackBy {
       color: #888888;
     }
+    
   #LoopIndicator {
     }
     #LoopIndicator:hover {

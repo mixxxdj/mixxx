@@ -11,7 +11,7 @@ Variables:
 -->
 <Template>
   <WidgetGroup><!-- DeckArtistTitle -->
-    <ObjectName>DeckArtistTitleLoop</ObjectName>
+    <ObjectName>DeckArtistTitleLeft</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,me</SizePolicy>
     <Children>
@@ -33,6 +33,8 @@ Variables:
                 <Size>1me,22f</Size>
                 <Channel><Variable name="chanNum"/></Channel>
               </TrackProperty>
+
+              <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
 
               <NumberPos>
                 <ObjectName>TrackTime</ObjectName>

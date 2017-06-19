@@ -13,7 +13,7 @@ Variables:
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>DeckArtistTitleLoop</ObjectName>
+    <ObjectName>DeckArtistTitleRight</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,me</SizePolicy>
     <Children>
@@ -25,7 +25,6 @@ Variables:
         <Layout>horizontal</Layout>
         <SizePolicy>me,me</SizePolicy>
         <Children>
-          <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
           <WidgetGroup><!-- TimeDurationColumn -->
             <ObjectName>TimeDurationColumn</ObjectName>
@@ -95,8 +94,6 @@ Variables:
               </WidgetGroup><!-- /by Artist -->
             </Children>
           </WidgetGroup><!-- /TitleArtistColumn -->
-
-          <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey persist="true">[Tango],symmetric_time</ConfigKey>
@@ -113,6 +110,8 @@ Variables:
             <Layout>horizontal</Layout>
             <SizePolicy>me,me</SizePolicy>
             <Children>
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
               <TrackProperty>
                 <ObjectName>TrackTitle</ObjectName>
                 <TooltipId>track_title</TooltipId>
@@ -142,6 +141,8 @@ Variables:
             <Layout>horizontal</Layout>
             <SizePolicy>me,me</SizePolicy>
             <Children>
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
               <Label>
                 <ObjectName>TrackBy</ObjectName>
                 <Size>20f,22f</Size>
