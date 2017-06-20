@@ -670,6 +670,10 @@ void EngineMaster::process(const int iBufferSize) {
                 // delayed.
                 SampleUtil::copy(m_pSidechain, m_pMaster, iBufferSize);
                 m_pInputLatencyCompensationDelay->process(m_pSidechain, iBufferSize);
+                SampleUtil::copy2WithGain(m_pSidechain,
+                                          m_pSidechain, 1.0,
+                                          m_pTalkover, 1.0,
+                                          iBufferSize);
                 m_pEngineSideChain->writeSamples(m_pSidechain, iBufferSize);
             } else {
                 m_pEngineSideChain->writeSamples(m_pMaster, iBufferSize);
