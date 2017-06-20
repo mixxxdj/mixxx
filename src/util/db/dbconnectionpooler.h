@@ -32,10 +32,11 @@ class DbConnectionPooler final {
         return static_cast<bool>(m_pDbConnectionPool);
     }
 
+    DbConnectionPooler& operator=(DbConnectionPooler&& other);
+
   private:
     DbConnectionPooler(const DbConnectionPooler&) = delete;
     DbConnectionPooler& operator=(const DbConnectionPooler&) = delete;
-    DbConnectionPooler& operator=(DbConnectionPooler&&) = delete;
 
     // Prevent heap allocation
     static void * operator new(std::size_t);
