@@ -16,10 +16,12 @@ const char* kDefaultProfile = "Default Profile";
 const mixxx::Logger kLogger("BroadcastSettings");
 } // anonymous namespace
 
-BroadcastSettings::BroadcastSettings(UserSettingsPointer pConfig)
-    : m_pConfig(pConfig),
-    m_profiles(),
-    m_currentProfile(kDefaultProfile) {
+BroadcastSettings::BroadcastSettings(
+        UserSettingsPointer pConfig, QObject* parent)
+    : QObject(parent),
+      m_pConfig(pConfig),
+      m_profiles(),
+      m_currentProfile(kDefaultProfile) {
     loadProfiles();
 }
 
@@ -56,7 +58,7 @@ void BroadcastSettings::loadProfiles() {
 
             if(profile) {
                 BroadcastProfilePtr profilePtr(profile);
-                m_profiles.push_back(std::move(profilePtr));
+                m_profiles[profile->getProfileName()] = std::move(profilePtr);
             }
         }
     } else {
@@ -71,7 +73,8 @@ void BroadcastSettings::loadProfiles() {
 
         saveProfile(defaultProfile);
 
-        m_profiles.push_back(std::move(defaultProfile));
+        m_profiles[defaultProfile->getProfileName()] =
+                std::move(defaultProfile);
         setCurrentProfile(defaultProfile);
     }
 }
@@ -120,16 +123,12 @@ const BroadcastProfilePtr& BroadcastSettings::getCurrentProfile() {
 
 const BroadcastProfilePtr& BroadcastSettings::getProfileByName(
         const QString& profileName) {
-    for(const auto& profile : m_profiles) {
-        if(profile && profile->getProfileName() == profileName)
-            return profile;
-    }
-    return BroadcastProfilePtr();
+    return m_profiles[profileName];
 }
 
 void BroadcastSettings::saveAll() {
-    for(const auto& profile : m_profiles) {
-        saveProfile(profile);
+    for(auto& kv : m_profiles) {
+        saveProfile(kv.second);
     }
 }
 
@@ -141,10 +140,14 @@ void BroadcastSettings::deleteProfile(const BroadcastProfilePtr& profile) {
     if(xmlFile.exists())
         QFile::remove(xmlFile.absolutePath());
 
-    std::vector<BroadcastProfilePtr>::iterator result =
-        std::find(m_profiles.begin(), m_profiles.end(), profile);
+    m_profiles.erase(profile->getProfileName());
+}
 
-    if(result != m_profiles.end()) {
-        m_profiles.erase(result);
+void BroadcastSettings::onProfileNameChanged(QString oldName, QString newName) {
+    if(m_profiles[oldName]) {
+        BroadcastProfilePtr oldItem = std::move(m_profiles[oldName]);
+        m_profiles.erase(oldName);
+
+        m_profiles[newName] = std::move(oldItem);
     }
 }

@@ -5,141 +5,148 @@
 #define BROADCASTPROFILE_H
 
 #include <memory>
+#include <QObject>
 #include <QString>
 
 #include "preferences/usersettings.h"
 
-class BroadcastProfile {
-    public:
-      explicit BroadcastProfile(const QString& profileName);
-      bool save(const QString& filename);
+class BroadcastProfile : public QObject {
+  Q_OBJECT
 
-      static BroadcastProfile* loadFromFile(const QString& filename);
-      static bool validName(const QString& str);
-      static QString stripForbiddenChars(const QString& str);
+  public:
+    explicit BroadcastProfile(const QString& profileName,
+                              QObject* parent = nullptr);
+    bool save(const QString& filename);
 
-      void setProfileName(const QString& profileName);
-      QString getProfileName() const;
+    static BroadcastProfile* loadFromFile(const QString& filename);
+    static bool validName(const QString& str);
+    static QString stripForbiddenChars(const QString& str);
 
-      bool getEnabled() const;
-      void setEnabled(bool value);
+    void setProfileName(const QString& profileName);
+    QString getProfileName() const;
 
-      QString getHost() const;
-      void setHost(const QString& value);
+    bool getEnabled() const;
+    void setEnabled(bool value);
 
-      int getPort() const;
-      void setPort(int value);
+    QString getHost() const;
+    void setHost(const QString& value);
 
-      QString getServertype() const;
-      void setServertype(const QString& value);
+    int getPort() const;
+    void setPort(int value);
 
-      QString getLogin() const;
-      void setLogin(const QString& value);
+    QString getServertype() const;
+    void setServertype(const QString& value);
 
-      QString getPassword() const;
-      void setPassword(const QString& value);
+    QString getLogin() const;
+    void setLogin(const QString& value);
 
-      bool getEnableReconnect() const;
-      void setEnableReconnect(bool value);
+    QString getPassword() const;
+    void setPassword(const QString& value);
 
-      double getReconnectPeriod() const;
-      void setReconnectPeriod(double value);
+    bool getEnableReconnect() const;
+    void setEnableReconnect(bool value);
 
-      bool getLimitReconnects() const;
-      void setLimitReconnects(bool value);
+    double getReconnectPeriod() const;
+    void setReconnectPeriod(double value);
 
-      int getMaximumRetries() const;
-      void setMaximumRetries(int value);
+    bool getLimitReconnects() const;
+    void setLimitReconnects(bool value);
 
-      bool getNoDelayFirstReconnect() const;
-      void setNoDelayFirstReconnect(bool value);
+    int getMaximumRetries() const;
+    void setMaximumRetries(int value);
 
-      double getReconnectFirstDelay() const;
-      void setReconnectFirstDelay(double value);
+    bool getNoDelayFirstReconnect() const;
+    void setNoDelayFirstReconnect(bool value);
 
-      QString getFormat() const;
-      void setFormat(const QString& value);
+    double getReconnectFirstDelay() const;
+    void setReconnectFirstDelay(double value);
 
-      int getBitrate() const;
-      void setBitrate(int value);
+    QString getFormat() const;
+    void setFormat(const QString& value);
 
-      int getChannels() const;
-      void setChannels(int value);
+    int getBitrate() const;
+    void setBitrate(int value);
 
-      QString getMountpoint() const;
-      void setMountPoint(const QString& value);
+    int getChannels() const;
+    void setChannels(int value);
 
-      QString getStreamName() const;
-      void setStreamName(const QString& value);
+    QString getMountpoint() const;
+    void setMountPoint(const QString& value);
 
-      QString getStreamDesc() const;
-      void setStreamDesc(const QString& value);
+    QString getStreamName() const;
+    void setStreamName(const QString& value);
 
-      QString getStreamGenre() const;
-      void setStreamGenre(const QString& value);
+    QString getStreamDesc() const;
+    void setStreamDesc(const QString& value);
 
-      bool getStreamPublic() const;
-      void setStreamPublic(bool value);
+    QString getStreamGenre() const;
+    void setStreamGenre(const QString& value);
 
-      QString getStreamWebsite() const;
-      void setStreamWebsite(const QString& value);
+    bool getStreamPublic() const;
+    void setStreamPublic(bool value);
 
-      bool getEnableMetadata() const;
-      void setEnableMetadata(bool value);
+    QString getStreamWebsite() const;
+    void setStreamWebsite(const QString& value);
 
-      QString getMetadataCharset() const;
-      void setMetadataCharset(const QString& value);
+    bool getEnableMetadata() const;
+    void setEnableMetadata(bool value);
 
-      QString getCustomArtist() const;
-      void setCustomArtist(const QString& value);
+    QString getMetadataCharset() const;
+    void setMetadataCharset(const QString& value);
 
-      QString getCustomTitle() const;
-      void setCustomTitle(const QString& value);
+    QString getCustomArtist() const;
+    void setCustomArtist(const QString& value);
 
-      QString getMetadataFormat() const;
-      void setMetadataFormat(const QString& value);
+    QString getCustomTitle() const;
+    void setCustomTitle(const QString& value);
 
-      bool getOggDynamicUpdate() const;
-      void setOggDynamicUpdate(bool value);
+    QString getMetadataFormat() const;
+    void setMetadataFormat(const QString& value);
 
-    private:
-      void adoptDefaultValues();
-      bool loadValues(const QString& filename);
+    bool getOggDynamicUpdate() const;
+    void setOggDynamicUpdate(bool value);
 
-      QString m_profileName;
+  signals:
+    void profileNameChanged(QString oldName, QString newName);
 
-      bool m_enabled;
+  private:
+    void adoptDefaultValues();
+    bool loadValues(const QString& filename);
 
-      QString m_host;
-      int m_port;
-      QString m_serverType;
-      QString m_login;
-      QString m_password;
+    QString m_profileName;
 
-      bool m_enableReconnect;
-      double m_reconnectPeriod;
-      bool m_limitReconnects;
-      int m_maximumRetries;
-      bool m_noDelayFirstReconnect;
-      double m_reconnectFirstDelay;
+    bool m_enabled;
 
-      QString m_mountpoint;
-      QString m_streamName;
-      QString m_streamDesc;
-      QString m_streamGenre;
-      bool m_streamPublic;
-      QString m_streamWebsite;
+    QString m_host;
+    int m_port;
+    QString m_serverType;
+    QString m_login;
+    QString m_password;
 
-      QString m_format;
-      int m_bitrate;
-      int m_channels;
+    bool m_enableReconnect;
+    double m_reconnectPeriod;
+    bool m_limitReconnects;
+    int m_maximumRetries;
+    bool m_noDelayFirstReconnect;
+    double m_reconnectFirstDelay;
 
-      bool m_enableMetadata;
-      QString m_metadataCharset;
-      QString m_customArtist;
-      QString m_customTitle;
-      QString m_metadataFormat;
-      bool m_oggDynamicUpdate;
+    QString m_mountpoint;
+    QString m_streamName;
+    QString m_streamDesc;
+    QString m_streamGenre;
+    bool m_streamPublic;
+    QString m_streamWebsite;
+
+    QString m_format;
+    int m_bitrate;
+    int m_channels;
+
+    bool m_enableMetadata;
+    QString m_metadataCharset;
+    QString m_customArtist;
+    QString m_customTitle;
+    QString m_metadataFormat;
+    bool m_oggDynamicUpdate;
 };
 
 typedef std::unique_ptr<BroadcastProfile> BroadcastProfilePtr;

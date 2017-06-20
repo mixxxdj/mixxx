@@ -2,6 +2,7 @@
 #define PREFERENCES_BROADCASTSETTINGS_H
 
 #include <vector>
+#include <QObject>
 #include <QSharedPointer>
 #include <QString>
 
@@ -9,9 +10,11 @@
 #include "track/track.h"
 #include "broadcastprofile.h"
 
-class BroadcastSettings {
+class BroadcastSettings : public QObject {
+  Q_OBJECT
+
   public:
-    BroadcastSettings(UserSettingsPointer pConfig);
+    BroadcastSettings(UserSettingsPointer pConfig, QObject* parent = nullptr);
 
     void setCurrentProfile(const BroadcastProfilePtr& profile);
     const BroadcastProfilePtr& getCurrentProfile();
@@ -19,6 +22,9 @@ class BroadcastSettings {
     void saveProfile(const BroadcastProfilePtr& profile);
     void saveAll();
     void deleteProfile(const BroadcastProfilePtr& profile);
+
+  private slots:
+    void onProfileNameChanged(QString oldName, QString newName);
 
   private:
     void loadProfiles();
@@ -29,7 +35,7 @@ class BroadcastSettings {
 
     // Pointer to config object
     UserSettingsPointer m_pConfig;
-    std::vector<BroadcastProfilePtr> m_profiles;
+    std::map<QString, BroadcastProfilePtr> m_profiles;
     QString m_currentProfile;
 };
 

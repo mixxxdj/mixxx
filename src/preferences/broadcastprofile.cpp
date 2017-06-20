@@ -68,9 +68,14 @@ const QRegExp kForbiddenChars =
                 "|CON|AUX|PRN|COM(\\d+)|LPT(\\d+)|NUL");
 } // anonymous namespace
 
-BroadcastProfile::BroadcastProfile(const QString& profileName) {
+BroadcastProfile::BroadcastProfile(const QString& profileName,
+                                   QObject* parent)
+    : QObject(parent) {
     adoptDefaultValues();
-    setProfileName(profileName);
+
+    // Direct assignment to avoid triggering the
+    // profileNameChanged signal
+    m_profileName = QString(profileName);
 }
 
 bool BroadcastProfile::validName(const QString& str) {
@@ -247,7 +252,10 @@ bool BroadcastProfile::save(const QString& filename) {
 }
 
 void BroadcastProfile::setProfileName(const QString &profileName) {
+    QString oldName(m_profileName);
     m_profileName = QString(profileName);
+
+    emit profileNameChanged(oldName, m_profileName);
 }
 
 QString BroadcastProfile::getProfileName() const {
