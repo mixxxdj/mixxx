@@ -393,22 +393,11 @@ WWidgetGroup {
   }
   #DeckArtistTitleRight > #TitleTimeRow {
     qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-    padding: 0px 3px 0px 1px;
   }
   #DeckArtistTitleLeft > #TitleTimeRow {
     qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-    padding: 0px 1px 0px 3px;
     }
-    WLabel#TrackTime, WLabel#TrackDuration {
-      font-family: "Ubuntu Mono";
-      font-weight: bold;
-      padding-top: 1px;
-      }
-      WLabel#TrackTime { /*
-        padding-right: -30px; */
-        font-size: 19px/19px;
-      }
-      WLabel#TrackTitle {
+      WLabel#TrackTime, WLabel#TrackTitle {
         font-size: 18px/18px;
         font-weight: bold;
       }
@@ -420,10 +409,7 @@ WWidgetGroup {
     qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
     padding: 0px 1px 0px 2px;
     }
-    WLabel#TrackDuration {
-      font-size: 17px/17px;
-    }
-    WLabel#TrackBy, WLabel#TrackArtist {
+    WLabel#TrackDuration, WLabel#TrackBy, WLabel#TrackArtist {
       font-size: 16px/16px;
       font-weight: bold;
     }
