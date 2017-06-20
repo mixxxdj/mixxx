@@ -714,3 +714,67 @@ bool CrateStorage::onPurgingTracks(
     }
     return true;
 }
+
+bool CrateStorage::createClosure() {
+    FwdSqlQuery query(m_database, QString(
+      "CREATE TABLE IF NOT EXISTS crateClosure ("
+      "parentId INTEGER, childId INTEGER, depth INTEGER)"));
+    if (!query.isPrepared()) {
+        return false;
+    }
+    if (!query.execPrepared()) {
+        return false;
+    }
+    return true;
+}
+
+bool CrateStorage::fillClosure() {
+    std::vector<CrateId> crateIds;
+
+    CrateSelectResult crates(selectCrates());
+    Crate crate;
+
+    while (crates.populateNext(&crate)) {
+        crateIds.push_back(crate.getId());
+    }
+
+    FwdSqlQuery query(m_database, QString(
+      "INSERT INTO crateClosure VALUES("
+      ":parent, :child, 0)"));
+    if (!query.isPrepared()) {
+        return false;
+    }
+
+    while (crateIds.size() != 0) {
+        query.bindValue(":parent", crateIds.back());
+        query.bindValue(":child", crateIds.back());
+        if (!query.execPrepared()) {
+            return false;
+        }
+        crateIds.pop_back();
+    }
+
+    return true;
+}
+
+
+bool CrateStorage::insertIntoClosure(CrateId parent, CrateId child) {
+    FwdSqlQuery query(m_database, QString(
+        "INSERT INTO crateClosure(parentId, childId, depth) "
+        "SELECT p.parentId, c.childId, p.depth + c.depth + 1 "
+        "FROM crateClosure p, crateClosure c "
+        "WHERE p.childId = :parent AND c.parentId = :child"));
+
+    if (!query.isPrepared()) {
+        return false;
+    }
+
+    query.bindValue(":parent", parent);
+    query.bindValue(":child", child);
+
+    if (!query.execPrepared()) {
+        return false;
+    }
+
+    return true;
+}

@@ -45,10 +45,10 @@ class MixxxLibraryFeature : public LibraryFeature {
     QString getIconPath() override;
     QString getSettingsName() const override;
 
-    bool dropAccept(QList<QUrl> urls, QObject* pSource);
-    bool dragMoveAccept(QUrl url);
-    QPointer<TreeItemModel> getChildModel();
-    parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter*, 
+    bool dropAccept(QList<QUrl> urls, QObject* pSource) override;
+    bool dragMoveAccept(QUrl url) override;
+    QPointer<TreeItemModel> getChildModel() override;
+    parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter*,
                                                    QWidget* parent) override;
 
   public slots:
@@ -70,11 +70,11 @@ class MixxxLibraryFeature : public LibraryFeature {
     static const QList<QStringList> kGroupingOptions;
     static const QStringList kGroupingText;
     static const QString kLibraryFolder;
-    
+
   private slots:
-    void setTreeSettings(const QVariant &settings, 
+    void setTreeSettings(const QVariant &settings,
                          AbstractRole role = AbstractRole::RoleSorting);
-    
+
   private:
     std::unique_ptr<TreeItemModel> m_pChildModel;
     QPointer<WLibrarySidebar> m_pSidebar;
@@ -83,7 +83,7 @@ class MixxxLibraryFeature : public LibraryFeature {
     TrackDAO& m_trackDao;
     QPersistentModelIndex m_lastClickedIndex;
     bool m_foldersShown;
-    
+
 };
 
 #endif /* MIXXXLIBRARYFEATURE_H */

@@ -345,6 +345,18 @@ bool TrackCollection::deleteCrate(
     // Emit signals
     emit(crateDeleted(crateId));
 
+    // bad code
+    m_crates.createClosure();
+    m_crates.fillClosure();
+
+    Crate parent, child;
+    m_crates.readCrateByName("Metallica", &parent);
+    m_crates.readCrateByName("Megadeth", &child);
+    m_crates.insertIntoClosure(parent.getId(), child.getId());
+    m_crates.readCrateByName("Megadeth", &parent);
+    m_crates.readCrateByName("BFMV", &child);
+    m_crates.insertIntoClosure(parent.getId(), child.getId());
+
     return true;
 }
 
