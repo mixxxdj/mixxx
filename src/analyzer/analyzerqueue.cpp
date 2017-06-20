@@ -7,11 +7,13 @@
 #include "analyzer/analyzergain.h"
 #include "analyzer/analyzerebur128.h"
 #include "analyzer/analyzerwaveform.h"
+#include "library/dao/analysisdao.h"
 #include "mixer/playerinfo.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/compatibility.h"
 #include "util/db/dbconnectionpooler.h"
+#include "util/db/dbconnectionpooled.h"
 #include "util/event.h"
 #include "util/timer.h"
 #include "util/trace.h"
@@ -51,7 +53,8 @@ AnalyzerQueue::AnalyzerQueue(
           m_queue_size(0) {
 
     if (mode != Mode::WithoutWaveform) {
-        m_pAnalyzers.push_back(std::make_unique<AnalyzerWaveform>(pConfig));
+        m_pAnalysisDao = std::make_unique<AnalysisDao>(pConfig);
+        m_pAnalyzers.push_back(std::make_unique<AnalyzerWaveform>(m_pAnalysisDao.get()));
     }
     m_pAnalyzers.push_back(std::make_unique<AnalyzerGain>(pConfig));
     m_pAnalyzers.push_back(std::make_unique<AnalyzerEbur128>(pConfig));
@@ -299,12 +302,21 @@ void AnalyzerQueue::run() {
 }
 
 void AnalyzerQueue::execThread() {
-    const mixxx::DbConnectionPooler dbConnection(m_pDbConnectionPool);
-    if (!dbConnection) {
-        kLogger.warning()
-                << "Failed to open database connection for analyzer queue";
-        kLogger.debug() << "Exiting thread";
-        return;
+    mixxx::DbConnectionPooler dbConnectionPooler;
+    if (m_pAnalysisDao) {
+        // Only create/open a new database connection for when needed
+        // for storing waveform analyses
+        dbConnectionPooler = mixxx::DbConnectionPooler(m_pDbConnectionPool);
+        if (!dbConnectionPooler) {
+            kLogger.warning()
+                    << "Failed to open database connection for analyzer queue thread";
+            return;
+        }
+        // Use the newly created database connection for this thread
+        m_pAnalysisDao->initialize(mixxx::DbConnectionPooled(m_pDbConnectionPool));
+        // The database connection is valid until dbConnectionPooler is destroyed
+        // when exiting the enclosing function scope. The pooler as the owner of
+        // the connection must not be destroyed now!
     }
 
     m_progressInfo.current_track.reset();
@@ -380,6 +392,13 @@ void AnalyzerQueue::execThread() {
         }
         emptyCheck();
     }
+
+    if (m_pAnalysisDao) {
+        // Invalidate reference to the thread-local database connection
+        // that will be closed soon. Not necessary, just in case ;)
+        m_pAnalysisDao->initialize(QSqlDatabase());
+    }
+
     emit(queueEmpty()); // emit in case of exit;
 }
 
