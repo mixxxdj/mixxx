@@ -44,6 +44,7 @@ const char* kStreamGenre = "StreamGenre";
 const char* kStreamName = "StreamName";
 const char* kStreamPublic = "StreamPublic";
 const char* kStreamWebsite = "StreamWebsite";
+const char* kProfileNameAttr = "name";
 
 const double kDefaultBitrate = 128;
 const int kDefaultChannels = 2;
@@ -76,17 +77,22 @@ bool BroadcastProfile::validName(const QString& str) {
     return !str.contains(kForbiddenChars);
 }
 
-BroadcastProfile* BroadcastProfile::loadFromFile(const QString& filename) {
+QString BroadcastProfile::stripForbiddenChars(const QString& str) {
+    QString sourceText(str);
+    return sourceText.replace(kForbiddenChars, " ");
+}
+
+BroadcastProfilePtr BroadcastProfile::loadFromFile(const QString& filename) {
     QFileInfo xmlFile(filename);
     if(!xmlFile.exists())
-        return nullptr;
+        return BroadcastProfilePtr(nullptr);
 
     QString profileName = xmlFile.baseName();
 
     BroadcastProfile* profile = new BroadcastProfile(profileName);
     profile->loadValues(filename);
 
-    return profile;
+    return BroadcastProfilePtr(profile);
 }
 
 void BroadcastProfile::adoptDefaultValues() {
@@ -130,6 +136,7 @@ bool BroadcastProfile::loadValues(const QString& filename) {
     if(doc.childNodes().size() < 1)
         return false;
 
+    m_profileName = doc.attribute(kProfileNameAttr, m_profileName);
     m_enabled = (bool)XmlParse::selectNodeInt(doc, kEnabled);
 
     m_host = XmlParse::selectNodeQString(doc, kHost);
@@ -178,6 +185,7 @@ bool BroadcastProfile::loadValues(const QString& filename) {
 bool BroadcastProfile::save(const QString& filename) {
     QDomDocument doc(kDoctype);
     QDomElement docRoot = doc.createElement(kDocumentRoot);
+    docRoot.setAttribute(kProfileNameAttr, m_profileName);
 
     XmlParse::addElement(doc, docRoot,
                          kEnabled, QString::number((int)m_enabled));
@@ -241,11 +249,6 @@ bool BroadcastProfile::save(const QString& filename) {
 
 void BroadcastProfile::setProfileName(const QString &profileName) {
     m_profileName = QString(profileName);
-
-    // Replace occurences of forbidden characters with a space
-    // to avoid problems with the underlying filesystem.
-    // Char list comes from MSDN article "Naming Files, Paths, and Namespaces".
-    m_profileName.replace(kForbiddenChars, " ");
 }
 
 QString BroadcastProfile::getProfileName() const {

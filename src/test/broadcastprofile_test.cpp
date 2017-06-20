@@ -63,10 +63,9 @@ TEST_F(BroadcastProfileTest, SaveAndLoadXML) {
 
     // Load XML file using static loadFromFile and assert
     // the discriminating value is present
-    BroadcastProfile* savedProfile = BroadcastProfile::loadFromFile(filename);
+    BroadcastProfilePtr savedProfile = BroadcastProfile::loadFromFile(filename);
     ASSERT_NE(savedProfile, nullptr);
     ASSERT_TRUE(savedProfile->getStreamName() == streamName);
-    delete savedProfile;
 }
 
 TEST_F(BroadcastProfileTest, SetGetValues) {

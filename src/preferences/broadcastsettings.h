@@ -12,25 +12,24 @@
 class BroadcastSettings {
   public:
     BroadcastSettings(UserSettingsPointer pConfig);
-    ~BroadcastSettings();
 
-    void setCurrentProfile(BroadcastProfile* profile);
-    BroadcastProfile* getCurrentProfile();
-    BroadcastProfile* getProfileByName(const QString& profileName);
-    void saveProfile(BroadcastProfile* profile);
+    void setCurrentProfile(BroadcastProfilePtr profile);
+    BroadcastProfilePtr getCurrentProfile();
+    BroadcastProfilePtr getProfileByName(const QString& profileName);
+    void saveProfile(BroadcastProfilePtr profile);
     void saveAll();
-    void deleteProfile(BroadcastProfile* profile);
+    void deleteProfile(BroadcastProfilePtr profile);
 
   private:
     void loadProfiles();
-    QString filenameForProfile(BroadcastProfile* profile);
+    QString filenameForProfile(BroadcastProfilePtr profile);
     QString filenameForProfile(const QString& profileName);
     QString getProfilesFolder();
-    void loadLegacySettings(BroadcastProfile* profile);
+    void loadLegacySettings(BroadcastProfilePtr profile);
 
     // Pointer to config object
     UserSettingsPointer m_pConfig;
-    QList<BroadcastProfile*> m_profiles;
+    QList<BroadcastProfilePtr> m_profiles;
     QString m_currentProfile;
 };
 

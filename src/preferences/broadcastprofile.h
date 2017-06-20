@@ -4,18 +4,23 @@
 #ifndef BROADCASTPROFILE_H
 #define BROADCASTPROFILE_H
 
+#include <QSharedPointer>
 #include <QString>
 
 #include "preferences/usersettings.h"
+
+class BroadcastProfile;
+typedef QSharedPointer<BroadcastProfile> BroadcastProfilePtr;
 
 class BroadcastProfile {
     public:
       explicit BroadcastProfile(const QString& profileName);
       bool save(const QString& filename);
 
-      static BroadcastProfile* loadFromFile(
+      static BroadcastProfilePtr loadFromFile(
               const QString& filename);
       static bool validName(const QString& str);
+      static QString stripForbiddenChars(const QString& str);
 
       void setProfileName(const QString& profileName);
       QString getProfileName() const;
