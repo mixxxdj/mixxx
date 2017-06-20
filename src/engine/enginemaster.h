@@ -27,6 +27,7 @@
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
 #include "engine/channelhandle.h"
+#include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
 #include "recording/recordingmanager.h"
 
@@ -89,6 +90,9 @@ class EngineMaster : public QObject, public AudioSource {
         return ChannelHandleAndGroup(
                 m_channelHandleFactory.getOrCreateHandle(group), group);
     }
+
+    // Register the sound I/O that does not correspond to any EngineChannel object
+    void registerNonEngineChannelSoundIO(SoundManager* pSoundManager);
 
     // WARNING: These methods are called by the main thread. They should only
     // touch the volatile bool connected indicators (see below). However, when
