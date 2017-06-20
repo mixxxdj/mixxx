@@ -223,21 +223,6 @@ function parameterSoftTakeOver(group, control, value) {
     }
 }
 
-var beatJumpSize = 4;
-var loopMoveSize = 4;
-var jumpSize = [1/32, 1/16, 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64];
-
-// go to next jump size, looping back to beginning
-var nextJumpSize = function(currentSize) {
-    var index = jumpSize.indexOf(currentSize);
-    return jumpSize[(index + 1) % (jumpSize.length)];
-};
-
-var prevJumpSize = function(currentSize) {
-    var index = jumpSize.indexOf(currentSize);
-    return jumpSize.slice(index - 1)[0];
-};
-
 // =====================================================================
 // Reusable Objects (special buttons handling, LEDs, iCUT and Jog wheels)
 // =====================================================================
@@ -977,11 +962,6 @@ NumarkMixtrack3.init = function(id, debug) {
         engine.connectControl("[Sampler" + i + "]", "play", "NumarkMixtrack3.OnSamplePlayStop");
     }
 
-    engine.connectControl("[BeatJump]", "next", "NumarkMixtrack3.OnBeatJump");
-    engine.connectControl("[BeatJump]", "prev", "NumarkMixtrack3.OnBeatJump");
-    engine.connectControl("[LoopMove]", "next", "NumarkMixtrack3.OnLoopMove");
-    engine.connectControl("[LoopMove]", "prev", "NumarkMixtrack3.OnLoopMove");
-
     NumarkMixtrack3.initDeck('[Channel1]', false); //Initial load, "remove" is set to false
     NumarkMixtrack3.initDeck('[Channel2]', false);
 
@@ -1068,14 +1048,6 @@ NumarkMixtrack3.connectDeckControls = function(group, remove) {
 
     for (var i = 0, n = loopsize.length; i < n; i ++) {
         controlsToFunctions['beatloop_' + loopsize[i] + '_enabled'] = 'NumarkMixtrack3.OnPADLoopButtonChange';
-    }
-
-    // map jump controls which we use to reset beatJumpSize and loopMoveSize if needed
-    for (var i = 0, n = jumpSize.length; i < n; i++) {
-        controlsToFunctions['beatjump_' + jumpSize[i] + '_forward'] = 'NumarkMixtrack3.OnBeatJumpX';
-        controlsToFunctions['beatjump_' + jumpSize[i] + '_backward'] = 'NumarkMixtrack3.OnBeatJumpX';
-        controlsToFunctions['loop_move_' + jumpSize[i] + '_forward'] = 'NumarkMixtrack3.OnLoopMoveX';
-        controlsToFunctions['loop_move_' + jumpSize[i] + '_backward'] = 'NumarkMixtrack3.OnLoopMoveX';
     }
 
     engine.connectControl("[EffectRack1_EffectUnit" + onDeckNum + "_Effect1]", "enabled",
@@ -1681,7 +1653,7 @@ NumarkMixtrack3.PADLoopButton = function(channel, control, value, status, group)
 
         if (engine.getValue(group, 'beatloop_' + loopsizeNew + '_enabled')) {
             // Loop is active, turn it off
-            engine.setValue(deck.group, 'reloop_exit', true);
+            engine.setValue(deck.group, 'reloop_toggle', true);
             deck.LEDs["padLoop" + padIndex].onOff(PADcolors.yellow);
         } else {
             // Loop is not active, turn it on
@@ -1710,7 +1682,7 @@ NumarkMixtrack3.onPADLoopButtonHold = function(channel, control, value, status, 
     }
     
     if (eventkind === LONG_PRESS) {
-        engine.setValue(deck.group, 'reloop_exit', true);
+        engine.setValue(deck.group, 'reloop_toggle', true);
     }
 };
 
@@ -1854,9 +1826,7 @@ NumarkMixtrack3.PitchBendMinusButton = function(channel, control, value, status,
 
     if (value === DOWN) {
         if (deck.shiftKey) {
-            engine.setValue(deck.group, "loop_move", -loopMoveSize);
-        } else if (deck.TapDown) {
-            engine.setValue(deck.group, "beatjump", -beatJumpSize);
+            engine.setValue(deck.group, "beatjump_backward", true);
         } else {
             engine.setValue(deck.group, "rate_temp_down", true);
         }
@@ -1870,9 +1840,7 @@ NumarkMixtrack3.PitchBendPlusButton = function(channel, control, value, status, 
 
     if (value === DOWN) {
         if (deck.shiftKey) {
-            engine.setValue(deck.group, "loop_move", loopMoveSize);
-        } else if (deck.TapDown) {
-            engine.setValue(deck.group, "beatjump", beatJumpSize);
+            engine.setValue(deck.group, "beatjump_forward", true);
         } else {
             engine.setValue(deck.group, "rate_temp_up", true);
         }
@@ -1907,41 +1875,19 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
         }
     }
 
-    if (deck.TapDown) {
-        engine.setValue('[BeatJump]', increase ? 'next': 'prev', true);
-        engine.setValue('[BeatJump]', increase ? 'next': 'prev', false);
-    }
-
     if (deck.shiftKey) {
-        engine.setValue('[LoopMove]', increase ? 'next': 'prev', true);
-        engine.setValue('[LoopMove]', increase ? 'next': 'prev', false);
+        var presetJumpSizes = [1/32, 1/16, 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512];
+        var jumpSize = engine.getValue(deck.group, 'beatjump_size');
+        var index = presetJumpSizes.indexOf(jumpSize);
+
+        if (increase) {
+            jumpSize = presetJumpSizes[(index + 1) % (presetJumpSizes.length)];
+        } else {
+            jumpSize = presetJumpSizes.slice(index - 1)[0];
+        }
+
+        engine.setValue(deck.group, 'beatjump_size', jumpSize);
     }
-};
-
-NumarkMixtrack3.OnBeatJump = function(value, group, control) {
-    if (!value) return;
-    // function to use to determine next jump size depends on value of control
-    var nextSizeFun = (control === 'next') ? nextJumpSize : prevJumpSize;
-    beatJumpSize = nextSizeFun(beatJumpSize);
-};
-
-NumarkMixtrack3.OnLoopMove = function(value, group, control) {
-    if (!value) return;
-    var nextSizeFun = (control === 'next') ? nextJumpSize : prevJumpSize;
-    loopMoveSize = nextSizeFun(loopMoveSize);
-};
-
-// when we hit a button on the UI that beat jumps by a certain amount, reset beatJumpSize
-// to reflect this. This mostly prevents the script and UI from becoming out of sync
-// when the script is reset but the UI is not.
-NumarkMixtrack3.OnBeatJumpX = function(value, group, control) {
-    if (!value) return;
-    beatJumpSize = parseInt(control.match(/\d+/)[0]);
-};
-
-NumarkMixtrack3.OnLoopMoveX = function(value, group, control) {
-    if (!value) return;
-    loopMoveSize = parseInt(control.match(/\d+/)[0]);
 };
 
 NumarkMixtrack3.bpmTap = function(channel, control, value, status, group) {
@@ -1999,26 +1945,17 @@ NumarkMixtrack3.FilterKnob = function(channel, control, value, status, group) {
 
 NumarkMixtrack3.loop_in = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
-
-    if (value === DOWN) {
-        engine.setValue(deck.group, "loop_in", value ? 1 : 0);
-    }
+    engine.setValue(deck.group, 'loop_in', value === DOWN);
 };
 
 NumarkMixtrack3.loop_out = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
-
-    if (value === DOWN) {
-        engine.setValue(deck.group, "loop_out", value ? 1 : 0);
-    }
+    engine.setValue(deck.group, 'loop_out', value === DOWN);
 };
 
 NumarkMixtrack3.reloop_exit = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
-
-    if (value === DOWN) {
-        engine.setValue(deck.group, "reloop_exit", value ? 1 : 0);
-    }
+    engine.setValue(deck.group, 'reloop_toggle', value === DOWN);
 };
 
 NumarkMixtrack3.LoopHalveButton = function(channel, control, value, status, group) {
