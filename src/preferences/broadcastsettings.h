@@ -22,8 +22,8 @@ class BroadcastSettings {
 
   private:
     void loadProfiles();
-    QString filenameForProfile(BroadcastProfilePtr profile);
-    QString filenameForProfile(const QString& profileName);
+    QString filePathForProfile(BroadcastProfilePtr profile);
+    QString filePathForProfile(const QString& profileName);
     QString getProfilesFolder();
     void loadLegacySettings(BroadcastProfilePtr profile);
 

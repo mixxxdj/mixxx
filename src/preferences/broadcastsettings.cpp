@@ -26,7 +26,7 @@ BroadcastSettings::BroadcastSettings(UserSettingsPointer pConfig)
 void BroadcastSettings::loadProfiles() {
     QDir profilesFolder(getProfilesFolder());
     if(!profilesFolder.exists()) {
-        kLogger.warning()
+        kLogger.debug()
                 << "Profiles folder doesn't exist. Creating it.";
         profilesFolder.mkpath(profilesFolder.absolutePath());
     }
@@ -35,8 +35,19 @@ void BroadcastSettings::loadProfiles() {
     QFileInfoList files =
             profilesFolder.entryInfoList(nameFilters, QDir::Files, QDir::Name);
 
+    // If *.bcp.xml files exist in the profiles subfolder, those will be loaded
+    // and instanciated in the class' internal profile list for other by it and
+    // Mixxx subsystems related to Live Broadcasting.
+    // If that directory is empty (common reasons: it has been created by the
+    // code at the beginning, or all profiles were deleted) then a default
+    // profile with default values is created. That case could also mean that
+    // Mixxx has just been upgraded to a new version, so "legacy format" values
+    // has fetched from mixxx.cfg and loaded into the fresh default profile.
+    // It's important to take into account that the "legacy" settings are left
+    // in mixxx.cfg for retro-compatibility during alpha and beta testing.
+
     if(files.count() > 0) {
-        kLogger.warning() << "Found " << files.count() << " profiles.";
+        kLogger.debug() << "Found " << files.count() << " profiles.";
         // Load profiles from filesystem
         for(QFileInfo fileInfo : files) {
             BroadcastProfilePtr profile =
@@ -46,10 +57,9 @@ void BroadcastSettings::loadProfiles() {
                m_profiles.push_back(profile);
         }
     } else {
-        kLogger.warning()
+        kLogger.debug()
                 << "No profiles found. Creating default profile.";
 
-        // Create default profile
         BroadcastProfilePtr defaultProfile(
                     new BroadcastProfile(kDefaultProfile));
         // Upgrade from mixxx.cfg format to XML (if required)
@@ -66,19 +76,20 @@ void BroadcastSettings::saveProfile(BroadcastProfilePtr profile) {
     if(!profile)
         return;
 
-    profile->save(filenameForProfile(profile));
+    profile->save(filePathForProfile(profile));
 }
 
-QString BroadcastSettings::filenameForProfile(const QString& profileName) {
-    QString filename = profileName + QString(".bcp.xml");
+QString BroadcastSettings::filePathForProfile(const QString& profileName) {
+    QString filename = profileName + ".bcp.xml";
+    filename = BroadcastProfile::stripForbiddenChars(filename);
     return QDir(getProfilesFolder()).absoluteFilePath(filename);
 }
 
-QString BroadcastSettings::filenameForProfile(BroadcastProfilePtr profile) {
+QString BroadcastSettings::filePathForProfile(BroadcastProfilePtr profile) {
     if(!profile)
         return QString();
 
-    return filenameForProfile(profile->getProfileName());
+    return filePathForProfile(profile->getProfileName());
 }
 
 QString BroadcastSettings::getProfilesFolder() {
@@ -121,7 +132,7 @@ void BroadcastSettings::deleteProfile(BroadcastProfilePtr profile) {
     if(!profile)
         return;
 
-    QFileInfo xmlFile(filenameForProfile(profile));
+    QFileInfo xmlFile(filePathForProfile(profile));
     if(xmlFile.exists())
         QFile::remove(xmlFile.absolutePath());
 
