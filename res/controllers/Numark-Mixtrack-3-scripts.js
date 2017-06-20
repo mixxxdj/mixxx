@@ -1983,7 +1983,7 @@ NumarkMixtrack3.OnLoopInOutChange = function(value, group, control) {
         deck.LEDs.loopout.onOff(OFF);
         deck.LEDs.reloopExit.onOff(OFF);
         deck.LEDs.loopHalve.onOff(OFF);
-    } else if (valOut == -1 && deck.loaded) {
+    } else if (valOut == -1 && deck.trackLoaded()) {
         deck.LEDs.loopin.onOff(PADcolors.blue);
         if (deck.LEDs.loopout.flashDuration !== 300) {
             deck.LEDs.loopout.flashOn(300, PADcolors.blue, 300);
@@ -2038,7 +2038,7 @@ NumarkMixtrack3.OnPlaypositionChange = function(value, group, control) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
     var duration = engine.getValue(group, "duration");
 
-    if (deck.loaded && TrackEndWarning) {
+    if (deck.trackLoaded() && TrackEndWarning) {
         var timeRemaining = duration * (1 - value);
 
         if (timeRemaining <= 30) {
