@@ -11,7 +11,7 @@
 class BroadcastProfile {
     public:
       explicit BroadcastProfile(const QString& profileName);
-      void save(const QString& filename);
+      bool save(const QString& filename);
 
       static BroadcastProfile* loadFromFile(
               const QString& filename);
@@ -102,8 +102,8 @@ class BroadcastProfile {
       void setOggDynamicUpdate(bool value);
 
     private:
-      void setDefaultValues();
-      void loadValues(const QString& filename);
+      void adoptDefaultValues();
+      bool loadValues(const QString& filename);
 
       QString m_profileName;
 

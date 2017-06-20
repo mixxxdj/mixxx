@@ -62,11 +62,13 @@ const QString kDefaultStreamDesc =
 const QString kDefaultStreamGenre = QObject::tr("Live Mix");
 const bool kDefaultStreamPublic = false;
 
-const QRegExp kForbiddenChars = QRegExp("[<>:\"\\/|?*\\\\]");
+const QRegExp kForbiddenChars =
+        QRegExp("[<>:\"\\/|?*\\\\]|(\\.\\.)"
+                "|CON|AUX|PRN|COM(\\d+)|LPT(\\d+)|NUL");
 } // anonymous namespace
 
 BroadcastProfile::BroadcastProfile(const QString& profileName) {
-    setDefaultValues();
+    adoptDefaultValues();
     setProfileName(profileName);
 }
 
@@ -87,7 +89,7 @@ BroadcastProfile* BroadcastProfile::loadFromFile(const QString& filename) {
     return profile;
 }
 
-void BroadcastProfile::setDefaultValues() {
+void BroadcastProfile::adoptDefaultValues() {
     m_enabled = true;
 
     m_host = QString();
@@ -123,8 +125,10 @@ void BroadcastProfile::setDefaultValues() {
     m_maximumRetries = kDefaultMaximumRetries;
 }
 
-void BroadcastProfile::loadValues(const QString& filename) {
+bool BroadcastProfile::loadValues(const QString& filename) {
     QDomElement doc = XmlParse::openXMLFile(filename, kDoctype);
+    if(doc.childNodes().size() < 1)
+        return false;
 
     m_enabled = (bool)XmlParse::selectNodeInt(doc, kEnabled);
 
@@ -167,9 +171,11 @@ void BroadcastProfile::loadValues(const QString& filename) {
     m_metadataFormat = XmlParse::selectNodeQString(doc, kMetadataFormat);
     m_oggDynamicUpdate =
             (bool)XmlParse::selectNodeInt(doc, kMetadataFormat);
+
+    return true;
 }
 
-void BroadcastProfile::save(const QString& filename) {
+bool BroadcastProfile::save(const QString& filename) {
     QDomDocument doc(kDoctype);
     QDomElement docRoot = doc.createElement(kDocumentRoot);
 
@@ -223,11 +229,14 @@ void BroadcastProfile::save(const QString& filename) {
     doc.appendChild(docRoot);
 
     QFile xmlFile(filename);
-    xmlFile.open(QIODevice::WriteOnly | QIODevice::Text);
+    if(xmlFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream fileStream(&xmlFile);
+        doc.save(fileStream, 4);
+        xmlFile.close();
 
-    QTextStream fileStream(&xmlFile);
-    doc.save(fileStream, 4);
-    xmlFile.close();
+        return true;
+    }
+    return false;
 }
 
 void BroadcastProfile::setProfileName(const QString &profileName) {
@@ -243,6 +252,8 @@ QString BroadcastProfile::getProfileName() const {
     return m_profileName;
 }
 
+// This was useless before, but now comes in handy for multi-broadcasting,
+// where it means "this connection is enabled and will be started by Mixxx"
 bool BroadcastProfile::getEnabled() const {
     return m_enabled;
 }
