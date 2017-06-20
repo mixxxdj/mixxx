@@ -1876,14 +1876,20 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
     }
 
     if (deck.shiftKey) {
-        var presetJumpSizes = [1/32, 1/16, 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512];
         var jumpSize = engine.getValue(deck.group, 'beatjump_size');
-        var index = presetJumpSizes.indexOf(jumpSize);
+        var maxJumpSize = 512;
+        var minJumpSize = 1/32;
 
         if (increase) {
-            jumpSize = presetJumpSizes[(index + 1) % (presetJumpSizes.length)];
+            jumpSize = jumpSize * 2;
         } else {
-            jumpSize = presetJumpSizes.slice(index - 1)[0];
+            jumpSize = jumpSize / 2;
+        }
+
+        if (jumpSize > maxJumpSize) {
+            jumpSize = maxJumpSize;
+        } else if (jumpSize < minJumpSize) {
+            jumpSize = minJumpSize;
         }
 
         engine.setValue(deck.group, 'beatjump_size', jumpSize);
