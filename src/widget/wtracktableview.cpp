@@ -44,6 +44,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false) {
 
+    setTextElideMode(Qt::ElideLeft);
 
     connect(&m_loadTrackMapper, SIGNAL(mapped(QString)),
             this, SLOT(loadSelectionToGroup(QString)));
