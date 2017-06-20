@@ -1,6 +1,8 @@
 #ifndef DLGMISSING_H
 #define DLGMISSING_H
 
+#include <QPointer>
+
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/features/maintenance/ui_dlgmissing.h"
 #include "library/trackcollection.h"

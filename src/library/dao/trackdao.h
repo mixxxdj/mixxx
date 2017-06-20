@@ -54,17 +54,18 @@ class TrackDAO : public QObject, public virtual DAO {
   public:
     // The 'config object' is necessary because users decide ID3 tags get
     // synchronized on track metadata change
-    TrackDAO(QSqlDatabase& database, CueDAO& cueDao,
-             PlaylistDAO& playlistDao,
-             AnalysisDao& analysisDao,
-             LibraryHashDAO& libraryHashDao,
-             UserSettingsPointer pConfig);
-    virtual ~TrackDAO();
+    TrackDAO(
+            CueDAO& cueDao,
+            PlaylistDAO& playlistDao,
+            AnalysisDao& analysisDao,
+            LibraryHashDAO& libraryHashDao,
+            UserSettingsPointer pConfig);
+    ~TrackDAO() override;
 
+    void initialize(const QSqlDatabase& database) override {
+        m_database = database;
+    }
     void finish();
-    void setDatabase(QSqlDatabase& database) { m_database = database; }
-
-    void initialize();
 
     TrackId getTrackId(const QString& absoluteFilePath);
     QList<TrackId> getTrackIds(const QList<QFileInfo>& files);
@@ -88,19 +89,16 @@ class TrackDAO : public QObject, public virtual DAO {
     void addTracksFinish(bool rollback = false);
 
     bool onHidingTracks(
-            SqlTransaction& transaction,
             const QList<TrackId>& trackIds);
     void afterHidingTracks(
             const QList<TrackId>& trackIds);
 
     bool onUnhidingTracks(
-            SqlTransaction& transaction,
             const QList<TrackId>& trackIds);
     void afterUnhidingTracks(
             const QList<TrackId>& trackIds);
 
     bool onPurgingTracks(
-            SqlTransaction& transaction,
             const QList<TrackId>& trackIds);
     void afterPurgingTracks(
             const QList<TrackId>& trackIds);

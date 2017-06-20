@@ -7,6 +7,9 @@
 #include <QMessageBox>
 #include <QTranslator>
 
+
+#include "database/mixxxdb.h"
+
 #include "controllers/keyboard/keyboardeventfilter.h"
 
 #include "library/features/analysis/analysisfeature.h"
@@ -34,6 +37,8 @@
 #include "library/trackmodel.h"
 #include "library/queryutil.h"
 #include "mixer/playermanager.h"
+#include "util/db/dbconnectionpooled.h"
+#include "util/logger.h"
 #include "util/assert.h"
 #include "util/sandbox.h"
 
@@ -42,26 +47,58 @@
 
 #include "library/library.h"
 
+namespace {
+
+const mixxx::Logger kLogger("Library");
+
+} // anonymous namespace
+
+//static
+const QString Library::kConfigGroup("[Library]");
+
+//static
+const ConfigKey Library::kConfigKeyRepairDatabaseOnNextRestart(kConfigGroup, "RepairDatabaseOnNextRestart");
+
 // The default row height of the library.
 const int Library::kDefaultRowHeightPx = 20;
 
-Library::Library(UserSettingsPointer pConfig,
-                 PlayerManagerInterface* pPlayerManager,
-                 RecordingManager* pRecordingManager) :
-        m_pConfig(pConfig),
-        m_pTrackCollection(new TrackCollection(pConfig)),
-        m_pLibraryControl(new LibraryControl(this)),
-        m_pRecordingManager(pRecordingManager),
-        m_scanner(m_pTrackCollection, pConfig),
-        m_pSidebarExpanded(nullptr),
-        m_hoveredFeature(nullptr),
-        m_focusedFeature(nullptr),
-        m_focusedPaneId(-1),
-        m_preselectedPane(-1),
-        m_previewPreselectedPane(-1) {
+Library::Library(
+        UserSettingsPointer pConfig,
+        mixxx::DbConnectionPoolPtr pDbConnectionPool,
+        PlayerManagerInterface* pPlayerManager,
+        RecordingManager* pRecordingManager)
+    : m_pConfig(pConfig),
+      m_pDbConnectionPool(pDbConnectionPool),
+      m_pTrackCollection(new TrackCollection(m_pConfig)),
+      m_pMixxxLibraryFeature(nullptr),
+      m_pPlaylistFeature(nullptr),
+      m_pCrateFeature(nullptr),
+      m_pAnalysisFeature(nullptr),
+      m_pLibraryControl(new LibraryControl(this)),
+      m_scanner(m_pDbConnectionPool, m_pTrackCollection, m_pConfig),
+      m_pSidebarExpanded(nullptr),
+      m_hoveredFeature(nullptr),
+      m_focusedFeature(nullptr),
+      m_focusedPaneId(-1),
+      m_preselectedPane(-1),
+      m_previewPreselectedPane(-1) {
+    QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
+
+    // TODO(XXX): Add a checkbox in the library preferences for checking
+    // and repairing the database on the next restart of the application.
+    if (pConfig->getValue(kConfigKeyRepairDatabaseOnNextRestart, false)) {
+        kLogger.info() << "Checking and repairing database (if necessary)";
+        m_pTrackCollection->repairDatabase(dbConnection);
+        // Reset config value
+        pConfig->setValue(kConfigKeyRepairDatabaseOnNextRestart, false);
+    }
+
+    kLogger.info() << "Connecting database";
+    m_pTrackCollection->connectDatabase(dbConnection);
+
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
 
-    m_pKeyNotation.reset(new ControlObject(ConfigKey("[Library]", "key_notation")));
+    m_pKeyNotation.reset(new ControlObject(ConfigKey(kConfigGroup, "key_notation")));
 
     connect(&m_scanner, SIGNAL(scanStarted()),
             this, SIGNAL(scanStarted()));
@@ -72,7 +109,7 @@ Library::Library(UserSettingsPointer pConfig,
             this, SLOT(slotRefreshLibraryModels()));
     
     createTrackCache();
-    createFeatures(pConfig, pPlayerManager);
+    createFeatures(pConfig, pPlayerManager, pRecordingManager);
 
     // On startup we need to check if all of the user's library folders are
     // accessible to us. If the user is using a database from <1.12.0 with
@@ -87,8 +124,8 @@ Library::Library(UserSettingsPointer pConfig,
     }
 
     m_iTrackTableRowHeight = m_pConfig->getValue(
-            ConfigKey("[Library]", "RowHeight"), kDefaultRowHeightPx);
-    QString fontStr = m_pConfig->getValueString(ConfigKey("[Library]", "Font"));
+            ConfigKey(kConfigGroup, "RowHeight"), kDefaultRowHeightPx);
+    QString fontStr = m_pConfig->getValueString(ConfigKey(kConfigGroup, "Font"));
     if (!fontStr.isEmpty()) {
         m_trackTableFont.fromString(fontStr);
     } else {
@@ -101,6 +138,10 @@ Library::~Library() {
     m_features.clear();
 
     delete m_pLibraryControl;
+
+    kLogger.info() << "Disconnecting database";
+    m_pTrackCollection->disconnectDatabase();
+
     //IMPORTANT: m_pTrackCollection gets destroyed via the QObject hierarchy somehow.
     //           Qt does it for us due to the way RJ wrote all this stuff.
     //Update:  - OR NOT! As of Dec 8, 2009, this pointer must be destroyed manually otherwise
@@ -691,8 +732,10 @@ void Library::createTrackCache() {
 
 
 
-void Library::createFeatures(UserSettingsPointer pConfig,
-                             PlayerManagerInterface* pPlayerManager) {
+void Library::createFeatures(
+        UserSettingsPointer pConfig,
+        PlayerManagerInterface* pPlayerManager,
+        RecordingManager* pRecordingManager) {
     m_pMixxxLibraryFeature = new MixxxLibraryFeature(
             pConfig, this, this, m_pTrackCollection);
     addFeature(m_pMixxxLibraryFeature);
@@ -709,7 +752,7 @@ void Library::createFeatures(UserSettingsPointer pConfig,
     addFeature(m_pCrateFeature);
     
     BrowseFeature* browseFeature = new BrowseFeature(
-			pConfig, this, this, m_pTrackCollection, m_pRecordingManager);
+			pConfig, this, this, m_pTrackCollection, pRecordingManager);
     connect(browseFeature, SIGNAL(scanLibrary()),
             &m_scanner, SLOT(scan()));
     connect(&m_scanner, SIGNAL(scanStarted()),
@@ -719,7 +762,7 @@ void Library::createFeatures(UserSettingsPointer pConfig,
     addFeature(browseFeature);
 
     addFeature(new RecordingFeature(
-			pConfig, this, this, m_pTrackCollection, m_pRecordingManager));
+			pConfig, this, this, m_pTrackCollection, pRecordingManager));
     
     addFeature(new HistoryFeature(pConfig, this, this, m_pTrackCollection));
     

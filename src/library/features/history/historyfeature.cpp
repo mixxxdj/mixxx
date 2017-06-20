@@ -115,7 +115,7 @@ void HistoryFeature::buildPlaylistList() {
     m_playlistList.clear();
     
     // Setup the sidebar playlist model    
-    QSqlQuery query("SELECT id, name FROM Playlists WHERE hidden=2");
+    QSqlQuery query("SELECT id, name FROM Playlists WHERE hidden=2", m_pTrackCollection->database());
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }

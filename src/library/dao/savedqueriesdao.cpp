@@ -8,14 +8,6 @@ const QString SavedQueriesDAO::kSelectStart =
         "SELECT query, title, selectedItems, sortOrder, "
         "vScrollbarPos, sortColumn, sortAscendingOrder, pinned, id ";
 
-SavedQueriesDAO::SavedQueriesDAO(QSqlDatabase& database)
-        : m_database(database) {
-
-}
-
-void SavedQueriesDAO::initialize() {
-}
-
 SavedSearchQuery SavedQueriesDAO::saveQuery(LibraryFeature* pFeature,
                                             SavedSearchQuery sQuery) {
     if (pFeature == nullptr) {

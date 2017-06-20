@@ -9,6 +9,7 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/features/analysis/analysisfeature.h"
 #include "library/features/analysis/dlganalysis.h"
+#include "library/library.h"
 #include "library/trackcollection.h"
 #include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
@@ -19,6 +20,7 @@ AnalysisFeature::AnalysisFeature(UserSettingsPointer pConfig,
                                  Library* pLibrary, TrackCollection* pTrackCollection,
                                  QObject* parent) :
         LibraryFeature(pConfig, pLibrary, pTrackCollection, parent),
+        m_pDbConnectionPool(pLibrary->dbConnectionPool()),
         m_pAnalyzerQueue(nullptr),
         m_iOldBpmEnabled(0),
         m_analysisTitleName(tr("Analyze")),
@@ -121,6 +123,18 @@ void AnalysisFeature::activate() {
     }
 }
 
+namespace {
+    inline
+    AnalyzerQueue::Mode getAnalyzerQueueMode(
+            const UserSettingsPointer& pConfig) {
+        if (pConfig->getValue<bool>(ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"), true)) {
+            return AnalyzerQueue::Mode::Default;
+        } else {
+            return AnalyzerQueue::Mode::WithoutWaveform;
+        }
+    }
+} // anonymous namespace
+
 void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
     if (m_pAnalyzerQueue == nullptr) {
         // Save the old BPM detection prefs setting (on or off)
@@ -129,7 +143,10 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
         m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(1));
         // Note: this sucks... we should refactor the prefs/analyzer to fix this hacky bit ^^^^.
 
-        m_pAnalyzerQueue = AnalyzerQueue::createAnalysisFeatureAnalyzerQueue(m_pConfig, m_pTrackCollection);
+        m_pAnalyzerQueue = new AnalyzerQueue(
+                m_pDbConnectionPool,
+                m_pConfig,
+                getAnalyzerQueueMode(m_pConfig));
 
         connect(m_pAnalyzerQueue, SIGNAL(trackProgress(int)),
                 m_pAnalysisView, SLOT(trackAnalysisProgress(int)));

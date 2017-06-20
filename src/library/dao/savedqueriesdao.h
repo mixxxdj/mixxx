@@ -70,9 +70,10 @@ class LibraryFeature;
 
 class SavedQueriesDAO : public DAO {
   public:
-    SavedQueriesDAO(QSqlDatabase& database);
-    
-    void initialize();
+    void initialize(const QSqlDatabase& database) override {
+        m_database = database;
+    }
+
     SavedSearchQuery saveQuery(LibraryFeature* pFeature, SavedSearchQuery sQuery);
     QList<SavedSearchQuery> getSavedQueries(const QString& settingsName) const;
     QList<SavedSearchQuery> getSavedQueries(const LibraryFeature *pFeature) const;
@@ -91,7 +92,7 @@ class SavedQueriesDAO : public DAO {
     
     static const QString kSelectStart;
     
-    QSqlDatabase& m_database;
+    QSqlDatabase m_database;
 };
 
 #endif // SAVEDQUERIESDAO_H

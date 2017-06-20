@@ -26,6 +26,19 @@
 
 namespace {
     const int kMaxRetrieveAttempts = 3;
+
+    int findOrCrateAutoDjPlaylistId(PlaylistDAO& playlistDAO) {
+        int playlistId = playlistDAO.getPlaylistIdFromName(AUTODJ_TABLE);
+        // If the AutoDJ playlist does not exist yet then create it.
+        if (playlistId < 0) {
+            playlistId = playlistDAO.createPlaylist(
+                    AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
+            VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
+                qWarning() << "Failed to create Auto DJ playlist!";
+            }
+        }
+        return playlistId;
+    }
 } // anonymous namespace
 
 AutoDJFeature::AutoDJFeature(UserSettingsPointer pConfig,
@@ -36,22 +49,10 @@ AutoDJFeature::AutoDJFeature(UserSettingsPointer pConfig,
         : LibraryFeature(pConfig, pLibrary, pTrackCollection, parent),
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
-          m_iAutoDJPlaylistId(-1),
+          m_iAutoDJPlaylistId(findOrCrateAutoDjPlaylistId(m_playlistDao)),
           m_pAutoDJProcessor(nullptr),
           m_pAutoDJView(nullptr),
-          m_autoDjCratesDao(pTrackCollection, pConfig) {
-    m_iAutoDJPlaylistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
-    // If the AutoDJ playlist does not exist yet then create it.
-    if (m_iAutoDJPlaylistId < 0) {
-        m_iAutoDJPlaylistId = m_playlistDao.createPlaylist(
-                AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
-        VERIFY_OR_DEBUG_ASSERT(m_iAutoDJPlaylistId >= 0) {
-            qWarning() << "Failed to create Auto DJ playlist!";
-        }
-    }
-    // The AutoDJCratesDAO expects that the dedicated AutoDJ playlist
-    // has already been created.
-    m_autoDjCratesDao.initialize();
+          m_autoDjCratesDao(m_iAutoDJPlaylistId, pTrackCollection, pConfig) {
 
     qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
     m_pAutoDJProcessor = new AutoDJProcessor(

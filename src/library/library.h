@@ -19,6 +19,7 @@
 #include "track/track.h"
 #include "util/parented_ptr.h"
 #include "util/memory.h"
+#include "util/db/dbconnectionpool.h"
 
 class AnalysisFeature;
 class CrateFeature;
@@ -26,14 +27,11 @@ class KeyboardEventFilter;
 class LibraryPaneManager;
 class LibraryControl;
 class LibraryFeature;
-class LibraryTableModel;
 class LibrarySidebarExpandedManager;
 class LibraryView;
 class MixxxLibraryFeature;
 class PlaylistFeature;
 class PlayerManagerInterface;
-class SidebarModel;
-class TrackModel;
 class TrackCollection;
 class WBaseLibrary;
 class WLibraryPane;
@@ -54,10 +52,19 @@ public:
     
     static const int kDefaultRowHeightPx;
     
+    static const QString kConfigGroup;
+
+    static const ConfigKey kConfigKeyRepairDatabaseOnNextRestart;
+
     Library(UserSettingsPointer pConfig,
+            mixxx::DbConnectionPoolPtr pDbConnectionPool,
             PlayerManagerInterface* pPlayerManager,
             RecordingManager* pRecordingManager);
-    virtual ~Library();
+    ~Library() override;
+
+    mixxx::DbConnectionPoolPtr dbConnectionPool() const {
+        return m_pDbConnectionPool;
+    }
     
     void bindSearchBar(WSearchLineEdit* searchLine, int id);
     void bindSidebarButtons(WButtonBar* sidebar);
@@ -75,14 +82,6 @@ public:
     
     void paneCollapsed(int paneId);
     void paneUncollapsed(int paneId);
-
-    // TODO(rryan) Transitionary only -- the only reason this is here is so the
-    // waveform widgets can signal to a player to load a track. This can be
-    // fixed by moving the waveform renderers inside player and connecting the
-    // signals directly.
-    TrackCollection* getTrackCollection() {
-        return m_pTrackCollection;
-    }
 
     inline int getTrackTableRowHeight() const {
         return m_iTrackTableRowHeight;
@@ -156,19 +155,25 @@ public:
     LibraryPaneManager* getPreselectedPane();
     
     void createTrackCache();
-    void createFeatures(UserSettingsPointer pConfig, PlayerManagerInterface *pPlayerManager);
+    void createFeatures(
+            UserSettingsPointer pConfig,
+            PlayerManagerInterface *pPlayerManager,
+            RecordingManager* pRecordingManager);
     
     void handleFocus();
     void handlePreselection();
     
-    UserSettingsPointer m_pConfig;
+    const UserSettingsPointer m_pConfig;
+
+    // The Mixxx database connection pool
+    const mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
+
     TrackCollection* m_pTrackCollection;
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
     AnalysisFeature* m_pAnalysisFeature;
     LibraryControl* m_pLibraryControl;
-    RecordingManager* m_pRecordingManager;
     LibraryScanner m_scanner;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;

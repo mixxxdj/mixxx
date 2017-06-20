@@ -9,7 +9,6 @@
 #include <QString>
 #include <QList>
 
-#include "analyzer/vamp/vamppluginloader.h"
 #include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefbeatsdlg.h"
