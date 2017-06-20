@@ -1144,18 +1144,16 @@ NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) 
 
     if (shifted && value === ON) {
         // SHIFT + BROWSE push : directory mode -- > Open/Close selected side bar item
-        engine.setValue(group, "ToggleSelectedSidebarItem", true);
+        engine.setValue('[Library]', 'ChooseItem', true);
     } else {
         // Browse push : maximize/minimize library view
         if (value === ON) {
-            script.toggleControl("[Master]", "maximize_library");
+            script.toggleControl('[Master]', 'maximize_library');
         }
     }
 };
 
 NumarkMixtrack3.BrowseKnob = function(channel, control, value, status, group) {
-    var shifted = (NumarkMixtrack3.decks.D1.shiftKey || NumarkMixtrack3.decks
-        .D2.shiftKey || NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey);
     // value = 1 / 2 / 3 ... for positive //value = 1 / 2 / 3  
     var nval = (value > 0x40 ? value - 0x80 : value);
     // adjust sampler pregain using PAD + Browse
@@ -1168,21 +1166,25 @@ NumarkMixtrack3.BrowseKnob = function(channel, control, value, status, group) {
         startingSampler = 5;
         engine.setValue("[Deere]","sampler_bank_2", true);
     }
+    var shifted = (
+        NumarkMixtrack3.decks.D1.shiftKey || NumarkMixtrack3.decks.D2.shiftKey ||
+        NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey
+    );
 
     // unmodified behaviour
     if (!shifted && !startingSampler) {
-        engine.setValue(group, "SelectTrackKnob", nval);
+        engine.setValue('[Library]', 'MoveVertical', nval);
     }
 
     if (shifted) {
         // SHIFT+Turn BROWSE Knob : directory mode --> select Play List/Side bar item
         if (nval > 0) {
             for (var i = 0; i < nval; i++) {
-                engine.setValue(group, "SelectNextPlaylist", 1);
+                engine.setValue('[Library]', 'MoveDown', 1);
             }
         } else {
             for (var i = 0; i < -nval; i++) {
-                engine.setValue(group, "SelectPrevPlaylist", 1);
+                engine.setValue('[Library]', 'MoveUp', 1);
             }
         }
     }
