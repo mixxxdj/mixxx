@@ -87,16 +87,17 @@ QString BroadcastProfile::stripForbiddenChars(const QString& str) {
     return sourceText.replace(kForbiddenChars, " ");
 }
 
-BroadcastProfile* BroadcastProfile::loadFromFile(
+BroadcastProfilePtr BroadcastProfile::loadFromFile(
         const QString& filename) {
     QFileInfo xmlFile(filename);
     if(!xmlFile.exists())
-        return nullptr;
+        return BroadcastProfilePtr(nullptr);
 
     QString profileName = xmlFile.baseName();
-    BroadcastProfile* profile = new BroadcastProfile(profileName);
+    BroadcastProfilePtr profile =
+            std::make_unique<BroadcastProfile>(profileName);
     profile->loadValues(filename);
-    return profile;
+    return std::move(profile);
 }
 
 void BroadcastProfile::adoptDefaultValues() {

@@ -10,6 +10,9 @@
 
 #include "preferences/usersettings.h"
 
+class BroadcastProfile;
+typedef std::unique_ptr<BroadcastProfile> BroadcastProfilePtr;
+
 class BroadcastProfile : public QObject {
   Q_OBJECT
 
@@ -18,7 +21,7 @@ class BroadcastProfile : public QObject {
                               QObject* parent = nullptr);
     bool save(const QString& filename);
 
-    static BroadcastProfile* loadFromFile(const QString& filename);
+    static BroadcastProfilePtr loadFromFile(const QString& filename);
     static bool validName(const QString& str);
     static QString stripForbiddenChars(const QString& str);
 
@@ -148,7 +151,5 @@ class BroadcastProfile : public QObject {
     QString m_metadataFormat;
     bool m_oggDynamicUpdate;
 };
-
-typedef std::unique_ptr<BroadcastProfile> BroadcastProfilePtr;
 
 #endif // BROADCASTPROFILE_H

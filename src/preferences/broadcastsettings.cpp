@@ -53,17 +53,14 @@ void BroadcastSettings::loadProfiles() {
 
         // Load profiles from filesystem
         for(QFileInfo fileInfo : files) {
-            BroadcastProfile* profile =
+            BroadcastProfilePtr profile =
                     BroadcastProfile::loadFromFile(fileInfo.absoluteFilePath());
 
-            if(profile) {
-                BroadcastProfilePtr profilePtr(profile);
-                m_profiles[profile->getProfileName()] = std::move(profilePtr);
-            }
+            if(profile)
+                m_profiles[profile->getProfileName()] = std::move(profile);
         }
     } else {
-        kLogger.debug()
-                << "No profiles found. Creating default profile.";
+        kLogger.debug() << "No profiles found. Creating default profile.";
 
         BroadcastProfilePtr defaultProfile =
                 std::make_unique<BroadcastProfile>(kDefaultProfile);
