@@ -448,24 +448,20 @@ void EngineMaster::process(const int iBufferSize) {
 
         if (configuredTalkoverMixMode != TalkoverMixMode::DIRECT_MONITOR
             && m_pNumMicsConfigured->get() > 0) {
-            m_pInputLatencyCompensationHeadphonesDelay->process(m_pHead, iBufferSize);
-        }
+            if (m_bRampingGain) {
+                ChannelMixer::mixChannelsRamping(
+                        m_headphoneGain, &m_activeTalkoverHeadphoneChannels,
+                        &m_channelHeadphoneGainCache,
+                        m_pTalkoverHeadphones, iBufferSize);
+            } else {
+                ChannelMixer::mixChannels(
+                        m_headphoneGain, &m_activeTalkoverHeadphoneChannels,
+                        &m_channelHeadphoneGainCache,
+                        m_pTalkoverHeadphones, iBufferSize);
+            }
 
-        if (m_bRampingGain) {
-            ChannelMixer::mixChannelsRamping(
-                    m_headphoneGain, &m_activeTalkoverHeadphoneChannels,
-                    &m_channelHeadphoneGainCache,
-                    m_pTalkoverHeadphones, iBufferSize);
-        } else {
-            ChannelMixer::mixChannels(
-                    m_headphoneGain, &m_activeTalkoverHeadphoneChannels,
-                    &m_channelHeadphoneGainCache,
-                    m_pTalkoverHeadphones, iBufferSize);
-        }
-
-        if (configuredTalkoverMixMode != TalkoverMixMode::DIRECT_MONITOR
-            && m_pNumMicsConfigured->get() > 0) {
             m_pInputLatencyCompensationHeadphonesDelay->process(m_pHead, iBufferSize);
+
             SampleUtil::copy2WithGain(m_pHead,
                 m_pHead, 1.0,
                 m_pTalkoverHeadphones, 1.0,
