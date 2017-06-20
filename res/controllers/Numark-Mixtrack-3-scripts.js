@@ -324,11 +324,6 @@ LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relig
     }
 };
 
-// public
-LED.prototype.getFlashDuration = function() {
-    return this.flashDuration;
-};
-
 // private : relight=true : restore light state before it was flashing
 // this is a call back function (called in flashon() )
 LED.prototype.flashOff = function(relight) {
@@ -1979,7 +1974,7 @@ NumarkMixtrack3.OnLoopInOutChange = function(value, group, control) {
     var valEnabled = engine.getValue(deck.group, "loop_enabled");
 
     if (valIn == -1) {
-        if (deck.LEDs.loopin.getFlashDuration() !== 300) {
+        if (deck.LEDs.loopin.flashDuration !== 300) {
             deck.LEDs.loopin.flashOn(300, PADcolors.blue, 300);
         }
 
@@ -1988,7 +1983,7 @@ NumarkMixtrack3.OnLoopInOutChange = function(value, group, control) {
         deck.LEDs.loopHalve.onOff(OFF);
     } else if (valOut == -1 && deck.loaded) {
         deck.LEDs.loopin.onOff(PADcolors.blue);
-        if (deck.LEDs.loopout.getFlashDuration() !== 300) {
+        if (deck.LEDs.loopout.flashDuration !== 300) {
             deck.LEDs.loopout.flashOn(300, PADcolors.blue, 300);
         }
         deck.LEDs.reloopExit.onOff(OFF);
@@ -1996,7 +1991,7 @@ NumarkMixtrack3.OnLoopInOutChange = function(value, group, control) {
     } else if (!valEnabled) {
         deck.LEDs.loopin.onOff(PADcolors.blue);
         deck.LEDs.loopout.onOff(PADcolors.blue);
-        if (deck.LEDs.reloopExit.getFlashDuration() !== 300) {
+        if (deck.LEDs.reloopExit.flashDuration !== 300) {
             deck.LEDs.reloopExit.flashOn(300, PADcolors.blue, 300);
         }
         deck.LEDs.loopHalve.onOff(PADcolors.blue);
@@ -2046,12 +2041,12 @@ NumarkMixtrack3.OnPlaypositionChange = function(value, group, control) {
 
         if (timeRemaining <= 30) {
             // flashing slowly
-            if (deck.LEDs.jogWheelsInScratchMode.getFlashDuration() !== 1000) {
+            if (deck.LEDs.jogWheelsInScratchMode.flashDuration !== 1000) {
                 deck.LEDs.jogWheelsInScratchMode.flashOn(1000, ON, 1000);
             }
         } else if (timeRemaining <= 10) {
             // flashing fast
-            if (deck.LEDs.jogWheelsInScratchMode.getFlashDuration() !== 300) {
+            if (deck.LEDs.jogWheelsInScratchMode.flashDuration !== 300) {
                 deck.LEDs.jogWheelsInScratchMode.flashOn(300, ON, 300);
             }
         } else {
