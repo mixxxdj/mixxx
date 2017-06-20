@@ -82,17 +82,16 @@ QString BroadcastProfile::stripForbiddenChars(const QString& str) {
     return sourceText.replace(kForbiddenChars, " ");
 }
 
-BroadcastProfilePtr BroadcastProfile::loadFromFile(const QString& filename) {
+BroadcastProfile* BroadcastProfile::loadFromFile(
+        const QString& filename) {
     QFileInfo xmlFile(filename);
     if(!xmlFile.exists())
-        return BroadcastProfilePtr(nullptr);
+        return nullptr;
 
     QString profileName = xmlFile.baseName();
-
     BroadcastProfile* profile = new BroadcastProfile(profileName);
     profile->loadValues(filename);
-
-    return BroadcastProfilePtr(profile);
+    return profile;
 }
 
 void BroadcastProfile::adoptDefaultValues() {

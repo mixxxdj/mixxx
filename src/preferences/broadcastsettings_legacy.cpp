@@ -31,7 +31,7 @@ const char* kStreamPublic = "stream_public";
 const char* kStreamWebsite = "stream_website";
 }
 
-void BroadcastSettings::loadLegacySettings(BroadcastProfilePtr profile) {
+void BroadcastSettings::loadLegacySettings(const BroadcastProfilePtr& profile) {
     if(!profile)
         return;
 

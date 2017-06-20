@@ -48,31 +48,35 @@ void BroadcastSettings::loadProfiles() {
 
     if(files.count() > 0) {
         kLogger.debug() << "Found " << files.count() << " profiles.";
+
         // Load profiles from filesystem
         for(QFileInfo fileInfo : files) {
-            BroadcastProfilePtr profile =
+            BroadcastProfile* profile =
                     BroadcastProfile::loadFromFile(fileInfo.absoluteFilePath());
 
-            if(profile)
-               m_profiles.push_back(profile);
+            if(profile) {
+                BroadcastProfilePtr profilePtr(profile);
+                m_profiles.push_back(std::move(profilePtr));
+            }
         }
     } else {
         kLogger.debug()
                 << "No profiles found. Creating default profile.";
 
-        BroadcastProfilePtr defaultProfile(
-                    new BroadcastProfile(kDefaultProfile));
+        BroadcastProfilePtr defaultProfile =
+                std::make_unique<BroadcastProfile>(kDefaultProfile);
+
         // Upgrade from mixxx.cfg format to XML (if required)
         loadLegacySettings(defaultProfile);
 
         saveProfile(defaultProfile);
 
-        m_profiles.push_back(defaultProfile);
+        m_profiles.push_back(std::move(defaultProfile));
         setCurrentProfile(defaultProfile);
     }
 }
 
-void BroadcastSettings::saveProfile(BroadcastProfilePtr profile) {
+void BroadcastSettings::saveProfile(const BroadcastProfilePtr& profile) {
     if(!profile)
         return;
 
@@ -85,7 +89,8 @@ QString BroadcastSettings::filePathForProfile(const QString& profileName) {
     return QDir(getProfilesFolder()).absoluteFilePath(filename);
 }
 
-QString BroadcastSettings::filePathForProfile(BroadcastProfilePtr profile) {
+QString BroadcastSettings::filePathForProfile(
+        const BroadcastProfilePtr& profile) {
     if(!profile)
         return QString();
 
@@ -98,7 +103,7 @@ QString BroadcastSettings::getProfilesFolder() {
     return profilesPath;
 }
 
-void BroadcastSettings::setCurrentProfile(BroadcastProfilePtr profile) {
+void BroadcastSettings::setCurrentProfile(const BroadcastProfilePtr& profile) {
     if(!profile)
         return;
 
@@ -106,15 +111,16 @@ void BroadcastSettings::setCurrentProfile(BroadcastProfilePtr profile) {
     m_pConfig->setValue(ConfigKey(kConfigKey, kCurrentProfile), profileName);
 }
 
-BroadcastProfilePtr BroadcastSettings::getCurrentProfile() {
+const BroadcastProfilePtr& BroadcastSettings::getCurrentProfile() {
     QString currentProfile = m_pConfig->getValue(
                                  ConfigKey(kConfigKey, kCurrentProfile),
                                  kDefaultProfile);
     return getProfileByName(currentProfile);
 }
 
-BroadcastProfilePtr BroadcastSettings::getProfileByName(const QString& profileName) {
-    for(BroadcastProfilePtr profile : m_profiles) {
+const BroadcastProfilePtr& BroadcastSettings::getProfileByName(
+        const QString& profileName) {
+    for(const auto& profile : m_profiles) {
         if(profile && profile->getProfileName() == profileName)
             return profile;
     }
@@ -122,13 +128,12 @@ BroadcastProfilePtr BroadcastSettings::getProfileByName(const QString& profileNa
 }
 
 void BroadcastSettings::saveAll() {
-    for(BroadcastProfilePtr profile : m_profiles) {
-        if(profile)
-            saveProfile(profile);
+    for(const auto& profile : m_profiles) {
+        saveProfile(profile);
     }
 }
 
-void BroadcastSettings::deleteProfile(BroadcastProfilePtr profile) {
+void BroadcastSettings::deleteProfile(const BroadcastProfilePtr& profile) {
     if(!profile)
         return;
 
@@ -136,5 +141,10 @@ void BroadcastSettings::deleteProfile(BroadcastProfilePtr profile) {
     if(xmlFile.exists())
         QFile::remove(xmlFile.absolutePath());
 
-    //m_profiles.removeAll(profile);
+    std::vector<BroadcastProfilePtr>::iterator result =
+        std::find(m_profiles.begin(), m_profiles.end(), profile);
+
+    if(result != m_profiles.end()) {
+        m_profiles.erase(result);
+    }
 }

@@ -13,7 +13,8 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
           m_pBroadcastSettings(pBroadcastSettings) {
     setupUi(this);
 
-    BroadcastProfilePtr profile = m_pBroadcastSettings->getCurrentProfile();
+    const BroadcastProfilePtr& profile =
+            m_pBroadcastSettings->getCurrentProfile();
 
     m_pBroadcastEnabled = new ControlProxy(
             BROADCAST_PREF_KEY, "enabled", this);
@@ -240,7 +241,8 @@ void DlgPrefBroadcast::slotApply()
         this->setEnabled(true);
     }
 
-    BroadcastProfilePtr profile = m_pBroadcastSettings->getCurrentProfile();
+    const BroadcastProfilePtr& profile =
+            m_pBroadcastSettings->getCurrentProfile();
 
     // Combo boxes, make sure to load their data not their display strings.
     profile->setServertype(comboBoxServerType->itemData(

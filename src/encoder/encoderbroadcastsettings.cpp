@@ -35,7 +35,7 @@ QList<int> EncoderBroadcastSettings::getQualityValues() const {
 
 // Sets the value
 void EncoderBroadcastSettings::setQualityByValue(int qualityValue) {
-    BroadcastProfilePtr profile = m_settings->getCurrentProfile();
+    const BroadcastProfilePtr& profile = m_settings->getCurrentProfile();
 
     if (m_qualList.contains(qualityValue)) {
         profile->setBitrate(qualityValue);
@@ -46,7 +46,7 @@ void EncoderBroadcastSettings::setQualityByValue(int qualityValue) {
 }
 
 void EncoderBroadcastSettings::setQualityByIndex(int qualityIndex) {
-    BroadcastProfilePtr profile = m_settings->getCurrentProfile();
+    const BroadcastProfilePtr& profile = m_settings->getCurrentProfile();
 
     if (qualityIndex >= 0 && qualityIndex < m_qualList.size()) {
         profile->setBitrate(m_qualList.at(qualityIndex));
@@ -57,7 +57,7 @@ void EncoderBroadcastSettings::setQualityByIndex(int qualityIndex) {
 }
 
 int EncoderBroadcastSettings::getQuality() const {
-    BroadcastProfilePtr profile = m_settings->getCurrentProfile();
+    const BroadcastProfilePtr& profile = m_settings->getCurrentProfile();
 
     int bitrate = profile->getBitrate();
     if (m_qualList.contains(bitrate)) {
@@ -76,12 +76,12 @@ int EncoderBroadcastSettings::getQualityIndex() const {
 
 void EncoderBroadcastSettings::setChannelMode(EncoderSettings::ChannelMode mode)
 {
-    BroadcastProfilePtr profile = m_settings->getCurrentProfile();
+    const BroadcastProfilePtr& profile = m_settings->getCurrentProfile();
     profile->setChannels(static_cast<int>(mode));
 }
 
 EncoderSettings::ChannelMode EncoderBroadcastSettings::getChannelMode() const {
-    BroadcastProfilePtr profile = m_settings->getCurrentProfile();
+    const BroadcastProfilePtr& profile = m_settings->getCurrentProfile();
 
     switch(profile->getChannels()) {
         case 1: return EncoderSettings::ChannelMode::MONO;

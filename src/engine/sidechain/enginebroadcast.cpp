@@ -136,7 +136,7 @@ QByteArray EngineBroadcast::encodeString(const QString& string) {
 }
 
 void EngineBroadcast::updateFromPreferences() {
-    BroadcastProfilePtr profile = m_settings->getCurrentProfile();
+    const BroadcastProfilePtr& profile = m_settings->getCurrentProfile();
 
     qDebug() << "EngineBroadcast: updating from preferences";
     NetworkStreamWorker::debugState();

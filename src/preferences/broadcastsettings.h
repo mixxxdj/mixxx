@@ -1,7 +1,7 @@
 #ifndef PREFERENCES_BROADCASTSETTINGS_H
 #define PREFERENCES_BROADCASTSETTINGS_H
 
-#include <QList>
+#include <vector>
 #include <QSharedPointer>
 #include <QString>
 
@@ -13,23 +13,23 @@ class BroadcastSettings {
   public:
     BroadcastSettings(UserSettingsPointer pConfig);
 
-    void setCurrentProfile(BroadcastProfilePtr profile);
-    BroadcastProfilePtr getCurrentProfile();
-    BroadcastProfilePtr getProfileByName(const QString& profileName);
-    void saveProfile(BroadcastProfilePtr profile);
+    void setCurrentProfile(const BroadcastProfilePtr& profile);
+    const BroadcastProfilePtr& getCurrentProfile();
+    const BroadcastProfilePtr& getProfileByName(const QString& profileName);
+    void saveProfile(const BroadcastProfilePtr& profile);
     void saveAll();
-    void deleteProfile(BroadcastProfilePtr profile);
+    void deleteProfile(const BroadcastProfilePtr& profile);
 
   private:
     void loadProfiles();
-    QString filePathForProfile(BroadcastProfilePtr profile);
+    QString filePathForProfile(const BroadcastProfilePtr& profile);
     QString filePathForProfile(const QString& profileName);
     QString getProfilesFolder();
-    void loadLegacySettings(BroadcastProfilePtr profile);
+    void loadLegacySettings(const BroadcastProfilePtr& profile);
 
     // Pointer to config object
     UserSettingsPointer m_pConfig;
-    QList<BroadcastProfilePtr> m_profiles;
+    std::vector<BroadcastProfilePtr> m_profiles;
     QString m_currentProfile;
 };
 
