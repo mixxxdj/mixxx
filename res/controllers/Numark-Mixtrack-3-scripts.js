@@ -329,10 +329,6 @@ LED.prototype.getFlashDuration = function() {
     return this.flashDuration;
 };
 
-LED.prototype.checkOn = function() {
-    return this.lit;
-};
-
 // private : relight=true : restore light state before it was flashing
 // this is a call back function (called in flashon() )
 LED.prototype.flashOff = function(relight) {
