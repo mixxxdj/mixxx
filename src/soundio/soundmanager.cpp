@@ -391,7 +391,7 @@ SoundDeviceError SoundManager::setupDevices() {
 
         // Statically connect the Network Device to the Sidechain
         if (device->getInternalName() == kNetworkDeviceInternalName) {
-            AudioOutput out(AudioPath::SIDECHAIN, 0, 2, 0);
+            AudioOutput out(AudioPath::RECORD_BROADCAST, 0, 2, 0);
             outputs.append(out);
         }
 

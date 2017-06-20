@@ -841,7 +841,7 @@ const CSAMPLE* EngineMaster::buffer(AudioOutput output) const {
     case AudioOutput::DECK:
         return getDeckBuffer(output.getIndex());
         break;
-    case AudioOutput::SIDECHAIN:
+    case AudioOutput::RECORD_BROADCAST:
         return getSidechainBuffer();
         break;
     default:
@@ -869,7 +869,7 @@ void EngineMaster::onOutputConnected(AudioOutput output) {
         case AudioOutput::DECK:
             // We don't track enabled decks.
             break;
-        case AudioOutput::SIDECHAIN:
+        case AudioOutput::RECORD_BROADCAST:
             // We don't track enabled sidechain.
             break;
         default:
@@ -895,7 +895,7 @@ void EngineMaster::onOutputDisconnected(AudioOutput output) {
         case AudioOutput::DECK:
             // We don't track enabled decks.
             break;
-        case AudioOutput::SIDECHAIN:
+        case AudioOutput::RECORD_BROADCAST:
             // We don't track enabled sidechain.
             break;
         default:
@@ -951,5 +951,5 @@ void EngineMaster::registerNonEngineChannelSoundIO(SoundManager* pSoundManager) 
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
         pSoundManager->registerOutput(AudioOutput(AudioOutput::BUS, 0, 2, o), this);
     }
-    pSoundManager->registerOutput(AudioOutput(AudioOutput::SIDECHAIN, 0, 2), this);
+    pSoundManager->registerOutput(AudioOutput(AudioOutput::RECORD_BROADCAST, 0, 2), this);
 }
