@@ -17,23 +17,12 @@ const QString AnalysisDao::s_analysisTableName = "track_analysis";
 // CPU time so I think we should stick with the default. rryan 4/3/2012
 const int kCompressionLevel = -1;
 
-AnalysisDao::AnalysisDao(QSqlDatabase& database, UserSettingsPointer pConfig)
-        : m_pConfig(pConfig),
-          m_db(database) {
+AnalysisDao::AnalysisDao(UserSettingsPointer pConfig)
+        : m_pConfig(pConfig) {
     QDir storagePath = getAnalysisStoragePath();
     if (!QDir().mkpath(storagePath.absolutePath())) {
         qDebug() << "WARNING: Could not create analysis storage path. Mixxx will be unable to store analyses.";
     }
-}
-
-AnalysisDao::~AnalysisDao() {
-}
-
-void AnalysisDao::initialize() {
-}
-
-void AnalysisDao::setDatabase(QSqlDatabase& database) {
-    m_db = database;
 }
 
 QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrack(TrackId trackId) {
@@ -369,10 +358,12 @@ void AnalysisDao::saveTrackAnalyses(const Track& track) {
              << "analysisId" << analysis.analysisId;
 }
 
-size_t AnalysisDao::getDiskUsageInBytes(AnalysisType type) {
+size_t AnalysisDao::getDiskUsageInBytes(
+        const QSqlDatabase& database,
+        AnalysisType type) const {
     QDir analysisPath(getAnalysisStoragePath());
 
-    QSqlQuery query(m_db);
+    QSqlQuery query(database);
     query.prepare(QString("SELECT id FROM %1 WHERE type=:type").arg(s_analysisTableName));
     query.bindValue(":type", type);
 
@@ -390,10 +381,12 @@ size_t AnalysisDao::getDiskUsageInBytes(AnalysisType type) {
     return total;
 }
 
-bool AnalysisDao::deleteAnalysesByType(AnalysisType type) {
+bool AnalysisDao::deleteAnalysesByType(
+        const QSqlDatabase& database,
+        AnalysisType type) const {
     QDir analysisPath(getAnalysisStoragePath());
 
-    QSqlQuery query(m_db);
+    QSqlQuery query(database);
     query.prepare(QString("SELECT id FROM %1 WHERE type=:type").arg(s_analysisTableName));
     query.bindValue(":type", type);
 

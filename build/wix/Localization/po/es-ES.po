@@ -1,14 +1,14 @@
 # 
 # Translators:
 # Jorge Marcos (Jorgeelalto) <jormarchav@gmail.com>, 2016
-# Josep Maria Antolin <josepma@gmail.com>, 2016
+# Josep Maria Antolin <josepma@gmail.com>, 2016-2017
 # Josep Maria Antolin <josepma@gmail.com>, 2016
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2017-01-22 20:14+0000\n"
-"Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
+"PO-Revision-Date: 2017-02-05 00:59+0000\n"
+"Last-Translator: Josep Maria Antolin <josepma@gmail.com>\n"
 "Language-Team: Spanish (Spain) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -118,13 +118,13 @@ msgstr "El núcleo de la aplicación, incluyendo las plantillas para los control
 
 msgctxt "FeaturePDBTitle"
 msgid "PDB debug files"
-msgstr ""
+msgstr "Ficheros PDB de depuración"
 
 msgctxt "FeaturePDBDescription"
 msgid ""
 "Install Mixxx PDB files to use with a debugger. This is useful to debug "
 "Mixxx and provide readable backtraces to the development team."
-msgstr ""
+msgstr "Instalar los ficheros PDB de Mixxx para uso con un depurador. Esto es útil para depurar Mixxx y enviar trazas de error comprensibles al equipo de desarrollo."
 
 msgctxt "FeatureDesktopShortcutTitle"
 msgid "Desktop Shortcut"

@@ -244,12 +244,13 @@ EffectChainPointer EffectChainSlot::getEffectChain() const {
     return m_pEffectChain;
 }
 
-EffectChainPointer EffectChainSlot::getAndEnsureEffectChain(
+EffectChainPointer EffectChainSlot::getOrCreateEffectChain(
         EffectsManager* pEffectsManager) {
     if (!m_pEffectChain) {
-        auto pEffectChain = EffectChainPointer(
+        EffectChainPointer pEffectChain(
                 new EffectChain(pEffectsManager, QString()));
-        pEffectChain->setName(QObject::tr("Empty Chain"));
+        //: Name for an empty effect chain, that is created after eject
+        pEffectChain->setName(tr("Empty Chain"));
         loadEffectChain(pEffectChain);
     }
     return m_pEffectChain;
@@ -447,7 +448,7 @@ unsigned int EffectChainSlot::getChainSlotNumber() const {
 QDomElement EffectChainSlot::toXml(QDomDocument* doc) const {
     QDomElement chainElement = doc->createElement(EffectXml::Chain);
     if (m_pEffectChain == nullptr) {
-        // ejected chains are stored with empty names
+        // ejected chains are stored empty <EffectChain/>
         return chainElement;
     }
 

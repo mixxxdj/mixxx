@@ -256,7 +256,7 @@ void EffectsManager::setup() {
         pStandardRack->addEffectChainSlot();
     }
 
-    EffectChainPointer pChain = EffectChainPointer(new EffectChain(
+    EffectChainPointer pChain(new EffectChain(
            this, "org.mixxx.effectchain.flanger"));
     pChain->setName(tr("Flanger"));
     EffectPointer pEffect = instantiateEffect(

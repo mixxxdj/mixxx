@@ -11,9 +11,9 @@
 #include <QString>
 #include <QList>
 #include <QVector>
+
 #include <vamp-hostsdk/vamp-hostsdk.h>
 
-#include "analyzer/vamp/vamppluginloader.h"
 #include "preferences/usersettings.h"
 #include "util/sample.h"
 
@@ -34,11 +34,6 @@ class VampAnalyzer {
     QVector<double> GetFirstValuesVector();
     QVector<double> GetLastValuesVector();
 
-    // Initialize the VAMP_PATH environment variable to point to the default
-    // places that Mixxx VAMP plugins are deployed on installation. If a
-    // VAMP_PATH environment variable is already set by the user, then this
-    // method appends to that.
-    static void initializePluginPaths();
     void SelectOutput(const int outputnumber);
 
   private:

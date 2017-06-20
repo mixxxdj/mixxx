@@ -196,7 +196,7 @@ void EffectChainManager::loadEffectChains() {
             QDomElement chainElement = chainNode.toElement();
             EffectChainPointer pChain = EffectChain::createFromXml(
                     m_pEffectsManager, chainElement);
-            if (!pChain->name().isEmpty()) { // skip unnamed = ejected chains.
+            if (pChain) { // null = ejected chains.
                 EffectChainSlotPointer pChainSlot = getStandardEffectRack(0)->getEffectChainSlot(i);
                 if (pChainSlot) {
                     pChainSlot->loadEffectChain(pChain);
