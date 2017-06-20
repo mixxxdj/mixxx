@@ -48,6 +48,7 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
     m_bBusOutputConnected[EngineChannel::LEFT] = false;
     m_bBusOutputConnected[EngineChannel::CENTER] = false;
     m_bBusOutputConnected[EngineChannel::RIGHT] = false;
+    m_bExternalRecordBroadcastInputConnected = false;
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
     m_pWorkerScheduler->start(QThread::HighPriority);
 
@@ -379,6 +380,9 @@ void EngineMaster::process(const int iBufferSize) {
     bool boothEnabled = m_pBoothEnabled->get();
     bool headphoneEnabled = m_pHeadphoneEnabled->get();
 
+    // TODO: remove assumption of stereo buffer
+    const unsigned int kChannels = 2;
+    const unsigned int iFrames = iBufferSize / kChannels;
     unsigned int iSampleRate = static_cast<int>(m_pMasterSampleRate->get());
     if (m_pEngineEffectsManager) {
         m_pEngineEffectsManager->onCallbackStart();
@@ -424,7 +428,7 @@ void EngineMaster::process(const int iBufferSize) {
     double measuredRoundTripLatency = m_pRoundTripLatency->get();
     // iBufferSize / iSampleRate gives double Mixxx's processing latency because
     // there are 2 channels per buffer. FIXME when removing the assumption of stereo channels.
-    double processingLatency = (double)iBufferSize / iSampleRate / 2.0 * 1000.0;
+    double processingLatency = (double)iBufferSize / iSampleRate / kChannels * 1000.0;
     if (measuredRoundTripLatency == 0.0) {
         inputLatencyCompensation = processingLatency;
     } else {
@@ -657,7 +661,10 @@ void EngineMaster::process(const int iBufferSize) {
 
         // Submit master samples to the side chain to do broadcasting, recording,
         // etc. (cpu intensive non-realtime tasks)
-        if (m_pEngineSideChain != NULL) {
+        // If recording/broadcasting from a sound card input,
+        // SoundManager will send the input buffer from the sound card to m_pSidechain
+        // so skip sending a signal to m_pSidechain here.
+        if (m_pEngineSideChain != NULL && !m_bExternalRecordBroadcastInputConnected) {
             if (configuredTalkoverMixMode == TalkoverMixMode::DIRECT_MONITOR
                 && m_pNumMicsConfigured->get() > 0) {
                 // When using direct monitoring, the user hears the microphone inputs
@@ -674,9 +681,9 @@ void EngineMaster::process(const int iBufferSize) {
                                           m_pSidechain, 1.0,
                                           m_pTalkover, 1.0,
                                           iBufferSize);
-                m_pEngineSideChain->writeSamples(m_pSidechain, iBufferSize);
+                m_pEngineSideChain->writeSamples(m_pSidechain, iFrames);
             } else {
-                m_pEngineSideChain->writeSamples(m_pMaster, iBufferSize);
+                m_pEngineSideChain->writeSamples(m_pMaster, iFrames);
             }
         }
 
@@ -907,6 +914,9 @@ void EngineMaster::onInputConnected(AudioInput input) {
       case AudioInput::VINYLCONTROL:
           // We don't track enabled vinyl control inputs.
           break;
+      case AudioInput::RECORD_BROADCAST:
+          m_bExternalRecordBroadcastInputConnected = true;
+          break;
       default:
           break;
     }
@@ -922,6 +932,9 @@ void EngineMaster::onInputDisconnected(AudioInput input) {
           break;
       case AudioInput::VINYLCONTROL:
           // We don't track enabled vinyl control inputs.
+          break;
+      case AudioInput::RECORD_BROADCAST:
+          m_bExternalRecordBroadcastInputConnected = false;
           break;
       default:
           break;

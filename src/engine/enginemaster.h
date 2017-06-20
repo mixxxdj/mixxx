@@ -364,6 +364,7 @@ class EngineMaster : public QObject, public AudioSource {
     ControlObject* m_pHeadphoneEnabled;
 
     volatile bool m_bBusOutputConnected[3];
+    bool m_bExternalRecordBroadcastInputConnected;
 };
 
 #endif

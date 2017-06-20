@@ -163,6 +163,8 @@ QString AudioPath::getStringFromType(AudioPathType type) {
         return QString::fromAscii("Bus");
     case DECK:
         return QString::fromAscii("Deck");
+    case RECORD_BROADCAST:
+        return QString::fromAscii("Record/Broadcast");
     case VINYLCONTROL:
         return QString::fromAscii("Vinyl Control");
     case MICROPHONE:
@@ -205,6 +207,8 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
     case DECK:
         return QString("%1 %2").arg(QObject::tr("Deck"),
                                     QString::number(index + 1));
+    case RECORD_BROADCAST:
+        return QObject::tr("Record/Broadcast");
     case VINYLCONTROL:
         return QString("%1 %2").arg(QObject::tr("Vinyl Control"),
                                     QString::number(index + 1));
@@ -446,6 +450,7 @@ QList<AudioPathType> AudioInput::getSupportedTypes() {
 #endif
     types.append(AUXILIARY);
     types.append(MICROPHONE);
+    types.append(RECORD_BROADCAST);
     return types;
 }
 

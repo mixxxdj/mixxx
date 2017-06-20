@@ -28,6 +28,7 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
 #include "engine/sidechain/enginenetworkstream.h"
+#include "engine/sidechain/enginesidechain.h"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddevicenetwork.h"
 #include "soundio/sounddevicenotfound.h"
@@ -79,6 +80,9 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
 
     m_pNetworkStream = QSharedPointer<EngineNetworkStream>(
             new EngineNetworkStream(2, 0));
+
+    AudioInput recordInput = AudioInput(AudioPath::RECORD_BROADCAST, 0, 2);
+    registerInput(recordInput, pMaster->getSideChain());
 
     queryDevices();
 

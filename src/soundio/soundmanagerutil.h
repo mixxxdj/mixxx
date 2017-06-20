@@ -60,6 +60,7 @@ public:
         HEADPHONES,
         BUS,
         DECK,
+        RECORD_BROADCAST,
         VINYLCONTROL,
         MICROPHONE,
         AUXILIARY,
