@@ -740,7 +740,7 @@ NumarkMixtrack3.deck = function(decknum) {
 };
 
 
-NumarkMixtrack3.deck.prototype.TrackIsLoaded = function() {
+NumarkMixtrack3.deck.prototype.trackLoaded = function() {
     return engine.getValue(this.group, "track_loaded");
 };
 
@@ -1122,7 +1122,7 @@ NumarkMixtrack3.PlayButton = function(channel, control, value, status, group) {
     if (value === DOWN) {
         if (!deck.shiftKey) {
             // play/pause
-            if (!deck.TrackIsLoaded()) {
+            if (!deck.trackLoaded()) {
                 engine.setValue(deck.group, "LoadSelectedTrackAndPlay", true);
             } else {
                 script.toggleControl(deck.group, "play");
@@ -1285,7 +1285,7 @@ NumarkMixtrack3.LoadButton = function(channel, control, value, status, group) {
             deck.faderstart = true;
             deck.LEDs["headphones"].flashOn(250, ON, 250);
 
-            if (!deck.TrackIsLoaded()) {
+            if (!deck.trackLoaded()) {
                 engine.setValue(deck.group, 'LoadSelectedTrack', true);
             }
         }
@@ -1640,7 +1640,7 @@ NumarkMixtrack3.PADLoopButton = function(channel, control, value, status, group)
         loopsizeNew = loopsize[padIndex - 1];
     }
 
-    if (value === DOWN && deck.duration !== 0) {
+    if (value === DOWN && deck.trackLoaded()) {
         // make sure all LED are ON
         deck.LEDs.padLoop1.onOff(PADcolors.yellow);
         deck.LEDs.padLoop2.onOff(PADcolors.yellow);
@@ -1661,7 +1661,7 @@ NumarkMixtrack3.PADLoopButton = function(channel, control, value, status, group)
         deck.PADLoopButtonHold.buttonDown(channel, control, value, status, deck.group);
     }
 
-    if (value === OFF && deck.duration !== 0) { //This triggers the callback function for "PADLoopButtonHold"
+    if (value === OFF && deck.trackLoaded()) { //This triggers the callback function for "PADLoopButtonHold"
         deck.PADLoopButtonHold.buttonUp();
     }
 };
