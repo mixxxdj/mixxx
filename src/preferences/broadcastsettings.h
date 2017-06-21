@@ -1,7 +1,7 @@
 #ifndef PREFERENCES_BROADCASTSETTINGS_H
 #define PREFERENCES_BROADCASTSETTINGS_H
 
-#include <vector>
+#include <map>
 #include <QObject>
 #include <QSharedPointer>
 #include <QString>

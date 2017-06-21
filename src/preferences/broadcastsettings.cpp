@@ -3,10 +3,11 @@
 #include <QFileInfoList>
 #include <QFileInfo>
 
-#include "util/logger.h"
-#include "preferences/broadcastsettings.h"
 #include "broadcast/defs_broadcast.h"
 #include "defs_urls.h"
+#include "preferences/broadcastsettings.h"
+#include "util/logger.h"
+#include "util/memory.h"
 
 namespace {
 const char* kConfigKey = "[Shoutcast]";
@@ -62,8 +63,8 @@ void BroadcastSettings::loadProfiles() {
     } else {
         kLogger.debug() << "No profiles found. Creating default profile.";
 
-        BroadcastProfilePtr defaultProfile(
-                    new BroadcastProfile(kDefaultProfile));
+        BroadcastProfilePtr defaultProfile =
+                std::make_unique<BroadcastProfile>(kDefaultProfile);
 
         // Upgrade from mixxx.cfg format to XML (if required)
         loadLegacySettings(defaultProfile);

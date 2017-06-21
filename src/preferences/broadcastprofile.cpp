@@ -8,9 +8,10 @@
 #include <QDebug>
 #include <QStringList>
 
-#include "util/xml.h"
 #include "broadcast/defs_broadcast.h"
 #include "defs_urls.h"
+#include "util/xml.h"
+#include "util/memory.h"
 
 #include "broadcastprofile.h"
 
@@ -94,7 +95,8 @@ BroadcastProfilePtr BroadcastProfile::loadFromFile(
         return BroadcastProfilePtr(nullptr);
 
     QString profileName = xmlFile.baseName();
-    BroadcastProfilePtr profile(new BroadcastProfile(profileName));
+    BroadcastProfilePtr profile =
+            std::make_unique<BroadcastProfile>(profileName);
     profile->loadValues(filename);
     return std::move(profile);
 }
