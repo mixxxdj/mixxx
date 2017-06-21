@@ -6,7 +6,8 @@
 
 
 // Common base class/interface of all persistent storage based on an
-// SQL database.
+// SQL database. Instances of this class will always be accessed by
+// the same thread.
 class SqlStorage {
   public:
     virtual ~SqlStorage() = default;
@@ -28,14 +29,14 @@ class SqlStorage {
     // until it is detached (see below). Implementations must
     // store an implicitly shared copy of the QSqlDatabase for
     // accessing it.
-    virtual void attachDatabase(QSqlDatabase database) = 0;
+    virtual void connectDatabase(QSqlDatabase database) = 0;
 
     // Detach the currently attached database, e.g. before
     // closing it.
     // Implementations should perform the necessary cleanup
     // and discard all internally cached data that depends
     // on the database connection.
-    virtual void detachDatabase() = 0;
+    virtual void disconnectDatabase() = 0;
 
   protected:
     SqlStorage() = default;
