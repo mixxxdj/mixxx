@@ -33,6 +33,7 @@ DbConnectionPooler& DbConnectionPooler::operator=(DbConnectionPooler&& other) {
     // Move assignment should transfer ownership by invalidating
     // the other instance.
     DEBUG_ASSERT(!other);
+    return *this;
 }
 
 } // namespace mixxx
