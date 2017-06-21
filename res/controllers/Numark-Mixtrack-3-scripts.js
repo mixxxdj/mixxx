@@ -110,15 +110,13 @@ var loopsize = [2, 4, 8, 16, 0.125, 0.25, 0.5, 1];
 ////////////////////////////////////////////////////////////////////////
 
 
-function NumarkMixtrack3() {}
-
-NumarkMixtrack3(); // Very important ! Initializes some reusable objects.
+var NumarkMixtrack3 = {
+    group: '[Master]',
+    decks: [],
+    samplers: []
+};
 
 // Array of Objects can be created
-NumarkMixtrack3.group = "[Master]";
-NumarkMixtrack3.decknum = 0;
-NumarkMixtrack3.decks = [];
-NumarkMixtrack3.samplers = [];
 
 // Global constants/variables
 var ON = 0x7F,
