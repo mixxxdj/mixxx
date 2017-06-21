@@ -1799,30 +1799,12 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
 
     // pad to change sampler gains
     if (deck.PADMode) {
-        var numSamplers = engine.getValue('[Master]', 'num_samplers');
-        var samplersPerRack = 8;
-        var samplersPerSide = 4;
-        var samplersToToggle = [];
-        var startingSampler = (deck.decknum < 3) ? 1 : samplersPerSide + 1;
+        var startingSampler = (deck.decknum < 3) ? 1 : 5;
 
-        // divvy up samplers that are associated with left and right decks
-        for (var i = startingSampler, n = numSamplers; i <= n; i = i + samplersPerRack) {
-            for (var j = 0; j < samplersPerSide; j++) {
-                samplersToToggle.push(i + j);
-            }
-        }
-
-        // adjust pre-gain for entire left/right ggroup
-        for (var i = 0; i <= samplersToToggle.length; i++) {
-            var samplerGroup = '[Sampler' + samplersToToggle[i] + ']'
+        for (var i = 0; i <= startingSampler + 3; i++) {
+            var samplerGroup = '[Sampler' + i + ']';
             var gainValue = engine.getValue(samplerGroup, 'pregain');
-            var gainMultiplier = 3;
             var maxGain = 4;
-
-            // for higher gain, we increment the gain by more
-            if (gainValue > 1) {
-                increment = increment * gainMultiplier;
-            }
 
             gainValue = gainValue + increment;
 
