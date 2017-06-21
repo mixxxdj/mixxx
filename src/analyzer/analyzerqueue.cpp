@@ -302,21 +302,22 @@ void AnalyzerQueue::run() {
 }
 
 void AnalyzerQueue::execThread() {
+    // The thread-local database connection for waveform anylsis must not
+    // be closed before returning from this function. Therefore the
+    // DbConnectionPooler is defined at the outher function scope,
+    // independent of whether a database connection is opened or not.
     mixxx::DbConnectionPooler dbConnectionPooler;
+    // m_pAnalysisDao remains null if no analyzer needs database access.
+    // Currently only waveform analyses makes use of it.
     if (m_pAnalysisDao) {
-        // Only create/open a new database connection for when needed
-        // for storing waveform analyses
         dbConnectionPooler = mixxx::DbConnectionPooler(m_pDbConnectionPool);
         if (!dbConnectionPooler) {
             kLogger.warning()
                     << "Failed to open database connection for analyzer queue thread";
             return;
         }
-        // Use the newly created database connection for this thread
+        // Obtain and use the newly created database connection within this thread
         m_pAnalysisDao->initialize(mixxx::DbConnectionPooled(m_pDbConnectionPool));
-        // The database connection is valid until dbConnectionPooler is destroyed
-        // when exiting the enclosing function scope. The pooler as the owner of
-        // the connection must not be destroyed now!
     }
 
     m_progressInfo.current_track.reset();
