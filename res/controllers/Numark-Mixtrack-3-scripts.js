@@ -732,6 +732,11 @@ NumarkMixtrack3.deck = function(decknum) {
     this.duration = 0;
 
     engine.setValue('[EffectRack1_EffectUnit' + decknum + ']', 'show_focus', true);
+
+    // buttons
+    this.LoadButtonControl = new LongShortBtn(NumarkMixtrack3.OnLoadButton);
+    this.SyncButtonControl = new LongShortDoubleBtn(NumarkMixtrack3.OnSyncButton);
+    this.PADLoopButtonHold = new LongShortBtn(NumarkMixtrack3.onPADLoopButtonHold);
 };
 
 
@@ -766,6 +771,8 @@ NumarkMixtrack3.sampler = function(decknum) {
     this.PitchFaderHigh = 0;
     this.lastfadervalue = 0;
     this.LEDs = [];
+
+    this.PADSampleButtonHold = new LongShortBtn(NumarkMixtrack3.onPADSampleButtonHold);
 };
 
 // =====================================================================
@@ -824,21 +831,7 @@ NumarkMixtrack3.initLEDsObjects = function() {
     }
 };
 
-NumarkMixtrack3.initButtonsObjects = function() {
-    var decks = NumarkMixtrack3.decks;
 
-    for (var i = 1; i <= 4; i++) {
-        decks["D" + i].LoadButtonControl = new LongShortBtn(NumarkMixtrack3.OnLoadButton);
-        decks["D" + i].SyncButtonControl = new LongShortDoubleBtn(NumarkMixtrack3.OnSyncButton);
-        decks["D" + i].PADLoopButtonHold = new LongShortBtn(NumarkMixtrack3.onPADLoopButtonHold);
-    }
-
-    for (var i = 1; i <= 8; i++) {
-        NumarkMixtrack3.samplers["S" + i].PADSampleButtonHold = new LongShortBtn(
-            NumarkMixtrack3.onPADSampleButtonHold
-        );
-    }
-};
 
 NumarkMixtrack3.init = function(id, debug) {
     // Set up the controller to manipulate decks 1 & 2 when this script is loaded 
@@ -928,11 +921,6 @@ NumarkMixtrack3.init = function(id, debug) {
         }
         print("   LEDs state set for deck " + "D" + i);
     }
-
-    print("==========================================================");
-    print("                 Initialize Buttons");
-    print("");
-    NumarkMixtrack3.initButtonsObjects();
 
     print("==========================================================");
     print("                Init Soft Takeovers");
