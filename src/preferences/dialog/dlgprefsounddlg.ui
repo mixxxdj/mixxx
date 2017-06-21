@@ -16,13 +16,6 @@
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="9" column="0">
-      <widget class="QLabel" name="masterDelayLabel">
-       <property name="text">
-        <string>Master Delay</string>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="0">
       <widget class="QLabel" name="apiLabel">
        <property name="text">
@@ -33,17 +26,67 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QComboBox" name="audioBufferComboBox"/>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="apiComboBox"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="sampleRateLabel">
+       <property name="text">
+        <string>Sa&amp;mple Rate</string>
+       </property>
+       <property name="buddy">
+        <cstring>sampleRateComboBox</cstring>
+       </property>
+      </widget>
      </item>
      <item row="1" column="1">
       <widget class="QComboBox" name="sampleRateComboBox"/>
      </item>
-     <item row="7" column="1">
-      <widget class="QComboBox" name="micMixComboBox"/>
+     <item row="2" column="0">
+      <widget class="QLabel" name="audioBufferLabel">
+       <property name="text">
+        <string>Audio Buffer</string>
+       </property>
+       <property name="buddy">
+        <cstring>audioBufferComboBox</cstring>
+       </property>
+      </widget>
      </item>
-     <item row="6" column="1">
-      <widget class="QComboBox" name="masterOutputModeComboBox"/>
+     <item row="2" column="1">
+      <widget class="QComboBox" name="audioBufferComboBox"/>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="deviceSyncLabel">
+       <property name="text">
+        <string>Multi-Soundcard Synchronization</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QComboBox" name="deviceSyncComboBox"/>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="keylockLabel">
+       <property name="text">
+        <string>&amp;Keylock/Pitch-Bending Engine</string>
+       </property>
+       <property name="buddy">
+        <cstring>keylockComboBox</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QComboBox" name="keylockComboBox"/>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="masteMixLabel">
+       <property name="text">
+        <string>Master Mix</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QComboBox" name="masterMixComboBox"/>
      </item>
      <item row="6" column="0">
       <widget class="QLabel" name="masterMonoLabel">
@@ -52,8 +95,25 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QComboBox" name="apiComboBox"/>
+     <item row="6" column="1">
+      <widget class="QComboBox" name="masterOutputModeComboBox"/>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="micMixLabel">
+       <property name="text">
+        <string>Microphone Mix Mode</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QComboBox" name="micMixComboBox"/>
+     </item>
+     <item row="8" column="0">
+      <widget class="QLabel" name="headDelayLabel">
+       <property name="text">
+        <string>Headphone Delay</string>
+       </property>
+      </widget>
      </item>
      <item row="8" column="1">
       <widget class="QDoubleSpinBox" name="headDelaySpinBox">
@@ -71,47 +131,10 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
-      <widget class="QComboBox" name="deviceSyncComboBox"/>
-     </item>
-     <item row="8" column="0">
-      <widget class="QLabel" name="headDelayLabel">
+     <item row="9" column="0">
+      <widget class="QLabel" name="masterDelayLabel">
        <property name="text">
-        <string>Headphone Delay</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="deviceSyncLabel">
-       <property name="text">
-        <string>Multi-Soundcard Synchronization</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="audioBufferLabel">
-       <property name="text">
-        <string>Audio Buffer</string>
-       </property>
-       <property name="buddy">
-        <cstring>audioBufferComboBox</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="sampleRateLabel">
-       <property name="text">
-        <string>Sa&amp;mple Rate</string>
-       </property>
-       <property name="buddy">
-        <cstring>sampleRateComboBox</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="0">
-      <widget class="QLabel" name="micMixLabel">
-       <property name="text">
-        <string>Microphone Mix Mode</string>
+        <string>Master Delay</string>
        </property>
       </widget>
      </item>
@@ -130,29 +153,6 @@
         <double>0.100000000000000</double>
        </property>
       </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="masteMixLabel">
-       <property name="text">
-        <string>Master Mix</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="keylockLabel">
-       <property name="text">
-        <string>&amp;Keylock/Pitch-Bending Engine</string>
-       </property>
-       <property name="buddy">
-        <cstring>keylockComboBox</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QComboBox" name="keylockComboBox"/>
-     </item>
-     <item row="5" column="1">
-      <widget class="QComboBox" name="masterMixComboBox"/>
      </item>
      <item row="10" column="0">
       <widget class="QLabel" name="roundTripLatencyLabel">
@@ -298,7 +298,7 @@
       <item row="3" column="0" colspan="2">
        <widget class="QLabel" name="limitsHint">
         <property name="text">
-         <string>Enable Realtime scheduling (currently disabled), see the &lt;a href=&quot;http://mixxx.org/wiki/doku.php/adjusting_audio_latency&quot;&gt;Mixxx Wiki&lt;/a&gt;.</string>
+         <string>Enable Realtime scheduling (currently disabled), see the &lt;a href="http://mixxx.org/wiki/doku.php/adjusting_audio_latency"&gt;Mixxx Wiki&lt;/a&gt;.</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -311,7 +311,7 @@
       <item row="4" column="0" colspan="2">
        <widget class="QLabel" name="hardwareGuide">
         <property name="text">
-         <string>The &lt;a href=&quot;http://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt;Mixxx DJ Hardware Guide&lt;/a&gt; lists sound cards and controllers you may want to consider for using Mixxx.</string>
+         <string>The &lt;a href="http://mixxx.org/wiki/doku.php/hardware_compatibility"&gt;Mixxx DJ Hardware Guide&lt;/a&gt; lists sound cards and controllers you may want to consider for using Mixxx.</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
