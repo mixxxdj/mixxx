@@ -115,10 +115,12 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
 
     m_pMasterDelay = new ControlProxy("[Master]", "delay", this);
     m_pHeadDelay = new ControlProxy("[Master]", "headDelay", this);
+    m_pBoothDelay = new ControlProxy("[Master]", "boothDelay", this);
     m_pRoundTripLatency = new ControlProxy("[Master]", "roundTripLatency", this);
 
     masterDelaySpinBox->setValue(m_pMasterDelay->get());
     headDelaySpinBox->setValue(m_pHeadDelay->get());
+    boothDelaySpinBox->setValue(m_pBoothDelay->get());
     roundTripLatencySpinBox->setValue(m_pRoundTripLatency->get());
 
     // TODO: remove this option by automatically disabling/enabling the master mix
@@ -156,6 +158,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(masterDelayChanged(double)));
     connect(headDelaySpinBox, SIGNAL(valueChanged(double)),
             this, SLOT(headDelayChanged(double)));
+    connect(boothDelaySpinBox, SIGNAL(valueChanged(double)),
+            this, SLOT(boothDelayChanged(double)));
     connect(roundTripLatencySpinBox, SIGNAL(valueChanged(double)),
             this, SLOT(roundTripLatencyChanged(double)));
 
@@ -545,6 +549,9 @@ void DlgPrefSound::slotResetToDefaults() {
     headDelaySpinBox->setValue(0.0);
     m_pHeadDelay->set(0.0);
 
+    boothDelaySpinBox->setValue(0.0);
+    m_pBoothDelay->set(0.0);
+
     // Enable talkover master output
     m_pTalkoverMixMode->set(0.0);
     micMixComboBox->setCurrentIndex(0);
@@ -568,6 +575,10 @@ void DlgPrefSound::masterDelayChanged(double value) {
 
 void DlgPrefSound::headDelayChanged(double value) {
     m_pHeadDelay->set(value);
+}
+
+void DlgPrefSound::boothDelayChanged(double value) {
+    m_pBoothDelay->set(value);
 }
 
 void DlgPrefSound::roundTripLatencyChanged(double value) {

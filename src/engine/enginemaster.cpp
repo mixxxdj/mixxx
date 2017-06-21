@@ -101,6 +101,7 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
 
     m_pMasterDelay = new EngineDelay(group, ConfigKey(group, "delay"));
     m_pHeadDelay = new EngineDelay(group, ConfigKey(group, "headDelay"));
+    m_pBoothDelay = new EngineDelay(group, ConfigKey(group, "boothDelay"));
     m_pInputLatencyCompensationDelay = new EngineDelay(group,
         ConfigKey(group, "inputLatency"));
     m_pInputLatencyCompensationHeadphonesDelay = new EngineDelay(group,
@@ -202,6 +203,7 @@ EngineMaster::~EngineMaster() {
     delete m_pEngineSideChain;
     delete m_pMasterDelay;
     delete m_pHeadDelay;
+    delete m_pBoothDelay;
     delete m_pInputLatencyCompensationDelay;
     delete m_pInputLatencyCompensationHeadphonesDelay;
     delete m_pRoundTripLatency;
@@ -812,6 +814,9 @@ void EngineMaster::process(const int iBufferSize) {
     }
     if (headphoneEnabled) {
         m_pHeadDelay->process(m_pHead, iBufferSize);
+    }
+    if (boothEnabled) {
+        m_pBoothDelay->process(m_pBooth, iBufferSize);
     }
 
     // We're close to the end of the callback. Wake up the engine worker

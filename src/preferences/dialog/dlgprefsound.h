@@ -62,6 +62,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void masterLatencyChanged(double latency);
     void masterDelayChanged(double value);
     void headDelayChanged(double value);
+    void boothDelayChanged(double value);
     void roundTripLatencyChanged(double value);
     void masterMixChanged(int value);
     void masterEnabledChanged(double value);
@@ -97,6 +98,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     ControlProxy* m_pMasterLatency;
     ControlProxy* m_pHeadDelay;
     ControlProxy* m_pMasterDelay;
+    ControlProxy* m_pBoothDelay;
     ControlProxy* m_pRoundTripLatency;
     ControlProxy* m_pKeylockEngine;
     ControlProxy* m_pMasterEnabled;

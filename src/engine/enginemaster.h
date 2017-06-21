@@ -329,6 +329,7 @@ class EngineMaster : public QObject, public AudioSource {
     EngineTalkoverDucking* m_pTalkoverDucking;
     EngineDelay* m_pMasterDelay;
     EngineDelay* m_pHeadDelay;
+    EngineDelay* m_pBoothDelay;
     EngineDelay* m_pInputLatencyCompensationDelay;
     EngineDelay* m_pInputLatencyCompensationHeadphonesDelay;
 
