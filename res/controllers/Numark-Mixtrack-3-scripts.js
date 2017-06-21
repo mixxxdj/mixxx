@@ -741,6 +741,16 @@ NumarkMixtrack3.deck = function(decknum) {
     engine.softTakeover(this.group, "rate", true); // Enable soft-takeover for Pitch slider
     engine.softTakeover(this.group, "volume", true); // Enable soft-takeover for volume
     engine.setParameter(this.group, "volume", 0); // Set volume to zero for each deck (initial load only)
+
+    for (var led in this.LEDs) {
+        if (led.hasOwnProperty("onOff")) {
+            led.onOff(OFF);
+        }
+    }
+
+    for (var j = 1; j <= 4; j++) {
+        this.LEDs['padLoop' + j].onOff(PADcolors.black);
+    }
 };
 
 
@@ -780,6 +790,8 @@ NumarkMixtrack3.sampler = function(decknum) {
 
     engine.softTakeover(this.group, 'pregain', true);
     engine.connectControl(this.group, 'play', 'NumarkMixtrack3.OnSamplePlayStop');
+
+    this.LEDs['padSampler' + decknum].onOff(PADcolors.black);
 };
 
 // =====================================================================
@@ -910,28 +922,6 @@ NumarkMixtrack3.init = function(id, debug) {
 
     // Turn ON all the lights: the only way PADMode Leds light up 
     NumarkMixtrack3.AllLeds.onOff(ON);
-
-    // Initialise some others (PAD LEDs)
-    for (var i = 1; i <= 8; i++) {
-        NumarkMixtrack3.samplers["S" + i].LEDs["padSampler" + i].onOff(PADcolors.black);
-    }
-
-    for (var i = 1; i <= 4; i++) {
-        for (var led in NumarkMixtrack3.decks["D" + i].LEDs) {
-            if (led.hasOwnProperty("onOff")) {
-                led.onOff(OFF);
-            }
-        }
-
-        for (var j = 1; j <= 4; j++) {
-            NumarkMixtrack3.decks["D" + i].LEDs["padLoop" + j].onOff(PADcolors.black);
-        }
-        print("   LEDs state set for deck " + "D" + i);
-    }
-
-    print("==========================================================");
-    print("                Init Soft Takeovers");
-    print("");
 
     NumarkMixtrack3.initDeck('[Channel1]', false); //Initial load, "remove" is set to false
     NumarkMixtrack3.initDeck('[Channel2]', false);
