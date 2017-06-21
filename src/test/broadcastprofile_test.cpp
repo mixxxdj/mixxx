@@ -45,6 +45,9 @@ TEST_F(BroadcastProfileTest, ForbiddenChars) {
     BroadcastProfile invalidProfile("This is an invalid profile name: ?/");
     ASSERT_TRUE(BroadcastProfile::validName(
                      invalidProfile.getProfileName()));
+
+    ASSERT_FALSE(BroadcastProfile::stripForbiddenChars(
+                        "This is an invalid profile name: ?/").contains("?"));
 }
 
 TEST_F(BroadcastProfileTest, SaveAndLoadXML) {
