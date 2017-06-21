@@ -135,13 +135,13 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
     m_pBooth = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pTalkover = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pTalkoverHeadphones = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pSidechain = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_pSidechainMix = SampleUtil::alloc(MAX_BUFFER_LEN);
     SampleUtil::clear(m_pHead, MAX_BUFFER_LEN);
     SampleUtil::clear(m_pMaster, MAX_BUFFER_LEN);
     SampleUtil::clear(m_pBooth, MAX_BUFFER_LEN);
     SampleUtil::clear(m_pTalkover, MAX_BUFFER_LEN);
     SampleUtil::clear(m_pTalkoverHeadphones, MAX_BUFFER_LEN);
-    SampleUtil::clear(m_pSidechain, MAX_BUFFER_LEN);
+    SampleUtil::clear(m_pSidechainMix, MAX_BUFFER_LEN);
 
     // Setup the output buses
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; ++o) {
@@ -554,97 +554,187 @@ void EngineMaster::process(const int iBufferSize) {
             m_pOutputBusBuffers[EngineChannel::RIGHT], 1.0,
             iBufferSize);
 
-        if (configuredTalkoverMixMode != TalkoverMixMode::DIRECT_MONITOR
-            && m_pNumMicsConfigured->get() > 0) {
-              m_pInputLatencyCompensationDelay->process(m_pMaster, iBufferSize);
-        }
-
-        if (boothEnabled) {
-            CSAMPLE boothGain = m_pBoothGain->get();
-
-            if (configuredTalkoverMixMode == TalkoverMixMode::MASTER) {
-                // Mix the talkover mix with the master output, but exclude it from
-                // the booth output.
-                if (m_bRampingGain) {
-                    SampleUtil::copy1WithRampingGain(m_pBooth, m_pMaster,
-                        m_boothGainOld, boothGain, iBufferSize);
-                } else {
-                    SampleUtil::copy1WithGain(m_pBooth, m_pMaster,
-                        boothGain, iBufferSize);
-                }
-
-                SampleUtil::copy2WithGain(m_pMaster,
-                    m_pMaster, 1.0,
-                    m_pTalkover, 1.0,
-                    iBufferSize);
-            } else if (configuredTalkoverMixMode == TalkoverMixMode::MASTER_AND_BOOTH) {
-                // Mix the talkover mix with the master output and include
-                // it in the booth output too.
-                SampleUtil::copy2WithGain(m_pMaster,
-                    m_pMaster, 1.0,
-                    m_pTalkover, 1.0,
-                    iBufferSize);
-
-                if (m_bRampingGain) {
-                    SampleUtil::copy1WithRampingGain(m_pBooth, m_pMaster,
-                        m_boothGainOld, boothGain, iBufferSize);
-                } else {
-                    SampleUtil::copy1WithGain(m_pBooth, m_pMaster,
-                        boothGain, iBufferSize);
-                }
-            } else if (configuredTalkoverMixMode == TalkoverMixMode::DIRECT_MONITOR) {
-                // Skip mixing the talkover mix with the master mix if using direct monitoring
-                // because it is being mixed in hardware without the latency of sending
-                // the signal in to Mixxx for processing.
-                // The talkover mix will be mixed later with recording/broadcasting signal
-                // after latency compensation.
-                if (m_bRampingGain) {
-                    SampleUtil::copy1WithRampingGain(m_pBooth, m_pMaster,
-                        m_boothGainOld, boothGain, iBufferSize);
-                } else {
-                    SampleUtil::copy1WithGain(m_pBooth, m_pMaster,
-                        boothGain, iBufferSize);
-                }
+        if (configuredTalkoverMixMode == TalkoverMixMode::MASTER) {
+            // Apply input latency compensation to master mix
+            // Do not add unnecessary latency if no microphones are configured
+            if (m_pNumMicsConfigured->get() > 0) {
+                m_pInputLatencyCompensationDelay->process(m_pMaster, iBufferSize);
             }
-            m_boothGainOld = boothGain;
-        } else {
-            if (configuredTalkoverMixMode != TalkoverMixMode::DIRECT_MONITOR) {
-                // Skip mixing the talkover mix with the master mix if using direct monitoring
-                // because it is being mixed in hardware without the latency of sending
-                // the signal in to Mixxx for processing.
-                // In that case, the talkover mix will be mixed later with
-                // the recording/broadcasting signal after latency compensation.
+
+            // Copy master mix to booth output with booth gain before mixing
+            // talkover with master mix
+            if (boothEnabled) {
+                CSAMPLE boothGain = m_pBoothGain->get();
+                if (m_bRampingGain) {
+                    SampleUtil::copy1WithRampingGain(m_pBooth, m_pMaster,
+                        m_boothGainOld, boothGain, iBufferSize);
+                } else {
+                    SampleUtil::copy1WithGain(m_pBooth, m_pMaster,
+                        boothGain, iBufferSize);
+                }
+                m_boothGainOld = boothGain;
+            }
+
+            // Mix talkover into master mix
+            if (m_pNumMicsConfigured->get() > 0) {
                 SampleUtil::copy2WithGain(m_pMaster,
                     m_pMaster, 1.0,
                     m_pTalkover, 1.0,
                     iBufferSize);
-              }
-        }
-
-        // Process master channel effects
-        if (m_pEngineEffectsManager) {
-            GroupFeatureState masterFeatures;
-            // Well, this is delayed by one buffer (it's dependent on the
-            // output). Oh well.
-            if (m_pVumeter != NULL) {
-                m_pVumeter->collectFeatures(&masterFeatures);
             }
-            masterFeatures.has_gain = true;
-            masterFeatures.gain = m_pMasterGain->get();
-            m_pEngineEffectsManager->process(m_masterHandle.handle(), m_pMaster,
-                                             iBufferSize, iSampleRate,
-                                             masterFeatures);
+
+            // Process master channel effects
+            if (m_pEngineEffectsManager) {
+                GroupFeatureState masterFeatures;
+                // Well, this is delayed by one buffer (it's dependent on the
+                // output). Oh well.
+                if (m_pVumeter != NULL) {
+                    m_pVumeter->collectFeatures(&masterFeatures);
+                }
+                masterFeatures.has_gain = true;
+                masterFeatures.gain = m_pMasterGain->get();
+                m_pEngineEffectsManager->process(m_masterHandle.handle(), m_pMaster,
+                                                iBufferSize, iSampleRate,
+                                                masterFeatures);
+            }
+
+            // Apply master gain
+            CSAMPLE master_gain = m_pMasterGain->get();
+            if (m_bRampingGain) {
+                SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld, master_gain,
+                                             iBufferSize);
+            } else {
+                SampleUtil::applyGain(m_pMaster, master_gain, iBufferSize);
+            }
+            m_masterGainOld = master_gain;
+
+            // Record/broadcast signal is the same as the master output
+            m_ppSidechainOutput = &m_pMaster;
+        } else if (configuredTalkoverMixMode == TalkoverMixMode::MASTER_AND_BOOTH) {
+            // Apply input latency compensation then mix talkover into master mix
+            // Do not add unnecessary latency if no microphones are configured
+            if (m_pNumMicsConfigured->get() > 0) {
+                m_pInputLatencyCompensationDelay->process(m_pMaster, iBufferSize);
+                SampleUtil::copy2WithGain(m_pMaster,
+                    m_pMaster, 1.0,
+                    m_pTalkover, 1.0,
+                    iBufferSize);
+            }
+
+            // Copy master mix (with talkover mixed in) to booth output with booth gain
+            if (boothEnabled) {
+                CSAMPLE boothGain = m_pBoothGain->get();
+                if (m_bRampingGain) {
+                    SampleUtil::copy1WithRampingGain(m_pBooth, m_pMaster,
+                        m_boothGainOld, boothGain, iBufferSize);
+                } else {
+                    SampleUtil::copy1WithGain(m_pBooth, m_pMaster,
+                        boothGain, iBufferSize);
+                }
+                m_boothGainOld = boothGain;
+            }
+
+            // Process master channel effects
+            if (m_pEngineEffectsManager) {
+                GroupFeatureState masterFeatures;
+                // Well, this is delayed by one buffer (it's dependent on the
+                // output). Oh well.
+                if (m_pVumeter != NULL) {
+                    m_pVumeter->collectFeatures(&masterFeatures);
+                }
+                masterFeatures.has_gain = true;
+                masterFeatures.gain = m_pMasterGain->get();
+                m_pEngineEffectsManager->process(m_masterHandle.handle(), m_pMaster,
+                                                iBufferSize, iSampleRate,
+                                                masterFeatures);
+            }
+
+            // Apply master gain
+            CSAMPLE master_gain = m_pMasterGain->get();
+            if (m_bRampingGain) {
+                SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld, master_gain,
+                                             iBufferSize);
+            } else {
+                SampleUtil::applyGain(m_pMaster, master_gain, iBufferSize);
+            }
+            m_masterGainOld = master_gain;
+
+            // Record/broadcast signal is the same as the master output
+            m_ppSidechainOutput = &m_pMaster;
+        } else if (configuredTalkoverMixMode == TalkoverMixMode::DIRECT_MONITOR) {
+            // Skip mixing talkover with the master mix if using direct monitoring
+            // because it is being mixed in hardware without the latency of sending
+            // the signal in to Mixxx for processing.
+
+            // Copy master mix to booth output with booth gain
+            if (boothEnabled) {
+                CSAMPLE boothGain = m_pBoothGain->get();
+                if (m_bRampingGain) {
+                    SampleUtil::copy1WithRampingGain(m_pBooth, m_pMaster,
+                        m_boothGainOld, boothGain, iBufferSize);
+                } else {
+                    SampleUtil::copy1WithGain(m_pBooth, m_pMaster,
+                        boothGain, iBufferSize);
+                }
+                m_boothGainOld = boothGain;
+            }
+
+            // Process master channel effects
+            if (m_pEngineEffectsManager) {
+                GroupFeatureState masterFeatures;
+                // Well, this is delayed by one buffer (it's dependent on the
+                // output). Oh well.
+                if (m_pVumeter != NULL) {
+                    m_pVumeter->collectFeatures(&masterFeatures);
+                }
+                masterFeatures.has_gain = true;
+                masterFeatures.gain = m_pMasterGain->get();
+                m_pEngineEffectsManager->process(m_masterHandle.handle(), m_pMaster,
+                                                iBufferSize, iSampleRate,
+                                                masterFeatures);
+            }
+
+            // Apply master gain
+            CSAMPLE master_gain = m_pMasterGain->get();
+            if (m_bRampingGain) {
+                SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld, master_gain,
+                                             iBufferSize);
+            } else {
+                SampleUtil::applyGain(m_pMaster, master_gain, iBufferSize);
+            }
+            m_masterGainOld = master_gain;
+
+            // The talkover signal Mixxx receives is delayed by the input latency,
+            // so to keep it aligned with the master mix for recording/broadcasting,
+            // the master mix going to the record/broadcast signal needs to be delayed.
+            // However, the master & booth outputs must not be delayed because
+            // they are being mixed in hardware with the talkover signal
+            // without the latency of sending the the talkover signal into the computer.
+            // If not using microphone inputs or recording/broadcasting from
+            // a sound card input, skip unnecessary processing here.
+            if (m_pNumMicsConfigured->get() > 0
+                && !m_bExternalRecordBroadcastInputConnected) {
+                SampleUtil::copy(m_pSidechainMix, m_pMaster, iBufferSize);
+                m_pInputLatencyCompensationDelay->process(m_pSidechainMix, iBufferSize);
+                SampleUtil::copy2WithGain(m_pSidechainMix,
+                                          m_pSidechainMix, 1.0,
+                                          m_pTalkover, 1.0,
+                                          iBufferSize);
+                m_ppSidechainOutput = &m_pSidechainMix;
+            } else {
+                m_ppSidechainOutput = &m_pMaster;
+            }
         }
 
-        // Apply master gain after effects.
-        CSAMPLE master_gain = m_pMasterGain->get();
-        if (m_bRampingGain) {
-            SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld,
-                                         master_gain, iBufferSize);
-        } else {
-            SampleUtil::applyGain(m_pMaster, master_gain, iBufferSize);
+        // Submit buffer to the side chain to do broadcasting, recording,
+        // etc. (CPU intensive non-realtime tasks)
+        // If recording/broadcasting from a sound card input,
+        // SoundManager will send the input buffer from the sound card to m_pSidechain
+        // so skip sending a buffer to m_pSidechain here.
+        if (!m_bExternalRecordBroadcastInputConnected
+            && m_pEngineSideChain != nullptr) {
+            m_pEngineSideChain->writeSamples(*m_ppSidechainOutput, iFrames);
         }
-        m_masterGainOld = master_gain;
 
         // Balance values
         CSAMPLE balright = 1.;
@@ -658,34 +748,6 @@ void EngineMaster::process(const int iBufferSize) {
 
         // Perform balancing on main out
         SampleUtil::applyAlternatingGain(m_pMaster, balleft, balright, iBufferSize);
-
-        // Submit master samples to the side chain to do broadcasting, recording,
-        // etc. (cpu intensive non-realtime tasks)
-        // If recording/broadcasting from a sound card input,
-        // SoundManager will send the input buffer from the sound card to m_pSidechain
-        // so skip sending a signal to m_pSidechain here.
-        if (m_pEngineSideChain != NULL && !m_bExternalRecordBroadcastInputConnected) {
-            if (configuredTalkoverMixMode == TalkoverMixMode::DIRECT_MONITOR
-                && m_pNumMicsConfigured->get() > 0) {
-                // When using direct monitoring, the user hears the microphone inputs
-                // mixed with the master output in hardware without the latency of
-                // sending the input signal into Mixxx. However, to record & broadcast
-                // the input signals mixed with the master mix, they need to be sent
-                // into Mixxx. The signal Mixxx receives is delayed by the input latency,
-                // so to keep the input and master mix aligned, the recording/broadcasting
-                // signal needs to be delayed, but the master/booth outputs must not be
-                // delayed.
-                SampleUtil::copy(m_pSidechain, m_pMaster, iBufferSize);
-                m_pInputLatencyCompensationDelay->process(m_pSidechain, iBufferSize);
-                SampleUtil::copy2WithGain(m_pSidechain,
-                                          m_pSidechain, 1.0,
-                                          m_pTalkover, 1.0,
-                                          iBufferSize);
-                m_pEngineSideChain->writeSamples(m_pSidechain, iFrames);
-            } else {
-                m_pEngineSideChain->writeSamples(m_pMaster, iFrames);
-            }
-        }
 
         // Update VU meter (it does not return anything). Needs to be here so that
         // master balance and talkover is reflected in the VU meter.

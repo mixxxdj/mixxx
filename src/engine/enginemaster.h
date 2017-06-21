@@ -309,7 +309,8 @@ class EngineMaster : public QObject, public AudioSource {
     CSAMPLE* m_pHead;
     CSAMPLE* m_pTalkover;
     CSAMPLE* m_pTalkoverHeadphones;
-    CSAMPLE* m_pSidechain;
+    CSAMPLE* m_pSidechainMix;
+    CSAMPLE** m_ppSidechainOutput;
 
     EngineWorkerScheduler* m_pWorkerScheduler;
     EngineSync* m_pMasterSync;
