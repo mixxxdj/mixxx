@@ -1154,25 +1154,16 @@ NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) 
 };
 
 NumarkMixtrack3.BrowseKnob = function(channel, control, value, status, group) {
-    // value = 1 / 2 / 3 ... for positive //value = 1 / 2 / 3  
-    var nval = (value > 0x40 ? value - 0x80 : value);
-    // adjust sampler pregain using PAD + Browse
-    var startingSampler = 0;
-
-    if (NumarkMixtrack3.decks.D1.PADMode || NumarkMixtrack3.decks.D3.PADMode) {
-        startingSampler = 1;
-        engine.setValue("[Deere]","sampler_bank_1", true);
-    } else if (NumarkMixtrack3.decks.D2.PADMode || NumarkMixtrack3.decks.D4.PADMode) {
-        startingSampler = 5;
-        engine.setValue("[Deere]","sampler_bank_2", true);
-    }
     var shifted = (
         NumarkMixtrack3.decks.D1.shiftKey || NumarkMixtrack3.decks.D2.shiftKey ||
         NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey
     );
 
+    // value = 1 / 2 / 3 ... for positive //value = 1 / 2 / 3
+    var nval = (value > 0x40 ? value - 0x80 : value);
+
     // unmodified behaviour
-    if (!shifted && !startingSampler) {
+    if (!shifted) {
         engine.setValue('[Library]', 'MoveVertical', nval);
     }
 
@@ -1186,33 +1177,6 @@ NumarkMixtrack3.BrowseKnob = function(channel, control, value, status, group) {
             for (var i = 0; i < -nval; i++) {
                 engine.setValue('[Library]', 'MoveUp', 1);
             }
-        }
-    }
-    
-    if (startingSampler) {
-        for (var i = startingSampler; i <= startingSampler + 3; i++) {
-            var gainValue = engine.getValue("[Sampler" + i + "]", "pregain");
-            var increment = 1 / 20;
-            var gainMultiplier = 3;
-
-            if (nval < 0) {
-                increment = -increment;
-            }
-
-            // for higher gain, we increment the gain by more
-            if (gainValue > 1) {
-                increment = increment * gainMultiplier;
-            }
-
-            gainValue = gainValue + increment;
-
-            if (gainValue < 0) {
-                gainValue = 0;
-            } else if (gainValue > 4) {
-                gainValue = 4;
-            }
-
-            engine.setValue("[Sampler" + i + "]", "pregain", gainValue);
         }
     }
 };
@@ -1846,28 +1810,20 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
     // beat knobs sends 1 or 127 as value. If value = 127, turn is counterclockwise
     var increase = (value === 1);
+    var increment = 1 / 20;
+
+    if (!increase) {
+        increment = -increment;
+    }
 
 
     // direct interaction with knob, without any button combination
     if (!deck.PADMode && !deck.shiftKey) {
         var mixValue = engine.getParameter("[EffectRack1_EffectUnit" + deck.decknum + "]", "mix");
-        var increment = 1 / 20;
-
-        if (!increase) {
-            increment = -increment;
-        }
-
         engine.setParameter("[EffectRack1_EffectUnit" + deck.decknum + "]", "mix", mixValue + increment);
     }
 
-    if (deck.PADMode) {
-        if (increase) {
-            engine.setValue(deck.group, "beats_translate_later", true);
-        } else {
-            engine.setValue(deck.group, "beats_translate_earlier", true);
-        }
-    }
-
+    // shift to change beatjump_size
     if (deck.shiftKey) {
         var jumpSize = engine.getValue(deck.group, 'beatjump_size');
         var maxJumpSize = 512;
@@ -1886,6 +1842,54 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
         }
 
         engine.setValue(deck.group, 'beatjump_size', jumpSize);
+    }
+
+    // tap to move beat grid
+    if (deck.TapDown) {
+        if (increase) {
+            engine.setValue(deck.group, 'beats_translate_later', true);
+        } else {
+            engine.setValue(deck.group, 'beats_translate_earlier', true);
+        }
+    }
+
+    // pad to change sampler gains
+    if (deck.PADMode) {
+        var numSamplers = engine.getValue('[Master]', 'num_samplers');
+        var samplersPerRack = 8;
+        var samplersPerSide = 4;
+        var samplersToToggle = [];
+        var startingSampler = (deck.decknum < 3) ? 1 : samplersPerSide + 1;
+
+        // divvy up samplers that are associated with left and right decks
+        for (var i = startingSampler, n = numSamplers; i <= n; i = i + samplersPerRack) {
+            for (var j = 0; j < samplersPerSide; j++) {
+                samplersToToggle.push(i + j);
+            }
+        }
+
+        // adjust pre-gain for entire left/right ggroup
+        for (var i = 0; i <= samplersToToggle.length; i++) {
+            var samplerGroup = '[Sampler' + samplersToToggle[i] + ']'
+            var gainValue = engine.getValue(samplerGroup, 'pregain');
+            var gainMultiplier = 3;
+            var maxGain = 4;
+
+            // for higher gain, we increment the gain by more
+            if (gainValue > 1) {
+                increment = increment * gainMultiplier;
+            }
+
+            gainValue = gainValue + increment;
+
+            if (gainValue < 0) {
+                gainValue = 0;
+            } else if (gainValue > maxGain) {
+                gainValue = maxGain;
+            }
+
+            engine.setValue(samplerGroup, 'pregain', gainValue);
+        }
     }
 };
 
