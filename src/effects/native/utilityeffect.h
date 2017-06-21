@@ -1,5 +1,5 @@
-#ifndef CUSTOMDSPEFFECT_H
-#define CUSTOMDSPEFFECT_H
+#ifndef UTILITYEFFECT_H
+#define UTILITYEFFECT_H
 
 #include <QMap>
 
@@ -10,9 +10,9 @@
 #include "util/class.h"
 #include "util/types.h"
 
-struct CustomDspGroupState {
+struct UtilityGroupState {
     // Default accumulator to 1 so we immediately pick an input value.
-    CustomDspGroupState()
+    UtilityGroupState()
             : hold_l(0),
               hold_r(0) {
     }
@@ -20,17 +20,17 @@ struct CustomDspGroupState {
 
 };
 
-class CustomDspEffect : public PerChannelEffectProcessor<CustomDspGroupState> {
+class UtilityEffect : public PerChannelEffectProcessor<UtilityGroupState> {
   public:
-    CustomDspEffect(EngineEffect* pEffect, const EffectManifest& manifest);
-    virtual ~CustomDspEffect();
+    UtilityEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    virtual ~UtilityEffect();
 
     static QString getId();
     static EffectManifest getManifest();
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,
-                        CustomDspGroupState* pState,
+                        UtilityGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
                         const unsigned int numSamples,
                         const unsigned int sampleRate,
@@ -46,7 +46,7 @@ class CustomDspEffect : public PerChannelEffectProcessor<CustomDspGroupState> {
     EngineEffectParameter* m_pSwitchA;
 
 
-    DISALLOW_COPY_AND_ASSIGN(CustomDspEffect);
+    DISALLOW_COPY_AND_ASSIGN(UtilityEffect);
 };
 
-#endif /* CUSTOMDSPEFFECT_H */
+#endif /* UTILITYEFFECT_H */

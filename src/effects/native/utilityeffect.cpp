@@ -1,23 +1,23 @@
-#include "effects/native/customdspeffect.h"
+#include "effects/native/utilityeffect.h"
 
 #include "util/sample.h"
 
 // static
-QString CustomDspEffect::getId() {
-    return "org.mixxx.effects.customdsp";
+QString UtilityEffect::getId() {
+    return "org.mixxx.effects.utility";
 }
 
 // static
-EffectManifest CustomDspEffect::getManifest() {
+EffectManifest UtilityEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
-    manifest.setName(QObject::tr("CustomDsp"));
+    manifest.setName(QObject::tr("Utility"));
     manifest.setAuthor("sqrwvzblw");
     manifest.setVersion("0.1");
     manifest.setDescription(QObject::tr(
-        "The CustomDsp is an effect that can be used as an example "
-    	"of how to implement custom dsp effects. A simple level/gain "
-        "effect with mute button is implemented."));
+        "Utility is a simple effect unit comprising of"
+    	"a simple level/gain knob and a mute switch for"
+        "muting audio of selected channel."));
     manifest.setEffectRampsFromDry(true);
 
     EffectManifestParameter* paramA = manifest.addParameter();
@@ -51,19 +51,19 @@ EffectManifest CustomDspEffect::getManifest() {
     return manifest;
 }
 
-CustomDspEffect::CustomDspEffect(EngineEffect* pEffect,
+UtilityEffect::UtilityEffect(EngineEffect* pEffect,
                                    const EffectManifest& manifest)
         : m_pKnobA(pEffect->getParameterById("knob_A")),
 		  m_pSwitchA(pEffect->getParameterById("switch_A")) {
     Q_UNUSED(manifest);
 }
 
-CustomDspEffect::~CustomDspEffect() {
+UtilityEffect::~UtilityEffect() {
     //qDebug() << debugString() << "destroyed";
 }
 
-void CustomDspEffect::processChannel(const ChannelHandle& handle,
-                                      CustomDspGroupState* pState,
+void UtilityEffect::processChannel(const ChannelHandle& handle,
+                                      UtilityGroupState* pState,
                                       const CSAMPLE* pInput, CSAMPLE* pOutput,
                                       const unsigned int numSamples,
                                       const unsigned int sampleRate,
@@ -72,7 +72,7 @@ void CustomDspEffect::processChannel(const ChannelHandle& handle,
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
     Q_UNUSED(sampleRate); // we are normalized to 1
-    Q_UNUSED(enableState); // no need to ramp, it is just a customdsp ;-)
+    Q_UNUSED(enableState); // no need to ramp, it is just a Utility ;-)
 
 
 

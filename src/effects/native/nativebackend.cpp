@@ -4,7 +4,7 @@
 #include "effects/native/nativebackend.h"
 #include "effects/native/flangereffect.h"
 #include "effects/native/bitcrushereffect.h"
-#include "effects/native/customdspeffect.h"
+#include <effects/native/utilityeffect.h>
 #include "effects/native/linkwitzriley8eqeffect.h"
 #include "effects/native/bessel8lvmixeqeffect.h"
 #include "effects/native/bessel4lvmixeqeffect.h"
@@ -37,7 +37,7 @@ NativeBackend::NativeBackend(QObject* pParent)
     registerEffect<FilterEffect>();
     registerEffect<MoogLadder4FilterEffect>();
     registerEffect<BitCrusherEffect>();
-    registerEffect<CustomDspEffect>();
+    registerEffect<UtilityEffect>();
     // Fancy effects
     registerEffect<FlangerEffect>();
     registerEffect<EchoEffect>();
