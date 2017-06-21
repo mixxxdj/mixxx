@@ -1113,22 +1113,11 @@ NumarkMixtrack3.BrowseKnob = function(channel, control, value, status, group) {
     // value = 1 / 2 / 3 ... for positive //value = 1 / 2 / 3
     var nval = (value > 0x40 ? value - 0x80 : value);
 
-    // unmodified behaviour
-    if (!shifted) {
-        engine.setValue('[Library]', 'MoveVertical', nval);
-    }
-
+    // SHIFT+Turn BROWSE Knob : directory mode --> select Play List/Side bar item
     if (shifted) {
-        // SHIFT+Turn BROWSE Knob : directory mode --> select Play List/Side bar item
-        if (nval > 0) {
-            for (var i = 0; i < nval; i++) {
-                engine.setValue('[Library]', 'MoveDown', 1);
-            }
-        } else {
-            for (var i = 0; i < -nval; i++) {
-                engine.setValue('[Library]', 'MoveUp', 1);
-            }
-        }
+        engine.setValue('[Playlist]', 'SelectPlaylist', nval);
+    } else {
+        engine.setValue('[Playlist]', 'SelectTrackKnob', nval);
     }
 };
 
