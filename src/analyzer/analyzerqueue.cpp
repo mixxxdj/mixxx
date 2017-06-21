@@ -302,10 +302,11 @@ void AnalyzerQueue::run() {
 }
 
 void AnalyzerQueue::execThread() {
-    // The thread-local database connection for waveform anylsis must not
+    // The thread-local database connection for waveform analysis must not
     // be closed before returning from this function. Therefore the
-    // DbConnectionPooler is defined at the outher function scope,
-    // independent of whether a database connection is opened or not.
+    // DbConnectionPooler is defined at this outer function scope,
+    // independent of whether a database connection will be opened
+    // or not.
     mixxx::DbConnectionPooler dbConnectionPooler;
     // m_pAnalysisDao remains null if no analyzer needs database access.
     // Currently only waveform analyses makes use of it.
