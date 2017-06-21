@@ -299,9 +299,6 @@ class CrateStorage: public virtual /*implements*/ SqlStorage {
     // Omit the pCrate parameter for checking if the corresponding crate exists.
     bool readCrateSummaryById(CrateId id, CrateSummary* pCrateSummary = nullptr) const;
 
-    bool createClosure();
-    bool fillClosure();
-    bool insertIntoClosure(CrateId parent, CrateId child);
   private:
     void createViews();
 

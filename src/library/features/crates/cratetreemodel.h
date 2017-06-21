@@ -1,19 +1,43 @@
 #ifndef CRATE_TREE_MODEL_H
 #define CRATE_TREE_MODEL_H
 
-#include <QModelIndex>
-#include <QVariant>
 #include <QList>
-#include <QUrl>
+#include <QMap>
 
 #include "library/treeitemmodel.h"
+#include "library/features/crates/cratehierarchy.h"
+#include "library/crate/crate.h"
 
 // This class represents the crate tree for the nested crates feature
 
 class CrateTreeModel : public TreeItemModel {
   public:
-    CrateTreeModel(QObject *parent = 0);
-    virtual ~CrateTreeModel();
+    CrateTreeModel(LibraryFeature* pFeature,
+                   TrackCollection* pTrackCollection,
+                   CrateHierarchy* pCrateHierarchy);
+    //virtual ~CrateTreeModel();
+
+    // QVariant data(const QModelIndex& index, int role) const override;
+    // bool setData(const QModelIndex& index, const QVariant& value, int role) override;
+
+  public slots:
+    void reloadTree() override;
+
+  protected:
+
+  private:
+    bool findParentChildFromPath(Crate& parent,
+                                 Crate& child,
+                                 const QString& idPath) const;
+    void fillTree(const QStringList& idPaths);
+
+    LibraryFeature* m_pFeature;
+    TrackCollection* m_pTrackCollection;
+    CrateHierarchy* m_pCrateHierarchy;
+
+    parented_ptr<TreeItem> m_pRecursion;
+    QMap<CrateId,TreeItem*> m_treeCrates;
+
 };
 
 #endif // CRATE_TREE_MODEL_H

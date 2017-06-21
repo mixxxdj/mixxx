@@ -452,14 +452,15 @@ METADATA
     </description>
     <sql>
       CREATE TABLE IF NOT EXISTS crateClosure (
-        crateId INTEGER,
+        parentId INTEGER,
         childId INTEGER,
         depth INTEGER
       );
 
       CREATE TABLE IF NOT EXISTS cratePath (
         crateId INTEGER,
-        path TEXT
+        idPath TEXT,
+        namePath TEXT
       );
     </sql>
   </revision>

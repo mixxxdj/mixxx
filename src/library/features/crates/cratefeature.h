@@ -11,6 +11,9 @@
 #include <QStackedWidget>
 
 #include "library/features/crates/cratetablemodel.h"
+#include "library/features/crates/cratetreemodel.h"
+#include "library/features/crates/cratehierarchy.h"
+
 
 #include "library/libraryfeature.h"
 #include "library/treeitemmodel.h"
@@ -59,6 +62,7 @@ class CrateFeature : public LibraryFeature {
     void onRightClick(const QPoint& globalPos) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
     void slotCreateCrate();
+    void slotCreateChildCrate();
 
   private slots:
     void slotDeleteCrate();
@@ -113,7 +117,7 @@ class CrateFeature : public LibraryFeature {
     TrackCollection* m_pTrackCollection;
 
     CrateTableModel* m_pCrateTableModel;
-    TreeItemModel m_childModel;
+    CrateHierarchy m_crateHierarchy;
 
     QModelIndex m_lastRightClickedIndex;
     TrackPointer m_pSelectedTrack;
@@ -123,6 +127,7 @@ class CrateFeature : public LibraryFeature {
     // variant of parented_ptr as soon as it becomes available.
     // See also: https://github.com/mixxxdj/mixxx/pull/1161
     std::unique_ptr<QAction> m_pCreateCrateAction;
+    std::unique_ptr<QAction> m_pCreateChildCrateAction;
     std::unique_ptr<QAction> m_pDeleteCrateAction;
     std::unique_ptr<QAction> m_pRenameCrateAction;
     std::unique_ptr<QAction> m_pLockCrateAction;
@@ -133,6 +138,8 @@ class CrateFeature : public LibraryFeature {
     std::unique_ptr<QAction> m_pExportPlaylistAction;
     std::unique_ptr<QAction> m_pExportTrackFilesAction;
     std::unique_ptr<QAction> m_pAnalyzeCrateAction;
+
+    std::unique_ptr<CrateTreeModel> m_pChildModel;
 
     QHash<int, QPointer<QStackedWidget> > m_panes;
     QHash<int, QPointer<CrateTableModel> > m_crateTableModel;
