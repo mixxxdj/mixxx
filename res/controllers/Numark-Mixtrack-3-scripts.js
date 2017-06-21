@@ -737,6 +737,10 @@ NumarkMixtrack3.deck = function(decknum) {
     this.LoadButtonControl = new LongShortBtn(NumarkMixtrack3.OnLoadButton);
     this.SyncButtonControl = new LongShortDoubleBtn(NumarkMixtrack3.OnSyncButton);
     this.PADLoopButtonHold = new LongShortBtn(NumarkMixtrack3.onPADLoopButtonHold);
+
+    engine.softTakeover(this.group, "rate", true); // Enable soft-takeover for Pitch slider
+    engine.softTakeover(this.group, "volume", true); // Enable soft-takeover for volume
+    engine.setParameter(this.group, "volume", 0); // Set volume to zero for each deck (initial load only)
 };
 
 
@@ -766,13 +770,16 @@ NumarkMixtrack3.deck.prototype.focusNextEffect = function() {
 
 NumarkMixtrack3.sampler = function(decknum) {
     this.decknum = decknum;
-    this.group = "[Sampler" + decknum + "]";
+    this.group = '[Sampler' + decknum + ']';
     this.loaded = false;
     this.PitchFaderHigh = 0;
     this.lastfadervalue = 0;
     this.LEDs = [];
 
     this.PADSampleButtonHold = new LongShortBtn(NumarkMixtrack3.onPADSampleButtonHold);
+
+    engine.softTakeover(this.group, 'pregain', true);
+    engine.connectControl(this.group, 'play', 'NumarkMixtrack3.OnSamplePlayStop');
 };
 
 // =====================================================================
@@ -925,21 +932,6 @@ NumarkMixtrack3.init = function(id, debug) {
     print("==========================================================");
     print("                Init Soft Takeovers");
     print("");
-
-    // Set soft-takeover for all Sampler volumes
-    for (var i = engine.getValue("[Master]", "num_samplers"); i >= 1; i--) {
-        engine.softTakeover("[Sampler" + i + "]", "pregain", true);
-    }
-
-    for (var i = engine.getValue("[Master]", "num_decks"); i >= 1; i--) {
-        engine.softTakeover("[Channel" + i + "]", "rate", true); // Enable soft-takeover for Pitch slider
-        engine.softTakeover("[Channel" + i + "]", "volume", true); // Enable soft-takeover for volume
-        engine.setParameter("[Channel" + i + "]", "volume", 0); // Set volume to zero for each deck (initial load only)
-    }
-
-    for (var i = 1; i <= 8; i++) {
-        engine.connectControl("[Sampler" + i + "]", "play", "NumarkMixtrack3.OnSamplePlayStop");
-    }
 
     NumarkMixtrack3.initDeck('[Channel1]', false); //Initial load, "remove" is set to false
     NumarkMixtrack3.initDeck('[Channel2]', false);
