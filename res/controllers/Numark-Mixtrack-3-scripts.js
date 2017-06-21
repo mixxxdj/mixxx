@@ -1530,6 +1530,12 @@ NumarkMixtrack3.OnSamplePlayStop = function(value, group, control) {
 
 NumarkMixtrack3.PADLoopButton = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
+
+    // if pad mode is being held, don't act as if we pressed the pad
+    if (deck.PADMode) {
+        return;
+    }
+
     var padIndex = control - leds.padLoop1 + 1;
     var loopsizeNew;
 
