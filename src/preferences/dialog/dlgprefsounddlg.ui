@@ -109,14 +109,14 @@
       <widget class="QComboBox" name="micMixComboBox"/>
      </item>
      <item row="8" column="0">
-      <widget class="QLabel" name="headDelayLabel">
+      <widget class="QLabel" name="masterDelayLabel">
        <property name="text">
-        <string>Headphone Delay</string>
+        <string>Master Delay</string>
        </property>
       </widget>
      </item>
      <item row="8" column="1">
-      <widget class="QDoubleSpinBox" name="headDelaySpinBox">
+      <widget class="QDoubleSpinBox" name="masterDelaySpinBox">
        <property name="suffix">
         <string extracomment="milliseconds"> ms</string>
        </property>
@@ -132,14 +132,14 @@
       </widget>
      </item>
      <item row="9" column="0">
-      <widget class="QLabel" name="masterDelayLabel">
+      <widget class="QLabel" name="headDelayLabel">
        <property name="text">
-        <string>Master Delay</string>
+        <string>Headphone Delay</string>
        </property>
       </widget>
      </item>
      <item row="9" column="1">
-      <widget class="QDoubleSpinBox" name="masterDelaySpinBox">
+      <widget class="QDoubleSpinBox" name="headDelaySpinBox">
        <property name="suffix">
         <string extracomment="milliseconds"> ms</string>
        </property>

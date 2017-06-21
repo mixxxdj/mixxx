@@ -60,8 +60,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void slotResetToDefaults();
     void bufferUnderflow(double count);
     void masterLatencyChanged(double latency);
-    void headDelayChanged(double value);
     void masterDelayChanged(double value);
+    void headDelayChanged(double value);
     void roundTripLatencyChanged(double value);
     void masterMixChanged(int value);
     void masterEnabledChanged(double value);

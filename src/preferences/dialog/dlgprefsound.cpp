@@ -113,13 +113,12 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     m_pMasterLatency = new ControlProxy("[Master]", "latency", this);
     m_pMasterLatency->connectValueChanged(SLOT(masterLatencyChanged(double)));
 
-
-    m_pHeadDelay = new ControlProxy("[Master]", "headDelay", this);
     m_pMasterDelay = new ControlProxy("[Master]", "delay", this);
+    m_pHeadDelay = new ControlProxy("[Master]", "headDelay", this);
     m_pRoundTripLatency = new ControlProxy("[Master]", "roundTripLatency", this);
 
-    headDelaySpinBox->setValue(m_pHeadDelay->get());
     masterDelaySpinBox->setValue(m_pMasterDelay->get());
+    headDelaySpinBox->setValue(m_pHeadDelay->get());
     roundTripLatencySpinBox->setValue(m_pRoundTripLatency->get());
 
     // TODO: remove this option by automatically disabling/enabling the master mix
@@ -153,10 +152,10 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     m_pKeylockEngine =
             new ControlProxy("[Master]", "keylock_engine", this);
 
-    connect(headDelaySpinBox, SIGNAL(valueChanged(double)),
-            this, SLOT(headDelayChanged(double)));
     connect(masterDelaySpinBox, SIGNAL(valueChanged(double)),
             this, SLOT(masterDelayChanged(double)));
+    connect(headDelaySpinBox, SIGNAL(valueChanged(double)),
+            this, SLOT(headDelayChanged(double)));
     connect(roundTripLatencySpinBox, SIGNAL(valueChanged(double)),
             this, SLOT(roundTripLatencyChanged(double)));
 
@@ -563,12 +562,12 @@ void DlgPrefSound::masterLatencyChanged(double latency) {
     update();
 }
 
-void DlgPrefSound::headDelayChanged(double value) {
-    m_pHeadDelay->set(value);
-}
-
 void DlgPrefSound::masterDelayChanged(double value) {
     m_pMasterDelay->set(value);
+}
+
+void DlgPrefSound::headDelayChanged(double value) {
+    m_pHeadDelay->set(value);
 }
 
 void DlgPrefSound::roundTripLatencyChanged(double value) {
