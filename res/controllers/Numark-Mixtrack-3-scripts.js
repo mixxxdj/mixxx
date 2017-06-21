@@ -816,10 +816,9 @@ NumarkMixtrack3.sampler = function(decknum) {
     engine.softTakeover(this.group, 'pregain', true);
     engine.connectControl(this.group, 'play', 'NumarkMixtrack3.OnSamplePlayStop');
 
-    // sampler LEDs, first 4 are 0x91, next 4 are 0x92
-    var led = new LED(0x91 + Math.round(decknum / 9), leds["padSampler" + decknum]);
-    led.onOff(PADcolors.black);
-    this.LEDs['padSampler' + decknum] = led;
+    // sampler LED, first 4 are 0x91, next 4 are 0x92
+    this.led = new LED(0x91 + Math.round(decknum / 9), leds['padSampler' + decknum]);
+    this.led.onOff(PADcolors.black);
 };
 
 // =====================================================================
@@ -1141,7 +1140,7 @@ NumarkMixtrack3.PadModeButton = function(channel, control, value, status, group)
         deck.PADMode = true;
         //ensure all LEDs are ON (default)
         for (var i = 1; i <= 8; i++) {
-            NumarkMixtrack3.samplers["S" + i].LEDs["padSampler" + i].onOff(PADcolors.purple);
+            NumarkMixtrack3.samplers['S' + i].led.onOff(PADcolors.purple);
         }
 
         deck.LEDs["padLoop1"].onOff(PADcolors.yellow);
@@ -1503,11 +1502,11 @@ NumarkMixtrack3.SamplerButton = function(channel, control, value, status, group)
                 engine.setValue(group, "beatsync", 1);
             }
 
-            sampler.LEDs["padSampler" + padIndex].flashOn(300, PADcolors.purple, 300);
+            sampler.led.flashOn(300, PADcolors.purple, 300);
         } else {
             if (deck.shiftKey) {
                 engine.setValue(group, "stop", 1);
-                sampler.LEDs["padSampler" + padIndex].onOff(ON);
+                sampler.led.onOff(ON);
             } else {
                 engine.setValue(group, "cue_gotoandplay", 1);
             }
@@ -1527,7 +1526,7 @@ NumarkMixtrack3.onPADSampleButtonHold = function(channel, control, value, status
     // pad button is lifted, the Sampler stops
     if (eventkind === LONG_PRESS) {
         engine.setValue(group, "stop", 1);
-        sampler.LEDs["padSampler" + padIndex].onOff(ON);
+        sampler.led.onOff(ON);
     }
 };
 
@@ -1536,9 +1535,9 @@ NumarkMixtrack3.OnSamplePlayStop = function(value, group, control) {
     var sampler = NumarkMixtrack3.samplers["S" + padIndex];
 
     if (value === 1) {
-        sampler.LEDs["padSampler" + padIndex].flashOn(300, PADcolors.purple, 300);
+        sampler.led.flashOn(300, PADcolors.purple, 300);
     } else {
-        sampler.LEDs["padSampler" + padIndex].onOff(ON);
+        sampler.led.onOff(ON);
     }
 };
 
