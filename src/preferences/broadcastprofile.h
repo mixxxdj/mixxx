@@ -4,14 +4,15 @@
 #ifndef BROADCASTPROFILE_H
 #define BROADCASTPROFILE_H
 
-#include <memory>
+#include <QSharedPointer>
 #include <QObject>
 #include <QString>
 
 #include "preferences/usersettings.h"
 
 class BroadcastProfile;
-typedef std::unique_ptr<BroadcastProfile> BroadcastProfilePtr;
+typedef QSharedPointer<BroadcastProfile> BroadcastProfilePtr;
+Q_DECLARE_METATYPE(BroadcastProfilePtr)
 
 class BroadcastProfile : public QObject {
   Q_OBJECT

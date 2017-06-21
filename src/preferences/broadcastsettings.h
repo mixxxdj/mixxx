@@ -1,7 +1,7 @@
 #ifndef PREFERENCES_BROADCASTSETTINGS_H
 #define PREFERENCES_BROADCASTSETTINGS_H
 
-#include <map>
+#include <QMap>
 #include <QObject>
 #include <QSharedPointer>
 #include <QString>
@@ -32,10 +32,11 @@ class BroadcastSettings : public QObject {
     QString filePathForProfile(const QString& profileName);
     QString getProfilesFolder();
     void loadLegacySettings(const BroadcastProfilePtr& profile);
+    void addProfile(const BroadcastProfilePtr& profile);
 
     // Pointer to config object
     UserSettingsPointer m_pConfig;
-    std::map<QString, BroadcastProfilePtr> m_profiles;
+    QMap<QString, BroadcastProfilePtr> m_profiles;
     QString m_currentProfile;
 };
 

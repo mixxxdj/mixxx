@@ -58,23 +58,35 @@ void BroadcastSettings::loadProfiles() {
                     BroadcastProfile::loadFromFile(fileInfo.absoluteFilePath());
 
             if(profile)
-                m_profiles[profile->getProfileName()] = std::move(profile);
+                addProfile(profile);
         }
     } else {
         kLogger.debug() << "No profiles found. Creating default profile.";
 
-        BroadcastProfilePtr defaultProfile =
-                std::make_unique<BroadcastProfile>(kDefaultProfile);
-
+        BroadcastProfilePtr defaultProfile(
+                    new BroadcastProfile(kDefaultProfile));
         // Upgrade from mixxx.cfg format to XML (if required)
         loadLegacySettings(defaultProfile);
 
+        addProfile(defaultProfile);
         saveProfile(defaultProfile);
 
-        m_profiles[defaultProfile->getProfileName()] =
-                std::move(defaultProfile);
         setCurrentProfile(defaultProfile);
     }
+}
+
+void BroadcastSettings::addProfile(const BroadcastProfilePtr& profile) {
+    if(!profile)
+        return;
+
+    // It is best to avoid using QSharedPointer::data(), especially when
+    // passing it to another function, as it puts the associated pointer
+    // at risk of being manually deleted.
+    // However it's fine with Qt's connect because it can be trusted that
+    // it won't delete the pointer.
+    connect(profile.data(), SIGNAL(profileNameChanged(QString, QString)),
+            this, SLOT(onProfileNameChanged(QString,QString)));
+    m_profiles[profile->getProfileName()] = profile;
 }
 
 void BroadcastSettings::saveProfile(const BroadcastProfilePtr& profile) {
@@ -125,8 +137,8 @@ const BroadcastProfilePtr& BroadcastSettings::getProfileByName(
 }
 
 void BroadcastSettings::saveAll() {
-    for(auto& kv : m_profiles) {
-        saveProfile(kv.second);
+    for(auto kv : m_profiles.values()) {
+        saveProfile(kv);
     }
 }
 
@@ -138,14 +150,15 @@ void BroadcastSettings::deleteProfile(const BroadcastProfilePtr& profile) {
     if(xmlFile.exists())
         QFile::remove(xmlFile.absolutePath());
 
-    m_profiles.erase(profile->getProfileName());
+    m_profiles.remove(profile->getProfileName());
 }
 
 void BroadcastSettings::onProfileNameChanged(QString oldName, QString newName) {
-    if(m_profiles[oldName]) {
-        BroadcastProfilePtr oldItem = std::move(m_profiles[oldName]);
-        m_profiles.erase(oldName);
+    if(!m_profiles[oldName])
+        return;
 
-        m_profiles[newName] = std::move(oldItem);
-    }
+    BroadcastProfilePtr oldItem = m_profiles[oldName];
+    m_profiles.remove(oldName);
+
+    m_profiles[newName] = std::move(oldItem);
 }
