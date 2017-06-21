@@ -94,8 +94,7 @@ BroadcastProfilePtr BroadcastProfile::loadFromFile(
         return BroadcastProfilePtr(nullptr);
 
     QString profileName = xmlFile.baseName();
-    BroadcastProfilePtr profile =
-            std::make_unique<BroadcastProfile>(profileName);
+    BroadcastProfilePtr profile(new BroadcastProfile(profileName));
     profile->loadValues(filename);
     return std::move(profile);
 }

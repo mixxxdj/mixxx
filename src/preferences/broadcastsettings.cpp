@@ -62,8 +62,8 @@ void BroadcastSettings::loadProfiles() {
     } else {
         kLogger.debug() << "No profiles found. Creating default profile.";
 
-        BroadcastProfilePtr defaultProfile =
-                std::make_unique<BroadcastProfile>(kDefaultProfile);
+        BroadcastProfilePtr defaultProfile(
+                    new BroadcastProfile(kDefaultProfile));
 
         // Upgrade from mixxx.cfg format to XML (if required)
         loadLegacySettings(defaultProfile);
