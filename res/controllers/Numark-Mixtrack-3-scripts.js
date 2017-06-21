@@ -797,17 +797,6 @@ NumarkMixtrack3.sampler = function(decknum) {
 // =====================================================================
 // Initialization of the mapping
 // =====================================================================
-
-// initialize 4 decks
-for (var i = 1; i <= 4; i++) {
-    NumarkMixtrack3.decks['D' + i] = new NumarkMixtrack3.deck(i);
-}
-
-//initialize 8 samplers
-for (var i = 1; i <= 8; i++) {
-    NumarkMixtrack3.samplers['S' + i] = new NumarkMixtrack3.sampler(i);
-}
-
 NumarkMixtrack3.initLEDsObjects = function() {
     var decks = NumarkMixtrack3.decks;
 
@@ -916,6 +905,16 @@ NumarkMixtrack3.init = function(id, debug) {
     print("==========================================================");
     print("                  Initialize LEDs");
     print("");
+
+    // initialize 4 decks
+    for (var i = 1; i <= 4; i++) {
+        NumarkMixtrack3.decks['D' + i] = new NumarkMixtrack3.deck(i);
+    }
+
+    // initialize 8 samplers
+    for (var i = 1; i <= 8; i++) {
+        NumarkMixtrack3.samplers['S' + i] = new NumarkMixtrack3.sampler(i);
+    }
 
     // Create LEDs Objects
     NumarkMixtrack3.initLEDsObjects();
