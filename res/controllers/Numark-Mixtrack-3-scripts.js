@@ -834,6 +834,9 @@ NumarkMixtrack3.init = function(id, debug) {
 
     NumarkMixtrack3.id = id; // Store the ID of this device for later use
     NumarkMixtrack3.debug = debug;
+
+    engine.setValue('[Master]', 'show_superknobs', 1);
+
     NumarkMixtrack3.deckGroup = {
         '[Channel1]': '[Channel1]',
         '[Channel2]': '[Channel2]',
