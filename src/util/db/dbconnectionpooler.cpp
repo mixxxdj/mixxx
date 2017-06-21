@@ -28,12 +28,4 @@ DbConnectionPooler::~DbConnectionPooler() {
     }
 }
 
-DbConnectionPooler& DbConnectionPooler::operator=(DbConnectionPooler&& other) {
-    m_pDbConnectionPool = std::move(other.m_pDbConnectionPool);
-    // Move assignment should transfer ownership by invalidating
-    // the other instance.
-    DEBUG_ASSERT(!other);
-    return *this;
-}
-
 } // namespace mixxx

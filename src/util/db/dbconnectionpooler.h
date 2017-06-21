@@ -32,7 +32,15 @@ class DbConnectionPooler final {
         return static_cast<bool>(m_pDbConnectionPool);
     }
 
-    DbConnectionPooler& operator=(DbConnectionPooler&& other);
+#if !defined(_MSC_VER) || _MSC_VER > 1900
+    DbConnectionPooler& operator=(DbConnectionPooler&&) = default;
+#else
+    // Workaround for Visual Studio 2015 (and before)
+    DbConnectionPooler& operator=(DbConnectionPooler&& other) {
+        m_pDbConnectionPool = std::move(other.m_pDbConnectionPool);
+        return *this;
+    }
+#endif
 
   private:
     DbConnectionPooler(const DbConnectionPooler&) = delete;
