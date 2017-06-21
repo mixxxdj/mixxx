@@ -1212,9 +1212,13 @@ NumarkMixtrack3.OnLoadSelectedTrack = function(value, group, control) {
             // change headphone cue (pfl) to the deck on which the song loaded.
             engine.setValue("[Channel" + i + "]", "pfl", deck.decknum === i);
         }
+
+        // update the jog light
+        engine.trigger(group, "playposition");
     }
 
-    deck.duration = engine.getValue(deck.group, "duration");
+    deck.duration = trackDuration;
+
 };
 
 /******************     Sync button :
@@ -2011,12 +2015,6 @@ NumarkMixtrack3.OnTrackLoaded = function(value, group, control) {
     } else {
         // Switch off the PFL light indicating that a track is ejected
         deck.LEDs["headphones"].onOff(OFF);
-    }
-
-    var oldloaded = deck.loaded;
-    deck.loaded = (value !== 0);
-    if (oldloaded !== deck.loaded) { // if this value changed we update the jog light
-        engine.trigger(group, "playposition");
     }
 };
 
