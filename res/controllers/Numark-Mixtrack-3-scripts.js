@@ -742,6 +742,31 @@ NumarkMixtrack3.deck = function(decknum) {
     engine.softTakeover(this.group, "volume", true); // Enable soft-takeover for volume
     engine.setParameter(this.group, "volume", 0); // Set volume to zero for each deck (initial load only)
 
+    // only have two physical sets of buttons for our 4 virtual decks
+    var j = (decknum + 1) % 2 + 1;
+    this.LEDs.headphones = new LED(0x90 + ledCategories.master, leds.headphones1 - 1 + j);
+    this.LEDs.jogWheelsInScratchMode = new LED(0x90 + j, leds.jogWheelsInScratchMode);
+    this.LEDs.loopin = new LED(0x90 + j, leds.loopin);
+    this.LEDs.loopout = new LED(0x90 + j, leds.loopout);
+    this.LEDs.reloopExit = new LED(0x90 + j, leds.reloopExit);
+    this.LEDs.loopHalve = new LED(0x90 + j, leds.loopHalve);
+    this.LEDs.hotCue1 = new LED(0x90 + j, leds.hotCue1);
+    this.LEDs.hotCue2 = new LED(0x90 + j, leds.hotCue2);
+    this.LEDs.hotCue3 = new LED(0x90 + j, leds.hotCue3);
+    this.LEDs.hotCue4 = new LED(0x90 + j, leds.hotCue4);
+    this.LEDs.cue = new LED(0x90 + j, leds.Cue);
+    this.LEDs.sync = new LED(0x90 + j, leds.sync);
+    this.LEDs.play = new LED(0x90 + j, leds.play);
+    this.LEDs.fx1 = new LED(0x90 + j, leds.fx1);
+    this.LEDs.fx2 = new LED(0x90 + j, leds.fx2);
+    this.LEDs.fx3 = new LED(0x90 + j, leds.fx3);
+    this.LEDs.tap = new LED(0x90 + j, leds.tap);
+    this.LEDs.padLoop1 = new LED(0x90 + j, leds.padLoop1);
+    this.LEDs.padLoop2 = new LED(0x90 + j, leds.padLoop2);
+    this.LEDs.padLoop3 = new LED(0x90 + j, leds.padLoop3);
+    this.LEDs.padLoop4 = new LED(0x90 + j, leds.padLoop4);
+    this.LEDs.meter = new LED(0x90 + ledCategories.meters, leds.meter1 - 1 + j);
+
     for (var led in this.LEDs) {
         if (led.hasOwnProperty("onOff")) {
             led.onOff(OFF);
@@ -791,59 +816,17 @@ NumarkMixtrack3.sampler = function(decknum) {
     engine.softTakeover(this.group, 'pregain', true);
     engine.connectControl(this.group, 'play', 'NumarkMixtrack3.OnSamplePlayStop');
 
-    this.LEDs['padSampler' + decknum].onOff(PADcolors.black);
+    // sampler LEDs, first 4 are 0x91, next 4 are 0x92
+    var led = new LED(0x91 + Math.round(decknum / 9), leds["padSampler" + decknum]);
+    led.onOff(PADcolors.black);
+    this.LEDs['padSampler' + decknum] = led;
 };
 
 // =====================================================================
 // Initialization of the mapping
 // =====================================================================
-NumarkMixtrack3.initLEDsObjects = function() {
-    var decks = NumarkMixtrack3.decks;
-
-    NumarkMixtrack3.AllLeds = new LED(0x90 + ledCategories.master, leds.all);
-
-    // sampler LEDs, first 4 are 0x91, next 4 are 0x92
-    for (var i = 1; i <= 8; i++) {
-        NumarkMixtrack3.samplers["S" + i].LEDs["padSampler" + i] = new LED(
-            0x91 + Math.round(i / 9), leds["padSampler" + i]
-        );
-    }
-
-    // all other leds for all decks
-    for (var i = 1; i <= 4; i++) {
-        // only have two physical sets of buttons for our 4 virtual decks
-        var j = (i + 1) % 2 + 1;
-
-        decks["D" + i].LEDs.headphones = new LED(0x90 + ledCategories.master, leds.headphones1 - 1 + j);
-        decks["D" + i].LEDs.jogWheelsInScratchMode = new LED(0x90 + j, leds.jogWheelsInScratchMode);
-        decks["D" + i].LEDs.loopin = new LED(0x90 + j, leds.loopin);
-        decks["D" + i].LEDs.loopout = new LED(0x90 + j, leds.loopout);
-        decks["D" + i].LEDs.reloopExit = new LED(0x90 + j, leds.reloopExit);
-        decks["D" + i].LEDs.loopHalve = new LED(0x90 + j, leds.loopHalve);
-        decks["D" + i].LEDs.hotCue1 = new LED(0x90 + j, leds.hotCue1);
-        decks["D" + i].LEDs.hotCue2 = new LED(0x90 + j, leds.hotCue2);
-        decks["D" + i].LEDs.hotCue3 = new LED(0x90 + j, leds.hotCue3);
-        decks["D" + i].LEDs.hotCue4 = new LED(0x90 + j, leds.hotCue4);
-        decks["D" + i].LEDs.cue = new LED(0x90 + j, leds.Cue);
-        decks["D" + i].LEDs.sync = new LED(0x90 + j, leds.sync);
-        decks["D" + i].LEDs.play = new LED(0x90 + j, leds.play);
-        decks["D" + i].LEDs.fx1 = new LED(0x90 + j, leds.fx1);
-        decks["D" + i].LEDs.fx2 = new LED(0x90 + j, leds.fx2);
-        decks["D" + i].LEDs.fx3 = new LED(0x90 + j, leds.fx3);
-        decks["D" + i].LEDs.tap = new LED(0x90 + j, leds.tap);
-        decks["D" + i].LEDs.padLoop1 = new LED(0x90 + j, leds.padLoop1);
-        decks["D" + i].LEDs.padLoop2 = new LED(0x90 + j, leds.padLoop2);
-        decks["D" + i].LEDs.padLoop3 = new LED(0x90 + j, leds.padLoop3);
-        decks["D" + i].LEDs.padLoop4 = new LED(0x90 + j, leds.padLoop4);
-        decks["D" + i].LEDs.meter = new LED(0x90 + ledCategories.meters, leds.meter1 - 1 + j);
-    }
-};
-
-
-
 NumarkMixtrack3.init = function(id, debug) {
     // Set up the controller to manipulate decks 1 & 2 when this script is loaded 
-
     print("********* Initialisation process engaged *****************");
     print("              Mapping initialization");
     print("");
@@ -917,7 +900,7 @@ NumarkMixtrack3.init = function(id, debug) {
     }
 
     // Create LEDs Objects
-    NumarkMixtrack3.initLEDsObjects();
+    NumarkMixtrack3.AllLeds = new LED(0x90 + ledCategories.master, leds.all);
 
     // Turn ON all the lights: the only way PADMode Leds light up 
     NumarkMixtrack3.AllLeds.onOff(ON);
