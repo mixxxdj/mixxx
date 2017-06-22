@@ -366,7 +366,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
             MixxxDb mixxxDb(config);
             const mixxx::DbConnectionPooler dbConnectionPooler(
                     mixxxDb.connectionPool());
-            if (dbConnectionPooler) {
+            if (dbConnectionPooler.isPooling()) {
                 QSqlDatabase dbConnection = mixxx::DbConnectionPooled(mixxxDb.connectionPool());
                 DEBUG_ASSERT(dbConnection.isOpen());
                 if (MixxxDb::initDatabaseSchema(dbConnection)) {

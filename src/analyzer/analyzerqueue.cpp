@@ -311,14 +311,16 @@ void AnalyzerQueue::execThread() {
     // m_pAnalysisDao remains null if no analyzer needs database access.
     // Currently only waveform analyses makes use of it.
     if (m_pAnalysisDao) {
-        dbConnectionPooler = mixxx::DbConnectionPooler(m_pDbConnectionPool);
-        if (!dbConnectionPooler) {
+        dbConnectionPooler = mixxx::DbConnectionPooler(m_pDbConnectionPool); // move assignment
+        if (!dbConnectionPooler.isPooling()) {
             kLogger.warning()
-                    << "Failed to open database connection for analyzer queue thread";
+                    << "Failed to obtain database connection for analyzer queue thread";
             return;
         }
         // Obtain and use the newly created database connection within this thread
-        m_pAnalysisDao->initialize(mixxx::DbConnectionPooled(m_pDbConnectionPool));
+        QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
+        DEBUG_ASSERT(dbConnection.isOpen());
+        m_pAnalysisDao->initialize(dbConnection);
     }
 
     m_progressInfo.current_track.reset();

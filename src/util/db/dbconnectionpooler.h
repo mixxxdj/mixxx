@@ -33,9 +33,8 @@ class DbConnectionPooler final {
     ~DbConnectionPooler();
 
     // Checks if a thread-local connection has actually been created
-    // during construction. Otherwise this instance does not store
-    // any reference to the connection pool and is non-functional.
-    explicit operator bool() const {
+    // during construction and is owned by this instance.
+    bool isPooling() const {
         return static_cast<bool>(m_pDbConnectionPool);
     }
 
@@ -51,7 +50,6 @@ class DbConnectionPooler final {
 #endif
 
   private:
-
     // Prevent heap allocation
     static void * operator new(std::size_t);
     static void * operator new[](std::size_t);
