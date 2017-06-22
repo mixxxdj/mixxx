@@ -5,6 +5,7 @@ import sys
 import os 
 import argparse
 
+
 def int_or_str(text):
     """Helper function for argument parsing."""
     try:
@@ -38,7 +39,6 @@ def parse_input_arguments_rt():
     return [args.effect_id, fx_parameters_list, args.input_device,args.output_device,args.samplerate,args.blocksize,args.dtype,args.latency,args.channels] 
 
 
-
 def parse_input_arguments_file():
     """  Parse input arguments and return a list with the user defined arguments. Used for fileIO version.
     """
@@ -54,7 +54,6 @@ def parse_input_arguments_file():
     parser.add_argument('-b', '--bufferlength', type=int_or_str, help='Define length of buffer to be used for block processing', default="1024")
     parser.add_argument('-p', '--plotflag', type=int_or_str, help='Set to get a debug plot at the end of proceesing', default="0")
     args = parser.parse_args()
-
 
     # TODO: Move here check that effect exist and return effect object instead of effect id.
     # Check that input file exists otherwise exit with error message.    

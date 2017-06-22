@@ -7,6 +7,7 @@
 """
 import numpy as np
 
+
 class FxGain():
     """
     Effect description and its parameters goes here.
