@@ -18,9 +18,7 @@ struct UtilityGroupState {
 			  previous_mute_state(false),
 			  ramp_time_in_seconds(0.8),
 			  ramp_factor(0.0),
-			  ramp_gain(1.0),
-              hold_l(0),
-              hold_r(0) {
+			  ramp_gain(1.0) {
     }
     enum RampState {
         RAMPNO = 0x00,
