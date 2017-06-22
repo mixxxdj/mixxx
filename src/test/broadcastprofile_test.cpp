@@ -37,15 +37,7 @@ TEST_F(BroadcastProfileTest, ForbiddenChars) {
     ASSERT_FALSE(BroadcastProfile::validName("<marquee>Scrolltext<marquee/>"));
     ASSERT_FALSE(BroadcastProfile::validName("It's called a \"profile\"."));
 
-    // Create an instance which name contains forbidden chars
-    // and test if they have been stripped
-    BroadcastProfile validProfile("This is a valid profile name");
-    ASSERT_TRUE(BroadcastProfile::validName(
-                    validProfile.getProfileName()));
-    BroadcastProfile invalidProfile("This is an invalid profile name: ?/");
-    ASSERT_TRUE(BroadcastProfile::validName(
-                     invalidProfile.getProfileName()));
-
+    // Test if forbidden chars are properly stripped
     ASSERT_FALSE(BroadcastProfile::stripForbiddenChars(
                         "This is an invalid profile name: ?/").contains("?"));
 }
