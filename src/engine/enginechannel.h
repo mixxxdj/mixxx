@@ -40,7 +40,7 @@ class EngineChannel : public EngineObject {
 
     EngineChannel(const ChannelHandleAndGroup& handle_group,
                   ChannelOrientation defaultOrientation = CENTER,
-                  bool isInput = false);
+                  bool isTalkoverChannel = false);
     virtual ~EngineChannel();
 
     virtual ChannelOrientation getOrientation() const;
