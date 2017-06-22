@@ -175,7 +175,8 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
     m_pKeylockEngine->set(pConfig->getValueString(
             ConfigKey(group, "keylock_engine")).toDouble());
 
-    // TODO: Make this read only but let EngineMasterTest enable it
+    // TODO: Make this read only and make EngineMaster decide whether
+    // processing the master mix is necessary.
     m_pMasterEnabled = new ControlObject(ConfigKey(group, "enabled"),
             true, false, true);  // persist = true
     m_pBoothEnabled = new ControlObject(ConfigKey(group, "booth_enabled"));
