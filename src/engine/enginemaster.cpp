@@ -99,15 +99,17 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
     // VU meter:
     m_pVumeter = new EngineVuMeter(group);
 
-    m_pMasterDelay = new EngineDelay(group, ConfigKey(group, "delay"));
-    m_pHeadDelay = new EngineDelay(group, ConfigKey(group, "headDelay"));
-    m_pBoothDelay = new EngineDelay(group, ConfigKey(group, "boothDelay"));
+    m_pMasterDelay = new EngineDelay(group, ConfigKey(group, "delay"), true);
+    m_pHeadDelay = new EngineDelay(group, ConfigKey(group, "headDelay"), true);
+    m_pBoothDelay = new EngineDelay(group, ConfigKey(group, "boothDelay"), true);
+    // Each EngineDelay uses its own internal buffer, so each engine buffer that
+    // needs to be delayed needs its own EngineDelay object. So, create separate
+    // EngineDelays for the master/booth/record/broadcast input latency compensation
+    // and headphone input latency compensation.
     m_pInputLatencyCompensationDelay = new EngineDelay(group,
-        ConfigKey(group, "inputLatency"));
+        ConfigKey(group, "inputLatencyCompensation"));
     m_pInputLatencyCompensationHeadphonesDelay = new EngineDelay(group,
-        ConfigKey(group, "headMixDelay"));
-    m_pRoundTripLatency = new ControlObject(ConfigKey(group, "roundTripLatency"),
-        true, false, true);
+        ConfigKey(group, "headphonesInputLatencyCompensation"));
     m_pNumMicsConfigured = new ControlObject(ConfigKey(group, "num_mics_configured"));
 
     // Headphone volume
@@ -206,7 +208,6 @@ EngineMaster::~EngineMaster() {
     delete m_pBoothDelay;
     delete m_pInputLatencyCompensationDelay;
     delete m_pInputLatencyCompensationHeadphonesDelay;
-    delete m_pRoundTripLatency;
     delete m_pNumMicsConfigured;
 
     delete m_pXFaderReverse;
@@ -412,32 +413,8 @@ void EngineMaster::process(const int iBufferSize) {
     // Mix all the PFL enabled channels together.
     m_headphoneGain.setGain(chead_gain);
 
-    // Mixxx gets input signals delayed by the input latency,
-    // so to preserve the relative timing of the input with the master and headphones
-    // outputs, delay the master, booth, and headphones outputs by the input latency.
-    // This way, if the microphone user is on beat with the output they hear coming from
-    // the speakers/headphones, the input will remain on beat at the expense of
-    // adding some latency.
-    // If the input signal is being directly monitored (mixed with the master output
-    // in hardware), do not delay the master output. The recording/broadcasting signal
-    // will be delayed in this case to keep the recorded/broadcasted signal on beat
-    // and consistent with what the user hears out the speakers/headphones.
-    // If no microphone inputs are configured, avoid adding this extra latency.
     TalkoverMixMode configuredTalkoverMixMode = static_cast<TalkoverMixMode>(
         static_cast<int>(m_pTalkoverMixMode->get()));
-    // These latency values are in milliseconds as required by EngineDelay.
-    double inputLatencyCompensation;
-    double measuredRoundTripLatency = m_pRoundTripLatency->get();
-    // iBufferSize / iSampleRate gives double Mixxx's processing latency because
-    // there are 2 channels per buffer. FIXME when removing the assumption of stereo channels.
-    double processingLatency = (double)iBufferSize / iSampleRate / kChannels * 1000.0;
-    if (measuredRoundTripLatency == 0.0) {
-        inputLatencyCompensation = processingLatency;
-    } else {
-        inputLatencyCompensation = (measuredRoundTripLatency - (processingLatency * 2)) / 2.0;
-    }
-    m_pInputLatencyCompensationDelay->setDelay(inputLatencyCompensation);
-    m_pInputLatencyCompensationHeadphonesDelay->setDelay(inputLatencyCompensation);
 
     if (headphoneEnabled) {
         if (m_bRampingGain) {
@@ -452,6 +429,10 @@ void EngineMaster::process(const int iBufferSize) {
                     m_pHead, iBufferSize);
         }
 
+        // Mix PFL enabled talkover channels into headphone buffer after
+        // input latency compensation
+        // Refer to comment below regarding TalkoverMixMode
+        // for more detailed explanation
         if (configuredTalkoverMixMode != TalkoverMixMode::DIRECT_MONITOR
             && m_pNumMicsConfigured->get() > 0) {
             if (m_bRampingGain) {
@@ -548,14 +529,31 @@ void EngineMaster::process(const int iBufferSize) {
     }
 
     if (masterEnabled) {
-        // Make master and booth mixes from the
-        // crossfader orientation buffers and talkover mix
+        // Mix the crossfader orientation buffers together into the master mix
         SampleUtil::copy3WithGain(m_pMaster,
             m_pOutputBusBuffers[EngineChannel::LEFT], 1.0,
             m_pOutputBusBuffers[EngineChannel::CENTER], 1.0,
             m_pOutputBusBuffers[EngineChannel::RIGHT], 1.0,
             iBufferSize);
 
+        // Process master, booth, and record/broadcast buffers according to the
+        // TalkoverMixMode configured in DlgPrefSound
+
+        // Mixxx gets input signals delayed by the input latency,
+        // so to preserve the relative timing of the input with Mixxx's outputs
+        // (headphones, master, booth, and record/broadcast), delay the outputs
+        // by the input latency before mixing the inputs into them.
+
+        // This way, if the microphone user is on beat with the output they hear from
+        // the speakers/headphones, the input will remain on beat at the expense of
+        // adding some latency to Mixxx's output (no latency will be added to the
+        // microphone signal though). If no microphone inputs are configured, avoid adding
+        // this extra latency.
+
+        // If the input signal is being directly monitored (mixed with the master output
+        // in hardware), do not delay the audible outputs. However, delay the
+        // record/broadcast signal to keep it on beat and consistent with what
+        // the user hears from the speakers/headphones.
         if (configuredTalkoverMixMode == TalkoverMixMode::MASTER) {
             // Apply input latency compensation to master mix
             // Do not add unnecessary latency if no microphones are configured

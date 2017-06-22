@@ -37,6 +37,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
           m_pPlayerManager(pPlayerManager),
           m_pConfig(pConfig),
           m_settingsModified(false),
+          m_bLatencyChanged(false),
           m_loading(false) {
     setupUi(this);
 
@@ -79,6 +80,36 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
                         static_cast<EngineBuffer::KeylockEngine>(i)));
     }
 
+    m_pMasterDelay = new ControlProxy("[Master]", "delay", this);
+    m_pHeadDelay = new ControlProxy("[Master]", "headDelay", this);
+    m_pBoothDelay = new ControlProxy("[Master]", "boothDelay", this);
+    m_pRoundTripLatency = new ControlObject(ConfigKey("[Master]", "roundTripLatency"),
+        true, false, true);
+    m_pInputLatencyCompensationDelay = new ControlProxy("[Master]",
+        "inputLatencyCompensation", this);
+    m_pInputLatencyCompensationHeadphonesDelay = new ControlProxy("[Master]",
+        "headphonesInputLatencyCompensation", this);
+
+    masterDelaySpinBox->setValue(m_pMasterDelay->get());
+    headDelaySpinBox->setValue(m_pHeadDelay->get());
+    boothDelaySpinBox->setValue(m_pBoothDelay->get());
+    roundTripLatencySpinBox->setValue(m_pRoundTripLatency->get());
+
+    connect(masterDelaySpinBox, SIGNAL(valueChanged(double)),
+            this, SLOT(masterDelaySpinboxChanged(double)));
+    connect(headDelaySpinBox, SIGNAL(valueChanged(double)),
+            this, SLOT(headDelaySpinboxChanged(double)));
+    connect(boothDelaySpinBox, SIGNAL(valueChanged(double)),
+            this, SLOT(boothDelaySpinboxChanged(double)));
+    // In case the user somehow updates the m_pRoundTripLatency ControlObject
+    // outside this preference dialog, the input compensation EngineDelays in
+    // EngineMaster should still be updated accordingly. So connect slots for
+    // both the spinbox valueChanged and the ControlObject valueChanged signals.
+    connect(roundTripLatencySpinBox, SIGNAL(valueChanged(double)),
+            this, SLOT(roundTripLatencySpinboxChanged(double)));
+    connect(m_pRoundTripLatency, SIGNAL(valueChanged(double)),
+            this, SLOT(roundTripLatencyChanged(double)));
+
     initializePaths();
     loadSettings();
 
@@ -113,16 +144,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     m_pMasterLatency = new ControlProxy("[Master]", "latency", this);
     m_pMasterLatency->connectValueChanged(SLOT(masterLatencyChanged(double)));
 
-    m_pMasterDelay = new ControlProxy("[Master]", "delay", this);
-    m_pHeadDelay = new ControlProxy("[Master]", "headDelay", this);
-    m_pBoothDelay = new ControlProxy("[Master]", "boothDelay", this);
-    m_pRoundTripLatency = new ControlProxy("[Master]", "roundTripLatency", this);
-
-    masterDelaySpinBox->setValue(m_pMasterDelay->get());
-    headDelaySpinBox->setValue(m_pHeadDelay->get());
-    boothDelaySpinBox->setValue(m_pBoothDelay->get());
-    roundTripLatencySpinBox->setValue(m_pRoundTripLatency->get());
-
     // TODO: remove this option by automatically disabling/enabling the master mix
     // when recording, broadcasting, headphone, and master outputs are enabled/disabled
     m_pMasterEnabled = new ControlProxy("[Master]", "enabled", this);
@@ -150,19 +171,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(talkoverMixComboBoxChanged(int)));
     m_pTalkoverMixMode->connectValueChanged(SLOT(talkoverMixChanged(double)));
 
-
     m_pKeylockEngine =
             new ControlProxy("[Master]", "keylock_engine", this);
-
-    connect(masterDelaySpinBox, SIGNAL(valueChanged(double)),
-            this, SLOT(masterDelayChanged(double)));
-    connect(headDelaySpinBox, SIGNAL(valueChanged(double)),
-            this, SLOT(headDelayChanged(double)));
-    connect(boothDelaySpinBox, SIGNAL(valueChanged(double)),
-            this, SLOT(boothDelayChanged(double)));
-    connect(roundTripLatencySpinBox, SIGNAL(valueChanged(double)),
-            this, SLOT(roundTripLatencyChanged(double)));
-
 
 #ifdef __LINUX__
     qDebug() << "RLimit Cur " << RLimit::getCurRtPrio();
@@ -179,6 +189,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
 }
 
 DlgPrefSound::~DlgPrefSound() {
+    delete m_pRoundTripLatency;
 }
 
 /**
@@ -203,6 +214,26 @@ void DlgPrefSound::slotApply() {
         return;
     }
 
+    if (m_bLatencyChanged
+        && m_pRoundTripLatency->get() != roundTripLatencySpinBox->minimum()) {
+        QMessageBox latencyChangeWarningBox;
+        latencyChangeWarningBox.setIcon(QMessageBox::Warning);
+        latencyChangeWarningBox.setText(tr("Change processing latency?"));
+        latencyChangeWarningBox.setInformativeText(tr("Changing Mixxx's Audio Buffer and/or Sample Rate changes the real round trip latency through your hardware and software. You have set a Measured Round Trip Latency of %1 ms. When you change the round trip latency, it should be measured again to exactly align microphone inputs with Mixxx's outputs.").arg(m_pRoundTripLatency->get())
+        + "\n\n" +
+        tr("If you apply the new settings, the Measured Round Trip Latency will be reset to the default. Microphone inputs will be slightly out of time with Mixxx's outputs until you enter a new Measured Round Trip Latency. Are you sure you want to apply the new Audio Buffer and Sample Rate settings?"));
+        latencyChangeWarningBox.setStandardButtons(QMessageBox::Cancel |
+            QMessageBox::Apply);
+        latencyChangeWarningBox.setDefaultButton(QMessageBox::Cancel);
+        QMessageBox::StandardButton userResponse = static_cast<QMessageBox::StandardButton>(
+              latencyChangeWarningBox.exec());
+        if (userResponse == QMessageBox::Cancel) {
+            return;
+        } else {
+            roundTripLatencySpinBox->setValue(roundTripLatencySpinBox->minimum());
+        }
+    }
+
     SoundDeviceError err = SOUNDDEVICE_ERROR_OK;
     {
         ScopedWaitCursor cursor;
@@ -220,6 +251,7 @@ void DlgPrefSound::slotApply() {
         QMessageBox::warning(NULL, tr("Configuration error"), error);
     } else {
         m_settingsModified = false;
+        m_bLatencyChanged = false;
     }
     loadSettings(); // in case SM decided to change anything it didn't like
 }
@@ -380,6 +412,22 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
         deviceSyncComboBox->setCurrentIndex(0);
     }
 
+    if (m_config.getAPI() == MIXXX_PORTAUDIO_JACK_STRING) {
+        // TODO(Be): Get the processing latency from JACK. PortAudio does
+        // not support this as of June 2017.
+        roundTripLatencySpinBox->setMinimum(0.0);
+    } else {
+        bool measuredRoundTripLatencyAtDefault =
+            m_pRoundTripLatency->get() == roundTripLatencySpinBox->minimum();
+        roundTripLatencySpinBox->setMinimum(config.getProcessingLatency() * 2.0);
+        if (measuredRoundTripLatencyAtDefault) {
+            roundTripLatencySpinBox->setValue(roundTripLatencySpinBox->minimum());
+        } else {
+            // Recalculate input latency compensation
+            roundTripLatencyChanged(m_pRoundTripLatency->get());
+        }
+    }
+
     // Default keylock is Rubberband.
     int keylock_engine = m_pConfig->getValue(
             ConfigKey("[Master]", "keylock_engine"), 1);
@@ -399,7 +447,9 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
 void DlgPrefSound::apiChanged(int index) {
     m_config.setAPI(apiComboBox->itemData(index).toString());
     refreshDevices();
-    // JACK sets its own latency
+    // JACK sets its own buffer size and sample rate that Mixxx cannot change.
+    // TODO(Be): Get the buffer size from JACK and update audioBufferComboBox.
+    // PortAudio does not have a way to get the buffer size from JACK as of June 2017.
     if (m_config.getAPI() == MIXXX_PORTAUDIO_JACK_STRING) {
         latencyLabel->setEnabled(false);
         audioBufferComboBox->setEnabled(false);
@@ -436,6 +486,7 @@ void DlgPrefSound::updateAPIs() {
 void DlgPrefSound::sampleRateChanged(int index) {
     m_config.setSampleRate(
             sampleRateComboBox->itemData(index).toUInt());
+    m_bLatencyChanged = true;
 }
 
 /**
@@ -445,6 +496,7 @@ void DlgPrefSound::sampleRateChanged(int index) {
 void DlgPrefSound::audioBufferChanged(int index) {
     m_config.setAudioBufferSizeIndex(
             audioBufferComboBox->itemData(index).toUInt());
+    m_bLatencyChanged = true;
 }
 
 void DlgPrefSound::syncBuffersChanged(int index) {
@@ -569,20 +621,27 @@ void DlgPrefSound::masterLatencyChanged(double latency) {
     update();
 }
 
-void DlgPrefSound::masterDelayChanged(double value) {
+void DlgPrefSound::masterDelaySpinboxChanged(double value) {
     m_pMasterDelay->set(value);
 }
 
-void DlgPrefSound::headDelayChanged(double value) {
+void DlgPrefSound::headDelaySpinboxChanged(double value) {
     m_pHeadDelay->set(value);
 }
 
-void DlgPrefSound::boothDelayChanged(double value) {
+void DlgPrefSound::boothDelaySpinboxChanged(double value) {
     m_pBoothDelay->set(value);
 }
 
-void DlgPrefSound::roundTripLatencyChanged(double value) {
+void DlgPrefSound::roundTripLatencySpinboxChanged(double value) {
     m_pRoundTripLatency->set(value);
+    roundTripLatencyChanged(value);
+}
+
+void DlgPrefSound::roundTripLatencyChanged(double newRoundTripLatency) {
+    double inputLatencyCompensation = newRoundTripLatency / 2.0;
+    m_pInputLatencyCompensationDelay->set(inputLatencyCompensation);
+    m_pInputLatencyCompensationHeadphonesDelay->set(inputLatencyCompensation);
 }
 
 void DlgPrefSound::masterMixChanged(int value) {

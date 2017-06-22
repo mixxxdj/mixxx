@@ -60,10 +60,11 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void slotResetToDefaults();
     void bufferUnderflow(double count);
     void masterLatencyChanged(double latency);
-    void masterDelayChanged(double value);
-    void headDelayChanged(double value);
-    void boothDelayChanged(double value);
-    void roundTripLatencyChanged(double value);
+    void masterDelaySpinboxChanged(double value);
+    void headDelaySpinboxChanged(double value);
+    void boothDelaySpinboxChanged(double value);
+    void roundTripLatencySpinboxChanged(double value);
+    void roundTripLatencyChanged(double newRoundTripLatency);
     void masterMixChanged(int value);
     void masterEnabledChanged(double value);
     void masterOutputModeComboBoxChanged(int value);
@@ -99,7 +100,9 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     ControlProxy* m_pHeadDelay;
     ControlProxy* m_pMasterDelay;
     ControlProxy* m_pBoothDelay;
-    ControlProxy* m_pRoundTripLatency;
+    ControlObject* m_pRoundTripLatency;
+    ControlProxy* m_pInputLatencyCompensationDelay;
+    ControlProxy* m_pInputLatencyCompensationHeadphonesDelay;
     ControlProxy* m_pKeylockEngine;
     ControlProxy* m_pMasterEnabled;
     ControlProxy* m_pMasterMonoMixdown;
@@ -107,6 +110,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     QList<SoundDevice*> m_inputDevices;
     QList<SoundDevice*> m_outputDevices;
     bool m_settingsModified;
+    bool m_bLatencyChanged;
     SoundManagerConfig m_config;
     bool m_loading;
 };
