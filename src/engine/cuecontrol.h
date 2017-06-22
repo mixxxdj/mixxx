@@ -93,7 +93,6 @@ class CueControl : public EngineControl {
     void updateIndicators();
     bool isTrackAtCue();
     bool isPlayingByPlayButton();
-    bool getPlayFlashingAtPause();
 
   public slots:
     void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;

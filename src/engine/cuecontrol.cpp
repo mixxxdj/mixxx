@@ -307,21 +307,25 @@ void CueControl::trackCuesUpdated() {
     if (!m_pLoadedTrack)
         return;
 
-    const QList<CuePointer> cuePoints(m_pLoadedTrack->getCuePoints());
-    QListIterator<CuePointer> it(cuePoints);
-    while (it.hasNext()) {
-        CuePointer pCue(it.next());
+    for (const CuePointer& pCue: m_pLoadedTrack->getCuePoints()) {
         if (pCue->getType() == Cue::BEGIN) {
             m_pAutoDJStartPosition->set(pCue->getPosition());
         } else if (pCue->getType() == Cue::END) {
             m_pAutoDJEndPosition->set(pCue->getPosition());
-        }
+        } else if (pCue->getType() == Cue::LOAD) {
+            if (m_pCuePoint->get() != pCue->getPosition()) {
+                bool wasTrackAtCue = isTrackAtCue();
 
-        if (pCue->getType() != Cue::CUE && pCue->getType() != Cue::LOAD)
-            continue;
+                // Update CO.
+                m_pCuePoint->set(pCue->getPosition());
 
-        int hotcue = pCue->getHotCue();
-        if (hotcue != -1) {
+                // If track was at cue, move track along with cue.
+                if (wasTrackAtCue) {
+                    seekExact(pCue->getPosition());
+                }
+            }
+        } else if (pCue->getType() == Cue::CUE && pCue->getHotCue() != -1) {
+            int hotcue = pCue->getHotCue();
             HotcueControl* pControl = m_hotcueControls.value(hotcue, NULL);
 
             // Cue's hotcue doesn't have a hotcue control.
