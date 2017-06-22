@@ -7,7 +7,6 @@
 
 #include "analyzer/analyzer.h"
 #include "waveform/waveform.h"
-#include "library/dao/analysisdao.h"
 #include "util/math.h"
 #include "util/performancetimer.h"
 
@@ -15,6 +14,7 @@
 //#define TEST_HEAT_MAP
 
 class EngineFilterIIRBase;
+class AnalysisDao;
 
 inline CSAMPLE scaleSignal(CSAMPLE invalue, FilterIndex index = FilterCount) {
     if (invalue == 0.0) {
@@ -137,7 +137,7 @@ struct WaveformStride {
 class AnalyzerWaveform : public Analyzer {
   public:
     explicit AnalyzerWaveform(
-            const UserSettingsPointer& pConfig);
+            AnalysisDao* pAnalysisDao);
     ~AnalyzerWaveform() override;
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
@@ -154,7 +154,7 @@ class AnalyzerWaveform : public Analyzer {
     void destroyFilters();
     void storeIfGreater(float* pDest, float source);
 
-    mutable AnalysisDao m_analysisDao;
+    AnalysisDao* m_pAnalysisDao;
 
     bool m_skipProcessing;
 

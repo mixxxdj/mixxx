@@ -15,7 +15,8 @@ DbConnectionPooler::DbConnectionPooler(
         DbConnectionPoolPtr pDbConnectionPool) {
     if (pDbConnectionPool && pDbConnectionPool->createThreadLocalConnection()) {
         // m_pDbConnectionPool indicates if the thread-local connection has actually
-        // been created during construction. Otherwise this instance is non-functional.
+        // been created during construction. Otherwise this instance does not store
+        // any reference to the connection pool and is non-functional.
         m_pDbConnectionPool = std::move(pDbConnectionPool);
     }
 }
