@@ -94,8 +94,12 @@ BroadcastProfilePtr BroadcastProfile::loadFromFile(
     if(!xmlFile.exists())
         return BroadcastProfilePtr(nullptr);
 
-    QString profileName = xmlFile.baseName();
-    BroadcastProfilePtr profile(new BroadcastProfile(profileName));
+    QString profileFilename = xmlFile.baseName();
+    // The profile filename (without extension) is used to create the instance
+    // but the real profile name (with forbidden chars but suitable for
+    // non-filesystem uses) will be fetched from the XML file and set in the
+    // object during the call to loadValues()
+    BroadcastProfilePtr profile(new BroadcastProfile(profileFilename));
     profile->loadValues(filename);
     return profile;
 }
