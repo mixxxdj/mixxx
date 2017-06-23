@@ -6,6 +6,7 @@
 #include <QApplication>
 #include <QFontDialog>
 #include <QFontMetrics>
+#include <QMessageBox>
 
 #include "preferences/dialog/dlgpreflibrary.h"
 #include "sources/soundsourceproxy.h"
@@ -75,12 +76,19 @@ DlgPrefLibrary::DlgPrefLibrary(
 
     connect(checkBox_WriteAudioTags, SIGNAL(toggled(bool)),
             this, SLOT(slotWriteAudioTagsToggled()));
-    // Initialize the controls after all slots have been connected
-    slotUpdate();
+    connect(checkBox_ReloadAudioTags, SIGNAL(clicked(bool)),
+            this, SLOT(slotReloadAudioTagsClicked(bool)));
 }
 
 void DlgPrefLibrary::slotShow() {
     m_bAddedDirectory = false;
+
+    // Initialize the controls when the dialog is displayed
+    // for the first time.
+    slotUpdate();
+
+    // Ensure that all dependencies between controls are updated
+    slotWriteAudioTagsToggled();
 }
 
 void DlgPrefLibrary::slotHide() {
@@ -134,6 +142,7 @@ void DlgPrefLibrary::slotExtraPlugins() {
 void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_library_scan->setChecked(false);
     checkBox_WriteAudioTags->setChecked(false);
+    checkBox_ReloadAudioTags->setChecked(false);
     checkBox_use_relative_path->setChecked(false);
     checkBox_show_rhythmbox->setChecked(true);
     checkBox_show_banshee->setChecked(true);
@@ -152,6 +161,8 @@ void DlgPrefLibrary::slotUpdate() {
             ConfigKey("[Library]","RescanOnStartup"), false));
     checkBox_WriteAudioTags->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","WriteAudioTags"), false));
+    checkBox_ReloadAudioTags->setChecked(m_pConfig->getValue(
+            ConfigKey("[Library]", "ReloadAudioTags"), false));
     checkBox_use_relative_path->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","UseRelativePathOnExport"), false));
     checkBox_show_rhythmbox->setChecked(m_pConfig->getValue(
@@ -285,6 +296,8 @@ void DlgPrefLibrary::slotApply() {
                 ConfigValue((int)checkBox_library_scan->isChecked()));
     m_pConfig->set(ConfigKey("[Library]","WriteAudioTags"),
                 ConfigValue((int)checkBox_WriteAudioTags->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]","ReloadAudioTags"),
+                ConfigValue((int)checkBox_ReloadAudioTags->isChecked()));
     m_pConfig->set(ConfigKey("[Library]","UseRelativePathOnExport"),
                 ConfigValue((int)checkBox_use_relative_path->isChecked()));
     m_pConfig->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),
@@ -347,5 +360,25 @@ void DlgPrefLibrary::slotSelectFont() {
                                       this, tr("Select Library Font"));
     if (ok) {
         setLibraryFont(font);
+    }
+}
+
+void DlgPrefLibrary::slotWriteAudioTagsToggled() {
+    // Reloading of audio tags is only useful if the files are kept
+    // synchronized with the library!
+    checkBox_ReloadAudioTags->setEnabled(checkBox_WriteAudioTags->isChecked());
+}
+
+void DlgPrefLibrary::slotReloadAudioTagsClicked(bool checked) {
+    if (checked) {
+        const QMessageBox::StandardButton answer =
+            QMessageBox::warning(
+                NULL,
+                tr("Reload Audio Tags"),
+                tr("Enabling this option will update the information stored in your library with the audio tags stored in the file before a track is selected/loaded/edited. You are encouraged to backup your library before enabling this option!\nAre you really sure that you want to enable this option?"),
+                QMessageBox::Yes | QMessageBox::No);
+        if (QMessageBox::Yes != answer) {
+            checkBox_ReloadAudioTags->setChecked(false);
+        }
     }
 }

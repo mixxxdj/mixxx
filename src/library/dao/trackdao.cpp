@@ -1307,9 +1307,20 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     } else {
         pTrack->markClean();
         // Update both metadata and cover art from file.
-        // This must be done before inserting the track into the recent
-        // tracks cache!
-        SoundSourceProxy(pTrack).updateTrack();
+        // This must be done while the TrackCache is still locked and
+        // before inserting the track into the recent tracks cache!
+        if (m_pConfig &&
+                (m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) &&
+                (m_pConfig->getValueString(ConfigKey("[Library]","ReloadAudioTags")).toInt() == 1)) {
+            // Consider the file tags to be the "book of records" for track metadata
+            // while the Mixxx library only serves as a cache for searching/filtering/
+            // organizing with additional track metadata like waveforms and cue points
+            SoundSourceProxy(pTrack).updateTrack(
+                    SoundSourceProxy::ParseFileTagsMode::Again);
+        } else {
+            SoundSourceProxy(pTrack).updateTrack(
+                    SoundSourceProxy::ParseFileTagsMode::Once);
+        }
         // NOTE(uklotz): Loading of metadata from the corresponding file
         // might have failed when the track has been added to the library.
         // We could (re-)load the metadata here, but this would risk to
