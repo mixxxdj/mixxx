@@ -702,7 +702,8 @@ TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove
     // TODO(uklotzde): Loading of metadata can be skipped if
     // the track is already in the library. A refactoring is
     // needed to detect this before calling addTracksAddTrack().
-    SoundSourceProxy(pTrack).loadTrackMetadata();
+    DEBUG_ASSERT(!pTrack->isHeaderParsed());
+    SoundSourceProxy(pTrack, SoundSourceProxy::PARSE_METADATA);
     if (!pTrack->isHeaderParsed()) {
         qWarning() << "TrackDAO::addTracksAddFile:"
                 << "Failed to parse track metadata from file"
@@ -1382,12 +1383,11 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
                 Track::newTemporary(
                         pTrack->getFileInfo(),
                         pTrack->getSecurityToken()));
-        SoundSourceProxy proxy(pTempTrack);
         // The metadata for the newly created track object has
         // not been parsed from the file, until we explicitly
         // (re-)load it through the SoundSourceProxy.
-        DEBUG_ASSERT(!pTempTrack->isHeaderParsed());
-        proxy.loadTrackMetadata();
+        SoundSourceProxy proxy(pTempTrack,
+                SoundSourceProxy::PARSE_METADATA);
         if (pTempTrack->isHeaderParsed()) {
             // Copy the track total from the temporary track object
             pTrack->setTrackTotal(pTempTrack->getTrackTotal());

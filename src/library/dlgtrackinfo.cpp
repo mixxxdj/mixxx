@@ -625,7 +625,10 @@ void DlgTrackInfo::reloadTrackMetadata() {
         TrackPointer pTrack(Track::newTemporary(
                 m_pLoadedTrack->getFileInfo(),
                 m_pLoadedTrack->getSecurityToken()));
-        SoundSourceProxy(pTrack).loadTrackMetadata();
+        SoundSourceProxy(pTrack,
+                SoundSourceProxy::PARSE_METADATA |
+                SoundSourceProxy::RELOAD_METADATA_EVEN_IF_ALREADY_PARSED |
+                SoundSourceProxy::RELOAD_METADATA_EVEN_IF_DIRTY);
         if (pTrack) {
             populateFields(*pTrack);
         }

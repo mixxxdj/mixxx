@@ -1389,7 +1389,12 @@ void WTrackTableView::slotReloadTrackMetadata() {
     for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            SoundSourceProxy(pTrack).loadTrackMetadata(true);
+            // The user has explicitly requested to reload metadata from the file
+            // to override the information within Mixxx!
+            SoundSourceProxy(pTrack,
+                    SoundSourceProxy::PARSE_METADATA |
+                    SoundSourceProxy::RELOAD_METADATA_EVEN_IF_ALREADY_PARSED |
+                    SoundSourceProxy::RELOAD_METADATA_EVEN_IF_DIRTY);
         }
     }
 }

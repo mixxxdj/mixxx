@@ -305,7 +305,8 @@ SoundSourceProxy::SaveTrackMetadataResult SoundSourceProxy::saveTrackMetadata(
     if (proxy.m_pSoundSource) {
         mixxx::TrackMetadata trackMetadata;
         bool parsedFromFile = false;
-        pTrack->getTrackMetadata(&trackMetadata, &parsedFromFile);
+        bool isDirty = false;
+        pTrack->getTrackMetadata(&trackMetadata, &parsedFromFile, &isDirty);
         if (parsedFromFile || evenIfNeverParsedFromFileBefore) {
             switch (proxy.m_pSoundSource->writeTrackMetadata(trackMetadata)) {
             case OK:
@@ -328,12 +329,18 @@ SoundSourceProxy::SaveTrackMetadataResult SoundSourceProxy::saveTrackMetadata(
     return SaveTrackMetadataResult::FAILED;
 }
 
-SoundSourceProxy::SoundSourceProxy(const TrackPointer& pTrack)
+SoundSourceProxy::SoundSourceProxy(
+        const TrackPointer& pTrack,
+        int parseFileTagsOptions)
     : m_pTrack(pTrack),
       m_url(getCanonicalUrlForTrack(pTrack.get())),
       m_soundSourceProviderRegistrations(findSoundSourceProviderRegistrations(m_url)),
       m_soundSourceProviderRegistrationIndex(0) {
+    // Determine if the track is marked as dirty before selecting
     initSoundSource();
+    if (parseFileTagsOptions != PARSE_NONE) {
+        parseFileTags(parseFileTagsOptions);
+    }
 }
 
 SoundSourceProxy::SoundSourceProxy(const Track* pTrack)
@@ -428,16 +435,21 @@ namespace {
     }
 } // anonymous namespace
 
-void SoundSourceProxy::loadTrackMetadataAndCoverArt(
-        bool withCoverArt,
-        bool reloadFromFile) const {
+void SoundSourceProxy::parseFileTags(int parseOptions) {
     DEBUG_ASSERT(m_pTrack);
 
-    if (!m_pSoundSource) {
-        // Silently ignore requests for unsupported files
-        kLogger.debug() << "Unable to parse file tags without a SoundSource"
+    if (!(parseOptions & PARSE_METADATA_AND_COVERART)) {
+        kLogger.debug() << "Skip parsing of tags from file"
                  << getUrl().toString();
-        return;
+        return; // abort
+    }
+
+    if (!m_pSoundSource) {
+        // Ignore requests for unsupported files where no appropriate SoundSource
+        // is available
+        kLogger.warning() << "Unable to parse tags from unsupported file type"
+                 << getUrl().toString();
+        return; // abort
     }
 
     // Use the existing trackMetadata as default values. Otherwise
@@ -445,58 +457,67 @@ void SoundSourceProxy::loadTrackMetadataAndCoverArt(
     // empty values if the corresponding file tags are missing.
     // Depending on the file type some kind of tags might even
     // not be supported at all and those would get lost!
-    bool parsedFromFile = false;
     mixxx::TrackMetadata trackMetadata;
-    m_pTrack->getTrackMetadata(&trackMetadata, &parsedFromFile);
-    if (parsedFromFile && !reloadFromFile) {
-        kLogger.debug() << "Skip parsing of track metadata from file"
+    bool parsedFromFile = false;
+    bool isDirty = false;
+    m_pTrack->getTrackMetadata(&trackMetadata, &parsedFromFile, &isDirty);
+    mixxx::TrackMetadata* pTrackMetadata = (parseOptions & PARSE_METADATA) ? &trackMetadata : nullptr;
+
+    // Evaluate state flags of track
+    if ((parsedFromFile && !(parseOptions & RELOAD_METADATA_EVEN_IF_ALREADY_PARSED)) ||
+            (isDirty && !(parseOptions & RELOAD_METADATA_EVEN_IF_DIRTY))) {
+        kLogger.info() << "Skip parsing of track metadata from file"
                  << getUrl().toString();
-        return; // do not reload from file
+        pTrackMetadata = nullptr;
     }
 
     // If parsing of the cover art image should be omitted the
-    // 2nd output parameter must be set to nullptr. Cover art
-    // is not reloaded from file once the metadata has been parsed!
-    CoverInfoRelative coverInfoRelative;
+    // 2nd output parameter must be set to nullptr.
     QImage coverImg;
     DEBUG_ASSERT(coverImg.isNull());
-    QImage* pCoverImg = (withCoverArt && !parsedFromFile) ? &coverImg : nullptr;
-    bool parsedCoverArt = false;
+    QImage* pCoverImg = (parseOptions & PARSE_COVERART) ? &coverImg : nullptr;
+
+    if (!pTrackMetadata && !pCoverImg) {
+        return; // done
+    }
 
     // Parse the tags stored in the audio file.
-    if (m_pSoundSource &&
-            (m_pSoundSource->parseTrackMetadataAndCoverArt(&trackMetadata, pCoverImg) == OK)) {
-        parsedFromFile = true;
-        if (!coverImg.isNull()) {
+    const int parseResult =
+            m_pSoundSource->parseTrackMetadataAndCoverArt(
+                    pTrackMetadata, pCoverImg);
+    if (parseResult != OK) {
+        kLogger.warning() << "Failed to parse track metadata and/or cover art from file"
+                   << getUrl().toString();
+    }
+
+    if (!parsedFromFile && pTrackMetadata && (pTrackMetadata->getArtist().isEmpty() || pTrackMetadata->getTitle().isEmpty())) {
+        // Fallback: If Artist or title fields are blank initially try to parse
+        // them from the file name.
+        // TODO(rryan): Should we re-visit this decision?
+        parseMetadataFromFileName(&trackMetadata, m_pTrack->getFileInfo().fileName());
+    }
+
+    if (pTrackMetadata) {
+        kLogger.warning() << "Updating track metadata"
+                 << getUrl().toString();
+        m_pTrack->setTrackMetadata(trackMetadata, parsedFromFile);
+    }
+    if (pCoverImg) {
+        if (pCoverImg->isNull()) {
+            kLogger.info() << "No cover art found in file"
+                       << getUrl().toString();
+        } else {
             // Cover image has been parsed from the file
             // TODO() here we may introduce a duplicate hash code
+            CoverInfoRelative coverInfoRelative;
             coverInfoRelative.hash = CoverArtUtils::calculateHash(coverImg);
             coverInfoRelative.coverLocation = QString();
             coverInfoRelative.type = CoverInfo::METADATA;
             coverInfoRelative.source = CoverInfo::GUESSED;
-            parsedCoverArt = true;
+            kLogger.warning() << "Updating track cover art"
+                     << getUrl().toString();
+            m_pTrack->setCoverInfo(coverInfoRelative);
         }
-    } else {
-        kLogger.warning() << "Failed to parse track metadata from file"
-                   << getUrl().toString();
-        if (parsedFromFile) {
-            // Don't overwrite any existing metadata that once has
-            // been parsed successfully from file.
-            return;
-        }
-    }
-
-    // If Artist or title fields are blank try to parse them
-    // from the file name.
-    // TODO(rryan): Should we re-visit this decision?
-    if (trackMetadata.getArtist().isEmpty() || trackMetadata.getTitle().isEmpty()) {
-        parseMetadataFromFileName(&trackMetadata, m_pTrack->getFileInfo().fileName());
-    }
-
-    // Dump the trackMetadata extracted from the file back into the track.
-    m_pTrack->setTrackMetadata(trackMetadata, parsedFromFile);
-    if (parsedCoverArt) {
-        m_pTrack->setCoverInfo(coverInfoRelative);
     }
 }
 

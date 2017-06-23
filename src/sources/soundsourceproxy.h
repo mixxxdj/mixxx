@@ -31,7 +31,25 @@ class SoundSourceProxy {
     static bool isFileNameSupported(const QString& fileName);
     static bool isFileExtensionSupported(const QString& fileExtension);
 
-    explicit SoundSourceProxy(const TrackPointer& pTrack);
+    // Controls which (metadata/coverart) and how tags are (re-)loaded from
+    // audio files.
+    //
+    // Default: Do not reload a track's metadata/coverart if it has already
+    // been parsed before or if the track is currently cached in memory and
+    // marked as dirty. These restrictions avoid that metadata that has been
+    // modified in Mixxx is overwritten by accident.
+    enum ParseFileTagOptions {
+        PARSE_NONE                             = 0x00,
+        PARSE_METADATA                         = 0x01,
+        PARSE_COVERART                         = 0x02,
+        PARSE_METADATA_AND_COVERART            = PARSE_METADATA | PARSE_COVERART,
+        RELOAD_METADATA_EVEN_IF_ALREADY_PARSED = 0x10,
+        RELOAD_METADATA_EVEN_IF_DIRTY          = 0x20,
+    };
+
+    explicit SoundSourceProxy(
+            const TrackPointer& pTrack,
+            int parseFileTagOptions = PARSE_NONE);
 
     const TrackPointer& getTrack() const {
         return m_pTrack;
@@ -39,17 +57,6 @@ class SoundSourceProxy {
 
     const QUrl& getUrl() const {
         return m_url;
-    }
-
-    // Load track metadata and (optionally) cover art from the file
-    // if it has not already been parsed. With reloadFromFile = true
-    // metadata and cover art will be reloaded from the file regardless
-    // if it has already been parsed before or not.
-    void loadTrackMetadata(bool reloadFromFile = false) const {
-        return loadTrackMetadataAndCoverArt(false, reloadFromFile);
-    }
-    void loadTrackMetadataAndCoverArt(bool reloadFromFile = false) const {
-        return loadTrackMetadataAndCoverArt(true, reloadFromFile);
     }
 
     // Parse only the metadata from the file without modifying
@@ -87,6 +94,8 @@ class SoundSourceProxy {
     explicit SoundSourceProxy(
             const Track* pTrack);
 
+    void parseFileTags(int parseOptions);
+
     const TrackPointer m_pTrack;
 
     const QUrl m_url;
@@ -100,8 +109,6 @@ class SoundSourceProxy {
     void nextSoundSourceProvider();
 
     void initSoundSource();
-
-    void loadTrackMetadataAndCoverArt(bool withCoverArt, bool reloadFromFile) const;
 
     // This pointer must stay in this class together with
     // the corresponding track pointer. Don't pass it around!!

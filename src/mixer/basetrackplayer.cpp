@@ -294,8 +294,10 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         emit(playerEmpty());
     } else if (pNewTrack && pNewTrack == m_pLoadedTrack) {
         // Successful loaded a new track
-        // Reload metadata from file, but only if required
-        SoundSourceProxy(m_pLoadedTrack).loadTrackMetadata();
+        // Reload metadata from file, but only if not already
+        // parsed before
+        SoundSourceProxy(m_pLoadedTrack,
+                SoundSourceProxy::PARSE_METADATA);
 
         // Update the BPM and duration values that are stored in ControlObjects
         m_pDuration->set(m_pLoadedTrack->getDuration());

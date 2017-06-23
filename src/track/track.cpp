@@ -141,10 +141,12 @@ void Track::setTrackMetadata(
 
 void Track::getTrackMetadata(
         mixxx::TrackMetadata* pTrackMetadata,
-        bool* pHeaderParsed) const {
+        bool* pHeaderParsed,
+        bool* pDirty) const {
     QMutexLocker lock(&m_qMutex);
     *pTrackMetadata = m_metadata;
     *pHeaderParsed = m_bHeaderParsed;
+    *pDirty = m_bDirty;
 }
 
 QString Track::getLocation() const {
