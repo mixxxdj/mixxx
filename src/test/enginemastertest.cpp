@@ -7,6 +7,7 @@
 #include "engine/enginechannel.h"
 #include "engine/enginemaster.h"
 #include "test/mixxxtest.h"
+#include "test/signalpathtest.h"
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/types.h"
@@ -42,8 +43,8 @@ class EngineMasterTest : public MixxxTest {
   protected:
     void SetUp() override {
         m_pChannelHandleFactory = new ChannelHandleFactory();
-        m_pMaster = new EngineMaster(config(), "[Master]", nullptr,
-                                     m_pChannelHandleFactory, false, false);
+        m_pMaster = new TestEngineMaster(config(), "[Master]", nullptr,
+                                         m_pChannelHandleFactory, false, false);
         m_pMasterEnabled = new ControlProxy(ConfigKey("[Master]", "enabled"));
         m_pMasterEnabled->set(1);
     }

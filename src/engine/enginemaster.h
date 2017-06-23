@@ -240,6 +240,11 @@ class EngineMaster : public QObject, public AudioSource {
     // The master buffer is protected so it can be accessed by test subclasses.
     CSAMPLE* m_pMaster;
 
+    // ControlObjects for switching off unnecessary processing
+    // These are protected so tests can set them
+    ControlObject* m_pMasterEnabled;
+    ControlObject* m_pHeadphoneEnabled;
+
   private:
     void mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
                      CSAMPLE* pOutput, unsigned int iBufferSize, GainCalculator* pGainCalculator);
@@ -321,13 +326,9 @@ class EngineMaster : public QObject, public AudioSource {
     const ChannelHandleAndGroup m_busCenterHandle;
     const ChannelHandleAndGroup m_busRightHandle;
 
-    // Produce the Master Mixxx, not Required if connected to left
-    // and right Bus and no recording and broadcast active
-    ControlObject* m_pMasterEnabled;
     // Mix two Mono channels. This is useful for outdoor gigs
     ControlObject* m_pMasterMonoMixdown;
     ControlObject* m_pMasterTalkoverMix;
-    ControlObject* m_pHeadphoneEnabled;
 
     volatile bool m_bBusOutputConnected[3];
 };

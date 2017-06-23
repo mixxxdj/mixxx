@@ -41,7 +41,10 @@ class TestEngineMaster : public EngineMaster {
                      bool bEnableSidechain,
                      bool bRampingGain)
         : EngineMaster(_config, group, pEffectsManager, pChannelHandleFactory,
-                       bEnableSidechain, bRampingGain) { }
+                       bEnableSidechain, bRampingGain) {
+        m_pMasterEnabled->forceSet(1);
+        m_pHeadphoneEnabled->forceSet(1);
+    }
 
     CSAMPLE* masterBuffer() {
         return m_pMaster;
