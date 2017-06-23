@@ -851,7 +851,7 @@
                                                                 this.output);
                 };
                 this.output = function (value, group, control) {
-                    this.send(value === this.number);
+                    this.send((value === this.number) ? this.on : this.off);
                 };
             },
         });
