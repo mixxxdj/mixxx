@@ -19,18 +19,17 @@ const mixxx::Logger kLogger("BroadcastSettings");
 
 BroadcastSettings::BroadcastSettings(
         UserSettingsPointer pConfig, QObject* parent)
-    : QObject(parent),
+    : QAbstractListModel(parent),
       m_pConfig(pConfig),
-      m_profiles(),
-      m_currentProfile(kDefaultProfile) {
+      m_profiles() {
+    setHeaderData(0, Qt::Horizontal, QObject::tr("Name"), Qt::DisplayRole);
     loadProfiles();
 }
 
 void BroadcastSettings::loadProfiles() {
     QDir profilesFolder(getProfilesFolder());
     if(!profilesFolder.exists()) {
-        kLogger.debug()
-                << "Profiles folder doesn't exist. Creating it.";
+        kLogger.info() << "Profiles folder doesn't exist. Creating it.";
         profilesFolder.mkpath(profilesFolder.absolutePath());
     }
 
@@ -49,8 +48,8 @@ void BroadcastSettings::loadProfiles() {
     // It's important to take into account that the "legacy" settings are left
     // in mixxx.cfg for retro-compatibility during alpha and beta testing.
 
-    if(files.count() > 0) {
-        kLogger.debug() << "Found " << files.count() << " profiles.";
+    if(files.size() > 0) {
+        kLogger.info() << "Found " << files.size() << " profile(s)";
 
         // Load profiles from filesystem
         for(QFileInfo fileInfo : files) {
@@ -61,7 +60,7 @@ void BroadcastSettings::loadProfiles() {
                 addProfile(profile);
         }
     } else {
-        kLogger.debug() << "No profiles found. Creating default profile.";
+        kLogger.info() << "No profiles found. Creating default profile.";
 
         BroadcastProfilePtr defaultProfile(
                     new BroadcastProfile(kDefaultProfile));
@@ -70,14 +69,15 @@ void BroadcastSettings::loadProfiles() {
 
         addProfile(defaultProfile);
         saveProfile(defaultProfile);
-
-        setCurrentProfile(defaultProfile);
     }
 }
 
 void BroadcastSettings::addProfile(const BroadcastProfilePtr& profile) {
     if(!profile)
         return;
+
+    int position = m_profiles.size();
+    beginInsertRows(QModelIndex(), position, position);
 
     // It is best to avoid using QSharedPointer::data(), especially when
     // passing it to another function, as it puts the associated pointer
@@ -86,7 +86,9 @@ void BroadcastSettings::addProfile(const BroadcastProfilePtr& profile) {
     // it won't delete the pointer.
     connect(profile.data(), SIGNAL(profileNameChanged(QString, QString)),
             this, SLOT(onProfileNameChanged(QString,QString)));
-    m_profiles[profile->getProfileName()] = profile;
+    m_profiles.insert(profile->getProfileName(), BroadcastProfilePtr(profile));
+
+    endInsertRows();
 }
 
 void BroadcastSettings::saveProfile(const BroadcastProfilePtr& profile) {
@@ -116,24 +118,9 @@ QString BroadcastSettings::getProfilesFolder() {
     return profilesPath;
 }
 
-void BroadcastSettings::setCurrentProfile(const BroadcastProfilePtr& profile) {
-    if(!profile)
-        return;
-
-    QString profileName = profile->getProfileName();
-    m_pConfig->setValue(ConfigKey(kConfigKey, kCurrentProfile), profileName);
-}
-
-const BroadcastProfilePtr& BroadcastSettings::getCurrentProfile() {
-    QString currentProfile = m_pConfig->getValue(
-                                 ConfigKey(kConfigKey, kCurrentProfile),
-                                 kDefaultProfile);
-    return getProfileByName(currentProfile);
-}
-
-const BroadcastProfilePtr& BroadcastSettings::getProfileByName(
+BroadcastProfilePtr BroadcastSettings::getProfileByName(
         const QString& profileName) {
-    return m_profiles[profileName];
+    return m_profiles.value(profileName, BroadcastProfilePtr(nullptr));
 }
 
 void BroadcastSettings::saveAll() {
@@ -150,15 +137,38 @@ void BroadcastSettings::deleteProfile(const BroadcastProfilePtr& profile) {
     if(xmlFile.exists())
         QFile::remove(xmlFile.absolutePath());
 
+    int position = m_profiles.keys().indexOf(profile->getProfileName());
+    if(position > -1) {
+        beginRemoveRows(QModelIndex(), position, position);
+        endRemoveRows();
+    }
     m_profiles.remove(profile->getProfileName());
 }
 
 void BroadcastSettings::onProfileNameChanged(QString oldName, QString newName) {
-    if(!m_profiles[oldName])
+    if(!m_profiles.contains(oldName))
         return;
 
-    BroadcastProfilePtr oldItem = m_profiles[oldName];
-    m_profiles.remove(oldName);
+    BroadcastProfilePtr oldItem = m_profiles.take(oldName);
+    m_profiles.insert(newName, oldItem);
+}
 
-    m_profiles[newName] = std::move(oldItem);
+int BroadcastSettings::rowCount(const QModelIndex& parent) const {
+    return m_profiles.size();
+}
+
+QVariant BroadcastSettings::data(const QModelIndex& index, int role) const {
+    int rowIndex = index.row();
+    if(!index.isValid() || rowIndex >= m_profiles.size())
+        return QVariant();
+
+    const BroadcastProfilePtr& profile = m_profiles.values().at(rowIndex);
+    if(profile && role == Qt::DisplayRole)
+        return profile->getProfileName();
+    else
+        return QVariant();
+}
+
+BroadcastProfilePtr BroadcastSettings::profileAt(int index) {
+    return m_profiles.values().value(index, BroadcastProfilePtr(nullptr));
 }
