@@ -97,8 +97,9 @@ class Track : public QObject {
 
     // Returns the file type
     QString getType() const;
-    // Sets the file type. Only used by TrackDAO and SoundSourceProxy!
-    void setType(const QString&);
+    // Initialize the file type without marking the track as dirty.
+    // Only used by TrackDAO and SoundSourceProxy!
+    void initType(const QString&);
 
     void setChannels(int iChannels);
     // Get number of channels

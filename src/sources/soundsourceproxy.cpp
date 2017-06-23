@@ -393,7 +393,7 @@ void SoundSourceProxy::initSoundSource() {
                      << "of type"
                      << trackType;
             if (m_pTrack) {
-                m_pTrack->setType(trackType);
+                m_pTrack->initType(trackType);
             }
         }
     }
