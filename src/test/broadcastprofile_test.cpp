@@ -10,7 +10,7 @@ namespace {
 
 class BroadcastProfileTest : public MixxxTest {};
 
-TEST_F(BroadcastProfileTest, ConstructWithName) {
+TEST(BroadcastProfileTest, ConstructWithName) {
     // instanciate BroadcastProfile with a specific name and
     // assert its case-sensitive equality when getting it from getProfileName
 
@@ -20,7 +20,7 @@ TEST_F(BroadcastProfileTest, ConstructWithName) {
     ASSERT_TRUE(profile.getProfileName() == name);
 }
 
-TEST_F(BroadcastProfileTest, ForbiddenChars) {
+TEST(BroadcastProfileTest, ForbiddenChars) {
     // Test if validName works properly with valid values
     ASSERT_TRUE(BroadcastProfile::validName("Default Profile"));
     ASSERT_TRUE(BroadcastProfile::validName("This is a profile"));
@@ -42,7 +42,7 @@ TEST_F(BroadcastProfileTest, ForbiddenChars) {
                         "This is an invalid profile name: ?/").contains("?"));
 }
 
-TEST_F(BroadcastProfileTest, SaveAndLoadXML) {
+TEST(BroadcastProfileTest, SaveAndLoadXML) {
     // Preliminary: set a discriminating value in one of the profile fields
     QString streamName("unit testing in progress");
 
@@ -63,7 +63,7 @@ TEST_F(BroadcastProfileTest, SaveAndLoadXML) {
     ASSERT_TRUE(savedProfile->getStreamName() == streamName);
 }
 
-TEST_F(BroadcastProfileTest, SetGetValues) {
+TEST(BroadcastProfileTest, SetGetValues) {
     // For each attribute:
     // - use its setter to set a specific value
     // - use its getter to check if the specific value has been set
@@ -184,7 +184,7 @@ TEST_F(BroadcastProfileTest, SetGetValues) {
     ASSERT_EQ(profile.getOggDynamicUpdate(), oggDynamicUpdate);
 }
 
-TEST_F(BroadcastProfileTest, DefaultValues) {
+TEST(BroadcastProfileTest, DefaultValues) {
     BroadcastProfile profile("Unit Testing Default Values");
 
     // Check if some select attributes have non-empty default values
