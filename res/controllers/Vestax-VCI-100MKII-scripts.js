@@ -1,6 +1,6 @@
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2016-12-1
+// description: 2017-6-1
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 // JSHint Configuration
@@ -28,10 +28,15 @@ VCI102.setShift = function(ch, midino, value, status, group) {
     });
 };
 
+VCI102.MoveFocus = function(ch, midino, value, status, group) {
+    engine.setValue(group, VCI102.shift[0] + VCI102.shift[1] ? "ChooseItem" :
+                    "MoveFocusForward", value > 0);
+};
+
 VCI102.selectTimer = 0;
 
-VCI102.selectTrackIter = function(value, select) {
-    if (value) {
+VCI102.selectIter = function(select) {
+    if (select) {
         select();
         VCI102.selectTimer = engine.beginTimer(500, function() {
             VCI102.selectTimer = engine.beginTimer(40, select);
@@ -42,14 +47,14 @@ VCI102.selectTrackIter = function(value, select) {
 };
 
 VCI102.SelectPrevTrack = function(ch, midino, value, status, group) {
-    VCI102.selectTrackIter(value, function() {
-        engine.setValue(group, "SelectPrevTrack", 1);
+    VCI102.selectIter(value && function() {
+        engine.setValue(group, "MoveUp", 1);
     });
 };
 
 VCI102.SelectNextTrack = function(ch, midino, value, status, group) {
-    VCI102.selectTrackIter(value, function() {
-        engine.setValue(group, "SelectNextTrack", 1);
+    VCI102.selectIter(value && function() {
+        engine.setValue(group, "MoveDown", 1);
     });
 };
 
@@ -158,147 +163,123 @@ VCI102.pitch = function(ch, midino, value, status, group) {
     engine.setValue(group, "pitch_adjust", value);
 };
 
-VCI102.fxKnob = [
-    "[EffectRack1_EffectUnit1_Effect1]",
-    "[EffectRack1_EffectUnit2_Effect1]",
-    "[EffectRack1_EffectUnit3_Effect1]",
-    "[EffectRack1_EffectUnit4_Effect1]"
-];
+VCI102.slot = function(group, n) {
+    // convert effectUnit group to effectSlot group
+    return group.slice(0, -1) + "_Effect" + n + "]";
+};
 
-["parameter1", "parameter2", "parameter3"].forEach(function(key) {
-    VCI102[key] = function(ch, midino, value, status, group) {
-        group = VCI102.fxKnob[ch];
-        if (VCI102.shift[ch % 2]) {
-            // link to super1, inverse variants -> none -> direct variants
-            if (engine.getValue(group, key + "_loaded")) {
-                value = Math.round(value / 16) - 4;
-                engine.setValue(group, key + "_link_type", Math.abs(value));
-                engine.setValue(group, key + "_link_inverse", value < 0);
-            }
+VCI102.parameter = function(ch, value, group, key) {
+    if (VCI102.shift[ch % 2]) {
+        // link to meta, inverse variants -> none -> direct variants
+        if (engine.getValue(group, key + "_loaded")) {
+            value = Math.round(value / 16) - 4;
+            engine.setValue(group, key + "_link_type", Math.abs(value));
+            engine.setValue(group, key + "_link_inverse", value < 0);
+        }
+    } else {
+        engine.setParameter(group, key, value < 127 ? value / 128 : 1);
+    }
+};
+
+VCI102.meta = function(ch, value, group, key) {
+    if (VCI102.shift[ch % 2]) {
+        engine.setValue(group, "enabled", value > 0);
+    }
+    engine.setValue(group, key, value < 127 ? value / 128 : 1);
+};
+
+VCI102.parameter1 = function(ch, midino, value, status, group) {
+    var n = engine.getValue(group, "focused_effect");
+    if (n) {
+        VCI102.parameter(ch, value, VCI102.slot(group, n), "parameter1");
+    } else {
+        VCI102.meta(ch, value, VCI102.slot(group, 1), "meta");
+    }
+};
+
+VCI102.parameter2 = function(ch, midino, value, status, group) {
+    var n = engine.getValue(group, "focused_effect");
+    if (n) {
+        VCI102.parameter(ch, value, VCI102.slot(group, n), "parameter2");
+    } else {
+        VCI102.meta(ch, value, VCI102.slot(group, 2), "meta");
+    }
+};
+
+VCI102.parameter3 = function(ch, midino, value, status, group) {
+    var n = engine.getValue(group, "focused_effect");
+    if (n) {
+        VCI102.parameter(ch, value, VCI102.slot(group, n), "parameter3");
+    } else {
+        VCI102.meta(ch, value, VCI102.slot(group, 3), "meta");
+    }
+};
+
+VCI102.parameter4 = function(ch, midino, value, status, group) {
+    var n = engine.getValue(group, "focused_effect");
+    if (n) {
+        VCI102.parameter(ch, value, VCI102.slot(group, n), "parameter4");
+    } else {
+        VCI102.meta(ch, value, group, "super1");
+    }
+};
+
+VCI102.prev_effect = function(ch, midino, value, status, group) {
+    var key, n = engine.getValue(group, "focused_effect");
+    if (n) {
+        group = VCI102.slot(group, n);
+        key = "prev_effect";
+    } else {
+        key = "prev_chain";
+    }
+    if (VCI102.shift[1 - ch % 2]) {
+        // clear effect if shift of the other Deck
+        key = "clear";
+    }
+    engine.setValue(group, key, value > 0);
+};
+
+VCI102.next_effect = function(ch, midino, value, status, group) {
+    var key, n = engine.getValue(group, "focused_effect");
+    if (VCI102.shift[1 - ch % 2]) {
+        // change focus if shift of the other Deck
+        if (value) {
+            engine.setValue(group, "focused_effect", (n + 1) % 4);
+        }
+    } else {
+        if (n) {
+            group = VCI102.slot(group, n);
+            key = "next_effect";
         } else {
-            engine.setParameter(group, key, value < 127 ? value / 128 : 1);
+            key = "next_chain";
         }
-    };
-});
-
-VCI102.super1 = function(ch, midino, value, status, group) {
-
-    function getKey() {
-        // if any parameters are linked then "super1" else "mix"
-        var i, j, effect;
-        for (i = engine.getValue(group, "num_effects"); i > 0; i--) {
-            effect = group.slice(0, -1) + "_Effect" + i + "]";
-            for (j = engine.getValue(effect, "num_parameters"); j > 0; j--) {
-                if (engine.getValue(effect, "parameter" + j + "_link_type")) {
-                    return "super1";
-                }
-            }
-        }
-        return "mix";
-    }
-
-    engine.setValue(group, getKey(), value < 127 ? value / 128 : 1);
-};
-
-VCI102.prev_chain = function(ch, midino, value, status, group) {
-    if (VCI102.shift[1 - ch % 2]) {
-        // select Effect1 of the EffectUnit if shift of the other Deck
-        if (value) {
-            VCI102.fxKnob[ch] = group.slice(0, -1) + "_Effect1]";
-        }
-    } else if (VCI102.fxKnob[ch].slice(-2, -1) > 1) {
-        engine.setValue(VCI102.fxKnob[ch], "prev_effect", value > 0);
-    } else {
-        engine.setValue(group, "prev_chain", value > 0);
+        engine.setValue(group, key, value > 0);
     }
 };
 
-VCI102.next_chain = function(ch, midino, value, status, group) {
-    if (VCI102.shift[1 - ch % 2]) {
-        // select Effect2 of the EffectUnit if shift of the other Deck
-        if (value) {
-            VCI102.fxKnob[ch] = group.slice(0, -1) + "_Effect2]";
-        }
-    } else if (VCI102.fxKnob[ch].slice(-2, -1) > 1) {
-        engine.setValue(VCI102.fxKnob[ch], "next_effect", value > 0);
-    } else {
-        engine.setValue(group, "next_chain", value > 0);
-    }
-};
-
-VCI102.loopLength = [4, 4, 4, 4];
-
-VCI102.setLoopLength = function(ch, status, value) {
-    var LED = [
-        [0x33, 0x29],
-        [0x29, 0x26],
-        [0x33, 0x29],
-        [0x29, 0x26]
-    ];
-    if (value > 64 || value * 32 < 1) return;
-    VCI102.loopLength[ch] = value;
-    midi.sendShortMsg(status, LED[ch][0], (value < 4) * 127);
-    midi.sendShortMsg(status, LED[ch][1], (value > 4 || value * 4 < 1) * 127);
-};
+VCI102.loopSize = [4, 4, 4, 4];  // saved beatloop_size
 
 VCI102.loop = function(ch, midino, value, status, group) {
     if (value) {
         if (engine.getValue(group, "loop_enabled")) {
-            engine.setValue(group, "reloop_exit", 1);
+            engine.setValue(group, "reloop_toggle", 1);
+            // restore beatloop_size
+            engine.setValue(group, "beatloop_size", VCI102.loopSize[ch]);
         } else {
-            engine.setValue(group, "beatloop", VCI102.loopLength[ch]);
+            VCI102.loopSize[ch] = engine.getValue(group, "beatloop_size");
+            engine.setValue(group, "beatloop_activate", 1);
         }
     }
 };
 
 VCI102.reloop = function(ch, midino, value, status, group) {
-    if (engine.getValue(group, "loop_enabled")) {
-        engine.setValue(group, "loop_out", value > 0);
-    } else {
-        engine.setValue(group, "reloop_exit", 1);
-    }
-};
-
-VCI102.loop_halve = function(ch, midino, value, status, group) {
-    if (engine.getValue(group, "loop_enabled")) {
-        engine.setValue(group, "loop_halve", value > 0);
-    } else if (value) {
-        VCI102.setLoopLength(ch, status, VCI102.loopLength[ch] / 2);
-    }
-};
-
-VCI102.loop_double = function(ch, midino, value, status, group) {
-    if (engine.getValue(group, "loop_enabled")) {
-        engine.setValue(group, "loop_double", value > 0);
-    } else if (value) {
-        VCI102.setLoopLength(ch, status, VCI102.loopLength[ch] * 2);
-    }
-};
-
-VCI102.move = function(ch, group, dir) {
-    if (engine.getValue(group, "loop_enabled")) {
-        // move the loop by the current length
-        engine.setValue(
-            group, "loop_move", dir * (
-                engine.getValue(group, "loop_end_position")
-                    - engine.getValue(group, "loop_start_position"))
-                / engine.getValue(group, "track_samplerate")
-                * engine.getValue(group, "file_bpm") / 120);
-    } else {
-        // jump by the default length
-        engine.setValue(group, "beatjump", dir * VCI102.loopLength[ch]);
-    }
-};
-
-VCI102.move_backward = function(ch, midino, value, status, group) {
     if (value) {
-        VCI102.move(ch, group, -1);
-    }
-};
-
-VCI102.move_forward = function(ch, midino, value, status, group) {
-    if (value) {
-        VCI102.move(ch, group, 1);
+        if (engine.getValue(group, "loop_enabled")) {
+            engine.setValue(group, "loop_out", 0);
+        } else {
+            VCI102.loopSize[ch] = engine.getValue(group, "beatloop_size");
+            engine.setValue(group, "reloop_toggle", 1);
+        }
     }
 };
 
@@ -343,6 +324,10 @@ VCI102.init = function(id, debug) {
         [0x28, 0x25, 0x27, 0x2C]
     ];
 
+    function beatjumpSize(value, group, key) {
+        engine.setValue(group, "beatjump_size", value);
+    }
+
     function headMix(value, group, key) {
         if (value) {
             if (engine.getValue("[Master]", "headMix") == 1) {
@@ -383,6 +368,7 @@ VCI102.init = function(id, debug) {
         ["loop_enabled", "play", "reverse"].forEach(function(key) {
             engine.connectControl(deck, key, VCI102.slip);
         });
+        engine.connectControl(deck, "beatloop_size", beatjumpSize);
         engine.connectControl(deck, "pfl", headMix);
         engine.softTakeover(deck, "rate", true);
         engine.softTakeover(deck, "pitch_adjust", true);
@@ -401,5 +387,8 @@ VCI102.init = function(id, debug) {
                 engine.setValue(VCI102.Deck[ch % 2], key, value > 0);
             };
         });
+    });
+    VCI102.fx12.concat(VCI102.fx34).forEach(function(fx) {
+        engine.setValue(fx, "show_focus", 1);
     });
 };
