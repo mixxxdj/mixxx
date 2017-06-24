@@ -36,14 +36,14 @@
   <String Id="WarningDlgTitle">{\WixUI_Font_Title}Предупреждение</String>
 
   <!-- Custom exit dialog -->
-  <String Id="StartOnExit">Launch Mixxx when setup exits.</String>
+  <String Id="StartOnExit">Запуск Mixxx, и выход из режима настройки</String>
 
   <!-- Features translations -->
   <String Id="FeatureCompleteDescription">Полный пакет.</String>
   <String Id="FeatureMainProgramTitle">Основная программа</String>
   <String Id="FeatureMainProgramDescription">Основная программа Mixxx включает настройки контроллера.</String>
-  <String Id="FeaturePDBTitle">PDB debug files</String>
-  <String Id="FeaturePDBDescription">Install Mixxx PDB files to use with a debugger. This is useful to debug Mixxx and provide readable backtraces to the development team.</String>
+  <String Id="FeaturePDBTitle">PDB файлы отладки</String>
+  <String Id="FeaturePDBDescription">Установите Mixxx PDB файлы для использования с помощью отладчика. Это полезно для отладки Mixxx и обеспечит считывание у цепочек вызова команды разработчиков.</String>
   <String Id="FeatureDesktopShortcutTitle">Ярлык на Рабочем столе</String>
   <String Id="FeatureDesktopShortcutDescription">Добавляет ярлык Mixxx на Рабочий стол</String>
   <String Id="FeatureManualTitle">Руководство пользователя</String>

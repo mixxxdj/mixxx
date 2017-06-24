@@ -16,7 +16,7 @@
 #include <QFileDialog>
 
 #include "track/track.h"
-#include "treeitemmodel.h"
+#include "library/treeitemmodel.h"
 #include "library/coverartcache.h"
 #include "library/dao/trackdao.h"
 

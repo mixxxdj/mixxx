@@ -48,7 +48,7 @@ StandardEffectRackPointer EffectChainManager::getStandardEffectRack(int i) {
 
 EqualizerRackPointer EffectChainManager::addEqualizerRack() {
     EqualizerRackPointer pRack(new EqualizerRack(
-        m_pEffectsManager, this, m_equalizerEffectRacks.size()));
+            m_pEffectsManager, this, m_equalizerEffectRacks.size()));
     m_equalizerEffectRacks.append(pRack);
     m_effectRacksByGroup.insert(pRack->getGroup(), pRack);
     return pRack;
@@ -164,12 +164,8 @@ bool EffectChainManager::saveEffectChains() {
     return true;
 }
 
-QList<std::pair<EffectChainPointer, QDomElement>> EffectChainManager::loadEffectChains() {
-    // StandardEffectRack::addEffectChainSlot uses both the EffectChainPointer
-    // and the saved state from the XML to initialize the respective
-    // EffectChain/Effect/EffectParameter/EffectButtonParameter Slots
-    QList<std::pair<EffectChainPointer, QDomElement>> loadedChains;
-
+void EffectChainManager::loadEffectChains(
+        StandardEffectRack* pRack) {
     QDir settingsPath(m_pConfig->getSettingsPath());
     QFile file(settingsPath.absoluteFilePath("effects.xml"));
     QDomDocument doc;
@@ -177,12 +173,7 @@ QList<std::pair<EffectChainPointer, QDomElement>> EffectChainManager::loadEffect
     QDomElement emptyChainElement = doc.createElement(EffectXml::Chain);
     // Check that XML file can be opened and is valid XML
     if (!file.open(QIODevice::ReadOnly) || !doc.setContent(&file)) {
-        for (int i = 0; i < kNumStandardEffectChains; ++i) {
-            EffectChainPointer pEmptyChain = EffectChainPointer(
-                new EffectChain(m_pEffectsManager, QString(), EffectChainPointer()));
-            loadedChains.append(std::make_pair(pEmptyChain, emptyChainElement));
-        }
-        return loadedChains;
+        return;
     }
 
     QDomElement root = doc.documentElement();
@@ -196,20 +187,14 @@ QList<std::pair<EffectChainPointer, QDomElement>> EffectChainManager::loadEffect
         if (chainNode.isElement()) {
             QDomElement chainElement = chainNode.toElement();
             EffectChainPointer pChain = EffectChain::createFromXml(
-                m_pEffectsManager, chainElement);
-
-            loadedChains.append(std::make_pair(pChain, chainElement));
-            m_effectChains.append(pChain);
+                    m_pEffectsManager, chainElement);
+            if (pChain) { // null = ejected chains.
+                EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(i);
+                if (pChainSlot) {
+                    pChainSlot->loadEffectChain(pChain);
+                    pChainSlot->loadChainSlotFromXml(chainElement);
+                }
+            }
         }
     }
-
-    // Make sure there are enough chains if the XML file does not have
-    // enough <EffectChain> elements
-    for (int i = loadedChains.size(); i < kNumStandardEffectChains; ++i) {
-        EffectChainPointer pEmptyChain = EffectChainPointer(
-            new EffectChain(m_pEffectsManager, QString(), EffectChainPointer()));
-        loadedChains.append(std::make_pair(pEmptyChain, emptyChainElement));
-    }
-
-    return loadedChains;
 }
