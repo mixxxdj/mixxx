@@ -248,42 +248,16 @@ void CueControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
             this, SLOT(trackCuesUpdated()),
             Qt::DirectConnection);
 
-    CuePointer pLoadCue;
-    for (const CuePointer& pCue: m_pLoadedTrack->getCuePoints()) {
-        if (pCue->getType() == Cue::CUE) {
-            continue; // skip
-        }
-        if (pCue->getType() == Cue::LOAD) {
-            DEBUG_ASSERT(!pLoadCue);
-            pLoadCue = pCue;
-        }
-        int hotcue = pCue->getHotCue();
-        if (hotcue != -1) {
-            attachCue(pCue, hotcue);
-        }
-    }
-    double cuePoint;
-    if (pLoadCue) {
-        cuePoint = pLoadCue->getPosition();
-    } else {
-        // If no load cue point is stored, read from track
-        cuePoint = m_pLoadedTrack->getCuePoint();
-    }
-    m_pCuePoint->set(cuePoint);
-
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
 
-    // Use pNewTrack here, because m_pLoadedTrack might have been reset
-    // immediately after leaving the locking scope!
-    pNewTrack->setCuePoint(cuePoint);
+    // Update COs with cues from track.
+    trackCuesUpdated();
 
     // If cue recall is ON in the prefs, then we're supposed to seek to the cue
-    // point on song load. Note that [Controls],cueRecall == 0 corresponds to "ON", not OFF.
-    bool cueRecall = (getConfig()->getValue(
-           ConfigKey("[Controls]","CueRecall"), 0) == 0);
-    if (cueRecall && (cuePoint >= 0.0)) {
-        seekExact(cuePoint);
+    // point on song load.
+    if (isCueRecallEnabled() && (m_pCuePoint->get() >= 0.0)) {
+        seekExact(m_pCuePoint->get());
     } else if (!(m_pVinylControlEnabled->get() &&
             m_pVinylControlMode->get() == MIXXX_VCMODE_ABSOLUTE)) {
         // If cuerecall is off, seek to zero unless
@@ -291,8 +265,6 @@ void CueControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
         // load tracks and have the needle-drop be maintained.
         seekExact(0.0);
     }
-
-    trackCuesUpdated();
 }
 
 void CueControl::cueUpdated() {
@@ -303,27 +275,21 @@ void CueControl::cueUpdated() {
 void CueControl::trackCuesUpdated() {
     QMutexLocker lock(&m_mutex);
     QSet<int> active_hotcues;
+    CuePointer pLoadCue, pStartCue, pEndCue;
 
     if (!m_pLoadedTrack)
         return;
 
     for (const CuePointer& pCue: m_pLoadedTrack->getCuePoints()) {
-        if (pCue->getType() == Cue::BEGIN) {
-            m_pAutoDJStartPosition->set(pCue->getPosition());
+        if (pCue->getType() == Cue::LOAD) {
+            DEBUG_ASSERT(!pLoadCue);  // There should be only one LOAD cue
+            pLoadCue = pCue;
+        } else if (pCue->getType() == Cue::BEGIN) {
+            DEBUG_ASSERT(!pStartCue);  // There should be only one BEGIN cue
+            pStartCue = pCue;
         } else if (pCue->getType() == Cue::END) {
-            m_pAutoDJEndPosition->set(pCue->getPosition());
-        } else if (pCue->getType() == Cue::LOAD) {
-            if (m_pCuePoint->get() != pCue->getPosition()) {
-                bool wasTrackAtCue = isTrackAtCue();
-
-                // Update CO.
-                m_pCuePoint->set(pCue->getPosition());
-
-                // If track was at cue, move track along with cue.
-                if (wasTrackAtCue) {
-                    seekExact(pCue->getPosition());
-                }
-            }
+            DEBUG_ASSERT(!pEndCue);  // There should be only one END cue
+            pEndCue = pCue;
         } else if (pCue->getType() == Cue::CUE && pCue->getHotCue() != -1) {
             int hotcue = pCue->getHotCue();
             HotcueControl* pControl = m_hotcueControls.value(hotcue, NULL);
@@ -349,6 +315,32 @@ void CueControl::trackCuesUpdated() {
             // Add the hotcue to the list of active hotcues
             active_hotcues.insert(hotcue);
         }
+    }
+
+    if (pLoadCue) {
+        bool wasTrackAtCue = isTrackAtCue();
+
+        // Update CO.
+        m_pCuePoint->set(pLoadCue->getPosition());
+
+        // If track was at cue, move track along with cue.
+        if (wasTrackAtCue && isCueRecallEnabled()) {
+            seekExact(pLoadCue->getPosition());
+        }
+    } else {
+        m_pCuePoint->set(-1.0);
+    }
+
+    if (pStartCue) {
+        m_pAutoDJStartPosition->set(pStartCue->getPosition());
+    } else {
+        m_pAutoDJStartPosition->set(-1.0);
+    }
+
+    if (pEndCue) {
+        m_pAutoDJEndPosition->set(pEndCue->getPosition());
+    } else {
+        m_pAutoDJEndPosition->set(-1.0);
     }
 
     // Detach all hotcues that are no longer present
@@ -1138,6 +1130,11 @@ bool CueControl::isTrackAtCue() {
 bool CueControl::isPlayingByPlayButton() {
     return m_pPlay->toBool() &&
             !m_iCurrentlyPreviewingHotcues && !m_bPreviewing;
+}
+
+bool CueControl::isCueRecallEnabled() {
+    // Note that [Controls],CueRecall == 0 corresponds to "ON", not "OFF".
+    return getConfig()->getValue(ConfigKey("[Controls]", "CueRecall"), 0) == 0;
 }
 
 

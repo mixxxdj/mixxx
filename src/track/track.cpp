@@ -762,6 +762,9 @@ void Track::removeCue(const CuePointer& pCue) {
     QMutexLocker lock(&m_qMutex);
     disconnect(pCue.get(), 0, this, 0);
     m_cuePoints.removeOne(pCue);
+    if (pCue->getType() == Cue::LOAD) {
+        m_cuePoint = 0.0;
+    }
     markDirtyAndUnlock(&lock);
     emit(cuesUpdated());
 }
@@ -783,6 +786,10 @@ void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
     for (const auto& pCue: m_cuePoints) {
         connect(pCue.get(), SIGNAL(updated()),
                 this, SLOT(slotCueUpdated()));
+        // update main cue point
+        if (pCue->getType() == Cue::LOAD) {
+            m_cuePoint = pCue->getPosition();
+        }
     }
     markDirtyAndUnlock(&lock);
     emit(cuesUpdated());
