@@ -19,7 +19,7 @@ class FxGain():
 	    self.mute = 0
 	    print("Initializing FxGain with default Values.")
 	    print("gain: ",self.gain)
-	    print("gain: ",self.mute)
+	    print("mute: ",self.mute)
     
     def set_params(self, p_list = []):
 	    # self.gain = p_gain
@@ -28,7 +28,7 @@ class FxGain():
 	    self.mute = float(p_list[1])
 	    print("FxGain parameters set as:")
 	    print("gain: ",self.gain)
-	    print("gain: ",self.mute)
+	    print("mute: ",self.mute)
     
     def process(self, input_array):
         if self.mute:

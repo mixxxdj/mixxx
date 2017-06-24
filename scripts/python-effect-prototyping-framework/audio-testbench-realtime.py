@@ -43,6 +43,7 @@ import utilities
 import effect_prototypes
 import threading
 import time
+import ipdb 
 
 kbdInput = ''
 playingID = ''
@@ -58,7 +59,8 @@ def kbdListener():
 
 # Match effect id to imported fx modules and initialize effect object.
 try:
-    exec("effect=dsp_prototypes."+effect_id+"()")
+    ipdb.set_trace()
+    exec("effect=effect_prototypes."+effect_id+"()")
 except:
     print("something went wrong - effect id either mispelled or not properly imported")
     sys.exit(-1)
