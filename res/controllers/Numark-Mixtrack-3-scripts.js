@@ -1804,17 +1804,7 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
         for (var i = 0; i <= startingSampler + 3; i++) {
             var samplerGroup = '[Sampler' + i + ']';
             var gainValue = engine.getValue(samplerGroup, 'pregain');
-            var maxGain = 4;
-
-            gainValue = gainValue + increment;
-
-            if (gainValue < 0) {
-                gainValue = 0;
-            } else if (gainValue > maxGain) {
-                gainValue = maxGain;
-            }
-
-            engine.setValue(samplerGroup, 'pregain', gainValue);
+            engine.setValue(samplerGroup, 'pregain', gainValue + increment);
         }
     }
 };
