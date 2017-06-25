@@ -50,6 +50,7 @@ Track::Track(
           m_bDirty(false),
           m_iRating(0),
           m_cuePoint(0.0),
+          m_cueSource(Cue::UNKNOWN),
           m_dateAdded(QDateTime::currentDateTime()),
           m_bHeaderParsed(false),
           m_bBpmLocked(false),
@@ -321,9 +322,17 @@ void Track::setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats) {
 
     m_metadata.setBpm(bpm);
 
+    // Try to update main cue point. This is needed in order to keep automatically
+    // placed cue point on beat. Note that updateCuePoint() will only change
+    // cue point if its source is not manual.
+    bool bCueModified = updateCuePoint(m_cuePoint, m_cueSource);
+
     markDirtyAndUnlock(pLock);
     emit(bpmUpdated(bpmValue));
     emit(beatsUpdated());
+    if (bCueModified) {
+        emit(cuesUpdated());
+    }
 }
 
 BeatsPointer Track::getBeats() const {
@@ -697,39 +706,63 @@ int Track::getAnalyzerProgress() const {
     return load_atomic(m_analyzerProgress);
 }
 
-void Track::setCuePoint(double cue) {
+void Track::setCuePoint(double position, Cue::CueSource source) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_cuePoint, cue)) {
-        // Store the cue point in a load cue
-        CuePointer pLoadCue;
-        for (const CuePointer& pCue: m_cuePoints) {
-            if (pCue->getType() == Cue::LOAD) {
-                pLoadCue = pCue;
-                break;
-            }
-        }
-        if (cue > 0) {
-            if (!pLoadCue) {
-                pLoadCue = CuePointer(new Cue(m_id));
-                pLoadCue->setType(Cue::LOAD);
-                pLoadCue->setSource(Cue::MANUAL);
-                connect(pLoadCue.get(), SIGNAL(updated()),
-                        this, SLOT(slotCueUpdated()));
-                m_cuePoints.push_back(pLoadCue);
-            }
-            pLoadCue->setPosition(cue);
-        } else {
-            disconnect(pLoadCue.get(), 0, this, 0);
-            m_cuePoints.removeOne(pLoadCue);
-        }
+
+    if (updateCuePoint(position, source)) {
         markDirtyAndUnlock(&lock);
         emit(cuesUpdated());
     }
 }
 
+bool Track::updateCuePoint(double position, Cue::CueSource source) {
+    // If source is not manual, snap cue point to nearest beat.
+    if (source != Cue::MANUAL) {
+        if (m_pBeats) {
+            double closest_beat = m_pBeats->findClosestBeat(position);
+            if (closest_beat != -1.0) {
+                position = closest_beat;
+            }
+        }
+    }
+
+    if (!compareAndSet(&m_cuePoint, position) && !compareAndSet(&m_cueSource, source)) {
+        // Nothing changed.
+        return false;
+    }
+
+    // Store the cue point in a load cue
+    CuePointer pLoadCue = findCueByType(Cue::LOAD);
+    if (position != 0.0 && position != -1.0) {
+        if (!pLoadCue) {
+            pLoadCue = CuePointer(new Cue(m_id));
+            pLoadCue->setType(Cue::LOAD);
+            connect(pLoadCue.get(), SIGNAL(updated()),
+                    this, SLOT(slotCueUpdated()));
+            m_cuePoints.push_back(pLoadCue);
+        }
+        pLoadCue->setPosition(position);
+        pLoadCue->setSource(source);
+    } else {
+        disconnect(pLoadCue.get(), 0, this, 0);
+        m_cuePoints.removeOne(pLoadCue);
+        m_cueSource = Cue::UNKNOWN;
+    }
+
+    return true;
+}
+
 double Track::getCuePoint() const {
     QMutexLocker lock(&m_qMutex);
     return m_cuePoint;
+}
+
+Cue::CueSource Track::getCuePointSource() const {
+    QMutexLocker lock(&m_qMutex);
+    if (m_cuePoint == 0.0 || m_cuePoint == -1.0) {
+        return Cue::UNKNOWN;
+    }
+    return m_cueSource;
 }
 
 void Track::slotCueUpdated() {
@@ -764,6 +797,7 @@ void Track::removeCue(const CuePointer& pCue) {
     m_cuePoints.removeOne(pCue);
     if (pCue->getType() == Cue::LOAD) {
         m_cuePoint = 0.0;
+        m_cueSource = Cue::UNKNOWN;
     }
     markDirtyAndUnlock(&lock);
     emit(cuesUpdated());
@@ -789,6 +823,7 @@ void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
         // update main cue point
         if (pCue->getType() == Cue::LOAD) {
             m_cuePoint = pCue->getPosition();
+            m_cueSource = pCue->getSource();
         }
     }
     markDirtyAndUnlock(&lock);

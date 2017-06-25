@@ -244,9 +244,10 @@ class Track : public QObject {
     int getAnalyzerProgress() const;
 
     // Save the cue point in samples
-    void setCuePoint(double cue);
+    void setCuePoint(double position, Cue::CueSource source);
     // Get saved the cue point
     double getCuePoint() const;
+    Cue::CueSource getCuePointSource() const;
 
     // Calls for managing the track's cue points
     CuePointer createAndAddCue();
@@ -341,6 +342,8 @@ class Track : public QObject {
     void setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats);
     void setKeysAndUnlock(QMutexLocker* pLock, const Keys& keys);
 
+    bool updateCuePoint(double position, Cue::CueSource source);
+
     // Set a unique identifier for the track.
     // Only used by TrackDAO!
     void setId(TrackId id);
@@ -385,6 +388,9 @@ class Track : public QObject {
 
     // Cue point in samples
     double m_cuePoint;
+
+    // Cue point source
+    Cue::CueSource m_cueSource;
 
     // Date the track was added to the library
     QDateTime m_dateAdded;

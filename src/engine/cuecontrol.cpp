@@ -324,7 +324,7 @@ void CueControl::trackCuesUpdated() {
         m_pCuePoint->set(pLoadCue->getPosition());
 
         // If track was at cue, move track along with cue.
-        if (wasTrackAtCue && isCueRecallEnabled()) {
+        if ((wasTrackAtCue || getCurrentSample() == 0.0) && isCueRecallEnabled()) {
             seekExact(pLoadCue->getPosition());
         }
     } else {
@@ -627,7 +627,7 @@ void CueControl::cueSet(double v) {
 
     // Store cue point in loaded track
     if (pLoadedTrack) {
-        pLoadedTrack->setCuePoint(cue);
+        pLoadedTrack->setCuePoint(cue, Cue::MANUAL);
     }
 }
 

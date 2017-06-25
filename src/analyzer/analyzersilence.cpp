@@ -27,6 +27,8 @@ bool AnalyzerSilence::initialize(TrackPointer tio, int sampleRate, int totalSamp
     m_iSignalBegin = -1;
     m_iSignalEnd = -1;
 
+    m_pTrack = tio;
+
     m_pBeginCue = tio->findCueByType(Cue::BEGIN);
     if (!m_pBeginCue) {
         m_pBeginCue = tio->createAndAddCue();
@@ -47,9 +49,9 @@ bool AnalyzerSilence::initialize(TrackPointer tio, int sampleRate, int totalSamp
 }
 
 bool AnalyzerSilence::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
-    Q_UNUSED(tio);
-
-    return m_pBeginCue->getSource() == Cue::MANUAL && m_pEndCue->getSource() == Cue::MANUAL;
+    return tio->getCuePointSource() == Cue::MANUAL &&
+            m_pBeginCue->getSource() == Cue::MANUAL &&
+            m_pEndCue->getSource() == Cue::MANUAL;
 }
 
 void AnalyzerSilence::process(const CSAMPLE* pIn, const int iLen) {
@@ -66,6 +68,11 @@ void AnalyzerSilence::process(const CSAMPLE* pIn, const int iLen) {
         if (m_bPrevSilence && !bSilence) {
             if (m_iSignalBegin < 0) {
                 m_iSignalBegin = m_iFramesProcessed + i / kChannelCount;
+
+                if (m_pTrack->getCuePointSource() != Cue::MANUAL) {
+                    double position = m_iFramesProcessed * kChannelCount + i;
+                    m_pTrack->setCuePoint(position, Cue::AUTOMATIC);
+                }
             }
         } else if (!m_bPrevSilence && bSilence) {
             m_iSignalEnd = m_iFramesProcessed + i / kChannelCount;
