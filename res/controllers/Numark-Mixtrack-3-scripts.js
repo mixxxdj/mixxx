@@ -811,7 +811,6 @@ NumarkMixtrack3.sampler = function(decknum) {
 
     this.PADSampleButtonHold = new LongShortBtn(NumarkMixtrack3.onPADSampleButtonHold);
 
-    engine.softTakeover(this.group, 'pregain', true);
     engine.connectControl(this.group, 'play', 'NumarkMixtrack3.OnSamplePlayStop');
 
     // sampler LED, first 4 are 0x91, next 4 are 0x92
