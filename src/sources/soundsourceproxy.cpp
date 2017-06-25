@@ -488,6 +488,7 @@ void SoundSourceProxy::parseFileTags(int parseOptions) {
     if (parseResult != OK) {
         kLogger.warning() << "Failed to parse track metadata and/or cover art from file"
                    << getUrl().toString();
+        return; // abort
     }
 
     if (!parsedFromFile && pTrackMetadata && (pTrackMetadata->getArtist().isEmpty() || pTrackMetadata->getTitle().isEmpty())) {
