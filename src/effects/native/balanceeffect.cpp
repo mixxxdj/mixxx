@@ -1,5 +1,9 @@
 #include "balanceeffect.h"
 
+namespace {
+
+} // anonymous namespace
+
 // static
 QString BalanceEffect::getId() {
     return "org.mixxx.effects.balance";
@@ -72,24 +76,38 @@ void BalanceEffect::processChannel(const ChannelHandle& handle,
                                const EffectProcessor::EnableState enableState,
                                const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
-    Q_UNUSED(pGroupState);
     Q_UNUSED(sampleRate);
     Q_UNUSED(enableState);
     Q_UNUSED(groupFeatures);
 
-    CSAMPLE left = m_pLeftParameter->value();
-    CSAMPLE right = m_pRightParameter->value();
-    CSAMPLE midSide = m_pMidSideParameter->value();
+    CSAMPLE_GAIN left = m_pLeftParameter->value();
+    CSAMPLE_GAIN right = m_pRightParameter->value();
+    CSAMPLE_GAIN midSide = m_pMidSideParameter->value();
+
+    CSAMPLE_GAIN leftDelta = (left - pGroupState->oldLeft)
+                    / CSAMPLE_GAIN(numSamples / 2);
+    CSAMPLE_GAIN rightDelta = (right - pGroupState->oldRight)
+                    / CSAMPLE_GAIN(numSamples / 2);
+    CSAMPLE_GAIN midSideDelta = (midSide - pGroupState->oldMidSide)
+                    / CSAMPLE_GAIN(numSamples / 2);
+
+    CSAMPLE_GAIN leftStart = left - leftDelta;
+    CSAMPLE_GAIN rightStart = right - rightDelta;
+    CSAMPLE_GAIN midSideStart = midSide - midSideDelta;
 
     for (SINT i = 0; i < numSamples / 2; ++i) {
         CSAMPLE mid = (pInput[i * 2]  + pInput[i * 2 + 1]) / 2.0f;
         CSAMPLE side = (pInput[i * 2 + 1] - pInput[i * 2]) / 2.0f;
         if (midSide > 0.5) {
-            mid *= 2 * (1 - midSide);
+            mid *= 2 * (1 - (midSideStart + midSideDelta * i));
         } else {
-            side *= 2 * midSide;
+            side *= 2 * (midSideStart + midSideDelta * i);
         }
-        pOutput[i * 2] = (mid - side) * left;
-        pOutput[i * 2 + 1] = (mid + side) * right;
+        pOutput[i * 2] = (mid - side) * (leftStart + leftDelta * i);
+        pOutput[i * 2 + 1] = (mid + side) * (rightStart + rightDelta * i);
     }
+
+    pGroupState->oldLeft = left;
+    pGroupState->oldRight = right;
+    pGroupState->oldMidSide = midSide;
 }

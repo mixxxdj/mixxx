@@ -7,6 +7,15 @@
 
 // This effect does not need to store any state.
 struct BalanceGroupState {
+    BalanceGroupState()
+        : oldLeft(1),
+          oldRight(1),
+          oldMidSide(0) {
+    }
+
+    CSAMPLE oldLeft;
+    CSAMPLE oldRight;
+    CSAMPLE oldMidSide;
 };
 
 class BalanceEffect : public PerChannelEffectProcessor<BalanceGroupState> {
