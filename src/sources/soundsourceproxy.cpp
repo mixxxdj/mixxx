@@ -501,7 +501,7 @@ void SoundSourceProxy::parseFileTags(int parseOptions) {
     if (pTrackMetadata) {
         kLogger.warning() << "Updating track metadata"
                  << getUrl().toString();
-        m_pTrack->setTrackMetadata(trackMetadata, parsedFromFile);
+        m_pTrack->setTrackMetadata(trackMetadata, true);
     }
     if (pCoverImg) {
         if (pCoverImg->isNull()) {
