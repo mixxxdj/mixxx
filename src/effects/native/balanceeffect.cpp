@@ -81,15 +81,15 @@ void BalanceEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE right = m_pRightParameter->value();
     CSAMPLE midSide = m_pMidSideParameter->value();
 
-    for (unsigned int i = 0; i < numSamples; i += 2) {
-        double mid = (pInput[i]  + pInput[i+1]) / 2.0f;
-        double side = (pInput[i+1] - pInput[i]) / 2.0f;
+    for (SINT i = 0; i < numSamples / 2; ++i) {
+        CSAMPLE mid = (pInput[i * 2]  + pInput[i * 2 + 1]) / 2.0f;
+        CSAMPLE side = (pInput[i * 2 + 1] - pInput[i * 2]) / 2.0f;
         if (midSide > 0.5) {
             mid *= 2 * (1 - midSide);
         } else {
             side *= 2 * midSide;
         }
-        pOutput[i] = (mid - side) * left;
-        pOutput[i + 1] = (mid + side) * right;
+        pOutput[i * 2] = (mid - side) * left;
+        pOutput[i * 2 + 1] = (mid + side) * right;
     }
 }
