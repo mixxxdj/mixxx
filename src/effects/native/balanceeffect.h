@@ -1,25 +1,25 @@
 #ifndef PANEFFECT_H
-#define PANEFFECT_H
+#define BALANCEEFFECT_H
 
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 
 // This effect does not need to store any state.
-struct PanGroupState {
+struct BalanceGroupState {
 };
 
-class PanEffect : public PerChannelEffectProcessor<PanGroupState> {
+class BalanceEffect : public PerChannelEffectProcessor<BalanceGroupState> {
   public:
-    PanEffect(EngineEffect* pEffect, const EffectManifest& manifest);
-    virtual ~PanEffect();
+    BalanceEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    virtual ~BalanceEffect();
 
     static QString getId();
     static EffectManifest getManifest();
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,
-                        PanGroupState* pState,
+                        BalanceGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
                         const unsigned int numSamples,
                         const unsigned int sampleRate,
@@ -36,7 +36,7 @@ class PanEffect : public PerChannelEffectProcessor<PanGroupState> {
     EngineEffectParameter* m_pRightParameter;
     EngineEffectParameter* m_pMidSideParameter;
 
-    DISALLOW_COPY_AND_ASSIGN(PanEffect);
+    DISALLOW_COPY_AND_ASSIGN(BalanceEffect);
 };
 
-#endif /* PANEFFECT_H */
+#endif /* BALANCEEFFECT_H */

@@ -1,18 +1,18 @@
-#include "effects/native/paneffect.h"
+#include "balanceeffect.h"
 
 // static
-QString PanEffect::getId() {
-    return "org.mixxx.effects.pan";
+QString BalanceEffect::getId() {
+    return "org.mixxx.effects.balance";
 }
 
 // static
-EffectManifest PanEffect::getManifest() {
+EffectManifest BalanceEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
-    manifest.setName(QObject::tr("Pan"));
+    manifest.setName(QObject::tr("Balance"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr("Adjust the left/right balance"));
+    manifest.setDescription(QObject::tr("Adjust the left/right balance and Stereo width"));
 
     EffectManifestParameter* left = manifest.addParameter();
     left->setId("left");
@@ -54,18 +54,18 @@ EffectManifest PanEffect::getManifest() {
     return manifest;
 }
 
-PanEffect::PanEffect(EngineEffect* pEffect, const EffectManifest& manifest)
+BalanceEffect::BalanceEffect(EngineEffect* pEffect, const EffectManifest& manifest)
           : m_pLeftParameter(pEffect->getParameterById("left")),
             m_pRightParameter(pEffect->getParameterById("right")),
             m_pMidSideParameter(pEffect->getParameterById("midSide")) {
     Q_UNUSED(manifest);
 }
 
-PanEffect::~PanEffect() {
+BalanceEffect::~BalanceEffect() {
 }
 
-void PanEffect::processChannel(const ChannelHandle& handle,
-                               PanGroupState* pGroupState,
+void BalanceEffect::processChannel(const ChannelHandle& handle,
+                               BalanceGroupState* pGroupState,
                                const CSAMPLE* pInput,
                                CSAMPLE* pOutput, const unsigned int numSamples,
                                const unsigned int sampleRate,
