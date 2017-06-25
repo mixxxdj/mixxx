@@ -1,0 +1,366 @@
+<!--
+Description:
+  The skin settings menu, floating on top of main skin window.
+
+  Bug: qss 'qproperty-layoutAlignment' is not respected for stacked layout.
+  No way to push SkinSettings to the right edge while keeping the area underneath clickable.
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Size>215f,1me</Size>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>SkinSettings</ObjectName>
+        <Layout>vertical</Layout>
+        <Size>200f,1me</Size>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>SkinSettingsHeader</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,f</SizePolicy>
+            <Children>
+              <Label>
+                <ObjectName>CategoryLabel</ObjectName>
+                <Text>Decks / General</Text>
+              </Label>
+                <!-- push Close button to far right -->
+                <WidgetGroup><Size>1me,1me</Size><Children/></WidgetGroup>
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="ObjectName">SkinSettingsClose</SetVariable>
+                <SetVariable name="Size">17f,24f</SetVariable>
+                <SetVariable name="state_1_pressed">skinsettings_close.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">skinsettings_close.svg</SetVariable>
+                <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup><!-- Main Decks Settings -->
+            <ObjectName>SkinSettingsCategory</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>me,max</SizePolicy>
+            <Children>
+
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="state_0_text">      Stacked Overviews</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Stacked Overviews</SetVariable>
+                <SetVariable name="Setting">[Tango],stacked_overviews</SetVariable>
+              </Template>
+
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="state_0_text">      Star Rating</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Star Rating</SetVariable>
+                <SetVariable name="Setting">[Tango],stars</SetVariable>
+              </Template>
+
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="state_0_text">      Track Comment</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Track Comment</SetVariable>
+                <SetVariable name="Setting">[Tango],trackComment</SetVariable>
+              </Template>
+
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="state_0_text">      BPM / Pitch Fader</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; BPM / Pitch Fader</SetVariable>
+                <SetVariable name="Setting">[Tango],pitch_fader</SetVariable>
+              </Template>
+
+              <WidgetGroup><!-- Pitch/Key submenu -->
+                <Layout>stacked</Layout>
+                <MinimumSize>172,15</MinimumSize>
+                <MaximumSize>172,17</MaximumSize>
+                <SizePolicy>f,max</SizePolicy>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover when Pitch slider is hidden -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>me,max</SizePolicy>
+                    <Children/>
+                    <Connection>
+                      <ConfigKey persist="true">[Tango],pitch_fader</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                      <Transform><Not/></Transform>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="state_0_text">      Key Controls</SetVariable>
+                    <SetVariable name="state_1_text"> &#10004; Key Controls</SetVariable>
+                    <SetVariable name="Setting">[Tango],key_controls</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup><!-- Pitch/Key submenu -->
+
+              <!--
+              <Template src="skin:skin_settings_button_4state.xml">
+                <SetVariable name="state_0_text">      Loop/Jump controls</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Loop/Jump   2.0&#9668; 2.1   2.1+</SetVariable>
+                <SetVariable name="state_2_text"> &#10004; Loop/Jump   2.0 &#9658;2.1   2.1+</SetVariable>
+                <SetVariable name="state_3_text"> &#10004; Loop/Jump   2.0   2.1 &#9658;2.1+</SetVariable>
+                <SetVariable name="Setting">[Tango],loop_beatjump_controls</SetVariable>
+              </Template> -->
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="state_0_text">      Loop/Jump controls</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Loop/Jump controls</SetVariable>
+                <SetVariable name="Setting">[Tango],loop_beatjump_controls</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <Label><!-- Mixer Settings -->
+            <ObjectName>CategoryLabel</ObjectName>
+            <Text>Mixer</Text>
+          </Label>
+          <WidgetGroup>
+            <ObjectName>SkinSettingsCategory</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>f,max</SizePolicy>
+            <Children>
+
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="state_0_text">      Channel Mixer</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Channel Mixer</SetVariable>
+                <SetVariable name="Setting">[Tango],channel_mixer</SetVariable>
+              </Template>
+
+              <WidgetGroup><!-- EQ & Filter knobs submenu -->
+                <Layout>stacked</Layout>
+                <Size>172f,30f</Size>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Size>172f,30f</Size>
+                    <Children/>
+                    <Connection>
+                      <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                      <Transform><Not/></Transform>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <WidgetGroup><!-- EQ Knobs button -->
+                    <Layout>vertical</Layout>
+                    <Size>172f,30f</Size>
+                    <Children>
+
+                      <Template src="skin:skin_settings_button_2state.xml">
+                        <SetVariable name="state_0_text">      EQ Knobs</SetVariable>
+                        <SetVariable name="state_1_text"> &#10004; EQ Knobs</SetVariable>
+                        <SetVariable name="Setting">[Tango],eq_knobs</SetVariable>
+                      </Template>
+
+                      <WidgetGroup><!-- Filter knob submenu -->
+                        <Layout>stacked</Layout>
+                        <Size>172f,15f</Size>
+                        <Children>
+                          <!-- index 0 due to bug -->
+                          <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                          <WidgetGroup><!-- translucent cover when EQ Knobs are hidden -->
+                            <ObjectName>SubmenuCover</ObjectName>
+                            <Layout>vertical</Layout>
+                            <SizePolicy>me,me</SizePolicy>
+                            <Children/>
+                            <Connection>
+                              <ConfigKey persist="true">[Tango],eq_knobs</ConfigKey>
+                              <BindProperty>visible</BindProperty>
+                              <Transform><Not/></Transform>
+                            </Connection>
+                          </WidgetGroup>
+
+                          <Template src="skin:skin_settings_button_2state.xml">
+                            <SetVariable name="state_0_text">      Filter Knob</SetVariable>
+                            <SetVariable name="state_1_text"> &#10004; Filter Knob</SetVariable>
+                            <SetVariable name="Setting">[Tango],filter_knob</SetVariable>
+                          </Template>
+                        </Children>
+                      </WidgetGroup>
+
+                    </Children>
+                  </WidgetGroup><!-- EQ Knobs button --><!-- /Filter knob submenu -->
+
+                </Children>
+              </WidgetGroup><!-- /EQ & Filter knobs submenu -->
+
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="state_0_text">      VU Meter</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; VU Meter</SetVariable>
+                <SetVariable name="Setting">[Tango],vumeter</SetVariable>
+              </Template>
+
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="state_0_text">      Crossfader</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Crossfader</SetVariable>
+                <SetVariable name="Setting">[Tango],crossfader</SetVariable>
+              </Template>
+
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="state_0_text">      Mixer Bar</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Mixer Bar</SetVariable>
+                <SetVariable name="Setting">[Tango],mixerbar</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- /Mixer Settings -->
+
+          <Label>
+            <ObjectName>CategoryLabel</ObjectName>
+            <Text>Spinny / Cover</Text>
+          </Label>
+          <WidgetGroup><!-- Spinny Settings -->
+            <ObjectName>SkinSettingsCategory</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>f,max</SizePolicy>
+            <Children>
+
+              <Template src="skin:skin_settings_button_3state.xml">
+                <SetVariable name="state_0_text"> &#10004; Spinny &#9668; Cover</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Spinny &#9658; Cover</SetVariable>
+                <SetVariable name="state_2_text">      Spinny  /  Cover</SetVariable>
+                <SetVariable name="Setting">[Tango],spinny_cover_none</SetVariable>
+              </Template>
+
+              <WidgetGroup><!-- SpinnyCover submenu -->
+                <Layout>stacked</Layout>
+                <Size>172f,30f</Size>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover when Spinny/Cover is hidden -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Children/>
+                    <Connection>
+                      <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                      <Transform><IsEqual>2</IsEqual></Transform>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <WidgetGroup><!-- SpinnyCover submenu buttons -->
+                    <Layout>vertical</Layout>
+                    <Size>172f,30f</Size>
+                    <Children>
+
+                    <Template src="skin:skin_settings_button_2state.xml">
+                        <SetVariable name="state_0_text">      ° &#9668; O</SetVariable>
+                        <SetVariable name="state_1_text">      ° &#9658; O</SetVariable>
+                        <SetVariable name="Setting">[Tango],spinnyCoverBIG</SetVariable>
+                      </Template>
+
+                      <Template src="skin:skin_settings_button_2state.xml">
+                        <SetVariable name="state_0_text">      Cover on Spinny</SetVariable>
+                        <SetVariable name="state_1_text"> &#10004; Cover on Spinny</SetVariable>
+                        <SetVariable name="Setting">[Tango],spinnyWithCoverArt</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup><!-- Spinny/Cover submenu buttons -->
+                </Children>
+              </WidgetGroup><!-- Spinny/Cover submenu -->
+
+            </Children>
+          </WidgetGroup><!-- /Spinny Settings -->
+
+          <Label><!-- Effects -->
+            <ObjectName>CategoryLabel</ObjectName>
+            <Text>Effects</Text>
+          </Label>
+          <WidgetGroup>
+            <ObjectName>SkinSettingsCategory</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>f,max</SizePolicy>
+            <Children>
+
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="state_0_text">      2 &#9668; 4  Effect Units</SetVariable>
+                <SetVariable name="state_1_text">      2 &#9658; 4  Effect Units</SetVariable>
+                <SetVariable name="Setting">[Tango],2or4_fxUnits</SetVariable>
+              </Template>
+
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="state_0_text">      Sampler FX buttons</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Sampler FX buttons</SetVariable>
+                <SetVariable name="Setting">[Tango],sampler_fx_buttons</SetVariable>
+              </Template>
+
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="state_0_text">      Mic/AUX FX buttons</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Mic/AUX FX buttons</SetVariable>
+                <SetVariable name="Setting">[Tango],micaux_fx_buttons</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup><!-- /Effects -->
+
+          <Label><!-- Extras -->
+            <ObjectName>CategoryLabel</ObjectName>
+            <Text>Extras</Text>
+          </Label>
+          <WidgetGroup>
+            <ObjectName>SkinSettingsCategory</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>f,max</SizePolicy>
+            <Children>
+
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="state_0_text">      Preview Deck</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Preview Deck</SetVariable>
+                <SetVariable name="Setting">[PreviewDeck],show_previewdeck</SetVariable>
+              </Template>
+
+              <Template src="skin:skin_settings_sampler_rows.xml"/>
+          
+              <WidgetGroup>
+                <ObjectName>AlignLeft</ObjectName>
+                <Layout>horizontal</Layout>
+                <Size>172f,15f</Size>
+                <Children>
+                  <Template src="skin:button_1state.xml">
+                    <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
+                    <SetVariable name="Size">50f,15f</SetVariable>
+                    <SetVariable name="state_0_text">      Load /</SetVariable>
+                    <SetVariable name="Align">left</SetVariable>
+                    <SetVariable name="ConfigKey">[Sampler],LoadSamplerBank</SetVariable>
+                  </Template>
+                  <Template src="skin:button_1state.xml">
+                    <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
+                    <SetVariable name="Size">122f,15f</SetVariable>
+                    <SetVariable name="state_0_text"> Save Sample Banks</SetVariable>
+                    <SetVariable name="Align">left</SetVariable>
+                    <SetVariable name="ConfigKey">[Sampler],SaveSamplerBank</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="state_0_text">      Enforce compact mode</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Enforce compact mode</SetVariable>
+                <SetVariable name="Setting">[Tango],enforce_netbook_mode</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup><!-- /Extras -->
+        </Children>
+      </WidgetGroup><!-- SkinSettings -->
+      <!-- Add a fading shadow to the right edge -->
+      <WidgetGroup>
+        <ObjectName>FadeRight</ObjectName>
+        <Size>15f,1me</Size>
+        <Children/>
+      </WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey>[Tango],skin_settings</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

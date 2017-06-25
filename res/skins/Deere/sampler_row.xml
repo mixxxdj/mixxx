@@ -1,0 +1,118 @@
+<Template>
+  <WidgetGroup>
+    <ObjectName>SamplerRow</ObjectName>
+    <Layout>horizontal</Layout>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>SamplerExpandButtonContainer</ObjectName>
+        <Layout>vertical</Layout>
+        <Size>20f,-1me</Size>
+        <Children>
+          <Template src="skin:spacer_vx.xml">
+            <SetVariable name="height">4</SetVariable>
+          </Template>
+
+          <Template src="skin:hide_show_button.xml">
+            <SetVariable name="object_name">SamplerRowExpandButton</SetVariable>
+            <SetVariable name="control">[SamplerRow<Variable name="row"/>],expanded</SetVariable>
+          </Template>
+
+          <!-- Push the button up to the top. -->
+          <Template src="skin:spacer_v.xml"/>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>SamplerRowCollapsed</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children>
+
+          <Template src="skin:sampler_simple.xml">
+            <SetVariable name="i"><Variable name="1"/></SetVariable>
+          </Template>
+          <Template src="skin:sampler_simple.xml">
+            <SetVariable name="i"><Variable name="2"/></SetVariable>
+          </Template>
+          <Template src="skin:sampler_simple.xml">
+            <SetVariable name="i"><Variable name="3"/></SetVariable>
+          </Template>
+          <Template src="skin:sampler_simple.xml">
+            <SetVariable name="i"><Variable name="4"/></SetVariable>
+          </Template>
+
+          <WidgetGroup>
+            <ObjectName>SamplerMiddleSpacer</ObjectName>
+            <Size>-1me,-1max</Size>
+            <Children/>
+          </WidgetGroup>
+
+          <Template src="skin:sampler_simple.xml">
+            <SetVariable name="i"><Variable name="5"/></SetVariable>
+          </Template>
+          <Template src="skin:sampler_simple.xml">
+            <SetVariable name="i"><Variable name="6"/></SetVariable>
+          </Template>
+          <Template src="skin:sampler_simple.xml">
+            <SetVariable name="i"><Variable name="7"/></SetVariable>
+          </Template>
+          <Template src="skin:sampler_simple.xml">
+            <SetVariable name="i"><Variable name="8"/></SetVariable>
+          </Template>
+
+        </Children>
+        <Connection>
+          <ConfigKey>[SamplerRow<Variable name="row"/>],expanded</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform>
+            <Not/>
+          </Transform>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>SamplerRowExpanded</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children>
+
+          <Template src="skin:sampler.xml">
+            <SetVariable name="i"><Variable name="1"/></SetVariable>
+          </Template>
+          <Template src="skin:sampler.xml">
+            <SetVariable name="i"><Variable name="2"/></SetVariable>
+          </Template>
+          <Template src="skin:sampler.xml">
+            <SetVariable name="i"><Variable name="3"/></SetVariable>
+          </Template>
+          <Template src="skin:sampler.xml">
+            <SetVariable name="i"><Variable name="4"/></SetVariable>
+          </Template>
+
+          <WidgetGroup>
+            <ObjectName>SamplerMiddleSpacer</ObjectName>
+            <Size>-1me,-1max</Size>
+          </WidgetGroup>
+
+          <Template src="skin:sampler.xml">
+            <SetVariable name="i"><Variable name="5"/></SetVariable>
+          </Template>
+          <Template src="skin:sampler.xml">
+            <SetVariable name="i"><Variable name="6"/></SetVariable>
+          </Template>
+          <Template src="skin:sampler.xml">
+            <SetVariable name="i"><Variable name="7"/></SetVariable>
+          </Template>
+          <Template src="skin:sampler.xml">
+            <SetVariable name="i"><Variable name="8"/></SetVariable>
+          </Template>
+
+        </Children>
+        <Connection>
+          <ConfigKey>[SamplerRow<Variable name="row"/>],expanded</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

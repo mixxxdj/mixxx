@@ -476,7 +476,7 @@ bool ControllerManager::importScript(const QString& scriptPath,
                    << scriptPath;
     }
 
-    // The name we will save this file as in our local script repository. The
+    // The name we will save this file as in our local script mixxxdb. The
     // conflict resolution logic below will mutate this variable if the name is
     // already taken.
     QString scriptFileName = script.fileName();

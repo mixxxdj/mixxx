@@ -31,7 +31,7 @@ QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& colum
     } else if (column == LIBRARYTABLE_TRACKNUMBER) {
         return pTrack->getTrackNumber();
     } else if (column == LIBRARYTABLE_LOCATION) {
-        return pTrack->getLocation();
+        return QDir::toNativeSeparators(pTrack->getLocation());
     } else if (column == LIBRARYTABLE_COMMENT) {
         return pTrack->getComment();
     } else if (column == LIBRARYTABLE_DURATION) {
@@ -164,6 +164,32 @@ QString TextFilterNode::toSql() const {
         searchClauses << QString("%1 LIKE %2").arg(sqlColumn, escapedArgument);
     }
     return concatSqlClauses(searchClauses, "OR");
+}
+
+CrateFilterNode::CrateFilterNode(const CrateStorage* pCrateStorage,
+                                 const QString& crateNameLike)
+    : m_pCrateStorage(pCrateStorage),
+      m_crateNameLike(crateNameLike),
+      m_matchInitialized(false) {
+}
+
+bool CrateFilterNode::match(const TrackPointer& pTrack) const {
+    if (!m_matchInitialized) {
+        CrateTrackSelectResult crateTracks(
+             m_pCrateStorage->selectTracksSortedByCrateNameLike(m_crateNameLike));
+
+        while (crateTracks.next()) {
+            m_matchingTrackIds.push_back(crateTracks.trackId());
+        }
+
+        m_matchInitialized = true;
+    }
+
+    return std::binary_search(m_matchingTrackIds.begin(), m_matchingTrackIds.end(), pTrack->getId());
+}
+
+QString CrateFilterNode::toSql() const {
+    return QString("id IN (%1)").arg(CrateStorage::formatQueryForTrackIdsByCrateNameLike(m_crateNameLike));
 }
 
 NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns)

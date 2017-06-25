@@ -1,36 +1,122 @@
 <!DOCTYPE template>
 <!--
   Description:
-    The auxiliary channel controls.
+    The auxiliary input controls.
   Variables:
-    i: The auxiliary channel number (1-indexed)
+    i: The Auxiliary input number (1-indexed)
 -->
 
 <Template>
+  <SetVariable name="group">[Auxiliary<Variable name="i"/>]</SetVariable>
   <WidgetGroup>
     <ObjectName>AuxiliaryContainer</ObjectName>
-    <Layout>horizontal</Layout>
-    <SizePolicy>min,min</SizePolicy>
+    <Layout>vertical</Layout>
+    <SizePolicy>max,max</SizePolicy>
     <Children>
-      <Template src="skin:vumeter.xml">
-        <SetVariable name="group">[Auxiliary<Variable name="i"/>]</SetVariable>
-        <SetVariable name="TooltipId">channel_VuMeter</SetVariable>
-        <SetVariable name="control">VuMeter</SetVariable>
-      </Template>
 
-      <Template src="skin:knob_with_button.xml">
-        <SetVariable name="TooltipId">pregain</SetVariable>
-        <SetVariable name="group">[Auxiliary<Variable name="i"/>]</SetVariable>
-        <SetVariable name="control">pregain</SetVariable>
-        <SetVariable name="color">red</SetVariable>
-        <SetVariable name="button_TooltipId">mute</SetVariable>
-        <SetVariable name="button_control">mute</SetVariable>
-        <SetVariable name="label">Gain</SetVariable>
-      </Template>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <ObjectName>AuxLabelContainer</ObjectName>
+        <Children>
+          <Label>
+            <ObjectName>AuxLabel</ObjectName>
+            <Text>Aux <Variable name="i"/></Text>
+          </Label>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>AuxiliaryControls</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children>
+
+          <Template src="skin:knob_with_button.xml">
+            <SetVariable name="TooltipId">microphone_pregain</SetVariable>
+            <SetVariable name="control">pregain</SetVariable>
+            <SetVariable name="color">red</SetVariable>
+            <SetVariable name="button_TooltipId">mute</SetVariable>
+            <SetVariable name="button_control">mute</SetVariable>
+            <SetVariable name="label">Gain</SetVariable>
+          </Template>
+
+          <WidgetGroup>
+            <ObjectName>AuxiliaryButtonsAndMeter</ObjectName>
+            <Layout>vertical</Layout>
+            <Children>
+
+              <WidgetGroup>
+                <ObjectName>AuxiliaryControlButtons</ObjectName>
+                <Layout>horizontal</Layout>
+                <Children>
+
+                  <Template src="skin:left_2state_button.xml">
+                    <SetVariable name="TooltipId">pfl</SetVariable>
+                    <SetVariable name="ObjectName">AuxPFLButton</SetVariable>
+                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                    <SetVariable name="state_0_text"></SetVariable>
+                    <SetVariable name="state_0_pressed">icon/ic_headphones_48px.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+                    <SetVariable name="state_1_text"></SetVariable>
+                    <SetVariable name="state_1_pressed">icon/ic_headphones_48px.svg</SetVariable>
+                    <SetVariable name="state_1_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+                    <SetVariable name="left_connection_control"><Variable name="group"/>,pfl</SetVariable>
+                  </Template>
+
+                  <Template src="skin:crossfader_orientation_button.xml" />
+
+                </Children>
+              </WidgetGroup>
+
+              <Template src="skin:vumeter.xml">
+                <SetVariable name="TooltipId">microphone_VuMeter</SetVariable>
+                <SetVariable name="control">VuMeter</SetVariable>
+              </Template>
+
+              <WidgetGroup>
+                <ObjectName>ButtonGrid</ObjectName>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:fx_unit_group_assignment_button.xml">
+                    <SetVariable name="EffectUnit">1</SetVariable>
+                    <SetVariable name="SourceType">auxiliary</SetVariable>
+                  </Template>
+
+                  <Template src="skin:fx_unit_group_assignment_button.xml">
+                    <SetVariable name="EffectUnit">2</SetVariable>
+                    <SetVariable name="SourceType">auxiliary</SetVariable>
+                  </Template>
+
+                  <WidgetGroup>
+                    <ObjectName>ButtonGrid</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <Template src="skin:fx_unit_group_assignment_button.xml">
+                        <SetVariable name="EffectUnit">3</SetVariable>
+                        <SetVariable name="SourceType">auxiliary</SetVariable>
+                      </Template>
+
+                      <Template src="skin:fx_unit_group_assignment_button.xml">
+                        <SetVariable name="EffectUnit">4</SetVariable>
+                        <SetVariable name="SourceType">auxiliary</SetVariable>
+                      </Template>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Master],show_4effectunits</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                </Children>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup>
+
     </Children>
-    <Connection>
-      <ConfigKey>[Auxiliary<Variable name="i"/>],enabled</ConfigKey>
-      <BindProperty>visible</BindProperty>
-    </Connection>
   </WidgetGroup>
 </Template>

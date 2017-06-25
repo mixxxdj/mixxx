@@ -12,17 +12,6 @@
 #include "util/assert.h"
 #include "util/performancetimer.h"
 
-CueDAO::CueDAO(QSqlDatabase& database)
-        : m_database(database) {
-}
-
-CueDAO::~CueDAO() {
-}
-
-void CueDAO::initialize() {
-    qDebug() << "CueDAO::initialize" << QThread::currentThread() << m_database.connectionName();
-}
-
 int CueDAO::cueCount() {
     qDebug() << "CueDAO::cueCount" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);

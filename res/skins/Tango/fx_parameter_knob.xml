@@ -1,0 +1,72 @@
+<!--
+Description:
+  An effect parameter knob with a 5 state button below
+  that controls SuperKnob linking type.
+Variables:
+  EffectRack      : rack number
+  EffectUnit      : unit number
+  Effect          : EffectRack1_EffectUnitX_EffectY
+  EffectNum       : effect number
+  EffectParameter : the parameter
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>stacked</Layout>
+    <Size>52f,39f</Size>
+    <Children>
+
+      <WidgetGroup><!-- Effect parameter knob -->
+        <ObjectName>EffectKnobParameter</ObjectName>
+        <Layout>vertical</Layout>
+        <Size>51f,30f</Size>
+        <Children>
+          <Template src="skin:knob_textless.xml">
+            <SetVariable name="TooltipId">EffectSlot_parameter</SetVariable>
+            <SetVariable name="group"><Variable name="Effect"/></SetVariable>
+            <SetVariable name="ConfigKey">parameter<Variable name="EffectParameter"/></SetVariable>
+            <SetVariable name="Size">30f,30f</SetVariable>
+            <SetVariable name="Color">yellow</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <!-- Meta knob link button -->
+      <Template src="skin:button_5state.xml">
+        <SetVariable name="ObjectName">EffectLinkTypeButton</SetVariable>
+        <SetVariable name="TooltipId">EffectSlot_parameter_link_type</SetVariable>
+        <SetVariable name="Size">51f,38f</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="Effect"/>,parameter<Variable name="EffectParameter"/>_link_type</SetVariable>
+      </Template>
+
+      <WidgetGroup><!-- Name of paramter -->
+        <Size>51f,1min</Size>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+          <EffectParameterName>
+            <ObjectName>EffectKnobParameterName</ObjectName>
+            <SizePolicy>min,me</SizePolicy>
+            <EffectRack><Variable name="EffectRack"/></EffectRack>
+            <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+            <Effect><Variable name="EffectNum"/></Effect>
+            <EffectParameter><Variable name="EffectParameter"/></EffectParameter>
+            <Alignment>left</Alignment>
+          </EffectParameterName>
+          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+      <!-- Button to display meta knob link type underneath the parameter name -->
+      <Template src="skin:button_5state.xml">
+        <SetVariable name="ObjectName">EffectLinkTypeButtonUnderlay</SetVariable>
+        <SetVariable name="Size">51f,38f</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="Effect"/>,parameter<Variable name="EffectParameter"/>_link_type</SetVariable>
+      </Template>
+    </Children>
+    <!-- show only if parameter is loaded -->
+    <Connection>
+      <ConfigKey><Variable name="Effect"/>,parameter<Variable name="EffectParameter"/>_loaded</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

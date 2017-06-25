@@ -1,0 +1,28 @@
+<!--
+Description:
+  The skin settings menu, floating on top of main skin window.
+
+  Bug: qss 'qproperty-layoutAlignment' is not respected for stacked layout.
+  No way to push SkinSettings to the right edge while keeping the area underneath clickable.
+-->
+<Template>
+  <PushButton>
+    <ObjectName>SkinSettingsButton</ObjectName>
+    <Size>172f,15f</Size>
+    <NumberStates>1</NumberStates>
+    <RightClickIsPushButton>true</RightClickIsPushButton>
+    <State>
+      <Number>0</Number>
+      <Text>[<Variable name="current"/>] Sampler Rows</Text>
+      <Alignment>left</Alignment>
+    </State>
+    <Connection>
+      <ConfigKey>[Tango],sampler_row_<Variable name="next"/></ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey>[Tango],sampler_row_<Variable name="prev"/></ConfigKey>
+      <ButtonState>RightButton</ButtonState>
+    </Connection>
+  </PushButton>
+</Template>

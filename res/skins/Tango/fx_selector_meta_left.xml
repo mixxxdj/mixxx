@@ -1,0 +1,88 @@
+<!--
+Description:
+  Container in left effect units with
+  * effect enable button
+  * effect focus button
+  * effect selector drop-down list
+  * Meta knob
+Variables:
+  fxGroup     : EffectRack1_EffectUnitX
+  EffectRack  : effect rack number
+  EffectUnit  : effect unit number
+  EffectNum   : effect number
+-->
+<Template>
+  <SetVariable name="Effect">[<Variable name="fxGroup"/>_Effect<Variable name="EffectNum"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>EffectTogglerMetaKnob</ObjectName>
+    <Layout>horizontal</Layout>
+    <MinimunSize>115,30</MinimunSize>
+    <MaximumSize>130,39</MaximumSize>
+    <SizePolicy>min,me</SizePolicy>
+    <Children>
+
+      <WidgetGroup><!-- Effect toggler + Effect selector -->
+        <ObjectName>EffectToggler</ObjectName>
+        <Layout>stacked</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+
+          <!-- invisible, clickable Overlay to toggle Effect -->
+          <Template src="skin:button_2state.xml"><!-- EffectToggleButton -->
+            <SetVariable name="ObjectName">EffectToggleButton</SetVariable>
+            <SetVariable name="TooltipId">EffectSlot_enabled</SetVariable>
+            <SetVariable name="Size">72f,20f</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="Effect"/>,enabled</SetVariable>
+          </Template>
+
+          <WidgetGroup>
+            <ObjectName>fxNameContainer</ObjectName>
+            <Size>72f,20f</Size>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
+              <EffectName>
+                <ObjectName>fxName</ObjectName>
+                <EffectRack><Variable name="EffectRack"/></EffectRack>
+                <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+                <Effect><Variable name="EffectNum"/></Effect>
+              </EffectName>
+              <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
+            </Children>
+          </WidgetGroup>
+          <!-- Colored background to communicate the Effect's ON/OFF status -->
+          <Template src="skin:button_2state.xml"><!-- EffectToggleButton -->
+            <SetVariable name="ObjectName">EffectToggleButtonUnderlay</SetVariable>
+            <SetVariable name="Size">72f,20f</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="Effect"/>,enabled</SetVariable>
+          </Template>
+
+          <EffectSelector>
+            <MinimunSize>72,20</MinimunSize>
+            <MaximumSize>87,20</MaximumSize>
+            <SizePolicy>me,f</SizePolicy>
+            <EffectRack><Variable name="EffectRack"/></EffectRack>
+            <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+            <Effect><Variable name="EffectNum"/></Effect>
+          </EffectSelector>
+
+        </Children>
+      </WidgetGroup><!-- /Effect toggler + Effect selector -->
+      
+      <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+      <Template src="skin:knob_textless.xml">
+        <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
+        <SetVariable name="group"><Variable name="Effect"/></SetVariable>
+        <SetVariable name="ConfigKey">meta</SetVariable>
+        <SetVariable name="Size">30f,30f</SetVariable>
+        <SetVariable name="Color">blue</SetVariable>
+      </Template>
+      
+      <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+      <Template src="skin:fx_focus_button.xml"/>
+
+    </Children>
+  </WidgetGroup>
+</Template>

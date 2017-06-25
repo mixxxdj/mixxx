@@ -77,7 +77,7 @@ bool EngineEffectRack::addEffectChain(EngineEffectChain* pChain, int iIndex) {
 }
 
 bool EngineEffectRack::removeEffectChain(EngineEffectChain* pChain, int iIndex) {
-    if (iIndex < 0) {
+    VERIFY_OR_DEBUG_ASSERT(iIndex < m_chains.size()) {
         if (kEffectDebugOutput) {
             qDebug() << debugString()
                      << "WARNING: REMOVE_CHAIN_FROM_RACK message with invalid index:"

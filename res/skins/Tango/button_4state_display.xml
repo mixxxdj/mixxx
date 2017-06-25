@@ -1,0 +1,59 @@
+<!--
+Description:
+  A button that has click or display controls.
+Variables:
+  ObjectName        : object name
+  TooolTipID        : standard Tooltip from mixxx db
+    see: https://github.com/mixxxdj/mixxx/blob/master/src/skin/tooltips.cpp
+  Size              : button size
+  state_X_text      : label text for state X
+  state_X_pressed   : background graphic for pressed state X
+  state_X_unpressed : background graphic for unpressed state X
+  Align             : alignment of text
+  ConfigKey         : left-click control
+  ConfigKeyDisp     : display control
+-->
+<Template>
+  <PushButton>
+    <TooltipId><Variable name="TooltipId"/></TooltipId>
+    <ObjectName><Variable name="ObjectName"/></ObjectName>
+    <Size><Variable name="Size"/></Size>
+    <NumberStates>4</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Text><Variable name="state_0_text"/></Text>
+      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_0_pressed"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_0_unpressed"/></Unpressed>
+      <Alignment><Variable name="Align"/></Alignment>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Text><Variable name="state_1_text"/></Text>
+      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_1_pressed"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_1_unpressed"/></Unpressed>
+      <Alignment><Variable name="Align"/></Alignment>
+    </State>
+    <State>
+      <Number>2</Number>
+      <Text><Variable name="state_2_text"/></Text>
+      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_2_pressed"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_2_unpressed"/></Unpressed>
+      <Alignment><Variable name="Align"/></Alignment>
+    </State>
+    <State>
+      <Number>3</Number>
+      <Text><Variable name="state_3_text"/></Text>
+      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_3_pressed"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_3_unpressed"/></Unpressed>
+      <Alignment><Variable name="Align"/></Alignment>
+    </State>
+    <Connection>
+      <ConfigKey><Variable name="ConfigKey"/></ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey><Variable name="ConfigKeyDisp"/></ConfigKey>
+      <ConnectValueFromWidget>false</ConnectValueFromWidget>
+    </Connection>
+  </PushButton>
+</Template>

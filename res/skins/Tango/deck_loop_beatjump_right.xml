@@ -1,0 +1,72 @@
+<Template>
+  <WidgetGroup><!-- Loop/Jump 2.0 -->
+    <ObjectName>DeckLoopBeatjump</ObjectName>
+    <SizePolicy>min,min</SizePolicy>
+    <Layout>horizontal</Layout>
+    <Children>
+      <!-- Number of spacers besides the loop containers determines the
+          ratio of 'white space' between them -->
+      <Template src="skin:beatjump_sizes.xml"/>
+        <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,1min</Size></WidgetGroup>
+        <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0me,1min</Size></WidgetGroup>
+        <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0me,1min</Size></WidgetGroup>
+      <Template src="skin:loop_basics.xml"/>
+        <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,1min</Size></WidgetGroup>
+      <Template src="skin:loop_sizes.xml"/>
+        <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+      <Template src="skin:loop_scale.xml"/>
+        <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,1min</Size></WidgetGroup>
+      <Template src="skin:loop_move_sizes.xml"/>
+        <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0me,1min</Size></WidgetGroup>
+        <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0me,1min</Size></WidgetGroup>
+        <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0me,1min</Size></WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Tango],loop_beatjump_controls</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup><!-- /Loop/Jump 2.0 -->
+
+  <!-- Loop/Jump 2.1 compact
+  <WidgetGroup>
+    <ObjectName>DeckLoopBeatjump</ObjectName>
+    <SizePolicy>min,min</SizePolicy>
+    <Layout>horizontal</Layout>
+    <Children>
+      <Template src="skin:beatjump_2.1_compact_right.xml"/>
+        <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,1min</Size></WidgetGroup>
+      <Template src="skin:loop_controls_2.1_compact_right.xml"/>
+        <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0me,1min</Size></WidgetGroup>
+        <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0me,1min</Size></WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Tango],loop_beatjump_controls</ConfigKey>
+      <Transform><IsEqual>2</IsEqual></Transform>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup> -->
+
+  <!-- Loop/Jump 2.1+ advanced
+  <WidgetGroup>
+    <ObjectName>DeckLoopBeatjump</ObjectName>
+    <SizePolicy>min,min</SizePolicy>
+    <Layout>horizontal</Layout>
+    <Children>
+      <Template src="skin:beatjump_2.1.xml"/>
+        <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,1min</Size></WidgetGroup>
+        <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0me,1min</Size></WidgetGroup>
+        <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,1min</Size></WidgetGroup>
+      <Template src="skin:loop_controls_2.1.xml"/>
+        <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,1min</Size></WidgetGroup>
+      <Template src="skin:loop_sizes.xml"/>
+        <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0me,1min</Size></WidgetGroup>
+        <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0me,1min</Size></WidgetGroup>
+        <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0me,1min</Size></WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Tango],loop_beatjump_controls</ConfigKey>
+      <Transform><IsEqual>3</IsEqual></Transform>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>   -->
+</Template>
