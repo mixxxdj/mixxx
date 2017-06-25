@@ -499,13 +499,13 @@ void SoundSourceProxy::parseFileTags(int parseOptions) {
     }
 
     if (pTrackMetadata) {
-        kLogger.warning() << "Updating track metadata"
+        kLogger.info() << "Updating track metadata from file tags"
                  << getUrl().toString();
         m_pTrack->setTrackMetadata(trackMetadata, true);
     }
     if (pCoverImg) {
         if (pCoverImg->isNull()) {
-            kLogger.info() << "No cover art found in file"
+            kLogger.warning() << "No cover art found in file"
                        << getUrl().toString();
         } else {
             // Cover image has been parsed from the file
@@ -515,7 +515,7 @@ void SoundSourceProxy::parseFileTags(int parseOptions) {
             coverInfoRelative.coverLocation = QString();
             coverInfoRelative.type = CoverInfo::METADATA;
             coverInfoRelative.source = CoverInfo::GUESSED;
-            kLogger.warning() << "Updating track cover art"
+            kLogger.info() << "Updating track cover art from file tags"
                      << getUrl().toString();
             m_pTrack->setCoverInfo(coverInfoRelative);
         }
