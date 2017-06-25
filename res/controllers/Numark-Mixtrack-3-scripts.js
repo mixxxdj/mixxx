@@ -1646,12 +1646,16 @@ NumarkMixtrack3.InstantFXOff = function(channel, control, value, status, group) 
 };
 
 NumarkMixtrack3.FXButton = function(channel, control, value, status, group) {
+    if (value !== DOWN) {
+        return;
+    }
+
     var deck = NumarkMixtrack3.deckFromGroup(group);
     var decknum = deck.decknum;
     var effectNum = control - leds.fx1 + 1;
     var effectGroup = "[EffectRack1_EffectUnit" + decknum + "_Effect" + effectNum + "]";
 
-    if (deck.PADMode && value === DOWN) {
+    if (deck.PADMode) {
         if (deck.InstantFX.indexOf(effectNum) > -1) {
             // remove effect from InstantFX and set LED to reflect whether or not effect is enabled
             var index = deck.InstantFX.indexOf(effectNum);
@@ -1667,16 +1671,16 @@ NumarkMixtrack3.FXButton = function(channel, control, value, status, group) {
                 deck.LEDs["fx" + effectNum].flashOn(250, ON, 250);
             }
         }
-    } else if (deck.shiftKey && value === DOWN) {
+    } else if (deck.shiftKey) {
         // load next effect and make sure the unit is enabled
         engine.setValue(effectGroup, "next_effect", true);
-    } else if (deck.TapDown && value === DOWN) {
+    } else if (deck.TapDown) {
         if (deck.getFocusedEffect() === effectNum) {
             deck.focusEffect(0);
         } else {
             deck.focusEffect(effectNum);
         }
-    } else if (value === DOWN) {
+    } else {
         // toggle effect if InstantFX is not active
         if (deck.InstantFX.indexOf(effectNum) === -1) {
             script.toggleControl(effectGroup, "enabled");
