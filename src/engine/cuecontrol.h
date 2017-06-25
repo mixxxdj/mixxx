@@ -111,6 +111,7 @@ class CueControl : public EngineControl {
     void hotcuePositionChanged(HotcueControl* pControl, double newPosition);
 
     void cueSet(double v);
+    void cueClear(double v);
     void cueGoto(double v);
     void cueGotoAndPlay(double v);
     void cueGotoAndStop(double v);
@@ -149,6 +150,7 @@ class CueControl : public EngineControl {
     ControlObject* m_pCuePoint;
     ControlObject* m_pCueMode;
     ControlPushButton* m_pCueSet;
+    ControlPushButton* m_pCueClear;
     ControlPushButton* m_pCueCDJ;
     ControlPushButton* m_pCueDefault;
     ControlPushButton* m_pPlayStutter;

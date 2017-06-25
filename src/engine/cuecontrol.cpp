@@ -56,6 +56,12 @@ CueControl::CueControl(QString group,
             this, SLOT(cueSet(double)),
             Qt::DirectConnection);
 
+    m_pCueClear = new ControlPushButton(ConfigKey(group, "cue_clear"));
+    m_pCueClear->setButtonMode(ControlPushButton::TRIGGER);
+    connect(m_pCueClear, SIGNAL(valueChanged(double)),
+            this, SLOT(cueClear(double)),
+            Qt::DirectConnection);
+
     m_pCueGoto = new ControlPushButton(ConfigKey(group, "cue_goto"));
     connect(m_pCueGoto, SIGNAL(valueChanged(double)),
             this, SLOT(cueGoto(double)),
@@ -140,6 +146,7 @@ CueControl::~CueControl() {
     delete m_pCuePoint;
     delete m_pCueMode;
     delete m_pCueSet;
+    delete m_pCueClear;
     delete m_pCueGoto;
     delete m_pCueGotoAndPlay;
     delete m_pCuePlay;
@@ -628,6 +635,21 @@ void CueControl::cueSet(double v) {
     // Store cue point in loaded track
     if (pLoadedTrack) {
         pLoadedTrack->setCuePoint(cue, Cue::MANUAL);
+    }
+}
+
+void CueControl::cueClear(double v) {
+    if (!v) {
+        return;
+    }
+
+    QMutexLocker lock(&m_mutex);
+    m_pCuePoint->set(-1.0);
+    TrackPointer pLoadedTrack = m_pLoadedTrack;
+    lock.unlock();
+
+    if (pLoadedTrack) {
+        pLoadedTrack->setCuePoint(-1.0, Cue::UNKNOWN);
     }
 }
 

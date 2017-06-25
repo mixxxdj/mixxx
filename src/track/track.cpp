@@ -717,7 +717,7 @@ void Track::setCuePoint(double position, Cue::CueSource source) {
 
 bool Track::updateCuePoint(double position, Cue::CueSource source) {
     // If source is not manual, snap cue point to nearest beat.
-    if (source != Cue::MANUAL) {
+    if (source != Cue::MANUAL && position != -1.0) {
         if (m_pBeats) {
             double closest_beat = m_pBeats->findClosestBeat(position);
             if (closest_beat != -1.0) {
