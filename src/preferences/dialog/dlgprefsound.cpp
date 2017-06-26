@@ -639,9 +639,8 @@ void DlgPrefSound::roundTripLatencySpinboxChanged(double value) {
 }
 
 void DlgPrefSound::roundTripLatencyChanged(double newRoundTripLatency) {
-    double inputLatencyCompensation = newRoundTripLatency / 2.0;
-    m_pInputLatencyCompensationDelay->set(inputLatencyCompensation);
-    m_pInputLatencyCompensationHeadphonesDelay->set(inputLatencyCompensation);
+    m_pInputLatencyCompensationDelay->set(newRoundTripLatency);
+    m_pInputLatencyCompensationHeadphonesDelay->set(newRoundTripLatency);
 }
 
 void DlgPrefSound::masterMixChanged(int value) {

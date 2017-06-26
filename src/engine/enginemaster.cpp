@@ -540,16 +540,24 @@ void EngineMaster::process(const int iBufferSize) {
         // Process master, booth, and record/broadcast buffers according to the
         // TalkoverMixMode configured in DlgPrefSound
 
-        // Mixxx gets input signals delayed by the input latency,
-        // so to preserve the relative timing of the input with Mixxx's outputs
-        // (headphones, master, booth, and record/broadcast), delay the outputs
-        // by the input latency before mixing the inputs into them.
-
-        // This way, if the microphone user is on beat with the output they hear from
-        // the speakers/headphones, the input will remain on beat at the expense of
-        // adding some latency to Mixxx's output (no latency will be added to the
-        // microphone signal though). If no microphone inputs are configured, avoid adding
-        // this extra latency.
+        // If a musician using a microphone plays on beat with the output they hear
+        // from Mixxx, when the input is processed by Mixxx and sent back out of Mixxx,
+        // they should hear themselves playing on beat. Due to the nature of digial audio,
+        // the user does not hear the output of Mixxx in the instant Mixxx is processing
+        // it. There is an output latency between the time Mixxx processes the audio
+        // and the user hears it. So if the microphone user plays on beat with what they
+        // hear, they will be playing out of sync with the engine's processing by the
+        // output latency. Additionally, Mixxx gets input signals delayed by the
+        // input latency. By the time Mixxx receives the input signal, a full
+        // round trip through the signal chain has elapsed since Mixxx processed the
+        // output signal. Therefore, to preserve the relative timing of the input with
+        // Mixxx's outputs (headphones, master, booth, and record/broadcast),
+        // the outputs must be delayed by the round trip latency before mixing
+        // the inputs into them. Unfortunately this adds some latency to Mixxx's outputs,
+        // so manipulating controls in Mixxx will feel less responsive. However,
+        // no latency will be added to the input signal as it passes through Mixxx.
+        // If no microphone inputs are configured, the outputs are not delayed to
+        // avoid adding unnecessary latency.
 
         // If the input signal is being directly monitored (mixed with the master output
         // in hardware), do not delay the audible outputs. However, delay the
