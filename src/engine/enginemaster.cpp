@@ -671,9 +671,10 @@ void EngineMaster::process(const int iBufferSize) {
             // Record/broadcast signal is the same as the master output
             m_ppSidechainOutput = &m_pMaster;
         } else if (configuredTalkoverMixMode == TalkoverMixMode::DIRECT_MONITOR) {
-            // Skip mixing talkover with the master mix if using direct monitoring
-            // because it is being mixed in hardware without the latency of sending
-            // the signal in to Mixxx for processing.
+            // Skip mixing talkover with the master and booth outputs
+            // if using direct monitoring because it is being mixed in hardware
+            // without the latency of sending the signal into Mixxx for processing.
+            // However, include the talkover mix in the record/broadcast signal.
 
             // Copy master mix to booth output with booth gain
             if (boothEnabled) {
@@ -713,16 +714,16 @@ void EngineMaster::process(const int iBufferSize) {
             }
             m_masterGainOld = master_gain;
 
-            // The talkover signal Mixxx receives is delayed by the input latency,
-            // so to keep it aligned with the master mix for recording/broadcasting,
-            // the master mix going to the record/broadcast signal needs to be delayed.
-            // However, the master & booth outputs must not be delayed because
-            // they are being mixed in hardware with the talkover signal
-            // without the latency of sending the the talkover signal into the computer.
+            // The talkover signal Mixxx receives is delayed by the round trip latency,
+            // so to record/broadcast the same signal that is heard on the master & booth
+            // outputs, the master mix must be delayed before mixing the talkover
+            // signal for the record/broadcast mix.
             // If not using microphone inputs or recording/broadcasting from
             // a sound card input, skip unnecessary processing here.
             if (m_pNumMicsConfigured->get() > 0
                 && !m_bExternalRecordBroadcastInputConnected) {
+                // Copy the master mix to a separate buffer before delaying it
+                // to avoid delaying the master output.
                 SampleUtil::copy(m_pSidechainMix, m_pMaster, iBufferSize);
                 m_pInputLatencyCompensationDelay->process(m_pSidechainMix, iBufferSize);
                 SampleUtil::copy2WithGain(m_pSidechainMix,
