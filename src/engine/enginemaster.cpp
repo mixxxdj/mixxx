@@ -570,6 +570,25 @@ void EngineMaster::process(const int iBufferSize) {
                 m_pInputLatencyCompensationDelay->process(m_pMaster, iBufferSize);
             }
 
+            // Process master channel effects
+            // TODO(Be): Move this after mixing in talkover. To apply master effects
+            // to both the master and booth in that case will require refactoring
+            // the effects system to be able to process the same effects on multiple
+            // buffers within the same callback.
+            if (m_pEngineEffectsManager) {
+                GroupFeatureState masterFeatures;
+                // Well, this is delayed by one buffer (it's dependent on the
+                // output). Oh well.
+                if (m_pVumeter != NULL) {
+                    m_pVumeter->collectFeatures(&masterFeatures);
+                }
+                masterFeatures.has_gain = true;
+                masterFeatures.gain = m_pMasterGain->get();
+                m_pEngineEffectsManager->process(m_masterHandle.handle(), m_pMaster,
+                                                iBufferSize, iSampleRate,
+                                                masterFeatures);
+            }
+
             // Copy master mix to booth output with booth gain before mixing
             // talkover with master mix
             if (boothEnabled) {
@@ -592,7 +611,25 @@ void EngineMaster::process(const int iBufferSize) {
                     iBufferSize);
             }
 
+            // Apply master gain
+            CSAMPLE master_gain = m_pMasterGain->get();
+            if (m_bRampingGain) {
+                SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld, master_gain,
+                                             iBufferSize);
+            } else {
+                SampleUtil::applyGain(m_pMaster, master_gain, iBufferSize);
+            }
+            m_masterGainOld = master_gain;
+
+            // Record/broadcast signal is the same as the master output
+            m_ppSidechainOutput = &m_pMaster;
+        } else if (configuredTalkoverMixMode == TalkoverMixMode::MASTER_AND_BOOTH) {
             // Process master channel effects
+            // TODO(Be): Move this after mixing in talkover. For the MASTER only
+            // TalkoverMixMode above, that will require refactoring the effects system
+            // to be able to process the same effects on different buffers
+            // within the same callback. For consistency between the TalkoverMixModes,
+            // process master effects here before mixing in talkover.
             if (m_pEngineEffectsManager) {
                 GroupFeatureState masterFeatures;
                 // Well, this is delayed by one buffer (it's dependent on the
@@ -607,19 +644,6 @@ void EngineMaster::process(const int iBufferSize) {
                                                 masterFeatures);
             }
 
-            // Apply master gain
-            CSAMPLE master_gain = m_pMasterGain->get();
-            if (m_bRampingGain) {
-                SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld, master_gain,
-                                             iBufferSize);
-            } else {
-                SampleUtil::applyGain(m_pMaster, master_gain, iBufferSize);
-            }
-            m_masterGainOld = master_gain;
-
-            // Record/broadcast signal is the same as the master output
-            m_ppSidechainOutput = &m_pMaster;
-        } else if (configuredTalkoverMixMode == TalkoverMixMode::MASTER_AND_BOOTH) {
             // Apply input latency compensation then mix talkover into master mix
             // Do not add unnecessary latency if no microphones are configured
             if (m_pNumMicsConfigured->get() > 0) {
@@ -641,21 +665,6 @@ void EngineMaster::process(const int iBufferSize) {
                         boothGain, iBufferSize);
                 }
                 m_boothGainOld = boothGain;
-            }
-
-            // Process master channel effects
-            if (m_pEngineEffectsManager) {
-                GroupFeatureState masterFeatures;
-                // Well, this is delayed by one buffer (it's dependent on the
-                // output). Oh well.
-                if (m_pVumeter != NULL) {
-                    m_pVumeter->collectFeatures(&masterFeatures);
-                }
-                masterFeatures.has_gain = true;
-                masterFeatures.gain = m_pMasterGain->get();
-                m_pEngineEffectsManager->process(m_masterHandle.handle(), m_pMaster,
-                                                iBufferSize, iSampleRate,
-                                                masterFeatures);
             }
 
             // Apply master gain
@@ -690,6 +699,9 @@ void EngineMaster::process(const int iBufferSize) {
             }
 
             // Process master channel effects
+            // NOTE(Be): This should occur before mixing in talkover for the
+            // record/broadcast signal so the record/broadcast signal is the same
+            // as what is heard on the master & booth outputs.
             if (m_pEngineEffectsManager) {
                 GroupFeatureState masterFeatures;
                 // Well, this is delayed by one buffer (it's dependent on the
