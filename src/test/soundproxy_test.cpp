@@ -51,7 +51,7 @@ class SoundSourceProxyTest: public MixxxTest {
     }
 
     static mixxx::AudioSourcePointer openAudioSource(const QString& filePath) {
-        TrackPointer pTrack(Track::newTemporary(filePath));
+        auto pTrack = Track::newTemporary(filePath);
         return SoundSourceProxy(pTrack).openAudioSource();
     }
 
@@ -100,8 +100,8 @@ TEST_F(SoundSourceProxyTest, open) {
 }
 
 TEST_F(SoundSourceProxyTest, readArtist) {
-    TrackPointer pTrack(Track::newTemporary(
-            kTestDir.absoluteFilePath("artist.mp3")));
+    auto pTrack = Track::newTemporary(
+            kTestDir.absoluteFilePath("artist.mp3"));
     SoundSourceProxy proxy(pTrack);
     mixxx::TrackMetadata trackMetadata;
     EXPECT_EQ(OK, proxy.parseTrackMetadata(&trackMetadata));
@@ -109,8 +109,8 @@ TEST_F(SoundSourceProxyTest, readArtist) {
 }
 
 TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
-    TrackPointer pTrack(Track::newTemporary(
-            kTestDir.absoluteFilePath("TOAL_TPE2.mp3")));
+    auto pTrack = Track::newTemporary(
+            kTestDir.absoluteFilePath("TOAL_TPE2.mp3"));
     SoundSourceProxy proxy(pTrack);
     mixxx::TrackMetadata trackMetadata;
     EXPECT_EQ(OK, proxy.parseTrackMetadata(&trackMetadata));

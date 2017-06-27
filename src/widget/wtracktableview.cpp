@@ -1390,11 +1390,10 @@ void WTrackTableView::slotReloadTrackMetadata() {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
             // The user has explicitly requested to reload metadata from the file
-            // to override the information within Mixxx!
-            SoundSourceProxy(pTrack,
-                    SoundSourceProxy::PARSE_METADATA |
-                    SoundSourceProxy::RELOAD_METADATA_EVEN_IF_ALREADY_PARSED |
-                    SoundSourceProxy::RELOAD_METADATA_EVEN_IF_DIRTY);
+            // to override the information within Mixxx! Cover art is reloaded
+            // separately.
+            SoundSourceProxy(pTrack).updateTrack(
+                    SoundSourceProxy::ParseFileTagsMode::AgainWithoutCoverArt);
         }
     }
 }

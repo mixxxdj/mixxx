@@ -622,14 +622,11 @@ void DlgTrackInfo::reloadTrackMetadata() {
         // We cannot reuse m_pLoadedTrack, because it might already been
         // modified and we want to read fresh metadata directly from the
         // file. Otherwise the changes in m_pLoadedTrack would be lost.
-        TrackPointer pTrack(Track::newTemporary(
+        TrackPointer pTrack = Track::newTemporary(
                 m_pLoadedTrack->getFileInfo(),
-                m_pLoadedTrack->getSecurityToken()));
-        SoundSourceProxy(pTrack,
-                SoundSourceProxy::PARSE_METADATA |
-                SoundSourceProxy::RELOAD_METADATA_EVEN_IF_ALREADY_PARSED |
-                SoundSourceProxy::RELOAD_METADATA_EVEN_IF_DIRTY);
+                m_pLoadedTrack->getSecurityToken());
         if (pTrack) {
+            SoundSourceProxy(pTrack).updateTrack();
             populateFields(*pTrack);
         }
     }

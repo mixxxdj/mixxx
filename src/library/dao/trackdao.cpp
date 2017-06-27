@@ -702,8 +702,7 @@ TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove
     // TODO(uklotzde): Loading of metadata can be skipped if
     // the track is already in the library. A refactoring is
     // needed to detect this before calling addTracksAddTrack().
-    DEBUG_ASSERT(!pTrack->isHeaderParsed());
-    SoundSourceProxy(pTrack, SoundSourceProxy::PARSE_METADATA);
+    SoundSourceProxy(pTrack).updateTrack();
     if (!pTrack->isHeaderParsed()) {
         qWarning() << "TrackDAO::addTracksAddFile:"
                 << "Failed to parse track metadata from file"
@@ -1365,44 +1364,6 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         }
     }
 
-    // Data migration: Reload track total from file tags if not initialized
-    // yet. The added column "tracktotal" has been initialized with the
-    // default value "//".
-    // See also: Schema revision 26 in schema.xml
-    if (pTrack->getTrackTotal() == "//") {
-        qDebug() << "Reloading value for 'tracktotal' once-only from file"
-                " to replace the default value introduced with a previous"
-                " schema upgrade";
-        // Reload track total from file tags into a temporary
-        // track object, if the special track total migration
-        // value "//" indicates that the track total is missing
-        // and needs to be reloaded. We need to use a temporary
-        // here, otherwise the track's metadata in the library
-        // would be overwritten.
-        const TrackPointer pTempTrack(
-                Track::newTemporary(
-                        pTrack->getFileInfo(),
-                        pTrack->getSecurityToken()));
-        // The metadata for the newly created track object has
-        // not been parsed from the file, until we explicitly
-        // (re-)load it through the SoundSourceProxy.
-        SoundSourceProxy proxy(pTempTrack,
-                SoundSourceProxy::PARSE_METADATA);
-        if (pTempTrack->isHeaderParsed()) {
-            // Copy the track total from the temporary track object
-            pTrack->setTrackTotal(pTempTrack->getTrackTotal());
-            // Also set the track number if it is still empty due
-            // to insufficient parsing capabilities of Mixxx in
-            // previous versions.
-            if (!pTempTrack->getTrackNumber().isEmpty() && pTrack->getTrackNumber().isEmpty()) {
-                pTrack->setTrackNumber(pTempTrack->getTrackNumber());
-            }
-        } else {
-            qWarning() << "Failed to reload value for 'tracktotal' from file tags:"
-                    << trackLocation;
-        }
-    }
-
     // Populate track cues from the cues table.
     pTrack->setCuePoints(m_cueDao.getCuesForTrack(trackId));
 
@@ -1413,6 +1374,49 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         pTrack->markDirty();
     } else {
         pTrack->markClean();
+        // Reload both metadata and cover art from file.
+        // This must be done while the track has not been
+        // marked as dirty.
+        SoundSourceProxy(pTrack).updateTrack();
+        // NOTE(uklotz): Loading of metadata from the corresponding file
+        // might have failed when the track has been added to the library.
+        // We could (re-)load the metadata here, but this would risk to
+        // overwrite the metadata that is currently stored in the library.
+        // Instead prefer to log an informational warning for the user.
+        if (!pTrack->isHeaderParsed()) {
+            qWarning() << "Metadata of the track" << pTrack->getLocation()
+                    << "has never been loaded from this file."
+                    << "Please consider reloading it manually if you prefer"
+                    << "to overwrite the metadata that is currently stored"
+                    << "in the library.";
+        }
+    }
+
+    // Data migration: Reload track total from file tags if not initialized
+    // yet. The added column "tracktotal" has been initialized with the
+    // default value "//".
+    // See also: Schema revision 26 in schema.xml
+    if (pTrack->getTrackTotal() == "//") {
+        // Reload track total from file tags if the special track
+        // total migration value "//" indicates that the track total
+        // is missing and needs to be reloaded.
+        qDebug() << "Reloading value for 'tracktotal' once-only from file"
+                " to replace the default value introduced with a previous"
+                " schema upgrade";
+        mixxx::TrackMetadata trackMetadata;
+        if (SoundSourceProxy(pTrack).parseTrackMetadata(&trackMetadata) == OK) {
+            // Copy the track total from the temporary track object
+            pTrack->setTrackTotal(trackMetadata.getTrackTotal());
+            // Also set the track number if it is still empty due
+            // to insufficient parsing capabilities of Mixxx in
+            // previous versions.
+            if (!trackMetadata.getTrackNumber().isEmpty() && pTrack->getTrackNumber().isEmpty()) {
+                pTrack->setTrackNumber(trackMetadata.getTrackNumber());
+            }
+        } else {
+            qWarning() << "Failed to reload value for 'tracktotal' from file tags:"
+                    << trackLocation;
+        }
     }
 
     // Listen to dirty and changed signals

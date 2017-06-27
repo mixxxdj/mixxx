@@ -5,6 +5,7 @@
 
 #include "sources/soundsourceproviderregistry.h"
 
+
 // Creates sound sources for tracks. Only intended to be used
 // in a narrow scope and not sharable between multiple threads!
 class SoundSourceProxy {
@@ -31,29 +32,39 @@ class SoundSourceProxy {
     static bool isFileNameSupported(const QString& fileName);
     static bool isFileExtensionSupported(const QString& fileExtension);
 
-    // Controls which (metadata/coverart) and how tags are (re-)loaded from
-    // audio files.
-    //
-    // Default: Do not reload a track's metadata/coverart if it has already
-    // been parsed before or if the track is currently cached in memory and
-    // marked as dirty. These restrictions avoid that metadata that has been
-    // modified in Mixxx is overwritten by accident.
-    enum ParseFileTagOptions {
-        PARSE_NONE                             = 0x00,
-        PARSE_METADATA                         = 0x01,
-        PARSE_COVERART                         = 0x02,
-        PARSE_METADATA_AND_COVERART            = PARSE_METADATA | PARSE_COVERART,
-        RELOAD_METADATA_EVEN_IF_ALREADY_PARSED = 0x10,
-        RELOAD_METADATA_EVEN_IF_DIRTY          = 0x20,
-    };
-
     explicit SoundSourceProxy(
-            const TrackPointer& pTrack,
-            int parseFileTagOptions = PARSE_NONE);
+            TrackPointer pTrack);
 
     const TrackPointer& getTrack() const {
         return m_pTrack;
     }
+
+    // Controls which (metadata/coverart) and how tags are (re-)loaded from
+    // audio files when creating a SoundSourceProxy.
+    enum class ParseFileTagsMode {
+        // Do not parse any file tags, only initialize the track's type
+        None,
+        // Parse both track metadata and cover art once for new track objects
+        Once,
+        // Parse and update the track's metadata, but not the cover art
+        AgainWithoutCoverArt,
+        // If omitted both metadata and cover art will be parsed once for each
+        // track object. This information will be stored together with the parsed
+        // metadata in the Mixxx database
+        Default = Once,
+    };
+
+    // Updates file type, metadata, and cover art of the track object as
+    // requested by parsing the file's tags.
+    //
+    // The track's type will always be (re-)initialized as recognized by
+    // the prioritized sound source implementation.
+    //
+    // File tags are parsed as specified and the track's metadata and
+    // cover art is initialized or updated. But only if the track object
+    // is not marked as dirty! Otherwise parsing of file tags is skipped.
+    void updateTrack(
+            ParseFileTagsMode parseFileTagsMode = ParseFileTagsMode::Default) const;
 
     const QUrl& getUrl() const {
         return m_url;
@@ -93,8 +104,6 @@ class SoundSourceProxy {
     // for writing metadata immediately before the TIO is destroyed.
     explicit SoundSourceProxy(
             const Track* pTrack);
-
-    void parseFileTags(int parseOptions);
 
     const TrackPointer m_pTrack;
 
