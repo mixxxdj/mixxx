@@ -1,6 +1,5 @@
 #ifndef MIXXX_TRACK_H
 #define MIXXX_TRACK_H
-
 #include <QAtomicInt>
 #include <QFileInfo>
 #include <QList>
@@ -98,8 +97,8 @@ class Track : public QObject {
     // Returns the file type
     QString getType() const;
     // Initialize the file type without marking the track as dirty.
-    // Only used by TrackDAO and SoundSourceProxy!
-    void initType(const QString&);
+    // Only used by a free function in TrackDAO and SoundSourceProxy!
+    void initType(const QString&);  // write-once
 
     void setChannels(int iChannels);
     // Get number of channels
@@ -159,7 +158,7 @@ class Track : public QObject {
 
     // Indicates if the metadata has been parsed from file tags.
     bool isHeaderParsed() const;
-    // Only used by TrackDAO!
+    // Only used by a free function in TrackDAO!
     void setHeaderParsed(bool headerParsed);
 
     void setDateAdded(const QDateTime& dateAdded);
@@ -333,6 +332,10 @@ class Track : public QObject {
           const SecurityTokenPointer& pSecurityToken,
           TrackId trackId);
 
+    // Set a unique identifier for the track. Only used by
+    // TrackDAO!
+    void initId(TrackId id); // write-once
+
     // Set whether the TIO is dirty or not and unlock before emitting
     // any signals. This must only be called from member functions
     // while the TIO is locked.
@@ -341,10 +344,6 @@ class Track : public QObject {
 
     void setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats);
     void setKeysAndUnlock(QMutexLocker* pLock, const Keys& keys);
-
-    // Set a unique identifier for the track.
-    // Only used by TrackDAO!
-    void setId(TrackId id);
 
     enum class DurationRounding {
         SECONDS, // rounded to full seconds
@@ -368,12 +367,12 @@ class Track : public QObject {
     // has been inserted or is loaded from the library DB.
     TrackId m_id;
 
+    // File type
+    QString m_sType;
+
     // Flag that indicates whether or not the TIO has changed. This is used by
     // TrackDAO to determine whether or not to write the Track back.
     bool m_bDirty;
-
-    // File type
-    QString m_sType;
 
     // Track metadata
     mixxx::TrackMetadata m_metadata;

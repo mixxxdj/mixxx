@@ -661,7 +661,7 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
         m_tracksAddedSet.insert(trackId);
     }
     if (trackId.isValid()) {
-        pTrack->setId(trackId);
+        pTrack->initId(trackId);
     } else {
         qWarning() << "TrackDAO::addTracksAddTrack:"
                 << "Failed to add track to database"
