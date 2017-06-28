@@ -447,18 +447,43 @@ void SoundSourceProxy::updateTrack(
     bool parsedFromFile = false;
     bool isDirty = false;
     m_pTrack->getTrackMetadata(&trackMetadata, &parsedFromFile, &isDirty);
-    // Evaluate state flags of track
-    if (isDirty || (parsedFromFile && (parseFileTagsMode == ParseFileTagsMode::Once))) {
-        kLogger.info() << "Skip parsing of tags from file"
-                 << getUrl().toString();
-        return; // abort
-    }
-
+    const auto coverInfo = m_pTrack->getCoverInfo();
     QImage coverImg;
     DEBUG_ASSERT(coverImg.isNull());
-    // Cover art should never be reloaded implicitly once the file tags
-    // have been parsed
-    QImage* pCoverImg = parsedFromFile ? nullptr : &coverImg;
+    QImage* pCoverImg;
+    // If the file tags have already been parsed once, both track metadata
+    // and cover art should not be updated implicitly.
+    if (parsedFromFile) {
+        if (isDirty || (parseFileTagsMode == ParseFileTagsMode::Once)) {
+            kLogger.info() << "Skip parsing of track metadata and cover art from file"
+                     << getUrl().toString();
+            return; // abort
+        }
+        // Only parse and update cover art from file tags if the track has
+        // no cover art or if cover art has already been loaded file tags.
+        if ((coverInfo.type == CoverInfo::NONE) ||
+                (coverInfo.source == CoverInfo::METADATA)) {
+            pCoverImg = &coverImg;
+        } else {
+            pCoverImg = nullptr;
+            kLogger.info() << "Skip parsing of cover art from file"
+                       << getUrl().toString();
+        }
+    } else {
+        // If the file tags have never been parsed before it doesn't matter
+        // if the track is marked as dirty or not. In this case the track
+        // object has just been created. But better check that those
+        // assumptions are correct.
+        VERIFY_OR_DEBUG_ASSERT(trackMetadata == mixxx::TrackMetadata()) {
+            kLogger.warning() << "Reloading track metadata from file"
+                     << getUrl().toString();
+        }
+        VERIFY_OR_DEBUG_ASSERT(coverInfo == CoverInfo()) {
+            kLogger.warning() << "Reloading cover art from file"
+                     << getUrl().toString();
+        }
+        pCoverImg = &coverImg;
+    }
 
     // Parse the tags stored in the audio file.
     const int parseResult =
@@ -478,30 +503,46 @@ void SoundSourceProxy::updateTrack(
     }
 
     if (parsedFromFile) {
-        kLogger.info() << "Updating track metadata from file tags"
+        kLogger.info() << "Updating track metadata from file"
                  << getUrl().toString();
     } else {
-        kLogger.info() << "Initializing track metadata from file tags"
+        kLogger.info() << "Initializing track metadata from file"
                  << getUrl().toString();
     }
     m_pTrack->setTrackMetadata(trackMetadata, true);
 
     if (pCoverImg) {
+        CoverInfoRelative coverInfoRelative;
         if (pCoverImg->isNull()) {
-            kLogger.info() << "No cover art found in file"
-                       << getUrl().toString();
+            if (coverInfo.type == CoverInfo::NONE) {
+                kLogger.info() << "No cover art found in file"
+                           << getUrl().toString();
+            } else {
+                kLogger.warning() << "Cover art is missing from file"
+                        << getUrl().toString();
+            }
+            // Cover art should be (re-)set to none
+            DEBUG_ASSERT(coverInfoRelative.type == CoverInfo::NONE);
         } else {
-            // Cover image has been parsed from the file
-            // TODO() here we may introduce a duplicate hash code
-            CoverInfoRelative coverInfoRelative;
-            coverInfoRelative.hash = CoverArtUtils::calculateHash(coverImg);
-            coverInfoRelative.coverLocation = QString();
             coverInfoRelative.type = CoverInfo::METADATA;
             coverInfoRelative.source = CoverInfo::GUESSED;
-            kLogger.info() << "Initializing track cover art from file tags"
-                     << getUrl().toString();
-            m_pTrack->setCoverInfo(coverInfoRelative);
+            DEBUG_ASSERT(coverInfoRelative.coverLocation.isEmpty());
+            // TODO(XXX) here we may introduce a duplicate hash code
+            coverInfoRelative.hash = CoverArtUtils::calculateHash(coverImg);
         }
+        if (coverInfoRelative.type == CoverInfo::NONE) {
+            kLogger.info() << "Resetting cover art for file"
+                     << getUrl().toString();
+        } else {
+            if (coverInfo.type == CoverInfo::NONE) {
+                kLogger.info() << "Initializing cover art from file"
+                         << getUrl().toString();
+            } else {
+                kLogger.info() << "Updating cover art from file"
+                        << getUrl().toString();
+            }
+        }
+        m_pTrack->setCoverInfo(coverInfoRelative);
     }
 }
 

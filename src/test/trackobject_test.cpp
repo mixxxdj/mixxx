@@ -3,6 +3,7 @@
 #include "test/mixxxtest.h"
 
 #include "track/track.h"
+#include "library/coverart.h"
 #include "sources/soundsourceproxy.h"
 
 namespace {
@@ -13,84 +14,130 @@ const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
 
 class TrackObjectTest: public MixxxTest {
   protected:
+    static bool hasTrackMetadata(const TrackPointer& pTrack) {
+        return !pTrack->getArtist().isEmpty();
+    }
+
+    static bool hasCoverArt(const TrackPointer& pTrack) {
+        return pTrack->getCoverInfo().type != CoverInfo::NONE;
+    }
+
     static TrackPointer newTestTrack() {
         return Track::newTemporary(
                 kTestDir.absoluteFilePath("TOAL_TPE2.mp3"));
     }
+
+    static TrackPointer newTestTrackParsed() {
+        auto pTrack = newTestTrack();
+        SoundSourceProxy(pTrack).updateTrack();
+        EXPECT_TRUE(pTrack->isHeaderParsed());
+        EXPECT_TRUE(hasTrackMetadata(pTrack));
+        EXPECT_TRUE(hasCoverArt(pTrack));
+        pTrack->markClean();
+        EXPECT_FALSE(pTrack->isDirty());
+        return pTrack;
+    }
+
+    static TrackPointer newTestTrackParsedModified() {
+        auto pTrack = newTestTrackParsed();
+        pTrack->setArtist(pTrack->getArtist() + pTrack->getArtist());
+        auto coverInfo = pTrack->getCoverInfo();
+        coverInfo.type = CoverInfo::FILE;
+        coverInfo.source = CoverInfo::USER_SELECTED;
+        coverInfo.hash = coverInfo.hash + 1;
+        pTrack->setCoverInfo(coverInfo);
+        EXPECT_TRUE(pTrack->isDirty());
+        return pTrack;
+    }
 };
 
-TEST_F(TrackObjectTest, initTrackType) {
-    TrackPointer pTrack = newTestTrack();
+TEST_F(TrackObjectTest, parseModifiedCleanOnce) {
+    auto pTrack = newTestTrackParsedModified();
+    pTrack->markClean();
 
-    // Verify preconditions
-    ASSERT_TRUE(pTrack->getType().isEmpty());
-    ASSERT_FALSE(pTrack->isDirty());
+    mixxx::TrackMetadata trackMetadataBefore;
+    pTrack->getTrackMetadata(&trackMetadataBefore);
+    auto coverInfoBefore = pTrack->getCoverInfo();
 
-    pTrack->initType("mp3");
+    SoundSourceProxy(pTrack).updateTrack(
+            SoundSourceProxy::ParseFileTagsMode::Once);
 
-    // Initially setting the track type once should not set the dirty flag
-    EXPECT_FALSE(pTrack->getType().isEmpty());
+    mixxx::TrackMetadata trackMetadataAfter;
+    pTrack->getTrackMetadata(&trackMetadataAfter);
+    auto coverInfoAfter = pTrack->getCoverInfo();
+
+    // Not updated
+    EXPECT_TRUE(pTrack->isHeaderParsed());
     EXPECT_FALSE(pTrack->isDirty());
-    EXPECT_FALSE(pTrack->isHeaderParsed());
-
-    pTrack->initType("mp3");
-
-    // Initializing the track type again with the same value is allowed
-    // and should not affect the track object
-    EXPECT_FALSE(pTrack->getType().isEmpty());
-    EXPECT_FALSE(pTrack->isDirty());
-    EXPECT_FALSE(pTrack->isHeaderParsed());
+    EXPECT_EQ(trackMetadataBefore, trackMetadataAfter);
+    EXPECT_EQ(coverInfoBefore, coverInfoAfter);
 }
 
-TEST_F(TrackObjectTest, readAndUpdateMetadata) {
-    TrackPointer pTrack = newTestTrack();
-
-    // Parse initially
-    SoundSourceProxy(pTrack).updateTrack(
-            SoundSourceProxy::ParseFileTagsMode::Once);
-    EXPECT_TRUE(pTrack->isDirty());
-    EXPECT_TRUE(pTrack->isHeaderParsed());
-    EXPECT_FALSE(pTrack->getArtist().isEmpty());
-    EXPECT_EQ(CoverInfo::METADATA, pTrack->getCoverInfo().type);
-
-    // Modify (-> reset) artist and cover art
-    pTrack->setArtist(QString());
-    ASSERT_TRUE(pTrack->getArtist().isEmpty());
-    pTrack->setCoverInfo(CoverArt());
-    ASSERT_EQ(CoverInfo::NONE, pTrack->getCoverInfo().type);
-
-    // Parse once more -> ignore both
-    ASSERT_TRUE(pTrack->isDirty());
-    ASSERT_TRUE(pTrack->isHeaderParsed());
-    SoundSourceProxy(pTrack).updateTrack(
-            SoundSourceProxy::ParseFileTagsMode::Once);
-    EXPECT_TRUE(pTrack->getArtist().isEmpty());
-    EXPECT_EQ(CoverInfo::NONE, pTrack->getCoverInfo().type);
-
-    // Parse again -> ignore both while dirty
-    ASSERT_TRUE(pTrack->isDirty());
-    ASSERT_TRUE(pTrack->isHeaderParsed());
-    SoundSourceProxy(pTrack).updateTrack(
-            SoundSourceProxy::ParseFileTagsMode::AgainWithoutCoverArt);
-    EXPECT_TRUE(pTrack->getArtist().isEmpty());
-    EXPECT_EQ(CoverInfo::NONE, pTrack->getCoverInfo().type);
-
-    // Parse once more -> ignore both even if not dirty
+TEST_F(TrackObjectTest, parseModifiedCleanAgainSkipCover) {
+    auto pTrack = newTestTrackParsedModified();
     pTrack->markClean();
-    ASSERT_FALSE(pTrack->isDirty());
-    ASSERT_TRUE(pTrack->isHeaderParsed());
-    SoundSourceProxy(pTrack).updateTrack(
-            SoundSourceProxy::ParseFileTagsMode::Once);
-    EXPECT_TRUE(pTrack->getArtist().isEmpty());
-    EXPECT_EQ(CoverInfo::NONE, pTrack->getCoverInfo().type);
 
-    // Parse again -> parse metadata, ignore cover art
-    ASSERT_FALSE(pTrack->isDirty());
-    ASSERT_TRUE(pTrack->isHeaderParsed());
+    mixxx::TrackMetadata trackMetadataBefore;
+    pTrack->getTrackMetadata(&trackMetadataBefore);
+    auto coverInfoBefore = pTrack->getCoverInfo();
+
     SoundSourceProxy(pTrack).updateTrack(
-            SoundSourceProxy::ParseFileTagsMode::AgainWithoutCoverArt);
-    EXPECT_TRUE(pTrack->isDirty());
+            SoundSourceProxy::ParseFileTagsMode::Again);
+
+    mixxx::TrackMetadata trackMetadataAfter;
+    pTrack->getTrackMetadata(&trackMetadataAfter);
+    auto coverInfoAfter = pTrack->getCoverInfo();
+
+    // Updated
     EXPECT_TRUE(pTrack->isHeaderParsed());
-    EXPECT_FALSE(pTrack->getArtist().isEmpty());
-    EXPECT_EQ(CoverInfo::NONE, pTrack->getCoverInfo().type);
+    EXPECT_TRUE(pTrack->isDirty());
+    EXPECT_NE(trackMetadataBefore, trackMetadataAfter);
+    EXPECT_EQ(coverInfoBefore, coverInfoAfter);
+}
+
+TEST_F(TrackObjectTest, parseModifiedCleanAgainUpdateCover) {
+    auto pTrack = newTestTrackParsedModified();
+    auto coverInfo = pTrack->getCoverInfo();
+    coverInfo.type = CoverInfo::METADATA;
+    coverInfo.source = CoverInfo::GUESSED;
+    pTrack->setCoverInfo(coverInfo);
+    pTrack->markClean();
+
+    mixxx::TrackMetadata trackMetadataBefore;
+    pTrack->getTrackMetadata(&trackMetadataBefore);
+    auto coverInfoBefore = pTrack->getCoverInfo();
+
+    SoundSourceProxy(pTrack).updateTrack(
+            SoundSourceProxy::ParseFileTagsMode::Again);
+
+    mixxx::TrackMetadata trackMetadataAfter;
+    pTrack->getTrackMetadata(&trackMetadataAfter);
+    auto coverInfoAfter = pTrack->getCoverInfo();
+
+    // Updated
+    EXPECT_TRUE(pTrack->isHeaderParsed());
+    EXPECT_TRUE(pTrack->isDirty());
+    EXPECT_NE(trackMetadataBefore, trackMetadataAfter);
+    EXPECT_NE(coverInfoBefore, coverInfoAfter);
+}
+
+TEST_F(TrackObjectTest, parseModifiedDirtyAgain) {
+    auto pTrack = newTestTrackParsedModified();
+
+    mixxx::TrackMetadata trackMetadataBefore;
+    pTrack->getTrackMetadata(&trackMetadataBefore);
+    auto coverInfoBefore = pTrack->getCoverInfo();
+
+    SoundSourceProxy(pTrack).updateTrack(
+            SoundSourceProxy::ParseFileTagsMode::Again);
+
+    mixxx::TrackMetadata trackMetadataAfter;
+    pTrack->getTrackMetadata(&trackMetadataAfter);
+    auto coverInfoAfter = pTrack->getCoverInfo();
+
+    // Not updated
+    EXPECT_TRUE(pTrack->isHeaderParsed());
+    EXPECT_TRUE(pTrack->isDirty());
+    EXPECT_EQ(trackMetadataBefore, trackMetadataAfter);
+    EXPECT_EQ(coverInfoBefore, coverInfoAfter);
 }

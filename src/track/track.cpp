@@ -148,8 +148,12 @@ void Track::getTrackMetadata(
         bool* pDirty) const {
     QMutexLocker lock(&m_qMutex);
     *pTrackMetadata = m_metadata;
-    *pHeaderParsed = m_bHeaderParsed;
-    *pDirty = m_bDirty;
+    if (pHeaderParsed != nullptr) {
+        *pHeaderParsed = m_bHeaderParsed;
+    }
+    if (pDirty != nullptr) {
+        *pDirty = m_bDirty;
+    }
 }
 
 QString Track::getLocation() const {
@@ -917,7 +921,7 @@ bool Track::isBpmLocked() const {
 
 void Track::setCoverInfo(const CoverInfoRelative& coverInfoRelative) {
     QMutexLocker lock(&m_qMutex);
-    if (coverInfoRelative != m_coverInfoRelative) {
+    if (m_coverInfoRelative != coverInfoRelative) {
         m_coverInfoRelative = coverInfoRelative;
         markDirtyAndUnlock(&lock);
         emit(coverArtUpdated());
@@ -925,11 +929,10 @@ void Track::setCoverInfo(const CoverInfoRelative& coverInfoRelative) {
 }
 
 void Track::setCoverInfo(const CoverInfo& coverInfo) {
+    CoverInfoRelative coverInfoRelative(coverInfo);
     QMutexLocker lock(&m_qMutex);
     DEBUG_ASSERT(coverInfo.trackLocation == m_fileInfo.absoluteFilePath());
-    CoverInfoRelative coverInfoRelative =
-            static_cast<CoverInfoRelative>(coverInfo);
-    if (coverInfoRelative != m_coverInfoRelative) {
+    if (m_coverInfoRelative != coverInfoRelative) {
         m_coverInfoRelative = coverInfoRelative;
         markDirtyAndUnlock(&lock);
         emit(coverArtUpdated());
@@ -937,7 +940,7 @@ void Track::setCoverInfo(const CoverInfo& coverInfo) {
 }
 
 void Track::setCoverInfo(const CoverArt& coverArt) {
-    setCoverInfo(static_cast<CoverInfo>(coverArt));
+    setCoverInfo(static_cast<const CoverInfo&>(coverArt));
 }
 
 CoverInfo Track::getCoverInfo() const {

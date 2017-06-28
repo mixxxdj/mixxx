@@ -1393,7 +1393,7 @@ void WTrackTableView::slotReloadTrackMetadata() {
             // to override the information within Mixxx! Cover art is reloaded
             // separately.
             SoundSourceProxy(pTrack).updateTrack(
-                    SoundSourceProxy::ParseFileTagsMode::AgainWithoutCoverArt);
+                    SoundSourceProxy::ParseFileTagsMode::Again);
         }
     }
 }

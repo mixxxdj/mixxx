@@ -288,8 +288,8 @@ class Track : public QObject {
             bool parsedFromFile);
     void getTrackMetadata(
             mixxx::TrackMetadata* pTrackMetadata,
-            bool* pHeaderParsed,
-            bool* pDirty) const;
+            bool* pHeaderParsed = nullptr,
+            bool* pDirty = nullptr) const;
 
     // Mark the track dirty if it isn't already.
     void markDirty();

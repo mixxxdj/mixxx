@@ -1374,9 +1374,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         pTrack->markDirty();
     } else {
         pTrack->markClean();
-        // Reload both metadata and cover art from file.
-        // This must be done while the track has not been
-        // marked as dirty.
+        // Update both metadata and cover art from file.
         SoundSourceProxy(pTrack).updateTrack();
         // NOTE(uklotz): Loading of metadata from the corresponding file
         // might have failed when the track has been added to the library.

@@ -42,10 +42,13 @@ class SoundSourceProxy {
     // Controls which (metadata/coverart) and how tags are (re-)loaded from
     // audio files when creating a SoundSourceProxy.
     enum class ParseFileTagsMode {
-        // Parse both track metadata and cover art once for new track objects
+        // Parse both track metadata and cover art once for new track objects.
+        // Otherwise the request is ignored and the track object is not updated.
         Once,
-        // Parse and update the track's metadata, but not the cover art
-        AgainWithoutCoverArt,
+        // Parse and update the track's metadata and cover art. Cover art is
+        // only updated if it has been guessed from metadata to prevent
+        // overwriting a custom choice.
+        Again,
         // If omitted both metadata and cover art will be parsed once for each
         // track object. This information will be stored together with the parsed
         // metadata in the Mixxx database
