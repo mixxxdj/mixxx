@@ -49,7 +49,7 @@
      <item>
       <widget class="QPushButton" name="pushButtonShuffle">
        <property name="toolTip">
-        <string>Shuffle the content of the Auto DJ playlist.</string>
+        <string>Shuffle the content of the Auto DJ queue.</string>
        </property>
        <property name="text">
         <string>Shuffle</string>
@@ -72,7 +72,7 @@
      <item>
       <widget class="QPushButton" name="pushButtonSkipNext">
        <property name="toolTip">
-        <string>Skip the next track in the Auto DJ playlist.</string>
+        <string>Skip the next track in the Auto DJ queue.</string>
        </property>
        <property name="text">
         <string>Skip Track</string>
