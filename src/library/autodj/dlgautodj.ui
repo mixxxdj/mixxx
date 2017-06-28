@@ -115,7 +115,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="labelTransitionAppendix">
        <property name="toolTip">
         <string comment="&quot;sec.&quot; as in seconds">Seconds</string>
        </property>
