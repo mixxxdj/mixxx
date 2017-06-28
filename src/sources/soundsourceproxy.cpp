@@ -488,7 +488,7 @@ void SoundSourceProxy::updateTrack(
 
     if (pCoverImg) {
         if (pCoverImg->isNull()) {
-            kLogger.warning() << "No cover art found in file"
+            kLogger.info() << "No cover art found in file"
                        << getUrl().toString();
         } else {
             // Cover image has been parsed from the file
