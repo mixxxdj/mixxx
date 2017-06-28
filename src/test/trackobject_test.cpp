@@ -44,18 +44,6 @@ TEST_F(TrackObjectTest, initTrackType) {
     EXPECT_FALSE(pTrack->isHeaderParsed());
 }
 
-TEST_F(TrackObjectTest, dontReadMetadata) {
-    TrackPointer pTrack = newTestTrack();
-
-    SoundSourceProxy(pTrack).updateTrack(
-            SoundSourceProxy::ParseFileTagsMode::None);
-
-    EXPECT_FALSE(pTrack->isDirty());
-    EXPECT_FALSE(pTrack->isHeaderParsed());
-    EXPECT_TRUE(pTrack->getArtist().isEmpty());
-    EXPECT_EQ(CoverInfo::NONE, pTrack->getCoverInfo().type);
-}
-
 TEST_F(TrackObjectTest, readAndUpdateMetadata) {
     TrackPointer pTrack = newTestTrack();
 

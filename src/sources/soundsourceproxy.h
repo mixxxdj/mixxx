@@ -42,8 +42,6 @@ class SoundSourceProxy {
     // Controls which (metadata/coverart) and how tags are (re-)loaded from
     // audio files when creating a SoundSourceProxy.
     enum class ParseFileTagsMode {
-        // Do not parse any file tags, only initialize the track's type
-        None,
         // Parse both track metadata and cover art once for new track objects
         Once,
         // Parse and update the track's metadata, but not the cover art

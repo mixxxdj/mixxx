@@ -438,10 +438,6 @@ void SoundSourceProxy::updateTrack(
         return; // abort
     }
 
-    if (parseFileTagsMode == ParseFileTagsMode::None) {
-        return; // done
-    }
-
     // Use the existing trackMetadata as default values. Otherwise
     // existing values in the library will be overwritten with
     // empty values if the corresponding file tags are missing.
