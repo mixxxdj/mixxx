@@ -62,7 +62,8 @@
      <item>
       <widget class="QPushButton" name="pushButtonAddRandom">
        <property name="toolTip">
-        <string>Add a random track from track sources (crates) or Library to the Auto DJ playlist.</string>
+        <string>Adds a random track from track sources (crates) to the Auto DJ queue.
+If no track sources are configured, the track is added from the library instead.</string>
        </property>
        <property name="text">
         <string>Add Random</string>
