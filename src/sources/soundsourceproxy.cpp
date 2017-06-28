@@ -448,7 +448,7 @@ void SoundSourceProxy::updateTrack(
     bool isDirty = false;
     m_pTrack->getTrackMetadata(&trackMetadata, &parsedFromFile, &isDirty);
     // Evaluate state flags of track
-    if (isDirty || (parsedFromFile && (parseFileTagsMode != ParseFileTagsMode::AgainWithoutCoverArt))) {
+    if (isDirty || (parsedFromFile && (parseFileTagsMode == ParseFileTagsMode::Once))) {
         kLogger.info() << "Skip parsing of tags from file"
                  << getUrl().toString();
         return; // abort
