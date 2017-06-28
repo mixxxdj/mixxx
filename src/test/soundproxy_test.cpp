@@ -1,5 +1,3 @@
-#include <gmock/gmock.h>
-
 #include <QtDebug>
 
 #include "test/mixxxtest.h"
