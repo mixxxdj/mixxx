@@ -647,7 +647,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.enableEffectUnitButtons[1].input</key>
+                <key>P32.leftDeck.enableEffectUnitButtons[0].input</key>
                 <status>0x91</status>
                 <midino>0x40</midino>
                 <options>
@@ -656,7 +656,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.enableEffectUnitButtons[1].input</key>
+                <key>P32.leftDeck.enableEffectUnitButtons[0].input</key>
                 <status>0x94</status>
                 <midino>0x40</midino>
                 <options>
@@ -665,8 +665,17 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.enableEffectUnitButtons[2].input</key>
+                <key>P32.leftDeck.enableEffectUnitButtons[1].input</key>
                 <status>0x91</status>
+                <midino>0x41</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.enableEffectUnitButtons[1].input</key>
+                <status>0x94</status>
                 <midino>0x41</midino>
                 <options>
                     <script-binding/>
@@ -676,15 +685,6 @@
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.enableEffectUnitButtons[2].input</key>
                 <status>0x94</status>
-                <midino>0x41</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.enableEffectUnitButtons[3].input</key>
-                <status>0x94</status>
                 <midino>0x3C</midino>
                 <options>
                     <script-binding/>
@@ -692,7 +692,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.enableEffectUnitButtons[3].input</key>
+                <key>P32.leftDeck.enableEffectUnitButtons[2].input</key>
                 <status>0x91</status>
                 <midino>0x3C</midino>
                 <options>
@@ -701,7 +701,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.enableEffectUnitButtons[4].input</key>
+                <key>P32.leftDeck.enableEffectUnitButtons[3].input</key>
                 <status>0x91</status>
                 <midino>0x3D</midino>
                 <options>
@@ -710,7 +710,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.enableEffectUnitButtons[4].input</key>
+                <key>P32.leftDeck.enableEffectUnitButtons[3].input</key>
                 <status>0x94</status>
                 <midino>0x3D</midino>
                 <options>
@@ -2286,7 +2286,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.enableEffectUnitButtons[1].input</key>
+                <key>P32.rightDeck.enableEffectUnitButtons[0].input</key>
                 <status>0x92</status>
                 <midino>0x40</midino>
                 <options>
@@ -2295,7 +2295,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.enableEffectUnitButtons[1].input</key>
+                <key>P32.rightDeck.enableEffectUnitButtons[0].input</key>
                 <status>0x95</status>
                 <midino>0x40</midino>
                 <options>
@@ -2304,7 +2304,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.enableEffectUnitButtons[2].input</key>
+                <key>P32.rightDeck.enableEffectUnitButtons[1].input</key>
                 <status>0x92</status>
                 <midino>0x41</midino>
                 <options>
@@ -2313,7 +2313,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.enableEffectUnitButtons[2].input</key>
+                <key>P32.rightDeck.enableEffectUnitButtons[1].input</key>
                 <status>0x95</status>
                 <midino>0x41</midino>
                 <options>
@@ -2322,7 +2322,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.enableEffectUnitButtons[3].input</key>
+                <key>P32.rightDeck.enableEffectUnitButtons[2].input</key>
                 <status>0x92</status>
                 <midino>0x3C</midino>
                 <options>
@@ -2331,7 +2331,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.enableEffectUnitButtons[3].input</key>
+                <key>P32.rightDeck.enableEffectUnitButtons[2].input</key>
                 <status>0x95</status>
                 <midino>0x3C</midino>
                 <options>
@@ -2340,7 +2340,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.enableEffectUnitButtons[4].input</key>
+                <key>P32.rightDeck.enableEffectUnitButtons[3].input</key>
                 <status>0x92</status>
                 <midino>0x3D</midino>
                 <options>
@@ -2349,7 +2349,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.enableEffectUnitButtons[4].input</key>
+                <key>P32.rightDeck.enableEffectUnitButtons[3].input</key>
                 <status>0x95</status>
                 <midino>0x3D</midino>
                 <options>

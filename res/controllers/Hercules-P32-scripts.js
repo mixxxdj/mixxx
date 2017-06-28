@@ -271,35 +271,17 @@ P32.Deck = function (deckNumbers, channel) {
         off: P32.padColors.blue,
     });
 
-    this.enableEffectUnitButtons = new components.ComponentContainer(); //fii
-    this.enableEffectUnitButtons[1] = new components.EffectAssignmentButton({
-        midi: [0x90 + channel, 0x40],
-        effectUnit: 1,
-        group: this.currentDeck,
-        on: P32.padColors.blue,
-        off: P32.padColors.red,
-    });
-    this.enableEffectUnitButtons[2] = new components.EffectAssignmentButton({
-        midi: [0x90 + channel, 0x41],
-        effectUnit: 2,
-        group: this.currentDeck,
-        on: P32.padColors.blue,
-        off: P32.padColors.red,
-    });
-    this.enableEffectUnitButtons[3] = new components.EffectAssignmentButton({
-        midi: [0x90 + channel, 0x3C],
-        effectUnit: 3,
-        group: this.currentDeck,
-        on: P32.padColors.blue,
-        off: P32.padColors.red,
-    });
-    this.enableEffectUnitButtons[4] = new components.EffectAssignmentButton({
-        midi: [0x90 + channel, 0x3D],
-        effectUnit: 4,
-        group: this.currentDeck,
-        on: P32.padColors.blue,
-        off: P32.padColors.red,
-    });
+    this.enableEffectUnitButtons = [0x40, 0x41, 0x3C, 0x3D].map(
+        function (midiByte, index) {
+            return new components.EffectAssignmentButton({
+                midi: [0x90 + channel, midiByte],
+                effectUnit: index + 1,
+                group: this.currentDeck,
+                on: P32.padColors.blue,
+                off: P32.padColors.red,
+            });
+        }
+    , this);
 
     // =================================== ENCODERS ==============================================
     this.loopSizeEncoder = new components.Encoder({
