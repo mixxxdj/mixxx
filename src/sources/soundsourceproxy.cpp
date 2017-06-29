@@ -439,7 +439,9 @@ void SoundSourceProxy::updateTrack(
     bool parsedFromFile = false;
     bool isDirty = false;
     m_pTrack->getTrackMetadata(&trackMetadata, &parsedFromFile, &isDirty);
-    const auto coverInfo = m_pTrack->getCoverInfo();
+    // Cast away the enriched track location by explicitly slicing the
+    // returned CoverInfo to CoverInfoRelative
+    const CoverInfoRelative coverInfo(m_pTrack->getCoverInfo());
     QImage coverImg;
     DEBUG_ASSERT(coverImg.isNull());
     QImage* pCoverImg;
