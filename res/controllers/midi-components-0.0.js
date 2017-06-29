@@ -362,53 +362,18 @@
         this.firstValueReceived = false;
     };
     Pot.prototype = new Component({
-        relative: false,
-        shift: function () {
-            if (this.relative) {
-                this.input = function (channel, control, value, status, group) {
-                    // Do not manipulate inKey, just store the position of the
-                    // physical potentiometer for calculating how much it moves
-                    // when shift is released.
-                    if (this.MSB !== undefined) {
-                        value = (this.MSB << 7) + value;
-                    }
-                    this.previousValueReceived = value;
-                }
+        input: function (channel, control, value, status, group) {
+            if (this.MSB !== undefined) {
+                value = (this.MSB << 7) + value;
             }
-        },
-        unshift: function () {
-            this.input = function (channel, control, value, status, group) {
-                if (this.MSB !== undefined) {
-                    value = (this.MSB << 7) + value;
-                }
-                if (this.relative) {
-                    if (this.previousValueReceived !== undefined) {
-                        var delta = (value - this.previousValueReceived) / this.max;
-                        if (this.invert) {
-                            delta = -delta;
-                        }
-                        this.inSetParameter(this.inGetParameter() + delta);
-                    } else {
-                        var newValue = value / this.max;
-                        if (this.invert) {
-                            newValue = 1 - newValue;
-                        }
-                        if (this.loadStateOnStartup) {
-                            this.inSetParameter(newValue);
-                        }
-                    }
-                    this.previousValueReceived = value;
-                } else {
-                    var newValue = this.inValueScale(value);
-                    if (this.invert) {
-                        newValue = 1 - newValue;
-                    }
-                    this.inSetParameter(newValue);
-                    if (!this.firstValueReceived) {
-                        this.firstValueReceived = true;
-                        this.connect();
-                    }
-                }
+            var newValue = this.inValueScale(value);
+            if (this.invert) {
+                newValue = 1 - newValue;
+            }
+            this.inSetParameter(newValue);
+            if (!this.firstValueReceived) {
+                this.firstValueReceived = true;
+                this.connect();
             }
         },
         // Input handlers for 14 bit MIDI
