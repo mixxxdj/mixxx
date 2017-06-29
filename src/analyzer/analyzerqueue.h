@@ -81,7 +81,7 @@ class AnalyzerQueue : public QThread {
     SampleBuffer m_sampleBuffer;
 
     // The processing queue and associated mutex
-    QQueue<TrackPointer> m_tioq;
+    QQueue<TrackPointer> m_queuedTracks;
     QMutex m_qm;
     QWaitCondition m_qwait;
     struct progress_info m_progressInfo;
