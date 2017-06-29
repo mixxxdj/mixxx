@@ -59,17 +59,14 @@ Description:
 
           <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
 
-          <Template src="skin:button_3state_persist.xml">
+          <Template src="skin:button_2state_persist.xml">
               <SetVariable name="TooltipId"></SetVariable>
               <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
               <SetVariable name="Size">20f,20f</SetVariable>
-              <SetVariable name="Align">left</SetVariable>
               <SetVariable name="state_0_unpressed">hotcues_off.svg</SetVariable>
               <SetVariable name="state_0_pressed">hotcues_off.svg</SetVariable>
               <SetVariable name="state_1_unpressed">hotcues_on.svg</SetVariable>
               <SetVariable name="state_1_pressed">hotcues_on.svg</SetVariable>
-              <SetVariable name="state_2_unpressed">hotcues_on.svg</SetVariable>
-              <SetVariable name="state_2_pressed">hotcues_on.svg</SetVariable>
               <SetVariable name="ConfigKeyPerm">[Tango],hotcues</SetVariable>
           </Template>
 
