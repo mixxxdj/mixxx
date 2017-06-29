@@ -40,7 +40,7 @@ Variables:
         <Mark>
           <Control>cue_point</Control>
           <Text>C</Text>
-          <Align>top</Align>
+          <Align>top|right</Align>
           <Color>#FF0080</Color>
           <TextColor>#FFFFFF</TextColor>
         </Mark>
