@@ -453,8 +453,9 @@ void SoundSourceProxy::updateTrack(
         }
         // Only parse and update cover art from file tags if the track has
         // no cover art or if cover art has already been loaded file tags.
-        if ((coverInfo.type == CoverInfo::NONE) ||
-                (coverInfo.source == CoverInfo::METADATA)) {
+        if (((coverInfo.type == CoverInfo::METADATA) ||
+                (coverInfo.type == CoverInfo::NONE)) &&
+                (coverInfo.source != CoverInfo::USER_SELECTED)) {
             pCoverImg = &coverImg;
         } else {
             pCoverImg = nullptr;
