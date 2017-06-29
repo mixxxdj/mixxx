@@ -1375,6 +1375,8 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     } else {
         pTrack->markClean();
         // Update both metadata and cover art from file.
+        // This must be done before inserting the track into the recent
+        // tracks cache!
         SoundSourceProxy(pTrack).updateTrack();
         // NOTE(uklotz): Loading of metadata from the corresponding file
         // might have failed when the track has been added to the library.
