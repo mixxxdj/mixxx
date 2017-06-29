@@ -75,7 +75,7 @@ Variables:
 
               <TrackProperty>
                 <ObjectName>TrackDuration</ObjectName>
-                <Size>50f,20me</Size>
+                <Size>50min,20me</Size>
                 <TooltipId>track_duration</TooltipId>
                 <Property>durationFormatted</Property>
                 <Alignment>right</Alignment>
