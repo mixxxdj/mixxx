@@ -430,6 +430,16 @@ void SoundSourceProxy::updateTrack(
         ParseFileTagsMode parseFileTagsMode) const {
     DEBUG_ASSERT(m_pTrack);
 
+    if (getUrl().isEmpty()) {
+        // Silently skip tracks without a corresponding file
+        return; // abort
+    }
+    if (!m_pSoundSource) {
+        kLogger.warning() << "Unable to parse tags from unsupported file type"
+                 << getUrl().toString();
+        return; // abort
+    }
+
     // Use the existing trackMetadata as default values. Otherwise
     // existing values in the library will be overwritten with
     // empty values if the corresponding file tags are missing.
@@ -480,18 +490,7 @@ void SoundSourceProxy::updateTrack(
         pCoverImg = &coverImg;
     }
 
-    // Until this point the track object has not been modified.
-    // Now we start updating it...
-
-    if (m_pSoundSource) {
-        m_pTrack->setType(m_pSoundSource->getType());
-    } else {
-        kLogger.warning() << "Unable to parse tags from unsupported file type"
-                 << getUrl().toString();
-        return; // abort
-    }
-
-    // Parse the tags stored in the audio file.
+    // Parse the tags stored in the audio file
     const int parseResult =
             m_pSoundSource->parseTrackMetadataAndCoverArt(
                     &trackMetadata, pCoverImg);
@@ -507,6 +506,13 @@ void SoundSourceProxy::updateTrack(
         // TODO(rryan): Should we re-visit this decision?
         parseMetadataFromFileName(&trackMetadata, m_pTrack->getFileInfo().fileName());
     }
+
+    // Until this point the track object has not been modified.
+    // Now we start updating it...
+
+    // Initialize or update the file/format as reported by the
+    // responsible SoundSource
+    m_pTrack->setType(m_pSoundSource->getType());
 
     if (parsedFromFile) {
         kLogger.info() << "Updating track metadata from file"
