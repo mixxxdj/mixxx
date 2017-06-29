@@ -83,7 +83,7 @@ bool AnalyzerQueue::isLoadedTrackWaiting(TrackPointer analysingTrack) {
     QList<TrackPointer> progress100List;
     QList<TrackPointer> progress0List;
 
-    m_qm.lock();
+    QMutexLocker locked(&m_qm);
     QMutableListIterator<TrackPointer> it(m_tioq);
     while (it.hasNext()) {
         TrackPointer& pTrack = it.next();
@@ -117,7 +117,7 @@ bool AnalyzerQueue::isLoadedTrackWaiting(TrackPointer analysingTrack) {
         }
     }
 
-    m_qm.unlock();
+    locked.unlock();
 
     // update progress after unlock to avoid a deadlock
     foreach (TrackPointer pTrack, progress100List) {
@@ -134,15 +134,15 @@ bool AnalyzerQueue::isLoadedTrackWaiting(TrackPointer analysingTrack) {
 }
 
 // This is called from the AnalyzerQueue thread
+// The returned track might be NULL, up to the caller to check.
 TrackPointer AnalyzerQueue::dequeueNextBlocking() {
-    m_qm.lock();
+    QMutexLocker locked(&m_qm);
     if (m_tioq.isEmpty()) {
         Event::end("AnalyzerQueue process");
         m_qwait.wait(&m_qm);
         Event::start("AnalyzerQueue process");
 
         if (m_exit) {
-            m_qm.unlock();
             return TrackPointer();
         }
     }
@@ -152,10 +152,7 @@ TrackPointer AnalyzerQueue::dequeueNextBlocking() {
     QMutableListIterator<TrackPointer> it(m_tioq);
     while (it.hasNext()) {
         TrackPointer& pTrack = it.next();
-        if (!pTrack) {
-            it.remove();
-            continue;
-        }
+        DEBUG_ASSERT(pTrack);
         // Prioritize tracks that are loaded.
         if (info.isTrackLoaded(pTrack)) {
             kLogger.debug() << "Prioritizing" << pTrack->getTitle() << pTrack->getLocation();
@@ -170,12 +167,6 @@ TrackPointer AnalyzerQueue::dequeueNextBlocking() {
         pLoadTrack = m_tioq.dequeue();
     }
 
-    m_qm.unlock();
-
-    if (pLoadTrack) {
-        kLogger.debug() << "Analyzing" << pLoadTrack->getTitle() << pLoadTrack->getLocation();
-    }
-    // pTrack might be NULL, up to the caller to check.
     return pLoadTrack;
 }
 
@@ -280,9 +271,8 @@ bool AnalyzerQueue::doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAudi
 
 void AnalyzerQueue::stop() {
     m_exit = true;
-    m_qm.lock();
+    QMutexLocker locked(&m_qm);
     m_qwait.wakeAll();
-    m_qm.unlock();
 }
 
 void AnalyzerQueue::run() {
@@ -344,6 +334,8 @@ void AnalyzerQueue::execThread() {
             emptyCheck();
             continue;
         }
+
+        kLogger.debug() << "Analyzing" << nextTrack->getTitle() << nextTrack->getLocation();
 
         Trace trace("AnalyzerQueue analyzing track");
 
@@ -458,10 +450,11 @@ void AnalyzerQueue::slotAnalyseTrack(TrackPointer tio) {
 
 // This is called from the GUI and from the AnalyzerQueue thread
 void AnalyzerQueue::queueAnalyseTrack(TrackPointer tio) {
-    m_qm.lock();
-    if (!m_tioq.contains(tio)) {
-        m_tioq.enqueue(tio);
-        m_qwait.wakeAll();
+    if (tio) {
+        QMutexLocker locked(&m_qm);
+        if (!m_tioq.contains(tio)) {
+            m_tioq.enqueue(tio);
+            m_qwait.wakeAll();
+        }
     }
-    m_qm.unlock();
 }
