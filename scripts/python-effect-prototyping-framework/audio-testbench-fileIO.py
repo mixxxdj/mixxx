@@ -37,15 +37,18 @@ import matplotlib.pyplot as plt
 import numpy as np
 import soundfile as sf
 import effect_prototypes
+import audio_framework_params as afp
+import ipdb
 
 if __name__ == "__main__":
 
     # Parse User Input Arguments
     [effect_id, fx_parameters_list, input_file_dir, buffer_length, output_file_dir, plot_id] = utilities.parse_input_arguments_file()
 
+    ipdb.set_trace()
     # Match effect id to imported fx modules and initialize effect object.
     try:
-        exec("effect=dsp_prototypes."+effect_id+"()")
+        exec("effect=effect_prototypes."+effect_id+"()")
     except:
     	print("something went wrong - effect id either mispelled or not properly imported")
     	sys.exit(-1)
@@ -54,6 +57,13 @@ if __name__ == "__main__":
     audio_file_info = sf.info(input_file_dir, verbose=False)
     num_of_channels = audio_file_info.channels
     input_length = audio_file_info.frames
+
+    # Save to global framework variables collected data.
+    afp.input_file_samplerate = audio_file_info.samplerate
+    afp.input_file_channels = num_of_channels
+    afp.input_file_duration = audio_file_info.duration
+    afp.input_file_dir = input_file_dir
+    afp.processing_buffer_length = buffer_length
 
     # Read input file into a numpy array object and reshape so as to be able to work with multichannel arrays.
     input_array_data, samplerate = sf.read(input_file_dir)

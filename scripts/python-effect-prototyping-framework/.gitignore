@@ -12,4 +12,4 @@ venv/
 ENV/
 
 # Audio files
-# .wav
+*.wav
