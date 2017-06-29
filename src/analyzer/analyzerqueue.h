@@ -73,6 +73,7 @@ class AnalyzerQueue : public QThread {
     bool doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAudioSource);
     void emitUpdateProgress(TrackPointer tio, int progress);
     void emptyCheck();
+    void updateSize();
 
     bool m_exit;
     QAtomicInt m_aiCheckPriorities;

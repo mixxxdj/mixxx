@@ -358,9 +358,7 @@ void AnalyzerQueue::execThread() {
             }
         }
 
-        m_qm.lock();
-        m_queue_size = m_tioq.size();
-        m_qm.unlock();
+        updateSize();
 
         if (processTrack) {
             emitUpdateProgress(nextTrack, 0);
@@ -399,12 +397,15 @@ void AnalyzerQueue::execThread() {
 }
 
 void AnalyzerQueue::emptyCheck() {
-    m_qm.lock();
-    m_queue_size = m_tioq.size();
-    m_qm.unlock();
+    updateSize();
     if (m_queue_size == 0) {
         emit(queueEmpty()); // emit asynchrony for no deadlock
     }
+}
+
+void AnalyzerQueue::updateSize() {
+    QMutexLocker locked(&m_qm);
+    m_queue_size = m_tioq.size();
 }
 
 // This is called from the AnalyzerQueue thread
