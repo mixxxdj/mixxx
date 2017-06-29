@@ -1159,7 +1159,7 @@ bool setTrackDateAdded(const QSqlRecord& record, const int column,
 
 bool setTrackFiletype(const QSqlRecord& record, const int column,
                       TrackPointer pTrack) {
-    pTrack->initType(record.value(column).toString());
+    pTrack->setType(record.value(column).toString());
     return false;
 }
 

@@ -94,11 +94,9 @@ class Track : public QObject {
     // Returns whether the file exists on disk or not.
     bool exists() const;
 
-    // Returns the file type
+    // File/format type
+    void setType(const QString&);
     QString getType() const;
-    // Initialize the file type without marking the track as dirty.
-    // Only used by a free function in TrackDAO and SoundSourceProxy!
-    void initType(const QString&);  // write-once
 
     void setChannels(int iChannels);
     // Get number of channels
@@ -367,12 +365,12 @@ class Track : public QObject {
     // has been inserted or is loaded from the library DB.
     TrackId m_id;
 
-    // File type
-    QString m_sType;
-
     // Flag that indicates whether or not the TIO has changed. This is used by
     // TrackDAO to determine whether or not to write the Track back.
     bool m_bDirty;
+
+    // File type
+    QString m_sType;
 
     // Track metadata
     mixxx::TrackMetadata m_metadata;

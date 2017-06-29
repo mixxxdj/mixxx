@@ -595,17 +595,12 @@ QString Track::getType() const {
     return m_sType;
 }
 
-void Track::initType(const QString& s) {
+void Track::setType(const QString& sType) {
     QMutexLocker lock(&m_qMutex);
-    // The type of a track is almost const. It is only set once and never
-    // modified. The dirty flag must not be set, otherwise track metadata
-    // might not be parsed from the corresponding file.
-    VERIFY_OR_DEBUG_ASSERT(m_sType.isEmpty() || (m_sType == s)) {
-        kLogger.warning() << "Cannot change type from"
-                << m_sType << "to" << s;
-        return; // abort
+    if (m_sType != sType) {
+        m_sType = sType;
+        markDirtyAndUnlock(&lock);
     }
-    m_sType = s;
 }
 
 void Track::setSampleRate(int iSampleRate) {
