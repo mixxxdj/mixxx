@@ -66,12 +66,6 @@ Description:
               </Template>
 
               <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      Symmetric Time/Duration</SetVariable>
-                <SetVariable name="state_1_text"> &#10004; Symmetric Time/Duration</SetVariable>
-                <SetVariable name="Setting">[Tango],symmetric_time</SetVariable>
-              </Template>
-
-              <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      4 &#9664;  8 Hotcues</SetVariable>
                 <SetVariable name="state_1_text">      4  &#9654; 8 Hotcues</SetVariable>
                 <SetVariable name="Setting">[Tango],8_hotcues</SetVariable>
@@ -142,7 +136,6 @@ Description:
                       <Template src="skin:button_2state_persist.xml"><!-- Keylock -->
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">15f,15f</SetVariable>
-                        <SetVariable name="TooltipId">keylock</SetVariable>
                         <SetVariable name="state_0_pressed">keylock_off.svg</SetVariable>
                         <SetVariable name="state_0_unpressed">keylock_off.svg</SetVariable>
                         <SetVariable name="state_1_pressed">keylock_on.svg</SetVariable>
@@ -153,7 +146,6 @@ Description:
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">15f,15f</SetVariable>
-                        <SetVariable name="TooltipId">eject</SetVariable>
                         <SetVariable name="state_0_pressed">eject.svg</SetVariable>
                         <SetVariable name="state_0_unpressed">eject.svg</SetVariable>
                         <SetVariable name="state_1_pressed">eject_pressed.svg</SetVariable>
@@ -164,7 +156,6 @@ Description:
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
-                        <SetVariable name="TooltipId">slip_mode</SetVariable>
                         <SetVariable name="state_0_pressed">slipmode_off.svg</SetVariable>
                         <SetVariable name="state_0_unpressed">slipmode_off.svg</SetVariable>
                         <SetVariable name="state_1_pressed">slipmode_visible.svg</SetVariable>
@@ -175,7 +166,6 @@ Description:
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
-                        <SetVariable name="TooltipId">repeat</SetVariable>
                         <SetVariable name="state_0_pressed">repeat_off.svg</SetVariable>
                         <SetVariable name="state_0_unpressed">repeat_off.svg</SetVariable>
                         <SetVariable name="state_1_pressed">repeat_visible.svg</SetVariable>
@@ -186,7 +176,6 @@ Description:
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">15f,15f</SetVariable>
-                        <SetVariable name="TooltipId">orientation</SetVariable>
                         <SetVariable name="state_0_pressed">cf_center.svg</SetVariable>
                         <SetVariable name="state_0_unpressed">cf_center.svg</SetVariable>
                         <SetVariable name="state_1_pressed">cf_visible.svg</SetVariable>
@@ -197,7 +186,6 @@ Description:
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">15f,15f</SetVariable>
-                        <SetVariable name="TooltipId">orientation</SetVariable>
                         <SetVariable name="state_0_pressed">quantize_off.svg</SetVariable>
                         <SetVariable name="state_0_unpressed">quantize_off.svg</SetVariable>
                         <SetVariable name="state_1_pressed">quantize_visible.svg</SetVariable>
@@ -210,7 +198,6 @@ Description:
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
-                        <SetVariable name="TooltipId">orientation</SetVariable>
                         <SetVariable name="state_0_pressed">stars_off.svg</SetVariable>
                         <SetVariable name="state_0_unpressed">stars_off.svg</SetVariable>
                         <SetVariable name="state_1_pressed">stars_visible.svg</SetVariable>
@@ -223,7 +210,6 @@ Description:
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">28f,15f</SetVariable>
-                        <SetVariable name="TooltipId">orientation</SetVariable>
                         <SetVariable name="state_0_text">CUE</SetVariable>
                         <SetVariable name="state_1_text">CUE</SetVariable>
                         <SetVariable name="ConfigKeyPerm">[Tango],separate_cue_button</SetVariable>
@@ -506,7 +492,7 @@ Description:
                   <Template src="skin:button_1state.xml">
                     <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
                     <SetVariable name="Size">122f,15f</SetVariable>
-                    <SetVariable name="state_0_text"> Save Sample Banks</SetVariable>
+                    <SetVariable name="state_0_text"> Save Sampler Banks</SetVariable>
                     <SetVariable name="Align">left</SetVariable>
                     <SetVariable name="ConfigKey">[Sampler],SaveSamplerBank</SetVariable>
                   </Template>
