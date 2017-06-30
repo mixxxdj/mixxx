@@ -18,10 +18,12 @@ class EffectRack;
 class StandardEffectRack;
 class EqualizerRack;
 class QuickEffectRack;
+class MasterEffectRack;
 typedef QSharedPointer<EffectRack> EffectRackPointer;
 typedef QSharedPointer<StandardEffectRack> StandardEffectRackPointer;
 typedef QSharedPointer<EqualizerRack> EqualizerRackPointer;
 typedef QSharedPointer<QuickEffectRack> QuickEffectRackPointer;
+typedef QSharedPointer<MasterEffectRack> MasterEffectRackPointer;
 
 class EffectRack : public QObject {
     Q_OBJECT
@@ -117,6 +119,14 @@ class StandardEffectRack : public EffectRack {
     }
 
     EffectChainSlotPointer addEffectChainSlot();
+};
+
+class MasterEffectRack : public EffectRack {
+    Q_OBJECT
+  public:
+    MasterEffectRack(EffectsManager* pEffectsManager,
+                     EffectChainManager* pChainManager);
+    virtual ~MasterEffectRack() {};
 };
 
 class PerGroupRack : public EffectRack {

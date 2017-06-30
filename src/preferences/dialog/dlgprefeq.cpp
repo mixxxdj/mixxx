@@ -56,6 +56,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
           m_bGainAutoReset(false) {
     m_pEQEffectRack = m_pEffectsManager->getEqualizerRack(0);
     m_pQuickEffectRack = m_pEffectsManager->getQuickEffectRack(0);
+    m_pMasterEffectRack = m_pEffectsManager->getMasterEffectRack();
 
     setupUi(this);
     // Connection
@@ -699,18 +700,15 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
         pbResetMasterEq->show();
     }
 
-    EffectChainSlotPointer pChainSlot =
-            m_pEQEffectRack->getGroupEffectChainSlot("[Master]");
+    EffectChainSlotPointer pChainSlot = m_pMasterEffectRack->getEffectChainSlot(0);
 
     if (pChainSlot) {
         EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
         EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
         pChain->replaceEffect(0, pEffect);
 
-        QString group = m_pEQEffectRack->formatEffectSlotGroupString(0, "[Master]");
-        ControlObject::set(ConfigKey(group, "enabled"), 1);
-
         if (pEffect) {
+            pEffect->setEnabled(true);
             m_pEffectMasterEQ = pEffect;
 
             int knobNum = pEffect->numKnobParameters();

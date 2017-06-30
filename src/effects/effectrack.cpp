@@ -210,6 +210,9 @@ StandardEffectRack::StandardEffectRack(EffectsManager* pEffectsManager,
                                        const unsigned int iRackNumber)
         : EffectRack(pEffectsManager, pChainManager, iRackNumber,
                      formatGroupString(iRackNumber), false) {
+    for (int i = 0; i < EffectChainManager::kNumStandardEffectChains; ++i) {
+        addEffectChainSlot();
+    }
 }
 
 EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
@@ -247,6 +250,50 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
     addEffectChainSlotInternal(pChainSlotPointer);
 
     return pChainSlotPointer;
+}
+
+MasterEffectRack::MasterEffectRack(EffectsManager* pEffectsManager,
+                                   EffectChainManager* pChainManager)
+        : EffectRack(pEffectsManager, pChainManager, 0,
+                     "[MasterEffectRack]", false) {
+
+    // Hard code only one EffectChainSlot
+    EffectChainSlot* pChainSlot = new EffectChainSlot(this,
+        "[MasterEffectRack_EffectUnit]", 0);
+
+    // Add a single EffectSlot for the master EQ effect
+    pChainSlot->addEffectSlot("[MasterEffectRack_EffectUnit_Effect1]");
+
+    connect(pChainSlot, SIGNAL(nextChain(unsigned int, EffectChainPointer)),
+            this, SLOT(loadNextChain(unsigned int, EffectChainPointer)));
+    connect(pChainSlot, SIGNAL(prevChain(unsigned int, EffectChainPointer)),
+            this, SLOT(loadPrevChain(unsigned int, EffectChainPointer)));
+
+    connect(pChainSlot, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)),
+            this, SLOT(loadNextEffect(unsigned int, unsigned int, EffectPointer)));
+    connect(pChainSlot, SIGNAL(prevEffect(unsigned int, unsigned int, EffectPointer)),
+            this, SLOT(loadPrevEffect(unsigned int, unsigned int, EffectPointer)));
+
+    // Register the master channel.
+    const ChannelHandleAndGroup* masterHandleAndGroup;
+
+    // TODO(Be): Remove this hideous hack to get the ChannelHandleAndGroup
+    const QSet<ChannelHandleAndGroup>& registeredChannels =
+            m_pEffectChainManager->registeredInputChannels();
+    for (const ChannelHandleAndGroup& handle_group : registeredChannels) {
+        if (handle_group.name() == "[Master]") {
+            masterHandleAndGroup = &handle_group;
+            break;
+        }
+    }
+
+    pChainSlot->registerInputChannel(*masterHandleAndGroup);
+    EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
+    pChain->enableForChannel(*masterHandleAndGroup);
+    pChain->setMix(1.0);
+
+    EffectChainSlotPointer pChainSlotPointer = EffectChainSlotPointer(pChainSlot);
+    addEffectChainSlotInternal(pChainSlotPointer);
 }
 
 PerGroupRack::PerGroupRack(EffectsManager* pEffectsManager,

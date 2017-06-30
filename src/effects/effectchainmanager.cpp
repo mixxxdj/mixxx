@@ -85,6 +85,18 @@ QuickEffectRackPointer EffectChainManager::getQuickEffectRack(int i) {
     return m_quickEffectRacks[i];
 }
 
+MasterEffectRackPointer EffectChainManager::addMasterEffectRack() {
+    MasterEffectRackPointer pRack(new MasterEffectRack(
+        m_pEffectsManager, this));
+    m_pMasterEffectRack = pRack;
+    m_effectRacksByGroup.insert(pRack->getGroup(), pRack);
+    return m_pMasterEffectRack;
+}
+
+MasterEffectRackPointer EffectChainManager::getMasterEffectRack() {
+    return m_pMasterEffectRack;
+}
+
 EffectRackPointer EffectChainManager::getEffectRack(const QString& group) {
     return m_effectRacksByGroup.value(group);
 }

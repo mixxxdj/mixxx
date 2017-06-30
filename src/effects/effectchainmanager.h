@@ -43,6 +43,9 @@ class EffectChainManager : public QObject {
     QuickEffectRackPointer addQuickEffectRack();
     QuickEffectRackPointer getQuickEffectRack(int rack);
 
+    MasterEffectRackPointer addMasterEffectRack();
+    MasterEffectRackPointer getMasterEffectRack();
+
     EffectRackPointer getEffectRack(const QString& group);
 
     void addEffectChain(EffectChainPointer pEffectChain);
@@ -71,6 +74,7 @@ class EffectChainManager : public QObject {
     QList<StandardEffectRackPointer> m_standardEffectRacks;
     QList<EqualizerRackPointer> m_equalizerEffectRacks;
     QList<QuickEffectRackPointer> m_quickEffectRacks;
+    MasterEffectRackPointer m_pMasterEffectRack;
     QHash<QString, EffectRackPointer> m_effectRacksByGroup;
     QList<EffectChainPointer> m_effectChains;
     QSet<ChannelHandleAndGroup> m_registeredInputChannels;

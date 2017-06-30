@@ -88,6 +88,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     EffectsManager* m_pEffectsManager;
     EqualizerRackPointer m_pEQEffectRack;
     QuickEffectRackPointer m_pQuickEffectRack;
+    MasterEffectRackPointer m_pMasterEffectRack;
     QLabel* m_firstSelectorLabel;
     QList<QComboBox*> m_deckEqEffectSelectors;
     QList<QComboBox*> m_deckQuickEffectSelectors;

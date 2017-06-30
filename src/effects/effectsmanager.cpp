@@ -233,6 +233,14 @@ QuickEffectRackPointer EffectsManager::getQuickEffectRack(int rack) {
     return m_pEffectChainManager->getQuickEffectRack(rack);
 }
 
+MasterEffectRackPointer EffectsManager::addMasterEffectRack() {
+    return m_pEffectChainManager->addMasterEffectRack();
+}
+
+MasterEffectRackPointer EffectsManager::getMasterEffectRack() {
+    return m_pEffectChainManager->getMasterEffectRack();
+}
+
 EffectRackPointer EffectsManager::getEffectRack(const QString& group) {
     return m_pEffectChainManager->getEffectRack(group);
 }
@@ -242,19 +250,16 @@ void EffectsManager::setup() {
     m_pLoEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);
     m_pHiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);
 
-    // Add an EqualizerRack.
-    EqualizerRackPointer pEqRack = addEqualizerRack();
-    // Add Master EQ here, because EngineMaster is already up
-    pEqRack->addEffectChainSlotForGroup("[Master]");
+    // NOTE(Be): Effect racks are processed in the order they are added here.
 
-    // Add a QuickEffectRack
+    // Add prefader effect racks
+    addEqualizerRack();
     addQuickEffectRack();
 
-    // Add a general purpose rack
-    StandardEffectRackPointer pStandardRack = addStandardEffectRack();
-    for (int i = 0; i < EffectChainManager::kNumStandardEffectChains; ++i) {
-        pStandardRack->addEffectChainSlot();
-    }
+    // Add postfader effect racks
+    addStandardEffectRack();
+    m_pChannelHandleFactory->getOrCreateHandle("[Master]");
+    addMasterEffectRack();
 
     EffectChainPointer pChain(new EffectChain(
            this, "org.mixxx.effectchain.flanger"));
