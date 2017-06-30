@@ -346,10 +346,10 @@
      <item row="12" column="1">
       <widget class="QCheckBox" name="beatGridLinesCheckBox">
        <property name="toolTip">
-        <string>Display beat grid lines on waveform</string>
+        <string>Beat Grid</string>
        </property>
        <property name="text">
-        <string>Enable Beat Grid Lines</string>
+        <string>Show Beat Markers</string>
        </property>
       </widget>
      </item>
