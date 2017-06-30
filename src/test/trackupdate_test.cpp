@@ -12,7 +12,8 @@ const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
 
 } // anonymous namespace
 
-class TrackObjectTest: public MixxxTest {
+// Test for updating track metadata and cover art from files.
+class TrackUpdateTest: public MixxxTest {
   protected:
     static bool hasTrackMetadata(const TrackPointer& pTrack) {
         return !pTrack->getArtist().isEmpty();
@@ -51,7 +52,7 @@ class TrackObjectTest: public MixxxTest {
     }
 };
 
-TEST_F(TrackObjectTest, parseModifiedCleanOnce) {
+TEST_F(TrackUpdateTest, parseModifiedCleanOnce) {
     auto pTrack = newTestTrackParsedModified();
     pTrack->markClean();
 
@@ -73,7 +74,7 @@ TEST_F(TrackObjectTest, parseModifiedCleanOnce) {
     EXPECT_EQ(coverInfoBefore, coverInfoAfter);
 }
 
-TEST_F(TrackObjectTest, parseModifiedCleanAgainSkipCover) {
+TEST_F(TrackUpdateTest, parseModifiedCleanAgainSkipCover) {
     auto pTrack = newTestTrackParsedModified();
     pTrack->markClean();
 
@@ -95,7 +96,7 @@ TEST_F(TrackObjectTest, parseModifiedCleanAgainSkipCover) {
     EXPECT_EQ(coverInfoBefore, coverInfoAfter);
 }
 
-TEST_F(TrackObjectTest, parseModifiedCleanAgainUpdateCover) {
+TEST_F(TrackUpdateTest, parseModifiedCleanAgainUpdateCover) {
     auto pTrack = newTestTrackParsedModified();
     auto coverInfo = pTrack->getCoverInfo();
     coverInfo.type = CoverInfo::METADATA;
@@ -121,7 +122,7 @@ TEST_F(TrackObjectTest, parseModifiedCleanAgainUpdateCover) {
     EXPECT_NE(coverInfoBefore, coverInfoAfter);
 }
 
-TEST_F(TrackObjectTest, parseModifiedDirtyAgain) {
+TEST_F(TrackUpdateTest, parseModifiedDirtyAgain) {
     auto pTrack = newTestTrackParsedModified();
 
     mixxx::TrackMetadata trackMetadataBefore;
