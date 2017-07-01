@@ -42,12 +42,12 @@ class EngineChannelMock : public EngineChannel {
 class EngineMasterTest : public BaseSignalPathTest {
   protected:
     void assertMasterBufferMatchesGolden(const QString& testName) {
-          assertBufferMatchesGolden(m_pEngineMaster->getMasterBuffer(), MAX_BUFFER_LEN,
+          assertBufferMatchesReference(m_pEngineMaster->getMasterBuffer(), MAX_BUFFER_LEN,
               QString("%1-master").arg(testName));
     };
 
     void assertHeadphoneBufferMatchesGolden(const QString& testName) {
-          assertBufferMatchesGolden(m_pEngineMaster->getHeadphoneBuffer(), MAX_BUFFER_LEN,
+          assertBufferMatchesReference(m_pEngineMaster->getHeadphoneBuffer(), MAX_BUFFER_LEN,
               QString("%1-headphone").arg(testName));
     };
 };
