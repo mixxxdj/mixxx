@@ -1,6 +1,6 @@
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2017-6-1
+// description: 2017-7-1
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 // JSHint Configuration
@@ -257,17 +257,13 @@ VCI102.next_effect = function(ch, midino, value, status, group) {
     }
 };
 
-VCI102.loopSize = [4, 4, 4, 4];  // saved beatloop_size
-
 VCI102.loop = function(ch, midino, value, status, group) {
     if (value) {
         if (engine.getValue(group, "loop_enabled")) {
             engine.setValue(group, "reloop_toggle", 1);
-            // restore beatloop_size
-            engine.setValue(group, "beatloop_size", VCI102.loopSize[ch]);
         } else {
-            VCI102.loopSize[ch] = engine.getValue(group, "beatloop_size");
             engine.setValue(group, "beatloop_activate", 1);
+            engine.setValue(group, "beatloop_activate", 0);
         }
     }
 };
@@ -275,11 +271,36 @@ VCI102.loop = function(ch, midino, value, status, group) {
 VCI102.reloop = function(ch, midino, value, status, group) {
     if (value) {
         if (engine.getValue(group, "loop_enabled")) {
+            engine.setValue(group, "loop_out", 1);
             engine.setValue(group, "loop_out", 0);
         } else {
-            VCI102.loopSize[ch] = engine.getValue(group, "beatloop_size");
             engine.setValue(group, "reloop_toggle", 1);
         }
+    }
+};
+
+VCI102.loop_scale = function(ch, group, scale) {
+    if (VCI102.shift[1 - ch % 2]) {
+        // scale beatjump_size if shift of the other Deck
+        engine.setValue(group, "beatjump_size",
+                        engine.getValue(group, "beatjump_size") * scale);
+    } else if (engine.getValue(group, "loop_enabled")) {
+        engine.setValue(group, "loop_scale", scale);
+    } else {
+        engine.setValue(group, "beatloop_size",
+                        engine.getValue(group, "beatloop_size") * scale);
+    }
+};
+
+VCI102.loop_halve = function(ch, midino, value, status, group) {
+    if (value) {
+        VCI102.loop_scale(ch, group, 1 / 2);
+    }
+};
+
+VCI102.loop_double = function(ch, midino, value, status, group) {
+    if (value) {
+        VCI102.loop_scale(ch, group, 2);
     }
 };
 
@@ -324,10 +345,6 @@ VCI102.init = function(id, debug) {
         [0x28, 0x25, 0x27, 0x2C]
     ];
 
-    function beatjumpSize(value, group, key) {
-        engine.setValue(group, "beatjump_size", value);
-    }
-
     function headMix(value, group, key) {
         if (value) {
             if (engine.getValue("[Master]", "headMix") == 1) {
@@ -368,7 +385,6 @@ VCI102.init = function(id, debug) {
         ["loop_enabled", "play", "reverse"].forEach(function(key) {
             engine.connectControl(deck, key, VCI102.slip);
         });
-        engine.connectControl(deck, "beatloop_size", beatjumpSize);
         engine.connectControl(deck, "pfl", headMix);
         engine.softTakeover(deck, "rate", true);
         engine.softTakeover(deck, "pitch_adjust", true);
