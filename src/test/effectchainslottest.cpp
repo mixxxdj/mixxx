@@ -20,8 +20,6 @@ class EffectChainSlotTest : public BaseEffectTest {
     EffectChainSlotTest()
             : m_master(m_factory.getOrCreateHandle("[Master]"), "[Master]"),
               m_headphone(m_factory.getOrCreateHandle("[Headphone]"), "[Headphone]") {
-        m_pEffectsManager->registerInputChannel(m_master);
-        m_pEffectsManager->registerInputChannel(m_headphone);
     }
 
     ChannelHandleFactory m_factory;
@@ -36,7 +34,7 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain) {
     int iChainNumber = 0;
 
     StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
-    EffectChainSlotPointer pChainSlot = pRack->addEffectChainSlot();
+    EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(iChainNumber);
 
     QString group = StandardEffectRack::formatEffectChainSlotGroupString(
         iRackNumber, iChainNumber);
@@ -88,7 +86,7 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain_StartsWithChainLoaded) {
     int iChainNumber = 0;
 
     StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
-    EffectChainSlotPointer pChainSlot = pRack->addEffectChainSlot();
+    EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(iChainNumber);
     pChainSlot->loadEffectChain(pChain); 
     QString group = StandardEffectRack::formatEffectChainSlotGroupString(
         iRackNumber, iChainNumber);
@@ -103,7 +101,7 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain_Clear) {
     int iChainNumber = 0;
 
     StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
-    EffectChainSlotPointer pChainSlot = pRack->addEffectChainSlot();
+    EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(iChainNumber);
 
     QString group = StandardEffectRack::formatEffectChainSlotGroupString(
         iRackNumber, iChainNumber);

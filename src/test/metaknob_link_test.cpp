@@ -29,9 +29,9 @@ class MetaLinkTest : public BaseEffectTest {
         int iEffectNumber = 0;
 
         StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
-        m_pChainSlot = pRack->addEffectChainSlot();
+        m_pChainSlot = pRack->getEffectChainSlot(iChainNumber);
         m_pChainSlot->loadEffectChain(pChain);
-        m_pEffectSlot = m_pChainSlot->getEffectSlot(0);
+        m_pEffectSlot = m_pChainSlot->getEffectSlot(iEffectNumber);
 
         QString group = StandardEffectRack::formatEffectSlotGroupString(
             iRackNumber, iChainNumber, iEffectNumber);
