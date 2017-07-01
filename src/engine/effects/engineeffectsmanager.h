@@ -50,15 +50,6 @@ class EngineEffectsManager : public EffectsRequestHandler {
         const unsigned int numSamples,
         const unsigned int sampleRate,
         const GroupFeatureState& groupFeatures,
-        const CSAMPLE_GAIN gain);
-
-    void processPostFaderAndMixRamping(
-        const ChannelHandle& inputHandle,
-        const ChannelHandle& outputHandle,
-        CSAMPLE* pIn, CSAMPLE* pOut,
-        const unsigned int numSamples,
-        const unsigned int sampleRate,
-        const GroupFeatureState& groupFeatures,
         const CSAMPLE_GAIN oldGain, const CSAMPLE_GAIN newGain);
 
     bool processEffectsRequest(
@@ -83,7 +74,6 @@ class EngineEffectsManager : public EffectsRequestHandler {
                       const unsigned int numSamples,
                       const unsigned int sampleRate,
                       const GroupFeatureState& groupFeatures,
-                      bool ramping = false,
                       const CSAMPLE_GAIN oldGain = 0, const CSAMPLE_GAIN newGain = 0);
 
     QScopedPointer<EffectsResponsePipe> m_pResponsePipe;

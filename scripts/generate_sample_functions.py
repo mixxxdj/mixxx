@@ -2,8 +2,8 @@
 import argparse
 import sys
 
-# Usage:
-# ./generate_sample_functions.py --sample_autogen_h ../src/util/sample_autogen.h --channelmixer_autogen_cpp ../src/engine/channelmixer_autogen.cpp
+# To use, run this from the top level of the Git repository tree:
+# scripts/generate_sample_functions.py --sample_autogen_h src/util/sample_autogen.h --channelmixer_autogen_cpp src/engine/channelmixer_autogen.cpp
 
 BASIC_INDENT = 4
 
@@ -36,8 +36,8 @@ def write_channelmixer_autogen(output, num_channels):
     output.append('')
     output.append('// static')
 
-    def write_applyeffectsandmixchannels(inplace, ramping, output):
-        header = 'void ChannelMixer::applyEffects%(inplace)sAndMixChannels%(ramping)s(' % {'inplace': 'InPlace' if inplace else '', 'ramping': 'Ramping' if ramping else ''}
+    def write_applyeffectsandmixchannels(inplace, output):
+        header = 'void ChannelMixer::applyEffects%(inplace)sAndMixChannels(' % {'inplace': 'InPlace' if inplace else ''}
         args = ['const EngineMaster::GainCalculator& gainCalculator',
                 'QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>* activeChannels',
                 'QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache',
@@ -70,25 +70,21 @@ def write_channelmixer_autogen(output, num_channels):
         if not inplace:
             write('SampleUtil::clear(pOutput, iBufferSize);', depth=1)
         write('if (totalActive == 0) {', depth=1)
-        write('ScopedTimer t("EngineMaster::applyEffects%(inplace)sAndMixChannels%(ramp)s_0active");' %
-              {'inplace': 'InPlace' if inplace else '',
-               'ramp': 'Ramping' if ramping else ''}, depth=2)
+        write('ScopedTimer t("EngineMaster::applyEffects%(inplace)sAndMixChannels_0active");' %
+              {'inplace': 'InPlace' if inplace else ''}, depth=2)
         if inplace:
             write('SampleUtil::clear(pOutput, iBufferSize);', depth=2)
         for i in xrange(1, num_channels+1):
             write('} else if (totalActive == %d) {' % i, depth=1)
-            write('ScopedTimer t("EngineMaster::applyEffects%(inplace)sAndMixChannels%(ramping)s_%(i)dactive");' %
-                  {'inplace': 'InPlace' if inplace else '',
-                   'ramping': 'Ramping' if ramping else '', 'i': i}, depth=2)
-            if ramping:
-                write('CSAMPLE_GAIN oldGain[%(i)d];' % {'i': i}, depth=2)
+            write('ScopedTimer t("EngineMaster::applyEffects%(inplace)sAndMixChannels_%(i)dactive");' %
+                  {'inplace': 'InPlace' if inplace else '', 'i': i}, depth=2)
+            write('CSAMPLE_GAIN oldGain[%(i)d];' % {'i': i}, depth=2)
             write('CSAMPLE_GAIN newGain[%(i)d];' % {'i': i}, depth=2)
             for j in xrange(i):
                 write('EngineMaster::ChannelInfo* pChannel%(j)d = activeChannels->at(%(j)d);' % {'j': j}, depth=2)
                 write('const int channelIndex%(j)d = pChannel%(j)d->m_index;' % {'j': j}, depth=2)
                 write('EngineMaster::GainCache& gainCache%(j)d = (*channelGainCache)[channelIndex%(j)d];' % {'j': j}, depth=2)
-                if ramping:
-                    write('oldGain[%(j)d] = gainCache%(j)d.m_gain;' % {'j': j}, depth=2)
+                write('oldGain[%(j)d] = gainCache%(j)d.m_gain;' % {'j': j}, depth=2)
                 write('if (gainCache%(j)d.m_fadeout) {' % {'j': j}, depth=2)
                 write('newGain[%(j)d] = 0;' % {'j': j}, depth=3)
                 write('gainCache%(j)d.m_fadeout = false;' % {'j': j}, depth=3)
@@ -98,31 +94,21 @@ def write_channelmixer_autogen(output, num_channels):
                 write('gainCache%(j)d.m_gain = newGain[%(j)d];' % {'j': j}, depth=2)
                 write('CSAMPLE* pBuffer%(j)d = pChannel%(j)d->m_pBuffer;' % {'j': j}, depth=2)
                 if inplace:
-                  if ramping:
-                      write('SampleUtil::applyRampingGain(pBuffer%(j)d, oldGain[%(j)d], newGain[%(j)d], iBufferSize);' % {'j': j}, depth=2)
-                  else:
-                      write('SampleUtil::applyGain(pBuffer%(j)d, newGain[%(j)d], iBufferSize);' % {'j': j}, depth=2)
+                    write('SampleUtil::applyRampingGain(pBuffer%(j)d, oldGain[%(j)d], newGain[%(j)d], iBufferSize);' % {'j': j}, depth=2)
                 # Gain is applied together with effects processing if not in place to avoid
                 # modifying input buffers
 
-            write('if (pEngineEffectsManager) {', depth=2)
             if inplace:
-                write('// Process effects for each channel in place', depth=3)
+                write('// Process effects for each channel in place', depth=2)
             else:
-                write('// Process effects for each channel and mix the processed signal into pOutput', depth=3)
+                write('// Process effects for each channel and mix the processed signal into pOutput', depth=2)
             for j in xrange(i):
               if inplace:
-                  write('pEngineEffectsManager->processPostFaderInPlace(pChannel%(j)d->m_handle, outputHandle, pBuffer%(j)d, iBufferSize, iSampleRate, pChannel%(j)d->m_features);' % {'j': j}, depth=3)
+                  write('pEngineEffectsManager->processPostFaderInPlace(pChannel%(j)d->m_handle, outputHandle, pBuffer%(j)d, iBufferSize, iSampleRate, pChannel%(j)d->m_features);' % {'j': j}, depth=2)
               else:
-                  if ramping:
-                      write('pEngineEffectsManager->processPostFaderAndMixRamping(pChannel%(j)d->m_handle, outputHandle, pBuffer%(j)d, pOutput, iBufferSize, iSampleRate, pChannel%(j)d->m_features, oldGain[%(j)d], newGain[%(j)d]);' % {'j': j}, depth=3)
-                  else:
-                      write('pEngineEffectsManager->processPostFaderAndMix(pChannel%(j)d->m_handle, outputHandle, pBuffer%(j)d, pOutput, iBufferSize, iSampleRate, pChannel%(j)d->m_features, newGain[%(j)d]);' % {'j': j}, depth=3)
-
-            call_prefix = "SampleUtil::" + copy_with_gain_method_name(i) + '('
+                  write('pEngineEffectsManager->processPostFaderAndMix(pChannel%(j)d->m_handle, outputHandle, pBuffer%(j)d, pOutput, iBufferSize, iSampleRate, pChannel%(j)d->m_features, oldGain[%(j)d], newGain[%(j)d]);' % {'j': j}, depth=2)
 
             if inplace:
-                write('}', depth=2)
                 write('// Mix the effected channel buffers together to replace the old pOutput from the last engine callback', depth=2)
                 write('for (unsigned int i = 0; i < iBufferSize; ++i) {', depth=2)
                 line = 'pOutput[i] = pBuffer0[i]'
@@ -131,38 +117,16 @@ def write_channelmixer_autogen(output, num_channels):
                 line += ';'
                 write(line, depth=3)
                 write('}', depth=2)
-            else:
-                write('} else {', depth=2)
-                arg_groups = ['pOutput'] + ['pBuffer%(j)d, newGain[%(j)d]' % {'j': j} for j in xrange(i)] + ['iBufferSize']
-                if ramping:
-                    arg_groups_ramping = ['pOutput'] + ['pBuffer%(j)d, oldGain[%(j)d], newGain[%(j)d]' % {'j': j} for j in xrange(i)] + ['iBufferSize']
-                    call_prefix_ramping = "SampleUtil::" + copy_with_ramping_gain_method_name(i) + '('
-                    write('int i = 0;', depth=3)
-                    write('for(; i < totalActive; ++i) {', depth=3)
-                    write('if (oldGain[i] != newGain[i]) {', depth=4)
-                    write('break;', depth=5)
-                    write('}', depth=4)
-                    write('}', depth=3)
-                    write('if (i == totalActive) {', depth=3)
-                    output.extend(hanging_indent(call_prefix, arg_groups, ',', ');', depth=4))
-                    write('} else {', depth=3)
-                    output.extend(hanging_indent(call_prefix_ramping, arg_groups_ramping, ',', ');', depth=4))
-                    write('}', depth=3)
-                else:
-                    output.extend(hanging_indent(call_prefix, arg_groups, ',', ');', depth=3))
-                write('}', depth=2)
 
         write('} else {', depth=1)
-        write('ScopedTimer t("EngineMaster::applyEffects%(inplace)sAndMixChannels%(ramping)s_Over32active");' %
-            {'inplace': 'InPlace' if inplace else '',
-             'ramping': 'Ramping' if ramping else '', 'i': i}, depth=2)
+        write('ScopedTimer t("EngineMaster::applyEffects%(inplace)sAndMixChannels_Over32active");' %
+            {'inplace': 'InPlace' if inplace else ''}, depth=2)
         write('for (int i = 0; i < activeChannels->size(); ++i) {', depth=2)
         write('EngineMaster::ChannelInfo* pChannelInfo = activeChannels->at(i);', depth=3)
 
         write('const int channelIndex = pChannelInfo->m_index;', depth=3)
         write('EngineMaster::GainCache& gainCache = (*channelGainCache)[channelIndex];', depth=3)
-        if ramping:
-            write('CSAMPLE_GAIN oldGain = gainCache.m_gain;', depth=3)
+        write('CSAMPLE_GAIN oldGain = gainCache.m_gain;', depth=3)
         write('CSAMPLE_GAIN newGain;', depth=3)
         write('if (gainCache.m_fadeout) {', depth=3)
         write('newGain = 0;', depth=4)
@@ -174,36 +138,21 @@ def write_channelmixer_autogen(output, num_channels):
 
         write('CSAMPLE* pBuffer = pChannelInfo->m_pBuffer;', depth=3)
         if inplace:
-            if ramping:
-                write('SampleUtil::applyRampingGain(pBuffer, oldGain, newGain, iBufferSize);', depth=3)
-            else:
-                write('SampleUtil::applyGain(pBuffer, newGain, iBufferSize);', depth=3)
-        write('if (pEngineEffectsManager) {', depth=3)
+            write('SampleUtil::applyRampingGain(pBuffer, oldGain, newGain, iBufferSize);', depth=3)
         if inplace:
-            write('pEngineEffectsManager->processPostFaderInPlace(pChannelInfo->m_handle, outputHandle, pBuffer, iBufferSize, iSampleRate, pChannelInfo->m_features);' % {'j': j}, depth=4)
-            write('}', depth=3)
+            write('pEngineEffectsManager->processPostFaderInPlace(pChannelInfo->m_handle, outputHandle, pBuffer, iBufferSize, iSampleRate, pChannelInfo->m_features);' % {'j': j}, depth=3)
             write('for (unsigned int i = 0; i < iBufferSize; ++i) {', depth=3)
             write('pOutput[i] += pBuffer[i];', depth=4)
             write('}', depth=3)
         else:
-            if ramping:
-                write('pEngineEffectsManager->processPostFaderAndMixRamping(pChannelInfo->m_handle, outputHandle, pBuffer, pOutput, iBufferSize, iSampleRate, pChannelInfo->m_features, oldGain, newGain);' % {'j': j}, depth=4)
-            else:
-                write('pEngineEffectsManager->processPostFaderAndMix(pChannelInfo->m_handle, outputHandle, pBuffer, pOutput, iBufferSize, iSampleRate, pChannelInfo->m_features, newGain);' % {'j': j}, depth=4)
-            write('} else {', depth=3)
-            write('for (unsigned int i = 0; i < iBufferSize; ++i) {', depth=4)
-            write('pOutput[i] += pBuffer[i];', depth=5)
-            write('}', depth=4)
-            write('}', depth=3)
+            write('pEngineEffectsManager->processPostFaderAndMix(pChannelInfo->m_handle, outputHandle, pBuffer, pOutput, iBufferSize, iSampleRate, pChannelInfo->m_features, oldGain, newGain);' % {'j': j}, depth=3)
 
         write('}', depth=2)
         write('}', depth=1)
         output.append('}')
 
-    write_applyeffectsandmixchannels(False, False, output)
-    write_applyeffectsandmixchannels(False, True, output)
-    write_applyeffectsandmixchannels(True, False, output)
-    write_applyeffectsandmixchannels(True, True, output)
+    write_applyeffectsandmixchannels(False, output)
+    write_applyeffectsandmixchannels(True, output)
 
 def write_sample_autogen(output, num_channels):
     output.append('#ifndef MIXXX_UTIL_SAMPLEAUTOGEN_H')

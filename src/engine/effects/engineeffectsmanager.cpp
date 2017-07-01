@@ -176,24 +176,6 @@ void EngineEffectsManager::processPostFaderAndMix(
     const unsigned int numSamples,
     const unsigned int sampleRate,
     const GroupFeatureState& groupFeatures,
-    const CSAMPLE_GAIN gain) {
-    // ChannelMixer::applyEffectsAndMixChannels has
-    // not applied gain to the input buffer, so processInner copies the input
-    // to a temporary buffer and applies gain
-    processInner(m_postFaderRacks,
-                 inputHandle, outputHandle,
-                 pIn, pOut,
-                 numSamples, sampleRate, groupFeatures,
-                 false, gain);
-}
-
-void EngineEffectsManager::processPostFaderAndMixRamping(
-    const ChannelHandle& inputHandle,
-    const ChannelHandle& outputHandle,
-    CSAMPLE* pIn, CSAMPLE* pOut,
-    const unsigned int numSamples,
-    const unsigned int sampleRate,
-    const GroupFeatureState& groupFeatures,
     const CSAMPLE_GAIN oldGain,
     const CSAMPLE_GAIN newGain) {
     // ChannelMixer::applyEffectsAndMixChannelsRamping has
@@ -203,7 +185,7 @@ void EngineEffectsManager::processPostFaderAndMixRamping(
                  inputHandle, outputHandle,
                  pIn, pOut,
                  numSamples, sampleRate, groupFeatures,
-                 true, newGain, oldGain);
+                 newGain, oldGain);
 }
 
 void EngineEffectsManager::processInner(
@@ -214,7 +196,6 @@ void EngineEffectsManager::processInner(
     const unsigned int numSamples,
     const unsigned int sampleRate,
     const GroupFeatureState& groupFeatures,
-    bool ramping,
     const CSAMPLE_GAIN newGain,
     const CSAMPLE_GAIN oldGain) {
     if (pIn == pOut) {
@@ -236,23 +217,13 @@ void EngineEffectsManager::processInner(
         //    this to mix channels into pOut regardless of whether any effects were processsed.
         int racksProcessed = 0;
         CSAMPLE* pIntermediateInput = m_buffer1.data();
-        if (ramping) {
-            if (oldGain == CSAMPLE_GAIN_ONE && newGain == CSAMPLE_GAIN_ONE) {
-                // Avoid an unnecessary copy. EngineEffectRack::process does not modify the
-                // input buffer when its input & output buffers are different, so this is okay.
-                pIntermediateInput = pIn;
-            } else {
-                SampleUtil::copyWithRampingGain(pIntermediateInput, pIn,
-                                                oldGain, newGain, numSamples);
-            }
+        if (oldGain == CSAMPLE_GAIN_ONE && newGain == CSAMPLE_GAIN_ONE) {
+            // Avoid an unnecessary copy. EngineEffectRack::process does not modify the
+            // input buffer when its input & output buffers are different, so this is okay.
+            pIntermediateInput = pIn;
         } else {
-            if (newGain == CSAMPLE_GAIN_ONE) {
-                // Avoid an unnecessary copy. EngineEffectRack::process does not modify the
-                // input buffer when its input & output buffers are different, so this is okay.
-                pIntermediateInput = pIn;
-            } else {
-                SampleUtil::copyWithGain(pIntermediateInput, pIn, newGain, numSamples);
-            }
+            SampleUtil::copyWithRampingGain(pIntermediateInput, pIn,
+                                            oldGain, newGain, numSamples);
         }
 
         CSAMPLE* pIntermediateOutput = m_buffer2.data();

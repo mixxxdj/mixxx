@@ -58,8 +58,7 @@ class EngineMaster : public QObject, public AudioSource {
                  const char* pGroup,
                  EffectsManager* pEffectsManager,
                  ChannelHandleFactory* pChannelHandleFactory,
-                 bool bEnableSidechain,
-                 bool bRampingGain);
+                 bool bEnableSidechain);
     virtual ~EngineMaster();
 
     // Get access to the sample buffers. None of these are thread safe. Only to
@@ -246,9 +245,6 @@ class EngineMaster : public QObject, public AudioSource {
     ControlObject* m_pHeadphoneEnabled;
 
   private:
-    void mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
-                     CSAMPLE* pOutput, unsigned int iBufferSize, GainCalculator* pGainCalculator);
-
     // Processes active channels. The master sync channel (if any) is processed
     // first and all others are processed after. Populates m_activeChannels,
     // m_activeBusChannels, m_activeHeadphoneChannels, and

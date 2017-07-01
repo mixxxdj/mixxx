@@ -38,10 +38,9 @@ class TestEngineMaster : public EngineMaster {
                      const char* group,
                      EffectsManager* pEffectsManager,
                      ChannelHandleFactory* pChannelHandleFactory,
-                     bool bEnableSidechain,
-                     bool bRampingGain)
+                     bool bEnableSidechain)
         : EngineMaster(_config, group, pEffectsManager, pChannelHandleFactory,
-                       bEnableSidechain, bRampingGain) {
+                       bEnableSidechain) {
         m_pMasterEnabled->forceSet(1);
         m_pHeadphoneEnabled->forceSet(1);
     }
@@ -60,7 +59,7 @@ class BaseSignalPathTest : public MixxxTest {
         m_pEffectsManager = new EffectsManager(NULL, config(), m_pChannelHandleFactory);
         m_pEngineMaster = new TestEngineMaster(m_pConfig, "[Master]",
                                                m_pEffectsManager, m_pChannelHandleFactory,
-                                               false, false);
+                                               false);
 
         m_pMixerDeck1 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
                                  EngineChannel::CENTER, m_sGroup1);
@@ -142,7 +141,7 @@ class BaseSignalPathTest : public MixxxTest {
     // Use scripts/AudioPlot.py to look at the golden file and make sure it
     // looks correct.  Each line of the generated file contains the left sample
     // followed by the right sample.
-    void assertBufferMatchesGolden(CSAMPLE* pBuffer, const int iBufferSize,
+    void assertBufferMatchesGolden(const CSAMPLE* pBuffer, const int iBufferSize,
                                    QString golden_title, const double delta=.0001) {
         QFile f(QDir::currentPath() + "/src/test/golden_buffers/" + golden_title);
         bool pass = true;
