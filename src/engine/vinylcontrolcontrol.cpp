@@ -107,7 +107,7 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
             return; // If off, do nothing.
         case MIXXX_RELATIVE_CUE_ONECUE:
             //if onecue, just seek to the regular cue
-            seekExact(m_pCurrentTrack->getCuePoint());
+            seekExact(m_pCurrentTrack->getCuePoint().getPosition());
             return;
         case MIXXX_RELATIVE_CUE_HOTCUE:
             // Continue processing in this function.

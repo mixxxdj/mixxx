@@ -703,7 +703,7 @@ void CueControl::cueSet(double v) {
 
     // Store cue point in loaded track
     if (pLoadedTrack) {
-        pLoadedTrack->setCuePoint(cue, Cue::MANUAL);
+        pLoadedTrack->setCuePoint(CuePosition(cue, Cue::MANUAL));
     }
 }
 
@@ -719,7 +719,7 @@ void CueControl::cueClear(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        pLoadedTrack->setCuePoint(-1.0, Cue::UNKNOWN);
+        pLoadedTrack->setCuePoint(CuePosition());
     }
 }
 

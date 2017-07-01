@@ -8,6 +8,7 @@
 #include "track/trackid.h"
 #include "util/memory.h"
 
+class CuePosition;
 class CueDAO;
 class Track;
 
@@ -58,6 +59,9 @@ class Cue : public QObject {
     QColor getColor() const;
     void setColor(QColor color);
 
+    CuePosition getCuePosition() const;
+    void setCuePosition(CuePosition position);
+
   signals:
     void updated();
 
@@ -100,5 +104,58 @@ class CuePointer: public std::shared_ptr<Cue> {
         }
     }
 };
+
+class CuePosition {
+  public:
+    CuePosition()
+        : m_position(0.0), m_source(Cue::UNKNOWN) {}
+    CuePosition(double position, Cue::CueSource source)
+        : m_position(position), m_source(source) {}
+
+    double getPosition() const {
+        return m_position;
+    }
+
+    void setPosition(double position) {
+        m_position = position;
+    }
+
+    Cue::CueSource getSource() const {
+        if (m_position == 0.0 || m_position == -1.0) {
+            return Cue::UNKNOWN;
+        }
+        return m_source;
+    }
+
+    void setSource(Cue::CueSource source) {
+        m_source = source;
+    }
+
+    void set(double position, Cue::CueSource source) {
+        m_position = position;
+        m_source = source;
+    }
+
+    void reset() {
+        m_position = 0.0;
+        m_source = Cue::UNKNOWN;
+    }
+
+  private:
+    double m_position;
+    Cue::CueSource m_source;
+};
+
+bool operator==(const CuePosition& lhs, const CuePosition& rhs);
+
+inline
+bool operator!=(const CuePosition& lhs, const CuePosition& rhs) {
+    return !(lhs == rhs);
+}
+
+inline
+QDebug operator<<(QDebug dbg, const CuePosition& arg) {
+    return dbg << "position =" << arg.getPosition() << "/" << "source =" << arg.getSource();
+}
 
 #endif // MIXXX_CUE_H

@@ -3,6 +3,7 @@
 #include "proto/keys.pb.h"
 
 #include "track/trackid.h"
+#include "track/cue.h"
 #include "track/keys.h"
 #include "track/keyutils.h"
 #include "track/trackmetadata.h"
@@ -43,7 +44,7 @@ class TrackRecord final {
     PROPERTY_SET_BYVAL_GET_BYREF(QString,     fileType,       FileType)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,     url,            Url)
     PROPERTY_SET_BYVAL_GET_BYREF(PlayCounter, playCounter,    PlayCounter)
-    PROPERTY_SET_BYVAL_GET_BYREF(double,      cuePoint,       CuePoint)
+    PROPERTY_SET_BYVAL_GET_BYREF(CuePosition, cuePoint,       CuePoint)
     PROPERTY_SET_BYVAL_GET_BYREF(int,         rating,         Rating)
     PROPERTY_SET_BYVAL_GET_BYREF(bool,        bpmLocked,      BpmLocked)
 

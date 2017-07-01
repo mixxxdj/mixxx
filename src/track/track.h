@@ -100,6 +100,7 @@ class Track : public QObject {
     void setType(const QString&);
     QString getType() const;
 
+    // Set number of channels
     void setChannels(int iChannels);
     // Get number of channels
     int getChannels() const;
@@ -108,7 +109,6 @@ class Track : public QObject {
     void setSampleRate(int iSampleRate);
     // Get sample rate
     int getSampleRate() const;
-    // Set number of channels
 
     // Sets the bitrate
     void setBitrate(int);
@@ -244,11 +244,10 @@ class Track : public QObject {
     void setAnalyzerProgress(int progress);
     int getAnalyzerProgress() const;
 
-    // Save the cue point in samples
-    void setCuePoint(double position, Cue::CueSource source);
-    // Get saved the cue point
-    double getCuePoint() const;
-    Cue::CueSource getCuePointSource() const;
+    // Get the track's main cue point
+    CuePosition getCuePoint() const;
+    // Set the track's main cue point
+    void setCuePoint(CuePosition cue);
 
     // Calls for managing the track's cue points
     CuePointer createAndAddCue();
@@ -374,9 +373,6 @@ class Track : public QObject {
     // Flag indicating that the user has explicitly requested to save
     // the metadata.
     bool m_bMarkedForMetadataExport;
-
-    // Cue point source
-    Cue::CueSource m_cueSource;
 
     // The list of cue points for the track
     QList<CuePointer> m_cuePoints;

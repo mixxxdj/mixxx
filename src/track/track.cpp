@@ -70,7 +70,6 @@ Track::Track(
           m_record(trackId),
           m_bDirty(false),
           m_bMarkedForMetadataExport(false),
-          m_cueSource(Cue::UNKNOWN),
           m_analyzerProgress(-1) {
     if (kLogStats && kLogger.debugEnabled()) {
         long numberOfInstancesBefore = s_numberOfInstances.fetch_add(1);
@@ -299,7 +298,7 @@ double Track::setBpm(double bpmValue) {
 
     if (!m_pBeats) {
         // No beat grid available -> create and initialize
-        double cue = getCuePoint();
+        double cue = getCuePoint().getPosition();
         BeatsPointer pBeats(BeatFactory::makeBeatGrid(*this, bpmValue, cue));
         setBeatsAndUnlock(&lock, pBeats);
         return bpmValue;
@@ -725,18 +724,18 @@ int Track::getAnalyzerProgress() const {
     return load_atomic(m_analyzerProgress);
 }
 
-void Track::setCuePoint(double position, Cue::CueSource source) {
+void Track::setCuePoint(CuePosition cue) {
     QMutexLocker lock(&m_qMutex);
 
-    bool positionModified = compareAndSet(&m_record.refCuePoint(), position);
-    bool sourceModified = compareAndSet(&m_cueSource, source);
-    if (!positionModified && !sourceModified) {
+    if (!compareAndSet(&m_record.refCuePoint(), cue)) {
         // Nothing changed.
         return;
     }
 
     // Store the cue point in a load cue
     CuePointer pLoadCue = findCueByType(Cue::LOAD);
+    Cue::CueSource source = cue.getSource();
+    double position = cue.getPosition();
     if (position != 0.0 && position != -1.0) {
         if (!pLoadCue) {
             pLoadCue = CuePointer(new Cue(m_record.getId()));
@@ -750,25 +749,15 @@ void Track::setCuePoint(double position, Cue::CueSource source) {
     } else {
         disconnect(pLoadCue.get(), 0, this, 0);
         m_cuePoints.removeOne(pLoadCue);
-        m_cueSource = Cue::UNKNOWN;
     }
 
     markDirtyAndUnlock(&lock);
     emit(cuesUpdated());
 }
 
-double Track::getCuePoint() const {
+CuePosition Track::getCuePoint() const {
     QMutexLocker lock(&m_qMutex);
     return m_record.getCuePoint();
-}
-
-Cue::CueSource Track::getCuePointSource() const {
-    QMutexLocker lock(&m_qMutex);
-    double position = m_record.getCuePoint();
-    if (position == 0.0 || position == -1.0) {
-        return Cue::UNKNOWN;
-    }
-    return m_cueSource;
 }
 
 void Track::slotCueUpdated() {
@@ -809,8 +798,7 @@ void Track::removeCue(const CuePointer& pCue) {
     disconnect(pCue.get(), 0, this, 0);
     m_cuePoints.removeOne(pCue);
     if (pCue->getType() == Cue::LOAD) {
-        m_record.setCuePoint(0.0);
-        m_cueSource = Cue::UNKNOWN;
+        m_record.setCuePoint(CuePosition());
     }
     markDirtyAndUnlock(&lock);
     emit(cuesUpdated());
@@ -829,10 +817,7 @@ void Track::removeCuesOfType(Cue::CueType type) {
             dirty = true;
         }
     }
-    if (compareAndSet(&m_record.refCuePoint(), -1.0)) {
-        dirty = true;
-    }
-    if (compareAndSet(&m_cueSource, Cue::UNKNOWN)) {
+    if (compareAndSet(&m_record.refCuePoint(), CuePosition())) {
         dirty = true;
     }
     if (dirty) {
@@ -860,8 +845,7 @@ void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
                 this, SLOT(slotCueUpdated()));
         // update main cue point
         if (pCue->getType() == Cue::LOAD) {
-            m_record.setCuePoint(pCue->getPosition());
-            m_cueSource = pCue->getSource();
+            m_record.setCuePoint(CuePosition(pCue->getPosition(), pCue->getSource()));
         }
     }
     markDirtyAndUnlock(&lock);

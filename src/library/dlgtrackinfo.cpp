@@ -526,9 +526,9 @@ void DlgTrackInfo::slotBpmConstChanged(int state) {
             // almost all cases.
             // The cue point should be set on a beat, so this seams
             // to be a good alternative
-            double cue = m_pLoadedTrack->getCuePoint();
+            CuePosition cue = m_pLoadedTrack->getCuePoint();
             m_pBeatsClone = BeatFactory::makeBeatGrid(
-                    *m_pLoadedTrack, spinBpm->value(), cue);
+                    *m_pLoadedTrack, spinBpm->value(), cue.getPosition());
         } else {
             m_pBeatsClone.clear();
         }
@@ -560,9 +560,9 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     }
 
     if (!m_pBeatsClone) {
-        double cue = m_pLoadedTrack->getCuePoint();
+        CuePosition cue = m_pLoadedTrack->getCuePoint();
         m_pBeatsClone = BeatFactory::makeBeatGrid(
-                *m_pLoadedTrack, value, cue);
+                *m_pLoadedTrack, value, cue.getPosition());
     }
 
     double oldValue = m_pBeatsClone->getBpm();
