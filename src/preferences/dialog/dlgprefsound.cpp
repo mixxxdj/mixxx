@@ -400,6 +400,11 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
         audioBufferComboBox->setCurrentIndex(sizeIndex);
     }
 
+    // Setting the index of audioBufferComboBox here sets m_bLatencyChanged to true,
+    // but m_bLatencyChanged should only be true when the user has edited the
+    // buffer size or sample rate.
+    m_bLatencyChanged = false;
+
     int syncBuffers = m_config.getSyncBuffers();
     if (syncBuffers == 0) {
         // "Experimental (no delay)"))
