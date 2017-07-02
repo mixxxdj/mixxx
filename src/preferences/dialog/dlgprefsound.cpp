@@ -454,11 +454,13 @@ void DlgPrefSound::apiChanged(int index) {
     refreshDevices();
     // JACK sets its own buffer size and sample rate that Mixxx cannot change.
     // TODO(Be): Get the buffer size from JACK and update audioBufferComboBox.
-    // PortAudio does not have a way to get the buffer size from JACK as of June 2017.
+    // PortAudio does not have a way to get the buffer size from JACK as of July 2017.
     if (m_config.getAPI() == MIXXX_PORTAUDIO_JACK_STRING) {
+        sampleRateComboBox->setEnabled(false);
         latencyLabel->setEnabled(false);
         audioBufferComboBox->setEnabled(false);
     } else {
+        sampleRateComboBox->setEnabled(true);
         latencyLabel->setEnabled(true);
         audioBufferComboBox->setEnabled(true);
     }
