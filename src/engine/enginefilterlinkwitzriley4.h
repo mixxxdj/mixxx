@@ -18,4 +18,4 @@ class EngineFilterLinkwtzRiley4High : public EngineFilterIIR<4, IIR_HP> {
     void setFrequencyCorners(int sampleRate, double freqCorner1);
 };
 
-#endif // ENGINEFILTERLINKWITZRILEY8_H
+#endif // ENGINEFILTERLINKWITZRILEY4_H

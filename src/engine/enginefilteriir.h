@@ -20,6 +20,8 @@ enum IIRPass {
     IIR_HP,
     IIR_LPMO,
     IIR_HPMO,
+    IIR_LP2,
+    IIR_HP2,
 };
 
 
@@ -562,4 +564,47 @@ inline double EngineFilterIIR<4, IIR_HPMO>::processSample(double* coef,
    buf[3]= iir; val= fir;
    return val;
 }
+
+template<>
+inline double EngineFilterIIR<2, IIR_LP2>::processSample(double* coef,
+                                                        double* buf,
+                                                        double val) {
+    double tmp, fir, iir;
+    tmp = buf[0];
+    iir = val * coef[0];
+    iir -= coef[1] * tmp; fir = tmp;
+    fir += iir;
+    buf[0] = iir; val = fir;
+
+    tmp = buf[1];
+    iir = val;
+    iir -= coef[2] * tmp; fir = tmp;
+    fir += iir;
+    buf[1] = iir; val = fir;
+
+    return val;
+}
+
+
+template<>
+inline double EngineFilterIIR<2, IIR_HP2>::processSample(double* coef,
+                                                        double* buf,
+                                                        double val) {
+    double tmp, fir, iir;
+    tmp = buf[0];
+    iir = val * -coef[0]; // swap gain to be in phase with LP2
+    iir -= coef[1] * tmp; fir = -tmp;
+    fir += iir;
+    buf[0] = iir; val = fir;
+
+    tmp = buf[1];
+    iir = val;
+    iir -= coef[2] * tmp; fir = -tmp;
+    fir += iir;
+    buf[1] = iir; val = fir;
+
+    return val;
+}
+
+
 #endif // ENGINEFILTERIIR_H
