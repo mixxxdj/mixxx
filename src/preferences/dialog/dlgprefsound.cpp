@@ -613,6 +613,8 @@ void DlgPrefSound::slotResetToDefaults() {
     m_pTalkoverMixMode->set(0.0);
     micMixComboBox->setCurrentIndex(0);
 
+    roundTripLatencySpinBox->setValue(roundTripLatencySpinBox->minimum());
+
     settingChanged(); // force the apply button to enable
 }
 
