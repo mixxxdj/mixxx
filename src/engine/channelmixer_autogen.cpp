@@ -7082,9 +7082,10 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
                                                      EngineEffectsManager* pEngineEffectsManager) {
     // Signal flow overview:
     // 1. Calculate gains for each channel
-    // 2. Apply gains to each channel input buffer, modifying the original input buffer
-    // 3. Apply effects to each channel input buffer, modifying the original input buffer
-    // 4. Mix channel buffers together to make pOutput, overwriting the pOutput buffer from the last engine callback
+    // 2. Pass each channel's calculated gain and input buffer to pEngineEffectsManager, which then:
+    //    A) Applies the calculated gain to the channel buffer, modifying the original input buffer
+    //    B) Applies effects to the buffer, modifying the original input buffer
+    // 4. Mix the channel buffers together to make pOutput, overwriting the pOutput buffer from the last engine callback
     int totalActive = activeChannels->size();
     if (totalActive == 0) {
         ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_0active");
@@ -7105,9 +7106,8 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i];
@@ -7128,7 +7128,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -7141,10 +7140,9 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i];
@@ -7165,7 +7163,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -7178,7 +7175,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -7191,11 +7187,10 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i];
@@ -7216,7 +7211,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -7229,7 +7223,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -7242,7 +7235,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -7255,12 +7247,11 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i];
@@ -7281,7 +7272,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -7294,7 +7284,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -7307,7 +7296,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -7320,7 +7308,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -7333,13 +7320,12 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i];
@@ -7360,7 +7346,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -7373,7 +7358,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -7386,7 +7370,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -7399,7 +7382,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -7412,7 +7394,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -7425,14 +7406,13 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i];
@@ -7453,7 +7433,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -7466,7 +7445,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -7479,7 +7457,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -7492,7 +7469,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -7505,7 +7481,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -7518,7 +7493,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -7531,15 +7505,14 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i];
@@ -7560,7 +7533,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -7573,7 +7545,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -7586,7 +7557,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -7599,7 +7569,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -7612,7 +7581,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -7625,7 +7593,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -7638,7 +7605,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         EngineMaster::ChannelInfo* pChannel7 = activeChannels->at(7);
         const int channelIndex7 = pChannel7->m_index;
         EngineMaster::GainCache& gainCache7 = (*channelGainCache)[channelIndex7];
@@ -7651,16 +7617,15 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache7.m_gain = newGain[7];
         CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i];
@@ -7681,7 +7646,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -7694,7 +7658,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -7707,7 +7670,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -7720,7 +7682,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -7733,7 +7694,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -7746,7 +7706,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -7759,7 +7718,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         EngineMaster::ChannelInfo* pChannel7 = activeChannels->at(7);
         const int channelIndex7 = pChannel7->m_index;
         EngineMaster::GainCache& gainCache7 = (*channelGainCache)[channelIndex7];
@@ -7772,7 +7730,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache7.m_gain = newGain[7];
         CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         EngineMaster::ChannelInfo* pChannel8 = activeChannels->at(8);
         const int channelIndex8 = pChannel8->m_index;
         EngineMaster::GainCache& gainCache8 = (*channelGainCache)[channelIndex8];
@@ -7785,17 +7742,16 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache8.m_gain = newGain[8];
         CSAMPLE* pBuffer8 = pChannel8->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer8, oldGain[8], newGain[8], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i];
@@ -7816,7 +7772,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -7829,7 +7784,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -7842,7 +7796,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -7855,7 +7808,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -7868,7 +7820,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -7881,7 +7832,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -7894,7 +7844,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         EngineMaster::ChannelInfo* pChannel7 = activeChannels->at(7);
         const int channelIndex7 = pChannel7->m_index;
         EngineMaster::GainCache& gainCache7 = (*channelGainCache)[channelIndex7];
@@ -7907,7 +7856,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache7.m_gain = newGain[7];
         CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         EngineMaster::ChannelInfo* pChannel8 = activeChannels->at(8);
         const int channelIndex8 = pChannel8->m_index;
         EngineMaster::GainCache& gainCache8 = (*channelGainCache)[channelIndex8];
@@ -7920,7 +7868,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache8.m_gain = newGain[8];
         CSAMPLE* pBuffer8 = pChannel8->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer8, oldGain[8], newGain[8], iBufferSize);
         EngineMaster::ChannelInfo* pChannel9 = activeChannels->at(9);
         const int channelIndex9 = pChannel9->m_index;
         EngineMaster::GainCache& gainCache9 = (*channelGainCache)[channelIndex9];
@@ -7933,18 +7880,17 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache9.m_gain = newGain[9];
         CSAMPLE* pBuffer9 = pChannel9->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer9, oldGain[9], newGain[9], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features, oldGain[9], newGain[9]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i];
@@ -7965,7 +7911,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -7978,7 +7923,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -7991,7 +7935,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -8004,7 +7947,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -8017,7 +7959,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -8030,7 +7971,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -8043,7 +7983,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         EngineMaster::ChannelInfo* pChannel7 = activeChannels->at(7);
         const int channelIndex7 = pChannel7->m_index;
         EngineMaster::GainCache& gainCache7 = (*channelGainCache)[channelIndex7];
@@ -8056,7 +7995,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache7.m_gain = newGain[7];
         CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         EngineMaster::ChannelInfo* pChannel8 = activeChannels->at(8);
         const int channelIndex8 = pChannel8->m_index;
         EngineMaster::GainCache& gainCache8 = (*channelGainCache)[channelIndex8];
@@ -8069,7 +8007,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache8.m_gain = newGain[8];
         CSAMPLE* pBuffer8 = pChannel8->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer8, oldGain[8], newGain[8], iBufferSize);
         EngineMaster::ChannelInfo* pChannel9 = activeChannels->at(9);
         const int channelIndex9 = pChannel9->m_index;
         EngineMaster::GainCache& gainCache9 = (*channelGainCache)[channelIndex9];
@@ -8082,7 +8019,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache9.m_gain = newGain[9];
         CSAMPLE* pBuffer9 = pChannel9->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer9, oldGain[9], newGain[9], iBufferSize);
         EngineMaster::ChannelInfo* pChannel10 = activeChannels->at(10);
         const int channelIndex10 = pChannel10->m_index;
         EngineMaster::GainCache& gainCache10 = (*channelGainCache)[channelIndex10];
@@ -8095,19 +8031,18 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache10.m_gain = newGain[10];
         CSAMPLE* pBuffer10 = pChannel10->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer10, oldGain[10], newGain[10], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features, oldGain[9], newGain[9]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features, oldGain[10], newGain[10]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i];
@@ -8128,7 +8063,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -8141,7 +8075,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -8154,7 +8087,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -8167,7 +8099,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -8180,7 +8111,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -8193,7 +8123,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -8206,7 +8135,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         EngineMaster::ChannelInfo* pChannel7 = activeChannels->at(7);
         const int channelIndex7 = pChannel7->m_index;
         EngineMaster::GainCache& gainCache7 = (*channelGainCache)[channelIndex7];
@@ -8219,7 +8147,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache7.m_gain = newGain[7];
         CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         EngineMaster::ChannelInfo* pChannel8 = activeChannels->at(8);
         const int channelIndex8 = pChannel8->m_index;
         EngineMaster::GainCache& gainCache8 = (*channelGainCache)[channelIndex8];
@@ -8232,7 +8159,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache8.m_gain = newGain[8];
         CSAMPLE* pBuffer8 = pChannel8->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer8, oldGain[8], newGain[8], iBufferSize);
         EngineMaster::ChannelInfo* pChannel9 = activeChannels->at(9);
         const int channelIndex9 = pChannel9->m_index;
         EngineMaster::GainCache& gainCache9 = (*channelGainCache)[channelIndex9];
@@ -8245,7 +8171,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache9.m_gain = newGain[9];
         CSAMPLE* pBuffer9 = pChannel9->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer9, oldGain[9], newGain[9], iBufferSize);
         EngineMaster::ChannelInfo* pChannel10 = activeChannels->at(10);
         const int channelIndex10 = pChannel10->m_index;
         EngineMaster::GainCache& gainCache10 = (*channelGainCache)[channelIndex10];
@@ -8258,7 +8183,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache10.m_gain = newGain[10];
         CSAMPLE* pBuffer10 = pChannel10->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer10, oldGain[10], newGain[10], iBufferSize);
         EngineMaster::ChannelInfo* pChannel11 = activeChannels->at(11);
         const int channelIndex11 = pChannel11->m_index;
         EngineMaster::GainCache& gainCache11 = (*channelGainCache)[channelIndex11];
@@ -8271,20 +8195,19 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache11.m_gain = newGain[11];
         CSAMPLE* pBuffer11 = pChannel11->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer11, oldGain[11], newGain[11], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features, oldGain[9], newGain[9]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features, oldGain[10], newGain[10]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features, oldGain[11], newGain[11]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i];
@@ -8305,7 +8228,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -8318,7 +8240,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -8331,7 +8252,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -8344,7 +8264,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -8357,7 +8276,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -8370,7 +8288,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -8383,7 +8300,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         EngineMaster::ChannelInfo* pChannel7 = activeChannels->at(7);
         const int channelIndex7 = pChannel7->m_index;
         EngineMaster::GainCache& gainCache7 = (*channelGainCache)[channelIndex7];
@@ -8396,7 +8312,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache7.m_gain = newGain[7];
         CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         EngineMaster::ChannelInfo* pChannel8 = activeChannels->at(8);
         const int channelIndex8 = pChannel8->m_index;
         EngineMaster::GainCache& gainCache8 = (*channelGainCache)[channelIndex8];
@@ -8409,7 +8324,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache8.m_gain = newGain[8];
         CSAMPLE* pBuffer8 = pChannel8->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer8, oldGain[8], newGain[8], iBufferSize);
         EngineMaster::ChannelInfo* pChannel9 = activeChannels->at(9);
         const int channelIndex9 = pChannel9->m_index;
         EngineMaster::GainCache& gainCache9 = (*channelGainCache)[channelIndex9];
@@ -8422,7 +8336,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache9.m_gain = newGain[9];
         CSAMPLE* pBuffer9 = pChannel9->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer9, oldGain[9], newGain[9], iBufferSize);
         EngineMaster::ChannelInfo* pChannel10 = activeChannels->at(10);
         const int channelIndex10 = pChannel10->m_index;
         EngineMaster::GainCache& gainCache10 = (*channelGainCache)[channelIndex10];
@@ -8435,7 +8348,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache10.m_gain = newGain[10];
         CSAMPLE* pBuffer10 = pChannel10->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer10, oldGain[10], newGain[10], iBufferSize);
         EngineMaster::ChannelInfo* pChannel11 = activeChannels->at(11);
         const int channelIndex11 = pChannel11->m_index;
         EngineMaster::GainCache& gainCache11 = (*channelGainCache)[channelIndex11];
@@ -8448,7 +8360,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache11.m_gain = newGain[11];
         CSAMPLE* pBuffer11 = pChannel11->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer11, oldGain[11], newGain[11], iBufferSize);
         EngineMaster::ChannelInfo* pChannel12 = activeChannels->at(12);
         const int channelIndex12 = pChannel12->m_index;
         EngineMaster::GainCache& gainCache12 = (*channelGainCache)[channelIndex12];
@@ -8461,21 +8372,20 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache12.m_gain = newGain[12];
         CSAMPLE* pBuffer12 = pChannel12->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer12, oldGain[12], newGain[12], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features, oldGain[9], newGain[9]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features, oldGain[10], newGain[10]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features, oldGain[11], newGain[11]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features, oldGain[12], newGain[12]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i];
@@ -8496,7 +8406,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -8509,7 +8418,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -8522,7 +8430,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -8535,7 +8442,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -8548,7 +8454,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -8561,7 +8466,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -8574,7 +8478,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         EngineMaster::ChannelInfo* pChannel7 = activeChannels->at(7);
         const int channelIndex7 = pChannel7->m_index;
         EngineMaster::GainCache& gainCache7 = (*channelGainCache)[channelIndex7];
@@ -8587,7 +8490,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache7.m_gain = newGain[7];
         CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         EngineMaster::ChannelInfo* pChannel8 = activeChannels->at(8);
         const int channelIndex8 = pChannel8->m_index;
         EngineMaster::GainCache& gainCache8 = (*channelGainCache)[channelIndex8];
@@ -8600,7 +8502,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache8.m_gain = newGain[8];
         CSAMPLE* pBuffer8 = pChannel8->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer8, oldGain[8], newGain[8], iBufferSize);
         EngineMaster::ChannelInfo* pChannel9 = activeChannels->at(9);
         const int channelIndex9 = pChannel9->m_index;
         EngineMaster::GainCache& gainCache9 = (*channelGainCache)[channelIndex9];
@@ -8613,7 +8514,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache9.m_gain = newGain[9];
         CSAMPLE* pBuffer9 = pChannel9->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer9, oldGain[9], newGain[9], iBufferSize);
         EngineMaster::ChannelInfo* pChannel10 = activeChannels->at(10);
         const int channelIndex10 = pChannel10->m_index;
         EngineMaster::GainCache& gainCache10 = (*channelGainCache)[channelIndex10];
@@ -8626,7 +8526,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache10.m_gain = newGain[10];
         CSAMPLE* pBuffer10 = pChannel10->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer10, oldGain[10], newGain[10], iBufferSize);
         EngineMaster::ChannelInfo* pChannel11 = activeChannels->at(11);
         const int channelIndex11 = pChannel11->m_index;
         EngineMaster::GainCache& gainCache11 = (*channelGainCache)[channelIndex11];
@@ -8639,7 +8538,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache11.m_gain = newGain[11];
         CSAMPLE* pBuffer11 = pChannel11->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer11, oldGain[11], newGain[11], iBufferSize);
         EngineMaster::ChannelInfo* pChannel12 = activeChannels->at(12);
         const int channelIndex12 = pChannel12->m_index;
         EngineMaster::GainCache& gainCache12 = (*channelGainCache)[channelIndex12];
@@ -8652,7 +8550,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache12.m_gain = newGain[12];
         CSAMPLE* pBuffer12 = pChannel12->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer12, oldGain[12], newGain[12], iBufferSize);
         EngineMaster::ChannelInfo* pChannel13 = activeChannels->at(13);
         const int channelIndex13 = pChannel13->m_index;
         EngineMaster::GainCache& gainCache13 = (*channelGainCache)[channelIndex13];
@@ -8665,22 +8562,21 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache13.m_gain = newGain[13];
         CSAMPLE* pBuffer13 = pChannel13->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer13, oldGain[13], newGain[13], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features, oldGain[9], newGain[9]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features, oldGain[10], newGain[10]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features, oldGain[11], newGain[11]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features, oldGain[12], newGain[12]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features, oldGain[13], newGain[13]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i];
@@ -8701,7 +8597,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -8714,7 +8609,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -8727,7 +8621,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -8740,7 +8633,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -8753,7 +8645,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -8766,7 +8657,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -8779,7 +8669,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         EngineMaster::ChannelInfo* pChannel7 = activeChannels->at(7);
         const int channelIndex7 = pChannel7->m_index;
         EngineMaster::GainCache& gainCache7 = (*channelGainCache)[channelIndex7];
@@ -8792,7 +8681,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache7.m_gain = newGain[7];
         CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         EngineMaster::ChannelInfo* pChannel8 = activeChannels->at(8);
         const int channelIndex8 = pChannel8->m_index;
         EngineMaster::GainCache& gainCache8 = (*channelGainCache)[channelIndex8];
@@ -8805,7 +8693,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache8.m_gain = newGain[8];
         CSAMPLE* pBuffer8 = pChannel8->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer8, oldGain[8], newGain[8], iBufferSize);
         EngineMaster::ChannelInfo* pChannel9 = activeChannels->at(9);
         const int channelIndex9 = pChannel9->m_index;
         EngineMaster::GainCache& gainCache9 = (*channelGainCache)[channelIndex9];
@@ -8818,7 +8705,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache9.m_gain = newGain[9];
         CSAMPLE* pBuffer9 = pChannel9->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer9, oldGain[9], newGain[9], iBufferSize);
         EngineMaster::ChannelInfo* pChannel10 = activeChannels->at(10);
         const int channelIndex10 = pChannel10->m_index;
         EngineMaster::GainCache& gainCache10 = (*channelGainCache)[channelIndex10];
@@ -8831,7 +8717,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache10.m_gain = newGain[10];
         CSAMPLE* pBuffer10 = pChannel10->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer10, oldGain[10], newGain[10], iBufferSize);
         EngineMaster::ChannelInfo* pChannel11 = activeChannels->at(11);
         const int channelIndex11 = pChannel11->m_index;
         EngineMaster::GainCache& gainCache11 = (*channelGainCache)[channelIndex11];
@@ -8844,7 +8729,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache11.m_gain = newGain[11];
         CSAMPLE* pBuffer11 = pChannel11->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer11, oldGain[11], newGain[11], iBufferSize);
         EngineMaster::ChannelInfo* pChannel12 = activeChannels->at(12);
         const int channelIndex12 = pChannel12->m_index;
         EngineMaster::GainCache& gainCache12 = (*channelGainCache)[channelIndex12];
@@ -8857,7 +8741,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache12.m_gain = newGain[12];
         CSAMPLE* pBuffer12 = pChannel12->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer12, oldGain[12], newGain[12], iBufferSize);
         EngineMaster::ChannelInfo* pChannel13 = activeChannels->at(13);
         const int channelIndex13 = pChannel13->m_index;
         EngineMaster::GainCache& gainCache13 = (*channelGainCache)[channelIndex13];
@@ -8870,7 +8753,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache13.m_gain = newGain[13];
         CSAMPLE* pBuffer13 = pChannel13->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer13, oldGain[13], newGain[13], iBufferSize);
         EngineMaster::ChannelInfo* pChannel14 = activeChannels->at(14);
         const int channelIndex14 = pChannel14->m_index;
         EngineMaster::GainCache& gainCache14 = (*channelGainCache)[channelIndex14];
@@ -8883,23 +8765,22 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache14.m_gain = newGain[14];
         CSAMPLE* pBuffer14 = pChannel14->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer14, oldGain[14], newGain[14], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features, oldGain[9], newGain[9]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features, oldGain[10], newGain[10]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features, oldGain[11], newGain[11]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features, oldGain[12], newGain[12]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features, oldGain[13], newGain[13]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features, oldGain[14], newGain[14]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i];
@@ -8920,7 +8801,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -8933,7 +8813,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -8946,7 +8825,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -8959,7 +8837,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -8972,7 +8849,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -8985,7 +8861,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -8998,7 +8873,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         EngineMaster::ChannelInfo* pChannel7 = activeChannels->at(7);
         const int channelIndex7 = pChannel7->m_index;
         EngineMaster::GainCache& gainCache7 = (*channelGainCache)[channelIndex7];
@@ -9011,7 +8885,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache7.m_gain = newGain[7];
         CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         EngineMaster::ChannelInfo* pChannel8 = activeChannels->at(8);
         const int channelIndex8 = pChannel8->m_index;
         EngineMaster::GainCache& gainCache8 = (*channelGainCache)[channelIndex8];
@@ -9024,7 +8897,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache8.m_gain = newGain[8];
         CSAMPLE* pBuffer8 = pChannel8->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer8, oldGain[8], newGain[8], iBufferSize);
         EngineMaster::ChannelInfo* pChannel9 = activeChannels->at(9);
         const int channelIndex9 = pChannel9->m_index;
         EngineMaster::GainCache& gainCache9 = (*channelGainCache)[channelIndex9];
@@ -9037,7 +8909,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache9.m_gain = newGain[9];
         CSAMPLE* pBuffer9 = pChannel9->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer9, oldGain[9], newGain[9], iBufferSize);
         EngineMaster::ChannelInfo* pChannel10 = activeChannels->at(10);
         const int channelIndex10 = pChannel10->m_index;
         EngineMaster::GainCache& gainCache10 = (*channelGainCache)[channelIndex10];
@@ -9050,7 +8921,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache10.m_gain = newGain[10];
         CSAMPLE* pBuffer10 = pChannel10->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer10, oldGain[10], newGain[10], iBufferSize);
         EngineMaster::ChannelInfo* pChannel11 = activeChannels->at(11);
         const int channelIndex11 = pChannel11->m_index;
         EngineMaster::GainCache& gainCache11 = (*channelGainCache)[channelIndex11];
@@ -9063,7 +8933,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache11.m_gain = newGain[11];
         CSAMPLE* pBuffer11 = pChannel11->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer11, oldGain[11], newGain[11], iBufferSize);
         EngineMaster::ChannelInfo* pChannel12 = activeChannels->at(12);
         const int channelIndex12 = pChannel12->m_index;
         EngineMaster::GainCache& gainCache12 = (*channelGainCache)[channelIndex12];
@@ -9076,7 +8945,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache12.m_gain = newGain[12];
         CSAMPLE* pBuffer12 = pChannel12->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer12, oldGain[12], newGain[12], iBufferSize);
         EngineMaster::ChannelInfo* pChannel13 = activeChannels->at(13);
         const int channelIndex13 = pChannel13->m_index;
         EngineMaster::GainCache& gainCache13 = (*channelGainCache)[channelIndex13];
@@ -9089,7 +8957,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache13.m_gain = newGain[13];
         CSAMPLE* pBuffer13 = pChannel13->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer13, oldGain[13], newGain[13], iBufferSize);
         EngineMaster::ChannelInfo* pChannel14 = activeChannels->at(14);
         const int channelIndex14 = pChannel14->m_index;
         EngineMaster::GainCache& gainCache14 = (*channelGainCache)[channelIndex14];
@@ -9102,7 +8969,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache14.m_gain = newGain[14];
         CSAMPLE* pBuffer14 = pChannel14->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer14, oldGain[14], newGain[14], iBufferSize);
         EngineMaster::ChannelInfo* pChannel15 = activeChannels->at(15);
         const int channelIndex15 = pChannel15->m_index;
         EngineMaster::GainCache& gainCache15 = (*channelGainCache)[channelIndex15];
@@ -9115,24 +8981,23 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache15.m_gain = newGain[15];
         CSAMPLE* pBuffer15 = pChannel15->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer15, oldGain[15], newGain[15], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features, oldGain[9], newGain[9]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features, oldGain[10], newGain[10]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features, oldGain[11], newGain[11]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features, oldGain[12], newGain[12]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features, oldGain[13], newGain[13]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features, oldGain[14], newGain[14]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features, oldGain[15], newGain[15]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i];
@@ -9153,7 +9018,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -9166,7 +9030,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -9179,7 +9042,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -9192,7 +9054,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -9205,7 +9066,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -9218,7 +9078,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -9231,7 +9090,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         EngineMaster::ChannelInfo* pChannel7 = activeChannels->at(7);
         const int channelIndex7 = pChannel7->m_index;
         EngineMaster::GainCache& gainCache7 = (*channelGainCache)[channelIndex7];
@@ -9244,7 +9102,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache7.m_gain = newGain[7];
         CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         EngineMaster::ChannelInfo* pChannel8 = activeChannels->at(8);
         const int channelIndex8 = pChannel8->m_index;
         EngineMaster::GainCache& gainCache8 = (*channelGainCache)[channelIndex8];
@@ -9257,7 +9114,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache8.m_gain = newGain[8];
         CSAMPLE* pBuffer8 = pChannel8->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer8, oldGain[8], newGain[8], iBufferSize);
         EngineMaster::ChannelInfo* pChannel9 = activeChannels->at(9);
         const int channelIndex9 = pChannel9->m_index;
         EngineMaster::GainCache& gainCache9 = (*channelGainCache)[channelIndex9];
@@ -9270,7 +9126,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache9.m_gain = newGain[9];
         CSAMPLE* pBuffer9 = pChannel9->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer9, oldGain[9], newGain[9], iBufferSize);
         EngineMaster::ChannelInfo* pChannel10 = activeChannels->at(10);
         const int channelIndex10 = pChannel10->m_index;
         EngineMaster::GainCache& gainCache10 = (*channelGainCache)[channelIndex10];
@@ -9283,7 +9138,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache10.m_gain = newGain[10];
         CSAMPLE* pBuffer10 = pChannel10->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer10, oldGain[10], newGain[10], iBufferSize);
         EngineMaster::ChannelInfo* pChannel11 = activeChannels->at(11);
         const int channelIndex11 = pChannel11->m_index;
         EngineMaster::GainCache& gainCache11 = (*channelGainCache)[channelIndex11];
@@ -9296,7 +9150,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache11.m_gain = newGain[11];
         CSAMPLE* pBuffer11 = pChannel11->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer11, oldGain[11], newGain[11], iBufferSize);
         EngineMaster::ChannelInfo* pChannel12 = activeChannels->at(12);
         const int channelIndex12 = pChannel12->m_index;
         EngineMaster::GainCache& gainCache12 = (*channelGainCache)[channelIndex12];
@@ -9309,7 +9162,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache12.m_gain = newGain[12];
         CSAMPLE* pBuffer12 = pChannel12->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer12, oldGain[12], newGain[12], iBufferSize);
         EngineMaster::ChannelInfo* pChannel13 = activeChannels->at(13);
         const int channelIndex13 = pChannel13->m_index;
         EngineMaster::GainCache& gainCache13 = (*channelGainCache)[channelIndex13];
@@ -9322,7 +9174,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache13.m_gain = newGain[13];
         CSAMPLE* pBuffer13 = pChannel13->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer13, oldGain[13], newGain[13], iBufferSize);
         EngineMaster::ChannelInfo* pChannel14 = activeChannels->at(14);
         const int channelIndex14 = pChannel14->m_index;
         EngineMaster::GainCache& gainCache14 = (*channelGainCache)[channelIndex14];
@@ -9335,7 +9186,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache14.m_gain = newGain[14];
         CSAMPLE* pBuffer14 = pChannel14->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer14, oldGain[14], newGain[14], iBufferSize);
         EngineMaster::ChannelInfo* pChannel15 = activeChannels->at(15);
         const int channelIndex15 = pChannel15->m_index;
         EngineMaster::GainCache& gainCache15 = (*channelGainCache)[channelIndex15];
@@ -9348,7 +9198,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache15.m_gain = newGain[15];
         CSAMPLE* pBuffer15 = pChannel15->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer15, oldGain[15], newGain[15], iBufferSize);
         EngineMaster::ChannelInfo* pChannel16 = activeChannels->at(16);
         const int channelIndex16 = pChannel16->m_index;
         EngineMaster::GainCache& gainCache16 = (*channelGainCache)[channelIndex16];
@@ -9361,25 +9210,24 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache16.m_gain = newGain[16];
         CSAMPLE* pBuffer16 = pChannel16->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer16, oldGain[16], newGain[16], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features, oldGain[9], newGain[9]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features, oldGain[10], newGain[10]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features, oldGain[11], newGain[11]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features, oldGain[12], newGain[12]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features, oldGain[13], newGain[13]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features, oldGain[14], newGain[14]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features, oldGain[15], newGain[15]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features, oldGain[16], newGain[16]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i];
@@ -9400,7 +9248,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -9413,7 +9260,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -9426,7 +9272,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -9439,7 +9284,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -9452,7 +9296,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -9465,7 +9308,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -9478,7 +9320,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         EngineMaster::ChannelInfo* pChannel7 = activeChannels->at(7);
         const int channelIndex7 = pChannel7->m_index;
         EngineMaster::GainCache& gainCache7 = (*channelGainCache)[channelIndex7];
@@ -9491,7 +9332,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache7.m_gain = newGain[7];
         CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         EngineMaster::ChannelInfo* pChannel8 = activeChannels->at(8);
         const int channelIndex8 = pChannel8->m_index;
         EngineMaster::GainCache& gainCache8 = (*channelGainCache)[channelIndex8];
@@ -9504,7 +9344,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache8.m_gain = newGain[8];
         CSAMPLE* pBuffer8 = pChannel8->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer8, oldGain[8], newGain[8], iBufferSize);
         EngineMaster::ChannelInfo* pChannel9 = activeChannels->at(9);
         const int channelIndex9 = pChannel9->m_index;
         EngineMaster::GainCache& gainCache9 = (*channelGainCache)[channelIndex9];
@@ -9517,7 +9356,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache9.m_gain = newGain[9];
         CSAMPLE* pBuffer9 = pChannel9->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer9, oldGain[9], newGain[9], iBufferSize);
         EngineMaster::ChannelInfo* pChannel10 = activeChannels->at(10);
         const int channelIndex10 = pChannel10->m_index;
         EngineMaster::GainCache& gainCache10 = (*channelGainCache)[channelIndex10];
@@ -9530,7 +9368,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache10.m_gain = newGain[10];
         CSAMPLE* pBuffer10 = pChannel10->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer10, oldGain[10], newGain[10], iBufferSize);
         EngineMaster::ChannelInfo* pChannel11 = activeChannels->at(11);
         const int channelIndex11 = pChannel11->m_index;
         EngineMaster::GainCache& gainCache11 = (*channelGainCache)[channelIndex11];
@@ -9543,7 +9380,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache11.m_gain = newGain[11];
         CSAMPLE* pBuffer11 = pChannel11->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer11, oldGain[11], newGain[11], iBufferSize);
         EngineMaster::ChannelInfo* pChannel12 = activeChannels->at(12);
         const int channelIndex12 = pChannel12->m_index;
         EngineMaster::GainCache& gainCache12 = (*channelGainCache)[channelIndex12];
@@ -9556,7 +9392,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache12.m_gain = newGain[12];
         CSAMPLE* pBuffer12 = pChannel12->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer12, oldGain[12], newGain[12], iBufferSize);
         EngineMaster::ChannelInfo* pChannel13 = activeChannels->at(13);
         const int channelIndex13 = pChannel13->m_index;
         EngineMaster::GainCache& gainCache13 = (*channelGainCache)[channelIndex13];
@@ -9569,7 +9404,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache13.m_gain = newGain[13];
         CSAMPLE* pBuffer13 = pChannel13->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer13, oldGain[13], newGain[13], iBufferSize);
         EngineMaster::ChannelInfo* pChannel14 = activeChannels->at(14);
         const int channelIndex14 = pChannel14->m_index;
         EngineMaster::GainCache& gainCache14 = (*channelGainCache)[channelIndex14];
@@ -9582,7 +9416,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache14.m_gain = newGain[14];
         CSAMPLE* pBuffer14 = pChannel14->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer14, oldGain[14], newGain[14], iBufferSize);
         EngineMaster::ChannelInfo* pChannel15 = activeChannels->at(15);
         const int channelIndex15 = pChannel15->m_index;
         EngineMaster::GainCache& gainCache15 = (*channelGainCache)[channelIndex15];
@@ -9595,7 +9428,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache15.m_gain = newGain[15];
         CSAMPLE* pBuffer15 = pChannel15->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer15, oldGain[15], newGain[15], iBufferSize);
         EngineMaster::ChannelInfo* pChannel16 = activeChannels->at(16);
         const int channelIndex16 = pChannel16->m_index;
         EngineMaster::GainCache& gainCache16 = (*channelGainCache)[channelIndex16];
@@ -9608,7 +9440,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache16.m_gain = newGain[16];
         CSAMPLE* pBuffer16 = pChannel16->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer16, oldGain[16], newGain[16], iBufferSize);
         EngineMaster::ChannelInfo* pChannel17 = activeChannels->at(17);
         const int channelIndex17 = pChannel17->m_index;
         EngineMaster::GainCache& gainCache17 = (*channelGainCache)[channelIndex17];
@@ -9621,26 +9452,25 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache17.m_gain = newGain[17];
         CSAMPLE* pBuffer17 = pChannel17->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer17, oldGain[17], newGain[17], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features, oldGain[9], newGain[9]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features, oldGain[10], newGain[10]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features, oldGain[11], newGain[11]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features, oldGain[12], newGain[12]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features, oldGain[13], newGain[13]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features, oldGain[14], newGain[14]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features, oldGain[15], newGain[15]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features, oldGain[16], newGain[16]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features, oldGain[17], newGain[17]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i];
@@ -9661,7 +9491,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -9674,7 +9503,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -9687,7 +9515,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -9700,7 +9527,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -9713,7 +9539,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -9726,7 +9551,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -9739,7 +9563,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         EngineMaster::ChannelInfo* pChannel7 = activeChannels->at(7);
         const int channelIndex7 = pChannel7->m_index;
         EngineMaster::GainCache& gainCache7 = (*channelGainCache)[channelIndex7];
@@ -9752,7 +9575,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache7.m_gain = newGain[7];
         CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         EngineMaster::ChannelInfo* pChannel8 = activeChannels->at(8);
         const int channelIndex8 = pChannel8->m_index;
         EngineMaster::GainCache& gainCache8 = (*channelGainCache)[channelIndex8];
@@ -9765,7 +9587,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache8.m_gain = newGain[8];
         CSAMPLE* pBuffer8 = pChannel8->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer8, oldGain[8], newGain[8], iBufferSize);
         EngineMaster::ChannelInfo* pChannel9 = activeChannels->at(9);
         const int channelIndex9 = pChannel9->m_index;
         EngineMaster::GainCache& gainCache9 = (*channelGainCache)[channelIndex9];
@@ -9778,7 +9599,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache9.m_gain = newGain[9];
         CSAMPLE* pBuffer9 = pChannel9->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer9, oldGain[9], newGain[9], iBufferSize);
         EngineMaster::ChannelInfo* pChannel10 = activeChannels->at(10);
         const int channelIndex10 = pChannel10->m_index;
         EngineMaster::GainCache& gainCache10 = (*channelGainCache)[channelIndex10];
@@ -9791,7 +9611,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache10.m_gain = newGain[10];
         CSAMPLE* pBuffer10 = pChannel10->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer10, oldGain[10], newGain[10], iBufferSize);
         EngineMaster::ChannelInfo* pChannel11 = activeChannels->at(11);
         const int channelIndex11 = pChannel11->m_index;
         EngineMaster::GainCache& gainCache11 = (*channelGainCache)[channelIndex11];
@@ -9804,7 +9623,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache11.m_gain = newGain[11];
         CSAMPLE* pBuffer11 = pChannel11->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer11, oldGain[11], newGain[11], iBufferSize);
         EngineMaster::ChannelInfo* pChannel12 = activeChannels->at(12);
         const int channelIndex12 = pChannel12->m_index;
         EngineMaster::GainCache& gainCache12 = (*channelGainCache)[channelIndex12];
@@ -9817,7 +9635,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache12.m_gain = newGain[12];
         CSAMPLE* pBuffer12 = pChannel12->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer12, oldGain[12], newGain[12], iBufferSize);
         EngineMaster::ChannelInfo* pChannel13 = activeChannels->at(13);
         const int channelIndex13 = pChannel13->m_index;
         EngineMaster::GainCache& gainCache13 = (*channelGainCache)[channelIndex13];
@@ -9830,7 +9647,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache13.m_gain = newGain[13];
         CSAMPLE* pBuffer13 = pChannel13->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer13, oldGain[13], newGain[13], iBufferSize);
         EngineMaster::ChannelInfo* pChannel14 = activeChannels->at(14);
         const int channelIndex14 = pChannel14->m_index;
         EngineMaster::GainCache& gainCache14 = (*channelGainCache)[channelIndex14];
@@ -9843,7 +9659,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache14.m_gain = newGain[14];
         CSAMPLE* pBuffer14 = pChannel14->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer14, oldGain[14], newGain[14], iBufferSize);
         EngineMaster::ChannelInfo* pChannel15 = activeChannels->at(15);
         const int channelIndex15 = pChannel15->m_index;
         EngineMaster::GainCache& gainCache15 = (*channelGainCache)[channelIndex15];
@@ -9856,7 +9671,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache15.m_gain = newGain[15];
         CSAMPLE* pBuffer15 = pChannel15->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer15, oldGain[15], newGain[15], iBufferSize);
         EngineMaster::ChannelInfo* pChannel16 = activeChannels->at(16);
         const int channelIndex16 = pChannel16->m_index;
         EngineMaster::GainCache& gainCache16 = (*channelGainCache)[channelIndex16];
@@ -9869,7 +9683,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache16.m_gain = newGain[16];
         CSAMPLE* pBuffer16 = pChannel16->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer16, oldGain[16], newGain[16], iBufferSize);
         EngineMaster::ChannelInfo* pChannel17 = activeChannels->at(17);
         const int channelIndex17 = pChannel17->m_index;
         EngineMaster::GainCache& gainCache17 = (*channelGainCache)[channelIndex17];
@@ -9882,7 +9695,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache17.m_gain = newGain[17];
         CSAMPLE* pBuffer17 = pChannel17->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer17, oldGain[17], newGain[17], iBufferSize);
         EngineMaster::ChannelInfo* pChannel18 = activeChannels->at(18);
         const int channelIndex18 = pChannel18->m_index;
         EngineMaster::GainCache& gainCache18 = (*channelGainCache)[channelIndex18];
@@ -9895,27 +9707,26 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache18.m_gain = newGain[18];
         CSAMPLE* pBuffer18 = pChannel18->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer18, oldGain[18], newGain[18], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features, oldGain[9], newGain[9]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features, oldGain[10], newGain[10]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features, oldGain[11], newGain[11]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features, oldGain[12], newGain[12]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features, oldGain[13], newGain[13]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features, oldGain[14], newGain[14]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features, oldGain[15], newGain[15]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features, oldGain[16], newGain[16]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features, oldGain[17], newGain[17]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features, oldGain[18], newGain[18]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i];
@@ -9936,7 +9747,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -9949,7 +9759,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -9962,7 +9771,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -9975,7 +9783,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -9988,7 +9795,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -10001,7 +9807,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -10014,7 +9819,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         EngineMaster::ChannelInfo* pChannel7 = activeChannels->at(7);
         const int channelIndex7 = pChannel7->m_index;
         EngineMaster::GainCache& gainCache7 = (*channelGainCache)[channelIndex7];
@@ -10027,7 +9831,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache7.m_gain = newGain[7];
         CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         EngineMaster::ChannelInfo* pChannel8 = activeChannels->at(8);
         const int channelIndex8 = pChannel8->m_index;
         EngineMaster::GainCache& gainCache8 = (*channelGainCache)[channelIndex8];
@@ -10040,7 +9843,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache8.m_gain = newGain[8];
         CSAMPLE* pBuffer8 = pChannel8->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer8, oldGain[8], newGain[8], iBufferSize);
         EngineMaster::ChannelInfo* pChannel9 = activeChannels->at(9);
         const int channelIndex9 = pChannel9->m_index;
         EngineMaster::GainCache& gainCache9 = (*channelGainCache)[channelIndex9];
@@ -10053,7 +9855,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache9.m_gain = newGain[9];
         CSAMPLE* pBuffer9 = pChannel9->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer9, oldGain[9], newGain[9], iBufferSize);
         EngineMaster::ChannelInfo* pChannel10 = activeChannels->at(10);
         const int channelIndex10 = pChannel10->m_index;
         EngineMaster::GainCache& gainCache10 = (*channelGainCache)[channelIndex10];
@@ -10066,7 +9867,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache10.m_gain = newGain[10];
         CSAMPLE* pBuffer10 = pChannel10->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer10, oldGain[10], newGain[10], iBufferSize);
         EngineMaster::ChannelInfo* pChannel11 = activeChannels->at(11);
         const int channelIndex11 = pChannel11->m_index;
         EngineMaster::GainCache& gainCache11 = (*channelGainCache)[channelIndex11];
@@ -10079,7 +9879,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache11.m_gain = newGain[11];
         CSAMPLE* pBuffer11 = pChannel11->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer11, oldGain[11], newGain[11], iBufferSize);
         EngineMaster::ChannelInfo* pChannel12 = activeChannels->at(12);
         const int channelIndex12 = pChannel12->m_index;
         EngineMaster::GainCache& gainCache12 = (*channelGainCache)[channelIndex12];
@@ -10092,7 +9891,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache12.m_gain = newGain[12];
         CSAMPLE* pBuffer12 = pChannel12->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer12, oldGain[12], newGain[12], iBufferSize);
         EngineMaster::ChannelInfo* pChannel13 = activeChannels->at(13);
         const int channelIndex13 = pChannel13->m_index;
         EngineMaster::GainCache& gainCache13 = (*channelGainCache)[channelIndex13];
@@ -10105,7 +9903,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache13.m_gain = newGain[13];
         CSAMPLE* pBuffer13 = pChannel13->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer13, oldGain[13], newGain[13], iBufferSize);
         EngineMaster::ChannelInfo* pChannel14 = activeChannels->at(14);
         const int channelIndex14 = pChannel14->m_index;
         EngineMaster::GainCache& gainCache14 = (*channelGainCache)[channelIndex14];
@@ -10118,7 +9915,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache14.m_gain = newGain[14];
         CSAMPLE* pBuffer14 = pChannel14->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer14, oldGain[14], newGain[14], iBufferSize);
         EngineMaster::ChannelInfo* pChannel15 = activeChannels->at(15);
         const int channelIndex15 = pChannel15->m_index;
         EngineMaster::GainCache& gainCache15 = (*channelGainCache)[channelIndex15];
@@ -10131,7 +9927,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache15.m_gain = newGain[15];
         CSAMPLE* pBuffer15 = pChannel15->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer15, oldGain[15], newGain[15], iBufferSize);
         EngineMaster::ChannelInfo* pChannel16 = activeChannels->at(16);
         const int channelIndex16 = pChannel16->m_index;
         EngineMaster::GainCache& gainCache16 = (*channelGainCache)[channelIndex16];
@@ -10144,7 +9939,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache16.m_gain = newGain[16];
         CSAMPLE* pBuffer16 = pChannel16->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer16, oldGain[16], newGain[16], iBufferSize);
         EngineMaster::ChannelInfo* pChannel17 = activeChannels->at(17);
         const int channelIndex17 = pChannel17->m_index;
         EngineMaster::GainCache& gainCache17 = (*channelGainCache)[channelIndex17];
@@ -10157,7 +9951,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache17.m_gain = newGain[17];
         CSAMPLE* pBuffer17 = pChannel17->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer17, oldGain[17], newGain[17], iBufferSize);
         EngineMaster::ChannelInfo* pChannel18 = activeChannels->at(18);
         const int channelIndex18 = pChannel18->m_index;
         EngineMaster::GainCache& gainCache18 = (*channelGainCache)[channelIndex18];
@@ -10170,7 +9963,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache18.m_gain = newGain[18];
         CSAMPLE* pBuffer18 = pChannel18->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer18, oldGain[18], newGain[18], iBufferSize);
         EngineMaster::ChannelInfo* pChannel19 = activeChannels->at(19);
         const int channelIndex19 = pChannel19->m_index;
         EngineMaster::GainCache& gainCache19 = (*channelGainCache)[channelIndex19];
@@ -10183,28 +9975,27 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache19.m_gain = newGain[19];
         CSAMPLE* pBuffer19 = pChannel19->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer19, oldGain[19], newGain[19], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features, oldGain[9], newGain[9]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features, oldGain[10], newGain[10]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features, oldGain[11], newGain[11]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features, oldGain[12], newGain[12]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features, oldGain[13], newGain[13]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features, oldGain[14], newGain[14]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features, oldGain[15], newGain[15]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features, oldGain[16], newGain[16]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features, oldGain[17], newGain[17]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features, oldGain[18], newGain[18]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features, oldGain[19], newGain[19]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i];
@@ -10225,7 +10016,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -10238,7 +10028,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -10251,7 +10040,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -10264,7 +10052,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -10277,7 +10064,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -10290,7 +10076,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -10303,7 +10088,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         EngineMaster::ChannelInfo* pChannel7 = activeChannels->at(7);
         const int channelIndex7 = pChannel7->m_index;
         EngineMaster::GainCache& gainCache7 = (*channelGainCache)[channelIndex7];
@@ -10316,7 +10100,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache7.m_gain = newGain[7];
         CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         EngineMaster::ChannelInfo* pChannel8 = activeChannels->at(8);
         const int channelIndex8 = pChannel8->m_index;
         EngineMaster::GainCache& gainCache8 = (*channelGainCache)[channelIndex8];
@@ -10329,7 +10112,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache8.m_gain = newGain[8];
         CSAMPLE* pBuffer8 = pChannel8->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer8, oldGain[8], newGain[8], iBufferSize);
         EngineMaster::ChannelInfo* pChannel9 = activeChannels->at(9);
         const int channelIndex9 = pChannel9->m_index;
         EngineMaster::GainCache& gainCache9 = (*channelGainCache)[channelIndex9];
@@ -10342,7 +10124,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache9.m_gain = newGain[9];
         CSAMPLE* pBuffer9 = pChannel9->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer9, oldGain[9], newGain[9], iBufferSize);
         EngineMaster::ChannelInfo* pChannel10 = activeChannels->at(10);
         const int channelIndex10 = pChannel10->m_index;
         EngineMaster::GainCache& gainCache10 = (*channelGainCache)[channelIndex10];
@@ -10355,7 +10136,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache10.m_gain = newGain[10];
         CSAMPLE* pBuffer10 = pChannel10->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer10, oldGain[10], newGain[10], iBufferSize);
         EngineMaster::ChannelInfo* pChannel11 = activeChannels->at(11);
         const int channelIndex11 = pChannel11->m_index;
         EngineMaster::GainCache& gainCache11 = (*channelGainCache)[channelIndex11];
@@ -10368,7 +10148,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache11.m_gain = newGain[11];
         CSAMPLE* pBuffer11 = pChannel11->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer11, oldGain[11], newGain[11], iBufferSize);
         EngineMaster::ChannelInfo* pChannel12 = activeChannels->at(12);
         const int channelIndex12 = pChannel12->m_index;
         EngineMaster::GainCache& gainCache12 = (*channelGainCache)[channelIndex12];
@@ -10381,7 +10160,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache12.m_gain = newGain[12];
         CSAMPLE* pBuffer12 = pChannel12->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer12, oldGain[12], newGain[12], iBufferSize);
         EngineMaster::ChannelInfo* pChannel13 = activeChannels->at(13);
         const int channelIndex13 = pChannel13->m_index;
         EngineMaster::GainCache& gainCache13 = (*channelGainCache)[channelIndex13];
@@ -10394,7 +10172,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache13.m_gain = newGain[13];
         CSAMPLE* pBuffer13 = pChannel13->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer13, oldGain[13], newGain[13], iBufferSize);
         EngineMaster::ChannelInfo* pChannel14 = activeChannels->at(14);
         const int channelIndex14 = pChannel14->m_index;
         EngineMaster::GainCache& gainCache14 = (*channelGainCache)[channelIndex14];
@@ -10407,7 +10184,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache14.m_gain = newGain[14];
         CSAMPLE* pBuffer14 = pChannel14->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer14, oldGain[14], newGain[14], iBufferSize);
         EngineMaster::ChannelInfo* pChannel15 = activeChannels->at(15);
         const int channelIndex15 = pChannel15->m_index;
         EngineMaster::GainCache& gainCache15 = (*channelGainCache)[channelIndex15];
@@ -10420,7 +10196,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache15.m_gain = newGain[15];
         CSAMPLE* pBuffer15 = pChannel15->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer15, oldGain[15], newGain[15], iBufferSize);
         EngineMaster::ChannelInfo* pChannel16 = activeChannels->at(16);
         const int channelIndex16 = pChannel16->m_index;
         EngineMaster::GainCache& gainCache16 = (*channelGainCache)[channelIndex16];
@@ -10433,7 +10208,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache16.m_gain = newGain[16];
         CSAMPLE* pBuffer16 = pChannel16->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer16, oldGain[16], newGain[16], iBufferSize);
         EngineMaster::ChannelInfo* pChannel17 = activeChannels->at(17);
         const int channelIndex17 = pChannel17->m_index;
         EngineMaster::GainCache& gainCache17 = (*channelGainCache)[channelIndex17];
@@ -10446,7 +10220,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache17.m_gain = newGain[17];
         CSAMPLE* pBuffer17 = pChannel17->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer17, oldGain[17], newGain[17], iBufferSize);
         EngineMaster::ChannelInfo* pChannel18 = activeChannels->at(18);
         const int channelIndex18 = pChannel18->m_index;
         EngineMaster::GainCache& gainCache18 = (*channelGainCache)[channelIndex18];
@@ -10459,7 +10232,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache18.m_gain = newGain[18];
         CSAMPLE* pBuffer18 = pChannel18->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer18, oldGain[18], newGain[18], iBufferSize);
         EngineMaster::ChannelInfo* pChannel19 = activeChannels->at(19);
         const int channelIndex19 = pChannel19->m_index;
         EngineMaster::GainCache& gainCache19 = (*channelGainCache)[channelIndex19];
@@ -10472,7 +10244,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache19.m_gain = newGain[19];
         CSAMPLE* pBuffer19 = pChannel19->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer19, oldGain[19], newGain[19], iBufferSize);
         EngineMaster::ChannelInfo* pChannel20 = activeChannels->at(20);
         const int channelIndex20 = pChannel20->m_index;
         EngineMaster::GainCache& gainCache20 = (*channelGainCache)[channelIndex20];
@@ -10485,29 +10256,28 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache20.m_gain = newGain[20];
         CSAMPLE* pBuffer20 = pChannel20->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer20, oldGain[20], newGain[20], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features, oldGain[9], newGain[9]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features, oldGain[10], newGain[10]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features, oldGain[11], newGain[11]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features, oldGain[12], newGain[12]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features, oldGain[13], newGain[13]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features, oldGain[14], newGain[14]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features, oldGain[15], newGain[15]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features, oldGain[16], newGain[16]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features, oldGain[17], newGain[17]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features, oldGain[18], newGain[18]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features, oldGain[19], newGain[19]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features, oldGain[20], newGain[20]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i] + pBuffer20[i];
@@ -10528,7 +10298,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -10541,7 +10310,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -10554,7 +10322,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -10567,7 +10334,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -10580,7 +10346,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -10593,7 +10358,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -10606,7 +10370,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         EngineMaster::ChannelInfo* pChannel7 = activeChannels->at(7);
         const int channelIndex7 = pChannel7->m_index;
         EngineMaster::GainCache& gainCache7 = (*channelGainCache)[channelIndex7];
@@ -10619,7 +10382,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache7.m_gain = newGain[7];
         CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         EngineMaster::ChannelInfo* pChannel8 = activeChannels->at(8);
         const int channelIndex8 = pChannel8->m_index;
         EngineMaster::GainCache& gainCache8 = (*channelGainCache)[channelIndex8];
@@ -10632,7 +10394,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache8.m_gain = newGain[8];
         CSAMPLE* pBuffer8 = pChannel8->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer8, oldGain[8], newGain[8], iBufferSize);
         EngineMaster::ChannelInfo* pChannel9 = activeChannels->at(9);
         const int channelIndex9 = pChannel9->m_index;
         EngineMaster::GainCache& gainCache9 = (*channelGainCache)[channelIndex9];
@@ -10645,7 +10406,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache9.m_gain = newGain[9];
         CSAMPLE* pBuffer9 = pChannel9->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer9, oldGain[9], newGain[9], iBufferSize);
         EngineMaster::ChannelInfo* pChannel10 = activeChannels->at(10);
         const int channelIndex10 = pChannel10->m_index;
         EngineMaster::GainCache& gainCache10 = (*channelGainCache)[channelIndex10];
@@ -10658,7 +10418,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache10.m_gain = newGain[10];
         CSAMPLE* pBuffer10 = pChannel10->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer10, oldGain[10], newGain[10], iBufferSize);
         EngineMaster::ChannelInfo* pChannel11 = activeChannels->at(11);
         const int channelIndex11 = pChannel11->m_index;
         EngineMaster::GainCache& gainCache11 = (*channelGainCache)[channelIndex11];
@@ -10671,7 +10430,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache11.m_gain = newGain[11];
         CSAMPLE* pBuffer11 = pChannel11->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer11, oldGain[11], newGain[11], iBufferSize);
         EngineMaster::ChannelInfo* pChannel12 = activeChannels->at(12);
         const int channelIndex12 = pChannel12->m_index;
         EngineMaster::GainCache& gainCache12 = (*channelGainCache)[channelIndex12];
@@ -10684,7 +10442,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache12.m_gain = newGain[12];
         CSAMPLE* pBuffer12 = pChannel12->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer12, oldGain[12], newGain[12], iBufferSize);
         EngineMaster::ChannelInfo* pChannel13 = activeChannels->at(13);
         const int channelIndex13 = pChannel13->m_index;
         EngineMaster::GainCache& gainCache13 = (*channelGainCache)[channelIndex13];
@@ -10697,7 +10454,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache13.m_gain = newGain[13];
         CSAMPLE* pBuffer13 = pChannel13->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer13, oldGain[13], newGain[13], iBufferSize);
         EngineMaster::ChannelInfo* pChannel14 = activeChannels->at(14);
         const int channelIndex14 = pChannel14->m_index;
         EngineMaster::GainCache& gainCache14 = (*channelGainCache)[channelIndex14];
@@ -10710,7 +10466,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache14.m_gain = newGain[14];
         CSAMPLE* pBuffer14 = pChannel14->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer14, oldGain[14], newGain[14], iBufferSize);
         EngineMaster::ChannelInfo* pChannel15 = activeChannels->at(15);
         const int channelIndex15 = pChannel15->m_index;
         EngineMaster::GainCache& gainCache15 = (*channelGainCache)[channelIndex15];
@@ -10723,7 +10478,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache15.m_gain = newGain[15];
         CSAMPLE* pBuffer15 = pChannel15->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer15, oldGain[15], newGain[15], iBufferSize);
         EngineMaster::ChannelInfo* pChannel16 = activeChannels->at(16);
         const int channelIndex16 = pChannel16->m_index;
         EngineMaster::GainCache& gainCache16 = (*channelGainCache)[channelIndex16];
@@ -10736,7 +10490,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache16.m_gain = newGain[16];
         CSAMPLE* pBuffer16 = pChannel16->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer16, oldGain[16], newGain[16], iBufferSize);
         EngineMaster::ChannelInfo* pChannel17 = activeChannels->at(17);
         const int channelIndex17 = pChannel17->m_index;
         EngineMaster::GainCache& gainCache17 = (*channelGainCache)[channelIndex17];
@@ -10749,7 +10502,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache17.m_gain = newGain[17];
         CSAMPLE* pBuffer17 = pChannel17->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer17, oldGain[17], newGain[17], iBufferSize);
         EngineMaster::ChannelInfo* pChannel18 = activeChannels->at(18);
         const int channelIndex18 = pChannel18->m_index;
         EngineMaster::GainCache& gainCache18 = (*channelGainCache)[channelIndex18];
@@ -10762,7 +10514,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache18.m_gain = newGain[18];
         CSAMPLE* pBuffer18 = pChannel18->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer18, oldGain[18], newGain[18], iBufferSize);
         EngineMaster::ChannelInfo* pChannel19 = activeChannels->at(19);
         const int channelIndex19 = pChannel19->m_index;
         EngineMaster::GainCache& gainCache19 = (*channelGainCache)[channelIndex19];
@@ -10775,7 +10526,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache19.m_gain = newGain[19];
         CSAMPLE* pBuffer19 = pChannel19->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer19, oldGain[19], newGain[19], iBufferSize);
         EngineMaster::ChannelInfo* pChannel20 = activeChannels->at(20);
         const int channelIndex20 = pChannel20->m_index;
         EngineMaster::GainCache& gainCache20 = (*channelGainCache)[channelIndex20];
@@ -10788,7 +10538,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache20.m_gain = newGain[20];
         CSAMPLE* pBuffer20 = pChannel20->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer20, oldGain[20], newGain[20], iBufferSize);
         EngineMaster::ChannelInfo* pChannel21 = activeChannels->at(21);
         const int channelIndex21 = pChannel21->m_index;
         EngineMaster::GainCache& gainCache21 = (*channelGainCache)[channelIndex21];
@@ -10801,30 +10550,29 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache21.m_gain = newGain[21];
         CSAMPLE* pBuffer21 = pChannel21->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer21, oldGain[21], newGain[21], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features, oldGain[9], newGain[9]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features, oldGain[10], newGain[10]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features, oldGain[11], newGain[11]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features, oldGain[12], newGain[12]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features, oldGain[13], newGain[13]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features, oldGain[14], newGain[14]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features, oldGain[15], newGain[15]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features, oldGain[16], newGain[16]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features, oldGain[17], newGain[17]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features, oldGain[18], newGain[18]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features, oldGain[19], newGain[19]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features, oldGain[20], newGain[20]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features, oldGain[21], newGain[21]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i] + pBuffer20[i] + pBuffer21[i];
@@ -10845,7 +10593,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -10858,7 +10605,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -10871,7 +10617,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -10884,7 +10629,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -10897,7 +10641,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -10910,7 +10653,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -10923,7 +10665,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         EngineMaster::ChannelInfo* pChannel7 = activeChannels->at(7);
         const int channelIndex7 = pChannel7->m_index;
         EngineMaster::GainCache& gainCache7 = (*channelGainCache)[channelIndex7];
@@ -10936,7 +10677,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache7.m_gain = newGain[7];
         CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         EngineMaster::ChannelInfo* pChannel8 = activeChannels->at(8);
         const int channelIndex8 = pChannel8->m_index;
         EngineMaster::GainCache& gainCache8 = (*channelGainCache)[channelIndex8];
@@ -10949,7 +10689,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache8.m_gain = newGain[8];
         CSAMPLE* pBuffer8 = pChannel8->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer8, oldGain[8], newGain[8], iBufferSize);
         EngineMaster::ChannelInfo* pChannel9 = activeChannels->at(9);
         const int channelIndex9 = pChannel9->m_index;
         EngineMaster::GainCache& gainCache9 = (*channelGainCache)[channelIndex9];
@@ -10962,7 +10701,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache9.m_gain = newGain[9];
         CSAMPLE* pBuffer9 = pChannel9->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer9, oldGain[9], newGain[9], iBufferSize);
         EngineMaster::ChannelInfo* pChannel10 = activeChannels->at(10);
         const int channelIndex10 = pChannel10->m_index;
         EngineMaster::GainCache& gainCache10 = (*channelGainCache)[channelIndex10];
@@ -10975,7 +10713,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache10.m_gain = newGain[10];
         CSAMPLE* pBuffer10 = pChannel10->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer10, oldGain[10], newGain[10], iBufferSize);
         EngineMaster::ChannelInfo* pChannel11 = activeChannels->at(11);
         const int channelIndex11 = pChannel11->m_index;
         EngineMaster::GainCache& gainCache11 = (*channelGainCache)[channelIndex11];
@@ -10988,7 +10725,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache11.m_gain = newGain[11];
         CSAMPLE* pBuffer11 = pChannel11->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer11, oldGain[11], newGain[11], iBufferSize);
         EngineMaster::ChannelInfo* pChannel12 = activeChannels->at(12);
         const int channelIndex12 = pChannel12->m_index;
         EngineMaster::GainCache& gainCache12 = (*channelGainCache)[channelIndex12];
@@ -11001,7 +10737,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache12.m_gain = newGain[12];
         CSAMPLE* pBuffer12 = pChannel12->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer12, oldGain[12], newGain[12], iBufferSize);
         EngineMaster::ChannelInfo* pChannel13 = activeChannels->at(13);
         const int channelIndex13 = pChannel13->m_index;
         EngineMaster::GainCache& gainCache13 = (*channelGainCache)[channelIndex13];
@@ -11014,7 +10749,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache13.m_gain = newGain[13];
         CSAMPLE* pBuffer13 = pChannel13->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer13, oldGain[13], newGain[13], iBufferSize);
         EngineMaster::ChannelInfo* pChannel14 = activeChannels->at(14);
         const int channelIndex14 = pChannel14->m_index;
         EngineMaster::GainCache& gainCache14 = (*channelGainCache)[channelIndex14];
@@ -11027,7 +10761,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache14.m_gain = newGain[14];
         CSAMPLE* pBuffer14 = pChannel14->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer14, oldGain[14], newGain[14], iBufferSize);
         EngineMaster::ChannelInfo* pChannel15 = activeChannels->at(15);
         const int channelIndex15 = pChannel15->m_index;
         EngineMaster::GainCache& gainCache15 = (*channelGainCache)[channelIndex15];
@@ -11040,7 +10773,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache15.m_gain = newGain[15];
         CSAMPLE* pBuffer15 = pChannel15->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer15, oldGain[15], newGain[15], iBufferSize);
         EngineMaster::ChannelInfo* pChannel16 = activeChannels->at(16);
         const int channelIndex16 = pChannel16->m_index;
         EngineMaster::GainCache& gainCache16 = (*channelGainCache)[channelIndex16];
@@ -11053,7 +10785,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache16.m_gain = newGain[16];
         CSAMPLE* pBuffer16 = pChannel16->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer16, oldGain[16], newGain[16], iBufferSize);
         EngineMaster::ChannelInfo* pChannel17 = activeChannels->at(17);
         const int channelIndex17 = pChannel17->m_index;
         EngineMaster::GainCache& gainCache17 = (*channelGainCache)[channelIndex17];
@@ -11066,7 +10797,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache17.m_gain = newGain[17];
         CSAMPLE* pBuffer17 = pChannel17->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer17, oldGain[17], newGain[17], iBufferSize);
         EngineMaster::ChannelInfo* pChannel18 = activeChannels->at(18);
         const int channelIndex18 = pChannel18->m_index;
         EngineMaster::GainCache& gainCache18 = (*channelGainCache)[channelIndex18];
@@ -11079,7 +10809,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache18.m_gain = newGain[18];
         CSAMPLE* pBuffer18 = pChannel18->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer18, oldGain[18], newGain[18], iBufferSize);
         EngineMaster::ChannelInfo* pChannel19 = activeChannels->at(19);
         const int channelIndex19 = pChannel19->m_index;
         EngineMaster::GainCache& gainCache19 = (*channelGainCache)[channelIndex19];
@@ -11092,7 +10821,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache19.m_gain = newGain[19];
         CSAMPLE* pBuffer19 = pChannel19->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer19, oldGain[19], newGain[19], iBufferSize);
         EngineMaster::ChannelInfo* pChannel20 = activeChannels->at(20);
         const int channelIndex20 = pChannel20->m_index;
         EngineMaster::GainCache& gainCache20 = (*channelGainCache)[channelIndex20];
@@ -11105,7 +10833,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache20.m_gain = newGain[20];
         CSAMPLE* pBuffer20 = pChannel20->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer20, oldGain[20], newGain[20], iBufferSize);
         EngineMaster::ChannelInfo* pChannel21 = activeChannels->at(21);
         const int channelIndex21 = pChannel21->m_index;
         EngineMaster::GainCache& gainCache21 = (*channelGainCache)[channelIndex21];
@@ -11118,7 +10845,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache21.m_gain = newGain[21];
         CSAMPLE* pBuffer21 = pChannel21->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer21, oldGain[21], newGain[21], iBufferSize);
         EngineMaster::ChannelInfo* pChannel22 = activeChannels->at(22);
         const int channelIndex22 = pChannel22->m_index;
         EngineMaster::GainCache& gainCache22 = (*channelGainCache)[channelIndex22];
@@ -11131,31 +10857,30 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache22.m_gain = newGain[22];
         CSAMPLE* pBuffer22 = pChannel22->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer22, oldGain[22], newGain[22], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features, oldGain[9], newGain[9]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features, oldGain[10], newGain[10]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features, oldGain[11], newGain[11]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features, oldGain[12], newGain[12]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features, oldGain[13], newGain[13]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features, oldGain[14], newGain[14]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features, oldGain[15], newGain[15]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features, oldGain[16], newGain[16]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features, oldGain[17], newGain[17]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features, oldGain[18], newGain[18]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features, oldGain[19], newGain[19]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features, oldGain[20], newGain[20]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features, oldGain[21], newGain[21]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features, oldGain[22], newGain[22]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i] + pBuffer20[i] + pBuffer21[i] + pBuffer22[i];
@@ -11176,7 +10901,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -11189,7 +10913,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -11202,7 +10925,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -11215,7 +10937,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -11228,7 +10949,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -11241,7 +10961,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -11254,7 +10973,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         EngineMaster::ChannelInfo* pChannel7 = activeChannels->at(7);
         const int channelIndex7 = pChannel7->m_index;
         EngineMaster::GainCache& gainCache7 = (*channelGainCache)[channelIndex7];
@@ -11267,7 +10985,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache7.m_gain = newGain[7];
         CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         EngineMaster::ChannelInfo* pChannel8 = activeChannels->at(8);
         const int channelIndex8 = pChannel8->m_index;
         EngineMaster::GainCache& gainCache8 = (*channelGainCache)[channelIndex8];
@@ -11280,7 +10997,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache8.m_gain = newGain[8];
         CSAMPLE* pBuffer8 = pChannel8->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer8, oldGain[8], newGain[8], iBufferSize);
         EngineMaster::ChannelInfo* pChannel9 = activeChannels->at(9);
         const int channelIndex9 = pChannel9->m_index;
         EngineMaster::GainCache& gainCache9 = (*channelGainCache)[channelIndex9];
@@ -11293,7 +11009,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache9.m_gain = newGain[9];
         CSAMPLE* pBuffer9 = pChannel9->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer9, oldGain[9], newGain[9], iBufferSize);
         EngineMaster::ChannelInfo* pChannel10 = activeChannels->at(10);
         const int channelIndex10 = pChannel10->m_index;
         EngineMaster::GainCache& gainCache10 = (*channelGainCache)[channelIndex10];
@@ -11306,7 +11021,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache10.m_gain = newGain[10];
         CSAMPLE* pBuffer10 = pChannel10->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer10, oldGain[10], newGain[10], iBufferSize);
         EngineMaster::ChannelInfo* pChannel11 = activeChannels->at(11);
         const int channelIndex11 = pChannel11->m_index;
         EngineMaster::GainCache& gainCache11 = (*channelGainCache)[channelIndex11];
@@ -11319,7 +11033,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache11.m_gain = newGain[11];
         CSAMPLE* pBuffer11 = pChannel11->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer11, oldGain[11], newGain[11], iBufferSize);
         EngineMaster::ChannelInfo* pChannel12 = activeChannels->at(12);
         const int channelIndex12 = pChannel12->m_index;
         EngineMaster::GainCache& gainCache12 = (*channelGainCache)[channelIndex12];
@@ -11332,7 +11045,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache12.m_gain = newGain[12];
         CSAMPLE* pBuffer12 = pChannel12->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer12, oldGain[12], newGain[12], iBufferSize);
         EngineMaster::ChannelInfo* pChannel13 = activeChannels->at(13);
         const int channelIndex13 = pChannel13->m_index;
         EngineMaster::GainCache& gainCache13 = (*channelGainCache)[channelIndex13];
@@ -11345,7 +11057,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache13.m_gain = newGain[13];
         CSAMPLE* pBuffer13 = pChannel13->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer13, oldGain[13], newGain[13], iBufferSize);
         EngineMaster::ChannelInfo* pChannel14 = activeChannels->at(14);
         const int channelIndex14 = pChannel14->m_index;
         EngineMaster::GainCache& gainCache14 = (*channelGainCache)[channelIndex14];
@@ -11358,7 +11069,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache14.m_gain = newGain[14];
         CSAMPLE* pBuffer14 = pChannel14->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer14, oldGain[14], newGain[14], iBufferSize);
         EngineMaster::ChannelInfo* pChannel15 = activeChannels->at(15);
         const int channelIndex15 = pChannel15->m_index;
         EngineMaster::GainCache& gainCache15 = (*channelGainCache)[channelIndex15];
@@ -11371,7 +11081,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache15.m_gain = newGain[15];
         CSAMPLE* pBuffer15 = pChannel15->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer15, oldGain[15], newGain[15], iBufferSize);
         EngineMaster::ChannelInfo* pChannel16 = activeChannels->at(16);
         const int channelIndex16 = pChannel16->m_index;
         EngineMaster::GainCache& gainCache16 = (*channelGainCache)[channelIndex16];
@@ -11384,7 +11093,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache16.m_gain = newGain[16];
         CSAMPLE* pBuffer16 = pChannel16->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer16, oldGain[16], newGain[16], iBufferSize);
         EngineMaster::ChannelInfo* pChannel17 = activeChannels->at(17);
         const int channelIndex17 = pChannel17->m_index;
         EngineMaster::GainCache& gainCache17 = (*channelGainCache)[channelIndex17];
@@ -11397,7 +11105,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache17.m_gain = newGain[17];
         CSAMPLE* pBuffer17 = pChannel17->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer17, oldGain[17], newGain[17], iBufferSize);
         EngineMaster::ChannelInfo* pChannel18 = activeChannels->at(18);
         const int channelIndex18 = pChannel18->m_index;
         EngineMaster::GainCache& gainCache18 = (*channelGainCache)[channelIndex18];
@@ -11410,7 +11117,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache18.m_gain = newGain[18];
         CSAMPLE* pBuffer18 = pChannel18->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer18, oldGain[18], newGain[18], iBufferSize);
         EngineMaster::ChannelInfo* pChannel19 = activeChannels->at(19);
         const int channelIndex19 = pChannel19->m_index;
         EngineMaster::GainCache& gainCache19 = (*channelGainCache)[channelIndex19];
@@ -11423,7 +11129,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache19.m_gain = newGain[19];
         CSAMPLE* pBuffer19 = pChannel19->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer19, oldGain[19], newGain[19], iBufferSize);
         EngineMaster::ChannelInfo* pChannel20 = activeChannels->at(20);
         const int channelIndex20 = pChannel20->m_index;
         EngineMaster::GainCache& gainCache20 = (*channelGainCache)[channelIndex20];
@@ -11436,7 +11141,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache20.m_gain = newGain[20];
         CSAMPLE* pBuffer20 = pChannel20->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer20, oldGain[20], newGain[20], iBufferSize);
         EngineMaster::ChannelInfo* pChannel21 = activeChannels->at(21);
         const int channelIndex21 = pChannel21->m_index;
         EngineMaster::GainCache& gainCache21 = (*channelGainCache)[channelIndex21];
@@ -11449,7 +11153,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache21.m_gain = newGain[21];
         CSAMPLE* pBuffer21 = pChannel21->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer21, oldGain[21], newGain[21], iBufferSize);
         EngineMaster::ChannelInfo* pChannel22 = activeChannels->at(22);
         const int channelIndex22 = pChannel22->m_index;
         EngineMaster::GainCache& gainCache22 = (*channelGainCache)[channelIndex22];
@@ -11462,7 +11165,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache22.m_gain = newGain[22];
         CSAMPLE* pBuffer22 = pChannel22->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer22, oldGain[22], newGain[22], iBufferSize);
         EngineMaster::ChannelInfo* pChannel23 = activeChannels->at(23);
         const int channelIndex23 = pChannel23->m_index;
         EngineMaster::GainCache& gainCache23 = (*channelGainCache)[channelIndex23];
@@ -11475,32 +11177,31 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache23.m_gain = newGain[23];
         CSAMPLE* pBuffer23 = pChannel23->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer23, oldGain[23], newGain[23], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features, oldGain[9], newGain[9]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features, oldGain[10], newGain[10]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features, oldGain[11], newGain[11]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features, oldGain[12], newGain[12]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features, oldGain[13], newGain[13]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features, oldGain[14], newGain[14]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features, oldGain[15], newGain[15]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features, oldGain[16], newGain[16]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features, oldGain[17], newGain[17]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features, oldGain[18], newGain[18]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features, oldGain[19], newGain[19]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features, oldGain[20], newGain[20]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features, oldGain[21], newGain[21]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features, oldGain[22], newGain[22]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features, oldGain[23], newGain[23]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i] + pBuffer20[i] + pBuffer21[i] + pBuffer22[i] + pBuffer23[i];
@@ -11521,7 +11222,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -11534,7 +11234,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -11547,7 +11246,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -11560,7 +11258,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -11573,7 +11270,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -11586,7 +11282,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -11599,7 +11294,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         EngineMaster::ChannelInfo* pChannel7 = activeChannels->at(7);
         const int channelIndex7 = pChannel7->m_index;
         EngineMaster::GainCache& gainCache7 = (*channelGainCache)[channelIndex7];
@@ -11612,7 +11306,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache7.m_gain = newGain[7];
         CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         EngineMaster::ChannelInfo* pChannel8 = activeChannels->at(8);
         const int channelIndex8 = pChannel8->m_index;
         EngineMaster::GainCache& gainCache8 = (*channelGainCache)[channelIndex8];
@@ -11625,7 +11318,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache8.m_gain = newGain[8];
         CSAMPLE* pBuffer8 = pChannel8->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer8, oldGain[8], newGain[8], iBufferSize);
         EngineMaster::ChannelInfo* pChannel9 = activeChannels->at(9);
         const int channelIndex9 = pChannel9->m_index;
         EngineMaster::GainCache& gainCache9 = (*channelGainCache)[channelIndex9];
@@ -11638,7 +11330,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache9.m_gain = newGain[9];
         CSAMPLE* pBuffer9 = pChannel9->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer9, oldGain[9], newGain[9], iBufferSize);
         EngineMaster::ChannelInfo* pChannel10 = activeChannels->at(10);
         const int channelIndex10 = pChannel10->m_index;
         EngineMaster::GainCache& gainCache10 = (*channelGainCache)[channelIndex10];
@@ -11651,7 +11342,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache10.m_gain = newGain[10];
         CSAMPLE* pBuffer10 = pChannel10->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer10, oldGain[10], newGain[10], iBufferSize);
         EngineMaster::ChannelInfo* pChannel11 = activeChannels->at(11);
         const int channelIndex11 = pChannel11->m_index;
         EngineMaster::GainCache& gainCache11 = (*channelGainCache)[channelIndex11];
@@ -11664,7 +11354,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache11.m_gain = newGain[11];
         CSAMPLE* pBuffer11 = pChannel11->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer11, oldGain[11], newGain[11], iBufferSize);
         EngineMaster::ChannelInfo* pChannel12 = activeChannels->at(12);
         const int channelIndex12 = pChannel12->m_index;
         EngineMaster::GainCache& gainCache12 = (*channelGainCache)[channelIndex12];
@@ -11677,7 +11366,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache12.m_gain = newGain[12];
         CSAMPLE* pBuffer12 = pChannel12->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer12, oldGain[12], newGain[12], iBufferSize);
         EngineMaster::ChannelInfo* pChannel13 = activeChannels->at(13);
         const int channelIndex13 = pChannel13->m_index;
         EngineMaster::GainCache& gainCache13 = (*channelGainCache)[channelIndex13];
@@ -11690,7 +11378,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache13.m_gain = newGain[13];
         CSAMPLE* pBuffer13 = pChannel13->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer13, oldGain[13], newGain[13], iBufferSize);
         EngineMaster::ChannelInfo* pChannel14 = activeChannels->at(14);
         const int channelIndex14 = pChannel14->m_index;
         EngineMaster::GainCache& gainCache14 = (*channelGainCache)[channelIndex14];
@@ -11703,7 +11390,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache14.m_gain = newGain[14];
         CSAMPLE* pBuffer14 = pChannel14->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer14, oldGain[14], newGain[14], iBufferSize);
         EngineMaster::ChannelInfo* pChannel15 = activeChannels->at(15);
         const int channelIndex15 = pChannel15->m_index;
         EngineMaster::GainCache& gainCache15 = (*channelGainCache)[channelIndex15];
@@ -11716,7 +11402,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache15.m_gain = newGain[15];
         CSAMPLE* pBuffer15 = pChannel15->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer15, oldGain[15], newGain[15], iBufferSize);
         EngineMaster::ChannelInfo* pChannel16 = activeChannels->at(16);
         const int channelIndex16 = pChannel16->m_index;
         EngineMaster::GainCache& gainCache16 = (*channelGainCache)[channelIndex16];
@@ -11729,7 +11414,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache16.m_gain = newGain[16];
         CSAMPLE* pBuffer16 = pChannel16->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer16, oldGain[16], newGain[16], iBufferSize);
         EngineMaster::ChannelInfo* pChannel17 = activeChannels->at(17);
         const int channelIndex17 = pChannel17->m_index;
         EngineMaster::GainCache& gainCache17 = (*channelGainCache)[channelIndex17];
@@ -11742,7 +11426,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache17.m_gain = newGain[17];
         CSAMPLE* pBuffer17 = pChannel17->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer17, oldGain[17], newGain[17], iBufferSize);
         EngineMaster::ChannelInfo* pChannel18 = activeChannels->at(18);
         const int channelIndex18 = pChannel18->m_index;
         EngineMaster::GainCache& gainCache18 = (*channelGainCache)[channelIndex18];
@@ -11755,7 +11438,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache18.m_gain = newGain[18];
         CSAMPLE* pBuffer18 = pChannel18->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer18, oldGain[18], newGain[18], iBufferSize);
         EngineMaster::ChannelInfo* pChannel19 = activeChannels->at(19);
         const int channelIndex19 = pChannel19->m_index;
         EngineMaster::GainCache& gainCache19 = (*channelGainCache)[channelIndex19];
@@ -11768,7 +11450,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache19.m_gain = newGain[19];
         CSAMPLE* pBuffer19 = pChannel19->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer19, oldGain[19], newGain[19], iBufferSize);
         EngineMaster::ChannelInfo* pChannel20 = activeChannels->at(20);
         const int channelIndex20 = pChannel20->m_index;
         EngineMaster::GainCache& gainCache20 = (*channelGainCache)[channelIndex20];
@@ -11781,7 +11462,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache20.m_gain = newGain[20];
         CSAMPLE* pBuffer20 = pChannel20->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer20, oldGain[20], newGain[20], iBufferSize);
         EngineMaster::ChannelInfo* pChannel21 = activeChannels->at(21);
         const int channelIndex21 = pChannel21->m_index;
         EngineMaster::GainCache& gainCache21 = (*channelGainCache)[channelIndex21];
@@ -11794,7 +11474,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache21.m_gain = newGain[21];
         CSAMPLE* pBuffer21 = pChannel21->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer21, oldGain[21], newGain[21], iBufferSize);
         EngineMaster::ChannelInfo* pChannel22 = activeChannels->at(22);
         const int channelIndex22 = pChannel22->m_index;
         EngineMaster::GainCache& gainCache22 = (*channelGainCache)[channelIndex22];
@@ -11807,7 +11486,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache22.m_gain = newGain[22];
         CSAMPLE* pBuffer22 = pChannel22->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer22, oldGain[22], newGain[22], iBufferSize);
         EngineMaster::ChannelInfo* pChannel23 = activeChannels->at(23);
         const int channelIndex23 = pChannel23->m_index;
         EngineMaster::GainCache& gainCache23 = (*channelGainCache)[channelIndex23];
@@ -11820,7 +11498,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache23.m_gain = newGain[23];
         CSAMPLE* pBuffer23 = pChannel23->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer23, oldGain[23], newGain[23], iBufferSize);
         EngineMaster::ChannelInfo* pChannel24 = activeChannels->at(24);
         const int channelIndex24 = pChannel24->m_index;
         EngineMaster::GainCache& gainCache24 = (*channelGainCache)[channelIndex24];
@@ -11833,33 +11510,32 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache24.m_gain = newGain[24];
         CSAMPLE* pBuffer24 = pChannel24->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer24, oldGain[24], newGain[24], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features, oldGain[9], newGain[9]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features, oldGain[10], newGain[10]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features, oldGain[11], newGain[11]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features, oldGain[12], newGain[12]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features, oldGain[13], newGain[13]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features, oldGain[14], newGain[14]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features, oldGain[15], newGain[15]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features, oldGain[16], newGain[16]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features, oldGain[17], newGain[17]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features, oldGain[18], newGain[18]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features, oldGain[19], newGain[19]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features, oldGain[20], newGain[20]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features, oldGain[21], newGain[21]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features, oldGain[22], newGain[22]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features, oldGain[23], newGain[23]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features, oldGain[24], newGain[24]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i] + pBuffer20[i] + pBuffer21[i] + pBuffer22[i] + pBuffer23[i] + pBuffer24[i];
@@ -11880,7 +11556,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -11893,7 +11568,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -11906,7 +11580,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -11919,7 +11592,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -11932,7 +11604,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -11945,7 +11616,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -11958,7 +11628,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         EngineMaster::ChannelInfo* pChannel7 = activeChannels->at(7);
         const int channelIndex7 = pChannel7->m_index;
         EngineMaster::GainCache& gainCache7 = (*channelGainCache)[channelIndex7];
@@ -11971,7 +11640,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache7.m_gain = newGain[7];
         CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         EngineMaster::ChannelInfo* pChannel8 = activeChannels->at(8);
         const int channelIndex8 = pChannel8->m_index;
         EngineMaster::GainCache& gainCache8 = (*channelGainCache)[channelIndex8];
@@ -11984,7 +11652,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache8.m_gain = newGain[8];
         CSAMPLE* pBuffer8 = pChannel8->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer8, oldGain[8], newGain[8], iBufferSize);
         EngineMaster::ChannelInfo* pChannel9 = activeChannels->at(9);
         const int channelIndex9 = pChannel9->m_index;
         EngineMaster::GainCache& gainCache9 = (*channelGainCache)[channelIndex9];
@@ -11997,7 +11664,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache9.m_gain = newGain[9];
         CSAMPLE* pBuffer9 = pChannel9->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer9, oldGain[9], newGain[9], iBufferSize);
         EngineMaster::ChannelInfo* pChannel10 = activeChannels->at(10);
         const int channelIndex10 = pChannel10->m_index;
         EngineMaster::GainCache& gainCache10 = (*channelGainCache)[channelIndex10];
@@ -12010,7 +11676,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache10.m_gain = newGain[10];
         CSAMPLE* pBuffer10 = pChannel10->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer10, oldGain[10], newGain[10], iBufferSize);
         EngineMaster::ChannelInfo* pChannel11 = activeChannels->at(11);
         const int channelIndex11 = pChannel11->m_index;
         EngineMaster::GainCache& gainCache11 = (*channelGainCache)[channelIndex11];
@@ -12023,7 +11688,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache11.m_gain = newGain[11];
         CSAMPLE* pBuffer11 = pChannel11->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer11, oldGain[11], newGain[11], iBufferSize);
         EngineMaster::ChannelInfo* pChannel12 = activeChannels->at(12);
         const int channelIndex12 = pChannel12->m_index;
         EngineMaster::GainCache& gainCache12 = (*channelGainCache)[channelIndex12];
@@ -12036,7 +11700,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache12.m_gain = newGain[12];
         CSAMPLE* pBuffer12 = pChannel12->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer12, oldGain[12], newGain[12], iBufferSize);
         EngineMaster::ChannelInfo* pChannel13 = activeChannels->at(13);
         const int channelIndex13 = pChannel13->m_index;
         EngineMaster::GainCache& gainCache13 = (*channelGainCache)[channelIndex13];
@@ -12049,7 +11712,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache13.m_gain = newGain[13];
         CSAMPLE* pBuffer13 = pChannel13->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer13, oldGain[13], newGain[13], iBufferSize);
         EngineMaster::ChannelInfo* pChannel14 = activeChannels->at(14);
         const int channelIndex14 = pChannel14->m_index;
         EngineMaster::GainCache& gainCache14 = (*channelGainCache)[channelIndex14];
@@ -12062,7 +11724,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache14.m_gain = newGain[14];
         CSAMPLE* pBuffer14 = pChannel14->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer14, oldGain[14], newGain[14], iBufferSize);
         EngineMaster::ChannelInfo* pChannel15 = activeChannels->at(15);
         const int channelIndex15 = pChannel15->m_index;
         EngineMaster::GainCache& gainCache15 = (*channelGainCache)[channelIndex15];
@@ -12075,7 +11736,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache15.m_gain = newGain[15];
         CSAMPLE* pBuffer15 = pChannel15->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer15, oldGain[15], newGain[15], iBufferSize);
         EngineMaster::ChannelInfo* pChannel16 = activeChannels->at(16);
         const int channelIndex16 = pChannel16->m_index;
         EngineMaster::GainCache& gainCache16 = (*channelGainCache)[channelIndex16];
@@ -12088,7 +11748,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache16.m_gain = newGain[16];
         CSAMPLE* pBuffer16 = pChannel16->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer16, oldGain[16], newGain[16], iBufferSize);
         EngineMaster::ChannelInfo* pChannel17 = activeChannels->at(17);
         const int channelIndex17 = pChannel17->m_index;
         EngineMaster::GainCache& gainCache17 = (*channelGainCache)[channelIndex17];
@@ -12101,7 +11760,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache17.m_gain = newGain[17];
         CSAMPLE* pBuffer17 = pChannel17->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer17, oldGain[17], newGain[17], iBufferSize);
         EngineMaster::ChannelInfo* pChannel18 = activeChannels->at(18);
         const int channelIndex18 = pChannel18->m_index;
         EngineMaster::GainCache& gainCache18 = (*channelGainCache)[channelIndex18];
@@ -12114,7 +11772,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache18.m_gain = newGain[18];
         CSAMPLE* pBuffer18 = pChannel18->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer18, oldGain[18], newGain[18], iBufferSize);
         EngineMaster::ChannelInfo* pChannel19 = activeChannels->at(19);
         const int channelIndex19 = pChannel19->m_index;
         EngineMaster::GainCache& gainCache19 = (*channelGainCache)[channelIndex19];
@@ -12127,7 +11784,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache19.m_gain = newGain[19];
         CSAMPLE* pBuffer19 = pChannel19->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer19, oldGain[19], newGain[19], iBufferSize);
         EngineMaster::ChannelInfo* pChannel20 = activeChannels->at(20);
         const int channelIndex20 = pChannel20->m_index;
         EngineMaster::GainCache& gainCache20 = (*channelGainCache)[channelIndex20];
@@ -12140,7 +11796,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache20.m_gain = newGain[20];
         CSAMPLE* pBuffer20 = pChannel20->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer20, oldGain[20], newGain[20], iBufferSize);
         EngineMaster::ChannelInfo* pChannel21 = activeChannels->at(21);
         const int channelIndex21 = pChannel21->m_index;
         EngineMaster::GainCache& gainCache21 = (*channelGainCache)[channelIndex21];
@@ -12153,7 +11808,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache21.m_gain = newGain[21];
         CSAMPLE* pBuffer21 = pChannel21->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer21, oldGain[21], newGain[21], iBufferSize);
         EngineMaster::ChannelInfo* pChannel22 = activeChannels->at(22);
         const int channelIndex22 = pChannel22->m_index;
         EngineMaster::GainCache& gainCache22 = (*channelGainCache)[channelIndex22];
@@ -12166,7 +11820,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache22.m_gain = newGain[22];
         CSAMPLE* pBuffer22 = pChannel22->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer22, oldGain[22], newGain[22], iBufferSize);
         EngineMaster::ChannelInfo* pChannel23 = activeChannels->at(23);
         const int channelIndex23 = pChannel23->m_index;
         EngineMaster::GainCache& gainCache23 = (*channelGainCache)[channelIndex23];
@@ -12179,7 +11832,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache23.m_gain = newGain[23];
         CSAMPLE* pBuffer23 = pChannel23->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer23, oldGain[23], newGain[23], iBufferSize);
         EngineMaster::ChannelInfo* pChannel24 = activeChannels->at(24);
         const int channelIndex24 = pChannel24->m_index;
         EngineMaster::GainCache& gainCache24 = (*channelGainCache)[channelIndex24];
@@ -12192,7 +11844,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache24.m_gain = newGain[24];
         CSAMPLE* pBuffer24 = pChannel24->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer24, oldGain[24], newGain[24], iBufferSize);
         EngineMaster::ChannelInfo* pChannel25 = activeChannels->at(25);
         const int channelIndex25 = pChannel25->m_index;
         EngineMaster::GainCache& gainCache25 = (*channelGainCache)[channelIndex25];
@@ -12205,34 +11856,33 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache25.m_gain = newGain[25];
         CSAMPLE* pBuffer25 = pChannel25->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer25, oldGain[25], newGain[25], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features, oldGain[9], newGain[9]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features, oldGain[10], newGain[10]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features, oldGain[11], newGain[11]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features, oldGain[12], newGain[12]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features, oldGain[13], newGain[13]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features, oldGain[14], newGain[14]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features, oldGain[15], newGain[15]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features, oldGain[16], newGain[16]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features, oldGain[17], newGain[17]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features, oldGain[18], newGain[18]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features, oldGain[19], newGain[19]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features, oldGain[20], newGain[20]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features, oldGain[21], newGain[21]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features, oldGain[22], newGain[22]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features, oldGain[23], newGain[23]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features, oldGain[24], newGain[24]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features, oldGain[25], newGain[25]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i] + pBuffer20[i] + pBuffer21[i] + pBuffer22[i] + pBuffer23[i] + pBuffer24[i] + pBuffer25[i];
@@ -12253,7 +11903,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -12266,7 +11915,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -12279,7 +11927,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -12292,7 +11939,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -12305,7 +11951,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -12318,7 +11963,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -12331,7 +11975,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         EngineMaster::ChannelInfo* pChannel7 = activeChannels->at(7);
         const int channelIndex7 = pChannel7->m_index;
         EngineMaster::GainCache& gainCache7 = (*channelGainCache)[channelIndex7];
@@ -12344,7 +11987,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache7.m_gain = newGain[7];
         CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         EngineMaster::ChannelInfo* pChannel8 = activeChannels->at(8);
         const int channelIndex8 = pChannel8->m_index;
         EngineMaster::GainCache& gainCache8 = (*channelGainCache)[channelIndex8];
@@ -12357,7 +11999,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache8.m_gain = newGain[8];
         CSAMPLE* pBuffer8 = pChannel8->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer8, oldGain[8], newGain[8], iBufferSize);
         EngineMaster::ChannelInfo* pChannel9 = activeChannels->at(9);
         const int channelIndex9 = pChannel9->m_index;
         EngineMaster::GainCache& gainCache9 = (*channelGainCache)[channelIndex9];
@@ -12370,7 +12011,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache9.m_gain = newGain[9];
         CSAMPLE* pBuffer9 = pChannel9->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer9, oldGain[9], newGain[9], iBufferSize);
         EngineMaster::ChannelInfo* pChannel10 = activeChannels->at(10);
         const int channelIndex10 = pChannel10->m_index;
         EngineMaster::GainCache& gainCache10 = (*channelGainCache)[channelIndex10];
@@ -12383,7 +12023,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache10.m_gain = newGain[10];
         CSAMPLE* pBuffer10 = pChannel10->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer10, oldGain[10], newGain[10], iBufferSize);
         EngineMaster::ChannelInfo* pChannel11 = activeChannels->at(11);
         const int channelIndex11 = pChannel11->m_index;
         EngineMaster::GainCache& gainCache11 = (*channelGainCache)[channelIndex11];
@@ -12396,7 +12035,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache11.m_gain = newGain[11];
         CSAMPLE* pBuffer11 = pChannel11->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer11, oldGain[11], newGain[11], iBufferSize);
         EngineMaster::ChannelInfo* pChannel12 = activeChannels->at(12);
         const int channelIndex12 = pChannel12->m_index;
         EngineMaster::GainCache& gainCache12 = (*channelGainCache)[channelIndex12];
@@ -12409,7 +12047,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache12.m_gain = newGain[12];
         CSAMPLE* pBuffer12 = pChannel12->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer12, oldGain[12], newGain[12], iBufferSize);
         EngineMaster::ChannelInfo* pChannel13 = activeChannels->at(13);
         const int channelIndex13 = pChannel13->m_index;
         EngineMaster::GainCache& gainCache13 = (*channelGainCache)[channelIndex13];
@@ -12422,7 +12059,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache13.m_gain = newGain[13];
         CSAMPLE* pBuffer13 = pChannel13->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer13, oldGain[13], newGain[13], iBufferSize);
         EngineMaster::ChannelInfo* pChannel14 = activeChannels->at(14);
         const int channelIndex14 = pChannel14->m_index;
         EngineMaster::GainCache& gainCache14 = (*channelGainCache)[channelIndex14];
@@ -12435,7 +12071,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache14.m_gain = newGain[14];
         CSAMPLE* pBuffer14 = pChannel14->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer14, oldGain[14], newGain[14], iBufferSize);
         EngineMaster::ChannelInfo* pChannel15 = activeChannels->at(15);
         const int channelIndex15 = pChannel15->m_index;
         EngineMaster::GainCache& gainCache15 = (*channelGainCache)[channelIndex15];
@@ -12448,7 +12083,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache15.m_gain = newGain[15];
         CSAMPLE* pBuffer15 = pChannel15->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer15, oldGain[15], newGain[15], iBufferSize);
         EngineMaster::ChannelInfo* pChannel16 = activeChannels->at(16);
         const int channelIndex16 = pChannel16->m_index;
         EngineMaster::GainCache& gainCache16 = (*channelGainCache)[channelIndex16];
@@ -12461,7 +12095,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache16.m_gain = newGain[16];
         CSAMPLE* pBuffer16 = pChannel16->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer16, oldGain[16], newGain[16], iBufferSize);
         EngineMaster::ChannelInfo* pChannel17 = activeChannels->at(17);
         const int channelIndex17 = pChannel17->m_index;
         EngineMaster::GainCache& gainCache17 = (*channelGainCache)[channelIndex17];
@@ -12474,7 +12107,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache17.m_gain = newGain[17];
         CSAMPLE* pBuffer17 = pChannel17->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer17, oldGain[17], newGain[17], iBufferSize);
         EngineMaster::ChannelInfo* pChannel18 = activeChannels->at(18);
         const int channelIndex18 = pChannel18->m_index;
         EngineMaster::GainCache& gainCache18 = (*channelGainCache)[channelIndex18];
@@ -12487,7 +12119,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache18.m_gain = newGain[18];
         CSAMPLE* pBuffer18 = pChannel18->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer18, oldGain[18], newGain[18], iBufferSize);
         EngineMaster::ChannelInfo* pChannel19 = activeChannels->at(19);
         const int channelIndex19 = pChannel19->m_index;
         EngineMaster::GainCache& gainCache19 = (*channelGainCache)[channelIndex19];
@@ -12500,7 +12131,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache19.m_gain = newGain[19];
         CSAMPLE* pBuffer19 = pChannel19->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer19, oldGain[19], newGain[19], iBufferSize);
         EngineMaster::ChannelInfo* pChannel20 = activeChannels->at(20);
         const int channelIndex20 = pChannel20->m_index;
         EngineMaster::GainCache& gainCache20 = (*channelGainCache)[channelIndex20];
@@ -12513,7 +12143,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache20.m_gain = newGain[20];
         CSAMPLE* pBuffer20 = pChannel20->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer20, oldGain[20], newGain[20], iBufferSize);
         EngineMaster::ChannelInfo* pChannel21 = activeChannels->at(21);
         const int channelIndex21 = pChannel21->m_index;
         EngineMaster::GainCache& gainCache21 = (*channelGainCache)[channelIndex21];
@@ -12526,7 +12155,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache21.m_gain = newGain[21];
         CSAMPLE* pBuffer21 = pChannel21->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer21, oldGain[21], newGain[21], iBufferSize);
         EngineMaster::ChannelInfo* pChannel22 = activeChannels->at(22);
         const int channelIndex22 = pChannel22->m_index;
         EngineMaster::GainCache& gainCache22 = (*channelGainCache)[channelIndex22];
@@ -12539,7 +12167,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache22.m_gain = newGain[22];
         CSAMPLE* pBuffer22 = pChannel22->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer22, oldGain[22], newGain[22], iBufferSize);
         EngineMaster::ChannelInfo* pChannel23 = activeChannels->at(23);
         const int channelIndex23 = pChannel23->m_index;
         EngineMaster::GainCache& gainCache23 = (*channelGainCache)[channelIndex23];
@@ -12552,7 +12179,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache23.m_gain = newGain[23];
         CSAMPLE* pBuffer23 = pChannel23->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer23, oldGain[23], newGain[23], iBufferSize);
         EngineMaster::ChannelInfo* pChannel24 = activeChannels->at(24);
         const int channelIndex24 = pChannel24->m_index;
         EngineMaster::GainCache& gainCache24 = (*channelGainCache)[channelIndex24];
@@ -12565,7 +12191,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache24.m_gain = newGain[24];
         CSAMPLE* pBuffer24 = pChannel24->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer24, oldGain[24], newGain[24], iBufferSize);
         EngineMaster::ChannelInfo* pChannel25 = activeChannels->at(25);
         const int channelIndex25 = pChannel25->m_index;
         EngineMaster::GainCache& gainCache25 = (*channelGainCache)[channelIndex25];
@@ -12578,7 +12203,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache25.m_gain = newGain[25];
         CSAMPLE* pBuffer25 = pChannel25->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer25, oldGain[25], newGain[25], iBufferSize);
         EngineMaster::ChannelInfo* pChannel26 = activeChannels->at(26);
         const int channelIndex26 = pChannel26->m_index;
         EngineMaster::GainCache& gainCache26 = (*channelGainCache)[channelIndex26];
@@ -12591,35 +12215,34 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache26.m_gain = newGain[26];
         CSAMPLE* pBuffer26 = pChannel26->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer26, oldGain[26], newGain[26], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, outputHandle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features, oldGain[9], newGain[9]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features, oldGain[10], newGain[10]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features, oldGain[11], newGain[11]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features, oldGain[12], newGain[12]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features, oldGain[13], newGain[13]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features, oldGain[14], newGain[14]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features, oldGain[15], newGain[15]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features, oldGain[16], newGain[16]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features, oldGain[17], newGain[17]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features, oldGain[18], newGain[18]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features, oldGain[19], newGain[19]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features, oldGain[20], newGain[20]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features, oldGain[21], newGain[21]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features, oldGain[22], newGain[22]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features, oldGain[23], newGain[23]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features, oldGain[24], newGain[24]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features, oldGain[25], newGain[25]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, outputHandle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features, oldGain[26], newGain[26]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i] + pBuffer20[i] + pBuffer21[i] + pBuffer22[i] + pBuffer23[i] + pBuffer24[i] + pBuffer25[i] + pBuffer26[i];
@@ -12640,7 +12263,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -12653,7 +12275,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -12666,7 +12287,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -12679,7 +12299,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -12692,7 +12311,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -12705,7 +12323,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -12718,7 +12335,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         EngineMaster::ChannelInfo* pChannel7 = activeChannels->at(7);
         const int channelIndex7 = pChannel7->m_index;
         EngineMaster::GainCache& gainCache7 = (*channelGainCache)[channelIndex7];
@@ -12731,7 +12347,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache7.m_gain = newGain[7];
         CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         EngineMaster::ChannelInfo* pChannel8 = activeChannels->at(8);
         const int channelIndex8 = pChannel8->m_index;
         EngineMaster::GainCache& gainCache8 = (*channelGainCache)[channelIndex8];
@@ -12744,7 +12359,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache8.m_gain = newGain[8];
         CSAMPLE* pBuffer8 = pChannel8->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer8, oldGain[8], newGain[8], iBufferSize);
         EngineMaster::ChannelInfo* pChannel9 = activeChannels->at(9);
         const int channelIndex9 = pChannel9->m_index;
         EngineMaster::GainCache& gainCache9 = (*channelGainCache)[channelIndex9];
@@ -12757,7 +12371,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache9.m_gain = newGain[9];
         CSAMPLE* pBuffer9 = pChannel9->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer9, oldGain[9], newGain[9], iBufferSize);
         EngineMaster::ChannelInfo* pChannel10 = activeChannels->at(10);
         const int channelIndex10 = pChannel10->m_index;
         EngineMaster::GainCache& gainCache10 = (*channelGainCache)[channelIndex10];
@@ -12770,7 +12383,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache10.m_gain = newGain[10];
         CSAMPLE* pBuffer10 = pChannel10->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer10, oldGain[10], newGain[10], iBufferSize);
         EngineMaster::ChannelInfo* pChannel11 = activeChannels->at(11);
         const int channelIndex11 = pChannel11->m_index;
         EngineMaster::GainCache& gainCache11 = (*channelGainCache)[channelIndex11];
@@ -12783,7 +12395,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache11.m_gain = newGain[11];
         CSAMPLE* pBuffer11 = pChannel11->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer11, oldGain[11], newGain[11], iBufferSize);
         EngineMaster::ChannelInfo* pChannel12 = activeChannels->at(12);
         const int channelIndex12 = pChannel12->m_index;
         EngineMaster::GainCache& gainCache12 = (*channelGainCache)[channelIndex12];
@@ -12796,7 +12407,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache12.m_gain = newGain[12];
         CSAMPLE* pBuffer12 = pChannel12->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer12, oldGain[12], newGain[12], iBufferSize);
         EngineMaster::ChannelInfo* pChannel13 = activeChannels->at(13);
         const int channelIndex13 = pChannel13->m_index;
         EngineMaster::GainCache& gainCache13 = (*channelGainCache)[channelIndex13];
@@ -12809,7 +12419,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache13.m_gain = newGain[13];
         CSAMPLE* pBuffer13 = pChannel13->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer13, oldGain[13], newGain[13], iBufferSize);
         EngineMaster::ChannelInfo* pChannel14 = activeChannels->at(14);
         const int channelIndex14 = pChannel14->m_index;
         EngineMaster::GainCache& gainCache14 = (*channelGainCache)[channelIndex14];
@@ -12822,7 +12431,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache14.m_gain = newGain[14];
         CSAMPLE* pBuffer14 = pChannel14->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer14, oldGain[14], newGain[14], iBufferSize);
         EngineMaster::ChannelInfo* pChannel15 = activeChannels->at(15);
         const int channelIndex15 = pChannel15->m_index;
         EngineMaster::GainCache& gainCache15 = (*channelGainCache)[channelIndex15];
@@ -12835,7 +12443,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache15.m_gain = newGain[15];
         CSAMPLE* pBuffer15 = pChannel15->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer15, oldGain[15], newGain[15], iBufferSize);
         EngineMaster::ChannelInfo* pChannel16 = activeChannels->at(16);
         const int channelIndex16 = pChannel16->m_index;
         EngineMaster::GainCache& gainCache16 = (*channelGainCache)[channelIndex16];
@@ -12848,7 +12455,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache16.m_gain = newGain[16];
         CSAMPLE* pBuffer16 = pChannel16->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer16, oldGain[16], newGain[16], iBufferSize);
         EngineMaster::ChannelInfo* pChannel17 = activeChannels->at(17);
         const int channelIndex17 = pChannel17->m_index;
         EngineMaster::GainCache& gainCache17 = (*channelGainCache)[channelIndex17];
@@ -12861,7 +12467,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache17.m_gain = newGain[17];
         CSAMPLE* pBuffer17 = pChannel17->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer17, oldGain[17], newGain[17], iBufferSize);
         EngineMaster::ChannelInfo* pChannel18 = activeChannels->at(18);
         const int channelIndex18 = pChannel18->m_index;
         EngineMaster::GainCache& gainCache18 = (*channelGainCache)[channelIndex18];
@@ -12874,7 +12479,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache18.m_gain = newGain[18];
         CSAMPLE* pBuffer18 = pChannel18->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer18, oldGain[18], newGain[18], iBufferSize);
         EngineMaster::ChannelInfo* pChannel19 = activeChannels->at(19);
         const int channelIndex19 = pChannel19->m_index;
         EngineMaster::GainCache& gainCache19 = (*channelGainCache)[channelIndex19];
@@ -12887,7 +12491,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache19.m_gain = newGain[19];
         CSAMPLE* pBuffer19 = pChannel19->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer19, oldGain[19], newGain[19], iBufferSize);
         EngineMaster::ChannelInfo* pChannel20 = activeChannels->at(20);
         const int channelIndex20 = pChannel20->m_index;
         EngineMaster::GainCache& gainCache20 = (*channelGainCache)[channelIndex20];
@@ -12900,7 +12503,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache20.m_gain = newGain[20];
         CSAMPLE* pBuffer20 = pChannel20->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer20, oldGain[20], newGain[20], iBufferSize);
         EngineMaster::ChannelInfo* pChannel21 = activeChannels->at(21);
         const int channelIndex21 = pChannel21->m_index;
         EngineMaster::GainCache& gainCache21 = (*channelGainCache)[channelIndex21];
@@ -12913,7 +12515,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache21.m_gain = newGain[21];
         CSAMPLE* pBuffer21 = pChannel21->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer21, oldGain[21], newGain[21], iBufferSize);
         EngineMaster::ChannelInfo* pChannel22 = activeChannels->at(22);
         const int channelIndex22 = pChannel22->m_index;
         EngineMaster::GainCache& gainCache22 = (*channelGainCache)[channelIndex22];
@@ -12926,7 +12527,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache22.m_gain = newGain[22];
         CSAMPLE* pBuffer22 = pChannel22->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer22, oldGain[22], newGain[22], iBufferSize);
         EngineMaster::ChannelInfo* pChannel23 = activeChannels->at(23);
         const int channelIndex23 = pChannel23->m_index;
         EngineMaster::GainCache& gainCache23 = (*channelGainCache)[channelIndex23];
@@ -12939,7 +12539,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache23.m_gain = newGain[23];
         CSAMPLE* pBuffer23 = pChannel23->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer23, oldGain[23], newGain[23], iBufferSize);
         EngineMaster::ChannelInfo* pChannel24 = activeChannels->at(24);
         const int channelIndex24 = pChannel24->m_index;
         EngineMaster::GainCache& gainCache24 = (*channelGainCache)[channelIndex24];
@@ -12952,7 +12551,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache24.m_gain = newGain[24];
         CSAMPLE* pBuffer24 = pChannel24->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer24, oldGain[24], newGain[24], iBufferSize);
         EngineMaster::ChannelInfo* pChannel25 = activeChannels->at(25);
         const int channelIndex25 = pChannel25->m_index;
         EngineMaster::GainCache& gainCache25 = (*channelGainCache)[channelIndex25];
@@ -12965,7 +12563,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache25.m_gain = newGain[25];
         CSAMPLE* pBuffer25 = pChannel25->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer25, oldGain[25], newGain[25], iBufferSize);
         EngineMaster::ChannelInfo* pChannel26 = activeChannels->at(26);
         const int channelIndex26 = pChannel26->m_index;
         EngineMaster::GainCache& gainCache26 = (*channelGainCache)[channelIndex26];
@@ -12978,7 +12575,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache26.m_gain = newGain[26];
         CSAMPLE* pBuffer26 = pChannel26->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer26, oldGain[26], newGain[26], iBufferSize);
         EngineMaster::ChannelInfo* pChannel27 = activeChannels->at(27);
         const int channelIndex27 = pChannel27->m_index;
         EngineMaster::GainCache& gainCache27 = (*channelGainCache)[channelIndex27];
@@ -12991,36 +12587,35 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache27.m_gain = newGain[27];
         CSAMPLE* pBuffer27 = pChannel27->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer27, oldGain[27], newGain[27], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, outputHandle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, outputHandle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features, oldGain[9], newGain[9]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features, oldGain[10], newGain[10]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features, oldGain[11], newGain[11]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features, oldGain[12], newGain[12]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features, oldGain[13], newGain[13]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features, oldGain[14], newGain[14]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features, oldGain[15], newGain[15]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features, oldGain[16], newGain[16]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features, oldGain[17], newGain[17]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features, oldGain[18], newGain[18]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features, oldGain[19], newGain[19]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features, oldGain[20], newGain[20]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features, oldGain[21], newGain[21]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features, oldGain[22], newGain[22]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features, oldGain[23], newGain[23]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features, oldGain[24], newGain[24]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features, oldGain[25], newGain[25]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, outputHandle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features, oldGain[26], newGain[26]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, outputHandle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features, oldGain[27], newGain[27]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i] + pBuffer20[i] + pBuffer21[i] + pBuffer22[i] + pBuffer23[i] + pBuffer24[i] + pBuffer25[i] + pBuffer26[i] + pBuffer27[i];
@@ -13041,7 +12636,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -13054,7 +12648,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -13067,7 +12660,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -13080,7 +12672,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -13093,7 +12684,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -13106,7 +12696,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -13119,7 +12708,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         EngineMaster::ChannelInfo* pChannel7 = activeChannels->at(7);
         const int channelIndex7 = pChannel7->m_index;
         EngineMaster::GainCache& gainCache7 = (*channelGainCache)[channelIndex7];
@@ -13132,7 +12720,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache7.m_gain = newGain[7];
         CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         EngineMaster::ChannelInfo* pChannel8 = activeChannels->at(8);
         const int channelIndex8 = pChannel8->m_index;
         EngineMaster::GainCache& gainCache8 = (*channelGainCache)[channelIndex8];
@@ -13145,7 +12732,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache8.m_gain = newGain[8];
         CSAMPLE* pBuffer8 = pChannel8->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer8, oldGain[8], newGain[8], iBufferSize);
         EngineMaster::ChannelInfo* pChannel9 = activeChannels->at(9);
         const int channelIndex9 = pChannel9->m_index;
         EngineMaster::GainCache& gainCache9 = (*channelGainCache)[channelIndex9];
@@ -13158,7 +12744,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache9.m_gain = newGain[9];
         CSAMPLE* pBuffer9 = pChannel9->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer9, oldGain[9], newGain[9], iBufferSize);
         EngineMaster::ChannelInfo* pChannel10 = activeChannels->at(10);
         const int channelIndex10 = pChannel10->m_index;
         EngineMaster::GainCache& gainCache10 = (*channelGainCache)[channelIndex10];
@@ -13171,7 +12756,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache10.m_gain = newGain[10];
         CSAMPLE* pBuffer10 = pChannel10->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer10, oldGain[10], newGain[10], iBufferSize);
         EngineMaster::ChannelInfo* pChannel11 = activeChannels->at(11);
         const int channelIndex11 = pChannel11->m_index;
         EngineMaster::GainCache& gainCache11 = (*channelGainCache)[channelIndex11];
@@ -13184,7 +12768,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache11.m_gain = newGain[11];
         CSAMPLE* pBuffer11 = pChannel11->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer11, oldGain[11], newGain[11], iBufferSize);
         EngineMaster::ChannelInfo* pChannel12 = activeChannels->at(12);
         const int channelIndex12 = pChannel12->m_index;
         EngineMaster::GainCache& gainCache12 = (*channelGainCache)[channelIndex12];
@@ -13197,7 +12780,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache12.m_gain = newGain[12];
         CSAMPLE* pBuffer12 = pChannel12->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer12, oldGain[12], newGain[12], iBufferSize);
         EngineMaster::ChannelInfo* pChannel13 = activeChannels->at(13);
         const int channelIndex13 = pChannel13->m_index;
         EngineMaster::GainCache& gainCache13 = (*channelGainCache)[channelIndex13];
@@ -13210,7 +12792,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache13.m_gain = newGain[13];
         CSAMPLE* pBuffer13 = pChannel13->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer13, oldGain[13], newGain[13], iBufferSize);
         EngineMaster::ChannelInfo* pChannel14 = activeChannels->at(14);
         const int channelIndex14 = pChannel14->m_index;
         EngineMaster::GainCache& gainCache14 = (*channelGainCache)[channelIndex14];
@@ -13223,7 +12804,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache14.m_gain = newGain[14];
         CSAMPLE* pBuffer14 = pChannel14->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer14, oldGain[14], newGain[14], iBufferSize);
         EngineMaster::ChannelInfo* pChannel15 = activeChannels->at(15);
         const int channelIndex15 = pChannel15->m_index;
         EngineMaster::GainCache& gainCache15 = (*channelGainCache)[channelIndex15];
@@ -13236,7 +12816,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache15.m_gain = newGain[15];
         CSAMPLE* pBuffer15 = pChannel15->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer15, oldGain[15], newGain[15], iBufferSize);
         EngineMaster::ChannelInfo* pChannel16 = activeChannels->at(16);
         const int channelIndex16 = pChannel16->m_index;
         EngineMaster::GainCache& gainCache16 = (*channelGainCache)[channelIndex16];
@@ -13249,7 +12828,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache16.m_gain = newGain[16];
         CSAMPLE* pBuffer16 = pChannel16->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer16, oldGain[16], newGain[16], iBufferSize);
         EngineMaster::ChannelInfo* pChannel17 = activeChannels->at(17);
         const int channelIndex17 = pChannel17->m_index;
         EngineMaster::GainCache& gainCache17 = (*channelGainCache)[channelIndex17];
@@ -13262,7 +12840,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache17.m_gain = newGain[17];
         CSAMPLE* pBuffer17 = pChannel17->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer17, oldGain[17], newGain[17], iBufferSize);
         EngineMaster::ChannelInfo* pChannel18 = activeChannels->at(18);
         const int channelIndex18 = pChannel18->m_index;
         EngineMaster::GainCache& gainCache18 = (*channelGainCache)[channelIndex18];
@@ -13275,7 +12852,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache18.m_gain = newGain[18];
         CSAMPLE* pBuffer18 = pChannel18->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer18, oldGain[18], newGain[18], iBufferSize);
         EngineMaster::ChannelInfo* pChannel19 = activeChannels->at(19);
         const int channelIndex19 = pChannel19->m_index;
         EngineMaster::GainCache& gainCache19 = (*channelGainCache)[channelIndex19];
@@ -13288,7 +12864,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache19.m_gain = newGain[19];
         CSAMPLE* pBuffer19 = pChannel19->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer19, oldGain[19], newGain[19], iBufferSize);
         EngineMaster::ChannelInfo* pChannel20 = activeChannels->at(20);
         const int channelIndex20 = pChannel20->m_index;
         EngineMaster::GainCache& gainCache20 = (*channelGainCache)[channelIndex20];
@@ -13301,7 +12876,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache20.m_gain = newGain[20];
         CSAMPLE* pBuffer20 = pChannel20->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer20, oldGain[20], newGain[20], iBufferSize);
         EngineMaster::ChannelInfo* pChannel21 = activeChannels->at(21);
         const int channelIndex21 = pChannel21->m_index;
         EngineMaster::GainCache& gainCache21 = (*channelGainCache)[channelIndex21];
@@ -13314,7 +12888,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache21.m_gain = newGain[21];
         CSAMPLE* pBuffer21 = pChannel21->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer21, oldGain[21], newGain[21], iBufferSize);
         EngineMaster::ChannelInfo* pChannel22 = activeChannels->at(22);
         const int channelIndex22 = pChannel22->m_index;
         EngineMaster::GainCache& gainCache22 = (*channelGainCache)[channelIndex22];
@@ -13327,7 +12900,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache22.m_gain = newGain[22];
         CSAMPLE* pBuffer22 = pChannel22->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer22, oldGain[22], newGain[22], iBufferSize);
         EngineMaster::ChannelInfo* pChannel23 = activeChannels->at(23);
         const int channelIndex23 = pChannel23->m_index;
         EngineMaster::GainCache& gainCache23 = (*channelGainCache)[channelIndex23];
@@ -13340,7 +12912,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache23.m_gain = newGain[23];
         CSAMPLE* pBuffer23 = pChannel23->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer23, oldGain[23], newGain[23], iBufferSize);
         EngineMaster::ChannelInfo* pChannel24 = activeChannels->at(24);
         const int channelIndex24 = pChannel24->m_index;
         EngineMaster::GainCache& gainCache24 = (*channelGainCache)[channelIndex24];
@@ -13353,7 +12924,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache24.m_gain = newGain[24];
         CSAMPLE* pBuffer24 = pChannel24->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer24, oldGain[24], newGain[24], iBufferSize);
         EngineMaster::ChannelInfo* pChannel25 = activeChannels->at(25);
         const int channelIndex25 = pChannel25->m_index;
         EngineMaster::GainCache& gainCache25 = (*channelGainCache)[channelIndex25];
@@ -13366,7 +12936,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache25.m_gain = newGain[25];
         CSAMPLE* pBuffer25 = pChannel25->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer25, oldGain[25], newGain[25], iBufferSize);
         EngineMaster::ChannelInfo* pChannel26 = activeChannels->at(26);
         const int channelIndex26 = pChannel26->m_index;
         EngineMaster::GainCache& gainCache26 = (*channelGainCache)[channelIndex26];
@@ -13379,7 +12948,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache26.m_gain = newGain[26];
         CSAMPLE* pBuffer26 = pChannel26->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer26, oldGain[26], newGain[26], iBufferSize);
         EngineMaster::ChannelInfo* pChannel27 = activeChannels->at(27);
         const int channelIndex27 = pChannel27->m_index;
         EngineMaster::GainCache& gainCache27 = (*channelGainCache)[channelIndex27];
@@ -13392,7 +12960,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache27.m_gain = newGain[27];
         CSAMPLE* pBuffer27 = pChannel27->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer27, oldGain[27], newGain[27], iBufferSize);
         EngineMaster::ChannelInfo* pChannel28 = activeChannels->at(28);
         const int channelIndex28 = pChannel28->m_index;
         EngineMaster::GainCache& gainCache28 = (*channelGainCache)[channelIndex28];
@@ -13405,37 +12972,36 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache28.m_gain = newGain[28];
         CSAMPLE* pBuffer28 = pChannel28->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer28, oldGain[28], newGain[28], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, outputHandle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, outputHandle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel28->m_handle, outputHandle, pBuffer28, iBufferSize, iSampleRate, pChannel28->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features, oldGain[9], newGain[9]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features, oldGain[10], newGain[10]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features, oldGain[11], newGain[11]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features, oldGain[12], newGain[12]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features, oldGain[13], newGain[13]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features, oldGain[14], newGain[14]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features, oldGain[15], newGain[15]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features, oldGain[16], newGain[16]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features, oldGain[17], newGain[17]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features, oldGain[18], newGain[18]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features, oldGain[19], newGain[19]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features, oldGain[20], newGain[20]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features, oldGain[21], newGain[21]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features, oldGain[22], newGain[22]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features, oldGain[23], newGain[23]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features, oldGain[24], newGain[24]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features, oldGain[25], newGain[25]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, outputHandle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features, oldGain[26], newGain[26]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, outputHandle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features, oldGain[27], newGain[27]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel28->m_handle, outputHandle, pBuffer28, iBufferSize, iSampleRate, pChannel28->m_features, oldGain[28], newGain[28]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i] + pBuffer20[i] + pBuffer21[i] + pBuffer22[i] + pBuffer23[i] + pBuffer24[i] + pBuffer25[i] + pBuffer26[i] + pBuffer27[i] + pBuffer28[i];
@@ -13456,7 +13022,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -13469,7 +13034,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -13482,7 +13046,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -13495,7 +13058,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -13508,7 +13070,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -13521,7 +13082,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -13534,7 +13094,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         EngineMaster::ChannelInfo* pChannel7 = activeChannels->at(7);
         const int channelIndex7 = pChannel7->m_index;
         EngineMaster::GainCache& gainCache7 = (*channelGainCache)[channelIndex7];
@@ -13547,7 +13106,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache7.m_gain = newGain[7];
         CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         EngineMaster::ChannelInfo* pChannel8 = activeChannels->at(8);
         const int channelIndex8 = pChannel8->m_index;
         EngineMaster::GainCache& gainCache8 = (*channelGainCache)[channelIndex8];
@@ -13560,7 +13118,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache8.m_gain = newGain[8];
         CSAMPLE* pBuffer8 = pChannel8->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer8, oldGain[8], newGain[8], iBufferSize);
         EngineMaster::ChannelInfo* pChannel9 = activeChannels->at(9);
         const int channelIndex9 = pChannel9->m_index;
         EngineMaster::GainCache& gainCache9 = (*channelGainCache)[channelIndex9];
@@ -13573,7 +13130,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache9.m_gain = newGain[9];
         CSAMPLE* pBuffer9 = pChannel9->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer9, oldGain[9], newGain[9], iBufferSize);
         EngineMaster::ChannelInfo* pChannel10 = activeChannels->at(10);
         const int channelIndex10 = pChannel10->m_index;
         EngineMaster::GainCache& gainCache10 = (*channelGainCache)[channelIndex10];
@@ -13586,7 +13142,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache10.m_gain = newGain[10];
         CSAMPLE* pBuffer10 = pChannel10->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer10, oldGain[10], newGain[10], iBufferSize);
         EngineMaster::ChannelInfo* pChannel11 = activeChannels->at(11);
         const int channelIndex11 = pChannel11->m_index;
         EngineMaster::GainCache& gainCache11 = (*channelGainCache)[channelIndex11];
@@ -13599,7 +13154,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache11.m_gain = newGain[11];
         CSAMPLE* pBuffer11 = pChannel11->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer11, oldGain[11], newGain[11], iBufferSize);
         EngineMaster::ChannelInfo* pChannel12 = activeChannels->at(12);
         const int channelIndex12 = pChannel12->m_index;
         EngineMaster::GainCache& gainCache12 = (*channelGainCache)[channelIndex12];
@@ -13612,7 +13166,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache12.m_gain = newGain[12];
         CSAMPLE* pBuffer12 = pChannel12->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer12, oldGain[12], newGain[12], iBufferSize);
         EngineMaster::ChannelInfo* pChannel13 = activeChannels->at(13);
         const int channelIndex13 = pChannel13->m_index;
         EngineMaster::GainCache& gainCache13 = (*channelGainCache)[channelIndex13];
@@ -13625,7 +13178,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache13.m_gain = newGain[13];
         CSAMPLE* pBuffer13 = pChannel13->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer13, oldGain[13], newGain[13], iBufferSize);
         EngineMaster::ChannelInfo* pChannel14 = activeChannels->at(14);
         const int channelIndex14 = pChannel14->m_index;
         EngineMaster::GainCache& gainCache14 = (*channelGainCache)[channelIndex14];
@@ -13638,7 +13190,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache14.m_gain = newGain[14];
         CSAMPLE* pBuffer14 = pChannel14->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer14, oldGain[14], newGain[14], iBufferSize);
         EngineMaster::ChannelInfo* pChannel15 = activeChannels->at(15);
         const int channelIndex15 = pChannel15->m_index;
         EngineMaster::GainCache& gainCache15 = (*channelGainCache)[channelIndex15];
@@ -13651,7 +13202,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache15.m_gain = newGain[15];
         CSAMPLE* pBuffer15 = pChannel15->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer15, oldGain[15], newGain[15], iBufferSize);
         EngineMaster::ChannelInfo* pChannel16 = activeChannels->at(16);
         const int channelIndex16 = pChannel16->m_index;
         EngineMaster::GainCache& gainCache16 = (*channelGainCache)[channelIndex16];
@@ -13664,7 +13214,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache16.m_gain = newGain[16];
         CSAMPLE* pBuffer16 = pChannel16->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer16, oldGain[16], newGain[16], iBufferSize);
         EngineMaster::ChannelInfo* pChannel17 = activeChannels->at(17);
         const int channelIndex17 = pChannel17->m_index;
         EngineMaster::GainCache& gainCache17 = (*channelGainCache)[channelIndex17];
@@ -13677,7 +13226,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache17.m_gain = newGain[17];
         CSAMPLE* pBuffer17 = pChannel17->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer17, oldGain[17], newGain[17], iBufferSize);
         EngineMaster::ChannelInfo* pChannel18 = activeChannels->at(18);
         const int channelIndex18 = pChannel18->m_index;
         EngineMaster::GainCache& gainCache18 = (*channelGainCache)[channelIndex18];
@@ -13690,7 +13238,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache18.m_gain = newGain[18];
         CSAMPLE* pBuffer18 = pChannel18->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer18, oldGain[18], newGain[18], iBufferSize);
         EngineMaster::ChannelInfo* pChannel19 = activeChannels->at(19);
         const int channelIndex19 = pChannel19->m_index;
         EngineMaster::GainCache& gainCache19 = (*channelGainCache)[channelIndex19];
@@ -13703,7 +13250,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache19.m_gain = newGain[19];
         CSAMPLE* pBuffer19 = pChannel19->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer19, oldGain[19], newGain[19], iBufferSize);
         EngineMaster::ChannelInfo* pChannel20 = activeChannels->at(20);
         const int channelIndex20 = pChannel20->m_index;
         EngineMaster::GainCache& gainCache20 = (*channelGainCache)[channelIndex20];
@@ -13716,7 +13262,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache20.m_gain = newGain[20];
         CSAMPLE* pBuffer20 = pChannel20->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer20, oldGain[20], newGain[20], iBufferSize);
         EngineMaster::ChannelInfo* pChannel21 = activeChannels->at(21);
         const int channelIndex21 = pChannel21->m_index;
         EngineMaster::GainCache& gainCache21 = (*channelGainCache)[channelIndex21];
@@ -13729,7 +13274,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache21.m_gain = newGain[21];
         CSAMPLE* pBuffer21 = pChannel21->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer21, oldGain[21], newGain[21], iBufferSize);
         EngineMaster::ChannelInfo* pChannel22 = activeChannels->at(22);
         const int channelIndex22 = pChannel22->m_index;
         EngineMaster::GainCache& gainCache22 = (*channelGainCache)[channelIndex22];
@@ -13742,7 +13286,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache22.m_gain = newGain[22];
         CSAMPLE* pBuffer22 = pChannel22->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer22, oldGain[22], newGain[22], iBufferSize);
         EngineMaster::ChannelInfo* pChannel23 = activeChannels->at(23);
         const int channelIndex23 = pChannel23->m_index;
         EngineMaster::GainCache& gainCache23 = (*channelGainCache)[channelIndex23];
@@ -13755,7 +13298,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache23.m_gain = newGain[23];
         CSAMPLE* pBuffer23 = pChannel23->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer23, oldGain[23], newGain[23], iBufferSize);
         EngineMaster::ChannelInfo* pChannel24 = activeChannels->at(24);
         const int channelIndex24 = pChannel24->m_index;
         EngineMaster::GainCache& gainCache24 = (*channelGainCache)[channelIndex24];
@@ -13768,7 +13310,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache24.m_gain = newGain[24];
         CSAMPLE* pBuffer24 = pChannel24->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer24, oldGain[24], newGain[24], iBufferSize);
         EngineMaster::ChannelInfo* pChannel25 = activeChannels->at(25);
         const int channelIndex25 = pChannel25->m_index;
         EngineMaster::GainCache& gainCache25 = (*channelGainCache)[channelIndex25];
@@ -13781,7 +13322,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache25.m_gain = newGain[25];
         CSAMPLE* pBuffer25 = pChannel25->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer25, oldGain[25], newGain[25], iBufferSize);
         EngineMaster::ChannelInfo* pChannel26 = activeChannels->at(26);
         const int channelIndex26 = pChannel26->m_index;
         EngineMaster::GainCache& gainCache26 = (*channelGainCache)[channelIndex26];
@@ -13794,7 +13334,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache26.m_gain = newGain[26];
         CSAMPLE* pBuffer26 = pChannel26->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer26, oldGain[26], newGain[26], iBufferSize);
         EngineMaster::ChannelInfo* pChannel27 = activeChannels->at(27);
         const int channelIndex27 = pChannel27->m_index;
         EngineMaster::GainCache& gainCache27 = (*channelGainCache)[channelIndex27];
@@ -13807,7 +13346,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache27.m_gain = newGain[27];
         CSAMPLE* pBuffer27 = pChannel27->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer27, oldGain[27], newGain[27], iBufferSize);
         EngineMaster::ChannelInfo* pChannel28 = activeChannels->at(28);
         const int channelIndex28 = pChannel28->m_index;
         EngineMaster::GainCache& gainCache28 = (*channelGainCache)[channelIndex28];
@@ -13820,7 +13358,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache28.m_gain = newGain[28];
         CSAMPLE* pBuffer28 = pChannel28->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer28, oldGain[28], newGain[28], iBufferSize);
         EngineMaster::ChannelInfo* pChannel29 = activeChannels->at(29);
         const int channelIndex29 = pChannel29->m_index;
         EngineMaster::GainCache& gainCache29 = (*channelGainCache)[channelIndex29];
@@ -13833,38 +13370,37 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache29.m_gain = newGain[29];
         CSAMPLE* pBuffer29 = pChannel29->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer29, oldGain[29], newGain[29], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, outputHandle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, outputHandle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel28->m_handle, outputHandle, pBuffer28, iBufferSize, iSampleRate, pChannel28->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel29->m_handle, outputHandle, pBuffer29, iBufferSize, iSampleRate, pChannel29->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features, oldGain[9], newGain[9]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features, oldGain[10], newGain[10]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features, oldGain[11], newGain[11]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features, oldGain[12], newGain[12]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features, oldGain[13], newGain[13]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features, oldGain[14], newGain[14]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features, oldGain[15], newGain[15]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features, oldGain[16], newGain[16]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features, oldGain[17], newGain[17]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features, oldGain[18], newGain[18]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features, oldGain[19], newGain[19]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features, oldGain[20], newGain[20]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features, oldGain[21], newGain[21]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features, oldGain[22], newGain[22]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features, oldGain[23], newGain[23]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features, oldGain[24], newGain[24]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features, oldGain[25], newGain[25]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, outputHandle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features, oldGain[26], newGain[26]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, outputHandle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features, oldGain[27], newGain[27]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel28->m_handle, outputHandle, pBuffer28, iBufferSize, iSampleRate, pChannel28->m_features, oldGain[28], newGain[28]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel29->m_handle, outputHandle, pBuffer29, iBufferSize, iSampleRate, pChannel29->m_features, oldGain[29], newGain[29]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i] + pBuffer20[i] + pBuffer21[i] + pBuffer22[i] + pBuffer23[i] + pBuffer24[i] + pBuffer25[i] + pBuffer26[i] + pBuffer27[i] + pBuffer28[i] + pBuffer29[i];
@@ -13885,7 +13421,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -13898,7 +13433,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -13911,7 +13445,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -13924,7 +13457,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -13937,7 +13469,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -13950,7 +13481,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -13963,7 +13493,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         EngineMaster::ChannelInfo* pChannel7 = activeChannels->at(7);
         const int channelIndex7 = pChannel7->m_index;
         EngineMaster::GainCache& gainCache7 = (*channelGainCache)[channelIndex7];
@@ -13976,7 +13505,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache7.m_gain = newGain[7];
         CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         EngineMaster::ChannelInfo* pChannel8 = activeChannels->at(8);
         const int channelIndex8 = pChannel8->m_index;
         EngineMaster::GainCache& gainCache8 = (*channelGainCache)[channelIndex8];
@@ -13989,7 +13517,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache8.m_gain = newGain[8];
         CSAMPLE* pBuffer8 = pChannel8->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer8, oldGain[8], newGain[8], iBufferSize);
         EngineMaster::ChannelInfo* pChannel9 = activeChannels->at(9);
         const int channelIndex9 = pChannel9->m_index;
         EngineMaster::GainCache& gainCache9 = (*channelGainCache)[channelIndex9];
@@ -14002,7 +13529,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache9.m_gain = newGain[9];
         CSAMPLE* pBuffer9 = pChannel9->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer9, oldGain[9], newGain[9], iBufferSize);
         EngineMaster::ChannelInfo* pChannel10 = activeChannels->at(10);
         const int channelIndex10 = pChannel10->m_index;
         EngineMaster::GainCache& gainCache10 = (*channelGainCache)[channelIndex10];
@@ -14015,7 +13541,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache10.m_gain = newGain[10];
         CSAMPLE* pBuffer10 = pChannel10->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer10, oldGain[10], newGain[10], iBufferSize);
         EngineMaster::ChannelInfo* pChannel11 = activeChannels->at(11);
         const int channelIndex11 = pChannel11->m_index;
         EngineMaster::GainCache& gainCache11 = (*channelGainCache)[channelIndex11];
@@ -14028,7 +13553,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache11.m_gain = newGain[11];
         CSAMPLE* pBuffer11 = pChannel11->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer11, oldGain[11], newGain[11], iBufferSize);
         EngineMaster::ChannelInfo* pChannel12 = activeChannels->at(12);
         const int channelIndex12 = pChannel12->m_index;
         EngineMaster::GainCache& gainCache12 = (*channelGainCache)[channelIndex12];
@@ -14041,7 +13565,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache12.m_gain = newGain[12];
         CSAMPLE* pBuffer12 = pChannel12->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer12, oldGain[12], newGain[12], iBufferSize);
         EngineMaster::ChannelInfo* pChannel13 = activeChannels->at(13);
         const int channelIndex13 = pChannel13->m_index;
         EngineMaster::GainCache& gainCache13 = (*channelGainCache)[channelIndex13];
@@ -14054,7 +13577,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache13.m_gain = newGain[13];
         CSAMPLE* pBuffer13 = pChannel13->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer13, oldGain[13], newGain[13], iBufferSize);
         EngineMaster::ChannelInfo* pChannel14 = activeChannels->at(14);
         const int channelIndex14 = pChannel14->m_index;
         EngineMaster::GainCache& gainCache14 = (*channelGainCache)[channelIndex14];
@@ -14067,7 +13589,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache14.m_gain = newGain[14];
         CSAMPLE* pBuffer14 = pChannel14->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer14, oldGain[14], newGain[14], iBufferSize);
         EngineMaster::ChannelInfo* pChannel15 = activeChannels->at(15);
         const int channelIndex15 = pChannel15->m_index;
         EngineMaster::GainCache& gainCache15 = (*channelGainCache)[channelIndex15];
@@ -14080,7 +13601,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache15.m_gain = newGain[15];
         CSAMPLE* pBuffer15 = pChannel15->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer15, oldGain[15], newGain[15], iBufferSize);
         EngineMaster::ChannelInfo* pChannel16 = activeChannels->at(16);
         const int channelIndex16 = pChannel16->m_index;
         EngineMaster::GainCache& gainCache16 = (*channelGainCache)[channelIndex16];
@@ -14093,7 +13613,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache16.m_gain = newGain[16];
         CSAMPLE* pBuffer16 = pChannel16->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer16, oldGain[16], newGain[16], iBufferSize);
         EngineMaster::ChannelInfo* pChannel17 = activeChannels->at(17);
         const int channelIndex17 = pChannel17->m_index;
         EngineMaster::GainCache& gainCache17 = (*channelGainCache)[channelIndex17];
@@ -14106,7 +13625,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache17.m_gain = newGain[17];
         CSAMPLE* pBuffer17 = pChannel17->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer17, oldGain[17], newGain[17], iBufferSize);
         EngineMaster::ChannelInfo* pChannel18 = activeChannels->at(18);
         const int channelIndex18 = pChannel18->m_index;
         EngineMaster::GainCache& gainCache18 = (*channelGainCache)[channelIndex18];
@@ -14119,7 +13637,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache18.m_gain = newGain[18];
         CSAMPLE* pBuffer18 = pChannel18->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer18, oldGain[18], newGain[18], iBufferSize);
         EngineMaster::ChannelInfo* pChannel19 = activeChannels->at(19);
         const int channelIndex19 = pChannel19->m_index;
         EngineMaster::GainCache& gainCache19 = (*channelGainCache)[channelIndex19];
@@ -14132,7 +13649,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache19.m_gain = newGain[19];
         CSAMPLE* pBuffer19 = pChannel19->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer19, oldGain[19], newGain[19], iBufferSize);
         EngineMaster::ChannelInfo* pChannel20 = activeChannels->at(20);
         const int channelIndex20 = pChannel20->m_index;
         EngineMaster::GainCache& gainCache20 = (*channelGainCache)[channelIndex20];
@@ -14145,7 +13661,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache20.m_gain = newGain[20];
         CSAMPLE* pBuffer20 = pChannel20->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer20, oldGain[20], newGain[20], iBufferSize);
         EngineMaster::ChannelInfo* pChannel21 = activeChannels->at(21);
         const int channelIndex21 = pChannel21->m_index;
         EngineMaster::GainCache& gainCache21 = (*channelGainCache)[channelIndex21];
@@ -14158,7 +13673,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache21.m_gain = newGain[21];
         CSAMPLE* pBuffer21 = pChannel21->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer21, oldGain[21], newGain[21], iBufferSize);
         EngineMaster::ChannelInfo* pChannel22 = activeChannels->at(22);
         const int channelIndex22 = pChannel22->m_index;
         EngineMaster::GainCache& gainCache22 = (*channelGainCache)[channelIndex22];
@@ -14171,7 +13685,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache22.m_gain = newGain[22];
         CSAMPLE* pBuffer22 = pChannel22->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer22, oldGain[22], newGain[22], iBufferSize);
         EngineMaster::ChannelInfo* pChannel23 = activeChannels->at(23);
         const int channelIndex23 = pChannel23->m_index;
         EngineMaster::GainCache& gainCache23 = (*channelGainCache)[channelIndex23];
@@ -14184,7 +13697,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache23.m_gain = newGain[23];
         CSAMPLE* pBuffer23 = pChannel23->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer23, oldGain[23], newGain[23], iBufferSize);
         EngineMaster::ChannelInfo* pChannel24 = activeChannels->at(24);
         const int channelIndex24 = pChannel24->m_index;
         EngineMaster::GainCache& gainCache24 = (*channelGainCache)[channelIndex24];
@@ -14197,7 +13709,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache24.m_gain = newGain[24];
         CSAMPLE* pBuffer24 = pChannel24->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer24, oldGain[24], newGain[24], iBufferSize);
         EngineMaster::ChannelInfo* pChannel25 = activeChannels->at(25);
         const int channelIndex25 = pChannel25->m_index;
         EngineMaster::GainCache& gainCache25 = (*channelGainCache)[channelIndex25];
@@ -14210,7 +13721,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache25.m_gain = newGain[25];
         CSAMPLE* pBuffer25 = pChannel25->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer25, oldGain[25], newGain[25], iBufferSize);
         EngineMaster::ChannelInfo* pChannel26 = activeChannels->at(26);
         const int channelIndex26 = pChannel26->m_index;
         EngineMaster::GainCache& gainCache26 = (*channelGainCache)[channelIndex26];
@@ -14223,7 +13733,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache26.m_gain = newGain[26];
         CSAMPLE* pBuffer26 = pChannel26->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer26, oldGain[26], newGain[26], iBufferSize);
         EngineMaster::ChannelInfo* pChannel27 = activeChannels->at(27);
         const int channelIndex27 = pChannel27->m_index;
         EngineMaster::GainCache& gainCache27 = (*channelGainCache)[channelIndex27];
@@ -14236,7 +13745,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache27.m_gain = newGain[27];
         CSAMPLE* pBuffer27 = pChannel27->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer27, oldGain[27], newGain[27], iBufferSize);
         EngineMaster::ChannelInfo* pChannel28 = activeChannels->at(28);
         const int channelIndex28 = pChannel28->m_index;
         EngineMaster::GainCache& gainCache28 = (*channelGainCache)[channelIndex28];
@@ -14249,7 +13757,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache28.m_gain = newGain[28];
         CSAMPLE* pBuffer28 = pChannel28->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer28, oldGain[28], newGain[28], iBufferSize);
         EngineMaster::ChannelInfo* pChannel29 = activeChannels->at(29);
         const int channelIndex29 = pChannel29->m_index;
         EngineMaster::GainCache& gainCache29 = (*channelGainCache)[channelIndex29];
@@ -14262,7 +13769,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache29.m_gain = newGain[29];
         CSAMPLE* pBuffer29 = pChannel29->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer29, oldGain[29], newGain[29], iBufferSize);
         EngineMaster::ChannelInfo* pChannel30 = activeChannels->at(30);
         const int channelIndex30 = pChannel30->m_index;
         EngineMaster::GainCache& gainCache30 = (*channelGainCache)[channelIndex30];
@@ -14275,39 +13781,38 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache30.m_gain = newGain[30];
         CSAMPLE* pBuffer30 = pChannel30->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer30, oldGain[30], newGain[30], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, outputHandle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, outputHandle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel28->m_handle, outputHandle, pBuffer28, iBufferSize, iSampleRate, pChannel28->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel29->m_handle, outputHandle, pBuffer29, iBufferSize, iSampleRate, pChannel29->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel30->m_handle, outputHandle, pBuffer30, iBufferSize, iSampleRate, pChannel30->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features, oldGain[9], newGain[9]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features, oldGain[10], newGain[10]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features, oldGain[11], newGain[11]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features, oldGain[12], newGain[12]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features, oldGain[13], newGain[13]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features, oldGain[14], newGain[14]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features, oldGain[15], newGain[15]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features, oldGain[16], newGain[16]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features, oldGain[17], newGain[17]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features, oldGain[18], newGain[18]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features, oldGain[19], newGain[19]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features, oldGain[20], newGain[20]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features, oldGain[21], newGain[21]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features, oldGain[22], newGain[22]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features, oldGain[23], newGain[23]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features, oldGain[24], newGain[24]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features, oldGain[25], newGain[25]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, outputHandle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features, oldGain[26], newGain[26]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, outputHandle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features, oldGain[27], newGain[27]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel28->m_handle, outputHandle, pBuffer28, iBufferSize, iSampleRate, pChannel28->m_features, oldGain[28], newGain[28]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel29->m_handle, outputHandle, pBuffer29, iBufferSize, iSampleRate, pChannel29->m_features, oldGain[29], newGain[29]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel30->m_handle, outputHandle, pBuffer30, iBufferSize, iSampleRate, pChannel30->m_features, oldGain[30], newGain[30]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i] + pBuffer20[i] + pBuffer21[i] + pBuffer22[i] + pBuffer23[i] + pBuffer24[i] + pBuffer25[i] + pBuffer26[i] + pBuffer27[i] + pBuffer28[i] + pBuffer29[i] + pBuffer30[i];
@@ -14328,7 +13833,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache0.m_gain = newGain[0];
         CSAMPLE* pBuffer0 = pChannel0->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer0, oldGain[0], newGain[0], iBufferSize);
         EngineMaster::ChannelInfo* pChannel1 = activeChannels->at(1);
         const int channelIndex1 = pChannel1->m_index;
         EngineMaster::GainCache& gainCache1 = (*channelGainCache)[channelIndex1];
@@ -14341,7 +13845,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache1.m_gain = newGain[1];
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer1, oldGain[1], newGain[1], iBufferSize);
         EngineMaster::ChannelInfo* pChannel2 = activeChannels->at(2);
         const int channelIndex2 = pChannel2->m_index;
         EngineMaster::GainCache& gainCache2 = (*channelGainCache)[channelIndex2];
@@ -14354,7 +13857,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache2.m_gain = newGain[2];
         CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer2, oldGain[2], newGain[2], iBufferSize);
         EngineMaster::ChannelInfo* pChannel3 = activeChannels->at(3);
         const int channelIndex3 = pChannel3->m_index;
         EngineMaster::GainCache& gainCache3 = (*channelGainCache)[channelIndex3];
@@ -14367,7 +13869,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache3.m_gain = newGain[3];
         CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer3, oldGain[3], newGain[3], iBufferSize);
         EngineMaster::ChannelInfo* pChannel4 = activeChannels->at(4);
         const int channelIndex4 = pChannel4->m_index;
         EngineMaster::GainCache& gainCache4 = (*channelGainCache)[channelIndex4];
@@ -14380,7 +13881,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache4.m_gain = newGain[4];
         CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer4, oldGain[4], newGain[4], iBufferSize);
         EngineMaster::ChannelInfo* pChannel5 = activeChannels->at(5);
         const int channelIndex5 = pChannel5->m_index;
         EngineMaster::GainCache& gainCache5 = (*channelGainCache)[channelIndex5];
@@ -14393,7 +13893,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache5.m_gain = newGain[5];
         CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer5, oldGain[5], newGain[5], iBufferSize);
         EngineMaster::ChannelInfo* pChannel6 = activeChannels->at(6);
         const int channelIndex6 = pChannel6->m_index;
         EngineMaster::GainCache& gainCache6 = (*channelGainCache)[channelIndex6];
@@ -14406,7 +13905,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache6.m_gain = newGain[6];
         CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer6, oldGain[6], newGain[6], iBufferSize);
         EngineMaster::ChannelInfo* pChannel7 = activeChannels->at(7);
         const int channelIndex7 = pChannel7->m_index;
         EngineMaster::GainCache& gainCache7 = (*channelGainCache)[channelIndex7];
@@ -14419,7 +13917,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache7.m_gain = newGain[7];
         CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer7, oldGain[7], newGain[7], iBufferSize);
         EngineMaster::ChannelInfo* pChannel8 = activeChannels->at(8);
         const int channelIndex8 = pChannel8->m_index;
         EngineMaster::GainCache& gainCache8 = (*channelGainCache)[channelIndex8];
@@ -14432,7 +13929,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache8.m_gain = newGain[8];
         CSAMPLE* pBuffer8 = pChannel8->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer8, oldGain[8], newGain[8], iBufferSize);
         EngineMaster::ChannelInfo* pChannel9 = activeChannels->at(9);
         const int channelIndex9 = pChannel9->m_index;
         EngineMaster::GainCache& gainCache9 = (*channelGainCache)[channelIndex9];
@@ -14445,7 +13941,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache9.m_gain = newGain[9];
         CSAMPLE* pBuffer9 = pChannel9->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer9, oldGain[9], newGain[9], iBufferSize);
         EngineMaster::ChannelInfo* pChannel10 = activeChannels->at(10);
         const int channelIndex10 = pChannel10->m_index;
         EngineMaster::GainCache& gainCache10 = (*channelGainCache)[channelIndex10];
@@ -14458,7 +13953,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache10.m_gain = newGain[10];
         CSAMPLE* pBuffer10 = pChannel10->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer10, oldGain[10], newGain[10], iBufferSize);
         EngineMaster::ChannelInfo* pChannel11 = activeChannels->at(11);
         const int channelIndex11 = pChannel11->m_index;
         EngineMaster::GainCache& gainCache11 = (*channelGainCache)[channelIndex11];
@@ -14471,7 +13965,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache11.m_gain = newGain[11];
         CSAMPLE* pBuffer11 = pChannel11->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer11, oldGain[11], newGain[11], iBufferSize);
         EngineMaster::ChannelInfo* pChannel12 = activeChannels->at(12);
         const int channelIndex12 = pChannel12->m_index;
         EngineMaster::GainCache& gainCache12 = (*channelGainCache)[channelIndex12];
@@ -14484,7 +13977,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache12.m_gain = newGain[12];
         CSAMPLE* pBuffer12 = pChannel12->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer12, oldGain[12], newGain[12], iBufferSize);
         EngineMaster::ChannelInfo* pChannel13 = activeChannels->at(13);
         const int channelIndex13 = pChannel13->m_index;
         EngineMaster::GainCache& gainCache13 = (*channelGainCache)[channelIndex13];
@@ -14497,7 +13989,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache13.m_gain = newGain[13];
         CSAMPLE* pBuffer13 = pChannel13->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer13, oldGain[13], newGain[13], iBufferSize);
         EngineMaster::ChannelInfo* pChannel14 = activeChannels->at(14);
         const int channelIndex14 = pChannel14->m_index;
         EngineMaster::GainCache& gainCache14 = (*channelGainCache)[channelIndex14];
@@ -14510,7 +14001,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache14.m_gain = newGain[14];
         CSAMPLE* pBuffer14 = pChannel14->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer14, oldGain[14], newGain[14], iBufferSize);
         EngineMaster::ChannelInfo* pChannel15 = activeChannels->at(15);
         const int channelIndex15 = pChannel15->m_index;
         EngineMaster::GainCache& gainCache15 = (*channelGainCache)[channelIndex15];
@@ -14523,7 +14013,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache15.m_gain = newGain[15];
         CSAMPLE* pBuffer15 = pChannel15->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer15, oldGain[15], newGain[15], iBufferSize);
         EngineMaster::ChannelInfo* pChannel16 = activeChannels->at(16);
         const int channelIndex16 = pChannel16->m_index;
         EngineMaster::GainCache& gainCache16 = (*channelGainCache)[channelIndex16];
@@ -14536,7 +14025,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache16.m_gain = newGain[16];
         CSAMPLE* pBuffer16 = pChannel16->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer16, oldGain[16], newGain[16], iBufferSize);
         EngineMaster::ChannelInfo* pChannel17 = activeChannels->at(17);
         const int channelIndex17 = pChannel17->m_index;
         EngineMaster::GainCache& gainCache17 = (*channelGainCache)[channelIndex17];
@@ -14549,7 +14037,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache17.m_gain = newGain[17];
         CSAMPLE* pBuffer17 = pChannel17->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer17, oldGain[17], newGain[17], iBufferSize);
         EngineMaster::ChannelInfo* pChannel18 = activeChannels->at(18);
         const int channelIndex18 = pChannel18->m_index;
         EngineMaster::GainCache& gainCache18 = (*channelGainCache)[channelIndex18];
@@ -14562,7 +14049,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache18.m_gain = newGain[18];
         CSAMPLE* pBuffer18 = pChannel18->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer18, oldGain[18], newGain[18], iBufferSize);
         EngineMaster::ChannelInfo* pChannel19 = activeChannels->at(19);
         const int channelIndex19 = pChannel19->m_index;
         EngineMaster::GainCache& gainCache19 = (*channelGainCache)[channelIndex19];
@@ -14575,7 +14061,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache19.m_gain = newGain[19];
         CSAMPLE* pBuffer19 = pChannel19->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer19, oldGain[19], newGain[19], iBufferSize);
         EngineMaster::ChannelInfo* pChannel20 = activeChannels->at(20);
         const int channelIndex20 = pChannel20->m_index;
         EngineMaster::GainCache& gainCache20 = (*channelGainCache)[channelIndex20];
@@ -14588,7 +14073,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache20.m_gain = newGain[20];
         CSAMPLE* pBuffer20 = pChannel20->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer20, oldGain[20], newGain[20], iBufferSize);
         EngineMaster::ChannelInfo* pChannel21 = activeChannels->at(21);
         const int channelIndex21 = pChannel21->m_index;
         EngineMaster::GainCache& gainCache21 = (*channelGainCache)[channelIndex21];
@@ -14601,7 +14085,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache21.m_gain = newGain[21];
         CSAMPLE* pBuffer21 = pChannel21->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer21, oldGain[21], newGain[21], iBufferSize);
         EngineMaster::ChannelInfo* pChannel22 = activeChannels->at(22);
         const int channelIndex22 = pChannel22->m_index;
         EngineMaster::GainCache& gainCache22 = (*channelGainCache)[channelIndex22];
@@ -14614,7 +14097,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache22.m_gain = newGain[22];
         CSAMPLE* pBuffer22 = pChannel22->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer22, oldGain[22], newGain[22], iBufferSize);
         EngineMaster::ChannelInfo* pChannel23 = activeChannels->at(23);
         const int channelIndex23 = pChannel23->m_index;
         EngineMaster::GainCache& gainCache23 = (*channelGainCache)[channelIndex23];
@@ -14627,7 +14109,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache23.m_gain = newGain[23];
         CSAMPLE* pBuffer23 = pChannel23->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer23, oldGain[23], newGain[23], iBufferSize);
         EngineMaster::ChannelInfo* pChannel24 = activeChannels->at(24);
         const int channelIndex24 = pChannel24->m_index;
         EngineMaster::GainCache& gainCache24 = (*channelGainCache)[channelIndex24];
@@ -14640,7 +14121,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache24.m_gain = newGain[24];
         CSAMPLE* pBuffer24 = pChannel24->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer24, oldGain[24], newGain[24], iBufferSize);
         EngineMaster::ChannelInfo* pChannel25 = activeChannels->at(25);
         const int channelIndex25 = pChannel25->m_index;
         EngineMaster::GainCache& gainCache25 = (*channelGainCache)[channelIndex25];
@@ -14653,7 +14133,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache25.m_gain = newGain[25];
         CSAMPLE* pBuffer25 = pChannel25->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer25, oldGain[25], newGain[25], iBufferSize);
         EngineMaster::ChannelInfo* pChannel26 = activeChannels->at(26);
         const int channelIndex26 = pChannel26->m_index;
         EngineMaster::GainCache& gainCache26 = (*channelGainCache)[channelIndex26];
@@ -14666,7 +14145,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache26.m_gain = newGain[26];
         CSAMPLE* pBuffer26 = pChannel26->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer26, oldGain[26], newGain[26], iBufferSize);
         EngineMaster::ChannelInfo* pChannel27 = activeChannels->at(27);
         const int channelIndex27 = pChannel27->m_index;
         EngineMaster::GainCache& gainCache27 = (*channelGainCache)[channelIndex27];
@@ -14679,7 +14157,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache27.m_gain = newGain[27];
         CSAMPLE* pBuffer27 = pChannel27->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer27, oldGain[27], newGain[27], iBufferSize);
         EngineMaster::ChannelInfo* pChannel28 = activeChannels->at(28);
         const int channelIndex28 = pChannel28->m_index;
         EngineMaster::GainCache& gainCache28 = (*channelGainCache)[channelIndex28];
@@ -14692,7 +14169,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache28.m_gain = newGain[28];
         CSAMPLE* pBuffer28 = pChannel28->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer28, oldGain[28], newGain[28], iBufferSize);
         EngineMaster::ChannelInfo* pChannel29 = activeChannels->at(29);
         const int channelIndex29 = pChannel29->m_index;
         EngineMaster::GainCache& gainCache29 = (*channelGainCache)[channelIndex29];
@@ -14705,7 +14181,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache29.m_gain = newGain[29];
         CSAMPLE* pBuffer29 = pChannel29->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer29, oldGain[29], newGain[29], iBufferSize);
         EngineMaster::ChannelInfo* pChannel30 = activeChannels->at(30);
         const int channelIndex30 = pChannel30->m_index;
         EngineMaster::GainCache& gainCache30 = (*channelGainCache)[channelIndex30];
@@ -14718,7 +14193,6 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache30.m_gain = newGain[30];
         CSAMPLE* pBuffer30 = pChannel30->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer30, oldGain[30], newGain[30], iBufferSize);
         EngineMaster::ChannelInfo* pChannel31 = activeChannels->at(31);
         const int channelIndex31 = pChannel31->m_index;
         EngineMaster::GainCache& gainCache31 = (*channelGainCache)[channelIndex31];
@@ -14731,40 +14205,39 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
         gainCache31.m_gain = newGain[31];
         CSAMPLE* pBuffer31 = pChannel31->m_pBuffer;
-        SampleUtil::applyRampingGain(pBuffer31, oldGain[31], newGain[31], iBufferSize);
         // Process effects for each channel in place
-        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, outputHandle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, outputHandle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel28->m_handle, outputHandle, pBuffer28, iBufferSize, iSampleRate, pChannel28->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel29->m_handle, outputHandle, pBuffer29, iBufferSize, iSampleRate, pChannel29->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel30->m_handle, outputHandle, pBuffer30, iBufferSize, iSampleRate, pChannel30->m_features);
-        pEngineEffectsManager->processPostFaderInPlace(pChannel31->m_handle, outputHandle, pBuffer31, iBufferSize, iSampleRate, pChannel31->m_features);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel0->m_handle, outputHandle, pBuffer0, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel1->m_handle, outputHandle, pBuffer1, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel2->m_handle, outputHandle, pBuffer2, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel3->m_handle, outputHandle, pBuffer3, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel4->m_handle, outputHandle, pBuffer4, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel5->m_handle, outputHandle, pBuffer5, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel6->m_handle, outputHandle, pBuffer6, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel7->m_handle, outputHandle, pBuffer7, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel8->m_handle, outputHandle, pBuffer8, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel9->m_handle, outputHandle, pBuffer9, iBufferSize, iSampleRate, pChannel9->m_features, oldGain[9], newGain[9]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel10->m_handle, outputHandle, pBuffer10, iBufferSize, iSampleRate, pChannel10->m_features, oldGain[10], newGain[10]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel11->m_handle, outputHandle, pBuffer11, iBufferSize, iSampleRate, pChannel11->m_features, oldGain[11], newGain[11]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel12->m_handle, outputHandle, pBuffer12, iBufferSize, iSampleRate, pChannel12->m_features, oldGain[12], newGain[12]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel13->m_handle, outputHandle, pBuffer13, iBufferSize, iSampleRate, pChannel13->m_features, oldGain[13], newGain[13]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel14->m_handle, outputHandle, pBuffer14, iBufferSize, iSampleRate, pChannel14->m_features, oldGain[14], newGain[14]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel15->m_handle, outputHandle, pBuffer15, iBufferSize, iSampleRate, pChannel15->m_features, oldGain[15], newGain[15]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel16->m_handle, outputHandle, pBuffer16, iBufferSize, iSampleRate, pChannel16->m_features, oldGain[16], newGain[16]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel17->m_handle, outputHandle, pBuffer17, iBufferSize, iSampleRate, pChannel17->m_features, oldGain[17], newGain[17]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel18->m_handle, outputHandle, pBuffer18, iBufferSize, iSampleRate, pChannel18->m_features, oldGain[18], newGain[18]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel19->m_handle, outputHandle, pBuffer19, iBufferSize, iSampleRate, pChannel19->m_features, oldGain[19], newGain[19]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel20->m_handle, outputHandle, pBuffer20, iBufferSize, iSampleRate, pChannel20->m_features, oldGain[20], newGain[20]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel21->m_handle, outputHandle, pBuffer21, iBufferSize, iSampleRate, pChannel21->m_features, oldGain[21], newGain[21]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel22->m_handle, outputHandle, pBuffer22, iBufferSize, iSampleRate, pChannel22->m_features, oldGain[22], newGain[22]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel23->m_handle, outputHandle, pBuffer23, iBufferSize, iSampleRate, pChannel23->m_features, oldGain[23], newGain[23]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel24->m_handle, outputHandle, pBuffer24, iBufferSize, iSampleRate, pChannel24->m_features, oldGain[24], newGain[24]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel25->m_handle, outputHandle, pBuffer25, iBufferSize, iSampleRate, pChannel25->m_features, oldGain[25], newGain[25]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel26->m_handle, outputHandle, pBuffer26, iBufferSize, iSampleRate, pChannel26->m_features, oldGain[26], newGain[26]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel27->m_handle, outputHandle, pBuffer27, iBufferSize, iSampleRate, pChannel27->m_features, oldGain[27], newGain[27]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel28->m_handle, outputHandle, pBuffer28, iBufferSize, iSampleRate, pChannel28->m_features, oldGain[28], newGain[28]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel29->m_handle, outputHandle, pBuffer29, iBufferSize, iSampleRate, pChannel29->m_features, oldGain[29], newGain[29]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel30->m_handle, outputHandle, pBuffer30, iBufferSize, iSampleRate, pChannel30->m_features, oldGain[30], newGain[30]);
+        pEngineEffectsManager->processPostFaderInPlace(pChannel31->m_handle, outputHandle, pBuffer31, iBufferSize, iSampleRate, pChannel31->m_features, oldGain[31], newGain[31]);
         // Mix the effected channel buffers together to replace the old pOutput from the last engine callback
         for (unsigned int i = 0; i < iBufferSize; ++i) {
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i] + pBuffer20[i] + pBuffer21[i] + pBuffer22[i] + pBuffer23[i] + pBuffer24[i] + pBuffer25[i] + pBuffer26[i] + pBuffer27[i] + pBuffer28[i] + pBuffer29[i] + pBuffer30[i] + pBuffer31[i];
@@ -14785,8 +14258,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             }
             gainCache.m_gain = newGain;
             CSAMPLE* pBuffer = pChannelInfo->m_pBuffer;
-            SampleUtil::applyRampingGain(pBuffer, oldGain, newGain, iBufferSize);
-            pEngineEffectsManager->processPostFaderInPlace(pChannelInfo->m_handle, outputHandle, pBuffer, iBufferSize, iSampleRate, pChannelInfo->m_features);
+            pEngineEffectsManager->processPostFaderInPlace(pChannelInfo->m_handle, outputHandle, pBuffer, iBufferSize, iSampleRate, pChannelInfo->m_features, oldGain, newGain);
             for (unsigned int i = 0; i < iBufferSize; ++i) {
                 pOutput[i] += pBuffer[i];
             }

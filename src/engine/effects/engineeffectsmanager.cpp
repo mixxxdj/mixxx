@@ -160,13 +160,14 @@ void EngineEffectsManager::processPostFaderInPlace(
     CSAMPLE* pInOut,
     const unsigned int numSamples,
     const unsigned int sampleRate,
-    const GroupFeatureState& groupFeatures) {
-    // ChannelMixer::applyEffectsInPlaceAndMixChannels has
-    // already applied gain to the input buffer
+    const GroupFeatureState& groupFeatures,
+    const CSAMPLE_GAIN oldGain,
+    const CSAMPLE_GAIN newGain) {
     processInner(m_postFaderRacks,
                  inputHandle, outputHandle,
                  pInOut, pInOut,
-                 numSamples, sampleRate, groupFeatures);
+                 numSamples, sampleRate, groupFeatures,
+                 oldGain, newGain);
 }
 
 void EngineEffectsManager::processPostFaderAndMix(
@@ -178,14 +179,11 @@ void EngineEffectsManager::processPostFaderAndMix(
     const GroupFeatureState& groupFeatures,
     const CSAMPLE_GAIN oldGain,
     const CSAMPLE_GAIN newGain) {
-    // ChannelMixer::applyEffectsAndMixChannelsRamping has
-    // not applied gain to the input buffer, so processInner copies the input
-    // to a temporary buffer and applies gain
     processInner(m_postFaderRacks,
                  inputHandle, outputHandle,
                  pIn, pOut,
                  numSamples, sampleRate, groupFeatures,
-                 newGain, oldGain);
+                 oldGain, newGain);
 }
 
 void EngineEffectsManager::processInner(
@@ -196,10 +194,12 @@ void EngineEffectsManager::processInner(
     const unsigned int numSamples,
     const unsigned int sampleRate,
     const GroupFeatureState& groupFeatures,
-    const CSAMPLE_GAIN newGain,
-    const CSAMPLE_GAIN oldGain) {
+    const CSAMPLE_GAIN oldGain,
+    const CSAMPLE_GAIN newGain) {
     if (pIn == pOut) {
-        // Effects are applied to the buffer in place, modifying the original input buffer
+        // Gain and effects are applied to the buffer in place,
+        // modifying the original input buffer
+        SampleUtil::applyRampingGain(pIn, oldGain, newGain, numSamples);
         for (EngineEffectRack* pRack : racks) {
             if (pRack != nullptr) {
                 pRack->process(inputHandle, outputHandle,
