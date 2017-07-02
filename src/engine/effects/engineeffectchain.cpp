@@ -171,9 +171,9 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
                                 const unsigned int numSamples,
                                 const unsigned int sampleRate,
                                 const GroupFeatureState& groupFeatures) {
-    // Compute the effective enable state from the channel input routing switch,
-    // the chain's enable state, and the dry/wet knob. When any of these
-    // are turned on/off, send the effects the intermediate enabling/disabling signal.
+    // Compute the effective enable state from the channel input routing switch and
+    // the chain's enable state. When either of these are turned on/off, send the
+    // effects the intermediate enabling/disabling signal.
     // If the EngineEffect is not disabled for the channel, it will pass the
     // intermediate state down to the EffectProcessor, which is then responsible for reacting
     // appropriately, for example the Echo effect clears its internal buffer for the channel
@@ -188,18 +188,6 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
 
     CSAMPLE currentWetGain = m_dMix;
     CSAMPLE lastCallbackWetGain = channelStatus.old_gain;
-
-    if (currentWetGain == 0.0) {
-        if (lastCallbackWetGain == 0.0) {
-            effectiveChainEnableState = EffectProcessor::DISABLED;
-        } else if (effectiveChainEnableState != EffectProcessor::DISABLED) {
-            // The dry/wet knob is fully dry and was for the last callback, so
-            // skip processing the effects.
-            // If the input routing switch or chain enable switches are fully disabled,
-            // do not send the intermediate disabling signal.
-            effectiveChainEnableState = EffectProcessor::DISABLING;
-        }
-    }
 
     bool processingOccured = false;
     if (effectiveChainEnableState != EffectProcessor::DISABLED) {
