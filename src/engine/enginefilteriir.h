@@ -55,6 +55,10 @@ class EngineFilterIIR : public EngineFilterIIRBase {
         }
     }
 
+    void setStartFromDry(bool val) {
+        m_startFromDry = val;
+    }
+
     // this is can be used instead off a final process() call before pause
     // It fades to dry or 0 according to the m_startFromDry parameter
     // it is an alternative for using pauseFillter() calls

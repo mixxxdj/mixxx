@@ -1,7 +1,11 @@
 #include "balanceeffect.h"
 
-namespace {
+#include "util/defs.h"
 
+namespace {
+    double kMaxCorner = 22000; // Hz
+    double kMinCorner = 16; // Hz
+    static const unsigned int kStartupSamplerate = 44100;
 } // anonymous namespace
 
 // static
@@ -55,13 +59,48 @@ EffectManifest BalanceEffect::getManifest() {
     midSide->setMaximum(1.0);
     midSide->setDefault(0.5);
 
+    EffectManifestParameter* midLowPass = manifest.addParameter();
+    midLowPass->setId("bypassFreq");
+    midLowPass->setName(QObject::tr("Bypass Freq."));
+    midLowPass->setDescription(QObject::tr("Corner frequency of the Mid Bypass LPF"));
+    midLowPass->setDescription(QObject::tr("Corner frequency ratio of the low pass filter"));
+    midLowPass->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+    midLowPass->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    midLowPass->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    midLowPass->setDefaultLinkType(EffectManifestParameter::LinkType::NONE);
+    midLowPass->setNeutralPointOnScale(1);
+    midLowPass->setDefault(kMinCorner);
+    midLowPass->setMinimum(kMinCorner);
+    midLowPass->setMaximum(kMaxCorner);
+
     return manifest;
+}
+
+BalanceGroupState::BalanceGroupState()
+        : m_pHighBuf(MAX_BUFFER_LEN),
+          m_oldSampleRate(kStartupSamplerate),
+          m_freq(kMinCorner),
+          m_oldLeft(1),
+          m_oldRight(1),
+          m_oldMidSide(0) {
+    m_low = std::make_unique<EngineFilterLinkwtzRiley4Low>(kStartupSamplerate, kMinCorner);
+    m_high = std::make_unique<EngineFilterLinkwtzRiley4High>(kStartupSamplerate, kMinCorner);
+    m_high->setStartFromDry(true);
+}
+
+BalanceGroupState::~BalanceGroupState() {
+}
+
+void BalanceGroupState::setFilters(int sampleRate, int freq) {
+    m_low->setFrequencyCorners(sampleRate, freq);
+    m_high->setFrequencyCorners(sampleRate, freq);
 }
 
 BalanceEffect::BalanceEffect(EngineEffect* pEffect, const EffectManifest& manifest)
           : m_pLeftParameter(pEffect->getParameterById("left")),
             m_pRightParameter(pEffect->getParameterById("right")),
-            m_pMidSideParameter(pEffect->getParameterById("midSide")) {
+            m_pMidSideParameter(pEffect->getParameterById("midSide")),
+            m_pBypassFreqParameter(pEffect->getParameterById("bypassFreq")) {
     Q_UNUSED(manifest);
 }
 
@@ -76,38 +115,79 @@ void BalanceEffect::processChannel(const ChannelHandle& handle,
                                const EffectProcessor::EnableState enableState,
                                const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
-    Q_UNUSED(sampleRate);
-    Q_UNUSED(enableState);
     Q_UNUSED(groupFeatures);
+
 
     CSAMPLE_GAIN left = m_pLeftParameter->value();
     CSAMPLE_GAIN right = m_pRightParameter->value();
     CSAMPLE_GAIN midSide = m_pMidSideParameter->value();
 
-    CSAMPLE_GAIN leftDelta = (left - pGroupState->oldLeft)
+    CSAMPLE_GAIN leftDelta = (left - pGroupState->m_oldLeft)
                     / CSAMPLE_GAIN(numSamples / 2);
-    CSAMPLE_GAIN rightDelta = (right - pGroupState->oldRight)
+    CSAMPLE_GAIN rightDelta = (right - pGroupState->m_oldRight)
                     / CSAMPLE_GAIN(numSamples / 2);
-    CSAMPLE_GAIN midSideDelta = (midSide - pGroupState->oldMidSide)
+    CSAMPLE_GAIN midSideDelta = (midSide - pGroupState->m_oldMidSide)
                     / CSAMPLE_GAIN(numSamples / 2);
 
     CSAMPLE_GAIN leftStart = left - leftDelta;
     CSAMPLE_GAIN rightStart = right - rightDelta;
     CSAMPLE_GAIN midSideStart = midSide - midSideDelta;
 
-    for (SINT i = 0; i < numSamples / 2; ++i) {
-        CSAMPLE mid = (pInput[i * 2]  + pInput[i * 2 + 1]) / 2.0f;
-        CSAMPLE side = (pInput[i * 2 + 1] - pInput[i * 2]) / 2.0f;
-        if (midSide > 0.5) {
-            mid *= 2 * (1 - (midSideStart + midSideDelta * i));
-        } else {
-            side *= 2 * (midSideStart + midSideDelta * i);
-        }
-        pOutput[i * 2] = (mid - side) * (leftStart + leftDelta * i);
-        pOutput[i * 2 + 1] = (mid + side) * (rightStart + rightDelta * i);
+
+    if (pGroupState->m_oldSampleRate != sampleRate ||
+            (pGroupState->m_freq != static_cast<int>(m_pBypassFreqParameter->value()))) {
+        pGroupState->m_freq = static_cast<int>(m_pBypassFreqParameter->value());
+        pGroupState->m_oldSampleRate = sampleRate;
+        pGroupState->setFilters(sampleRate, pGroupState->m_freq);
     }
 
-    pGroupState->oldLeft = left;
-    pGroupState->oldRight = right;
-    pGroupState->oldMidSide = midSide;
+    if (pGroupState->m_freq > kMinCorner) {
+        pGroupState->m_high->process(pInput, pGroupState->m_pHighBuf.data(), numSamples); // HighPass first run
+        pGroupState->m_low->process(pInput, pOutput, numSamples); // LowPass first run for low and bandpass
+
+        for (SINT i = 0; i < numSamples / 2; ++i) {
+            CSAMPLE mid = (pGroupState->m_pHighBuf[i * 2]  + pGroupState->m_pHighBuf[i * 2 + 1]) / 2.0f;
+            CSAMPLE side = (pGroupState->m_pHighBuf[i * 2 + 1] - pGroupState->m_pHighBuf[i * 2]) / 2.0f;
+            if (midSide > 0.5) {
+                mid *= 2 * (1 - (midSideStart + midSideDelta * i));
+            } else {
+                side *= 2 * (midSideStart + midSideDelta * i);
+            }
+            pOutput[i * 2] += (mid - side) * (leftStart + leftDelta * i);
+            pOutput[i * 2 + 1] += (mid + side) * (rightStart + rightDelta * i);
+        }
+
+    } else {
+        pGroupState->m_high->pauseFilter();
+        pGroupState->m_low->pauseFilter();
+
+        for (SINT i = 0; i < numSamples / 2; ++i) {
+            CSAMPLE mid = (pInput[i * 2]  + pInput[i * 2 + 1]) / 2.0f;
+            CSAMPLE side = (pInput[i * 2 + 1] - pInput[i * 2]) / 2.0f;
+            if (midSide > 0.5) {
+                mid *= 2 * (1 - (midSideStart + midSideDelta * i));
+            } else {
+                side *= 2 * (midSideStart + midSideDelta * i);
+            }
+            pOutput[i * 2] = (mid - side) * (leftStart + leftDelta * i);
+            pOutput[i * 2 + 1] = (mid + side) * (rightStart + rightDelta * i);
+        }
+    }
+
+
+    if (enableState == EffectProcessor::DISABLING) {
+        // we rely on the ramping to dry in EngineEffect
+        // since this EQ is not fully dry at unity
+        pGroupState->m_low->pauseFilter();
+        pGroupState->m_high->pauseFilter();
+
+        pGroupState->m_oldLeft = left;
+        pGroupState->m_oldRight = right;
+        pGroupState->m_oldMidSide = midSide;
+    } else {
+        pGroupState->m_oldLeft = left;
+        pGroupState->m_oldRight = right;
+        pGroupState->m_oldMidSide = midSide;
+    }
+
 }

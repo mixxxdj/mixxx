@@ -4,18 +4,29 @@
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
+#include "engine/enginefilterlinkwitzriley4.h"
+#include "util/samplebuffer.h"
+#include "util/memory.h"
 
 // This effect does not need to store any state.
-struct BalanceGroupState {
-    BalanceGroupState()
-        : oldLeft(1),
-          oldRight(1),
-          oldMidSide(0) {
-    }
+class BalanceGroupState final {
+  public:
+    BalanceGroupState();
+    ~BalanceGroupState();
 
-    CSAMPLE oldLeft;
-    CSAMPLE oldRight;
-    CSAMPLE oldMidSide;
+    void setFilters(int sampleRate, int freq);
+
+    std::unique_ptr<EngineFilterLinkwtzRiley4Low> m_low;
+    std::unique_ptr<EngineFilterLinkwtzRiley4High> m_high;
+
+    SampleBuffer m_pHighBuf;
+
+    unsigned int m_oldSampleRate;
+    int m_freq;
+
+    CSAMPLE m_oldLeft;
+    CSAMPLE m_oldRight;
+    CSAMPLE m_oldMidSide;
 };
 
 class BalanceEffect : public PerChannelEffectProcessor<BalanceGroupState> {
@@ -44,6 +55,7 @@ class BalanceEffect : public PerChannelEffectProcessor<BalanceGroupState> {
     EngineEffectParameter* m_pLeftParameter;
     EngineEffectParameter* m_pRightParameter;
     EngineEffectParameter* m_pMidSideParameter;
+    EngineEffectParameter* m_pBypassFreqParameter;
 
     DISALLOW_COPY_AND_ASSIGN(BalanceEffect);
 };
