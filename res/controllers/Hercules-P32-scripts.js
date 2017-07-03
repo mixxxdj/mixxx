@@ -1,4 +1,8 @@
 // USER CONFIGURABLE OPTIONS
+// The labels on the encoders are mirrored, but the rest of the controller
+// is asymmetrical. If this is confusing for you to use, set this to "false" to swap the
+// mapping of the encoders on the right deck so the whole controller is asymmetrical.
+var mirroredEncoders = true;
 // Set to "true" to use the dot on the loop size LED display to indicate
 // that a loop is active. This restricts loop sizes to 2-32 beats and
 // may be helpful if you never use loops less than 2 beats long.
@@ -281,7 +285,7 @@ P32.Deck = function (deckNumbers, channel) {
         }
     };
 
-    this.rightEncoder = new components.Encoder({
+    this.tempoAndBeatjumpEncoder = new components.Encoder({
         unshift: function () {
             this.input = function (channel, control, value, status, group) {
                 var direction = (value > 64) ? -1 : 1;
@@ -308,7 +312,7 @@ P32.Deck = function (deckNumbers, channel) {
         },
     });
 
-    this.rightEncoderPress = new components.Button({
+    this.tempoAndBeatjumpEncoderPress = new components.Button({
         unshift: function () {
             theDeck.loopEncoder.trigger();
             this.input = function (channel, control, value, status, group) {
@@ -329,6 +333,25 @@ P32.Deck = function (deckNumbers, channel) {
             };
         },
     });
+
+    if (mirroredEncoders) {
+        if (channel == 1) { // left deck
+            this.leftEncoder = this.loopEncoder;
+            this.leftEncoderPress = this.loopEncoderPress;
+            this.rightEncoder = this.tempoAndBeatjumpEncoder;
+            this.rightEncoderPress = this.tempoAndBeatjumpEncoderPress;
+        } else if (channel == 2) { // right deck
+            this.leftEncoder = this.tempoAndBeatjumpEncoder;
+            this.leftEncoderPress = this.tempoAndBeatjumpEncoderPress;
+            this.rightEncoder = this.loopEncoder;
+            this.rightEncoderPress = this.loopEncoderPress;
+        }
+    } else {
+        this.leftEncoder = this.loopEncoder;
+        this.leftEncoderPress = this.loopEncoderPress;
+        this.rightEncoder = this.tempoAndBeatjumpEncoder;
+        this.rightEncoderPress = this.tempoAndBeatjumpEncoderPress;
+    }
 
     // ================================= EFFECTS =====================================
     this.effectUnit = new components.EffectUnit(deckNumbers);

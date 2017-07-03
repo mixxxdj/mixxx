@@ -43,7 +43,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.loopEncoder.input</key>
+                <key>P32.leftDeck.leftEncoder.input</key>
                 <status>0xB1</status>
                 <midino>0x0A</midino>
                 <options>
@@ -52,7 +52,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.loopEncoder.input</key>
+                <key>P32.leftDeck.leftEncoder.input</key>
                 <status>0xB4</status>
                 <midino>0x0A</midino>
                 <options>
@@ -61,7 +61,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.loopEncoderPress.input</key>
+                <key>P32.leftDeck.leftEncoderPress.input</key>
                 <status>0x91</status>
                 <midino>0x01</midino>
                 <options>
@@ -70,7 +70,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.loopEncoderPress.input</key>
+                <key>P32.leftDeck.leftEncoderPress.input</key>
                 <status>0x94</status>
                 <midino>0x01</midino>
                 <options>
@@ -908,7 +908,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.loopEncoder.input</key>
+                <key>P32.rightDeck.leftEncoder.input</key>
                 <status>0xB2</status>
                 <midino>0x05</midino>
                 <options>
@@ -917,7 +917,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.loopEncoder.input</key>
+                <key>P32.rightDeck.leftEncoder.input</key>
                 <status>0xB5</status>
                 <midino>0x05</midino>
                 <options>
@@ -926,7 +926,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.loopEncoderPress.input</key>
+                <key>P32.rightDeck.leftEncoderPress.input</key>
                 <status>0x92</status>
                 <midino>0x02</midino>
                 <options>
@@ -935,7 +935,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.loopEncoderPress.input</key>
+                <key>P32.rightDeck.leftEncoderPress.input</key>
                 <status>0x95</status>
                 <midino>0x02</midino>
                 <options>
