@@ -99,17 +99,11 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
     // VU meter:
     m_pVumeter = new EngineVuMeter(group);
 
-    m_pMasterDelay = new EngineDelay(group, ConfigKey(group, "delay"), true);
-    m_pHeadDelay = new EngineDelay(group, ConfigKey(group, "headDelay"), true);
-    m_pBoothDelay = new EngineDelay(group, ConfigKey(group, "boothDelay"), true);
-    // Each EngineDelay uses its own internal buffer, so each engine buffer that
-    // needs to be delayed needs its own EngineDelay object. So, create separate
-    // EngineDelays for the master/booth/record/broadcast input latency compensation
-    // and headphone input latency compensation.
-    m_pInputLatencyCompensationDelay = new EngineDelay(group,
-        ConfigKey(group, "inputLatencyCompensation"));
-    m_pInputLatencyCompensationHeadphonesDelay = new EngineDelay(group,
-        ConfigKey(group, "headphonesInputLatencyCompensation"));
+    m_pMasterDelay = new EngineDelay(group, ConfigKey(group, "delay"));
+    m_pHeadDelay = new EngineDelay(group, ConfigKey(group, "headDelay"));
+    m_pBoothDelay = new EngineDelay(group, ConfigKey(group, "boothDelay"));
+    m_pLatencyCompensationDelay = new EngineDelay(group,
+        ConfigKey(group, "roundTripLatency"));
     m_pNumMicsConfigured = new ControlObject(ConfigKey(group, "num_mics_configured"));
 
     // Headphone volume
@@ -207,8 +201,7 @@ EngineMaster::~EngineMaster() {
     delete m_pMasterDelay;
     delete m_pHeadDelay;
     delete m_pBoothDelay;
-    delete m_pInputLatencyCompensationDelay;
-    delete m_pInputLatencyCompensationHeadphonesDelay;
+    delete m_pLatencyCompensationDelay;
     delete m_pNumMicsConfigured;
 
     delete m_pXFaderReverse;
@@ -272,7 +265,6 @@ void EngineMaster::processChannels(int iBufferSize) {
     m_activeBusChannels[EngineChannel::RIGHT].clear();
     m_activeHeadphoneChannels.clear();
     m_activeTalkoverChannels.clear();
-    m_activeTalkoverHeadphoneChannels.clear();
     m_activeChannels.clear();
 
     ScopedTimer timer("EngineMaster::processChannels");
@@ -326,21 +318,13 @@ void EngineMaster::processChannels(int iBufferSize) {
         // If the channel is enabled for previewing in headphones, copy it
         // over to the headphone buffer
         if (pChannel->isPflEnabled()) {
-            if (pChannel->isTalkoverChannel()) {
-                m_activeTalkoverHeadphoneChannels.append(pChannelInfo);
-            } else {
-                m_activeHeadphoneChannels.append(pChannelInfo);
-            }
+            m_activeHeadphoneChannels.append(pChannelInfo);
         } else {
             // Check if we need to fade out the channel
             GainCache& gainCache = m_channelHeadphoneGainCache[i];
             if (gainCache.m_gain) {
                 m_channelHeadphoneGainCache[i].m_fadeout = true;
-                if (pChannel->isTalkoverChannel()) {
-                    m_activeTalkoverHeadphoneChannels.append(pChannelInfo);
-                } else {
-                    m_activeHeadphoneChannels.append(pChannelInfo);
-                }
+                m_activeHeadphoneChannels.append(pChannelInfo);
             }
         }
 
@@ -414,9 +398,6 @@ void EngineMaster::process(const int iBufferSize) {
     // Mix all the PFL enabled channels together.
     m_headphoneGain.setGain(chead_gain);
 
-    TalkoverMixMode configuredTalkoverMixMode = static_cast<TalkoverMixMode>(
-        static_cast<int>(m_pTalkoverMixMode->get()));
-
     if (headphoneEnabled) {
         if (m_bRampingGain) {
             ChannelMixer::mixChannelsRamping(
@@ -428,32 +409,6 @@ void EngineMaster::process(const int iBufferSize) {
                     m_headphoneGain, &m_activeHeadphoneChannels,
                     &m_channelHeadphoneGainCache,
                     m_pHead, iBufferSize);
-        }
-
-        // Mix PFL enabled talkover channels into headphone buffer after
-        // input latency compensation
-        // Refer to comment below regarding TalkoverMixMode
-        // for more detailed explanation
-        if (configuredTalkoverMixMode != TalkoverMixMode::DIRECT_MONITOR
-            && m_pNumMicsConfigured->get() > 0) {
-            if (m_bRampingGain) {
-                ChannelMixer::mixChannelsRamping(
-                        m_headphoneGain, &m_activeTalkoverHeadphoneChannels,
-                        &m_channelHeadphoneGainCache,
-                        m_pTalkoverHeadphones, iBufferSize);
-            } else {
-                ChannelMixer::mixChannels(
-                        m_headphoneGain, &m_activeTalkoverHeadphoneChannels,
-                        &m_channelHeadphoneGainCache,
-                        m_pTalkoverHeadphones, iBufferSize);
-            }
-
-            m_pInputLatencyCompensationHeadphonesDelay->process(m_pHead, iBufferSize);
-
-            SampleUtil::copy2WithGain(m_pHead,
-                m_pHead, 1.0,
-                m_pTalkoverHeadphones, 1.0,
-                iBufferSize);
         }
 
         // Process headphone channel effects
@@ -537,39 +492,12 @@ void EngineMaster::process(const int iBufferSize) {
             m_pOutputBusBuffers[EngineChannel::RIGHT], 1.0,
             iBufferSize);
 
+        TalkoverMixMode configuredTalkoverMixMode = static_cast<TalkoverMixMode>(
+            static_cast<int>(m_pTalkoverMixMode->get()));
+
         // Process master, booth, and record/broadcast buffers according to the
         // TalkoverMixMode configured in DlgPrefSound
-
-        // If a musician using a microphone plays on beat with the output they hear
-        // from Mixxx, when the input is processed by Mixxx and sent back out of Mixxx,
-        // they should hear themselves playing on beat. Due to the nature of digial audio,
-        // the user does not hear the output of Mixxx in the instant Mixxx is processing
-        // it. There is an output latency between the time Mixxx processes the audio
-        // and the user hears it. So if the microphone user plays on beat with what they
-        // hear, they will be playing out of sync with the engine's processing by the
-        // output latency. Additionally, Mixxx gets input signals delayed by the
-        // input latency. By the time Mixxx receives the input signal, a full
-        // round trip through the signal chain has elapsed since Mixxx processed the
-        // output signal. Therefore, to preserve the relative timing of the input with
-        // Mixxx's outputs (headphones, master, booth, and record/broadcast),
-        // the outputs must be delayed by the round trip latency before mixing
-        // the inputs into them. Unfortunately this adds some latency to Mixxx's outputs,
-        // so manipulating controls in Mixxx will feel less responsive. However,
-        // no latency will be added to the input signal as it passes through Mixxx.
-        // If no microphone inputs are configured, the outputs are not delayed to
-        // avoid adding unnecessary latency.
-
-        // If the input signal is being directly monitored (mixed with the master output
-        // in hardware), do not delay the audible outputs. However, delay the
-        // record/broadcast signal to keep it on beat and consistent with what
-        // the user hears from the speakers/headphones.
         if (configuredTalkoverMixMode == TalkoverMixMode::MASTER) {
-            // Apply input latency compensation to master mix
-            // Do not add unnecessary latency if no microphones are configured
-            if (m_pNumMicsConfigured->get() > 0) {
-                m_pInputLatencyCompensationDelay->process(m_pMaster, iBufferSize);
-            }
-
             // Process master channel effects
             // TODO(Be): Move this after mixing in talkover. To apply master effects
             // to both the master and booth in that case will require refactoring
@@ -644,10 +572,8 @@ void EngineMaster::process(const int iBufferSize) {
                                                 masterFeatures);
             }
 
-            // Apply input latency compensation then mix talkover into master mix
-            // Do not add unnecessary latency if no microphones are configured
+            // Mix talkover with master
             if (m_pNumMicsConfigured->get() > 0) {
-                m_pInputLatencyCompensationDelay->process(m_pMaster, iBufferSize);
                 SampleUtil::copy2WithGain(m_pMaster,
                     m_pMaster, 1.0,
                     m_pTalkover, 1.0,
@@ -726,10 +652,19 @@ void EngineMaster::process(const int iBufferSize) {
             }
             m_masterGainOld = master_gain;
 
-            // The talkover signal Mixxx receives is delayed by the round trip latency,
-            // so to record/broadcast the same signal that is heard on the master & booth
-            // outputs, the master mix must be delayed before mixing the talkover
-            // signal for the record/broadcast mix.
+            // The talkover signal Mixxx receives is delayed by the round trip latency.
+            // There is an output latency between the time Mixxx processes the audio
+            // and the user hears it. So if the microphone user plays on beat with
+            // what they hear, they will be playing out of sync with the engine's
+            // processing by the output latency. Additionally, Mixxx gets input signals
+            // delayed by the input latency. By the time Mixxx receives the input signal,
+            // a full round trip through the signal chain has elapsed since Mixxx
+            // processed the output signal.
+            // Although Mixxx receives the input signal delayed, the user hears it mixed
+            // in hardware with the master & booth outputs without that
+            // latency, so to record/broadcast the same signal that is heard
+            // on the master & booth outputs, the master mix must be delayed before
+            // mixing the talkover signal for the record/broadcast mix.
             // If not using microphone inputs or recording/broadcasting from
             // a sound card input, skip unnecessary processing here.
             if (m_pNumMicsConfigured->get() > 0
@@ -737,7 +672,7 @@ void EngineMaster::process(const int iBufferSize) {
                 // Copy the master mix to a separate buffer before delaying it
                 // to avoid delaying the master output.
                 SampleUtil::copy(m_pSidechainMix, m_pMaster, iBufferSize);
-                m_pInputLatencyCompensationDelay->process(m_pSidechainMix, iBufferSize);
+                m_pLatencyCompensationDelay->process(m_pSidechainMix, iBufferSize);
                 SampleUtil::copy2WithGain(m_pSidechainMix,
                                           m_pSidechainMix, 1.0,
                                           m_pTalkover, 1.0,
@@ -872,7 +807,6 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     m_activeBusChannels[EngineChannel::CENTER].reserve(m_channels.size());
     m_activeBusChannels[EngineChannel::RIGHT].reserve(m_channels.size());
     m_activeHeadphoneChannels.reserve(m_channels.size());
-    m_activeTalkoverHeadphoneChannels.reserve(m_channels.size());
     m_activeTalkoverChannels.reserve(m_channels.size());
 
     EngineBuffer* pBuffer = pChannelInfo->m_pChannel->getEngineBuffer();

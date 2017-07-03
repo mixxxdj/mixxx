@@ -83,12 +83,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     m_pMasterDelay = new ControlProxy("[Master]", "delay", this);
     m_pHeadDelay = new ControlProxy("[Master]", "headDelay", this);
     m_pBoothDelay = new ControlProxy("[Master]", "boothDelay", this);
-    m_pRoundTripLatency = new ControlObject(ConfigKey("[Master]", "roundTripLatency"),
-        true, false, true);
-    m_pInputLatencyCompensationDelay = new ControlProxy("[Master]",
-        "inputLatencyCompensation", this);
-    m_pInputLatencyCompensationHeadphonesDelay = new ControlProxy("[Master]",
-        "headphonesInputLatencyCompensation", this);
+    m_pRoundTripLatency = new ControlProxy("[Master]", "roundTripLatency", this);
 
     masterDelaySpinBox->setValue(m_pMasterDelay->get());
     headDelaySpinBox->setValue(m_pHeadDelay->get());
@@ -101,14 +96,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(headDelaySpinboxChanged(double)));
     connect(boothDelaySpinBox, SIGNAL(valueChanged(double)),
             this, SLOT(boothDelaySpinboxChanged(double)));
-    // In case the user somehow updates the m_pRoundTripLatency ControlObject
-    // outside this preference dialog, the input compensation EngineDelays in
-    // EngineMaster should still be updated accordingly. So connect slots for
-    // both the spinbox valueChanged and the ControlObject valueChanged signals.
-    connect(roundTripLatencySpinBox, SIGNAL(valueChanged(double)),
-            this, SLOT(roundTripLatencySpinboxChanged(double)));
-    connect(m_pRoundTripLatency, SIGNAL(valueChanged(double)),
-            this, SLOT(roundTripLatencyChanged(double)));
 
     initializePaths();
     loadSettings();
@@ -214,7 +201,11 @@ void DlgPrefSound::slotApply() {
         return;
     }
 
-    if (m_bLatencyChanged
+    EngineMaster::TalkoverMixMode configuredTalkoverMixMode =
+        static_cast<EngineMaster::TalkoverMixMode>(
+              static_cast<int>(m_pTalkoverMixMode->get()));
+    if (configuredTalkoverMixMode == EngineMaster::TalkoverMixMode::DIRECT_MONITOR
+        && m_bLatencyChanged
         && m_pRoundTripLatency->get() != roundTripLatencySpinBox->minimum()) {
         QMessageBox latencyChangeWarningBox;
         latencyChangeWarningBox.setIcon(QMessageBox::Warning);
@@ -427,9 +418,6 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
         roundTripLatencySpinBox->setMinimum(config.getProcessingLatency());
         if (measuredRoundTripLatencyAtDefault) {
             roundTripLatencySpinBox->setValue(roundTripLatencySpinBox->minimum());
-        } else {
-            // Recalculate input latency compensation
-            roundTripLatencyChanged(m_pRoundTripLatency->get());
         }
     }
 
@@ -640,16 +628,6 @@ void DlgPrefSound::headDelaySpinboxChanged(double value) {
 
 void DlgPrefSound::boothDelaySpinboxChanged(double value) {
     m_pBoothDelay->set(value);
-}
-
-void DlgPrefSound::roundTripLatencySpinboxChanged(double value) {
-    m_pRoundTripLatency->set(value);
-    roundTripLatencyChanged(value);
-}
-
-void DlgPrefSound::roundTripLatencyChanged(double newRoundTripLatency) {
-    m_pInputLatencyCompensationDelay->set(newRoundTripLatency);
-    m_pInputLatencyCompensationHeadphonesDelay->set(newRoundTripLatency);
 }
 
 void DlgPrefSound::masterMixChanged(int value) {

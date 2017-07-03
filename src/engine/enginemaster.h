@@ -307,7 +307,6 @@ class EngineMaster : public QObject, public AudioSource {
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeBusChannels[3];
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeHeadphoneChannels;
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeTalkoverChannels;
-    QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeTalkoverHeadphoneChannels;
 
     // Mixing buffers for each output.
     CSAMPLE* m_pOutputBusBuffers[3];
@@ -335,8 +334,7 @@ class EngineMaster : public QObject, public AudioSource {
     EngineDelay* m_pMasterDelay;
     EngineDelay* m_pHeadDelay;
     EngineDelay* m_pBoothDelay;
-    EngineDelay* m_pInputLatencyCompensationDelay;
-    EngineDelay* m_pInputLatencyCompensationHeadphonesDelay;
+    EngineDelay* m_pLatencyCompensationDelay;
 
     EngineVuMeter* m_pVumeter;
     EngineSideChain* m_pEngineSideChain;
