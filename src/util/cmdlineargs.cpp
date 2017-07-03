@@ -58,7 +58,9 @@ bool CmdlineArgs::Parse(int &argc, char **argv) {
         } else if (argv[i] == QString("--logLevel") && i+1 < argc) {
             logLevelSet = true;
             auto level = QLatin1String(argv[i+1]);
-            if (level == "debug") {
+            if (level == "trace") {
+                m_logLevel = mixxx::LogLevel::Trace;
+            } else if (level == "debug") {
                 m_logLevel = mixxx::LogLevel::Debug;
             } else if (level == "info") {
                 m_logLevel = mixxx::LogLevel::Info;
@@ -67,7 +69,7 @@ bool CmdlineArgs::Parse(int &argc, char **argv) {
             } else if (level == "critical") {
                 m_logLevel = mixxx::LogLevel::Critical;
             } else {
-                fputs("\nlogLevel argument wasn't 'debug', 'info', 'warning', or 'critical'! Mixxx will only output\n\
+                fputs("\nlogLevel argument wasn't 'trace', 'debug', 'info', 'warning', or 'critical'! Mixxx will only output\n\
 warnings and errors to the console unless this is set properly.\n", stdout);
             }
             i++;
@@ -142,9 +144,10 @@ void CmdlineArgs::printUsage() {
 \n\
 --logLevel LEVEL        Sets the verbosity of command line logging\n\
                         critical - Critical/Fatal only\n\
-                        warning - Above + Warnings\n\
-                        info - Above + Informational messages\n\
-                        debug - Above + Debug/Developer messages\n\
+                        warning  - Above + Warnings\n\
+                        info     - Above + Informational messages\n\
+                        debug    - Above + Debug/Developer messages\n\
+                        trace    - Above + Profiling messages\n\
 \n"
 #ifdef MIXXX_BUILD_DEBUG
 "\

@@ -6,15 +6,32 @@
     control: The control to connect to.
 -->
 <Template>
-  <WidgetGroup>
-    <Layout>vertical</Layout>
+  <SizeAwareStack>
     <Children>
-      <Template src="skin:knob.xml"/>
-      <Label>
-        <Size>40f,10f</Size>
-        <ObjectName>KnobLabel</ObjectName>
-        <Text><Variable name="label"/></Text>
-      </Label>
+
+      <WidgetGroup>
+        <MinimumSize>40,34</MinimumSize>
+        <MaximumSize>40,41</MaximumSize>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skin:knob.xml"/>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <MinimumSize>40,42</MinimumSize>
+        <MaximumSize>40,45</MaximumSize>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skin:knob.xml"/>
+          <Label>
+            <Size>40f,10f</Size>
+            <ObjectName>KnobLabel</ObjectName>
+            <Text><Variable name="label"/></Text>
+          </Label>
+        </Children>
+      </WidgetGroup>
+
     </Children>
-  </WidgetGroup>
+  </SizeAwareStack>
 </Template>

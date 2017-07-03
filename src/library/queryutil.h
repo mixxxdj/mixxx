@@ -10,7 +10,7 @@
 
 class ScopedTransaction {
   public:
-    explicit ScopedTransaction(QSqlDatabase& database) :
+    explicit ScopedTransaction(const QSqlDatabase& database) :
             m_database(database),
             m_active(false) {
         if (!transaction()) {
@@ -62,7 +62,7 @@ class ScopedTransaction {
         return result;
     }
   private:
-    QSqlDatabase& m_database;
+    QSqlDatabase m_database;
     bool m_active;
 };
 
@@ -94,7 +94,7 @@ class FieldEscaper final {
         }
     }
 
-    const QSqlDatabase& m_database;
+    QSqlDatabase m_database;
     mutable QSqlField m_stringField;
 };
 

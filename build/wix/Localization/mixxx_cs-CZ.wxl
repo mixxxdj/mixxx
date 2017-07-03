@@ -36,14 +36,14 @@
   <String Id="WarningDlgTitle">{\WixUI_Font_Title}Varování</String>
 
   <!-- Custom exit dialog -->
-  <String Id="StartOnExit">Launch Mixxx when setup exits.</String>
+  <String Id="StartOnExit">Spustit Mixxx, když existuje nastavení.</String>
 
   <!-- Features translations -->
   <String Id="FeatureCompleteDescription">Úplný balíček.</String>
   <String Id="FeatureMainProgramTitle">Hlavní aplikace</String>
   <String Id="FeatureMainProgramDescription">Hlavní aplikace Mixxxu včetně přednastavení ovladačů.</String>
-  <String Id="FeaturePDBTitle">PDB debug files</String>
-  <String Id="FeaturePDBDescription">Install Mixxx PDB files to use with a debugger. This is useful to debug Mixxx and provide readable backtraces to the development team.</String>
+  <String Id="FeaturePDBTitle">Soubory ladění PDB</String>
+  <String Id="FeaturePDBDescription">Nainstalujte soubory PDB Mixxxu k použití s ladičem. Toto je užitečné na ladění Mixxxu a poskytuje vývojářskému družstvu čitelné stopy.</String>
   <String Id="FeatureDesktopShortcutTitle">Klávesová zkratka</String>
   <String Id="FeatureDesktopShortcutDescription">Přidat klávesovou zkratku pro Mixxx na pracovní plochu</String>
   <String Id="FeatureManualTitle">Uživatelská příručka</String>

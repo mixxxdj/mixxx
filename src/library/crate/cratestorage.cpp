@@ -4,15 +4,17 @@
 #include "library/dao/trackschema.h"
 
 #include "util/db/dbconnection.h"
-#include "util/db/sqltransaction.h"
+
+#include "util/db/sqllikewildcards.h"
 #include "util/db/fwdsqlquery.h"
 
-#include <QtDebug>
+#include "util/logger.h"
 
 
 namespace {
 
-const QString CRATETABLE_NAME = "name";
+const mixxx::Logger kLogger("CrateStorage");
+
 const QString CRATETABLE_LOCKED = "locked";
 
 const QString CRATE_SUMMARY_VIEW = "crate_summary";
@@ -82,6 +84,7 @@ class CrateQueryBinder {
 } // anonymous namespace
 
 
+
 CrateQueryFields::CrateQueryFields(const FwdSqlQuery& query)
     : m_iId(query.fieldIndex(CRATETABLE_ID)),
       m_iName(query.fieldIndex(CRATETABLE_NAME)),
@@ -122,8 +125,6 @@ void CrateSummaryQueryFields::populateFromQuery(
 
 
 void CrateStorage::repairDatabase(QSqlDatabase database) {
-    DEBUG_ASSERT(!m_database.isOpen());
-
     // NOTE(uklotzde): No transactions
     // All queries are independent so there is no need to enclose some
     // or all of them in a transaction. Grouping into transactions would
@@ -145,7 +146,8 @@ void CrateStorage::repairDatabase(QSqlDatabase database) {
                         CRATE_TABLE,
                         CRATETABLE_NAME));
         if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            qWarning() << "Deleted" << query.numRowsAffected()
+            kLogger.warning()
+                    << "Deleted" << query.numRowsAffected()
                     << "crates with empty names";
         }
     }
@@ -156,8 +158,8 @@ void CrateStorage::repairDatabase(QSqlDatabase database) {
                         CRATE_TABLE,
                         CRATETABLE_LOCKED));
         if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            qWarning() << "Fixed boolean values in"
-                    "table" << CRATE_TABLE
+            kLogger.warning()
+                    << "Fixed boolean values in table" << CRATE_TABLE
                     << "column" << CRATETABLE_LOCKED
                     << "for" << query.numRowsAffected() << "crates";
         }
@@ -169,8 +171,8 @@ void CrateStorage::repairDatabase(QSqlDatabase database) {
                         CRATE_TABLE,
                         CRATETABLE_AUTODJ_SOURCE));
         if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            qWarning() << "Fixed boolean values in"
-                    "table" << CRATE_TABLE
+            kLogger.warning()
+                    << "Fixed boolean values in table" << CRATE_TABLE
                     << "column" << CRATETABLE_AUTODJ_SOURCE
                     << "for" << query.numRowsAffected() << "crates";
         }
@@ -186,7 +188,8 @@ void CrateStorage::repairDatabase(QSqlDatabase database) {
                         CRATETABLE_ID,
                         CRATE_TABLE));
         if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            qWarning() << "Removed" << query.numRowsAffected()
+            kLogger.warning()
+                    << "Removed" << query.numRowsAffected()
                     << "crate tracks from non-existent crates";
         }
     }
@@ -199,26 +202,31 @@ void CrateStorage::repairDatabase(QSqlDatabase database) {
                         LIBRARYTABLE_ID,
                         LIBRARY_TABLE));
         if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            qWarning() << "Removed" << query.numRowsAffected()
+            kLogger.warning()
+                    << "Removed" << query.numRowsAffected()
                     << "library purged tracks from crates";
         }
     }
 }
 
 
-void CrateStorage::attachDatabase(QSqlDatabase database) {
+void CrateStorage::connectDatabase(QSqlDatabase database) {
     m_database = database;
     createViews();
 }
 
 
-void CrateStorage::detachDatabase() {
+void CrateStorage::disconnectDatabase() {
+    // Ensure that we don't use the current database connection
+    // any longer.
+    m_database = QSqlDatabase();
 }
 
 
 void CrateStorage::createViews() {
     VERIFY_OR_DEBUG_ASSERT(FwdSqlQuery(m_database, kCrateSummaryViewQuery).execPrepared()) {
-        qCritical() << "Failed to create database view for crate summaries!";
+        kLogger.critical()
+                << "Failed to create database view for crate summaries!";
     }
 }
 
@@ -247,11 +255,13 @@ bool CrateStorage::readCrateById(CrateId id, Crate* pCrate) const {
         CrateSelectResult crates(std::move(query));
         if ((pCrate != nullptr) ? crates.populateNext(pCrate) : crates.next()) {
             VERIFY_OR_DEBUG_ASSERT(!crates.next()) {
-                qWarning() << "Ambiguous crate id:" << id;
+                kLogger.warning()
+                        << "Ambiguous crate id:" << id;
             }
             return true;
         } else {
-            qWarning() << "Crate not found by id:" << id;
+            kLogger.warning()
+                    << "Crate not found by id:" << id;
         }
     }
     return false;
@@ -268,11 +278,13 @@ bool CrateStorage::readCrateByName(const QString& name, Crate* pCrate) const {
         CrateSelectResult crates(std::move(query));
         if ((pCrate != nullptr) ? crates.populateNext(pCrate) : crates.next()) {
             VERIFY_OR_DEBUG_ASSERT(!crates.next()) {
-                qWarning() << "Ambiguous crate name:" << name;
+                kLogger.warning()
+                        << "Ambiguous crate name:" << name;
             }
             return true;
         } else {
-            qDebug() << "Crate not found by name:" << name;
+            kLogger.debug()
+                    << "Crate not found by name:" << name;
         }
     }
     return false;
@@ -281,7 +293,7 @@ bool CrateStorage::readCrateByName(const QString& name, Crate* pCrate) const {
 
 CrateSelectResult CrateStorage::selectCrates() const {
     FwdSqlQuery query(m_database,
-            DbConnection::collateLexicographically(QString(
+            mixxx::DbConnection::collateLexicographically(QString(
                     "SELECT * FROM %1 ORDER BY %2").arg(
                             CRATE_TABLE,
                             CRATETABLE_NAME)));
@@ -318,7 +330,7 @@ CrateSelectResult CrateStorage::selectCratesByIds(
     DEBUG_ASSERT(!subselectForCrateIds.isEmpty());
 
     FwdSqlQuery query(m_database,
-            DbConnection::collateLexicographically(QString(
+            mixxx::DbConnection::collateLexicographically(QString(
                     "SELECT * FROM %1 WHERE %2 %3 (%4) ORDER BY %5").arg(
                             CRATE_TABLE,
                             CRATETABLE_ID,
@@ -336,7 +348,7 @@ CrateSelectResult CrateStorage::selectCratesByIds(
 
 CrateSelectResult CrateStorage::selectAutoDjCrates(bool autoDjSource) const {
     FwdSqlQuery query(m_database,
-            DbConnection::collateLexicographically(QString(
+            mixxx::DbConnection::collateLexicographically(QString(
                     "SELECT * FROM %1 WHERE %2=:autoDjSource ORDER BY %3").arg(
                             CRATE_TABLE,
                             CRATETABLE_AUTODJ_SOURCE,
@@ -352,7 +364,7 @@ CrateSelectResult CrateStorage::selectAutoDjCrates(bool autoDjSource) const {
 
 CrateSummarySelectResult CrateStorage::selectCrateSummaries() const {
     FwdSqlQuery query(m_database,
-            DbConnection::collateLexicographically(QString(
+            mixxx::DbConnection::collateLexicographically(QString(
                     "SELECT * FROM %1 ORDER BY %2").arg(
                             CRATE_SUMMARY_VIEW,
                             CRATETABLE_NAME)));
@@ -373,11 +385,13 @@ bool CrateStorage::readCrateSummaryById(CrateId id, CrateSummary* pCrateSummary)
         CrateSummarySelectResult crateSummaries(std::move(query));
         if ((pCrateSummary != nullptr) ? crateSummaries.populateNext(pCrateSummary) : crateSummaries.next()) {
             VERIFY_OR_DEBUG_ASSERT(!crateSummaries.next()) {
-                qWarning() << "Ambiguous crate id:" << id;
+                kLogger.warning()
+                        << "Ambiguous crate id:" << id;
             }
             return true;
         } else {
-            qWarning() << "Crate summary not found by id:" << id;
+            kLogger.warning()
+                    << "Crate summary not found by id:" << id;
         }
     }
     return false;
@@ -411,6 +425,20 @@ QString CrateStorage::formatSubselectQueryForCrateTrackIds(
 }
 
 
+//static
+QString CrateStorage::formatQueryForTrackIdsByCrateNameLike(
+        const QString& crateNameLike) {
+    return QString("SELECT DISTINCT %1 FROM %2 JOIN %3 ON %4=%5 WHERE %6 LIKE '%7' ORDER BY %1").arg(
+            CRATETRACKSTABLE_TRACKID,
+            CRATE_TRACKS_TABLE,
+            CRATE_TABLE,
+            CRATETRACKSTABLE_CRATEID,
+            CRATETABLE_ID,
+            CRATETABLE_NAME,
+            kSqlLikeMatchAll + crateNameLike + kSqlLikeMatchAll);
+}
+
+
 CrateTrackSelectResult CrateStorage::selectCrateTracksSorted(CrateId crateId) const {
     FwdSqlQuery query(m_database, QString(
             "SELECT * FROM %1 WHERE %2=:crateId ORDER BY %3").arg(
@@ -441,6 +469,26 @@ CrateTrackSelectResult CrateStorage::selectTrackCratesSorted(TrackId trackId) co
 }
 
 
+CrateTrackSelectResult CrateStorage::selectTracksSortedByCrateNameLike(const QString& crateNameLike) const {
+    FwdSqlQuery query(m_database, QString(
+            "SELECT %1,%2 FROM %3 JOIN %4 ON %5 = %6 WHERE %7 LIKE :crateNameLike ORDER BY %1").arg(
+                    CRATETRACKSTABLE_TRACKID,
+                    CRATETRACKSTABLE_CRATEID,
+                    CRATE_TRACKS_TABLE,
+                    CRATE_TABLE,
+                    CRATETABLE_ID,
+                    CRATETRACKSTABLE_CRATEID,
+                    CRATETABLE_NAME));
+    query.bindValue(":crateNameLike", kSqlLikeMatchAll + crateNameLike + kSqlLikeMatchAll);
+
+    if (query.execPrepared()) {
+        return CrateTrackSelectResult(std::move(query));
+    } else {
+        return CrateTrackSelectResult();
+    }
+}
+
+
 QSet<CrateId> CrateStorage::collectCrateIdsOfTracks(const QList<TrackId>& trackIds) const {
     // NOTE(uklotzde): One query per track id. This could be optimized
     // by querying for chunks of track ids and collecting the results.
@@ -461,12 +509,11 @@ QSet<CrateId> CrateStorage::collectCrateIdsOfTracks(const QList<TrackId>& trackI
 
 
 bool CrateStorage::onInsertingCrate(
-        SqlTransaction& transaction,
         const Crate& crate,
         CrateId* pCrateId) {
-    DEBUG_ASSERT(transaction);
     VERIFY_OR_DEBUG_ASSERT(!crate.getId().isValid()) {
-        qWarning() << "Cannot insert crate with a valid id:" << crate.getId();
+        kLogger.warning()
+                << "Cannot insert crate with a valid id:" << crate.getId();
         return false;
     }
     FwdSqlQuery query(m_database, QString(
@@ -499,11 +546,10 @@ bool CrateStorage::onInsertingCrate(
 
 
 bool CrateStorage::onUpdatingCrate(
-        SqlTransaction& transaction,
         const Crate& crate) {
-    DEBUG_ASSERT(transaction);
     VERIFY_OR_DEBUG_ASSERT(crate.getId().isValid()) {
-        qWarning() << "Cannot update crate without a valid id";
+        kLogger.warning()
+                << "Cannot update crate without a valid id";
         return false;
     }
     FwdSqlQuery query(m_database, QString(
@@ -526,24 +572,23 @@ bool CrateStorage::onUpdatingCrate(
     }
     if (query.numRowsAffected() > 0) {
         VERIFY_OR_DEBUG_ASSERT(query.numRowsAffected() <= 1) {
-            qWarning() << "Updated multiple crates with the same id" << crate.getId();
+            kLogger.warning()
+                    << "Updated multiple crates with the same id" << crate.getId();
         }
         return true;
     } else {
-        qWarning() << "Cannot update non-existent crate with id" << crate.getId();
+        kLogger.warning()
+                << "Cannot update non-existent crate with id" << crate.getId();
         return false;
     }
 }
 
 
 bool CrateStorage::onDeletingCrate(
-        SqlTransaction& transaction,
         CrateId crateId) {
-    VERIFY_OR_DEBUG_ASSERT(transaction) {
-        return false;
-    }
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
-        qWarning() << "Cannot delete crate without a valid id";
+        kLogger.warning()
+                << "Cannot delete crate without a valid id";
         return false;
     }
     {
@@ -559,7 +604,8 @@ bool CrateStorage::onDeletingCrate(
             return false;
         }
         if (query.numRowsAffected() <= 0) {
-            qDebug() << "Deleting empty crate with id" << crateId;
+            kLogger.debug()
+                    << "Deleting empty crate with id" << crateId;
         }
     }
     {
@@ -576,11 +622,13 @@ bool CrateStorage::onDeletingCrate(
         }
         if (query.numRowsAffected() > 0) {
             VERIFY_OR_DEBUG_ASSERT(query.numRowsAffected() <= 1) {
-                qWarning() << "Deleted multiple crates with the same id" << crateId;
+                kLogger.warning()
+                        << "Deleted multiple crates with the same id" << crateId;
             }
             return true;
         } else {
-            qWarning() << "Cannot delete non-existent crate with id" << crateId;
+            kLogger.warning()
+                    << "Cannot delete non-existent crate with id" << crateId;
             return false;
         }
     }
@@ -588,12 +636,8 @@ bool CrateStorage::onDeletingCrate(
 
 
 bool CrateStorage::onAddingCrateTracks(
-        SqlTransaction& transaction,
         CrateId crateId,
         const QList<TrackId>& trackIds) {
-    VERIFY_OR_DEBUG_ASSERT(transaction) {
-        return false;
-    }
     FwdSqlQuery query(m_database, QString(
             "INSERT OR IGNORE INTO %1 (%2, %3) VALUES (:crateId,:trackId)").arg(
                     CRATE_TRACKS_TABLE,
@@ -610,7 +654,9 @@ bool CrateStorage::onAddingCrateTracks(
         }
         if (query.numRowsAffected() == 0) {
             // track is already in crate
-            qDebug() << "Track" << trackId << "not added to crate" << crateId;
+            kLogger.debug()
+                    << "Track" << trackId
+                    << "not added to crate" << crateId;
         } else {
             DEBUG_ASSERT(query.numRowsAffected() == 1);
         }
@@ -620,14 +666,10 @@ bool CrateStorage::onAddingCrateTracks(
 
 
 bool CrateStorage::onRemovingCrateTracks(
-        SqlTransaction& transaction,
         CrateId crateId,
         const QList<TrackId>& trackIds) {
-    // NOTE(uklotzde): We remove tracks in a transaction and loop
+    // NOTE(uklotzde): We remove tracks in a loop
     // analogously to adding tracks (see above).
-    VERIFY_OR_DEBUG_ASSERT(transaction) {
-        return false;
-    }
     FwdSqlQuery query(m_database, QString(
             "DELETE FROM %1 WHERE %2=:crateId AND %3=:trackId").arg(
                     CRATE_TRACKS_TABLE,
@@ -644,7 +686,9 @@ bool CrateStorage::onRemovingCrateTracks(
         }
         if (query.numRowsAffected() == 0) {
             // track not found in crate
-            qDebug() << "Track" << trackId << "not removed from crate" << crateId;
+            kLogger.debug()
+                    << "Track" << trackId
+                    << "not removed from crate" << crateId;
         } else {
             DEBUG_ASSERT(query.numRowsAffected() == 1);
         }
@@ -654,10 +698,7 @@ bool CrateStorage::onRemovingCrateTracks(
 
 
 bool CrateStorage::onPurgingTracks(
-        SqlTransaction& transaction,
         const QList<TrackId>& trackIds) {
-    DEBUG_ASSERT(transaction);
-
     // NOTE(uklotzde): Remove tracks from crates one-by-one.
     // This might be optimized by deleting multiple track ids
     // at once in chunks with a maximum size.
