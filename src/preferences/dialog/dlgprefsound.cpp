@@ -424,7 +424,7 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
     } else {
         bool measuredRoundTripLatencyAtDefault =
             m_pRoundTripLatency->get() == roundTripLatencySpinBox->minimum();
-        roundTripLatencySpinBox->setMinimum(config.getProcessingLatency() * 2.0);
+        roundTripLatencySpinBox->setMinimum(config.getProcessingLatency());
         if (measuredRoundTripLatencyAtDefault) {
             roundTripLatencySpinBox->setValue(roundTripLatencySpinBox->minimum());
         } else {
