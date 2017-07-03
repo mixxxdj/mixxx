@@ -60,6 +60,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void slotResetToDefaults();
     void bufferUnderflow(double count);
     void masterLatencyChanged(double latency);
+    void roundTripLatencySpinboxChanged(double value);
     void masterDelaySpinboxChanged(double value);
     void headDelaySpinboxChanged(double value);
     void boothDelaySpinboxChanged(double value);
@@ -67,8 +68,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void masterEnabledChanged(double value);
     void masterOutputModeComboBoxChanged(int value);
     void masterMonoMixdownChanged(double value);
-    void talkoverMixComboBoxChanged(int value);
-    void talkoverMixChanged(double value);
+    void micMonitorModeComboBoxChanged(int value);
+    void micMonitorModeChanged(double value);
 
   private slots:
     void addPath(AudioOutput output);
@@ -102,7 +103,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     ControlProxy* m_pKeylockEngine;
     ControlProxy* m_pMasterEnabled;
     ControlProxy* m_pMasterMonoMixdown;
-    ControlProxy* m_pTalkoverMixMode;
+    ControlProxy* m_pMicMonitorMode;
     QList<SoundDevice*> m_inputDevices;
     QList<SoundDevice*> m_outputDevices;
     bool m_settingsModified;

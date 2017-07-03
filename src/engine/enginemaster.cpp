@@ -177,7 +177,7 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
     m_pBoothEnabled->setReadOnly();
     m_pMasterMonoMixdown = new ControlObject(ConfigKey(group, "mono_mixdown"),
             true, false, true);  // persist = true
-    m_pTalkoverMixMode = new ControlObject(ConfigKey(group, "talkover_mix"),
+    m_pMicMonitorMode = new ControlObject(ConfigKey(group, "talkover_mix"),
             true, false, true);  // persist = true
     m_pHeadphoneEnabled = new ControlObject(ConfigKey(group, "headEnabled"));
     m_pHeadphoneEnabled->setReadOnly();
@@ -219,7 +219,7 @@ EngineMaster::~EngineMaster() {
 
     delete m_pMasterEnabled;
     delete m_pMasterMonoMixdown;
-    delete m_pTalkoverMixMode;
+    delete m_pMicMonitorMode;
     delete m_pHeadphoneEnabled;
 
     SampleUtil::free(m_pHead);
@@ -492,12 +492,12 @@ void EngineMaster::process(const int iBufferSize) {
             m_pOutputBusBuffers[EngineChannel::RIGHT], 1.0,
             iBufferSize);
 
-        TalkoverMixMode configuredTalkoverMixMode = static_cast<TalkoverMixMode>(
-            static_cast<int>(m_pTalkoverMixMode->get()));
+        MicMonitorMode configuredMicMonitorMode = static_cast<MicMonitorMode>(
+            static_cast<int>(m_pMicMonitorMode->get()));
 
         // Process master, booth, and record/broadcast buffers according to the
-        // TalkoverMixMode configured in DlgPrefSound
-        if (configuredTalkoverMixMode == TalkoverMixMode::MASTER) {
+        // MicMonitorMode configured in DlgPrefSound
+        if (configuredMicMonitorMode == MicMonitorMode::MASTER) {
             // Process master channel effects
             // TODO(Be): Move this after mixing in talkover. To apply master effects
             // to both the master and booth in that case will require refactoring
@@ -551,12 +551,12 @@ void EngineMaster::process(const int iBufferSize) {
 
             // Record/broadcast signal is the same as the master output
             m_ppSidechainOutput = &m_pMaster;
-        } else if (configuredTalkoverMixMode == TalkoverMixMode::MASTER_AND_BOOTH) {
+        } else if (configuredMicMonitorMode == MicMonitorMode::MASTER_AND_BOOTH) {
             // Process master channel effects
             // TODO(Be): Move this after mixing in talkover. For the MASTER only
-            // TalkoverMixMode above, that will require refactoring the effects system
+            // MicMonitorMode above, that will require refactoring the effects system
             // to be able to process the same effects on different buffers
-            // within the same callback. For consistency between the TalkoverMixModes,
+            // within the same callback. For consistency between the MicMonitorModes,
             // process master effects here before mixing in talkover.
             if (m_pEngineEffectsManager) {
                 GroupFeatureState masterFeatures;
@@ -605,7 +605,7 @@ void EngineMaster::process(const int iBufferSize) {
 
             // Record/broadcast signal is the same as the master output
             m_ppSidechainOutput = &m_pMaster;
-        } else if (configuredTalkoverMixMode == TalkoverMixMode::DIRECT_MONITOR) {
+        } else if (configuredMicMonitorMode == MicMonitorMode::DIRECT_MONITOR) {
             // Skip mixing talkover with the master and booth outputs
             // if using direct monitoring because it is being mixed in hardware
             // without the latency of sending the signal into Mixxx for processing.

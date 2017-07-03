@@ -219,7 +219,7 @@ class EngineMaster : public QObject, public AudioSource {
         double m_dTalkoverDuckingGain;
     };
 
-    enum class TalkoverMixMode {
+    enum class MicMonitorMode {
         MASTER = 0,
         MASTER_AND_BOOTH,
         DIRECT_MONITOR,
@@ -365,7 +365,7 @@ class EngineMaster : public QObject, public AudioSource {
 
     // Mix two Mono channels. This is useful for outdoor gigs
     ControlObject* m_pMasterMonoMixdown;
-    ControlObject* m_pTalkoverMixMode;
+    ControlObject* m_pMicMonitorMode;
 
     volatile bool m_bBusOutputConnected[3];
     bool m_bExternalRecordBroadcastInputConnected;

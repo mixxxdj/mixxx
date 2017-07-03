@@ -80,16 +80,18 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
                         static_cast<EngineBuffer::KeylockEngine>(i)));
     }
 
+    m_pRoundTripLatency = new ControlProxy("[Master]", "roundTripLatency", this);
     m_pMasterDelay = new ControlProxy("[Master]", "delay", this);
     m_pHeadDelay = new ControlProxy("[Master]", "headDelay", this);
     m_pBoothDelay = new ControlProxy("[Master]", "boothDelay", this);
-    m_pRoundTripLatency = new ControlProxy("[Master]", "roundTripLatency", this);
 
+    roundTripLatencySpinBox->setValue(m_pRoundTripLatency->get());
     masterDelaySpinBox->setValue(m_pMasterDelay->get());
     headDelaySpinBox->setValue(m_pHeadDelay->get());
     boothDelaySpinBox->setValue(m_pBoothDelay->get());
-    roundTripLatencySpinBox->setValue(m_pRoundTripLatency->get());
 
+    connect(roundTripLatencySpinBox, SIGNAL(valueChanged(double)),
+            this, SLOT(roundTripLatencySpinboxChanged(double)));
     connect(masterDelaySpinBox, SIGNAL(valueChanged(double)),
             this, SLOT(masterDelaySpinboxChanged(double)));
     connect(headDelaySpinBox, SIGNAL(valueChanged(double)),
@@ -149,14 +151,14 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(masterOutputModeComboBoxChanged(int)));
     m_pMasterMonoMixdown->connectValueChanged(SLOT(masterMonoMixdownChanged(double)));
 
-    m_pTalkoverMixMode = new ControlProxy("[Master]", "talkover_mix", this);
-    micMixComboBox->addItem(tr("Master output only"));
-    micMixComboBox->addItem(tr("Master and booth outputs"));
-    micMixComboBox->addItem(tr("Direct monitor (recording and broadcasting only)"));
-    micMixComboBox->setCurrentIndex((int)m_pTalkoverMixMode->get());
-    connect(micMixComboBox, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(talkoverMixComboBoxChanged(int)));
-    m_pTalkoverMixMode->connectValueChanged(SLOT(talkoverMixChanged(double)));
+    m_pMicMonitorMode = new ControlProxy("[Master]", "talkover_mix", this);
+    micMonitorComboBox->addItem(tr("Master output only"));
+    micMonitorComboBox->addItem(tr("Master and booth outputs"));
+    micMonitorComboBox->addItem(tr("Direct monitor (recording and broadcasting only)"));
+    micMonitorComboBox->setCurrentIndex((int)m_pMicMonitorMode->get());
+    connect(micMonitorComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(micMonitorModeComboBoxChanged(int)));
+    m_pMicMonitorMode->connectValueChanged(SLOT(micMonitorModeChanged(double)));
 
     m_pKeylockEngine =
             new ControlProxy("[Master]", "keylock_engine", this);
@@ -201,10 +203,10 @@ void DlgPrefSound::slotApply() {
         return;
     }
 
-    EngineMaster::TalkoverMixMode configuredTalkoverMixMode =
-        static_cast<EngineMaster::TalkoverMixMode>(
-              static_cast<int>(m_pTalkoverMixMode->get()));
-    if (configuredTalkoverMixMode == EngineMaster::TalkoverMixMode::DIRECT_MONITOR
+    EngineMaster::MicMonitorMode configuredMicMonitorMode =
+        static_cast<EngineMaster::MicMonitorMode>(
+              static_cast<int>(m_pMicMonitorMode->get()));
+    if (configuredMicMonitorMode == EngineMaster::MicMonitorMode::DIRECT_MONITOR
         && m_bLatencyChanged
         && m_pRoundTripLatency->get() != roundTripLatencySpinBox->minimum()) {
         QMessageBox latencyChangeWarningBox;
@@ -600,8 +602,8 @@ void DlgPrefSound::slotResetToDefaults() {
     m_pBoothDelay->set(0.0);
 
     // Enable talkover master output
-    m_pTalkoverMixMode->set(0.0);
-    micMixComboBox->setCurrentIndex(0);
+    m_pMicMonitorMode->set(0.0);
+    micMonitorComboBox->setCurrentIndex(0);
 
     roundTripLatencySpinBox->setValue(roundTripLatencySpinBox->minimum());
 
@@ -616,6 +618,10 @@ void DlgPrefSound::bufferUnderflow(double count) {
 void DlgPrefSound::masterLatencyChanged(double latency) {
     currentLatency->setText(QString("%1 ms").arg(latency));
     update();
+}
+
+void DlgPrefSound::roundTripLatencySpinboxChanged(double value) {
+    m_pRoundTripLatency->set(value);
 }
 
 void DlgPrefSound::masterDelaySpinboxChanged(double value) {
@@ -646,10 +652,10 @@ void DlgPrefSound::masterMonoMixdownChanged(double value) {
     masterOutputModeComboBox->setCurrentIndex(value ? 1 : 0);
 }
 
-void DlgPrefSound::talkoverMixComboBoxChanged(int value) {
-    m_pTalkoverMixMode->set((double)value);
+void DlgPrefSound::micMonitorModeComboBoxChanged(int value) {
+    m_pMicMonitorMode->set((double)value);
 }
 
-void DlgPrefSound::talkoverMixChanged(double value) {
-    micMixComboBox->setCurrentIndex(value ? 1 : 0);
+void DlgPrefSound::micMonitorModeChanged(double value) {
+    micMonitorComboBox->setCurrentIndex(value ? 1 : 0);
 }
