@@ -42,13 +42,12 @@ EffectManifest AutoPanEffect::getManifest() {
     period->setMaximum(4.0);
     period->setDefault(0.5);
 
-    // This parameter controls the easing of the sound from a side to another.
     EffectManifestParameter* smoothing = manifest.addParameter();
     smoothing->setId("smoothing");
     smoothing->setName(QObject::tr("Smoothing"));
     smoothing->setShortName(QObject::tr("Smooth"));
     smoothing->setDescription(
-            QObject::tr("How fast the signal goes from a channel to another"));
+            QObject::tr("How smoothly the signal goes from one side to the other"));
     smoothing->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     smoothing->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     smoothing->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -63,7 +62,7 @@ EffectManifest AutoPanEffect::getManifest() {
     EffectManifestParameter* width = manifest.addParameter();
     width->setId("width");
     width->setName(QObject::tr("Width"));
-    width->setDescription("How far the signal goes on the left or on the right");
+    width->setDescription("How far the signal goes to each side");
     width->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     width->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     width->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
