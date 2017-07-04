@@ -27,19 +27,18 @@ EffectManifest AutoPanEffect::getManifest() {
             "spatial move and the period can be synced with the BPM."));
 
     // Period
-    // The maximum is at 128 + 1 allowing 128 as max value and
-    // enabling us to pause time when the parameter is above
     EffectManifestParameter* period = manifest.addParameter();
     period->setId("period");
     period->setName(QObject::tr("Period"));
-    period->setDescription(QObject::tr("How fast the sound goes from a side to another,"
-            " following a logarithmic scale"));
-    period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+    period->setDescription(QObject::tr("How fast the sound goes from a side to another\n"
+            "1/4 - 4 beats rounded to 1/2 beat if sync parameter is enabled and tempo is detected (decks and samplers)\n"
+            "1/4 - 4 seconds if sync parameter disabled or no tempo is detected (mic & aux inputs, master mix)"));
+    period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    period->setMinimum(0.0625);     // 1 / 16
-    period->setMaximum(129.0);      // 128 + 1
-    period->setDefault(3.0);
+    period->setMinimum(0.0);
+    period->setMaximum(4.0);
+    period->setDefault(0.5);
 
     // This parameter controls the easing of the sound from a side to another.
     EffectManifestParameter* smoothing = manifest.addParameter();
@@ -114,31 +113,13 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
     double periodUnit = m_pPeriodUnitParameter->value();
     double smoothing = 0.5-m_pSmoothingParameter->value();
 
-    // When the period knob is between max and max-1, the time is paused.
-    // Time shouldn't be paused while enabling state as the sound
-    // will be stuck in the middle even if the smoothing is at max.
-    bool timePaused = period > m_pPeriodParameter->maximum() - 1
-            && enableState != EffectProcessor::ENABLING;
-
     if (periodUnit == 1 && groupFeatures.has_beat_length) {
-        // floor the param on one of these values :
-        // 1/16, 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64, 128
-
-        int i = 0;
-        while (period > m_pPeriodParameter->minimum()) {
-            period /= 2;
-            i++;
-        }
-
-        double beats = m_pPeriodParameter->minimum();
-        while (i != 0.0) {
-            beats *= 2;
-            i--;
-        }
-
+        // period is a number of beats
+        double beats = std::max(roundToFraction(period, 2), 0.25);
         period = groupFeatures.beat_length * beats;
     } else {
-        // max period is 128 seconds
+        // period is a number of seconds
+        period = std::max(period, 0.25);
         period *= sampleRate;
     }
 
@@ -210,9 +191,9 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         pOutput[i] *= gs.frac * lawCoef;
         pOutput[i+1] *= (1.0f - gs.frac) * lawCoef;
 
-        // The time shouldn't be paused if the position has not its
+        // The time shouldn't be paused if the position does not have its
         // expected value due to ramping
-        if (!timePaused || gs.frac.ramped) {
+        if (enableState != EffectProcessor::ENABLING || gs.frac.ramped) {
             gs.time++;
         }
     }
