@@ -3,6 +3,9 @@
 // is asymmetrical. If this is confusing for you to use, set this to "false" to swap the
 // mapping of the encoders on the right deck so the whole controller is asymmetrical.
 var mirroredEncoders = true;
+// Set this to "false" to be able to set the loop and beatjump sizes above 64 beats
+// to values that cannot be shown on the controller's LED display.
+var clampLoopAndBeatJumpSize = true;
 // Set to "true" to use the dot on the loop size LED display to indicate
 // that a loop is active. This restricts loop sizes to 2-32 beats and
 // may be helpful if you never use loops less than 2 beats long.
@@ -183,17 +186,23 @@ P32.Deck = function (deckNumbers, channel) {
                     if (value > 64 && loopSize > 2) { // turn left
                         // Unfortunately, there is no way to show 1 with a dot on the
                         // loop size LED.
-                        script.triggerControl(this.group, 'loop_halve');
+                        engine.setValue(this.group, 'beatloop_size', loopSize / 2);
                     } else if (value < 64 && loopSize < 32) { // turn right
                         // Mixxx supports loops longer than 32 beats, but there is no way
                         // to show 64 with a dot on the loop size LED.
-                        script.triggerControl(this.group, 'loop_double');
+                        engine.setValue(this.group, 'beatloop_size', loopSize * 2);
                     }
                 } else {
                     if (value > 64 && loopSize > 1/32) { // turn left
-                        script.triggerControl(this.group, 'loop_halve');
+                        engine.setValue(this.group, 'beatloop_size', loopSize / 2);
                     } else if (value < 64) { // turn right
-                        script.triggerControl(this.group, 'loop_double');
+                        if (clampLoopAndBeatJumpSize) {
+                            if (loopSize * 2 <= 64) {
+                                engine.setValue(this.group, 'beatloop_size', loopSize * 2);
+                            }
+                        } else {
+                            engine.setValue(this.group, 'beatloop_size', loopSize * 2);
+                        }
                     }
                 }
             };
@@ -300,6 +309,9 @@ P32.Deck = function (deckNumbers, channel) {
                     if (value > 64 && beatJumpSize > 1/32) { // turn left
                         beatJumpSize /= 2;
                     } else if (value < 64) { // turn right
+                        if (clampLoopAndBeatJumpSize && beatJumpSize >= 64) {
+                            return;
+                        }
                         beatJumpSize *= 2;
                     }
                     engine.setValue(this.group, 'beatjump_size', beatJumpSize);
