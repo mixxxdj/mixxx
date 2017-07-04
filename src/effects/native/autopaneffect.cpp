@@ -36,6 +36,8 @@ EffectManifest AutoPanEffect::getManifest() {
     period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    period->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
+    period->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
     period->setMinimum(0.0);
     period->setMaximum(4.0);
     period->setDefault(0.5);
@@ -53,6 +55,7 @@ EffectManifest AutoPanEffect::getManifest() {
     smoothing->setMinimum(0.0);
     smoothing->setMaximum(0.5);  // there are two steps per period so max is half
     smoothing->setDefault(0.5);
+    smoothing->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     // TODO(Ferran Pujol): when KnobComposedMaskedRing branch is merged to master,
     //                     make the scaleStartParameter for this be 1.
 
