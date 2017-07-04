@@ -734,6 +734,7 @@
                 };
             },
             shift: function () {
+                engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
                 this.valueAtLastEffectSwitch = this.previousValueReceived;
                 // Floor the threshold to ensure that every effect can be selected
                 this.changeThreshold = Math.floor(this.max /
