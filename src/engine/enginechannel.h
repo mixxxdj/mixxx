@@ -41,7 +41,9 @@ class EngineChannel : public EngineObject {
 
     EngineChannel(const ChannelHandleAndGroup& handle_group,
                   ChannelOrientation defaultOrientation = CENTER,
-                  EffectsManager* pEffectsManager = nullptr);
+                  EffectsManager* pEffectsManager = nullptr,
+                  bool isTalkoverChannel = false,
+                  bool effectable = true);
     virtual ~EngineChannel();
 
     virtual ChannelOrientation getOrientation() const;

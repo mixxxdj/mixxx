@@ -30,8 +30,10 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
                        UserSettingsPointer pConfig,
                        EngineMaster* pMixingEngine,
                        EffectsManager* pEffectsManager,
-                       EngineChannel::ChannelOrientation defaultOrientation)
-        : EngineChannel(handle_group, defaultOrientation, pEffectsManager),
+                       EngineChannel::ChannelOrientation defaultOrientation,
+                       bool effectable)
+        : EngineChannel(handle_group, defaultOrientation,
+                        pEffectsManager, false, effectable),
           m_pConfig(pConfig),
           m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))),
           // Need a +1 here because the CircularBuffer only allows its size-1

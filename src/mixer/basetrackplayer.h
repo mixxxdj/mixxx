@@ -56,7 +56,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
                         EngineChannel::ChannelOrientation defaultOrientation,
                         const QString& group,
                         bool defaultMaster,
-                        bool defaultHeadphones);
+                        bool defaultHeadphones,
+                        bool effectable = true);
     virtual ~BaseTrackPlayerImpl();
 
     TrackPointer getLoadedTrack() const override;
