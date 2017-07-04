@@ -14,8 +14,9 @@
 #include "util/types.h"
 
 struct EchoGroupState {
-    // 2 seconds max.
-    static constexpr int kMaxDelaySeconds = 2;
+    // 3 seconds max. This supports the full range of 2 beats for tempos down to
+    // 40 BPM.
+    static constexpr int kMaxDelaySeconds = 3;
     // TODO(XXX): When we move from stereo to multi-channel this needs updating.
     static constexpr int kChannelCount = mixxx::AudioSignal::kChannelCountStereo;
     // Ramp length in samples when we are at the start of an echo.
