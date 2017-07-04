@@ -10,6 +10,11 @@ PioneerDDJSB2.vinylModeOnStartup = false;
 // Allows toggling slip faster, but is counterintuitive.
 PioneerDDJSB2.invertVinylSlipButton = false;
 
+// If true, pressing shift + cue will play the track in reverse and enable slip mode,
+// which can be used like a censor effect. If false, pressing shift + cue jumps to
+// the beginning of the track and stops playback.
+PioneerDDJSB2.reverseRollOnShiftCue = false;
+
 // Sets the jogwheels sensivity. 1 is default, 2 is twice as sensitive, 0.5 is half as sensitive.
 PioneerDDJSB2.jogwheelSensivity = 1.0;
 
@@ -209,6 +214,7 @@ PioneerDDJSB2.Deck = function (deckNumber) {
         shiftOffset: 60,
         shiftControl: true,
         sendShifted: true,
+        reverseRollOnShift: PioneerDDJSB2.reverseRollOnShiftCue,
     });
 
     this.syncButton = new components.SyncButton({
