@@ -16,7 +16,7 @@
 
 #include "library/libraryfeature.h"
 #include "library/dao/trackdao.h"
-#include "treeitemmodel.h"
+#include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
 
 class DlgHidden;

@@ -2,6 +2,8 @@
 
 #include "encoder/encoderffmpegresample.h"
 
+#include "util/logger.h"
+
 #include <mutex>
 #include <vector>
 
@@ -16,6 +18,8 @@
 namespace mixxx {
 
 namespace {
+
+const Logger kLogger("SoundSourceFFmpeg");
 
 std::once_flag initFFmpegLibFlag;
 
@@ -80,7 +84,7 @@ bool getFrameCountOfStream(AVStream* pStream, SINT* pFrameCount) {
     int64val *= getSamplingRateOfStream(pStream);
     VERIFY_OR_DEBUG_ASSERT(int64val > 0) {
         // Integer overflow
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "Integer overflow during calculation of frame count";
         return false;
     }
@@ -88,7 +92,7 @@ bool getFrameCountOfStream(AVStream* pStream, SINT* pFrameCount) {
     int64val *= pStream->time_base.num;
     VERIFY_OR_DEBUG_ASSERT(int64val > 0) {
         // Integer overflow
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "Integer overflow during calculation of frame count";
         return false;
     }
@@ -97,7 +101,7 @@ bool getFrameCountOfStream(AVStream* pStream, SINT* pFrameCount) {
     SINT frameCount = int64val;
     VERIFY_OR_DEBUG_ASSERT(static_cast<int64_t>(frameCount) == int64val) {
         // Integer truncation
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "Integer truncation during calculation of frame count";
         return false;
     }
@@ -125,7 +129,7 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
             break; // exit loop
         }
 
-        qDebug() << "FFmpeg input format:" << l_SInputFmt->name;
+        kLogger.debug() << "FFmpeg input format:" << l_SInputFmt->name;
 
         if (!strcmp(l_SInputFmt->name, "ac3")) {
             list.append("ac3");
@@ -175,7 +179,7 @@ AVFormatContext* SoundSourceFFmpeg::openInputFile(
     // the AVFormatContext struct before opening the input file???
     AVFormatContext *pInputFormatContext = avformat_alloc_context();
     if (pInputFormatContext == nullptr) {
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "avformat_alloc_context() failed";
         return nullptr;
     }
@@ -203,7 +207,7 @@ AVFormatContext* SoundSourceFFmpeg::openInputFile(
             avformat_open_input(
                     &pInputFormatContext, qBAFilename.constData(), nullptr, nullptr);
     if (avformat_open_input_result != 0) {
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "avformat_open_input() failed and returned"
                 << avformat_open_input_result;
         DEBUG_ASSERT(pInputFormatContext == nullptr);
@@ -235,7 +239,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::openAudioStream(
 
     const int avcodec_open2_result = avcodec_open2(pCodecContext, pDecoder, nullptr);
     if (avcodec_open2_result < 0) {
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "avcodec_open2() failed and returned"
                 << avcodec_open2_result;
         return SoundSource::OpenResult::FAILED;
@@ -257,7 +261,7 @@ void SoundSourceFFmpeg::ClosableAVStreamPtr::close() {
 #if ! AVSTREAM_FROM_API_VERSION_3_1
         const int avcodec_close_result = avcodec_close(m_pClosableStream->codec);
         if (avcodec_close_result != 0) {
-            qWarning() << "[SoundSourceFFmpeg]"
+            kLogger.warning()
                     << "avcodec_close() failed and returned"
                     << avcodec_close_result;
             // ignore error and continue
@@ -308,7 +312,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
     AVFormatContext *pInputFormatContext =
             openInputFile(getLocalFileName());
     if (pInputFormatContext == nullptr) {
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "Failed to open input file"
                 << getLocalFileName();
         return OpenResult::FAILED;
@@ -319,7 +323,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
     const int avformat_find_stream_info_result =
             avformat_find_stream_info(m_pInputFormatContext, nullptr);
     if (avformat_find_stream_info_result < 0) {
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "avformat_find_stream_info() failed and returned"
                 << avformat_find_stream_info_result;
         return OpenResult::FAILED;
@@ -331,7 +335,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
     // Find and open audio stream for decoding
     AVStream* pAudioStream = findFirstAudioStream(m_pInputFormatContext);
     if (pAudioStream == nullptr) {
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "No audio stream found";
         return OpenResult::ABORTED;
     }
@@ -339,7 +343,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
     // Find codec to decode stream or pass out
     AVCodec* pDecoder = findDecoderForStream(pAudioStream);
     if (pDecoder == nullptr) {
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "Failed to find a decoder for stream"
                 << pAudioStream->index;
         return SoundSource::OpenResult::ABORTED;
@@ -349,7 +353,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
     AVCodecContext *pCodecContext = avcodec_alloc_context3(pDecoder);
 
     if (pCodecContext == nullptr) {
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "Failed to allocate codec context"
                 << pAudioStream->index;
         return SoundSource::OpenResult::ABORTED;
@@ -357,7 +361,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
 
     // Add stream parameters to context
     if(avcodec_parameters_to_context(pCodecContext,pAudioStream->codecpar)) {
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "Failed to find to set Code parameter for AVCodecContext"
                 << pAudioStream->index;
         return SoundSource::OpenResult::ABORTED;
@@ -387,13 +391,13 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
 
     const SINT channelCount = getChannelCountOfStream(m_pAudioStream);
     if (!isValidChannelCount(channelCount)) {
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "Stream has invalid number of channels:"
                 << channelCount;
         return OpenResult::FAILED;
     }
     if (channelCount > kMaxChannelCount) {
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "Stream has unsupported number of channels:"
                 << channelCount << ">" << kMaxChannelCount;
         return OpenResult::ABORTED;
@@ -401,7 +405,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
 
     const SINT samplingRate = getSamplingRateOfStream(m_pAudioStream);
     if (!isValidSamplingRate(samplingRate)) {
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "Stream has invalid sampling rate:"
                 << samplingRate;
         return OpenResult::FAILED;
@@ -409,7 +413,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
 
     SINT frameCount = getFrameCount();
     if (getFrameCountOfStream(m_pAudioStream, &frameCount) && isValidFrameCount(frameCount) == false) {
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "Stream has invalid number of frames:"
                 << frameCount;
         return OpenResult::FAILED;
@@ -502,7 +506,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
 #endif
 
         if (l_pFrame == nullptr) {
-            qDebug() << "SoundSourceFFmpeg::readFramesToCache: Can't alloc memory!";
+            kLogger.debug() << "readFramesToCache: Can't alloc memory!";
             return false;
         }
 
@@ -554,12 +558,12 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                 // AVERROR(EAGAIN) means that we need to feed more
                 // That we can decode Frame or Packet
                 if (l_iRet == AVERROR(EAGAIN)) {
-                  qDebug() << "SoundSourceFFmpeg::readFramesToCache: Need more packets to decode!";
+                  kLogger.debug() << "readFramesToCache: Need more packets to decode!";
                   continue;
                 }
 
                 if(l_iRet == AVERROR_EOF || l_iRet == AVERROR(EINVAL)) {
-                      qDebug() << "SoundSourceFFmpeg::readFramesToCache: Warning can't decode frame!";
+                      kLogger.debug() << "readFramesToCache: Warning can't decode frame!";
                 }
 
                 l_iRet = avcodec_receive_frame(m_pAudioContext, l_pFrame);
@@ -567,12 +571,12 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                 // AVERROR(EAGAIN) means that we need to feed more
                 // That we can decode Frame or Packet
                 if (l_iRet == AVERROR(EAGAIN)) {
-                  qDebug() << "SoundSourceFFmpeg::readFramesToCache: Need more packets to decode!";
+                  kLogger.debug() << "readFramesToCache: Need more packets to decode!";
                   continue;
                 }
 
                 if(l_iRet == AVERROR_EOF || l_iRet == AVERROR(EINVAL)) {
-                      qDebug() << "SoundSourceFFmpeg::readFramesToCache: Warning can't decode frame!";
+                      kLogger.debug() << "readFramesToCache: Warning can't decode frame!";
                 }
 
                 if (l_iRet == AVERROR_EOF || l_iRet < 0) {
@@ -584,14 +588,14 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
 #endif
                     // An error or EOF occurred,index break out and return what
                     // we have so far.
-                    qDebug() << "SoundSourceFFmpeg::readFramesToCache: EOF or uncoverable error!";
+                    kLogger.debug() << "readFramesToCache: EOF or uncoverable error!";
                     l_bStop = true;
                     continue;
                 } else {
                     l_iRet = 0;
                     l_SObj = (struct ffmpegCacheObject *)malloc(sizeof(struct ffmpegCacheObject));
                     if (l_SObj == nullptr) {
-                        qDebug() << "SoundSourceFFmpeg::readFramesToCache: Not enough memory!";
+                        kLogger.debug() << "readFramesToCache: Not enough memory!";
                         l_bStop = true;
                         continue;
                     }
@@ -656,8 +660,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                     } else {
                         free(l_SObj);
                         l_SObj = nullptr;
-                        qDebug() <<
-                                 "SoundSourceFFmpeg::readFramesToCache: General error in audio decode:" <<
+                        kLogger.debug() << "readFramesToCache: General error in audio decode:" <<
                                  l_iRet;
                     }
                 }
@@ -680,7 +683,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
 
 
         } else {
-            qDebug() << "SoundSourceFFmpeg::readFramesToCache: Packet too big or File end";
+            kLogger.debug() << "readFramesToCache: Packet too big or File end";
             l_bStop = true;
         }
 
@@ -704,13 +707,12 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
     }
 
     if (l_iFrameCount > 0) {
-        qDebug() <<
-                 "SoundSourceFFmpeg::readFramesToCache(): Frame balance is not 0 it is: " <<
+        kLogger.debug() << "readFramesToCache(): Frame balance is not 0 it is: " <<
                  l_iFrameCount;
     }
 
     if (m_SCache.isEmpty()) {
-        qDebug() << "SoundSourceFFmpeg::readFramesToCache(): Can't read frames. Cache empty!";
+        kLogger.debug() << "readFramesToCache(): Can't read frames. Cache empty!";
         return false;
     }
 
@@ -739,7 +741,7 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
 
     // If cache is empty then retun without crash.
     if (m_SCache.isEmpty()) {
-        qDebug() << "SoundSourceFFmpeg::getBytesFromCache: Cache is empty can't return bytes";
+        kLogger.debug() << "getBytesFromCache: Cache is empty can't return bytes";
         if(l_pBuffer != nullptr)
         {
             memset(l_pBuffer, 0x00, l_lLeft);
@@ -787,12 +789,12 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
         l_SObj = m_SCache[l_lPos];
 
         if (l_SObj == nullptr) {
-            qDebug() << "SoundSourceFFmpeg::getBytesFromCache: Cache object nullptr";
+            kLogger.debug() << "getBytesFromCache: Cache object nullptr";
             return false;
         }
 
         if (l_pBuffer == nullptr) {
-            qDebug() << "SoundSourceFFmpeg::getBytesFromCache: Out buffer nullptr";
+            kLogger.debug() << "getBytesFromCache: Out buffer nullptr";
             return false;
         }
 
@@ -839,8 +841,7 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
                     l_SObj = m_SCache[++ l_lPos];
                     continue;
                 } else {
-                    qDebug() <<
-                             "SoundSourceFFmpeg::getBytesFromCache: Buffer run out. Shouldn't happen!";
+                    kLogger.debug() << "getBytesFromCache: Buffer run out. Shouldn't happen!";
                     if(l_pBuffer != nullptr)
                     {
                         memset(l_pBuffer, 0x00, l_lLeft);
@@ -917,7 +918,7 @@ SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
                                  AVSEEK_FLAG_BACKWARD);
 
         if (ret < 0) {
-            qDebug() << "SoundSourceFFmpeg::seek: Can't seek to 0 byte!";
+            kLogger.debug() << "seek: Can't seek to 0 byte!";
             return -1;
         }
 

@@ -5,26 +5,20 @@
 #include <QSqlDatabase>
 
 #include "preferences/usersettings.h"
-#include "library/dao/dao.h"
 #include "library/crate/crateid.h"
 #include "track/track.h"
 #include "util/class.h"
 
 class TrackCollection;
 
-class AutoDJCratesDAO : public QObject, public virtual DAO {
+class AutoDJCratesDAO : public QObject {
     Q_OBJECT
   public:
-    AutoDJCratesDAO(TrackCollection* pTrackCollection,
-                    UserSettingsPointer a_pConfig);
+    AutoDJCratesDAO(
+            int iAutoDjPlaylistId,
+            TrackCollection* pTrackCollection,
+            UserSettingsPointer a_pConfig);
     ~AutoDJCratesDAO() override;
-
-    void initialize() override;
-
-    int getPlaylistId() const {
-        DEBUG_ASSERT(m_iAutoDjPlaylistId >= 0);
-        return m_iAutoDjPlaylistId;
-    }
 
     // Get the ID of a random track.
     TrackId getRandomTrackId();
@@ -105,6 +99,9 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
     void updateAutoDjCrate(CrateId crateId);
     void deleteAutoDjCrate(CrateId crateId);
 
+    // The auto-DJ playlist's ID.
+    const int m_iAutoDjPlaylistId;
+
     TrackCollection* m_pTrackCollection;
 
     // The SQL database we interact with.
@@ -115,9 +112,6 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
 
     // True if the auto-DJ-crates database has been created.
     bool m_bAutoDjCratesDbCreated;
-
-    // The auto-DJ playlist's ID.
-    int m_iAutoDjPlaylistId;
 
     // True if active tracks can be tracks that haven't been played in
     // a while.

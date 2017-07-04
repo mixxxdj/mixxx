@@ -8,15 +8,12 @@
 #include "library/autodj/autodjprocessor.h"
 #include "util/math.h"
 
-PlaylistDAO::PlaylistDAO(QSqlDatabase& database)
-        : m_database(database),
-          m_pAutoDJProcessor(nullptr) {
+PlaylistDAO::PlaylistDAO()
+        : m_pAutoDJProcessor(nullptr) {
 }
 
-PlaylistDAO::~PlaylistDAO() {
-}
-
-void PlaylistDAO::initialize() {
+void PlaylistDAO::initialize(const QSqlDatabase& database) {
+    m_database = database;
     populatePlaylistMembershipCache();
 }
 
