@@ -52,10 +52,10 @@ EffectManifest AutoPanEffect::getManifest() {
     smoothing->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     smoothing->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     smoothing->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    smoothing->setMinimum(0.0);
-    smoothing->setMaximum(0.5);  // there are two steps per period so max is half
-    smoothing->setDefault(0.5);
     smoothing->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
+    smoothing->setMinimum(0.25);
+    smoothing->setMaximum(0.50);  // there are two steps per period so max is half
+    smoothing->setDefault(0.50);
     // TODO(Ferran Pujol): when KnobComposedMaskedRing branch is merged to master,
     //                     make the scaleStartParameter for this be 1.
 
