@@ -18,11 +18,15 @@
 
 #include "control/controlproxy.h"
 #include "control/controlpotmeter.h"
+#include "util/audiosignal.h"
 #include "util/assert.h"
 #include "util/sample.h"
 
-const int kiMaxDelay = 40000; // 208 ms @ 96 kb/s
-const double kdMaxDelayPot = 200; // 200 ms
+namespace {
+constexpr double kdMaxDelayPot = 500;
+constexpr int kiMaxDelay = (kdMaxDelayPot + 8) / 1000 *
+    mixxx::AudioSignal::kSamplingRateMax * mixxx::AudioSignal::kChannelCountStereo;
+} // anonymous namespace
 
 EngineDelay::EngineDelay(const char* group, ConfigKey delayControl, bool bPersist)
         : m_iDelayPos(0),
