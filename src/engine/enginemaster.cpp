@@ -503,19 +503,7 @@ void EngineMaster::process(const int iBufferSize) {
             // to both the master and booth in that case will require refactoring
             // the effects system to be able to process the same effects on multiple
             // buffers within the same callback.
-            if (m_pEngineEffectsManager) {
-                GroupFeatureState masterFeatures;
-                // Well, this is delayed by one buffer (it's dependent on the
-                // output). Oh well.
-                if (m_pVumeter != NULL) {
-                    m_pVumeter->collectFeatures(&masterFeatures);
-                }
-                masterFeatures.has_gain = true;
-                masterFeatures.gain = m_pMasterGain->get();
-                m_pEngineEffectsManager->process(m_masterHandle.handle(), m_pMaster,
-                                                iBufferSize, iSampleRate,
-                                                masterFeatures);
-            }
+            applyMasterEffects(iBufferSize, iSampleRate);
 
             // Copy master mix to booth output with booth gain before mixing
             // talkover with master mix
@@ -558,19 +546,7 @@ void EngineMaster::process(const int iBufferSize) {
             // to be able to process the same effects on different buffers
             // within the same callback. For consistency between the MicMonitorModes,
             // process master effects here before mixing in talkover.
-            if (m_pEngineEffectsManager) {
-                GroupFeatureState masterFeatures;
-                // Well, this is delayed by one buffer (it's dependent on the
-                // output). Oh well.
-                if (m_pVumeter != NULL) {
-                    m_pVumeter->collectFeatures(&masterFeatures);
-                }
-                masterFeatures.has_gain = true;
-                masterFeatures.gain = m_pMasterGain->get();
-                m_pEngineEffectsManager->process(m_masterHandle.handle(), m_pMaster,
-                                                iBufferSize, iSampleRate,
-                                                masterFeatures);
-            }
+            applyMasterEffects(iBufferSize, iSampleRate);
 
             // Mix talkover with master
             if (m_pNumMicsConfigured->get() > 0) {
@@ -628,19 +604,7 @@ void EngineMaster::process(const int iBufferSize) {
             // NOTE(Be): This should occur before mixing in talkover for the
             // record/broadcast signal so the record/broadcast signal is the same
             // as what is heard on the master & booth outputs.
-            if (m_pEngineEffectsManager) {
-                GroupFeatureState masterFeatures;
-                // Well, this is delayed by one buffer (it's dependent on the
-                // output). Oh well.
-                if (m_pVumeter != NULL) {
-                    m_pVumeter->collectFeatures(&masterFeatures);
-                }
-                masterFeatures.has_gain = true;
-                masterFeatures.gain = m_pMasterGain->get();
-                m_pEngineEffectsManager->process(m_masterHandle.handle(), m_pMaster,
-                                                iBufferSize, iSampleRate,
-                                                masterFeatures);
-            }
+            applyMasterEffects(iBufferSize, iSampleRate);
 
             // Apply master gain
             CSAMPLE master_gain = m_pMasterGain->get();
@@ -777,6 +741,22 @@ void EngineMaster::process(const int iBufferSize) {
     // We're close to the end of the callback. Wake up the engine worker
     // scheduler so that it runs the workers.
     m_pWorkerScheduler->runWorkers();
+}
+
+void EngineMaster::applyMasterEffects(const int iBufferSize, const int iSampleRate) {
+    if (m_pEngineEffectsManager) {
+        GroupFeatureState masterFeatures;
+        // Well, this is delayed by one buffer (it's dependent on the
+        // output). Oh well.
+        if (m_pVumeter != NULL) {
+            m_pVumeter->collectFeatures(&masterFeatures);
+        }
+        masterFeatures.has_gain = true;
+        masterFeatures.gain = m_pMasterGain->get();
+        m_pEngineEffectsManager->process(m_masterHandle.handle(), m_pMaster,
+                                        iBufferSize, iSampleRate,
+                                        masterFeatures);
+    }
 }
 
 void EngineMaster::addChannel(EngineChannel* pChannel) {
