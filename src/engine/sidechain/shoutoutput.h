@@ -148,5 +148,5 @@ class ShoutOutput
 
 typedef QSharedPointer<ShoutOutput> ShoutOutputPtr;
 
-#endif // ENGINE_SIDECHAIN_ENGINEBROADCAST_H
+#endif // ENGINE_SIDECHAIN_SHOUTOUTPUT_H
 
