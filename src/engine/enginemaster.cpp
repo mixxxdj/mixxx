@@ -500,6 +500,7 @@ void EngineMaster::process(const int iBufferSize) {
 
         // Process master, booth, and record/broadcast buffers according to the
         // MicMonitorMode configured in DlgPrefSound
+        // TODO(Be): make SampleUtil ramping functions update the old gain variable
         if (configuredMicMonitorMode == MicMonitorMode::MASTER) {
             // Process master channel effects
             // TODO(Be): Move this after mixing in talkover. To apply master effects
