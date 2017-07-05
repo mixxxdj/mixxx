@@ -146,6 +146,8 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
         SampleUtil::clear(m_pOutputBusBuffers[o], MAX_BUFFER_LEN);
     }
 
+    m_ppSidechainOutput = &m_pMaster;
+
     // Starts a thread for recording and broadcast
     m_pEngineSideChain = bEnableSidechain ? new EngineSideChain(pConfig) : NULL;
 
@@ -256,7 +258,7 @@ const CSAMPLE* EngineMaster::getHeadphoneBuffer() const {
 }
 
 const CSAMPLE* EngineMaster::getSidechainBuffer() const {
-    return m_pMaster;
+    return *m_ppSidechainOutput;
 }
 
 void EngineMaster::processChannels(int iBufferSize) {
