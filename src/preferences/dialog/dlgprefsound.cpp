@@ -80,18 +80,18 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
                         static_cast<EngineBuffer::KeylockEngine>(i)));
     }
 
-    m_pRoundTripLatency = new ControlProxy("[Master]", "roundTripLatency", this);
+    m_pLatencyCompensation = new ControlProxy("[Master]", "microphoneLatencyCompensation", this);
     m_pMasterDelay = new ControlProxy("[Master]", "delay", this);
     m_pHeadDelay = new ControlProxy("[Master]", "headDelay", this);
     m_pBoothDelay = new ControlProxy("[Master]", "boothDelay", this);
 
-    roundTripLatencySpinBox->setValue(m_pRoundTripLatency->get());
+    latencyCompensationSpinBox->setValue(m_pLatencyCompensation->get());
     masterDelaySpinBox->setValue(m_pMasterDelay->get());
     headDelaySpinBox->setValue(m_pHeadDelay->get());
     boothDelaySpinBox->setValue(m_pBoothDelay->get());
 
-    connect(roundTripLatencySpinBox, SIGNAL(valueChanged(double)),
-            this, SLOT(roundTripLatencySpinboxChanged(double)));
+    connect(latencyCompensationSpinBox, SIGNAL(valueChanged(double)),
+            this, SLOT(latencyCompensationSpinboxChanged(double)));
     connect(masterDelaySpinBox, SIGNAL(valueChanged(double)),
             this, SLOT(masterDelaySpinboxChanged(double)));
     connect(headDelaySpinBox, SIGNAL(valueChanged(double)),
@@ -178,7 +178,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
 }
 
 DlgPrefSound::~DlgPrefSound() {
-    delete m_pRoundTripLatency;
+    delete m_pLatencyCompensation;
 }
 
 /**
@@ -208,11 +208,11 @@ void DlgPrefSound::slotApply() {
               static_cast<int>(m_pMicMonitorMode->get()));
     if (configuredMicMonitorMode == EngineMaster::MicMonitorMode::DIRECT_MONITOR
         && m_bLatencyChanged
-        && m_pRoundTripLatency->get() != roundTripLatencySpinBox->minimum()) {
+        && m_pLatencyCompensation->get() != latencyCompensationSpinBox->minimum()) {
         QMessageBox latencyChangeWarningBox;
         latencyChangeWarningBox.setIcon(QMessageBox::Warning);
         latencyChangeWarningBox.setText(tr("Change processing latency?"));
-        latencyChangeWarningBox.setInformativeText(tr("Changing Mixxx's Audio Buffer and/or Sample Rate changes the real round trip latency through your hardware and software. You have set a Measured Round Trip Latency of %1 ms. When you change the round trip latency, it should be measured again to exactly align microphone inputs with Mixxx's outputs.").arg(m_pRoundTripLatency->get())
+        latencyChangeWarningBox.setInformativeText(tr("Changing Mixxx's Audio Buffer and/or Sample Rate changes the real round trip latency through your hardware and software. You have set a Measured Round Trip Latency of %1 ms. When you change the round trip latency, it should be measured again to exactly align microphone inputs with Mixxx's outputs.").arg(m_pLatencyCompensation->get())
         + "\n\n" +
         tr("If you apply the new settings, the Measured Round Trip Latency will be reset to the default. Microphone inputs will be slightly out of time with Mixxx's outputs until you enter a new Measured Round Trip Latency. Are you sure you want to apply the new Audio Buffer and Sample Rate settings?"));
         latencyChangeWarningBox.setStandardButtons(QMessageBox::Cancel |
@@ -223,7 +223,7 @@ void DlgPrefSound::slotApply() {
         if (userResponse == QMessageBox::Cancel) {
             return;
         } else {
-            roundTripLatencySpinBox->setValue(roundTripLatencySpinBox->minimum());
+            latencyCompensationSpinBox->setValue(latencyCompensationSpinBox->minimum());
         }
     }
 
@@ -413,13 +413,13 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
     if (m_config.getAPI() == MIXXX_PORTAUDIO_JACK_STRING) {
         // TODO(Be): Get the processing latency from JACK. PortAudio does
         // not support this as of June 2017.
-        roundTripLatencySpinBox->setMinimum(0.0);
+        latencyCompensationSpinBox->setMinimum(0.0);
     } else {
-        bool measuredRoundTripLatencyAtDefault =
-            m_pRoundTripLatency->get() == roundTripLatencySpinBox->minimum();
-        roundTripLatencySpinBox->setMinimum(config.getProcessingLatency());
-        if (measuredRoundTripLatencyAtDefault) {
-            roundTripLatencySpinBox->setValue(roundTripLatencySpinBox->minimum());
+        bool latencyCompensationAtDefault =
+            m_pLatencyCompensation->get() == latencyCompensationSpinBox->minimum();
+        latencyCompensationSpinBox->setMinimum(config.getProcessingLatency());
+        if (latencyCompensationAtDefault) {
+            latencyCompensationSpinBox->setValue(latencyCompensationSpinBox->minimum());
         }
     }
 
@@ -605,7 +605,7 @@ void DlgPrefSound::slotResetToDefaults() {
     m_pMicMonitorMode->set(0.0);
     micMonitorComboBox->setCurrentIndex(0);
 
-    roundTripLatencySpinBox->setValue(roundTripLatencySpinBox->minimum());
+    latencyCompensationSpinBox->setValue(latencyCompensationSpinBox->minimum());
 
     settingChanged(); // force the apply button to enable
 }
@@ -620,8 +620,8 @@ void DlgPrefSound::masterLatencyChanged(double latency) {
     update();
 }
 
-void DlgPrefSound::roundTripLatencySpinboxChanged(double value) {
-    m_pRoundTripLatency->set(value);
+void DlgPrefSound::latencyCompensationSpinboxChanged(double value) {
+    m_pLatencyCompensation->set(value);
 }
 
 void DlgPrefSound::masterDelaySpinboxChanged(double value) {

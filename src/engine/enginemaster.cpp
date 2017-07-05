@@ -103,7 +103,7 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
     m_pHeadDelay = new EngineDelay(group, ConfigKey(group, "headDelay"));
     m_pBoothDelay = new EngineDelay(group, ConfigKey(group, "boothDelay"));
     m_pLatencyCompensationDelay = new EngineDelay(group,
-        ConfigKey(group, "roundTripLatency"));
+        ConfigKey(group, "microphoneLatencyCompensation"));
     m_pNumMicsConfigured = new ControlObject(ConfigKey(group, "num_mics_configured"));
 
     // Headphone volume
