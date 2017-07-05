@@ -197,11 +197,11 @@ class EngineMaster : public QObject, public AudioSource {
         }
 
         inline double getGain(ChannelInfo* pChannelInfo) const {
-            const double channelGain = pChannelInfo->m_pVolumeControl->get();
+            const double channelVolume = pChannelInfo->m_pVolumeControl->get();
             const double orientationGain = EngineMaster::gainForOrientation(
                     pChannelInfo->m_pChannel->getOrientation(),
                     m_dLeftGain, m_dCenterGain, m_dRightGain);
-            return channelGain * orientationGain * m_dTalkoverDuckingGain;
+            return channelVolume * orientationGain * m_dTalkoverDuckingGain;
         }
 
         inline void setGains(double leftGain, double centerGain, double rightGain,
