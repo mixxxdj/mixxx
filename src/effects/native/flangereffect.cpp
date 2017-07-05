@@ -28,8 +28,8 @@ EffectManifest FlangerEffect::getManifest() {
     period->setId("period");
     period->setName(QObject::tr("Period"));
     period->setDescription(QObject::tr("Controls the period of the LFO (low frequency oscillator)\n"
-        "0 - 4 beats if sync parameter is enabled and tempo is detected (decks and samplers) \n"
-        "0 - 4 seconds if sync parameter is disabled or no tempo is detected (mic & aux inputs, master mix)"));
+        "1/4 - 4 beats rounded to 1/2 beat if sync parameter is enabled and tempo is detected (decks and samplers) \n"
+        "0.05 - 4 seconds if sync parameter is disabled or no tempo is detected (mic & aux inputs, master mix)"));
     period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
@@ -90,14 +90,14 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     const int kChannels = 2;
 
     // The parameter minimum is zero so the exact center of the knob is 2 beats.
-    CSAMPLE periodTime = std::max(m_pPeriodParameter->value(), 0.05);
-    CSAMPLE lfoPeriod;
+    CSAMPLE lfoPeriod = m_pPeriodParameter->value();
     if (m_pSyncParameter->toBool() && groupFeatures.has_beat_length) {
         // period is a number of beats
-        lfoPeriod = periodTime * groupFeatures.beat_length;
+        lfoPeriod = std::max(roundToFraction(lfoPeriod, 2.0), 0.25) *
+            groupFeatures.beat_length;
     } else {
         // period is a number of seconds
-        lfoPeriod = periodTime * sampleRate * kChannels;
+        lfoPeriod = std::max(lfoPeriod, 0.05f) * sampleRate * kChannels;
     }
 
     CSAMPLE lfoDepth = m_pDepthParameter->value();
