@@ -24,8 +24,7 @@ class BalanceGroupState final {
     unsigned int m_oldSampleRate;
     int m_freq;
 
-    CSAMPLE m_oldLeft;
-    CSAMPLE m_oldRight;
+    CSAMPLE m_oldBalance;
     CSAMPLE m_oldMidSide;
 };
 
@@ -52,8 +51,7 @@ class BalanceEffect : public PerChannelEffectProcessor<BalanceGroupState> {
         return getId();
     }
 
-    EngineEffectParameter* m_pLeftParameter;
-    EngineEffectParameter* m_pRightParameter;
+    EngineEffectParameter* m_pBalanceParameter;
     EngineEffectParameter* m_pMidSideParameter;
     EngineEffectParameter* m_pBypassFreqParameter;
 

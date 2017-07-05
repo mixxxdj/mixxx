@@ -22,30 +22,17 @@ EffectManifest BalanceEffect::getManifest() {
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr("Adjust the left/right balance and Stereo width"));
 
-    EffectManifestParameter* left = manifest.addParameter();
-    left->setId("left");
-    left->setName(QObject::tr("Left"));
-    left->setDescription(QObject::tr("Level of the left channel"));
-    left->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
-    left->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    left->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    left->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED_RIGHT);
-    left->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
-    left->setMinimum(0.0);
-    left->setMaximum(1.0);
-    left->setDefault(1.0);
-
-    EffectManifestParameter* right = manifest.addParameter();
-    right->setId("right");
-    right->setName(QObject::tr("Right"));
-    right->setDescription(QObject::tr("Level of the right channel"));
-    right->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
-    right->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    right->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    right->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED_LEFT);
-    right->setMinimum(0.0);
-    right->setMaximum(1.0);
-    right->setDefault(1.0);
+    EffectManifestParameter* balance = manifest.addParameter();
+    balance->setId("balance");
+    balance->setName(QObject::tr("Balance"));
+    balance->setDescription(QObject::tr("Alternate gain for left and right channel"));
+    balance->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    balance->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    balance->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    balance->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
+    balance->setMinimum(-1.0);
+    balance->setMaximum(+1.0);
+    balance->setDefault(0.0);
 
     EffectManifestParameter* midSide = manifest.addParameter();
     midSide->setId("midSide");
@@ -55,9 +42,9 @@ EffectManifest BalanceEffect::getManifest() {
     midSide->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     midSide->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     midSide->setDefaultLinkType(EffectManifestParameter::LinkType::NONE);
-    midSide->setMinimum(0);
-    midSide->setMaximum(1.0);
-    midSide->setDefault(0.5);
+    midSide->setMinimum(-1.0);
+    midSide->setMaximum(+1.0);
+    midSide->setDefault(0.0);
 
     EffectManifestParameter* midLowPass = manifest.addParameter();
     midLowPass->setId("bypassFreq");
@@ -79,8 +66,7 @@ BalanceGroupState::BalanceGroupState()
         : m_pHighBuf(MAX_BUFFER_LEN),
           m_oldSampleRate(kStartupSamplerate),
           m_freq(kMinCorner),
-          m_oldLeft(1),
-          m_oldRight(1),
+          m_oldBalance(0),
           m_oldMidSide(0) {
     m_low = std::make_unique<EngineFilterLinkwtzRiley4Low>(kStartupSamplerate, kMinCorner);
     m_high = std::make_unique<EngineFilterLinkwtzRiley4High>(kStartupSamplerate, kMinCorner);
@@ -96,8 +82,7 @@ void BalanceGroupState::setFilters(int sampleRate, int freq) {
 }
 
 BalanceEffect::BalanceEffect(EngineEffect* pEffect, const EffectManifest& manifest)
-          : m_pLeftParameter(pEffect->getParameterById("left")),
-            m_pRightParameter(pEffect->getParameterById("right")),
+          : m_pBalanceParameter(pEffect->getParameterById("balance")),
             m_pMidSideParameter(pEffect->getParameterById("midSide")),
             m_pBypassFreqParameter(pEffect->getParameterById("bypassFreq")) {
     Q_UNUSED(manifest);
@@ -116,22 +101,16 @@ void BalanceEffect::processChannel(const ChannelHandle& handle,
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
 
-
-    CSAMPLE_GAIN left = m_pLeftParameter->value();
-    CSAMPLE_GAIN right = m_pRightParameter->value();
+    CSAMPLE_GAIN balance = m_pBalanceParameter->value();
     CSAMPLE_GAIN midSide = m_pMidSideParameter->value();
 
-    CSAMPLE_GAIN leftDelta = (left - pGroupState->m_oldLeft)
-                    / CSAMPLE_GAIN(numSamples / 2);
-    CSAMPLE_GAIN rightDelta = (right - pGroupState->m_oldRight)
+    CSAMPLE_GAIN balanceDelta = (balance - pGroupState->m_oldBalance)
                     / CSAMPLE_GAIN(numSamples / 2);
     CSAMPLE_GAIN midSideDelta = (midSide - pGroupState->m_oldMidSide)
                     / CSAMPLE_GAIN(numSamples / 2);
 
-    CSAMPLE_GAIN leftStart = left - leftDelta;
-    CSAMPLE_GAIN rightStart = right - rightDelta;
+    CSAMPLE_GAIN balanceStart = balance - balanceDelta;
     CSAMPLE_GAIN midSideStart = midSide - midSideDelta;
-
 
     if (pGroupState->m_oldSampleRate != sampleRate ||
             (pGroupState->m_freq != static_cast<int>(m_pBypassFreqParameter->value()))) {
@@ -147,15 +126,21 @@ void BalanceEffect::processChannel(const ChannelHandle& handle,
         for (SINT i = 0; i < numSamples / 2; ++i) {
             CSAMPLE mid = (pGroupState->m_pHighBuf[i * 2]  + pGroupState->m_pHighBuf[i * 2 + 1]) / 2.0f;
             CSAMPLE side = (pGroupState->m_pHighBuf[i * 2 + 1] - pGroupState->m_pHighBuf[i * 2]) / 2.0f;
-            if (midSide > 0.5) {
-                mid *= 2 * (1 - (midSideStart + midSideDelta * i));
+            CSAMPLE_GAIN currentMidSide = midSideStart + midSideDelta * i;
+            if (currentMidSide > 0) {
+                mid *= (1 - currentMidSide);
             } else {
-                side *= 2 * (midSideStart + midSideDelta * i);
+                side *= (1 + currentMidSide);
             }
-            pOutput[i * 2] += (mid - side) * (leftStart + leftDelta * i);
-            pOutput[i * 2 + 1] += (mid + side) * (rightStart + rightDelta * i);
+            CSAMPLE_GAIN currentBalance = (balanceStart + balanceDelta * i);
+            if (currentBalance > 0) {
+                pOutput[i * 2] += (mid - side) * (1 - currentBalance);
+                pOutput[i * 2 + 1] += (mid + side);
+            } else {
+                pOutput[i * 2] += (mid - side);
+                pOutput[i * 2 + 1] += (mid + side) * (1 + currentBalance);
+            }
         }
-
     } else {
         pGroupState->m_high->pauseFilter();
         pGroupState->m_low->pauseFilter();
@@ -163,30 +148,29 @@ void BalanceEffect::processChannel(const ChannelHandle& handle,
         for (SINT i = 0; i < numSamples / 2; ++i) {
             CSAMPLE mid = (pInput[i * 2]  + pInput[i * 2 + 1]) / 2.0f;
             CSAMPLE side = (pInput[i * 2 + 1] - pInput[i * 2]) / 2.0f;
-            if (midSide > 0.5) {
-                mid *= 2 * (1 - (midSideStart + midSideDelta * i));
+            CSAMPLE_GAIN currentMidSide = midSideStart + midSideDelta * i;
+            if (currentMidSide > 0) {
+               mid *= (1 - currentMidSide);
             } else {
-                side *= 2 * (midSideStart + midSideDelta * i);
+               side *= (1 + currentMidSide);
             }
-            pOutput[i * 2] = (mid - side) * (leftStart + leftDelta * i);
-            pOutput[i * 2 + 1] = (mid + side) * (rightStart + rightDelta * i);
+            CSAMPLE_GAIN currentBalance = (balanceStart + balanceDelta * i);
+            if (currentBalance > 0) {
+               pOutput[i * 2] = (mid - side) * (1 - currentBalance);
+               pOutput[i * 2 + 1] = (mid + side);
+            } else {
+               pOutput[i * 2] = (mid - side);
+               pOutput[i * 2 + 1] = (mid + side) * (1 + currentBalance);
+            }
         }
     }
-
 
     if (enableState == EffectProcessor::DISABLING) {
         // we rely on the ramping to dry in EngineEffect
         // since this EQ is not fully dry at unity
         pGroupState->m_low->pauseFilter();
         pGroupState->m_high->pauseFilter();
-
-        pGroupState->m_oldLeft = left;
-        pGroupState->m_oldRight = right;
-        pGroupState->m_oldMidSide = midSide;
-    } else {
-        pGroupState->m_oldLeft = left;
-        pGroupState->m_oldRight = right;
-        pGroupState->m_oldMidSide = midSide;
     }
-
+    pGroupState->m_oldBalance = balance;
+    pGroupState->m_oldMidSide = midSide;
 }
