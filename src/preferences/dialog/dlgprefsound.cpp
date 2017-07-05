@@ -156,6 +156,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     micMonitorComboBox->addItem(tr("Master and booth outputs"));
     micMonitorComboBox->addItem(tr("Direct monitor (recording and broadcasting only)"));
     micMonitorComboBox->setCurrentIndex((int)m_pMicMonitorMode->get());
+    micMonitorModeComboBoxChanged(m_pMicMonitorMode->get());
     connect(micMonitorComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(micMonitorModeComboBoxChanged(int)));
     m_pMicMonitorMode->connectValueChanged(SLOT(micMonitorModeChanged(double)));
@@ -203,27 +204,35 @@ void DlgPrefSound::slotApply() {
         return;
     }
 
+    m_config.clearInputs();
+    m_config.clearOutputs();
+    emit(writePaths(&m_config));
+
     EngineMaster::MicMonitorMode configuredMicMonitorMode =
         static_cast<EngineMaster::MicMonitorMode>(
               static_cast<int>(m_pMicMonitorMode->get()));
     if (configuredMicMonitorMode == EngineMaster::MicMonitorMode::DIRECT_MONITOR
-        && m_bLatencyChanged
-        && m_pLatencyCompensation->get() != latencyCompensationSpinBox->minimum()) {
-        QMessageBox latencyChangeWarningBox;
-        latencyChangeWarningBox.setIcon(QMessageBox::Warning);
-        latencyChangeWarningBox.setText(tr("Change processing latency?"));
-        latencyChangeWarningBox.setInformativeText(tr("Changing Mixxx's Audio Buffer and/or Sample Rate changes the real round trip latency through your hardware and software. You have set a Measured Round Trip Latency of %1 ms. When you change the round trip latency, it should be measured again to exactly align microphone inputs with Mixxx's outputs.").arg(m_pLatencyCompensation->get())
-        + "\n\n" +
-        tr("If you apply the new settings, the Measured Round Trip Latency will be reset to the default. Microphone inputs will be slightly out of time with Mixxx's outputs until you enter a new Measured Round Trip Latency. Are you sure you want to apply the new Audio Buffer and Sample Rate settings?"));
-        latencyChangeWarningBox.setStandardButtons(QMessageBox::Cancel |
-            QMessageBox::Apply);
-        latencyChangeWarningBox.setDefaultButton(QMessageBox::Cancel);
-        QMessageBox::StandardButton userResponse = static_cast<QMessageBox::StandardButton>(
-              latencyChangeWarningBox.exec());
-        if (userResponse == QMessageBox::Cancel) {
-            return;
-        } else {
-            latencyCompensationSpinBox->setValue(latencyCompensationSpinBox->minimum());
+        && m_config.hasMicInputs()) {
+        if (m_pLatencyCompensation->get() == 0.0) {
+            // TODO(Be): Make the "User Manual" text link to the manual in this dialog.
+            QMessageBox measureRoundTripLatencyAdvisoryBox;
+            measureRoundTripLatencyAdvisoryBox.setIcon(QMessageBox::Information);
+            measureRoundTripLatencyAdvisoryBox.setText(tr("Measure Round Trip Latency"));
+            measureRoundTripLatencyAdvisoryBox.setInformativeText(tr("Your microphone input will be out of time in your recorded and broadcasted mixes compared to what you hear. To align them, measure the round trip latency through your setup and enter this value for the Microphone Latency Compensation. Refer to the Mixxx Manual for details."));
+            measureRoundTripLatencyAdvisoryBox.exec();
+        } else if (m_bLatencyChanged) {
+            QMessageBox latencyChangeWarningBox;
+            latencyChangeWarningBox.setIcon(QMessageBox::Warning);
+            latencyChangeWarningBox.setText(tr("Change processing latency?"));
+            latencyChangeWarningBox.setInformativeText(tr("Changing Mixxx's Audio Buffer and/or Sample Rate changes the real round trip latency through your hardware and software. Your microphone inputs will be out of time with the music in your recorded and broadcasted mixes until you measure your round trip latency again and update the Microphone Latency Compensation with the newly measured value. Are you sure you want to apply the new settings?"));
+            latencyChangeWarningBox.setStandardButtons(QMessageBox::Cancel |
+                QMessageBox::Apply);
+            latencyChangeWarningBox.setDefaultButton(QMessageBox::Cancel);
+            QMessageBox::StandardButton userResponse = static_cast<QMessageBox::StandardButton>(
+                  latencyChangeWarningBox.exec());
+            if (userResponse == QMessageBox::Cancel) {
+                return;
+            }
         }
     }
 
@@ -234,9 +243,6 @@ void DlgPrefSound::slotApply() {
         m_pConfig->set(ConfigKey("[Master]", "keylock_engine"),
                        ConfigValue(keylockComboBox->currentIndex()));
 
-        m_config.clearInputs();
-        m_config.clearOutputs();
-        emit(writePaths(&m_config));
         err = m_pSoundManager->setConfig(m_config);
     }
     if (err != SOUNDDEVICE_ERROR_OK) {
@@ -408,19 +414,6 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
     } else {
         // "Default (long delay)" = 2 buffer
         deviceSyncComboBox->setCurrentIndex(0);
-    }
-
-    if (m_config.getAPI() == MIXXX_PORTAUDIO_JACK_STRING) {
-        // TODO(Be): Get the processing latency from JACK. PortAudio does
-        // not support this as of June 2017.
-        latencyCompensationSpinBox->setMinimum(0.0);
-    } else {
-        bool latencyCompensationAtDefault =
-            m_pLatencyCompensation->get() == latencyCompensationSpinBox->minimum();
-        latencyCompensationSpinBox->setMinimum(config.getProcessingLatency());
-        if (latencyCompensationAtDefault) {
-            latencyCompensationSpinBox->setValue(latencyCompensationSpinBox->minimum());
-        }
     }
 
     // Default keylock is Rubberband.
@@ -654,6 +647,13 @@ void DlgPrefSound::masterMonoMixdownChanged(double value) {
 
 void DlgPrefSound::micMonitorModeComboBoxChanged(int value) {
     m_pMicMonitorMode->set((double)value);
+    EngineMaster::MicMonitorMode newMode =
+        static_cast<EngineMaster::MicMonitorMode>(value);
+    if (newMode == EngineMaster::MicMonitorMode::DIRECT_MONITOR) {
+        latencyCompensationSpinBox->setEnabled(true);
+    } else {
+        latencyCompensationSpinBox->setEnabled(false);
+    }
 }
 
 void DlgPrefSound::micMonitorModeChanged(double value) {

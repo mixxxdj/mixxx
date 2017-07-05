@@ -295,6 +295,9 @@ void SoundManagerConfig::addOutput(const QString &device, const AudioOutput &out
 
 void SoundManagerConfig::addInput(const QString &device, const AudioInput &in) {
     m_inputs.insert(device, in);
+    if (in.getType() == AudioPath::MICROPHONE) {
+        m_iNumMicInputs++;
+    }
 }
 
 QMultiHash<QString, AudioOutput> SoundManagerConfig::getOutputs() const {
@@ -311,6 +314,11 @@ void SoundManagerConfig::clearOutputs() {
 
 void SoundManagerConfig::clearInputs() {
     m_inputs.clear();
+    m_iNumMicInputs = 0;
+}
+
+bool SoundManagerConfig::hasMicInputs() {
+    return m_iNumMicInputs;
 }
 
 /**
