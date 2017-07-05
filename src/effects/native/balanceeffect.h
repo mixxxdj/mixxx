@@ -16,8 +16,8 @@ class BalanceGroupState final {
 
     void setFilters(int sampleRate, int freq);
 
-    std::unique_ptr<EngineFilterLinkwtzRiley4Low> m_low;
-    std::unique_ptr<EngineFilterLinkwtzRiley4High> m_high;
+    std::unique_ptr<EngineFilterLinkwitzRiley4Low> m_low;
+    std::unique_ptr<EngineFilterLinkwitzRiley4High> m_high;
 
     SampleBuffer m_pHighBuf;
 

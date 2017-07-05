@@ -3,18 +3,18 @@
 
 #include "engine/enginefilteriir.h"
 
-class EngineFilterLinkwtzRiley2Low : public EngineFilterIIR<2, IIR_LP2> {
+class EngineFilterLinkwitzRiley2Low : public EngineFilterIIR<2, IIR_LP2> {
     Q_OBJECT
   public:
-    EngineFilterLinkwtzRiley2Low(int sampleRate, double freqCorner1);
+    EngineFilterLinkwitzRiley2Low(int sampleRate, double freqCorner1);
     void setFrequencyCorners(int sampleRate, double freqCorner1);
 };
 
 
-class EngineFilterLinkwtzRiley2High : public EngineFilterIIR<2, IIR_HP2> {
+class EngineFilterLinkwitzRiley2High : public EngineFilterIIR<2, IIR_HP2> {
     Q_OBJECT
   public:
-    EngineFilterLinkwtzRiley2High(int sampleRate, double freqCorner1);
+    EngineFilterLinkwitzRiley2High(int sampleRate, double freqCorner1);
     void setFrequencyCorners(int sampleRate, double freqCorner1);
 };
 

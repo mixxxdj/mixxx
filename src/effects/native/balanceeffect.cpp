@@ -68,8 +68,8 @@ BalanceGroupState::BalanceGroupState()
           m_freq(kMinCorner),
           m_oldBalance(0),
           m_oldMidSide(0) {
-    m_low = std::make_unique<EngineFilterLinkwtzRiley4Low>(kStartupSamplerate, kMinCorner);
-    m_high = std::make_unique<EngineFilterLinkwtzRiley4High>(kStartupSamplerate, kMinCorner);
+    m_low = std::make_unique<EngineFilterLinkwitzRiley4Low>(kStartupSamplerate, kMinCorner);
+    m_high = std::make_unique<EngineFilterLinkwitzRiley4High>(kStartupSamplerate, kMinCorner);
     m_high->setStartFromDry(true);
 }
 
