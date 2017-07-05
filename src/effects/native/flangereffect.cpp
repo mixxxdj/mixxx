@@ -83,8 +83,6 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
                                    const EffectProcessor::EnableState enableState,
                                    const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
-    Q_UNUSED(enableState);
-    Q_UNUSED(groupFeatures);
 
     // TODO: remove assumption of stereo signal
     const int kChannels = 2;
@@ -133,5 +131,9 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
 
         pOutput[i] = pInput[i] + lfoDepth * delayedSampleLeft;
         pOutput[i+1] = pInput[i+1] + lfoDepth * delayedSampleRight;
+
+    if (enableState == EffectProcessor::DISABLING) {
+        SampleUtil::clear(delayLeft, numSamples);
+        SampleUtil::clear(delayRight, numSamples);
     }
 }
