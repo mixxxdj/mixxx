@@ -229,7 +229,11 @@
             this.inKey = 'cue_default';
         },
         shift: function () {
-            this.inKey = 'start_stop';
+            if (this.reverseRollOnShift) {
+                this.inKey = 'reverseroll';
+            } else {
+                this.inKey = 'start_stop';
+            }
         },
         outKey: 'cue_indicator',
     });
