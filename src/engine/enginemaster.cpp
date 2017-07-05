@@ -456,6 +456,7 @@ void EngineMaster::process(const int iBufferSize) {
     // Make the mix for each crossfader orientation output bus.
     // m_masterGain takes care of applying the attenuation from
     // channel volume faders, crossfader, and talkover ducking.
+    // Talkover is mixed in later according to the configured MicMonitorMode
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
         if (m_bRampingGain) {
             ChannelMixer::mixChannelsRamping(
@@ -530,6 +531,8 @@ void EngineMaster::process(const int iBufferSize) {
             }
 
             // Apply master gain
+            // TODO(Be): make this not affect the headphones. Refer to
+            // https://bugs.launchpad.net/mixxx/+bug/1458213
             CSAMPLE master_gain = m_pMasterGain->get();
             if (m_bRampingGain) {
                 SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld, master_gain,
@@ -572,6 +575,8 @@ void EngineMaster::process(const int iBufferSize) {
             }
 
             // Apply master gain
+            // TODO(Be): make this not affect the headphones. Refer to
+            // https://bugs.launchpad.net/mixxx/+bug/1458213
             CSAMPLE master_gain = m_pMasterGain->get();
             if (m_bRampingGain) {
                 SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld, master_gain,
@@ -609,6 +614,8 @@ void EngineMaster::process(const int iBufferSize) {
             applyMasterEffects(iBufferSize, iSampleRate);
 
             // Apply master gain
+            // TODO(Be): make this not affect the headphones. Refer to
+            // https://bugs.launchpad.net/mixxx/+bug/1458213
             CSAMPLE master_gain = m_pMasterGain->get();
             if (m_bRampingGain) {
                 SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld, master_gain,
