@@ -92,7 +92,7 @@ void EngineSideChain::writeSamples(const CSAMPLE* pBuffer, int iFrames) {
     const int iSamples = iFrames * kChannels;
     int samples_written = m_sampleFifo.write(pBuffer, iSamples);
 
-    if (samples_written != iFrames) {
+    if (samples_written != iSamples) {
         Counter("EngineSideChain::writeSamples buffer overrun").increment();
     }
 
