@@ -152,12 +152,17 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     m_pMasterMonoMixdown->connectValueChanged(SLOT(masterMonoMixdownChanged(double)));
 
     m_pMicMonitorMode = new ControlProxy("[Master]", "talkover_mix", this);
-    micMonitorComboBox->addItem(tr("Master output only"));
-    micMonitorComboBox->addItem(tr("Master and booth outputs"));
-    micMonitorComboBox->addItem(tr("Direct monitor (recording and broadcasting only)"));
-    micMonitorComboBox->setCurrentIndex((int)m_pMicMonitorMode->get());
-    micMonitorModeComboBoxChanged(m_pMicMonitorMode->get());
-    connect(micMonitorComboBox, SIGNAL(currentIndexChanged(int)),
+    micMonitorModeComboBox->addItem(tr("Master output only"),
+        QVariant(static_cast<int>(EngineMaster::MicMonitorMode::MASTER)));
+    micMonitorModeComboBox->addItem(tr("Master and booth outputs"),
+        QVariant(static_cast<int>(EngineMaster::MicMonitorMode::MASTER_AND_BOOTH)));
+    micMonitorModeComboBox->addItem(tr("Direct monitor (recording and broadcasting only)"),
+        QVariant(static_cast<int>(EngineMaster::MicMonitorMode::DIRECT_MONITOR)));
+    int modeIndex = micMonitorModeComboBox->findData(
+        static_cast<int>(m_pMicMonitorMode->get()));
+    micMonitorModeComboBox->setCurrentIndex(modeIndex);
+    micMonitorModeComboBoxChanged(modeIndex);
+    connect(micMonitorModeComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(micMonitorModeComboBoxChanged(int)));
     m_pMicMonitorMode->connectValueChanged(SLOT(micMonitorModeChanged(double)));
 
@@ -595,8 +600,12 @@ void DlgPrefSound::slotResetToDefaults() {
     m_pBoothDelay->set(0.0);
 
     // Enable talkover master output
-    m_pMicMonitorMode->set(0.0);
-    micMonitorComboBox->setCurrentIndex(0);
+    m_pMicMonitorMode->set(
+        static_cast<double>(
+            static_cast<int>(EngineMaster::MicMonitorMode::MASTER)));
+    micMonitorModeComboBox->setCurrentIndex(
+        micMonitorModeComboBox->findData(
+            static_cast<int>(EngineMaster::MicMonitorMode::MASTER)));
 
     latencyCompensationSpinBox->setValue(latencyCompensationSpinBox->minimum());
 
@@ -646,9 +655,10 @@ void DlgPrefSound::masterMonoMixdownChanged(double value) {
 }
 
 void DlgPrefSound::micMonitorModeComboBoxChanged(int value) {
-    m_pMicMonitorMode->set((double)value);
     EngineMaster::MicMonitorMode newMode =
-        static_cast<EngineMaster::MicMonitorMode>(value);
+        static_cast<EngineMaster::MicMonitorMode>(
+            micMonitorModeComboBox->itemData(value).toInt());
+    m_pMicMonitorMode->set(static_cast<double>(newMode));
     if (newMode == EngineMaster::MicMonitorMode::DIRECT_MONITOR) {
         latencyCompensationSpinBox->setEnabled(true);
     } else {
@@ -657,5 +667,7 @@ void DlgPrefSound::micMonitorModeComboBoxChanged(int value) {
 }
 
 void DlgPrefSound::micMonitorModeChanged(double value) {
-    micMonitorComboBox->setCurrentIndex(value ? 1 : 0);
+    int modeIndex = micMonitorModeComboBox->findData(
+        static_cast<int>(value));
+    micMonitorModeComboBox->setCurrentIndex(modeIndex);
 }

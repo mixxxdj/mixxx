@@ -99,14 +99,14 @@
       <widget class="QComboBox" name="masterOutputModeComboBox"/>
      </item>
      <item row="7" column="0">
-      <widget class="QLabel" name="micMonitorLabel">
+      <widget class="QLabel" name="micMonitorModeLabel">
        <property name="text">
         <string>Microphone Monitor Mode</string>
        </property>
       </widget>
      </item>
      <item row="7" column="1">
-      <widget class="QComboBox" name="micMonitorComboBox"/>
+      <widget class="QComboBox" name="micMonitorModeComboBox"/>
      </item>
      <item row="8" column="0">
       <widget class="QLabel" name="latencyCompensationLabel">
