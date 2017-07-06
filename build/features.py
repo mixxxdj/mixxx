@@ -139,6 +139,52 @@ class HID(Feature):
 
         return sources
 
+class Ctlra(Feature):
+    INTERNAL_LINK = False
+
+    def description(self):
+        return "Ctlra controller support"
+
+    def enabled(self, build):
+        is_default = 1 if build.platform_is_linux else 0
+        build.flags['ctlra'] = util.get_flags(build.env, 'ctlra', 1)
+        if int(build.flags['ctlra']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('ctlra', 'Set to 1 to enable Ctlra controller support.', 1)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        if build.platform_is_linux:
+            # Try using system lib
+            #conf.CheckLib(['libusb', 'libusb'])
+            #build.env.ParseConfig('pkg-config libusb --silence-errors --cflags --libs')
+
+
+            # Optionally add libpthread and librt. Some distros need this.
+            #conf.CheckLib(['pthread', 'libpthread'])
+            #conf.CheckLib(['rt', 'librt'])
+
+            # -pthread tells GCC to do the right thing regardless of system
+            #build.env.Append(CCFLAGS='-pthread')
+            #build.env.Append(LINKFLAGS='-pthread')
+            print "Configure() on linux platfrom"
+            pass
+
+        else:
+            raise Exception('Ctlra is not tested on this platform (yet), exiting.')
+
+        build.env.Append(CPPDEFINES='__CTLRA__')
+
+    def sources(self, build):
+        sources = []
+        #sources = ['controllers/ctlra/ctlra.cpp']
+
+        return sources
 
 class Bulk(Feature):
     def description(self):
