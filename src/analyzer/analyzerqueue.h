@@ -16,6 +16,7 @@
 #include "util/memory.h"
 
 class Analyzer;
+class AnalysisDao;
 
 class AnalyzerQueue : public QThread {
     Q_OBJECT
@@ -59,6 +60,8 @@ class AnalyzerQueue : public QThread {
     };
 
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
+
+    std::unique_ptr<AnalysisDao> m_pAnalysisDao;
 
     typedef std::unique_ptr<Analyzer> AnalyzerPtr;
     std::vector<AnalyzerPtr> m_pAnalyzers;

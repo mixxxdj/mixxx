@@ -45,7 +45,9 @@ CrateFeature::CrateFeature(UserSettingsPointer pConfig,
           m_cratesIcon(":/images/library/ic_library_crates.png"),
           m_lockedCrateIcon(":/images/library/ic_library_locked.png"),
           m_pTrackCollection(pTrackCollection),
-          m_crateHierarchy(pTrackCollection){
+          m_pCrateTableModel(nullptr),
+          m_crateHierarchy(pTrackCollection) {
+
 
     initActions();
 
@@ -346,8 +348,13 @@ bool CrateFeature::activateCrate(CrateId crateId) {
         return false;
     }
     m_lastRightClickedIndex = index;
-    m_pCrateTableModel->selectCrate(crateId);
-    emit(showTrackModel(m_pCrateTableModel));
+    // TODO(XXX): How to select the newly created crate without
+    // a corresponding table model? m_pCrateTableModel = nullptr
+    // when creating crates by clicking the link on the HTML view.
+    if (m_pCrateTableModel) {
+        m_pCrateTableModel->selectCrate(crateId);
+        emit(showTrackModel(m_pCrateTableModel));
+    }
     emit(enableCoverArtDisplay(true));
     // Update selection
     emit(featureSelect(this, m_lastRightClickedIndex));

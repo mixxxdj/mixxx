@@ -7,11 +7,13 @@
 #include "analyzer/analyzergain.h"
 #include "analyzer/analyzerebur128.h"
 #include "analyzer/analyzerwaveform.h"
+#include "library/dao/analysisdao.h"
 #include "mixer/playerinfo.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/compatibility.h"
 #include "util/db/dbconnectionpooler.h"
+#include "util/db/dbconnectionpooled.h"
 #include "util/event.h"
 #include "util/timer.h"
 #include "util/trace.h"
@@ -51,7 +53,8 @@ AnalyzerQueue::AnalyzerQueue(
           m_queue_size(0) {
 
     if (mode != Mode::WithoutWaveform) {
-        m_pAnalyzers.push_back(std::make_unique<AnalyzerWaveform>(pConfig));
+        m_pAnalysisDao = std::make_unique<AnalysisDao>(pConfig);
+        m_pAnalyzers.push_back(std::make_unique<AnalyzerWaveform>(m_pAnalysisDao.get()));
     }
     m_pAnalyzers.push_back(std::make_unique<AnalyzerGain>(pConfig));
     m_pAnalyzers.push_back(std::make_unique<AnalyzerEbur128>(pConfig));
@@ -197,7 +200,7 @@ bool AnalyzerQueue::doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAudi
 
         const SINT framesRead =
                 pAudioSource->readSampleFramesStereo(
-                        kAnalysisFramesPerBlock,
+                        framesToRead,
                         &m_sampleBuffer);
         DEBUG_ASSERT(framesRead <= framesToRead);
         frameIndex += framesRead;
@@ -299,12 +302,25 @@ void AnalyzerQueue::run() {
 }
 
 void AnalyzerQueue::execThread() {
-    const mixxx::DbConnectionPooler dbConnection(m_pDbConnectionPool);
-    if (!dbConnection) {
-        kLogger.warning()
-                << "Failed to open database connection for analyzer queue";
-        kLogger.debug() << "Exiting thread";
-        return;
+    // The thread-local database connection for waveform analysis must not
+    // be closed before returning from this function. Therefore the
+    // DbConnectionPooler is defined at this outer function scope,
+    // independent of whether a database connection will be opened
+    // or not.
+    mixxx::DbConnectionPooler dbConnectionPooler;
+    // m_pAnalysisDao remains null if no analyzer needs database access.
+    // Currently only waveform analyses makes use of it.
+    if (m_pAnalysisDao) {
+        dbConnectionPooler = mixxx::DbConnectionPooler(m_pDbConnectionPool); // move assignment
+        if (!dbConnectionPooler.isPooling()) {
+            kLogger.warning()
+                    << "Failed to obtain database connection for analyzer queue thread";
+            return;
+        }
+        // Obtain and use the newly created database connection within this thread
+        QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
+        DEBUG_ASSERT(dbConnection.isOpen());
+        m_pAnalysisDao->initialize(dbConnection);
     }
 
     m_progressInfo.current_track.reset();
@@ -380,6 +396,13 @@ void AnalyzerQueue::execThread() {
         }
         emptyCheck();
     }
+
+    if (m_pAnalysisDao) {
+        // Invalidate reference to the thread-local database connection
+        // that will be closed soon. Not necessary, just in case ;)
+        m_pAnalysisDao->initialize(QSqlDatabase());
+    }
+
     emit(queueEmpty()); // emit in case of exit;
 }
 

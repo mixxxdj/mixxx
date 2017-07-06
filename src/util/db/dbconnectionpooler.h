@@ -21,22 +21,35 @@ class DbConnectionPooler final {
   public:
     explicit DbConnectionPooler(
             DbConnectionPoolPtr pDbConnectionPool = DbConnectionPoolPtr());
-    DbConnectionPooler(
-            DbConnectionPooler&& other) = default;
+    DbConnectionPooler(const DbConnectionPooler&) = delete;
+#if !defined(_MSC_VER) || _MSC_VER > 1900
+    DbConnectionPooler(DbConnectionPooler&&) = default;
+#else
+    // Workaround for Visual Studio 2015 (and before)
+    DbConnectionPooler(DbConnectionPooler&& other)
+        : m_pDbConnectionPool(std::move(other.m_pDbConnectionPool)) {
+    }
+#endif
     ~DbConnectionPooler();
 
     // Checks if a thread-local connection has actually been created
-    // during construction. Otherwise this instance does not store
-    // any reference to the connection pool and is non-functional.
-    explicit operator bool() const {
+    // during construction and is owned by this instance.
+    bool isPooling() const {
         return static_cast<bool>(m_pDbConnectionPool);
     }
 
-  private:
-    DbConnectionPooler(const DbConnectionPooler&) = delete;
     DbConnectionPooler& operator=(const DbConnectionPooler&) = delete;
-    DbConnectionPooler& operator=(DbConnectionPooler&&) = delete;
+#if !defined(_MSC_VER) || _MSC_VER > 1900
+    DbConnectionPooler& operator=(DbConnectionPooler&&) = default;
+#else
+    // Workaround for Visual Studio 2015 (and before)
+    DbConnectionPooler& operator=(DbConnectionPooler&& other) {
+        m_pDbConnectionPool = std::move(other.m_pDbConnectionPool);
+        return *this;
+    }
+#endif
 
+  private:
     // Prevent heap allocation
     static void * operator new(std::size_t);
     static void * operator new[](std::size_t);
