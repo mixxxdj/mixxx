@@ -66,8 +66,8 @@ Description:
               </Template>
 
               <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      4 &#9664;  8 Hotcues</SetVariable>
-                <SetVariable name="state_1_text">      4  &#9654; 8 Hotcues</SetVariable>
+                <SetVariable name="state_0_text">      [ 4 &#9664;  8 ]  Hotcues</SetVariable>
+                <SetVariable name="state_1_text">      [ 4  &#9654; 8 ]  Hotcues</SetVariable>
                 <SetVariable name="Setting">[Tango],8_hotcues</SetVariable>
               </Template>
 
@@ -232,11 +232,37 @@ Description:
             <SizePolicy>f,max</SizePolicy>
             <Children>
 
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      Channel Mixer</SetVariable>
-                <SetVariable name="state_1_text"> &#10004; Channel Mixer</SetVariable>
-                <SetVariable name="Setting">[Tango],channel_mixer</SetVariable>
-              </Template>
+              <WidgetGroup><!-- Channel mixer toggle + hint for big cover -->
+                <Layout>stacked</Layout>
+                <Size>182f,15f</Size>
+                <Children>
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="state_0_text">      Channel Mixer</SetVariable>
+                    <SetVariable name="state_1_text"> &#10004; Channel Mixer</SetVariable>
+                    <SetVariable name="Setting">[Tango],channel_mixer</SetVariable>
+                  </Template>
+
+                  <WidgetGroup><!-- Show hint when Channel mixer is visible -->
+                    <Layout>vertical</Layout>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Children>
+                      <Label>
+                        <ObjectName>CoverSpinnyHint</ObjectName>
+                        <Size>182f,15f</Size>
+                        <Text>                                   &#9664; !</Text>
+                        <Connection>
+                          <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </Label>
+                    </Children>
+                    <Connection>
+                      <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
 
               <WidgetGroup><!-- EQ & QuickEffect knobs submenu -->
                 <Layout>stacked</Layout>
@@ -332,9 +358,9 @@ Description:
             <Children>
 
               <Template src="skin:skin_settings_button_3state.xml">
-                <SetVariable name="state_0_text">      Spinny &#9664;  Cover    Off</SetVariable>
-                <SetVariable name="state_1_text">      Spinny  &#9654; Cover    Off</SetVariable>
-                <SetVariable name="state_2_text">      Spinny    Cover  &#9654; Off</SetVariable>
+                <SetVariable name="state_0_text">      [ Spinny &#9664;  Cover    Off ]</SetVariable>
+                <SetVariable name="state_1_text">      [ Spinny  &#9654; Cover    Off ]</SetVariable>
+                <SetVariable name="state_2_text">      [ Spinny    Cover  &#9654; Off ]</SetVariable>
                 <SetVariable name="Setting">[Tango],spinny_cover_none</SetVariable>
               </Template>
 
@@ -362,35 +388,43 @@ Description:
                     <Size>182f,15f</Size>
                     <Children>
                       <Template src="skin:skin_settings_button_2state.xml">
-                        <SetVariable name="state_0_text">      ° &#9664;  O</SetVariable>
-                        <SetVariable name="state_1_text">      °  &#9654; O</SetVariable>
+                        <SetVariable name="state_0_text">      [ ° &#9664;  O ]</SetVariable>
+                        <SetVariable name="state_1_text">      [ °  &#9654; O ]</SetVariable>
                         <SetVariable name="Setting">[Tango],spinnyCoverBIG</SetVariable>
                       </Template>
                     </Children>
-                    <Connection>
-                      <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                      <Transform><Not/></Transform>
-                    </Connection>
                   </WidgetGroup><!-- /small/BIG button without Channel mixer -->
-
-                  <WidgetGroup><!-- small/BIG button with Channel mixer -->
-                    <Layout>vertical</Layout>
-                    <Size>182f,15f</Size>
-                    <Children>
-                      <Template src="skin:skin_settings_button_2state.xml">
-                        <SetVariable name="state_0_text">      ° &#9664;  O</SetVariable>
-                        <SetVariable name="state_1_text">      °  &#9654; O  [ hide Channel mixer! ]</SetVariable>
-                        <SetVariable name="Setting">[Tango],spinnyCoverBIG</SetVariable>
-                      </Template>
-                    </Children>
-                    <Connection>
-                      <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup><!-- /small/BIG button with Channel mixer -->
                 </Children>
               </WidgetGroup><!-- /Spinny/Cover small/BIG-->
+
+              <WidgetGroup><!-- Show hint when Channel mixer is visible -->
+                <Layout>vertical</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+                  <Label>
+                    <ObjectName>CoverSpinnyHint</ObjectName>
+                    <Size>182f,15f</Size>
+                    <Text>      hide Channel Mixer</Text>
+                    <Connection>
+                      <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </Label>
+                  <Label>
+                    <ObjectName>CoverSpinnyHint</ObjectName>
+                    <Size>182f,15f</Size>
+                    <Text>      to see big Cover/Spinny</Text>
+                    <Connection>
+                      <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </Label>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
 
               <WidgetGroup><!-- Spinny/Cover Cover on Spinny-->
                 <Layout>stacked</Layout>
@@ -439,8 +473,8 @@ Description:
             <Children>
 
               <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      2 &#9664;  4  Effect Units</SetVariable>
-                <SetVariable name="state_1_text">      2  &#9654; 4  Effect Units</SetVariable>
+                <SetVariable name="state_0_text">      [ 2 &#9664;  4 ]  Effect Units</SetVariable>
+                <SetVariable name="state_1_text">      [ 2  &#9654; 4 ]  Effect Units</SetVariable>
                 <SetVariable name="Setting">[Tango],2or4_fxUnits</SetVariable>
               </Template>
 

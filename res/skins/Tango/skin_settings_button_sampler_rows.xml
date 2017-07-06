@@ -12,7 +12,7 @@ Description:
     <NumberStates>1</NumberStates>
     <State>
       <Number>0</Number>
-      <Text>[<Variable name="current"/>] Sampler Rows</Text>
+      <Text>      [ <Variable name="current"/> ] Sampler Rows</Text>
       <Alignment>left</Alignment>
     </State>
     <Connection>

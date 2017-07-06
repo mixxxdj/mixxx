@@ -133,6 +133,11 @@ WWidgetGroup {
     font-size: 12px/14px;
     color: #d2d2d2;
   }
+  #CoverSpinnyHint {
+    padding-top: 1px;
+    font-size: 12px/14px;
+    color: #f56200;
+  }
   #SkinSettingsButton:hover {
     background: #151515;
   }
