@@ -15,7 +15,7 @@
 
 class EncoderBroadcastSettings : public EncoderSettings {
   public:
-    EncoderBroadcastSettings(BroadcastSettingsPointer settings);
+    EncoderBroadcastSettings(BroadcastProfilePtr profile);
     virtual ~EncoderBroadcastSettings();
 
     // Indicates that it uses the quality slider section of the preferences
@@ -39,9 +39,8 @@ class EncoderBroadcastSettings : public EncoderSettings {
 
   private:
     QList<int> m_qualList;
-    BroadcastSettingsPointer m_settings;
+    BroadcastProfilePtr m_pProfile;
 };
-
 
 inline bool EncoderBroadcastSettings::usesQualitySlider() const
 {

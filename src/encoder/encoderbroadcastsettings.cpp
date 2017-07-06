@@ -11,8 +11,8 @@
 #define DEFAULT_BITRATE 128
 
 EncoderBroadcastSettings::EncoderBroadcastSettings(
-        BroadcastSettingsPointer settings)
-        : m_settings(settings) {
+        BroadcastProfilePtr profile)
+        : m_pProfile(profile) {
     m_qualList.append(32);
     m_qualList.append(48);
     m_qualList.append(64);
@@ -35,10 +35,8 @@ QList<int> EncoderBroadcastSettings::getQualityValues() const {
 
 // Sets the value
 void EncoderBroadcastSettings::setQualityByValue(int qualityValue) {
-    const BroadcastProfilePtr& profile = m_settings->profileAt(0);
-
     if (m_qualList.contains(qualityValue)) {
-        profile->setBitrate(qualityValue);
+        m_pProfile->setBitrate(qualityValue);
     } else {
         qWarning() << "Invalid qualityValue given to EncoderBroadcastSettings: " 
             << qualityValue << ". Ignoring it";
@@ -46,10 +44,8 @@ void EncoderBroadcastSettings::setQualityByValue(int qualityValue) {
 }
 
 void EncoderBroadcastSettings::setQualityByIndex(int qualityIndex) {
-    const BroadcastProfilePtr& profile = m_settings->profileAt(0);
-
     if (qualityIndex >= 0 && qualityIndex < m_qualList.size()) {
-        profile->setBitrate(m_qualList.at(qualityIndex));
+        m_pProfile->setBitrate(m_qualList.at(qualityIndex));
     } else {
         qWarning() << "Invalid qualityIndex given to EncoderBroadcastSettings: " 
             << qualityIndex << ". Ignoring it";
@@ -57,9 +53,7 @@ void EncoderBroadcastSettings::setQualityByIndex(int qualityIndex) {
 }
 
 int EncoderBroadcastSettings::getQuality() const {
-    const BroadcastProfilePtr& profile = m_settings->profileAt(0);
-
-    int bitrate = profile->getBitrate();
+    int bitrate = m_pProfile->getBitrate();
     if (m_qualList.contains(bitrate)) {
         return bitrate;
     }
@@ -76,14 +70,11 @@ int EncoderBroadcastSettings::getQualityIndex() const {
 
 void EncoderBroadcastSettings::setChannelMode(EncoderSettings::ChannelMode mode)
 {
-    const BroadcastProfilePtr& profile = m_settings->profileAt(0);
-    profile->setChannels(static_cast<int>(mode));
+    m_pProfile->setChannels(static_cast<int>(mode));
 }
 
 EncoderSettings::ChannelMode EncoderBroadcastSettings::getChannelMode() const {
-    const BroadcastProfilePtr& profile = m_settings->profileAt(0);
-
-    switch(profile->getChannels()) {
+    switch(m_pProfile->getChannels()) {
         case 1: return EncoderSettings::ChannelMode::MONO;
         case 2: return EncoderSettings::ChannelMode::STEREO;
         case 0: // fallthrough

@@ -21,6 +21,7 @@
 #include "track/track.h"
 #include "util/fifo.h"
 #include "preferences/broadcastsettings.h"
+#include "engine/sidechain/shoutoutput.h"
 
 class ControlPushButton;
 

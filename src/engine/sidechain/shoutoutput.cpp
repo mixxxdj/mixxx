@@ -5,6 +5,7 @@
 #include <QUrl>
 
 #include <signal.h>
+#include <unistd.h>
 
 // shout.h checks for WIN32 to see if we are on Windows.
 #ifdef WIN64
@@ -32,14 +33,17 @@ static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
 // http://wiki.shoutcast.com/wiki/SHOUTcast_DNAS_Server_2
 static const int kMaxShoutFailures = 3;
 
-ShoutOutput::ShoutOutput(BroadcastProfilePtr profile)
-        : m_pTextCodec(nullptr),
+ShoutOutput::ShoutOutput(BroadcastProfilePtr profile, UserSettingsPointer pConfig,
+        QObject* parent)
+        : QObject(parent),
+          m_pTextCodec(nullptr),
           m_pMetaData(),
           m_pShout(nullptr),
           m_pShoutMetaData(nullptr),
           m_iMetaDataLife(0),
           m_iShoutStatus(0),
           m_iShoutFailures(0),
+          m_pConfig(pConfig),
           m_pProfile(profile),
           m_encoder(nullptr),
           m_pMasterSamplerate(new ControlProxy("[Master]", "samplerate")),
@@ -346,7 +350,7 @@ void ShoutOutput::updateFromPreferences() {
     }
 
     // Initialize m_encoder
-    EncoderBroadcastSettings broadcastSettings(m_settings);
+    EncoderBroadcastSettings broadcastSettings(m_pProfile);
     if (m_format_is_mp3) {
         m_encoder = EncoderFactory::getFactory().getNewEncoder(
             EncoderFactory::getFactory().getFormatFor(ENCODING_MP3), m_pConfig, this);
@@ -607,7 +611,7 @@ bool ShoutOutput::writeSingle(const unsigned char* data, size_t len) {
         // in case of busy, frames are queued
         // try to flush queue after a short sleep
         qDebug() << "EngineBroadcast::writeSingle() SHOUTERR_BUSY, trying again";
-        QThread::msleep(10); // wait 10 ms until "busy" is over. TODO() tweak for an optimum.
+        usleep(10000); // wait 10 ms until "busy" is over. TODO() tweak for an optimum.
         // if this fails, the queue is transmitted after the next regular shout_send_raw()
         (void)shout_send_raw(m_pShout, nullptr, 0);
     } else if (ret < SHOUTERR_SUCCESS) {
@@ -854,7 +858,6 @@ void ShoutOutput::tryReconnect() {
 
     if (m_pStatusCO->get() == STATUSCO_FAILURE) {
         m_pProfile->setEnabled(false);
-        m_readSema.release();
         QString errorText;
         if (m_retryCount > 0) {
             errorText = tr("Lost connection to streaming server and %1 attempts to reconnect have failed.")

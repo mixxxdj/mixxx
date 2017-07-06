@@ -75,7 +75,7 @@ bool EngineBroadcast::addConnection(BroadcastProfilePtr profile) {
     if(m_connections.contains(profileName))
         return false;
 
-    ShoutOutputPtr output(new ShoutOutput(profile));
+    ShoutOutputPtr output(new ShoutOutput(profile, m_pConfig));
     m_connections.insert(profileName, output);
     return true;
 }

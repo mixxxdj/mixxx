@@ -35,7 +35,7 @@ struct _util_dict;
 typedef struct _util_dict shout_metadata_t;
 
 class ShoutOutput
-        : public EncoderCallback, public NetworkStreamWorker {
+        : public QObject, public EncoderCallback, public NetworkStreamWorker {
     Q_OBJECT
   public:
     enum StatusCOStates {
@@ -45,7 +45,8 @@ class ShoutOutput
         STATUSCO_FAILURE = 3 // Happens when disconnected by an error
     };
 
-    ShoutOutput(BroadcastProfilePtr profile);
+    ShoutOutput(BroadcastProfilePtr profile, UserSettingsPointer pConfig,
+            QObject* parent = nullptr);
     virtual ~ShoutOutput();
 
     // This is called by the Engine implementation for each sample. Encode and
@@ -112,6 +113,7 @@ class ShoutOutput
     int m_iMetaDataLife;
     long m_iShoutStatus;
     long m_iShoutFailures;
+    UserSettingsPointer m_pConfig;
     BroadcastProfilePtr m_pProfile;
     EncoderPointer m_encoder;
     ControlProxy* m_pMasterSamplerate;
