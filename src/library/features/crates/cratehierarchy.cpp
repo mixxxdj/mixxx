@@ -1,12 +1,20 @@
 #include "util/db/fwdsqlquery.h"
 
+#include "library/crate/crateschema.h"
+#include "library/dao/trackschema.h"
+
 #include "library/features/crates/cratehierarchy.h"
 #include "library/features/crates/cratestorage.h"
 #include "library/trackcollection.h"
 
 uint CrateHierarchy::countCratesOnClosure() const {
-    FwdSqlQuery query(m_database, QString(
-             "SELECT COUNT(*) FROM crateClosure WHERE parentId = childId"));
+    FwdSqlQuery query(
+      m_database, QString(
+        "SELECT COUNT(*) FROM %1 "
+        "WHERE %2 = %3").arg(
+          CRATE_CLOSURE_TABLE,
+          CLOSURE_PARENTID,
+          CLOSURE_CHILDID));
     if (query.execPrepared() && query.next()) {
         uint result = query.fieldValue(0).toUInt();
         DEBUG_ASSERT(!query.next());
@@ -21,8 +29,10 @@ bool CrateHierarchy::closureIsValid() const {
 }
 
 void CrateHierarchy::resetClosure() const {
-    FwdSqlQuery query(m_database, QString(
-         "DELETE FROM crateClosure"));
+    FwdSqlQuery query(
+      m_database, QString(
+        "DELETE FROM %1").arg(
+          CRATE_CLOSURE_TABLE));
     if (!query.isPrepared()) {
         return;
     }
@@ -42,9 +52,11 @@ bool CrateHierarchy::initClosure() const {
         crateIds.push_back(crate.getId());
     }
 
-    FwdSqlQuery query(m_database, QString(
-      "INSERT INTO crateClosure VALUES("
-      ":parent, :child, 0)"));
+    FwdSqlQuery query(
+      m_database, QString(
+        "INSERT INTO %1 VALUES("
+        ":parent, :child, 0)").arg(
+          CRATE_CLOSURE_TABLE));
     if (!query.isPrepared()) {
         return false;
     }
@@ -62,8 +74,10 @@ bool CrateHierarchy::initClosure() const {
 }
 
 void CrateHierarchy::resetPath() const {
-    FwdSqlQuery query(m_database, QString(
-         "DELETE FROM cratePath"));
+    FwdSqlQuery query(
+      m_database, QString(
+        "DELETE FROM %1").arg(
+          CRATE_PATH_TABLE));
     if (!query.isPrepared()) {
         return;
     }
@@ -73,9 +87,11 @@ void CrateHierarchy::resetPath() const {
 }
 
 bool CrateHierarchy::writeCratePaths(CrateId id, QString namePath, QString idPath) const {
-    FwdSqlQuery query(m_database, QString(
-                                          "INSERT INTO cratePath(crateId, namePath, idPath)"
-                                          "VALUES (:id, :namePath, :idPath)"));
+    FwdSqlQuery query(
+      m_database, QString(
+        "INSERT INTO %1 "
+        "VALUES (:id, :idPath, :namePath)").arg(
+          CRATE_PATH_TABLE));
     if (!query.isPrepared()) {
         return false;
     }
@@ -89,55 +105,25 @@ bool CrateHierarchy::writeCratePaths(CrateId id, QString namePath, QString idPat
     return true;
 }
 
-bool CrateHierarchy::generateAllPaths() const {
-    CrateSelectResult crates(m_pTrackCollection->crates().selectCrates());
-    Crate crate;
-    while (crates.populateNext(&crate)) {
-        QSqlQuery query(m_database);
-
-        query.prepare(QString(
-               "SELECT p.name, p.id FROM crateClosure "
-               "JOIN crates p ON parentId = p.id "
-               "JOIN crates c ON childId = c.id "
-               "where c.name = :child and depth != 0 "
-               "ORDER BY depth DESC"));
-
-        query.bindValue(":child", crate.getName());
-        query.setForwardOnly(true);
-        QString namePath;
-        QString idPath;
-
-        if (query.exec()) {
-            while (query.next()) {
-                namePath = namePath + "/" + query.value(0).toString();
-                idPath = idPath + "/" + query.value(1).toString();
-            }
-        } else {
-            return false;
-        }
-
-        namePath = namePath + "/" + crate.getName();
-        idPath = idPath + "/" + crate.getId().toString();
-
-        if(!writeCratePaths(crate.getId(), namePath, idPath)) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
 bool CrateHierarchy::generateCratePaths(Crate crate) const {
     QSqlQuery query(m_database);
 
-    query.prepare(QString(
-               "SELECT p.name, p.id FROM crateClosure "
-               "JOIN crates p ON parentId = p.id "
-               "JOIN crates c ON childId = c.id "
-               "where c.name = :child and depth != 0 "
-               "ORDER BY depth DESC"));
+    query.prepare(
+      QString(
+        "SELECT p.%1, p.%2 FROM %3 "
+        "JOIN %4 p ON %5 = p.%2 "
+        "JOIN %4 c ON %6 = c.%2 "
+        "where c.%1 = :childName and %7 != 0 "
+        "ORDER BY %7 DESC").arg(
+          CRATETABLE_NAME,
+          CRATETABLE_ID,
+          CRATE_CLOSURE_TABLE,
+          CRATE_TABLE,
+          CLOSURE_PARENTID,
+          CLOSURE_CHILDID,
+          CLOSURE_DEPTH));
 
-    query.bindValue(":child", crate.getName());
+    query.bindValue(":childName", crate.getName());
     query.setForwardOnly(true);
     QString namePath;
     QString idPath;
@@ -161,14 +147,28 @@ bool CrateHierarchy::generateCratePaths(Crate crate) const {
     return true;
 }
 
+bool CrateHierarchy::generateAllPaths() const {
+    CrateSelectResult crates(m_pTrackCollection->crates().selectCrates());
+    Crate crate;
+    while (crates.populateNext(&crate)) {
+        generateCratePaths(crate);
+    }
+
+    return true;
+}
+
 bool CrateHierarchy::initClosureForCrate(CrateId id) const {
-    FwdSqlQuery query(m_database, QString(
-      "INSERT INTO crateClosure VALUES("
-      ":parent, :child, 0)"));
+    FwdSqlQuery query(
+      m_database, QString(
+        "INSERT INTO %1 "
+        "VALUES(:parent, :child, 0)").arg(
+          CRATE_CLOSURE_TABLE));
+
     if (!query.isPrepared()) {
         return false;
     }
 
+    // closure dependacy
     query.bindValue(":parent", id);
     query.bindValue(":child", id);
     if (!query.execPrepared()) {
@@ -179,11 +179,16 @@ bool CrateHierarchy::initClosureForCrate(CrateId id) const {
 }
 
 bool CrateHierarchy::insertIntoClosure(CrateId parent, CrateId child) const {
-    FwdSqlQuery query(m_database, QString(
-        "INSERT INTO crateClosure(parentId, childId, depth) "
-        "SELECT p.parentId, c.childId, p.depth + c.depth + 1 "
-        "FROM crateClosure p, crateClosure c "
-        "WHERE p.childId = :parent AND c.parentId = :child"));
+    FwdSqlQuery query(
+      m_database, QString(
+        "INSERT INTO %1(%2, %3, %4) "
+        "SELECT p.%2, c.%3, p.%4 + c.%4 + 1 "
+        "FROM %1 p, %1 c "
+        "WHERE p.%3 = :parent AND c.%2 = :child").arg(
+          CRATE_CLOSURE_TABLE,
+          CLOSURE_PARENTID,
+          CLOSURE_CHILDID,
+          CLOSURE_DEPTH));
 
     if (!query.isPrepared()) {
         return false;
@@ -200,7 +205,10 @@ bool CrateHierarchy::insertIntoClosure(CrateId parent, CrateId child) const {
 }
 
 void CrateHierarchy::deleteCrate(CrateId id) const {
-    FwdSqlQuery query(m_database, QString(
+    // TODO(gramanas) cratedeletion from the hierarchy must
+    // be smart (delete crate with children)
+    FwdSqlQuery query(
+      m_database, QString(
         "DELETE FROM cratePath WHERE crateId = :id"));
     query.bindValue(":id", id);
     if (!query.isPrepared()) {
@@ -222,9 +230,14 @@ void CrateHierarchy::deleteCrate(CrateId id) const {
 }
 
 bool CrateHierarchy::hasChildern(CrateId id) const {
-    FwdSqlQuery query(m_database, QString(
-       "SELECT COUNT(*) FROM crateClosure "
-       "WHERE parentId = :id AND depth != 0"));
+    FwdSqlQuery query(
+      m_database, QString(
+        "SELECT COUNT(*) FROM %1 "
+        "WHERE %2 = :id AND %3 != 0").arg(
+          CRATE_CLOSURE_TABLE,
+          CLOSURE_PARENTID,
+          CLOSURE_DEPTH));
+
     query.bindValue(":id", id);
     if (query.execPrepared() && query.next()) {
         return query.fieldValue(0).toUInt() != 0;
@@ -235,8 +248,13 @@ bool CrateHierarchy::hasChildern(CrateId id) const {
 QStringList CrateHierarchy::collectIdPaths() const {
     QSqlQuery query(m_database);
 
-    query.prepare(QString(
-         "SELECT idPath FROM cratePath ORDER BY namePath"));
+    query.prepare(
+      QString(
+        "SELECT %1 FROM %2 "
+        "ORDER BY %3").arg(
+          PATHTABLE_ID_PATH,
+          CRATE_PATH_TABLE,
+          PATHTABLE_NAME_PATH));
 
     query.setForwardOnly(true);
 

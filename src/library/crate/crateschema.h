@@ -7,6 +7,8 @@
 
 #define CRATE_TABLE "crates"
 #define CRATE_TRACKS_TABLE "crate_tracks"
+#define CRATE_CLOSURE_TABLE "crateClosure"
+#define CRATE_PATH_TABLE "cratePath"
 
 const QString CRATETABLE_ID = "id";
 const QString CRATETABLE_NAME = "name";
@@ -24,5 +26,12 @@ const QString CRATETABLE_AUTODJ_SOURCE = "autodj_source";
 const QString CRATETRACKSTABLE_CRATEID = "crate_id";
 const QString CRATETRACKSTABLE_TRACKID = "track_id";
 
+const QString CLOSURE_PARENTID = "parentId";
+const QString CLOSURE_CHILDID = "childId";
+const QString CLOSURE_DEPTH = "depth";
+
+const QString PATHTABLE_CRATEID = "crateId";
+const QString PATHTABLE_ID_PATH = "idPath";
+const QString PATHTABLE_NAME_PATH = "namePath";
 
 #endif // MIXXX_CRATESCHEMA_H

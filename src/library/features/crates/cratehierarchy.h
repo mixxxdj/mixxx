@@ -6,6 +6,8 @@
 #include "library/trackcollection.h"
 
 // This class handles the hiearachical structure in the database
+// It uses a closure table as described here
+// http://dirtsimple.org/2010/11/simplest-way-to-do-tree-based-queries.html
 
 class CrateHierarchy {
   public:
@@ -26,8 +28,9 @@ class CrateHierarchy {
     // empties the path table
     void resetPath() const;
     bool writeCratePaths(CrateId id, QString namePath, QString idPath) const;
-    bool generateAllPaths() const;
     bool generateCratePaths(Crate crate) const;
+    bool generateAllPaths() const;
+
 
     bool initClosureForCrate(CrateId id) const;
     bool insertIntoClosure(CrateId parent, CrateId child) const;
