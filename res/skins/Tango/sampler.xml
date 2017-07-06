@@ -171,7 +171,7 @@ Variables:
         <Children>
 
           <Template src="skin:knob_textless.xml">
-            <SetVariable name="TooltipId">pregain</SetVariable>
+            <SetVariable name="TooltipId">channel_volume</SetVariable>
             <SetVariable name="ObjectName">SamplerGainKnob</SetVariable>
             <SetVariable name="Size">20f,20f</SetVariable>
             <SetVariable name="ConfigKey">volume</SetVariable>
@@ -226,7 +226,7 @@ Variables:
 
           <Template src="skin:button_2state.xml">
             <SetVariable name="TooltipId">keylock</SetVariable>
-            <SetVariable name="ObjectName">Keylock</SetVariable>
+            <SetVariable name="ObjectName">SamplerButton</SetVariable>
             <SetVariable name="Size">14f,16f</SetVariable>
             <SetVariable name="state_0_pressed">sampler_keylock_off.svg</SetVariable>
             <SetVariable name="state_0_unpressed">sampler_keylock_off.svg</SetVariable>

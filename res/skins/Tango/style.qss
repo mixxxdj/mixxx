@@ -1815,7 +1815,36 @@ QScrollBar:horizontal {
       image: url(skin:/graphics/splitterVert_handle_pressed.png);
     }
 
-/* Pushbuttons, a lot of them...	*/
+/* Pushbuttons, a lot of them...
+Library features and their buttons:
+  Tracks DlgMissing
+    QPushButton#btnSelect
+    QPushButton#btnPurge
+  Tracks DlgHidden
+    QPushButton#btnSelect
+    QPushButton#btnPurge
+    QPushButton#btnUnhide
+    QPushButton#
+  DlgAutoDJ
+    QPushButton#pushButtonShuffle
+    QPushButton#pushButtonAddRandom
+    QPushButton#pushButtonSkipNext
+    QPushButton#pushButtonFadeNow
+    QSpinBox#spinBoxTransition
+    QLabel#labelSelectionInfo
+  DlgAnalysis
+    + some small margin to maximize and cover art button
+    + make radio buttons blue like active keylock button
+    QRadioButton#radioButtonRecentlyAdded
+    QRadioButton#radioButtonAllSongs
+    QLabel#labelProgress
+    QPushButton#pushButtonSelectAll
+    QPushButton#pushButtonAnalyze
+  DlgRecording
+    QLabel#label > "Status: ..."
+    QPushButton#pushButtonRecording > un/checked
+    
+  	*/
 QPushButton {
   text-align: center;
   font-family: Ubuntu;
