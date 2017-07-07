@@ -451,7 +451,7 @@ void MixxxPlateX2::processBuffer(const sample_t* in, sample_t* out, const uint f
 
 	// loop through the buffer, processing each sample
 	for (uint i = 0; i + 1 < frames; i += 2) {
-		sample_t mono_sample = blend*(in[i] + in[i + 1]) / 2;
+		sample_t mono_sample = blend * (in[i] + in[i + 1]) / 2;
 		sample_t xl, xr;
 		PlateStub::process(mono_sample, decay, &xl, &xr);
 		out[i] = xl + in[i];
