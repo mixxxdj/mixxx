@@ -855,6 +855,23 @@ def BuildRelease(target, source, env):
             os.remove(exe_name)
         os.rename('part.' + exe_name, exe_name)
 
+        print "*** Compiling Bundle"
+        # Compile bundle wix file
+        command = '"%(wix)s\\candle.exe" -ext WixBalExtension -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dMSIPackage=%(package_name)s -arch %(arch)s -out build\\wix\\bundle\\bundle.wixobj build\\wix\\bundle\\bundle.wxs' % \
+            {'wix': wix_path,
+             'winlibpath': build.winlib_path,
+             'arch': winArch,
+             'package_name': exe_name}
+        print "Using Command: " + command
+        subprocess.check_call(command)
+        command = '"%(wix)s\\light.exe" -cc .\ -nologo -sw1076 -spdb -ext WixBalExtension -dMSIPackage=%(msi_name)s -cultures:%(deflang)s -loc build\wix\Localization\mixxx_%(deflang)s.wxl -out %(package_name)s build\\wix\\bundle\\*.wixobj' % \
+            {'wix': wix_path,
+             'deflang': defaultLanguage,
+             'msi_name': exe_name,
+             'package_name': os.path.splitext(exe_name)[0] + '.exe'}
+        print "Using Command: " + command
+        subprocess.check_call(command)
+
         # Some cleaning before leaving
         for file in glob.glob('*.cab'):
             os.remove(file)
@@ -864,6 +881,7 @@ def BuildRelease(target, source, env):
             os.remove(file)
         for file in glob.glob('build\wix\subdirs\*.wxs'):
             os.remove(file)
+        os.remove(exe_name)
 
     else:
         print "Aborted building installer"

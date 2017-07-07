@@ -1,0 +1,60 @@
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:bal="http://schemas.microsoft.com/wix/BalExtension"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+
+  <?define VersionNumber="!(bind.packageVersion.MainPackage)" ?>
+  <?define UpgradeCode="921DC99C-4DCF-478D-B950-50685CB9E6BE" ?>
+
+  <Bundle Name="!(loc.ApplicationName)" Version="$(var.VersionNumber)" Manufacturer="!(loc.ManufacturerFullName)" UpgradeCode="$(var.UpgradeCode)">
+      <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkSidebarLicense">
+        <bal:WixStandardBootstrapperApplication
+          LicenseUrl=""
+          SuppressOptionsUI="yes"
+          LogoFile="res\images\mixxx-icon.png" LogoSideFile="build\wix\images\sidebar.png"
+          />
+      </BootstrapperApplicationRef>
+    <Chain>
+      <ExePackage
+         Id="vcredist"
+         Name="Microsoft Visual C++ 2015 Redistributable (x86) Setup"
+         SourceFile="$(var.WINLIBPATH)\vc_redist.x86.exe"
+         Cache="no"
+         Compressed="yes"
+         PerMachine="yes"
+         Permanent="yes"
+         Vital="yes"
+         InstallCommand="/install /quiet /norestart"
+         InstallCondition="NOT VersionNT64">
+
+         <!-- -->
+         <ExitCode Value="3010" Behavior="forceReboot"/>
+
+         <!-- Ignore "Newer version installed" error -->
+         <ExitCode Value="1638" Behavior="success"/>
+     </ExePackage>
+
+     <ExePackage
+        Id="vcredist64"
+        Name="Microsoft Visual C++ 2015 Redistributable (x64) Setup"
+        SourceFile="$(var.WINLIBPATH)\vc_redist.x86.exe"
+        Cache="no"
+        Compressed="yes"
+        PerMachine="yes"
+        Permanent="yes"
+        Vital="yes"
+        InstallCommand="/install /quiet /norestart"
+        InstallCondition="VersionNT64">
+
+        <!-- -->
+        <ExitCode Value="3010" Behavior="forceReboot"/>
+
+        <!-- Ignore "Newer version installed" error -->
+        <ExitCode Value="1638" Behavior="success"/>
+    </ExePackage>
+
+      <RollbackBoundary />
+
+      <MsiPackage Id="MainPackage" SourceFile="$(var.MSIPackage)" DisplayInternalUI="yes" Compressed="yes" Vital="yes" />
+    </Chain>
+  </Bundle>
+</Wix>
