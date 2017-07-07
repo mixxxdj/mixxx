@@ -89,17 +89,6 @@
     <!-- AllowSameVersionUpgrades causes ICE61 which must be ignored -->
     <MajorUpgrade DowngradeErrorMessage="!(loc.NewerInstalled)" AllowSameVersionUpgrades="yes" />
 
-    <Property Id="VCREDISTINSTALLED">
-      <RegistrySearch Id="VCRedistInstalledSearch"
-                      Root="HKLM"
-                      Key="SOFTWARE\Wow6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\$(var.Platform)"
-                      Name="Installed"
-                      Type="raw" />
-    </Property>
-
-    <!-- References the VCRedist package -->
-    <Binary Id="VCRedist" SourceFile="$(var.WINLIBPATH)\vc_redist.$(var.Platform).exe" />
-
     <!-- This will search if mixxx is already installed in another bitWidth -->
     <Property Id="OTHERBITWIDTHINSTALLED">
       <RegistrySearch Id="BitWidthInstalledSearch"
@@ -127,14 +116,10 @@
 
       <!-- Determine the install location after the install path has been validated by the installer -->
       <Custom Action="SetARPINSTALLLOCATION" After="InstallValidate" />
-      <Custom Action="InstallVCRedist" After="InstallValidate">NOT VCREDISTINSTALLED AND NOT Installed AND NOT REMOVE</Custom>
     </InstallExecuteSequence>
 
     <!-- Set up ARPINSTALLLOCATION property (http://blogs.technet.com/b/alexshev/archive/2008/02/09/from-msi-to-wix-part-2.aspx) -->
     <CustomAction Id="SetARPINSTALLLOCATION" Property="ARPINSTALLLOCATION" Value="[INSTALLDIR]" />
-
-    <!-- Install VCRedist -->
-    <CustomAction Id='InstallVCRedist' BinaryKey='VCRedist' ExeCommand='/quiet /install /norestart' Return='check' />
 
     <!-- CA to launch the exe after install -->
     <CustomAction Id          ="CA.StartAppOnExit"
