@@ -69,6 +69,11 @@ class ShoutOutput
     bool serverConnect();
     bool serverDisconnect();
     bool isConnected();
+    void applySettings();
+
+    BroadcastProfilePtr profile() {
+        return m_pProfile;
+    }
 
   signals:
     void broadcastDisconnected();

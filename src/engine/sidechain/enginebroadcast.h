@@ -48,6 +48,10 @@ class EngineBroadcast
 
   private slots:
     void slotEnableCO(double v);
+    void slotProfileAdded(BroadcastProfilePtr profile);
+    void slotProfileRemoved(BroadcastProfilePtr profile);
+    void slotProfileRenamed(QString oldName, BroadcastProfilePtr profile);
+    void slotProfilesChanged();
 
   private:
 #ifndef __WINDOWS__

@@ -25,6 +25,13 @@ class BroadcastSettings : public QAbstractListModel {
     int rowCount(const QModelIndex& parent) const;
     QVariant data(const QModelIndex& index, int role) const;
     BroadcastProfilePtr profileAt(int index);
+
+  signals:
+    void profileAdded(BroadcastProfilePtr profile);
+    void profileRemoved(BroadcastProfilePtr profile);
+    void profileRenamed(QString oldName, BroadcastProfilePtr profile);
+    void profilesChanged();
+
   private slots:
     void onProfileNameChanged(QString oldName, QString newName);
 

@@ -89,6 +89,8 @@ void BroadcastSettings::addProfile(const BroadcastProfilePtr& profile) {
     m_profiles.insert(profile->getProfileName(), BroadcastProfilePtr(profile));
 
     endInsertRows();
+
+    emit profileAdded(profile);
 }
 
 void BroadcastSettings::saveProfile(const BroadcastProfilePtr& profile) {
@@ -127,6 +129,7 @@ void BroadcastSettings::saveAll() {
     for(auto kv : m_profiles.values()) {
         saveProfile(kv);
     }
+    emit profilesChanged();
 }
 
 void BroadcastSettings::deleteProfile(const BroadcastProfilePtr& profile) {
@@ -143,6 +146,8 @@ void BroadcastSettings::deleteProfile(const BroadcastProfilePtr& profile) {
         endRemoveRows();
     }
     m_profiles.remove(profile->getProfileName());
+
+    emit profileRemoved(profile);
 }
 
 void BroadcastSettings::onProfileNameChanged(QString oldName, QString newName) {
@@ -150,7 +155,10 @@ void BroadcastSettings::onProfileNameChanged(QString oldName, QString newName) {
         return;
 
     BroadcastProfilePtr oldItem = m_profiles.take(oldName);
-    m_profiles.insert(newName, oldItem);
+    if(oldItem) {
+        m_profiles.insert(newName, oldItem);
+        emit profileRenamed(oldName, oldItem);
+    }
 }
 
 int BroadcastSettings::rowCount(const QModelIndex& parent) const {

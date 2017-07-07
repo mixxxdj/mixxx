@@ -92,13 +92,14 @@ ShoutOutput::~ShoutOutput() {
     delete m_pStatusCO;
     delete m_pMasterSamplerate;
 
-    if (m_pShoutMetaData) {
+    if (m_pShoutMetaData)
         shout_metadata_free(m_pShoutMetaData);
-    }
+
     if (m_pShout) {
         shout_close(m_pShout);
         shout_free(m_pShout);
     }
+
     shout_shutdown();
 }
 
@@ -109,6 +110,15 @@ bool ShoutOutput::isConnected() {
             return true;
     }
     return false;
+}
+
+void ShoutOutput::applySettings() {
+    // TODO(Palakis): just in case there's more logic needed before
+    // calling updateFromPreferences()
+    // If this doesn't turn out true, there remove applySettings
+    // and call it directly.
+
+    updateFromPreferences();
 }
 
 QByteArray ShoutOutput::encodeString(const QString& string) {
@@ -324,7 +334,6 @@ void ShoutOutput::updateFromPreferences() {
     m_protocol_is_shoutcast = serverType == BROADCAST_SERVER_SHOUTCAST;
     m_protocol_is_icecast1 = serverType == BROADCAST_SERVER_ICECAST1;
 
-
     if (m_protocol_is_icecast2) {
         protocol = SHOUT_PROTOCOL_HTTP;
     } else if (m_protocol_is_shoutcast) {
@@ -370,13 +379,16 @@ void ShoutOutput::updateFromPreferences() {
         // init m_encoder itself will display a message box
         qDebug() << "**** Encoder init failed";
         qWarning() << errorMsg;
+
         // delete m_encoder calls write() make sure it will be exit early
         DEBUG_ASSERT(m_iShoutStatus != SHOUTERR_CONNECTED);
         m_encoder.reset();
         setState(NETWORKSTREAMWORKER_STATE_ERROR);
         m_lastErrorStr = "Encoder error";
+
         return;
     }
+
     setState(NETWORKSTREAMWORKER_STATE_READY);
 }
 
@@ -652,6 +664,7 @@ void ShoutOutput::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     if (metaDataHasChanged()) {
         updateMetaData();
     }
+
     setState(NETWORKSTREAMWORKER_STATE_READY);
 }
 

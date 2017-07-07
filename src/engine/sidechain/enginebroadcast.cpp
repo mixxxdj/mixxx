@@ -31,6 +31,18 @@ EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig,
     connect(m_pBroadcastEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(slotEnableCO(double)));
 
+    // Connect add/remove/renamed profiles signals.
+    // Passing the raw pointer from QSharedPointer to connect() is fine, since
+    // connect is trusted that it won't delete the pointer
+    connect(m_settings.data(), SIGNAL(profileAdded(BroadcastProfilePtr)),
+            this, SLOT(slotProfileAdded(BroadcastProfilePtr)));
+    connect(m_settings.data(), SIGNAL(profileRemoved(BroadcastProfilePtr)),
+            this, SLOT(slotProfileRemoved(BroadcastProfilePtr)));
+    connect(m_settings.data(), SIGNAL(profileRenamed(QString, BroadcastProfilePtr)),
+            this, SLOT(slotProfileRenamed(QString, BroadcastProfilePtr)));
+    connect(m_settings.data(), SIGNAL(profilesChanged()),
+            this, SLOT(slotProfilesChanged()));
+
     setState(NETWORKSTREAMWORKER_STATE_INIT);
 
     // Initialize libshout
@@ -124,7 +136,6 @@ void EngineBroadcast::run() {
 
     setState(NETWORKSTREAMWORKER_STATE_BUSY);
 
-    // TODO(Palakis): use signals
     for(ShoutOutputPtr output : m_connections) {
         output->serverConnect();
     }
@@ -139,7 +150,6 @@ void EngineBroadcast::run() {
         if (!m_pBroadcastEnabled->toBool()) {
             m_threadWaiting = false;
 
-            // TODO(Palakis): use signals
             for(ShoutOutputPtr output : m_connections) {
                 output->serverDisconnect();
             }
@@ -218,3 +228,26 @@ void EngineBroadcast::slotEnableCO(double v) {
     }
 }
 
+void EngineBroadcast::slotProfileAdded(BroadcastProfilePtr profile) {
+    addConnection(profile);
+}
+
+void EngineBroadcast::slotProfileRemoved(BroadcastProfilePtr profile) {
+    removeConnection(profile);
+}
+
+void EngineBroadcast::slotProfileRenamed(QString oldName, BroadcastProfilePtr profile) {
+    ShoutOutputPtr oldItem = m_connections.take(oldName);
+    if(oldItem) {
+        // Profile in ShoutOutput is a reference, which is supposed
+        // to have already been updated
+        QString newName = profile->getProfileName();
+        m_connections.insert(newName, oldItem);
+    }
+}
+
+void EngineBroadcast::slotProfilesChanged() {
+    for(ShoutOutputPtr c : m_connections.values()) {
+        if(c) c->applySettings();
+    }
+}
