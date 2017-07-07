@@ -428,8 +428,12 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex&
 void CrateFeature::slotCreateCrate() {
     CrateId crateId = CrateFeatureHelper(
             m_pTrackCollection, m_pConfig).createEmptyCrate();
+    Crate newCrate;
+    m_pTrackCollection->crates().readCrateById(crateId, &newCrate);
+    m_crateHierarchy.initClosureForCrate(crateId);
+    m_crateHierarchy.generateCratePaths(newCrate);
     if (crateId.isValid()) {
-        activateCrate(crateId);
+        m_pChildModel->reloadTree();
     }
 }
 
