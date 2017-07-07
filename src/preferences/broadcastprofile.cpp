@@ -104,6 +104,88 @@ BroadcastProfilePtr BroadcastProfile::loadFromFile(
     return profile;
 }
 
+bool BroadcastProfile::equals(BroadcastProfilePtr other) {
+    // TODO(Palakis): A more future-proof design may be appropriate.
+    // For example, a QMap<QString,QVariant> would allow for
+    // iteration over all values, along with default values defined
+    // in each getter.
+
+    if(getProfileName() == other->getProfileName()
+            && getEnabled() == other->getEnabled()
+            && getHost() == other->getHost()
+            && getPort() == other->getPort()
+            && getServertype() == other->getServertype()
+            && getLogin() == other->getLogin()
+            && getPassword() == other->getPassword()
+            && getEnableReconnect() == other->getEnableReconnect()
+            && getReconnectPeriod() == other->getReconnectPeriod()
+            && getLimitReconnects() == other->getLimitReconnects()
+            && getMaximumRetries() == other->getMaximumRetries()
+            && getNoDelayFirstReconnect() == other->getNoDelayFirstReconnect()
+            && getReconnectFirstDelay() == other->getReconnectFirstDelay()
+            && getFormat() == other->getFormat()
+            && getBitrate() == other->getBitrate()
+            && getChannels() == other->getChannels()
+            && getMountpoint() == other->getMountpoint()
+            && getStreamName() == other->getStreamName()
+            && getStreamDesc() == other->getStreamDesc()
+            && getStreamGenre() == other->getStreamGenre()
+            && getStreamPublic() == other->getStreamPublic()
+            && getStreamWebsite() == other->getStreamWebsite()
+            && getEnableMetadata() == other->getEnableMetadata()
+            && getMetadataCharset() == other->getMetadataCharset()
+            && getCustomArtist() == other->getCustomArtist()
+            && getCustomTitle() == other->getCustomTitle()
+            && getMetadataFormat() == other->getMetadataFormat()
+            && getOggDynamicUpdate() == other->getOggDynamicUpdate()) {
+        return true;
+    }
+
+    return false;
+}
+
+BroadcastProfilePtr BroadcastProfile::valuesCopy() {
+    BroadcastProfile* newProfile = new BroadcastProfile(getProfileName());
+
+    newProfile->setEnabled(getEnabled());
+
+    newProfile->setHost(getHost());
+    newProfile->setPort(getPort());
+
+    newProfile->setServertype(getServertype());
+    newProfile->setLogin(getLogin());
+    newProfile->setPassword(getPassword());
+
+    newProfile->setEnableReconnect(getEnableReconnect());
+    newProfile->setReconnectPeriod(getReconnectPeriod());
+
+    newProfile->setLimitReconnects(getLimitReconnects());
+    newProfile->setMaximumRetries(getMaximumRetries());
+
+    newProfile->setNoDelayFirstReconnect(getNoDelayFirstReconnect());
+    newProfile->setReconnectFirstDelay(getReconnectFirstDelay());
+
+    newProfile->setFormat(getFormat());
+    newProfile->setBitrate(getBitrate());
+    newProfile->setChannels(getChannels());
+
+    newProfile->setMountPoint(getMountpoint());
+    newProfile->setStreamName(getStreamName());
+    newProfile->setStreamDesc(getStreamDesc());
+    newProfile->setStreamGenre(getStreamGenre());
+    newProfile->setStreamPublic(getStreamPublic());
+    newProfile->setStreamWebsite(getStreamWebsite());
+
+    newProfile->setEnableMetadata(getEnableMetadata());
+    newProfile->setMetadataCharset(getMetadataCharset());
+    newProfile->setCustomArtist(getCustomArtist());
+    newProfile->setCustomTitle(getCustomTitle());
+    newProfile->setMetadataFormat(getMetadataFormat());
+    newProfile->setOggDynamicUpdate(getOggDynamicUpdate());
+
+    return BroadcastProfilePtr(newProfile);
+}
+
 void BroadcastProfile::adoptDefaultValues() {
     m_enabled = true;
 
