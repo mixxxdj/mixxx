@@ -13,24 +13,13 @@
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
-#include "encoder/encodercallback.h"
-#include "encoder/encoder.h"
 #include "engine/sidechain/networkstreamworker.h"
-#include "errordialoghandler.h"
 #include "preferences/usersettings.h"
-#include "track/track.h"
 #include "util/fifo.h"
 #include "preferences/broadcastsettings.h"
 #include "engine/sidechain/shoutoutput.h"
 
 class ControlPushButton;
-
-// Forward declare libshout structures to prevent leaking shout.h definitions
-// beyond where they are needed.
-struct shout;
-typedef struct shout shout_t;
-struct _util_dict;
-typedef struct _util_dict shout_metadata_t;
 
 class EngineBroadcast
         : public QThread, public NetworkStreamWorker {
@@ -64,8 +53,6 @@ class EngineBroadcast
 #ifndef __WINDOWS__
     void ignoreSigpipe();
 #endif
-
-    bool writeSingle(const unsigned char *data, size_t len);
 
     QMap<QString,ShoutOutputPtr> m_connections;
 

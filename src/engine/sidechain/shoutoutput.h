@@ -25,8 +25,6 @@
 #include "util/fifo.h"
 #include "preferences/broadcastprofile.h"
 
-class ControlPushButton;
-
 // Forward declare libshout structures to prevent leaking shout.h definitions
 // beyond where they are needed.
 struct shout;

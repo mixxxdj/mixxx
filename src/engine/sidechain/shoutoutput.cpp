@@ -33,8 +33,8 @@ static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
 // http://wiki.shoutcast.com/wiki/SHOUTcast_DNAS_Server_2
 static const int kMaxShoutFailures = 3;
 
-ShoutOutput::ShoutOutput(BroadcastProfilePtr profile, UserSettingsPointer pConfig,
-        QObject* parent)
+ShoutOutput::ShoutOutput(BroadcastProfilePtr profile,
+        UserSettingsPointer pConfig, QObject* parent)
         : QObject(parent),
           m_pTextCodec(nullptr),
           m_pMetaData(),
@@ -61,8 +61,6 @@ ShoutOutput::ShoutOutput(BroadcastProfilePtr profile, UserSettingsPointer pConfi
           m_noDelayFirstReconnect(true),
           m_limitReconnects(true),
           m_maximumRetries(10) {
-    const bool persist = true;
-
     m_pStatusCO = new ControlObject(ConfigKey(BROADCAST_PREF_KEY, "status"));
     m_pStatusCO->setReadOnly();
     m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);

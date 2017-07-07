@@ -1,5 +1,4 @@
 #include <QtDebug>
-#include <QUrl>
 
 #include <signal.h>
 
@@ -12,23 +11,11 @@
 #undef WIN32
 #endif
 
-#include "engine/sidechain/enginebroadcast.h"
-
 #include "broadcast/defs_broadcast.h"
 #include "control/controlpushbutton.h"
-#include "encoder/encoder.h"
-#include "encoder/encoderbroadcastsettings.h"
-#include "mixer/playerinfo.h"
 #include "preferences/usersettings.h"
-#include "recording/defs_recording.h"
 
-#include "track/track.h"
-
-static const int kConnectRetries = 30;
-static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
-// Shoutcast default receive buffer 1048576 and autodumpsourcetime 30 s
-// http://wiki.shoutcast.com/wiki/SHOUTcast_DNAS_Server_2
-static const int kMaxShoutFailures = 3;
+#include "engine/sidechain/enginebroadcast.h"
 
 EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig,
                                  BroadcastSettingsPointer pBroadcastSettings)
@@ -37,6 +24,7 @@ EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig,
           m_threadWaiting(false),
           m_pOutputFifo(nullptr) {
     const bool persist = true;
+
     m_pBroadcastEnabled = new ControlPushButton(
             ConfigKey(BROADCAST_PREF_KEY,"enabled"), persist);
     m_pBroadcastEnabled->setButtonMode(ControlPushButton::TOGGLE);
@@ -104,7 +92,6 @@ void EngineBroadcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 
         if(output->isConnected())
             output->process(pBuffer, iBufferSize);
-
     }
 
     setState(NETWORKSTREAMWORKER_STATE_READY);
@@ -125,6 +112,7 @@ void EngineBroadcast::run() {
     QThread::currentThread()->setObjectName(QString("EngineBroadcast %1").arg(++id));
     qDebug() << "EngineBroadcast::run: starting thread";
     NetworkStreamWorker::debugState();
+
 #ifndef __WINDOWS__
     ignoreSigpipe();
 #endif
@@ -222,8 +210,8 @@ void EngineBroadcast::slotEnableCO(double v) {
         v = 0.0;
     }
     if (v > 0.0) {
-        //serverConnect();
-        // TODO(Palakis): connect instances here
+        start(QThread::HighPriority);
+        setState(NETWORKSTREAMWORKER_STATE_CONNECTING);
     } else {
         // return early from Timeouts
         m_waitEnabled.wakeAll();
