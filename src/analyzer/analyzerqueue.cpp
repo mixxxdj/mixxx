@@ -340,10 +340,9 @@ void AnalyzerQueue::execThread() {
         Trace trace("AnalyzerQueue analyzing track");
 
         // Get the audio
-        SoundSourceProxy soundSourceProxy(nextTrack);
         mixxx::AudioSourceConfig audioSrcCfg;
         audioSrcCfg.setChannelCount(kAnalysisChannels);
-        mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource(audioSrcCfg));
+        auto pAudioSource = SoundSourceProxy(nextTrack).openAudioSource(audioSrcCfg);
         if (!pAudioSource) {
             kLogger.warning() << "Failed to open file for analyzing:" << nextTrack->getLocation();
             emptyCheck();
