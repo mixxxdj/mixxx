@@ -8,9 +8,12 @@
 #include "util/counter.h"
 #include "util/math.h"
 #include "util/sample.h"
+#include "util/logger.h"
 
 
 namespace {
+
+mixxx::Logger kLogger("CachingReader");
 
 // This is the default hint frameCount that is adopted in case of Hint::kFrameCountForward and
 // Hint::kFrameCountBackward count is provided. It matches 23 ms @ 44.1 kHz
@@ -113,7 +116,7 @@ CachingReaderChunkForOwner* CachingReader::allocateChunk(SINT chunkIndex) {
     CachingReaderChunkForOwner* pChunk = m_freeChunks.takeFirst();
     pChunk->init(chunkIndex);
 
-    //qDebug() << "Allocating chunk" << pChunk << pChunk->getIndex();
+    //kLogger.debug() << "Allocating chunk" << pChunk << pChunk->getIndex();
     m_allocatedCachingReaderChunks.insert(chunkIndex, pChunk);
 
     return pChunk;
@@ -123,13 +126,13 @@ CachingReaderChunkForOwner* CachingReader::allocateChunkExpireLRU(SINT chunkInde
     CachingReaderChunkForOwner* pChunk = allocateChunk(chunkIndex);
     if (pChunk == nullptr) {
         if (m_lruCachingReaderChunk == nullptr) {
-            qWarning() << "ERROR: No LRU chunk to free in allocateChunkExpireLRU.";
+            kLogger.warning() << "ERROR: No LRU chunk to free in allocateChunkExpireLRU.";
             return nullptr;
         }
         freeChunk(m_lruCachingReaderChunk);
         pChunk = allocateChunk(chunkIndex);
     }
-    //qDebug() << "allocateChunkExpireLRU" << chunk << pChunk;
+    //kLogger.debug() << "allocateChunkExpireLRU" << chunk << pChunk;
     return pChunk;
 }
 
@@ -236,7 +239,7 @@ SINT CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPL
     }
     if (numSamples < 0 || !buffer) {
         QString temp = QString("Sample = %1").arg(sample);
-        qDebug() << "CachingReader::read() invalid arguments sample:" << sample
+        kLogger.debug() << "read() invalid arguments sample:" << sample
                  << "numSamples:" << numSamples << "buffer:" << buffer;
         return 0;
     }
@@ -382,7 +385,7 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
         }
 
         VERIFY_OR_DEBUG_ASSERT(hintFrameCount > 0) {
-            qWarning() << "ERROR: Negative hint length. Ignoring.";
+            kLogger.warning() << "ERROR: Negative hint length. Ignoring.";
             continue;
         }
 
@@ -402,23 +405,23 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
                 shouldWake = true;
                 pChunk = allocateChunkExpireLRU(chunkIndex);
                 if (pChunk == nullptr) {
-                    qDebug() << "ERROR: Couldn't allocate spare CachingReaderChunk to make CachingReaderChunkReadRequest.";
+                    kLogger.debug() << "ERROR: Couldn't allocate spare CachingReaderChunk to make CachingReaderChunkReadRequest.";
                     continue;
                 }
                 // Do not insert the allocated chunk into the MRU/LRU list,
                 // because it will be handed over to the worker immediately
                 CachingReaderChunkReadRequest request(pChunk);
                 pChunk->giveToWorker();
-                // qDebug() << "Requesting read of chunk" << current << "into" << pChunk;
-                // qDebug() << "Requesting read into " << request.chunk->data;
+                // kLogger.debug() << "Requesting read of chunk" << current << "into" << pChunk;
+                // kLogger.debug() << "Requesting read into " << request.chunk->data;
                 if (m_chunkReadRequestFIFO.write(&request, 1) != 1) {
-                    qWarning() << "ERROR: Could not submit read request for "
+                    kLogger.warning() << "ERROR: Could not submit read request for "
                              << chunkIndex;
                     // Revoke the chunk from the worker and free it
                     pChunk->takeFromWorker();
                     freeChunk(pChunk);
                 }
-                //qDebug() << "Checking chunk " << current << " shouldWake:" << shouldWake << " chunksToRead" << m_chunksToRead.size();
+                //kLogger.debug() << "Checking chunk " << current << " shouldWake:" << shouldWake << " chunksToRead" << m_chunksToRead.size();
             } else if (pChunk->getState() == CachingReaderChunkForOwner::READY) {
                 // This will cause the chunk to be 'freshened' in the cache. The
                 // chunk will be moved to the end of the LRU list.
