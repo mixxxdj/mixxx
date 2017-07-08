@@ -8,7 +8,7 @@
 
 #include "controllers/ctlra/ctlraenumerator.h"
 
-#include "control/controlobject.h"
+#include "control/controlproxy.h"
 
 #include "controllers/ctlra/ctlra.h"
 
@@ -75,6 +75,10 @@ mixxx_event_func(struct ctlra_dev_t* dev, uint32_t num_events,
 			printf("[%03d] slider %s (%d)\n",
 			       (int)(e->slider.value * 100.f),
 			       name, e->slider.id);
+			if(e->slider.id == 0) {
+				ControlProxy("[Master]", "crossfader")
+					.set((e->slider.value * 2) - 1);
+			}
 			break;
 
 		case CTLRA_EVENT_GRID:
