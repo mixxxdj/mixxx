@@ -27,6 +27,10 @@
 #include "controllers/bulk/bulkenumerator.h"
 #endif
 
+#ifdef __CTLRA__
+#include "controllers/ctlra/ctlraenumerator.h"
+#endif
+
 namespace {
 // http://developer.qt.nokia.com/wiki/Threads_Events_QObjects
 
@@ -136,6 +140,9 @@ void ControllerManager::slotInitialize() {
 #endif
 #ifdef __HID__
     m_enumerators.append(new HidEnumerator());
+#endif
+#ifdef __CTLRA__
+    m_enumerators.append(new CtlraEnumerator());
 #endif
 }
 

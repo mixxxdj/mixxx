@@ -181,8 +181,7 @@ class Ctlra(Feature):
         build.env.Append(CPPDEFINES='__CTLRA__')
 
     def sources(self, build):
-        sources = []
-        #sources = ['controllers/ctlra/ctlra.cpp']
+        sources = ['controllers/ctlra/ctlraenumerator.cpp']
 
         return sources
 
