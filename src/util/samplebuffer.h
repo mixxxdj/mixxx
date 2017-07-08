@@ -87,9 +87,9 @@ class SampleBuffer {
     // Fills the whole buffer with the same value
     void fill(CSAMPLE value);
 
-    class ReadableChunk {
+    class ReadableSlice {
       public:
-        ReadableChunk(const SampleBuffer& buffer, SINT offset, SINT length)
+        ReadableSlice(const SampleBuffer& buffer, SINT offset, SINT length)
             : m_data(buffer.data(offset)),
               m_size(length) {
             DEBUG_ASSERT((buffer.size() - offset) >= length);
@@ -111,9 +111,17 @@ class SampleBuffer {
         SINT m_size;
     };
 
-    class WritableChunk {
+    class WritableSlice {
       public:
-        WritableChunk(SampleBuffer& buffer, SINT offset, SINT length)
+        WritableSlice(CSAMPLE* data, SINT size)
+            : m_data(data),
+              m_size(size) {
+        }
+        explicit WritableSlice(SampleBuffer& buffer)
+            : m_data(buffer.data()),
+              m_size(buffer.size()) {
+        }
+        WritableSlice(SampleBuffer& buffer, SINT offset, SINT length)
             : m_data(buffer.data(offset)),
               m_size(length) {
             DEBUG_ASSERT((buffer.size() - offset) >= length);

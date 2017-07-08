@@ -54,21 +54,21 @@ class SingularSampleBuffer {
     // Returns a pointer to the continuous memory region and the actual number
     // of samples that have been reserved. The maximum growth is limited by
     // getTailCapacity() and might be increased by calling trim().
-    SampleBuffer::WritableChunk writeToTail(SINT size);
+    SampleBuffer::WritableSlice writeToTail(SINT size);
 
     // Shrinks the buffer from the tail for reading buffered samples.
     //
     // Returns a pointer to the continuous memory region and the actual
     // number of buffered samples that have been dropped. The pointer is
     // valid for reading as long as no modifying member function is called!
-    SampleBuffer::ReadableChunk readFromTail(SINT size);
+    SampleBuffer::ReadableSlice readFromTail(SINT size);
 
     // Shrinks the buffer from the head for reading buffered samples.
     //
     // Returns a pointer to the continuous memory region and the actual
     // number of buffered samples that have been dropped. The pointer is
     // valid for reading as long as no modifying member function is called!
-    SampleBuffer::ReadableChunk readFromHead(SINT size);
+    SampleBuffer::ReadableSlice readFromHead(SINT size);
 
   protected:
     void trim(SampleBuffer& secondaryBuffer);

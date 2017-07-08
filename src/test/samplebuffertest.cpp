@@ -16,33 +16,33 @@ protected:
     static const SINT kCapacity;
 
     SINT writeTail(CircularSampleBuffer* pSampleBuffer, SINT size) {
-        const SampleBuffer::WritableChunk writableChunk(
+        const SampleBuffer::WritableSlice writableSlice(
                 pSampleBuffer->writeToTail(size));
-        for (SINT i = 0; i < writableChunk.size(); ++i) {
-            writableChunk[i] = m_writeValue;
+        for (SINT i = 0; i < writableSlice.size(); ++i) {
+            writableSlice[i] = m_writeValue;
             m_writeValue += CSAMPLE_ONE;
         }
-        return writableChunk.size();
+        return writableSlice.size();
     }
 
     SINT readHeadAndVerify(CircularSampleBuffer* pSampleBuffer, SINT size) {
-        const SampleBuffer::ReadableChunk readableChunk(
+        const SampleBuffer::ReadableSlice readableSlice(
                 pSampleBuffer->readFromHead(size));
-        for (SINT i = 0; i < readableChunk.size(); ++i) {
-            EXPECT_EQ(readableChunk[i], m_readValue);
+        for (SINT i = 0; i < readableSlice.size(); ++i) {
+            EXPECT_EQ(readableSlice[i], m_readValue);
             m_readValue += CSAMPLE_ONE;
         }
-        return readableChunk.size();
+        return readableSlice.size();
     }
 
     SINT readTailAndVerify(CircularSampleBuffer* pSampleBuffer, SINT size) {
-        const SampleBuffer::ReadableChunk readableChunk(
+        const SampleBuffer::ReadableSlice readableSlice(
                 pSampleBuffer->readFromTail(size));
-        for (SINT i = readableChunk.size(); i-- > 0; ) {
+        for (SINT i = readableSlice.size(); i-- > 0; ) {
             m_writeValue -= CSAMPLE_ONE;
-            EXPECT_EQ(readableChunk[i], m_writeValue);
+            EXPECT_EQ(readableSlice[i], m_writeValue);
         }
-        return readableChunk.size();
+        return readableSlice.size();
     }
 
     void reset(CircularSampleBuffer* pSampleBuffer) {
@@ -68,16 +68,16 @@ TEST_F(CircularSampleBufferTest, emptyWithoutCapacity) {
     sampleBuffer.reset();
     EXPECT_TRUE(sampleBuffer.isEmpty());
 
-    const SampleBuffer::WritableChunk writableChunk(
+    const SampleBuffer::WritableSlice writableSlice(
             sampleBuffer.writeToTail(10));
-    EXPECT_EQ(writableChunk.data(), static_cast<CSAMPLE*>(NULL));
-    EXPECT_EQ(writableChunk.size(), 0);
+    EXPECT_EQ(writableSlice.data(), static_cast<CSAMPLE*>(NULL));
+    EXPECT_EQ(writableSlice.size(), 0);
     EXPECT_TRUE(sampleBuffer.isEmpty());
 
-    const SampleBuffer::ReadableChunk readableChunk(
+    const SampleBuffer::ReadableSlice readableSlice(
             sampleBuffer.readFromHead(10));
-    EXPECT_EQ(readableChunk.data(), static_cast<const CSAMPLE*>(NULL));
-    EXPECT_EQ(readableChunk.size(), 0);
+    EXPECT_EQ(readableSlice.data(), static_cast<const CSAMPLE*>(NULL));
+    EXPECT_EQ(readableSlice.size(), 0);
     EXPECT_TRUE(sampleBuffer.isEmpty());
 }
 
