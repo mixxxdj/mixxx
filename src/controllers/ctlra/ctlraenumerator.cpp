@@ -77,7 +77,10 @@ int CtlraEnumerator::accept_dev_func(struct mixxx_ctlra_accept_t *a)
 CtlraEnumerator::CtlraEnumerator() : ControllerEnumerator()
 {
 	qDebug() << "CtlraEnumerator\n";
-	m_ctlra = ctlra_create(NULL);
+
+	struct ctlra_create_opts_t opts;
+	opts.flags_usb_no_own_context = 1;
+	m_ctlra = ctlra_create(&opts);
 	if(m_ctlra == 0) {
 		printf("Ctlra error creating context!\n");
 		return;
