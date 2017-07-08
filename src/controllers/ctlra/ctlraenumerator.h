@@ -13,6 +13,7 @@
 
 // foward declaration only
 struct ctlra_t;
+struct mixxx_ctlra_accept_t;
 
 class CtlraEnumerator : public ControllerEnumerator {
   public:
@@ -20,6 +21,10 @@ class CtlraEnumerator : public ControllerEnumerator {
     virtual ~CtlraEnumerator();
 
     QList<Controller*> queryDevices();
+
+    // accept function, called once per device, and for hotplug arrival
+    // this is public so it can be called from the static wrapper
+    int accept_dev_func(struct mixxx_ctlra_accept_t*);
 
   private:
     QList<Controller*> m_devices;
@@ -29,7 +34,11 @@ class CtlraEnumerator : public ControllerEnumerator {
     // responsible for adding/removing that controller from the list. For
     // that reason, it makes most sense that the Enumerator is the Ctlra
     // context owner.
-    struct ctlra_t *ctlra;
+    struct ctlra_t *m_ctlra;
+
+    // the number of Ctlra devices in use
+    uint32_t m_num_devices;
+
 };
 
 #endif

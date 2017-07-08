@@ -10,14 +10,55 @@
 
 #include "control/controlobject.h"
 
-//#include "controllers/ctlra/ctlra.h"
-//#include "controllers/ctlra/ctlracontroller.h"
+#include "controllers/ctlra/ctlra.h"
 
-#include <iostream>
+// Hide these typedefs from the header file by passing a struct* instead
+struct mixxx_ctlra_accept_t {
+	const struct ctlra_dev_info_t* info;
+	ctlra_event_func* event_func;
+	ctlra_feedback_func* feedback_func;
+	ctlra_remove_dev_func* remove_func;
+	void** userdata_for_event_func;
+};
+
+static int mixxx_accept_dev_func(const struct ctlra_dev_info_t *info,
+                    ctlra_event_func *event_func,
+                    ctlra_feedback_func *feedback_func,
+                    ctlra_remove_dev_func *remove_func,
+                    void **userdata_for_event_func,
+                    void *userdata)
+{
+	CtlraEnumerator *ce = (CtlraEnumerator*)userdata;
+
+	// hide functions in struct, avoids polluting CtlraEnumerator
+	// header with all of the Ctlra functions and typedefs
+	struct mixxx_ctlra_accept_t accept;
+	accept.info = info;
+	accept.event_func = event_func;
+	accept.feedback_func = feedback_func;
+	accept.remove_func = remove_func;
+	accept.userdata_for_event_func = userdata_for_event_func;
+
+	return ce->accept_dev_func(&accept);
+}
+
+
+int CtlraEnumerator::accept_dev_func(struct mixxx_ctlra_accept_t *a)
+{
+	printf("mixxx-ctlra accepting %s %s\n",
+	       a->info->vendor,
+	       a->info->device);
+	return 1;
+}
 
 CtlraEnumerator::CtlraEnumerator() : ControllerEnumerator()
 {
 	qDebug() << "CtlraEnumerator\n";
+	m_ctlra = ctlra_create(NULL);
+	if(m_ctlra == 0) {
+		printf("Ctlra error creating context!\n");
+		return;
+	}
 }
 
 CtlraEnumerator::~CtlraEnumerator()
@@ -26,15 +67,14 @@ CtlraEnumerator::~CtlraEnumerator()
 	while (m_devices.size() > 0) {
 		delete m_devices.takeLast();
 	}
+
+	ctlra_exit(m_ctlra);
 }
 
 QList<Controller*> CtlraEnumerator::queryDevices()
 {
-	qDebug() << "CtlraEnumerator queryDevices()";
-	std::cout << "\n\n\nCtlraEnumerator queryDevices()\n\n\n";
-
-	// Move this to accept_func
-	//m_devices.push_back( new CtlraController() );
+	// probe for devices, the accept_func is called once per device
+	m_num_devices = ctlra_probe(m_ctlra, mixxx_accept_dev_func, this);
 
 	return m_devices;
 }
