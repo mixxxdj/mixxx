@@ -13,7 +13,7 @@
           LogoFile="res\images\mixxx-icon.png" LogoSideFile="build\wix\images\bundle-sidebar.png"
           />
       </BootstrapperApplicationRef>
-    <Chain>
+    <Chain DisableSystemRestore="yes">
       <!-- 32-bit / 64-bit variables -->
       <?if $(var.Platform) = x86 ?>
         <ExePackage
