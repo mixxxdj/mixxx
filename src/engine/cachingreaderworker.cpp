@@ -8,7 +8,14 @@
 #include "sources/soundsourceproxy.h"
 #include "util/compatibility.h"
 #include "util/event.h"
+#include "util/logger.h"
 
+
+namespace {
+
+mixxx::Logger kLogger("CachingReaderWorker");
+
+} // anonymous namespace
 
 CachingReaderWorker::CachingReaderWorker(
         QString group,
@@ -103,7 +110,7 @@ namespace {
 mixxx::AudioSourcePointer openAudioSourceForReading(const TrackPointer& pTrack, const mixxx::AudioSourceConfig& audioSrcCfg) {
     auto pAudioSource = SoundSourceProxy(pTrack).openAudioSource(audioSrcCfg);
     if (!pAudioSource) {
-        qWarning() << "Failed to open file:" << pTrack->getLocation();
+        kLogger.warning() << "Failed to open file:" << pTrack->getLocation();
     }
     return pAudioSource;
 }
@@ -128,7 +135,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     QString filename = pTrack->getLocation();
     if (filename.isEmpty() || !pTrack->exists()) {
         // Must unlock before emitting to avoid deadlock
-        qDebug() << m_group << "CachingReaderWorker::loadTrack() load failed for\""
+        kLogger.debug() << m_group << "loadTrack() load failed for\""
                  << filename << "\", unlocked reader lock";
         m_pReaderStatusFIFO->writeBlocking(&status, 1);
         emit(trackLoadFailed(
@@ -143,7 +150,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     if (!m_pAudioSource) {
         m_maxReadableFrameIndex = mixxx::AudioSource::getMinFrameIndex();
         // Must unlock before emitting to avoid deadlock
-        qDebug() << m_group << "CachingReaderWorker::loadTrack() load failed for\""
+        kLogger.debug() << m_group << "loadTrack() load failed for\""
                  << filename << "\", file invalid, unlocked reader lock";
         m_pReaderStatusFIFO->writeBlocking(&status, 1);
         emit(trackLoadFailed(
@@ -163,7 +170,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     // Clear the chunks to read list.
     CachingReaderChunkReadRequest request;
     while (m_pChunkReadRequestFIFO->read(&request, 1) == 1) {
-        qDebug() << "Skipping read request for " << request.chunk->getIndex();
+        kLogger.debug() << "Cancelling read request for " << request.chunk->getIndex();
         status.status = CHUNK_READ_INVALID;
         status.chunk = request.chunk;
         m_pReaderStatusFIFO->writeBlocking(&status, 1);

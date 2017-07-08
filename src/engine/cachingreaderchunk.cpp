@@ -4,8 +4,16 @@
 
 #include "util/math.h"
 #include "util/sample.h"
+#include "util/logger.h"
 
-const SINT CachingReaderChunk::kInvalidIndex = -1;
+
+namespace {
+
+mixxx::Logger kLogger("CachingReaderChunk");
+
+const SINT kInvalidChunkIndex = -1;
+
+} // anonymous namespace
 
 // One chunk should contain 1/2 - 1/4th of a second of audio.
 // 8192 frames contain about 170 ms of audio at 48 kHz, which
@@ -22,9 +30,9 @@ const SINT CachingReaderChunk::kSamples =
 
 CachingReaderChunk::CachingReaderChunk(
         CSAMPLE* sampleBuffer)
-        : m_index(kInvalidIndex),
           m_sampleBuffer(sampleBuffer),
           m_frameCount(0) {
+        : m_index(kInvalidChunkIndex),
 }
 
 CachingReaderChunk::~CachingReaderChunk() {
@@ -144,7 +152,7 @@ void CachingReaderChunkForOwner::init(SINT index) {
 
 void CachingReaderChunkForOwner::free() {
     DEBUG_ASSERT(READ_PENDING != m_state);
-    CachingReaderChunk::init(kInvalidIndex);
+    CachingReaderChunk::init(kInvalidChunkIndex);
     m_state = FREE;
 }
 

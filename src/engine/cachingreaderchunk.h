@@ -16,7 +16,6 @@
 // and the worker.
 class CachingReaderChunk {
 public:
-    static const SINT kInvalidIndex;
     static const SINT kChannels;
     static const SINT kFrames;
     static const SINT kSamples;
