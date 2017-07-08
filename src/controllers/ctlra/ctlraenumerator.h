@@ -14,6 +14,7 @@
 // foward declaration only
 struct ctlra_t;
 struct mixxx_ctlra_accept_t;
+class CtlraReader;
 
 class CtlraEnumerator : public ControllerEnumerator {
   public:
@@ -38,6 +39,9 @@ class CtlraEnumerator : public ControllerEnumerator {
 
     // the number of Ctlra devices in use
     uint32_t m_num_devices;
+
+    // The reader for the Ctlra devices
+    CtlraReader* m_reader;
 
 };
 
