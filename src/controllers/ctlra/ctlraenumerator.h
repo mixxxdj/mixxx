@@ -14,7 +14,27 @@
 // foward declaration only
 struct ctlra_t;
 struct mixxx_ctlra_accept_t;
-class CtlraReader;
+
+/* A reader thread to poll the device, execute actions based on the
+ * recieved events, and post them to Mixxx using ControlObjects */
+class CtlraReader : public QThread
+{
+	Q_OBJECT
+public:
+	CtlraReader(struct ctlra_t *dev);
+	virtual ~CtlraReader();
+	void stop() {
+		m_stop = 1;
+	}
+
+protected:
+	void run();
+
+private:
+	struct ctlra_t *ctlra;
+	QAtomicInt m_stop;
+};
+
 
 class CtlraEnumerator : public ControllerEnumerator {
   public:
