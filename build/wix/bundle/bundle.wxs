@@ -3,7 +3,7 @@
      xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
 
   <?define VersionNumber="!(bind.packageVersion.MainPackage)" ?>
-  <?define UpgradeCode="921DC99C-4DCF-478D-B950-50685CB9E6BE" ?>
+  <?define UpgradeCode="EC95672A-1A9D-489D-9283-E6B1CAA15F29" ?>
 
   <Bundle Name="!(loc.ApplicationName)" Version="$(var.VersionNumber)" Manufacturer="!(loc.ManufacturerFullName)" UpgradeCode="$(var.UpgradeCode)">
       <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkSidebarLicense">
