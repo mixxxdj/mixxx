@@ -9,6 +9,7 @@
 #include "controllers/ctlra/ctlraenumerator.h"
 
 #include "control/controlproxy.h"
+#include "controllers/ctlra/ctlracontroller.h"
 
 #include "controllers/ctlra/ctlra.h"
 
@@ -128,6 +129,10 @@ int CtlraEnumerator::accept_dev_func(struct mixxx_ctlra_accept_t *a)
 	       a->info->vendor,
 	       a->info->device);
 	*a->event_func = mixxx_event_func;
+
+	// here we add the CtlraController instance to the GUI
+	m_devices.push_back( new CtlraController() );
+
 	return 1;
 }
 
