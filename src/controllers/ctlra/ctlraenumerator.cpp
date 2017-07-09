@@ -45,60 +45,12 @@ static void
 mixxx_event_func(struct ctlra_dev_t* dev, uint32_t num_events,
                  struct ctlra_event_t** events, void *userdata)
 {
-	static const char* grid_pressed[] = { " X ", "   " };
-	struct ctlra_dev_info_t info;
-	ctlra_dev_get_info(dev, &info);
-
-	for(uint32_t i = 0; i < num_events; i++) {
-		struct ctlra_event_t *e = events[i];
-		const char *pressed = 0;
-		const char *name = 0;
-		switch(e->type) {
-		case CTLRA_EVENT_BUTTON:
-			name = ctlra_info_get_name(&info, CTLRA_EVENT_BUTTON,
-			                           e->button.id);
-			printf("[%s] button %s (%d)\n",
-			       e->button.pressed ? " X " : "   ",
-			       name, e->button.id);
-			break;
-
-		case CTLRA_EVENT_ENCODER:
-			name = ctlra_info_get_name(&info, CTLRA_EVENT_ENCODER,
-			                           e->encoder.id);
-			printf("[%s] encoder %s (%d)\n",
-			       e->encoder.delta > 0 ? " ->" : "<- ",
-			       name, e->button.id);
-			break;
-
-		case CTLRA_EVENT_SLIDER:
-			name = ctlra_info_get_name(&info, CTLRA_EVENT_SLIDER,
-			                           e->slider.id);
-			printf("[%03d] slider %s (%d)\n",
-			       (int)(e->slider.value * 100.f),
-			       name, e->slider.id);
-			if(e->slider.id == 0) {
-				ControlProxy("[Master]", "crossfader")
-					.set((e->slider.value * 2) - 1);
-			}
-			break;
-
-		case CTLRA_EVENT_GRID:
-			name = ctlra_info_get_name(&info, CTLRA_EVENT_GRID,
-			                           e->grid.id);
-			if(e->grid.flags & CTLRA_EVENT_GRID_FLAG_BUTTON) {
-				pressed = grid_pressed[e->grid.pressed];
-			} else {
-				pressed = "---";
-			}
-			printf("[%s] grid %d", pressed ? " X " : "   ", e->grid.pos);
-			if(e->grid.flags & CTLRA_EVENT_GRID_FLAG_PRESSURE)
-				printf(", pressure %1.3f", e->grid.pressure);
-			printf("\n");
-			break;
-		default:
-			break;
-		};
-	}
+	// Cast to the pointer as was registered with Ctlra library in
+	// CtlraEnumerator::accept_dev_func. This allows us to look up the
+	// CtlraController class that the event originates from, and handle
+	// the event specifically for that device instance.
+	CtlraController* c = (CtlraController*)userdata;
+	c->event_func(dev, num_events, events);
 }
 
 static int mixxx_accept_dev_func(const struct ctlra_dev_info_t *info,
