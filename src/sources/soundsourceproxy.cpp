@@ -3,6 +3,8 @@
 
 #include "sources/soundsourceproxy.h"
 
+#include "sources/audiosourcetrackproxy.h"
+
 #ifdef __MAD__
 #include "sources/soundsourcemp3.h"
 #endif
@@ -574,64 +576,6 @@ QImage SoundSourceProxy::parseCoverImage() const {
     return coverImg;
 }
 
-namespace {
-
-// Keeps the TIO alive while accessing the audio data
-// of the track. The TIO must not be deleted while
-// accessing the corresponding file to avoid file
-// corruption when writing metadata while the file
-// is still in use.
-class AudioSourceProxy: public mixxx::AudioSource {
-public:
-    AudioSourceProxy(
-            const TrackPointer& pTrack,
-            const mixxx::AudioSourcePointer& pAudioSource)
-        : mixxx::AudioSource(*pAudioSource),
-          m_pTrack(pTrack),
-          m_pAudioSource(pAudioSource) {
-    }
-    AudioSourceProxy(const AudioSourceProxy&) = delete;
-    AudioSourceProxy(AudioSourceProxy&&) = delete;
-
-    static mixxx::AudioSourcePointer create(
-            const TrackPointer& pTrack,
-            const mixxx::AudioSourcePointer& pAudioSource) {
-        DEBUG_ASSERT(pTrack);
-        DEBUG_ASSERT(pAudioSource);
-        return mixxx::AudioSourcePointer(
-                std::make_shared<AudioSourceProxy>(pTrack, pAudioSource));
-    }
-
-    SINT seekSampleFrame(SINT frameIndex) override {
-        return m_pAudioSource->seekSampleFrame(
-                frameIndex);
-    }
-
-    SINT readSampleFrames(
-            SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) override {
-        return m_pAudioSource->readSampleFrames(
-                numberOfFrames,
-                sampleBuffer);
-    }
-
-    SINT readSampleFramesStereo(
-            SINT numberOfFrames,
-            CSAMPLE* sampleBuffer,
-            SINT sampleBufferSize) override {
-        return m_pAudioSource->readSampleFramesStereo(
-                numberOfFrames,
-                sampleBuffer,
-                sampleBufferSize);
-    }
-
-private:
-    const TrackPointer m_pTrack;
-    const mixxx::AudioSourcePointer m_pAudioSource;
-};
-
-} // anonymous namespace
-
 mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSourceConfig& audioSrcCfg) {
     DEBUG_ASSERT(m_pTrack);
     while (m_pSoundSource && !m_pAudioSource) {
@@ -653,25 +597,25 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
         }
         if ((openResult == mixxx::SoundSource::OpenResult::SUCCEEDED) && m_pSoundSource->verifyReadable()) {
             m_pAudioSource =
-                    AudioSourceProxy::create(m_pTrack, m_pSoundSource);
+                    std::make_shared<mixxx::AudioSourceTrackProxy>(m_pSoundSource, m_pTrack);
             DEBUG_ASSERT(m_pAudioSource);
-            if (m_pAudioSource->isEmpty()) {
+            if (m_pAudioSource->frameIndexRange().empty()) {
                 kLogger.warning() << "File is empty"
                            << getUrl().toString();
             }
             // Overwrite metadata with actual audio properties
             if (m_pTrack) {
-                DEBUG_ASSERT(m_pAudioSource->hasValidChannelCount());
-                m_pTrack->setChannels(m_pAudioSource->getChannelCount());
-                DEBUG_ASSERT(m_pAudioSource->hasValidSamplingRate());
-                m_pTrack->setSampleRate(m_pAudioSource->getSamplingRate());
+                DEBUG_ASSERT(m_pAudioSource->channelCount().valid());
+                m_pTrack->setChannels(m_pAudioSource->channelCount());
+                DEBUG_ASSERT(m_pAudioSource->samplingRate().valid());
+                m_pTrack->setSampleRate(m_pAudioSource->samplingRate());
                 if (m_pAudioSource->hasDuration()) {
                     // optional property
                     m_pTrack->setDuration(m_pAudioSource->getDuration());
                 }
-                if (m_pAudioSource->hasBitrate()) {
+                if (m_pAudioSource->bitrate() != mixxx::AudioSource::Bitrate()) {
                     // optional property
-                    m_pTrack->setBitrate(m_pAudioSource->getBitrate());
+                    m_pTrack->setBitrate(m_pAudioSource->bitrate());
                 }
             }
         } else {

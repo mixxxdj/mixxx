@@ -59,25 +59,27 @@ AVCodec* findDecoderForStream(AVStream* pStream) {
 }
 
 inline
-SINT getChannelCountOfStream(AVStream* pStream) {
-    return m_pAVStreamWrapper.getChannelCountOfStream(pStream);
+mixxx::AudioSignal::ChannelCount getChannelCountOfStream(AVStream* pStream) {
+    return mixxx::AudioSignal::ChannelCount(
+            m_pAVStreamWrapper.getChannelCountOfStream(pStream));
 }
 
 inline
-SINT getSamplingRateOfStream(AVStream* pStream) {
-    return m_pAVStreamWrapper.getSamplingRateOfStream(pStream);
+mixxx::AudioSignal::SamplingRate getSamplingRateOfStream(AVStream* pStream) {
+    return mixxx::AudioSignal::SamplingRate(
+            m_pAVStreamWrapper.getSamplingRateOfStream(pStream));
 }
 
 inline
-bool getFrameCountOfStream(AVStream* pStream, SINT* pFrameCount) {
+bool getFrameIndexRangeOfStream(AVStream* pStream, mixxx::IndexRange* pFrameIndexRange) {
     // NOTE(uklotzde): Use 64-bit integer instead of floating point
     // calculations to minimize rounding errors
-    DEBUG_ASSERT(pFrameCount);
+    DEBUG_ASSERT(pFrameIndexRange);
     DEBUG_ASSERT(pStream->duration >= 0);
     int64_t int64val = pStream->duration;
     if (int64val <= 0) {
         // Empty stream
-        *pFrameCount = 0;
+        *pFrameIndexRange = mixxx::IndexRange();
         return true;
     }
     DEBUG_ASSERT(getSamplingRateOfStream(pStream) > 0);
@@ -105,7 +107,7 @@ bool getFrameCountOfStream(AVStream* pStream, SINT* pFrameCount) {
                 << "Integer truncation during calculation of frame count";
         return false;
     }
-    *pFrameCount = frameCount;
+    *pFrameIndexRange = mixxx::IndexRange::forward(0, frameCount);
     return true;
 }
 
@@ -389,39 +391,32 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
     // successfully and needs to be closed eventually.
     m_pAudioStream.take(&pAudioStream);
 
-    const SINT channelCount = getChannelCountOfStream(m_pAudioStream);
-    if (!isValidChannelCount(channelCount)) {
+    const auto channelCount = getChannelCountOfStream(m_pAudioStream);
+    if (!channelCount.valid()) {
         kLogger.warning()
-                << "Stream has invalid number of channels:"
+                << "Stream has invalid or unsupported number of channels:"
                 << channelCount;
-        return OpenResult::FAILED;
-    }
-    if (channelCount > kMaxChannelCount) {
-        kLogger.warning()
-                << "Stream has unsupported number of channels:"
-                << channelCount << ">" << kMaxChannelCount;
         return OpenResult::ABORTED;
     }
 
-    const SINT samplingRate = getSamplingRateOfStream(m_pAudioStream);
-    if (!isValidSamplingRate(samplingRate)) {
+    const auto samplingRate = getSamplingRateOfStream(m_pAudioStream);
+    if (!samplingRate.valid()) {
         kLogger.warning()
-                << "Stream has invalid sampling rate:"
+                << "Stream has invalid or unsupported sampling rate:"
                 << samplingRate;
-        return OpenResult::FAILED;
+        return OpenResult::ABORTED;
     }
 
-    SINT frameCount = getFrameCount();
-    if (getFrameCountOfStream(m_pAudioStream, &frameCount) && isValidFrameCount(frameCount) == false) {
+    mixxx::IndexRange frameIndexRange;
+    if (!getFrameIndexRangeOfStream(m_pAudioStream, &frameIndexRange)) {
         kLogger.warning()
-                << "Stream has invalid number of frames:"
-                << frameCount;
+                << "Failed to get frame index range for stream";
         return OpenResult::FAILED;
     }
 
     setChannelCount(channelCount);
     setSamplingRate(samplingRate);
-    setFrameCount(frameCount);
+    initFrameIndexRange(frameIndexRange);
 
 #if AVSTREAM_FROM_API_VERSION_3_1
     m_pResample = std::make_unique<EncoderFfmpegResample>(m_pAudioContext);
@@ -980,15 +975,17 @@ SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
 SINT SoundSourceFFmpeg::readSampleFrames(SINT numberOfFrames,
         CSAMPLE* sampleBuffer) {
 
+    DEBUG_ASSERT(numberOfFrames >= 0);
+    DEBUG_ASSERT(isValidFrameIndex(m_currentMixxxFrameIndex));
     const SINT prevFrameIndex = m_currentMixxxFrameIndex;
     const SINT numberOfFramesRemaining = math_min(
-            numberOfFrames, getMaxFrameIndex() - m_currentMixxxFrameIndex);
+            numberOfFrames, frameIndexMax() - m_currentMixxxFrameIndex);
 
     if (sampleBuffer != nullptr) {
         if (m_SCache.size() == 0) {
             // Make sure we always start at beginning and cache have some
             // material that we can consume.
-            seekSampleFrame(0);
+            seekSampleFrame(frameIndexMin());
             m_bIsSeeked = false;
         }
         getBytesFromCache(sampleBuffer, m_currentMixxxFrameIndex, numberOfFramesRemaining);

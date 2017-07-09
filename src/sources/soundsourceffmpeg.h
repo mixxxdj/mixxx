@@ -118,6 +118,7 @@ class SoundSourceFFmpeg : public SoundSource {
 
     void close() override;
 
+  protected:
     SINT seekSampleFrame(SINT frameIndex) override;
 
     SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) override;

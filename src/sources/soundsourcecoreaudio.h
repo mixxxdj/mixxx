@@ -27,6 +27,7 @@ public:
 
     void close() override;
 
+protected:
     SINT seekSampleFrame(SINT frameIndex) override;
 
     SINT readSampleFrames(SINT numberOfFrames,

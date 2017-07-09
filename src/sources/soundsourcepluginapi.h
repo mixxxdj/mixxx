@@ -1,8 +1,9 @@
 #ifndef MIXXX_SOUNDSOURCEPLUGINAPI_H
 #define MIXXX_SOUNDSOURCEPLUGINAPI_H
 
-#define MIXXX_SOUNDSOURCEPLUGINAPI_VERSION 14
+#define MIXXX_SOUNDSOURCEPLUGINAPI_VERSION 15
 // SoundSource Plugin API version history:
+//  15 - Mixxx 2.1.0 - AudioSource v2
 //  14 - Mixxx 2.1.0 - Replace QSharedPointer with std::shared_ptr
 //  13 - Mixxx 2.1.0 - New function in base class for verifying audio properties
 //  12 - Mixxx 2.1.0 - New result codes for opening files

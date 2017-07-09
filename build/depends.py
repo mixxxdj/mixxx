@@ -812,6 +812,7 @@ class MixxxCore(Feature):
                    "errordialoghandler.cpp",
 
                    "sources/audiosource.cpp",
+                   "sources/audiosourcestereoproxy.cpp",
                    "sources/soundsource.cpp",
                    "sources/soundsourceplugin.cpp",
                    "sources/soundsourcepluginlibrary.cpp",

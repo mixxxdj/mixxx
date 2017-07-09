@@ -15,7 +15,7 @@ const Logger kLogger("SoundSourceSndFile");
 SoundSourceSndFile::SoundSourceSndFile(const QUrl& url)
         : SoundSource(url),
           m_pSndFile(nullptr),
-          m_curFrameIndex(getMinFrameIndex()) {
+          m_curFrameIndex(0) {
 }
 
 SoundSourceSndFile::~SoundSourceSndFile() {
@@ -63,9 +63,9 @@ SoundSource::OpenResult SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*a
 
     setChannelCount(sfInfo.channels);
     setSamplingRate(sfInfo.samplerate);
-    setFrameCount(sfInfo.frames);
+    initFrameIndexRange(mixxx::IndexRange::forward(0, sfInfo.frames));
 
-    m_curFrameIndex = getMinFrameIndex();
+    m_curFrameIndex = frameIndexMin();
 
     return OpenResult::SUCCEEDED;
 }
@@ -75,7 +75,7 @@ void SoundSourceSndFile::close() {
         const int closeResult = sf_close(m_pSndFile);
         if (0 == closeResult) {
             m_pSndFile = nullptr;
-            m_curFrameIndex = getMinFrameIndex();
+            m_curFrameIndex = frameIndexMin();
         } else {
             kLogger.warning() << "Failed to close file:" << closeResult
                     << sf_strerror(m_pSndFile)
@@ -88,9 +88,9 @@ SINT SoundSourceSndFile::seekSampleFrame(
         SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
 
-    if (frameIndex >= getMaxFrameIndex()) {
+    if (frameIndex >= frameIndexMax()) {
         // EOF
-        m_curFrameIndex = getMaxFrameIndex();
+        m_curFrameIndex = frameIndexMax();
         return m_curFrameIndex;
     }
 

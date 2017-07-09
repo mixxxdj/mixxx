@@ -163,7 +163,11 @@ SoundSource::OpenResult SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*a
 
     setChannelCount(kChannelCount);
     setSamplingRate(kSamplingRate);
-    setFrameCount(samples2frames(m_sampleBuf.size()));
+    initFrameIndexRange(
+            mixxx::IndexRange::forward(
+                    0,
+                    samples2frames(m_sampleBuf.size())));
+
     m_seekPos = 0;
 
     return OpenResult::SUCCEEDED;
@@ -187,7 +191,7 @@ SINT SoundSourceModPlug::readSampleFrames(
         SINT numberOfFrames, CSAMPLE* sampleBuffer) {
     DEBUG_ASSERT(0 <= numberOfFrames);
     DEBUG_ASSERT(isValidFrameIndex(m_seekPos));
-    const SINT readFrames = math_min(getFrameCount() - m_seekPos, numberOfFrames);
+    const SINT readFrames = math_min(frameIndexRange().length() - m_seekPos, numberOfFrames);
 
     const SINT readSamples = frames2samples(readFrames);
     const SINT readOffset = frames2samples(m_seekPos);

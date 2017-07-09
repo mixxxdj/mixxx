@@ -18,13 +18,6 @@ public:
 
     void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) override;
-
-    SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) override;
-    SINT readSampleFramesStereo(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer, SINT sampleBufferSize) override;
-
     // callback methods
     FLAC__StreamDecoderReadStatus flacRead(FLAC__byte buffer[], size_t* bytes);
     FLAC__StreamDecoderSeekStatus flacSeek(FLAC__uint64 offset);
@@ -36,12 +29,14 @@ public:
     void flacMetadata(const FLAC__StreamMetadata* metadata);
     void flacError(FLAC__StreamDecoderErrorStatus status);
 
-private:
-    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+protected:
+    SINT seekSampleFrame(SINT frameIndex) override;
 
     SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer, SINT sampleBufferSize,
-            bool readStereoSamples);
+            CSAMPLE* sampleBuffer) override;
+
+private:
+    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     QFile m_file;
 
