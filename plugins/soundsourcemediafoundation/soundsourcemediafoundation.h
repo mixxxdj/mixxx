@@ -32,12 +32,12 @@ class StreamUnitConverter final {
         // Used for seeking, so we need to round down to hit the
         // corresponding stream unit where the given stream unit
         // starts
-        return floor((frameIndex - AudioSource::getMinFrameIndex()) * m_streamUnitsPerFrame);
+        return floor((frameIndex - AudioSource::frameIndexMin()) * m_streamUnitsPerFrame);
     }
 
     SINT toFrameIndex(LONGLONG streamPos) const {
         // NOTE(uklotzde): Add m_toFrameIndexBias to account for rounding errors
-        return AudioSource::getMinFrameIndex() +
+        return AudioSource::frameIndexMin() +
                 static_cast<SINT>(floor((streamPos + m_toFrameIndexBias) / m_streamUnitsPerFrame));
     }
 
@@ -53,6 +53,7 @@ public:
 
     void close() override;
 
+protected:
     SINT seekSampleFrame(SINT frameIndex) override;
 
     SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) override;

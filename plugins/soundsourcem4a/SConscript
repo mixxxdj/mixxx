@@ -20,6 +20,7 @@ m4a_sources = [
     "util/singularsamplebuffer.cpp",
     "util/sample.cpp",
     "util/logger.cpp",
+    "util/indexrange.cpp",
     "track/trackmetadata.cpp",
     "track/trackmetadatataglib.cpp",
     "track/tracknumbers.cpp",

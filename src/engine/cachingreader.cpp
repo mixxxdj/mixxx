@@ -20,12 +20,13 @@ mixxx::Logger kLogger("CachingReader");
 // TODO() Do we suffer chache misses if we use an audio buffer of above 23 ms?
 const SINT kDefaultHintFrames = 1024;
 
-} // anonymous namespace
-
 // currently CachingReaderWorker::kCachingReaderChunkLength is 65536 (0x10000);
 // For 80 chunks we need 5242880 (0x500000) bytes (5 MiB) of Memory
 //static
-const int CachingReader::maximumCachingReaderChunksInMemory = 80;
+const SINT kNumberOfCachedChunksInMemory = 80;
+
+} // anonymous namespace
+
 
 CachingReader::CachingReader(QString group,
                              UserSettingsPointer config)
@@ -35,24 +36,22 @@ CachingReader::CachingReader(QString group,
           m_readerStatus(INVALID),
           m_mruCachingReaderChunk(nullptr),
           m_lruCachingReaderChunk(nullptr),
-          m_sampleBuffer(CachingReaderChunk::kSamples * maximumCachingReaderChunksInMemory),
-          m_maxReadableFrameIndex(mixxx::AudioSource::getMinFrameIndex()),
+          m_sampleBuffer(CachingReaderChunk::kSamples * kNumberOfCachedChunksInMemory),
           m_worker(group, &m_chunkReadRequestFIFO, &m_readerStatusFIFO) {
 
-    m_allocatedCachingReaderChunks.reserve(maximumCachingReaderChunksInMemory);
-
-    CSAMPLE* bufferStart = m_sampleBuffer.data();
-
+    m_allocatedCachingReaderChunks.reserve(kNumberOfCachedChunksInMemory);
     // Divide up the allocated raw memory buffer into total_chunks
     // chunks. Initialize each chunk to hold nothing and add it to the free
     // list.
-    for (int i = 0; i < maximumCachingReaderChunksInMemory; ++i) {
-        CachingReaderChunkForOwner* c = new CachingReaderChunkForOwner(bufferStart);
-
+    for (SINT i = 0; i < kNumberOfCachedChunksInMemory; ++i) {
+        CachingReaderChunkForOwner* c =
+                new CachingReaderChunkForOwner(
+                        SampleBuffer::WritableSlice(
+                                m_sampleBuffer,
+                                CachingReaderChunk::kSamples * i,
+                                CachingReaderChunk::kSamples));
         m_chunks.push_back(c);
         m_freeChunks.push_back(c);
-
-        bufferStart += CachingReaderChunk::kSamples;
     }
 
     // Forward signals from worker
@@ -205,20 +204,27 @@ void CachingReader::process() {
         } else if (status.status == TRACK_LOADED) {
             m_readerStatus = status.status;
             // Reset the max. readable frame index
-            m_maxReadableFrameIndex = status.maxReadableFrameIndex;
+            m_readableFrameIndexRange = status.readableFrameIndexRange;
             // Free all chunks with sample data from a previous track
             freeAllChunks();
         }
-        // Adjust the max. readable frame index
         if (m_readerStatus == TRACK_LOADED) {
-            m_maxReadableFrameIndex = math_min(status.maxReadableFrameIndex, m_maxReadableFrameIndex);
+            // Adjust the readable frame index range after loading or reading
+            m_readableFrameIndexRange = intersect(
+                    m_readableFrameIndexRange,
+                    status.readableFrameIndexRange);
         } else {
-            m_maxReadableFrameIndex = mixxx::AudioSource::getMinFrameIndex();
+            // Reset the readable frame index range
+            m_readableFrameIndexRange = mixxx::IndexRange();
         }
     }
 }
 
 SINT CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPLE* buffer) {
+    VERIFY_OR_DEBUG_ASSERT(buffer) {
+        return 0;
+    }
+
     // the samples are always read in forward direction
     // If reverse = true, the frames are copied in reverse order to the
     // destination buffer
@@ -237,7 +243,7 @@ SINT CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPL
     VERIFY_OR_DEBUG_ASSERT(numSamples % CachingReaderChunk::kChannels == 0) {
         --numSamples;
     }
-    if (numSamples < 0 || !buffer) {
+    VERIFY_OR_DEBUG_ASSERT(numSamples >= 0) {
         QString temp = QString("Sample = %1").arg(sample);
         kLogger.debug() << "read() invalid arguments sample:" << sample
                  << "numSamples:" << numSamples << "buffer:" << buffer;
@@ -256,102 +262,129 @@ SINT CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPL
 
     SINT samplesRead = 0;
 
-    SINT frameIndex = CachingReaderChunk::samples2frames(sample);
-    SINT numFrames = CachingReaderChunk::samples2frames(numSamples);
-
-    // Fill the buffer up to the first readable sample with
-    // silence. This may happen when the engine is in preroll,
-    // i.e. if the frame index points a region before the first
-    // track sample.
-    if (mixxx::AudioSource::getMinFrameIndex() > frameIndex) {
-        const SINT prerollFrames = math_min(numFrames,
-                mixxx::AudioSource::getMinFrameIndex() - frameIndex);
-        const SINT prerollSamples = CachingReaderChunk::frames2samples(prerollFrames);
-        if (reverse) {
-            SampleUtil::clear(&buffer[numSamples - prerollSamples], prerollSamples);
-        } else {
-            SampleUtil::clear(buffer, prerollSamples);
-            buffer += prerollSamples;
+    auto remainingFrameIndexRange =
+            mixxx::IndexRange::forward(
+                    CachingReaderChunk::samples2frames(sample),
+                    CachingReaderChunk::samples2frames(numSamples));
+    DEBUG_ASSERT(!remainingFrameIndexRange.empty());
+    if (!intersect(remainingFrameIndexRange, m_readableFrameIndexRange).empty()) {
+        // Fill the buffer up to the first readable sample with
+        // silence. This may happen when the engine is in preroll,
+        // i.e. if the frame index points a region before the first
+        // track sample.
+        if (remainingFrameIndexRange.head() < m_readableFrameIndexRange.head()) {
+            const auto prerollFrameIndexRange =
+                    mixxx::IndexRange::between(
+                            remainingFrameIndexRange.head(),
+                            m_readableFrameIndexRange.head());
+            DEBUG_ASSERT(prerollFrameIndexRange.length() <= remainingFrameIndexRange.length());
+            kLogger.debug()
+                    << "Prepending"
+                    << prerollFrameIndexRange.length()
+                    << "frames of silence";
+            const SINT prerollFrames = prerollFrameIndexRange.length();
+            const SINT prerollSamples = CachingReaderChunk::frames2samples(prerollFrames);
+            if (reverse) {
+                SampleUtil::clear(&buffer[numSamples - samplesRead - prerollSamples], prerollSamples);
+            } else {
+                SampleUtil::clear(buffer, prerollSamples);
+                buffer += prerollSamples;
+            }
+            samplesRead += prerollSamples;
+            remainingFrameIndexRange.splitHead(prerollFrames);
         }
 
-        samplesRead += prerollSamples;
-        frameIndex += prerollFrames;
-        numFrames -= prerollFrames;
-    }
-
-    // Read the actual samples from the audio source into the
-    // buffer. The buffer will be filled with silence for every
-    // unreadable sample or samples outside of the track region
-    // later at the end of this function.
-    if (numSamples > samplesRead) {
-        // If any unread samples from the track are left the current
-        // frame index must be at or beyond the first track sample.
-        DEBUG_ASSERT(mixxx::AudioSource::getMinFrameIndex() <= frameIndex);
-
-        SINT maxReadableFrameIndex = math_min(frameIndex + numFrames, m_maxReadableFrameIndex);
-        if (maxReadableFrameIndex > frameIndex) {
+        // Read the actual samples from the audio source into the
+        // buffer. The buffer will be filled with silence for every
+        // unreadable sample or samples outside of the track region
+        // later at the end of this function.
+        if (!remainingFrameIndexRange.empty()) {
             // The intersection between the readable samples from the track
             // and the requested samples is not empty, so start reading.
+            DEBUG_ASSERT(!intersect(remainingFrameIndexRange, m_readableFrameIndexRange).empty());
+            DEBUG_ASSERT(remainingFrameIndexRange.head() >= m_readableFrameIndexRange.head());
 
-            const SINT firstCachingReaderChunkIndex = CachingReaderChunk::indexForFrame(frameIndex);
-            SINT lastCachingReaderChunkIndex = CachingReaderChunk::indexForFrame(maxReadableFrameIndex - 1);
-            for (SINT chunkIndex = firstCachingReaderChunkIndex; chunkIndex <= lastCachingReaderChunkIndex; ++chunkIndex) {
+            const SINT firstCachingReaderChunkIndex =
+                    CachingReaderChunk::indexForFrame(remainingFrameIndexRange.head());
+            SINT lastCachingReaderChunkIndex =
+                    CachingReaderChunk::indexForFrame(remainingFrameIndexRange.tail() - 1);
+            for (SINT chunkIndex = firstCachingReaderChunkIndex;
+                    chunkIndex <= lastCachingReaderChunkIndex;
+                    ++chunkIndex) {
 
                 const CachingReaderChunkForOwner* const pChunk = lookupChunkAndFreshen(chunkIndex);
                 // If the chunk is not in cache, then we must return an error.
                 if (!pChunk || (pChunk->getState() != CachingReaderChunkForOwner::READY)) {
                     Counter("CachingReader::read(): Failed to read chunk on cache miss")++;
+                    kLogger.warning()
+                            << "Failed to fetch chunk with index"
+                            << chunkIndex;
                     // Exit the loop and fill the remaining buffer with silence
                     break;
                 }
 
-                // Please note that m_maxReadableFrameIndex might change with
+                // Please note that m_readableFrameIndexRange might change with
                 // every read operation! On a cache miss audio data will be
                 // read from the audio source in lookupChunkAndFreshen() and
-                // the max. readable frame index might be adjusted if decoding
+                // the readable frame index range might get adjusted if decoding
                 // errors occur.
-                maxReadableFrameIndex = math_min(maxReadableFrameIndex, m_maxReadableFrameIndex);
-                if (maxReadableFrameIndex <= frameIndex) {
+                remainingFrameIndexRange =
+                        intersect(
+                                remainingFrameIndexRange,
+                                m_readableFrameIndexRange);
+                if (remainingFrameIndexRange.empty()) {
                     // No more readable data available. Exit the loop and
                     // fill the remaining buffer with silence.
                     break;
                 }
-                DEBUG_ASSERT(0 < maxReadableFrameIndex);
-                lastCachingReaderChunkIndex = CachingReaderChunk::indexForFrame(maxReadableFrameIndex - 1);
 
-                const SINT chunkFrameIndex = CachingReaderChunk::frameForIndex(chunkIndex);
-                DEBUG_ASSERT(chunkFrameIndex <= frameIndex);
-                DEBUG_ASSERT((chunkIndex == firstCachingReaderChunkIndex) ||
-                        (chunkFrameIndex == frameIndex));
-                const SINT chunkFrameOffset = frameIndex - chunkFrameIndex;
-                DEBUG_ASSERT(chunkFrameOffset >= 0);
-                const SINT chunkFrameCount = math_min(
-                        pChunk->getFrameCount(),
-                        maxReadableFrameIndex - chunkFrameIndex);
-                if (chunkFrameCount < chunkFrameOffset) {
-                    // No more readable data available from this chunk (and
-                    // consequently all following chunks). Exit the loop and
+                mixxx::IndexRange bufferedFrameIndexRange;
+                if (reverse) {
+                    bufferedFrameIndexRange =
+                            pChunk->readBufferedSampleFramesReverse(
+                                    &buffer[numSamples - samplesRead],
+                                    remainingFrameIndexRange);
+                } else {
+                    bufferedFrameIndexRange =
+                            pChunk->readBufferedSampleFrames(
+                                    buffer,
+                                    remainingFrameIndexRange);
+                }
+                if (bufferedFrameIndexRange.empty()) {
+                    // No more readable data available. Exit the loop and
                     // fill the remaining buffer with silence.
                     break;
                 }
-
-                const SINT framesToCopy = chunkFrameCount - chunkFrameOffset;
-                DEBUG_ASSERT(framesToCopy >= 0);
-                const SINT chunkSampleOffset = CachingReaderChunk::frames2samples(chunkFrameOffset);
-                const SINT samplesToCopy = CachingReaderChunk::frames2samples(framesToCopy);
-
-                if (reverse) {
-                    pChunk->copySamplesReverse(&buffer[numSamples - samplesRead - samplesToCopy], chunkSampleOffset, samplesToCopy);
-                } else {
-                    pChunk->copySamples(buffer, chunkSampleOffset, samplesToCopy);
-                    buffer += samplesToCopy;
+                DEBUG_ASSERT(bufferedFrameIndexRange <= remainingFrameIndexRange);
+                if (remainingFrameIndexRange.head() < bufferedFrameIndexRange.head()) {
+                    const auto paddingFrameIndexRange =
+                            mixxx::IndexRange::between(
+                                    remainingFrameIndexRange.head(),
+                                    bufferedFrameIndexRange.head());
+                    kLogger.warning()
+                            << "Inserting"
+                            << paddingFrameIndexRange.length()
+                            << "frames of silence for unreadable audio data";
+                    SINT paddingSamples = CachingReaderChunk::frames2samples(paddingFrameIndexRange.length());
+                    if (reverse) {
+                        SampleUtil::clear(&buffer[numSamples - samplesRead - paddingSamples], paddingSamples);
+                    } else {
+                        SampleUtil::clear(buffer, paddingSamples);
+                        buffer += paddingSamples;
+                    }
+                    samplesRead += paddingSamples;
+                    remainingFrameIndexRange.splitHead(paddingFrameIndexRange.length());
                 }
-                samplesRead += samplesToCopy;
-                frameIndex += framesToCopy;
+                const SINT chunkSamples =
+                        CachingReaderChunk::frames2samples(bufferedFrameIndexRange.length());
+                if (!reverse) {
+                    buffer += chunkSamples;
+                }
+                samplesRead += chunkSamples;
+                remainingFrameIndexRange.splitHead(bufferedFrameIndexRange.length());
             }
         }
     }
-
     // Finally fill the remaining buffer with silence.
     DEBUG_ASSERT(numSamples >= samplesRead);
     SampleUtil::clear(buffer, numSamples - samplesRead);
@@ -389,16 +422,15 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
             continue;
         }
 
-        SINT minReadableFrameIndex = hintFrame;
-        SINT maxReadableFrameIndex = hintFrame + hintFrameCount;
-        mixxx::AudioSource::clampFrameInterval(&minReadableFrameIndex, &maxReadableFrameIndex, m_maxReadableFrameIndex);
-        if (minReadableFrameIndex >= maxReadableFrameIndex) {
-            // skip empty frame interval silently
+        const auto readableFrameIndexRange = intersect(
+                m_readableFrameIndexRange,
+                mixxx::IndexRange::forward(hintFrame, hintFrameCount));
+        if (readableFrameIndexRange.empty()) {
             continue;
         }
 
-        const int firstCachingReaderChunkIndex = CachingReaderChunk::indexForFrame(minReadableFrameIndex);
-        const int lastCachingReaderChunkIndex = CachingReaderChunk::indexForFrame(maxReadableFrameIndex - 1);
+        const int firstCachingReaderChunkIndex = CachingReaderChunk::indexForFrame(readableFrameIndexRange.head());
+        const int lastCachingReaderChunkIndex = CachingReaderChunk::indexForFrame(readableFrameIndexRange.tail() - 1);
         for (int chunkIndex = firstCachingReaderChunkIndex; chunkIndex <= lastCachingReaderChunkIndex; ++chunkIndex) {
             CachingReaderChunkForOwner* pChunk = lookupChunk(chunkIndex);
             if (pChunk == nullptr) {

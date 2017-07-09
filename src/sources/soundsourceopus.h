@@ -31,12 +31,11 @@ public:
 
     void close() override;
 
+protected:
     SINT seekSampleFrame(SINT frameIndex) override;
 
     SINT readSampleFrames(SINT numberOfFrames,
             CSAMPLE* sampleBuffer) override;
-    SINT readSampleFramesStereo(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer, SINT sampleBufferSize) override;
 
 private:
     OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;

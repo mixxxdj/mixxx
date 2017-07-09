@@ -18,10 +18,10 @@ struct EchoGroupState {
     // 40 BPM.
     static constexpr int kMaxDelaySeconds = 3;
     // TODO(XXX): When we move from stereo to multi-channel this needs updating.
-    static constexpr int kChannelCount = mixxx::AudioSignal::kChannelCountStereo;
+    static constexpr mixxx::AudioSignal::ChannelCount kChannelCount = mixxx::AudioSignal::ChannelCount::stereo();
 
     EchoGroupState()
-            : delay_buf(mixxx::AudioSignal::kSamplingRateMax * kMaxDelaySeconds *
+            : delay_buf(mixxx::AudioSignal::SamplingRate::max() * kMaxDelaySeconds *
                         kChannelCount) {
         delay_buf.clear();
         prev_send = 0.0f;

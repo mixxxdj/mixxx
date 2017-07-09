@@ -16,7 +16,7 @@ namespace mixxx {
 // in RAM to allow seeking and smooth operation in Mixxx.
 class SoundSourceModPlug: public mixxx::SoundSource {
 public:
-     static constexpr SINT kChannelCount = kChannelCountStereo;
+     static constexpr SINT kChannelCount = 2;
      static constexpr SINT kSamplingRate = 44100;
      static constexpr SINT kBitsPerSample = 16;
 
@@ -33,6 +33,7 @@ public:
 
     void close() override;
 
+protected:
     SINT seekSampleFrame(SINT frameIndex) override;
 
     SINT readSampleFrames(SINT numberOfFrames,

@@ -23,8 +23,7 @@ const SINT kMp3MaxFrameSize = 1152;
 const SINT kMp3StabilizationFrames =
         kMp3SeekFramePrefetchCount * kMp3MaxFrameSize;
 
-static CSAMPLE kMp3StabilizationScratchBuffer[kMp3StabilizationFrames *
-                                              AudioSource::kChannelCountStereo];
+static CSAMPLE kMp3StabilizationScratchBuffer[kMp3StabilizationFrames * 2]; // stereo
 
 }  // namespace
 
@@ -81,7 +80,7 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& a
 
     // create the output format
     const UInt32 numChannels =
-            audioSrcCfg.hasValidChannelCount() ? audioSrcCfg.getChannelCount() : 2;
+            audioSrcCfg.channelCount().valid() ? audioSrcCfg.channelCount() : 2;
     m_outputFormat = CAStreamBasicDescription(m_inputFormat.mSampleRate,
             numChannels, CAStreamBasicDescription::kPCMFormatFloat32, true);
 
@@ -133,12 +132,12 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& a
     // the code from SoundSource (sample-oriented) to the new
     // AudioSource (frame-oriented) API. It is not documented
     // when m_headerFrames > 0 and what the consequences are.
-    setFrameCount(totalFrameCount/* - m_headerFrames*/);
+    initFrameIndexRange(IndexRange::forward(0/*m_headerFrames*/, totalFrameCount));
 
-    //Seek to position 0, which forces us to skip over all the header frames.
+    //Seek to first position, which forces us to skip over all the header frames.
     //This makes sure we're ready to just let the Analyzer rip and it'll
     //get the number of samples it expects (ie. no header frames).
-    seekSampleFrame(0);
+    seekSampleFrame(frameIndexMin());
 
     return OpenResult::SUCCEEDED;
 }
@@ -180,7 +179,7 @@ SINT SoundSourceCoreAudio::readSampleFrames(
         SInt64 frameOffset = 0;
         const OSStatus osErr = ExtAudioFileTell(m_audioFile, &frameOffset);
         if (osErr == noErr) {
-            const SINT frameIndexBefore = getMinFrameIndex() + frameOffset;
+            const SINT frameIndexBefore = frameIndexMin() + frameOffset;
             const SINT frameIndexAfter = seekSampleFrame(frameIndexBefore + numberOfFrames);
             DEBUG_ASSERT(frameIndexBefore <= frameIndexAfter);
             return frameIndexAfter - frameIndexBefore;
@@ -196,7 +195,7 @@ SINT SoundSourceCoreAudio::readSampleFrames(
 
         AudioBufferList fillBufList;
         fillBufList.mNumberBuffers = 1;
-        fillBufList.mBuffers[0].mNumberChannels = getChannelCount();
+        fillBufList.mBuffers[0].mNumberChannels = channelCount();
         fillBufList.mBuffers[0].mDataByteSize = frames2samples(numFramesToRead)
                 * sizeof(sampleBuffer[0]);
         fillBufList.mBuffers[0].mData = sampleBuffer

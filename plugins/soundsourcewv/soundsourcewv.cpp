@@ -30,7 +30,7 @@ SoundSourceWV::SoundSourceWV(const QUrl& url)
           m_sampleScaleFactor(CSAMPLE_ZERO), 
           m_pWVFile(nullptr),
           m_pWVCFile(nullptr),
-          m_curFrameIndex(getMinFrameIndex()) {
+          m_curFrameIndex(0) {
 }
 
 SoundSourceWV::~SoundSourceWV() {
@@ -41,8 +41,8 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrc
     DEBUG_ASSERT(!m_wpc);
     char msg[80]; // hold possible error message
     int openFlags = OPEN_WVC | OPEN_NORMALIZE;
-    if ((kChannelCountMono == audioSrcCfg.getChannelCount()) ||
-            (kChannelCountStereo == audioSrcCfg.getChannelCount())) {
+    if ((kChannelCountMono == audioSrcCfg.channelCount()) ||
+            (kChannelCountStereo == audioSrcCfg.channelCount())) {
         openFlags |= OPEN_2CH_MAX;
     }
 
@@ -66,7 +66,10 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrc
 
     setChannelCount(WavpackGetReducedChannels(m_wpc));
     setSamplingRate(WavpackGetSampleRate(m_wpc));
-    setFrameCount(WavpackGetNumSamples(m_wpc));
+    initFrameIndexRange(
+            mixxx::IndexRange::forward(
+                    0,
+                    WavpackGetNumSamples(m_wpc)));
 
     if (WavpackGetMode(m_wpc) & MODE_FLOAT) {
         m_sampleScaleFactor = CSAMPLE_PEAK;
@@ -76,6 +79,8 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrc
                 << (bitsPerSample - 1);
         m_sampleScaleFactor = CSAMPLE_PEAK / wavpackPeakSampleValue;
     }
+
+    m_curFrameIndex = frameIndexMin();
 
     return OpenResult::SUCCEEDED;
 }
@@ -95,15 +100,14 @@ void SoundSourceWV::close() {
         delete m_pWVCFile;
         m_pWVCFile = nullptr;
     }
-    m_curFrameIndex = getMinFrameIndex();
 }
 
 SINT SoundSourceWV::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
 
-    if (frameIndex >= getMaxFrameIndex()) {
+    if (frameIndex >= frameIndexMax()) {
         // EOF reached
-        m_curFrameIndex = getMaxFrameIndex();
+        m_curFrameIndex = frameIndexMax();
         return m_curFrameIndex;
     }
 

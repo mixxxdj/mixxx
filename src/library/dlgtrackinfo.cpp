@@ -168,7 +168,7 @@ void DlgTrackInfo::populateFields(const Track& track) {
     txtDuration->setText(track.getDurationText(mixxx::Duration::Precision::SECONDS));
     txtLocation->setText(QDir::toNativeSeparators(track.getLocation()));
     txtType->setText(track.getType());
-    txtBitrate->setText(QString(track.getBitrateText()) + (" ") + tr("kbps"));
+    txtBitrate->setText(QString(track.getBitrateText()) + (" ") + tr(mixxx::AudioSource::Bitrate::unit()));
     txtBpm->setText(track.getBpmText());
     m_keysClone = track.getKeys();
     txtKey->setText(KeyUtils::getGlobalKeyText(m_keysClone));

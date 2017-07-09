@@ -84,16 +84,16 @@ SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /
     setChannelCount(vi->channels);
     setSamplingRate(vi->rate);
     if (0 < vi->bitrate_nominal) {
-        setBitrate(vi->bitrate_nominal / 1000);
+        initBitrate(vi->bitrate_nominal / 1000);
     } else {
         if ((0 < vi->bitrate_lower) && (vi->bitrate_lower == vi->bitrate_upper)) {
-            setBitrate(vi->bitrate_lower / 1000);
+            initBitrate(vi->bitrate_lower / 1000);
         }
     }
 
     ogg_int64_t pcmTotal = ov_pcm_total(&m_vf, kEntireBitstreamLink);
     if (0 <= pcmTotal) {
-        setFrameCount(pcmTotal);
+        initFrameIndexRange(mixxx::IndexRange::forward(0, pcmTotal));
     } else {
         kLogger.warning()
                 << "Failed to read read total length of"
@@ -116,9 +116,9 @@ SINT SoundSourceOggVorbis::seekSampleFrame(
         SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
 
-    if (frameIndex >= getMaxFrameIndex()) {
+    if (frameIndex >= frameIndexMax()) {
         // EOF
-        m_curFrameIndex = getMaxFrameIndex();
+        m_curFrameIndex = frameIndexMax();
         return m_curFrameIndex;
     }
 
@@ -136,7 +136,7 @@ SINT SoundSourceOggVorbis::seekSampleFrame(
             m_curFrameIndex = pcmOffset;
         } else {
             // Reset to EOF
-            m_curFrameIndex = getMaxFrameIndex();
+            m_curFrameIndex = frameIndexMax();
         }
     }
 
@@ -146,25 +146,10 @@ SINT SoundSourceOggVorbis::seekSampleFrame(
 
 SINT SoundSourceOggVorbis::readSampleFrames(
         SINT numberOfFrames, CSAMPLE* sampleBuffer) {
-    return readSampleFrames(numberOfFrames, sampleBuffer,
-            frames2samples(numberOfFrames), false);
-}
-
-SINT SoundSourceOggVorbis::readSampleFramesStereo(
-        SINT numberOfFrames, CSAMPLE* sampleBuffer,
-        SINT sampleBufferSize) {
-    return readSampleFrames(numberOfFrames, sampleBuffer, sampleBufferSize,
-            true);
-}
-
-SINT SoundSourceOggVorbis::readSampleFrames(
-        SINT numberOfFrames, CSAMPLE* sampleBuffer,
-        SINT sampleBufferSize, bool readStereoSamples) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-    DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, readStereoSamples) <= sampleBufferSize);
 
     const SINT numberOfFramesTotal = math_min(
-            numberOfFrames, getMaxFrameIndex() - m_curFrameIndex);
+            numberOfFrames, frameIndexMax() - m_curFrameIndex);
 
     CSAMPLE* pSampleBuffer = sampleBuffer;
     SINT numberOfFramesRemaining = numberOfFramesTotal;
@@ -180,25 +165,18 @@ SINT SoundSourceOggVorbis::readSampleFrames(
         if (0 < readResult) {
             m_curFrameIndex += readResult;
             if (pSampleBuffer != nullptr) {
-                if (kChannelCountMono == getChannelCount()) {
-                    if (readStereoSamples) {
-                        for (long i = 0; i < readResult; ++i) {
-                            *pSampleBuffer++ = pcmChannels[0][i];
-                            *pSampleBuffer++ = pcmChannels[0][i];
-                        }
-                    } else {
-                        for (long i = 0; i < readResult; ++i) {
-                            *pSampleBuffer++ = pcmChannels[0][i];
-                        }
+                if (channelCount() == kChannelCountMono) {
+                    for (long i = 0; i < readResult; ++i) {
+                        *pSampleBuffer++ = pcmChannels[0][i];
                     }
-                } else if (readStereoSamples || (kChannelCountStereo == getChannelCount())) {
+                } else if (channelCount() == kChannelCountStereo) {
                     for (long i = 0; i < readResult; ++i) {
                         *pSampleBuffer++ = pcmChannels[0][i];
                         *pSampleBuffer++ = pcmChannels[1][i];
                     }
                 } else {
                     for (long i = 0; i < readResult; ++i) {
-                        for (SINT j = 0; j < getChannelCount(); ++j) {
+                        for (SINT j = 0; j < channelCount(); ++j) {
                             *pSampleBuffer++ = pcmChannels[j][i];
                         }
                     }

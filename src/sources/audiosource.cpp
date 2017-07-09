@@ -3,6 +3,7 @@
 #include "util/sample.h"
 #include "util/logger.h"
 
+
 namespace mixxx {
 
 namespace {
@@ -11,121 +12,161 @@ const Logger kLogger("AudioSource");
 
 } // anonymous namespace
 
-/*static*/ constexpr AudioSignal::SampleLayout AudioSource::kSampleLayout;
-
-/*static*/ constexpr SINT AudioSource::kFrameCountZero;
-/*static*/ constexpr SINT AudioSource::kFrameCountDefault;
-
-/*static*/ constexpr SINT AudioSource::kFrameIndexMin;
-
-/*static*/ constexpr SINT AudioSource::kBitrateZero;
-/*static*/ constexpr SINT AudioSource::kBitrateDefault;
-
-void AudioSource::clampFrameInterval(
-        SINT* pMinFrameIndexOfInterval,
-        SINT* pMaxFrameIndexOfInterval,
-        SINT maxFrameIndexOfAudioSource) {
-    if (*pMinFrameIndexOfInterval < getMinFrameIndex()) {
-        *pMinFrameIndexOfInterval = getMinFrameIndex();
-    }
-    if (*pMaxFrameIndexOfInterval > maxFrameIndexOfAudioSource) {
-        *pMaxFrameIndexOfInterval = maxFrameIndexOfAudioSource;
-    }
-    if (*pMaxFrameIndexOfInterval < *pMinFrameIndexOfInterval) {
-        *pMaxFrameIndexOfInterval = *pMinFrameIndexOfInterval;
-    }
-}
-
 AudioSource::AudioSource(const QUrl& url)
         : UrlResource(url),
-          AudioSignal(kSampleLayout),
-          m_frameCount(kFrameCountDefault),
-          m_bitrate(kBitrateDefault) {
+          AudioSignal(sampleLayout()) {
 }
 
-void AudioSource::setFrameCount(SINT frameCount) {
-    DEBUG_ASSERT(isValidFrameCount(frameCount));
-    m_frameCount = frameCount;
+bool AudioSource::initFrameIndexRange(
+        IndexRange frameIndexRange) {
+    VERIFY_OR_DEBUG_ASSERT(frameIndexRange.orientation() != mixxx::IndexRange::Orientation::Backward) {
+        kLogger.warning()
+                << "Backward frame index range not supported"
+                << frameIndexRange;
+        return false; // abort
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_frameIndexRange.empty() || (m_frameIndexRange == frameIndexRange)) {
+        kLogger.warning()
+                << "Frame index range has already been initialized to"
+                << m_frameIndexRange
+                << "which differs from"
+                << frameIndexRange;
+        return false; // abort
+    }
+    m_frameIndexRange = frameIndexRange;
+    return true;
 }
 
-void AudioSource::setBitrate(SINT bitrate) {
-    DEBUG_ASSERT(isValidBitrate(bitrate));
+bool AudioSource::initBitrate(Bitrate bitrate) {
+    if (bitrate < Bitrate()) {
+        kLogger.warning()
+                << "Invalid bitrate"
+                << bitrate;
+        return false; // abort
+    }
+    VERIFY_OR_DEBUG_ASSERT(!m_bitrate.valid() || (m_bitrate == bitrate)) {
+        kLogger.warning()
+                << "Bitrate has already been initialized to"
+                << m_bitrate
+                << "which differs from"
+                << bitrate;
+        return false; // abort
+    }
     m_bitrate = bitrate;
+    return true;
 }
 
-SINT AudioSource::getSampleBufferSize(
-        SINT numberOfFrames,
-        bool readStereoSamples) const {
-    if (readStereoSamples) {
-        return numberOfFrames * kChannelCountStereo;
+IndexRange AudioSource::readOrSkipSampleFrames(
+        IndexRange frameIndexRange,
+        SampleBuffer::WritableSlice* pOutputBuffer) {
+    // Default implementation based on the v1 legacy interface
+    // TODO(XXX): Delete this implementation and declare the function
+    // as pure virtual after functions of the v1 legacy interface have
+    // been deleted.
+    VERIFY_OR_DEBUG_ASSERT(frameIndexRange.orientation() != mixxx::IndexRange::Orientation::Backward) {
+        kLogger.warning()
+                << "Backward frame index range not supported"
+                << frameIndexRange;
+        return IndexRange(); // abort
+    }
+    VERIFY_OR_DEBUG_ASSERT(!pOutputBuffer ||
+            (pOutputBuffer->size() >= frames2samples(frameIndexRange.length()))) {
+        kLogger.warning()
+                << "Read request exceeds size of output buffer:"
+                << frames2samples(frameIndexRange.length())
+                << ">"
+                << pOutputBuffer->size();
+        return IndexRange();
+    }
+
+    auto readableFrameIndexRange =
+            intersect(frameIndexRange, this->frameIndexRange());
+    if (readableFrameIndexRange.empty()) {
+        return readableFrameIndexRange;
+    }
+    DEBUG_ASSERT(frameIndexRange.head() <= readableFrameIndexRange.head());
+
+    SINT seekFrameIndex = seekSampleFrame(readableFrameIndexRange.head());
+    if (pOutputBuffer && (seekFrameIndex < readableFrameIndexRange.head())) {
+        // Fallback: Try to skip frames up to the first readable frame index
+        const auto skipFrameIndexRange =
+                IndexRange::between(seekFrameIndex, readableFrameIndexRange.head());
+        const auto skippedFrameIndexRange =
+                skipSampleFrames(skipFrameIndexRange);
+        if (skipFrameIndexRange != skippedFrameIndexRange) {
+            kLogger.warning()
+                    << "Failed to start reading sample frames";
+            return IndexRange();
+        }
+        seekFrameIndex = skippedFrameIndexRange.tail();
+    }
+    DEBUG_ASSERT(readableFrameIndexRange.head() <= seekFrameIndex);
+    // Skip unreadable frames up to seek position
+    readableFrameIndexRange.dropHead(seekFrameIndex - readableFrameIndexRange.head());
+    DEBUG_ASSERT(readableFrameIndexRange.head() == seekFrameIndex);
+
+    if (pOutputBuffer) {
+        // Skip unreadable sample frames in output buffer
+        SINT outputBufferDataOffset = 0;
+        if (frameIndexRange.head() < readableFrameIndexRange.head()) {
+            const auto unreadableFrameIndexRange =
+                    IndexRange::between(frameIndexRange.head(), readableFrameIndexRange.head());
+            outputBufferDataOffset +=
+                    frames2samples(unreadableFrameIndexRange.length());
+            DEBUG_ASSERT(outputBufferDataOffset <= pOutputBuffer->size());
+        }
+        // Read data
+        return IndexRange::forward(
+                readableFrameIndexRange.head(),
+                readSampleFrames(
+                        readableFrameIndexRange.length(),
+                        pOutputBuffer->data() + outputBufferDataOffset));
     } else {
-        return frames2samples(numberOfFrames);
+        // Skip data
+        return IndexRange::forward(
+                readableFrameIndexRange.head(),
+                skipSampleFrames(
+                        readableFrameIndexRange.length()));
     }
-}
-
-SINT AudioSource::readSampleFramesStereo(
-        SINT numberOfFrames,
-        CSAMPLE* sampleBuffer,
-        SINT sampleBufferSize) {
-    DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, true) <= sampleBufferSize);
-
-    switch (getChannelCount()) {
-        case 1: // mono channel
-        {
-            const SINT readFrameCount = readSampleFrames(
-                    numberOfFrames, sampleBuffer);
-            SampleUtil::doubleMonoToDualMono(sampleBuffer, readFrameCount);
-            return readFrameCount;
-        }
-        case 2: // stereo channel(s)
-        {
-            return readSampleFrames(numberOfFrames, sampleBuffer);
-        }
-        default: // multiple (3 or more) channels
-        {
-            const SINT numberOfSamplesToRead = frames2samples(numberOfFrames);
-            if (numberOfSamplesToRead <= sampleBufferSize) {
-                // efficient in-place transformation
-                const SINT readFrameCount = readSampleFrames(
-                        numberOfFrames, sampleBuffer);
-                SampleUtil::copyMultiToStereo(sampleBuffer, sampleBuffer,
-                        readFrameCount, getChannelCount());
-                return readFrameCount;
-            } else {
-                // inefficient transformation through a temporary buffer
-                kLogger.debug() << "Performance warning:"
-                        << "Allocating a temporary buffer of size"
-                        << numberOfSamplesToRead << "for reading stereo samples."
-                        << "The size of the provided sample buffer is"
-                        << sampleBufferSize;
-                SampleBuffer tempBuffer(numberOfSamplesToRead);
-                const SINT readFrameCount = readSampleFrames(
-                        numberOfFrames, tempBuffer.data());
-                SampleUtil::copyMultiToStereo(sampleBuffer, tempBuffer.data(),
-                        readFrameCount, getChannelCount());
-                return readFrameCount;
-            }
-        }
-    }
+    DEBUG_ASSERT(!"unreachable code");
+    return IndexRange();
 }
 
 bool AudioSource::verifyReadable() const {
     bool result = AudioSignal::verifyReadable();
-    if (hasBitrate()) {
-        VERIFY_OR_DEBUG_ASSERT(isValidBitrate(m_bitrate)) {
-            kLogger.warning() << "Invalid bitrate [kbps]:"
-                    << getBitrate();
+    if (m_frameIndexRange.empty()) {
+        kLogger.warning()
+                << "No audio data available";
+        // Don't set the result to false, even if reading from an empty source
+        // is pointless!
+    }
+    if (m_bitrate != Bitrate()) {
+        VERIFY_OR_DEBUG_ASSERT(m_bitrate.valid()) {
+            kLogger.warning()
+                    << "Invalid bitrate [kbps]:"
+                    << m_bitrate;
             // Don't set the result to false, because bitrate is only
             // an  informational property that does not effect the ability
             // to decode audio data!
         }
     }
-    if (isEmpty()) {
-        kLogger.warning() << "No audio data available";
-        // Don't set the result to false, even if reading from an empty source
-        // is pointless!
-    }
     return result;
 }
 
+SINT AudioSource::seekSampleFrame(SINT frameIndex) {
+    DEBUG_ASSERT(!"not implemented");
+    kLogger.critical()
+            << "seekSampleFrame() not implemented";
+    return frameIndex;
 }
+
+SINT AudioSource::readSampleFrames(
+        SINT /*numberOfFrames*/,
+        CSAMPLE* /*sampleBuffer*/) {
+    DEBUG_ASSERT(!"not implemented");
+    kLogger.critical()
+            << "readSampleFrames() not implemented";
+    return 0;
+}
+
+} // namespace mixxx
