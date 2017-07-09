@@ -113,12 +113,16 @@ bool ShoutOutput::isConnected() {
 }
 
 void ShoutOutput::applySettings() {
-    // TODO(Palakis): just in case there's more logic needed before
-    // calling updateFromPreferences()
-    // If this doesn't turn out true, there remove applySettings
-    // and call it directly.
-
     updateFromPreferences();
+
+    double dStatus = m_pStatusCO->get();
+    if(m_pProfile->getEnabled()
+            && (dStatus == STATUSCO_UNCONNECTED
+                    || dStatus == STATUSCO_FAILURE)) {
+        serverConnect();
+    } else {
+        serverDisconnect();
+    }
 }
 
 QByteArray ShoutOutput::encodeString(const QString& string) {
