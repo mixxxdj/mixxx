@@ -183,8 +183,10 @@ class Ctlra(Feature):
     def sources(self, build):
         sources = ['controllers/ctlra/ctlraenumerator.cpp',
                    'controllers/ctlra/ctlracontroller.cpp']
-
         return sources
+
+    def depends(self, build):
+        return [depends.CtlraLibrary]
 
 class Bulk(Feature):
     def description(self):

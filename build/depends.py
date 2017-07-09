@@ -109,6 +109,22 @@ class UPower(Dependence):
         build.env.ParseConfig(
                 'pkg-config upower-glib --silence-errors --cflags --libs')
 
+class CtlraLibrary(Dependence):
+    """Ctlra library is used to access modern controller devices"""
+    def configure(self, build, conf):
+        if not build.platform_is_linux:
+            return
+        ctlra_env = str(os.environ["CTLRA_PATH"])
+        if ctlra_env == "":
+            raise Exception("CtlraLibrary Error, CTLRA_PATH env\
+                    variable not set! Please run: export\
+                    CTLRA_PATH=/dir/to/ctlra/ and ensure that the Ctlra\
+                    library is built")
+            return
+        ctlra_link_path = "-L" + ctlra_env + "/build/ctlra/"
+        build.env.Append(LINKFLAGS= str(ctlra_link_path) )
+        build.env.Append(LIBS='ctlra')
+
 class OggVorbis(Dependence):
 
     def configure(self, build, conf):
