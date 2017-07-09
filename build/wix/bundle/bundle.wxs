@@ -37,7 +37,7 @@
        <ExePackage
           Id="vcredist64"
           Name="Microsoft Visual C++ 2015 Redistributable (x64) Setup"
-          SourceFile="$(var.WINLIBPATH)\vc_redist.x86.exe"
+          SourceFile="$(var.WINLIBPATH)\vc_redist.x64.exe"
           Cache="no"
           Compressed="yes"
           PerMachine="yes"
