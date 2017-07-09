@@ -59,6 +59,8 @@ void CtlraController::event_func(struct ctlra_dev_t* dev,
 			       (int)(e->slider.value * 100.f),
 			       name, e->slider.id);
 			if(e->slider.id == 0) {
+				// TODO: optimize to avoid repeated
+				// lookups of ControlProxy
 				ControlProxy("[Master]", "crossfader")
 					.set((e->slider.value * 2) - 1);
 			}
@@ -81,6 +83,15 @@ void CtlraController::event_func(struct ctlra_dev_t* dev,
 			break;
 		};
 	}
+}
+
+void CtlraController::feedback_func(struct ctlra_dev_t* dev)
+{
+	// TODO: optimize to avoid repeated lookups of ControlProxy
+	int cue_indicator = ControlProxy("[Channel1]","cue_indicator").get();
+	uint32_t cue_led_1 = cue_indicator ? 0xffffffff : 0x11111111;
+	ctlra_dev_light_set(dev, 0, cue_led_1);
+	ctlra_dev_light_flush(dev, 1);
 }
 
 CtlraController::CtlraController(const struct ctlra_dev_info_t* info)

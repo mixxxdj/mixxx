@@ -53,6 +53,13 @@ mixxx_event_func(struct ctlra_dev_t* dev, uint32_t num_events,
 	c->event_func(dev, num_events, events);
 }
 
+static void
+mixxx_feedback_func(struct ctlra_dev_t* dev, void *userdata)
+{
+	CtlraController* c = (CtlraController*)userdata;
+	c->feedback_func(dev);
+}
+
 static int mixxx_accept_dev_func(const struct ctlra_dev_info_t *info,
                     ctlra_event_func *event_func,
                     ctlra_feedback_func *feedback_func,
@@ -80,7 +87,11 @@ int CtlraEnumerator::accept_dev_func(struct mixxx_ctlra_accept_t *a)
 	printf("mixxx-ctlra accepting %s %s\n",
 	       a->info->vendor,
 	       a->info->device);
-	*a->event_func = mixxx_event_func;
+
+	// set callback pointers to static functions above. These static
+	// functions will proxy the calls on to the CtlraController instance
+	*a->event_func    = mixxx_event_func;
+	*a->feedback_func = mixxx_feedback_func;
 
 	// here we add the CtlraController instance to the GUI
 	CtlraController *c = new CtlraController(a->info);

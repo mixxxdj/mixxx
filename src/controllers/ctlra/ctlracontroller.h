@@ -34,6 +34,9 @@ public:
 				uint32_t num_events,
 				struct ctlra_event_t** events);
 
+	// this virtual function provides feedback to the device
+	virtual void feedback_func(struct ctlra_dev_t* dev);
+
 	bool isMappable() const override
 	{
 		return false;
