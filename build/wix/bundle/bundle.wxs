@@ -15,11 +15,11 @@
       </BootstrapperApplicationRef>
     <Chain DisableSystemRestore="yes">
       <!-- 32-bit / 64-bit variables -->
-      <?if $(var.Platform) = x86 ?>
+      <?if $(var.Platform) = x64 ?>
         <ExePackage
-           Id="vcredist"
-           Name="Microsoft Visual C++ 2015 Redistributable (x86) Setup"
-           SourceFile="$(var.WINLIBPATH)\vc_redist.x86.exe"
+           Id="vcredist64"
+           Name="Microsoft Visual C++ 2015 Redistributable (x64) Setup"
+           SourceFile="$(var.WINLIBPATH)\vc_redist.x64.exe"
            Cache="no"
            Compressed="yes"
            PerMachine="yes"
@@ -37,9 +37,9 @@
        </ExePackage>
      <?else ?>
        <ExePackage
-          Id="vcredist64"
-          Name="Microsoft Visual C++ 2015 Redistributable (x64) Setup"
-          SourceFile="$(var.WINLIBPATH)\vc_redist.x64.exe"
+          Id="vcredist"
+          Name="Microsoft Visual C++ 2015 Redistributable (x86) Setup"
+          SourceFile="$(var.WINLIBPATH)\vc_redist.x86.exe"
           Cache="no"
           Compressed="yes"
           PerMachine="yes"
