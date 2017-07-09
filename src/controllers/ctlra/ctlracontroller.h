@@ -28,9 +28,11 @@ public:
 	CtlraController(const struct ctlra_dev_info_t* info);
 	~CtlraController() override;
 
-	// the function that handles any input data
-	void event_func(struct ctlra_dev_t* dev, uint32_t num_events,
-			struct ctlra_event_t** events);
+	// this virtual function that handles any input data. Derived
+	// classes can override it in order to access events.
+	virtual void event_func(struct ctlra_dev_t* dev,
+				uint32_t num_events,
+				struct ctlra_event_t** events);
 
 	bool isMappable() const override
 	{
