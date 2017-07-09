@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2017-07-09 13:39+0000\n"
+"PO-Revision-Date: 2017-07-09 20:18+0000\n"
 "Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
 "Language-Team: Swedish (Sweden) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/sv_SE/)\n"
 "MIME-Version: 1.0\n"
@@ -157,3 +157,188 @@ msgid ""
 "Resource files that allow Mixxx to display in alternate languages, other "
 "than US english"
 msgstr "Resursfiler som tillåter Mixxx att visas i alternativa språk, andra än amerikansk engelska"
+
+#.  Bootstrapper
+msgctxt "Caption"
+msgid "[WixBundleName] Setup"
+msgstr ""
+
+msgctxt "Title"
+msgid "[WixBundleName]"
+msgstr ""
+
+msgctxt "ConfirmCancelMessage"
+msgid "Are you sure you want to cancel?"
+msgstr ""
+
+msgctxt "ExecuteUpgradeRelatedBundleMessage"
+msgid "Previous version"
+msgstr ""
+
+msgctxt "HelpHeader"
+msgid "Setup Help"
+msgstr ""
+
+msgctxt "HelpText"
+msgid ""
+"/install | /repair | /uninstall | /layout [directory] - installs, repairs, uninstalls or\n"
+"    creates a complete local copy of the bundle in directory.\n"
+"    Install is the default.\n"
+"\n"
+" /passive | /quiet -  displays minimal UI with no prompts or displays no UI\n"
+"    and no prompts. By default UI and all prompts are displayed.\n"
+"\n"
+" /norestart   - suppress any attempts to restart. By default UI will prompt before restart.\n"
+"\n"
+" /log log.txt - logs to a specific file. By default a log file is created in %TEMP%."
+msgstr ""
+
+msgctxt "HelpCloseButton"
+msgid "&Close"
+msgstr ""
+
+msgctxt "InstallHeader"
+msgid "Welcome"
+msgstr ""
+
+msgctxt "InstallMessage"
+msgid ""
+"Setup will install Mixxx on your computer.\n"
+"It will first install required third party libraries, then Mixxx itself.\n"
+"Click install to continue or Close to exit."
+msgstr ""
+
+msgctxt "InstallVersion"
+msgid "Version [WixBundleVersion]"
+msgstr ""
+
+msgctxt "InstallOptionsButton"
+msgid "&Options"
+msgstr ""
+
+msgctxt "InstallInstallButton"
+msgid "&Install"
+msgstr ""
+
+msgctxt "InstallCloseButton"
+msgid "&Close"
+msgstr ""
+
+msgctxt "OptionsHeader"
+msgid "Setup Options"
+msgstr ""
+
+msgctxt "OptionsLocationLabel"
+msgid "Install location:"
+msgstr ""
+
+msgctxt "OptionsBrowseButton"
+msgid "&Browse"
+msgstr ""
+
+msgctxt "OptionsOkButton"
+msgid "&OK"
+msgstr ""
+
+msgctxt "OptionsCancelButton"
+msgid "&Cancel"
+msgstr ""
+
+msgctxt "FilesInUseHeader"
+msgid "Files In Use"
+msgstr ""
+
+msgctxt "FilesInUseLabel"
+msgid "The following applications are using files that need to be updated:"
+msgstr ""
+
+msgctxt "FilesInUseCloseRadioButton"
+msgid "Close the &applications and attempt to restart them."
+msgstr ""
+
+msgctxt "FilesInUseDontCloseRadioButton"
+msgid "&Do not close applications. A reboot will be required."
+msgstr ""
+
+msgctxt "FilesInUseOkButton"
+msgid "&OK"
+msgstr ""
+
+msgctxt "FilesInUseCancelButton"
+msgid "&Cancel"
+msgstr ""
+
+msgctxt "ProgressHeader"
+msgid "Setup Progress"
+msgstr ""
+
+msgctxt "ProgressLabel"
+msgid "Processing:"
+msgstr ""
+
+msgctxt "OverallProgressPackageText"
+msgid "Initializing..."
+msgstr ""
+
+msgctxt "ProgressCancelButton"
+msgid "&Cancel"
+msgstr ""
+
+msgctxt "ModifyHeader"
+msgid "Modify Setup"
+msgstr ""
+
+msgctxt "ModifyRepairButton"
+msgid "&Repair"
+msgstr ""
+
+msgctxt "ModifyUninstallButton"
+msgid "&Uninstall"
+msgstr ""
+
+msgctxt "ModifyCloseButton"
+msgid "&Close"
+msgstr ""
+
+msgctxt "SuccessHeader"
+msgid "Setup Successful"
+msgstr ""
+
+msgctxt "SuccessLaunchButton"
+msgid "&Launch"
+msgstr ""
+
+msgctxt "SuccessRestartText"
+msgid "You must restart your computer before you can use the software."
+msgstr ""
+
+msgctxt "SuccessRestartButton"
+msgid "&Restart"
+msgstr ""
+
+msgctxt "SuccessCloseButton"
+msgid "&Close"
+msgstr ""
+
+msgctxt "FailureHeader"
+msgid "Setup Failed"
+msgstr ""
+
+msgctxt "FailureHyperlinkLogText"
+msgid ""
+"One or more issues caused the setup to fail. Please fix the issues and then "
+"retry setup. For more information see the <a href=\"#\">log file</a>."
+msgstr ""
+
+msgctxt "FailureRestartText"
+msgid ""
+"You must restart your computer to complete the rollback of the software."
+msgstr ""
+
+msgctxt "FailureRestartButton"
+msgid "&Restart"
+msgstr ""
+
+msgctxt "FailureCloseButton"
+msgid "&Close"
+msgstr ""
