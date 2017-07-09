@@ -25,7 +25,9 @@
            PerMachine="yes"
            Permanent="yes"
            Vital="yes"
-           InstallCommand="/install /quiet /norestart">
+           InstallCommand="/install /quiet /norestart"
+           RepairCommand="/repair /quiet /norestart"
+           UninstallCommand="/uninstall /quiet /norestart">
 
            <!-- -->
            <ExitCode Value="3010" Behavior="forceReboot"/>
@@ -43,7 +45,9 @@
           PerMachine="yes"
           Permanent="yes"
           Vital="yes"
-          InstallCommand="/install /quiet /norestart">
+          InstallCommand="/install /quiet /norestart"
+          RepairCommand="/repair /quiet /norestart"
+          UninstallCommand="/uninstall /quiet /norestart">
 
           <!-- -->
           <ExitCode Value="3010" Behavior="forceReboot"/>
