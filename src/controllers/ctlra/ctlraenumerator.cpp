@@ -131,7 +131,14 @@ int CtlraEnumerator::accept_dev_func(struct mixxx_ctlra_accept_t *a)
 	*a->event_func = mixxx_event_func;
 
 	// here we add the CtlraController instance to the GUI
-	m_devices.push_back( new CtlraController() );
+	CtlraController *c = new CtlraController(a->info);
+	m_devices.push_back(c);
+
+	// pass the CtlraController as the userdata pointer to the event
+	// callback functions as registered with Ctlra library. This allows
+	// easy lookup of the CtlraController metadata when events arrive
+	*a->userdata_for_event_func = (void*)c;
+	printf("controller instance = %p\n", c);
 
 	return 1;
 }

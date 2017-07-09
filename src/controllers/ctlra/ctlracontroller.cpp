@@ -23,19 +23,18 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 
-CtlraController::CtlraController()
+CtlraController::CtlraController(const struct ctlra_dev_info_t* info)
 {
-	setDeviceName("Ctlra");
+	setDeviceName(info->device);
 	// Copy required variables from deviceInfo, which will be freed after
 	// this class is initialized by caller.
-	m_preset.setDeviceId("Ctlra Device");
-	m_preset.setName("Scriptable Device Backend");
+	m_preset.setDeviceId(info->serial);
+	char buf[64];
+	snprintf(buf, sizeof(buf), "%s %s\n", info->vendor, info->device);
+	m_preset.setName(buf);
 	m_preset.setAuthor("OpenAV");
-	m_preset.setDescription("Ctlra library supports scripting of devices"
-	                        ", so if your device is supported by Ctlra"
-	                        ", you can script your own controls to Mixxx"
-	                        " parameters.");
-
+	m_preset.setDescription("Ctlra controller instance: events need "
+                                "mapping, and is currently no use (yet :)");
 	open();
 }
 

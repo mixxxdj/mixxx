@@ -16,11 +16,14 @@
 #include "controllers/controller.h"
 #include "util/duration.h"
 
+// forward declaration
+struct ctlra_dev_info_t;
+
 class CtlraController : public Controller
 {
 	Q_OBJECT
 public:
-	CtlraController();
+	CtlraController(const struct ctlra_dev_info_t* info);
 	~CtlraController() override;
 
 	bool isMappable() const override
