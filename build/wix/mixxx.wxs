@@ -89,6 +89,14 @@
     <!-- AllowSameVersionUpgrades causes ICE61 which must be ignored -->
     <MajorUpgrade DowngradeErrorMessage="!(loc.NewerInstalled)" AllowSameVersionUpgrades="yes" />
 
+    <Property Id="VCREDISTINSTALLED">
+      <RegistrySearch Id="VCRedistInstalledSearch"
+                      Root="HKLM"
+                      Key="SOFTWARE\Wow6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\$(var.Platform)"
+                      Name="Installed"
+                      Type="raw" />
+    </Property>
+
     <!-- This will search if mixxx is already installed in another bitWidth -->
     <Property Id="OTHERBITWIDTHINSTALLED">
       <RegistrySearch Id="BitWidthInstalledSearch"
@@ -182,6 +190,8 @@
     -->
 
     <Condition Message="!(loc.OlderVersionFound)">NOT OLDERINSTALLEXISTS</Condition>
+
+    <Condition Message="!(loc.VCredistNotFound)">VCREDISTINSTALLED</Condition>
 
     <!--
        Launch conditions end

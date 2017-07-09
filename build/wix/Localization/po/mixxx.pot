@@ -67,6 +67,10 @@ msgctxt "OlderVersionFound"
 msgid "An older version of Mixxx has been detected. As we changed installer, we can not smoothly upgrade. Please uninstall older version before installing this one."
 msgstr ""
 
+msgctxt "VCredistNotFound"
+msgid "Installer was not able to find Microsoft Visual C++ 2015 Redistributable on this system. This is likely an installer bug that should be reported to Mixxx developpers."
+msgstr ""
+
 #.  Custom Warning Dialog 
 msgctxt "WarningDlgTitle"
 msgid "{\\WixUI_Font_Title}Warning"

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2017-01-22 20:15+0000\n"
+"PO-Revision-Date: 2017-07-09 13:45+0000\n"
 "Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
 "Language-Team: French (France) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/fr_FR/)\n"
 "MIME-Version: 1.0\n"
@@ -90,6 +90,13 @@ msgid ""
 " not smoothly upgrade. Please uninstall older version before installing this"
 " one."
 msgstr "Une ancienne version de Mixxx a été détectée. Comme nous avons changé d'installeur, nous ne pouvons pas mettre à jour de manière transparente. Merci de désinstaller l'ancienne version avant d'installer celle-ci."
+
+msgctxt "VCredistNotFound"
+msgid ""
+"Installer was not able to find Microsoft Visual C++ 2015 Redistributable on "
+"this system. This is likely an installer bug that should be reported to "
+"Mixxx developpers."
+msgstr "L'installeur n'a pas pu trouver \"Microsoft Visual C++ 2015 Redistribuable\" sur votre système. Il s'agit probablement d'un bug de l'installer qui doit être rapporté aux développeurs de Mixxx."
 
 #.  Custom Warning Dialog
 msgctxt "WarningDlgTitle"

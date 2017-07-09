@@ -31,6 +31,7 @@
   <String Id="bitWidthMismatch32">Chystáte se nainstalovat 32bitovou verzi, ale již je nainstalována 64bitová verze.&#13;&#10;To může vést k neobvyklému chování. Odinstalujte, prosím, nejprve stávající verzi Mixxxu, nebo pro povýšení verze stáhněte instalační balíček pro 64bitový systém (pokud přesně nevíte, co děláte).</String>
   <String Id="bitWidthMismatch64">Chystáte se nainstalovat 64bitovou verzi, ale již je nainstalována 32bitová verze.&#13;&#10;To může vést k neobvyklému chování. Odinstalujte, prosím, nejprve stávající verzi Mixxxu, nebo pro povýšení verze stáhněte instalační balíček pro 32bitový systém (pokud přesně nevíte, co děláte).</String>
   <String Id="OlderVersionFound">Byla zjištěna starší verze Mixxxu. Protože byl změněn instalátor, není možné povýšení provést hladce. Odinstalujte, prosím, starší verzi, předtím než začnete instalovat tuto.</String>
+  <String Id="VCredistNotFound">Installer was not able to find Microsoft Visual C++ 2015 Redistributable on this system. This is likely an installer bug that should be reported to Mixxx developpers.</String>
 
   <!-- Custom Warning Dialog -->
   <String Id="WarningDlgTitle">{\WixUI_Font_Title}Varování</String>

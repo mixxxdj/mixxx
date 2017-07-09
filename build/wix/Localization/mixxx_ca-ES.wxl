@@ -31,6 +31,7 @@
   <String Id="bitWidthMismatch32">Esteu a punt d'instal·lar la versió de 32 bits tot i que teniu instal·lada una versió de 64 bits. Això pot provocar un comportament no desitjat. Desinstal·leu primer la versió existent del Mixxx o baixeu l'instal·lador de 64 bits per actualitzar la versió (a no ser que sapigueu exactament què esteu fent).</String>
   <String Id="bitWidthMismatch64">Esteu a punt d'instal·lar la versió de 64 bits tot i que teniu instal·lada una versió de 32 bits. Això pot provocar un comportament no desitjat. Desinstal·leu primer la versió existent del Mixxx o baixeu l'instal·lador de 32 bits per a actualitzar la versió (a no ser que sapigueu exactament què esteu fent).</String>
   <String Id="OlderVersionFound">S'ha detectat una versió anterior del Mixxx. Atès la limitació de l'instal·lador, no és possible actualitzar automàticament. Desinstal·leu la versió existent abans d'instal·lar aquesta versió.</String>
+  <String Id="VCredistNotFound">Installer was not able to find Microsoft Visual C++ 2015 Redistributable on this system. This is likely an installer bug that should be reported to Mixxx developpers.</String>
 
   <!-- Custom Warning Dialog -->
   <String Id="WarningDlgTitle">{\WixUI_Font_Title}Avís</String>

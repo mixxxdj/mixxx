@@ -31,6 +31,7 @@
   <String Id="bitWidthMismatch32">32-bit sürümü yüklemek üzeresiniz ancak bir 64-bit sürüm zaten yüklü. Devam etmek istenmeyen sonuçlar doğurabilir. Lütfen önce mevcut Mixxx'i kaldırın, veya güncellemek için 64-bit yükleme paketini indirin (ne yaptığınızı tam olarak bilmiyorsanız).</String>
   <String Id="bitWidthMismatch64">64-bit sürümü yüklemek üzeresiniz ancak bir 32-bit versiyon zaten yüklü. Devam etmek istenmeyen sonuçlar doğurabilir. Lütfen önce Mixxx'i kaldırın, veya güncellemek için 32-bit yükleme paketini indirin (ne yaptığınızı tam olarak bilmiyorsanız).</String>
   <String Id="OlderVersionFound">Mixxx'in daha eski bir sürümü tespit edildi. Yükleyici'yi değiştirdiğimiz için pürüzsüz bir güncelleme deneyimi sunamıyoruz. Lütfen yüklemeden önce eski sürümü kaldırın.</String>
+  <String Id="VCredistNotFound">Installer was not able to find Microsoft Visual C++ 2015 Redistributable on this system. This is likely an installer bug that should be reported to Mixxx developpers.</String>
 
   <!-- Custom Warning Dialog -->
   <String Id="WarningDlgTitle">{\WixUI_Font_Title} Uyarı</String>
