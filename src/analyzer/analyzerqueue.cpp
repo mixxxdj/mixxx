@@ -85,8 +85,8 @@ bool AnalyzerQueue::isLoadedTrackWaiting(TrackPointer analysingTrack) {
     QList<TrackPointer> progress100List;
     QList<TrackPointer> progress0List;
 
-    m_qm.lock();
-    QMutableListIterator<TrackPointer> it(m_tioq);
+    QMutexLocker locked(&m_qm);
+    QMutableListIterator<TrackPointer> it(m_queuedTracks);
     while (it.hasNext()) {
         TrackPointer& pTrack = it.next();
         if (!pTrack) {
@@ -119,7 +119,7 @@ bool AnalyzerQueue::isLoadedTrackWaiting(TrackPointer analysingTrack) {
         }
     }
 
-    m_qm.unlock();
+    locked.unlock();
 
     // update progress after unlock to avoid a deadlock
     foreach (TrackPointer pTrack, progress100List) {
@@ -136,28 +136,25 @@ bool AnalyzerQueue::isLoadedTrackWaiting(TrackPointer analysingTrack) {
 }
 
 // This is called from the AnalyzerQueue thread
+// The returned track might be NULL, up to the caller to check.
 TrackPointer AnalyzerQueue::dequeueNextBlocking() {
-    m_qm.lock();
-    if (m_tioq.isEmpty()) {
+    QMutexLocker locked(&m_qm);
+    if (m_queuedTracks.isEmpty()) {
         Event::end("AnalyzerQueue process");
         m_qwait.wait(&m_qm);
         Event::start("AnalyzerQueue process");
 
         if (m_exit) {
-            m_qm.unlock();
             return TrackPointer();
         }
     }
 
     const PlayerInfo& info = PlayerInfo::instance();
     TrackPointer pLoadTrack;
-    QMutableListIterator<TrackPointer> it(m_tioq);
+    QMutableListIterator<TrackPointer> it(m_queuedTracks);
     while (it.hasNext()) {
         TrackPointer& pTrack = it.next();
-        if (!pTrack) {
-            it.remove();
-            continue;
-        }
+        DEBUG_ASSERT(pTrack);
         // Prioritize tracks that are loaded.
         if (info.isTrackLoaded(pTrack)) {
             kLogger.debug() << "Prioritizing" << pTrack->getTitle() << pTrack->getLocation();
@@ -167,22 +164,16 @@ TrackPointer AnalyzerQueue::dequeueNextBlocking() {
         }
     }
 
-    if (!pLoadTrack && !m_tioq.isEmpty()) {
+    if (!pLoadTrack && !m_queuedTracks.isEmpty()) {
         // no prioritized track found, use head track
-        pLoadTrack = m_tioq.dequeue();
+        pLoadTrack = m_queuedTracks.dequeue();
     }
 
-    m_qm.unlock();
-
-    if (pLoadTrack) {
-        kLogger.debug() << "Analyzing" << pLoadTrack->getTitle() << pLoadTrack->getLocation();
-    }
-    // pTrack might be NULL, up to the caller to check.
     return pLoadTrack;
 }
 
 // This is called from the AnalyzerQueue thread
-bool AnalyzerQueue::doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAudioSource) {
+bool AnalyzerQueue::doAnalysis(TrackPointer pTrack, mixxx::AudioSourcePointer pAudioSource) {
 
     QTime progressUpdateInhibitTimer;
     progressUpdateInhibitTimer.start(); // Inhibit Updates for 60 milliseconds
@@ -222,7 +213,7 @@ bool AnalyzerQueue::doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAudi
             if (frameIndex < pAudioSource->getMaxFrameIndex()) {
                 // EOF not reached -> Maybe a corrupt file?
                 kLogger.warning() << "Failed to read sample data from file:"
-                        << tio->getLocation()
+                        << pTrack->getLocation()
                         << "@" << frameIndex;
                 if (0 >= framesRead) {
                     // If no frames have been read then abort the analysis.
@@ -245,7 +236,7 @@ bool AnalyzerQueue::doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAudi
         if (m_progressInfo.track_progress != progressPromille) {
             if (progressUpdateInhibitTimer.elapsed() > 60) {
                 // Inhibit Updates for 60 milliseconds
-                emitUpdateProgress(tio, progressPromille);
+                emitUpdateProgress(pTrack, progressPromille);
                 progressUpdateInhibitTimer.start();
             }
         }
@@ -259,7 +250,7 @@ bool AnalyzerQueue::doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAudi
 
         // has something new entered the queue?
         if (m_aiCheckPriorities.fetchAndStoreAcquire(false)) {
-            if (isLoadedTrackWaiting(tio)) {
+            if (isLoadedTrackWaiting(pTrack)) {
                 kLogger.debug() << "Interrupting analysis to give preference to a loaded track.";
                 dieflag = true;
                 cancelled = true;
@@ -282,9 +273,8 @@ bool AnalyzerQueue::doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAudi
 
 void AnalyzerQueue::stop() {
     m_exit = true;
-    m_qm.lock();
+    QMutexLocker locked(&m_qm);
     m_qwait.wakeAll();
-    m_qm.unlock();
 }
 
 void AnalyzerQueue::run() {
@@ -347,13 +337,14 @@ void AnalyzerQueue::execThread() {
             continue;
         }
 
+        kLogger.debug() << "Analyzing" << nextTrack->getTitle() << nextTrack->getLocation();
+
         Trace trace("AnalyzerQueue analyzing track");
 
         // Get the audio
-        SoundSourceProxy soundSourceProxy(nextTrack);
         mixxx::AudioSourceConfig audioSrcCfg;
         audioSrcCfg.setChannelCount(kAnalysisChannels);
-        mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource(audioSrcCfg));
+        auto pAudioSource = SoundSourceProxy(nextTrack).openAudioSource(audioSrcCfg);
         if (!pAudioSource) {
             kLogger.warning() << "Failed to open file for analyzing:" << nextTrack->getLocation();
             emptyCheck();
@@ -368,9 +359,7 @@ void AnalyzerQueue::execThread() {
             }
         }
 
-        m_qm.lock();
-        m_queue_size = m_tioq.size();
-        m_qm.unlock();
+        updateSize();
 
         if (processTrack) {
             emitUpdateProgress(nextTrack, 0);
@@ -409,12 +398,15 @@ void AnalyzerQueue::execThread() {
 }
 
 void AnalyzerQueue::emptyCheck() {
-    m_qm.lock();
-    m_queue_size = m_tioq.size();
-    m_qm.unlock();
+    updateSize();
     if (m_queue_size == 0) {
         emit(queueEmpty()); // emit asynchrony for no deadlock
     }
+}
+
+void AnalyzerQueue::updateSize() {
+    QMutexLocker locked(&m_qm);
+    m_queue_size = m_queuedTracks.size();
 }
 
 // This is called from the AnalyzerQueue thread
@@ -452,18 +444,19 @@ void AnalyzerQueue::slotUpdateProgress() {
     m_progressInfo.sema.release();
 }
 
-void AnalyzerQueue::slotAnalyseTrack(TrackPointer tio) {
+void AnalyzerQueue::slotAnalyseTrack(TrackPointer pTrack) {
     // This slot is called from the decks and and samplers when the track was loaded.
-    queueAnalyseTrack(tio);
+    queueAnalyseTrack(pTrack);
     m_aiCheckPriorities = true;
 }
 
 // This is called from the GUI and from the AnalyzerQueue thread
-void AnalyzerQueue::queueAnalyseTrack(TrackPointer tio) {
-    m_qm.lock();
-    if (!m_tioq.contains(tio)) {
-        m_tioq.enqueue(tio);
-        m_qwait.wakeAll();
+void AnalyzerQueue::queueAnalyseTrack(TrackPointer pTrack) {
+    if (pTrack) {
+        QMutexLocker locked(&m_qm);
+        if (!m_queuedTracks.contains(pTrack)) {
+            m_queuedTracks.enqueue(pTrack);
+            m_qwait.wakeAll();
+        }
     }
-    m_qm.unlock();
 }

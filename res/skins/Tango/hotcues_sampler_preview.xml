@@ -34,8 +34,8 @@ Variables:
           </Template>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
-          <Transform><IsEqual>1</IsEqual></Transform>
+          <ConfigKey persist="true">[Tango],8_hotcues</ConfigKey>
+          <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- 4 -->
@@ -80,8 +80,7 @@ Variables:
           </Template>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
-          <Transform><IsEqual>2</IsEqual></Transform>
+          <ConfigKey persist="true">[Tango],8_hotcues</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- 8 -->

@@ -9,10 +9,10 @@ Description:
   * mixer / [CoverArt/Spinny]
   * VU meter
 Variables:
-  channum : [ChannelN]
+  chanNum : [ChannelN]
 -->
 <Template>
-  <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
+  <SetVariable name="group">[Channel<Variable name="chanNum"/>]</SetVariable>
   <WidgetGroup>
     <ObjectName>DeckContainer</ObjectName>
     <Layout>horizontal</Layout>
@@ -20,7 +20,7 @@ Variables:
     <Children>
 
       <WidgetGroup><!-- [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
-        <ObjectName>Deck<Variable name="channum"/></ObjectName>
+        <ObjectName>Deck<Variable name="chanNum"/></ObjectName>
         <Size>250me,136min</Size>
         <Layout>vertical</Layout>
         <Children>
@@ -41,7 +41,19 @@ Variables:
           </WidgetGroup><!-- /Overview, Comment, ArtistTitle -->
 
           <Template src="skin:deck_buttons_left.xml" />
-          <Template src="skin:deck_loop_beatjump_left.xml"/>
+
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Size>1me,25f</Size>
+            <Children>
+              <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,3f</Size></WidgetGroup>
+              <Template src="skin:loop_controls_left.xml"/>
+            </Children>
+            <Connection>
+              <ConfigKey>[Tango],loop_beatjump_controls</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
 
         </Children>
       </WidgetGroup><!-- / [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
@@ -62,19 +74,32 @@ Variables:
 
                   <!-- Mixer -->
                   <WidgetGroup trigger="[Tango],channel_mixer" persist="true" on-hide-select="1">
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>f,f</SizePolicy>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>f,min</SizePolicy>
                     <Children>
                       <Template src="skin:mixer_channel_left.xml"/>
+
+                      <WidgetGroup>
+                        <Layout>vertical</Layout>
+                        <Size>1me,25f</Size>
+                        <Children>
+                          <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,3f</Size></WidgetGroup>
+                          <WidgetGroup><ObjectName>Spacer25</ObjectName><Size>1me,22f</Size></WidgetGroup>
+                        </Children>
+                        <Connection>
+                          <ConfigKey>[Tango],loop_beatjump_controls</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
                     </Children>
                   </WidgetGroup><!-- /Mixer -->
 
-                  <WidgetGroup><!-- [Spinny / Cover / none] + VUMeter -->
+                  <WidgetGroup><!-- Spinny/Cover/none + VUMeter -->
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,me</SizePolicy>
                     <Children>
 
-                      <WidgetGroup><!-- [Spinny / Cover / none] -->
+                      <WidgetGroup><!-- Spinny/Cover/none -->
                         <Layout>horizontal</Layout>
                         <SizePolicy>min,min</SizePolicy>
                         <Children>
@@ -102,7 +127,7 @@ Variables:
                           <Transform><IsEqual>2</IsEqual><Not/></Transform>
                           <BindProperty>visible</BindProperty>
                         </Connection>
-                      </WidgetGroup><!-- /[Spinny / Cover /none] -->
+                      </WidgetGroup><!-- /Spinny/Cover/none -->
 
                       <WidgetGroup>
                         <Size>3f,1me</Size>
@@ -116,10 +141,10 @@ Variables:
                       <Template src="skin:vumeter_floating.xml"/>
 
                     </Children>
-                  </WidgetGroup><!-- / [Spinny / Cover / none] + VUMeter -->
+                  </WidgetGroup><!-- / Spinny/Cover/none + VUMeter -->
 
                 </Children>
-              </WidgetStack><!-- /Mixer / [ [Spinny / Cover / none] + VUMeter ] -->
+              </WidgetStack><!-- /Mixer / [ Spinny/Cover/none + VUMeter ] -->
 
               <WidgetGroup><!-- Pitch slider & Key controls -->
                 <Size>3f,1me</Size>
@@ -134,7 +159,7 @@ Variables:
               <!-- /Pitch slider & Key controls -->
 
             </Children>
-          </WidgetGroup><!-- /Mixer / [ [Spinny / Cover] + VUMeter ] + Pitch -->
+          </WidgetGroup><!-- /Mixer / [ Spinny/Cover/none + VUMeter ] + Pitch -->
 
           <!-- This was working and somehow necessary, but now (v38++) causes left decks
           to grow by 3px (right decks shrink by 3px) when enabling extra deck buttons.

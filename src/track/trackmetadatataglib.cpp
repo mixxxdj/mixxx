@@ -53,7 +53,12 @@
 #include <taglib/attachedpictureframe.h>
 #include <taglib/flacpicture.h>
 
+#include "util/logger.h"
+
+
 namespace mixxx {
+
+mixxx::Logger kLogger("TagLib");
 
 namespace taglib {
 
@@ -255,7 +260,7 @@ bool parseTrackGain(
         // the replay gain.
         if (ratio == ReplayGain::kRatio0dB) {
             // special case
-            qDebug() << "Ignoring possibly undefined gain:" << dbGain;
+            kLogger.debug() << "Ignoring possibly undefined gain:" << dbGain;
             ratio = ReplayGain::kRatioUndefined;
         }
         ReplayGain replayGain(pTrackMetadata->getReplayGain());
@@ -319,7 +324,7 @@ bool readAudioProperties(TrackMetadata* pTrackMetadata,
     const TagLib::AudioProperties* pAudioProperties =
             file.audioProperties();
     if (!pAudioProperties) {
-        qWarning() << "Failed to read audio properties from file"
+        kLogger.warning() << "Failed to read audio properties from file"
                 << file.name();
         return false;
     }
@@ -399,7 +404,7 @@ inline QImage loadImageFromVorbisCommentPicture(
 QImage loadCoverArtImageFromVorbisCommentPictureList(
         const TagLib::List<TagLib::FLAC::Picture*>& pictures) {
     if (pictures.isEmpty()) {
-        qDebug() << "VorbisComment picture list is empty";
+        kLogger.debug() << "VorbisComment picture list is empty";
         return QImage();
     }
 
@@ -409,7 +414,7 @@ QImage loadCoverArtImageFromVorbisCommentPictureList(
             if (pPicture->type() == coverArtType) {
                 const QImage image(loadImageFromVorbisCommentPicture(*pPicture));
                 if (image.isNull()) {
-                    qWarning() << "Failed to load image from VorbisComment picture of type" << pPicture->type();
+                    kLogger.warning() << "Failed to load image from VorbisComment picture of type" << pPicture->type();
                     // continue...
                 } else {
                     return image; // success
@@ -423,14 +428,14 @@ QImage loadCoverArtImageFromVorbisCommentPictureList(
         DEBUG_ASSERT(pPicture != nullptr); // trust TagLib
         const QImage image(loadImageFromVorbisCommentPicture(*pPicture));
         if (image.isNull()) {
-            qWarning() << "Failed to load image from VorbisComment picture of type" << pPicture->type();
+            kLogger.warning() << "Failed to load image from VorbisComment picture of type" << pPicture->type();
             // continue...
         } else {
             return image; // success
         }
     }
 
-    qWarning() << "Failed to load cover art image from VorbisComment pictures";
+    kLogger.warning() << "Failed to load cover art image from VorbisComment pictures";
     return QImage();
 }
 
@@ -455,12 +460,13 @@ void readCoverArtFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& tag) 
         return; // nothing to do
     }
 
-    TagLib::ID3v2::FrameList pFrames = tag.frameListMap()["APIC"];
-    if (pFrames.isEmpty()) {
-        qDebug() << "Failed to load cover art: Empty list of ID3v2 APIC frames";
-        return; // failure
+    const auto iterAPIC = tag.frameListMap().find("APIC");
+    if ((iterAPIC == tag.frameListMap().end()) || iterAPIC->second.isEmpty()) {
+        kLogger.debug() << "No cover art: None or empty list of ID3v2 APIC frames";
+        return; // abort
     }
 
+    const TagLib::ID3v2::FrameList pFrames = iterAPIC->second;
     for (const auto coverArtType: kPreferredID3v2PictureTypes) {
         for (const auto pFrame: pFrames) {
             const TagLib::ID3v2::AttachedPictureFrame* pApicFrame =
@@ -469,7 +475,7 @@ void readCoverArtFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& tag) 
             if (pApicFrame->type() == coverArtType) {
                 QImage image(loadImageFromID3v2PictureFrame(*pApicFrame));
                 if (image.isNull()) {
-                    qWarning() << "Failed to load image from ID3v2 APIC frame of type" << pApicFrame->type();
+                    kLogger.warning() << "Failed to load image from ID3v2 APIC frame of type" << pApicFrame->type();
                     // continue...
                 } else {
                     *pCoverArt = image;
@@ -486,7 +492,7 @@ void readCoverArtFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& tag) 
         DEBUG_ASSERT(pApicFrame != nullptr); // trust TagLib
         const QImage image(loadImageFromID3v2PictureFrame(*pApicFrame));
         if (image.isNull()) {
-            qWarning() << "Failed to load image from ID3v2 APIC frame of type" << pApicFrame->type();
+            kLogger.warning() << "Failed to load image from ID3v2 APIC frame of type" << pApicFrame->type();
             // continue...
         } else {
             *pCoverArt = image;
@@ -509,7 +515,7 @@ void readCoverArtFromAPETag(QImage* pCoverArt, const TagLib::APE::Tag& tag) {
             const TagLib::ByteVector data(item.mid(pos));
             const QImage image(loadImageFromByteVector(data));
             if (image.isNull()) {
-                qWarning() << "Failed to load image from APE tag";
+                kLogger.warning() << "Failed to load image from APE tag";
             } else {
                 *pCoverArt = image; // success
             }
@@ -545,7 +551,7 @@ void readCoverArtFromVorbisCommentTag(QImage* pCoverArt, TagLib::Ogg::XiphCommen
                 tag.fieldListMap()["METADATA_BLOCK_PICTURE"];
 #if (TAGLIB_HAS_VORBIS_COMMENT_PICTURES)
         if (!base64EncodedList.isEmpty()) {
-            qWarning() << "Taking legacy code path for reading cover art from VorbisComment field METADATA_BLOCK_PICTURE";
+            kLogger.warning() << "Taking legacy code path for reading cover art from VorbisComment field METADATA_BLOCK_PICTURE";
         }
 #endif
         for (const auto& base64Encoded: base64EncodedList) {
@@ -553,14 +559,14 @@ void readCoverArtFromVorbisCommentTag(QImage* pCoverArt, TagLib::Ogg::XiphCommen
             if (parseBase64EncodedVorbisCommentPicture(&picture, base64Encoded)) {
                 const QImage image(loadImageFromVorbisCommentPicture(picture));
                 if (image.isNull()) {
-                    qWarning() << "Failed to load image from VorbisComment picture of type" << picture.type();
+                    kLogger.warning() << "Failed to load image from VorbisComment picture of type" << picture.type();
                     // continue...
                 } else {
                     *pCoverArt = image;
                     return; // done
                 }
             } else {
-                qWarning() << "Failed to parse picture from VorbisComment metadata block";
+                kLogger.warning() << "Failed to parse picture from VorbisComment metadata block";
                 // continue...
             }
         }
@@ -574,12 +580,12 @@ void readCoverArtFromVorbisCommentTag(QImage* pCoverArt, TagLib::Ogg::XiphCommen
         const TagLib::StringList& base64EncodedList =
                 tag.fieldListMap()["COVERART"];
         if (!base64EncodedList.isEmpty()) {
-            qWarning() << "Fallback: Trying to parse image from deprecated VorbisComment field COVERART";
+            kLogger.warning() << "Fallback: Trying to parse image from deprecated VorbisComment field COVERART";
         }
         for (const auto& base64Encoded: base64EncodedList) {
             const QImage image(parseBase64EncodedVorbisCommentImage(base64Encoded));
             if (image.isNull()) {
-                qWarning() << "Failed to parse image from deprecated VorbisComment field COVERART";
+                kLogger.warning() << "Failed to parse image from deprecated VorbisComment field COVERART";
                 // continue...
             } else {
                 *pCoverArt = image;
@@ -588,7 +594,7 @@ void readCoverArtFromVorbisCommentTag(QImage* pCoverArt, TagLib::Ogg::XiphCommen
         }
     }
 
-    qDebug() << "No cover art found in VorbisComment tag";
+    kLogger.debug() << "No cover art found in VorbisComment tag";
 }
 
 void readCoverArtFromMP4Tag(QImage* pCoverArt, const TagLib::MP4::Tag& tag) {
@@ -602,7 +608,7 @@ void readCoverArtFromMP4Tag(QImage* pCoverArt, const TagLib::MP4::Tag& tag) {
         for (const auto& coverArt: coverArtList) {
             const QImage image(loadImageFromByteVector(coverArt.data()));
             if (image.isNull()) {
-                qWarning() << "Failed to load image from MP4 atom covr";
+                kLogger.warning() << "Failed to load image from MP4 atom covr";
                 // continue...
             } else {
                 *pCoverArt = image;
@@ -738,7 +744,7 @@ int removeUserTextIdentificationFrames(
                         toQString(pFrame->description()));
                 if (0 == frameDescription.compare(
                         description, Qt::CaseInsensitive)) {
-                    qDebug() << "Removing ID3v2 TXXX frame:" << toQString(pFrame->description());
+                    kLogger.debug() << "Removing ID3v2 TXXX frame:" << toQString(pFrame->description());
                     // After removing a frame the result of frameListMap()
                     // is no longer valid!!
                     pTag->removeFrame(pFrame, false); // remove an unowned frame
@@ -813,7 +819,7 @@ void writeID3v2CommentsFrame(
     int numberOfRemovedCommentFrames =
             removeUserTextIdentificationFrames(pTag, "COMMENT");
     if (numberOfRemovedCommentFrames > 0) {
-        qWarning() << "Removed" << numberOfRemovedCommentFrames
+        kLogger.warning() << "Removed" << numberOfRemovedCommentFrames
                 << "non-standard ID3v2 TXXX comment frames";
     }
 }
@@ -1126,7 +1132,7 @@ void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
             bpmValue /= 10.0;
         }
         if (bpmValue != bpmValueOriginal) {
-            qWarning() << " Changing BPM on " << pTrackMetadata->getArtist() << " - " <<
+            kLogger.warning() << " Changing BPM on " << pTrackMetadata->getArtist() << " - " <<
                 pTrackMetadata->getTitle() << " from " << bpmValueOriginal << " to " << bpmValue;
         }
         pTrackMetadata->setBpm(Bpm(bpmValue));
@@ -1575,7 +1581,7 @@ bool writeTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& t
                 parsedTrackNumbers.getTotal());
         break;
     default:
-        qWarning() << "Invalid track numbers:"
+        kLogger.warning() << "Invalid track numbers:"
             << TrackNumbers::joinStrings(trackMetadata.getTrackNumber(), trackMetadata.getTrackTotal());
     }
 
@@ -1671,7 +1677,7 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
         fileType = getFileTypeFromFileName(fileName);
     }
 
-    qDebug() << "Reading tags from file" << fileName << "of type" << fileType
+    kLogger.debug() << "Reading tags from file" << fileName << "of type" << fileType
             << ":" << (pTrackMetadata ? "parsing" : "ignoring") << "track metadata"
             << "," << (pCoverArt ? "parsing" : "ignoring") << "cover art";
 
@@ -1875,7 +1881,7 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
         break;
     }
     default:
-        qWarning()
+        kLogger.warning()
             << "Cannot read metadata from file"
             << fileName
             << "with unknown or unsupported file type"
@@ -1883,7 +1889,7 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
         return ERR;
     }
 
-    qWarning() << "Failed to read track metadata from file" << fileName;
+    kLogger.warning() << "Failed to read track metadata from file" << fileName;
     return ERR;
 }
 
@@ -2154,7 +2160,7 @@ Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fi
         fileType = getFileTypeFromFileName(fileName);
     }
 
-    qDebug() << "Writing track metadata into file"
+    kLogger.debug() << "Writing track metadata into file"
             << fileName
             << "of type"
             << fileType;
@@ -2204,7 +2210,7 @@ Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fi
         break;
     }
     default:
-        qWarning()
+        kLogger.warning()
             << "Cannot write metadata into tags of file"
             << fileName
             << "with unknown or unsupported file type"
@@ -2216,11 +2222,11 @@ Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fi
         if (pTagSaver->saveModifiedTags()) {
             return OK;
         } else {
-            qWarning() << "Failed to save tags of file" << fileName;
+            kLogger.warning() << "Failed to save tags of file" << fileName;
             return ERR;
         }
     } else {
-        qWarning() << "Failed to modify tags of file" << fileName;
+        kLogger.warning() << "Failed to modify tags of file" << fileName;
         return ERR;
     }
 }
