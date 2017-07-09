@@ -10,6 +10,7 @@
         <bal:WixStandardBootstrapperApplication
           LicenseUrl=""
           SuppressOptionsUI="yes"
+          ShowVersion="yes"
           LogoFile="res\images\mixxx-icon.png" LogoSideFile="build\wix\images\bundle-sidebar.png"
           />
       </BootstrapperApplicationRef>
