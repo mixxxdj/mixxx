@@ -23,6 +23,8 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 
+#include "ctlra.h"
+
 void CtlraController::event_func(struct ctlra_dev_t* dev,
 				 uint32_t num_events,
 				 struct ctlra_event_t** events)

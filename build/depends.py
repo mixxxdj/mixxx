@@ -122,6 +122,7 @@ class CtlraLibrary(Dependence):
                     library is built")
             return
         ctlra_link_path = "-L" + ctlra_env + "/build/ctlra/"
+        build.env.Append(CCFLAGS="-I" + ctlra_env + "/ctlra/")
         build.env.Append(LINKFLAGS= str(ctlra_link_path) )
         build.env.Append(LIBS='ctlra')
 

@@ -11,7 +11,7 @@
 #include "control/controlproxy.h"
 #include "controllers/ctlra/ctlracontroller.h"
 
-#include "controllers/ctlra/ctlra.h"
+#include "ctlra.h"
 
 CtlraReader::CtlraReader(struct ctlra_t *c)
 	: QThread(),

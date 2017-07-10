@@ -8,7 +8,6 @@
 #ifndef CTLRACONTROLLER_H
 #define CTLRACONTROLLER_H
 
-#include "controllers/ctlra/ctlra.h"
 #include "controllers/hid/hidcontrollerpreset.h"
 
 #include <QAtomicInt>
