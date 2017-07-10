@@ -23,45 +23,42 @@ TEST_F(CrateStorageTest, persistentLifecycle) {
     }
     EXPECT_EQ(kNumCrates, m_crateStorage.countCrates());
 
-    // The "middle" crate
+    // Identify one of the "middle" crates by name
     const auto kCrateIndex = (kNumCrates + 1) / 2;
     const auto kCrateName = QString("Crate %1").arg(kCrateIndex);
     CrateId crateId;
 
-    // Find crate by name
-    Crate crateByName;
+    // Find this crate by name
     {
-        ASSERT_TRUE(m_crateStorage.readCrateByName(kCrateName, &crateByName));
-        EXPECT_EQ(kCrateName, crateByName.getName());
-        crateId = crateByName.getId();
+        Crate crate;
+        ASSERT_TRUE(m_crateStorage.readCrateByName(kCrateName, &crate));
+        EXPECT_EQ(kCrateName, crate.getName());
+        crateId = crate.getId();
         ASSERT_TRUE(crateId.isValid());
     }
 
-    // Find crate by id
-    Crate crateById;
+    // Find this crate crate again, but now by id
+    Crate crate;
     {
-        ASSERT_TRUE(m_crateStorage.readCrateById(crateId, &crateById));
-        EXPECT_EQ(crateId, crateById.getId());
-        EXPECT_EQ(kCrateName, crateById.getName());
+        ASSERT_TRUE(m_crateStorage.readCrateById(crateId, &crate));
+        EXPECT_EQ(crateId, crate.getId());
+        EXPECT_EQ(kCrateName, crate.getName());
     }
 
-    // Update crate name
+    // Update the crate's name
     const auto kNewCrateName = QString("New%1").arg(kCrateName);
-    Crate crateUpdated = crateById;
-    crateUpdated.setName(kNewCrateName);
-    ASSERT_TRUE(m_crateStorage.onUpdatingCrate(crateUpdated));
-    EXPECT_TRUE(m_crateStorage.readCrateById(crateId));
+    crate.setName(kNewCrateName);
+    ASSERT_TRUE(m_crateStorage.onUpdatingCrate(crate));
+    // Reading the crate by its old name should fail
     EXPECT_FALSE(m_crateStorage.readCrateByName(kCrateName));
-
-    // Find crate by new name
-    Crate crateByNewName;
+    // Reading by id should reflect the updated name
     {
-        ASSERT_TRUE(m_crateStorage.readCrateByName(kNewCrateName, &crateByNewName));
-        EXPECT_EQ(crateId, crateByNewName.getId());
-        EXPECT_EQ(kNewCrateName, crateByNewName.getName());
+        Crate updatedCrate;
+        EXPECT_TRUE(m_crateStorage.readCrateById(crateId, &updatedCrate));
+        EXPECT_EQ(kNewCrateName, updatedCrate.getName());
     }
 
-    // Delete crate
+    // Finally delete this crate
     ASSERT_TRUE(m_crateStorage.onDeletingCrate(crateId));
     EXPECT_FALSE(m_crateStorage.readCrateById(crateId));
     EXPECT_FALSE(m_crateStorage.readCrateByName(kCrateName));
