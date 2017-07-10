@@ -64,6 +64,19 @@ install:
 
   #####
   # Ubuntu Trusty Build
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      sudo apt-get install libasound2-dev libusb-1.0-0-dev libjack-dev libsndfile-dev &&
+      git clone https://github.com/openAVproductions/openAV-ctlra ctlra &&
+      cd ctlra &&
+      export CTLRA_PATH=`pwd` &&
+      echo $CTLRA_PATH  &&
+      mkdir build &&
+      cd build  &&
+      cmake ..  &&
+      make -j3 &&
+      cd ..  &&
+      cd .. ;
+   fi
 
   ####
   # OS X Build
@@ -80,7 +93,7 @@ install:
   # build.  Turning off optimizations to see if that speeds up compile times.
   # TODO(rryan): localecompare doesn't work on Travis with qt5 for some reason.
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export EXTRA_FLAGS="optimize=none asan=0 localecompare=0" ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export EXTRA_FLAGS="localecompare=1" ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export EXTRA_FLAGS="localecompare=1 ctlra=1" ; fi
 
   ####
   # Common Build
