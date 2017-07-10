@@ -160,33 +160,20 @@ class Ctlra(Feature):
             return
 
         if build.platform_is_linux:
-            # Try using system lib
-            #conf.CheckLib(['libusb', 'libusb'])
-            #build.env.ParseConfig('pkg-config libusb --silence-errors --cflags --libs')
-
-
-            # Optionally add libpthread and librt. Some distros need this.
-            #conf.CheckLib(['pthread', 'libpthread'])
-            #conf.CheckLib(['rt', 'librt'])
-
-            # -pthread tells GCC to do the right thing regardless of system
-            #build.env.Append(CCFLAGS='-pthread')
-            #build.env.Append(LINKFLAGS='-pthread')
-            print "Configure() on linux platfrom"
+            build.env.Append(CPPDEFINES='__CTLRA__')
             pass
 
-        else:
-            raise Exception('Ctlra is not tested on this platform (yet), exiting.')
-
-        build.env.Append(CPPDEFINES='__CTLRA__')
-
     def sources(self, build):
-        sources = ['controllers/ctlra/ctlraenumerator.cpp',
-                   'controllers/ctlra/ctlracontroller.cpp']
-        return sources
+        if build.platform_is_linux:
+            sources = ['controllers/ctlra/ctlraenumerator.cpp',
+                       'controllers/ctlra/ctlracontroller.cpp']
+            return sources
+        return []
 
     def depends(self, build):
-        return [depends.CtlraLibrary]
+        if build.platform_is_linux:
+            return [depends.CtlraLibrary]
+        return []
 
 class Bulk(Feature):
     def description(self):
