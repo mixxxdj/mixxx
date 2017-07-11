@@ -1,6 +1,7 @@
 #ifndef DLGPREFBROADCAST_H
 #define DLGPREFBROADCAST_H
 
+#include <QModelIndex>
 #include <QWidget>
 
 #include "preferences/dialog/ui_dlgprefbroadcastdlg.h"
@@ -29,13 +30,24 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     void checkBoxEnableReconnectChanged(int value);
     void checkBoxLimitReconnectsChanged(int value);
     void enableCustomMetadataChanged(int value);
+    void btnCreateConnectionClicked(bool enabled);
+    void profileListItemSelected(const QModelIndex& index);
 
   signals:
     void apply(const QString &);
 
+  private slots:
+    void formValueChanged();
+
   private:
+    void getValuesFromProfile(BroadcastProfilePtr profile);
+    void setValuesToProfile(BroadcastProfilePtr profile);
+    void enableValueSignals(bool enable = true);
+
     BroadcastSettingsPointer m_pBroadcastSettings;
     ControlProxy* m_pBroadcastEnabled;
+    BroadcastProfilePtr m_pProfileListSelection;
+    bool m_valuesChanged;
 };
 
 #endif

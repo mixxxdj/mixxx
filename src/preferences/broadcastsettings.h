@@ -18,8 +18,10 @@ class BroadcastSettings : public QAbstractListModel {
     BroadcastSettings(UserSettingsPointer pConfig, QObject* parent = nullptr);
 
     BroadcastProfilePtr getProfileByName(const QString& profileName);
-    void saveProfile(const BroadcastProfilePtr& profile);
+    bool saveProfile(const BroadcastProfilePtr& profile);
     void saveAll();
+    BroadcastProfilePtr createProfile(const QString& profileName);
+    bool addProfile(const BroadcastProfilePtr& profile);
     void deleteProfile(const BroadcastProfilePtr& profile);
 
     int rowCount(const QModelIndex& parent) const;
@@ -41,7 +43,6 @@ class BroadcastSettings : public QAbstractListModel {
     QString filePathForProfile(const QString& profileName);
     QString getProfilesFolder();
     void loadLegacySettings(const BroadcastProfilePtr& profile);
-    void addProfile(const BroadcastProfilePtr& profile);
 
     // Pointer to config object
     UserSettingsPointer m_pConfig;

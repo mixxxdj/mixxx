@@ -22,7 +22,11 @@ BroadcastSettings::BroadcastSettings(
     : QAbstractListModel(parent),
       m_pConfig(pConfig),
       m_profiles() {
-    setHeaderData(0, Qt::Horizontal, QObject::tr("Name"), Qt::DisplayRole);
+    setHeaderData(0, Qt::Horizontal, tr("Enabled"), Qt::EditRole);
+    setHeaderData(1, Qt::Horizontal, tr("Name"), Qt::EditRole);
+    setHeaderData(2, Qt::Horizontal, tr("Edit"), Qt::DisplayRole);
+    setHeaderData(3, Qt::Horizontal, tr("Remove"), Qt::DisplayRole);
+
     loadProfiles();
 }
 
@@ -72,9 +76,9 @@ void BroadcastSettings::loadProfiles() {
     }
 }
 
-void BroadcastSettings::addProfile(const BroadcastProfilePtr& profile) {
+bool BroadcastSettings::addProfile(const BroadcastProfilePtr& profile) {
     if(!profile)
-        return;
+        return false;
 
     int position = m_profiles.size();
     beginInsertRows(QModelIndex(), position, position);
@@ -91,13 +95,26 @@ void BroadcastSettings::addProfile(const BroadcastProfilePtr& profile) {
     endInsertRows();
 
     emit profileAdded(profile);
+    return true;
 }
 
-void BroadcastSettings::saveProfile(const BroadcastProfilePtr& profile) {
-    if(!profile)
-        return;
+BroadcastProfilePtr BroadcastSettings::createProfile(const QString& profileName) {
+    QFileInfo xmlFile(filePathForProfile(profileName));
 
-    profile->save(filePathForProfile(profile));
+    if(!xmlFile.exists()) {
+        BroadcastProfilePtr profile(new BroadcastProfile(profileName));
+        saveProfile(profile);
+        addProfile(profile);
+        return profile;
+    }
+    return BroadcastProfilePtr(nullptr);
+}
+
+bool BroadcastSettings::saveProfile(const BroadcastProfilePtr& profile) {
+    if(!profile)
+        return false;
+
+    return profile->save(filePathForProfile(profile));
 }
 
 QString BroadcastSettings::filePathForProfile(const QString& profileName) {
@@ -170,7 +187,7 @@ QVariant BroadcastSettings::data(const QModelIndex& index, int role) const {
     if(!index.isValid() || rowIndex >= m_profiles.size())
         return QVariant();
 
-    const BroadcastProfilePtr& profile = m_profiles.values().at(rowIndex);
+    BroadcastProfilePtr profile = m_profiles.values().at(rowIndex);
     if(profile && role == Qt::DisplayRole)
         return profile->getProfileName();
     else
