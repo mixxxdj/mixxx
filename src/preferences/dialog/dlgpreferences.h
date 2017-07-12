@@ -79,8 +79,6 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     void closeDlg();
     void showDlg();
 
-    // Emitted just after the user clicks Apply or OK.
-    void applyPreferences();
     // Emitted if the user clicks Cancel
     void cancelPreferences();
     // Emitted if the user clicks Reset to Defaults.
