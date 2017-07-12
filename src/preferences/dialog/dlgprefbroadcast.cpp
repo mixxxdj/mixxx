@@ -214,7 +214,8 @@ void DlgPrefBroadcast::btnCreateConnectionClicked(bool enabled) {
 }
 
 void DlgPrefBroadcast::profileListItemSelected(const QModelIndex& index) {
-    if(m_pProfileListSelection) {
+    // TODO(Palakis): reuse this to ask for unsaved changes on apply
+    /*if(m_pProfileListSelection) {
         QString title = QObject::tr("Unsaved changes");
         QString msg =
                 QString(kUnsavedChangesWarning)
@@ -227,7 +228,7 @@ void DlgPrefBroadcast::profileListItemSelected(const QModelIndex& index) {
             // TODO(Palakis) : apply settings to profile in internal list copy
             m_pBroadcastSettings->saveProfile(m_pProfileListSelection);
         }
-    }
+    }*/
 
     QString selectedName = m_pBroadcastSettings->data(index,
             Qt::DisplayRole).toString();

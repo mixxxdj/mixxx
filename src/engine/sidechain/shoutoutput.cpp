@@ -61,7 +61,7 @@ ShoutOutput::ShoutOutput(BroadcastProfilePtr profile,
           m_noDelayFirstReconnect(true),
           m_limitReconnects(true),
           m_maximumRetries(10) {
-    m_pStatusCO = new ControlObject(ConfigKey(BROADCAST_PREF_KEY, "status"));
+    m_pStatusCO = new ControlObject(ConfigKey(m_pProfile->getProfileName(), "status"));
     m_pStatusCO->setReadOnly();
     m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
 
