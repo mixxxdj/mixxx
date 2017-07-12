@@ -1,7 +1,7 @@
 #ifndef PREFERENCES_BROADCASTSETTINGS_H
 #define PREFERENCES_BROADCASTSETTINGS_H
 
-#include <QAbstractListModel>
+#include <QAbstractTableModel>
 #include <QMap>
 #include <QSharedPointer>
 #include <QString>
@@ -11,7 +11,7 @@
 #include "track/track.h"
 #include "broadcastprofile.h"
 
-class BroadcastSettings : public QAbstractListModel {
+class BroadcastSettings : public QAbstractTableModel {
   Q_OBJECT
 
   public:
@@ -24,8 +24,11 @@ class BroadcastSettings : public QAbstractListModel {
     bool addProfile(const BroadcastProfilePtr& profile);
     void deleteProfile(const BroadcastProfilePtr& profile);
 
-    int rowCount(const QModelIndex& parent) const;
-    QVariant data(const QModelIndex& index, int role) const;
+    int rowCount(const QModelIndex& parent = QModelIndex()) const;
+    int columnCount(const QModelIndex& parent = QModelIndex()) const;
+    QVariant headerData(int section, Qt::Orientation orientation,
+            int role = Qt::DisplayRole) const;
+    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
     BroadcastProfilePtr profileAt(int index);
 
   signals:

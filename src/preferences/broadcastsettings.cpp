@@ -10,8 +10,6 @@
 #include "util/memory.h"
 
 namespace {
-const char* kConfigKey = "[Shoutcast]";
-const char* kCurrentProfile = "current_profile";
 const char* kProfilesSubfolder = "broadcast_profiles";
 const char* kDefaultProfile = "Default Profile";
 const mixxx::Logger kLogger("BroadcastSettings");
@@ -19,14 +17,9 @@ const mixxx::Logger kLogger("BroadcastSettings");
 
 BroadcastSettings::BroadcastSettings(
         UserSettingsPointer pConfig, QObject* parent)
-    : QAbstractListModel(parent),
+    : QAbstractTableModel(parent),
       m_pConfig(pConfig),
       m_profiles() {
-    setHeaderData(0, Qt::Horizontal, tr("Enabled"), Qt::EditRole);
-    setHeaderData(1, Qt::Horizontal, tr("Name"), Qt::EditRole);
-    setHeaderData(2, Qt::Horizontal, tr("Edit"), Qt::DisplayRole);
-    setHeaderData(3, Qt::Horizontal, tr("Remove"), Qt::DisplayRole);
-
     loadProfiles();
 }
 
@@ -182,16 +175,47 @@ int BroadcastSettings::rowCount(const QModelIndex& parent) const {
     return m_profiles.size();
 }
 
+int BroadcastSettings::columnCount(const QModelIndex& parent) const {
+    return 4;
+}
+
 QVariant BroadcastSettings::data(const QModelIndex& index, int role) const {
     int rowIndex = index.row();
     if(!index.isValid() || rowIndex >= m_profiles.size())
         return QVariant();
 
     BroadcastProfilePtr profile = m_profiles.values().at(rowIndex);
-    if(profile && role == Qt::DisplayRole)
-        return profile->getProfileName();
-    else
-        return QVariant();
+    if(profile) {
+        int column = index.column();
+        if(column == 0 && role == Qt::CheckStateRole) {
+            return (profile->getEnabled() == true ? Qt::Checked : Qt::Unchecked);
+        } else if(column == 1 && role == Qt::DisplayRole) {
+            return profile->getProfileName();
+        } else if(column == 2 && role == Qt::DisplayRole) {
+            return QString("Edit");
+        } else if(column == 3 && role == Qt::DisplayRole) {
+            return QString("Remove");
+        }
+    }
+
+    return QVariant();
+}
+
+QVariant BroadcastSettings::headerData(int section, Qt::Orientation orientation,
+        int role) const {
+    if(orientation == Qt::Horizontal) {
+        if(section == 0) {
+            return QString("Enabled");
+        } else if(section == 1) {
+            return QString("Name");
+        } else if(section == 2) {
+            return QString("Edit");
+        } else if(section == 3) {
+            return QString("Remove");
+        }
+    }
+
+    return QVariant();
 }
 
 BroadcastProfilePtr BroadcastSettings::profileAt(int index) {
