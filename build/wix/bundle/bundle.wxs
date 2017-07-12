@@ -46,7 +46,7 @@
       <?if $(var.Platform) = x64 ?>
         <ExePackage
           Id="vcredist64"
-          Name="Microsoft Visual C++ 2015 Redistributable (x64) Setup"
+          Name="Microsoft Visual C++ 2015 Redistributable (x64)"
           SourceFile="$(var.WINLIBPATH)\vc_redist.x64.exe"
           Cache="no"
           Compressed="yes"
@@ -66,7 +66,7 @@
       <?else ?>
         <ExePackage
           Id="vcredist"
-          Name="Microsoft Visual C++ 2015 Redistributable (x86) Setup"
+          Name="Microsoft Visual C++ 2015 Redistributable (x86)"
           SourceFile="$(var.WINLIBPATH)\vc_redist.x86.exe"
           Cache="no"
           Compressed="yes"
