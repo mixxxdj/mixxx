@@ -7,6 +7,13 @@
 
   <Bundle Name="Mixxx" Version="$(var.VersionNumber)" Manufacturer="The Mixxx Development Team" UpgradeCode="$(var.UpgradeCode)">
 
+    <?if $(var.Platform) = x64 ?>
+      <bal:Condition
+        Message="#(loc.x86VersionRequired)">
+        VersionNT64
+      </bal:Condition>
+     <?endif ?>
+
     <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkSidebarLicense">
       <bal:WixStandardBootstrapperApplication
         LicenseUrl=""
