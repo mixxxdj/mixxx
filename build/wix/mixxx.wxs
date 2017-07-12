@@ -191,7 +191,7 @@
 
     <Condition Message="!(loc.OlderVersionFound)">NOT OLDERINSTALLEXISTS</Condition>
 
-    <Condition Message="!(loc.VCredistNotFound)">VCREDISTINSTALLED</Condition>
+    <Condition Message="!(loc.VCredistNotFound)">NOT VCREDISTINSTALLED</Condition>
 
     <!--
        Launch conditions end
