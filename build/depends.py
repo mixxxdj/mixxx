@@ -819,6 +819,8 @@ class MixxxCore(Feature):
                    "sources/soundsourceproviderregistry.cpp",
                    "sources/soundsourceproxy.cpp",
 
+                   "sources/v1/legacyaudiosourceadapter.cpp",
+
                    "widget/controlwidgetconnection.cpp",
                    "widget/wbasewidget.cpp",
                    "widget/wwidget.cpp",

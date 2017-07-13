@@ -553,12 +553,12 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                 // AVERROR(EAGAIN) means that we need to feed more
                 // That we can decode Frame or Packet
                 if (l_iRet == AVERROR(EAGAIN)) {
-                  kLogger.debug() << "readFramesToCache: Need more packets to decode!";
+                  kLogger.warning() << "readFramesToCache: Need more packets to decode!";
                   continue;
                 }
 
                 if(l_iRet == AVERROR_EOF || l_iRet == AVERROR(EINVAL)) {
-                      kLogger.debug() << "readFramesToCache: Warning can't decode frame!";
+                      kLogger.warning() << "readFramesToCache: Warning can't decode frame!";
                 }
 
                 l_iRet = avcodec_receive_frame(m_pAudioContext, l_pFrame);
@@ -566,12 +566,12 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                 // AVERROR(EAGAIN) means that we need to feed more
                 // That we can decode Frame or Packet
                 if (l_iRet == AVERROR(EAGAIN)) {
-                  kLogger.debug() << "readFramesToCache: Need more packets to decode!";
+                  kLogger.warning() << "readFramesToCache: Need more packets to decode!";
                   continue;
                 }
 
                 if(l_iRet == AVERROR_EOF || l_iRet == AVERROR(EINVAL)) {
-                      kLogger.debug() << "readFramesToCache: Warning can't decode frame!";
+                      kLogger.warning() << "readFramesToCache: Warning can't decode frame!";
                 }
 
                 if (l_iRet == AVERROR_EOF || l_iRet < 0) {
@@ -887,117 +887,110 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
     return false;
 }
 
-SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
-    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
+IndexRange SoundSourceFFmpeg::readOrSkipSampleFrames(
+        IndexRange frameIndexRange,
+        SampleBuffer::WritableSlice* pOutputBuffer) {
+    auto readableFrames =
+            adjustReadableFrameIndexRangeAndOutputBuffer(
+                    frameIndexRange, pOutputBuffer);
+    if (readableFrames.empty()) {
+        return readableFrames;
+    }
 
-    int ret = 0;
-    qint64 i = 0;
-    struct ffmpegLocationObject *l_STestObj = nullptr;
+    const SINT seekFrameIndex =
+            pOutputBuffer ? readableFrames.head() : readableFrames.tail();
+    if ((m_currentMixxxFrameIndex != seekFrameIndex) || (pOutputBuffer && (m_SCache.size() == 0))) {
+        int ret = 0;
+        qint64 i = 0;
+        struct ffmpegLocationObject *l_STestObj = nullptr;
 
-    if (frameIndex < 0 || frameIndex < m_lCacheStartFrame) {
-        // Seek to set (start of the stream which is FFmpeg frame 0)
-        // because we are dealing with compressed audio FFmpeg takes
-        // best of to seek that point (in this case 0 Is always there)
-        // in every other case we should provide MIN and MAX tolerance
-        // which we can take.
-        // FFmpeg just just can't take zero as MAX tolerance so we try to
-        // just make some tolerable (which is never used because zero point
-        // should always be there) some number (which is 0xffff 65535)
-        // that is chosen because in WMA frames can be that big and if it's
-        // smaller than the frame we are seeking we can get into error
-        ret = avformat_seek_file(m_pInputFormatContext,
-                                 m_pAudioStream->index,
-                                 0,
-                                 0,
-                                 0xffff,
-                                 AVSEEK_FLAG_BACKWARD);
+        if (seekFrameIndex < m_lCacheStartFrame) {
+            // Seek to set (start of the stream which is FFmpeg frame 0)
+            // because we are dealing with compressed audio FFmpeg takes
+            // best of to seek that point (in this case 0 Is always there)
+            // in every other case we should provide MIN and MAX tolerance
+            // which we can take.
+            // FFmpeg just just can't take zero as MAX tolerance so we try to
+            // just make some tolerable (which is never used because zero point
+            // should always be there) some number (which is 0xffff 65535)
+            // that is chosen because in WMA frames can be that big and if it's
+            // smaller than the frame we are seeking we can get into error
+            ret = avformat_seek_file(m_pInputFormatContext,
+                                     m_pAudioStream->index,
+                                     0,
+                                     0,
+                                     0xffff,
+                                     AVSEEK_FLAG_BACKWARD);
 
-        if (ret < 0) {
-            kLogger.debug() << "seek: Can't seek to 0 byte!";
-            return -1;
-        }
+            if (ret < 0) {
+                kLogger.warning() << "seek: Can't seek to 0 byte!";
+                return IndexRange();
+            }
 
-        clearCache();
-        m_lCacheStartFrame = 0;
-        m_lCacheEndFrame = 0;
-        m_lCacheLastPos = 0;
-        m_lCacheFramePos = 0;
-        m_lStoredSeekPoint = -1;
+            clearCache();
+            m_lCacheStartFrame = 0;
+            m_lCacheEndFrame = 0;
+            m_lCacheLastPos = 0;
+            m_lCacheFramePos = 0;
+            m_lStoredSeekPoint = -1;
 
 
-        // Try to find some jump point near to
-        // where we are located so we don't needed
-        // to try guess it
-        if (m_SJumpPoints.size() > 0) {
-            l_STestObj = m_SJumpPoints.first();
+            // Try to find some jump point near to
+            // where we are located so we don't needed
+            // to try guess it
+            if (m_SJumpPoints.size() > 0) {
+                l_STestObj = m_SJumpPoints.first();
 
-            if (frameIndex > l_STestObj->startFrame) {
-                for (i = 0; i < m_SJumpPoints.size(); i++) {
-                    if (m_SJumpPoints[i]->startFrame >= frameIndex) {
-                        if (i > 0) {
-                            i--;
+                if (seekFrameIndex > l_STestObj->startFrame) {
+                    for (i = 0; i < m_SJumpPoints.size(); i++) {
+                        if (m_SJumpPoints[i]->startFrame >= seekFrameIndex) {
+                            if (i > 0) {
+                                i--;
+                            }
+
+                            m_lCacheFramePos = m_SJumpPoints[i]->startFrame;
+                            m_lStoredSeekPoint = m_SJumpPoints[i]->pos;
+                            m_SStoredJumpPoint = m_SJumpPoints[i];
+                            break;
                         }
-
-                        m_lCacheFramePos = m_SJumpPoints[i]->startFrame;
-                        m_lStoredSeekPoint = m_SJumpPoints[i]->pos;
-                        m_SStoredJumpPoint = m_SJumpPoints[i];
-                        break;
                     }
                 }
             }
+
+            if (seekFrameIndex == frameIndexMin()) {
+                // Because we are in the beginning just read cache full
+                // but leave 50 of just in case
+                // -1 one means we are seeking from current position and
+                // filling the cache
+                readFramesToCache((AUDIOSOURCEFFMPEG_CACHESIZE - 50),
+                                  AUDIOSOURCEFFMPEG_FILL_FROM_CURRENTPOS);
+            }
         }
 
-        if (frameIndex == 0) {
-            // Because we are in the beginning just read cache full
-            // but leave 50 of just in case
-            // -1 one means we are seeking from current position and
-            // filling the cache
-            readFramesToCache((AUDIOSOURCEFFMPEG_CACHESIZE - 50),
-                              AUDIOSOURCEFFMPEG_FILL_FROM_CURRENTPOS);
+        if (m_lCacheEndFrame <= seekFrameIndex) {
+            // Cache tries to read until it gets to frameIndex
+            // after that we still read 100 FFmpeg frames to memory
+            // so we have good cache to go forward (100) and backward (900)
+            // from the point
+            readFramesToCache(100, seekFrameIndex);
         }
+
+        m_currentMixxxFrameIndex = seekFrameIndex;
+
+        m_bIsSeeked = m_currentMixxxFrameIndex != frameIndexMin();
     }
+    DEBUG_ASSERT(m_currentMixxxFrameIndex == seekFrameIndex);
 
-    if (m_lCacheEndFrame <= frameIndex) {
-        // Cache tries to read until it gets to frameIndex
-        // after that we still read 100 FFmpeg frames to memory
-        // so we have good cache to go forward (100) and backward (900)
-        // from the point
-        readFramesToCache(100, frameIndex);
-    }
-
-    m_currentMixxxFrameIndex = frameIndex;
-
-    m_bIsSeeked = true;
-
-    return frameIndex;
-}
-
-SINT SoundSourceFFmpeg::readSampleFrames(SINT numberOfFrames,
-        CSAMPLE* sampleBuffer) {
-
-    DEBUG_ASSERT(numberOfFrames >= 0);
-    DEBUG_ASSERT(isValidFrameIndex(m_currentMixxxFrameIndex));
-    const SINT prevFrameIndex = m_currentMixxxFrameIndex;
-    const SINT numberOfFramesRemaining = math_min(
-            numberOfFrames, frameIndexMax() - m_currentMixxxFrameIndex);
-
-    if (sampleBuffer != nullptr) {
-        if (m_SCache.size() == 0) {
-            // Make sure we always start at beginning and cache have some
-            // material that we can consume.
-            seekSampleFrame(frameIndexMin());
-            m_bIsSeeked = false;
-        }
-        getBytesFromCache(sampleBuffer, m_currentMixxxFrameIndex, numberOfFramesRemaining);
-        m_currentMixxxFrameIndex += numberOfFramesRemaining;
+    if (pOutputBuffer) {
+        DEBUG_ASSERT(m_currentMixxxFrameIndex == readableFrames.head());
+        DEBUG_ASSERT(m_SCache.size() > 0);
+        getBytesFromCache(pOutputBuffer->data(), m_currentMixxxFrameIndex, readableFrames.length());
+        m_currentMixxxFrameIndex += readableFrames.length();
         m_bIsSeeked = false;
     } else {
-       // No output buffer -> just skip frames
-       seekSampleFrame(prevFrameIndex + numberOfFramesRemaining);
+        DEBUG_ASSERT(m_currentMixxxFrameIndex == readableFrames.tail());
     }
-
-    DEBUG_ASSERT(prevFrameIndex <= m_currentMixxxFrameIndex);
-    return m_currentMixxxFrameIndex - prevFrameIndex;
+    return readableFrames;
 }
 
 } // namespace mixxx

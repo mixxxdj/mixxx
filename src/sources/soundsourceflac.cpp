@@ -121,82 +121,88 @@ void SoundSourceFLAC::close() {
     m_file.close();
 }
 
-SINT SoundSourceFLAC::seekSampleFrame(SINT frameIndex) {
-    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
-
-    // Seek to the new position
-    SINT seekFrameIndex = frameIndex;
-    int retryCount = 0;
-    // NOTE(uklotzde): This loop avoids unnecessary seek operations.
-    // If the file is decoded from the beginning to the end during
-    // continuous playback no seek operations are necessary. This
-    // may hide rare seek errors that we have observed in some "flaky"
-    // FLAC files. The retry strategy implemented by this loop tries
-    // to solve these issues when randomly seeking through such a file.
-    while ((seekFrameIndex != m_curFrameIndex) &&
-            (retryCount <= kSeekErrorMaxRetryCount)){
-        // Discard decoded sample data before seeking
-        m_sampleBuffer.reset();
-        // Invalidate the current position
-        m_curFrameIndex = frameIndexRange().tail();
-        if (FLAC__stream_decoder_seek_absolute(m_decoder, seekFrameIndex)) {
-            // Success: Set the new position
-            m_curFrameIndex = seekFrameIndex;
-            DEBUG_ASSERT(FLAC__STREAM_DECODER_SEEK_ERROR != FLAC__stream_decoder_get_state(m_decoder));
-        } else {
-            // Failure
-            kLogger.warning() << "Seek error at" << seekFrameIndex << "in" << m_file.fileName();
-            if (FLAC__STREAM_DECODER_SEEK_ERROR == FLAC__stream_decoder_get_state(m_decoder)) {
-                // Flush the input stream of the decoder according to the
-                // documentation of FLAC__stream_decoder_seek_absolute()
-                if (!FLAC__stream_decoder_flush(m_decoder)) {
-                    kLogger.warning() << "Failed to flush input buffer of the FLAC decoder after seek failure in"
-                            << m_file.fileName();
-                    // Invalidate the current position again...
-                    m_curFrameIndex = frameIndexRange().tail();
-                    // ...and abort
-                    return m_curFrameIndex;
-                }
-            }
-            if (frameIndexMin() < seekFrameIndex) {
-                // The next seek position should start at a preceding sample block.
-                // By subtracting max. blocksize from the current seek position it
-                // is guaranteed that the targeted sample blocks of subsequent seek
-                // operations will differ.
-                DEBUG_ASSERT(0 < m_maxBlocksize);
-                seekFrameIndex -= m_maxBlocksize;
-                if (seekFrameIndex < frameIndexMin()) {
-                    seekFrameIndex = frameIndexMin();
-                }
-            } else {
-                // We have already reached the beginning of the file
-                // and cannot move the seek position backward any
-                // further!
-                break; // exit loop
-            }
-        }
-    } while (m_curFrameIndex != seekFrameIndex);
-    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-
-    if (frameIndex > m_curFrameIndex) {
-        // Adjust the current position
-        skipSampleFrames(frameIndex - m_curFrameIndex);
+IndexRange SoundSourceFLAC::readOrSkipSampleFrames(
+        IndexRange frameIndexRange,
+        SampleBuffer::WritableSlice* pOutputBuffer) {
+    auto readableFrames =
+            adjustReadableFrameIndexRangeAndOutputBuffer(
+                    frameIndexRange, pOutputBuffer);
+    if (readableFrames.empty()) {
+        return readableFrames;
     }
 
-    return m_curFrameIndex;
-}
+    if (m_curFrameIndex != readableFrames.head()) {
+        // Seek to the new position
+        SINT seekFrameIndex = readableFrames.head();
+        int retryCount = 0;
+        // NOTE(uklotzde): This loop avoids unnecessary seek operations.
+        // If the file is decoded from the beginning to the end during
+        // continuous playback no seek operations are necessary. This
+        // may hide rare seek errors that we have observed in some "flaky"
+        // FLAC files. The retry strategy implemented by this loop tries
+        // to solve these issues when randomly seeking through such a file.
+        while ((seekFrameIndex != m_curFrameIndex) &&
+                (retryCount <= kSeekErrorMaxRetryCount)) {
+            // Discard decoded sample data before seeking
+            m_sampleBuffer.reset();
+            invalidateCurFrameIndex();
+            if (FLAC__stream_decoder_seek_absolute(m_decoder, seekFrameIndex)) {
+                // Success: Set the new position
+                m_curFrameIndex = seekFrameIndex;
+                DEBUG_ASSERT(FLAC__STREAM_DECODER_SEEK_ERROR != FLAC__stream_decoder_get_state(m_decoder));
+            } else {
+                // Failure
+                kLogger.warning()
+                        << "Seek error at" << seekFrameIndex
+                        << "in file" << m_file.fileName();
+                if (FLAC__STREAM_DECODER_SEEK_ERROR == FLAC__stream_decoder_get_state(m_decoder)) {
+                    // Flush the input stream of the decoder according to the
+                    // documentation of FLAC__stream_decoder_seek_absolute()
+                    if (!FLAC__stream_decoder_flush(m_decoder)) {
+                        kLogger.warning()
+                                << "Failed to flush input buffer of the FLAC decoder after seek failure"
+                                << "in file" << m_file.fileName();
+                        invalidateCurFrameIndex();
+                        // ...and abort
+                        return IndexRange();
+                    }
+                }
+                if (frameIndexMin() < seekFrameIndex) {
+                    // The next seek position should start at a preceding sample block.
+                    // By subtracting max. blocksize from the current seek position it
+                    // is guaranteed that the targeted sample blocks of subsequent seek
+                    // operations will differ.
+                    DEBUG_ASSERT(0 < m_maxBlocksize);
+                    seekFrameIndex -= m_maxBlocksize;
+                    if (seekFrameIndex < frameIndexMin()) {
+                        seekFrameIndex = frameIndexMin();
+                    }
+                } else {
+                    // We have already reached the beginning of the file
+                    // and cannot move the seek position backwards any
+                    // further!
+                    break; // exit loop
+                }
+            }
+        }
 
-SINT SoundSourceFLAC::readSampleFrames(
-        SINT numberOfFrames, CSAMPLE* sampleBuffer) {
-    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
+        // Decoding starts before the actual target position
+        DEBUG_ASSERT(m_curFrameIndex <= readableFrames.head());
+        const auto precedingFrames =
+                IndexRange::between(m_curFrameIndex, readableFrames.head());
+        if (!precedingFrames.empty()
+                && (precedingFrames != skipSampleFrames(precedingFrames))) {
+            kLogger.warning()
+                    << "Failed to skip preceding frames"
+                    << precedingFrames;
+            return IndexRange();
+        }
+    }
+    DEBUG_ASSERT(m_curFrameIndex == readableFrames.head());
 
-    const SINT numberOfFramesTotal =
-            math_min(numberOfFrames, frameIndexRange().tail() - m_curFrameIndex);
-    const SINT numberOfSamplesTotal = frames2samples(numberOfFramesTotal);
-
-    CSAMPLE* outBuffer = sampleBuffer;
+    const SINT numberOfSamplesTotal = frames2samples(readableFrames.length());
     SINT numberOfSamplesRemaining = numberOfSamplesTotal;
+    SINT outputSampleOffset = 0;
     while (0 < numberOfSamplesRemaining) {
         // If our buffer from libflac is empty (either because we explicitly cleared
         // it or because we've simply used all the samples), ask for a new buffer
@@ -208,22 +214,35 @@ SINT SoundSourceFLAC::readSampleFrames(
             // will be called with the decoded metadata block or audio frame."
             // See also: https://xiph.org/flac/api/group__flac__stream__decoder.html#ga9d6df4a39892c05955122cf7f987f856
             if (!FLAC__stream_decoder_process_single(m_decoder)) {
-                kLogger.warning() << "Failed to decode FLAC file"
+                kLogger.warning()
+                        << "Failed to decode FLAC file"
                         << m_file.fileName();
                 break; // abort
             }
-            // After seeking we might need to skip some samples if the decoder
-            // complained that it has lost sync for some malformed(?) files
-            if (curFrameIndexBeforeProcessing != m_curFrameIndex) {
-                if (curFrameIndexBeforeProcessing > m_curFrameIndex) {
-                    kLogger.warning() << "Trying to adjust frame index"
-                            << m_curFrameIndex << "<>" << curFrameIndexBeforeProcessing
+            // After decoding we might first need to skip some samples if the
+            // decoder complained that it has lost sync for some malformed(?)
+            // files
+            if (m_curFrameIndex != curFrameIndexBeforeProcessing) {
+                if (m_curFrameIndex < curFrameIndexBeforeProcessing) {
+                    kLogger.warning()
+                            << "Trying to adjust frame index"
+                            << m_curFrameIndex << "<" << curFrameIndexBeforeProcessing
                             << "while decoding FLAC file"
                             << m_file.fileName();
-                    skipSampleFrames(curFrameIndexBeforeProcessing - m_curFrameIndex);
+                    const auto skipFrames =
+                            IndexRange::between(m_curFrameIndex, curFrameIndexBeforeProcessing);
+                    if (skipFrames != skipSampleFrames(skipFrames)) {
+                        kLogger.warning()
+                                << "Failed to skip sample frames"
+                                << skipFrames
+                                << "while decoding FLAC file"
+                                << m_file.fileName();
+                        break; // abort
+                    }
                 } else {
-                    kLogger.warning() << "Unexpected frame index"
-                            << m_curFrameIndex << "<>" << curFrameIndexBeforeProcessing
+                    kLogger.warning()
+                            << "Unexpected frame index"
+                            << m_curFrameIndex << ">" << curFrameIndexBeforeProcessing
                             << "while decoding FLAC file"
                             << m_file.fileName();
                     break; // abort
@@ -235,20 +254,26 @@ SINT SoundSourceFLAC::readSampleFrames(
             break; // EOF
         }
 
+        const SINT numberOfSamplesRead =
+                std::min(m_sampleBuffer.getSize(), numberOfSamplesRemaining);
         const SampleBuffer::ReadableSlice readableSlice(
-                m_sampleBuffer.readFromHead(numberOfSamplesRemaining));
-        const SINT framesToCopy = samples2frames(readableSlice.size());
-        if (outBuffer) {
-            SampleUtil::copy(outBuffer, readableSlice.data(), readableSlice.size());
-            outBuffer += readableSlice.size();
+                m_sampleBuffer.readFromHead(numberOfSamplesRead));
+        DEBUG_ASSERT(readableSlice.size() == numberOfSamplesRead);
+        if (pOutputBuffer) {
+            SampleUtil::copy(
+                    pOutputBuffer->data(outputSampleOffset),
+                    readableSlice.data(),
+                    readableSlice.size());
+            outputSampleOffset += numberOfSamplesRead;
         }
-        m_curFrameIndex += framesToCopy;
-        numberOfSamplesRemaining -= readableSlice.size();
+        m_curFrameIndex += samples2frames(numberOfSamplesRead);
+        numberOfSamplesRemaining -= numberOfSamplesRead;
     }
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(numberOfSamplesTotal >= numberOfSamplesRemaining);
-    return samples2frames(numberOfSamplesTotal - numberOfSamplesRemaining);
+    return readableFrames.splitHead(
+            samples2frames(numberOfSamplesTotal - numberOfSamplesRemaining));
 }
 
 // flac callback methods
