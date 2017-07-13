@@ -3,9 +3,9 @@
 #include "util/defs.h"
 
 namespace {
-    double kMaxCorner = 22000; // Hz
-    double kMinCorner = 16; // Hz
-    static const unsigned int kStartupSamplerate = 44100;
+    const double kMaxCornerHz = 500;
+    const double kMinCornerHz = 16;
+    const unsigned int kStartupSamplerate = 44100;
 } // anonymous namespace
 
 // static
@@ -55,9 +55,9 @@ EffectManifest BalanceEffect::getManifest() {
     midLowPass->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     midLowPass->setDefaultLinkType(EffectManifestParameter::LinkType::NONE);
     midLowPass->setNeutralPointOnScale(1);
-    midLowPass->setDefault(kMinCorner);
-    midLowPass->setMinimum(kMinCorner);
-    midLowPass->setMaximum(kMaxCorner);
+    midLowPass->setDefault(kMinCornerHz);
+    midLowPass->setMinimum(kMinCornerHz);
+    midLowPass->setMaximum(kMaxCornerHz);
 
     return manifest;
 }
@@ -65,11 +65,11 @@ EffectManifest BalanceEffect::getManifest() {
 BalanceGroupState::BalanceGroupState()
         : m_pHighBuf(MAX_BUFFER_LEN),
           m_oldSampleRate(kStartupSamplerate),
-          m_freq(kMinCorner),
+          m_freq(kMinCornerHz),
           m_oldBalance(0),
           m_oldMidSide(0) {
-    m_low = std::make_unique<EngineFilterLinkwitzRiley4Low>(kStartupSamplerate, kMinCorner);
-    m_high = std::make_unique<EngineFilterLinkwitzRiley4High>(kStartupSamplerate, kMinCorner);
+    m_low = std::make_unique<EngineFilterLinkwitzRiley4Low>(kStartupSamplerate, kMinCornerHz);
+    m_high = std::make_unique<EngineFilterLinkwitzRiley4High>(kStartupSamplerate, kMinCornerHz);
     m_high->setStartFromDry(true);
 }
 
@@ -119,7 +119,7 @@ void BalanceEffect::processChannel(const ChannelHandle& handle,
         pGroupState->setFilters(sampleRate, pGroupState->m_freq);
     }
 
-    if (pGroupState->m_freq > kMinCorner) {
+    if (pGroupState->m_freq > kMinCornerHz) {
         pGroupState->m_high->process(pInput, pGroupState->m_pHighBuf.data(), numSamples); // HighPass first run
         pGroupState->m_low->process(pInput, pOutput, numSamples); // LowPass first run for low and bandpass
 
