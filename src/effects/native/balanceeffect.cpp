@@ -25,7 +25,7 @@ EffectManifest BalanceEffect::getManifest() {
     EffectManifestParameter* balance = manifest.addParameter();
     balance->setId("balance");
     balance->setName(QObject::tr("Balance"));
-    balance->setDescription(QObject::tr("Alternate gain for left and right channel"));
+    balance->setDescription(QObject::tr("Adjust balance between left and right channels"));
     balance->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     balance->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     balance->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -37,7 +37,7 @@ EffectManifest BalanceEffect::getManifest() {
     EffectManifestParameter* midSide = manifest.addParameter();
     midSide->setId("midSide");
     midSide->setName(QObject::tr("Mid/Side"));
-    midSide->setDescription(QObject::tr("Balance of Mid and Side"));
+    midSide->setDescription(QObject::tr("Adjust balance between mid and side. Fully mid is Mono."));
     midSide->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     midSide->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     midSide->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
