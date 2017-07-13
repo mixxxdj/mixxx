@@ -18,7 +18,11 @@ public:
 
     void close() override;
 
-    // callback methods
+    IndexRange readOrSkipSampleFrames(
+            IndexRange frameIndexRange,
+            SampleBuffer::WritableSlice* pOutputBuffer) override;
+
+    // Internal callbacks
     FLAC__StreamDecoderReadStatus flacRead(FLAC__byte buffer[], size_t* bytes);
     FLAC__StreamDecoderSeekStatus flacSeek(FLAC__uint64 offset);
     FLAC__StreamDecoderTellStatus flacTell(FLAC__uint64* offset);
@@ -28,12 +32,6 @@ public:
             const FLAC__int32* const buffer[]);
     void flacMetadata(const FLAC__StreamMetadata* metadata);
     void flacError(FLAC__StreamDecoderErrorStatus status);
-
-protected:
-    SINT seekSampleFrame(SINT frameIndex) override;
-
-    SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) override;
 
 private:
     OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
@@ -52,6 +50,10 @@ private:
     CSAMPLE m_sampleScaleFactor;
 
     SingularSampleBuffer m_sampleBuffer;
+
+    void invalidateCurFrameIndex() {
+        m_curFrameIndex = frameIndexMax();
+    }
 
     SINT m_curFrameIndex;
 };

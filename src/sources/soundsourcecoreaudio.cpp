@@ -29,6 +29,7 @@ static CSAMPLE kMp3StabilizationScratchBuffer[kMp3StabilizationFrames * 2]; // s
 
 SoundSourceCoreAudio::SoundSourceCoreAudio(QUrl url)
         : SoundSource(url),
+          LegacyAudioSourceAdapter(this, this),
           m_bFileIsMp3(false),
           m_headerFrames(0) {
 }

@@ -16,11 +16,9 @@ class SoundSourceWV: public SoundSourcePlugin {
 
     void close() override;
 
-  protected:
-    SINT seekSampleFrame(SINT frameIndex) override;
-
-    SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) override;
+    IndexRange readOrSkipSampleFrames(
+            IndexRange frameIndexRange,
+            SampleBuffer::WritableSlice* pOutputBuffer) override;
 
   private:
     OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;

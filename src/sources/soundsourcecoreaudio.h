@@ -3,6 +3,8 @@
 
 #include "sources/soundsourceprovider.h"
 
+#include "sources/v1/legacyaudiosourceadapter.h"
+
 #include <AudioToolbox/AudioToolbox.h>
 //In our tree at lib/apple/
 #include "CAStreamBasicDescription.h"
@@ -20,14 +22,13 @@
 
 namespace mixxx {
 
-class SoundSourceCoreAudio : public mixxx::SoundSource {
+class SoundSourceCoreAudio: public mixxx::SoundSource, public virtual LegacyAudioSource, public LegacyAudioSourceAdapter {
 public:
     explicit SoundSourceCoreAudio(QUrl url);
     ~SoundSourceCoreAudio() override;
 
     void close() override;
 
-protected:
     SINT seekSampleFrame(SINT frameIndex) override;
 
     SINT readSampleFrames(SINT numberOfFrames,

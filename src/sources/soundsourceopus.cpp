@@ -186,12 +186,12 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(const AudioSourceConfig& audioS
         // opusfile supports to enforce stereo decoding
         bool enforceStereoDecoding =
                 audioSrcCfg.channelCount().valid() &&
-                (audioSrcCfg.channelCount() <= kChannelCountStereo) &&
-                ((streamChannelCount > kChannelCountStereo) ||
-                        // preserve mono signals if stereo signal is not requested explicitly
-                        (audioSrcCfg.channelCount() == kChannelCountStereo));
+                (audioSrcCfg.channelCount() <= ChannelCount::stereo()) &&
+                // preserve mono signals if stereo signal is not requested explicitly
+                (audioSrcCfg.channelCount().isStereo() ||
+                        (streamChannelCount > ChannelCount::stereo()));
         if (enforceStereoDecoding) {
-            setChannelCount(kChannelCountStereo);
+            setChannelCount(ChannelCount::stereo());
         } else {
             setChannelCount(streamChannelCount);
         }
@@ -203,7 +203,7 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(const AudioSourceConfig& audioS
     }
 
     // Reserve enough capacity for buffering a stereo signal!
-    const auto prefetchChannelCount = std::min(channelCount(), kChannelCountStereo);
+    const auto prefetchChannelCount = std::min(channelCount(), ChannelCount::stereo());
     SampleBuffer(prefetchChannelCount * kNumberOfPrefetchFrames).swap(m_prefetchSampleBuffer);
 
     const ogg_int64_t pcmTotal = op_pcm_total(m_pOggOpusFile, kEntireStreamLink);
@@ -240,60 +240,58 @@ void SoundSourceOpus::close() {
     }
 }
 
-SINT SoundSourceOpus::seekSampleFrame(SINT frameIndex) {
-    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-
-    if (frameIndex >= frameIndexMax()) {
-        // EOF
-        m_curFrameIndex = frameIndexMax();
-        return m_curFrameIndex;
+IndexRange SoundSourceOpus::readOrSkipSampleFrames(
+        IndexRange frameIndexRange,
+        SampleBuffer::WritableSlice* pOutputBuffer) {
+    auto readableFrames =
+            adjustReadableFrameIndexRangeAndOutputBuffer(
+                    frameIndexRange, pOutputBuffer);
+    if (readableFrames.empty()) {
+        return readableFrames;
     }
 
-    if ((frameIndex > m_curFrameIndex) && // seeking forward
-            ((frameIndex - m_curFrameIndex) <= 2 * kNumberOfPrefetchFrames)) {
+    if (m_curFrameIndex != readableFrames.head()) {
         // Prefer skipping over seeking if the seek position is up to
         // 2 * kNumberOfPrefetchFrames in front of the current position
-        skipSampleFrames(frameIndex - m_curFrameIndex);
-        return m_curFrameIndex;
-    }
-    if (frameIndex == m_curFrameIndex) {
-        return m_curFrameIndex;
-    }
-
-    SINT seekIndex = std::max(frameIndex - kNumberOfPrefetchFrames, frameIndexMin());
-    int seekResult = op_pcm_seek(m_pOggOpusFile, seekIndex);
-    if (0 == seekResult) {
-        m_curFrameIndex = seekIndex;
-        // Skip prefetched frames
-        skipSampleFrames(frameIndex - seekIndex);
-    } else {
-        kLogger.warning() << "Failed to seek OggOpus file:" << seekResult;
-        const ogg_int64_t pcmOffset = op_pcm_tell(m_pOggOpusFile);
-        if (0 <= pcmOffset) {
-            m_curFrameIndex = pcmOffset;
-        } else {
-            // Reset to EOF
-            m_curFrameIndex = frameIndexMax();
+        if ((m_curFrameIndex > readableFrames.head()) ||
+                ((readableFrames.head() - m_curFrameIndex) > 2 * kNumberOfPrefetchFrames)) {
+            SINT seekIndex = std::max(readableFrames.head() - kNumberOfPrefetchFrames, frameIndexMin());
+            int seekResult = op_pcm_seek(m_pOggOpusFile, seekIndex);
+            if (0 == seekResult) {
+                m_curFrameIndex = seekIndex;
+            } else {
+                kLogger.warning() << "Failed to seek OggOpus file:" << seekResult;
+                const ogg_int64_t pcmOffset = op_pcm_tell(m_pOggOpusFile);
+                if (0 <= pcmOffset) {
+                    m_curFrameIndex = pcmOffset;
+                } else {
+                    // Reset to EOF
+                    m_curFrameIndex = frameIndexMax();
+                }
+                return IndexRange();
+            }
+        }
+        // Decoding starts before the actual target position
+        DEBUG_ASSERT(m_curFrameIndex <= readableFrames.head());
+        const auto precedingFrames =
+                IndexRange::between(m_curFrameIndex, readableFrames.head());
+        if (!precedingFrames.empty()
+                && (precedingFrames != skipSampleFrames(precedingFrames))) {
+            kLogger.warning()
+                    << "Failed to skip preceding frames"
+                    << precedingFrames;
+            return IndexRange();
         }
     }
+    DEBUG_ASSERT(m_curFrameIndex == readableFrames.head());
 
-    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-    return m_curFrameIndex;
-}
-
-SINT SoundSourceOpus::readSampleFrames(
-        SINT numberOfFrames, CSAMPLE* sampleBuffer) {
-    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-
-    const SINT numberOfFramesTotal = math_min(
-            numberOfFrames, frameIndexMax() - m_curFrameIndex);
-
-    CSAMPLE* pSampleBuffer = sampleBuffer;
-    SINT numberOfFramesRemaining = numberOfFramesTotal;
+    CSAMPLE* pSampleBuffer = pOutputBuffer ?
+            pOutputBuffer->data() : nullptr;
+    SINT numberOfFramesRemaining = readableFrames.length();
     while (0 < numberOfFramesRemaining) {
         SINT numberOfSamplesToRead =
                 frames2samples(numberOfFramesRemaining);
-        if (sampleBuffer == nullptr) {
+        if (!pOutputBuffer) {
             // NOTE(uklotzde): The opusfile API does not provide any
             // functions for skipping samples in the audio stream. Calling
             // API functions with a nullptr buffer does not return. Since
@@ -306,7 +304,7 @@ SINT SoundSourceOpus::readSampleFrames(
             }
         }
         int readResult;
-        if (channelCount() == kChannelCountStereo) {
+        if (channelCount().isStereo()) {
             readResult = op_read_float_stereo(
                     m_pOggOpusFile,
                     pSampleBuffer,
@@ -330,8 +328,8 @@ SINT SoundSourceOpus::readSampleFrames(
     }
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-    DEBUG_ASSERT(numberOfFramesTotal >= numberOfFramesRemaining);
-    return numberOfFramesTotal - numberOfFramesRemaining;
+    DEBUG_ASSERT(readableFrames.length() >= numberOfFramesRemaining);
+    return readableFrames.splitHead(readableFrames.length() - numberOfFramesRemaining);
 }
 
 QString SoundSourceProviderOpus::getName() const {

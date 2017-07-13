@@ -9,7 +9,7 @@
 
 namespace mixxx {
 
-class SoundSourceOpus: public mixxx::SoundSource {
+class SoundSourceOpus: public SoundSource {
 public:
     // According to the API documentation of op_pcm_seek():
     // "...decoding after seeking may not return exactly the same
@@ -31,11 +31,9 @@ public:
 
     void close() override;
 
-protected:
-    SINT seekSampleFrame(SINT frameIndex) override;
-
-    SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) override;
+    IndexRange readOrSkipSampleFrames(
+            IndexRange frameIndexRange,
+            SampleBuffer::WritableSlice* pOutputBuffer) override;
 
 private:
     OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;

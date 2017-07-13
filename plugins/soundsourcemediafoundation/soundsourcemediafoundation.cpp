@@ -102,7 +102,7 @@ SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(const AudioSourceCon
         return OpenResult::FAILED;
     }
 
-    m_streamUnitConverter = StreamUnitConverter(samplingRate());
+    m_streamUnitConverter = StreamUnitConverter(this);
 
     if (!readProperties()) {
         kLogger.warning()
@@ -131,19 +131,12 @@ void SoundSourceMediaFoundation::close() {
     }
 }
 
-SINT SoundSourceMediaFoundation::seekSampleFrame(
-        SINT frameIndex) {
-    DEBUG_ASSERT(isValidFrameIndex(m_currentFrameIndex));
+void SoundSourceMediaFoundation::seekSampleFrame(SINT frameIndex) {
+    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
-    if (frameIndex >= frameIndexMax()) {
-        // EOF
-        m_currentFrameIndex = frameIndexMax();
-        return m_currentFrameIndex;
-    }
-
-    if (frameIndex > m_currentFrameIndex) {
+    if (m_currentFrameIndex < frameIndex) {
         // seeking forward
-        SINT skipFramesCount = frameIndex - m_currentFrameIndex;
+        const auto skipFrames = IndexRange::between(m_currentFrameIndex, frameIndex);
         // When to prefer skipping over seeking:
         // 1) The sample buffer would be discarded before seeking anyway and
         //    skipping those already decoded samples effectively costs nothing
@@ -154,91 +147,117 @@ SINT SoundSourceMediaFoundation::seekSampleFrame(
         SINT skipFramesCountMax =
                 samples2frames(m_sampleBuffer.getSize()) +
                 2 * kNumberOfPrefetchFrames;
-        if (skipFramesCount <= skipFramesCountMax) {
-            skipSampleFrames(skipFramesCount);
+        if (skipFrames.length() <= skipFramesCountMax) {
+            if (skipFrames != skipSampleFrames(skipFrames)) {
+                kLogger.warning()
+                        << "Failed to skip frames before decoding"
+                        << skipFrames;
+                return; // abort
+            }
         }
     }
-    if (frameIndex == m_currentFrameIndex) {
-        return m_currentFrameIndex;
-    }
+    if (m_currentFrameIndex != frameIndex) {
+        // Discard decoded samples
+        m_sampleBuffer.reset();
 
-    // Discard decoded samples
-    m_sampleBuffer.reset();
+        // Invalidate current position (end of stream)
+        m_currentFrameIndex = frameIndexMax();
 
-    // Invalidate current position (end of stream)
-    m_currentFrameIndex = frameIndexMax();
+        if (m_pSourceReader == nullptr) {
+            // reader is dead
+            return; // abort
+        }
 
-    if (m_pSourceReader == nullptr) {
-        // reader is dead
-        return m_currentFrameIndex;
-    }
+        // Jump to a position before the actual seeking position.
+        // Prefetching a certain number of frames is necessary for
+        // sample accurate decoding. The decoder needs to decode
+        // some frames in advance to produce the same result at
+        // each position in the stream.
+        SINT seekIndex = std::max(SINT(frameIndex - kNumberOfPrefetchFrames), frameIndexMin());
 
-    // Jump to a position before the actual seeking position.
-    // Prefetching a certain number of frames is necessary for
-    // sample accurate decoding. The decoder needs to decode
-    // some frames in advance to produce the same result at
-    // each position in the stream.
-    SINT seekIndex = std::max(SINT(frameIndex - kNumberOfPrefetchFrames), frameIndexMin());
-
-    LONGLONG seekPos = m_streamUnitConverter.fromFrameIndex(seekIndex);
-    DEBUG_ASSERT(seekPos >= 0);
-    PROPVARIANT prop;
-    HRESULT hrInitPropVariantFromInt64 =
-            InitPropVariantFromInt64(seekPos, &prop);
-    DEBUG_ASSERT(SUCCEEDED(hrInitPropVariantFromInt64)); // never fails
-    HRESULT hrSetCurrentPosition =
-            m_pSourceReader->SetCurrentPosition(GUID_NULL, prop);
-    PropVariantClear(&prop);
-    if (SUCCEEDED(hrSetCurrentPosition)) {
-        // NOTE(uklotzde): After SetCurrentPosition() the actual position
-        // of the stream is unknown until reading the next samples from
-        // the reader. Please note that the first sample decoded after
-        // SetCurrentPosition() may start BEFORE the actual target position.
-        // See also: https://msdn.microsoft.com/en-us/library/windows/desktop/dd374668(v=vs.85).aspx
-        //   "The SetCurrentPosition method does not guarantee exact seeking." ...
-        //   "After seeking, the application should call IMFSourceReader::ReadSample
-        //    and advance to the desired position.
-        SINT skipFramesCount = frameIndex - seekIndex;
-        if (skipFramesCount > 0) {
-            // We need to fetch at least 1 sample from the reader to obtain the
-            // current position!
-            skipSampleFrames(skipFramesCount);
-            // Now m_currentFrameIndex reflects the actual position of the reader
-            if (m_currentFrameIndex < frameIndex) {
-                // Skip more samples if frameIndex has not yet been reached
-                skipSampleFrames(frameIndex - m_currentFrameIndex);
-            }
-            if (m_currentFrameIndex != frameIndex) {
-                kLogger.warning()
-                        << "Seek to frame"
-                        << frameIndex
-                        << "failed";
-                // Jump to end of stream (= invalidate current position)
-                m_currentFrameIndex = frameIndexMax();
+        LONGLONG seekPos = m_streamUnitConverter.fromFrameIndex(seekIndex);
+        DEBUG_ASSERT(seekPos >= 0);
+        PROPVARIANT prop;
+        HRESULT hrInitPropVariantFromInt64 =
+                InitPropVariantFromInt64(seekPos, &prop);
+        DEBUG_ASSERT(SUCCEEDED(hrInitPropVariantFromInt64)); // never fails
+        HRESULT hrSetCurrentPosition =
+                m_pSourceReader->SetCurrentPosition(GUID_NULL, prop);
+        PropVariantClear(&prop);
+        if (SUCCEEDED(hrSetCurrentPosition)) {
+            // NOTE(uklotzde): After SetCurrentPosition() the actual position
+            // of the stream is unknown until reading the next samples from
+            // the reader. Please note that the first sample decoded after
+            // SetCurrentPosition() may start BEFORE the actual target position.
+            // See also: https://msdn.microsoft.com/en-us/library/windows/desktop/dd374668(v=vs.85).aspx
+            //   "The SetCurrentPosition method does not guarantee exact seeking." ...
+            //   "After seeking, the application should call IMFSourceReader::ReadSample
+            //    and advance to the desired position.
+            auto skipFrames = IndexRange::between(seekIndex, frameIndex);
+            if (!skipFrames.empty()) {
+                // We need to fetch at least 1 sample from the reader to obtain the
+                // current position!
+                if (skipFrames != skipSampleFrames(skipFrames)) {
+                    kLogger.warning()
+                            << "Failed to skip frames while seeking"
+                            << skipFrames;
+                    return; // abort
+                }
+                // Now m_currentFrameIndex reflects the actual position of the reader
+                if (m_currentFrameIndex < frameIndex) {
+                    skipFrames = IndexRange::between(m_currentFrameIndex, frameIndex);
+                    // Skip more samples if frameIndex has not yet been reached
+                    if (skipFrames != skipSampleFrames(skipFrames)) {
+                        kLogger.warning()
+                                << "Failed to skip frames while seeking"
+                                << skipFrames;
+                        return; // abort
+                    }
+                }
+                if (m_currentFrameIndex != frameIndex) {
+                    kLogger.warning()
+                            << "Seeking to frame"
+                            << frameIndex
+                            << "failed";
+                    // Jump to end of stream (= invalidate current position)
+                    m_currentFrameIndex = frameIndexMax();
+                }
+            } else {
+                // We are at the beginning of the stream and don't need
+                // to skip any frames. Calling IMFSourceReader::ReadSample
+                // is not necessary in this special case.
+                DEBUG_ASSERT(frameIndex == frameIndexMin());
+                m_currentFrameIndex = frameIndex;
             }
         } else {
-            // We are at the beginning of the stream and don't need
-            // to skip any frames. Calling IMFSourceReader::ReadSample
-            // is not necessary in this special case.
-            DEBUG_ASSERT(frameIndex == frameIndexMin());
-            m_currentFrameIndex = frameIndex;
+            kLogger.warning()
+                    << "IMFSourceReader::SetCurrentPosition() failed"
+                    << hrSetCurrentPosition;
+            safeRelease(&m_pSourceReader); // kill the reader
         }
-    } else {
-        kLogger.warning()
-                << "IMFSourceReader::SetCurrentPosition() failed"
-                << hrSetCurrentPosition;
-        safeRelease(&m_pSourceReader); // kill the reader
     }
-
-    return m_currentFrameIndex;
 }
 
-SINT SoundSourceMediaFoundation::readSampleFrames(
-        SINT numberOfFrames, CSAMPLE* sampleBuffer) {
+IndexRange SoundSourceMediaFoundation::readOrSkipSampleFrames(
+        IndexRange frameIndexRange,
+        SampleBuffer::WritableSlice* pOutputBuffer) {
+    auto readableFrames =
+            adjustReadableFrameIndexRangeAndOutputBuffer(
+                    frameIndexRange, pOutputBuffer);
+    if (readableFrames.empty()) {
+        return readableFrames;
+    }
 
-    SINT numberOfFramesRemaining = numberOfFrames;
-    CSAMPLE* pSampleBuffer = sampleBuffer;
+    seekSampleFrame(readableFrames.head());
+    if (m_currentFrameIndex != readableFrames.head()) {
+         kLogger.warning()
+                << "Failed to position reader at beginning of decoding range"
+                << readableFrames;
+         return mixxx::IndexRange(); // abort
+    }
 
+    SINT numberOfFramesRemaining = readableFrames.length();
+    CSAMPLE* pSampleBuffer = pOutputBuffer ? pOutputBuffer->data() : nullptr;
     while (numberOfFramesRemaining > 0) {
         SampleBuffer::ReadableSlice readableSlice(
                 m_sampleBuffer.readFromHead(
@@ -247,7 +266,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
                 <= frames2samples(numberOfFramesRemaining));
         if (readableSlice.size() > 0) {
             DEBUG_ASSERT(m_currentFrameIndex < frameIndexMax());
-            if (sampleBuffer != nullptr) {
+            if (pSampleBuffer) {
                 SampleUtil::copy(
                         pSampleBuffer,
                         readableSlice.data(),
@@ -433,7 +452,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
         }
     }
 
-    return numberOfFrames - numberOfFramesRemaining;
+    return readableFrames.splitHead(readableFrames.length() - numberOfFramesRemaining);
 }
 
 //-------------------------------------------------------------------
@@ -490,7 +509,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
         return false;
     }
 
-    setBitrate( (avgBytesPerSecond * 8) / 1000);
+    initBitrate( (avgBytesPerSecond * 8) / 1000);
     //------
 
     hr = pAudioType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);

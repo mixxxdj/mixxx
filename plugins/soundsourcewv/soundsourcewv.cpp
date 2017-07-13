@@ -41,8 +41,8 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrc
     DEBUG_ASSERT(!m_wpc);
     char msg[80]; // hold possible error message
     int openFlags = OPEN_WVC | OPEN_NORMALIZE;
-    if ((kChannelCountMono == audioSrcCfg.channelCount()) ||
-            (kChannelCountStereo == audioSrcCfg.channelCount())) {
+    if (audioSrcCfg.channelCount().isMono() ||
+            audioSrcCfg.channelCount().isStereo()) {
         openFlags |= OPEN_2CH_MAX;
     }
 
@@ -102,58 +102,69 @@ void SoundSourceWV::close() {
     }
 }
 
-SINT SoundSourceWV::seekSampleFrame(SINT frameIndex) {
-    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-
-    if (frameIndex >= frameIndexMax()) {
-        // EOF reached
-        m_curFrameIndex = frameIndexMax();
-        return m_curFrameIndex;
+IndexRange SoundSourceWV::readOrSkipSampleFrames(
+        IndexRange frameIndexRange,
+        SampleBuffer::WritableSlice* pOutputBuffer) {
+    auto readableFrames =
+            adjustReadableFrameIndexRangeAndOutputBuffer(
+                    frameIndexRange, pOutputBuffer);
+    if (readableFrames.empty()) {
+        return readableFrames;
     }
 
-    if (frameIndex == m_curFrameIndex) {
-        return m_curFrameIndex;
-    }
-
-    if (WavpackSeekSample(m_wpc, frameIndex) == true) {
-        m_curFrameIndex = frameIndex;
-        return frameIndex;
+    if (pOutputBuffer) {
+        if (m_curFrameIndex != readableFrames.head()) {
+            if (WavpackSeekSample(m_wpc, readableFrames.head())) {
+                m_curFrameIndex = readableFrames.head();
+            } else {
+                kLogger.warning()
+                        << "Could not seek to frame index range"
+                        << readableFrames;
+                m_curFrameIndex = WavpackGetSampleIndex(m_wpc);
+                return IndexRange();
+            }
+        }
     } else {
-        kLogger.debug() << "could not seek to frame #" << frameIndex;
-        return WavpackGetSampleIndex(m_wpc);
-    }
-}
-
-SINT SoundSourceWV::readSampleFrames(
-        SINT numberOfFrames, CSAMPLE* sampleBuffer) {
-    if (sampleBuffer == nullptr) {
         // NOTE(uklotzde): The WavPack API does not provide any
         // functions for skipping samples in the audio stream. Calling
         // API functions with a nullptr buffer does not return. Since
         // we don't want to read samples into a temporary buffer that
         // has to be allocated we are seeking to the position after
         // the skipped samples.
-        SINT curFrameIndexBefore = m_curFrameIndex;
-        SINT curFrameIndexAfter = seekSampleFrame(m_curFrameIndex + numberOfFrames);
-        DEBUG_ASSERT(curFrameIndexBefore <= curFrameIndexAfter);
-        DEBUG_ASSERT(m_curFrameIndex == curFrameIndexAfter);
-        return curFrameIndexAfter - curFrameIndexBefore;
+        if (m_curFrameIndex != readableFrames.tail()) {
+            if (WavpackSeekSample(m_wpc, readableFrames.tail())) {
+                m_curFrameIndex = readableFrames.tail();
+                return readableFrames;
+            } else {
+                kLogger.warning()
+                        << "Could not skip frame index range"
+                        << readableFrames;
+                m_curFrameIndex = WavpackGetSampleIndex(m_wpc);
+                return IndexRange::between(m_curFrameIndex, m_curFrameIndex);
+            }
+        }
     }
-    // static assert: sizeof(CSAMPLE) == sizeof(int32_t)
+
+    DEBUG_ASSERT(m_curFrameIndex == readableFrames.head());
+    DEBUG_ASSERT(pOutputBuffer);
+    static_assert(sizeof(CSAMPLE) == sizeof(int32_t),
+            "CSAMPLE and int32_t must have the same size");
     SINT unpackCount = WavpackUnpackSamples(m_wpc,
-            reinterpret_cast<int32_t*>(sampleBuffer), numberOfFrames);
+            reinterpret_cast<int32_t*>(pOutputBuffer->data()), readableFrames.length());
     DEBUG_ASSERT(unpackCount >= 0);
+    DEBUG_ASSERT(unpackCount <= readableFrames.length());
     if (!(WavpackGetMode(m_wpc) & MODE_FLOAT)) {
         // signed integer -> float
         const SINT sampleCount = frames2samples(unpackCount);
         for (SINT i = 0; i < sampleCount; ++i) {
             const int32_t sampleValue =
-                    reinterpret_cast<int32_t*>(sampleBuffer)[i];
-            sampleBuffer[i] = CSAMPLE(sampleValue) * m_sampleScaleFactor;
+                    *reinterpret_cast<int32_t*>(pOutputBuffer->data(i));
+            *pOutputBuffer->data(i) = CSAMPLE(sampleValue) * m_sampleScaleFactor;
         }
     }
+    const auto result = IndexRange::forward(m_curFrameIndex, unpackCount);
     m_curFrameIndex += unpackCount;
-    return unpackCount;
+    return result;
 }
 
 QString SoundSourceProviderWV::getName() const {

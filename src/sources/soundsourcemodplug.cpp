@@ -57,6 +57,7 @@ void SoundSourceModPlug::configure(unsigned int bufferSizeLimit,
 
 SoundSourceModPlug::SoundSourceModPlug(const QUrl& url)
         : SoundSource(url, getModPlugTypeFromUrl(url)),
+          LegacyAudioSourceAdapter(this, this),
           m_pModFile(nullptr),
           m_seekPos(0) {
 }

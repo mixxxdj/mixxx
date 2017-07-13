@@ -3,6 +3,8 @@
 
 #include "sources/soundsourceprovider.h"
 
+#include "sources/v1/legacyaudiosourceadapter.h"
+
 namespace ModPlug {
 #include <libmodplug/modplug.h>
 }
@@ -14,7 +16,7 @@ namespace mixxx {
 // Class for reading tracker files using libmodplug.
 // The whole file is decoded at once and saved
 // in RAM to allow seeking and smooth operation in Mixxx.
-class SoundSourceModPlug: public mixxx::SoundSource {
+class SoundSourceModPlug: public SoundSource, public virtual LegacyAudioSource, public LegacyAudioSourceAdapter {
 public:
      static constexpr SINT kChannelCount = 2;
      static constexpr SINT kSamplingRate = 44100;
@@ -33,7 +35,6 @@ public:
 
     void close() override;
 
-protected:
     SINT seekSampleFrame(SINT frameIndex) override;
 
     SINT readSampleFrames(SINT numberOfFrames,

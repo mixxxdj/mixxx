@@ -8,6 +8,7 @@
 #include "util/result.h"
 #include "util/samplebuffer.h"
 
+
 namespace mixxx {
 
 // forward declaration(s)
@@ -15,6 +16,49 @@ class AudioSource;
 class AudioSourceConfig;
 
 typedef std::shared_ptr<AudioSource> AudioSourcePointer;
+
+// AudioSource v2 interface
+class IAudioSource {
+  public:
+    virtual ~IAudioSource() = default;
+
+    // Read sample frames from the requested frame index range. Only
+    // forward-oriented index ranges need to be supported. The implementation
+    // is responsible for restricting the requested range to the range that
+    // is actually readable.
+    //
+    // Only that part of the output buffer corresponding to the returned
+    // range is allowed to be modified. All remaining samples in the output
+    // buffer should stay untouched. The samples in the output buffer need
+    // to be offset properly depending on the difference between the first
+    // requested frame and the actual first read frame, i.e. the first sample
+    // in the output buffer represents the sample of the first channel from
+    // the first requested frame.
+    //
+    // If the output buffer is null all decoded samples must be discarded
+    // immediately. Otherwise the size of the output buffer must be
+    // sufficient to buffer all frames2samples(frameIndexRange.length())
+    // sample values.
+    //
+    // On errors only a sub range of the requested frames might be returned.
+    virtual IndexRange readOrSkipSampleFrames(
+            IndexRange frameIndexRange,
+            SampleBuffer::WritableSlice* pOutputBuffer) = 0;
+
+
+    /*non-virtual*/ IndexRange readSampleFrames(
+            IndexRange frameIndexRange,
+            SampleBuffer::WritableSlice outputBuffer) {
+        return readOrSkipSampleFrames(frameIndexRange, &outputBuffer);
+    }
+
+    // Might be overridden by derived classes to provide an optimized
+    // implementation for this special case.
+    virtual IndexRange skipSampleFrames(
+            IndexRange frameIndexRange) {
+        return readOrSkipSampleFrames(frameIndexRange, nullptr);
+    }
+};
 
 // Common interface and base class for audio sources.
 //
@@ -26,7 +70,7 @@ typedef std::shared_ptr<AudioSource> AudioSourcePointer;
 //
 // Audio sources are implicitly opened upon creation and
 // closed upon destruction.
-class AudioSource: public UrlResource, public AudioSignal {
+class AudioSource: public UrlResource, public AudioSignal, public virtual /*implements*/ IAudioSource {
   public:
     // All AudioSources are required to produce a signal of frames
     // where each frame contains samples from all channels that are
@@ -110,107 +154,6 @@ class AudioSource: public UrlResource, public AudioSignal {
 
     bool verifyReadable() const override;
 
-
-    ///////////////////////////////////////////////////////////////////////////
-    // AudioSource v2 Interface
-    ///////////////////////////////////////////////////////////////////////////
-
-    // Read sample frames from the requested frame index range. Only
-    // forward-oriented index ranges need to be supported. The implementation
-    // is responsible for restricting the requested range to the range that
-    // is actually readable.
-    //
-    // Only that part of the output buffer corresponding to the returned
-    // range is allowed to be modified. All remaining samples in the output
-    // buffer should stay untouched. The samples in the output buffer need
-    // to be offset properly depending on the difference between the first
-    // requested frame and the actual first read frame, i.e. the first sample
-    // in the output buffer represents the sample of the first channel from
-    // the first requested frame.
-    //
-    // If the output buffer is null all decoded samples must be discarded
-    // immediately. Otherwise the size of the output buffer must be
-    // sufficient to buffer all frames2samples(frameIndexRange.length())
-    // sample values.
-    //
-    // On errors only a sub range of the requested frames might be returned.
-    //
-    // TODO(XXX): Declare as a pure virtual function after deleting the
-    // default implementation that is currently used to support migration
-    // to the new v2 API.
-    virtual IndexRange readOrSkipSampleFrames(
-            IndexRange frameIndexRange,
-            SampleBuffer::WritableSlice* pOutputBuffer) /*= 0*/;
-
-    /*non-virtual*/ IndexRange readSampleFrames(
-            IndexRange frameIndexRange,
-            SampleBuffer::WritableSlice outputBuffer) {
-        return readOrSkipSampleFrames(frameIndexRange, &outputBuffer);
-    }
-
-    // Might be overridden by derived classes to provide an optimized
-    // implementation for this special case.
-    virtual IndexRange skipSampleFrames(
-            IndexRange frameIndexRange) {
-        return readOrSkipSampleFrames(frameIndexRange, nullptr);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-
-
-  protected:
-    ///////////////////////////////////////////////////////////////////////////
-    // Legacy AudioSource Interface
-    //
-    // These functions are no longer used and should not be implemented for
-    // new AudioSources!!
-    //
-    // TODO(XXX): Delete after all derived classes have been migrated
-    // to the new v2 interface!
-    ///////////////////////////////////////////////////////////////////////////
-
-    // Adjusts the current frame seek index:
-    // - Precondition: isValidFrameIndex(frameIndex) == true
-    // - The seek position in seconds is frameIndex / samplingRate()
-    // Returns the actual current frame index which may differ from the
-    // requested index if the source does not support accurate seeking.
-    virtual SINT seekSampleFrame(SINT frameIndex);
-
-    // Fills the buffer with samples from each channel starting
-    // at the current frame seek position.
-    //
-    // The implicit  minimum required capacity of the sampleBuffer is
-    //     sampleBufferSize = frames2samples(numberOfFrames)
-    // Samples in the sampleBuffer are stored as consecutive sample
-    // frames with samples from each channel interleaved.
-    //
-    // Returns the actual number of frames that have been read which
-    // might be lower than the requested number of frames when the end
-    // of the audio stream has been reached. The current frame seek
-    // position is moved forward towards the next unread frame.
-    virtual SINT readSampleFrames(
-            SINT numberOfFrames,
-            CSAMPLE* sampleBuffer);
-
-    inline SINT skipSampleFrames(
-            SINT numberOfFrames) {
-        return readSampleFrames(numberOfFrames, static_cast<CSAMPLE*>(nullptr));
-    }
-
-    inline SINT readSampleFrames(
-            SINT numberOfFrames,
-            SampleBuffer* pSampleBuffer) {
-        if (pSampleBuffer) {
-            DEBUG_ASSERT(frames2samples(numberOfFrames) <= pSampleBuffer->size());
-            return readSampleFrames(numberOfFrames, pSampleBuffer->data());
-        } else {
-            return skipSampleFrames(numberOfFrames);
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-
-
   protected:
     explicit AudioSource(const QUrl& url);
     explicit AudioSource(const AudioSource& other) = default;
@@ -222,6 +165,11 @@ class AudioSource: public UrlResource, public AudioSignal {
     bool initBitrate(SINT bitrate) {
         return initBitrate(Bitrate(bitrate));
     }
+
+    friend class LegacyAudioSourceAdapter;
+    IndexRange adjustReadableFrameIndexRangeAndOutputBuffer(
+            IndexRange frameIndexRange,
+            SampleBuffer::WritableSlice* pOutputBuffer) const;
 
   private:
     friend class AudioSourceConfig;
@@ -246,5 +194,6 @@ class AudioSourceConfig : public AudioSignal {
 };
 
 } // namespace mixxx
+
 
 #endif // MIXXX_AUDIOSOURCE_H
