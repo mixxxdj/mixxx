@@ -19,10 +19,10 @@ RecordingFeature::RecordingFeature(UserSettingsPointer pConfig,
           m_pTrackCollection(pTrackCollection),
           m_pRecordingManager(pRecordingManager),
           m_pRecordingView(nullptr) {
-    
+
     m_childModel.setRootItem(std::make_unique<TreeItem>(this));
-    
-    m_pBrowseModel = make_parented<BrowseTableModel>(this, 
+
+    m_pBrowseModel = make_parented<BrowseTableModel>(this,
             m_pTrackCollection, m_pRecordingManager);
     m_pProxyModel = std::make_unique<ProxyTrackModel>(m_pBrowseModel.get());
 }
@@ -47,23 +47,23 @@ QPointer<TreeItemModel> RecordingFeature::getChildModel() {
     return &m_childModel;
 }
 
-parented_ptr<QWidget> RecordingFeature::createPaneWidget(KeyboardEventFilter*, 
+parented_ptr<QWidget> RecordingFeature::createPaneWidget(KeyboardEventFilter*,
             int paneId, QWidget* parent) {
     auto pTable = LibraryFeature::createTableWidget(paneId, parent);
-    pTable->setSorting(false);    
+    pTable->setSorting(false);
     return pTable;
 }
 
 parented_ptr<QWidget> RecordingFeature::createInnerSidebarWidget(
             KeyboardEventFilter* pKeyboard, QWidget* parent) {
-    auto pRecordingView = make_parented<DlgRecording>(parent, 
+    auto pRecordingView = make_parented<DlgRecording>(parent,
                                                       m_pTrackCollection,
                                                       m_pRecordingManager);
     m_pRecordingView = pRecordingView.toWeakRef();
     m_pRecordingView->installEventFilter(pKeyboard);
     m_pRecordingView->setBrowseTableModel(m_pBrowseModel.get());
     m_pRecordingView->setProxyTrackModel(m_pProxyModel.get());
-    
+
     return pRecordingView;
 }
 
@@ -72,10 +72,10 @@ void RecordingFeature::activate() {
     VERIFY_OR_DEBUG_ASSERT(!m_pRecordingView.isNull()) {
         return;
     }
-    
+
     m_pRecordingView->refreshBrowseModel();
     showTrackModel(m_pProxyModel.get());
     showBreadCrumb();
     restoreSearch("");
-    
+
 }

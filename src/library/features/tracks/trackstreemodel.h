@@ -19,28 +19,28 @@ class TracksTreeModel : public TreeItemModel {
     Q_OBJECT
   public:
     TracksTreeModel(LibraryFeature* pFeature,
-                          TrackCollection* pTrackCollection, 
+                          TrackCollection* pTrackCollection,
                           UserSettingsPointer pConfig,
                           QObject* parent = nullptr);
 
     virtual QVariant data(const QModelIndex& index, int role) const;
     virtual bool setData(const QModelIndex& index, const QVariant& value, int role);
-    
-  public slots:  
+
+  public slots:
     void reloadTree() override;
-    
+
   protected:
     virtual void createTracksTree();
     virtual QString getGroupingOptions();
-    
+
     parented_ptr<TreeItem> m_pGrouping;
     parented_ptr<TreeItem> m_pShowAll;
-    
+
     LibraryFeature* m_pFeature;
     TrackCollection* m_pTrackCollection;
     UserSettingsPointer m_pConfig;
-  
-  private:  
+
+  private:
     struct CoverIndex {
         int iCoverHash;
         int iCoverLoc;
@@ -48,16 +48,16 @@ class TracksTreeModel : public TreeItemModel {
         int iCoverSrc;
         int iCoverType;
     };
-    
+
   private slots:
     void coverFound(const QObject* requestor, int requestReference, const CoverInfo&,
                     QPixmap pixmap, bool fromCache);
-    
-  private:    
+
+  private:
     QVariant getQuery(TreeItem* pTree) const;
     void addCoverArt(const CoverIndex& index, const QSqlQuery& query, TreeItem* pTree);
-    
-    
+
+
     QStringList m_sortOrder;
     QStringList m_coverQuery;
 };

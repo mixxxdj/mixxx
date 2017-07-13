@@ -18,7 +18,7 @@ class DlgAutoDJ : public QFrame, public Ui::DlgAutoDJ {
     Q_OBJECT
   public:
     DlgAutoDJ(QWidget* parent, AutoDJProcessor* pProcessor);
-    
+
     // These seleced rows are always from the focused pane
     void setSelectedRows(const QModelIndexList& selectedRows);
     void onShow();
@@ -35,11 +35,11 @@ class DlgAutoDJ : public QFrame, public Ui::DlgAutoDJ {
 
   signals:
     void addRandomButton(bool buttonChecked);
-    
+
   private:
     AutoDJProcessor* m_pAutoDJProcessor;
     PlaylistTableModel* m_pAutoDJTableModel;
-    
+
     QModelIndexList m_selectedRows;
 };
 

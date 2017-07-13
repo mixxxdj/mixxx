@@ -147,26 +147,26 @@ class TrackModel {
 
     virtual void select() {
     }
-    
+
     virtual void saveSelection(const QModelIndexList&) {
     }
-    
+
     virtual QModelIndexList getSavedSelectionIndices() {
         return QModelIndexList();
     }
 
     virtual void restoreQuery(const SavedSearchQuery&) {
     }
-    
-    virtual SavedSearchQuery saveQuery(const QModelIndexList& /* selected */, 
+
+    virtual SavedSearchQuery saveQuery(const QModelIndexList& /* selected */,
                                        SavedSearchQuery query = SavedSearchQuery()) const {
         return query;
     }
-    
+
     virtual SavedSearchQuery saveQuery(SavedSearchQuery = SavedSearchQuery()) {
         return SavedSearchQuery();
     }
-    
+
   private:
     QSqlDatabase m_db;
     QString m_settingsNamespace;

@@ -98,9 +98,9 @@ class CoverArt : public CoverInfo {
     CoverArt& operator=(CoverArt&&) = default;
 #endif
 
-    // it is not a QPixmap, because it is not safe to use pixmaps 
+    // it is not a QPixmap, because it is not safe to use pixmaps
     // outside the GUI thread
-    QImage image; 
+    QImage image;
     int resizedToWidth;
 };
 

@@ -57,7 +57,7 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     bool m_cancelImport;
 
     static QString m_databaseFile;
-    
+
     static const QString BANSHEE_MOUNT_KEY;
 };
 

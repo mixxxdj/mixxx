@@ -123,8 +123,8 @@ TracksFeature::TracksFeature(UserSettingsPointer pConfig,
             m_pChildModel.get(), SLOT(reloadTree()));
     connect(&m_trackDao, SIGNAL(tracksAdded(QSet<TrackId>)),
             m_pChildModel.get(), SLOT(reloadTree()));
-    
-    m_pLibraryTableModel = make_parented<LibraryTableModel>(this, 
+
+    m_pLibraryTableModel = make_parented<LibraryTableModel>(this,
             pTrackCollection, "mixxx.db.model.library");
 }
 
@@ -151,7 +151,7 @@ parented_ptr<QWidget> TracksFeature::createInnerSidebarWidget(
             KeyboardEventFilter*, QWidget* parent) {
     auto pSidebar = createLibrarySidebarWidget(parent);
     m_pSidebar = pSidebar.toWeakRef();
-    m_pSidebar->setIconSize(m_pChildModel->getDefaultIconSize());    
+    m_pSidebar->setIconSize(m_pChildModel->getDefaultIconSize());
     m_pChildModel->reloadTree();
     return pSidebar;
 }
@@ -174,28 +174,28 @@ void TracksFeature::activate() {
         activateChild(m_lastClickedIndex);
         return;
     }
-    
+
     //qDebug() << "MixxxLibraryFeature::activate()";
     showTrackModel(m_pLibraryTableModel.get());
     restoreSearch("");
     showBreadCrumb();
-    
+
 }
 
 void TracksFeature::activateChild(const QModelIndex& index) {
     m_lastClickedIndex = index;
-    
+
     if (!index.isValid()) return;
 
     QString query = index.data(AbstractRole::RoleQuery).toString();
     //qDebug() << "MixxxLibraryFeature::activateChild" << query;
-    
+
     if (query == "$groupingSettings$") {
         // Act as right click
         onRightClickChild(QCursor::pos(), QModelIndex());
         return;
     }
-    
+
     m_pLibraryTableModel->search(query);
     switchToFeature();
     showBreadCrumb(index.data(AbstractRole::RoleBreadCrumb).toString(), getIcon());
@@ -208,15 +208,15 @@ void TracksFeature::invalidateChild() {
 
 void TracksFeature::onRightClickChild(const QPoint& pos,
                                             const QModelIndex&) {
-    
+
     // Create the sort menu
-    QMenu menu;    
+    QMenu menu;
     QStringList currentSort = m_pChildModel->data(
             QModelIndex(), AbstractRole::RoleSorting).toStringList();
     bool recursive = m_pChildModel->data(
             QModelIndex(), AbstractRole::RoleSettings).toBool();
-    
-    
+
+
     parented_ptr<QActionGroup> orderGroup = make_parented<QActionGroup>(&menu);
     for (int i = 0; i < kGroupingOptions.size(); ++i) {
         QAction* action = menu.addAction(kGroupingText.at(i));
@@ -225,17 +225,17 @@ void TracksFeature::onRightClickChild(const QPoint& pos,
         action->setCheckable(true);
         action->setChecked(currentSort == kGroupingOptions.at(i));
     }
-    
+
     menu.addSeparator();
     QAction* folderRecursive = menu.addAction(tr("Get recursive folder search query"));
     folderRecursive->setCheckable(true);
     folderRecursive->setChecked(recursive);
-    
+
     QAction* selected = menu.exec(pos);
     if (selected == nullptr) {
         return;
     } else if (selected == folderRecursive) {
-        setTreeSettings(folderRecursive->isChecked(), 
+        setTreeSettings(folderRecursive->isChecked(),
                         AbstractRole::RoleSettings);
     } else {
         setTreeSettings(selected->data());
@@ -246,7 +246,7 @@ bool TracksFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     if (pSource) {
         return false;
     } else {
-        QList<QFileInfo> files = 
+        QList<QFileInfo> files =
                 DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
 
         // Adds track, does not insert duplicates, handles unremoving logic.

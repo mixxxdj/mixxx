@@ -36,7 +36,7 @@ class CrateFeature : public LibraryFeature {
     QString getIconPath() override;
     QString getSettingsName() const override;
     bool isSinglePane() const override;
-    
+
     void onSearch(QString&) {}
 
     bool dragMoveAccept(QUrl url) override;
@@ -44,9 +44,9 @@ class CrateFeature : public LibraryFeature {
                          QObject* pSource) override;
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url) override;
 
-    parented_ptr<QWidget> createPaneWidget(KeyboardEventFilter* pKeyboard, 
+    parented_ptr<QWidget> createPaneWidget(KeyboardEventFilter* pKeyboard,
                                            int paneId, QWidget* parent) override;
-    
+
     QPointer<TreeItemModel> getChildModel() override;
 
   signals:

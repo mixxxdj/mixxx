@@ -11,7 +11,7 @@ class TrackCollection;
 class HistoryTreeModel : public TreeItemModel
 {
   public:
-    HistoryTreeModel(HistoryFeature* pFeature, TrackCollection* pTrackCollection, 
+    HistoryTreeModel(HistoryFeature* pFeature, TrackCollection* pTrackCollection,
                      QObject* parent = nullptr);
 
     QModelIndex reloadListsTree(int playlistId);
@@ -25,10 +25,10 @@ class HistoryTreeModel : public TreeItemModel
         int iName;
         int iCount;
     };
-    
+
     QList<QVariant> idsFromItem(TreeItem* pTree) const;
     TreeItem* findItemFromPlaylistId(TreeItem* pTree, int playlistId, int& row) const;
-    
+
     QPointer<HistoryFeature> m_pFeature;
     TrackCollection* m_pTrackCollection;
     QStringList m_columns;

@@ -20,9 +20,9 @@ class BaseExternalPlaylistModel;
 class ITunesFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
  public:
-    ITunesFeature(UserSettingsPointer pConfig, 
+    ITunesFeature(UserSettingsPointer pConfig,
                   Library* pLibrary,
-                  QObject* parent, 
+                  QObject* parent,
                   TrackCollection* pTrackCollection);
     virtual ~ITunesFeature();
     static bool isSupported();

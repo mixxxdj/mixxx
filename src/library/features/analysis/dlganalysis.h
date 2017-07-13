@@ -11,11 +11,11 @@
 class AnalysisFeature;
 
 class DlgAnalysis : public QFrame, public Ui::DlgAnalysis {
-    
+
     Q_OBJECT
-    
+
   public:
-    
+
     DlgAnalysis(QWidget* parent, AnalysisFeature* pAnalysis);
     ~DlgAnalysis() override;
 
@@ -24,19 +24,19 @@ class DlgAnalysis : public QFrame, public Ui::DlgAnalysis {
         return m_pAnalysisLibraryTableModel->currentSearch();
     }
     int getNumTracks();
-    
+
     // The selected indexes are always from the focused pane
     void setSelectedIndexes(const QModelIndexList& selectedIndexes);
     void setTableModel(AnalysisLibraryTableModel* pTableModel);
 
   public slots:
-    
+
     void analyze();
     void trackAnalysisFinished(int size);
     void trackAnalysisProgress(int progress);
     void trackAnalysisStarted(int size);
     void analysisActive(bool bActive);
-    
+
   private:
     //Note m_pTrackTablePlaceholder is defined in the .ui file
     bool m_bAnalysisActive;
@@ -45,7 +45,7 @@ class DlgAnalysis : public QFrame, public Ui::DlgAnalysis {
     QPointer<AnalysisFeature> m_pAnalysis;
     int m_tracksInQueue;
     int m_currentTrack;
-    
+
     QModelIndexList m_selectedIndexes;
 };
 

@@ -22,10 +22,10 @@ MaintenanceFeature::MaintenanceFeature(UserSettingsPointer pConfig,
           m_pTab(nullptr),
           m_idExpandedHidden(-1),
           m_idExpandedMissing(-1) {
-    
+
     auto pHiddenTable = make_parented<HiddenTableModel>(this, m_pTrackCollection);
     m_pHiddenTableModel = pHiddenTable.toWeakRef();
-    
+
     auto pMissingTable = make_parented<MissingTableModel>(this, m_pTrackCollection);
     m_pMissingTableModel = pMissingTable.toWeakRef();
 }
@@ -162,7 +162,7 @@ void MaintenanceFeature::slotUnhideHidden() {
     if (pTable.isNull()) {
         return;
     }
-    
+
     pTable->slotUnhide();
 }
 
@@ -172,7 +172,7 @@ void MaintenanceFeature::slotPurge() {
         return;
     }
     pTable->slotPurge();
-    
+
     m_pMissingView->onShow();
     m_pHiddenView->onShow();
 }

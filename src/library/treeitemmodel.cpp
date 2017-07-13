@@ -53,7 +53,7 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
         return QVariant();
     }
 
-    // We use Qt::UserRole to ask for the datapath.    
+    // We use Qt::UserRole to ask for the datapath.
     switch(role) {
         case Qt::DisplayRole:
             return item->getLabel();
@@ -118,12 +118,12 @@ Qt::ItemFlags TreeItemModel::flags(const QModelIndex &index) const {
     if (!index.isValid())
         return 0;
     Qt::ItemFlags flags = Qt::ItemIsEnabled;
-    
+
     bool divider = index.data(AbstractRole::RoleDivider).toBool();
     if (!divider) {
         flags |= Qt::ItemIsSelectable;
     }
-    
+
     return flags;
 }
 
@@ -244,7 +244,7 @@ void TreeItemModel::triggerRepaint() {
 }
 
 //static
-QString TreeItemModel::getBreadCrumbString(TreeItem* pTree) {    
+QString TreeItemModel::getBreadCrumbString(TreeItem* pTree) {
     // Base case
     if (pTree == nullptr || pTree->feature() == nullptr) {
         return QString();
@@ -252,7 +252,7 @@ QString TreeItemModel::getBreadCrumbString(TreeItem* pTree) {
     else if (pTree->parent() == nullptr) {
         return pTree->feature()->title().toString();
     }
-    
+
     // Recursive case
     QString text = pTree->getLabel();
     QString next = getBreadCrumbString(pTree->parent());
@@ -275,17 +275,17 @@ bool TreeItemModel::dropAccept(const QModelIndex& index, QList<QUrl> urls,
     if (pFeature == nullptr) {
         return false;
     }
-    
+
     return pFeature->dropAcceptChild(index, urls, pSource);
 }
 
 bool TreeItemModel::dragMoveAccept(const QModelIndex& index, QUrl url) {
-    //qDebug() << "TreeItemModel::dragMoveAccept() index=" << index << url;    
+    //qDebug() << "TreeItemModel::dragMoveAccept() index=" << index << url;
     LibraryFeature* pFeature = getFeatureFromIndex(index);
     if (pFeature == nullptr) {
         return false;
     }
-    
+
     return pFeature->dragMoveAcceptChild(index, url);
 }
 

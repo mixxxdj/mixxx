@@ -54,7 +54,7 @@ void DlgAutoDJ::setSelectedRows(const QModelIndexList& selectedRows) {
     updateSelectionInfo();
 }
 
-void DlgAutoDJ::shufflePlaylistButton(bool) {    
+void DlgAutoDJ::shufflePlaylistButton(bool) {
     // Activate regardless of button being checked
     m_pAutoDJProcessor->shufflePlaylist(m_selectedRows);
 }
@@ -134,7 +134,7 @@ void DlgAutoDJ::updateSelectionInfo() {
         labelSelectionInfo->setEnabled(false);
         return;
     }
-    
+
     double duration = 0.0;
     for (const QModelIndex& mIndex : m_selectedRows) {
         TrackPointer pTrack = m_pAutoDJTableModel->getTrack(mIndex);

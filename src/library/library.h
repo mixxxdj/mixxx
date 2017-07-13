@@ -49,9 +49,9 @@ public:
         HideTracks,
         PurgeTracks
     };
-    
+
     static const int kDefaultRowHeightPx;
-    
+
     static const QString kConfigGroup;
 
     static const ConfigKey kConfigKeyRepairDatabaseOnNextRestart;
@@ -65,21 +65,21 @@ public:
     mixxx::DbConnectionPoolPtr dbConnectionPool() const {
         return m_pDbConnectionPool;
     }
-    
+
     void bindSearchBar(WSearchLineEdit* searchLine, int id);
     void bindSidebarButtons(WButtonBar* sidebar);
     void bindPaneWidget(WLibraryPane *libraryWidget,
                         KeyboardEventFilter* pKeyboard, int paneId);
-    void bindSidebarExpanded(WBaseLibrary *expandedPane, 
+    void bindSidebarExpanded(WBaseLibrary *expandedPane,
                              KeyboardEventFilter* pKeyboard);
     void bindBreadCrumb(WLibraryBreadCrumb *pBreadCrumb, int paneId);
 
     void destroyInterface();
     LibraryView* getActiveView();
-    
+
     void addFeature(LibraryFeature* feature);
     QStringList getDirs();
-    
+
     void paneCollapsed(int paneId);
     void paneUncollapsed(int paneId);
 
@@ -90,7 +90,7 @@ public:
     inline const QFont& getTrackTableFont() const {
         return m_trackTableFont;
     }
-    
+
     void switchToFeature(LibraryFeature* pFeature);
     void showBreadCrumb(int paneId, TreeItem* pTree);
     void showBreadCrumb(int paneId, const QString& text, const QIcon& icon);
@@ -98,17 +98,17 @@ public:
     void restoreSaveButton(int paneId);
     void paneFocused(LibraryPaneManager *pPane);
     void panePreselected(LibraryPaneManager* pPane, bool value);
-    
+
     int getFocusedPaneId();
     int getPreselectedPaneId();
 
     void focusSearch();
 
   public slots:
-    
+
     void slotActivateFeature(LibraryFeature* pFeature);
     void slotHoverFeature(LibraryFeature* pFeature);
-    
+
     // Updates the focus from the feature before changing the view
     void slotLoadTrack(TrackPointer pTrack);
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play);
@@ -122,7 +122,7 @@ public:
     void onSkinLoadFinished();
     void slotSetTrackTableFont(const QFont& font);
     void slotSetTrackTableRowHeight(int rowHeight);
-    
+
     void slotSetHoveredFeature(LibraryFeature* pFeature);
     void slotResetHoveredFeature(LibraryFeature* pFeature);
     void slotSetFocusedFeature(LibraryFeature* pFeature);
@@ -135,7 +135,7 @@ public:
   signals:
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
-    
+
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);
@@ -148,21 +148,21 @@ public:
     void scanFinished();
 
   private:
-    
+
     // If the pane exists returns it, otherwise it creates the pane
     LibraryPaneManager* getOrCreatePane(int paneId);
     LibraryPaneManager* getFocusedPane();
     LibraryPaneManager* getPreselectedPane();
-    
+
     void createTrackCache();
     void createFeatures(
             UserSettingsPointer pConfig,
             PlayerManagerInterface *pPlayerManager,
             RecordingManager* pRecordingManager);
-    
+
     void handleFocus();
     void handlePreselection();
-    
+
     const UserSettingsPointer m_pConfig;
 
     // The Mixxx database connection pool
@@ -178,7 +178,7 @@ public:
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
     QScopedPointer<ControlObject> m_pKeyNotation;
-    
+
     QHash<int, LibraryPaneManager*> m_panes;
     std::unique_ptr<LibrarySidebarExpandedManager> m_pSidebarExpanded;
     QList<LibraryFeature*> m_features;
@@ -187,7 +187,7 @@ public:
     // Used to show the preselected pane when the mouse is over the button
     LibraryFeature* m_hoveredFeature;
     LibraryFeature* m_focusedFeature;
-    
+
     // Can be any integer as it's used with a HashMap
     int m_focusedPaneId;
     int m_preselectedPane;

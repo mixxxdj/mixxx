@@ -64,7 +64,7 @@ AutoDJFeature::AutoDJFeature(UserSettingsPointer pConfig,
     // Create the "Crates" tree-item under the root item.
     auto pRootItem = std::make_unique<TreeItem>(this);
     m_pCratesTreeItem = pRootItem->appendChild(tr("Crates"));
-    // we set the Icon later, because the icon loader is not fully set up yet 
+    // we set the Icon later, because the icon loader is not fully set up yet
 
     // Create tree-items under "Crates".
     constructCrateChildModel();
@@ -105,7 +105,7 @@ QString AutoDJFeature::getSettingsName() const {
     return "AutoDJFeature";
 }
 
-parented_ptr<QWidget> AutoDJFeature::createPaneWidget(KeyboardEventFilter*, 
+parented_ptr<QWidget> AutoDJFeature::createPaneWidget(KeyboardEventFilter*,
             int paneId, QWidget* parent) {
     auto pTrackTableView = createTableWidget(paneId, parent);
     pTrackTableView->loadTrackModel(m_pAutoDJProcessor->getTableModel());
@@ -122,7 +122,7 @@ parented_ptr<QWidget> AutoDJFeature::createInnerSidebarWidget(
             KeyboardEventFilter* pKeyboard, QWidget* parent) {
     auto pContainer = make_parented<QTabWidget>(parent);
 
-    // now the icon loader is set up and get an icon 
+    // now the icon loader is set up and get an icon
     m_pCratesTreeItem->setIcon(WPixmapStore::getLibraryIcon(
             ":/images/library/ic_library_crates.png"));
 
@@ -337,6 +337,6 @@ void AutoDJFeature::selectionChanged(const QItemSelection&, const QItemSelection
     VERIFY_OR_DEBUG_ASSERT(!m_pAutoDJView.isNull() && !pTable.isNull()) {
         return;
     }
-    
+
     m_pAutoDJView->setSelectedRows(pTable->selectionModel()->selectedRows());
 }

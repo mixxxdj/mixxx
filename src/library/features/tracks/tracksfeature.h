@@ -48,7 +48,7 @@ class TracksFeature : public LibraryFeature {
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
     QPointer<TreeItemModel> getChildModel();
-    parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter*, 
+    parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter*,
                                                    QWidget* parent) override;
 
   public slots:
@@ -70,11 +70,11 @@ class TracksFeature : public LibraryFeature {
     static const QList<QStringList> kGroupingOptions;
     static const QStringList kGroupingText;
     static const QString kLibraryFolder;
-    
+
   private slots:
-    void setTreeSettings(const QVariant &settings, 
+    void setTreeSettings(const QVariant &settings,
                          AbstractRole role = AbstractRole::RoleSorting);
-    
+
   private:
     std::unique_ptr<TreeItemModel> m_pChildModel;
     QPointer<WLibrarySidebar> m_pSidebar;
@@ -83,7 +83,7 @@ class TracksFeature : public LibraryFeature {
     TrackDAO& m_trackDao;
     QPersistentModelIndex m_lastClickedIndex;
     bool m_foldersShown;
-    
+
 };
 
 #endif /* MIXXXLIBRARYFEATURE_H */

@@ -30,10 +30,10 @@ HistoryFeature::HistoryFeature(UserSettingsPointer pConfig,
     emit(slotGetNewPlaylist());
 
     //construct child model
-    m_pHistoryTreeModel = std::make_unique<HistoryTreeModel>(this, 
+    m_pHistoryTreeModel = std::make_unique<HistoryTreeModel>(this,
                                                              m_pTrackCollection);
     constructChildModel(-1);
-    
+
     connect(&PlayerInfo::instance(), SIGNAL(currentPlayingTrackChanged(TrackPointer)),
             this, SLOT(slotPlayingTrackChanged(TrackPointer)));
 }
@@ -113,13 +113,13 @@ void HistoryFeature::onRightClickChild(const QPoint& globalPos, const QModelInde
 
 void HistoryFeature::buildPlaylistList() {
     m_playlistList.clear();
-    
-    // Setup the sidebar playlist model    
+
+    // Setup the sidebar playlist model
     QSqlQuery query("SELECT id, name FROM Playlists WHERE hidden=2", m_pTrackCollection->database());
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
-    
+
     int iId = query.record().indexOf("id");
     int iName = query.record().indexOf("name");
     while (query.next()) {
@@ -153,7 +153,7 @@ QModelIndex HistoryFeature::constructChildModel(int selected_id) {
 }
 
 parented_ptr<PlaylistTableModel> HistoryFeature::constructTableModel() {
-    return make_parented<PlaylistTableModel>(this, m_pTrackCollection, 
+    return make_parented<PlaylistTableModel>(this, m_pTrackCollection,
             "mixxx.db.model.setlog", true);
 }
 
@@ -222,18 +222,18 @@ void HistoryFeature::slotJoinWithNext() {
         bool ok;
         int currentPlaylistId =
                 m_lastRightClickedIndex.data(AbstractRole::RoleData).toInt(&ok);
-        
+
         if (!ok) {
             return;
         }
 
         bool locked = m_playlistDao.isPlaylistLocked(currentPlaylistId);
-        
+
         if (locked) {
             qDebug() << "Skipping playlist deletion because playlist" << currentPlaylistId << "is locked.";
             return;
         }
-        
+
         // Add every track from right klicked playlist to that with the next smaller ID
         // Although being the name "join with next" this is because it's ordered
         // in descendant order so actually the next playlist in the GUI is the
@@ -242,12 +242,12 @@ void HistoryFeature::slotJoinWithNext() {
         if (previousPlaylistId < 0) {
             return;
         }
-            
+
         m_pPlaylistTableModel->setTableModel(previousPlaylistId);
-        
+
         if (currentPlaylistId == m_playlistId) {
             // mark all the Tracks in the previous Playlist as played
-            
+
             m_pPlaylistTableModel->select();
             int rows = m_pPlaylistTableModel->rowCount();
             for (int i = 0; i < rows; ++i) {
@@ -260,7 +260,7 @@ void HistoryFeature::slotJoinWithNext() {
                     track->setPlayCounter(playCounter);
                 }
             }
-            
+
             // Change current setlog
             m_playlistId = previousPlaylistId;
         }
@@ -308,7 +308,7 @@ void HistoryFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
     if (!currentPlayingTrackId.isValid()) {
         return;
     }
-    
+
     m_pPlaylistTableModel = getPlaylistTableModel(-1);
 
     if (m_pPlaylistTableModel->getPlaylist() == m_playlistId) {
