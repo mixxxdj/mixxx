@@ -29,7 +29,7 @@ class LibraryControl;
 class LibraryFeature;
 class LibrarySidebarExpandedManager;
 class LibraryView;
-class MixxxLibraryFeature;
+class TracksFeature;
 class PlaylistFeature;
 class PlayerManagerInterface;
 class TrackCollection;
@@ -169,7 +169,7 @@ public:
     const mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
 
     TrackCollection* m_pTrackCollection;
-    MixxxLibraryFeature* m_pMixxxLibraryFeature;
+    TracksFeature* m_pTracksFeature;
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
     AnalysisFeature* m_pAnalysisFeature;

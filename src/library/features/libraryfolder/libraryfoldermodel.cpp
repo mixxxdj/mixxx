@@ -13,7 +13,7 @@ LibraryFolderModel::LibraryFolderModel(LibraryFeature* pFeature,
                                        TrackCollection* pTrackCollection,
                                        UserSettingsPointer pConfig,
                                        QObject* parent)
-        : MixxxLibraryTreeModel(pFeature, pTrackCollection, pConfig, parent),
+        : TracksTreeModel(pFeature, pTrackCollection, pConfig, parent),
           m_showFolders(false) {
 
     QString recursive = m_pConfig->getValueString(
@@ -51,7 +51,7 @@ bool LibraryFolderModel::setData(
         return true;
     }
     
-    return MixxxLibraryTreeModel::setData(index, value, role);
+    return TracksTreeModel::setData(index, value, role);
 }
 
 QVariant LibraryFolderModel::data(const QModelIndex& index, int role) const {
@@ -61,9 +61,9 @@ QVariant LibraryFolderModel::data(const QModelIndex& index, int role) const {
         if (m_showFolders)
             return LIBRARYFOLDERMODEL_FOLDER;
         
-        return MixxxLibraryTreeModel::data(index, role);
+        return TracksTreeModel::data(index, role);
     } else if (role == AbstractRole::RoleBreadCrumb) {
-        return MixxxLibraryTreeModel::data(index, role);
+        return TracksTreeModel::data(index, role);
     }
     
     TreeItem* pTree = static_cast<TreeItem*>(index.internalPointer());
@@ -75,19 +75,19 @@ QVariant LibraryFolderModel::data(const QModelIndex& index, int role) const {
         // User has clicked the show all item or we are showing the library
         // instead of the folders
         if (!m_showFolders || pTree == m_pShowAll || pTree == m_pGrouping) {
-            return MixxxLibraryTreeModel::data(index, role);
+            return TracksTreeModel::data(index, role);
         }
         
         const QString param("%1:=\"%2\"");
         return param.arg("folder", pTree->getData().toString());
     }
 
-    return MixxxLibraryTreeModel::data(index, role);
+    return TracksTreeModel::data(index, role);
 }
 
 void LibraryFolderModel::createTracksTree() {
     if (!m_showFolders) {
-        MixxxLibraryTreeModel::createTracksTree();
+        TracksTreeModel::createTracksTree();
         return;
     }
     
@@ -125,7 +125,7 @@ QString LibraryFolderModel::getGroupingOptions() {
     if (m_showFolders) 
         return tr("Folders");
     
-    return MixxxLibraryTreeModel::getGroupingOptions();
+    return TracksTreeModel::getGroupingOptions();
 }
 
 void LibraryFolderModel::createTreeForLibraryDir(const QString& dir, QSqlQuery& query) {

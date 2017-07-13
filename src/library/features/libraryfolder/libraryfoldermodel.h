@@ -3,7 +3,7 @@
 
 #include <QSqlQuery>
 
-#include "library/features/mixxxlibrary/mixxxlibrarytreemodel.h"
+#include "library/features/tracks/trackstreemodel.h"
 
 class LibraryFeature;
 class TrackCollection;
@@ -11,7 +11,7 @@ class TrackCollection;
 const QString LIBRARYFOLDERMODEL_FOLDER = "$FOLDER$";
 const QString LIBRARYFOLDERMODEL_RECURSIVE = "FolderRecursive";
 
-class LibraryFolderModel : public MixxxLibraryTreeModel
+class LibraryFolderModel : public TracksTreeModel
 {
   public:
     LibraryFolderModel(LibraryFeature* pFeature, 

@@ -15,10 +15,10 @@ class TrackCollection;
 
 const QString LIBRARYTREEMODEL_SORT = "LibraryTree_Sort"; // ConfigValue key for Library Tree Model sort
 
-class MixxxLibraryTreeModel : public TreeItemModel {
+class TracksTreeModel : public TreeItemModel {
     Q_OBJECT
   public:
-    MixxxLibraryTreeModel(LibraryFeature* pFeature, 
+    TracksTreeModel(LibraryFeature* pFeature,
                           TrackCollection* pTrackCollection, 
                           UserSettingsPointer pConfig,
                           QObject* parent = nullptr);

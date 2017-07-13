@@ -20,7 +20,7 @@
 #include "library/features/history/historyfeature.h"
 #include "library/features/itunes/itunesfeature.h"
 #include "library/features/maintenance/maintenancefeature.h"
-#include "library/features/mixxxlibrary/mixxxlibraryfeature.h"
+#include "library/features/tracks/tracksfeature.h"
 #include "library/features/playlist/playlistfeature.h"
 #include "library/features/recording/recordingfeature.h"
 #include "library/features/rhythmbox/rhythmboxfeature.h"
@@ -70,7 +70,7 @@ Library::Library(
     : m_pConfig(pConfig),
       m_pDbConnectionPool(pDbConnectionPool),
       m_pTrackCollection(new TrackCollection(m_pConfig)),
-      m_pMixxxLibraryFeature(nullptr),
+      m_pTracksFeature(nullptr),
       m_pPlaylistFeature(nullptr),
       m_pCrateFeature(nullptr),
       m_pAnalysisFeature(nullptr),
@@ -368,7 +368,7 @@ int Library::getPreselectedPaneId() {
 }
 
 void Library::slotRefreshLibraryModels() {
-   m_pMixxxLibraryFeature->refreshLibraryModels();
+    m_pTracksFeature->refreshLibraryModels();
    m_pAnalysisFeature->refreshLibraryModels();
 }
 
@@ -736,9 +736,9 @@ void Library::createFeatures(
         UserSettingsPointer pConfig,
         PlayerManagerInterface* pPlayerManager,
         RecordingManager* pRecordingManager) {
-    m_pMixxxLibraryFeature = new MixxxLibraryFeature(
+    m_pTracksFeature = new TracksFeature(
             pConfig, this, this, m_pTrackCollection);
-    addFeature(m_pMixxxLibraryFeature);
+    addFeature(m_pTracksFeature);
 
     addFeature(new AutoDJFeature(
             pConfig, this, this, pPlayerManager, m_pTrackCollection));

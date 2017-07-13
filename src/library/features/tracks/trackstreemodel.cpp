@@ -8,7 +8,7 @@
 #include "util/stringhelper.h"
 #include "widget/wpixmapstore.h"
 
-#include "library/features/mixxxlibrary/mixxxlibrarytreemodel.h"
+#include "library/features/tracks/trackstreemodel.h"
 #include "util/db/dbconnection.h"
 
 namespace  {
@@ -17,10 +17,10 @@ namespace  {
 // changed so this is a hack to allow using coverarts in the model
 // since there's another pointer to the class there's no problem in two classes
 // coexisting.
-QHash<const MixxxLibraryTreeModel*, QHash<quint16, QModelIndex> > m_hashToIndex;
+QHash<const TracksTreeModel*, QHash<quint16, QModelIndex> > m_hashToIndex;
 }
 
-MixxxLibraryTreeModel::MixxxLibraryTreeModel(LibraryFeature* pFeature,
+TracksTreeModel::TracksTreeModel(LibraryFeature* pFeature,
                                              TrackCollection* pTrackCollection, 
                                              UserSettingsPointer pConfig,
                                              QObject* parent)
@@ -59,7 +59,7 @@ MixxxLibraryTreeModel::MixxxLibraryTreeModel(LibraryFeature* pFeature,
 }
 
 
-QVariant MixxxLibraryTreeModel::data(const QModelIndex& index, int role) const {
+QVariant TracksTreeModel::data(const QModelIndex& index, int role) const {
     if (role == AbstractRole::RoleSorting) {
         return m_sortOrder;
     }
@@ -121,7 +121,7 @@ QVariant MixxxLibraryTreeModel::data(const QModelIndex& index, int role) const {
     return TreeItemModel::data(index, role);
 }
 
-bool MixxxLibraryTreeModel::setData(const QModelIndex& index, const QVariant& value, 
+bool TracksTreeModel::setData(const QModelIndex& index, const QVariant& value,
                                     int role) {
     if (role == AbstractRole::RoleSorting) {
         m_sortOrder = value.toStringList();
@@ -133,7 +133,7 @@ bool MixxxLibraryTreeModel::setData(const QModelIndex& index, const QVariant& va
     }
 }
 
-void MixxxLibraryTreeModel::reloadTree() {    
+void TracksTreeModel::reloadTree() {
     //qDebug() << "LibraryTreeModel::reloadTracksTree";
     beginResetModel();
     // Create root item
@@ -149,7 +149,7 @@ void MixxxLibraryTreeModel::reloadTree() {
     endResetModel();
 }
 
-void MixxxLibraryTreeModel::coverFound(const QObject* requestor, int requestReference,
+void TracksTreeModel::coverFound(const QObject* requestor, int requestReference,
                                        const CoverInfo&, QPixmap pixmap, bool fromCache) {
     
     if (requestor == this && !pixmap.isNull() && !fromCache) {
@@ -163,7 +163,7 @@ void MixxxLibraryTreeModel::coverFound(const QObject* requestor, int requestRefe
     }
 }
 
-QVariant MixxxLibraryTreeModel::getQuery(TreeItem* pTree) const {
+QVariant TracksTreeModel::getQuery(TreeItem* pTree) const {
     VERIFY_OR_DEBUG_ASSERT(pTree != nullptr) {
         return "";
     }
@@ -202,7 +202,7 @@ QVariant MixxxLibraryTreeModel::getQuery(TreeItem* pTree) const {
     return result.join(" ");
 }
 
-void MixxxLibraryTreeModel::createTracksTree() {
+void TracksTreeModel::createTracksTree() {
 
     QStringList columns;
     for (const QString& col : m_sortOrder) {
@@ -322,11 +322,11 @@ void MixxxLibraryTreeModel::createTracksTree() {
     }
 }
 
-QString MixxxLibraryTreeModel::getGroupingOptions() {
+QString TracksTreeModel::getGroupingOptions() {
     return m_sortOrder.join(" > ");
 }
 
-void MixxxLibraryTreeModel::addCoverArt(const MixxxLibraryTreeModel::CoverIndex& index,
+void TracksTreeModel::addCoverArt(const TracksTreeModel::CoverIndex& index,
                                    const QSqlQuery& query, TreeItem* pTree) {
     CoverInfo c;
     c.hash = query.value(index.iCoverHash).toInt();
