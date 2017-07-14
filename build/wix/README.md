@@ -11,8 +11,8 @@ bundle embedding Visual Studio C++ redistributables and Mixxx's MSI.
 To test your multilingual package
 =================================
 
-MSI package: `msiexec /i mixxx-full-name.msi ProductLanguage=xxxx`
-EXE bundle: `mixxx-full-name.exe -lang xxxx`
+* MSI package: `msiexec /i mixxx-full-name.msi ProductLanguage=xxxx`
+* EXE bundle: `mixxx-full-name.exe -lang xxxx`
 
 where xxxx is a LCID in decimal notation taken from http://www.science.co.il/Language/Locale-codes.asp and available as a translation in build/wix/Localization
 
