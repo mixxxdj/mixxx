@@ -17,6 +17,24 @@
       </bal:Condition>
      <?endif ?>
 
+    <!-- checking for 32bits vcredist installation -->
+    <util:RegistrySearch Id="vcredist32search"
+                         Variable="vcredist32installed"
+                         Root="HKLM"
+                         Key="SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x86"
+                         Value="Installed"
+                         Result="exists"
+                         Win64="no" />
+
+    <!-- checking for 64bits vcredist installation -->
+    <util:RegistrySearch Id="vcredist64search"
+                         Variable="vcredist64installed"
+                         Root="HKLM"
+                         Key="SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64"
+                         Value="Installed"
+                         Result="exists"
+                         Win64="yes" />
+
     <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkSidebarLicense">
       <bal:WixStandardBootstrapperApplication
         LicenseUrl=""
@@ -65,7 +83,8 @@
           Vital="yes"
           InstallCommand="/install /quiet /norestart"
           RepairCommand="/repair /quiet /norestart"
-          UninstallCommand="/uninstall /quiet /norestart">
+          UninstallCommand="/uninstall /quiet /norestart"
+          DetectCondition="vcredist64installed">
 
           <!-- -->
           <ExitCode Value="3010" Behavior="forceReboot"/>
@@ -85,7 +104,8 @@
           Vital="yes"
           InstallCommand="/install /quiet /norestart"
           RepairCommand="/repair /quiet /norestart"
-          UninstallCommand="/uninstall /quiet /norestart">
+          UninstallCommand="/uninstall /quiet /norestart"
+          DetectCondition="vcredist32installed">
 
           <!-- -->
           <ExitCode Value="3010" Behavior="forceReboot"/>
