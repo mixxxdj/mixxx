@@ -31,7 +31,7 @@
   <String Id="bitWidthMismatch32">您將要安裝的 32 位版本，但已經安裝了一個 64 位。這可能導致意外的行為。首先，請卸載現有的 Mixxx 首先，請卸載現有的 Mixxx 或下載 64 位安裝套裝軟體來升級 (除非你知道你在做什麼)。</String>
   <String Id="bitWidthMismatch64">您將要安裝 64 位版本，但已經安裝了一個 32 位。這可能導致意外的行為。首先，請卸載現有的 Mixxx 首先，請卸載現有的 Mixxx 或下載 32 位安裝套裝軟體來升級 (除非你知道你在做什麼)。</String>
   <String Id="OlderVersionFound">檢測到舊版本的 Mixxx。當我們改變了安裝程式，我們不能順利升級。請安裝這個之前，卸載舊版本。</String>
-  <String Id="VCredistNotFound">Installer was not able to find Microsoft Visual C++ 2015 Redistributable on this system. This is likely an installer bug that should be reported to Mixxx developpers.</String>
+  <String Id="VCredistNotFound">Installer was not able to find Microsoft Visual C++ 2015 Redistributable on this system. This is likely an installer bug that should be reported to Mixxx developers.</String>
 
   <!-- Custom Warning Dialog -->
   <String Id="WarningDlgTitle">{\WixUI_Font_Title}警告</String>

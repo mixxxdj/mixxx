@@ -31,7 +31,7 @@
   <String Id="bitWidthMismatch32">Sie sind dabei, die 32-Bit-Version zu installieren, aber eine 64-Bit-Version ist bereits installiert. Dies kann zu unerwünschtem Verhalten führen. Bitte deinstallieren Sie zuerst die vorhandene Mixxx Version oder laden Sie das 64-Bit-Installationspaket zum Aktualisieren (es sei denn, Sie wissen genau was Sie tun.)</String>
   <String Id="bitWidthMismatch64">Sie sind dabei, die 64-Bit-Version zu installieren, aber eine 32-Bit-Version ist bereits installiert. Dies kann zu unerwünschtem Verhalten führen. Bitte deinstallieren Sie zuerst die vorhandene Mixxx Version oder laden Sie das 32-Bit-Installationspaket zum Aktualisieren (es sei denn, Sie wissen genau was Sie tun.)</String>
   <String Id="OlderVersionFound">Eine ältere Version von Mixxx wurde erkannt. Da wir die Installer-Software geändert haben, können wir nicht problemlos aktualisieren. Bitte deinstallieren Sie ältere Version vor der Installation dieser neuen Version.</String>
-  <String Id="VCredistNotFound">Installer was not able to find Microsoft Visual C++ 2015 Redistributable on this system. This is likely an installer bug that should be reported to Mixxx developpers.</String>
+  <String Id="VCredistNotFound">Installer was not able to find Microsoft Visual C++ 2015 Redistributable on this system. This is likely an installer bug that should be reported to Mixxx developers.</String>
 
   <!-- Custom Warning Dialog -->
   <String Id="WarningDlgTitle">{\WixUI_Font_Title}Warnung</String>
@@ -64,7 +64,7 @@
   <String Id="InstallMessage">Setup will install Mixxx on your computer.&#13;&#10;It will first install required third party libraries, then Mixxx itself.&#13;&#10;Click install to continue or Close to exit.</String>
   <String Id="InstallVersion">Version [WixBundleVersion]</String>
   <String Id="InstallOptionsButton">&amp;Options</String>
-  <String Id="InstallInstallButton">&amp;Install</String>
+  <String Id="InstallInstallButton">&amp;Installieren</String>
   <String Id="InstallCloseButton">&amp;Close</String>
   <String Id="OptionsHeader">Setup Options</String>
   <String Id="OptionsLocationLabel">Install location:</String>

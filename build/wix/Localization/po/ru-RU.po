@@ -1,12 +1,13 @@
 # 
 # Translators:
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
+# Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 # Vladimir Novikov <dancenoise1@gmail.com>, 2016
 # Андрей Фролов <andrey_frolov1999@mail.ru>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2017-07-09 20:18+0000\n"
+"PO-Revision-Date: 2017-07-14 14:03+0000\n"
 "Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
 "Language-Team: Russian (Russia) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/ru_RU/)\n"
 "MIME-Version: 1.0\n"
@@ -96,7 +97,7 @@ msgctxt "VCredistNotFound"
 msgid ""
 "Installer was not able to find Microsoft Visual C++ 2015 Redistributable on "
 "this system. This is likely an installer bug that should be reported to "
-"Mixxx developpers."
+"Mixxx developers."
 msgstr ""
 
 #.  Custom Warning Dialog
