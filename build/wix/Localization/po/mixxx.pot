@@ -68,7 +68,7 @@ msgid "An older version of Mixxx has been detected. As we changed installer, we 
 msgstr ""
 
 msgctxt "VCredistNotFound"
-msgid "Installer was not able to find Microsoft Visual C++ 2015 Redistributable on this system. This is likely an installer bug that should be reported to Mixxx developpers."
+msgid "Installer was not able to find Microsoft Visual C++ 2015 Redistributable on this system. This is likely an installer bug that should be reported to Mixxx developers."
 msgstr ""
 
 #.  Custom Warning Dialog 

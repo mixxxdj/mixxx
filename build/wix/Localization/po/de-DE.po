@@ -1,12 +1,14 @@
 # 
 # Translators:
 # Inpromtu <kmbredt@gmail.com>, 2016
+# Inpromtu <kmbredt@gmail.com>, 2016
 # S.Brandt <s.brandt@mixxx.org>, 2017
+# Sebastien BLAISOT <sebastien@blaisot.org>, 2016-2017
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2017-07-09 20:18+0000\n"
+"PO-Revision-Date: 2017-07-14 14:03+0000\n"
 "Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
 "Language-Team: German (Germany) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/de_DE/)\n"
 "MIME-Version: 1.0\n"
@@ -96,7 +98,7 @@ msgctxt "VCredistNotFound"
 msgid ""
 "Installer was not able to find Microsoft Visual C++ 2015 Redistributable on "
 "this system. This is likely an installer bug that should be reported to "
-"Mixxx developpers."
+"Mixxx developers."
 msgstr ""
 
 #.  Custom Warning Dialog
@@ -220,7 +222,7 @@ msgstr ""
 
 msgctxt "InstallInstallButton"
 msgid "&Install"
-msgstr ""
+msgstr "&Installieren"
 
 msgctxt "InstallCloseButton"
 msgid "&Close"
