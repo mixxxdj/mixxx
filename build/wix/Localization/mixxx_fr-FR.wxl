@@ -86,11 +86,17 @@
   <String Id="ModifyUninstallButton">&amp;Désinstaller</String>
   <String Id="ModifyCloseButton">&amp;Fermer</String>
   <String Id="SuccessHeader">Installation réussie</String>
+  <String Id="SuccessInstallHeader">Mixxx a été installé avec succès</String>
+  <String Id="SuccessRepairHeader">Mixxx a été réparé avec succès</String>
+  <String Id="SuccessUninstallHeader">Mixxx a été désinstallé avec succès</String>
   <String Id="SuccessLaunchButton">&amp;Lancer</String>
   <String Id="SuccessRestartText">Vous devez redémarrer votre ordinateur avant de pouvoir utiliser le logiciel.</String>
   <String Id="SuccessRestartButton">&amp;Redémarrer</String>
   <String Id="SuccessCloseButton">&amp;Fermer</String>
   <String Id="FailureHeader">Installation échouée</String>
+  <String Id="FailureInstallHeader">L'installation de Mixxx a échoué</String>
+  <String Id="FailureRepairHeader">La réparation de Mixxx a échoué</String>
+  <String Id="FailureUninstallHeader">La désinstallation de Mixxx a échoué</String>
   <String Id="FailureHyperlinkLogText">Une ou plusieurs erreurs ont fait échoué l'installation. Corrigez-les et réessayez. Pour de plus amples informations, consultez le &lt;a href="#"&gt;fichier journal&lt;/a&gt;.</String>
   <String Id="FailureRestartText">Vous devez redémarrer votre ordinateur pour terminer le retour-arrière du logiciel.</String>
   <String Id="FailureRestartButton">&amp;Redémarrer</String>

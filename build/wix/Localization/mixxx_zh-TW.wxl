@@ -86,11 +86,17 @@
   <String Id="ModifyUninstallButton">&amp;Uninstall</String>
   <String Id="ModifyCloseButton">&amp;Close</String>
   <String Id="SuccessHeader">Setup Successful</String>
+  <String Id="SuccessInstallHeader">Mixxx installation has been successful</String>
+  <String Id="SuccessRepairHeader">Mixxx repair has been successful</String>
+  <String Id="SuccessUninstallHeader">Mixxx uninstall has been successful</String>
   <String Id="SuccessLaunchButton">&amp;Launch</String>
   <String Id="SuccessRestartText">You must restart your computer before you can use the software.</String>
   <String Id="SuccessRestartButton">&amp;Restart</String>
   <String Id="SuccessCloseButton">&amp;Close</String>
   <String Id="FailureHeader">Setup Failed</String>
+  <String Id="FailureInstallHeader">Mixxx installation failed</String>
+  <String Id="FailureRepairHeader">Mixxx repair failed</String>
+  <String Id="FailureUninstallHeader">Mixxx uninstall failed</String>
   <String Id="FailureHyperlinkLogText">One or more issues caused the setup to fail. Please fix the issues and then retry setup. For more information see the &lt;a href="#"&gt;log file&lt;/a&gt;.</String>
   <String Id="FailureRestartText">You must restart your computer to complete the rollback of the software.</String>
   <String Id="FailureRestartButton">&amp;Restart</String>

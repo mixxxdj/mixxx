@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2017-07-14 14:03+0000\n"
+"PO-Revision-Date: 2017-07-14 20:07+0000\n"
 "Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
 "Language-Team: Russian (Russia) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/ru_RU/)\n"
 "MIME-Version: 1.0\n"
@@ -307,6 +307,18 @@ msgctxt "SuccessHeader"
 msgid "Setup Successful"
 msgstr ""
 
+msgctxt "SuccessInstallHeader"
+msgid "Mixxx installation has been successful"
+msgstr ""
+
+msgctxt "SuccessRepairHeader"
+msgid "Mixxx repair has been successful"
+msgstr ""
+
+msgctxt "SuccessUninstallHeader"
+msgid "Mixxx uninstall has been successful"
+msgstr ""
+
 msgctxt "SuccessLaunchButton"
 msgid "&Launch"
 msgstr ""
@@ -325,6 +337,18 @@ msgstr ""
 
 msgctxt "FailureHeader"
 msgid "Setup Failed"
+msgstr ""
+
+msgctxt "FailureInstallHeader"
+msgid "Mixxx installation failed"
+msgstr ""
+
+msgctxt "FailureRepairHeader"
+msgid "Mixxx repair failed"
+msgstr ""
+
+msgctxt "FailureUninstallHeader"
+msgid "Mixxx uninstall failed"
 msgstr ""
 
 msgctxt "FailureHyperlinkLogText"
