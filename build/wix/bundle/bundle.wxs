@@ -40,7 +40,7 @@
         LicenseUrl=""
         LocalizationFile="..\Localization\mixxx_en-us.wxl"
         ThemeFile="bundletheme.xml"
-        SuppressOptionsUI="yes"
+        SuppressOptionsUI="no"
         ShowVersion="yes"
         LogoSideFile="build\wix\images\bundle-sidebar.png"
       />
@@ -67,6 +67,9 @@
 <!-- END LOCALIZATION -->
 
     </BootstrapperApplicationRef>
+
+    <Variable Name="InstallFolder" Type="string" Value="[ProgramFiles6432Folder]Mixxx" />
+    <Variable Name="LaunchTarget" Value="[InstallFolder]\mixxx.exe"/>
 
     <Chain DisableSystemRestore="yes">
 
@@ -122,7 +125,9 @@
         SourceFile="$(var.MSIPackage)"
         DisplayInternalUI="yes"
         Compressed="yes"
-        Vital="yes"/>
+        Vital="yes">
+        <MsiProperty Name="INSTALLDIR" Value="[InstallFolder]" />
+      </MsiPackage>
 
     </Chain>
   </Bundle>

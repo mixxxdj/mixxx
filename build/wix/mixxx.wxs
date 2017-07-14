@@ -139,14 +139,6 @@
     <!-- Set up ARPINSTALLLOCATION property (http://blogs.technet.com/b/alexshev/archive/2008/02/09/from-msi-to-wix-part-2.aspx) -->
     <CustomAction Id="SetARPINSTALLLOCATION" Property="ARPINSTALLLOCATION" Value="[INSTALLDIR]" />
 
-    <!-- CA to launch the exe after install -->
-    <CustomAction Id          ="CA.StartAppOnExit"
-                  FileKey     ="mixxxExe"
-                  ExeCommand  =""
-                  Execute     ="immediate"
-                  Impersonate ="yes"
-                  Return      ="asyncNoWait" />
-
     <!-- License agreement -->
     <WixVariable Id="WixUILicenseRtf" Value="LICENSE.rtf" />
 
@@ -258,9 +250,6 @@
 
 
     <SetProperty Id="MyWarningText" After="SetMyWarningText3" Value="[MyWarningText1]&#13;&#10;&#13;&#10;[MyWarningText2]&#13;&#10;&#13;&#10;[MyWarningText3]" />
-
-    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT"
-              Value="!(loc.StartOnExit)" />
 
     <!-- Outermost folder (kind of virtual). Fixed entry. -->
     <Directory Id="TARGETDIR" Name="SourceDir">
@@ -377,8 +366,7 @@
              Absent='disallow'
              InstallDefault='local'
              Level="1"
-             Display="expand"
-             ConfigurableDirectory="INSTALLDIR">
+             Display="expand">
       <ComponentRef Id='mixxx.exe_comp' />
       <ComponentRef Id='mixxxRegistry' />
       <ComponentGroupRef Id='mainDLLCompGroup' />
@@ -442,12 +430,6 @@
 <UI Id="MyWixUI_FeatureTree">
     <UIRef Id="WixUI_FeatureTree" />
     <UIRef Id="WixUI_ErrorProgressText" />
-
-    <Publish Dialog  ="ExitDialog"
-             Control ="Finish"
-             Order   ="1"
-             Event   ="DoAction"
-             Value   ="CA.StartAppOnExit">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
 
     <DialogRef Id="WarningDlg" />
 
