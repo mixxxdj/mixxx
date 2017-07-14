@@ -46,24 +46,7 @@
       />
 
 <!-- LOCALIZATION -->
-      <Payload Id="thm-ca-ES" Compressed="yes" Name="1027\thm.wxl" SourceFile="..\Localization\mixxx_ca-ES.wxl" />
-      <Payload Id="thm-cs-CZ" Compressed="yes" Name="1029\thm.wxl" SourceFile="..\Localization\mixxx_cs-CZ.wxl" />
-      <Payload Id="thm-de-DE" Compressed="yes" Name="1031\thm.wxl" SourceFile="..\Localization\mixxx_de-DE.wxl" />
-      <Payload Id="thm-en-us" Compressed="yes" Name="1033\thm.wxl" SourceFile="..\Localization\mixxx_en-us.wxl" />
-      <Payload Id="thm-es-ES" Compressed="yes" Name="1034\thm.wxl" SourceFile="..\Localization\mixxx_es-ES.wxl" />
-      <Payload Id="thm-et-EE" Compressed="yes" Name="1061\thm.wxl" SourceFile="..\Localization\mixxx_et-EE.wxl" />
-      <Payload Id="thm-fr-FR" Compressed="yes" Name="1036\thm.wxl" SourceFile="..\Localization\mixxx_fr-FR.wxl" />
-      <Payload Id="thm-it-IT" Compressed="yes" Name="1040\thm.wxl" SourceFile="..\Localization\mixxx_it-IT.wxl" />
-      <Payload Id="thm-nl-NL" Compressed="yes" Name="1043\thm.wxl" SourceFile="..\Localization\mixxx_nl-NL.wxl" />
-      <Payload Id="thm-pl-PL" Compressed="yes" Name="1045\thm.wxl" SourceFile="..\Localization\mixxx_pl-PL.wxl" />
-      <Payload Id="thm-pt-BR" Compressed="yes" Name="1046\thm.wxl" SourceFile="..\Localization\mixxx_pt-BR.wxl" />
-      <Payload Id="thm-pt-PT" Compressed="yes" Name="2070\thm.wxl" SourceFile="..\Localization\mixxx_pt-PT.wxl" />
-      <Payload Id="thm-ro-RO" Compressed="yes" Name="1048\thm.wxl" SourceFile="..\Localization\mixxx_ro-RO.wxl" />
-      <Payload Id="thm-ru-RU" Compressed="yes" Name="1049\thm.wxl" SourceFile="..\Localization\mixxx_ru-RU.wxl" />
-      <Payload Id="thm-sv-SE" Compressed="yes" Name="1053\thm.wxl" SourceFile="..\Localization\mixxx_sv-SE.wxl" />
-      <Payload Id="thm-tr-TR" Compressed="yes" Name="1055\thm.wxl" SourceFile="..\Localization\mixxx_tr-TR.wxl" />
-      <Payload Id="thm-zh-CN" Compressed="yes" Name="2052\thm.wxl" SourceFile="..\Localization\mixxx_zh-CN.wxl" />
-      <Payload Id="thm-zh-TW" Compressed="yes" Name="1028\thm.wxl" SourceFile="..\Localization\mixxx_zh-TW.wxl" />
+      <PayloadGroupRef Id='BundleLoc' />
 <!-- END LOCALIZATION -->
 
     </BootstrapperApplicationRef>

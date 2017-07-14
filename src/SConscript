@@ -794,12 +794,16 @@ def BuildRelease(target, source, env):
         print "Using Command: " + command
         subprocess.check_call(command)
 
+        bundlelocfile = open("build/wix/bundle/bundleloc.wxs", "w")
+        bundlelocfile.write("<?xml version='1.0' encoding='windows-1252'?>\n")
+        bundlelocfile.write("<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\n")
+        bundlelocfile.write("    <Fragment Id='FragmentBundleLoc'>\n")
+        bundlelocfile.write("        <PayloadGroup Id='BundleLoc'>\n")
+
         for file in glob.glob('build\wix\Localization\mixxx_*.wxl'):
             doc = minidom.parse(file)
             wixloc = doc.getElementsByTagName("WixLocalization")[0]
             culture = wixloc.getAttribute("Culture")
-            if culture == defaultLanguage:
-                continue
             strings = doc.getElementsByTagName("String")
             LCID = None
             for string in strings:
@@ -809,6 +813,15 @@ def BuildRelease(target, source, env):
 
             if not LCID:
                 print "LCID not found, skipping file " + file
+                continue
+
+            bundlelocfile.write("<Payload Id=\"thm-%(culture)s\" Compressed=\"yes\" Name=\"%(LCID)s\\thm.wxl\" SourceFile=\"..\\Localization\\mixxx_%(culture)s.wxl\" />\n" %\
+              {'culture': culture,
+               'LCID': LCID}
+            )
+
+            # Do not build localized MSI if it's default language
+            if culture == defaultLanguage:
                 continue
 
             print "*** Building package transform for locale %(culture)s LangID %(LCID)s" % \
@@ -850,6 +863,11 @@ def BuildRelease(target, source, env):
         print "Using Command: " + command
         subprocess.check_call(command)
 
+        bundlelocfile.write("        </PayloadGroup>\n")
+        bundlelocfile.write("    </Fragment>\n")
+        bundlelocfile.write("</Wix>\n")
+        bundlelocfile.close()
+
         # Everything is OK, now rename the msi to final name
         if os.path.isfile(exe_name):
             os.remove(exe_name)
@@ -858,6 +876,14 @@ def BuildRelease(target, source, env):
         print "*** Compiling Bundle"
         # Compile bundle wix file
         command = '"%(wix)s\\candle.exe" -ext WixUtilExtension -ext WixBalExtension -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dMSIPackage=%(package_name)s -arch %(arch)s -out build\\wix\\bundle\\bundle.wixobj build\\wix\\bundle\\bundle.wxs' % \
+            {'wix': wix_path,
+             'winlibpath': build.winlib_path,
+             'arch': winArch,
+             'package_name': exe_name}
+        print "Using Command: " + command
+        subprocess.check_call(command)
+        # bundle localisation references
+        command = '"%(wix)s\\candle.exe" -ext WixUtilExtension -ext WixBalExtension -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dMSIPackage=%(package_name)s -arch %(arch)s -out build\\wix\\bundle\\bundleloc.wixobj build\\wix\\bundle\\bundleloc.wxs' % \
             {'wix': wix_path,
              'winlibpath': build.winlib_path,
              'arch': winArch,

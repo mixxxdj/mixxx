@@ -46,6 +46,7 @@ res/developer_skins
 *.mst
 *.cab
 build/wix/subdirs/*.wxs
+build/wix/bundle/bundleloc.wxs
 
 *.obj
 *.pdb
