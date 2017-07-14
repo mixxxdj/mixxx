@@ -1,18 +1,11 @@
 To build the windows installer package
 ==========================================
 
-install & configure Wix toolset
+Mixxx installation package is built with Wix Toolset v3.9+
+All the build logic is called from Sconscript, which calls Wix Toolset executables
+to build a multilingual MSI package for Mixxx.
 
-once done :
-
-1. Build Mixxx
-2. Package, calling build.bat <bitwidth>
-
-For example, to build 64 bits package:
-.\build.bat 64
-
-or to build 32 bits package:
-.\build.bat 32
+`scons mixxx makerelease`
 
 To test your multilingual package
 =================================
