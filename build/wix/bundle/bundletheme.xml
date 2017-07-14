@@ -6,7 +6,6 @@
   <Font Id="2" Height="-22" Weight="500" Foreground="666666">Segoe UI</Font>
   <Font Id="3" Height="-12" Weight="500" Foreground="000000" Background="FFFFFF">Segoe UI</Font>
   <Font Id="4" Height="-12" Weight="500" Foreground="ff0000" Background="FFFFFF" Underline="yes">Segoe UI</Font>
-
   <Page Name="Help">
     <Text X="187" Y="11" Width="-11" Height="32" FontId="1" DisablePrefix="yes">#(loc.Title)</Text>
     <Image X="11" Y="11" Width="165" Height="400" ImageFile="logoside.png"/>
@@ -40,10 +39,8 @@
     <Text X="187" Y="50" Width="-11" Height="32" FontId="2" DisablePrefix="yes">#(loc.FilesInUseHeader)</Text>
     <Text X="187" Y="91" Width="-11" Height="34" FontId="3" DisablePrefix="yes">#(loc.FilesInUseLabel)</Text>
     <Text Name="FilesInUseText" X="187" Y="130" Width="-11" Height="-86" FontId="3" DisablePrefix="yes" HexStyle="0x0000000C"></Text>
-
     <Button Name="FilesInUseCloseRadioButton" X="187" Y="-60" Width="-11" Height="23" TabStop="yes" FontId="0" HideWhenDisabled="yes" HexStyle="0x000009">#(loc.FilesInUseCloseRadioButton)</Button>
     <Button Name="FilesInUseDontCloseRadioButton" X="187" Y="-40" Width="-11" Height="23" TabStop="yes" FontId="0" HideWhenDisabled="yes" HexStyle="0x000009">#(loc.FilesInUseDontCloseRadioButton)</Button>
-
     <Button Name="FilesInUseOkButton" X="-91" Y="-11" Width="75" Height="23" TabStop="yes" FontId="0" HideWhenDisabled="yes">#(loc.FilesInUseOkButton)</Button>
     <Button Name="FilesInUseCancelButton" X="-11" Y="-11" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.FilesInUseCancelButton)</Button>
   </Page>

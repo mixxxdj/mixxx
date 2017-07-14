@@ -2,10 +2,13 @@
      xmlns:bal="http://schemas.microsoft.com/wix/BalExtension"
      xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
 
+  <!-- Get version from the embedded MSI -->
   <?define VersionNumber="!(bind.packageVersion.MainPackage)" ?>
+
+  <!-- NEVER changer Upgrade Code otherwise you will have upgrade troubles -->
   <?define UpgradeCode="EC95672A-1A9D-489D-9283-E6B1CAA15F29" ?>
 
-  <Bundle Name="Mixxx" Version="$(var.VersionNumber)" Manufacturer="The Mixxx Development Team" UpgradeCode="$(var.UpgradeCode)">
+  <Bundle Name="!(loc.ApplicationName)" Version="$(var.VersionNumber)" Manufacturer="!(loc.ManufacturerFullName)" UpgradeCode="$(var.UpgradeCode)">
 
     <?if $(var.Platform) = x64 ?>
       <bal:Condition
@@ -21,7 +24,7 @@
         ThemeFile="bundletheme.xml"
         SuppressOptionsUI="yes"
         ShowVersion="yes"
-        LogoFile="res\images\mixxx-icon.png" LogoSideFile="build\wix\images\bundle-sidebar.png"
+        LogoSideFile="build\wix\images\bundle-sidebar.png"
       />
 
 <!-- LOCALIZATION -->
