@@ -10,8 +10,8 @@
 #include "library/queryutil.h"
 
 RhythmboxFeature::RhythmboxFeature(UserSettingsPointer pConfig,
-                                   Library* pLibrary, 
-                                   QObject* parent, 
+                                   Library* pLibrary,
+                                   QObject* parent,
                                    TrackCollection* pTrackCollection)
         : BaseExternalLibraryFeature(pConfig, pLibrary, parent, pTrackCollection),
           m_pTrackCollection(pTrackCollection),
@@ -133,7 +133,7 @@ void RhythmboxFeature::activate() {
         //calls a slot in the sidebar model such that 'Rhythmbox (isLoading)' is displayed.
         emit (featureIsLoading(this, true));
     }
-    
+
     showTrackModel(m_pRhythmboxTrackModel);
     showBreadCrumb();
 }
@@ -143,7 +143,7 @@ void RhythmboxFeature::activateChild(const QModelIndex& index) {
     QString playlist = index.data().toString();
     qDebug() << "Activating " << playlist;
     m_pRhythmboxPlaylistModel->setPlaylist(playlist);
-    
+
     showTrackModel(m_pRhythmboxPlaylistModel);
     showBreadCrumb(index);
 }

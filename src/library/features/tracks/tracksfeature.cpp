@@ -6,7 +6,7 @@
 #include <QStringList>
 #include <QVBoxLayout>
 
-#include "library/features/mixxxlibrary/mixxxlibraryfeature.h"
+#include "library/features/tracks/tracksfeature.h"
 #include "library/features/libraryfolder/libraryfoldermodel.h"
 
 #include "library/basetrackcache.h"
@@ -21,9 +21,9 @@
 #include "widget/wlibrarystack.h"
 #include "widget/wtracktableview.h"
 
-const QString MixxxLibraryFeature::kLibraryTitle = tr("Tracks");
+const QString TracksFeature::kLibraryTitle = tr("Tracks");
 
-const QStringList MixxxLibraryFeature::kGroupingText {
+const QStringList TracksFeature::kGroupingText {
     tr("Artist > Album"),
     tr("Album"),
     tr("Genre > Artist > Album"),
@@ -31,7 +31,7 @@ const QStringList MixxxLibraryFeature::kGroupingText {
     tr("Folder")
 };
 
-const QList<QStringList> MixxxLibraryFeature::kGroupingOptions {
+const QList<QStringList> TracksFeature::kGroupingOptions {
         { LIBRARYTABLE_ARTIST, LIBRARYTABLE_ALBUM },
         { LIBRARYTABLE_ALBUM },
         { LIBRARYTABLE_GENRE, LIBRARYTABLE_ARTIST, LIBRARYTABLE_ALBUM },
@@ -39,7 +39,7 @@ const QList<QStringList> MixxxLibraryFeature::kGroupingOptions {
         { LIBRARYFOLDERMODEL_FOLDER }
 };
 
-MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
+TracksFeature::TracksFeature(UserSettingsPointer pConfig,
                                          Library* pLibrary,
                                          QObject* parent,
                                          TrackCollection* pTrackCollection)
@@ -123,100 +123,100 @@ MixxxLibraryFeature::MixxxLibraryFeature(UserSettingsPointer pConfig,
             m_pChildModel.get(), SLOT(reloadTree()));
     connect(&m_trackDao, SIGNAL(tracksAdded(QSet<TrackId>)),
             m_pChildModel.get(), SLOT(reloadTree()));
-    
-    m_pLibraryTableModel = make_parented<LibraryTableModel>(this, 
+
+    m_pLibraryTableModel = make_parented<LibraryTableModel>(this,
             pTrackCollection, "mixxx.db.model.library");
 }
 
-MixxxLibraryFeature::~MixxxLibraryFeature() {
+TracksFeature::~TracksFeature() {
 }
 
-QVariant MixxxLibraryFeature::title() {
+QVariant TracksFeature::title() {
     return kLibraryTitle;
 }
 
-QString MixxxLibraryFeature::getIconPath() {
+QString TracksFeature::getIconPath() {
     return ":/images/library/ic_library_tracks.png";
 }
 
-QString MixxxLibraryFeature::getSettingsName() const {
+QString TracksFeature::getSettingsName() const {
     return "MixxxLibraryFeature";
 }
 
-QPointer<TreeItemModel> MixxxLibraryFeature::getChildModel() {
+QPointer<TreeItemModel> TracksFeature::getChildModel() {
     return m_pChildModel.get();
 }
 
-parented_ptr<QWidget> MixxxLibraryFeature::createInnerSidebarWidget(
+parented_ptr<QWidget> TracksFeature::createInnerSidebarWidget(
             KeyboardEventFilter*, QWidget* parent) {
     auto pSidebar = createLibrarySidebarWidget(parent);
     m_pSidebar = pSidebar.toWeakRef();
-    m_pSidebar->setIconSize(m_pChildModel->getDefaultIconSize());    
+    m_pSidebar->setIconSize(m_pChildModel->getDefaultIconSize());
     m_pChildModel->reloadTree();
     return pSidebar;
 }
 
-void MixxxLibraryFeature::refreshLibraryModels() {
+void TracksFeature::refreshLibraryModels() {
     if (m_pLibraryTableModel) {
         m_pLibraryTableModel->select();
     }
 }
 
-void MixxxLibraryFeature::onSearch(const QString&) {
+void TracksFeature::onSearch(const QString&) {
     showBreadCrumb();
     if (!m_pSidebar.isNull()) {
         m_pSidebar->clearSelection();
     }
 }
 
-void MixxxLibraryFeature::activate() {    
+void TracksFeature::activate() {
     if (m_lastClickedIndex.isValid()) {
         activateChild(m_lastClickedIndex);
         return;
     }
-    
+
     //qDebug() << "MixxxLibraryFeature::activate()";
     showTrackModel(m_pLibraryTableModel.get());
     restoreSearch("");
     showBreadCrumb();
-    
+
 }
 
-void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
+void TracksFeature::activateChild(const QModelIndex& index) {
     m_lastClickedIndex = index;
-    
+
     if (!index.isValid()) return;
 
     QString query = index.data(AbstractRole::RoleQuery).toString();
     //qDebug() << "MixxxLibraryFeature::activateChild" << query;
-    
+
     if (query == "$groupingSettings$") {
         // Act as right click
         onRightClickChild(QCursor::pos(), QModelIndex());
         return;
     }
-    
+
     m_pLibraryTableModel->search(query);
     switchToFeature();
     showBreadCrumb(index.data(AbstractRole::RoleBreadCrumb).toString(), getIcon());
     restoreSearch(query);
 }
 
-void MixxxLibraryFeature::invalidateChild() {
+void TracksFeature::invalidateChild() {
     m_lastClickedIndex = QPersistentModelIndex();
 }
 
-void MixxxLibraryFeature::onRightClickChild(const QPoint& pos, 
+void TracksFeature::onRightClickChild(const QPoint& pos,
                                             const QModelIndex&) {
-    
+
     // Create the sort menu
-    QMenu menu;    
+    QMenu menu;
     QStringList currentSort = m_pChildModel->data(
             QModelIndex(), AbstractRole::RoleSorting).toStringList();
     bool recursive = m_pChildModel->data(
             QModelIndex(), AbstractRole::RoleSettings).toBool();
-    
-    
+
+
     parented_ptr<QActionGroup> orderGroup = make_parented<QActionGroup>(&menu);
     for (int i = 0; i < kGroupingOptions.size(); ++i) {
         QAction* action = menu.addAction(kGroupingText.at(i));
@@ -225,28 +225,28 @@ void MixxxLibraryFeature::onRightClickChild(const QPoint& pos,
         action->setCheckable(true);
         action->setChecked(currentSort == kGroupingOptions.at(i));
     }
-    
+
     menu.addSeparator();
     QAction* folderRecursive = menu.addAction(tr("Get recursive folder search query"));
     folderRecursive->setCheckable(true);
     folderRecursive->setChecked(recursive);
-    
+
     QAction* selected = menu.exec(pos);
     if (selected == nullptr) {
         return;
     } else if (selected == folderRecursive) {
-        setTreeSettings(folderRecursive->isChecked(), 
+        setTreeSettings(folderRecursive->isChecked(),
                         AbstractRole::RoleSettings);
     } else {
         setTreeSettings(selected->data());
     }
 }
 
-bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
+bool TracksFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     if (pSource) {
         return false;
     } else {
-        QList<QFileInfo> files = 
+        QList<QFileInfo> files =
                 DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
 
         // Adds track, does not insert duplicates, handles unremoving logic.
@@ -256,12 +256,12 @@ bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     }
 }
 
-bool MixxxLibraryFeature::dragMoveAccept(QUrl url) {
+bool TracksFeature::dragMoveAccept(QUrl url) {
     return SoundSourceProxy::isUrlSupported(url) ||
             Parser::isPlaylistFilenameSupported(url.toLocalFile());
 }
 
-void MixxxLibraryFeature::setTreeSettings(const QVariant& settings, 
+void TracksFeature::setTreeSettings(const QVariant& settings,
                                           AbstractRole role) {
     m_pChildModel->setData(QModelIndex(), settings, role);
     m_pChildModel->reloadTree();

@@ -23,7 +23,7 @@ void LibraryPaneManager::bindPaneWidget(WBaseLibrary* pPaneWidget,
                                         KeyboardEventFilter* pKeyboard) {
     //qDebug() << "LibraryPaneManager::bindLibraryWidget" << libraryWidget;
     m_pPaneWidget = pPaneWidget;
-    
+
     connect(m_pPaneWidget, SIGNAL(focused()),
             this, SLOT(slotPaneFocused()));
     connect(m_pPaneWidget, SIGNAL(collapsed()),
@@ -34,8 +34,8 @@ void LibraryPaneManager::bindPaneWidget(WBaseLibrary* pPaneWidget,
     if (qobject_cast<WLibraryPane*>(m_pPaneWidget) == nullptr) {
         return;
     }
-    for (LibraryFeature* f : m_features) {        
-        auto pFeaturePaneWidget = f->createPaneWidget(pKeyboard, m_paneId, 
+    for (LibraryFeature* f : m_features) {
+        auto pFeaturePaneWidget = f->createPaneWidget(pKeyboard, m_paneId,
                                                       m_pPaneWidget);
         m_pPaneWidget->registerView(f, pFeaturePaneWidget.get());
     }
@@ -92,7 +92,7 @@ void LibraryPaneManager::setFocused(bool value) {
     VERIFY_OR_DEBUG_ASSERT(m_pPaneWidget) {
         return;
     }
-    
+
     m_pPaneWidget->setProperty("showFocus", (int) value);
 }
 
@@ -119,7 +119,7 @@ void LibraryPaneManager::showBreadCrumb(TreeItem *pTree) {
     VERIFY_OR_DEBUG_ASSERT(!m_pBreadCrumb.isNull()) {
         return;
     }
-    
+
     m_pBreadCrumb->showBreadCrumb(pTree);
 }
 
@@ -182,7 +182,7 @@ void LibraryPaneManager::slotSearchCancel() {
 
 void LibraryPaneManager::slotSearch(const QString& text) {
     VERIFY_OR_DEBUG_ASSERT(!m_pPaneWidget.isNull()) {
-        return;    
+        return;
     }
     m_pPaneWidget->search(text);
     m_pCurrentFeature->onSearch(text);

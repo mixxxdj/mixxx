@@ -31,7 +31,7 @@ class DlgMissing : public QFrame, public Ui::DlgMissing {
 
   private:
     void activateButtons(bool enable);
-    
+
     QPointer<MissingTableModel> m_pMissingTableModel;
 };
 

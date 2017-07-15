@@ -61,38 +61,38 @@ QString AnalysisFeature::getSettingsName() const {
     return "AnalysisFeature";
 }
 
-parented_ptr<QWidget> AnalysisFeature::createPaneWidget(KeyboardEventFilter*, 
+parented_ptr<QWidget> AnalysisFeature::createPaneWidget(KeyboardEventFilter*,
             int paneId, QWidget* parent) {
     auto pTable = createTableWidget(paneId, parent);
     pTable->loadTrackModel(&m_analysisLibraryTableModel);
-    connect(pTable->selectionModel(), 
+    connect(pTable->selectionModel(),
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
-            this, 
+            this,
             SLOT(tableSelectionChanged(const QItemSelection&, const QItemSelection&)));
-    
+
     return pTable;
 }
 
 parented_ptr<QWidget> AnalysisFeature::createInnerSidebarWidget(
             KeyboardEventFilter* pKeyboard, QWidget* parent) {
     auto pAnalysisView = make_parented<DlgAnalysis>(parent, this);
-    
+
     m_pAnalysisView = pAnalysisView.toWeakRef();
     m_pAnalysisView->setTableModel(&m_analysisLibraryTableModel);
-    
+
     connect(this, SIGNAL(analysisActive(bool)),
             m_pAnalysisView, SLOT(analysisActive(bool)));
     connect(this, SIGNAL(trackAnalysisStarted(int)),
             m_pAnalysisView, SLOT(trackAnalysisStarted(int)));
 
     m_pAnalysisView->installEventFilter(pKeyboard);
-    
+
     // Let the DlgAnalysis know whether or not analysis is active.
     bool bAnalysisActive = m_pAnalyzerQueue != nullptr;
     emit(analysisActive(bAnalysisActive));
-    
+
     m_pAnalysisView->onShow();
-    
+
     return pAnalysisView;
 }
 
@@ -114,10 +114,10 @@ void AnalysisFeature::selectAll() {
 }
 
 void AnalysisFeature::activate() {
-    //qDebug() << "AnalysisFeature::activate()";    
+    //qDebug() << "AnalysisFeature::activate()";
     switchToFeature();
     showBreadCrumb();
-    
+
     if (!m_pAnalysisView.isNull()) {
         restoreSearch(m_pAnalysisView->currentSearch());
     }
@@ -207,7 +207,7 @@ void AnalysisFeature::tableSelectionChanged(const QItemSelection&,
     if (pTable.isNull()) {
         return;
     }
-    
+
     QModelIndexList indexes = pTable->selectionModel()->selectedIndexes();
     m_pAnalysisView->setSelectedIndexes(indexes);
 }

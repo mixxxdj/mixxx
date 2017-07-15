@@ -40,7 +40,7 @@ class TraktorFeature : public BaseExternalLibraryFeature {
   public:
     TraktorFeature(UserSettingsPointer pConfig,
                    Library* pLibrary,
-                   QObject* parent, 
+                   QObject* parent,
                    TrackCollection* pTrackCollection);
     virtual ~TraktorFeature();
 

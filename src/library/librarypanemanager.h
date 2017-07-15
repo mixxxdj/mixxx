@@ -35,29 +35,29 @@ class LibraryPaneManager : public QObject {
     void addFeatures(const QList<LibraryFeature*>& features);
 
     WBaseLibrary* getPaneWidget();
-    
+
     void setCurrentFeature(LibraryFeature* pFeature);
     LibraryFeature* getCurrentFeature() const;
 
     void setFocused(bool value);
-    
+
     void restoreSearch(const QString& text);
     void restoreSaveButton();
     void switchToFeature(LibraryFeature* pFeature);
     void showBreadCrumb(TreeItem* pTree);
     void showBreadCrumb(const QString& text, const QIcon &icon);
-    
+
     int getPaneId() const;
-    
+
     void setPreselected(bool value);
     bool isPreselected() const;
-    
+
     void setPreviewed(bool value);
 
     bool focusSearch();
 
   signals:
-    
+
     void searchCleared();
     void searchStarting();
 
@@ -80,7 +80,7 @@ class LibraryPaneManager : public QObject {
     QPointer<WSearchLineEdit> m_pSearchBar;
 
   private:
-    
+
     LibraryFeature* m_pCurrentFeature;
     int m_paneId;
     Library* m_pLibrary;

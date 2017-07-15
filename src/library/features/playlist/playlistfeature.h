@@ -12,9 +12,9 @@ class TreeItem;
 class PlaylistFeature : public BasePlaylistFeature {
     Q_OBJECT
   public:
-    PlaylistFeature(UserSettingsPointer pConfig, 
+    PlaylistFeature(UserSettingsPointer pConfig,
                     Library* pLibrary,
-                    QObject* parent, 
+                    QObject* parent,
                     TrackCollection* pTrackCollection);
     virtual ~PlaylistFeature();
 

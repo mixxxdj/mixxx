@@ -24,7 +24,7 @@ class BasePlaylistFeature : public LibraryFeature {
                         QObject* parent,
                         TrackCollection* pTrackCollection);
     virtual ~BasePlaylistFeature();
-    parented_ptr<QWidget> createPaneWidget(KeyboardEventFilter*pKeyboard, 
+    parented_ptr<QWidget> createPaneWidget(KeyboardEventFilter*pKeyboard,
                                            int paneId, QWidget* parent) override;
 
   signals:
@@ -61,37 +61,37 @@ class BasePlaylistFeature : public LibraryFeature {
     void slotAnalyzePlaylist();
 
   protected:
-    
+
     struct PlaylistItem {
         PlaylistItem() : id(-1) {}
         PlaylistItem(int id) : id(id) {}
         PlaylistItem(int id, QString name) : id(id), name(name) {}
-        
+
         int id;
         QString name;
-        
+
         bool operator==(const PlaylistItem& other) {
             return this->id == other.id;
         }
     };
-    
+
     virtual const TreeItemModel* getConstChildModel() const = 0;
-    
+
     virtual QModelIndex constructChildModel(int selected_id);
     virtual void updateChildModel(int selectedId);
     virtual void buildPlaylistList() = 0;
     virtual void decorateChild(TreeItem *pChild, int playlist_id) = 0;
     virtual void addToAutoDJ(bool bTop);
     QString getValidPlaylistName() const;
-    
+
     QPointer<PlaylistTableModel> getPlaylistTableModel(int paneId = -1);
     virtual parented_ptr<PlaylistTableModel> constructTableModel() = 0;
-    
+
     virtual QSet<int> playlistIdsFromIndex(const QModelIndex& index) const;
     int playlistIdFromIndex(const QModelIndex& index) const;
     void showTable(int paneId);
     void showBrowse(int paneId);
-    
+
     // Get the QModelIndex of a playlist based on its id.  Returns QModelIndex()
     // on failure.
     virtual QModelIndex indexFromPlaylistId(int playlistId) const;
@@ -115,7 +115,7 @@ class BasePlaylistFeature : public LibraryFeature {
     QList<PlaylistItem> m_playlistList;
     QPersistentModelIndex m_lastRightClickedIndex;
     TrackPointer m_pSelectedTrack;
-    
+
     QHash<int, QPersistentModelIndex> m_lastChildClicked;
 
   protected slots:
@@ -125,7 +125,7 @@ class BasePlaylistFeature : public LibraryFeature {
     virtual QString getRootViewHtml() const = 0;
 
     QSet<int> m_playlistsSelectedTrackIsIn;
-    
+
     QHash<int, QPointer<WLibraryStack> > m_panes;
     QHash<int, int> m_browseIndexByPaneId;
     QHash<int, int> m_tableIndexByPaneId;

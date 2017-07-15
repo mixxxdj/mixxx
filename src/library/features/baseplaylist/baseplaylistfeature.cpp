@@ -27,7 +27,7 @@ BasePlaylistFeature::BasePlaylistFeature(UserSettingsPointer pConfig,
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_trackDao(pTrackCollection->getTrackDAO()),
           m_pPlaylistTableModel(nullptr) {
-    
+
     m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"),this);
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotCreatePlaylist()));
@@ -138,37 +138,37 @@ void BasePlaylistFeature::activate() {
     showBrowse(m_featurePane);
     switchToFeature();
     showBreadCrumb();
-    
+
     restoreSearch(QString()); // Null String disables search box
 }
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     adoptPreselectedPane();
-    
+
     if (index == m_lastChildClicked.value(m_featurePane)) {
         restoreSearch("");
         showTable(m_featurePane);
         switchToFeature();
         return;
     }
-    
+
     m_lastChildClicked[m_featurePane] = index;
-    
+
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
     QSet<int> playlistIds = playlistIdsFromIndex(index);
     m_pPlaylistTableModel = getPlaylistTableModel(m_featurePane);
-    
+
     if (!playlistIds.isEmpty() && m_pPlaylistTableModel) {
         m_pPlaylistTableModel->setTableModel(playlistIds);
         showTable(m_featurePane);
-        
+
         // Set the feature Focus for a moment to allow the LibraryFeature class
         // to find the focused WTrackTable
         showTrackModel(m_pPlaylistTableModel);
-        
+
         restoreSearch("");
         showBreadCrumb(index);
-                
+
     }
 }
 
@@ -340,8 +340,8 @@ void BasePlaylistFeature::slotDeletePlaylist() {
         VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
             return;
         }
-        
-        m_playlistDao.deletePlaylist(playlistId);   
+
+        m_playlistDao.deletePlaylist(playlistId);
         activate();
     }
 }
@@ -458,7 +458,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
     if (pTableModel.isNull()) {
         return;
     }
-    
+
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
     if (playlistId == -1) {
         return;
@@ -644,7 +644,7 @@ int BasePlaylistFeature::playlistIdFromIndex(const QModelIndex& index) const {
     if (playlistIds.empty() || playlistIds.size() > 1) {
         return -1;
     }
-    
+
     return *playlistIds.begin();
 }
 
@@ -654,7 +654,7 @@ void BasePlaylistFeature::showTable(int paneId) {
     if (it == m_panes.end() || it->isNull() || itId == m_tableIndexByPaneId.end()) {
         return;
     }
-    
+
     (*it)->setCurrentIndex(*itId);
 }
 
@@ -664,7 +664,7 @@ void BasePlaylistFeature::showBrowse(int paneId) {
     if (it == m_panes.end() || it->isNull() || itId == m_browseIndexByPaneId.end()) {
         return;
     }
-    
+
     (*it)->setCurrentIndex(*itId);
 }
 
@@ -679,11 +679,11 @@ void BasePlaylistFeature::slotAnalyzePlaylist() {
     }
 }
 
-parented_ptr<QWidget> BasePlaylistFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
+parented_ptr<QWidget> BasePlaylistFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
                                                int paneId, QWidget* parent) {
     auto pStack = make_parented<WLibraryStack>(parent);
     m_panes[paneId] = pStack.toWeakRef();
-    
+
     auto edit = make_parented<WLibraryTextBrowser>(pStack.get());
     edit->setHtml(getRootViewHtml());
     edit->setOpenLinks(false);
@@ -691,10 +691,10 @@ parented_ptr<QWidget> BasePlaylistFeature::createPaneWidget(KeyboardEventFilter*
     connect(edit.get(), SIGNAL(anchorClicked(const QUrl)),
             this, SLOT(htmlLinkClicked(const QUrl)));
     m_browseIndexByPaneId[paneId] = pStack->addWidget(edit.get());
-    
+
     auto pTable = LibraryFeature::createPaneWidget(pKeyboard, paneId, pStack.get());
     m_tableIndexByPaneId[paneId] = pStack->addWidget(pTable.get());
-    
+
     return pStack;
 }
 
@@ -717,9 +717,9 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selectedId) {
     QPointer<TreeItemModel> pChildModel = getChildModel();
     if (pChildModel.isNull())
         return QModelIndex();
-    
+
     TreeItem* pRoot = pChildModel->setRootItem(std::make_unique<TreeItem>(this));
-    
+
     int row = 0;
     for (const PlaylistItem& p : m_playlistList) {
         if (selectedId == p.id) {
@@ -741,15 +741,15 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selectedId) {
 
 void BasePlaylistFeature::updateChildModel(int selectedId) {
     buildPlaylistList();
-    
+
     QModelIndex index = indexFromPlaylistId(selectedId);
     if (!index.isValid()) {
         return;
     }
     QPointer<TreeItemModel> pChildModel = getChildModel();
-    VERIFY_OR_DEBUG_ASSERT (pChildModel.isNull()) 
+    VERIFY_OR_DEBUG_ASSERT (pChildModel.isNull())
         return;
-    
+
     TreeItem* item = pChildModel->getItem(index);
     VERIFY_OR_DEBUG_ASSERT(item) {
         return;
@@ -760,7 +760,7 @@ void BasePlaylistFeature::updateChildModel(int selectedId) {
         return;
     }
     item->setData(m_playlistList[pos].name);
-    
+
     decorateChild(item, selectedId);
 }
 
@@ -769,7 +769,7 @@ QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) const {
     if (row < 0) {
         return QModelIndex();
     }
-    
+
     return getConstChildModel()->index(row, 0);
 }
 
@@ -784,12 +784,12 @@ void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
     // Set all playlists the track is in bold (or if there is no track selected,
     // clear all the bolding).
     QPointer<TreeItemModel> pChildModel = getChildModel();
-    VERIFY_OR_DEBUG_ASSERT(!pChildModel.isNull()) 
+    VERIFY_OR_DEBUG_ASSERT(!pChildModel.isNull())
         return;
-    
-    for (const PlaylistItem& p : m_playlistList) { 
+
+    for (const PlaylistItem& p : m_playlistList) {
         QModelIndex index = indexFromPlaylistId(p.id);
-        
+
         bool shouldBold = m_playlistsSelectedTrackIsIn.contains(p.id);
         pChildModel->setData(index, shouldBold, AbstractRole::RoleBold);
     }

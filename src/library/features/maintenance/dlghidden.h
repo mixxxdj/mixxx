@@ -26,7 +26,7 @@ class DlgHidden : public QFrame, public Ui::DlgHidden {
     void onShow();
 
   signals:
-    void selectAll();  
+    void selectAll();
     void unhide();
     void purge();
     void trackSelected(TrackPointer pTrack);

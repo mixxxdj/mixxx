@@ -204,7 +204,7 @@ void updateTreeItemForTrackSelection(
     pTreeItem->setBold(crateContainsSelectedTrack);
 }
 
-} 
+}
 
 bool CrateFeature::dragMoveAccept(QUrl url) {
     return SoundSourceProxy::isUrlSupported(url) ||
@@ -251,24 +251,24 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
         Parser::isPlaylistFilenameSupported(url.toLocalFile());
 }
 
-parented_ptr<QWidget> CrateFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
+parented_ptr<QWidget> CrateFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
             int paneId, QWidget* parent) {
     auto pContainer = make_parented<WLibraryStack>(parent);
     m_panes[paneId] = pContainer.toWeakRef();
-    
+
     auto pEdit = make_parented<WLibraryTextBrowser>(pContainer.get());
     pEdit->setHtml(formatRootViewHtml());
     pEdit->setOpenLinks(false);
     pEdit->installEventFilter(pKeyboard);
     connect(pEdit.get(), SIGNAL(anchorClicked(const QUrl)),
             this, SLOT(htmlLinkClicked(const QUrl)));
-    
+
     m_idBrowse[paneId] = pContainer->addWidget(pEdit.get());
-    
-    auto pTable = LibraryFeature::createPaneWidget(pKeyboard, paneId, 
+
+    auto pTable = LibraryFeature::createPaneWidget(pKeyboard, paneId,
                                                    pContainer.get());
     m_idTable[paneId] = pContainer->addWidget(pTable.get());
-    
+
     return pContainer;
 }
 
@@ -284,8 +284,8 @@ void CrateFeature::activate() {
         activateChild(*modelIt);
         return;
     }
-    
-    showBrowse(m_featurePane);    
+
+    showBrowse(m_featurePane);
     switchToFeature();
     showBreadCrumb();
     restoreSearch(QString()); //disable search on crate home
@@ -293,13 +293,13 @@ void CrateFeature::activate() {
 
 void CrateFeature::activateChild(const QModelIndex& index) {
     adoptPreselectedPane();
-    
+
     m_lastClickedIndex[m_featurePane] = index;
     CrateId crateId(crateIdFromIndex(index));
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         return;
     }
-    
+
     m_pCrateTableModel = getTableModel(m_featurePane);
     m_pCrateTableModel->selectCrate(crateId);
     showTable(m_featurePane);

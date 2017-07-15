@@ -29,7 +29,7 @@ void PlaylistTableModel::setTableModel(const QSet<int> &playlistIds) {
         qDebug() << "Already focused on playlist " << playlistIds;
         return;
     }
-    
+
     if (playlistIds.size() > 1) {
         // If we are showing many playlist at once this is not a real playlist
         m_iPlaylistId = -1;
@@ -48,7 +48,7 @@ void PlaylistTableModel::setTableModel(const QSet<int> &playlistIds) {
     	    m_pTrackCollection->getPlaylistDAO().removeHiddenTracks(playlistId);
         }
     }
-    
+
     QString playlistTableName = "playlist";
     QStringList sIds;
     for (int n : m_playlistIds) {
@@ -56,7 +56,7 @@ void PlaylistTableModel::setTableModel(const QSet<int> &playlistIds) {
         sIds << sNum;
         playlistTableName.append("_" + sNum);
     }
-    
+
     QSqlQuery query(m_database);
     FieldEscaper escaper(m_database);
 
@@ -101,7 +101,7 @@ int PlaylistTableModel::addTracks(const QModelIndex& index,
     if (locations.isEmpty()) {
         return 0;
     }
-    
+
     int position = getPosition(index);
 
     // Handle weird cases like a drag and drop to an invalid index
@@ -280,7 +280,7 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
 
 void PlaylistTableModel::saveSelection(const QModelIndexList& selection) {
     m_savedSelectionIndices.clear();
-    
+
     for (const QModelIndex& index : selection) {
         m_savedSelectionIndices.insert(getPosition(index));
     }
@@ -299,7 +299,7 @@ QModelIndexList PlaylistTableModel::getSavedSelectionIndices() {
 
 void PlaylistTableModel::select() {
     BaseSqlTableModel::select();
-    
+
     m_positionToRow.clear();
     for (int i = 0; i < rowCount(); ++i) {
         int pos = getPosition(index(i, 0));

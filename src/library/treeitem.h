@@ -14,7 +14,7 @@ class CoverInfo;
 class TreeItem final {
   public:
     static const int kInvalidRow = -1;
-    
+
 	TreeItem(); // creates an invisible root item for the tree
     explicit TreeItem(
             LibraryFeature* pFeature,
@@ -105,7 +105,7 @@ class TreeItem final {
     inline const QIcon& getIcon() {
         return m_icon;
     }
-    
+
 	// Returns true if we have a leaf node
     bool isPlaylist() const;
     // Returns true if we have an inner node
@@ -124,14 +124,14 @@ class TreeItem final {
 	inline bool isDivider() const {
 		return m_divider;
 	}
-    
+
 	inline void setCoverInfo(const CoverInfo& cover) {
 		m_cover = cover;
 	}
 	inline const CoverInfo& getCoverInfo() const {
 		return m_cover;
 	}
-    
+
 	inline void setTrackCount(int count) {
 		m_trackCount = count;
 		m_labelNumbered = m_label + " (" + QString::number(m_trackCount) + ")";
@@ -146,10 +146,10 @@ class TreeItem final {
 	void insertChild(TreeItem* pChild, int row);
 
     LibraryFeature* m_pFeature;
-    
+
     TreeItem* m_pParent;
     QList<TreeItem*> m_children; // owned child items
-    
+
     QString m_label;
 	QString m_labelNumbered;
     QVariant m_data;

@@ -9,7 +9,7 @@ DlgHidden::DlgHidden(QWidget* parent)
          : QFrame(parent),
            Ui::DlgHidden() {
     setupUi(this);
-    
+
     connect(btnSelect, SIGNAL(clicked()), this, SIGNAL(selectAll()));
     connect(btnPurge, SIGNAL(clicked()), this, SIGNAL(purge()));
     connect(btnUnhide, SIGNAL(clicked()), this, SIGNAL(unhide()));
@@ -21,7 +21,7 @@ DlgHidden::~DlgHidden() {
 void DlgHidden::onShow() {
     VERIFY_OR_DEBUG_ASSERT (!m_pHiddenTableModel.isNull())
         return;
-    
+
     m_pHiddenTableModel->select();
     // no buttons can be selected
     activateButtons(false);

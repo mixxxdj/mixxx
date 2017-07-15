@@ -17,7 +17,7 @@
 #include <QVariant>
 
 #include "library/libraryfeature.h"
-#include "library/features/mixxxlibrary/mixxxlibrarytreemodel.h"
+#include "library/features/tracks/trackstreemodel.h"
 #include "library/dao/trackdao.h"
 #include "preferences/usersettings.h"
 
@@ -31,15 +31,15 @@ class WTrackTableView;
 class HiddenTableModel;
 class MissingTableModel;
 
-class MixxxLibraryFeature : public LibraryFeature {
+class TracksFeature : public LibraryFeature {
     Q_OBJECT
 
   public:
-    MixxxLibraryFeature(UserSettingsPointer pConfig,
+    TracksFeature(UserSettingsPointer pConfig,
                         Library* pLibrary,
                         QObject* parent,
                         TrackCollection* pTrackCollection);
-    virtual ~MixxxLibraryFeature();
+    virtual ~TracksFeature();
 
     QVariant title() override;
     QString getIconPath() override;
@@ -48,7 +48,7 @@ class MixxxLibraryFeature : public LibraryFeature {
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
     QPointer<TreeItemModel> getChildModel();
-    parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter*, 
+    parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter*,
                                                    QWidget* parent) override;
 
   public slots:
@@ -70,11 +70,11 @@ class MixxxLibraryFeature : public LibraryFeature {
     static const QList<QStringList> kGroupingOptions;
     static const QStringList kGroupingText;
     static const QString kLibraryFolder;
-    
+
   private slots:
-    void setTreeSettings(const QVariant &settings, 
+    void setTreeSettings(const QVariant &settings,
                          AbstractRole role = AbstractRole::RoleSorting);
-    
+
   private:
     std::unique_ptr<TreeItemModel> m_pChildModel;
     QPointer<WLibrarySidebar> m_pSidebar;
@@ -83,7 +83,7 @@ class MixxxLibraryFeature : public LibraryFeature {
     TrackDAO& m_trackDao;
     QPersistentModelIndex m_lastClickedIndex;
     bool m_foldersShown;
-    
+
 };
 
 #endif /* MIXXXLIBRARYFEATURE_H */

@@ -23,7 +23,7 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
  public:
     RhythmboxFeature(UserSettingsPointer pConfig,
                      Library* pLibrary,
-                     QObject* parent, 
+                     QObject* parent,
                      TrackCollection* pTrackCollection);
     virtual ~RhythmboxFeature();
     static bool isSupported();

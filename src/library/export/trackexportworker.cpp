@@ -85,13 +85,13 @@ void TrackExportWorker::run() {
         ++i;
         emit(progress(it->fileName(), i, copyList.size()));
     }
-    
+
     // If no file is being copied sleep a bit of time to allow the dialog to be
     // shown, otherwise no dialog is shown and it seems that anything is done
     if (copyList.size() <= 0) {
         QThread::msleep(500);
     }
-    
+
     emit progress("", copyList.size(), copyList.size());
 }
 

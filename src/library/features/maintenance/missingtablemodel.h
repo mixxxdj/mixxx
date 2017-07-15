@@ -23,7 +23,7 @@ class MissingTableModel : public BaseSqlTableModel {
     void purgeTracks(const QModelIndexList& indices) final;
     Qt::ItemFlags flags(const QModelIndex &index) const final;
     CapabilitiesFlags getCapabilities() const final;
-    
+
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
     using QObject::parent;
 #endif

@@ -960,13 +960,13 @@ class MixxxCore(Feature):
                    "library/features/maintenance/hiddentablemodel.cpp",
                    "library/features/maintenance/maintenancefeature.cpp",
                    "library/features/maintenance/missingtablemodel.cpp",
-                   
-                   "library/features/mixxxlibrary/mixxxlibraryfeature.cpp",
-                   "library/features/mixxxlibrary/mixxxlibrarytreemodel.cpp",
-                   
+
                    "library/features/playlist/playlistfeature.cpp",
                    "library/features/playlist/playlisttablemodel.cpp",
-                   
+
+                   "library/features/tracks/tracksfeature.cpp",
+                   "library/features/tracks/trackstreemodel.cpp",
+
                    # External Library Features
                    "library/features/baseexternalfeature/baseexternallibraryfeature.cpp",
                    "library/features/baseexternalfeature/baseexternalplaylistmodel.cpp",

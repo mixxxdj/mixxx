@@ -23,10 +23,10 @@ class PlaylistTableModel : public BaseSqlTableModel {
                    const QModelIndex& destIndex);
     void removeTrack(const QModelIndex& index);
     void shuffleTracks(const QModelIndexList& shuffle, const QModelIndex& exclude);
-    
+
     void saveSelection(const QModelIndexList& selection);
     QModelIndexList getSavedSelectionIndices();
-    
+
     void select() override;
 
     bool isColumnInternal(int column) final;
@@ -38,7 +38,7 @@ class PlaylistTableModel : public BaseSqlTableModel {
     int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
     bool isLocked() final;
     CapabilitiesFlags getCapabilities() const final;
-    
+
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
     using QObject::parent;
 #endif
@@ -47,13 +47,13 @@ class PlaylistTableModel : public BaseSqlTableModel {
     void playlistChanged(int playlistId);
 
   private:
-    
+
     int getPosition(const QModelIndex& index);
-    
+
     int m_iPlaylistId;
     QSet<int> m_playlistIds;
     bool m_showAll;
-    
+
     QHash<int, int> m_positionToRow;
     QSet<int> m_savedSelectionIndices;
 };

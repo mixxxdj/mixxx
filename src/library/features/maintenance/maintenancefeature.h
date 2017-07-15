@@ -17,7 +17,7 @@ class MaintenanceFeature : public LibraryFeature
     Q_OBJECT
   public:
     MaintenanceFeature(UserSettingsPointer pConfig,
-                       Library* pLibrary, QObject* parent, 
+                       Library* pLibrary, QObject* parent,
                        TrackCollection* pTrackCollection);
 
     QVariant title() override;
@@ -31,7 +31,7 @@ class MaintenanceFeature : public LibraryFeature
     void selectAll();
 
   protected:
-    parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter* pKeyboard, 
+    parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter* pKeyboard,
                                                    QWidget* parent);
 
   private:
@@ -44,10 +44,10 @@ class MaintenanceFeature : public LibraryFeature
     const QString kMaintenanceTitle;
     const QString kHiddenTitle;
     const QString kMissingTitle;
-    
+
   private slots:
-    
-    void slotTabIndexChanged(int index);    
+
+    void slotTabIndexChanged(int index);
     void slotUnhideHidden();
     void slotPurge();
 

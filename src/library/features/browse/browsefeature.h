@@ -40,7 +40,7 @@ class BrowseFeature : public LibraryFeature {
     QString getIconPath() override;
     QString getSettingsName() const override;
 
-    parented_ptr<QWidget> createPaneWidget(KeyboardEventFilter*pKeyboard, 
+    parented_ptr<QWidget> createPaneWidget(KeyboardEventFilter*pKeyboard,
                                            int paneId, QWidget* parent) override;
 
     QPointer<TreeItemModel> getChildModel();
@@ -81,7 +81,7 @@ class BrowseFeature : public LibraryFeature {
     parented_ptr<TreeItem> m_pQuickLinkItem;
     QStringList m_quickLinkList;
     QPersistentModelIndex m_lastClickedChild;
-    
+
     QHash<int, QPointer<WLibraryStack> > m_panes;
     QHash<int, int> m_idBrowse;
     QHash<int, int> m_idTable;
