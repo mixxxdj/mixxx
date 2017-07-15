@@ -49,7 +49,7 @@ bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
 }
 
 TraktorFeature::TraktorFeature(UserSettingsPointer pConfig,
-                               Library* pLibrary, 
+                               Library* pLibrary,
                                QObject* parent, TrackCollection* pTrackCollection)
         : BaseExternalLibraryFeature(pConfig, pLibrary, parent, pTrackCollection),
           m_pTrackCollection(pTrackCollection),
@@ -160,7 +160,7 @@ void TraktorFeature::activate() {
         //calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
         emit(featureIsLoading(this, true));
     }
-    
+
     showTrackModel(m_pTraktorTableModel);
     showBreadCrumb();
 }
@@ -175,7 +175,7 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
     if (item->isPlaylist()) {
         qDebug() << "Activate Traktor Playlist: " << item->getData().toString();
         m_pTraktorPlaylistModel->setPlaylist(item->getData().toString());
-        
+
         showTrackModel(m_pTraktorPlaylistModel);
         showBreadCrumb(item);
     }

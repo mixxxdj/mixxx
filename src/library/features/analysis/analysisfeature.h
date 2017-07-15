@@ -33,12 +33,12 @@ class AnalysisFeature : public LibraryFeature {
 
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
-    
-    parented_ptr<QWidget> createPaneWidget(KeyboardEventFilter*, int paneId, 
+
+    parented_ptr<QWidget> createPaneWidget(KeyboardEventFilter*, int paneId,
                                            QWidget* parent) override;
-    parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter* pKeyboard, 
+    parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter* pKeyboard,
                                                    QWidget* parent) override;
-    
+
     QPointer<TreeItemModel> getChildModel();
     void refreshLibraryModels();
     void stopAnalysis();
@@ -67,7 +67,7 @@ class AnalysisFeature : public LibraryFeature {
     // where x is the current track being analyzed and y is the total number of
     // tracks in the job
     void setTitleProgress(int trackNum, int totalNum);
-    
+
     AnalysisLibraryTableModel* getAnalysisTableModel();
 
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;

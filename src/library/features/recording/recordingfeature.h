@@ -33,9 +33,9 @@ class RecordingFeature : public LibraryFeature {
     QString getIconPath() override;
     QString getSettingsName() const override;
 
-    parented_ptr<QWidget> createPaneWidget(KeyboardEventFilter*, int paneId, 
+    parented_ptr<QWidget> createPaneWidget(KeyboardEventFilter*, int paneId,
                                            QWidget* parent) override;
-    parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter* pKeyboard, 
+    parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter* pKeyboard,
                                                    QWidget* parent) override;
 
     QPointer<TreeItemModel> getChildModel();
@@ -47,14 +47,14 @@ class RecordingFeature : public LibraryFeature {
     void setRootIndex(const QModelIndex&);
 
   private:
-    
+
     BrowseTableModel* getBrowseTableModel();
     ProxyTrackModel* getProxyTrackModel();
-    
+
     TrackCollection* m_pTrackCollection;
     FolderTreeModel m_childModel;
     RecordingManager* m_pRecordingManager;
-    
+
     QPointer<DlgRecording> m_pRecordingView;
     parented_ptr<BrowseTableModel> m_pBrowseModel;
     std::unique_ptr<ProxyTrackModel> m_pProxyModel;

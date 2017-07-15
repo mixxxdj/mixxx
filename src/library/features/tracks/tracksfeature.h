@@ -17,7 +17,7 @@
 #include <QVariant>
 
 #include "library/libraryfeature.h"
-#include "library/features/mixxxlibrary/mixxxlibrarytreemodel.h"
+#include "library/features/tracks/trackstreemodel.h"
 #include "library/dao/trackdao.h"
 #include "preferences/usersettings.h"
 
@@ -31,15 +31,15 @@ class WTrackTableView;
 class HiddenTableModel;
 class MissingTableModel;
 
-class MixxxLibraryFeature : public LibraryFeature {
+class TracksFeature : public LibraryFeature {
     Q_OBJECT
 
   public:
-    MixxxLibraryFeature(UserSettingsPointer pConfig,
+    TracksFeature(UserSettingsPointer pConfig,
                         Library* pLibrary,
                         QObject* parent,
                         TrackCollection* pTrackCollection);
-    virtual ~MixxxLibraryFeature();
+    virtual ~TracksFeature();
 
     QVariant title() override;
     QString getIconPath() override;

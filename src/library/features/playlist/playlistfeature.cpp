@@ -138,19 +138,19 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
             // The user has canceled
             return false;
         }
-        
+
         playlistId = m_playlistDao.createPlaylist(name);
         // An error happened
         if (playlistId < 0) {
             return false;
         }
     }
-    
+
     // Return whether appendTracksToPlaylist succeeded.
     return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
 }
 
-bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {    
+bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     int playlistId = playlistIdFromIndex(index);
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
@@ -193,14 +193,14 @@ void PlaylistFeature::buildPlaylistList() {
         int count = query.value(countColumn).toInt();
         int duration = query.value(durationColumn).toInt();
         QString itemName = "%1 (%2) %3";
-        itemName = itemName.arg(name, 
+        itemName = itemName.arg(name,
                                 QString::number(count),
                                 mixxx::Duration::formatSeconds(duration));
         m_playlistList << PlaylistItem(id, itemName);
     }
 }
 
-void PlaylistFeature::decorateChild(TreeItem* item, int playlist_id) {    
+void PlaylistFeature::decorateChild(TreeItem* item, int playlist_id) {
     if (m_playlistDao.isPlaylistLocked(playlist_id)) {
         item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
     } else {
@@ -209,7 +209,7 @@ void PlaylistFeature::decorateChild(TreeItem* item, int playlist_id) {
 }
 
 parented_ptr<PlaylistTableModel> PlaylistFeature::constructTableModel() {
-    return make_parented<PlaylistTableModel>(this, m_pTrackCollection, 
+    return make_parented<PlaylistTableModel>(this, m_pTrackCollection,
                                              "mixxx.db.model.playlist");
 }
 

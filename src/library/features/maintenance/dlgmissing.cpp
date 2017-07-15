@@ -7,8 +7,8 @@
 DlgMissing::DlgMissing(QWidget* parent)
          : QFrame(parent),
            Ui::DlgMissing() {
-    setupUi(this);    
- 
+    setupUi(this);
+
     connect(btnPurge, SIGNAL(clicked()), this, SIGNAL(purge()));
     connect(btnSelect, SIGNAL(clicked()), this, SIGNAL(selectAll()));
 }
@@ -19,7 +19,7 @@ DlgMissing::~DlgMissing() {
 void DlgMissing::onShow() {
     VERIFY_OR_DEBUG_ASSERT(!m_pMissingTableModel.isNull())
         return;
-    
+
     m_pMissingTableModel->select();
     // no buttons can be selected
     activateButtons(false);

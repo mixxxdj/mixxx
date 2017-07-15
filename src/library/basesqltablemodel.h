@@ -53,10 +53,10 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     QVariant headerData(int section, Qt::Orientation orientation,
                         int role=Qt::DisplayRole) const final;
     virtual QMimeData* mimeData(const QModelIndexList &indexes) const final;
-    
+
     void saveSelection(const QModelIndexList& selection) override;
     QModelIndexList getSavedSelectionIndices() override;
-    
+
     void restoreQuery(const SavedSearchQuery& query) override;
     SavedSearchQuery saveQuery(const QModelIndexList &indices, SavedSearchQuery query) const override;
 
@@ -82,7 +82,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     void search(const QString& searchText, const QString& extraFilter = QString()) override;
     const QString currentSearch() const override;
     QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent) override;
-    
+
   public slots:
     void select();
 
@@ -91,7 +91,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
                   const QStringList& tableColumns,
                   QSharedPointer<BaseTrackCache> trackSource);
     void initHeaderData();
-    
+
     QSet<TrackId> getTrackIdsFromIndices(const QModelIndexList& list) const;
 
     // Use this if you want a model that is read-only.

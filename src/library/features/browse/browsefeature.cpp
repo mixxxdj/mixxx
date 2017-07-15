@@ -197,19 +197,19 @@ QPointer<TreeItemModel> BrowseFeature::getChildModel() {
     return &m_childModel;
 }
 
-parented_ptr<QWidget> BrowseFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
+parented_ptr<QWidget> BrowseFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
             int paneId, QWidget* parent) {
     auto pStack = make_parented<WLibraryStack>(parent);
     m_panes[paneId] = pStack.toWeakRef();
-    
+
     auto pEdit = make_parented<WLibraryTextBrowser>(pStack.get());
     pEdit->setHtml(getRootViewHtml());
     pEdit->installEventFilter(pKeyboard);
     m_idBrowse[paneId] = pStack->addWidget(pEdit.get());
-    
+
     auto pTable = LibraryFeature::createPaneWidget(pKeyboard, paneId, pStack.get());
     m_idTable[paneId] = pStack->addWidget(pTable.get());
-    
+
     return pStack;
 }
 
@@ -218,12 +218,12 @@ void BrowseFeature::activate() {
         activateChild(m_lastClickedChild);
         return;
     }
-    
+
     showBrowse(m_featurePane);
     switchToFeature();
     showBreadCrumb();
     restoreSearch(QString());
-    
+
 }
 
 // Note: This is executed whenever you single click on an child item
@@ -233,7 +233,7 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
     QString data = index.data().toString();
     QString dataPath = index.data(AbstractRole::RoleData).toString();
     qDebug() << "BrowseFeature::activateChild " << data << dataPath;
-    
+
     if (dataPath == QUICK_LINK_NODE || dataPath == DEVICE_NODE) {
         m_browseModel.setPath(MDir());
     } else {
@@ -251,12 +251,12 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
         }
         m_browseModel.setPath(dir);
     }
-    
+
     showTable(m_featurePane);
     showTrackModel(&m_proxyModel);
     QString bread = index.data(AbstractRole::RoleBreadCrumb).toString();
     showBreadCrumb(bread, getIcon());
-    
+
 }
 
 void BrowseFeature::onRightClickChild(const QPoint& globalPos,
@@ -282,7 +282,7 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos,
         onLazyChildExpandation(persitstentIndex);
         return;
     }
-    
+
     for (const QString& str : m_quickLinkList) {
         if (str == path) {
              return;
@@ -300,7 +300,7 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos,
 void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
     if (!index.isValid())
         return;
-    
+
     QString label = index.data().toString();
     QString path = index.data(AbstractRole::RoleData).toString();
 

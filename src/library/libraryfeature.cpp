@@ -27,7 +27,7 @@
 // KEEP THIS cpp file to tell scons that moc should be called on the class!!!
 // The reason for this is that LibraryFeature uses slots/signals and for this
 // to work the code has to be precompiled by moc
-LibraryFeature::LibraryFeature(UserSettingsPointer pConfig, 
+LibraryFeature::LibraryFeature(UserSettingsPointer pConfig,
                                Library* pLibrary,
                                TrackCollection* pTrackCollection,
                                QObject* parent)
@@ -50,7 +50,7 @@ bool LibraryFeature::isSinglePane() const {
     return true;
 }
 
-QIcon LibraryFeature::getIcon() {    
+QIcon LibraryFeature::getIcon() {
     return WPixmapStore::getLibraryIcon(getIconPath());
 }
 
@@ -66,7 +66,7 @@ bool LibraryFeature::dragMoveAcceptChild(const QModelIndex &, QUrl) {
     return false;
 }
 
-parented_ptr<QWidget> LibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard, 
+parented_ptr<QWidget> LibraryFeature::createPaneWidget(KeyboardEventFilter* pKeyboard,
                                           int paneId, QWidget* parent) {
     Q_UNUSED(pKeyboard);
     return createTableWidget(paneId, parent);
@@ -76,30 +76,30 @@ parented_ptr<QWidget> LibraryFeature::createSidebarWidget(KeyboardEventFilter* p
     //qDebug() << "LibraryFeature::bindSidebarWidget";
     auto pContainer = make_parented<QFrame>(parent);
     pContainer->setContentsMargins(0,0,0,0);
-    
+
     auto pLayout = make_parented<QVBoxLayout>(pContainer.get());
     pLayout->setContentsMargins(0,0,0,0);
     pLayout->setSpacing(0);
     pContainer->setLayout(pLayout.get());
-    
+
     // Note: cannot set directly set pLayout as parent, because it is not a QWidget
     auto pLayoutTitle = std::make_unique<QHBoxLayout>();
-    
+
     auto pIcon = make_parented<QLabel>(pContainer.get());
     int height = pIcon->fontMetrics().height();
     pIcon->setPixmap(getIcon().pixmap(height));
     pLayoutTitle->addWidget(pIcon.get());
-    
+
     auto pTitle = make_parented<QLabel>(title().toString(), pContainer.get());
     pLayoutTitle->addWidget(pTitle.get());
-    pLayoutTitle->addSpacerItem(new QSpacerItem(0, 0, 
-                                                QSizePolicy::Expanding, 
+    pLayoutTitle->addSpacerItem(new QSpacerItem(0, 0,
+                                                QSizePolicy::Expanding,
                                                 QSizePolicy::Minimum));
     pLayout->addLayout(pLayoutTitle.release());
-    
+
     auto pSidebar = createInnerSidebarWidget(pKeyboard, pContainer.get());
     pLayout->addWidget(pSidebar.get());
-    
+
     return pContainer;
 }
 
@@ -130,7 +130,7 @@ SavedSearchQuery LibraryFeature::saveQuery(SavedSearchQuery sQuery) {
     if (pTable == nullptr) {
         return SavedSearchQuery();
     }
-    
+
     sQuery = pTable->saveQuery(sQuery);
     int qId = m_savedDAO.getQueryId(sQuery);
     if (qId >= 0) {
@@ -145,17 +145,17 @@ SavedSearchQuery LibraryFeature::saveQuery(SavedSearchQuery sQuery) {
         box.addButton(QMessageBox::No);
         box.setDefaultButton(QMessageBox::Yes);
         box.setEscapeButton(QMessageBox::No);
-        
+
         if (box.exec() == QMessageBox::No) {
             // No pressed
             m_savedDAO.moveToFirst(this, qId);
             return sQuery;
         } else {
-            // Yes pressed 
+            // Yes pressed
             m_savedDAO.deleteSavedQuery(qId);
         }
     }
-    
+
     // A saved query goes the first in the list
     return m_savedDAO.saveQuery(this, sQuery);
 }
@@ -165,26 +165,26 @@ void LibraryFeature::restoreQuery(int id) {
     if (pTable == nullptr) {
         return;
     }
-    
+
     // Move the query to the first position to be reused later by the user
     const SavedSearchQuery& sQuery = m_savedDAO.moveToFirst(this, id);
     pTable->restoreQuery(sQuery);
     restoreSearch(sQuery.query.isNull() ? "" : sQuery.query);
 }
 
-QList<SavedSearchQuery> LibraryFeature::getSavedQueries() const {    
+QList<SavedSearchQuery> LibraryFeature::getSavedQueries() const {
     return m_savedDAO.getSavedQueries(this);
 }
 
 parented_ptr<WTrackTableView> LibraryFeature::createTableWidget(int paneId, QWidget* parent) {
-    auto pTrackTableView = make_parented<WTrackTableView>(parent, m_pConfig, 
+    auto pTrackTableView = make_parented<WTrackTableView>(parent, m_pConfig,
             m_pTrackCollection, true);
-    
+
     m_trackTablesByPaneId[paneId] = pTrackTableView.get();
-        
+
     auto pScrollBar = make_parented<WMiniViewScrollBar>(pTrackTableView.get());
     pTrackTableView->setScrollBar(pScrollBar.get());
-    
+
     connect(pTrackTableView.get(), SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
     connect(pTrackTableView.get(), SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
@@ -193,12 +193,12 @@ parented_ptr<WTrackTableView> LibraryFeature::createTableWidget(int paneId, QWid
             this, SIGNAL(trackSelected(TrackPointer)));
     connect(pTrackTableView.get(), SIGNAL(tableChanged()),
             this, SLOT(restoreSaveButton()));
-    
+
     connect(m_pLibrary, SIGNAL(setTrackTableFont(QFont)),
             pTrackTableView.get(), SLOT(setTrackTableFont(QFont)));
     connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
             pTrackTableView.get(), SLOT(setTrackTableRowHeight(int)));
-    
+
     return pTrackTableView;
 }
 
@@ -211,7 +211,7 @@ parented_ptr<WLibrarySidebar> LibraryFeature::createLibrarySidebarWidget(QWidget
     auto pSidebar = make_parented<WLibrarySidebar>(parent);
     QAbstractItemModel* pModel = getChildModel();
     pSidebar->setModel(pModel);
-    
+
     // Set sidebar mini view
     auto pMiniView = make_parented<WMiniViewScrollBar>(pSidebar.get());
     pMiniView->setTreeView(pSidebar.get());
@@ -219,7 +219,7 @@ parented_ptr<WLibrarySidebar> LibraryFeature::createLibrarySidebarWidget(QWidget
     pSidebar->setVerticalScrollBar(pMiniView.get());
     // invalidate probably stored QModelIndex
     invalidateChild();
-    
+
     connect(pSidebar.get(), SIGNAL(pressed(const QModelIndex&)),
             this, SLOT(activateChild(const QModelIndex&)));
     connect(pSidebar.get(), SIGNAL(doubleClicked(const QModelIndex&)),
@@ -230,7 +230,7 @@ parented_ptr<WLibrarySidebar> LibraryFeature::createLibrarySidebarWidget(QWidget
             this, SLOT(onLazyChildExpandation(const QModelIndex&)));
     connect(this, SIGNAL(selectIndex(const QModelIndex&)),
             pSidebar.get(), SLOT(selectIndex(const QModelIndex&)));
-    
+
     connect(pSidebar.get(), SIGNAL(hovered()),
             this, SLOT(slotSetHoveredSidebar()));
     connect(pSidebar.get(), SIGNAL(leaved()),

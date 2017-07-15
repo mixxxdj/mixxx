@@ -28,9 +28,9 @@ DlgAnalysis::~DlgAnalysis() {
 void DlgAnalysis::onShow() {
     // Refresh table
     // There might be new tracks dropped to other views
-    if (!m_pAnalysisLibraryTableModel.isNull()) 
+    if (!m_pAnalysisLibraryTableModel.isNull())
         m_pAnalysisLibraryTableModel->select();
-    
+
     // TODO(rryan): This triggers a library search before the UI has even
     // started up. Accounts for 0.2% of skin creation time. Get rid of this!
     radioButtonRecentlyAdded->click();
@@ -41,7 +41,7 @@ void DlgAnalysis::analyze() {
     if (m_bAnalysisActive) {
         m_pAnalysis->stopAnalysis();
     } else {
-        if (m_pAnalysisLibraryTableModel.isNull()) 
+        if (m_pAnalysisLibraryTableModel.isNull())
             return;
         QList<TrackId> trackIds;
         for (QModelIndex selectedIndex : m_selectedIndexes) {
@@ -103,7 +103,7 @@ void DlgAnalysis::setSelectedIndexes(const QModelIndexList& selectedIndexes) {
 
 void DlgAnalysis::setTableModel(AnalysisLibraryTableModel* pTableModel) {
     m_pAnalysisLibraryTableModel = pTableModel;
-    
+
     connect(radioButtonRecentlyAdded, SIGNAL(clicked()),
             m_pAnalysisLibraryTableModel, SLOT(showRecentSongs()));
     connect(radioButtonAllSongs, SIGNAL(clicked()),

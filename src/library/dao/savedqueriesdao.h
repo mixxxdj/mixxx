@@ -21,7 +21,7 @@ enum SavedQueryColumns {
     SORTCOLUMN,
     SORTASCENDINGORDER,
     PINNED,
-    
+
     // NUM_COLUMNS should be always the last item
     NUM_COLUMNS
 };
@@ -40,25 +40,25 @@ const QString SAVEDQUERYTABLE_PINNED = "pinned";
 // This struct allows to save some data to allow interaction between
 // the search bar and the library features
 struct SavedSearchQuery {
-    
-    SavedSearchQuery() : 
+
+    SavedSearchQuery() :
         vScrollBarPos(-1),
-        sortColumn(-1), 
-        sortAscendingOrder(false), 
+        sortColumn(-1),
+        sortAscendingOrder(false),
         pinned(false),
         id(-1) {}
-    
+
     SavedSearchQuery(const SavedSearchQuery& other) = default;
     SavedSearchQuery& operator=(const SavedSearchQuery& other) = default;
     bool operator==(const SavedSearchQuery& other) const {
         return other.title == this->title && other.query == this->query;
     }
-    
+
     QString query;
     QString title;
     QSet<DbId> selectedItems;
     QString sortOrder;
-    
+
     int vScrollBarPos;
     int sortColumn;
     bool sortAscendingOrder;
@@ -84,14 +84,14 @@ class SavedQueriesDAO : public DAO {
     bool deleteSavedQuery(int id);
     bool exists(const SavedSearchQuery& sQuery);
     int getQueryId(const SavedSearchQuery& sQuery);
-    
+
   private:
     static QString serializeItems(const QSet<DbId>& items);
     static QSet<DbId> deserializeItems(QString text);
     static SavedSearchQuery valueToQuery(const QSqlQuery& query);
-    
+
     static const QString kSelectStart;
-    
+
     QSqlDatabase m_database;
 };
 

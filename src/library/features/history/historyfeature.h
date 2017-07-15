@@ -16,7 +16,7 @@ class HistoryFeature : public BasePlaylistFeature {
 public:
     HistoryFeature(UserSettingsPointer pConfig,
                   Library* pLibrary,
-                  QObject* parent, 
+                  QObject* parent,
                   TrackCollection* pTrackCollection);
     virtual ~HistoryFeature();
 
@@ -33,9 +33,9 @@ public:
     void slotGetNewPlaylist();
 
   protected:
-    parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter*, 
+    parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter*,
                                                    QWidget* parent) override;
-    
+
     const TreeItemModel* getConstChildModel() const override;
     void buildPlaylistList() override;
     QModelIndex constructChildModel(int selected_id);
