@@ -65,7 +65,7 @@
    <String Id="InstallHeader">Welcome</String>
    <String Id="InstallMessage">Setup will install Mixxx on your computer.
 It will first install required third party libraries, then Mixxx itself.
-Click install to continue or Close to exit.</String>
+Click Install to continue or Close to exit.</String>
    <String Id="InstallVersion">Version [WixBundleVersion]</String>
    <String Id="InstallOptionsButton">&amp;Options</String>
    <String Id="InstallInstallButton">&amp;Install</String>

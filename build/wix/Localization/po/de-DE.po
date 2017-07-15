@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2017-07-14 20:07+0000\n"
+"PO-Revision-Date: 2017-07-15 07:50+0000\n"
 "Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
 "Language-Team: German (Germany) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/de_DE/)\n"
 "MIME-Version: 1.0\n"
@@ -99,7 +99,7 @@ msgid ""
 "Installer was not able to find Microsoft Visual C++ 2015 Redistributable on "
 "this system. This is likely an installer bug that should be reported to "
 "Mixxx developers."
-msgstr ""
+msgstr "Das Installationsprogramm war nicht in der Lage Microsoft Visual C ++ 2015 Redistributable auf diesem System zu finden. Dies ist wahrscheinlich ein Bug des Installationsprogramms, der an Mixxx-Entwickler gemeldet werden sollte."
 
 #.  Custom Warning Dialog
 msgctxt "WarningDlgTitle"
@@ -165,23 +165,23 @@ msgstr "Ressource-Dateien um Mixxx außer in US-Englisch in alternativen Sprache
 #.  Bootstrapper
 msgctxt "Caption"
 msgid "[WixBundleName] Setup"
-msgstr ""
+msgstr "[WixBundleName] Setup"
 
 msgctxt "Title"
 msgid "[WixBundleName]"
-msgstr ""
+msgstr "[WixBundleName]"
 
 msgctxt "ConfirmCancelMessage"
 msgid "Are you sure you want to cancel?"
-msgstr ""
+msgstr "Sind Sie sicher, dass Sie abbrechen möchten?"
 
 msgctxt "ExecuteUpgradeRelatedBundleMessage"
 msgid "Previous version"
-msgstr ""
+msgstr "Vorherige Version"
 
 msgctxt "HelpHeader"
 msgid "Setup Help"
-msgstr ""
+msgstr "Setup-Hilfe"
 
 msgctxt "HelpText"
 msgid ""
@@ -199,26 +199,26 @@ msgstr ""
 
 msgctxt "HelpCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "S&chließen"
 
 msgctxt "InstallHeader"
 msgid "Welcome"
-msgstr ""
+msgstr "Willkommen"
 
 msgctxt "InstallMessage"
 msgid ""
 "Setup will install Mixxx on your computer.\n"
 "It will first install required third party libraries, then Mixxx itself.\n"
-"Click install to continue or Close to exit."
+"Click Install to continue or Close to exit."
 msgstr ""
 
 msgctxt "InstallVersion"
 msgid "Version [WixBundleVersion]"
-msgstr ""
+msgstr "Version [WixBundleVersion]"
 
 msgctxt "InstallOptionsButton"
 msgid "&Options"
-msgstr ""
+msgstr "&Optionen"
 
 msgctxt "InstallInstallButton"
 msgid "&Install"
@@ -226,51 +226,51 @@ msgstr "&Installieren"
 
 msgctxt "InstallCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Schließen"
 
 msgctxt "OptionsHeader"
 msgid "Setup Options"
-msgstr ""
+msgstr "Setup-Optionen"
 
 msgctxt "OptionsLocationLabel"
 msgid "Install location:"
-msgstr ""
+msgstr "Installationsverzeichnis:"
 
 msgctxt "OptionsBrowseButton"
 msgid "&Browse"
-msgstr ""
+msgstr "&Durchsuchen"
 
 msgctxt "OptionsOkButton"
 msgid "&OK"
-msgstr ""
+msgstr "&OK"
 
 msgctxt "OptionsCancelButton"
 msgid "&Cancel"
-msgstr ""
+msgstr "&Abbrechen"
 
 msgctxt "FilesInUseHeader"
 msgid "Files In Use"
-msgstr ""
+msgstr "Dateien in Benutzung"
 
 msgctxt "FilesInUseLabel"
 msgid "The following applications are using files that need to be updated:"
-msgstr ""
+msgstr "Die folgenden Anwendungen verwenden Dateien, die aktualisiert werden müssen:"
 
 msgctxt "FilesInUseCloseRadioButton"
 msgid "Close the &applications and attempt to restart them."
-msgstr ""
+msgstr "Die &Anwendungen schliessen, und versuchen sie neu zu starten."
 
 msgctxt "FilesInUseDontCloseRadioButton"
 msgid "&Do not close applications. A reboot will be required."
-msgstr ""
+msgstr "&Schließe keine Anwendungen. Ein Neustart ist erforderlich."
 
 msgctxt "FilesInUseOkButton"
 msgid "&OK"
-msgstr ""
+msgstr "&OK"
 
 msgctxt "FilesInUseCancelButton"
 msgid "&Cancel"
-msgstr ""
+msgstr "&Abbrechen"
 
 msgctxt "ProgressHeader"
 msgid "Setup Progress"
@@ -278,51 +278,51 @@ msgstr ""
 
 msgctxt "ProgressLabel"
 msgid "Processing:"
-msgstr ""
+msgstr "Wird bearbeitet:"
 
 msgctxt "OverallProgressPackageText"
 msgid "Initializing..."
-msgstr ""
+msgstr "Initialisiere..."
 
 msgctxt "ProgressCancelButton"
 msgid "&Cancel"
-msgstr ""
+msgstr "&Cancel"
 
 msgctxt "ModifyHeader"
 msgid "Modify Setup"
-msgstr ""
+msgstr "Setup ändern"
 
 msgctxt "ModifyRepairButton"
 msgid "&Repair"
-msgstr ""
+msgstr "&Reparieren"
 
 msgctxt "ModifyUninstallButton"
 msgid "&Uninstall"
-msgstr ""
+msgstr "&Deinstallieren"
 
 msgctxt "ModifyCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Schließen"
 
 msgctxt "SuccessHeader"
 msgid "Setup Successful"
-msgstr ""
+msgstr "Installation erfolgreich"
 
 msgctxt "SuccessInstallHeader"
 msgid "Mixxx installation has been successful"
-msgstr ""
+msgstr "Installation von Mixxx war erfolgreich"
 
 msgctxt "SuccessRepairHeader"
 msgid "Mixxx repair has been successful"
-msgstr ""
+msgstr "Reparatur von Mixxx war erfolgreich"
 
 msgctxt "SuccessUninstallHeader"
 msgid "Mixxx uninstall has been successful"
-msgstr ""
+msgstr "Deinstallation von Mixxx war erfolgreich"
 
 msgctxt "SuccessLaunchButton"
 msgid "&Launch"
-msgstr ""
+msgstr "&Start"
 
 msgctxt "SuccessRestartText"
 msgid "You must restart your computer before you can use the software."
@@ -330,27 +330,27 @@ msgstr ""
 
 msgctxt "SuccessRestartButton"
 msgid "&Restart"
-msgstr ""
+msgstr "&Neustart"
 
 msgctxt "SuccessCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Schließen"
 
 msgctxt "FailureHeader"
 msgid "Setup Failed"
-msgstr ""
+msgstr "Setup fehlgeschlagen"
 
 msgctxt "FailureInstallHeader"
 msgid "Mixxx installation failed"
-msgstr ""
+msgstr "Installation von Mixxx ist fehlgeschlagen"
 
 msgctxt "FailureRepairHeader"
 msgid "Mixxx repair failed"
-msgstr ""
+msgstr "Reparatur von Mixxx ist fehlgeschlagen"
 
 msgctxt "FailureUninstallHeader"
 msgid "Mixxx uninstall failed"
-msgstr ""
+msgstr "Deinstallation von Mixxx ist fehlgeschlagen"
 
 msgctxt "FailureHyperlinkLogText"
 msgid ""
@@ -365,8 +365,8 @@ msgstr ""
 
 msgctxt "FailureRestartButton"
 msgid "&Restart"
-msgstr ""
+msgstr "&Neustart"
 
 msgctxt "FailureCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "S&chließen"

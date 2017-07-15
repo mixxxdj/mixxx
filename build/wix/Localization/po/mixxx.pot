@@ -173,7 +173,7 @@ msgctxt "InstallMessage"
 msgid ""
 "Setup will install Mixxx on your computer.\n"
 "It will first install required third party libraries, then Mixxx itself.\n"
-"Click install to continue or Close to exit."
+"Click Install to continue or Close to exit."
 msgstr ""
 
 msgctxt "InstallVersion"
