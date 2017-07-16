@@ -172,6 +172,9 @@ void DlgPrefBroadcast::slotApply()
     // Here would be a call to a method of BroadcastSettings that syncs
     // another list with its internal list
 
+    if(m_pProfileListSelection) {
+        setValuesToProfile(m_pProfileListSelection);
+    }
     m_pBroadcastSettings->saveAll();
     m_valuesChanged = false;
 }
@@ -229,6 +232,7 @@ void DlgPrefBroadcast::profileListItemSelected(const QModelIndex& index) {
             m_pBroadcastSettings->saveProfile(m_pProfileListSelection);
         }
     }*/
+    setValuesToProfile(m_pProfileListSelection);
 
     QString selectedName = m_pBroadcastSettings->data(index,
             Qt::DisplayRole).toString();
@@ -236,9 +240,8 @@ void DlgPrefBroadcast::profileListItemSelected(const QModelIndex& index) {
             m_pBroadcastSettings->getProfileByName(selectedName);
     if(profile) {
         getValuesFromProfile(profile);
+        m_pProfileListSelection = profile;
     }
-
-    m_pProfileListSelection = profile;
 }
 
 void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
