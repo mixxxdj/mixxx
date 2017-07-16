@@ -224,12 +224,9 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
         m_config->set(ConfigKey("[Waveform]","ZoomSynchronization"), ConfigValue(m_zoomSync));
     }
 
-    int showBeatGrid = m_config->getValue(ConfigKey("[Waveform]", "beatGridLinesCheckBox")).toInt(&ok);
-    if (ok) {
-        setDisplayBeatGrid(static_cast<bool>(showBeatGrid));
-    } else {
-        m_config->set(ConfigKey("[Waveform]", "beatGridLinesCheckBox"), ConfigValue(m_beatGridEnabled));
-    }
+    int showBeatGrid = m_config->getValue(ConfigKey("[Waveform]", "beatGridLinesCheckBox"), m_beatGridEnabled);
+    setDisplayBeatGrid(static_cast<bool>(showBeatGrid));
+
 
     WaveformWidgetType::Type type = static_cast<WaveformWidgetType::Type>(
             m_config->getValueString(ConfigKey("[Waveform]","WaveformType")).toInt(&ok));
