@@ -1,0 +1,223 @@
+<!--
+Description:
+  Size-aware container that decides whether Star Rating fits in between
+  HotCues and deck controls, to avoid squeezed deck controls and on the
+  other hand let HotCue buttons auto-shrink only if necessesary.
+  It contains spacers for 4/8 HotCues, each deck control button i.e. separate
+  Cue, keylock, quantize etc.
+
+Controls:
+  [Tango],stars_fit_stack0
+    Its current page is set to '0' in skin.xml so that 'stars_wont_fit' is triggered
+  [Tango],stars_fit_stack1
+    Its current page is set to '1' in skin.xml so that 'stars_fit' is triggered
+    for size bigger than 83px.
+
+-->
+<Template>
+  <WidgetGroup><!-- hidden size detector for star rating -->
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+      <WidgetGroup><!-- Play and deck controls toggler -->
+        <ObjectName>SizeTest</ObjectName>
+        <Size>63f,12f</Size>
+        <Children/>
+      </WidgetGroup>
+      <WidgetGroup><!-- Separate Cue button -->
+        <ObjectName>SizeTest</ObjectName>
+        <Size>25f,12f</Size>
+        <Children/>
+        <Connection>
+          <ConfigKey persist="true">[Tango],separate_cue_button</ConfigKey>
+          <Transform><IsEqual>1</IsEqual></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      <WidgetGroup><!-- HotCues 1-4 at minimum size -->
+        <ObjectName>SizeTest</ObjectName>
+        <Size>64f,12f</Size>
+        <Children/>
+        <Connection>
+          <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
+          <Transform><IsEqual>1</IsEqual></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      <WidgetGroup><!-- HotCues 1-8 at minimum size -->
+        <ObjectName>SizeTest</ObjectName>
+        <Size>128f,12f</Size>
+        <Children/>
+        <Connection>
+          <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
+          <Transform><IsEqual>2</IsEqual></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      <!-- spacers for deck controls that are set to be always visible -->
+      <WidgetGroup><!-- keylock -->
+        <ObjectName>SizeTest</ObjectName>
+        <Size>20f,12f</Size>
+        <Children/>
+        <Connection>
+          <ConfigKey persist="true">[Tango],always_visible_keylock</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      <WidgetGroup><!-- repeat -->
+        <ObjectName>SizeTest</ObjectName>
+        <Size>22f,12f</Size>
+        <Children/>
+        <Connection>
+          <ConfigKey persist="true">[Tango],always_visible_repeat</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      <WidgetGroup><!-- eject -->
+        <ObjectName>SizeTest</ObjectName>
+        <Size>20f,12f</Size>
+        <Children/>
+        <Connection>
+          <ConfigKey persist="true">[Tango],always_visible_eject</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      <WidgetGroup><!-- slip mode -->
+        <ObjectName>SizeTest</ObjectName>
+        <Size>22f,12f</Size>
+        <Children/>
+        <Connection>
+          <ConfigKey persist="true">[Tango],always_visible_slipMode</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      <WidgetGroup><!-- cf orientation -->
+        <ObjectName>SizeTest</ObjectName>
+        <Size>20f,12f</Size>
+        <Children/>
+        <Connection>
+          <ConfigKey persist="true">[Tango],always_visible_cfOrientation</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      <WidgetGroup><!-- quantize -->
+        <ObjectName>SizeTest</ObjectName>
+        <Size>22f,12f</Size>
+        <Children/>
+        <Connection>
+          <ConfigKey persist="true">[Tango],always_visible_quantize</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup><!-- Spacer for expanded deck controls -->
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup><!-- keylock expanded -->
+            <ObjectName>SizeTest</ObjectName>
+            <Size>20f,12f</Size>
+            <Children/>
+            <Connection>
+              <ConfigKey persist="true">[Tango],always_visible_keylock</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <WidgetGroup><!-- repeat expanded -->
+            <ObjectName>SizeTest</ObjectName>
+            <Size>22f,12f</Size>
+            <Children/>
+            <Connection>
+              <ConfigKey persist="true">[Tango],always_visible_repeat</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <WidgetGroup><!-- eject expanded -->
+            <ObjectName>SizeTest</ObjectName>
+            <Size>20f,12f</Size>
+            <Children/>
+            <Connection>
+              <ConfigKey persist="true">[Tango],always_visible_eject</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <WidgetGroup><!-- slip mode expanded -->
+            <ObjectName>SizeTest</ObjectName>
+            <Size>22f,12f</Size>
+            <Children/>
+            <Connection>
+              <ConfigKey persist="true">[Tango],always_visible_slipMode</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <WidgetGroup><!-- cf orientation expanded -->
+            <ObjectName>SizeTest</ObjectName>
+            <Size>20f,12f</Size>
+            <Children/>
+            <Connection>
+              <ConfigKey persist="true">[Tango],always_visible_cfOrientation</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <WidgetGroup><!-- quantize expanded -->
+            <ObjectName>SizeTest</ObjectName>
+            <Size>22f,12f</Size>
+            <Children/>
+            <Connection>
+              <ConfigKey persist="true">[Tango],always_visible_quantize</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Tango],deck_controls</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Spacer for expanded deck controls -->
+
+      <SizeAwareStack><!-- Size detector -->
+        <Children>
+          <WidgetStack><!-- Not enough space for stars -->
+            <SizePolicy>me,me</SizePolicy>
+            <MinimumSize>0,12</MinimumSize>
+            <MaximumSize>82,12</MaximumSize>
+            <Children>
+              <WidgetGroup>
+                <Size>1f,12f</Size>
+                <Children/>
+              </WidgetGroup>
+              <WidgetGroup trigger="[Tango],stars_fit">
+                <Size>1f,12f</Size>
+                <Children/>
+              </WidgetGroup>
+            </Children>
+          </WidgetStack>
+
+          <WidgetStack><!-- when there is enough space for stars (min 83px) show them. -->
+            <SizePolicy>me,me</SizePolicy>
+            <MinimumSize>83,12</MinimumSize>
+            <MaximumSize>-1,12</MaximumSize>
+            <Children>
+              <WidgetGroup trigger="[Tango],stars_fit">
+                <Size>1f,12f</Size>
+                <Children/>
+              </WidgetGroup>
+              <WidgetGroup>
+                <Size>1f,12f</Size>
+                <Children/>
+              </WidgetGroup>
+            </Children>
+          </WidgetStack>
+
+        </Children>
+      </SizeAwareStack><!-- /Size detector -->
+
+    </Children>
+  </WidgetGroup><!-- /hidden size detector for star rating -->
+</Template>
