@@ -20,7 +20,7 @@ EffectManifest BalanceEffect::getManifest() {
     manifest.setName(QObject::tr("Balance"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr("Adjust the left/right balance and Stereo width"));
+    manifest.setDescription(QObject::tr("Adjust the left/right balance and stereo width"));
     manifest.setEffectRampsFromDry(true);
 
     EffectManifestParameter* balance = manifest.addParameter();
@@ -38,7 +38,7 @@ EffectManifest BalanceEffect::getManifest() {
     EffectManifestParameter* midSide = manifest.addParameter();
     midSide->setId("midSide");
     midSide->setName(QObject::tr("Mid/Side"));
-    midSide->setDescription(QObject::tr("Adjust balance between mid and side. Fully mid is Mono."));
+    midSide->setDescription(QObject::tr("Adjust stereo width by changing balance between middle and side of the signal. Fully left is mono, fully right is only side ambiance, and centered does not change the original signal."));
     midSide->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     midSide->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     midSide->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -49,7 +49,7 @@ EffectManifest BalanceEffect::getManifest() {
 
     EffectManifestParameter* midLowPass = manifest.addParameter();
     midLowPass->setId("bypassFreq");
-    midLowPass->setName(QObject::tr("Bypass Freq."));
+    midLowPass->setName(QObject::tr("Bypass Fr."));
     midLowPass->setDescription(QObject::tr("Frequencies below this cutoff are not adjusted in the stereo field"));
     midLowPass->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     midLowPass->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
