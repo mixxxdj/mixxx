@@ -1,6 +1,6 @@
 #include "test/librarytest.h"
 
-#include "library/crate/cratestorage.h"
+#include "library/features/crates/cratestorage.h"
 
 
 class CrateStorageTest : public LibraryTest {
