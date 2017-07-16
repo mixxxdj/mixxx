@@ -87,7 +87,7 @@ void CrateFeature::initActions() {
     connect(m_pCreateCrateAction.get(), SIGNAL(triggered()),
             this, SLOT(slotCreateCrate()));
 
-    m_pCreateChildCrateAction = std::make_unique<QAction>(tr("Create Child Crate Here"),this);
+    m_pCreateChildCrateAction = std::make_unique<QAction>(tr("Create Subcrate"),this);
     connect(m_pCreateChildCrateAction.get(), SIGNAL(triggered()),
             this, SLOT(slotCreateChildCrate()));
 

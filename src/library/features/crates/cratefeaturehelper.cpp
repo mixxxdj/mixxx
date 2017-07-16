@@ -56,6 +56,10 @@ CrateId CrateFeatureHelper::createEmptyCrate() {
             continue;
         }
 
+        // select name from crateClosure join crates on id = childId group by childId having count(*) = 1;
+        // check if it has parent, if not compare with names from above
+        // in closure.
+        // Else split path into tokens and compare to those
         if (m_pTrackCollection->crates().readCrateByName(newCrate.getName())) {
             QMessageBox::warning(
                     nullptr,

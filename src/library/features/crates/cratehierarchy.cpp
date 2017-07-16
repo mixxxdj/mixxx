@@ -157,6 +157,23 @@ bool CrateHierarchy::generateAllPaths() const {
     return true;
 }
 
+bool CrateHierarchy::findParentAndChildFromPath(Crate& parent,
+                                                Crate& child,
+                                                const QString& idPath) const {
+    QStringList ids = idPath.split("/", QString::SkipEmptyParts);
+
+    // get the last item (child)
+    m_pTrackCollection->crates().readCrateById(CrateId(ids.back()), &child);
+    if (ids.size() > 1) {
+        // get the second to last item (parent)
+        m_pTrackCollection->crates().readCrateById(CrateId(ids.at(ids.size() - 2)), &parent);
+    } else {
+        // if there isn't one return false
+        return false;
+    }
+    return true;
+}
+
 bool CrateHierarchy::initClosureForCrate(CrateId id) const {
     FwdSqlQuery query(
       m_database, QString(

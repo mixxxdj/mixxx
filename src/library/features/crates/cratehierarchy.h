@@ -31,6 +31,12 @@ class CrateHierarchy {
     bool generateCratePaths(Crate crate) const;
     bool generateAllPaths() const;
 
+    // parent and child are assigned the corresponding crate
+    // returns false if the crate does not have a parent (is level 1)
+    bool findParentAndChildFromPath(Crate& parent,
+                                    Crate& child,
+                                    const QString& idPath) const;
+
 
     bool initClosureForCrate(CrateId id) const;
     bool insertIntoClosure(CrateId parent, CrateId child) const;

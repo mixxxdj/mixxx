@@ -26,9 +26,6 @@ class CrateTreeModel : public TreeItemModel {
   protected:
 
   private:
-    bool findParentChildFromPath(Crate& parent,
-                                 Crate& child,
-                                 const QString& idPath) const;
     void fillTree(const QStringList& idPaths);
 
     LibraryFeature* m_pFeature;

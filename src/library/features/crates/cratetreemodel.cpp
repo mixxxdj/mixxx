@@ -19,23 +19,6 @@ CrateTreeModel::CrateTreeModel(LibraryFeature* pFeature,
      m_pCrateHierarchy(pCrateHierarchy) {
 }
 
-bool CrateTreeModel::findParentChildFromPath(Crate& parent,
-                                             Crate& child,
-                                             const QString& idPath) const {
-    QStringList ids = idPath.split("/", QString::SkipEmptyParts);
-
-    // get the last item (child)
-    m_pTrackCollection->crates().readCrateById(CrateId(ids.back()), &child);
-    if (ids.size() > 1) {
-        // get the second to last item (parent)
-        m_pTrackCollection->crates().readCrateById(CrateId(ids.at(ids.size() - 2)), &parent);
-    } else {
-        // if there isn't one return false
-        return false;
-    }
-    return true;
-}
-
 void CrateTreeModel::fillTree(const QStringList& idPaths) {
     Crate parent, child;
 
@@ -44,7 +27,7 @@ void CrateTreeModel::fillTree(const QStringList& idPaths) {
     // parent. Since it's sorted alphabetically the parent will always exist before the child
     for (const auto& idPath : idPaths) {
         // if there is no parent set the parent as the root of the tree
-        if (!findParentChildFromPath(parent, child, idPath)) {
+        if (!m_pCrateHierarchy->findParentAndChildFromPath(parent, child, idPath)) {
             parent.setId(rootId);
         }
         if (child.getName() == "") {
