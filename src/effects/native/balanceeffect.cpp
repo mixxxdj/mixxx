@@ -21,6 +21,7 @@ EffectManifest BalanceEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr("Adjust the left/right balance and Stereo width"));
+    manifest.setEffectRampsFromDry(true);
 
     EffectManifestParameter* balance = manifest.addParameter();
     balance->setId("balance");
@@ -101,8 +102,12 @@ void BalanceEffect::processChannel(const ChannelHandle& handle,
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
 
-    CSAMPLE_GAIN balance = m_pBalanceParameter->value();
-    CSAMPLE_GAIN midSide = m_pMidSideParameter->value();
+    CSAMPLE_GAIN balance = 0;
+    CSAMPLE_GAIN midSide = 0;
+    if (enableState != EffectProcessor::DISABLING) {
+        balance = m_pBalanceParameter->value();
+        midSide = m_pMidSideParameter->value();
+    }
 
     CSAMPLE_GAIN balanceDelta = (balance - pGroupState->m_oldBalance)
                     / CSAMPLE_GAIN(numSamples / 2);
@@ -112,16 +117,22 @@ void BalanceEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE_GAIN balanceStart = pGroupState->m_oldBalance + balanceDelta;
     CSAMPLE_GAIN midSideStart = pGroupState->m_oldMidSide + midSideDelta;
 
+    int freq = pGroupState->m_freq;
     if (pGroupState->m_oldSampleRate != sampleRate ||
-            (pGroupState->m_freq != static_cast<int>(m_pBypassFreqParameter->value()))) {
-        pGroupState->m_freq = static_cast<int>(m_pBypassFreqParameter->value());
+            (freq != static_cast<int>(m_pBypassFreqParameter->value()))) {
+        freq = static_cast<int>(m_pBypassFreqParameter->value());
         pGroupState->m_oldSampleRate = sampleRate;
         pGroupState->setFilters(sampleRate, pGroupState->m_freq);
     }
 
     if (pGroupState->m_freq > kMinCornerHz) {
-        pGroupState->m_high->process(pInput, pGroupState->m_pHighBuf.data(), numSamples); // HighPass first run
-        pGroupState->m_low->process(pInput, pOutput, numSamples); // LowPass first run for low and bandpass
+        if (freq > kMinCornerHz && enableState != EffectProcessor::DISABLING) {
+            pGroupState->m_high->process(pInput, pGroupState->m_pHighBuf.data(), numSamples);
+            pGroupState->m_low->process(pInput, pOutput, numSamples);
+        } else {
+            pGroupState->m_high->processAndPauseFilter(pInput, pGroupState->m_pHighBuf.data(), numSamples);
+            pGroupState->m_low->processAndPauseFilter(pInput, pOutput, numSamples);
+        }
 
         for (SINT i = 0; i < numSamples / 2; ++i) {
             CSAMPLE mid = (pGroupState->m_pHighBuf[i * 2]  + pGroupState->m_pHighBuf[i * 2 + 1]) / 2.0f;
@@ -165,12 +176,7 @@ void BalanceEffect::processChannel(const ChannelHandle& handle,
         }
     }
 
-    if (enableState == EffectProcessor::DISABLING) {
-        // we rely on the ramping to dry in EngineEffect
-        // since this EQ is not fully dry at unity
-        pGroupState->m_low->pauseFilter();
-        pGroupState->m_high->pauseFilter();
-    }
     pGroupState->m_oldBalance = balance;
     pGroupState->m_oldMidSide = midSide;
+    pGroupState->m_freq = freq;
 }
