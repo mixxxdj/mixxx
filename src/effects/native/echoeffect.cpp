@@ -158,11 +158,15 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     for (unsigned int i = 0; i < numSamples; i += EchoGroupState::kChannelCount) {
         // Ramp the beginning and end of the delay buffer to prevent clicks.
         double write_ramper = 1.0;
-        if (gs.write_position < EchoGroupState::kRampLength) {
-            write_ramper = static_cast<double>(gs.write_position) / EchoGroupState::kRampLength;
-        } else if (gs.write_position > delay_samples - EchoGroupState::kRampLength) {
-            write_ramper = static_cast<double>(delay_samples - gs.write_position)
-                    / EchoGroupState::kRampLength;
+        // When feedback is 1.0, continously applying ramping to the buffer creates
+        // an unpleasant artifact.
+        if (feedback_amount != 1.0) {
+            if (gs.write_position < EchoGroupState::kRampLength) {
+                write_ramper = static_cast<double>(gs.write_position) / EchoGroupState::kRampLength;
+            } else if (gs.write_position > delay_samples - EchoGroupState::kRampLength) {
+                write_ramper = static_cast<double>(delay_samples - gs.write_position)
+                        / EchoGroupState::kRampLength;
+            }
         }
         gs.delay_buf[gs.write_position] *= feedback_amount;
         gs.delay_buf[gs.write_position + 1] *= feedback_amount;
