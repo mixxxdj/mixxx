@@ -12,11 +12,9 @@ const CrateId rootId(-1);
 } // anonymous namespace
 
 CrateTreeModel::CrateTreeModel(LibraryFeature* pFeature,
-                               TrackCollection* pTrackCollection,
-                               CrateHierarchy* pCrateHierarchy)
-    :m_pFeature(pFeature),
-     m_pTrackCollection(pTrackCollection),
-     m_pCrateHierarchy(pCrateHierarchy) {
+                               TrackCollection* pTrackCollection)
+    : m_pFeature(pFeature),
+      m_pTrackCollection(pTrackCollection) {
 }
 
 void CrateTreeModel::fillTree(const QStringList& idPaths) {
@@ -27,7 +25,7 @@ void CrateTreeModel::fillTree(const QStringList& idPaths) {
     // parent. Since it's sorted alphabetically the parent will always exist before the child
     for (const auto& idPath : idPaths) {
         // if there is no parent set the parent as the root of the tree
-        if (!m_pCrateHierarchy->findParentAndChildFromPath(parent, child, idPath)) {
+        if (!m_pTrackCollection->crates().findParentAndChildFromPath(parent, child, idPath)) {
             parent.setId(rootId);
         }
         if (child.getName() == "") {
@@ -43,7 +41,7 @@ void CrateTreeModel::fillTree(const QStringList& idPaths) {
 }
 
 void CrateTreeModel::reloadTree() {
-    const QStringList idPaths = m_pCrateHierarchy->collectIdPaths();
+    const QStringList idPaths = m_pTrackCollection->crates().collectIdPaths();
 
     // empty crate map
     m_treeCrates.clear();

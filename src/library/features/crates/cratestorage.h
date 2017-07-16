@@ -135,6 +135,42 @@ class CrateStorage: public virtual /*implements*/ SqlStorage {
     // Omit the pCrate parameter for checking if the corresponding crate exists.
     bool readCrateSummaryById(CrateId id, CrateSummary* pCrateSummary = nullptr) const;
 
+    //////////////////////////////////////////////////////////////////////
+    // Crate Hierarchy operations (const)
+    //////////////////////////////////////////////////////////////////////
+
+    uint countCratesOnClosure() const;
+
+    // checks # of crates in closure table against # of crates in crates table
+    bool closureIsValid() const;
+    // empties the closure table
+    void resetClosure() const;
+    // fills the closure table with (self,self,0)
+    bool initClosure() const;
+
+    // empties the path table
+    void resetPath() const;
+    bool writeCratePaths(CrateId id, QString namePath, QString idPath) const;
+    bool generateCratePaths(Crate crate) const;
+    bool generateAllPaths() const;
+
+    // parent and child are assigned the corresponding crate
+    // returns false if the crate does not have a parent (is level 1)
+    bool findParentAndChildFromPath(Crate& parent,
+                                    Crate& child,
+                                    const QString& idPath) const;
+
+
+    bool initClosureForCrate(CrateId id) const;
+    bool insertIntoClosure(CrateId parent, CrateId child) const;
+
+    void deleteCrate(CrateId id) const;
+    bool hasChildern(CrateId id) const;
+
+    QStringList collectIdPaths() const;
+    QStringList tokenizeCratePath(CrateId id) const;
+    QStringList collectRootCrates() const;
+
   private:
     void createViews();
 

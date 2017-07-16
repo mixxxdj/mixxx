@@ -60,7 +60,7 @@ CrateId CrateFeatureHelper::createEmptyCrate() {
         // check if it has parent, if not compare with names from above
         // in closure.
         // Else split path into tokens and compare to those
-        if (m_pTrackCollection->crates().readCrateByName(newCrate.getName())) {
+        if (m_pTrackCollection->crates().collectRootCrates().contains(newCrate.getName())) {
             QMessageBox::warning(
                     nullptr,
                     tr("Creating Crate Failed"),
@@ -74,6 +74,68 @@ CrateId CrateFeatureHelper::createEmptyCrate() {
     if (m_pTrackCollection->insertCrate(newCrate, &newCrateId)) {
         DEBUG_ASSERT(newCrateId.isValid());
         newCrate.setId(newCrateId);
+        m_pTrackCollection->crates().initClosureForCrate(newCrateId);
+        m_pTrackCollection->crates().generateCratePaths(newCrate);
+        qDebug() << "Created new crate" << newCrate;
+    } else {
+        DEBUG_ASSERT(!newCrateId.isValid());
+        qWarning() << "Failed to create new crate"
+                << "->"  << newCrate.getName();
+        QMessageBox::warning(
+                nullptr,
+                tr("Creating Crate Failed"),
+                tr("An unknown error occurred while creating crate: ") + newCrate.getName());
+    }
+    return newCrateId;
+}
+
+CrateId CrateFeatureHelper::createEmptySubrate(const Crate& parent) {
+    const QString proposedCrateName =
+            proposeNameForNewCrate(tr("New Subcrate"));
+    Crate newCrate;
+    while (!newCrate.hasName()) {
+        bool ok = false;
+        newCrate.parseName(
+                QInputDialog::getText(
+                        nullptr,
+                        tr("Create New Crate"),
+                        tr("Enter name for new crate:"),
+                        QLineEdit::Normal,
+                        proposedCrateName,
+                        &ok));
+        if (!ok) {
+            return CrateId();
+        }
+        if (!newCrate.hasName()) {
+            QMessageBox::warning(
+                    nullptr,
+                    tr("Creating Crate Failed"),
+                    tr("A crate cannot have a blank name."));
+            continue;
+        }
+
+        // select name from crateClosure join crates on id = childId group by childId having count(*) = 1;
+        // check if it has parent, if not compare with names from above
+        // in closure.
+        // Else split path into tokens and compare to those
+        if (m_pTrackCollection->crates().tokenizeCratePath(parent.getId()).contains(newCrate.getName())) {
+            QMessageBox::warning(
+                    nullptr,
+                    tr("Creating Crate Failed"),
+                    tr("A crate by that name already exists."));
+            newCrate.resetName();
+            continue;
+        }
+    }
+
+    CrateId newCrateId;
+    if (m_pTrackCollection->insertCrate(newCrate, &newCrateId)) {
+        DEBUG_ASSERT(newCrateId.isValid());
+        newCrate.setId(newCrateId);
+        m_pTrackCollection->crates().initClosureForCrate(newCrateId);
+        if (m_pTrackCollection->crates().insertIntoClosure(parent.getId(), newCrateId)) {
+            m_pTrackCollection->crates().generateCratePaths(newCrate);
+            }
         qDebug() << "Created new crate" << newCrate;
     } else {
         DEBUG_ASSERT(!newCrateId.isValid());

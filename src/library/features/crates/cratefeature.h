@@ -12,7 +12,6 @@
 
 #include "library/features/crates/cratetablemodel.h"
 #include "library/features/crates/cratetreemodel.h"
-#include "library/features/crates/cratehierarchy.h"
 
 
 #include "library/libraryfeature.h"
@@ -117,7 +116,6 @@ class CrateFeature : public LibraryFeature {
     TrackCollection* m_pTrackCollection;
 
     CrateTableModel* m_pCrateTableModel;
-    CrateHierarchy m_crateHierarchy;
 
     QModelIndex m_lastRightClickedIndex;
     TrackPointer m_pSelectedTrack;

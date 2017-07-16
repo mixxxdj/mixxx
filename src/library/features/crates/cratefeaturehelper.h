@@ -20,6 +20,7 @@ class CrateFeatureHelper: public QObject {
     ~CrateFeatureHelper() override {}
 
     CrateId createEmptyCrate();
+    CrateId createEmptySubrate(const Crate& parent);
     CrateId duplicateCrate(const Crate& oldCrate);
 
   private:

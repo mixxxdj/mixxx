@@ -462,6 +462,21 @@ METADATA
         idPath TEXT,
         namePath TEXT
       );
+
+      ALTER TABLE crates RENAME TO old_crates;
+
+      CREATE TABLE crates (
+        id integer PRIMARY KEY AUTOINCREMENT,
+        name varchar(48) NOT NULL,
+        count integer DEFAULT 0,
+        show integer DEFAULT 1,
+        locked integer DEFAULT 0,
+        autodj_source integer DEFAULT 0
+      );
+
+      INSERT INTO crates SELECT * FROM old_crates;
+
+      DROP TABLE old_crates;
     </sql>
   </revision>
 </schema>

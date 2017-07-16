@@ -13,9 +13,8 @@
 class CrateTreeModel : public TreeItemModel {
   public:
     CrateTreeModel(LibraryFeature* pFeature,
-                   TrackCollection* pTrackCollection,
-                   CrateHierarchy* pCrateHierarchy);
-    //virtual ~CrateTreeModel();
+                   TrackCollection* pTrackCollection);
+          //virtual ~CrateTreeModel();
 
     // QVariant data(const QModelIndex& index, int role) const override;
     // bool setData(const QModelIndex& index, const QVariant& value, int role) override;
@@ -30,7 +29,6 @@ class CrateTreeModel : public TreeItemModel {
 
     LibraryFeature* m_pFeature;
     TrackCollection* m_pTrackCollection;
-    CrateHierarchy* m_pCrateHierarchy;
 
     parented_ptr<TreeItem> m_pRecursion;
     QMap<CrateId,TreeItem*> m_treeCrates;

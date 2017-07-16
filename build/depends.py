@@ -951,7 +951,6 @@ class MixxxCore(Feature):
                    "library/features/crates/cratestorage.cpp",
                    "library/features/crates/cratestoragehelpers.cpp",
                    "library/features/crates/cratefeaturehelper.cpp",
-                   "library/features/crates/cratehierarchy.cpp",
 
                    "library/features/history/historyfeature.cpp",
                    "library/features/history/historytreemodel.cpp",

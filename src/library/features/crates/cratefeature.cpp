@@ -45,8 +45,7 @@ CrateFeature::CrateFeature(UserSettingsPointer pConfig,
           m_cratesIcon(":/images/library/ic_library_crates.png"),
           m_lockedCrateIcon(":/images/library/ic_library_locked.png"),
           m_pTrackCollection(pTrackCollection),
-          m_pCrateTableModel(nullptr),
-          m_crateHierarchy(pTrackCollection) {
+          m_pCrateTableModel(nullptr) {
 
 
     initActions();
@@ -58,21 +57,21 @@ CrateFeature::CrateFeature(UserSettingsPointer pConfig,
     // if closure does not have the same number of crates as the crates table
     // this means that the user just started mixxx with nested crates for the
     // first time, so we have to fill the closure table with (self,self,0)
-    if (!m_crateHierarchy.closureIsValid()) {
+    if (!pTrackCollection->crates().closureIsValid()) {
         QMessageBox::warning(
             nullptr,
             tr("Nested Crates"),
             tr("Crates now support hierarchical structure."
                "All your crates have been converted to Level 1 crates"));
 
-        m_crateHierarchy.resetClosure();
-        m_crateHierarchy.initClosure();
-        m_crateHierarchy.resetPath();
-        m_crateHierarchy.generateAllPaths();
+        pTrackCollection->crates().resetClosure();
+        pTrackCollection->crates().initClosure();
+        pTrackCollection->crates().resetPath();
+        pTrackCollection->crates().generateAllPaths();
     }
 
     m_pChildModel = std::make_unique<CrateTreeModel>(this,
-                        m_pTrackCollection, &m_crateHierarchy);
+                        m_pTrackCollection);
     m_pChildModel->reloadTree();
 
     connectLibrary(pLibrary);
@@ -426,13 +425,9 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex&
 }
 
 void CrateFeature::slotCreateCrate() {
-    CrateId crateId = CrateFeatureHelper(
-            m_pTrackCollection, m_pConfig).createEmptyCrate();
-    Crate newCrate;
-    m_pTrackCollection->crates().readCrateById(crateId, &newCrate);
-    m_crateHierarchy.initClosureForCrate(crateId);
-    m_crateHierarchy.generateCratePaths(newCrate);
-    if (crateId.isValid()) {
+    CrateId newCrateId = CrateFeatureHelper(
+      m_pTrackCollection, m_pConfig).createEmptyCrate();
+    if (newCrateId.isValid()) {
         m_pChildModel->reloadTree();
     }
 }
@@ -440,16 +435,10 @@ void CrateFeature::slotCreateCrate() {
 void CrateFeature::slotCreateChildCrate() {
     Crate parent;
     if (readLastRightClickedCrate(&parent)) {
-        CrateId newCrate = CrateFeatureHelper(
-            m_pTrackCollection, m_pConfig).createEmptyCrate();
-        if (newCrate.isValid()) {
-            m_crateHierarchy.initClosureForCrate(newCrate);
-            if (m_crateHierarchy.insertIntoClosure(parent.getId(), newCrate)) {
-                Crate child;
-                m_pTrackCollection->crates().readCrateById(newCrate, &child);
-                m_crateHierarchy.generateCratePaths(child);
-                m_pChildModel->reloadTree();
-            }
+        CrateId newCrateId = CrateFeatureHelper(
+          m_pTrackCollection, m_pConfig).createEmptySubrate(parent);
+        if (newCrateId.isValid()) {
+            m_pChildModel->reloadTree();
         }
     }
 }
@@ -462,13 +451,13 @@ void CrateFeature::slotDeleteCrate() {
             return;
         }
         // better deletion requeried
-        if (m_crateHierarchy.hasChildern(crate.getId())) {
+        if (m_pTrackCollection->crates().hasChildern(crate.getId())) {
             qWarning() << "Can't delete " << crate;
             qWarning() << "Currently only delete leaf crates";
             return;
         }
         if (m_pTrackCollection->deleteCrate(crate.getId())) {
-            m_crateHierarchy.deleteCrate(crate.getId());
+            m_pTrackCollection->crates().deleteCrate(crate.getId());
             qDebug() << "Deleted crate" << crate;
             m_pChildModel->reloadTree();
             return;
