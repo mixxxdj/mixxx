@@ -109,8 +109,8 @@ void BalanceEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE_GAIN midSideDelta = (midSide - pGroupState->m_oldMidSide)
                     / CSAMPLE_GAIN(numSamples / 2);
 
-    CSAMPLE_GAIN balanceStart = balance - balanceDelta;
-    CSAMPLE_GAIN midSideStart = midSide - midSideDelta;
+    CSAMPLE_GAIN balanceStart = pGroupState->m_oldBalance + balanceDelta;
+    CSAMPLE_GAIN midSideStart = pGroupState->m_oldMidSide + midSideDelta;
 
     if (pGroupState->m_oldSampleRate != sampleRate ||
             (pGroupState->m_freq != static_cast<int>(m_pBypassFreqParameter->value()))) {

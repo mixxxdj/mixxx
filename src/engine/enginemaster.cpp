@@ -38,6 +38,8 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
           m_bRampingGain(bRampingGain),
           m_ppSidechain(&m_pTalkover),
           m_masterGainOld(0.0),
+          m_balleftOld(1.0),
+          m_balrightOld(1.0),
           m_headphoneMasterGainOld(0.0),
           m_headphoneGainOld(1.0),
           m_masterHandle(registerChannelGroup("[Master]")),
@@ -497,7 +499,11 @@ void EngineMaster::process(const int iBufferSize) {
         }
 
         // Perform balancing on main out
-        SampleUtil::applyAlternatingGain(m_pMaster, balleft, balright, iBufferSize);
+        SampleUtil::applyRampingAlternatingGain(m_pMaster, balleft, balright,
+                m_balleftOld, m_balrightOld, iBufferSize);
+
+        m_balleftOld = balleft;
+        m_balrightOld = balright;
 
         // Submit master samples to the side chain to do broadcasting, recording,
         // etc. (cpu intensive non-realtime tasks)
