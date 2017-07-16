@@ -175,7 +175,7 @@ void SampleUtil::applyRampingAlternatingGain(CSAMPLE* pBuffer,
         }
     }
 
-    const CSAMPLE_GAIN gain2Delta = (gain1 - gain2Old)
+    const CSAMPLE_GAIN gain2Delta = (gain2 - gain2Old)
             / CSAMPLE_GAIN(numSamples / 2);
     if (gain2Delta) {
         const CSAMPLE_GAIN start_gain = gain2Old + gain2Delta;
