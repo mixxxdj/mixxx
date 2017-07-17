@@ -642,7 +642,7 @@ p, li { white-space: pre-wrap; }
    <item row="1" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBoxProfiles">
      <property name="title">
-      <string>Broadcasting Profiles</string>
+      <string>Live Streaming outputs</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_7">
       <item>

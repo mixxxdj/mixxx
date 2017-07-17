@@ -168,6 +168,11 @@ void BroadcastSettings::onProfileNameChanged(QString oldName, QString newName) {
     if(oldItem) {
         m_profiles.insert(newName, oldItem);
         emit profileRenamed(oldName, oldItem);
+
+        // TODO(Palakis): less redundancy with above code
+        QFileInfo xmlFile(filePathForProfile(oldName));
+        if(xmlFile.exists())
+        	QFile::remove(xmlFile.absolutePath());
     }
 }
 
@@ -192,9 +197,9 @@ QVariant BroadcastSettings::data(const QModelIndex& index, int role) const {
         } else if(column == 1 && role == Qt::DisplayRole) {
             return profile->getProfileName();
         } else if(column == 2 && role == Qt::DisplayRole) {
-            return QString("Edit");
+            return QString("");
         } else if(column == 3 && role == Qt::DisplayRole) {
-            return QString("Remove");
+            return QString("");
         }
     }
 
@@ -218,6 +223,31 @@ QVariant BroadcastSettings::headerData(int section, Qt::Orientation orientation,
     return QVariant();
 }
 
+Qt::ItemFlags BroadcastSettings::flags(const QModelIndex& index) const {
+	if(index.column() == 0)
+		return QAbstractItemModel::flags(index) | Qt::ItemIsUserCheckable;
+
+	if(index.column() == 1)
+		return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+
+	return Qt::ItemIsEnabled;
+}
+
+bool BroadcastSettings::setData(const QModelIndex& index, const QVariant& value, int role) {
+	if(index.isValid()) {
+		BroadcastProfilePtr profile = profileAt(index.row());
+		if(profile) {
+			if(index.column() == 0 && role == Qt::CheckStateRole) {
+				profile->setEnabled(value.toBool());
+			}
+			if(index.column() == 1 && role == Qt::EditRole) {
+				profile->setProfileName(value.toString());
+			}
+		}
+	}
+	return true;
+}
+
 BroadcastProfilePtr BroadcastSettings::profileAt(int index) {
-    return m_profiles.values().value(index, BroadcastProfilePtr(nullptr));
+	return m_profiles.values().value(index, BroadcastProfilePtr(nullptr));
 }
