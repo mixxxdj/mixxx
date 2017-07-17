@@ -47,6 +47,8 @@ class BroadcastSettings : public QAbstractTableModel {
     void loadProfiles();
     QString filePathForProfile(const BroadcastProfilePtr& profile);
     QString filePathForProfile(const QString& profileName);
+    bool deleteFileForProfile(const BroadcastProfilePtr& profile);
+    bool deleteFileForProfile(const QString& profileName);
     QString getProfilesFolder();
     void loadLegacySettings(const BroadcastProfilePtr& profile);
 
