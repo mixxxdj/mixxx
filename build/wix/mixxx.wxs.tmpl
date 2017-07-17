@@ -111,7 +111,7 @@
     <Property Id="OTHERBITWIDTHINSTALLED">
       <RegistrySearch Id="BitWidthInstalledSearch"
                       Root="HKLM"
-                      Key="SOFTWARE\Wow6432Node\!(loc.ApplicationName)"
+                      Key="SOFTWARE\!(loc.ApplicationName)"
                       Name="installed$(var.notarch)"
                       Type="raw" />
     </Property>
@@ -279,11 +279,7 @@
           <Component Id="mixxxRegistry" Guid="*" Win64="$(var.Win64)">
             <RegistryValue Root="HKLM" Key="SOFTWARE\!(loc.ApplicationName)" Type="string" Value='' KeyPath="yes" />
             <RegistryValue Root="HKLM" Key="SOFTWARE\!(loc.ApplicationName)" Name="installed" Type="integer" Value="1" />
-            <?if $(var.Platform) = x64 ?>
-            <RegistryValue Root="HKLM" Key="SOFTWARE\Wow6432Node\!(loc.ApplicationName)" Name="installed$(var.arch)" Type="integer" Value="1" />
-            <?else?>
             <RegistryValue Root="HKLM" Key="SOFTWARE\!(loc.ApplicationName)" Name="installed$(var.arch)" Type="integer" Value="1" />
-            <?endif?>
           </Component>
 
           <Component Id="LICENSE_comp" Guid="*" Win64="$(var.Win64)">
