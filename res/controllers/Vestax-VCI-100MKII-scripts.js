@@ -281,7 +281,8 @@ VCI102.reloop = function(ch, midino, value, status, group) {
 
 VCI102.loop_scale = function(ch, group, scale) {
     if (VCI102.shift[1 - ch % 2]) {
-        // scale beatjump_size if shift of the other Deck
+        // scale beatjump_size of the other Deck if shift of it
+        group = VCI102.Deck[1 - ch % 2];
         engine.setValue(group, "beatjump_size",
                         engine.getValue(group, "beatjump_size") * scale);
     } else if (engine.getValue(group, "loop_enabled")) {
