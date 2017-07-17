@@ -46,10 +46,20 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>me, min</SizePolicy>
                 <Children>
-                    <Template src="skin:knob_textless.xml">
-                       <SetVariable name="group"><Variable name="EqualizerEffectGroup"/></SetVariable>
-                       <SetVariable name="control">parameter<Variable name="parameter"/></SetVariable>
-                    </Template>
+                    <EffectParameterKnobComposed>
+                        <Size>40f,34f</Size>
+                        <Knob>knob_indicator.svg</Knob>
+                        <BackPath>knob_bg.svg</BackPath>
+                        <MinAngle>-135</MinAngle>
+                        <MaxAngle>135</MaxAngle>
+                        <EffectRackGroup><Variable name="EqualizerRackGroup"/></EffectRackGroup>
+                        <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>
+                        <Effect><Variable name="EffectNumber"/></Effect>
+                        <EffectParameter><Variable name="parameter"/></EffectParameter>
+                        <Connection>
+                            <ConfigKey><Variable name="EqualizerEffectGroup"/>,parameter<Variable name="parameter"/></ConfigKey>
+                        </Connection>
+                    </EffectParameterKnobComposed>
                 </Children>
             </WidgetGroup>
         </Children>
