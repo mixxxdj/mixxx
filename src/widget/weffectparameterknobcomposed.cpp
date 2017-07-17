@@ -24,10 +24,9 @@ void WEffectParameterKnobComposed::setup(const QDomNode& node,
 
 void WEffectParameterKnobComposed::parameterUpdated() {
     if (m_pEffectParameterSlot) {
-        //: %1 = effect parameter name; %2 = effect parameter description
-        setBaseTooltip(tr("%1: %2").arg(
-                          m_pEffectParameterSlot->name(),
-                          m_pEffectParameterSlot->description()));
+        setBaseTooltip(QString("%1\n%2").arg(
+                       m_pEffectParameterSlot->name(),
+                       m_pEffectParameterSlot->description()));
     } else {
         setBaseTooltip(tr("No effect loaded."));
     }
