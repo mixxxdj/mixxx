@@ -42,7 +42,7 @@
         ThemeFile="bundletheme.xml"
         SuppressOptionsUI="no"
         ShowVersion="yes"
-        LogoSideFile="build\wix\images\bundle-sidebar.png"
+        LogoFile="build\wix\images\bundle_background_black.png"
       />
 
 <!-- LOCALIZATION -->

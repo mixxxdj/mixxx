@@ -815,7 +815,7 @@ def BuildRelease(target, source, env):
                 print "LCID not found, skipping file " + file
                 continue
 
-            bundlelocfile.write("<Payload Id=\"thm-%(culture)s\" Compressed=\"yes\" Name=\"%(LCID)s\\thm.wxl\" SourceFile=\"..\\Localization\\mixxx_%(culture)s.wxl\" />\n" %\
+            bundlelocfile.write("            <Payload Id=\"thm-%(culture)s\" Compressed=\"yes\" Name=\"%(LCID)s\\thm.wxl\" SourceFile=\"..\\Localization\\mixxx_%(culture)s.wxl\" />\n" %\
               {'culture': culture,
                'LCID': LCID}
             )
