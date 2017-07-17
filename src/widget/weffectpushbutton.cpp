@@ -86,6 +86,15 @@ void WEffectPushButton::mouseReleaseEvent(QMouseEvent* e) {
 }
 
 void WEffectPushButton::parameterUpdated() {
+    // Set tooltip
+    if (m_pEffectParameterSlot) {
+        setBaseTooltip(QString("%1\n%2").arg(
+                       m_pEffectParameterSlot->name(),
+                       m_pEffectParameterSlot->description()));
+    } else {
+        setBaseTooltip(tr("No effect loaded."));
+    }
+
     m_pButtonMenu->clear();
     const QList<QPair<QString, double> >& options = m_pEffectParameterSlot->getManifest().getSteps();
     // qDebug() << " HERE IS THE OPTIONS SIZE: " << options.size() << m_pEffectParameterSlot->getManifest().name();
