@@ -23,7 +23,7 @@ void WEffectParameterBase::parameterUpdated() {
     if (m_pEffectParameterSlot) {
         if (!m_pEffectParameterSlot->shortName().isEmpty()) {
             setText(m_pEffectParameterSlot->shortName());
-            //: %1 = effect name; %2 = effect description
+            //: %1 = effect parameter name; %2 = effect parameter description
             setBaseTooltip(tr("%1: %2").arg(
                               m_pEffectParameterSlot->name(),
                               m_pEffectParameterSlot->description()));
