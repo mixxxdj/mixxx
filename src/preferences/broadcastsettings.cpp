@@ -6,6 +6,7 @@
 #include "broadcast/defs_broadcast.h"
 #include "defs_urls.h"
 #include "preferences/broadcastsettings.h"
+#include "preferences/pushbuttondelegate.h"
 #include "util/logger.h"
 #include "util/memory.h"
 
@@ -210,7 +211,7 @@ QVariant BroadcastSettings::data(const QModelIndex& index, int role) const {
         } else if(column == kColumnName && role == Qt::DisplayRole) {
             return profile->getProfileName();
         } else if(column == kColumnRemove && role == Qt::DisplayRole) {
-            return QString("");
+            return tr("Double-click to remove");
         }
     }
 
@@ -222,14 +223,16 @@ QVariant BroadcastSettings::headerData(int section, Qt::Orientation orientation,
     if(orientation == Qt::Horizontal) {
         if(role == Qt::DisplayRole) {
             if(section == kColumnEnabled) {
-                return QString("Enabled");
+                return tr("Enabled");
             } else if(section == kColumnName) {
-                return QString("Name");
+                return tr("Name");
             } else if(section == kColumnRemove) {
-                return QString("Remove");
+                return tr("Remove");
             }
         }
     }
+
+    // TODO(Palakis): provide size hint for columns
 
     return QVariant();
 }
@@ -239,6 +242,9 @@ Qt::ItemFlags BroadcastSettings::flags(const QModelIndex& index) const {
 		return QAbstractItemModel::flags(index) | Qt::ItemIsUserCheckable;
 
 	if(index.column() == kColumnName)
+		return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+
+	if(index.column() == kColumnRemove)
 		return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
 
 	return Qt::ItemIsEnabled;
@@ -257,6 +263,13 @@ bool BroadcastSettings::setData(const QModelIndex& index, const QVariant& value,
 		}
 	}
 	return true;
+}
+
+QAbstractItemDelegate* BroadcastSettings::delegateForColumn(const int i, QObject* parent) {
+	if(i == kColumnRemove) {
+		return new PushButtonDelegate(parent);
+	}
+	return nullptr;
 }
 
 BroadcastProfilePtr BroadcastSettings::profileAt(int index) {

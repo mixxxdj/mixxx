@@ -2,6 +2,8 @@
 #include <QInputDialog>
 #include <QMetaMethod>
 #include <QMetaProperty>
+#include <QAbstractItemDelegate>
+#include <QMessageBox>
 
 #include "broadcast/defs_broadcast.h"
 #include "control/controlproxy.h"
@@ -13,6 +15,9 @@ namespace {
 const char* kSettingsGroupHeader = "Settings for profile '%1'";
 const char* kUnsavedChangesWarning =
         "Profile '%1' has unsaved changes. Do you want to save them?";
+const int kColumnEnabled = 0;
+const int kColumnName = 1;
+const int kColumnRemove = 2;
 }
 
 DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
@@ -22,10 +27,17 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
           m_pBroadcastSettings(pBroadcastSettings),
           m_pProfileListSelection(nullptr),
           m_valuesChanged(false) {
-    setupUi(this);
+	setupUi(this);
 
-    // Should be safe to get the underlying pointer
+	// Should be safe to get the underlying pointer
     profileList->setModel(m_pBroadcastSettings.data());
+
+    QAbstractItemDelegate* removeDelegate =
+    		m_pBroadcastSettings->delegateForColumn(kColumnRemove, this);
+    connect(removeDelegate, SIGNAL(clicked(int, int)),
+    		this, SLOT(onRemoveButtonClicked(int, int)));
+    profileList->setItemDelegateForColumn(kColumnRemove,
+    		removeDelegate);
 
     connect(btnCreateProfile, SIGNAL(clicked(bool)),
             this, SLOT(btnCreateConnectionClicked(bool)));
@@ -449,4 +461,12 @@ void DlgPrefBroadcast::enableValueSignals(bool enable) {
             }
         }
     }
+}
+
+void DlgPrefBroadcast::onRemoveButtonClicked(int column, int row) {
+	// TODO(Palakis): ask the user for confirmation
+	BroadcastProfilePtr profile = m_pBroadcastSettings->profileAt(row);
+	if(profile) {
+		m_pBroadcastSettings->deleteProfile(profile);
+	}
 }

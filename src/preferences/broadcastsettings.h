@@ -2,6 +2,7 @@
 #define PREFERENCES_BROADCASTSETTINGS_H
 
 #include <QAbstractTableModel>
+#include <QAbstractItemDelegate>
 #include <QMap>
 #include <QSharedPointer>
 #include <QString>
@@ -32,6 +33,7 @@ class BroadcastSettings : public QAbstractTableModel {
     Qt::ItemFlags flags(const QModelIndex& index) const;
     bool setData(const QModelIndex& index, const QVariant& value,
     		int role = Qt::EditRole);
+    QAbstractItemDelegate* delegateForColumn(const int i, QObject* parent);
     BroadcastProfilePtr profileAt(int index);
 
   signals:
