@@ -138,8 +138,9 @@ bool BroadcastSettings::deleteFileForProfile(const BroadcastProfilePtr& profile)
 bool BroadcastSettings::deleteFileForProfile(const QString& profileName) {
     QFileInfo xmlFile(filePathForProfile(profileName));
     if(xmlFile.exists()) {
-        QFile::remove(xmlFile.absolutePath());
+        return QFile::remove(xmlFile.absoluteFilePath());
     }
+    return false;
 }
 
 QString BroadcastSettings::getProfilesFolder() {

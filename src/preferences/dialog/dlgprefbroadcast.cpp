@@ -464,6 +464,12 @@ void DlgPrefBroadcast::enableValueSignals(bool enable) {
 }
 
 void DlgPrefBroadcast::onRemoveButtonClicked(int column, int row) {
+	if(m_pBroadcastSettings->rowCount() < 2) {
+		QMessageBox::information(this, tr("Action forbidden"),
+				tr("At least one connection profile is required."));
+		return;
+	}
+
 	// TODO(Palakis): ask the user for confirmation
 	BroadcastProfilePtr profile = m_pBroadcastSettings->profileAt(row);
 	if(profile) {
