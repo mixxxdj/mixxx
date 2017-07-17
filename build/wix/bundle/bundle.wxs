@@ -107,6 +107,7 @@
         Id="MainPackage"
         SourceFile="$(var.MSIPackage)"
         DisplayInternalUI="yes"
+        EnableFeatureSelection="yes"
         Compressed="yes"
         Vital="yes">
         <MsiProperty Name="INSTALLDIR" Value="[InstallFolder]" />

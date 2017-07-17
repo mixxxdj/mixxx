@@ -8,6 +8,7 @@ import subprocess
 import time
 import datetime
 import glob
+import uuid
 from xml.dom import minidom
 import SCons.Script as SCons
 
@@ -687,6 +688,14 @@ def BuildRelease(target, source, env):
         if not os.path.isfile(os.path.join(WinSDK_path, 'WiLangId.vbs')):
             raise Exception ('can not find ' + WinSDK_path + '\WiLangId.vbs')
 
+        # Generating random ProductID (should change on every run)
+        # and put it in mixxx.wxs using the template
+        ProductID = str(uuid.uuid1()).upper()
+        with open("build/wix/mixxx.wxs.tmpl", "rt") as fin:
+            with open("build/wix/mixxx.wxs", "wt") as fout:
+                for line in fin:
+                    fout.write(line.replace('==SCONS-GENERATED-PRODUCTID==', ProductID))
+
         # The default language
         defaultLanguage="en-us"
         # The langIds contained in the installer. starting with LangId of the default language
@@ -907,6 +916,7 @@ def BuildRelease(target, source, env):
             os.remove(file)
         for file in glob.glob('build\wix\subdirs\*.wxs'):
             os.remove(file)
+        os.remove("build/wix/mixxx.wxs")
         os.remove(exe_name)
 
     else:
