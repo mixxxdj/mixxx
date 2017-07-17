@@ -19,16 +19,19 @@
         <Layout>horizontal</Layout>
         <Size>me,20f</Size>
         <Children>
-          <KnobComposed>
-            <TooltipId><Variable name="TooltipId"/></TooltipId>
+          <EffectParameterKnobComposed>
             <Size>20f,20f</Size>
             <Knob>knob_small.svg</Knob>
             <MinAngle>-230</MinAngle>
             <MaxAngle>50</MaxAngle>
+            <EffectRack><Variable name="EffectRack"/></EffectRack>
+            <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+            <Effect><Variable name="Effect"/></Effect>
+            <EffectParameter><Variable name="EffectParameter"/></EffectParameter>
             <Connection>
               <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/></ConfigKey>
             </Connection>
-          </KnobComposed>
+          </EffectParameterKnobComposed>
         </Children>
       </WidgetGroup>
 
