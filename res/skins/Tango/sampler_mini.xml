@@ -8,16 +8,16 @@ Description:
   * Volume knob
   Switches to light grey background when playing.
 Variables:
-  samplernum  : sampler deck number
+  samNum  : sampler deck number
   group       : [ChannelXY]
   PlayedOverlayColor  : defined in skin.xml
 -->
 <Template>
-  <SetVariable name="group">[Sampler<Variable name="samplernum"/>]</SetVariable>
+  <SetVariable name="group">[Sampler<Variable name="samNum"/>]</SetVariable>
   <WidgetGroup><!-- SamplerDeck -->
     <Layout>horizontal</Layout>
     <ObjectName>SamplerDeck</ObjectName>
-    <Size>120me,37f</Size>
+    <Size>119me,39f</Size>
     <Children>
 
       <WidgetGroup><!-- Play -->
@@ -29,6 +29,11 @@ Variables:
             <SetVariable name="ObjectName">SamplerPlayCue</SetVariable>
             <SetVariable name="Size">34f,34f</SetVariable>
             <SetVariable name="TooltipId">play_cue_set</SetVariable>
+            <SetVariable name="state_0_pressed">sampler_paused.png</SetVariable>
+            <SetVariable name="state_0_unpressed">sampler_paused.png</SetVariable>
+            <SetVariable name="state_0_pressed">sampler_paused.png</SetVariable>
+            <SetVariable name="state_1_pressed">sampler_playing.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">sampler_playing.svg</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,cue_gotoandplay</SetVariable>
             <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
             <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
@@ -53,7 +58,7 @@ Variables:
       <WidgetGroup><!-- Title + [Sync, CF assign, Volume] -->
         <ObjectName>Spacer33</ObjectName>
         <Layout>vertical</Layout>
-        <Size>82me,34f</Size>
+        <Size>84me,34f</Size>
         <Children>
 
           <TrackProperty>
@@ -69,6 +74,8 @@ Variables:
             <Size>82me,20f</Size>
             <Children>
 
+              <WidgetGroup><Size>2f,1min</Size><Children/></WidgetGroup>
+
               <Template src="skin:knob_textless.xml">
                 <SetVariable name="TooltipId">pregain</SetVariable>
                 <SetVariable name="ObjectName">SamplerGainKnob</SetVariable>
@@ -78,29 +85,39 @@ Variables:
                 <SetVariable name="Color">tiny_red</SetVariable>
               </Template>
 
-              <WidgetGroup><Size>1me,1min</Size><Children/></WidgetGroup>
+              <!-- Instead of a plain spacer I chose <TrackProperty> here,
+                  so that tracks from library can be dropped on 'empty space' -->
+              <TrackProperty>
+                <ObjectName>Text33</ObjectName>
+                <TooltipId>text</TooltipId>
+                <Size>1me,1min</Size>
+                <Group><Variable name="group"/></Group>
+                <Property>durationFormatted</Property>
+              </TrackProperty>
 
               <Template src="skin:button_3state.xml">
                 <SetVariable name="TooltipId">orientation</SetVariable>
-                <SetVariable name="ObjectName">SamplerButton_mini</SetVariable>
-                <SetVariable name="Size">18f,18f</SetVariable>
-                <SetVariable name="state_0_text">|--</SetVariable>
-                <SetVariable name="state_1_text">-|-</SetVariable>
-                <SetVariable name="state_2_text">--|</SetVariable>
+                <SetVariable name="ObjectName">SamplerButton</SetVariable>
+                <SetVariable name="Size">16f,16f</SetVariable>
+                <SetVariable name="state_0_pressed">sampler_cf_left_white.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">sampler_cf_left_white.svg</SetVariable>
+                <SetVariable name="state_1_pressed">sampler_cf_center.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">sampler_cf_center.svg</SetVariable>
+                <SetVariable name="state_2_pressed">sampler_cf_right_white.svg</SetVariable>
+                <SetVariable name="state_2_unpressed">sampler_cf_right_white.svg</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
               </Template>
 
               <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
 
-              <Template src="skin:button_2state.xml">
-                <SetVariable name="TooltipId">sync_enabled</SetVariable>
+              <Template src="skin:button_1state_right.xml">
+                <SetVariable name="TooltipId">beatsync_beatsync_tempo</SetVariable>
                 <SetVariable name="ObjectName">SamplerSyncButton</SetVariable>
                 <SetVariable name="Size">18f,18f</SetVariable>
                 <SetVariable name="state_0_unpressed">sampler_sync_off.svg</SetVariable>
-                <SetVariable name="state_0_pressed">sampler_sync_off.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">sampler_sync_on.svg</SetVariable>
-                <SetVariable name="state_1_pressed">sampler_sync_on.svg</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="group"/>,sync_enabled</SetVariable>
+                <SetVariable name="state_0_pressed">sampler_sync_on.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,beatsync</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatsync_tempo</SetVariable>
               </Template>
 
               <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>

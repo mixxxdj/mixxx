@@ -385,6 +385,10 @@ void SoundSourceM4A::restartDecoding(MP4SampleId sampleBlockId) {
 SINT SoundSourceM4A::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
 
+    DEBUG_ASSERT(frameIndex >= getMinFrameIndex());
+    if (frameIndex == m_curFrameIndex) {
+        return m_curFrameIndex;
+    }
     if (frameIndex >= getMaxFrameIndex()) {
         // EOF
         m_curFrameIndex = getMaxFrameIndex();
@@ -394,15 +398,12 @@ SINT SoundSourceM4A::seekSampleFrame(SINT frameIndex) {
     // NOTE(uklotzde): Resetting the decoder near to the beginning
     // of the stream when seeking backwards produces invalid sample
     // values! As a consequence the seeking test fails.
-    if (isValidSampleBlockId(m_curSampleBlockId) &&
-            (frameIndex <= kNumberOfPrefetchFrames)) {
+    if ((m_curSampleBlockId != MP4_INVALID_SAMPLE_ID) &&
+            (frameIndex < m_curFrameIndex) &&
+            (frameIndex <= (getMinFrameIndex() + kNumberOfPrefetchFrames))) {
         // Workaround: Reset the decoder when seeking near to the beginning
         // of the stream while decoding.
         reopenDecoder();
-        skipSampleFrames(frameIndex);
-    }
-    if (frameIndex == m_curFrameIndex) {
-        return m_curFrameIndex;
     }
 
     MP4SampleId sampleBlockId = kSampleBlockIdMin
