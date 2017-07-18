@@ -217,8 +217,11 @@ void DlgPrefBroadcast::btnCreateConnectionClicked(bool enabled) {
 	int profileCount = m_pBroadcastSettings->rowCount();
     QString newName = tr("Profile %1").arg(++profileCount);
 
-    BroadcastProfilePtr newProfile =
-            m_pBroadcastSettings->createProfile(newName);
+    BroadcastProfilePtr existingProfile =
+    		m_pBroadcastSettings->getProfileByName(newName);
+    if(!existingProfile) {
+    	m_pBroadcastSettings->createProfile(newName);
+    }
 }
 
 void DlgPrefBroadcast::profileListItemSelected(const QModelIndex& index) {
