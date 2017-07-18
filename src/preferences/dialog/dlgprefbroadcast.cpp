@@ -163,9 +163,11 @@ void DlgPrefBroadcast::slotUpdate() {
     // Don't let user modify information if
     // sending is enabled.
     if(m_pBroadcastEnabled->toBool()) {
-        this->setEnabled(false);
+    	groupBoxProfileSettings->setEnabled(false);
+    	btnCreateProfile->setEnabled(false);
     } else {
-        this->setEnabled(true);
+    	groupBoxProfileSettings->setEnabled(true);
+    	btnCreateProfile->setEnabled(true);
     }
 }
 
@@ -177,8 +179,10 @@ void DlgPrefBroadcast::slotApply()
     // sending is enabled.
     if(m_pBroadcastEnabled->toBool()) {
         groupBoxProfileSettings->setEnabled(false);
+        btnCreateProfile->setEnabled(false);
     } else {
         groupBoxProfileSettings->setEnabled(true);
+        btnCreateProfile->setEnabled(true);
     }
 
     // TODO(Palakis) : keep a local deep copy of the profiles list to
@@ -196,7 +200,10 @@ void DlgPrefBroadcast::slotApply()
 void DlgPrefBroadcast::broadcastEnabledChanged(double value) {
     qDebug() << "DlgPrefBroadcast::broadcastEnabledChanged()" << value;
     bool enabled = value == 1.0; // 0 and 2 are disabled
+
     groupBoxProfileSettings->setEnabled(!enabled);
+    btnCreateProfile->setEnabled(!enabled);
+
     enableLiveBroadcasting->setChecked(enabled);
 }
 
@@ -425,19 +432,13 @@ void DlgPrefBroadcast::enableValueSignals(bool enable) {
     QMetaMethod valueChangedSlot = metaObject()->method(
                            metaObject()->indexOfSlot("formValueChanged()"));
 
-    //kLogger.info() << QString("--- ---");
-
     QList<QGroupBox*> subGroups =
             groupBoxProfileSettings->findChildren<QGroupBox*>();
     for(QGroupBox* subGroup : subGroups) {
-        ///kLogger.info() << QString("---");
-
         QList<QWidget*> childs = subGroup->findChildren<QWidget*>();
         for(QWidget* child : childs) {
             const QMetaObject* metaObj = child->metaObject();
             QMetaProperty userProp = metaObj->userProperty();
-
-            ///kLogger.info() << QString(metaObj->className());
             if(userProp.isValid() && userProp.hasNotifySignal()) {
                 if(enable)
                     connect(child, userProp.notifySignal(),
@@ -457,7 +458,6 @@ void DlgPrefBroadcast::onRemoveButtonClicked(int column, int row) {
 		return;
 	}
 
-	// TODO(Palakis): ask the user for confirmation
 	BroadcastProfilePtr profile = m_pBroadcastSettings->profileAt(row);
 	if(profile) {
 		m_pBroadcastSettings->deleteProfile(profile);
