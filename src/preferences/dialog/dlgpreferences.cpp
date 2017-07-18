@@ -416,9 +416,7 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
             }
             break;
         case QDialogButtonBox::AcceptRole:
-            if (pCurrentPage != NULL) {
-                pCurrentPage->slotApply();
-            }
+            emit(applyPreferences());
             accept();
             break;
         case QDialogButtonBox::RejectRole:
@@ -438,6 +436,8 @@ void DlgPreferences::addPageWidget(DlgPreferencePage* pWidget) {
     connect(this, SIGNAL(showDlg()),
             pWidget, SLOT(slotUpdate()));
 
+    connect(this, SIGNAL(applyPreferences()),
+            pWidget, SLOT(slotApply()));
     connect(this, SIGNAL(cancelPreferences()),
             pWidget, SLOT(slotCancel()));
     connect(this, SIGNAL(resetToDefaults()),
