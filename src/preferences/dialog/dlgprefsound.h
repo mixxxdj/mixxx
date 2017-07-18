@@ -69,7 +69,6 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void masterOutputModeComboBoxChanged(int value);
     void masterMonoMixdownChanged(double value);
     void micMonitorModeComboBoxChanged(int value);
-    void micMonitorModeChanged(double value);
 
   private slots:
     void addPath(AudioOutput output);
@@ -90,6 +89,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void connectSoundItem(DlgPrefSoundItem *item);
     void loadSettings(const SoundManagerConfig &config);
     void insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout);
+    void checkLatencyCompensation();
 
     SoundManager *m_pSoundManager;
     PlayerManager *m_pPlayerManager;
@@ -108,6 +108,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     QList<SoundDevice*> m_outputDevices;
     bool m_settingsModified;
     bool m_bLatencyChanged;
+    bool m_bSkipConfigClear;
     SoundManagerConfig m_config;
     bool m_loading;
 };

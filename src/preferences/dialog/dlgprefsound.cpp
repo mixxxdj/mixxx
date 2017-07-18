@@ -38,6 +38,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
           m_pConfig(pConfig),
           m_settingsModified(false),
           m_bLatencyChanged(false),
+          m_bSkipConfigClear(true),
           m_loading(false) {
     setupUi(this);
 
@@ -86,6 +87,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     m_pBoothDelay = new ControlProxy("[Master]", "boothDelay", this);
 
     latencyCompensationSpinBox->setValue(m_pLatencyCompensation->get());
+    latencyCompensationWarningLabel->setWordWrap(true);
     masterDelaySpinBox->setValue(m_pMasterDelay->get());
     headDelaySpinBox->setValue(m_pHeadDelay->get());
     boothDelaySpinBox->setValue(m_pBoothDelay->get());
@@ -98,6 +100,20 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(headDelaySpinboxChanged(double)));
     connect(boothDelaySpinBox, SIGNAL(valueChanged(double)),
             this, SLOT(boothDelaySpinboxChanged(double)));
+
+    m_pMicMonitorMode = new ControlProxy("[Master]", "talkover_mix", this);
+    micMonitorModeComboBox->addItem(tr("Master output only"),
+        QVariant(static_cast<int>(EngineMaster::MicMonitorMode::MASTER)));
+    micMonitorModeComboBox->addItem(tr("Master and booth outputs"),
+        QVariant(static_cast<int>(EngineMaster::MicMonitorMode::MASTER_AND_BOOTH)));
+    micMonitorModeComboBox->addItem(tr("Direct monitor (recording and broadcasting only)"),
+        QVariant(static_cast<int>(EngineMaster::MicMonitorMode::DIRECT_MONITOR)));
+    int modeIndex = micMonitorModeComboBox->findData(
+        static_cast<int>(m_pMicMonitorMode->get()));
+    micMonitorModeComboBox->setCurrentIndex(modeIndex);
+    micMonitorModeComboBoxChanged(modeIndex);
+    connect(micMonitorModeComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(micMonitorModeComboBoxChanged(int)));
 
     initializePaths();
     loadSettings();
@@ -151,21 +167,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(masterOutputModeComboBoxChanged(int)));
     m_pMasterMonoMixdown->connectValueChanged(SLOT(masterMonoMixdownChanged(double)));
 
-    m_pMicMonitorMode = new ControlProxy("[Master]", "talkover_mix", this);
-    micMonitorModeComboBox->addItem(tr("Master output only"),
-        QVariant(static_cast<int>(EngineMaster::MicMonitorMode::MASTER)));
-    micMonitorModeComboBox->addItem(tr("Master and booth outputs"),
-        QVariant(static_cast<int>(EngineMaster::MicMonitorMode::MASTER_AND_BOOTH)));
-    micMonitorModeComboBox->addItem(tr("Direct monitor (recording and broadcasting only)"),
-        QVariant(static_cast<int>(EngineMaster::MicMonitorMode::DIRECT_MONITOR)));
-    int modeIndex = micMonitorModeComboBox->findData(
-        static_cast<int>(m_pMicMonitorMode->get()));
-    micMonitorModeComboBox->setCurrentIndex(modeIndex);
-    micMonitorModeComboBoxChanged(modeIndex);
-    connect(micMonitorModeComboBox, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(micMonitorModeComboBoxChanged(int)));
-    m_pMicMonitorMode->connectValueChanged(SLOT(micMonitorModeChanged(double)));
-
     m_pKeylockEngine =
             new ControlProxy("[Master]", "keylock_engine", this);
 
@@ -180,7 +181,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     // the limits warning is a Linux only thing
     limitsHint->hide();
 #endif // __LINUX__
-
 }
 
 DlgPrefSound::~DlgPrefSound() {
@@ -197,8 +197,10 @@ void DlgPrefSound::slotUpdate() {
     // every time. There's no real way around this, just another argument
     // for a prefs rewrite -- bkgood
     m_settingsModified = false;
+    m_bSkipConfigClear = true;
     loadSettings();
-
+    checkLatencyCompensation();
+    m_bSkipConfigClear = false;
 }
 
 /**
@@ -212,34 +214,6 @@ void DlgPrefSound::slotApply() {
     m_config.clearInputs();
     m_config.clearOutputs();
     emit(writePaths(&m_config));
-
-    EngineMaster::MicMonitorMode configuredMicMonitorMode =
-        static_cast<EngineMaster::MicMonitorMode>(
-              static_cast<int>(m_pMicMonitorMode->get()));
-    if (configuredMicMonitorMode == EngineMaster::MicMonitorMode::DIRECT_MONITOR
-        && m_config.hasMicInputs()) {
-        if (m_pLatencyCompensation->get() == 0.0) {
-            // TODO(Be): Make the "User Manual" text link to the manual in this dialog.
-            QMessageBox measureRoundTripLatencyAdvisoryBox;
-            measureRoundTripLatencyAdvisoryBox.setIcon(QMessageBox::Information);
-            measureRoundTripLatencyAdvisoryBox.setText(tr("Measure Round Trip Latency"));
-            measureRoundTripLatencyAdvisoryBox.setInformativeText(tr("Your microphone input will be out of time in your recorded and broadcasted mixes compared to what you hear. To align them, measure the round trip latency through your setup and enter this value for the Microphone Latency Compensation. Refer to the Mixxx Manual for details."));
-            measureRoundTripLatencyAdvisoryBox.exec();
-        } else if (m_bLatencyChanged) {
-            QMessageBox latencyChangeWarningBox;
-            latencyChangeWarningBox.setIcon(QMessageBox::Warning);
-            latencyChangeWarningBox.setText(tr("Change processing latency?"));
-            latencyChangeWarningBox.setInformativeText(tr("Changing Mixxx's Audio Buffer and/or Sample Rate changes the real round trip latency through your hardware and software. Your microphone inputs will be out of time with the music in your recorded and broadcasted mixes until you measure your round trip latency again and update the Microphone Latency Compensation with the newly measured value. Are you sure you want to apply the new settings?"));
-            latencyChangeWarningBox.setStandardButtons(QMessageBox::Cancel |
-                QMessageBox::Apply);
-            latencyChangeWarningBox.setDefaultButton(QMessageBox::Cancel);
-            QMessageBox::StandardButton userResponse = static_cast<QMessageBox::StandardButton>(
-                  latencyChangeWarningBox.exec());
-            if (userResponse == QMessageBox::Cancel) {
-                return;
-            }
-        }
-    }
 
     SoundDeviceError err = SOUNDDEVICE_ERROR_OK;
     {
@@ -257,7 +231,10 @@ void DlgPrefSound::slotApply() {
         m_settingsModified = false;
         m_bLatencyChanged = false;
     }
+    m_bSkipConfigClear = true;
     loadSettings(); // in case SM decided to change anything it didn't like
+    checkLatencyCompensation();
+    m_bSkipConfigClear = false;
 }
 
 /**
@@ -482,6 +459,7 @@ void DlgPrefSound::sampleRateChanged(int index) {
     m_config.setSampleRate(
             sampleRateComboBox->itemData(index).toUInt());
     m_bLatencyChanged = true;
+    checkLatencyCompensation();
 }
 
 /**
@@ -492,6 +470,7 @@ void DlgPrefSound::audioBufferChanged(int index) {
     m_config.setAudioBufferSizeIndex(
             audioBufferComboBox->itemData(index).toUInt());
     m_bLatencyChanged = true;
+    checkLatencyCompensation();
 }
 
 void DlgPrefSound::syncBuffersChanged(int index) {
@@ -624,6 +603,7 @@ void DlgPrefSound::masterLatencyChanged(double latency) {
 
 void DlgPrefSound::latencyCompensationSpinboxChanged(double value) {
     m_pLatencyCompensation->set(value);
+    checkLatencyCompensation();
 }
 
 void DlgPrefSound::masterDelaySpinboxChanged(double value) {
@@ -658,16 +638,54 @@ void DlgPrefSound::micMonitorModeComboBoxChanged(int value) {
     EngineMaster::MicMonitorMode newMode =
         static_cast<EngineMaster::MicMonitorMode>(
             micMonitorModeComboBox->itemData(value).toInt());
+
     m_pMicMonitorMode->set(static_cast<double>(newMode));
+
     if (newMode == EngineMaster::MicMonitorMode::DIRECT_MONITOR) {
         latencyCompensationSpinBox->setEnabled(true);
     } else {
         latencyCompensationSpinBox->setEnabled(false);
     }
+
+    checkLatencyCompensation();
 }
 
-void DlgPrefSound::micMonitorModeChanged(double value) {
-    int modeIndex = micMonitorModeComboBox->findData(
-        static_cast<int>(value));
-    micMonitorModeComboBox->setCurrentIndex(modeIndex);
+void DlgPrefSound::checkLatencyCompensation() {
+    EngineMaster::MicMonitorMode configuredMicMonitorMode =
+        static_cast<EngineMaster::MicMonitorMode>(
+            static_cast<int>(m_pMicMonitorMode->get()));
+
+    // Do not clear the SoundManagerConfig on startup, from slotApply, or from slotUpdate
+    if (!m_bSkipConfigClear) {
+        m_config.clearInputs();
+        m_config.clearOutputs();
+    }
+
+    emit(writePaths(&m_config));
+
+    if (configuredMicMonitorMode == EngineMaster::MicMonitorMode::DIRECT_MONITOR
+        && m_config.hasMicInputs()) {
+        QString warningIcon("<html><img src=':/images/preferences/ic_preferences_warning.png' width='20' height='20'></html> ");
+        QString lineBreak("<br/>");
+        // TODO(Be): Make the "User Manual" text link to the manual.
+        if (m_pLatencyCompensation->get() == 0.0) {
+            latencyCompensationWarningLabel->setText(
+                  warningIcon +
+                  tr("Microphone inputs are out of time in the record & broadcast signal compared to what you hear.") + lineBreak +
+                  tr("Measure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.") + lineBreak +
+                  tr("Refer to the Mixxx User Manual for details.") + "</html>");
+            latencyCompensationWarningLabel->show();
+        } else if (m_bLatencyChanged) {
+            latencyCompensationWarningLabel->setText(
+              warningIcon +
+              tr("Configured latency has changed.") + lineBreak +
+              tr("Remeasure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.") + lineBreak +
+              tr("Refer to the Mixxx User Manual for details.") + "</html>");
+            latencyCompensationWarningLabel->show();
+        } else {
+            latencyCompensationWarningLabel->hide();
+        }
+    } else {
+        latencyCompensationWarningLabel->hide();
+    }
 }
