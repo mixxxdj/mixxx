@@ -12,7 +12,7 @@
 
 namespace {
 const char* kProfilesSubfolder = "broadcast_profiles";
-const char* kDefaultProfile = "Default Profile";
+const char* kDefaultProfile = "Profile 1"; // Must be used only when initializing profiles
 const mixxx::Logger kLogger("BroadcastSettings");
 const int kColumnEnabled = 0;
 const int kColumnName = 1;

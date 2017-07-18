@@ -212,38 +212,15 @@ void DlgPrefBroadcast::enableCustomMetadataChanged(int value) {
 }
 
 void DlgPrefBroadcast::btnCreateConnectionClicked(bool enabled) {
-    // TODO(Palakis): Import code from branch broadcast-profile
-    bool ok = false;
-    QString profileName = QInputDialog::getText(this,
-            tr("Create profile"), tr("Profile name:"), QLineEdit::Normal,
-            tr("Default profile"), &ok);
+    // TODO(Palakis): determine the next index from the profile names
+	int profileCount = m_pBroadcastSettings->rowCount();
+    QString newName = tr("Profile %1").arg(++profileCount);
 
-    if(ok) {
-        BroadcastProfilePtr newProfile =
-                    m_pBroadcastSettings->createProfile(profileName);
-        if(!newProfile) {
-            QMessageBox::warning(this, tr("Profile already exists"),
-                                    tr("An Untitled Profile already exists"));
-        }
-    }
+    BroadcastProfilePtr newProfile =
+            m_pBroadcastSettings->createProfile(newName);
 }
 
 void DlgPrefBroadcast::profileListItemSelected(const QModelIndex& index) {
-    // TODO(Palakis): reuse this to ask for unsaved changes on apply
-    /*if(m_pProfileListSelection) {
-        QString title = QObject::tr("Unsaved changes");
-        QString msg =
-                QString(kUnsavedChangesWarning)
-                .arg(m_pProfileListSelection->getProfileName());
-
-        QMessageBox::StandardButton reply =
-                QMessageBox::question(this, title, msg,
-                        QMessageBox::Yes | QMessageBox::No);
-        if(reply == QMessageBox::Yes) {
-            // TODO(Palakis) : apply settings to profile in internal list copy
-            m_pBroadcastSettings->saveProfile(m_pProfileListSelection);
-        }
-    }*/
     setValuesToProfile(m_pProfileListSelection);
 
     QString selectedName = m_pBroadcastSettings->data(index,

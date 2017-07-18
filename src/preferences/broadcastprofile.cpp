@@ -187,7 +187,7 @@ BroadcastProfilePtr BroadcastProfile::valuesCopy() {
 }
 
 void BroadcastProfile::adoptDefaultValues() {
-    m_enabled = true;
+    m_enabled = false;
 
     m_host = QString();
     m_port = BROADCAST_DEFAULT_PORT;
