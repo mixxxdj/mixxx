@@ -14,8 +14,6 @@
 
 namespace {
 const char* kSettingsGroupHeader = "Settings for profile '%1'";
-const char* kUnsavedChangesWarning =
-        "Profile '%1' has unsaved changes. Do you want to save them?";
 const int kColumnEnabled = 0;
 const int kColumnName = 1;
 const int kColumnRemove = 2;
@@ -44,6 +42,9 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
             this, SLOT(btnCreateConnectionClicked(bool)));
     connect(profileList, SIGNAL(clicked(const QModelIndex&)),
             this, SLOT(profileListItemSelected(const QModelIndex&)));
+
+    // Highlight first row
+    profileList->selectRow(0);
 
     m_pBroadcastEnabled = new ControlProxy(
             BROADCAST_PREF_KEY, "enabled", this);
@@ -175,9 +176,9 @@ void DlgPrefBroadcast::slotApply()
     // Don't let user modify information if
     // sending is enabled.
     if(m_pBroadcastEnabled->toBool()) {
-        this->setEnabled(false);
+        groupBoxProfileSettings->setEnabled(false);
     } else {
-        this->setEnabled(true);
+        groupBoxProfileSettings->setEnabled(true);
     }
 
     // TODO(Palakis) : keep a local deep copy of the profiles list to
@@ -195,7 +196,7 @@ void DlgPrefBroadcast::slotApply()
 void DlgPrefBroadcast::broadcastEnabledChanged(double value) {
     qDebug() << "DlgPrefBroadcast::broadcastEnabledChanged()" << value;
     bool enabled = value == 1.0; // 0 and 2 are disabled
-    this->setEnabled(!enabled);
+    groupBoxProfileSettings->setEnabled(!enabled);
     enableLiveBroadcasting->setChecked(enabled);
 }
 
@@ -213,15 +214,21 @@ void DlgPrefBroadcast::enableCustomMetadataChanged(int value) {
 }
 
 void DlgPrefBroadcast::btnCreateConnectionClicked(bool enabled) {
-    // TODO(Palakis): determine the next index from the profile names
-	int profileCount = m_pBroadcastSettings->rowCount();
-    QString newName = tr("Profile %1").arg(++profileCount);
+	int profileNumber = m_pBroadcastSettings->rowCount();
 
-    BroadcastProfilePtr existingProfile =
-    		m_pBroadcastSettings->getProfileByName(newName);
-    if(!existingProfile) {
-    	m_pBroadcastSettings->createProfile(newName);
-    }
+	// Generate a new profile name based on the current profile count.
+	// Try the number above if the generated name is already taken.
+	BroadcastProfilePtr existingProfile(nullptr);
+	QString newName;
+	do {
+		profileNumber++;
+		newName = tr("Profile %1").arg(profileNumber);
+		existingProfile = m_pBroadcastSettings->getProfileByName(newName);
+	} while(!existingProfile.isNull());
+
+	// TODO(Palakis): add a safety check to avoid infinite looping
+
+    m_pBroadcastSettings->createProfile(newName);
 }
 
 void DlgPrefBroadcast::profileListItemSelected(const QModelIndex& index) {
