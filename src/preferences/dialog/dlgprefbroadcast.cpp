@@ -4,6 +4,7 @@
 #include <QMetaProperty>
 #include <QAbstractItemDelegate>
 #include <QMessageBox>
+#include <QHeaderView>
 
 #include "broadcast/defs_broadcast.h"
 #include "control/controlproxy.h"
@@ -29,7 +30,7 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
           m_valuesChanged(false) {
 	setupUi(this);
 
-	// Should be safe to get the underlying pointer
+	// Should be safe to directly access the underlying pointer
     profileList->setModel(m_pBroadcastSettings.data());
 
     QAbstractItemDelegate* removeDelegate =
@@ -427,7 +428,6 @@ void DlgPrefBroadcast::enableValueSignals(bool enable) {
             QMetaProperty userProp = metaObj->userProperty();
 
             ///kLogger.info() << QString(metaObj->className());
-
             if(userProp.isValid() && userProp.hasNotifySignal()) {
                 if(enable)
                     connect(child, userProp.notifySignal(),
