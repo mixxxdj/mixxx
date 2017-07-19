@@ -166,11 +166,12 @@ void DlgPrefCrossfader::drawXfaderDisplay()
     double xfadeStep = 2. / (pointCount - 1);
     for (int i = 0; i < pointCount; i++) {
         double gain1, gain2;
+        bool hardCut;
         EngineXfader::getXfadeGains((-1. + (xfadeStep * i)),
                                     m_transform, m_cal,
                                     m_xFaderMode,
                                     checkBoxReverse->isChecked(),
-                                    &gain1, &gain2);
+                                    &gain1, &gain2, &hardCut);
 
         double gain = sqrt(gain1 * gain1 + gain2 * gain2);
         // scale for graph
@@ -183,7 +184,7 @@ void DlgPrefCrossfader::drawXfaderDisplay()
         point1 = QPointF(i + 1, (1. - gain1) * (sizeY) - 3);
         point2 = QPointF(i + 1, (1. - gain2) * (sizeY) - 3);
 
-        if (m_transform + 1 > EngineXfader::kTransformMax) {
+        if (hardCut) {
             // A fake, to show a hard cut as vertical line
             if (i == pointCount - 2) {
                 point1.setX(i + 2);

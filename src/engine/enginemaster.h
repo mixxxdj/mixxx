@@ -154,7 +154,8 @@ class EngineMaster : public QObject, public AudioSource {
 
     struct GainCache {
         CSAMPLE m_gain;
-        bool m_fadeout;
+        bool m_fadeout; // fade channel to zero instead of the calculated gain.
+                        // This is used if the channel was disabled.
     };
 
     class GainCalculator {
