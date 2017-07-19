@@ -77,6 +77,7 @@ public:
     void clearOutputs();
     void clearInputs();
     bool hasMicInputs();
+    bool hasExternalRecordBroadcast();
     void loadDefaults(SoundManager *soundManager, unsigned int flags);
 private:
     QFileInfo m_configFile;
@@ -94,5 +95,6 @@ private:
     QMultiHash<QString, AudioOutput> m_outputs;
     QMultiHash<QString, AudioInput> m_inputs;
     int m_iNumMicInputs;
+    bool m_bExternalRecordBroadcastConnected;
 };
 #endif

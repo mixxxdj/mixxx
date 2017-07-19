@@ -38,7 +38,9 @@ SoundManagerConfig::SoundManagerConfig()
       m_sampleRate(kFallbackSampleRate),
       m_deckCount(kDefaultDeckCount),
       m_audioBufferSizeIndex(kDefaultAudioBufferSizeIndex),
-      m_syncBuffers(2) {
+      m_syncBuffers(2),
+      m_iNumMicInputs(0),
+      m_bExternalRecordBroadcastConnected(false) {
     m_configFile = QFileInfo(QDir(CmdlineArgs::Instance().getSettingsPath()).filePath(SOUNDMANAGERCONFIG_FILENAME));
 }
 
@@ -297,6 +299,8 @@ void SoundManagerConfig::addInput(const QString &device, const AudioInput &in) {
     m_inputs.insert(device, in);
     if (in.getType() == AudioPath::MICROPHONE) {
         m_iNumMicInputs++;
+    } else if (in.getType() == AudioPath::RECORD_BROADCAST) {
+        m_bExternalRecordBroadcastConnected = true;
     }
 }
 
@@ -315,10 +319,15 @@ void SoundManagerConfig::clearOutputs() {
 void SoundManagerConfig::clearInputs() {
     m_inputs.clear();
     m_iNumMicInputs = 0;
+    m_bExternalRecordBroadcastConnected = false;
 }
 
 bool SoundManagerConfig::hasMicInputs() {
     return m_iNumMicInputs;
+}
+
+bool SoundManagerConfig::hasExternalRecordBroadcast() {
+    return m_bExternalRecordBroadcastConnected;
 }
 
 /**

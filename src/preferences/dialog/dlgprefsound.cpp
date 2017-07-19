@@ -663,6 +663,10 @@ void DlgPrefSound::checkLatencyCompensation() {
 
     emit(writePaths(&m_config));
 
+    if (m_config.hasExternalRecordBroadcast()) {
+        latencyCompensationSpinBox->setEnabled(false);
+        latencyCompensationWarningLabel->hide();
+    }
     if (configuredMicMonitorMode == EngineMaster::MicMonitorMode::DIRECT_MONITOR
         && m_config.hasMicInputs()) {
         QString warningIcon("<html><img src=':/images/preferences/ic_preferences_warning.png' width='20' height='20'></html> ");
