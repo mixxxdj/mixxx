@@ -229,13 +229,10 @@ QVariant BroadcastSettings::headerData(int section, Qt::Orientation orientation,
             } else if(section == kColumnName) {
                 return tr("Name");
             } else if(section == kColumnRemove) {
-                return tr("Remove");
+                return QString("");
             }
         }
     }
-
-    // TODO(Palakis): provide size hint for columns
-
     return QVariant();
 }
 

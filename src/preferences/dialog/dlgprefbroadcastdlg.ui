@@ -66,13 +66,10 @@
       </item>
       <item>
        <layout class="QGridLayout" name="gridLayout_4">
-        <item row="0" column="2">
-         <widget class="QPushButton" name="btnCreateProfile">
-          <property name="styleSheet">
-           <string notr="true">padding: 4px 7px 4px 7px;</string>
-          </property>
+        <item row="0" column="0">
+         <widget class="QLabel" name="labelHowtoSettings">
           <property name="text">
-           <string>Create new connection</string>
+           <string>Select a connection above to edit its settings below</string>
           </property>
          </widget>
         </item>
@@ -92,10 +89,20 @@
           </property>
          </spacer>
         </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="labelHowtoSettings">
+        <item row="0" column="3">
+         <widget class="QPushButton" name="btnCreateProfile">
+          <property name="styleSheet">
+           <string notr="true">padding: 4px 7px 4px 7px;</string>
+          </property>
           <property name="text">
-           <string>Select a connection above to edit its settings below</string>
+           <string>Create new connection</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QCheckBox" name="cbRemoveMode">
+          <property name="text">
+           <string>Removal Mode</string>
           </property>
          </widget>
         </item>

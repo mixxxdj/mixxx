@@ -29,9 +29,12 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
 	setupUi(this);
 	connect(profileList->horizontalHeader(), SIGNAL(sectionResized(int, int, int)),
 			this, SLOT(onSectionResized()));
+	connect(cbRemoveMode, SIGNAL(stateChanged(int)),
+			this, SLOT(onRemoveModeChanged(int)));
 
 	// Should be safe to directly access the underlying pointer
     profileList->setModel(m_pBroadcastSettings.data());
+    profileList->setColumnHidden(kColumnRemove, true);
 
     QAbstractItemDelegate* removeDelegate =
     		m_pBroadcastSettings->delegateForColumn(kColumnRemove, this);
@@ -475,4 +478,15 @@ void DlgPrefBroadcast::onSectionResized() {
 	// The last column, kColumnRemove, is automatically resized to fill
 	// the remaining width, thanks to stretchLastSection set to true.
 	sender()->blockSignals(false);
+}
+
+void DlgPrefBroadcast::onRemoveModeChanged(int value) {
+	bool enabled = (value == Qt::Checked ? true : false);
+
+	btnCreateProfile->setEnabled(!enabled);
+	groupBoxProfileSettings->setEnabled(!enabled);
+
+	// Hide the "Enabled" column and show the "remove" column
+	profileList->setColumnHidden(kColumnEnabled, enabled);
+	profileList->setColumnHidden(kColumnRemove, !enabled);
 }
