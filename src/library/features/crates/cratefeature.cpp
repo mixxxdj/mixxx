@@ -57,18 +57,7 @@ CrateFeature::CrateFeature(UserSettingsPointer pConfig,
     // if closure does not have the same number of crates as the crates table
     // this means that the user just started mixxx with nested crates for the
     // first time, so we have to fill the closure table with (self,self,0)
-    if (!pTrackCollection->crates().closureIsValid()) {
-        QMessageBox::warning(
-            nullptr,
-            tr("Nested Crates"),
-            tr("Crates now support hierarchical structure."
-               "All your crates have been converted to Level 1 crates"));
-
-        pTrackCollection->crates().resetClosure();
-        pTrackCollection->crates().initClosure();
-        pTrackCollection->crates().resetPath();
-        pTrackCollection->crates().generateAllPaths();
-    }
+    pTrackCollection->crates().checkClosure();
 
     m_pChildModel = std::make_unique<CrateTreeModel>(this,
                         m_pTrackCollection);

@@ -22,17 +22,13 @@ class CrateTreeModel : public TreeItemModel {
   public slots:
     void reloadTree() override;
 
-  protected:
-
   private:
-    void fillTree(const QStringList& idPaths);
+    void fillTree(const QStringList& idPaths, QMap<CrateId,TreeItem*> treeCrates);
 
     LibraryFeature* m_pFeature;
     TrackCollection* m_pTrackCollection;
 
     parented_ptr<TreeItem> m_pRecursion;
-    QMap<CrateId,TreeItem*> m_treeCrates;
-
 };
 
 #endif // CRATE_TREE_MODEL_H

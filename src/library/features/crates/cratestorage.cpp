@@ -618,7 +618,7 @@ bool CrateStorage::onPurgingTracks(
 }
 
 
-uint CrateStorage::countCratesOnClosure() const {
+uint CrateStorage::countCratesInClosure() const {
     FwdSqlQuery query(
       m_database, QString(
         "SELECT COUNT(*) FROM %1 "
@@ -635,8 +635,13 @@ uint CrateStorage::countCratesOnClosure() const {
     }
 }
 
-bool CrateStorage::closureIsValid() const {
-    return countCratesOnClosure() == countCrates();
+void CrateStorage::checkClosure() const {
+    if (countCratesInClosure() == countCrates()) {
+        resetClosure();
+        initClosure();
+        resetPath();
+        generateAllPaths();
+    }
 }
 
 void CrateStorage::resetClosure() const {
@@ -751,11 +756,7 @@ bool CrateStorage::generateCratePaths(Crate crate) const {
     namePath = namePath + "/" + crate.getName();
     idPath = idPath + "/" + crate.getId().toString();
 
-    if(!writeCratePaths(crate.getId(), namePath, idPath)) {
-        return false;
-    }
-
-    return true;
+    return writeCratePaths(crate.getId(), namePath, idPath);
 }
 
 bool CrateStorage::generateAllPaths() const {

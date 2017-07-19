@@ -139,10 +139,9 @@ class CrateStorage: public virtual /*implements*/ SqlStorage {
     // Crate Hierarchy operations (const)
     //////////////////////////////////////////////////////////////////////
 
-    uint countCratesOnClosure() const;
+    uint countCratesInClosure() const;
 
-    // checks # of crates in closure table against # of crates in crates table
-    bool closureIsValid() const;
+    void checkClosure() const;
     // empties the closure table
     void resetClosure() const;
     // fills the closure table with (self,self,0)
