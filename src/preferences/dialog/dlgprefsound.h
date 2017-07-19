@@ -82,6 +82,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void syncBuffersChanged(int index);
     void refreshDevices();
     void settingChanged();
+    void deviceSettingChanged();
     void queryClicked();
 
   private:

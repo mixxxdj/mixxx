@@ -320,7 +320,7 @@ void DlgPrefSound::addPath(AudioInput input) {
 
 void DlgPrefSound::connectSoundItem(DlgPrefSoundItem *item) {
     connect(item, SIGNAL(settingChanged()),
-            this, SLOT(settingChanged()));
+            this, SLOT(deviceSettingChanged()));
     connect(this, SIGNAL(loadPaths(const SoundManagerConfig&)),
             item, SLOT(loadPath(const SoundManagerConfig&)));
     connect(this, SIGNAL(writePaths(SoundManagerConfig*)),
@@ -547,6 +547,12 @@ void DlgPrefSound::settingChanged() {
     m_settingsModified = true;
 }
 
+void DlgPrefSound::deviceSettingChanged() {
+    if (m_loading) return;
+    checkLatencyCompensation();
+    m_settingsModified = true;
+}
+
 /**
  * Slot called when the "Query Devices" button is clicked.
  */
@@ -641,12 +647,6 @@ void DlgPrefSound::micMonitorModeComboBoxChanged(int value) {
 
     m_pMicMonitorMode->set(static_cast<double>(newMode));
 
-    if (newMode == EngineMaster::MicMonitorMode::DIRECT_MONITOR) {
-        latencyCompensationSpinBox->setEnabled(true);
-    } else {
-        latencyCompensationSpinBox->setEnabled(false);
-    }
-
     checkLatencyCompensation();
 }
 
@@ -663,33 +663,36 @@ void DlgPrefSound::checkLatencyCompensation() {
 
     emit(writePaths(&m_config));
 
-    if (m_config.hasExternalRecordBroadcast()) {
-        latencyCompensationSpinBox->setEnabled(false);
-        latencyCompensationWarningLabel->hide();
-    }
-    if (configuredMicMonitorMode == EngineMaster::MicMonitorMode::DIRECT_MONITOR
-        && m_config.hasMicInputs()) {
-        QString warningIcon("<html><img src=':/images/preferences/ic_preferences_warning.png' width='20' height='20'></html> ");
-        QString lineBreak("<br/>");
-        // TODO(Be): Make the "User Manual" text link to the manual.
-        if (m_pLatencyCompensation->get() == 0.0) {
-            latencyCompensationWarningLabel->setText(
+    if (m_config.hasMicInputs() && !m_config.hasExternalRecordBroadcast()) {
+        micMonitorModeComboBox->setEnabled(true);
+        if (configuredMicMonitorMode == EngineMaster::MicMonitorMode::DIRECT_MONITOR) {
+            latencyCompensationSpinBox->setEnabled(true);
+            QString warningIcon("<html><img src=':/images/preferences/ic_preferences_warning.png' width='20' height='20'></html> ");
+            QString lineBreak("<br/>");
+            // TODO(Be): Make the "User Manual" text link to the manual.
+            if (m_pLatencyCompensation->get() == 0.0) {
+                latencyCompensationWarningLabel->setText(
+                      warningIcon +
+                      tr("Microphone inputs are out of time in the record & broadcast signal compared to what you hear.") + lineBreak +
+                      tr("Measure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.") + lineBreak +
+                      tr("Refer to the Mixxx User Manual for details.") + "</html>");
+                latencyCompensationWarningLabel->show();
+            } else if (m_bLatencyChanged) {
+                latencyCompensationWarningLabel->setText(
                   warningIcon +
-                  tr("Microphone inputs are out of time in the record & broadcast signal compared to what you hear.") + lineBreak +
-                  tr("Measure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.") + lineBreak +
+                  tr("Configured latency has changed.") + lineBreak +
+                  tr("Remeasure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.") + lineBreak +
                   tr("Refer to the Mixxx User Manual for details.") + "</html>");
-            latencyCompensationWarningLabel->show();
-        } else if (m_bLatencyChanged) {
-            latencyCompensationWarningLabel->setText(
-              warningIcon +
-              tr("Configured latency has changed.") + lineBreak +
-              tr("Remeasure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.") + lineBreak +
-              tr("Refer to the Mixxx User Manual for details.") + "</html>");
-            latencyCompensationWarningLabel->show();
+                latencyCompensationWarningLabel->show();
+            } else {
+                latencyCompensationWarningLabel->hide();
+            }
         } else {
-            latencyCompensationWarningLabel->hide();
+            latencyCompensationSpinBox->setEnabled(false);
         }
     } else {
+        micMonitorModeComboBox->setEnabled(false);
+        latencyCompensationSpinBox->setEnabled(false);
         latencyCompensationWarningLabel->hide();
     }
 }
