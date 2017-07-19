@@ -164,7 +164,7 @@ class EngineMaster : public QObject, public AudioSource {
     };
     class PflGainCalculator : public GainCalculator {
       public:
-        inline double getGain(ChannelInfo* pChannelInfo) const {
+        double getGain(ChannelInfo* pChannelInfo) const override {
             Q_UNUSED(pChannelInfo);
             return m_dGain;
         }
@@ -176,7 +176,7 @@ class EngineMaster : public QObject, public AudioSource {
     };
     class TalkoverGainCalculator : public GainCalculator {
       public:
-        inline double getGain(ChannelInfo* pChannelInfo) const {
+        double getGain(ChannelInfo* pChannelInfo) const override {
             Q_UNUSED(pChannelInfo);
             return 1.0;
         }
@@ -190,7 +190,7 @@ class EngineMaster : public QObject, public AudioSource {
                   m_dRightGain(1.0) {
         }
 
-        inline double getGain(ChannelInfo* pChannelInfo) const {
+        double getGain(ChannelInfo* pChannelInfo) const override {
             const double channelVolume = pChannelInfo->m_pVolumeControl->get();
             const double orientationGain = EngineMaster::gainForOrientation(
                     pChannelInfo->m_pChannel->getOrientation(),
@@ -204,6 +204,13 @@ class EngineMaster : public QObject, public AudioSource {
             m_dLeftGain = leftGain;
             m_dCenterGain = centerGain;
             m_dRightGain = rightGain;
+        }
+
+        inline double getLeftGain() {
+            return m_dLeftGain;
+        }
+        inline double getRightGain() {
+            return m_dLeftGain;
         }
 
       private:

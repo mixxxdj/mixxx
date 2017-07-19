@@ -29,6 +29,10 @@
 #include "util/timer.h"
 #include "util/trace.h"
 
+namespace {
+    constexpr float kHardCutRampTime = 0.002f; // Ramp in time in s for xfader hard cuts.
+} // anonymous namespace
+
 EngineMaster::EngineMaster(UserSettingsPointer pConfig,
                            const char* group,
                            EffectsManager* pEffectsManager,
@@ -406,6 +410,17 @@ void EngineMaster::process(const int iBufferSize) {
                                 m_pXFaderReverse->toBool(),
                                 &c1_gain, &c2_gain, &fastCut);
 
+    const int fastRampBufferSize = iSampleRate * kHardCutRampTime * 2;
+    bool fastCutByO[3] = {false, false, false};
+    if (fastCut && iBufferSize > fastRampBufferSize) {
+        if (c1_gain != m_masterGain.getLeftGain()) {
+            fastCutByO[EngineChannel::LEFT] = true;
+        }
+        if (c2_gain != m_masterGain.getRightGain()) {
+            fastCutByO[EngineChannel::RIGHT] = true;
+        }
+    }
+
     // All other channels should be adjusted by ducking gain.
     // The talkover channels are mixed in later
     m_masterGain.setGains(m_pTalkoverDucking->getGain(iBufferSize / 2),
@@ -415,11 +430,29 @@ void EngineMaster::process(const int iBufferSize) {
     // master volume, the channel volume, and the orientation gain.
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
         if (m_bRampingGain) {
-            ChannelMixer::mixChannelsRamping(
-                    m_masterGain,
-                    &m_activeBusChannels[o],
-                    &m_channelMasterGainCache, // no [o] because the old gain follows an orientation switch
-                    m_pOutputBusBuffers[o], iBufferSize);
+            if (fastCutByO[o]) {
+                // First copy the whole buffer without ramping
+                // save the cache for the second call.
+                QVarLengthArray<GainCache, kPreallocatedChannels> oldGainCache =
+                        m_channelMasterGainCache;
+                ChannelMixer::mixChannels(
+                        m_masterGain,
+                        &m_activeBusChannels[o],
+                        &m_channelMasterGainCache, // no [o] because the old gain follows an orientation switch
+                        m_pOutputBusBuffers[o], iBufferSize);
+                // Than add a small ramp at the beginning to suppress clicks
+                ChannelMixer::mixChannelsRamping(
+                        m_masterGain,
+                        &m_activeBusChannels[o],
+                        &oldGainCache,
+                        m_pOutputBusBuffers[o], fastRampBufferSize);
+            } else {
+                ChannelMixer::mixChannelsRamping(
+                        m_masterGain,
+                        &m_activeBusChannels[o],
+                        &m_channelMasterGainCache, // no [o] because the old gain follows an orientation switch
+                        m_pOutputBusBuffers[o], iBufferSize);
+            }
         } else {
             ChannelMixer::mixChannels(
                     m_masterGain,
