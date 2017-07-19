@@ -39,6 +39,7 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
   private slots:
     void formValueChanged();
     void onRemoveButtonClicked(int column, int row);
+    void onSectionResized();
 
   private:
     void getValuesFromProfile(BroadcastProfilePtr profile);

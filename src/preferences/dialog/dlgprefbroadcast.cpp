@@ -27,6 +27,8 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
           m_pProfileListSelection(nullptr),
           m_valuesChanged(false) {
 	setupUi(this);
+	connect(profileList->horizontalHeader(), SIGNAL(sectionResized(int, int, int)),
+			this, SLOT(onSectionResized()));
 
 	// Should be safe to directly access the underlying pointer
     profileList->setModel(m_pBroadcastSettings.data());
@@ -259,7 +261,7 @@ void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
 
     // Set groupbox header
     QString headerText =
-            QString(QObject::tr(kSettingsGroupHeader))
+            QString(tr(kSettingsGroupHeader))
             .arg(profile->getProfileName());
     groupBoxProfileSettings->setTitle(headerText);
 
@@ -462,4 +464,15 @@ void DlgPrefBroadcast::onRemoveButtonClicked(int column, int row) {
 	if(profile) {
 		m_pBroadcastSettings->deleteProfile(profile);
 	}
+}
+
+void DlgPrefBroadcast::onSectionResized() {
+	float width = (float)profileList->width();
+
+	sender()->blockSignals(true);
+	profileList->setColumnWidth(kColumnEnabled, 100);
+	profileList->setColumnWidth(kColumnName, width * 0.65); // 70% of profileList's width
+	// The last column, kColumnRemove, is automatically resized to fill
+	// the remaining width, thanks to stretchLastSection set to true.
+	sender()->blockSignals(false);
 }
