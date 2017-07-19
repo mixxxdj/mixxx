@@ -259,7 +259,11 @@ bool BroadcastSettings::setData(const QModelIndex& index, const QVariant& value,
 				profile->setEnabled(value.toBool());
 			}
 			if(index.column() == kColumnName && role == Qt::EditRole) {
-				profile->setProfileName(value.toString());
+				QString newName = value.toString();
+				newName = newName.trimmed();
+
+				if(!newName.isNull() && !newName.isEmpty())
+					profile->setProfileName(newName);
 			}
 		}
 	}
