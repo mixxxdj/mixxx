@@ -209,7 +209,8 @@ QVariant BroadcastSettings::data(const QModelIndex& index, int role) const {
         int column = index.column();
         if(column == kColumnEnabled && role == Qt::CheckStateRole) {
             return (profile->getEnabled() == true ? Qt::Checked : Qt::Unchecked);
-        } else if(column == kColumnName && role == Qt::DisplayRole) {
+        } else if(column == kColumnName
+        		&& (role == Qt::DisplayRole || role == Qt::EditRole)) {
             return profile->getProfileName();
         } else if(column == kColumnRemove && role == Qt::DisplayRole) {
             return tr("Double-click to remove");
