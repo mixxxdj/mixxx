@@ -183,6 +183,20 @@ void DlgPrefCrossfader::drawXfaderDisplay()
         point1 = QPointF(i + 1, (1. - gain1) * (sizeY) - 3);
         point2 = QPointF(i + 1, (1. - gain2) * (sizeY) - 3);
 
+        if (m_transform + 1 > EngineXfader::kTransformMax) {
+            // A fake, to show a hard cut as vertical line
+            if (i == pointCount - 2) {
+                point1.setX(i + 2);
+                point2.setX(i + 2);
+                pointTotal.setX(i + 2);
+            }
+            if (i == 1) {
+                point1.setX(1);
+                point2.setX(1);
+                pointTotal.setX(1);
+            }
+        }
+
         if (i > 0) {
             m_pxfScene->addLine(QLineF(pointTotal, pointTotalPrev), QPen(Qt::red));
             m_pxfScene->addLine(QLineF(point1, point1Prev), graphLinePen);
