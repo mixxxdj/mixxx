@@ -3,6 +3,8 @@
 
 namespace {
     int kBandCount = 2;
+    double kDefaultCenter1 = 1000; // 1 kHz
+    double kDefaultCenter2 = 3000; // 3 kHz
 }
 
 // static
@@ -33,7 +35,7 @@ EffectManifest ParametricEQEffect::getManifest() {
     lfmGain->setNeutralPointOnScale(0.5);
     lfmGain->setDefault(0);
     lfmGain->setMinimum(-18);
-    lfmGain->setMaximum(18);
+    lfmGain->setMaximum(18); // dB
 
     EffectManifestParameter* lfmQ = manifest.addParameter();
     lfmQ->setId("q1");
@@ -55,9 +57,9 @@ EffectManifest ParametricEQEffect::getManifest() {
     lfmCenter->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     lfmCenter->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     lfmCenter->setNeutralPointOnScale(0.5);
-    lfmCenter->setDefault(1000); // 1kHz
-    lfmCenter->setMinimum(100);
-    lfmCenter->setMaximum(14000);
+    lfmCenter->setDefault(kDefaultCenter1);
+    lfmCenter->setMinimum(100); // 1kHz
+    lfmCenter->setMaximum(14000); // 1kHz
 
     EffectManifestParameter* hfmGain = manifest.addParameter();
     hfmGain->setId("gain2");
@@ -69,7 +71,7 @@ EffectManifest ParametricEQEffect::getManifest() {
     hfmGain->setNeutralPointOnScale(0.5);
     hfmGain->setDefault(0);
     hfmGain->setMinimum(-18);
-    hfmGain->setMaximum(18);
+    hfmGain->setMaximum(18); // dB
 
     EffectManifestParameter* hfmQ = manifest.addParameter();
     hfmQ->setId("q2");
@@ -91,9 +93,9 @@ EffectManifest ParametricEQEffect::getManifest() {
     hfmCenter->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     hfmCenter->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     hfmCenter->setNeutralPointOnScale(0.5);
-    hfmCenter->setDefault(3000); // 3 kHz
-    hfmCenter->setMinimum(100);
-    hfmCenter->setMaximum(14000);
+    hfmCenter->setDefault(kDefaultCenter2);
+    hfmCenter->setMinimum(100); // 1kHz
+    hfmCenter->setMaximum(14000); // 1kHz
 
     return manifest;
 }
@@ -104,8 +106,8 @@ ParametricEQEffectGroupState::ParametricEQEffectGroupState() {
         m_oldQ.append(1.75);
     }
 
-    m_oldCenter.append(550);
-    m_oldCenter.append(2600);
+    m_oldCenter.append(kDefaultCenter1);
+    m_oldCenter.append(kDefaultCenter2);
 
     // Initialize the filters with default parameters
     for (int i = 0; i < kBandCount; i++) {
