@@ -24,9 +24,9 @@ EffectManifest ParametricEQEffect::getManifest() {
     manifest.setIsMasterEQ(true);
 
     EffectManifestParameter* lfmGain = manifest.addParameter();
-    lfmGain->setId("lmfGain");
-    lfmGain->setName(QString("LMF Gain"));
-    lfmGain->setDescription(QObject::tr("Gain for Low Mid Filter"));
+    lfmGain->setId("gain1");
+    lfmGain->setName(QObject::tr("Gain 1"));
+    lfmGain->setDescription(QObject::tr("Gain for Mid Filter 1"));
     lfmGain->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     lfmGain->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     lfmGain->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -36,9 +36,9 @@ EffectManifest ParametricEQEffect::getManifest() {
     lfmGain->setMaximum(18);
 
     EffectManifestParameter* lfmQ = manifest.addParameter();
-    lfmQ->setId("lmfQ");
-    lfmQ->setName(QString("LMF Q"));
-    lfmQ->setDescription(QObject::tr("Q for Low Mid Filter"));
+    lfmQ->setId("q1");
+    lfmQ->setName(QObject::tr("Q 1"));
+    lfmQ->setDescription(QObject::tr("Q for Mid Filter 1"));
     lfmQ->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     lfmQ->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     lfmQ->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -48,21 +48,21 @@ EffectManifest ParametricEQEffect::getManifest() {
     lfmQ->setMaximum(3.0);
 
     EffectManifestParameter* lfmCenter = manifest.addParameter();
-    lfmCenter->setId("lmfCenter");
-    lfmCenter->setName(QString("LMF Center"));
-    lfmCenter->setDescription(QObject::tr("Center frequency for Low Mid Filter"));
+    lfmCenter->setId("center1");
+    lfmCenter->setName(QObject::tr("Center 1"));
+    lfmCenter->setDescription(QObject::tr("Center frequency for Mid Filter 1 in Hz"));
     lfmCenter->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     lfmCenter->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     lfmCenter->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     lfmCenter->setNeutralPointOnScale(0.5);
-    lfmCenter->setDefault(550);
+    lfmCenter->setDefault(1000); // 1kHz
     lfmCenter->setMinimum(100);
-    lfmCenter->setMaximum(5000);
+    lfmCenter->setMaximum(14000);
 
     EffectManifestParameter* hfmGain = manifest.addParameter();
-    hfmGain->setId("hmfGain");
-    hfmGain->setName(QString("HMF Gain"));
-    hfmGain->setDescription(QObject::tr("Gain for High Mid Filter"));
+    hfmGain->setId("gain2");
+    hfmGain->setName(QObject::tr("Gain 2"));
+    hfmGain->setDescription(QObject::tr("Gain for Mid Filter 2"));
     hfmGain->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     hfmGain->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     hfmGain->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -72,9 +72,9 @@ EffectManifest ParametricEQEffect::getManifest() {
     hfmGain->setMaximum(18);
 
     EffectManifestParameter* hfmQ = manifest.addParameter();
-    hfmQ->setId("hmfQ");
-    hfmQ->setName(QString("HMF Q"));
-    hfmQ->setDescription(QObject::tr("Q for High Mid Filter"));
+    hfmQ->setId("q2");
+    hfmQ->setName(QObject::tr("Q 2"));
+    hfmQ->setDescription(QObject::tr("Q for Mid Filter 2"));
     hfmQ->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     hfmQ->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     hfmQ->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -84,15 +84,15 @@ EffectManifest ParametricEQEffect::getManifest() {
     hfmQ->setMaximum(3.0);
 
     EffectManifestParameter* hfmCenter = manifest.addParameter();
-    hfmCenter->setId("hmfCenter");
-    hfmCenter->setName(QString("LMF Center"));
-    hfmCenter->setDescription(QObject::tr("Center frequency for Low Mid Filter"));
+    hfmCenter->setId("center2");
+    hfmCenter->setName(QObject::tr("Center 2"));
+    hfmCenter->setDescription(QObject::tr("Center frequency for Mid Filter 2 in Hz"));
     hfmCenter->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     hfmCenter->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     hfmCenter->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     hfmCenter->setNeutralPointOnScale(0.5);
-    hfmCenter->setDefault(2600);
-    hfmCenter->setMinimum(1500);
+    hfmCenter->setDefault(3000); // 3 kHz
+    hfmCenter->setMinimum(100);
     hfmCenter->setMaximum(14000);
 
     return manifest;
@@ -125,12 +125,12 @@ ParametricEQEffect::ParametricEQEffect(EngineEffect* pEffect,
                                  const EffectManifest& manifest)
         : m_oldSampleRate(44100) {
     Q_UNUSED(manifest);
-    m_pPotGain.append(pEffect->getParameterById("lmfGain"));
-    m_pPotQ.append(pEffect->getParameterById("lmfQ"));
-    m_pPotCenter.append(pEffect->getParameterById("lmfCenter"));
-    m_pPotGain.append(pEffect->getParameterById("hmfGain"));
-    m_pPotQ.append(pEffect->getParameterById("hmfQ"));
-    m_pPotCenter.append(pEffect->getParameterById("hmfCenter"));
+    m_pPotGain.append(pEffect->getParameterById("gain1"));
+    m_pPotQ.append(pEffect->getParameterById("q1"));
+    m_pPotCenter.append(pEffect->getParameterById("center1"));
+    m_pPotGain.append(pEffect->getParameterById("gain2"));
+    m_pPotQ.append(pEffect->getParameterById("q2"));
+    m_pPotCenter.append(pEffect->getParameterById("center2"));
 }
 
 ParametricEQEffect::~ParametricEQEffect() {
