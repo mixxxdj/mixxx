@@ -28,7 +28,9 @@ void WEffectParameterKnobComposed::parameterUpdated() {
                        m_pEffectParameterSlot->name(),
                        m_pEffectParameterSlot->description()));
     } else {
-        setBaseTooltip(tr("No effect loaded."));
+        // The knob should be hidden by the skin when the parameterX_loaded ControlObject
+        // indicates no parameter is loaded, so this tooltip should never be shown.
+        setBaseTooltip("");
     }
 }
 

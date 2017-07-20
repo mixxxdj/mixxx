@@ -92,7 +92,10 @@ void WEffectPushButton::parameterUpdated() {
                        m_pEffectParameterSlot->name(),
                        m_pEffectParameterSlot->description()));
     } else {
-        setBaseTooltip(tr("No effect loaded."));
+        // The button should be hidden by the skin when the buttonparameterX_loaded
+        // ControlObject indicates no parameter is loaded, so this tooltip should
+        // never be shown.
+        setBaseTooltip("");
     }
 
     m_pButtonMenu->clear();
