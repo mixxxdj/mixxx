@@ -1,6 +1,7 @@
 #ifndef PARAMERICEQEFFECT_H
 #define PARAMERICEQEFFECT_H
 
+#include <vector>
 #include <QMap>
 
 #include "control/controlproxy.h"
@@ -13,15 +14,15 @@
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/types.h"
+#include "util/memory.h"
 
 class ParametricEQEffectGroupState final {
   public:
     ParametricEQEffectGroupState();
-    ~ParametricEQEffectGroupState();
 
     void setFilters(int sampleRate);
 
-    QList<EngineFilterBiquad1Peaking*> m_bands;
+    std::vector<std::unique_ptr<EngineFilterBiquad1Peaking> > m_bands;
     QList<double> m_oldGain;
     QList<double> m_oldCenter;
     QList<double> m_oldQ;

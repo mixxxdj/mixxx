@@ -109,14 +109,8 @@ ParametricEQEffectGroupState::ParametricEQEffectGroupState() {
 
     // Initialize the filters with default parameters
     for (int i = 0; i < kBandCount; i++) {
-        m_bands.append(new EngineFilterBiquad1Peaking(
+        m_bands.push_back(std::make_unique<EngineFilterBiquad1Peaking>(
                 44100, m_oldCenter[i], m_oldQ[i]));
-    }
-}
-
-ParametricEQEffectGroupState::~ParametricEQEffectGroupState() {
-    foreach (EngineFilterBiquad1Peaking* filter, m_bands) {
-        delete filter;
     }
 }
 
