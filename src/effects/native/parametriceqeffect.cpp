@@ -2,9 +2,9 @@
 #include "util/math.h"
 
 namespace {
-    int kBandCount = 2;
-    double kDefaultCenter1 = 1000; // 1 kHz
-    double kDefaultCenter2 = 3000; // 3 kHz
+    constexpr int kBandCount = 2;
+    constexpr double kDefaultCenter1 = 1000; // 1 kHz
+    constexpr double kDefaultCenter2 = 3000; // 3 kHz
 }
 
 // static
@@ -159,24 +159,15 @@ void ParametricEQEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE_GAIN fQ[2];
     CSAMPLE_GAIN fCenter[2];
 
-    if (enableState == EffectProcessor::DISABLING) {
-         // Ramp to dry, when disabling, this will ramp from dry when enabling as well
-        for (int i = 0; i < kBandCount; i++) {
+    for (int i = 0; i < kBandCount; i++) {
+        if (enableState == EffectProcessor::DISABLING) {
+            // Ramp to dry, when disabling, this will ramp from dry when enabling as well
             fGain[i] = 1.0;
-        }
-    } else {
-        for (int i = 0; i < kBandCount; i++) {
+        } else {
             fGain[i] = m_pPotGain[i]->value();
         }
-    }
-
-    for (int i = 0; i < kBandCount; i++) {
-        fGain[i] = m_pPotGain[i]->value();
         fQ[i] = m_pPotQ[i]->value();
         fCenter[i] = m_pPotCenter[i]->value();
-    }
-
-    for (int i = 0; i < kBandCount; i++) {
         if (fGain[i] != pState->m_oldGain[i] ||
                 fQ[i] != pState->m_oldQ[i] ||
                 fCenter[i] != pState->m_oldCenter[i]) {
