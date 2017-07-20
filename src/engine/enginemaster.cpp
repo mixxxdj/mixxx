@@ -410,7 +410,7 @@ void EngineMaster::process(const int iBufferSize) {
                                 m_pXFaderReverse->toBool(),
                                 &c1_gain, &c2_gain, &fastCut);
 
-    const int fastRampBufferSize = iSampleRate * kHardCutRampTime * 2;
+    const int fastRampBufferSize = iSampleRate * kHardCutRampTime * 2; // 2 channels, assuming stereo
     bool fastCutByO[3] = {false, false, false};
     if (fastCut && iBufferSize > fastRampBufferSize) {
         if (c1_gain != m_masterGain.getLeftGain()) {
