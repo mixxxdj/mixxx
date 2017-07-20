@@ -5,6 +5,7 @@
 
 #include "sources/soundsourceproviderregistry.h"
 
+
 // Creates sound sources for tracks. Only intended to be used
 // in a narrow scope and not sharable between multiple threads!
 class SoundSourceProxy {
@@ -31,25 +32,43 @@ class SoundSourceProxy {
     static bool isFileNameSupported(const QString& fileName);
     static bool isFileExtensionSupported(const QString& fileExtension);
 
-    explicit SoundSourceProxy(const TrackPointer& pTrack);
+    explicit SoundSourceProxy(
+            TrackPointer pTrack);
 
     const TrackPointer& getTrack() const {
         return m_pTrack;
     }
 
+    // Controls which (metadata/coverart) and how tags are (re-)loaded from
+    // audio files when creating a SoundSourceProxy.
+    enum class ParseFileTagsMode {
+        // Parse both track metadata and cover art once for new track objects.
+        // Otherwise the request is ignored and the track object is not updated.
+        Once,
+        // Parse and update the track's metadata and cover art. Cover art is
+        // only updated if it has been guessed from metadata to prevent
+        // overwriting a custom choice.
+        Again,
+        // If omitted both metadata and cover art will be parsed once for each
+        // track object. This information will be stored together with the parsed
+        // metadata in the Mixxx database
+        Default = Once,
+    };
+
+    // Updates file type, metadata, and cover art of the track object as
+    // requested by parsing the file's tags.
+    //
+    // The track's type will always be (re-)initialized as recognized by
+    // the prioritized sound source implementation.
+    //
+    // File tags are parsed as specified and the track's metadata and
+    // cover art is initialized or updated. But only if the track object
+    // is not marked as dirty! Otherwise parsing of file tags is skipped.
+    void updateTrack(
+            ParseFileTagsMode parseFileTagsMode = ParseFileTagsMode::Default) const;
+
     const QUrl& getUrl() const {
         return m_url;
-    }
-
-    // Load track metadata and (optionally) cover art from the file
-    // if it has not already been parsed. With reloadFromFile = true
-    // metadata and cover art will be reloaded from the file regardless
-    // if it has already been parsed before or not.
-    void loadTrackMetadata(bool reloadFromFile = false) const {
-        return loadTrackMetadataAndCoverArt(false, reloadFromFile);
-    }
-    void loadTrackMetadataAndCoverArt(bool reloadFromFile = false) const {
-        return loadTrackMetadataAndCoverArt(true, reloadFromFile);
     }
 
     // Parse only the metadata from the file without modifying
@@ -100,8 +119,6 @@ class SoundSourceProxy {
     void nextSoundSourceProvider();
 
     void initSoundSource();
-
-    void loadTrackMetadataAndCoverArt(bool withCoverArt, bool reloadFromFile) const;
 
     // This pointer must stay in this class together with
     // the corresponding track pointer. Don't pass it around!!

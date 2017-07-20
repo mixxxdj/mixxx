@@ -114,7 +114,6 @@ TEST_F(CoverArtUtilTest, searchImage) {
     const QString kTrackLocationTest(kTestDir.absoluteFilePath("cover-test-png.mp3"));
 
     TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
-    SoundSourceProxy(pTrack).loadTrackMetadata();
     QLinkedList<QFileInfo> covers;
     CoverInfo res;
     // looking for cover in an empty directory
@@ -126,7 +125,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
 
     // Looking for a track with embedded cover.
     pTrack = TrackPointer(Track::newTemporary(kTrackLocationTest));
-    SoundSourceProxy(pTrack).loadTrackMetadataAndCoverArt();
+    SoundSourceProxy(pTrack).updateTrack();
     CoverInfo result = pTrack->getCoverInfo();
     EXPECT_EQ(result.type, CoverInfo::METADATA);
     EXPECT_EQ(result.source, CoverInfo::GUESSED);
