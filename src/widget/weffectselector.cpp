@@ -101,6 +101,7 @@ void WEffectSelector::slotEffectUpdated() {
 
     if (newIndex != -1 && newIndex != currentIndex()) {
         setCurrentIndex(newIndex);
+        setBaseTooltip(itemData(newIndex, Qt::ToolTipRole).toString());
     }
 }
 
