@@ -1,0 +1,71 @@
+<!DOCTYPE template>
+
+<!--
+  Description:
+    An effect parameter knob.
+  Variables:
+    EffectRack: the rack
+    EffectUnit: the chain
+    Effect: the effect
+    EffectParameter: the parameter
+-->
+
+<Template>
+
+	<WidgetGroup>
+		<ObjectName>EffectParameterButton</ObjectName>		
+		<MinimumSize>-1,85</MinimumSize>
+		<MaximumSize>-1,85</MaximumSize>
+		<SizePolicy>me,me</SizePolicy>		
+		<Layout>vertical</Layout>		
+		<Children>
+		
+		<EffectButtonParameterName>
+		<ObjectName>EffectsTextsSmall</ObjectName>
+		<EffectRack>1</EffectRack>
+		<EffectUnit><Variable name="unit"/></EffectUnit>
+		<Effect><Variable name="effect"/></Effect>
+		<EffectButtonParameter><Variable name="effect_parameter"/></EffectButtonParameter>
+		</EffectButtonParameterName>
+		
+		<WidgetGroup>
+			<Layout>vertical</Layout>
+			<Children>
+			
+				<EffectPushButton>					
+					<EffectRack>1</EffectRack>
+					<EffectUnit><Variable name="unit"/></EffectUnit>
+					<Effect><Variable name="effect"/></Effect>
+					<EffectButtonParameter><Variable name="effect_parameter"/></EffectButtonParameter>
+	
+					<NumberStates>2</NumberStates>
+					<State>
+					<Number>0</Number>
+					<Pressed>gfx_hifi/btn_kill_over.svg</Pressed>
+					<Unpressed>gfx_hifi/btn_kill.svg</Unpressed>
+					</State>
+					
+					<State>
+					<Number>1</Number>
+					<Pressed>gfx_hifi/btn_kill_over.svg</Pressed>
+					<Unpressed>gfx_hifi/btn_kill_over.svg</Unpressed>
+					</State>
+					
+					<Pos>11,57</Pos>
+					<Connection>
+					<ConfigKey>[EffectRack1_EffectUnit<Variable name="unit"/>_Effect<Variable name="effect"/>],button_parameter<Variable name="effect_parameter"/></ConfigKey>
+					<ButtonState>LeftButton</ButtonState>
+					</Connection>					
+				</EffectPushButton>
+				
+			</Children>
+		</WidgetGroup>
+		
+    	</Children>
+    	<Connection>
+      	<ConfigKey>[EffectRack1_EffectUnit<Variable name="unit"/>_Effect<Variable name="effect"/>],button_parameter<Variable name="effect_parameter"/>_loaded</ConfigKey>
+      	<BindProperty>visible</BindProperty>
+    	</Connection>
+  	</WidgetGroup>
+	
+</Template>

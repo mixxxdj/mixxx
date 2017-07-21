@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="20"
+   height="20"
+   viewBox="0 0 20 20"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="btn_headphones_1.svg">
+  <defs
+     id="defs4">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient4733">
+      <stop
+         style="stop-color:#170b28;stop-opacity:1"
+         offset="0"
+         id="stop4735" />
+      <stop
+         style="stop-color:#000000;stop-opacity:1"
+         offset="1"
+         id="stop4737" />
+    </linearGradient>
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4733"
+       id="radialGradient4725-4-0-0-5"
+       cx="747.81494"
+       cy="150.97885"
+       fx="747.81494"
+       fy="150.97859"
+       r="24.596836"
+       gradientTransform="matrix(0.39853297,1.7674267e-7,1.7378477e-5,0.36857454,-288.08349,986.06929)"
+       gradientUnits="userSpaceOnUse" />
+    <pattern
+       y="0"
+       x="0"
+       height="6"
+       width="6"
+       patternUnits="userSpaceOnUse"
+       id="EMFhbasepattern" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="12.499655"
+     inkscape:cx="6.5024775"
+     inkscape:cy="6.951324"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1920"
+     inkscape:window-height="1028"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     showguides="false" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Jorge Rosa</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:description>Email: jorge.bigarte@gmail.com
+Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-1032.3622)">
+    <path
+       style="opacity:1;fill:url(#radialGradient4725-4-0-0-5);fill-opacity:1;stroke:none;stroke-width:1.02858019;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 20,1032.3622 0,20 -20,0 0,-20 z"
+       id="rect4183-39-0-0-1-8-1-0"
+       inkscape:connector-curvature="0" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;stroke:#1a1a1a;stroke-width:0.99276209;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 0.4963808,1032.8586 0,19.0072 19.0072382,0 0,-19.0072 z"
+       id="rect4183-39-0-0-1-8-78-5-3"
+       inkscape:connector-curvature="0" />
+    <path
+       id="path4300"
+       d="m 14.495777,1041.9444 c -0.07518,-1.4049 -0.514497,-2.5514 -1.315609,-3.4112 -0.0024,0 -0.0024,0 -0.0046,-0.01 -0.180897,-0.1974 -0.378237,-0.3735 -0.582626,-0.5309 -0.211438,-0.1622 -0.43697,-0.3055 -0.669551,-0.4253 -0.594374,-0.3078 -1.245129,-0.4699 -1.9287757,-0.4699 -0.681297,0 -1.329704,0.1621 -1.924077,0.4699 -0.232581,0.1197 -0.455764,0.263 -0.667201,0.4253 -0.204389,0.1574 -0.399382,0.3335 -0.580278,0.5309 -0.0024,0 -0.0024,0 -0.0047,0.01 -0.798763,0.8598 -1.2380813,2.0085 -1.3132592,3.4112 -0.065781,1.1911 0.07753,3.0494 0.3054094,3.801 0.4769068,1.5741 0.9491178,1.8796 1.6938458,1.8796 0.744728,0 1.367292,-0.6203 1.367292,-1.3839 l 0,-2.4902 c 0,-0.7635 -0.547387,-1.3859 -1.252177,-1.3859 -0.422874,0 -0.798762,0.2277 -1.028993,0.5731 0,0 -0.260773,-0.1902 -0.307759,-0.5403 -0.04934,-0.35 -0.07283,-0.7612 0.131561,-1.48 0.20439,-0.7166 0.488654,-0.4746 0.836351,-0.9163 0.05874,-0.078 0.122164,-0.1504 0.187944,-0.2232 0.07518,-0.08 0.150355,-0.1574 0.230231,-0.2279 0.03759,-0.035 0.07518,-0.066 0.112767,-0.099 0.258423,-0.2184 0.493353,-0.3993 0.791715,-0.5356 0.444017,-0.202 0.925623,-0.3125 1.421326,-0.3125 0.4933527,0 0.9796577,0.1105 1.4260247,0.3125 0.298361,0.1363 0.53799,0.3172 0.796413,0.5356 0.03759,0.033 0.07518,0.063 0.112766,0.099 0.07988,0.071 0.155054,0.1479 0.230232,0.2279 0.06578,0.073 0.129212,0.1456 0.187944,0.2232 0.347697,0.4417 0.631962,0.1996 0.836351,0.9163 0.204389,0.7165 0.178547,1.13 0.131561,1.48 -0.04934,0.3501 -0.307758,0.5403 -0.307758,0.5403 -0.230232,-0.3453 -0.603772,-0.5731 -1.028994,-0.5731 -0.704791,0 -1.252177,0.6201 -1.252177,1.3859 l 0,2.4927 c 0,0.7611 0.622564,1.3837 1.367292,1.3837 0.744729,0 1.216938,-0.3053 1.693846,-1.8794 0.227883,-0.7542 0.371189,-2.6124 0.307759,-3.8035 z"
+       inkscape:connector-curvature="0"
+       style="fill:#8d5fd3;fill-opacity:1" />
+  </g>
+</svg>

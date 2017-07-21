@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="20"
+   height="18"
+   viewBox="0 0 20 18"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="btn_keylock.svg">
+  <defs
+     id="defs4">
+    <pattern
+       y="0"
+       x="0"
+       height="6"
+       width="6"
+       patternUnits="userSpaceOnUse"
+       id="EMFhbasepattern" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="8.8486816"
+     inkscape:cx="-21.200401"
+     inkscape:cy="0.84637679"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1920"
+     inkscape:window-height="1028"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     showguides="true"
+     inkscape:guide-bbox="true">
+    <sodipodi:guide
+       position="-4.5549256,14.943352"
+       orientation="0,1"
+       id="guide4888" />
+    <sodipodi:guide
+       position="3.436172,4.7147476"
+       orientation="0,1"
+       id="guide4890" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Jorge Rosa</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:description>Email: jorge.bigarte@gmail.com
+Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-1034.3622)">
+    <g
+       id="g4141"
+       transform="translate(-2.5,0)">
+      <path
+         sodipodi:nodetypes="ssscscssscccccccscccscccscccccccs"
+         style="fill:#553289;fill-opacity:1"
+         inkscape:connector-curvature="0"
+         id="path6-0"
+         d="m 9.2696816,1040.6983 c 0,-0.4354 0.085525,-0.8513 0.2565744,-1.2476 0.17105,-0.3964 0.4009859,-0.7383 0.689808,-1.0258 0.288821,-0.2876 0.632323,-0.5164 1.030504,-0.6867 0.398183,-0.1702 0.815993,-0.2553 1.253431,-0.2553 0.437439,0 0.85525,0.086 1.253432,0.2553 0.398181,0.1703 0.741683,0.3991 1.030505,0.6867 0.288822,0.2875 0.518758,0.6294 0.689807,1.0258 0.17105,0.3963 0.256575,0.8122 0.256575,1.2476 0,0.5081 -0.112865,0.9867 -0.338595,1.4361 -0.225729,0.4494 -0.543293,0.8261 -0.952691,1.1304 -0.120576,0.089 -0.254471,0.1242 -0.401687,0.1047 -0.147215,-0.02 -0.264286,-0.09 -0.351213,-0.2093 -0.08973,-0.1173 -0.124081,-0.2492 -0.10305,-0.3957 0.02103,-0.1466 0.09043,-0.2645 0.208203,-0.3538 0.274801,-0.2065 0.487213,-0.4591 0.637231,-0.7578 0.15002,-0.2987 0.225029,-0.6168 0.225029,-0.9546 0,-0.2902 -0.05679,-0.5673 -0.170349,-0.831 -0.113566,-0.2638 -0.267089,-0.492 -0.460572,-0.6846 -0.193483,-0.1926 -0.422718,-0.3455 -0.687705,-0.4585 -0.264988,-0.1131 -0.543294,-0.1696 -0.83492,-0.1696 -0.291625,0 -0.569932,0.057 -0.83492,0.1696 -0.264986,0.113 -0.494221,0.2659 -0.687704,0.4585 -0.193483,0.1926 -0.347006,0.4208 -0.460572,0.6846 -0.113566,0.2637 -0.170349,0.5408 -0.170349,0.831 0,0.3378 0.07501,0.6559 0.225029,0.9546 0.150018,0.2987 0.362429,0.5513 0.63723,0.7578 0.117773,0.089 0.187174,0.2072 0.208204,0.3538 0.02103,0.1465 -0.01331,0.2784 -0.10305,0.3957 -0.08693,0.12 -0.204699,0.1897 -0.353316,0.2093 -0.148617,0.019 -0.281812,-0.015 -0.399584,-0.1047 -0.409398,-0.3043 -0.7269617,-0.681 -0.9526915,-1.1304 -0.225729,-0.4494 -0.3385939,-0.928 -0.3385939,-1.4361 z" />
+      <rect
+         y="1041.1866"
+         x="7.9203467"
+         height="5.7340407"
+         width="9.1593065"
+         id="rect4886"
+         style="opacity:1;fill:#553289;fill-opacity:1;stroke:#553289;stroke-width:1.39949405;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <g
+         transform="translate(0.63322067,18.477329)"
+         id="g4896">
+        <circle
+           style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:2.03600001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           id="path4892"
+           cx="11.866779"
+           cy="1024.5132"
+           r="0.43951038" />
+        <path
+           style="fill:#000000;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 11.789709,1024.8026 -1.24146,3.2763 2.557151,0 z"
+           id="path4894"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="cccc" />
+      </g>
+    </g>
+  </g>
+</svg>

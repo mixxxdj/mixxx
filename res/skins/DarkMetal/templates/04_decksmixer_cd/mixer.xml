@@ -1,0 +1,924 @@
+<!DOCTYPE template>
+
+<Template>
+	
+	<WidgetGroup>
+	<ObjectName>MixerPanel2</ObjectName>
+		<BackPath>gfx_hifi/background_mixer2.svg</BackPath>
+		<Pos>735,0</Pos>
+		<MinimumSize>450,300</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>
+		
+		<!--
+		**********************************************
+		Texts - Pitchs rates display
+		**********************************************
+		-->
+		
+		<NumberRate>
+		<ObjectName>PitchRateDisplay</ObjectName>
+		<Channel><Variable name="audiochannel_a"/></Channel>
+		<Pos>19,26</Pos>
+		<Size>40f,14</Size>
+		<Alignment>center</Alignment>
+		<NumberOfDigits>2</NumberOfDigits>
+		</NumberRate>
+
+		<NumberRate>
+		<ObjectName>PitchRateDisplay</ObjectName>
+		<Channel><Variable name="audiochannel_b"/></Channel>
+		<Pos>406,26</Pos>
+		<Size>40f,14</Size>
+		<Alignment>center</Alignment>
+		<NumberOfDigits>2</NumberOfDigits>
+		</NumberRate>
+		
+		
+		<!--
+		**********************************************
+		Texts - Key number display
+		**********************************************
+		-->
+						
+		<Key>
+		<ObjectName>KeyNumberDisplay</ObjectName>
+		<Channel><Variable name="audiochannel_a"/></Channel>
+		<Pos>19,49</Pos>
+		<Size>40f,14</Size>
+		<Alignment>center</Alignment>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],visual_key</ConfigKey>
+		</Connection>
+		</Key>
+
+		<Key>
+		<ObjectName>KeyNumberDisplay</ObjectName>
+		<Channel><Variable name="audiochannel_b"/></Channel>
+		<Pos>406,49</Pos>
+		<Size>40f,14</Size>
+		<Alignment>center</Alignment>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],visual_key</ConfigKey>
+		</Connection>
+		</Key>
+		
+		<!--
+		**********************************************
+		Buttons - Sync selectors:
+		**********************************************
+		-->
+		
+		<PushButton> <!-- Left -->
+		<Pos>2,24</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_sync_small_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_sync_small.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_sync_small_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_sync_small_over.svg</Unpressed>
+		</State>							
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],sync_enabled</ConfigKey>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],beatsync_tempo</ConfigKey>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>		
+		
+		<PushButton> <!-- Left -->
+		<Pos>2,47</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_sync_small_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_sync_small.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_sync_small_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_sync_small_over.svg</Unpressed>
+		</State>							
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],sync_key</ConfigKey>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],reset_key</ConfigKey>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>		
+
+		
+		<PushButton> <!-- Right -->
+		<Pos>388,24</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_sync_small_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_sync_small.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_sync_small_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_sync_small_over.svg</Unpressed>
+		</State>							
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],sync_enabled</ConfigKey>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],beatsync_tempo</ConfigKey>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>		
+		
+		<PushButton> <!-- Right -->
+		<Pos>388,47</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_sync_small_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_sync_small.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_sync_small_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_sync_small_over.svg</Unpressed>
+		</State>							
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],sync_key</ConfigKey>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],reset_key</ConfigKey>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>			
+		
+		
+	
+		<!--
+		**********************************************
+		Sliders - Pitch control
+		**********************************************
+		-->
+		
+		<SliderComposed>	
+		<Handle>gfx_hifi/knob_pitch.svg</Handle>
+		<Slider>gfx_hifi/slider_pitch.svg</Slider>
+		<Pos>13,81</Pos>
+		<Horizontal>false</Horizontal>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],rate</ConfigKey>
+		<EmitOnDownPress>false</EmitOnDownPress>
+		</Connection>
+		</SliderComposed>
+
+		<SliderComposed>	
+		<Handle>gfx_hifi/knob_pitch.svg</Handle>
+		<Slider>gfx_hifi/slider_pitch.svg</Slider>
+		<Pos>399,81</Pos>
+		<Horizontal>false</Horizontal>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],rate</ConfigKey>
+		<EmitOnDownPress>false</EmitOnDownPress>
+		</Connection>
+		</SliderComposed>
+
+		<!--
+		**********************************************
+		Button - Pitch control
+		**********************************************
+		-->
+		
+		<PushButton>	
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_pitch_up_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_pitch_up.svg</Unpressed>
+		</State>
+		<Pos>33,199</Pos>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],rate_perm_up</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],rate_perm_up_small</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>
+		<PushButton>		
+		
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_pitch_down_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_pitch_down.svg</Unpressed>
+		</State>
+		<Pos>7,199</Pos>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],rate_perm_down</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],rate_perm_down_small</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>
+
+		<PushButton>	
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_pitch_up_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_pitch_up.svg</Unpressed>
+		</State>
+		<Pos>418,199</Pos>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],rate_perm_up</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],rate_perm_up_small</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>
+		
+		<PushButton>	
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_pitch_down_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_pitch_down.svg</Unpressed>
+		</State>
+		<Pos>392,199</Pos>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],rate_perm_down</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],rate_perm_down_small</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>
+
+		<!--
+		**********************************************
+		Button - Pitch bend (Nudge)
+		**********************************************
+		-->
+		
+		<PushButton><!-- Label: -> -->
+		<Pos>33,225</Pos>		
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_nudge_up_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_nudge_up.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],rate_temp_up</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],rate_temp_up_small</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>
+		
+		<PushButton><!-- Label: <- -->	
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_nudge_down_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_nudge_down.svg</Unpressed>
+		</State>
+		<Pos>7,225</Pos>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],rate_temp_down</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],rate_temp_down_small</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>
+
+		<PushButton>	
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_nudge_up_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_nudge_up.svg</Unpressed>
+		</State>
+		<Pos>418,225</Pos>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],rate_temp_up</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],rate_temp_up_small</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>
+		
+		<PushButton>	
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_nudge_down_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_nudge_down.svg</Unpressed>
+		</State>
+		<Pos>392,225</Pos>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],rate_temp_down</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],rate_temp_down_small</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>		
+
+		<!--
+		****************************************
+		Buttons - Play
+		****************************************
+		-->
+		
+		<PushButton>	
+		<Pos>75,260</Pos>
+		<NumberStates>2</NumberStates>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_play.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_play.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_play_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_play_over.svg</Unpressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],play</ConfigKey>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],cue_set</ConfigKey>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],play_indicator</ConfigKey>
+		</Connection>
+		</PushButton>
+
+		<PushButton>
+		<Pos>314,260</Pos>		
+		<NumberStates>2</NumberStates>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_play.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_play.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_play_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_play_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],play</ConfigKey>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],cue_set</ConfigKey>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],play_indicator</ConfigKey>
+		</Connection>
+		</PushButton>
+
+		<!--
+		**********************************************
+		Buttons - Cues:
+		**********************************************
+		-->
+		
+		<PushButton>
+		<Pos>7,260</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_cue_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_cue.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_cue_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_cue_over.svg</Unpressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],cue_default</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],cue_gotoandstop</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],cue_indicator</ConfigKey>
+		</Connection>
+		</PushButton>
+		
+		<PushButton>
+		<Pos>392,260</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_cue_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_cue.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_cue_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_cue_over.svg</Unpressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],cue_default</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],cue_gotoandstop</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],cue_indicator</ConfigKey>
+		</Connection>
+		</PushButton>
+
+		<!--
+		**********************************************
+		Button - Prelisten / Monitoring (Headphones)
+		**********************************************
+		-->
+		
+		<PushButton>
+		<Pos>75,225</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_headphones_3_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_headphones_3.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_headphones_3_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_headphones_3_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],pfl</ConfigKey>
+		</Connection>
+		</PushButton>
+		
+		<PushButton>	
+		<Pos>314,225</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_headphones_3_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_headphones_3.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_headphones_3_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_headphones_3_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],pfl</ConfigKey>
+		</Connection>
+		</PushButton>
+
+		<!--
+		**********************************************
+		Buttons - Frequency Kill - Left row
+		**********************************************
+		-->
+		
+		<PushButton>
+		<Pos>73,111</Pos>		
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_kill.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_kill.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_kill_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_kill_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],filterHighKill</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		</PushButton>
+		
+		<PushButton>
+		<Pos>73,151</Pos>		
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_kill.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_kill.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_kill_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_kill_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],filterMidKill</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		</PushButton>
+		
+		<PushButton>
+		<Pos>73,191</Pos>		
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_kill.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_kill.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_kill_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_kill_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],filterLowKill</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		</PushButton>
+
+		<!--
+		**********************************************
+		Buttons - Frequency Kill - Right row
+		**********************************************
+		-->
+		
+		<PushButton>
+		<Pos>358,111</Pos>		
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_kill.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_kill.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_kill_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_kill_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],filterHighKill</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		</PushButton>
+		
+		<PushButton>	
+		<Pos>358,151</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_kill.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_kill.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_kill_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_kill_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],filterMidKill</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		</PushButton>
+		
+		<PushButton>	
+		<Pos>358,191</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>gfx_hifi/btn_kill.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_kill.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>gfx_hifi/btn_kill_over.svg</Pressed>
+		<Unpressed>gfx_hifi/btn_kill_over.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],filterLowKill</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		</PushButton>
+		
+		<!--
+		**********************************************
+		Others...
+		**********************************************
+		-->
+		
+		<KnobComposed>
+		<Pos>101,26</Pos>
+		<Size>40f,40f</Size>
+		<BackPath>gfx_hifi/background_knob1.svg</BackPath>
+		<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+		<MinAngle>-130</MinAngle>
+		<MaxAngle>130</MaxAngle>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],pregain</ConfigKey>
+		</Connection>
+		</KnobComposed>	
+		
+		<KnobComposed>
+		<Pos>101,102</Pos>
+		<Size>40f,40f</Size>
+		<BackPath>gfx_hifi/background_knob1.svg</BackPath>
+		<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+		<MinAngle>-130</MinAngle>
+		<MaxAngle>130</MaxAngle>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],filterHigh</ConfigKey>
+		</Connection>
+		</KnobComposed>			
+
+		<KnobComposed>
+		<Pos>101,142</Pos>
+		<Size>40f,40f</Size>
+		<BackPath>gfx_hifi/background_knob1.svg</BackPath>
+		<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+		<MinAngle>-130</MinAngle>
+		<MaxAngle>130</MaxAngle>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],filterMid</ConfigKey>
+		</Connection>
+		</KnobComposed>			
+
+		<KnobComposed>
+		<Pos>101,182</Pos>
+		<Size>40f,40f</Size>
+		<BackPath>gfx_hifi/background_knob1.svg</BackPath>
+		<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+		<MinAngle>-130</MinAngle>
+		<MaxAngle>130</MaxAngle>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],filterLow</ConfigKey>
+		</Connection>
+		</KnobComposed>
+
+		<KnobComposed>
+		<Pos>310,26</Pos>
+		<Size>40f,40f</Size>
+		<BackPath>gfx_hifi/background_knob1.svg</BackPath>
+		<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+		<MinAngle>-130</MinAngle>
+		<MaxAngle>130</MaxAngle>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],pregain</ConfigKey>
+		</Connection>
+		</KnobComposed>
+			
+		<KnobComposed>
+		<Pos>310,102</Pos>
+		<Size>40f,40f</Size>
+		<BackPath>gfx_hifi/background_knob1.svg</BackPath>
+		<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+		<MinAngle>-130</MinAngle>
+		<MaxAngle>130</MaxAngle>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],filterHigh</ConfigKey>
+		</Connection>
+		</KnobComposed>		
+
+		<KnobComposed>
+		<Pos>310,142</Pos>
+		<Size>40f,40f</Size>
+		<BackPath>gfx_hifi/background_knob1.svg</BackPath>
+		<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+		<MinAngle>-130</MinAngle>
+		<MaxAngle>130</MaxAngle>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],filterMid</ConfigKey>
+		</Connection>
+		</KnobComposed>		
+
+		<KnobComposed>
+		<Pos>310,182</Pos>
+		<Size>40f,40f</Size>
+		<BackPath>gfx_hifi/background_knob1.svg</BackPath>
+		<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+		<MinAngle>-130</MinAngle>
+		<MaxAngle>130</MaxAngle>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],filterLow</ConfigKey>
+		</Connection>
+		</KnobComposed>
+		
+		<!--
+		**********************************************
+		**********************************************
+		Sliders - Channels Volume
+		**********************************************
+		**********************************************
+		-->
+		
+		<SliderComposed>	
+		<Handle>gfx_hifi/knob_volume.svg</Handle>
+		<Slider>gfx_hifi/slider_volume.svg</Slider>
+		<Pos>166,91</Pos>
+		<Horizontal>false</Horizontal>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],volume</ConfigKey>
+		<EmitOnDownPress>false</EmitOnDownPress>
+		</Connection>
+		</SliderComposed>
+		<SliderComposed>	
+		
+		<Handle>gfx_hifi/knob_volume.svg</Handle>
+		<Slider>gfx_hifi/slider_volume.svg</Slider>
+		<Pos>241,91</Pos>
+		<Horizontal>false</Horizontal>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],volume</ConfigKey>
+		<EmitOnDownPress>false</EmitOnDownPress>
+		</Connection>
+		</SliderComposed>
+
+		<!--
+		**********************************************
+		Slider - Crossfader
+		**********************************************
+		-->
+		
+		<SliderComposed>	
+		<Handle>gfx_hifi/knob_crossfader.svg</Handle>
+		<Slider>gfx_hifi/slider_crossfader.svg</Slider>
+		<Pos>145,253</Pos>
+		<Horizontal>true</Horizontal>
+		<Connection>
+		<ConfigKey>[Master],crossfader</ConfigKey>
+		<EmitOnDownPress>false</EmitOnDownPress>
+		</Connection>
+		</SliderComposed>
+
+		<!--
+		**********************************************
+		**********************************************
+		Visual - Volume level display
+		**********************************************
+		**********************************************
+		-->
+		
+		<VuMeter>
+		<ObjectName>VuMeterCh1</ObjectName>
+		<PathVu>gfx_hifi/volume_display_big_over.svg</PathVu>
+		<PathBack>gfx_hifi/volume_display_big.svg</PathBack>
+		<Pos>152,105</Pos>
+		<Horizontal>false</Horizontal>
+		<PeakHoldSize>5</PeakHoldSize>
+		<PeakHoldTime>600</PeakHoldTime>
+		<PeakFallTime>100</PeakFallTime>
+		<PeakFallStep>1</PeakFallStep>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],VuMeter</ConfigKey>
+		</Connection>
+		</VuMeter>
+		
+		<VuMeter>
+		<ObjectName>VuMeterCh2</ObjectName>
+		<PathVu>gfx_hifi/volume_display_big_over.svg</PathVu>
+		<PathBack>gfx_hifi/volume_display_big.svg</PathBack>
+		<Pos>290,105</Pos>
+		<Horizontal>false</Horizontal>
+		<PeakHoldSize>5</PeakHoldSize>
+		<PeakHoldTime>600</PeakHoldTime>
+		<PeakFallTime>100</PeakFallTime>
+		<PeakFallStep>1</PeakFallStep>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],VuMeter</ConfigKey>
+		</Connection>
+		</VuMeter>
+
+		<VuMeter>	
+		<ObjectName>VuMeterL1</ObjectName>
+		<PathVu>gfx_hifi/volume_display_big_over.svg</PathVu>
+		<PathBack>gfx_hifi/volume_display_big.svg</PathBack>
+		<Pos>216,105</Pos>
+		<PeakHoldSize>5</PeakHoldSize>
+		<PeakHoldTime>600</PeakHoldTime>
+		<PeakFallTime>100</PeakFallTime>
+		<PeakFallStep>1</PeakFallStep>
+		<Connection>
+		<ConfigKey>[Master],VuMeterL</ConfigKey>
+		</Connection>
+		</VuMeter>
+		
+		<VuMeter>
+		<ObjectName>VuMeterR1</ObjectName>
+		<PathVu>gfx_hifi/volume_display_big_over.svg</PathVu>
+		<PathBack>gfx_hifi/volume_display_big.svg</PathBack>
+		<Pos>225,105</Pos>
+		<PeakHoldSize>5</PeakHoldSize>
+		<PeakHoldTime>600</PeakHoldTime>
+		<PeakFallTime>100</PeakFallTime>
+		<PeakFallStep>1</PeakFallStep>
+		<Connection>
+		<ConfigKey>[Master],VuMeterR</ConfigKey>
+		</Connection>
+		</VuMeter>
+
+		<!--
+		**********************************************
+		Visual - Volume peak indicator
+		**********************************************
+		-->
+		
+		<StatusLight><!-- left peak indicator -->
+		<PathStatusLight>gfx_hifi/volume_clipping_big_over.svg</PathStatusLight>
+		<PathBack>gfx_hifi/volume_clipping_big.svg</PathBack>
+		<Pos>152,91</Pos>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],PeakIndicator</ConfigKey>
+		</Connection>
+		</StatusLight>
+
+		<StatusLight><!-- MASTER peaks indicators -->	
+		<PathStatusLight>gfx_hifi/volume_clipping_big_over.svg</PathStatusLight>
+		<PathBack>gfx_hifi/volume_clipping_big.svg</PathBack>
+		<Pos>216,91</Pos>
+		<Connection>
+		<ConfigKey>[Master],PeakIndicator</ConfigKey>
+		</Connection>
+		</StatusLight>
+		
+		<StatusLight><!-- MASTER peaks indicators -->	
+		<PathStatusLight>gfx_hifi/volume_clipping_big_over.svg</PathStatusLight>
+		<PathBack>gfx_hifi/volume_clipping_big.svg</PathBack>
+		<Pos>225,91</Pos>
+		<Connection>
+		<ConfigKey>[Master],PeakIndicator</ConfigKey>
+		</Connection>
+		</StatusLight>
+		
+		<StatusLight><!-- right peak indicator -->	
+		<PathStatusLight>gfx_hifi/volume_clipping_big_over.svg</PathStatusLight>
+		<PathBack>gfx_hifi/volume_clipping_big.svg</PathBack>
+		<Pos>290,91</Pos>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],PeakIndicator</ConfigKey>
+		</Connection>
+		</StatusLight>
+		
+
+		</Children>
+	</WidgetGroup>	
+
+</Template>
