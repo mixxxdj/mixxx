@@ -1,13 +1,14 @@
 # 
 # Translators:
 # Chee Kin Weng <rhytanbernama@gmail.com>, 2016
+# liushuyu011 <liushuyu011@gmail.com>, 2017
 # Nya Chan (喵酱) <dlj2013@gmail.com>, 2016
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2017-01-22 20:14+0000\n"
-"Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
+"PO-Revision-Date: 2017-03-09 03:39+0000\n"
+"Last-Translator: liushuyu011 <liushuyu011@gmail.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -117,13 +118,13 @@ msgstr "核心Mixxx程序包含控制器预设"
 
 msgctxt "FeaturePDBTitle"
 msgid "PDB debug files"
-msgstr ""
+msgstr "PDB 调试符号文件"
 
 msgctxt "FeaturePDBDescription"
 msgid ""
 "Install Mixxx PDB files to use with a debugger. This is useful to debug "
 "Mixxx and provide readable backtraces to the development team."
-msgstr ""
+msgstr "安装用于辅助调试的 PDB 文件。这些文件在调试 Mixxx 时会非常有用，有了这些文件就能向开发团队提供人类可读的回溯信息。"
 
 msgctxt "FeatureDesktopShortcutTitle"
 msgid "Desktop Shortcut"

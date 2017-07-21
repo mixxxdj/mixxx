@@ -16,6 +16,7 @@
 #include "mixer/playerinfo.h"
 #include "track/keyutils.h"
 #include "track/trackmetadata.h"
+#include "util/db/dbconnection.h"
 #include "util/duration.h"
 #include "util/dnd.h"
 #include "util/assert.h"
@@ -510,7 +511,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
             m_tableOrderBy = "ORDER BY ";
             QString field = m_tableColumns[column];
             QString sort_field = QString("%1.%2").arg(m_tableName, field);
-            m_tableOrderBy.append(DbConnection::collateLexicographically(sort_field));
+            m_tableOrderBy.append(mixxx::DbConnection::collateLexicographically(sort_field));
             m_tableOrderBy.append((order == Qt::AscendingOrder) ? " ASC" : " DESC");
         }
         m_sortColumns.clear();
@@ -540,7 +541,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
             }
 
             m_trackSourceOrderBy.append(first ? "ORDER BY ": ", ");
-            m_trackSourceOrderBy.append(DbConnection::collateLexicographically(sort_field));
+            m_trackSourceOrderBy.append(mixxx::DbConnection::collateLexicographically(sort_field));
             m_trackSourceOrderBy.append((sc.m_order == Qt::AscendingOrder) ?
                     " ASC" : " DESC");
             //qDebug() << m_trackSourceOrderBy;

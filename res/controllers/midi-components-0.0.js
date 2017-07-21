@@ -189,14 +189,18 @@
             } else if (this.type === this.types.powerWindow) {
                 if (this.isPress(channel, control, value, status)) {
                     this.inToggle();
+                    this.isLongPressed = false;
                     this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
                         this.isLongPressed = true;
+                        this.longPressTimer = 0;
                     }, true);
                 } else {
                     if (this.isLongPressed) {
                         this.inToggle();
-                    } else {
+                    }
+                    if (this.longPressTimer !== 0) {
                         engine.stopTimer(this.longPressTimer);
+                        this.longPressTimer = 0;
                     }
                     this.isLongPressed = false;
                 }
@@ -229,7 +233,11 @@
             this.inKey = 'cue_default';
         },
         shift: function () {
-            this.inKey = 'start_stop';
+            if (this.reverseRollOnShift) {
+                this.inKey = 'reverseroll';
+            } else {
+                this.inKey = 'start_stop';
+            }
         },
         outKey: 'cue_indicator',
     });
@@ -245,12 +253,16 @@
                         engine.setValue(this.group, 'beatsync', 1);
                         this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
                             engine.setValue(this.group, 'sync_enabled', 1);
+                            this.longPressTimer = 0;
                         }, true);
                     } else {
                         engine.setValue(this.group, 'sync_enabled', 0);
                     }
                 } else {
-                    engine.stopTimer(this.longPressTimer);
+                    if (this.longPressTimer !== 0) {
+                        engine.stopTimer(this.longPressTimer);
+                        this.longPressTimer = 0;
+                    }
                 }
             };
         },
@@ -362,53 +374,18 @@
         this.firstValueReceived = false;
     };
     Pot.prototype = new Component({
-        relative: false,
-        shift: function () {
-            if (this.relative) {
-                this.input = function (channel, control, value, status, group) {
-                    // Do not manipulate inKey, just store the position of the
-                    // physical potentiometer for calculating how much it moves
-                    // when shift is released.
-                    if (this.MSB !== undefined) {
-                        value = (this.MSB << 7) + value;
-                    }
-                    this.previousValueReceived = value;
-                }
+        input: function (channel, control, value, status, group) {
+            if (this.MSB !== undefined) {
+                value = (this.MSB << 7) + value;
             }
-        },
-        unshift: function () {
-            this.input = function (channel, control, value, status, group) {
-                if (this.MSB !== undefined) {
-                    value = (this.MSB << 7) + value;
-                }
-                if (this.relative) {
-                    if (this.previousValueReceived !== undefined) {
-                        var delta = (value - this.previousValueReceived) / this.max;
-                        if (this.invert) {
-                            delta = -delta;
-                        }
-                        this.inSetParameter(this.inGetParameter() + delta);
-                    } else {
-                        var newValue = value / this.max;
-                        if (this.invert) {
-                            newValue = 1 - newValue;
-                        }
-                        if (this.loadStateOnStartup) {
-                            this.inSetParameter(newValue);
-                        }
-                    }
-                    this.previousValueReceived = value;
-                } else {
-                    var newValue = this.inValueScale(value);
-                    if (this.invert) {
-                        newValue = 1 - newValue;
-                    }
-                    this.inSetParameter(newValue);
-                    if (!this.firstValueReceived) {
-                        this.firstValueReceived = true;
-                        this.connect();
-                    }
-                }
+            var newValue = this.inValueScale(value);
+            if (this.invert) {
+                newValue = 1 - newValue;
+            }
+            this.inSetParameter(newValue);
+            if (!this.firstValueReceived) {
+                this.firstValueReceived = true;
+                this.connect();
             }
         },
         // Input handlers for 14 bit MIDI
@@ -769,6 +746,7 @@
                 };
             },
             shift: function () {
+                engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
                 this.valueAtLastEffectSwitch = this.previousValueReceived;
                 // Floor the threshold to ensure that every effect can be selected
                 this.changeThreshold = Math.floor(this.max /
@@ -851,7 +829,7 @@
                                                                 this.output);
                 };
                 this.output = function (value, group, control) {
-                    this.send(value === this.number);
+                    this.send((value === this.number) ? this.on : this.off);
                 };
             },
         });

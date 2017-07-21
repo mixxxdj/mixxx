@@ -98,19 +98,17 @@ void CachingReaderWorker::run() {
     }
 }
 
-namespace
-{
-    mixxx::AudioSourcePointer openAudioSourceForReading(const TrackPointer& pTrack, const mixxx::AudioSourceConfig& audioSrcCfg) {
-        SoundSourceProxy soundSourceProxy(pTrack);
-        mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource(audioSrcCfg));
-        if (!pAudioSource) {
-            qWarning() << "Failed to open file:" << pTrack->getLocation();
-            return mixxx::AudioSourcePointer();
-        }
-        // successfully opened and readable
-        return pAudioSource;
+namespace {
+
+mixxx::AudioSourcePointer openAudioSourceForReading(const TrackPointer& pTrack, const mixxx::AudioSourceConfig& audioSrcCfg) {
+    auto pAudioSource = SoundSourceProxy(pTrack).openAudioSource(audioSrcCfg);
+    if (!pAudioSource) {
+        qWarning() << "Failed to open file:" << pTrack->getLocation();
     }
+    return pAudioSource;
 }
+
+} // anonymous namespace
 
 void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     // Emit that a new track is loading, stops the current track

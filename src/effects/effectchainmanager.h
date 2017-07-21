@@ -51,7 +51,8 @@ class EffectChainManager : public QObject {
     EffectChainPointer getPrevEffectChain(EffectChainPointer pEffectChain);
 
     bool saveEffectChains();
-    QList<std::pair<EffectChainPointer, QDomElement>> loadEffectChains();
+    void loadEffectChains(
+            StandardEffectRack* pRack);
 
     static const int kNumEffectsPerUnit = 4;
     static const int kNumStandardEffectChains = 4;
