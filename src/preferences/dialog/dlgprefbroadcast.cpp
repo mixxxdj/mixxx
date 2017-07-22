@@ -24,8 +24,7 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
                                    BroadcastSettingsPointer pBroadcastSettings)
         : DlgPreferencePage(parent),
           m_pBroadcastSettings(pBroadcastSettings),
-          m_pProfileListSelection(nullptr),
-          m_valuesChanged(false) {
+          m_pProfileListSelection(nullptr) {
 	setupUi(this);
 	connect(profileList->horizontalHeader(), SIGNAL(sectionResized(int, int, int)),
 			this, SLOT(onSectionResized()));
@@ -108,12 +107,6 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
 
      connect(enableCustomMetadata, SIGNAL(stateChanged(int)),
              this, SLOT(enableCustomMetadataChanged(int)));
-
-     // Connect each user input of each groupbox in the values groupbox
-     // to a local slot which purpose is to determine if changes have been made
-     // to the values. Used when selecting another profile without saving
-     // the currently selected one.
-     enableValueSignals(true);
 }
 
 DlgPrefBroadcast::~DlgPrefBroadcast() {
@@ -199,7 +192,6 @@ void DlgPrefBroadcast::slotApply()
         setValuesToProfile(m_pProfileListSelection);
     }
     m_pBroadcastSettings->saveAll();
-    m_valuesChanged = false;
 }
 
 void DlgPrefBroadcast::broadcastEnabledChanged(double value) {
@@ -259,8 +251,6 @@ void DlgPrefBroadcast::profileListItemSelected(const QModelIndex& index) {
 void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
     if(!profile)
         return;
-
-    enableValueSignals(false);
 
     // Set groupbox header
     QString headerText =
@@ -370,9 +360,6 @@ void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
 
     // OGG "dynamicupdate" checkbox
     ogg_dynamicupdate->setChecked(profile->getOggDynamicUpdate());
-
-    m_valuesChanged = false;
-    enableValueSignals(true);
 }
 
 void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
@@ -425,35 +412,6 @@ void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
     profile->setCustomArtist(custom_artist->text());
     profile->setCustomTitle(custom_title->text());
     profile->setMetadataFormat(metadata_format->text());
-
-    m_valuesChanged = false;
-}
-
-void DlgPrefBroadcast::formValueChanged() {
-    m_valuesChanged = true;
-}
-
-void DlgPrefBroadcast::enableValueSignals(bool enable) {
-    QMetaMethod valueChangedSlot = metaObject()->method(
-                           metaObject()->indexOfSlot("formValueChanged()"));
-
-    QList<QGroupBox*> subGroups =
-            groupBoxProfileSettings->findChildren<QGroupBox*>();
-    for(QGroupBox* subGroup : subGroups) {
-        QList<QWidget*> childs = subGroup->findChildren<QWidget*>();
-        for(QWidget* child : childs) {
-            const QMetaObject* metaObj = child->metaObject();
-            QMetaProperty userProp = metaObj->userProperty();
-            if(userProp.isValid() && userProp.hasNotifySignal()) {
-                if(enable)
-                    connect(child, userProp.notifySignal(),
-                            this, valueChangedSlot);
-                else
-                    disconnect(child, userProp.notifySignal(),
-                               this, valueChangedSlot);
-            }
-        }
-    }
 }
 
 void DlgPrefBroadcast::onRemoveButtonClicked(int column, int row) {

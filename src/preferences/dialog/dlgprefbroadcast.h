@@ -37,7 +37,6 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     void apply(const QString &);
 
   private slots:
-    void formValueChanged();
     void onRemoveButtonClicked(int column, int row);
     void onSectionResized();
     void onRemoveModeChanged(int value);
@@ -45,12 +44,10 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
   private:
     void getValuesFromProfile(BroadcastProfilePtr profile);
     void setValuesToProfile(BroadcastProfilePtr profile);
-    void enableValueSignals(bool enable = true);
 
     BroadcastSettingsPointer m_pBroadcastSettings;
     ControlProxy* m_pBroadcastEnabled;
     BroadcastProfilePtr m_pProfileListSelection;
-    bool m_valuesChanged;
 };
 
 #endif
