@@ -22,6 +22,7 @@ class BroadcastProfile : public QObject {
                               QObject* parent = nullptr);
     bool save(const QString& filename);
     bool equals(BroadcastProfilePtr other);
+    bool valuesEquals(BroadcastProfilePtr other);
     BroadcastProfilePtr valuesCopy();
 
     static BroadcastProfilePtr loadFromFile(const QString& filename);

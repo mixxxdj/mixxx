@@ -105,13 +105,12 @@ BroadcastProfilePtr BroadcastProfile::loadFromFile(
 }
 
 bool BroadcastProfile::equals(BroadcastProfilePtr other) {
-    // TODO(Palakis): A more future-proof design may be appropriate.
-    // For example, a QMap<QString,QVariant> would allow for
-    // iteration over all values, along with default values defined
-    // in each getter.
+	return ((getProfileName() == other->getProfileName())
+			&& valuesEquals(other));
+}
 
-    if(getProfileName() == other->getProfileName()
-            && getEnabled() == other->getEnabled()
+bool BroadcastProfile::valuesEquals(BroadcastProfilePtr other) {
+    if(getEnabled() == other->getEnabled()
             && getHost() == other->getHost()
             && getPort() == other->getPort()
             && getServertype() == other->getServertype()
