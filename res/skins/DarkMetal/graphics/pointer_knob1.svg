@@ -15,7 +15,7 @@
    viewBox="0 0 40 40.000001"
    id="svg4222"
    version="1.1"
-   inkscape:version="0.92.0 r15299"
+   inkscape:version="0.92.1 r15371"
    sodipodi:docname="pointer_knob1.svg">
   <defs
      id="defs4224">
@@ -205,7 +205,7 @@
        x2="19.9865"
        y2="1028.1428"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.1759244,0,0,1.1462193,-3.5184876,-149.20841)" />
+       gradientTransform="matrix(0.94073952,0,0,1.1462193,1.1852099,-149.80866)" />
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient4207"
@@ -215,7 +215,14 @@
        x2="19.9865"
        y2="1027.3641"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.2449039,0,0,1.1354538,-4.8980782,-138.12796)" />
+       gradientTransform="matrix(1.0670605,0,0,1.1354538,-1.3412099,-138.72821)" />
+    <pattern
+       y="0"
+       x="0"
+       height="6"
+       width="6"
+       patternUnits="userSpaceOnUse"
+       id="EMFhbasepattern-2" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -224,9 +231,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="51.370629"
-     inkscape:cx="17.71533"
-     inkscape:cy="26.10274"
+     inkscape:zoom="18.16226"
+     inkscape:cx="14.905495"
+     inkscape:cy="20.964905"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -253,16 +260,6 @@
        orientation="1,0"
        id="guide4274"
        inkscape:locked="false" />
-    <sodipodi:guide
-       position="18.278928,31.924858"
-       orientation="0,1"
-       id="guide4166"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="15.534168,32.430984"
-       orientation="0,1"
-       id="guide4182"
-       inkscape:locked="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata4227">
@@ -272,7 +269,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -282,22 +279,22 @@
      id="layer1"
      transform="translate(0,-1012.3622)">
     <rect
-       style="opacity:1;fill:url(#linearGradient4205);fill-opacity:1;stroke:none;stroke-width:0.62685269;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:url(#linearGradient4205);fill-opacity:1;stroke:none;stroke-width:0.56067407;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect4217-0"
-       width="5"
+       width="4"
        height="9.3084583"
-       x="17.5"
-       y="1020.4421"
-       rx="0.58950019"
+       x="18"
+       y="1019.8417"
+       rx="0.47160015"
        ry="0.81200749" />
     <rect
-       style="opacity:1;fill:url(#linearGradient4213);fill-opacity:1;stroke:none;stroke-width:0.68940699;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:url(#linearGradient4213);fill-opacity:1;stroke:none;stroke-width:0.63826686;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect4217"
-       width="3.5"
+       width="3"
        height="9"
-       x="18.25"
-       y="1019.9622"
-       rx="0.51714194"
+       x="18.5"
+       y="1019.362"
+       rx="0.44326451"
        ry="0.56935042" />
   </g>
 </svg>

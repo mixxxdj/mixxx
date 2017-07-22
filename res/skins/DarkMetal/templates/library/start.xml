@@ -45,13 +45,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_view.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_view.svg</Unpressed>
+		<Pressed>skin:graphics/btn_view.svg</Pressed>
+		<Unpressed>skin:graphics/btn_view.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/btn_view_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_view_over.svg</Unpressed>
+		<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[PreviewD1],show</ConfigKey>
@@ -70,13 +70,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_view.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_view.svg</Unpressed>
+		<Pressed>skin:graphics/btn_view.svg</Pressed>
+		<Unpressed>skin:graphics/btn_view.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/btn_view_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_view_over.svg</Unpressed>
+		<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[SearchTextBox1],show</ConfigKey>
@@ -110,13 +110,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_library_less.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_library_less.svg</Unpressed>
+		<Pressed>skin:graphics/btn_library_less.svg</Pressed>
+		<Unpressed>skin:graphics/btn_library_less.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/btn_library_more.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_library_more.svg</Unpressed>
+		<Pressed>skin:graphics/btn_library_more.svg</Pressed>
+		<Unpressed>skin:graphics/btn_library_more.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[Hifi],show</ConfigKey>
@@ -170,8 +170,8 @@
 		<NumberStates>1</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_library_font_decrease_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_library_font_decrease.svg</Unpressed>
+		<Pressed>skin:graphics/btn_library_font_decrease_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_library_font_decrease.svg</Unpressed>
 		</State>
 		<Connection>
 		<ConfigKey>[Library],font_size_decrement</ConfigKey>
@@ -182,8 +182,8 @@
 		<NumberStates>1</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_library_font_increase_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_library_font_increase.svg</Unpressed>
+		<Pressed>skin:graphics/btn_library_font_increase_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_library_font_increase.svg</Unpressed>
 		</State>
 		<Connection>
 		<ConfigKey>[Library],font_size_increment</ConfigKey>
@@ -291,13 +291,13 @@
 		<RightClickIsPushButton>true</RightClickIsPushButton>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_play_preview_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_play_preview.svg</Unpressed>
+		<Pressed>skin:graphics/btn_play_preview_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_play_preview.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/btn_play_preview_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_play_preview_over.svg</Unpressed>
+		<Pressed>skin:graphics/btn_play_preview_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_play_preview_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[PreviewDeck1],play</ConfigKey>
@@ -317,15 +317,16 @@
 		<Size>10me,20f</Size>
 		<!-- transparent background if no <BgColor> & <BgPixmap> is present -->
 		<BgColor></BgColor>
-		<BgPixmap>gfx_hifi/wave_background_medium.svg</BgPixmap> <!-- bg image must be set here, not in "style.qss" -->
+		<BgPixmap>skin:graphics/wave_background_medium.svg</BgPixmap> <!-- bg image must be set here, not in "style.qss" -->
 		<SignalHighColor>#5f4d75</SignalHighColor><!-- highs - clear -->
 		<SignalMidColor>#230d44</SignalMidColor>  <!-- mediums - dark -->
 		<SignalLowColor>#180831</SignalLowColor>  <!-- lows - darker -->
 		<SignalColor>#7c708f</SignalColor>        <!-- "main wave" -->
-		<PlayPosColor>#ece7f5</PlayPosColor>
+		<PlayPosColor>#99ece7f5</PlayPosColor>    <!-- color format: #AARRGGBB -->
+		<PlayedOverlayColor>#99684e8c</PlayedOverlayColor> <!-- played wave - color format: #AARRGGBB -->
 		<BeatColor>#d8cbec</BeatColor>
 		<EndOfTrackColor>#6e4aaa</EndOfTrackColor>					
-		<AxesColor>#580078</AxesColor>
+		<AxesColor>#99580078</AxesColor> <!-- color format: #AARRGGBB -->
 		<DefaultMark> <!-- Applies to numbers 1 to 8 -->
 		<Align>top</Align>
 		<Color>#dbb7ff</Color>
@@ -379,8 +380,8 @@
 		<NumberStates>1</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_eject_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_eject.svg</Unpressed>
+		<Pressed>skin:graphics/btn_eject_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_eject.svg</Unpressed>
 		</State>
 		<Pos></Pos>
 		<Connection>
@@ -410,8 +411,8 @@
 		-->
 		
 		<StatusLight>
-		<PathStatusLight>gfx_hifi/volume_clipping_preview_over.svg</PathStatusLight>
-		<PathBack>gfx_hifi/volume_clipping_preview.svg</PathBack>
+		<PathStatusLight>skin:graphics/volume_clipping_preview_pressed.svg</PathStatusLight>
+		<PathBack>skin:graphics/volume_clipping_preview.svg</PathBack>
 		<Pos>0,2</Pos>
 		<Connection>
 		<ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
@@ -425,8 +426,8 @@
 		-->
 		
 		<VuMeter>
-		<PathVu>gfx_hifi/volume_display_preview_over.svg</PathVu>
-		<PathBack>gfx_hifi/volume_display_preview.svg</PathBack>
+		<PathVu>skin:graphics/volume_display_preview_pressed.svg</PathVu>
+		<PathBack>skin:graphics/volume_display_preview.svg</PathBack>
 		<Pos>0,12</Pos>
 		<Horizontal>false</Horizontal>
 		<PeakHoldSize>5</PeakHoldSize>
@@ -439,8 +440,8 @@
 		</VuMeter>	
 		
 		<SliderComposed>
-		<Handle>gfx_hifi/knob_volume_preview.svg</Handle>
-		<Slider>gfx_hifi/slider_volume_preview.svg</Slider>
+		<Handle>skin:graphics/knob_volume_preview.svg</Handle>
+		<Slider>skin:graphics/slider_volume_preview.svg</Slider>
 		<Pos>10,2</Pos>
 		<Horizontal>false</Horizontal>
 		<Connection>

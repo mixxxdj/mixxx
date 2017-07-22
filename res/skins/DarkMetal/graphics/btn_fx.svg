@@ -15,7 +15,7 @@
    viewBox="0 0 26 26"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.1 r15371"
    sodipodi:docname="btn_fx.svg">
   <defs
      id="defs4">
@@ -57,9 +57,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="32.057296"
-     inkscape:cx="15.06323"
-     inkscape:cy="15.797912"
+     inkscape:zoom="16.028648"
+     inkscape:cx="12.09438"
+     inkscape:cy="13.23135"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -97,18 +97,14 @@
        d="m 1.6471109,1048.9675 22.7057781,0 0,-22.0908 -22.7057781,0 z"
        style="opacity:1;fill:none;fill-opacity:1;stroke:#1a1a1a;stroke-width:1.02900004;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
     <g
-       id="g4175"
-       style="fill:#8d5fd3;fill-opacity:1">
+       id="g4"
+       transform="matrix(0.00651042,0,0,-0.00643256,7.9924302,1042.4298)"
+       style="fill:#8d5fd3;fill-opacity:1;opacity:0.8">
       <path
+         style="fill:#8d5fd3;fill-opacity:1"
          inkscape:connector-curvature="0"
-         d="m 11.319264,1034.7782 -2.4279502,0 0,2.0988 2.4387412,0 0,0.8956 -2.4387412,0 0,3.0809 -1.0521118,0 0,-6.9818 3.480062,0 0,0.9065 z"
-         id="path4149"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:100%;font-family:'Estrangelo Edessa';-inkscape-font-specification:'Estrangelo Edessa, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#8d5fd3;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-      <path
-         inkscape:connector-curvature="0"
-         d="m 18.160688,1040.8535 -1.246348,0 -1.494537,-2.2769 q -0.01618,-0.027 -0.07014,-0.1024 -0.04856,-0.082 -0.107903,-0.1673 -0.05935,-0.091 -0.113296,-0.1725 -0.05396,-0.086 -0.08093,-0.1297 l -0.01072,0 q -0.01618,0.032 -0.05935,0.098 -0.03776,0.059 -0.08633,0.1344 -0.04856,0.075 -0.102507,0.1505 -0.05396,0.075 -0.09711,0.1344 l -1.521515,2.331 -1.262535,0 2.508883,-3.5827 -2.373997,-3.3991 1.26793,0 1.149229,1.7427 q 0.04856,0.07 0.124101,0.1943 0.08093,0.1249 0.167259,0.259 0.08633,0.1297 0.161863,0.259 0.08093,0.1249 0.124101,0.2051 l 0.02158,0 q 0.03778,-0.082 0.118707,-0.2105 0.08093,-0.1345 0.167259,-0.2752 0.09172,-0.1408 0.172653,-0.259 0.08093,-0.1232 0.113312,-0.1727 l 1.20858,-1.7427 1.203185,0 -2.363205,3.3344 2.481904,3.6474 z"
-         id="path4151"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:100%;font-family:'Estrangelo Edessa';-inkscape-font-specification:'Estrangelo Edessa, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#8d5fd3;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+         id="path6"
+         d="M 1536,640 Q 1536,484 1475,342 1414,200 1311,97 1208,-6 1066,-67 924,-128 768,-128 612,-128 470,-67 328,-6 225,97 122,200 61,342 0,484 0,640 0,822 80.5,983 161,1144 307,1253 q 43,32 95.5,25 52.5,-7 83.5,-50 32,-42 24.5,-94.5 Q 503,1081 461,1049 363,975 309.5,868 256,761 256,640 256,536 296.5,441.5 337,347 406,278 475,209 569.5,168.5 664,128 768,128 872,128 966.5,168.5 1061,209 1130,278 q 69,69 109.5,163.5 40.5,94.5 40.5,198.5 0,121 -53.5,228 -53.5,107 -151.5,181 -42,32 -49.5,84.5 -7.5,52.5 24.5,94.5 31,43 84,50 53,7 95,-25 146,-109 226.5,-270 Q 1536,822 1536,640 Z M 896,1408 V 768 q 0,-52 -38,-90 -38,-38 -90,-38 -52,0 -90,38 -38,38 -38,90 v 640 q 0,52 38,90 38,38 90,38 52,0 90,-38 38,-38 38,-90 z" />
     </g>
   </g>
 </svg>

@@ -47,8 +47,8 @@
 		
 			<!-- VUMeter: -->
 			<VuMeter>
-			<PathVu>gfx_hifi/volume_display_microphone_over.svg</PathVu>
-			<PathBack>gfx_hifi/volume_display_microphone.svg</PathBack>
+			<PathVu>skin:graphics/volume_display_microphone_pressed.svg</PathVu>
+			<PathBack>skin:graphics/volume_display_microphone.svg</PathBack>
 			<Pos>15,29</Pos>
 			<Horizontal>true</Horizontal>
 			<PeakHoldSize>5</PeakHoldSize>
@@ -63,8 +63,8 @@
 			<!-- Peak indicator: -->						
 			<StatusLight>
 			<Pos>85,29</Pos>
-			<PathStatusLight>gfx_hifi/volume_clipping_microphone_over.svg</PathStatusLight>
-			<PathBack>gfx_hifi/volume_clipping_microphone.svg</PathBack>							
+			<PathStatusLight>skin:graphics/volume_clipping_microphone_pressed.svg</PathStatusLight>
+			<PathBack>skin:graphics/volume_clipping_microphone.svg</PathBack>							
 			<Connection>
 			<ConfigKey>[Auxiliary1],PeakIndicator</ConfigKey>
 			</Connection>
@@ -72,10 +72,10 @@
 			
 			<!-- Volume: -->			
 			<KnobComposed>
-			<Pos>105,3</Pos>
+			<Pos>107,3</Pos>
 			<Size>40f,40f</Size>
-			<BackPath>gfx_hifi/background_knob1.svg</BackPath>
-			<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+			<BackPath>skin:graphics/background_knob1.svg</BackPath>
+			<Knob>skin:graphics/pointer_knob1.svg</Knob>
 			<MinAngle>-130</MinAngle>
 			<MaxAngle>130</MaxAngle>
 			<Connection>
@@ -89,13 +89,13 @@
 			<NumberStates>2</NumberStates>
 			<State>
 			<Number>0</Number>
-			<Pressed>gfx_hifi/btn_mute_1_over.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_mute_1.svg</Unpressed>
+			<Pressed>skin:graphics/btn_mute_1_pressed.svg</Pressed>
+			<Unpressed>skin:graphics/btn_mute_1.svg</Unpressed>
 			</State>
 			<State>
 			<Number>1</Number>
-			<Pressed>gfx_hifi/btn_mute_1_over.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_mute_1_over.svg</Unpressed>
+			<Pressed>skin:graphics/btn_mute_1_pressed.svg</Pressed>
+			<Unpressed>skin:graphics/btn_mute_1_pressed.svg</Unpressed>
 			</State>					
 			<Connection>
 			<ConfigKey>[Auxiliary1],mute</ConfigKey>
@@ -109,13 +109,13 @@
 			<NumberStates>2</NumberStates>
 			<State>
 			<Number>0</Number>
-			<Pressed>gfx_hifi/btn_headphones_1_over.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_headphones_1.svg</Unpressed>
+			<Pressed>skin:graphics/btn_headphones_1_pressed.svg</Pressed>
+			<Unpressed>skin:graphics/btn_headphones_1.svg</Unpressed>
 			</State>
 			<State>
 			<Number>1</Number>
-			<Pressed>gfx_hifi/btn_headphones_1_over.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_headphones_1_over.svg</Unpressed>
+			<Pressed>skin:graphics/btn_headphones_1_pressed.svg</Pressed>
+			<Unpressed>skin:graphics/btn_headphones_1_pressed.svg</Unpressed>
 			</State>					
 			<Connection>
 			<ConfigKey>[Auxiliary1],pfl</ConfigKey>
@@ -129,18 +129,18 @@
 			<NumberStates>3</NumberStates>
 			<State>
 			<Number>0</Number>
-			<Pressed>gfx_hifi/btn_orientation_left.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_orientation_left.svg</Unpressed>
+			<Pressed>skin:graphics/btn_orientation_left.svg</Pressed>
+			<Unpressed>skin:graphics/btn_orientation_left.svg</Unpressed>
 			</State>
 			<State>
 			<Number>1</Number>
-			<Pressed>gfx_hifi/btn_orientation_master.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_orientation_master.svg</Unpressed>
+			<Pressed>skin:graphics/btn_orientation_master.svg</Pressed>
+			<Unpressed>skin:graphics/btn_orientation_master.svg</Unpressed>
 			</State>
 			<State>
 			<Number>2</Number>
-			<Pressed>gfx_hifi/btn_orientation_right.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_orientation_right.svg</Unpressed>
+			<Pressed>skin:graphics/btn_orientation_right.svg</Pressed>
+			<Unpressed>skin:graphics/btn_orientation_right.svg</Unpressed>
 			</State>					
 			<Connection>
 			<ConfigKey>[Auxiliary1],orientation</ConfigKey>
@@ -175,8 +175,8 @@
 		
 			<!-- VUMeter: -->
 			<VuMeter>
-			<PathVu>gfx_hifi/volume_display_microphone_over.svg</PathVu>
-			<PathBack>gfx_hifi/volume_display_microphone.svg</PathBack>
+			<PathVu>skin:graphics/volume_display_microphone_pressed.svg</PathVu>
+			<PathBack>skin:graphics/volume_display_microphone.svg</PathBack>
 			<Pos>15,29</Pos>
 			<Horizontal>true</Horizontal>
 			<PeakHoldSize>5</PeakHoldSize>
@@ -191,8 +191,8 @@
 			<!-- Peak indicator: -->						
 			<StatusLight>
 			<Pos>85,29</Pos>
-			<PathStatusLight>gfx_hifi/volume_clipping_microphone_over.svg</PathStatusLight>
-			<PathBack>gfx_hifi/volume_clipping_microphone.svg</PathBack>							
+			<PathStatusLight>skin:graphics/volume_clipping_microphone_pressed.svg</PathStatusLight>
+			<PathBack>skin:graphics/volume_clipping_microphone.svg</PathBack>							
 			<Connection>
 			<ConfigKey>[Auxiliary2],PeakIndicator</ConfigKey>
 			</Connection>
@@ -200,10 +200,10 @@
 			
 			<!-- Volume: -->
 			<KnobComposed>
-			<Pos>105,3</Pos>
+			<Pos>107,3</Pos>
 			<Size>40f,40f</Size>
-			<BackPath>gfx_hifi/background_knob1.svg</BackPath>
-			<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+			<BackPath>skin:graphics/background_knob1.svg</BackPath>
+			<Knob>skin:graphics/pointer_knob1.svg</Knob>
 			<MinAngle>-130</MinAngle>
 			<MaxAngle>130</MaxAngle>
 			<Connection>
@@ -217,13 +217,13 @@
 			<NumberStates>2</NumberStates>
 			<State>
 			<Number>0</Number>
-			<Pressed>gfx_hifi/btn_mute_1_over.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_mute_1.svg</Unpressed>
+			<Pressed>skin:graphics/btn_mute_1_pressed.svg</Pressed>
+			<Unpressed>skin:graphics/btn_mute_1.svg</Unpressed>
 			</State>
 			<State>
 			<Number>1</Number>
-			<Pressed>gfx_hifi/btn_mute_1_over.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_mute_1_over.svg</Unpressed>
+			<Pressed>skin:graphics/btn_mute_1_pressed.svg</Pressed>
+			<Unpressed>skin:graphics/btn_mute_1_pressed.svg</Unpressed>
 			</State>					
 			<Connection>
 			<ConfigKey>[Auxiliary2],mute</ConfigKey>
@@ -237,13 +237,13 @@
 			<NumberStates>2</NumberStates>
 			<State>
 			<Number>0</Number>
-			<Pressed>gfx_hifi/btn_headphones_1_over.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_headphones_1.svg</Unpressed>
+			<Pressed>skin:graphics/btn_headphones_1_pressed.svg</Pressed>
+			<Unpressed>skin:graphics/btn_headphones_1.svg</Unpressed>
 			</State>
 			<State>
 			<Number>1</Number>
-			<Pressed>gfx_hifi/btn_headphones_1_over.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_headphones_1_over.svg</Unpressed>
+			<Pressed>skin:graphics/btn_headphones_1_pressed.svg</Pressed>
+			<Unpressed>skin:graphics/btn_headphones_1_pressed.svg</Unpressed>
 			</State>					
 			<Connection>
 			<ConfigKey>[Auxiliary2],pfl</ConfigKey>
@@ -257,18 +257,18 @@
 			<NumberStates>3</NumberStates>
 			<State>
 			<Number>0</Number>
-			<Pressed>gfx_hifi/btn_orientation_left.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_orientation_left.svg</Unpressed>
+			<Pressed>skin:graphics/btn_orientation_left.svg</Pressed>
+			<Unpressed>skin:graphics/btn_orientation_left.svg</Unpressed>
 			</State>
 			<State>
 			<Number>1</Number>
-			<Pressed>gfx_hifi/btn_orientation_master.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_orientation_master.svg</Unpressed>
+			<Pressed>skin:graphics/btn_orientation_master.svg</Pressed>
+			<Unpressed>skin:graphics/btn_orientation_master.svg</Unpressed>
 			</State>
 			<State>
 			<Number>2</Number>
-			<Pressed>gfx_hifi/btn_orientation_right.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_orientation_right.svg</Unpressed>
+			<Pressed>skin:graphics/btn_orientation_right.svg</Pressed>
+			<Unpressed>skin:graphics/btn_orientation_right.svg</Unpressed>
 			</State>					
 			<Connection>
 			<ConfigKey>[Auxiliary2],orientation</ConfigKey>
@@ -303,8 +303,8 @@
 		
 			<!-- VUMeter: -->
 			<VuMeter>
-			<PathVu>gfx_hifi/volume_display_microphone_over.svg</PathVu>
-			<PathBack>gfx_hifi/volume_display_microphone.svg</PathBack>
+			<PathVu>skin:graphics/volume_display_microphone_pressed.svg</PathVu>
+			<PathBack>skin:graphics/volume_display_microphone.svg</PathBack>
 			<Pos>15,29</Pos>
 			<Horizontal>true</Horizontal>
 			<PeakHoldSize>5</PeakHoldSize>
@@ -319,8 +319,8 @@
 			<!-- Peak indicator: -->						
 			<StatusLight>
 			<Pos>85,29</Pos>
-			<PathStatusLight>gfx_hifi/volume_clipping_microphone_over.svg</PathStatusLight>
-			<PathBack>gfx_hifi/volume_clipping_microphone.svg</PathBack>							
+			<PathStatusLight>skin:graphics/volume_clipping_microphone_pressed.svg</PathStatusLight>
+			<PathBack>skin:graphics/volume_clipping_microphone.svg</PathBack>							
 			<Connection>
 			<ConfigKey>[Auxiliary3],PeakIndicator</ConfigKey>
 			</Connection>
@@ -328,10 +328,10 @@
 			
 			<!-- Volume: -->
 			<KnobComposed>
-			<Pos>105,3</Pos>
+			<Pos>107,3</Pos>
 			<Size>40f,40f</Size>
-			<BackPath>gfx_hifi/background_knob1.svg</BackPath>
-			<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+			<BackPath>skin:graphics/background_knob1.svg</BackPath>
+			<Knob>skin:graphics/pointer_knob1.svg</Knob>
 			<MinAngle>-130</MinAngle>
 			<MaxAngle>130</MaxAngle>
 			<Connection>
@@ -345,13 +345,13 @@
 			<NumberStates>2</NumberStates>
 			<State>
 			<Number>0</Number>
-			<Pressed>gfx_hifi/btn_mute_1_over.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_mute_1.svg</Unpressed>
+			<Pressed>skin:graphics/btn_mute_1_pressed.svg</Pressed>
+			<Unpressed>skin:graphics/btn_mute_1.svg</Unpressed>
 			</State>
 			<State>
 			<Number>1</Number>
-			<Pressed>gfx_hifi/btn_mute_1_over.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_mute_1_over.svg</Unpressed>
+			<Pressed>skin:graphics/btn_mute_1_pressed.svg</Pressed>
+			<Unpressed>skin:graphics/btn_mute_1_pressed.svg</Unpressed>
 			</State>					
 			<Connection>
 			<ConfigKey>[Auxiliary3],mute</ConfigKey>
@@ -365,13 +365,13 @@
 			<NumberStates>2</NumberStates>
 			<State>
 			<Number>0</Number>
-			<Pressed>gfx_hifi/btn_headphones_1_over.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_headphones_1.svg</Unpressed>
+			<Pressed>skin:graphics/btn_headphones_1_pressed.svg</Pressed>
+			<Unpressed>skin:graphics/btn_headphones_1.svg</Unpressed>
 			</State>
 			<State>
 			<Number>1</Number>
-			<Pressed>gfx_hifi/btn_headphones_1_over.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_headphones_1_over.svg</Unpressed>
+			<Pressed>skin:graphics/btn_headphones_1_pressed.svg</Pressed>
+			<Unpressed>skin:graphics/btn_headphones_1_pressed.svg</Unpressed>
 			</State>					
 			<Connection>
 			<ConfigKey>[Auxiliary3],pfl</ConfigKey>
@@ -385,18 +385,18 @@
 			<NumberStates>3</NumberStates>
 			<State>
 			<Number>0</Number>
-			<Pressed>gfx_hifi/btn_orientation_left.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_orientation_left.svg</Unpressed>
+			<Pressed>skin:graphics/btn_orientation_left.svg</Pressed>
+			<Unpressed>skin:graphics/btn_orientation_left.svg</Unpressed>
 			</State>
 			<State>
 			<Number>1</Number>
-			<Pressed>gfx_hifi/btn_orientation_master.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_orientation_master.svg</Unpressed>
+			<Pressed>skin:graphics/btn_orientation_master.svg</Pressed>
+			<Unpressed>skin:graphics/btn_orientation_master.svg</Unpressed>
 			</State>
 			<State>
 			<Number>2</Number>
-			<Pressed>gfx_hifi/btn_orientation_right.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_orientation_right.svg</Unpressed>
+			<Pressed>skin:graphics/btn_orientation_right.svg</Pressed>
+			<Unpressed>skin:graphics/btn_orientation_right.svg</Unpressed>
 			</State>					
 			<Connection>
 			<ConfigKey>[Auxiliary3],orientation</ConfigKey>
@@ -431,8 +431,8 @@
 		
 			<!-- VUMeter: -->
 			<VuMeter>
-			<PathVu>gfx_hifi/volume_display_microphone_over.svg</PathVu>
-			<PathBack>gfx_hifi/volume_display_microphone.svg</PathBack>
+			<PathVu>skin:graphics/volume_display_microphone_pressed.svg</PathVu>
+			<PathBack>skin:graphics/volume_display_microphone.svg</PathBack>
 			<Pos>15,29</Pos>
 			<Horizontal>true</Horizontal>
 			<PeakHoldSize>5</PeakHoldSize>
@@ -447,8 +447,8 @@
 			<!-- Peak indicator: -->						
 			<StatusLight>
 			<Pos>85,29</Pos>
-			<PathStatusLight>gfx_hifi/volume_clipping_microphone_over.svg</PathStatusLight>
-			<PathBack>gfx_hifi/volume_clipping_microphone.svg</PathBack>							
+			<PathStatusLight>skin:graphics/volume_clipping_microphone_pressed.svg</PathStatusLight>
+			<PathBack>skin:graphics/volume_clipping_microphone.svg</PathBack>							
 			<Connection>
 			<ConfigKey>[Auxiliary4],PeakIndicator</ConfigKey>
 			</Connection>
@@ -456,10 +456,10 @@
 			
 			<!-- Volume: -->
 			<KnobComposed>
-			<Pos>105,3</Pos>
+			<Pos>107,3</Pos>
 			<Size>40f,40f</Size>
-			<BackPath>gfx_hifi/background_knob1.svg</BackPath>
-			<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+			<BackPath>skin:graphics/background_knob1.svg</BackPath>
+			<Knob>skin:graphics/pointer_knob1.svg</Knob>
 			<MinAngle>-130</MinAngle>
 			<MaxAngle>130</MaxAngle>
 			<Connection>
@@ -473,13 +473,13 @@
 			<NumberStates>2</NumberStates>
 			<State>
 			<Number>0</Number>
-			<Pressed>gfx_hifi/btn_mute_1_over.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_mute_1.svg</Unpressed>
+			<Pressed>skin:graphics/btn_mute_1_pressed.svg</Pressed>
+			<Unpressed>skin:graphics/btn_mute_1.svg</Unpressed>
 			</State>
 			<State>
 			<Number>1</Number>
-			<Pressed>gfx_hifi/btn_mute_1_over.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_mute_1_over.svg</Unpressed>
+			<Pressed>skin:graphics/btn_mute_1_pressed.svg</Pressed>
+			<Unpressed>skin:graphics/btn_mute_1_pressed.svg</Unpressed>
 			</State>					
 			<Connection>
 			<ConfigKey>[Auxiliary4],mute</ConfigKey>
@@ -493,13 +493,13 @@
 			<NumberStates>2</NumberStates>
 			<State>
 			<Number>0</Number>
-			<Pressed>gfx_hifi/btn_headphones_1_over.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_headphones_1.svg</Unpressed>
+			<Pressed>skin:graphics/btn_headphones_1_pressed.svg</Pressed>
+			<Unpressed>skin:graphics/btn_headphones_1.svg</Unpressed>
 			</State>
 			<State>
 			<Number>1</Number>
-			<Pressed>gfx_hifi/btn_headphones_1_over.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_headphones_1_over.svg</Unpressed>
+			<Pressed>skin:graphics/btn_headphones_1_pressed.svg</Pressed>
+			<Unpressed>skin:graphics/btn_headphones_1_pressed.svg</Unpressed>
 			</State>					
 			<Connection>
 			<ConfigKey>[Auxiliary4],pfl</ConfigKey>
@@ -513,18 +513,18 @@
 			<NumberStates>3</NumberStates>
 			<State>
 			<Number>0</Number>
-			<Pressed>gfx_hifi/btn_orientation_left.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_orientation_left.svg</Unpressed>
+			<Pressed>skin:graphics/btn_orientation_left.svg</Pressed>
+			<Unpressed>skin:graphics/btn_orientation_left.svg</Unpressed>
 			</State>
 			<State>
 			<Number>1</Number>
-			<Pressed>gfx_hifi/btn_orientation_master.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_orientation_master.svg</Unpressed>
+			<Pressed>skin:graphics/btn_orientation_master.svg</Pressed>
+			<Unpressed>skin:graphics/btn_orientation_master.svg</Unpressed>
 			</State>
 			<State>
 			<Number>2</Number>
-			<Pressed>gfx_hifi/btn_orientation_right.svg</Pressed>
-			<Unpressed>gfx_hifi/btn_orientation_right.svg</Unpressed>
+			<Pressed>skin:graphics/btn_orientation_right.svg</Pressed>
+			<Unpressed>skin:graphics/btn_orientation_right.svg</Unpressed>
 			</State>					
 			<Connection>
 			<ConfigKey>[Auxiliary4],orientation</ConfigKey>
@@ -557,6 +557,14 @@
 	<ConfigKey>[ToolBarAuxiliaries],show</ConfigKey>
 	<BindProperty>visible</BindProperty>
 	</Connection>
+	</WidgetGroup>
+	
+	<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+	<ObjectName>HorizontalLineDarker</ObjectName>
+	<MinimumSize>-1,1</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>				
+	<Children></Children>
 	</WidgetGroup>
 	
 </Template>

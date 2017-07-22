@@ -15,7 +15,7 @@
 	<SizePolicy>me,f</SizePolicy>
 	<Layout>horizontal</Layout>	
 	<Children>
-	<Template src="skin:templates/08_samplers/sampler_toolbar.xml">	
+	<Template src="skin:templates/samplers_1/sampler_toolbar.xml">	
 	<SetVariable name="toolbarnum_a">1</SetVariable>
 	<SetVariable name="toolbarnum_b">2</SetVariable>
 	<SetVariable name="samplernum_a">1</SetVariable>
@@ -46,10 +46,10 @@
 		<SizePolicy>me,f</SizePolicy>
 		<Layout>horizontal</Layout>	
 		<Children>
-		<Template src="skin:templates/08_samplers/sampler_module.xml"><SetVariable name="samplernum">1</SetVariable></Template>	
-		<Template src="skin:templates/08_samplers/sampler_module.xml"><SetVariable name="samplernum">2</SetVariable></Template>
-		<Template src="skin:templates/08_samplers/sampler_module.xml"><SetVariable name="samplernum">3</SetVariable></Template>
-		<Template src="skin:templates/08_samplers/sampler_module.xml"><SetVariable name="samplernum">4</SetVariable></Template>	
+		<Template src="skin:templates/samplers_1/sampler_module.xml"><SetVariable name="samplernum">1</SetVariable></Template>	
+		<Template src="skin:templates/samplers_1/sampler_module.xml"><SetVariable name="samplernum">2</SetVariable></Template>
+		<Template src="skin:templates/samplers_1/sampler_module.xml"><SetVariable name="samplernum">3</SetVariable></Template>
+		<Template src="skin:templates/samplers_1/sampler_module.xml"><SetVariable name="samplernum">4</SetVariable></Template>	
 		</Children>
 		</WidgetGroup>
 

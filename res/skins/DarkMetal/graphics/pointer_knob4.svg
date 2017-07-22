@@ -15,7 +15,7 @@
    viewBox="0 0 25 25.000001"
    id="svg4222"
    version="1.1"
-   inkscape:version="0.92.0 r15299"
+   inkscape:version="0.92.1 r15371"
    sodipodi:docname="pointer_knob4.svg">
   <defs
      id="defs4224">
@@ -211,7 +211,7 @@
        x2="12.450951"
        y2="1030.976"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(0,-2.0193054e-5)" />
+       gradientTransform="matrix(0.79570307,0,0,0.79570307,2.5619916,211.86487)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -221,7 +221,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="32.688267"
-     inkscape:cx="12.197591"
+     inkscape:cx="7.2263883"
      inkscape:cy="12.551145"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -268,10 +268,10 @@
      id="layer1"
      transform="translate(0,-1027.3622)">
     <circle
-       style="opacity:1;fill:url(#linearGradient859);fill-opacity:1;stroke:#000000;stroke-width:0.70494044"
+       style="opacity:1;fill:url(#linearGradient859);fill-opacity:1;stroke:#000000;stroke-width:0.56092328"
        id="path851"
-       cy="1033.1174"
-       cx="12.489594"
-       r="2.7172594" />
+       cy="1033.9196"
+       cx="12.5"
+       r="2.1621315" />
   </g>
 </svg>

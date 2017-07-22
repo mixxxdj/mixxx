@@ -15,7 +15,7 @@
    viewBox="0 0 26 26"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.1 r15371"
    sodipodi:docname="btn_forward.svg">
   <defs
      id="defs4">
@@ -65,7 +65,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="14.481547"
-     inkscape:cx="-0.25663815"
+     inkscape:cx="-11.477815"
      inkscape:cy="16.302914"
      inkscape:document-units="px"
      inkscape:current-layer="g4647"
@@ -129,7 +129,7 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
       <g
          transform="translate(0.1308599,0)"
          id="g4546"
-         style="fill:#8d5fd3;fill-opacity:1">
+         style="fill:#8d5fd3;fill-opacity:1;opacity:0.755">
         <g
            id="g4608"
            transform="translate(-1.5151357,0)"

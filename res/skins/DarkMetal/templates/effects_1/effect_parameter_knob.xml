@@ -37,8 +37,8 @@
 					<Children>					
 						<KnobComposed>
 						<Size>40f,40f</Size>
-						<BackPath>gfx_hifi/background_knob3.svg</BackPath>
-						<Knob>gfx_hifi/pointer_knob3.svg</Knob>
+						<BackPath>skin:graphics/background_knob3.svg</BackPath>
+						<Knob>skin:graphics/pointer_knob3.svg</Knob>
 						<MinAngle>-130</MinAngle>
 						<MaxAngle>130</MaxAngle>
 						<Connection>
@@ -57,28 +57,28 @@
 						<NumberStates>5</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_link_type_none.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_link_type_none.svg</Unpressed>
+							<Pressed>skin:graphics/btn_link_type_none.svg</Pressed>
+							<Unpressed>skin:graphics/btn_link_type_none.svg</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>gfx_hifi/btn_link_type_linked.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_link_type_linked.svg</Unpressed>
+							<Pressed>skin:graphics/btn_link_type_linked.svg</Pressed>
+							<Unpressed>skin:graphics/btn_link_type_linked.svg</Unpressed>
 						</State>
 				   		<State>
 							<Number>2</Number>
-							<Pressed>gfx_hifi/btn_link_type_left.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_link_type_left.svg</Unpressed>
+							<Pressed>skin:graphics/btn_link_type_left.svg</Pressed>
+							<Unpressed>skin:graphics/btn_link_type_left.svg</Unpressed>
 						</State>
 						<State>
 				  			<Number>3</Number>
-				  			<Pressed>gfx_hifi/btn_link_type_right.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_link_type_right.svg</Unpressed>
+				  			<Pressed>skin:graphics/btn_link_type_right.svg</Pressed>
+							<Unpressed>skin:graphics/btn_link_type_right.svg</Unpressed>
 						</State>
 				   		<State>
 				  			<Number>4</Number>
-				  			<Pressed>gfx_hifi/btn_link_type_left_right.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_link_type_left_right.svg</Unpressed>
+				  			<Pressed>skin:graphics/btn_link_type_left_right.svg</Pressed>
+							<Unpressed>skin:graphics/btn_link_type_left_right.svg</Unpressed>
 						</State>
 						<Connection>
 							<ConfigKey>[EffectRack1_EffectUnit<Variable name="unit"/>_Effect<Variable name="effect"/>],parameter<Variable name="effect_parameter"/>_link_type</ConfigKey>

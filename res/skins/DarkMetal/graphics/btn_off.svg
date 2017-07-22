@@ -15,7 +15,7 @@
    viewBox="0 0 26 16"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.1 r15371"
    sodipodi:docname="btn_off.svg">
   <defs
      id="defs4">
@@ -65,7 +65,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="25.027851"
-     inkscape:cx="12.932868"
+     inkscape:cx="6.4401012"
      inkscape:cy="6.1284602"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -85,7 +85,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
         <dc:creator>
           <cc:Agent>
             <dc:title>Jorge Rosa</dc:title>
@@ -111,7 +111,7 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
     <g
        id="g4"
        transform="matrix(0.00651042,0,0,-0.00643256,7.9999974,1047.5388)"
-       style="fill:#8d5fd3;fill-opacity:1">
+       style="fill:#8d5fd3;fill-opacity:1;opacity:0.755">
       <path
          style="fill:#8d5fd3;fill-opacity:1"
          inkscape:connector-curvature="0"

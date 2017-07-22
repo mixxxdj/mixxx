@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="26"
+   height="26"
+   viewBox="0 0 26 26"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.92.1 r15371"
+   sodipodi:docname="btn_fx_over.svg">
+  <defs
+     id="defs4">
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4138-3"
+       id="radialGradient4144-8"
+       cx="9.7359629"
+       cy="1041.7625"
+       fx="9.7359629"
+       fy="1041.7625"
+       r="9.7090063"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(2.0240728,0.00216202,5.0500939e-6,1.9490082,-6.9739894,-992.99735)" />
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient4138-3">
+      <stop
+         style="stop-color:#8d5fd3;stop-opacity:1"
+         offset="0"
+         id="stop4140-2" />
+      <stop
+         style="stop-color:#000000;stop-opacity:1"
+         offset="1"
+         id="stop4142-2" />
+    </linearGradient>
+    <pattern
+       y="0"
+       x="0"
+       height="6"
+       width="6"
+       patternUnits="userSpaceOnUse"
+       id="EMFhbasepattern" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="16.028648"
+     inkscape:cx="7.7246638"
+     inkscape:cy="19.571858"
+     inkscape:document-units="px"
+     inkscape:current-layer="g4177"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1920"
+     inkscape:window-height="1028"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-1026.3622)">
+    <g
+       transform="translate(4.9999999e-8,0.01422149)"
+       id="g4177">
+      <path
+         style="opacity:1;fill:url(#radialGradient4144-8);fill-opacity:1;stroke:none;stroke-width:0.26792389;stroke-miterlimit:4;stroke-dasharray:none"
+         d="m 2.0556107,1027.3413 21.8423103,0 0,21.1793 -21.8423103,0 z"
+         id="rect4136-5"
+         inkscape:connector-curvature="0" />
+      <path
+         transform="scale(1,-1)"
+         style="opacity:1;fill:none;fill-opacity:1;stroke:#1a1a1a;stroke-width:1.02900004;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         d="m 1.6471109,-1048.9675 22.7057781,0 0,22.0908 -22.7057781,0 z"
+         id="rect4183-39-0-0-1-8-78-2"
+         inkscape:connector-curvature="0" />
+      <g
+         id="g4"
+         transform="matrix(0.00651042,0,0,-0.00643256,7.9767633,1042.4595)"
+         style="fill:#e5d5ff;fill-opacity:1;stroke:none;stroke-opacity:1;opacity:0.9">
+        <path
+           style="fill:#e5d5ff;fill-opacity:1;stroke:none;stroke-opacity:1"
+           inkscape:connector-curvature="0"
+           id="path6"
+           d="M 1536,640 Q 1536,484 1475,342 1414,200 1311,97 1208,-6 1066,-67 924,-128 768,-128 612,-128 470,-67 328,-6 225,97 122,200 61,342 0,484 0,640 0,822 80.5,983 161,1144 307,1253 q 43,32 95.5,25 52.5,-7 83.5,-50 32,-42 24.5,-94.5 Q 503,1081 461,1049 363,975 309.5,868 256,761 256,640 256,536 296.5,441.5 337,347 406,278 475,209 569.5,168.5 664,128 768,128 872,128 966.5,168.5 1061,209 1130,278 q 69,69 109.5,163.5 40.5,94.5 40.5,198.5 0,121 -53.5,228 -53.5,107 -151.5,181 -42,32 -49.5,84.5 -7.5,52.5 24.5,94.5 31,43 84,50 53,7 95,-25 146,-109 226.5,-270 Q 1536,822 1536,640 Z M 896,1408 V 768 q 0,-52 -38,-90 -38,-38 -90,-38 -52,0 -90,38 -38,38 -38,90 v 640 q 0,52 38,90 38,38 90,38 52,0 90,-38 38,-38 38,-90 z" />
+      </g>
+    </g>
+  </g>
+</svg>

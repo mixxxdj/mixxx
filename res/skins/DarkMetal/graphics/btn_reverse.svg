@@ -15,7 +15,7 @@
    viewBox="0 0 52 26"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.1 r15371"
    sodipodi:docname="btn_reverse.svg">
   <defs
      id="defs4">
@@ -58,7 +58,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="8.8385907"
-     inkscape:cx="9.4778521"
+     inkscape:cx="-8.9074319"
      inkscape:cy="10.034386"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -119,7 +119,7 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
        y="0.4989292"
        transform="matrix(0,1,1,0,0,0)" />
     <path
-       style="fill:#8d5fd3;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
+       style="fill:#8d5fd3;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1;opacity:0.755"
        d="m 29.210044,1032.2017 0,11.3603 -8.66015,-4.9999 z"
        id="path4430"
        inkscape:connector-curvature="0" />

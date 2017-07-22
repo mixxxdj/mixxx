@@ -5,22 +5,16 @@
 	<WidgetGroup>
 	<ObjectName>ToolBarTests</ObjectName>
 	<Pos>0,0</Pos>
-	<MinimumSize>1230,46</MinimumSize>
+	<MinimumSize>1,46</MinimumSize>
 	<SizePolicy>me,f</SizePolicy>
 	<Layout>horizontal</Layout>
 	<Children>
 	
 	<WidgetGroup>
-	<MinimumSize>10,45</MinimumSize>
+	<MinimumSize>1,45</MinimumSize>
 	<SizePolicy>me,f</SizePolicy>
 	<Layout>horizontal</Layout>
 	<Children>		
-	
-	<WidgetGroup>
-	<MinimumSize>1,45</MinimumSize>
-	<SizePolicy>me,f</SizePolicy>
-	<Children><!-- Pusher --></Children>
-	</WidgetGroup>	
 		
 	<WidgetGroup>
 	<ObjectName>VerticalLine</ObjectName>
@@ -31,8 +25,8 @@
 	
 	<WidgetGroup>
 	<ObjectName>ToolBarTestsMetal</ObjectName>
-	<MinimumSize>800,45</MinimumSize>
-	<SizePolicy>f,f</SizePolicy>
+	<MinimumSize>1,45</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
 	<Layout>horizontal</Layout>
 	<Children>
 
@@ -56,7 +50,7 @@
 		<Layout>vertical</Layout>
 		<Children>
 		<Label>
-		<Text>Danger: Tests Area</Text>
+		<Text>Tests Area</Text>
 		</Label>
 		</Children>			
 		</WidgetGroup>
@@ -97,13 +91,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/tab_auxiliaries.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_auxiliaries.svg</Unpressed>
+		<Pressed>skin:graphics/tab_auxiliaries.svg</Pressed>
+		<Unpressed>skin:graphics/tab_auxiliaries.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/tab_auxiliaries_over.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_auxiliaries_over.svg</Unpressed>
+		<Pressed>skin:graphics/tab_auxiliaries_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/tab_auxiliaries_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[DecksAndMixerRack1],raise</ConfigKey>
@@ -115,23 +109,38 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_view.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_view.svg</Unpressed>
+		<Pressed>skin:graphics/btn_view.svg</Pressed>
+		<Unpressed>skin:graphics/btn_view.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/btn_view_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_view_over.svg</Unpressed>
+		<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[Hifi],show</ConfigKey>
 		</Connection>	
 		</PushButton>
-
 		
-	
-	
-	
+		<NumberRate>
+		  <TooltipId>rate_display</TooltipId>
+		  <Channel>1</Channel>
+		  <Pos>X,Y</Pos>
+		  <Size>W,H</Size>
+		  <Connection>
+		  <ConfigKey>[Channel1],rate</ConfigKey>
+		  </Connection>
+		</NumberRate>
+		
+		<NumberDb>
+		<Text>Gain %1 dB</Text>
+		<Connection>
+		<ConfigKey>[Channel1],pregain</ConfigKey>
+		</Connection>
+		</NumberDb>
+		
+
+
 	
 	
 	
@@ -148,11 +157,6 @@
 	<Children><!-- Design --></Children>
 	</WidgetGroup>	
 		
-	<WidgetGroup>
-	<MinimumSize>1,45</MinimumSize>
-	<SizePolicy>me,f</SizePolicy>
-	<Children><!-- Pusher --></Children>
-	</WidgetGroup>	
 	
 	</Children>
 	</WidgetGroup>

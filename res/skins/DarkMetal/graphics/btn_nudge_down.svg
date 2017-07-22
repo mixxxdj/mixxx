@@ -15,7 +15,7 @@
    viewBox="0 0 26 26"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.1 r15371"
    sodipodi:docname="btn_nudge_down.svg">
   <defs
      id="defs4">
@@ -65,7 +65,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="14.481547"
-     inkscape:cx="7.3802122"
+     inkscape:cx="-3.8409647"
      inkscape:cy="12.852726"
      inkscape:document-units="px"
      inkscape:current-layer="g4783"
@@ -126,22 +126,11 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
          width="22.705778"
          id="rect4183-39-0-0-1-8-78"
          style="opacity:1;fill:none;fill-opacity:1;stroke:#1a1a1a;stroke-width:1.02858019;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
-      <g
-         transform="matrix(-1,0,0,1,-17.454593,0)"
-         id="g4752"
-         style="fill:#442178;fill-opacity:1">
-        <path
-           style="fill:#8d5fd3;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           d="m 10.485355,1034.4876 0,7.2336 4.833976,-3.5125 z"
-           id="path4529"
-           inkscape:connector-curvature="0"
-           sodipodi:nodetypes="cccc" />
-        <path
-           style="fill:#8d5fd3;fill-rule:evenodd;stroke:#8d5fd3;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
-           d="m 3.7714845,1038.202 10.2539055,0"
-           id="path4405-4"
-           inkscape:connector-curvature="0" />
-      </g>
+      <path
+         style="opacity:0.75499998;fill:#8d5fd3;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m -28.277364,1034.4848 -4.833984,3.7207 4.833984,3.5137 v -3.0196 h 6.712891 v -1 h -6.712891 z"
+         id="path4529"
+         inkscape:connector-curvature="0" />
     </g>
   </g>
 </svg>

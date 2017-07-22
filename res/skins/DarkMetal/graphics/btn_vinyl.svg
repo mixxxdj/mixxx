@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="20"
+   height="18"
+   viewBox="0 0 20 18"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.92.1 r15371"
+   sodipodi:docname="btn_vinyl.svg">
+  <defs
+     id="defs4">
+    <pattern
+       y="0"
+       x="0"
+       height="6"
+       width="6"
+       patternUnits="userSpaceOnUse"
+       id="EMFhbasepattern" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="50.055702"
+     inkscape:cx="9.2742893"
+     inkscape:cy="6.8381072"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1920"
+     inkscape:window-height="1028"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     showguides="true"
+     inkscape:guide-bbox="true">
+    <sodipodi:guide
+       position="-4.5549256,14.943352"
+       orientation="0,1"
+       id="guide4888"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="3.436172,4.7147476"
+       orientation="0,1"
+       id="guide4890"
+       inkscape:locked="false" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Jorge Rosa</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:description>Email: jorge.bigarte@gmail.com
+Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-1034.3622)">
+    <g
+       id="g4956"
+       transform="matrix(0,0.02442813,-0.02442813,0,15.321547,1036.2396)" />
+    <path
+       style="opacity:1;fill:#553289;fill-opacity:1;stroke:none;stroke-width:2.03600001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 10,1037.4188 c -2.8252791,-5e-4 -5.1157492,2.29 -5.1152342,5.1153 5.639e-4,2.8245 2.290718,5.1138 5.1152342,5.1133 2.824516,5e-4 5.11467,-2.2888 5.115234,-5.1133 5.15e-4,-2.8253 -2.289955,-5.1158 -5.115234,-5.1153 z m 0,2.7461 c 1.308085,10e-5 2.36817,1.0611 2.367188,2.3692 -9.8e-5,1.3073 -1.059867,2.3671 -2.367188,2.3672 -1.3073211,-10e-5 -2.3670903,-1.0599 -2.3671873,-2.3672 -9.824e-4,-1.3081 1.059103,-2.3691 2.3671873,-2.3692 z m 0,1.6582 a 0.70920992,0.70920992 0 0 0 -0.7089842,0.709 0.70920992,0.70920992 0 0 0 0.7089842,0.711 0.70920992,0.70920992 0 0 0 0.708984,-0.711 A 0.70920992,0.70920992 0 0 0 10,1041.8231 Z"
+       id="path5005"
+       inkscape:connector-curvature="0" />
+  </g>
+</svg>

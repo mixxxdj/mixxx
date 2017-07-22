@@ -15,7 +15,7 @@
    viewBox="0 0 40 40.000001"
    id="svg4222"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.1 r15371"
    sodipodi:docname="pointer_knob3.svg">
   <defs
      id="defs4224">
@@ -193,8 +193,15 @@
        fx="23.8125"
        fy="1024.5006"
        r="2.3747422"
-       gradientTransform="matrix(3.5174932,0,0,3.661941,-63.760305,-2723.5193)"
+       gradientTransform="matrix(2.7729386,0,0,3.2739363,-46.030602,-2326.1371)"
        gradientUnits="userSpaceOnUse" />
+    <pattern
+       y="0"
+       x="0"
+       height="6"
+       width="6"
+       patternUnits="userSpaceOnUse"
+       id="EMFhbasepattern-9" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -203,9 +210,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="45.254834"
-     inkscape:cx="15.346106"
-     inkscape:cy="29.254572"
+     inkscape:zoom="32"
+     inkscape:cx="15.95596"
+     inkscape:cy="28.311902"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -220,23 +227,28 @@
     <sodipodi:guide
        position="38.903399,3981.4657"
        orientation="0,1"
-       id="guide4179" />
+       id="guide4179"
+       inkscape:locked="false" />
     <sodipodi:guide
        position="21.140565,20.002405"
        orientation="0,1"
-       id="guide4272" />
+       id="guide4272"
+       inkscape:locked="false" />
     <sodipodi:guide
        position="20.011435,37.492243"
        orientation="1,0"
-       id="guide4274" />
+       id="guide4274"
+       inkscape:locked="false" />
     <sodipodi:guide
        position="21.308594,33.73047"
        orientation="0,1"
-       id="guide4186" />
+       id="guide4186"
+       inkscape:locked="false" />
     <sodipodi:guide
        position="23.842757,26.693282"
        orientation="0,1"
-       id="guide4188" />
+       id="guide4188"
+       inkscape:locked="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata4227">
@@ -256,13 +268,13 @@
      id="layer1"
      transform="translate(0,-1012.3622)">
     <rect
-       style="opacity:1;fill:url(#radialGradient4237);fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:url(#radialGradient4237);fill-opacity:1;stroke:#000000;stroke-width:0.83952367;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect4229"
-       width="4.0090876"
-       height="8.0090876"
-       x="17.995457"
-       y="1018.1539"
-       rx="0.46748313"
-       ry="0.44053313" />
+       width="3.1604764"
+       height="7.1604762"
+       x="18.419762"
+       y="1019.0829"
+       rx="0.36853009"
+       ry="0.39385599" />
   </g>
 </svg>

@@ -15,7 +15,7 @@
    viewBox="0 0 60 30"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.1 r15371"
    sodipodi:docname="tab_auxiliaries.svg">
   <defs
      id="defs4">
@@ -79,8 +79,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="10.572439"
-     inkscape:cx="23.323728"
-     inkscape:cy="10.330189"
+     inkscape:cx="7.9535755"
+     inkscape:cy="9.7329381"
      inkscape:document-units="px"
      inkscape:current-layer="g5160"
      showgrid="false"
@@ -118,17 +118,16 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
      transform="translate(0,-1022.3622)">
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:7.3307333px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;opacity:0.1;fill:#ececec;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;opacity:0.1;fill:#ececec;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        x="-64.373627"
        y="823.29761"
        id="text6116-5"
-       sodipodi:linespacing="125%"
        transform="scale(1.0112873,0.98883868)"><tspan
          sodipodi:role="line"
          id="tspan6118-8"
          x="-64.373627"
          y="823.29761"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Digital;-inkscape-font-specification:Digital;fill:#ececec">8888888888888888888888888888888888888888888888888888888888888888888888888</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.33073282px;line-height:1.25;font-family:Digital;-inkscape-font-specification:Digital;fill:#ececec">8888888888888888888888888888888888888888888888888888888888888888888888888</tspan></text>
     <g
        id="g5160">
       <path
@@ -139,14 +138,15 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
       <flowRoot
          xml:space="preserve"
          id="flowRoot4249"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15px;line-height:100%;font-family:'Estrangelo Edessa';-inkscape-font-specification:'Estrangelo Edessa, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"><flowRegion
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:0.01%;font-family:'Estrangelo Edessa';-inkscape-font-specification:'Estrangelo Edessa, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"><flowRegion
            id="flowRegion4251"><rect
              id="rect4253"
              width="60.913097"
              height="241.76068"
              x="-66.209885"
              y="-78.584213" /></flowRegion><flowPara
-           id="flowPara4255" /></flowRoot>      <g
+           id="flowPara4255"
+           style="font-size:15px;line-height:1"> </flowPara></flowRoot>      <g
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12.36420155px;line-height:100%;font-family:'Estrangelo Edessa';-inkscape-font-specification:'Estrangelo Edessa, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#8d5fd3;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          id="text4161-8-8-1"
          transform="translate(86.102641,56.578745)">
@@ -171,6 +171,17 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
            inkscape:connector-curvature="0"
            style="fill:#8d5fd3;fill-opacity:1" />
       </g>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;font-size:12.07992935px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#8d5fd3;fill-opacity:1;stroke:none;stroke-width:0.30199823"
+         x="19.97818"
+         y="1063.6278"
+         id="text835"><tspan
+           sodipodi:role="line"
+           id="tspan833"
+           x="19.97818"
+           y="1063.6278"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Estrangelo Edessa';-inkscape-font-specification:'Estrangelo Edessa';fill:#8d5fd3;fill-opacity:1;stroke-width:0.30199823">Vinyl</tspan></text>
     </g>
   </g>
 </svg>

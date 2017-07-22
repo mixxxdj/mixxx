@@ -4,7 +4,7 @@
 	
 	<WidgetGroup>
 	<ObjectName>MixerPanel2</ObjectName>
-		<BackPath>gfx_hifi/background_mixer2.svg</BackPath>
+		<BackPath>skin:graphics/background_mixer2.svg</BackPath>
 		<Pos>735,0</Pos>
 		<MinimumSize>450,300</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
@@ -74,13 +74,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_sync_small_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_sync_small.svg</Unpressed>
+		<Pressed>skin:graphics/btn_sync_small_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_sync_small.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/btn_sync_small_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_sync_small_over.svg</Unpressed>
+		<Pressed>skin:graphics/btn_sync_small_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_sync_small_pressed.svg</Unpressed>
 		</State>							
 		<Connection>
 		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],sync_enabled</ConfigKey>
@@ -97,13 +97,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_sync_small_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_sync_small.svg</Unpressed>
+		<Pressed>skin:graphics/btn_sync_small_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_sync_small.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/btn_sync_small_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_sync_small_over.svg</Unpressed>
+		<Pressed>skin:graphics/btn_sync_small_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_sync_small_pressed.svg</Unpressed>
 		</State>							
 		<Connection>
 		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],sync_key</ConfigKey>
@@ -121,13 +121,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_sync_small_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_sync_small.svg</Unpressed>
+		<Pressed>skin:graphics/btn_sync_small_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_sync_small.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/btn_sync_small_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_sync_small_over.svg</Unpressed>
+		<Pressed>skin:graphics/btn_sync_small_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_sync_small_pressed.svg</Unpressed>
 		</State>							
 		<Connection>
 		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],sync_enabled</ConfigKey>
@@ -144,13 +144,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_sync_small_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_sync_small.svg</Unpressed>
+		<Pressed>skin:graphics/btn_sync_small_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_sync_small.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/btn_sync_small_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_sync_small_over.svg</Unpressed>
+		<Pressed>skin:graphics/btn_sync_small_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_sync_small_pressed.svg</Unpressed>
 		</State>							
 		<Connection>
 		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],sync_key</ConfigKey>
@@ -171,8 +171,8 @@
 		-->
 		
 		<SliderComposed>	
-		<Handle>gfx_hifi/knob_pitch.svg</Handle>
-		<Slider>gfx_hifi/slider_pitch.svg</Slider>
+		<Handle>skin:graphics/knob_pitch.svg</Handle>
+		<Slider>skin:graphics/slider_pitch.svg</Slider>
 		<Pos>13,81</Pos>
 		<Horizontal>false</Horizontal>
 		<Connection>
@@ -182,8 +182,8 @@
 		</SliderComposed>
 
 		<SliderComposed>	
-		<Handle>gfx_hifi/knob_pitch.svg</Handle>
-		<Slider>gfx_hifi/slider_pitch.svg</Slider>
+		<Handle>skin:graphics/knob_pitch.svg</Handle>
+		<Slider>skin:graphics/slider_pitch.svg</Slider>
 		<Pos>399,81</Pos>
 		<Horizontal>false</Horizontal>
 		<Connection>
@@ -202,8 +202,8 @@
 		<NumberStates>1</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_pitch_up_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_pitch_up.svg</Unpressed>
+		<Pressed>skin:graphics/btn_pitch_up_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_pitch_up.svg</Unpressed>
 		</State>
 		<Pos>33,199</Pos>
 		<Connection>
@@ -222,8 +222,8 @@
 		<NumberStates>1</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_pitch_down_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_pitch_down.svg</Unpressed>
+		<Pressed>skin:graphics/btn_pitch_down_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_pitch_down.svg</Unpressed>
 		</State>
 		<Pos>7,199</Pos>
 		<Connection>
@@ -242,8 +242,8 @@
 		<NumberStates>1</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_pitch_up_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_pitch_up.svg</Unpressed>
+		<Pressed>skin:graphics/btn_pitch_up_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_pitch_up.svg</Unpressed>
 		</State>
 		<Pos>418,199</Pos>
 		<Connection>
@@ -262,8 +262,8 @@
 		<NumberStates>1</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_pitch_down_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_pitch_down.svg</Unpressed>
+		<Pressed>skin:graphics/btn_pitch_down_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_pitch_down.svg</Unpressed>
 		</State>
 		<Pos>392,199</Pos>
 		<Connection>
@@ -289,8 +289,8 @@
 		<NumberStates>1</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_nudge_up_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_nudge_up.svg</Unpressed>
+		<Pressed>skin:graphics/btn_nudge_up_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_nudge_up.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],rate_temp_up</ConfigKey>
@@ -308,8 +308,8 @@
 		<NumberStates>1</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_nudge_down_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_nudge_down.svg</Unpressed>
+		<Pressed>skin:graphics/btn_nudge_down_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_nudge_down.svg</Unpressed>
 		</State>
 		<Pos>7,225</Pos>
 		<Connection>
@@ -328,8 +328,8 @@
 		<NumberStates>1</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_nudge_up_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_nudge_up.svg</Unpressed>
+		<Pressed>skin:graphics/btn_nudge_up_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_nudge_up.svg</Unpressed>
 		</State>
 		<Pos>418,225</Pos>
 		<Connection>
@@ -348,8 +348,8 @@
 		<NumberStates>1</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_nudge_down_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_nudge_down.svg</Unpressed>
+		<Pressed>skin:graphics/btn_nudge_down_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_nudge_down.svg</Unpressed>
 		</State>
 		<Pos>392,225</Pos>
 		<Connection>
@@ -376,13 +376,13 @@
 		<RightClickIsPushButton>true</RightClickIsPushButton>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_play.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_play.svg</Unpressed>
+		<Pressed>skin:graphics/btn_play.svg</Pressed>
+		<Unpressed>skin:graphics/btn_play.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/btn_play_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_play_over.svg</Unpressed>
+		<Pressed>skin:graphics/btn_play_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_play_pressed.svg</Unpressed>
 		</State>
 		<Connection>
 		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],play</ConfigKey>
@@ -403,13 +403,13 @@
 		<RightClickIsPushButton>true</RightClickIsPushButton>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_play.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_play.svg</Unpressed>
+		<Pressed>skin:graphics/btn_play.svg</Pressed>
+		<Unpressed>skin:graphics/btn_play.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/btn_play_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_play_over.svg</Unpressed>
+		<Pressed>skin:graphics/btn_play_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_play_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],play</ConfigKey>
@@ -435,13 +435,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_cue_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_cue.svg</Unpressed>
+		<Pressed>skin:graphics/btn_cue_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_cue.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/btn_cue_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_cue_over.svg</Unpressed>
+		<Pressed>skin:graphics/btn_cue_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_cue_pressed.svg</Unpressed>
 		</State>
 		<Connection>
 		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],cue_default</ConfigKey>
@@ -463,13 +463,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_cue_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_cue.svg</Unpressed>
+		<Pressed>skin:graphics/btn_cue_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_cue.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/btn_cue_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_cue_over.svg</Unpressed>
+		<Pressed>skin:graphics/btn_cue_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_cue_pressed.svg</Unpressed>
 		</State>
 		<Connection>
 		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],cue_default</ConfigKey>
@@ -497,13 +497,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_headphones_3_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_headphones_3.svg</Unpressed>
+		<Pressed>skin:graphics/btn_headphones_3_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_headphones_3.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/btn_headphones_3_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_headphones_3_over.svg</Unpressed>
+		<Pressed>skin:graphics/btn_headphones_3_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_headphones_3_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],pfl</ConfigKey>
@@ -515,13 +515,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_headphones_3_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_headphones_3.svg</Unpressed>
+		<Pressed>skin:graphics/btn_headphones_3_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_headphones_3.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/btn_headphones_3_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_headphones_3_over.svg</Unpressed>
+		<Pressed>skin:graphics/btn_headphones_3_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_headphones_3_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],pfl</ConfigKey>
@@ -530,22 +530,61 @@
 
 		<!--
 		**********************************************
-		Buttons - Frequency Kill - Left row
+		Buttons = Quick Effect Button + Frequency Kill (Left row)
 		**********************************************
 		-->
+		
+		<PushButton><!-- Effects: apply -->
+		<Pos>73,71</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_kill.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_kill_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill_pressed.svg</Unpressed>
+		</State>							
+		<Connection>
+		<!-- <ConfigKey>[EffectRack1_EffectUnit<Variable name="audiochannel_a"/>],group_[BusRight]_enable</ConfigKey> -->
+		<ConfigKey>[EffectRack1_EffectUnit<Variable name="audiochannel_a"/>],group_[Channel<Variable name="audiochannel_a"/>]_enable</ConfigKey>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		</PushButton>
+		
+		<PushButton><!-- Effects: on/off -->
+		<Pos>93,71</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_effect_deck_left.svg</Pressed>
+		<Unpressed>skin:graphics/btn_effect_deck_left.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_effect_deck_left_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_effect_deck_left_pressed.svg</Unpressed>
+		</State>							
+		<Connection>
+		<ConfigKey>[EffectRack1_EffectUnit<Variable name="audiochannel_a"/>_Effect1],enabled</ConfigKey>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		</PushButton>
 		
 		<PushButton>
 		<Pos>73,111</Pos>		
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_kill.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_kill.svg</Unpressed>
+		<Pressed>skin:graphics/btn_kill.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/btn_kill_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_kill_over.svg</Unpressed>
+		<Pressed>skin:graphics/btn_kill_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],filterHighKill</ConfigKey>
@@ -559,13 +598,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_kill.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_kill.svg</Unpressed>
+		<Pressed>skin:graphics/btn_kill.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/btn_kill_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_kill_over.svg</Unpressed>
+		<Pressed>skin:graphics/btn_kill_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],filterMidKill</ConfigKey>
@@ -579,13 +618,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_kill.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_kill.svg</Unpressed>
+		<Pressed>skin:graphics/btn_kill.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/btn_kill_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_kill_over.svg</Unpressed>
+		<Pressed>skin:graphics/btn_kill_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],filterLowKill</ConfigKey>
@@ -596,22 +635,61 @@
 
 		<!--
 		**********************************************
-		Buttons - Frequency Kill - Right row
+		Buttons = Quick Effect Button + Frequency Kill (right row)
 		**********************************************
-		-->
+		-->		
+		
+		<PushButton><!-- Effects: apply -->
+		<Pos>358,71</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_kill.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_kill_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill_pressed.svg</Unpressed>
+		</State>							
+		<Connection>
+		<!-- <ConfigKey>[EffectRack1_EffectUnit<Variable name="audiochannel_b"/>],group_[BusRight]_enable</ConfigKey> -->
+		<ConfigKey>[EffectRack1_EffectUnit<Variable name="audiochannel_b"/>],group_[Channel<Variable name="audiochannel_b"/>]_enable</ConfigKey>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		</PushButton>
+		
+		<PushButton><!-- Effects: on/off -->
+		<Pos>308,71</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_effect_deck_right.svg</Pressed>
+		<Unpressed>skin:graphics/btn_effect_deck_right.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_effect_deck_right_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_effect_deck_right_pressed.svg</Unpressed>
+		</State>							
+		<Connection>
+		<ConfigKey>[EffectRack1_EffectUnit<Variable name="audiochannel_b"/>_Effect1],enabled</ConfigKey>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		</PushButton>
 		
 		<PushButton>
 		<Pos>358,111</Pos>		
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_kill.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_kill.svg</Unpressed>
+		<Pressed>skin:graphics/btn_kill.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/btn_kill_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_kill_over.svg</Unpressed>
+		<Pressed>skin:graphics/btn_kill_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],filterHighKill</ConfigKey>
@@ -625,13 +703,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_kill.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_kill.svg</Unpressed>
+		<Pressed>skin:graphics/btn_kill.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/btn_kill_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_kill_over.svg</Unpressed>
+		<Pressed>skin:graphics/btn_kill_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],filterMidKill</ConfigKey>
@@ -645,13 +723,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/btn_kill.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_kill.svg</Unpressed>
+		<Pressed>skin:graphics/btn_kill.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/btn_kill_over.svg</Pressed>
-		<Unpressed>gfx_hifi/btn_kill_over.svg</Unpressed>
+		<Pressed>skin:graphics/btn_kill_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],filterLowKill</ConfigKey>
@@ -667,10 +745,10 @@
 		-->
 		
 		<KnobComposed>
-		<Pos>101,26</Pos>
+		<Pos>101,6</Pos>
 		<Size>40f,40f</Size>
-		<BackPath>gfx_hifi/background_knob1.svg</BackPath>
-		<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+		<BackPath>skin:graphics/background_knob1.svg</BackPath>
+		<Knob>skin:graphics/pointer_knob1.svg</Knob>
 		<MinAngle>-130</MinAngle>
 		<MaxAngle>130</MaxAngle>
 		<Connection>
@@ -681,8 +759,8 @@
 		<KnobComposed>
 		<Pos>101,102</Pos>
 		<Size>40f,40f</Size>
-		<BackPath>gfx_hifi/background_knob1.svg</BackPath>
-		<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+		<BackPath>skin:graphics/background_knob2.svg</BackPath>
+		<Knob>skin:graphics/pointer_knob2.svg</Knob>
 		<MinAngle>-130</MinAngle>
 		<MaxAngle>130</MaxAngle>
 		<Connection>
@@ -693,8 +771,8 @@
 		<KnobComposed>
 		<Pos>101,142</Pos>
 		<Size>40f,40f</Size>
-		<BackPath>gfx_hifi/background_knob1.svg</BackPath>
-		<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+		<BackPath>skin:graphics/background_knob2.svg</BackPath>
+		<Knob>skin:graphics/pointer_knob2.svg</Knob>
 		<MinAngle>-130</MinAngle>
 		<MaxAngle>130</MaxAngle>
 		<Connection>
@@ -705,8 +783,8 @@
 		<KnobComposed>
 		<Pos>101,182</Pos>
 		<Size>40f,40f</Size>
-		<BackPath>gfx_hifi/background_knob1.svg</BackPath>
-		<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+		<BackPath>skin:graphics/background_knob2.svg</BackPath>
+		<Knob>skin:graphics/pointer_knob2.svg</Knob>
 		<MinAngle>-130</MinAngle>
 		<MaxAngle>130</MaxAngle>
 		<Connection>
@@ -715,10 +793,10 @@
 		</KnobComposed>
 
 		<KnobComposed>
-		<Pos>310,26</Pos>
+		<Pos>310,6</Pos>
 		<Size>40f,40f</Size>
-		<BackPath>gfx_hifi/background_knob1.svg</BackPath>
-		<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+		<BackPath>skin:graphics/background_knob1.svg</BackPath>
+		<Knob>skin:graphics/pointer_knob1.svg</Knob>
 		<MinAngle>-130</MinAngle>
 		<MaxAngle>130</MaxAngle>
 		<Connection>
@@ -729,8 +807,8 @@
 		<KnobComposed>
 		<Pos>310,102</Pos>
 		<Size>40f,40f</Size>
-		<BackPath>gfx_hifi/background_knob1.svg</BackPath>
-		<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+		<BackPath>skin:graphics/background_knob2.svg</BackPath>
+		<Knob>skin:graphics/pointer_knob2.svg</Knob>
 		<MinAngle>-130</MinAngle>
 		<MaxAngle>130</MaxAngle>
 		<Connection>
@@ -741,8 +819,8 @@
 		<KnobComposed>
 		<Pos>310,142</Pos>
 		<Size>40f,40f</Size>
-		<BackPath>gfx_hifi/background_knob1.svg</BackPath>
-		<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+		<BackPath>skin:graphics/background_knob2.svg</BackPath>
+		<Knob>skin:graphics/pointer_knob2.svg</Knob>
 		<MinAngle>-130</MinAngle>
 		<MaxAngle>130</MaxAngle>
 		<Connection>
@@ -753,8 +831,8 @@
 		<KnobComposed>
 		<Pos>310,182</Pos>
 		<Size>40f,40f</Size>
-		<BackPath>gfx_hifi/background_knob1.svg</BackPath>
-		<Knob>gfx_hifi/pointer_knob1.svg</Knob>
+		<BackPath>skin:graphics/background_knob2.svg</BackPath>
+		<Knob>skin:graphics/pointer_knob2.svg</Knob>
 		<MinAngle>-130</MinAngle>
 		<MaxAngle>130</MaxAngle>
 		<Connection>
@@ -771,8 +849,8 @@
 		-->
 		
 		<SliderComposed>	
-		<Handle>gfx_hifi/knob_volume.svg</Handle>
-		<Slider>gfx_hifi/slider_volume.svg</Slider>
+		<Handle>skin:graphics/knob_volume.svg</Handle>
+		<Slider>skin:graphics/slider_volume.svg</Slider>
 		<Pos>166,91</Pos>
 		<Horizontal>false</Horizontal>
 		<Connection>
@@ -782,8 +860,8 @@
 		</SliderComposed>
 		<SliderComposed>	
 		
-		<Handle>gfx_hifi/knob_volume.svg</Handle>
-		<Slider>gfx_hifi/slider_volume.svg</Slider>
+		<Handle>skin:graphics/knob_volume.svg</Handle>
+		<Slider>skin:graphics/slider_volume.svg</Slider>
 		<Pos>241,91</Pos>
 		<Horizontal>false</Horizontal>
 		<Connection>
@@ -799,8 +877,8 @@
 		-->
 		
 		<SliderComposed>	
-		<Handle>gfx_hifi/knob_crossfader.svg</Handle>
-		<Slider>gfx_hifi/slider_crossfader.svg</Slider>
+		<Handle>skin:graphics/knob_crossfader.svg</Handle>
+		<Slider>skin:graphics/slider_crossfader.svg</Slider>
 		<Pos>145,253</Pos>
 		<Horizontal>true</Horizontal>
 		<Connection>
@@ -819,8 +897,8 @@
 		
 		<VuMeter>
 		<ObjectName>VuMeterCh1</ObjectName>
-		<PathVu>gfx_hifi/volume_display_big_over.svg</PathVu>
-		<PathBack>gfx_hifi/volume_display_big.svg</PathBack>
+		<PathVu>skin:graphics/volume_display_big_pressed.svg</PathVu>
+		<PathBack>skin:graphics/volume_display_big.svg</PathBack>
 		<Pos>152,105</Pos>
 		<Horizontal>false</Horizontal>
 		<PeakHoldSize>5</PeakHoldSize>
@@ -834,8 +912,8 @@
 		
 		<VuMeter>
 		<ObjectName>VuMeterCh2</ObjectName>
-		<PathVu>gfx_hifi/volume_display_big_over.svg</PathVu>
-		<PathBack>gfx_hifi/volume_display_big.svg</PathBack>
+		<PathVu>skin:graphics/volume_display_big_pressed.svg</PathVu>
+		<PathBack>skin:graphics/volume_display_big.svg</PathBack>
 		<Pos>290,105</Pos>
 		<Horizontal>false</Horizontal>
 		<PeakHoldSize>5</PeakHoldSize>
@@ -849,8 +927,8 @@
 
 		<VuMeter>	
 		<ObjectName>VuMeterL1</ObjectName>
-		<PathVu>gfx_hifi/volume_display_big_over.svg</PathVu>
-		<PathBack>gfx_hifi/volume_display_big.svg</PathBack>
+		<PathVu>skin:graphics/volume_display_big_pressed.svg</PathVu>
+		<PathBack>skin:graphics/volume_display_big.svg</PathBack>
 		<Pos>216,105</Pos>
 		<PeakHoldSize>5</PeakHoldSize>
 		<PeakHoldTime>600</PeakHoldTime>
@@ -863,8 +941,8 @@
 		
 		<VuMeter>
 		<ObjectName>VuMeterR1</ObjectName>
-		<PathVu>gfx_hifi/volume_display_big_over.svg</PathVu>
-		<PathBack>gfx_hifi/volume_display_big.svg</PathBack>
+		<PathVu>skin:graphics/volume_display_big_pressed.svg</PathVu>
+		<PathBack>skin:graphics/volume_display_big.svg</PathBack>
 		<Pos>225,105</Pos>
 		<PeakHoldSize>5</PeakHoldSize>
 		<PeakHoldTime>600</PeakHoldTime>
@@ -882,8 +960,8 @@
 		-->
 		
 		<StatusLight><!-- left peak indicator -->
-		<PathStatusLight>gfx_hifi/volume_clipping_big_over.svg</PathStatusLight>
-		<PathBack>gfx_hifi/volume_clipping_big.svg</PathBack>
+		<PathStatusLight>skin:graphics/volume_clipping_big_pressed.svg</PathStatusLight>
+		<PathBack>skin:graphics/volume_clipping_big.svg</PathBack>
 		<Pos>152,91</Pos>
 		<Connection>
 		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],PeakIndicator</ConfigKey>
@@ -891,8 +969,8 @@
 		</StatusLight>
 
 		<StatusLight><!-- MASTER peaks indicators -->	
-		<PathStatusLight>gfx_hifi/volume_clipping_big_over.svg</PathStatusLight>
-		<PathBack>gfx_hifi/volume_clipping_big.svg</PathBack>
+		<PathStatusLight>skin:graphics/volume_clipping_big_pressed.svg</PathStatusLight>
+		<PathBack>skin:graphics/volume_clipping_big.svg</PathBack>
 		<Pos>216,91</Pos>
 		<Connection>
 		<ConfigKey>[Master],PeakIndicator</ConfigKey>
@@ -900,8 +978,8 @@
 		</StatusLight>
 		
 		<StatusLight><!-- MASTER peaks indicators -->	
-		<PathStatusLight>gfx_hifi/volume_clipping_big_over.svg</PathStatusLight>
-		<PathBack>gfx_hifi/volume_clipping_big.svg</PathBack>
+		<PathStatusLight>skin:graphics/volume_clipping_big_pressed.svg</PathStatusLight>
+		<PathBack>skin:graphics/volume_clipping_big.svg</PathBack>
 		<Pos>225,91</Pos>
 		<Connection>
 		<ConfigKey>[Master],PeakIndicator</ConfigKey>
@@ -909,8 +987,8 @@
 		</StatusLight>
 		
 		<StatusLight><!-- right peak indicator -->	
-		<PathStatusLight>gfx_hifi/volume_clipping_big_over.svg</PathStatusLight>
-		<PathBack>gfx_hifi/volume_clipping_big.svg</PathBack>
+		<PathStatusLight>skin:graphics/volume_clipping_big_pressed.svg</PathStatusLight>
+		<PathBack>skin:graphics/volume_clipping_big.svg</PathBack>
 		<Pos>290,91</Pos>
 		<Connection>
 		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],PeakIndicator</ConfigKey>

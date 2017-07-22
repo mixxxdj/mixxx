@@ -9,12 +9,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="9"
+   width="8"
    height="8"
-   viewBox="0 0 9 8"
+   viewBox="0 0 8 8"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.1 r15371"
    sodipodi:docname="scroll_down.svg">
   <defs
      id="defs4">
@@ -33,9 +33,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="14.481547"
-     inkscape:cx="-5.4389828"
-     inkscape:cy="-3.0731889"
+     inkscape:zoom="20.48"
+     inkscape:cx="-1.0797191"
+     inkscape:cy="0.62499728"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -71,8 +71,8 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
      id="layer1"
      transform="translate(0,-1044.3622)">
     <path
-       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 8.5595624,1044.8088 -8.1191248,0 4.11508,7.1068 z"
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.78987724px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 7,1045.3622 H 1 l 3.0410273,6 z"
        id="path4529"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cccc" />

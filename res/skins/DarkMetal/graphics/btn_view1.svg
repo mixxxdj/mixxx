@@ -15,7 +15,7 @@
    viewBox="0 0 30 30"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.1 r15371"
    sodipodi:docname="btn_view1.svg">
   <defs
      id="defs4">
@@ -49,6 +49,13 @@
        r="7"
        gradientUnits="userSpaceOnUse"
        gradientTransform="matrix(1.1625772,-1.0682303e-7,1.0932542e-7,1.1898113,-24.768435,-197.13733)" />
+    <pattern
+       y="0"
+       x="0"
+       height="6"
+       width="6"
+       patternUnits="userSpaceOnUse"
+       id="EMFhbasepattern-3" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -57,18 +64,18 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="15.014234"
-     inkscape:cx="-5.5360389"
-     inkscape:cy="20.236221"
+     inkscape:zoom="30.028468"
+     inkscape:cx="7.4848255"
+     inkscape:cy="13.35894"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="text827"
      showgrid="false"
      units="px"
      inkscape:window-width="1920"
      inkscape:window-height="1028"
-     inkscape:window-x="-103"
-     inkscape:window-y="23"
-     inkscape:window-maximized="0"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true" />
   <metadata
@@ -123,5 +130,16 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
        height="6.957828"
        x="11.521086"
        y="1033.8833" />
+    <g
+       aria-label="+"
+       style="font-style:normal;font-weight:normal;font-size:12.53666878px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#e5d5ff;fill-opacity:1;stroke:none;stroke-width:0.31341672"
+       id="text827">
+      <path
+         id="path869"
+         d="m 17.36,1038.0422 h -1.640005 v 1.64 h -1.35999 v -1.64 H 12.64 v -1.36 h 1.720005 v -1.64 h 1.35999 v 1.64 H 17.36 Z"
+         style="opacity:0.7;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ccccccccccccc" />
+    </g>
   </g>
 </svg>
