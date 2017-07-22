@@ -81,8 +81,6 @@ ShoutOutput::ShoutOutput(BroadcastProfilePtr profile,
         errorDialog(tr("Error setting non-blocking mode:"),
                 shout_get_error(m_pShout));
     }
-
-    updateFromPreferences();
 }
 
 ShoutOutput::~ShoutOutput() {
@@ -110,12 +108,14 @@ bool ShoutOutput::isConnected() {
 }
 
 void ShoutOutput::applySettings() {
-    updateFromPreferences();
-
-    if(!m_pProfile->getEnabled())
+	double dStatus = m_pStatusCO->get();
+	if(!m_pProfile->getEnabled()) {
+    	if(dStatus == STATUSCO_CONNECTED || dStatus == STATUSCO_CONNECTING) {
+    		serverDisconnect();
+    	}
     	return;
+    }
 
-    double dStatus = m_pStatusCO->get();
     if(dStatus == STATUSCO_UNCONNECTED || dStatus == STATUSCO_FAILURE) {
         serverConnect();
     } else {
@@ -132,7 +132,6 @@ QByteArray ShoutOutput::encodeString(const QString& string) {
 
 void ShoutOutput::updateFromPreferences() {
     qDebug() << "EngineBroadcast: updating from preferences";
-    NetworkStreamWorker::debugState();
 
     double dStatus = m_pStatusCO->get();
     if (dStatus == STATUSCO_CONNECTED ||
@@ -400,8 +399,7 @@ bool ShoutOutput::serverConnect() {
         return false;
     }
 
-    // Signal user also that we are connected
-    infoDialog(tr("Mixxx has successfully connected to the streaming server"), "");
+    // TODO(Palakis): signal successful connect in the preferences connections list
 
     return true;
 }
@@ -409,7 +407,7 @@ bool ShoutOutput::serverConnect() {
 bool ShoutOutput::serverDisconnect() {
     if (processDisconnect()) {
         m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
-        infoDialog(tr("Mixxx has successfully disconnected from the streaming server"), "");
+        // TODO(Palakis): signal successful disconnect in the preferences connections list
         return true;
     }
     return false;
@@ -488,7 +486,6 @@ bool ShoutOutput::processConnect() {
                 timeout < kConnectRetries &&
                 m_pProfile->getEnabled()) {
             qDebug() << "Connection pending. Waiting...";
-            NetworkStreamWorker::debugState();
             m_iShoutStatus = shout_get_connected(m_pShout);
 
             if (m_iShoutStatus != SHOUTERR_BUSY &&
@@ -579,7 +576,6 @@ void ShoutOutput::write(const unsigned char *header, const unsigned char *body,
     ssize_t queuelen = shout_queuelen(m_pShout);
     if (queuelen > 0) {
         qDebug() << "shout_queuelen" << queuelen;
-        NetworkStreamWorker::debugState();
         if (queuelen > kMaxNetworkCache) {
             m_lastErrorStr = tr("Network cache overflow");
             tryReconnect();
@@ -616,7 +612,6 @@ bool ShoutOutput::writeSingle(const unsigned char* data, size_t len) {
         m_lastErrorStr = shout_get_error(m_pShout);
         qDebug() << "EngineBroadcast::writeSingle() error:"
                  << ret << m_lastErrorStr;
-        NetworkStreamWorker::debugState();
         if (++m_iShoutFailures > kMaxShoutFailures) {
             tryReconnect();
         }
@@ -631,14 +626,9 @@ void ShoutOutput::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     if(!m_pProfile->getEnabled())
         return;
 
-    double status = m_pStatusCO->get();
-    if(m_pProfile->getEnabled()
-    		&& (status != STATUSCO_CONNECTED || status != STATUSCO_CONNECTING)) {
-    	serverConnect();
-    }
-
-    // If we are here then the user wants to be connected (broadcast is enabled
-    // in the preferences).
+    // TODO(Palakis): connect here if broadcasting and connection enabled.
+    // Do so asynchronously to avoid blocking sample
+    // processing in EngineBroadcast::run
 
     // If we aren't connected, bail.
     if (m_iShoutStatus != SHOUTERR_CONNECTED)
@@ -784,7 +774,6 @@ void ShoutOutput::updateMetaData() {
 
 void ShoutOutput::errorDialog(QString text, QString detailedError) {
     qWarning() << "Streaming error: " << detailedError;
-    NetworkStreamWorker::debugState();
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
     props->setTitle(tr("Live broadcasting : %1").arg(m_pProfile->getProfileName()));
@@ -806,7 +795,6 @@ void ShoutOutput::infoDialog(QString text, QString detailedInfo) {
     props->setDefaultButton(QMessageBox::Close);
     props->setModal(false);
     ErrorDialogHandler::instance()->requestErrorDialog(props);
-    NetworkStreamWorker::debugState();
 }
 
 bool ShoutOutput::waitForRetry() {

@@ -248,18 +248,14 @@ void EngineBroadcast::slotEnableCO(double v) {
 }
 
 void EngineBroadcast::slotProfileAdded(BroadcastProfilePtr profile) {
-	qDebug() << "EngineBroadcast::slotProfileAdded";
     addConnection(profile);
 }
 
 void EngineBroadcast::slotProfileRemoved(BroadcastProfilePtr profile) {
-	qDebug() << "EngineBroadcast::slotProfileRemoved";
     removeConnection(profile);
 }
 
 void EngineBroadcast::slotProfileRenamed(QString oldName, BroadcastProfilePtr profile) {
-	qDebug() << "EngineBroadcast::slotProfileRenamed";
-
     ShoutOutputPtr oldItem = m_connections.take(oldName);
     if(oldItem) {
         // Profile in ShoutOutput is a reference, which is supposed
@@ -270,8 +266,9 @@ void EngineBroadcast::slotProfileRenamed(QString oldName, BroadcastProfilePtr pr
 }
 
 void EngineBroadcast::slotProfilesChanged() {
-	qDebug() << "EngineBroadcast::slotProfilesChanged";
-    for(ShoutOutputPtr c : m_connections.values()) {
-        if(c) c->applySettings();
-    }
+	if(m_pBroadcastEnabled->toBool()) {
+		for(ShoutOutputPtr c : m_connections.values()) {
+			if(c) c->applySettings();
+		}
+	}
 }
