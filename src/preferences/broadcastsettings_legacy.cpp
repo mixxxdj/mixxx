@@ -37,10 +37,6 @@ void BroadcastSettings::loadLegacySettings(const BroadcastProfilePtr& profile) {
 
     // For each value, the current value is kept if it can't be found in the
     // general settings file.
-    profile->setEnabled(m_pConfig->getValue(
-                            ConfigKey(kConfigKey, kEnabled),
-                            profile->getEnabled()));
-
     profile->setHost(m_pConfig->getValue(
                          ConfigKey(kConfigKey, kHost),
                          profile->getHost()));
@@ -146,4 +142,6 @@ void BroadcastSettings::loadLegacySettings(const BroadcastProfilePtr& profile) {
     profile->setMaximumRetries(m_pConfig->getValue(
                                    ConfigKey(kConfigKey, kMaximumRetries),
                                    profile->getMaximumRetries()));
+
+    profile->setEnabled(true);
 }
