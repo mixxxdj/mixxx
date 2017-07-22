@@ -11,12 +11,14 @@ BroadcastManager::BroadcastManager(SettingsManager* pSettingsManager,
         : m_pConfig(pSettingsManager->settings()) {
     QSharedPointer<EngineNetworkStream> pNetworkStream =
             pSoundManager->getNetworkStream();
+
     if (!pNetworkStream.isNull()) {
         m_pBroadcast = QSharedPointer<EngineBroadcast>(
                 new EngineBroadcast(m_pConfig,
                                     pSettingsManager->broadcastSettings()));
         pNetworkStream->addWorker(m_pBroadcast);
     }
+
     m_pBroadcastEnabled = new ControlProxy(
             BROADCAST_PREF_KEY, "enabled", this);
     m_pBroadcastEnabled->connectValueChanged(SLOT(slotControlEnabled(double)));

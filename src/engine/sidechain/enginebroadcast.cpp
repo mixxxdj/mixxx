@@ -104,8 +104,6 @@ bool EngineBroadcast::removeConnection(BroadcastProfilePtr profile) {
 void EngineBroadcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     setFunctionCode(4);
 
-    setState(NETWORKSTREAMWORKER_STATE_BUSY);
-
     for(ShoutOutputPtr output : m_connections) {
         if(!output)
             continue;
@@ -113,12 +111,11 @@ void EngineBroadcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         if(output->isConnected())
             output->process(pBuffer, iBufferSize);
     }
-
-    setState(NETWORKSTREAMWORKER_STATE_READY);
 }
 
 // Is called from the Mixxx engine thread
 void EngineBroadcast::outputAvailable() {
+	//qDebug() << "EngineBroadcast::outputAvailable";
     m_readSema.release();
 }
 
@@ -140,7 +137,11 @@ void EngineBroadcast::run() {
         return;
     }
 
-    setState(NETWORKSTREAMWORKER_STATE_READING);
+    setState(NETWORKSTREAMWORKER_STATE_READY);
+    if(m_pOutputFifo->readAvailable()) {
+    	m_pOutputFifo->flushReadData(m_pOutputFifo->readAvailable());
+    }
+    m_threadWaiting = true; // no frames received without this
 
     while(true) {
         setFunctionCode(1);
@@ -157,7 +158,6 @@ void EngineBroadcast::run() {
 
         int readAvailable = m_pOutputFifo->readAvailable();
         if (readAvailable) {
-        	qDebug() << "EngineBroadcast::run: Read available.";
             setFunctionCode(3);
 
             CSAMPLE* dataPtr1;
@@ -178,8 +178,9 @@ void EngineBroadcast::run() {
             m_pOutputFifo->releaseReadRegions(readAvailable);
         }
     }
+    m_threadWaiting = false;
 
-    qDebug() << "EngineBroadcast::run: Stopping thread";
+    qDebug() << "EngineBroadcast::run: Thread stopped";
 }
 
 bool EngineBroadcast::threadWaiting() {
