@@ -77,6 +77,8 @@ bool EngineBroadcast::addConnection(BroadcastProfilePtr profile) {
 
     ShoutOutputPtr output(new ShoutOutput(profile, m_pConfig));
     m_connections.insert(profileName, output);
+
+    qDebug() << "EngineBroadcast::addConnection: created connection for profile" << profileName;
     return true;
 }
 
@@ -87,6 +89,7 @@ bool EngineBroadcast::removeConnection(BroadcastProfilePtr profile) {
     ShoutOutputPtr output = m_connections.take(profile->getProfileName());
     if(output) {
         output->serverDisconnect();
+        qDebug() << "EngineBroadcast::addConnection: removed connection for profile" << profile->getProfileName();
         return true;
     }
 
@@ -121,8 +124,8 @@ void EngineBroadcast::setOutputFifo(FIFO<CSAMPLE>* pOutputFifo) {
 
 void EngineBroadcast::run() {
     unsigned static id = 0;
-    QThread::currentThread()->setObjectName(QString("EngineBroadcast %1").arg(++id));
-    qDebug() << "EngineBroadcast::run: starting thread";
+    QThread::currentThread()->setObjectName(QString("EngineBroadcast"));
+    qDebug() << "EngineBroadcast::run: Starting thread";
     NetworkStreamWorker::debugState();
 
 #ifndef __WINDOWS__
@@ -136,18 +139,25 @@ void EngineBroadcast::run() {
 
     setState(NETWORKSTREAMWORKER_STATE_BUSY);
 
+    qDebug() << "EngineBroadcast::run: Opening enabled connections. Connection count:" << m_connections.size();
     for(ShoutOutputPtr output : m_connections) {
-        output->serverConnect();
+    	if(output->profile()->getEnabled()) {
+    		qDebug() << "EngineBroadcast::run: Opening" << output->profile()->getProfileName();
+    		output->serverConnect();
+    	}
     }
 
     while(true) {
         setFunctionCode(1);
         incRunCount();
+        qDebug() << "EngineBroadcast::run: acquiring read semaphore";
         m_readSema.acquire();
+        qDebug() << "EngineBroadcast::run: read semaphore acquired";
 
-        // Check to see if Broadcast is enabled, and pass the samples off to be
-        // broadcast if necessary.
+        // If broadcasting gets disabled, disconnect all connections
+        // and stop the thread
         if (!m_pBroadcastEnabled->toBool()) {
+        	qDebug() << "EngineBroadcast::run: Broadcasting disabled. Closing connections";
             m_threadWaiting = false;
 
             for(ShoutOutputPtr output : m_connections) {
@@ -155,11 +165,12 @@ void EngineBroadcast::run() {
             }
 
             setFunctionCode(2);
-            return;
+            break;
         }
 
         int readAvailable = m_pOutputFifo->readAvailable();
         if (readAvailable) {
+        	qDebug() << "EngineBroadcast::run: Read available.";
             setFunctionCode(3);
 
             CSAMPLE* dataPtr1;
@@ -171,6 +182,7 @@ void EngineBroadcast::run() {
             (void)m_pOutputFifo->aquireReadRegions(readAvailable, &dataPtr1, &size1,
                     &dataPtr2, &size2);
 
+            // Push frames to the streaming connections.
             process(dataPtr1, size1);
             if (size2 > 0) {
                 process(dataPtr2, size2);
@@ -179,6 +191,8 @@ void EngineBroadcast::run() {
             m_pOutputFifo->releaseReadRegions(readAvailable);
         }
     }
+
+    qDebug() << "EngineBroadcast::run: Stopping thread";
 }
 
 bool EngineBroadcast::threadWaiting() {
@@ -229,14 +243,18 @@ void EngineBroadcast::slotEnableCO(double v) {
 }
 
 void EngineBroadcast::slotProfileAdded(BroadcastProfilePtr profile) {
+	qDebug() << "EngineBroadcast::slotProfileAdded";
     addConnection(profile);
 }
 
 void EngineBroadcast::slotProfileRemoved(BroadcastProfilePtr profile) {
+	qDebug() << "EngineBroadcast::slotProfileRemoved";
     removeConnection(profile);
 }
 
 void EngineBroadcast::slotProfileRenamed(QString oldName, BroadcastProfilePtr profile) {
+	qDebug() << "EngineBroadcast::slotProfileRenamed";
+
     ShoutOutputPtr oldItem = m_connections.take(oldName);
     if(oldItem) {
         // Profile in ShoutOutput is a reference, which is supposed
@@ -247,6 +265,7 @@ void EngineBroadcast::slotProfileRenamed(QString oldName, BroadcastProfilePtr pr
 }
 
 void EngineBroadcast::slotProfilesChanged() {
+	qDebug() << "EngineBroadcast::slotProfilesChanged";
     for(ShoutOutputPtr c : m_connections.values()) {
         if(c) c->applySettings();
     }

@@ -65,8 +65,6 @@ ShoutOutput::ShoutOutput(BroadcastProfilePtr profile,
     m_pStatusCO->setReadOnly();
     m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
 
-    setState(NETWORKSTREAMWORKER_STATE_INIT);
-
     // shout_init() should've already been called by now
 
     if (!(m_pShout = shout_new())) {
@@ -79,7 +77,6 @@ ShoutOutput::ShoutOutput(BroadcastProfilePtr profile,
                 tr("Could not allocate shout_metadata_t"));
     }
 
-    setFunctionCode(14);
     if (shout_set_nonblocking(m_pShout, 1) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting non-blocking mode:"),
                 shout_get_error(m_pShout));
@@ -115,10 +112,11 @@ bool ShoutOutput::isConnected() {
 void ShoutOutput::applySettings() {
     updateFromPreferences();
 
+    if(!m_pProfile->getEnabled())
+    	return;
+
     double dStatus = m_pStatusCO->get();
-    if(m_pProfile->getEnabled()
-            && (dStatus == STATUSCO_UNCONNECTED
-                    || dStatus == STATUSCO_FAILURE)) {
+    if(dStatus == STATUSCO_UNCONNECTED || dStatus == STATUSCO_FAILURE) {
         serverConnect();
     } else {
         serverDisconnect();
@@ -144,8 +142,6 @@ void ShoutOutput::updateFromPreferences() {
                  << ". Can't edit preferences when playing";
         return;
     }
-
-    setState(NETWORKSTREAMWORKER_STATE_BUSY);
 
     // Delete m_encoder if it has been initialized (with maybe) different bitrate.
     // delete m_encoder calls write() check if it will be exit early
@@ -372,7 +368,6 @@ void ShoutOutput::updateFromPreferences() {
         m_encoder->setEncoderSettings(broadcastSettings);
     } else {
         qDebug() << "**** Unknown Encoder Format";
-        setState(NETWORKSTREAMWORKER_STATE_ERROR);
         m_lastErrorStr = "Encoder format error";
         return;
     }
@@ -387,20 +382,15 @@ void ShoutOutput::updateFromPreferences() {
         // delete m_encoder calls write() make sure it will be exit early
         DEBUG_ASSERT(m_iShoutStatus != SHOUTERR_CONNECTED);
         m_encoder.reset();
-        setState(NETWORKSTREAMWORKER_STATE_ERROR);
         m_lastErrorStr = "Encoder error";
 
         return;
     }
-
-    setState(NETWORKSTREAMWORKER_STATE_READY);
 }
 
 bool ShoutOutput::serverConnect() {
-    if(isConnected() || !m_pProfile->getEnabled())
+    if(!m_pProfile->getEnabled())
         return false;
-
-    setState(NETWORKSTREAMWORKER_STATE_CONNECTING);
 
     if (!processConnect()) {
         m_pProfile->setEnabled(false);
@@ -457,7 +447,6 @@ bool ShoutOutput::processConnect() {
         m_iShoutStatus = shout_open(m_pShout);
         if (m_iShoutStatus == SHOUTERR_SUCCESS) {
             m_iShoutStatus = SHOUTERR_CONNECTED;
-            setState(NETWORKSTREAMWORKER_STATE_CONNECTED);
         }
 
         if ((m_iShoutStatus == SHOUTERR_BUSY) ||
@@ -498,7 +487,6 @@ bool ShoutOutput::processConnect() {
         while (m_iShoutStatus == SHOUTERR_BUSY &&
                 timeout < kConnectRetries &&
                 m_pProfile->getEnabled()) {
-            setState(NETWORKSTREAMWORKER_STATE_WAITING);
             qDebug() << "Connection pending. Waiting...";
             NetworkStreamWorker::debugState();
             m_iShoutStatus = shout_get_connected(m_pShout);
@@ -519,7 +507,6 @@ bool ShoutOutput::processConnect() {
             ++ timeout;
         }
         if (m_iShoutStatus == SHOUTERR_CONNECTED) {
-            setState(NETWORKSTREAMWORKER_STATE_READY);
             qDebug() << "***********Connected to streaming server...";
 
             m_retryCount = 0;
@@ -572,7 +559,6 @@ bool ShoutOutput::processDisconnect() {
 
 void ShoutOutput::write(const unsigned char *header, const unsigned char *body,
                             int headerLen, int bodyLen) {
-    setFunctionCode(7);
     if (!m_pShout || m_iShoutStatus != SHOUTERR_CONNECTED) {
         // This happens when the decoder calls flush() and the connection is
         // already down
@@ -618,8 +604,6 @@ int ShoutOutput::filelen() {
 }
 
 bool ShoutOutput::writeSingle(const unsigned char* data, size_t len) {
-    // We are already synced by EngineNetworkstream
-    setFunctionCode(8);
     int ret = shout_send_raw(m_pShout, data, len);
     if (ret == SHOUTERR_BUSY) {
         // in case of busy, frames are queued
@@ -644,12 +628,15 @@ bool ShoutOutput::writeSingle(const unsigned char* data, size_t len) {
 }
 
 void ShoutOutput::process(const CSAMPLE* pBuffer, const int iBufferSize) {
-    setFunctionCode(4);
-
     if(!m_pProfile->getEnabled())
         return;
 
-    setState(NETWORKSTREAMWORKER_STATE_BUSY);
+    double status = m_pStatusCO->get();
+    if(m_pProfile->getEnabled()
+    		&& (status != STATUSCO_CONNECTED || status != STATUSCO_CONNECTING)) {
+    	serverConnect();
+    }
+
     // If we are here then the user wants to be connected (broadcast is enabled
     // in the preferences).
 
@@ -659,7 +646,6 @@ void ShoutOutput::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 
     // If we are connected, encode the samples.
     if (iBufferSize > 0 && m_encoder) {
-        setFunctionCode(6);
         m_encoder->encodeBuffer(pBuffer, iBufferSize);
         // the encoded frames are received by the write() callback.
     }
@@ -668,8 +654,6 @@ void ShoutOutput::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     if (metaDataHasChanged()) {
         updateMetaData();
     }
-
-    setState(NETWORKSTREAMWORKER_STATE_READY);
 }
 
 bool ShoutOutput::metaDataHasChanged() {
@@ -703,7 +687,6 @@ bool ShoutOutput::metaDataHasChanged() {
 }
 
 void ShoutOutput::updateMetaData() {
-    setFunctionCode(5);
     if (!m_pShout || !m_pShoutMetaData)
         return;
 
@@ -740,7 +723,6 @@ void ShoutOutput::updateMetaData() {
             // Also I do not know about icecast1. To be safe, i stick to the
             // old way for those use cases.
             if (!m_format_is_mp3 && m_protocol_is_icecast2) {
-                setFunctionCode(9);
                 shout_metadata_add(m_pShoutMetaData, "artist",  encodeString(artist).constData());
                 shout_metadata_add(m_pShoutMetaData, "title",  encodeString(title).constData());
             } else {
@@ -773,12 +755,9 @@ void ShoutOutput::updateMetaData() {
                 } while (replaceIndex != -1);
 
                 QByteArray baSong = encodeString(metadataFinal);
-                setFunctionCode(10);
                 shout_metadata_add(m_pShoutMetaData, "song",  baSong.constData());
             }
-            setFunctionCode(11);
             shout_set_metadata(m_pShout, m_pShoutMetaData);
-
         }
     } else {
         // Otherwise we might use static metadata
@@ -787,7 +766,6 @@ void ShoutOutput::updateMetaData() {
 
             // see comment above...
             if (!m_format_is_mp3 && m_protocol_is_icecast2) {
-                setFunctionCode(12);
                 shout_metadata_add(
                         m_pShoutMetaData,"artist",encodeString(m_customArtist).constData());
 
@@ -798,7 +776,6 @@ void ShoutOutput::updateMetaData() {
                 shout_metadata_add(m_pShoutMetaData, "song", baCustomSong.constData());
             }
 
-            setFunctionCode(13);
             shout_set_metadata(m_pShout, m_pShoutMetaData);
             m_firstCall = true;
         }
@@ -817,7 +794,6 @@ void ShoutOutput::errorDialog(QString text, QString detailedError) {
     props->setDefaultButton(QMessageBox::Close);
     props->setModal(false);
     ErrorDialogHandler::instance()->requestErrorDialog(props);
-    setState(NETWORKSTREAMWORKER_STATE_ERROR);
 }
 
 void ShoutOutput::infoDialog(QString text, QString detailedInfo) {

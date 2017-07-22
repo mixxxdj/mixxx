@@ -33,7 +33,7 @@ struct _util_dict;
 typedef struct _util_dict shout_metadata_t;
 
 class ShoutOutput
-        : public QObject, public EncoderCallback, public NetworkStreamWorker {
+        : public QObject, public EncoderCallback {
     Q_OBJECT
   public:
     enum StatusCOStates {
