@@ -128,10 +128,8 @@ void EngineBroadcast::setOutputFifo(FIFO<CSAMPLE>* pOutputFifo) {
 }
 
 void EngineBroadcast::run() {
-    unsigned static id = 0;
     QThread::currentThread()->setObjectName(QString("EngineBroadcast"));
     qDebug() << "EngineBroadcast::run: Starting thread";
-    NetworkStreamWorker::debugState();
 
 #ifndef __WINDOWS__
     ignoreSigpipe();
@@ -142,33 +140,17 @@ void EngineBroadcast::run() {
         return;
     }
 
-    setState(NETWORKSTREAMWORKER_STATE_BUSY);
-
-    qDebug() << "EngineBroadcast::run: Opening enabled connections. Connection count:" << m_connections.size();
-    for(ShoutOutputPtr output : m_connections) {
-    	if(output->profile()->getEnabled()) {
-    		qDebug() << "EngineBroadcast::run: Opening" << output->profile()->getProfileName();
-    		output->serverConnect();
-    	}
-    }
+    setState(NETWORKSTREAMWORKER_STATE_READING);
 
     while(true) {
         setFunctionCode(1);
         incRunCount();
-        qDebug() << "EngineBroadcast::run: acquiring read semaphore";
         m_readSema.acquire();
-        qDebug() << "EngineBroadcast::run: read semaphore acquired";
 
-        // If broadcasting gets disabled, disconnect all connections
-        // and stop the thread
+        // Stop the thread if broadcasting is turned off
         if (!m_pBroadcastEnabled->toBool()) {
-        	qDebug() << "EngineBroadcast::run: Broadcasting disabled. Closing connections";
+        	qDebug() << "EngineBroadcast::run: Broadcasting disabled. Terminating thread";
             m_threadWaiting = false;
-
-            for(ShoutOutputPtr output : m_connections) {
-                output->serverDisconnect();
-            }
-
             setFunctionCode(2);
             break;
         }
@@ -238,12 +220,10 @@ void EngineBroadcast::slotEnableCO(double v) {
         m_pBroadcastEnabled->set(0.0);
         v = 0.0;
     }
+
     if (v > 0.0) {
         start(QThread::HighPriority);
         setState(NETWORKSTREAMWORKER_STATE_CONNECTING);
-    } else {
-        // return early from Timeouts
-        m_waitEnabled.wakeAll();
     }
 }
 

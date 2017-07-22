@@ -69,7 +69,6 @@ class EngineBroadcast
     FIFO<CSAMPLE>* m_pOutputFifo;
 
     QMutex m_enabledMutex;
-    QWaitCondition m_waitEnabled;
 };
 
 #endif // ENGINE_SIDECHAIN_ENGINEBROADCAST_H
