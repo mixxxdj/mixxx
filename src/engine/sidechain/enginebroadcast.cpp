@@ -31,6 +31,11 @@ EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig,
     connect(m_pBroadcastEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(slotEnableCO(double)));
 
+    QList<BroadcastProfilePtr> profiles = m_settings->profiles();
+    for(BroadcastProfilePtr profile : profiles) {
+    	addConnection(profile);
+    }
+
     // Connect add/remove/renamed profiles signals.
     // Passing the raw pointer from QSharedPointer to connect() is fine, since
     // connect is trusted that it won't delete the pointer

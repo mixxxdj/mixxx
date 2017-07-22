@@ -278,3 +278,7 @@ QAbstractItemDelegate* BroadcastSettings::delegateForColumn(const int i, QObject
 BroadcastProfilePtr BroadcastSettings::profileAt(int index) {
 	return m_profiles.values().value(index, BroadcastProfilePtr(nullptr));
 }
+
+QList<BroadcastProfilePtr> BroadcastSettings::profiles() {
+	return m_profiles.values();
+}

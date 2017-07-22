@@ -34,7 +34,9 @@ class BroadcastSettings : public QAbstractTableModel {
     bool setData(const QModelIndex& index, const QVariant& value,
     		int role = Qt::EditRole);
     QAbstractItemDelegate* delegateForColumn(const int i, QObject* parent);
+
     BroadcastProfilePtr profileAt(int index);
+    QList<BroadcastProfilePtr> profiles();
 
   signals:
     void profileAdded(BroadcastProfilePtr profile);
