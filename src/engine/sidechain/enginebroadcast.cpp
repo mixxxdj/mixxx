@@ -110,13 +110,26 @@ bool EngineBroadcast::removeConnection(BroadcastProfilePtr profile) {
 void EngineBroadcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     setFunctionCode(4);
 
-    for(ShoutOutputPtr output : m_connections) {
-        if(!output)
-            continue;
+    QList<ShoutOutputPtr> connections = m_connections.values();
+	for(ShoutOutputPtr c : connections) {
+		if(!c)
+			continue;
 
-        if(output->isConnected())
-            output->process(pBuffer, iBufferSize);
-    }
+		if(!c->threadWaiting())
+			continue;
+
+		FIFO<CSAMPLE>* cFifo = c->getOutputFifo();
+		if(cFifo) {
+			int available = cFifo->writeAvailable();
+
+			int copyCount = math_min(available, iBufferSize);
+			if(copyCount > 0) {
+				cFifo->write(pBuffer, copyCount);
+			}
+
+			c->outputAvailable();
+		}
+	}
 }
 
 // Is called from the Mixxx engine thread
@@ -134,27 +147,16 @@ void EngineBroadcast::run() {
     QThread::currentThread()->setObjectName("EngineBroadcast");
     qDebug() << "EngineBroadcast::run: Starting thread";
 
-#ifndef __WINDOWS__
-    ignoreSigpipe();
-#endif
-
     VERIFY_OR_DEBUG_ASSERT(m_pOutputFifo) {
         qDebug() << "EngineBroadcast::run: Broadcast FIFO handle is not available. Aborting";
         return;
     }
 
-    setState(NETWORKSTREAMWORKER_STATE_READY);
     if(m_pOutputFifo->readAvailable()) {
     	m_pOutputFifo->flushReadData(m_pOutputFifo->readAvailable());
     }
     m_threadWaiting = true; // no frames received without this
     m_pStatusCO->forceSet(STATUSCO_CONNECTING);
-
-    for(ShoutOutputPtr output : m_connections.values()) {
-    	if(output->profile()->getEnabled() && !output->isConnected()) {
-    		output->serverConnect();
-    	}
-    }
 
     while(true) {
         setFunctionCode(1);
@@ -186,7 +188,6 @@ void EngineBroadcast::run() {
             (void)m_pOutputFifo->aquireReadRegions(readAvailable, &dataPtr1, &size1,
                     &dataPtr2, &size2);
 
-            // Push frames to the streaming connections.
             process(dataPtr1, size1);
             if (size2 > 0) {
                 process(dataPtr2, size2);
@@ -205,32 +206,6 @@ void EngineBroadcast::run() {
 bool EngineBroadcast::threadWaiting() {
     return m_threadWaiting;
 }
-
-#ifndef __WINDOWS__
-void EngineBroadcast::ignoreSigpipe() {
-    // If the remote connection is closed, shout_send_raw() can cause a
-    // SIGPIPE. If it is unhandled then Mixxx will quit immediately.
-#ifdef Q_OS_MAC
-    // The per-thread approach using pthread_sigmask below does not seem to work
-    // on macOS.
-    struct sigaction sa;
-    memset(&sa, 0, sizeof(sa));
-    sa.sa_handler = SIG_IGN;
-    if (sigaction(SIGPIPE, &sa, NULL) != 0) {
-        qDebug() << "EngineBroadcast::ignoreSigpipe() failed";
-    }
-#else
-    // http://www.microhowto.info/howto/ignore_sigpipe_without_affecting_other_threads_in_a_process.html
-    sigset_t sigpipe_mask;
-    sigemptyset(&sigpipe_mask);
-    sigaddset(&sigpipe_mask, SIGPIPE);
-    sigset_t saved_mask;
-    if (pthread_sigmask(SIG_BLOCK, &sigpipe_mask, &saved_mask) != 0) {
-        qDebug() << "EngineBroadcast::ignoreSigpipe() failed";
-    }
-#endif
-}
-#endif
 
 void EngineBroadcast::slotEnableCO(double v) {
     if (v > 1.0) {

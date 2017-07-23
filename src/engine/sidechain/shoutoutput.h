@@ -33,7 +33,7 @@ struct _util_dict;
 typedef struct _util_dict shout_metadata_t;
 
 class ShoutOutput
-        : public QObject, public EncoderCallback {
+        : public QThread, public EncoderCallback, public NetworkStreamWorker {
     Q_OBJECT
   public:
     enum StatusCOStates {
@@ -43,8 +43,7 @@ class ShoutOutput
         STATUSCO_FAILURE = 3 // Happens when disconnected by an error
     };
 
-    ShoutOutput(BroadcastProfilePtr profile, UserSettingsPointer pConfig,
-            QObject* parent = nullptr);
+    ShoutOutput(BroadcastProfilePtr profile, UserSettingsPointer pConfig);
     virtual ~ShoutOutput();
 
     // This is called by the Engine implementation for each sample. Encode and
@@ -70,6 +69,12 @@ class ShoutOutput
     bool serverDisconnect();
     bool isConnected();
     void applySettings();
+
+    virtual void outputAvailable();
+    virtual void setOutputFifo(FIFO<CSAMPLE>* pOutputFifo);
+    FIFO<CSAMPLE>* getOutputFifo();
+    virtual bool threadWaiting();
+    virtual void run();
 
     BroadcastProfilePtr profile() {
         return m_pProfile;
@@ -100,6 +105,10 @@ class ShoutOutput
 
     void serverWrite(unsigned char *header, unsigned char *body,
                int headerLen, int bodyLen);
+
+#ifndef __WINDOWS__
+    void ignoreSigpipe();
+#endif
 
     bool writeSingle(const unsigned char *data, size_t len);
 
@@ -137,6 +146,9 @@ class ShoutOutput
     bool m_protocol_is_icecast2;
     bool m_protocol_is_shoutcast;
     bool m_ogg_dynamic_update;
+    QAtomicInt m_threadWaiting;
+    QSemaphore m_readSema;
+    FIFO<CSAMPLE>* m_pOutputFifo;
 
     QString m_lastErrorStr;
     int m_retryCount;

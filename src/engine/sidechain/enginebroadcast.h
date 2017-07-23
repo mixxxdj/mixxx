@@ -61,10 +61,6 @@ class EngineBroadcast
     void slotProfilesChanged();
 
   private:
-#ifndef __WINDOWS__
-    void ignoreSigpipe();
-#endif
-
     QMap<QString,ShoutOutputPtr> m_connections;
 
     BroadcastSettingsPointer m_settings;

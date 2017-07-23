@@ -27,16 +27,30 @@
 
 #include "engine/sidechain/shoutoutput.h"
 
+namespace {
 static const int kConnectRetries = 30;
 static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
 // Shoutcast default receive buffer 1048576 and autodumpsourcetime 30 s
 // http://wiki.shoutcast.com/wiki/SHOUTcast_DNAS_Server_2
 static const int kMaxShoutFailures = 3;
 
+const int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
+// Related chunk sizes:
+// Mp3 frames = 1152 samples
+// Ogg frames = 64 to 8192 samples.
+// In Mixxx 1.11 we transmit every decoder-frames at once,
+// Which results in case of ogg in a dynamic latency from 0.14 ms to to 185 ms
+// Now we have switched to a fixed latency of 8192 frames (stereo samples) =
+// which is 185 @ 44100 ms and twice the maximum of the max mixxx audio buffer
+const int kBufferFrames = kNetworkLatencyFrames * 4; // 743 ms @ 44100 Hz
+// normally * 2 is sufficient.
+// We allow to buffer two extra chunks for a CPU overload case, when
+// the broadcast thread is not scheduled in time.
+}
+
 ShoutOutput::ShoutOutput(BroadcastProfilePtr profile,
-        UserSettingsPointer pConfig, QObject* parent)
-        : QObject(parent),
-          m_pTextCodec(nullptr),
+        UserSettingsPointer pConfig)
+        : m_pTextCodec(nullptr),
           m_pMetaData(),
           m_pShout(nullptr),
           m_pShoutMetaData(nullptr),
@@ -55,17 +69,21 @@ ShoutOutput::ShoutOutput(BroadcastProfilePtr profile,
           m_protocol_is_icecast2(false),
           m_protocol_is_shoutcast(false),
           m_ogg_dynamic_update(false),
+		  m_threadWaiting(false),
           m_retryCount(0),
           m_reconnectFirstDelay(0.0),
           m_reconnectPeriod(5.0),
           m_noDelayFirstReconnect(true),
           m_limitReconnects(true),
           m_maximumRetries(10) {
-	setObjectName(QString("ShoutOutput '%1'").arg(m_pProfile->getProfileName()));
-
     m_pStatusCO = new ControlObject(ConfigKey(m_pProfile->getProfileName(), "status"));
     m_pStatusCO->setReadOnly();
     m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
+
+    // TODO(Palakis): hardcoded channel count for testing only. FIX THIS ASAP.
+    m_pOutputFifo = new FIFO<CSAMPLE>(2 * kBufferFrames);
+
+    setState(NETWORKSTREAMWORKER_STATE_INIT);
 
     // shout_init() should've already been called by now
 
@@ -79,6 +97,7 @@ ShoutOutput::ShoutOutput(BroadcastProfilePtr profile,
                 tr("Could not allocate shout_metadata_t"));
     }
 
+    setFunctionCode(14);
     if (shout_set_nonblocking(m_pShout, 1) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting non-blocking mode:"),
                 shout_get_error(m_pShout));
@@ -143,6 +162,8 @@ void ShoutOutput::updateFromPreferences() {
                  << ". Can't edit preferences when playing";
         return;
     }
+
+    setState(NETWORKSTREAMWORKER_STATE_BUSY);
 
     // Delete m_encoder if it has been initialized (with maybe) different bitrate.
     // delete m_encoder calls write() check if it will be exit early
@@ -369,6 +390,7 @@ void ShoutOutput::updateFromPreferences() {
         m_encoder->setEncoderSettings(broadcastSettings);
     } else {
         qDebug() << "**** Unknown Encoder Format";
+        setState(NETWORKSTREAMWORKER_STATE_ERROR);
         m_lastErrorStr = "Encoder format error";
         return;
     }
@@ -383,35 +405,26 @@ void ShoutOutput::updateFromPreferences() {
         // delete m_encoder calls write() make sure it will be exit early
         DEBUG_ASSERT(m_iShoutStatus != SHOUTERR_CONNECTED);
         m_encoder.reset();
+
+        setState(NETWORKSTREAMWORKER_STATE_ERROR);
         m_lastErrorStr = "Encoder error";
 
         return;
     }
+    setState(NETWORKSTREAMWORKER_STATE_READY);
 }
 
 bool ShoutOutput::serverConnect() {
     if(!m_pProfile->getEnabled())
         return false;
 
-    if (!processConnect()) {
-        m_pProfile->setEnabled(false);
-        errorDialog(tr("Can't connect to streaming server"),
-                m_lastErrorStr + "\n" +
-                tr("Please check your connection to the Internet and verify that your username and password are correct."));
-        return false;
-    }
-
-    // TODO(Palakis): signal successful connect in the preferences connections list
-
+    start(QThread::HighPriority);
+    setState(NETWORKSTREAMWORKER_STATE_CONNECTING);
     return true;
 }
 
 bool ShoutOutput::serverDisconnect() {
-    if (processDisconnect()) {
-        m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
-        // TODO(Palakis): signal successful disconnect in the preferences connections list
-        return true;
-    }
+    m_pProfile->setEnabled(false);
     return false;
 }
 
@@ -447,6 +460,7 @@ bool ShoutOutput::processConnect() {
         m_iShoutStatus = shout_open(m_pShout);
         if (m_iShoutStatus == SHOUTERR_SUCCESS) {
             m_iShoutStatus = SHOUTERR_CONNECTED;
+            setState(NETWORKSTREAMWORKER_STATE_CONNECTED);
         }
 
         if ((m_iShoutStatus == SHOUTERR_BUSY) ||
@@ -487,6 +501,7 @@ bool ShoutOutput::processConnect() {
         while (m_iShoutStatus == SHOUTERR_BUSY &&
                 timeout < kConnectRetries &&
                 m_pProfile->getEnabled()) {
+        	setState(NETWORKSTREAMWORKER_STATE_WAITING);
             qDebug() << "Connection pending. Waiting...";
             m_iShoutStatus = shout_get_connected(m_pShout);
 
@@ -506,12 +521,19 @@ bool ShoutOutput::processConnect() {
             ++ timeout;
         }
         if (m_iShoutStatus == SHOUTERR_CONNECTED) {
+        	setState(NETWORKSTREAMWORKER_STATE_READY);
             qDebug() << "***********Connected to streaming server...";
 
             m_retryCount = 0;
 
+            if(m_pOutputFifo->readAvailable()) {
+            	m_pOutputFifo->flushReadData(m_pOutputFifo->readAvailable());
+            }
+            m_threadWaiting = true;
+
             m_pStatusCO->forceSet(STATUSCO_CONNECTED);
             emit(broadcastConnected());
+
             qDebug() << "ShoutOutput::processConnect() returning true";
             return true;
         } else if (m_iShoutStatus == SHOUTERR_SOCKET) {
@@ -543,9 +565,12 @@ bool ShoutOutput::processDisconnect() {
     qDebug() << "ShoutOutput::processDisconnect()";
     bool disconnected = false;
     if (isConnected()) {
+    	m_threadWaiting = false;
+
         // We are connected but broadcast is disabled. Disconnect.
         shout_close(m_pShout);
         m_iShoutStatus = SHOUTERR_UNCONNECTED;
+
         emit(broadcastDisconnected());
         disconnected = true;
     }
@@ -553,12 +578,12 @@ bool ShoutOutput::processDisconnect() {
     DEBUG_ASSERT(m_iShoutStatus != SHOUTERR_CONNECTED);
     m_encoder.reset();
     return disconnected;
-
 }
 
 void ShoutOutput::write(const unsigned char *header, const unsigned char *body,
                             int headerLen, int bodyLen) {
-    if (!m_pShout || m_iShoutStatus != SHOUTERR_CONNECTED) {
+    setFunctionCode(7);
+	if (!m_pShout || m_iShoutStatus != SHOUTERR_CONNECTED) {
         // This happens when the decoder calls flush() and the connection is
         // already down
         return;
@@ -602,7 +627,8 @@ int ShoutOutput::filelen() {
 }
 
 bool ShoutOutput::writeSingle(const unsigned char* data, size_t len) {
-    int ret = shout_send_raw(m_pShout, data, len);
+    setFunctionCode(8);
+	int ret = shout_send_raw(m_pShout, data, len);
     if (ret == SHOUTERR_BUSY) {
         // in case of busy, frames are queued
         // try to flush queue after a short sleep
@@ -625,12 +651,11 @@ bool ShoutOutput::writeSingle(const unsigned char* data, size_t len) {
 }
 
 void ShoutOutput::process(const CSAMPLE* pBuffer, const int iBufferSize) {
-    if(!m_pProfile->getEnabled())
+    setFunctionCode(4);
+	if(!m_pProfile->getEnabled())
         return;
 
-    // TODO(Palakis): connect here if broadcasting and connection enabled.
-    // Do so asynchronously to avoid blocking sample
-    // processing in EngineBroadcast::run
+    setState(NETWORKSTREAMWORKER_STATE_BUSY);
 
     // If we aren't connected, bail.
     if (m_iShoutStatus != SHOUTERR_CONNECTED)
@@ -638,6 +663,7 @@ void ShoutOutput::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 
     // If we are connected, encode the samples.
     if (iBufferSize > 0 && m_encoder) {
+    	setFunctionCode(6);
         m_encoder->encodeBuffer(pBuffer, iBufferSize);
         // the encoded frames are received by the write() callback.
     }
@@ -646,6 +672,7 @@ void ShoutOutput::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     if (metaDataHasChanged()) {
         updateMetaData();
     }
+    setState(NETWORKSTREAMWORKER_STATE_READY);
 }
 
 bool ShoutOutput::metaDataHasChanged() {
@@ -679,6 +706,7 @@ bool ShoutOutput::metaDataHasChanged() {
 }
 
 void ShoutOutput::updateMetaData() {
+	setFunctionCode(5);
     if (!m_pShout || !m_pShoutMetaData)
         return;
 
@@ -715,6 +743,7 @@ void ShoutOutput::updateMetaData() {
             // Also I do not know about icecast1. To be safe, i stick to the
             // old way for those use cases.
             if (!m_format_is_mp3 && m_protocol_is_icecast2) {
+            	setFunctionCode(9);
                 shout_metadata_add(m_pShoutMetaData, "artist",  encodeString(artist).constData());
                 shout_metadata_add(m_pShoutMetaData, "title",  encodeString(title).constData());
             } else {
@@ -747,8 +776,10 @@ void ShoutOutput::updateMetaData() {
                 } while (replaceIndex != -1);
 
                 QByteArray baSong = encodeString(metadataFinal);
+                setFunctionCode(10);
                 shout_metadata_add(m_pShoutMetaData, "song",  baSong.constData());
             }
+            setFunctionCode(11);
             shout_set_metadata(m_pShout, m_pShoutMetaData);
         }
     } else {
@@ -758,6 +789,7 @@ void ShoutOutput::updateMetaData() {
 
             // see comment above...
             if (!m_format_is_mp3 && m_protocol_is_icecast2) {
+            	setFunctionCode(12);
                 shout_metadata_add(
                         m_pShoutMetaData,"artist",encodeString(m_customArtist).constData());
 
@@ -768,6 +800,7 @@ void ShoutOutput::updateMetaData() {
                 shout_metadata_add(m_pShoutMetaData, "song", baCustomSong.constData());
             }
 
+            setFunctionCode(13);
             shout_set_metadata(m_pShout, m_pShoutMetaData);
             m_firstCall = true;
         }
@@ -785,6 +818,7 @@ void ShoutOutput::errorDialog(QString text, QString detailedError) {
     props->setDefaultButton(QMessageBox::Close);
     props->setModal(false);
     ErrorDialogHandler::instance()->requestErrorDialog(props);
+    setState(NETWORKSTREAMWORKER_STATE_ERROR);
 }
 
 void ShoutOutput::infoDialog(QString text, QString detailedInfo) {
@@ -852,3 +886,110 @@ void ShoutOutput::tryReconnect() {
                     tr("Please check your connection to the Internet."));
     }
 }
+
+void ShoutOutput::outputAvailable() {
+	m_readSema.release();
+}
+
+void ShoutOutput::setOutputFifo(FIFO<CSAMPLE>* pOutputFifo) {
+}
+
+FIFO<CSAMPLE>* ShoutOutput::getOutputFifo() {
+	return m_pOutputFifo;
+}
+
+bool ShoutOutput::threadWaiting() {
+	return m_threadWaiting;
+}
+
+void ShoutOutput::run() {
+	QThread::currentThread()->setObjectName(
+			QString("ShoutOutput '%1'").arg(m_pProfile->getProfileName()));
+	qDebug() << "ShoutOutput::run: Starting thread";
+
+#ifndef __WINDOWS__
+	ignoreSigpipe();
+#endif
+
+	VERIFY_OR_DEBUG_ASSERT(m_pOutputFifo) {
+		qDebug() << "ShoutOutput::run: Broadcast FIFO handle is not available. Aborting";
+		return;
+	}
+
+	if (!processConnect()) {
+		m_pProfile->setEnabled(false);
+		errorDialog(tr("Can't connect to streaming server"),
+				m_lastErrorStr + "\n" +
+				tr("Please check your connection to the Internet and verify that your username and password are correct."));
+		return;
+	}
+
+	m_pStatusCO->forceSet(STATUSCO_CONNECTED);
+
+	while(true) {
+		setFunctionCode(1);
+		incRunCount();
+		m_readSema.acquire();
+
+		// Stop the thread if broadcasting is turned off
+		if (!m_pProfile->getEnabled()) {
+			m_threadWaiting = false;
+			qDebug() << "ShoutOutput::run: Connection disabled. Disconnecting";
+			if(processDisconnect()) {
+				m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
+			}
+			setFunctionCode(2);
+			break;
+		}
+
+		int readAvailable = m_pOutputFifo->readAvailable();
+		if (readAvailable) {
+			setFunctionCode(3);
+			CSAMPLE* dataPtr1;
+			ring_buffer_size_t size1;
+			CSAMPLE* dataPtr2;
+			ring_buffer_size_t size2;
+
+			// We use size1 and size2, so we can ignore the return value
+			(void)m_pOutputFifo->aquireReadRegions(readAvailable, &dataPtr1, &size1,
+					&dataPtr2, &size2);
+
+			// Push frames to the encoder.
+			process(dataPtr1, size1);
+			if (size2 > 0) {
+				process(dataPtr2, size2);
+			}
+
+			m_pOutputFifo->releaseReadRegions(readAvailable);
+		}
+	}
+
+	qDebug() << "ShoutOutput::run: Thread stopped";
+}
+
+#ifndef __WINDOWS__
+void ShoutOutput::ignoreSigpipe() {
+    // If the remote connection is closed, shout_send_raw() can cause a
+    // SIGPIPE. If it is unhandled then Mixxx will quit immediately.
+#ifdef Q_OS_MAC
+    // The per-thread approach using pthread_sigmask below does not seem to work
+    // on macOS.
+    struct sigaction sa;
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_handler = SIG_IGN;
+    if (sigaction(SIGPIPE, &sa, NULL) != 0) {
+        qDebug() << "EngineBroadcast::ignoreSigpipe() failed";
+    }
+#else
+    // http://www.microhowto.info/howto/ignore_sigpipe_without_affecting_other_threads_in_a_process.html
+    sigset_t sigpipe_mask;
+    sigemptyset(&sigpipe_mask);
+    sigaddset(&sigpipe_mask, SIGPIPE);
+    sigset_t saved_mask;
+    if (pthread_sigmask(SIG_BLOCK, &sigpipe_mask, &saved_mask) != 0) {
+        qDebug() << "EngineBroadcast::ignoreSigpipe() failed";
+    }
+#endif
+}
+#endif
+
