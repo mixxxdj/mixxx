@@ -219,6 +219,7 @@ void EngineBroadcast::slotEnableCO(double v) {
     if (v > 0.0) {
         start(QThread::HighPriority);
         setState(NETWORKSTREAMWORKER_STATE_CONNECTING);
+        slotProfilesChanged();
     }
 }
 
