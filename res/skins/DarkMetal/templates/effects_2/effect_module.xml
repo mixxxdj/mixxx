@@ -4,19 +4,25 @@
 		
 		<WidgetGroup>
 		<ObjectName>EffectsModule<Variable name="unit"/></ObjectName>	
-		<MinimumSize>640,85</MinimumSize>
+		<MinimumSize>700,85</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
 		<Children>
 			
 			<WidgetGroup>
-				<BackPath>gfx_hifi/background_effects_unit.svg</BackPath>
+				<BackPath>skin:graphics/background_effects_unit.svg</BackPath>
 				<Children>
+				
+					<WidgetGroup><!-- Super + Mix buttons -->
+					<Pos>10,5</Pos>
+					<Size>80f,85f</Size>						
+					<Layout>horizontal</Layout>						
+					<Children>	
 											
 					<KnobComposed><!-- Button: Super -->
-						<Pos>9,17</Pos>
-						<Size>25f,25f</Size>
-						<BackPath>gfx_hifi/background_knob4.svg</BackPath>
-						<Knob>gfx_hifi/pointer_knob4.svg</Knob>
+						<Pos>0,0</Pos>
+						<Size>40f,40f</Size>
+						<BackPath>skin:graphics/background_knob4.svg</BackPath>
+						<Knob>skin:graphics/pointer_knob4.svg</Knob>
 						<MinAngle>-130</MinAngle>
 						<MaxAngle>130</MaxAngle>
 						<Connection>
@@ -25,10 +31,10 @@
 					</KnobComposed>
 							
 					<KnobComposed><!-- Button: Mix -->
-						<Pos>9,52</Pos>
-						<Size>25f,25f</Size>
-						<BackPath>gfx_hifi/background_knob4.svg</BackPath>
-						<Knob>gfx_hifi/pointer_knob4.svg</Knob>
+						<Pos>0,0</Pos>
+						<Size>40f,40f</Size>
+						<BackPath>skin:graphics/background_knob4.svg</BackPath>
+						<Knob>skin:graphics/pointer_knob4.svg</Knob>
 						<MinAngle>-130</MinAngle>
 						<MaxAngle>130</MaxAngle>
 						<Connection>
@@ -36,30 +42,33 @@
 						</Connection>
 					</KnobComposed>			
 				
+					</Children>						
+					</WidgetGroup>				
+				
 					<WidgetGroup><!-- Select a channel for this unit: -->
-						<Pos>46,7</Pos>
+						<Pos>100,7</Pos>
 						<Size>100,23</Size>						
 						<Layout>vertical</Layout>						
 						<Children>						
-						<Template src="skin:templates/06_effects/effect_channel.xml"><Variable name="unit"/></Template>	
+						<Template src="skin:templates/effects_2/effect_channel.xml"><Variable name="unit"/></Template>	
 						</Children>						
 					</WidgetGroup>
 					
 					<WidgetGroup><!-- Select an effect: -->
-						<Pos>50,50</Pos>
+						<Pos>104,52</Pos>
 						<Size>100,23</Size>
 						<Layout>vertical</Layout>
 						<Children>						
-						<Template src="skin:templates/06_effects/effect_select.xml"><SetVariable name="effect">1</SetVariable></Template>
+						<Template src="skin:templates/effects_2/effect_select.xml"><SetVariable name="effect">1</SetVariable></Template>
 						</Children>
 					</WidgetGroup>
 					
 					<WidgetGroup><!-- Effect parameters: -->
-						<Pos>240,0</Pos>
+						<Pos>298,0</Pos>
 						<Size>390,85</Size>
 						<Layout>vertical</Layout>
 						<Children>
-						<Template src="skin:templates/06_effects/effect_parameters.xml"><SetVariable name="effect">1</SetVariable></Template>	
+						<Template src="skin:templates/effects_2/effect_parameters.xml"><SetVariable name="effect">1</SetVariable></Template>	
 						</Children>
 					</WidgetGroup>
 					

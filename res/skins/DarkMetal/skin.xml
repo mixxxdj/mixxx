@@ -4,7 +4,7 @@
 <skin>
 
 	<!--
-	###############################################################################################
+	##################################################################################################################
 
 	DARK METAL skin by Jorge Rosa (Portugal - With love to ASCR)
 	Email: jorge.bigarte@gmail.com
@@ -13,13 +13,13 @@
 	DARK METAL skin at Mixxx forums:
 	http://www.mixxx.org/forums/viewtopic.php?t=6052
 
-	###############################################################################################
+	##################################################################################################################
 
 	LICENCE:
 	Creative Commons - Attribution 3.0 Unported
 	https://creativecommons.org/licenses/by/3.0
 
-	###############################################################################################
+	##################################################################################################################
 
 	INSTALL:
 	1 • Remove any older version of "DarkMetal" (Just delete the "DarkMetal" folder), if you already have one.
@@ -31,42 +31,66 @@
 	6 • Done!...
 
 	THE DEVELOPER´S SKIN SCHEME:
+	- All skin files are designed to be "human readable".
 	- EVERYTHING is divided by ROWS (racks) for simplicity (instead a long hierarchy of templates after templates after templates...).
-	- For example, if we want to fix something on the "deck c", EVERYTHING related (except graphics, of course) is in that row´s directory!
-	  So, in the above case, the path would be: "DarkMetal\templates\04_decksmixer_cd".
-	- This way we can search and update things very fast and easy (and without open a BUNCH of files first!)
+	- For example, if we want to fix something on the "deck 1", EVERYTHING related (except graphics, of course) is in that row´s directory!
+	  So, in the above case, the path would be: "DarkMetal\templates\decksmixer_12".
+	- This way we can search and update things very fast and easy, and without open a bunch of files first!
 
-	###############################################################################################
+	##################################################################################################################
 
 	Mixxx: (All the lattest releases)
 	http://downloads.mixxx.org/builds/master/release/
+	
+	Mixxx skin change log: (Important to read)
+	https://www.mixxx.org/wiki/doku.php/skin_system_changelog
 
 	Mixxx skin documentation:
 	http://mixxx.org/wiki/doku.php/creating_skins
 
-	List of controls:
+	List of Mixxx controls:
 	http://mixxx.org/wiki/doku.php/mixxxcontrols
 
 	Qt Style Sheets documentation:
 	https://qt-project.org/doc/qt-4.8/stylesheet.html
+	
+	To know...	
+	To reset the skin (and all the other Mixxx) settings to its defaults, in WINDOWS7, delete all contents in this "Mixxx" folder:
+	"C:\Users\<UserName>\AppData\Local\Mixxx"
+	
+	ToolTips list at:
+	https://github.com/mixxxdj/mixxx/blob/master/src/skin/tooltips.cpp
 
-	###############################################################################################
+	##################################################################################################################
 	-->
 
 	<manifest>
-	<title>Dark Metal V.2.8.7</title>
+	<title>Dark Metal V.2.9.2</title>
 	<author>Jorge Rosa - jorge.bigarte@gmail.com</author>
-	<version>V.2.8.7</version>
+	<version>V.2.9.2</version>
 	<description>Dark Metal - Color Schemes - SVG - Resizable</description>
 	<language>en</language>
 	<license>Creative Commons - Attribution 3.0 Unported</license>
 	<attributes>
 	
-	<!-- Define core elements: -->
+	<!-- Define main settings: -->
 	<attribute config_key="[Master],num_decks">4</attribute>
 	<attribute config_key="[Master],num_samplers">8</attribute>
 	<attribute config_key="[Master],num_preview_decks">1</attribute>
 	<attribute config_key="[EffectRack1],num_effectunits">4</attribute>
+
+	<!-- Make these FULL ROWS (racks) visible, or not, at start: -->
+	<attribute persist="true" config_key="[ToolBar1],show">1</attribute>
+	<attribute persist="true" config_key="[ToolBar2],show">1</attribute>	
+	<attribute persist="true" config_key="[ToolBarMicros],show">0</attribute>
+	<attribute persist="true" config_key="[DecksAndMixerRack1],show">1</attribute>
+	<attribute persist="true" config_key="[DecksAndMixerRack2],show">0</attribute>
+	<attribute persist="true" config_key="[MiniPlayer1],show">0</attribute>
+	<attribute persist="true" config_key="[MiniPlayer2],show">0</attribute>
+	<attribute persist="true" config_key="[ToolBarAuxiliaries],show">0</attribute>
+	<attribute persist="true" config_key="[LongWavesRack1],show">1</attribute>
+	<attribute persist="true" config_key="[LongWavesRack2],show">0</attribute>
+	<attribute persist="true" config_key="[Hifi],show">1</attribute>
 	
 	<!-- Make these ITEMS visible, or not, by default: -->
 	<attribute persist="true" config_key="[DarkMetal],deck1_show">1</attribute>
@@ -77,6 +101,10 @@
 	<attribute persist="true" config_key="[DarkMetal],mini_deck2_show">1</attribute>
 	<attribute persist="true" config_key="[DarkMetal],mini_deck3_show">1</attribute>
 	<attribute persist="true" config_key="[DarkMetal],mini_deck4_show">1</attribute>
+	<attribute persist="true" config_key="[DarkMetal],vinylcontrols_deck1_show">0</attribute>
+	<attribute persist="true" config_key="[DarkMetal],vinylcontrols_deck2_show">0</attribute>
+	<attribute persist="true" config_key="[DarkMetal],vinylcontrols_deck3_show">0</attribute>
+	<attribute persist="true" config_key="[DarkMetal],vinylcontrols_deck4_show">0</attribute>
 	<attribute persist="true" config_key="[DarkMetal],buttons_row_deck1_show">1</attribute>
 	<attribute persist="true" config_key="[DarkMetal],buttons_row_deck2_show">1</attribute>
 	<attribute persist="true" config_key="[DarkMetal],buttons_row_deck3_show">1</attribute>
@@ -90,21 +118,10 @@
 	<attribute persist="true" config_key="[DarkMetal],coverart_big_deck3_show">0</attribute>
 	<attribute persist="true" config_key="[DarkMetal],coverart_big_deck4_show">0</attribute>
 	<attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
-	<attribute persist="true" config_key="[DarkMetal],search_text_box1_show">0</attribute>
+	<attribute persist="true" config_key="[DarkMetal],search_text_box1_show">1</attribute>
 	<attribute persist="true" config_key="[Library],show_coverart">1</attribute>
 	<attribute persist="true" config_key="[Library],show_current">1</attribute>	
 	<attribute config_key="[Library],show_library">1</attribute>
-	
-	<!-- Make these ROWS (RACKS) visible, or not, by default: -->
-	<attribute persist="true" config_key="[DarkMetal],tool_bar_micros_show">0</attribute>
-	<attribute persist="true" config_key="[DarkMetal],decks_and_mixer_rack1_show">0</attribute>
-	<attribute persist="true" config_key="[DarkMetal],decks_and_mixer_rack2_show">0</attribute>
-	<attribute persist="true" config_key="[DarkMetal],mini_player1_show">1</attribute>
-	<attribute persist="true" config_key="[DarkMetal],mini_player2_show">0</attribute>
-	<attribute persist="true" config_key="[DarkMetal],tool_bar_auxiliaries_show">0</attribute>
-	<attribute persist="true" config_key="[DarkMetal],long_waves_rack1_show">1</attribute>
-	<attribute persist="true" config_key="[DarkMetal],long_waves_rack2_show">0</attribute>
-	<attribute persist="true" config_key="[DarkMetal],hifi_show">1</attribute>
 	
 	<!-- Samplers: (Racks + Modules) -->
 	<attribute persist="true" config_key="[DarkMetal],samplers_rack1_show">0</attribute>
@@ -128,32 +145,30 @@
 	<attribute persist="true" config_key="[DarkMetal],effects_module3_show">1</attribute>
 	<attribute persist="true" config_key="[DarkMetal],effects_module4_show">0</attribute>	
 
-	<!-- Effects: (By default, the FX buttons are off) -->
+	<!-- Effects: (By default, the ON/OFF buttons are off) - Not used! -->
+	<!--
 	<attribute config_key="[EffectRack1_EffectUnit1_Effect1],enabled">0</attribute>
 	<attribute config_key="[EffectRack1_EffectUnit2_Effect1],enabled">0</attribute>
 	<attribute config_key="[EffectRack1_EffectUnit3_Effect1],enabled">0</attribute>
 	<attribute config_key="[EffectRack1_EffectUnit4_Effect1],enabled">0</attribute>
-	
-	<!-- TO-DO: Effects: (By default, Loads an effect into module) -->
-	<!--
-	<attribute config_key="[EffectRack1_EffectUnit1],next_chain">1</attribute>
-	<attribute config_key="[EffectRack1_EffectUnit2],next_chain">1</attribute>
-	<attribute config_key="[EffectRack1_EffectUnit3],next_chain">1</attribute>
-	<attribute config_key="[EffectRack1_EffectUnit4],next_chain">1</attribute>	
-	<attribute config_key="[EffectRack1_EffectUnit1_Effect1],next_effect">1</attribute>	
-	<attribute config_key="[EffectRack1_EffectUnit2_Effect1],next_effect">1</attribute>	
-	<attribute config_key="[EffectRack1_EffectUnit3_Effect1],next_effect">1</attribute>	
-	<attribute config_key="[EffectRack1_EffectUnit4_Effect1],next_effect">1</attribute>
 	-->
 	
+	<!-- Effects: (By default, the master channel is enabled in all modules) - Not used! -->
+	<!--
+	<attribute config_key="[EffectRack1_EffectUnit1],group_[Master]_enable">0</attribute>
+	<attribute config_key="[EffectRack1_EffectUnit2],group_[Master]_enable">0</attribute>
+	<attribute config_key="[EffectRack1_EffectUnit3],group_[Master]_enable">0</attribute>
+	<attribute config_key="[EffectRack1_EffectUnit4],group_[Master]_enable">0</attribute>
+	-->	
+		
 	</attributes>
 	</manifest>
 
-	<!-- START (THE INTRO SPLASH SCREEN): -->
+	<!-- START: (The intro splash screen) -->
 	<LaunchImageStyle>
     LaunchImage { qproperty-layoutAlignment:AlignCenter; background-color:#000000; }
-    QLabel { image:url(skin:/gfx_hifi/start.svg); padding:0; margin:0; border:none; min-width:400px; max-width:400px; min-height:50px; max-height:50px; }
-    QProgressBar { background-color: #000000; border:none; min-width:400px; max-width:400px; min-height:3px; max-height:3px; }
+    QLabel { image:url(skin:graphics/start.svg); padding:0px; margin:0px; margin-bottom:20px; border:none; min-width:400px; max-width:400px; min-height:50px; max-height:50px; }
+    QProgressBar { background-color:#000000; padding:2px; border:1px solid #111111; min-width:400px; max-width:400px; min-height:4px; max-height:4px; }
     QProgressBar::chunk { background-color:#a1a1a1; }
 	</LaunchImageStyle>
 
@@ -171,10 +186,19 @@
 	<Schemes>
 	
 	<Scheme>
-	<Name>Purple 1 - Default</Name>
+	<Name>Grey 1 - Dark Metal - Metropolis</Name>
+	<Filters>
+	<HSVTweak>
+	<HConst>-3</HConst><SConst>-365</SConst><VConst>-3</VConst>
+	</HSVTweak>
+	</Filters>
+	</Scheme>
+	
+	<Scheme>
+	<Name>Purple 1 - Normal</Name>
 	<Filters>
 	<HSVTweak>	
-	<HConst>0</HConst><SConst>0</SConst><VConst>0</VConst> <!-- HSV (perfect) -->
+	<HConst>0</HConst><SConst>0</SConst><VConst>0</VConst>
 	</HSVTweak>
 	</Filters>
 	</Scheme>
@@ -183,7 +207,7 @@
 	<Name>Purple 2 - Pale</Name>
 	<Filters>
 	<HSVTweak>	
-	<HConst>0</HConst><SConst>-60</SConst><VConst>0</VConst> <!-- HSV (perfect) -->
+	<HConst>0</HConst><SConst>-60</SConst><VConst>0</VConst>
 	</HSVTweak>
 	</Filters>
 	</Scheme>
@@ -192,25 +216,16 @@
 	<Name>Purple 3 - Glow</Name>
 	<Filters>
 	<HSVTweak>	
-	<HConst>20</HConst><SConst>50</SConst><VConst>0</VConst> <!-- HSV (...) -->
+	<HConst>20</HConst><SConst>50</SConst><VConst>0</VConst>
 	</HSVTweak>
 	</Filters>
 	</Scheme>
 	
 	<Scheme>
-	<Name>Grey 1 - Dark Metal - Metropolis</Name>
-	<Filters>
-	<HSVTweak>
-	<HConst>-3</HConst><SConst>-365</SConst><VConst>-3</VConst> <!-- HSV (perfect) -->
-	</HSVTweak>
-	</Filters>
-	</Scheme>
-
-	<Scheme>
 	<Name>Orange 1 - Normal</Name>
 	<Filters>
 	<HSVTweak>
-	<HConst>-240</HConst><SConst>140</SConst><VConst>0</VConst> <!-- HSV (perfect) -->
+	<HConst>-240</HConst><SConst>140</SConst><VConst>0</VConst>
 	</HSVTweak>
 	</Filters>
 	</Scheme>
@@ -219,7 +234,7 @@
 	<Name>Orange 2 - Dark</Name>
 	<Filters>
 	<HSVTweak>
-	<HConst>-242</HConst><SConst>210</SConst><VConst>0</VConst> <!-- HSV (perfect) -->
+	<HConst>-242</HConst><SConst>210</SConst><VConst>0</VConst>
 	</HSVTweak>
 	</Filters>
 	</Scheme>
@@ -228,7 +243,7 @@
 	<Name>Blue 1 - Normal</Name>
 	<Filters>
 	<HSVTweak>	
-	<HConst>-49</HConst><SConst>210</SConst><VConst>0</VConst> <!-- HSV (perfect) -->
+	<HConst>-49</HConst><SConst>210</SConst><VConst>0</VConst>
 	</HSVTweak>
 	</Filters>
 	</Scheme>
@@ -237,7 +252,7 @@
 	<Name>Blue 2 - Jeans</Name>
 	<Filters>
 	<HSVTweak>	
-	<HConst>-68</HConst><SConst>48</SConst><VConst>0</VConst> <!-- HSV (perfect) -->
+	<HConst>-68</HConst><SConst>48</SConst><VConst>0</VConst>
 	</HSVTweak>
 	</Filters>
 	</Scheme>
@@ -246,7 +261,7 @@
 	<Name>Blue 3 - Dark</Name>
 	<Filters>
 	<HSVTweak>
-	<HConst>-60</HConst><SConst>250</SConst><VConst>0</VConst> <!-- HSV (...) -->
+	<HConst>-60</HConst><SConst>250</SConst><VConst>0</VConst>
 	</HSVTweak>
 	</Filters>
 	</Scheme>
@@ -255,7 +270,7 @@
 	<Name>Blue 4 - Soft</Name>
 	<Filters>
 	<HSVTweak>
-	<HConst>-70</HConst><SConst>120</SConst><VConst>0</VConst> <!-- HSV (...) -->
+	<HConst>-70</HConst><SConst>120</SConst><VConst>0</VConst>
 	</HSVTweak>
 	</Filters>
 	</Scheme>	
@@ -264,7 +279,7 @@
 	<Name>Red 1 - Normal</Name>
 	<Filters>
 	<HSVTweak>
-	<HConst>-265</HConst><SConst>210</SConst><VConst>0</VConst> <!-- HSV (perfect) -->
+	<HConst>-265</HConst><SConst>210</SConst><VConst>0</VConst>
 	</HSVTweak>
 	</Filters>
 	</Scheme>
@@ -273,7 +288,7 @@
 	<Name>Red 2 - Pale</Name>
 	<Filters>
 	<HSVTweak>
-	<HConst>80</HConst><SConst>200</SConst><VConst>0</VConst> <!-- HSV (...) -->
+	<HConst>80</HConst><SConst>200</SConst><VConst>0</VConst>
 	</HSVTweak>
 	</Filters>
 	</Scheme>
@@ -282,7 +297,7 @@
 	<Name>Red 3 - Wine</Name>
 	<Filters>
 	<HSVTweak> 	
-	<HConst>-290</HConst><SConst>10</SConst><VConst>0</VConst> <!-- HSV (...) -->
+	<HConst>-290</HConst><SConst>10</SConst><VConst>0</VConst>
 	</HSVTweak>
 	</Filters>
 	</Scheme>
@@ -291,7 +306,7 @@
 	<Name>Red 4 - Bright</Name>
 	<Filters>
 	<HSVTweak>
-	<HConst>-260</HConst><SConst>120</SConst><VConst>0</VConst> <!-- HSV (...) -->
+	<HConst>-260</HConst><SConst>120</SConst><VConst>0</VConst>
 	</HSVTweak>
 	</Filters>
 	</Scheme>
@@ -300,7 +315,7 @@
 	<Name>Brown 1 - Soft</Name>
 	<Filters>
 	<HSVTweak>
-	<HConst>100</HConst><SConst>30</SConst><VConst>0</VConst> <!-- HSV (...) -->
+	<HConst>100</HConst><SConst>30</SConst><VConst>0</VConst>
 	</HSVTweak>	
 	</Filters>
 	</Scheme>	
@@ -309,7 +324,7 @@
 	<Name>Brown 2 - Chocolatte</Name>
 	<Filters>
 	<HSVTweak>
-	<HConst>-260</HConst><SConst>50</SConst><VConst>0</VConst> <!-- HSV (...) -->
+	<HConst>-260</HConst><SConst>50</SConst><VConst>0</VConst>
 	</HSVTweak>
 	</Filters>
 	</Scheme>
@@ -318,7 +333,7 @@
 	<Name>Brown 3 - Dark</Name>
 	<Filters>
 	<HSVTweak>
-	<HConst>-240</HConst><SConst>210</SConst><VConst>0</VConst> <!-- HSV (...) -->
+	<HConst>-240</HConst><SConst>210</SConst><VConst>0</VConst>
 	</HSVTweak>
 	</Filters>
 	</Scheme>
@@ -327,7 +342,7 @@
 	<Name>Pink 1 - Normal</Name>
 	<Filters>
 	<HSVTweak>
-	<HConst>36</HConst><SConst>46</SConst><VConst>0</VConst> <!-- HSV (...) -->
+	<HConst>36</HConst><SConst>46</SConst><VConst>0</VConst>
 	</HSVTweak>
 	</Filters>
 	</Scheme>
@@ -336,7 +351,7 @@
 	<Name>Pink 2 - Pale</Name>
 	<Filters>
 	<HSVTweak>
-	<HConst>55</HConst><SConst>-20</SConst><VConst>0</VConst> <!-- HSV (...) -->
+	<HConst>55</HConst><SConst>-20</SConst><VConst>0</VConst>
 	</HSVTweak>
 	</Filters>
 	</Scheme>
@@ -345,7 +360,7 @@
 	<Name>Pink 3 - Dark</Name>
 	<Filters>
 	<HSVTweak>
-	<HConst>40</HConst><SConst>10</SConst><VConst>0</VConst> <!-- HSV (...) -->
+	<HConst>40</HConst><SConst>10</SConst><VConst>0</VConst>
 	</HSVTweak>
 	</Filters>
 	</Scheme>
@@ -354,7 +369,7 @@
 	<Name>Yellow 1 - Normal</Name>
 	<Filters>
 	<HSVTweak>
-	<HConst>-225</HConst><SConst>85</SConst><VConst>0</VConst> <!-- HSV (...) -->
+	<HConst>-225</HConst><SConst>85</SConst><VConst>0</VConst>
 	</HSVTweak>
 	</Filters>
 	</Scheme>
@@ -363,7 +378,7 @@
 	<Name>Yellow 2 - Dark</Name>
 	<Filters>
 	<HSVTweak>
-	<HConst>-230</HConst><SConst>120</SConst><VConst>0</VConst> <!-- HSV (...) -->
+	<HConst>-230</HConst><SConst>120</SConst><VConst>0</VConst>
 	</HSVTweak>
 	</Filters>
 	</Scheme>
@@ -372,7 +387,7 @@
 	<Name>Green 1 - Normal</Name>
 	<Filters>
 	<HSVTweak>
-	<HConst>-159</HConst><SConst>210</SConst><VConst>0</VConst> <!-- HSV (perfect) -->
+	<HConst>-159</HConst><SConst>210</SConst><VConst>0</VConst>
 	</HSVTweak>
 	</Filters>
 	</Scheme>
@@ -381,7 +396,7 @@
 	<Name>Green 2 - Lime</Name>
 	<Filters>
 	<HSVTweak>
-	<HConst>-190</HConst><SConst>85</SConst><VConst>0</VConst> <!-- HSV (perfect) -->
+	<HConst>-190</HConst><SConst>85</SConst><VConst>0</VConst>
 	</HSVTweak>
 	</Filters>
 	</Scheme>
@@ -390,7 +405,7 @@
 	<Name>Green 3 - Pale</Name>
 	<Filters>
 	<HSVTweak>
-	<HConst>255</HConst><SConst>0</SConst><VConst>0</VConst> <!-- HSV (...) -->
+	<HConst>255</HConst><SConst>0</SConst><VConst>0</VConst>
 	</HSVTweak>
 	</Filters>
 	</Scheme>
@@ -399,7 +414,7 @@
 	<Name>Green 4 - Glow</Name>
 	<Filters>
 	<HSVTweak>
-	<HConst>200</HConst><SConst>30</SConst><VConst>0</VConst> <!-- HSV (...) -->
+	<HConst>200</HConst><SConst>30</SConst><VConst>0</VConst>
 	</HSVTweak>	
 	</Filters>
 	</Scheme>
@@ -408,7 +423,7 @@
 	<Name>Green 5 - Olive</Name>
 	<Filters>
 	<HSVTweak>	
-	<HConst>150</HConst><SConst>5</SConst><VConst>0</VConst> <!-- HSV (...) -->
+	<HConst>150</HConst><SConst>5</SConst><VConst>0</VConst>
 	</HSVTweak>
 	</Filters>
 	</Scheme>
@@ -418,52 +433,52 @@
 	<!-- LAYOUT GLOBALS -->
 	<ObjectName>Mixxx</ObjectName>
 	<Background><BgColor>#000000</BgColor></Background>
-	<BackPath>gfx_hifi/background_main.svg</BackPath>
-	<Style src="skin:styles.qss"/> <!-- Includes the QT styles -->
-	<MinimumSize>980,350</MinimumSize>
+	<BackPath>skin:graphics/background_main.svg</BackPath>
+	<Style src="skin:styles.qss"/> <!-- Includes the QT styles file -->
+	<MinimumSize>1024,550</MinimumSize>
 	<SizePolicy>me,me</SizePolicy>
 	<Layout>vertical</Layout>
 	<!-- STARTS - ALL THE LAYOUT: -->
 	<Children>		
 	
-	<!-- WIDGETGROUP ROW: Rack for DEVELOP purposes only. To "show/hide", you have to "comment/uncomment" the next line. -->
-	<!-- <Template src="skin:templates/99_tests/start.xml"></Template> -->
+	<!-- WIDGETGROUP ROW: Rack for TEST/DEBUG PURPOSES only. To "show/hide", you have to "comment/uncomment" the next line: -->
+	<!-- <Template src="skin:templates/tests/start.xml"></Template> -->
 	<!-- WIDGETGROUP ROW: Show/Hide Racks buttons -->
-	<Template src="skin:templates/00_toolbar/start.xml"></Template>
-	<!-- WIDGETGROUP ROW: Global Volume + Analog VUs + Latency + Clock (...) -->
-    <Template src="skin:templates/01_globals/start.xml"></Template>
+	<Template src="skin:templates/toolbar/start.xml"></Template>
+	<!-- WIDGETGROUP ROW: Global Volume + Analog VUs + Latency + Clock + Battery (...) -->
+    <Template src="skin:templates/globals/start.xml"></Template>
 	
-	<!-- WIDGETGROUP: HIFI - Contains all the rows to hide, when maximizing the library -->
+	<!-- WIDGETGROUP: HIFI - Contains all the needed rows to hide, when maximizing the library -->
 	<WidgetGroup>
 	<ObjectName>Hifi</ObjectName>
     <Layout>vertical</Layout>
     <Children>
 	<!-- WIDGETGROUP ROW: Microphones -->
-    <Template src="skin:templates/11_microphones/start.xml"></Template>
+    <Template src="skin:templates/microphones/start.xml"></Template>
 	<!-- WIDGETGROUP ROW: Deck A + Mixer + Deck B -->
-	<Template src="skin:templates/03_decksmixer_ab/start.xml"></Template>
+	<Template src="skin:templates/decksmixer_12/start.xml"></Template>
 	<!-- WIDGETGROUP ROW: Deck C + Mixer + Deck D -->
-    <Template src="skin:templates/04_decksmixer_cd/start.xml"></Template>	
+    <Template src="skin:templates/decksmixer_34/start.xml"></Template>	
 	<!-- WIDGETGROUP ROW: Mini Player AB -->
-    <Template src="skin:templates/13_miniplayer_ab/start.xml"></Template>
+    <Template src="skin:templates/miniplayer_12/start.xml"></Template>
 	<!-- WIDGETGROUP ROW: Mini Player CD -->
-    <Template src="skin:templates/14_miniplayer_cd/start.xml"></Template>
+    <Template src="skin:templates/miniplayer_34/start.xml"></Template>
 	<!-- WIDGETGROUP ROW: Auxiliaries -->
-    <Template src="skin:templates/12_auxiliaries/start.xml"></Template>
+    <Template src="skin:templates/auxiliaries/start.xml"></Template>
 	<!-- WIDGETGROUP ROW: Long waves for AB -->
-	<Template src="skin:templates/15_longwaves_ab/start.xml"><SetVariable name="audiochannel">1</SetVariable></Template>
-	<Template src="skin:templates/15_longwaves_ab/start.xml"><SetVariable name="audiochannel">2</SetVariable></Template>	
+	<Template src="skin:templates/longwaves_12/start.xml"><SetVariable name="audiochannel">1</SetVariable></Template>
+	<Template src="skin:templates/longwaves_12/start.xml"><SetVariable name="audiochannel">2</SetVariable></Template>	
 	<!-- WIDGETGROUP ROW: Long waves for CD -->
-	<Template src="skin:templates/16_longwaves_cd/start.xml"><SetVariable name="audiochannel">3</SetVariable></Template>
-	<Template src="skin:templates/16_longwaves_cd/start.xml"><SetVariable name="audiochannel">4</SetVariable></Template>
+	<Template src="skin:templates/longwaves_34/start.xml"><SetVariable name="audiochannel">3</SetVariable></Template>
+	<Template src="skin:templates/longwaves_34/start.xml"><SetVariable name="audiochannel">4</SetVariable></Template>
 	<!-- WIDGETGROUP ROW: Effects 1 -->
-	<Template src="skin:templates/06_effects/start.xml"></Template>
+	<Template src="skin:templates/effects_1/start.xml"></Template>
 	<!-- WIDGETGROUP ROW: Effects 2 -->
-	<Template src="skin:templates/07_effects/start.xml"></Template>
+	<Template src="skin:templates/effects_2/start.xml"></Template>
 	<!-- WIDGETGROUP ROW: Samplers 1 -->
-	<Template src="skin:templates/08_samplers/start.xml"></Template>
+	<Template src="skin:templates/samplers_1/start.xml"></Template>
 	<!-- WIDGETGROUP ROW: Samplers 2 -->
-	<Template src="skin:templates/09_samplers/start.xml"></Template>	
+	<Template src="skin:templates/samplers_2/start.xml"></Template>	
 	</Children>
 	<Connection>
 	<ConfigKey>[DarkMetal],hifi_show</ConfigKey>
@@ -472,7 +487,7 @@
 	</WidgetGroup>	
 	
 	<!-- WIDGETGROUP ROW: Library + Preview Deck + Search Text Box + Tree view (...) -->
-	<Template src="skin:templates/10_library/start.xml"></Template>	
+	<Template src="skin:templates/library/start.xml"></Template>	
 	
 	<!-- ENDS - ALL THE LAYOUT: -->
 	</Children>

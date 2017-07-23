@@ -15,7 +15,7 @@
    viewBox="0 0 30 30"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.1 r15371"
    sodipodi:docname="btn_view.svg">
   <defs
      id="defs4">
@@ -57,9 +57,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="14.481547"
-     inkscape:cx="-8.1916698"
-     inkscape:cy="14.915532"
+     inkscape:zoom="28.963094"
+     inkscape:cx="15.706144"
+     inkscape:cy="13.84321"
      inkscape:document-units="px"
      inkscape:current-layer="g4198"
      showgrid="false"
@@ -117,6 +117,12 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
          cx="15"
          cy="1037.3622"
          r="4.9701223" />
+      <path
+         id="path869"
+         d="m 18.371688,1038.3337 h -2.343045 v 2.343 h -1.942992 v -2.343 h -2.457339 v -1.943 h 2.457339 v -2.343 h 1.942992 v 2.343 h 2.343045 z"
+         style="font-style:normal;font-weight:normal;font-size:12.53666878px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;opacity:0.7;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.44777256"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ccccccccccccc" />
     </g>
   </g>
 </svg>

@@ -7,206 +7,7 @@
 			<MinimumSize>265,300</MinimumSize>
 			<SizePolicy>me,f</SizePolicy>
 			<Layout>vertical</Layout>
-			<Children>
-			
-			<!--
-			**********************************************
-			ROW: Vinyl - All Control Modes
-			**********************************************
-			-->
-			
-			<WidgetGroup>
-			<ObjectName>VinylControlsDeck<Variable name="audiochannel"/></ObjectName>
-			<MinimumSize>10,20</MinimumSize>
-			<SizePolicy>me,f</SizePolicy>
-			<Layout>horizontal</Layout>
-			<Children>
-				
-			<!--
-			**********************************************
-			Vinyl - Control Mode:
-			**********************************************
-			-->	
-			
-			<WidgetGroup>		
-			<MinimumSize>120,16</MinimumSize>
-			<SizePolicy>f,f</SizePolicy>
-			<Children>				
-				
-				<PushButton>
-				<NumberStates>3</NumberStates>
-				<State>
-				<Number>0</Number>
-				<Pressed>gfx_hifi/btn_vinylcontrol_mode_abs.svg</Pressed>
-				<Unpressed>gfx_hifi/btn_vinylcontrol_mode_abs.svg</Unpressed>
-				</State>
-				<State>
-				<Number>1</Number>
-				<Pressed>gfx_hifi/btn_vinylcontrol_mode_rel.svg</Pressed>
-				<Unpressed>gfx_hifi/btn_vinylcontrol_mode_rel.svg</Unpressed>
-				</State>
-				<State>
-				<Number>2</Number>
-				<Pressed>gfx_hifi/btn_vinylcontrol_mode_const.svg</Pressed>
-				<Unpressed>gfx_hifi/btn_vinylcontrol_mode_const.svg</Unpressed>
-				</State>
-				<Connection>
-				<ConfigKey>[Channel<Variable name="audiochannel"/>],vinylcontrol_mode</ConfigKey>
-				</Connection>
-				</PushButton>							
-
-				<PushButton>				
-				<NumberStates>3</NumberStates>
-				<State>
-				<Number>0</Number>
-				<Pressed>gfx_hifi/btn_vinylcontrol_mode_abs.svg</Pressed>
-				<Unpressed>gfx_hifi/btn_vinylcontrol_mode_abs.svg</Unpressed>
-				</State>
-				<State>
-				<Number>1</Number>
-				<Pressed>gfx_hifi/btn_vinylcontrol_mode_rel.svg</Pressed>
-				<Unpressed>gfx_hifi/btn_vinylcontrol_mode_rel.svg</Unpressed>
-				</State>
-				<State>
-				<Number>2</Number>
-				<Pressed>gfx_hifi/btn_vinylcontrol_mode_const.svg</Pressed>
-				<Unpressed>gfx_hifi/btn_vinylcontrol_mode_const.svg</Unpressed>
-				</State>				
-				<Connection>
-				<ConfigKey>[Channel<Variable name="audiochannel"/>],vinylcontrol_mode</ConfigKey>
-				</Connection>
-				</PushButton>
-				
-				<PushButton>
-				<NumberStates>3</NumberStates>
-				<State>
-				<Number>0</Number>
-				<Pressed>gfx_hifi/btn_vinylcontrol_mode_abs.svg</Pressed>
-				<Unpressed>gfx_hifi/btn_vinylcontrol_mode_abs.svg</Unpressed>
-				</State>
-				<State>
-				<Number>1</Number>
-				<Pressed>gfx_hifi/btn_vinylcontrol_mode_rel.svg</Pressed>
-				<Unpressed>gfx_hifi/btn_vinylcontrol_mode_rel.svg</Unpressed>
-				</State>
-				<State>
-				<Number>2</Number>
-				<Pressed>gfx_hifi/btn_vinylcontrol_mode_const.svg</Pressed>
-				<Unpressed>gfx_hifi/btn_vinylcontrol_mode_const.svg</Unpressed>
-				</State>
-				<Connection>
-				<ConfigKey>[Channel<Variable name="audiochannel"/>],vinylcontrol_mode</ConfigKey>
-				</Connection>
-				</PushButton>							
-
-			</Children>
-			</WidgetGroup>
-			
-			<WidgetGroup> <!-- Pusher: Pushes everything in this row to both sides, left and right -->				
-			<MinimumSize>1,16</MinimumSize>
-			<SizePolicy>me,f</SizePolicy>
-			<Children><!-- Pusher --></Children>
-			</WidgetGroup>	
-			
-			<!--
-			**********************************************
-			Vinyl - Cueing Mode:
-			**********************************************
-			-->
-			
-			<WidgetGroup>
-			<MinimumSize>120,16</MinimumSize>
-			<SizePolicy>f,f</SizePolicy>
-			<Children>
-			
-				<PushButton>								
-				<NumberStates>3</NumberStates>
-				<State>
-				<Number>0</Number>
-				<Pressed>gfx_hifi/btn_vinylcontrol_cueing_off.svg</Pressed>
-				<Unpressed>gfx_hifi/btn_vinylcontrol_cueing_off.svg</Unpressed>
-				</State>
-				<State>
-				<Number>1</Number>
-				<Pressed>gfx_hifi/btn_vinylcontrol_cueing_one.svg</Pressed>
-				<Unpressed>gfx_hifi/btn_vinylcontrol_cueing_one.svg</Unpressed>
-				</State>
-				<State>
-				<Number>2</Number>
-				<Pressed>gfx_hifi/btn_vinylcontrol_cueing_hot.svg</Pressed>
-				<Unpressed>gfx_hifi/btn_vinylcontrol_cueing_hot.svg</Unpressed>
-				</State>
-				<Connection>
-				<ConfigKey>[Channel<Variable name="audiochannel"/>],vinylcontrol_cueing</ConfigKey>
-				</Connection>
-				</PushButton>
-				
-				<PushButton>
-				<NumberStates>3</NumberStates>
-				<State>
-				<Number>0</Number>
-				<Pressed>gfx_hifi/btn_vinylcontrol_cueing_off.svg</Pressed>
-				<Unpressed>gfx_hifi/btn_vinylcontrol_cueing_off.svg</Unpressed>
-				</State>
-				<State>
-				<Number>1</Number>
-				<Pressed>gfx_hifi/btn_vinylcontrol_cueing_one.svg</Pressed>
-				<Unpressed>gfx_hifi/btn_vinylcontrol_cueing_one.svg</Unpressed>
-				</State>
-				<State>
-				<Number>2</Number>
-				<Pressed>gfx_hifi/btn_vinylcontrol_cueing_hot.svg</Pressed>
-				<Unpressed>gfx_hifi/btn_vinylcontrol_cueing_hot.svg</Unpressed>
-				</State>
-				<Connection>
-				<ConfigKey>[Channel<Variable name="audiochannel"/>],vinylcontrol_cueing</ConfigKey>
-				</Connection>
-				</PushButton>				
-				
-			</Children>
-			</WidgetGroup>	
-
-			<!--
-			**********************************************
-			Vinyl - On/Off:
-			**********************************************
-			-->
-				
-			<WidgetGroup>		
-			<MinimumSize>26,16</MinimumSize>
-			<SizePolicy>f,f</SizePolicy>
-			<Children>
-
-				<PushButton>				
-				<NumberStates>2</NumberStates>
-				<State>
-				<Number>0</Number>
-				<Pressed>gfx_hifi/btn_on.svg</Pressed>
-				<Unpressed>gfx_hifi/btn_off.svg</Unpressed>
-				</State>
-				<State>
-				<Number>1</Number>
-				<Pressed>gfx_hifi/btn_on.svg</Pressed>
-				<Unpressed>gfx_hifi/btn_on.svg</Unpressed>
-				</State>
-				<Connection>
-				<ConfigKey>[Channel<Variable name="audiochannel"/>],vinylcontrol_enabled</ConfigKey>
-				</Connection>
-				</PushButton>
-				
-			</Children>
-			</WidgetGroup>			
-				
-			</Children>
-			</WidgetGroup>
-
-			<WidgetGroup><!-- Design only: For creating an horizontal long line -->
-			<ObjectName>HorizontalLine</ObjectName>
-			<MinimumSize>10,1</MinimumSize>
-			<SizePolicy>me,f</SizePolicy>
-			<Layout>horizontal</Layout>				
-			<Children></Children>
-			</WidgetGroup>			
+			<Children>		
 		
 			<!--
 			********************************************************************
@@ -216,7 +17,7 @@
 			
 			<WidgetGroup>
 			<ObjectName>TextLineN1Deck<Variable name="audiochannel"/></ObjectName>
-			<BackPath>gfx_hifi/background_digital.svg</BackPath> <!-- For color process -->
+			<BackPath>skin:graphics/background_digital.svg</BackPath> <!-- For color process -->
 			<Pos>0,0</Pos>
 			<MinimumSize>10,23</MinimumSize>
 			<!-- <SizePolicy>me,f</SizePolicy> -->
@@ -264,14 +65,14 @@
                     <State>
                     <Number>0</Number>
                     <Text></Text>
-					<Pressed>gfx_hifi/btn_tap1_over.svg</Pressed>
-					<Unpressed>gfx_hifi/btn_tap1.svg</Unpressed>
+					<Pressed>skin:graphics/btn_tap1_pressed.svg</Pressed>
+					<Unpressed>skin:graphics/btn_tap1.svg</Unpressed>
                     </State>
                     <State>
                     <Number>1</Number>
                     <Text></Text>
-					<Pressed>gfx_hifi/btn_tap1_over.svg</Pressed>
-					<Unpressed>gfx_hifi/btn_tap1.svg</Unpressed>
+					<Pressed>skin:graphics/btn_tap1_pressed.svg</Pressed>
+					<Unpressed>skin:graphics/btn_tap1.svg</Unpressed>
                     </State>                                      
                     <Connection>
                     <ConfigKey>[Channel<Variable name="audiochannel" />],bpm_tap</ConfigKey>
@@ -303,7 +104,7 @@
 
 			<WidgetGroup>
 				<ObjectName>TextLineN2Deck<Variable name="audiochannel"/></ObjectName>
-				<BackPath>gfx_hifi/background_digital.svg</BackPath> <!-- For color process -->
+				<BackPath>skin:graphics/background_digital.svg</BackPath> <!-- For color process -->
 				<Pos>0,26</Pos>
 				<MinimumSize>10,23</MinimumSize>
 				<!-- <SizePolicy>me,f</SizePolicy> -->
@@ -376,7 +177,7 @@
 						<MinimumSize>83,83</MinimumSize>	
 						<SizePolicy>f,f</SizePolicy>					
 						<Group>[Channel<Variable name="audiochannel"/>]</Group>
-						<!-- <PathMask>gfx_hifi/cover_mask.svg</PathMask> -->
+						<!-- <PathMask>skin:graphics/cover_mask.svg</PathMask> -->
 						</CoverArt>						
 						</Children>
 						<Connection>
@@ -396,11 +197,17 @@
 
 					<WidgetGroup> <!-- Display: The track kHz -->
 					<ObjectName>TrackRate<Variable name="audiochannel"/></ObjectName>
-					<BackPath>gfx_hifi/background_digital_small.svg</BackPath> <!-- For color process -->
+					<BackPath>skin:graphics/background_digital_small.svg</BackPath> <!-- For color process -->
 					<MinimumSize>-1,20</MinimumSize>
 					<SizePolicy>me,f</SizePolicy>
 					<Layout>horizontal</Layout>	
 					<Children>
+						<StarRating><!-- Star Rating -->	
+						<ObjectName>TrackStarRating</ObjectName>
+						<MinimumSize>80,20</MinimumSize>
+						<SizePolicy>f,f</SizePolicy>
+						<Channel><Variable name="audiochannel"/></Channel>
+						</StarRating>
 						<WidgetGroup><!-- Pusher -->								
 						<MinimumSize>-1,20</MinimumSize>
 						<SizePolicy>me,f</SizePolicy>
@@ -441,15 +248,16 @@
 					<MinimumSize>1,66</MinimumSize>	
 					<SizePolicy>me,me</SizePolicy>
 					<BgColor></BgColor>
-					<BgPixmap>gfx_hifi/wave_background_big.svg</BgPixmap>					
+					<BgPixmap>skin:graphics/wave_background_big.svg</BgPixmap>					
 					<SignalHighColor>#5f4d75</SignalHighColor><!-- highs - clear -->
 					<SignalMidColor>#230d44</SignalMidColor>  <!-- mediums - dark -->
 					<SignalLowColor>#180831</SignalLowColor>  <!-- lows - darker -->
 					<SignalColor>#7c708f</SignalColor>        <!-- "main wave" -->
-					<PlayPosColor>#ece7f5</PlayPosColor>
+					<PlayPosColor>#99ece7f5</PlayPosColor>    <!-- color format: #AARRGGBB -->
+					<PlayedOverlayColor>#99684e8c</PlayedOverlayColor> <!-- played wave - color format: #AARRGGBB -->
 					<BeatColor>#d8cbec</BeatColor>
 					<EndOfTrackColor>#6e4aaa</EndOfTrackColor>					
-					<AxesColor>#580078</AxesColor>
+					<AxesColor>#99580078</AxesColor> <!-- color format: #AARRGGBB -->
 					<DefaultMark> <!-- Applies to numbers 1 to 8 -->
 					<Align>top</Align>
 					<Color>#dbb7ff</Color>
@@ -508,15 +316,16 @@
 					<SizePolicy>me,f</SizePolicy>					
 					<Channel><Variable name="audiochannel"/></Channel>
 					<BgColor></BgColor>	
-					<BgPixmap>gfx_hifi/wave_background_medium.svg</BgPixmap> <!-- bg image must be set here, not in "style.qss" -->
+					<BgPixmap>skin:graphics/wave_background_medium.svg</BgPixmap> <!-- bg image must be set here, not in "style.qss" -->
 					<SignalHighColor>#5f4d75</SignalHighColor><!-- highs - clear -->
 					<SignalMidColor>#230d44</SignalMidColor>  <!-- mediums - dark -->
 					<SignalLowColor>#180831</SignalLowColor>  <!-- lows - darker -->
 					<SignalColor>#7c708f</SignalColor>        <!-- "main wave" -->
-					<PlayPosColor>#ece7f5</PlayPosColor>
+					<PlayPosColor>#99ece7f5</PlayPosColor>    <!-- color format: #AARRGGBB -->
+					<PlayedOverlayColor>#99684e8c</PlayedOverlayColor> <!-- played wave - color format: #AARRGGBB -->
 					<BeatColor>#d8cbec</BeatColor>
 					<EndOfTrackColor>#6e4aaa</EndOfTrackColor>					
-					<AxesColor>#580078</AxesColor>
+					<AxesColor>#99580078</AxesColor> <!-- color format: #AARRGGBB -->
 					<DefaultMark> <!-- Applies to numbers 1 to 8 -->
 					<Align>top</Align>
 					<Color>#dbb7ff</Color>
@@ -577,9 +386,9 @@
 						<Children>
 							<Spinny>								
 								<Channel><Variable name="audiochannel"/></Channel>								
-								<PathBackground>gfx_hifi/background_spinny.svg</PathBackground>
-								<PathForeground>gfx_hifi/spinny_bobine.svg</PathForeground>
-								<PathGhost>gfx_hifi/spinny_bobine.svg</PathGhost>
+								<PathBackground>skin:graphics/background_spinny.svg</PathBackground>
+								<PathForeground>skin:graphics/spinny_bobine.svg</PathForeground>
+								<PathGhost>skin:graphics/spinny_bobine.svg</PathGhost>
 								<PathMask></PathMask>
 								<ShowCover>false</ShowCover>
 							</Spinny>
@@ -603,6 +412,217 @@
 			<Children></Children>
 			</WidgetGroup>
 			
+			<!--
+			**********************************************
+			ROW: Vinyl - All Control Modes
+			**********************************************
+			-->
+			
+			<WidgetGroup>
+			<ObjectName>VinylControlsDeck<Variable name="audiochannel"/></ObjectName>
+			<MinimumSize>10,20</MinimumSize>
+			<SizePolicy>me,f</SizePolicy>
+			<Layout>horizontal</Layout>
+			<Children>
+				
+			<!--
+			**********************************************
+			Vinyl - Control Mode:
+			**********************************************
+			-->	
+			
+			<WidgetGroup>		
+			<MinimumSize>120,16</MinimumSize>
+			<SizePolicy>f,f</SizePolicy>
+			<Children>				
+				
+				<PushButton>
+				<NumberStates>3</NumberStates>
+				<State>
+				<Number>0</Number>
+				<Pressed>skin:graphics/btn_vinylcontrol_mode_abs.svg</Pressed>
+				<Unpressed>skin:graphics/btn_vinylcontrol_mode_abs.svg</Unpressed>
+				</State>
+				<State>
+				<Number>1</Number>
+				<Pressed>skin:graphics/btn_vinylcontrol_mode_rel.svg</Pressed>
+				<Unpressed>skin:graphics/btn_vinylcontrol_mode_rel.svg</Unpressed>
+				</State>
+				<State>
+				<Number>2</Number>
+				<Pressed>skin:graphics/btn_vinylcontrol_mode_const.svg</Pressed>
+				<Unpressed>skin:graphics/btn_vinylcontrol_mode_const.svg</Unpressed>
+				</State>
+				<Connection>
+				<ConfigKey>[Channel<Variable name="audiochannel"/>],vinylcontrol_mode</ConfigKey>
+				</Connection>
+				</PushButton>							
+
+				<PushButton>				
+				<NumberStates>3</NumberStates>
+				<State>
+				<Number>0</Number>
+				<Pressed>skin:graphics/btn_vinylcontrol_mode_abs.svg</Pressed>
+				<Unpressed>skin:graphics/btn_vinylcontrol_mode_abs.svg</Unpressed>
+				</State>
+				<State>
+				<Number>1</Number>
+				<Pressed>skin:graphics/btn_vinylcontrol_mode_rel.svg</Pressed>
+				<Unpressed>skin:graphics/btn_vinylcontrol_mode_rel.svg</Unpressed>
+				</State>
+				<State>
+				<Number>2</Number>
+				<Pressed>skin:graphics/btn_vinylcontrol_mode_const.svg</Pressed>
+				<Unpressed>skin:graphics/btn_vinylcontrol_mode_const.svg</Unpressed>
+				</State>				
+				<Connection>
+				<ConfigKey>[Channel<Variable name="audiochannel"/>],vinylcontrol_mode</ConfigKey>
+				</Connection>
+				</PushButton>
+				
+				<PushButton>
+				<NumberStates>3</NumberStates>
+				<State>
+				<Number>0</Number>
+				<Pressed>skin:graphics/btn_vinylcontrol_mode_abs.svg</Pressed>
+				<Unpressed>skin:graphics/btn_vinylcontrol_mode_abs.svg</Unpressed>
+				</State>
+				<State>
+				<Number>1</Number>
+				<Pressed>skin:graphics/btn_vinylcontrol_mode_rel.svg</Pressed>
+				<Unpressed>skin:graphics/btn_vinylcontrol_mode_rel.svg</Unpressed>
+				</State>
+				<State>
+				<Number>2</Number>
+				<Pressed>skin:graphics/btn_vinylcontrol_mode_const.svg</Pressed>
+				<Unpressed>skin:graphics/btn_vinylcontrol_mode_const.svg</Unpressed>
+				</State>
+				<Connection>
+				<ConfigKey>[Channel<Variable name="audiochannel"/>],vinylcontrol_mode</ConfigKey>
+				</Connection>
+				</PushButton>							
+
+			</Children>
+			</WidgetGroup>
+					
+			<!-- Texts + Pusher: Pushes everything in this row to both sides, left and right -->
+			<WidgetGroup>
+			<ObjectName>Texts</ObjectName>	
+			<MinimumSize>1,16</MinimumSize>
+			<SizePolicy>me,f</SizePolicy>
+			<Layout>vertical</Layout>
+			<Children>
+			<Label>
+			<Style>font:10px/12px; background:transparent; color:#484848;</Style>
+			<Text>Vinyl Controls</Text>
+			</Label>
+			</Children>			
+			</WidgetGroup>
+			
+			<!--
+			**********************************************
+			Vinyl - Cueing Mode:
+			**********************************************
+			-->
+			
+			<WidgetGroup>
+			<MinimumSize>120,16</MinimumSize>
+			<SizePolicy>f,f</SizePolicy>
+			<Children>
+			
+				<PushButton>								
+				<NumberStates>3</NumberStates>
+				<State>
+				<Number>0</Number>
+				<Pressed>skin:graphics/btn_vinylcontrol_cueing_off.svg</Pressed>
+				<Unpressed>skin:graphics/btn_vinylcontrol_cueing_off.svg</Unpressed>
+				</State>
+				<State>
+				<Number>1</Number>
+				<Pressed>skin:graphics/btn_vinylcontrol_cueing_one.svg</Pressed>
+				<Unpressed>skin:graphics/btn_vinylcontrol_cueing_one.svg</Unpressed>
+				</State>
+				<State>
+				<Number>2</Number>
+				<Pressed>skin:graphics/btn_vinylcontrol_cueing_hot.svg</Pressed>
+				<Unpressed>skin:graphics/btn_vinylcontrol_cueing_hot.svg</Unpressed>
+				</State>
+				<Connection>
+				<ConfigKey>[Channel<Variable name="audiochannel"/>],vinylcontrol_cueing</ConfigKey>
+				</Connection>
+				</PushButton>
+				
+				<PushButton>
+				<NumberStates>3</NumberStates>
+				<State>
+				<Number>0</Number>
+				<Pressed>skin:graphics/btn_vinylcontrol_cueing_off.svg</Pressed>
+				<Unpressed>skin:graphics/btn_vinylcontrol_cueing_off.svg</Unpressed>
+				</State>
+				<State>
+				<Number>1</Number>
+				<Pressed>skin:graphics/btn_vinylcontrol_cueing_one.svg</Pressed>
+				<Unpressed>skin:graphics/btn_vinylcontrol_cueing_one.svg</Unpressed>
+				</State>
+				<State>
+				<Number>2</Number>
+				<Pressed>skin:graphics/btn_vinylcontrol_cueing_hot.svg</Pressed>
+				<Unpressed>skin:graphics/btn_vinylcontrol_cueing_hot.svg</Unpressed>
+				</State>
+				<Connection>
+				<ConfigKey>[Channel<Variable name="audiochannel"/>],vinylcontrol_cueing</ConfigKey>
+				</Connection>
+				</PushButton>				
+				
+			</Children>
+			</WidgetGroup>	
+
+			<!--
+			**********************************************
+			Vinyl - On/Off:
+			**********************************************
+			-->
+				
+			<WidgetGroup>		
+			<MinimumSize>26,16</MinimumSize>
+			<SizePolicy>f,f</SizePolicy>
+			<Children>
+
+				<PushButton>				
+				<NumberStates>2</NumberStates>
+				<State>
+				<Number>0</Number>
+				<Pressed>skin:graphics/btn_on.svg</Pressed>
+				<Unpressed>skin:graphics/btn_off.svg</Unpressed>
+				</State>
+				<State>
+				<Number>1</Number>
+				<Pressed>skin:graphics/btn_on.svg</Pressed>
+				<Unpressed>skin:graphics/btn_on.svg</Unpressed>
+				</State>
+				<Connection>
+				<ConfigKey>[Channel<Variable name="audiochannel"/>],vinylcontrol_enabled</ConfigKey>
+				</Connection>
+				</PushButton>
+				
+			</Children>
+			</WidgetGroup>			
+				
+			</Children>
+			<Connection><!-- Show/Hide all the above vinyl buttons -->			
+			<ConfigKey>[DarkMetal],vinylcontrols_deck<Variable name="audiochannel"/>_show</ConfigKey>            
+            <!-- <Transform><Not/></Transform> --> <!-- Important: INVERSE !!! -->
+			<BindProperty>visible</BindProperty>
+			</Connection>
+			</WidgetGroup>
+
+			<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+			<ObjectName>HorizontalLine</ObjectName>
+			<MinimumSize>10,1</MinimumSize>
+			<SizePolicy>me,f</SizePolicy>
+			<Layout>horizontal</Layout>				
+			<Children></Children>
+			</WidgetGroup>
 
 			<!--
 			********************************************************************
@@ -611,15 +631,16 @@
 			-->			
 			
 			<WidgetGroup>
+				<ObjectName>HorizontalSmallButtons<Variable name="audiochannel"/></ObjectName>
 				<Pos>0,170</Pos>
-				<MinimumSize>50,35</MinimumSize>
+				<MinimumSize>290,35</MinimumSize> <!-- Dont let the small buttons overlap between themselves -->
 				<SizePolicy>me,f</SizePolicy>
 				<Layout>horizontal</Layout>				
 				<Children>								
 					
 					<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 					<ObjectName>VerticalLineDarker30</ObjectName>
-					<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
+					<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
 					<MinimumSize>1,35</MinimumSize>
 					<SizePolicy>f,me</SizePolicy>
 					<Layout>horizontal</Layout>				
@@ -636,13 +657,13 @@
 					<NumberStates>2</NumberStates>
 					<State>
 					<Number>0</Number>
-					<Pressed>gfx_hifi/btn_expand_deck_<Variable name="audiochannel"/>.svg</Pressed>
-					<Unpressed>gfx_hifi/btn_expand_deck_<Variable name="audiochannel"/>.svg</Unpressed>
+					<Pressed>skin:graphics/btn_expand_deck_<Variable name="audiochannel"/>_pressed.svg</Pressed>
+					<Unpressed>skin:graphics/btn_expand_deck_<Variable name="audiochannel"/>_pressed.svg</Unpressed>
 					</State>
 					<State>
 					<Number>1</Number>
-					<Pressed>gfx_hifi/btn_expand_deck_<Variable name="audiochannel"/>.svg</Pressed>
-					<Unpressed>gfx_hifi/btn_expand_deck_<Variable name="audiochannel"/>.svg</Unpressed>
+					<Pressed>skin:graphics/btn_expand_deck_<Variable name="audiochannel"/>.svg</Pressed>
+					<Unpressed>skin:graphics/btn_expand_deck_<Variable name="audiochannel"/>.svg</Unpressed>
 					</State>
 					<Connection>
 					<ConfigKey>[DarkMetal],deck<Variable name="decktohide"/>_show</ConfigKey>    
@@ -652,7 +673,7 @@
 
 					<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 					<ObjectName>VerticalLineDarker30</ObjectName>
-					<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
+					<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
 					<MinimumSize>1,35</MinimumSize>
 					<SizePolicy>f,me</SizePolicy>
 					<Layout>horizontal</Layout>				
@@ -660,7 +681,6 @@
 					</WidgetGroup>					
 				
 					<WidgetGroup><!-- Pusher -->
-					<MinimumSize>10,35</MinimumSize>
 					<SizePolicy>me,me</SizePolicy>
 					<Layout>horizontal</Layout>				
 					<Children></Children>
@@ -668,7 +688,7 @@
 								
 					<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 					<ObjectName>VerticalLineDarker30</ObjectName>
-					<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
+					<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
 					<MinimumSize>1,35</MinimumSize>
 					<SizePolicy>f,me</SizePolicy>
 					<Layout>horizontal</Layout>				
@@ -685,13 +705,13 @@
 					<NumberStates>2</NumberStates>
 					<State>
 					<Number>0</Number>
-					<Pressed>gfx_hifi/btn_buttons_row.svg</Pressed>
-					<Unpressed>gfx_hifi/btn_buttons_row.svg</Unpressed>
+					<Pressed>skin:graphics/btn_buttons_row.svg</Pressed>
+					<Unpressed>skin:graphics/btn_buttons_row.svg</Unpressed>
 					</State>
 					<State>
 					<Number>1</Number>
-					<Pressed>gfx_hifi/btn_buttons_row_over.svg</Pressed>
-					<Unpressed>gfx_hifi/btn_buttons_row_over.svg</Unpressed>
+					<Pressed>skin:graphics/btn_buttons_row_pressed.svg</Pressed>
+					<Unpressed>skin:graphics/btn_buttons_row_pressed.svg</Unpressed>
 					</State>
 					<Connection>
 					<ConfigKey>[DarkMetal],buttons_row_deck<Variable name="audiochannel"/>_show</ConfigKey>
@@ -705,25 +725,25 @@
 					**********************************************
 					-->
 					
-					<PushButton>				
-						<NumberStates>2</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_coverart_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_coverart.svg</Unpressed>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Pressed>gfx_hifi/btn_coverart_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_coverart_over.svg</Unpressed>
-						</State>					
-						<Connection>
-							<ConfigKey>[DarkMetal],coverart_big_deck<Variable name="audiochannel"/>_show</ConfigKey>
-							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-							<ButtonState>LeftButton</ButtonState>
-						</Connection>
+					<PushButton>			
+					<NumberStates>2</NumberStates>
+					<State>
+					<Number>0</Number>
+					<Pressed>skin:graphics/btn_coverart_pressed.svg</Pressed>
+					<Unpressed>skin:graphics/btn_coverart.svg</Unpressed>
+					</State>
+					<State>
+					<Number>1</Number>
+					<Pressed>skin:graphics/btn_coverart_pressed.svg</Pressed>
+					<Unpressed>skin:graphics/btn_coverart_pressed.svg</Unpressed>
+					</State>					
+					<Connection>
+					<ConfigKey>[CoverArtBigDeck<Variable name="audiochannel"/>],show</ConfigKey>
+					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+					<ButtonState>LeftButton</ButtonState>
+					</Connection>
 					</PushButton>
-			
+								
 					<!--
 					**********************************************
 					Button - Show/Hide spinning disc:
@@ -734,13 +754,13 @@
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_spinny.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_spinny.svg</Unpressed>
+							<Pressed>skin:graphics/btn_spinny.svg</Pressed>
+							<Unpressed>skin:graphics/btn_spinny.svg</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>gfx_hifi/btn_spinny_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_spinny_over.svg</Unpressed>
+							<Pressed>skin:graphics/btn_spinny_pressed.svg</Pressed>
+							<Unpressed>skin:graphics/btn_spinny_pressed.svg</Unpressed>
 						</State>					
 						<Connection>
 							<ConfigKey>[Spinny<Variable name="audiochannel"/>],show_spinny</ConfigKey>
@@ -748,10 +768,35 @@
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 					</PushButton>
+
+					<!--
+					**********************************************
+					Button - Show/Hide vinyl controls:
+					**********************************************
+					-->
+					
+					<PushButton>				
+						<NumberStates>2</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>skin:graphics/btn_vinyl.svg</Pressed>
+							<Unpressed>skin:graphics/btn_vinyl.svg</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>skin:graphics/btn_vinyl_pressed.svg</Pressed>
+							<Unpressed>skin:graphics/btn_vinyl_pressed.svg</Unpressed>
+						</State>					
+						<Connection>
+							<ConfigKey>[DarkMetal],vinylcontrols_deck<Variable name="audiochannel"/>_show</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+					</PushButton>
 					
 					<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 					<ObjectName>VerticalLineDarker30</ObjectName>
-					<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
+					<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
 					<MinimumSize>1,35</MinimumSize>
 					<SizePolicy>f,me</SizePolicy>
 					<Layout>horizontal</Layout>				
@@ -768,13 +813,13 @@
 					<NumberStates>2</NumberStates>
 					<State>
 					<Number>0</Number>
-					<Pressed>gfx_hifi/btn_slip.svg</Pressed>
-					<Unpressed>gfx_hifi/btn_slip.svg</Unpressed>
+					<Pressed>skin:graphics/btn_slip.svg</Pressed>
+					<Unpressed>skin:graphics/btn_slip.svg</Unpressed>
 					</State>
 					<State>
 					<Number>1</Number>
-					<Pressed>gfx_hifi/btn_slip_over.svg</Pressed>
-					<Unpressed>gfx_hifi/btn_slip_over.svg</Unpressed>
+					<Pressed>skin:graphics/btn_slip_pressed.svg</Pressed>
+					<Unpressed>skin:graphics/btn_slip_pressed.svg</Unpressed>
 					</State>		
 					<Connection>
 					<ConfigKey>[Channel<Variable name="audiochannel"/>],slip_enabled</ConfigKey>
@@ -793,8 +838,8 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_beatgrid_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_beatgrid.svg</Unpressed>
+							<Pressed>skin:graphics/btn_beatgrid_pressed.svg</Pressed>
+							<Unpressed>skin:graphics/btn_beatgrid.svg</Unpressed>
 						</State>						
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],beats_translate_curpos</ConfigKey>
@@ -813,13 +858,13 @@
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_keylock.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_keylock.svg</Unpressed>
+							<Pressed>skin:graphics/btn_keylock.svg</Pressed>
+							<Unpressed>skin:graphics/btn_keylock.svg</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>gfx_hifi/btn_keylock_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_keylock_over.svg</Unpressed>
+							<Pressed>skin:graphics/btn_keylock_pressed.svg</Pressed>
+							<Unpressed>skin:graphics/btn_keylock_pressed.svg</Unpressed>
 						</State>						
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],keylock</ConfigKey>
@@ -836,13 +881,13 @@
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_quantize.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_quantize.svg</Unpressed>
+							<Pressed>skin:graphics/btn_quantize.svg</Pressed>
+							<Unpressed>skin:graphics/btn_quantize.svg</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>gfx_hifi/btn_quantize_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_quantize_over.svg</Unpressed>
+							<Pressed>skin:graphics/btn_quantize_pressed.svg</Pressed>
+							<Unpressed>skin:graphics/btn_quantize_pressed.svg</Unpressed>
 						</State>						
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],quantize</ConfigKey>
@@ -861,13 +906,13 @@
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_repeat.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_repeat.svg</Unpressed>
+							<Pressed>skin:graphics/btn_repeat.svg</Pressed>
+							<Unpressed>skin:graphics/btn_repeat.svg</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>gfx_hifi/btn_repeat_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_repeat_over.svg</Unpressed>
+							<Pressed>skin:graphics/btn_repeat_pressed.svg</Pressed>
+							<Unpressed>skin:graphics/btn_repeat_pressed.svg</Unpressed>
 						</State>						
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],repeat</ConfigKey>
@@ -884,8 +929,8 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_eject_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_eject.svg</Unpressed>
+							<Pressed>skin:graphics/btn_eject_pressed.svg</Pressed>
+							<Unpressed>skin:graphics/btn_eject.svg</Unpressed>
 						</State>						
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],eject</ConfigKey>
@@ -893,10 +938,31 @@
 							<ButtonState>LeftButton</ButtonState>
 							<ConnectValueToWidget>false</ConnectValueToWidget>
 						</Connection>
-					</PushButton>				
-			
-			</Children>
-			</WidgetGroup>
+					</PushButton>					
+					
+					<!--
+					**********************************************
+					Button - Show the tinny coverart:
+					**********************************************
+					-->
+					
+					<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+					<ObjectName>CoverArtTinny<Variable name="audiochannel"/></ObjectName>
+					<MinimumSize>24,24</MinimumSize>
+					<SizePolicy>f,f</SizePolicy>
+					<Layout>horizontal</Layout>
+					<Children>			
+					<CoverArt>
+					<MinimumSize>24,24</MinimumSize>
+					<SizePolicy>f,f</SizePolicy>
+					<Group>[Channel<Variable name="audiochannel"/>]</Group>
+					<!-- <PathMask>skin:graphics/cover_mask.svg</PathMask> -->
+					</CoverArt>					
+					</Children>
+					</WidgetGroup>							
+					
+					</Children>
+					</WidgetGroup>
 
 
 			<WidgetGroup><!-- Design only: For creating an horizontal long line -->
@@ -904,7 +970,8 @@
 			<MinimumSize>10,1</MinimumSize>
 			<SizePolicy>me,f</SizePolicy>
 			<Children></Children>
-			</WidgetGroup>			
+			</WidgetGroup>
+			
 			
 		<!--
 		*************************************************************************
@@ -915,7 +982,7 @@
 		-->		
 				
 		<WidgetGroup> 
-		<ObjectName>SetAnFixedArea</ObjectName> <!-- Starts: SetAnFixedArea -->
+		<ObjectName>HorizontalMainButtons<Variable name="audiochannel"/></ObjectName> <!-- Starts: SetAnFixedArea -->
 		<MinimumSize>-1,70</MinimumSize>
 		<MaximumSize>-1,70</MaximumSize>
 		<SizePolicy>me,f</SizePolicy>
@@ -932,13 +999,14 @@
 				
 			<WidgetGroup>
 			<ObjectName>ButtonsRowDeck<Variable name="audiochannel"/></ObjectName> <!-- MUST have 2 WidgetGroup with same name! -->
-			<MinimumSize>113,70</MinimumSize> <!-- 113 == The exact sum of the nexts "Boxes" and "Spacers" -->
+			<MinimumSize>113,70</MinimumSize> <!-- 113 == The exact sum of the nexts "Boxes" and "Spacers" -->	
+			<MaximumSize>113,70</MaximumSize> <!-- Applies the "Rigid Body" to the full buttons row -->			
 			<SizePolicy>f,f</SizePolicy>
 			<Layout>horizontal</Layout>
 			<Children>
 			
 				<WidgetGroup> <!-- All the Player Buttons -->	
-				<ObjectName>Box</ObjectName>
+				<ObjectName>PosButtonsBox</ObjectName>
 				<MinimumSize>105,70</MinimumSize>
 				<SizePolicy>f,f</SizePolicy>
 				<Children>
@@ -954,8 +1022,8 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_startstop2.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_startstop1.svg</Unpressed>
+							<Pressed>skin:graphics/btn_startstop2.svg</Pressed>
+							<Unpressed>skin:graphics/btn_startstop1.svg</Unpressed>
 						</State>						
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],start_stop</ConfigKey>
@@ -980,8 +1048,8 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_rewind_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_rewind.svg</Unpressed>
+							<Pressed>skin:graphics/btn_rewind_pressed.svg</Pressed>
+							<Unpressed>skin:graphics/btn_rewind.svg</Unpressed>
 						</State>						
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],back</ConfigKey>
@@ -1006,8 +1074,8 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_forward_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_forward.svg</Unpressed>
+							<Pressed>skin:graphics/btn_forward_pressed.svg</Pressed>
+							<Unpressed>skin:graphics/btn_forward.svg</Unpressed>
 						</State>						
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],fwd</ConfigKey>
@@ -1032,8 +1100,8 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_endstop_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_endstop.svg</Unpressed>
+							<Pressed>skin:graphics/btn_endstop_pressed.svg</Pressed>
+							<Unpressed>skin:graphics/btn_endstop.svg</Unpressed>
 						</State>						
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],end</ConfigKey>
@@ -1058,8 +1126,8 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_startplay_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_startplay.svg</Unpressed>
+							<Pressed>skin:graphics/btn_startplay_pressed.svg</Pressed>
+							<Unpressed>skin:graphics/btn_startplay.svg</Unpressed>
 						</State>						
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],start_play</ConfigKey>
@@ -1079,8 +1147,8 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_reverse_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_reverse.svg</Unpressed>
+							<Pressed>skin:graphics/btn_reverse_pressed.svg</Pressed>
+							<Unpressed>skin:graphics/btn_reverse.svg</Unpressed>
 						</State>						
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],reverse</ConfigKey>
@@ -1092,12 +1160,14 @@
 				</Children>
 				</WidgetGroup>
 				
-			<!-- Spacer: Creates a margin between these Boxes with buttons -->
-			<WidgetGroup> 				
-			<MinimumSize>8,70</MinimumSize>
-			<SizePolicy>f,f</SizePolicy>
-			<Children></Children>
-			</WidgetGroup>
+		<!-- Spacer: Creates a margin between these Boxes with buttons -->
+		<WidgetGroup> 				
+		<MinimumSize>8,-1</MinimumSize>
+		<MaximumSize>8,-1</MaximumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>
+		<!-- /Spacer -->
 				
 			</Children>
 			<Connection><!-- Show/Hide above full row with buttons -->			
@@ -1111,13 +1181,14 @@
 							
 			<WidgetGroup>
 			<ObjectName>ButtonsRowDeck<Variable name="audiochannel"/></ObjectName> <!-- MUST have 2 WidgetGroup with same name! -->
-			<MinimumSize>335,70</MinimumSize> <!-- 335 == The exact sum of the nexts "Boxes" and "Spacers" -->
-			<SizePolicy>f,f</SizePolicy>
+			<MinimumSize>452,70</MinimumSize> <!-- 452 == The exact sum of the nexts "Boxes" and "Spacers" -->
+			<MaximumSize>452,70</MaximumSize> <!-- Applies the "Rigid Body" to the full buttons row -->
+			<SizePolicy>f,me</SizePolicy>
 			<Layout>horizontal</Layout>
 			<Children>		
 					
 					<WidgetGroup><!-- All the Cues: Buttons with the numbers 1,2,3,4,5,6,7,8 -->	
-					<ObjectName>Box</ObjectName>
+					<ObjectName>CuesButtonsBox</ObjectName>
 					<MinimumSize>105,70</MinimumSize>
 					<SizePolicy>f,f</SizePolicy>
 					<Children>
@@ -1129,13 +1200,13 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_hotcue_1.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_hotcue_1.svg</Unpressed>
+							<Pressed>skin:graphics/btn_hotcue_1.svg</Pressed>
+							<Unpressed>skin:graphics/btn_hotcue_1.svg</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>gfx_hifi/btn_hotcue_1_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_hotcue_1_over.svg</Unpressed>
+							<Pressed>skin:graphics/btn_hotcue_1_pressed.svg</Pressed>
+							<Unpressed>skin:graphics/btn_hotcue_1_pressed.svg</Unpressed>
 						</State>
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_1_activate</ConfigKey>
@@ -1162,13 +1233,13 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_hotcue_2.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_hotcue_2.svg</Unpressed>
+							<Pressed>skin:graphics/btn_hotcue_2.svg</Pressed>
+							<Unpressed>skin:graphics/btn_hotcue_2.svg</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>gfx_hifi/btn_hotcue_2_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_hotcue_2_over.svg</Unpressed>
+							<Pressed>skin:graphics/btn_hotcue_2_pressed.svg</Pressed>
+							<Unpressed>skin:graphics/btn_hotcue_2_pressed.svg</Unpressed>
 						</State>
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_2_activate</ConfigKey>
@@ -1195,13 +1266,13 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_hotcue_3.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_hotcue_3.svg</Unpressed>
+							<Pressed>skin:graphics/btn_hotcue_3.svg</Pressed>
+							<Unpressed>skin:graphics/btn_hotcue_3.svg</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>gfx_hifi/btn_hotcue_3_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_hotcue_3_over.svg</Unpressed>
+							<Pressed>skin:graphics/btn_hotcue_3_pressed.svg</Pressed>
+							<Unpressed>skin:graphics/btn_hotcue_3_pressed.svg</Unpressed>
 						</State>
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_3_activate</ConfigKey>
@@ -1228,13 +1299,13 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_hotcue_4.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_hotcue_4.svg</Unpressed>
+							<Pressed>skin:graphics/btn_hotcue_4.svg</Pressed>
+							<Unpressed>skin:graphics/btn_hotcue_4.svg</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>gfx_hifi/btn_hotcue_4_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_hotcue_4_over.svg</Unpressed>
+							<Pressed>skin:graphics/btn_hotcue_4_pressed.svg</Pressed>
+							<Unpressed>skin:graphics/btn_hotcue_4_pressed.svg</Unpressed>
 						</State>
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_4_activate</ConfigKey>
@@ -1261,13 +1332,13 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_hotcue_5.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_hotcue_5.svg</Unpressed>
+							<Pressed>skin:graphics/btn_hotcue_5.svg</Pressed>
+							<Unpressed>skin:graphics/btn_hotcue_5.svg</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>gfx_hifi/btn_hotcue_5_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_hotcue_5_over.svg</Unpressed>
+							<Pressed>skin:graphics/btn_hotcue_5_pressed.svg</Pressed>
+							<Unpressed>skin:graphics/btn_hotcue_5_pressed.svg</Unpressed>
 						</State>
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_5_activate</ConfigKey>
@@ -1294,13 +1365,13 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_hotcue_6.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_hotcue_6.svg</Unpressed>
+							<Pressed>skin:graphics/btn_hotcue_6.svg</Pressed>
+							<Unpressed>skin:graphics/btn_hotcue_6.svg</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>gfx_hifi/btn_hotcue_6_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_hotcue_6_over.svg</Unpressed>
+							<Pressed>skin:graphics/btn_hotcue_6_pressed.svg</Pressed>
+							<Unpressed>skin:graphics/btn_hotcue_6_pressed.svg</Unpressed>
 						</State>
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_6_activate</ConfigKey>
@@ -1327,13 +1398,13 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_hotcue_7.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_hotcue_7.svg</Unpressed>
+							<Pressed>skin:graphics/btn_hotcue_7.svg</Pressed>
+							<Unpressed>skin:graphics/btn_hotcue_7.svg</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>gfx_hifi/btn_hotcue_7_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_hotcue_7_over.svg</Unpressed>
+							<Pressed>skin:graphics/btn_hotcue_7_pressed.svg</Pressed>
+							<Unpressed>skin:graphics/btn_hotcue_7_pressed.svg</Unpressed>
 						</State>
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_7_activate</ConfigKey>
@@ -1360,13 +1431,13 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_hotcue_8.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_hotcue_8.svg</Unpressed>
+							<Pressed>skin:graphics/btn_hotcue_8.svg</Pressed>
+							<Unpressed>skin:graphics/btn_hotcue_8.svg</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>gfx_hifi/btn_hotcue_8_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_hotcue_8_over.svg</Unpressed>
+							<Pressed>skin:graphics/btn_hotcue_8_pressed.svg</Pressed>
+							<Unpressed>skin:graphics/btn_hotcue_8_pressed.svg</Unpressed>
 						</State>
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],hotcue_8_activate</ConfigKey>
@@ -1389,15 +1460,17 @@
 					</Children>
 					</WidgetGroup>
 					
-					<!-- Spacer: Creates a margin between these Boxes with buttons -->
-					<WidgetGroup> 				
-					<MinimumSize>8,70</MinimumSize>
-					<SizePolicy>f,f</SizePolicy>
-					<Children></Children>
-					</WidgetGroup>
+		<!-- Spacer: Creates a margin between these Boxes with buttons -->
+		<WidgetGroup> 				
+		<MinimumSize>8,-1</MinimumSize>
+		<MaximumSize>8,-1</MaximumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>
+		<!-- /Spacer -->
 					
 					<WidgetGroup> <!-- All the Cues: Flags and Loop button -->	
-					<ObjectName>Box</ObjectName>
+					<ObjectName>LoopsButtonsBox1</ObjectName>
 					<MinimumSize>54,70</MinimumSize>
 					<SizePolicy>f,f</SizePolicy>
 					<Children>
@@ -1407,8 +1480,8 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_loop_in_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_loop_in.svg</Unpressed>
+							<Pressed>skin:graphics/btn_loop_in_pressed.svg</Pressed>
+							<Unpressed>skin:graphics/btn_loop_in.svg</Unpressed>
 						</State>
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],loop_in</ConfigKey>
@@ -1422,8 +1495,8 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_loop_out_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_loop_out.svg</Unpressed>
+							<Pressed>skin:graphics/btn_loop_out_pressed.svg</Pressed>
+							<Unpressed>skin:graphics/btn_loop_out.svg</Unpressed>
 						</State>
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],loop_out</ConfigKey>
@@ -1438,13 +1511,13 @@
 						<LeftClickIsPushButton>true</LeftClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_reloop.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_reloop.svg</Unpressed>
+							<Pressed>skin:graphics/btn_reloop.svg</Pressed>
+							<Unpressed>skin:graphics/btn_reloop.svg</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>gfx_hifi/btn_reloop_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_reloop_over.svg</Unpressed>
+							<Pressed>skin:graphics/btn_reloop_pressed.svg</Pressed>
+							<Unpressed>skin:graphics/btn_reloop_pressed.svg</Unpressed>
 						</State>
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],reloop_exit</ConfigKey>
@@ -1461,26 +1534,30 @@
 					</Children>
 					</WidgetGroup>
 					
-					<!-- Spacer: Creates a margin between these Boxes with buttons -->
-					<WidgetGroup> 				
-					<MinimumSize>8,70</MinimumSize>
-					<SizePolicy>f,f</SizePolicy>
-					<Children></Children>
-					</WidgetGroup>			
+		<!-- Spacer: Creates a margin between these Boxes with buttons -->
+		<WidgetGroup> 				
+		<MinimumSize>8,-1</MinimumSize>
+		<MaximumSize>8,-1</MaximumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>
+		<!-- /Spacer -->
+					
 
-					<WidgetGroup> <!-- All the Cues: Buttons from 1|8 to 16 -->	
-					<ObjectName>Box</ObjectName>
+					<WidgetGroup> <!-- Buttons for Beat Jump and Beat Loop -->	
+					<ObjectName>LoopsButtonsBox2</ObjectName>
 					<MinimumSize>152,70</MinimumSize>
 					<SizePolicy>f,f</SizePolicy>
 					<Children>
+				
 
 					<PushButton> <!-- Labeled: - -->
 					<Pos>0,10</Pos>
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_beatloop_halve_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_beatloop_halve.svg</Unpressed>
+							<Pressed>skin:graphics/btn_beatloop_halve_pressed.svg</Pressed>
+							<Unpressed>skin:graphics/btn_beatloop_halve.svg</Unpressed>
 						</State>
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],loop_halve</ConfigKey>
@@ -1496,13 +1573,13 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_beatloop_0125.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_beatloop_0125.svg</Unpressed>
+							<Pressed>skin:graphics/btn_beatloop_0125.svg</Pressed>
+							<Unpressed>skin:graphics/btn_beatloop_0125.svg</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>gfx_hifi/btn_beatloop_0125.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_beatloop_0125_over.svg</Unpressed>
+							<Pressed>skin:graphics/btn_beatloop_0125.svg</Pressed>
+							<Unpressed>skin:graphics/btn_beatloop_0125_pressed.svg</Unpressed>
 						</State>
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatloop_0.125_toggle</ConfigKey>
@@ -1527,13 +1604,13 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_beatloop_0250.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_beatloop_0250.svg</Unpressed>
+							<Pressed>skin:graphics/btn_beatloop_0250.svg</Pressed>
+							<Unpressed>skin:graphics/btn_beatloop_0250.svg</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>gfx_hifi/btn_beatloop_0250.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_beatloop_0250_over.svg</Unpressed>
+							<Pressed>skin:graphics/btn_beatloop_0250.svg</Pressed>
+							<Unpressed>skin:graphics/btn_beatloop_0250_pressed.svg</Unpressed>
 						</State>
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatloop_0.25_toggle</ConfigKey>
@@ -1558,13 +1635,13 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_beatloop_0500.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_beatloop_0500.svg</Unpressed>
+							<Pressed>skin:graphics/btn_beatloop_0500.svg</Pressed>
+							<Unpressed>skin:graphics/btn_beatloop_0500.svg</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>gfx_hifi/btn_beatloop_0500.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_beatloop_0500_over.svg</Unpressed>
+							<Pressed>skin:graphics/btn_beatloop_0500.svg</Pressed>
+							<Unpressed>skin:graphics/btn_beatloop_0500_pressed.svg</Unpressed>
 						</State>
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatloop_0.5_toggle</ConfigKey>
@@ -1589,13 +1666,13 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_beatloop_1.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_beatloop_1.svg</Unpressed>
+							<Pressed>skin:graphics/btn_beatloop_1.svg</Pressed>
+							<Unpressed>skin:graphics/btn_beatloop_1.svg</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>gfx_hifi/btn_beatloop_1.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_beatloop_1_over.svg</Unpressed>
+							<Pressed>skin:graphics/btn_beatloop_1.svg</Pressed>
+							<Unpressed>skin:graphics/btn_beatloop_1_pressed.svg</Unpressed>
 						</State>
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatloop_1_toggle</ConfigKey>
@@ -1620,13 +1697,13 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_beatloop_2.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_beatloop_2.svg</Unpressed>
+							<Pressed>skin:graphics/btn_beatloop_2.svg</Pressed>
+							<Unpressed>skin:graphics/btn_beatloop_2.svg</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>gfx_hifi/btn_beatloop_2.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_beatloop_2_over.svg</Unpressed>
+							<Pressed>skin:graphics/btn_beatloop_2.svg</Pressed>
+							<Unpressed>skin:graphics/btn_beatloop_2_pressed.svg</Unpressed>
 						</State>
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatloop_2_toggle</ConfigKey>
@@ -1651,13 +1728,13 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_beatloop_4.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_beatloop_4.svg</Unpressed>
+							<Pressed>skin:graphics/btn_beatloop_4.svg</Pressed>
+							<Unpressed>skin:graphics/btn_beatloop_4.svg</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>gfx_hifi/btn_beatloop_4.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_beatloop_4_over.svg</Unpressed>
+							<Pressed>skin:graphics/btn_beatloop_4.svg</Pressed>
+							<Unpressed>skin:graphics/btn_beatloop_4_pressed.svg</Unpressed>
 						</State>
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatloop_4_toggle</ConfigKey>
@@ -1682,13 +1759,13 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_beatloop_8.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_beatloop_8.svg</Unpressed>
+							<Pressed>skin:graphics/btn_beatloop_8.svg</Pressed>
+							<Unpressed>skin:graphics/btn_beatloop_8.svg</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>gfx_hifi/btn_beatloop_8.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_beatloop_8_over.svg</Unpressed>
+							<Pressed>skin:graphics/btn_beatloop_8.svg</Pressed>
+							<Unpressed>skin:graphics/btn_beatloop_8_pressed.svg</Unpressed>
 						</State>
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatloop_8_toggle</ConfigKey>
@@ -1713,13 +1790,13 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_beatloop_16.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_beatloop_16.svg</Unpressed>
+							<Pressed>skin:graphics/btn_beatloop_16.svg</Pressed>
+							<Unpressed>skin:graphics/btn_beatloop_16.svg</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>gfx_hifi/btn_beatloop_16.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_beatloop_16_over.svg</Unpressed>
+							<Pressed>skin:graphics/btn_beatloop_16.svg</Pressed>
+							<Unpressed>skin:graphics/btn_beatloop_16_pressed.svg</Unpressed>
 						</State>						
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],beatloop_16_toggle</ConfigKey>
@@ -1742,8 +1819,8 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>gfx_hifi/btn_beatloop_double_over.svg</Pressed>
-							<Unpressed>gfx_hifi/btn_beatloop_double.svg</Unpressed>
+							<Pressed>skin:graphics/btn_beatloop_double_pressed.svg</Pressed>
+							<Unpressed>skin:graphics/btn_beatloop_double.svg</Unpressed>
 						</State>						
 						<Connection>
 							<ConfigKey>[Channel<Variable name="audiochannel"/>],loop_double</ConfigKey>
@@ -1754,13 +1831,179 @@
 
 					</Children>					
 					</WidgetGroup>
+			
+			
+		<!-- Spacer: Creates a margin between these Boxes with buttons -->
+		<WidgetGroup> 				
+		<MinimumSize>4,-1</MinimumSize>
+		<MaximumSize>4,-1</MaximumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>
+		<!-- /Spacer -->					
+
+		<WidgetGroup> <!-- GROUP: Buttons for: Beat Jump + Beat Loop -->	
+		<ObjectName>LoopsButtonsBox3</ObjectName>
+		<MinimumSize>115,-1</MinimumSize> 
+		<MaximumSize>115,-1</MaximumSize> 
+		<SizePolicy>f,me</SizePolicy>
+		<Layout>vertical</Layout>
+		<Children>		
+
+		<WidgetGroup><!-- Pusher (Pushes 3px to bottom) -->
+		<ObjectName></ObjectName>
+		<MinimumSize>-1,3</MinimumSize>
+		<MaximumSize>-1,3</MaximumSize>
+		<SizePolicy>me,f</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>
+
+		<!-- PACK: Beat Jump -->
+		
+		<WidgetGroup>
+		<ObjectName>HorizontalRow</ObjectName>
+		<MinimumSize>-1,25</MinimumSize>
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>	
+		<Children>
+	
+		<PushButton>
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Unpressed>skin:graphics/btn_jump_back.svg</Unpressed>
+		<Pressed>skin:graphics/btn_jump_back_pressed.svg</Pressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel"/>],beatjump_backward</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel"/>],beatjump_1_backward</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		</PushButton>	
+		
+		<BeatSpinBox>
+        <ObjectName>BeatjumpSizeSpinBox</ObjectName>
+        <!-- <TooltipId>beatjump_size</TooltipId> -->
+        <Value>[Channel<Variable name="audiochannel"/>],beatjump_size</Value>
+        </BeatSpinBox>	   
+	
+		<PushButton>
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>		
+		<Unpressed>skin:graphics/btn_jump_front.svg</Unpressed>
+		<Pressed>skin:graphics/btn_jump_front_pressed.svg</Pressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel"/>],beatjump_forward</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel"/>],beatjump_1_forward</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		</PushButton>		
+		
+		</Children>					
+		</WidgetGroup>
+		
+		<!-- PACK: Beat Loop -->	
+
+		<WidgetGroup>
+		<ObjectName>HorizontalRow</ObjectName>
+		<MinimumSize>1,26</MinimumSize>
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>	
+		<Children>			
+
+		<PushButton>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_beat_reloop_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_beat_reloop.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_beat_reloop_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_beat_reloop_pressed.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel"/>],reloop_toggle</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel"/>],reloop_andstop</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel"/>],loop_enabled</ConfigKey>
+		<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>	
+		</PushButton>	 
+
+		<BeatSpinBox>
+        <ObjectName>BeatloopSizeSpinBox</ObjectName>
+        <!-- <TooltipId>beatloop_size</TooltipId> -->
+        <Value>[Channel<Variable name="audiochannel"/>],beatloop_size</Value>
+		</BeatSpinBox>
+		
+		<PushButton>
+		<NumberStates>2</NumberStates>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_beat_loop_activate_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_beat_loop_activate.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_beat_loop_activate_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_beat_loop_activate.svg</Unpressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel"/>],beatloop_activate</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel"/>],beatlooproll_activate</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		</PushButton>
+		
+		</Children>					
+		</WidgetGroup>					
 					
-					<!-- Spacer: Creates a margin between these Boxes with buttons -->
-					<WidgetGroup> 				
-					<MinimumSize>8,70</MinimumSize>
-					<SizePolicy>f,f</SizePolicy>
-					<Children></Children>
-					</WidgetGroup>
+		</Children>					
+		</WidgetGroup>						
+					
+		<!-- Spacer: Creates a margin between these Boxes with buttons -->
+		<!-- THIS ONE MUST BE DISABLED:
+		<WidgetGroup> 				
+		<MinimumSize>8,-1</MinimumSize>
+		<MaximumSize>8,-1</MaximumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Children></Children>
+		</WidgetGroup>
+		-->
+		<!-- /Spacer -->
+					
 				
 			</Children>
 			<Connection><!-- Show/Hide above full row with buttons -->			
@@ -1781,7 +2024,11 @@
 		*************************************************************************
 		-->			
 		
-
+	<WidgetGroup> <!-- Pusher: Pushes everything in this deck to up -->				
+	<SizePolicy>f,me</SizePolicy>
+	<Children><!-- Pusher --></Children>
+	</WidgetGroup>	
+	
 	</Children>
 	<Connection><!-- Show/Hide the other deck, so this one will be expanded -->
 	<ConfigKey>[DarkMetal],deck<Variable name="audiochannel"/>_show</ConfigKey>

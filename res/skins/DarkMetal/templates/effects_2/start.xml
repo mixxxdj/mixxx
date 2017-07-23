@@ -4,7 +4,7 @@
 
 	<WidgetGroup>
 	<ObjectName>EffectsRacks</ObjectName>
-	<BackPath>gfx_hifi/background_racks_150.svg</BackPath>
+	<BackPath>skin:graphics/background_racks_150.svg</BackPath>
 	<MinimumSize>-1,115</MinimumSize>
 	<SizePolicy>me,f</SizePolicy>
 	<Layout>vertical</Layout> 
@@ -12,13 +12,13 @@
 	
 	<WidgetGroup>
 	<ObjectName>EffectsOptions</ObjectName>
-    <BackPath>gfx_hifi/background_effects_settings.svg</BackPath>
+    <BackPath>skin:graphics/background_effects_settings.svg</BackPath>
 	<MinimumSize>-1,30</MinimumSize>
 	<SizePolicy>me,f</SizePolicy>
 	<Layout>horizontal</Layout> 
 	<Children>
 	<!-- WIDGETGROUP: Toolbar -->
-	<Template src="skin:templates/07_effects/effect_toolbar.xml">
+	<Template src="skin:templates/effects_2/effect_toolbar.xml">
 	<SetVariable name="toolbarnum_a">2</SetVariable>
 	<SetVariable name="toolbarnum_b">1</SetVariable>
 	<SetVariable name="unit_a">3</SetVariable>
@@ -33,7 +33,7 @@
 	
 	<WidgetGroup> <!-- Design only: Visual Rack Left -->
 	<ObjectName>Rack85</ObjectName>
-	<BackPath>gfx_hifi/rack_85.svg</BackPath>
+	<BackPath>skin:graphics/rack_85.svg</BackPath>
 	<MinimumSize>15,-1</MinimumSize>
 	<SizePolicy>f,me</SizePolicy>
 	<Children><!-- Design --></Children>
@@ -51,7 +51,7 @@
 	<Layout>vertical</Layout> 
 	<Children>
 		
-		<!-- WIDGETGROUP: Row with 3 units -->		
+		<!-- WIDGETGROUP: The full row (2 units) -->		
 		<WidgetGroup>
 		<ObjectName>EffectsModulesRow2</ObjectName>
 		<MinimumSize>-1,85</MinimumSize>
@@ -59,8 +59,8 @@
 		<Layout>horizontal</Layout>
 		<Children>		
 			
-		<Template src="skin:templates/07_effects/effect_module.xml"><SetVariable name="unit">3</SetVariable></Template>
-		<Template src="skin:templates/07_effects/effect_module.xml"><SetVariable name="unit">4</SetVariable></Template>
+		<Template src="skin:templates/effects_2/effect_module.xml"><SetVariable name="unit">3</SetVariable></Template>
+		<Template src="skin:templates/effects_2/effect_module.xml"><SetVariable name="unit">4</SetVariable></Template>
 			
 		</Children>
 		<Connection>
@@ -80,7 +80,7 @@
 	
 	<WidgetGroup> <!-- Design only: Visual Rack Right -->
 	<ObjectName>Rack85</ObjectName>
-	<BackPath>gfx_hifi/rack_85.svg</BackPath>
+	<BackPath>skin:graphics/rack_85.svg</BackPath>
 	<MinimumSize>15,-1</MinimumSize>
 	<SizePolicy>f,me</SizePolicy>
 	<Children><!-- Design --></Children>

@@ -5,7 +5,7 @@
 	<!-- WIDGETGROUP: Mini Player AB -->	
 	<WidgetGroup>
 	<ObjectName>MiniPlayer</ObjectName>
-	<BackPath>gfx_hifi/background_miniplayer_metal.svg</BackPath>
+	<BackPath>skin:graphics/background_miniplayer_metal.svg</BackPath>
 	<Pos>0,0</Pos>
 	<MinimumSize>1,46</MinimumSize>
 	<SizePolicy>me,f</SizePolicy>
@@ -19,7 +19,7 @@
 	<Children>
 	
 	<!-- Mini Player A -->
-	<Template src="skin:templates/14_miniplayer_cd/minideck_left.xml">
+	<Template src="skin:templates/miniplayer_34/minideck_left.xml">
 	<SetVariable name="audiochannel">3</SetVariable>
 	<SetVariable name="minidecktohide">4</SetVariable>
 	</Template>	
@@ -27,14 +27,14 @@
 	<!-- Slider - Crossfader -->
 	<WidgetGroup>
 	<ObjectName>MiniFader</ObjectName>
-	<BackPath>gfx_hifi/background_miniplayer_fader.svg</BackPath>
+	<BackPath>skin:graphics/background_miniplayer_fader.svg</BackPath>
 	<MinimumSize>200,45</MinimumSize>
 	<SizePolicy>f,f</SizePolicy>
 	<Children>					
 	<SliderComposed>
 	<Pos>20,0</Pos>	
-	<Handle>gfx_hifi/knob_crossfader.svg</Handle>
-	<Slider>gfx_hifi/slider_crossfader.svg</Slider>
+	<Handle>skin:graphics/knob_crossfader.svg</Handle>
+	<Slider>skin:graphics/slider_crossfader.svg</Slider>
 	<Horizontal>true</Horizontal>
 	<Connection>
 	<ConfigKey>[Master],crossfader</ConfigKey>
@@ -45,7 +45,7 @@
 	</WidgetGroup>		
 	
 	<!-- Mini Player B -->
-	<Template src="skin:templates/14_miniplayer_cd/minideck_right.xml">
+	<Template src="skin:templates/miniplayer_34/minideck_right.xml">
 	<SetVariable name="audiochannel">4</SetVariable>
 	<SetVariable name="minidecktohide">3</SetVariable>
 	</Template>			

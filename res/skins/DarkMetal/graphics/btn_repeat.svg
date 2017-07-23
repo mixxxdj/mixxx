@@ -14,7 +14,7 @@
    viewBox="0 0 20 18"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.1 r15371"
    sodipodi:docname="btn_repeat.svg">
   <defs
      id="defs4">
@@ -33,9 +33,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="8.8486819"
-     inkscape:cx="9.864939"
-     inkscape:cy="18.212769"
+     inkscape:zoom="25.027852"
+     inkscape:cx="10.120519"
+     inkscape:cy="10.461078"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -50,11 +50,13 @@
     <sodipodi:guide
        position="-4.5549256,14.943352"
        orientation="0,1"
-       id="guide4888" />
+       id="guide4888"
+       inkscape:locked="false" />
     <sodipodi:guide
        position="3.436172,4.7147476"
        orientation="0,1"
-       id="guide4890" />
+       id="guide4890"
+       inkscape:locked="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata7">
@@ -64,7 +66,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
         <dc:creator>
           <cc:Agent>
             <dc:title>Jorge Rosa</dc:title>
@@ -82,8 +84,9 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
      transform="translate(0,-1034.3622)">
     <path
        inkscape:connector-curvature="0"
-       d="m 9.9999995,1047.7132 0,1.8527 -3.9245398,-2.4702 3.9245398,-2.4702 0,1.8527 c 3.2524635,0 5.8868105,-1.6581 5.8868105,-3.7053 0,-0.6268 -0.25019,-1.2135 -0.681888,-1.7322 l 1.432456,-0.9016 c 0.760381,0.7658 1.211702,1.6643 1.211702,2.6338 0,2.7295 -3.512464,4.9403 -7.8490805,4.9403 z m 0,-8.6455 c -3.2524623,0 -5.8868099,1.6581 -5.8868099,3.7052 0,0.6268 0.2501894,1.2135 0.6818889,1.7322 l -1.4324572,0.9016 c -0.7603797,-0.7657 -1.2117018,-1.6643 -1.2117018,-2.6338 0,-2.7295 3.5124635,-4.9403 7.84908,-4.9403 l 0,-1.8526 3.9245415,2.4701 -3.9245415,2.4702 0,-1.8526 z"
-       id="path4902-7"
-       style="fill:#553289;fill-opacity:1" />
+       d="m 9.999999,1048.0472 v 1.828 l -2.81283,-2.8373 2.81283,-2.8377 v 1.828 c 2.331133,0 3.819001,-1.2356 3.819001,-3.2556 0,-0.6186 -0.178589,-0.8976 -0.488,-1.4094 l 1.426199,-1.1893 c 0.544987,0.7555 0.868462,1.6421 0.868462,2.5987 0,2.6931 -2.517485,5.2746 -5.625662,5.2746 z m 0,-8.53 c -2.331133,0 -3.818999,1.2355 -3.818999,3.2554 0,0.6185 0.178589,0.8979 0.488,1.4096 l -1.4262,1.1891 c -0.544986,-0.7555 -0.868461,-1.6421 -0.868461,-2.5987 0,-2.6932 2.517483,-5.2744 5.62566,-5.2744 v -1.828 l 2.812831,2.8371 -2.812831,2.8369 z"
+       id="path4902-7-0"
+       style="fill:#553289;fill-opacity:1;stroke-width:0.8409459"
+       sodipodi:nodetypes="cccccsccsccsccsccccc" />
   </g>
 </svg>

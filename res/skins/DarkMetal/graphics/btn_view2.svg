@@ -15,7 +15,7 @@
    viewBox="0 0 30 30"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.1 r15371"
    sodipodi:docname="btn_view2.svg">
   <defs
      id="defs4">
@@ -57,11 +57,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="30.028468"
-     inkscape:cx="13.209838"
-     inkscape:cy="15.513651"
+     inkscape:zoom="42.466667"
+     inkscape:cx="9.8049497"
+     inkscape:cy="13.844996"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="text827"
      showgrid="false"
      units="px"
      inkscape:window-width="1920"
@@ -132,6 +132,18 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
          id="path4151"
          d="m 14.2,1032.2678 6.027614,0 0,5.8944"
          style="fill:none;fill-rule:evenodd;stroke:#271346;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    </g>
+    <g
+       transform="translate(-1.246939,1.2795863)"
+       aria-label="+"
+       style="font-style:normal;font-weight:normal;font-size:12.53666878px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#e5d5ff;fill-opacity:1;stroke:none;stroke-width:0.31341672"
+       id="text827">
+      <path
+         inkscape:connector-curvature="0"
+         d="m 17.374939,1038.0456 h -1.679 v 1.643 h -1.38 v -1.643 h -1.691 v -1.379 h 1.691 v -1.63 h 1.38 v 1.63 h 1.679 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Estrangelo Edessa';-inkscape-font-specification:'Estrangelo Edessa';opacity:0.7;fill:#000000;fill-opacity:1;stroke-width:0.31341672"
+         id="path829"
+         sodipodi:nodetypes="ccccccccccccc" />
     </g>
   </g>
 </svg>

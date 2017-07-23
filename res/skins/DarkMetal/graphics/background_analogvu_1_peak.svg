@@ -9,12 +9,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="50"
+   width="43"
    height="50"
-   viewBox="0 0 50 50"
+   viewBox="0 0 43 50"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.1 r15371"
    sodipodi:docname="background_analogvu_1_peak.svg">
   <defs
      id="defs4">
@@ -55,9 +55,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="11.313709"
-     inkscape:cx="51.473458"
-     inkscape:cy="33.443577"
+     inkscape:zoom="2.8284273"
+     inkscape:cx="37.326489"
+     inkscape:cy="-24.059521"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -103,15 +103,10 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
        clip-path="url(#clipEmfPath1)"
        style="fill:none;stroke:none"
        transform="translate(7.3339618,1013.8494)" />
-    <g
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15px;line-height:100%;font-family:'Estrangelo Edessa';-inkscape-font-specification:'Estrangelo Edessa, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ff00ff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       id="text4269"
-       transform="matrix(0.76055683,0,0,0.76055683,5.8937866,235.77035)">
-      <path
-         d="m 29.515881,1032.9167 -1.545411,0 -1.062011,-2.7172 -3.647461,0 -0.98877,2.7172 -1.54541,0 3.676758,-9.4775 1.391601,0 3.720704,9.4775 z m -4.240723,-7.1997 q -0.03662,-0.1025 -0.09521,-0.2929 -0.05127,-0.1978 -0.08789,-0.4102 l -0.0293,0 q -0.03662,0.2271 -0.09521,0.4248 -0.05127,0.1905 -0.102539,0.3223 l -1.149903,3.1787 2.761231,0 -1.201172,-3.2227 z"
-         id="path4332"
-         inkscape:connector-curvature="0"
-         style="fill:#ff00ff;fill-opacity:1" />
-    </g>
+    <path
+       style="opacity:1;fill:#ff00ff;fill-opacity:1;stroke:none;stroke-width:0.65338755;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 21.500632,1011.5924 a 3.8611862,3.8611862 0 0 0 -3.861417,3.8614 3.8611862,3.8611862 0 0 0 3.861417,3.8614 3.8611862,3.8611862 0 0 0 3.860153,-3.8614 3.8611862,3.8611862 0 0 0 -3.860153,-3.8614 z m 0.571547,1.0897 h 0.525926 v 5.5432 h -0.819934 v -4.4875 c -0.04555,0.04 -0.09545,0.082 -0.149539,0.128 -0.05126,0.043 -0.101144,0.082 -0.149542,0.1193 l -1.075923,0.7692 v -0.8163 z"
+       id="path4518-36"
+       inkscape:connector-curvature="0" />
   </g>
 </svg>

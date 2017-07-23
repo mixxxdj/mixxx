@@ -14,7 +14,7 @@
    viewBox="0 0 20 18"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.1 r15371"
    sodipodi:docname="btn_spinny.svg">
   <defs
      id="defs4">
@@ -33,9 +33,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="17.697363"
-     inkscape:cx="-8.6185604"
-     inkscape:cy="5.0744268"
+     inkscape:zoom="35.394726"
+     inkscape:cx="-1.5791255"
+     inkscape:cy="7.9786091"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -50,11 +50,13 @@
     <sodipodi:guide
        position="-4.5549256,14.943352"
        orientation="0,1"
-       id="guide4888" />
+       id="guide4888"
+       inkscape:locked="false" />
     <sodipodi:guide
        position="3.436172,4.7147476"
        orientation="0,1"
-       id="guide4890" />
+       id="guide4890"
+       inkscape:locked="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata7">
@@ -64,7 +66,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
         <dc:creator>
           <cc:Agent>
             <dc:title>Jorge Rosa</dc:title>
@@ -83,17 +85,12 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
     <g
        id="g4956"
        transform="matrix(0,0.02442813,-0.02442813,0,15.321547,1036.2396)" />
-    <circle
+    <path
        style="opacity:1;fill:#553289;fill-opacity:1;stroke:none;stroke-width:2.03600001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="path5005"
-       cx="10"
-       cy="1042.5332"
-       r="5.1143022" />
-    <circle
-       style="opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2.03600001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="path5005-2"
-       cx="10"
-       cy="1042.4738"
-       r="1.2719219" />
+       d="M 10.449219 3.078125 L 10.373047 5.515625 A 2.6840158 2.6840158 0 0 1 12.683594 8.171875 A 2.6840158 2.6840158 0 0 1 12.503906 9.1308594 L 14.634766 10.320312 A 5.1143022 5.1143022 0 0 0 15.115234 8.171875 A 5.1143022 5.1143022 0 0 0 10.449219 3.078125 z M 9.5507812 3.0800781 A 5.1143022 5.1143022 0 0 0 4.8847656 8.171875 A 5.1143022 5.1143022 0 0 0 5.3652344 10.322266 L 7.4941406 9.1347656 A 2.6840158 2.6840158 0 0 1 7.3164062 8.171875 A 2.6840158 2.6840158 0 0 1 9.6269531 5.515625 L 9.5507812 3.0800781 z M 12.095703 9.84375 A 2.6840158 2.6840158 0 0 1 10 10.855469 A 2.6840158 2.6840158 0 0 1 7.9042969 9.8457031 L 5.7910156 11.064453 A 5.1143022 5.1143022 0 0 0 10 13.285156 A 5.1143022 5.1143022 0 0 0 14.214844 11.066406 L 12.095703 9.84375 z "
+       transform="translate(0,1034.3622)"
+       id="path5005" />
+    <g
+       id="g856" />
   </g>
 </svg>

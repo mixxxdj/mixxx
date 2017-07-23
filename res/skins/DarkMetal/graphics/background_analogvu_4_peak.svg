@@ -9,12 +9,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="50"
+   width="43"
    height="50"
-   viewBox="0 0 50 50"
+   viewBox="0 0 43 50"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.1 r15371"
    sodipodi:docname="background_analogvu_4_peak.svg">
   <defs
      id="defs4">
@@ -55,9 +55,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="11.313709"
-     inkscape:cx="47.230818"
-     inkscape:cy="29.819655"
+     inkscape:zoom="5.6568545"
+     inkscape:cx="-6.470528"
+     inkscape:cy="25.544985"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -77,7 +77,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
         <dc:creator>
           <cc:Agent>
             <dc:title>Jorge Rosa</dc:title>
@@ -103,15 +103,10 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
        clip-path="url(#clipEmfPath1)"
        style="fill:none;stroke:none"
        transform="translate(7.3339618,1013.8494)" />
-    <g
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.10088062px;line-height:100%;font-family:'Estrangelo Edessa';-inkscape-font-specification:'Estrangelo Edessa, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ff00ff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       id="text4269-9-0-0"
-       transform="matrix(1.1294414,0,0,1.1294414,-60.794434,-140.06813)">
-      <path
-         d="m 77.658461,1025.0184 q 0,-0.5869 -0.187418,-1.0111 -0.182487,-0.4241 -0.527732,-0.7003 -0.340313,-0.2762 -0.838452,-0.4045 -0.493207,-0.1331 -1.114648,-0.1331 l -0.754607,0 0,4.7348 0.66583,0 q 0.631305,0 1.139308,-0.1727 0.512936,-0.1775 0.872977,-0.4981 0.360041,-0.3255 0.552392,-0.7842 0.19235,-0.4636 0.19235,-1.0308 z m 1.001211,-0.01 q 0,0.7448 -0.276196,1.3563 -0.271264,0.6116 -0.764471,1.0506 -0.493207,0.434 -1.178765,0.6707 -0.685558,0.2368 -1.509214,0.2368 l -1.66704,0 0,-6.3821 1.745953,0 q 0.868045,0 1.543739,0.1973 0.680625,0.1923 1.149172,0.5819 0.468547,0.3847 0.710218,0.9618 0.246604,0.5721 0.246604,1.3267 z"
-         style="fill:#ff00ff;fill-opacity:1"
-         id="path4379"
-         inkscape:connector-curvature="0" />
-    </g>
+    <path
+       style="opacity:1;fill:#ff00ff;fill-opacity:1;stroke:none;stroke-width:0.65338755;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 21.500005,1011.5924 a 3.8611862,3.8611862 0 0 0 -3.86142,3.8614 3.8611862,3.8611862 0 0 0 3.86142,3.8615 3.8611862,3.8611862 0 0 0 3.86141,-3.8615 3.8611862,3.8611862 0 0 0 -3.86141,-3.8614 z m 0.5462,1.0898 h 0.65772 v 3.4724 h 0.79459 v 0.6451 h -0.79459 v 1.4257 h -0.81486 v -1.4257 h -2.33688 l -0.0507,-0.2522 c 0.0313,-0.1793 0.0977,-0.3862 0.20023,-0.6197 0.10534,-0.2335 0.23214,-0.4766 0.38019,-0.7299 0.14805,-0.2535 0.31011,-0.5079 0.48664,-0.7642 0.17936,-0.2563 0.35827,-0.4974 0.53479,-0.7223 0.17937,-0.2278 0.3497,-0.4316 0.51198,-0.611 0.16514,-0.1793 0.30845,-0.3185 0.43088,-0.4182 z m -0.14954,1.0468 c -0.0142,0.014 -0.0234,0.03 -0.0291,0.047 -0.006,0.014 -0.0162,0.027 -0.0304,0.042 -0.0427,0.043 -0.10087,0.1082 -0.17489,0.1964 -0.074,0.088 -0.15601,0.1923 -0.24711,0.3117 -0.0883,0.1197 -0.18392,0.2528 -0.28642,0.3979 -0.0996,0.1452 -0.19847,0.2969 -0.29527,0.4563 -0.094,0.1595 -0.18325,0.3228 -0.26867,0.4878 -0.0854,0.1652 -0.15914,0.3273 -0.22177,0.4867 h 1.54609 v -2.1353 -0.1331 c 0,-0.052 0.002,-0.103 0.008,-0.1572 z"
+       id="path4518-3"
+       inkscape:connector-curvature="0" />
   </g>
 </svg>

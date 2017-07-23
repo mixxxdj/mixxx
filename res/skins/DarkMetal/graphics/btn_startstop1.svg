@@ -15,7 +15,7 @@
    viewBox="0 0 26 26"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.1 r15371"
    sodipodi:docname="btn_startstop1.svg">
   <defs
      id="defs4">
@@ -65,7 +65,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="14.481547"
-     inkscape:cx="3.8668959"
+     inkscape:cx="-7.354281"
      inkscape:cy="12.677142"
      inkscape:document-units="px"
      inkscape:current-layer="g4183"
@@ -139,12 +139,12 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
              inkscape:connector-curvature="0"
              id="path4529"
              d="m 9.1796875,1033.0263 0,10.1562 4.9316345,-4.9316 z"
-             style="fill:#8d5fd3;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+             style="fill:#8d5fd3;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;opacity:0.755" />
           <path
              inkscape:connector-curvature="0"
              id="path4405-7-4-5"
              d="m 15.863282,1043.2314 0,-10.254"
-             style="fill:#442178;fill-opacity:1;fill-rule:evenodd;stroke:#8d5fd3;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+             style="fill:#442178;fill-opacity:1;fill-rule:evenodd;stroke:#8d5fd3;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;opacity:0.755" />
         </g>
       </g>
     </g>

@@ -5,7 +5,7 @@
 	<!-- WIDGETGROUP: Toolbar -->	
 	<WidgetGroup>
 	<ObjectName>ToolBar1</ObjectName>
-	<BackPath>gfx_hifi/background_toolbar1.svg</BackPath>
+	<BackPath>skin:graphics/background_toolbar1.svg</BackPath>
 	<Pos>0,0</Pos>
 	<MinimumSize>1,31</MinimumSize>
 	<SizePolicy>me,f</SizePolicy>
@@ -20,7 +20,7 @@
 	
 	<WidgetGroup>
 	<ObjectName>ToolBar1Metal</ObjectName>
-	<BackPath>gfx_hifi/background_toolbar1.svg</BackPath>
+	<BackPath>skin:graphics/background_toolbar1.svg</BackPath>
 	<MinimumSize>1,30</MinimumSize>
 	<SizePolicy>me,f</SizePolicy>
 	<Children><!-- Design --></Children>
@@ -32,15 +32,29 @@
 		<Layout>horizontal</Layout>
 		<Children>
 		
+		<!-- Texts -->
+		<WidgetGroup>
+		<ObjectName>Texts</ObjectName>	
+		<MinimumSize>60,30</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>vertical</Layout>
+		<Children>
+		<Label>
+		<Style>font:10px/12px; background:transparent; color:#707070;</Style>
+		<Text>Rows</Text>
+		</Label>
+		</Children>			
+		</WidgetGroup>
+		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
+		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
 		<Children></Children>
 		</WidgetGroup>
-
+		
 		<!--
 		**********************************************
 		Tab - Show/hide widget group: Microphones
@@ -51,13 +65,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/tab_microphones.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_microphones.svg</Unpressed>
+		<Pressed>skin:graphics/tab_microphones.svg</Pressed>
+		<Unpressed>skin:graphics/tab_microphones.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/tab_microphones_over.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_microphones_over.svg</Unpressed>
+		<Pressed>skin:graphics/tab_microphones_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/tab_microphones_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[DarkMetal],tool_bar_micros_show</ConfigKey>
@@ -66,7 +80,7 @@
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
+		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -83,13 +97,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/tab_auxiliaries.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_auxiliaries.svg</Unpressed>
+		<Pressed>skin:graphics/tab_auxiliaries.svg</Pressed>
+		<Unpressed>skin:graphics/tab_auxiliaries.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/tab_auxiliaries_over.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_auxiliaries_over.svg</Unpressed>
+		<Pressed>skin:graphics/tab_auxiliaries_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/tab_auxiliaries_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[DarkMetal],tool_bar_auxiliaries_show</ConfigKey>
@@ -98,7 +112,7 @@
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
+		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -115,13 +129,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/tab_decks_ab.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_decks_ab.svg</Unpressed>
+		<Pressed>skin:graphics/tab_decks_12.svg</Pressed>
+		<Unpressed>skin:graphics/tab_decks_12.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/tab_decks_ab_over.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_decks_ab_over.svg</Unpressed>
+		<Pressed>skin:graphics/tab_decks_12_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/tab_decks_12_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[DarkMetal],decks_and_mixer_rack1_show</ConfigKey>
@@ -130,7 +144,7 @@
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
+		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -147,13 +161,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/tab_decks_cd.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_decks_cd.svg</Unpressed>
+		<Pressed>skin:graphics/tab_decks_34.svg</Pressed>
+		<Unpressed>skin:graphics/tab_decks_34.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/tab_decks_cd_over.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_decks_cd_over.svg</Unpressed>
+		<Pressed>skin:graphics/tab_decks_34_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/tab_decks_34_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[DarkMetal],decks_and_mixer_rack2_show</ConfigKey>
@@ -162,7 +176,7 @@
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
+		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -179,13 +193,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/tab_miniplayer1.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_miniplayer1.svg</Unpressed>
+		<Pressed>skin:graphics/tab_miniplayer1.svg</Pressed>
+		<Unpressed>skin:graphics/tab_miniplayer1.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/tab_miniplayer1_over.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_miniplayer1_over.svg</Unpressed>
+		<Pressed>skin:graphics/tab_miniplayer1_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/tab_miniplayer1_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[DarkMetal],mini_player1_show</ConfigKey>
@@ -194,7 +208,7 @@
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
+		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -211,13 +225,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/tab_miniplayer2.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_miniplayer2.svg</Unpressed>
+		<Pressed>skin:graphics/tab_miniplayer2.svg</Pressed>
+		<Unpressed>skin:graphics/tab_miniplayer2.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/tab_miniplayer2_over.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_miniplayer2_over.svg</Unpressed>
+		<Pressed>skin:graphics/tab_miniplayer2_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/tab_miniplayer2_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[DarkMetal],mini_player2_show</ConfigKey>
@@ -226,7 +240,7 @@
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
+		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -243,13 +257,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/tab_longwaves1.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_longwaves1.svg</Unpressed>
+		<Pressed>skin:graphics/tab_longwaves1.svg</Pressed>
+		<Unpressed>skin:graphics/tab_longwaves1.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/tab_longwaves1_over.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_longwaves1_over.svg</Unpressed>
+		<Pressed>skin:graphics/tab_longwaves1_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/tab_longwaves1_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[DarkMetal],long_waves_rack1_show</ConfigKey>
@@ -258,7 +272,7 @@
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
+		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -275,13 +289,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/tab_longwaves2.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_longwaves2.svg</Unpressed>
+		<Pressed>skin:graphics/tab_longwaves2.svg</Pressed>
+		<Unpressed>skin:graphics/tab_longwaves2.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/tab_longwaves2_over.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_longwaves2_over.svg</Unpressed>
+		<Pressed>skin:graphics/tab_longwaves2_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/tab_longwaves2_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[DarkMetal],long_waves_rack2_show</ConfigKey>
@@ -290,7 +304,7 @@
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
+		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -307,13 +321,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/tab_effects1.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_effects1.svg</Unpressed>
+		<Pressed>skin:graphics/tab_effects1.svg</Pressed>
+		<Unpressed>skin:graphics/tab_effects1.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/tab_effects1_over.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_effects1_over.svg</Unpressed>
+		<Pressed>skin:graphics/tab_effects1_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/tab_effects1_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[DarkMetal],effects_rack1_show</ConfigKey>
@@ -322,7 +336,7 @@
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
+		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -339,13 +353,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/tab_effects2.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_effects2.svg</Unpressed>
+		<Pressed>skin:graphics/tab_effects2.svg</Pressed>
+		<Unpressed>skin:graphics/tab_effects2.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/tab_effects2_over.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_effects2_over.svg</Unpressed>
+		<Pressed>skin:graphics/tab_effects2_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/tab_effects2_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[DarkMetal],effects_rack2_show</ConfigKey>
@@ -354,7 +368,7 @@
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
+		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -371,13 +385,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/tab_samplers_1.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_samplers_1.svg</Unpressed>
+		<Pressed>skin:graphics/tab_samplers_1.svg</Pressed>
+		<Unpressed>skin:graphics/tab_samplers_1.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/tab_samplers_1_over.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_samplers_1_over.svg</Unpressed>
+		<Pressed>skin:graphics/tab_samplers_1_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/tab_samplers_1_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[DarkMetal],samplers_rack1_show</ConfigKey>
@@ -386,7 +400,7 @@
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
+		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -403,13 +417,13 @@
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>gfx_hifi/tab_samplers_2.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_samplers_2.svg</Unpressed>
+		<Pressed>skin:graphics/tab_samplers_2.svg</Pressed>
+		<Unpressed>skin:graphics/tab_samplers_2.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>gfx_hifi/tab_samplers_2_over.svg</Pressed>
-		<Unpressed>gfx_hifi/tab_samplers_2_over.svg</Unpressed>
+		<Pressed>skin:graphics/tab_samplers_2_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/tab_samplers_2_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
 		<ConfigKey>[DarkMetal],samplers_rack2_show</ConfigKey>
@@ -418,7 +432,7 @@
 
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>gfx_hifi/background_vertical_line_darker_30.svg</BackPath>
+		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -432,7 +446,7 @@
 
 		<WidgetGroup>
 		<ObjectName>ToolBar1Metal</ObjectName>
-		<BackPath>gfx_hifi/background_toolbar1.svg</BackPath>
+		<BackPath>skin:graphics/background_toolbar1.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>me,f</SizePolicy>
 		<Children><!-- Design --></Children>

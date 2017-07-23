@@ -41,14 +41,14 @@
 					<NumberStates>2</NumberStates>
 					<State>
 					<Number>0</Number>
-					<Pressed>gfx_hifi/btn_kill_over.svg</Pressed>
-					<Unpressed>gfx_hifi/btn_kill.svg</Unpressed>
+					<Pressed>skin:graphics/btn_kill_pressed.svg</Pressed>
+					<Unpressed>skin:graphics/btn_kill.svg</Unpressed>
 					</State>
 					
 					<State>
 					<Number>1</Number>
-					<Pressed>gfx_hifi/btn_kill_over.svg</Pressed>
-					<Unpressed>gfx_hifi/btn_kill_over.svg</Unpressed>
+					<Pressed>skin:graphics/btn_kill_pressed.svg</Pressed>
+					<Unpressed>skin:graphics/btn_kill_pressed.svg</Unpressed>
 					</State>
 					
 					<Pos>11,57</Pos>

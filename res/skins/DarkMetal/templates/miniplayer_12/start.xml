@@ -18,7 +18,7 @@
 	<Children>
 	
 	<!-- Mini Player A -->
-	<Template src="skin:templates/13_miniplayer_ab/minideck_left.xml">
+	<Template src="skin:templates/miniplayer_12/minideck_left.xml">
 	<SetVariable name="audiochannel">1</SetVariable>
 	<SetVariable name="minidecktohide">2</SetVariable>
 	</Template>	
@@ -26,14 +26,14 @@
 	<!-- Slider - Crossfader -->
 	<WidgetGroup>
 	<ObjectName>MiniFader</ObjectName>
-	<BackPath>gfx_hifi/background_miniplayer_fader.svg</BackPath>
+	<BackPath>skin:graphics/background_miniplayer_fader.svg</BackPath>
 	<MinimumSize>200,45</MinimumSize>
 	<SizePolicy>f,f</SizePolicy>
 	<Children>					
 	<SliderComposed>
 	<Pos>20,0</Pos>	
-	<Handle>gfx_hifi/knob_crossfader.svg</Handle>
-	<Slider>gfx_hifi/slider_crossfader.svg</Slider>
+	<Handle>skin:graphics/knob_crossfader.svg</Handle>
+	<Slider>skin:graphics/slider_crossfader.svg</Slider>
 	<Horizontal>true</Horizontal>
 	<Connection>
 	<ConfigKey>[Master],crossfader</ConfigKey>
@@ -44,7 +44,7 @@
 	</WidgetGroup>		
 	
 	<!-- Mini Player B -->
-	<Template src="skin:templates/13_miniplayer_ab/minideck_right.xml">
+	<Template src="skin:templates/miniplayer_12/minideck_right.xml">
 	<SetVariable name="audiochannel">2</SetVariable>
 	<SetVariable name="minidecktohide">1</SetVariable>
 	</Template>			

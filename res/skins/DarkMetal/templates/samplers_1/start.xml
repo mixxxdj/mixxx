@@ -4,7 +4,7 @@
 	
 	<WidgetGroup>
 	<ObjectName>SamplersRack</ObjectName>	
-	<BackPath>gfx_hifi/background_racks_200.svg</BackPath>
+	<BackPath>skin:graphics/background_racks_200.svg</BackPath>
 	<MinimumSize>-1,150</MinimumSize>
 	<SizePolicy>me,f</SizePolicy>
 	<Layout>vertical</Layout> 
@@ -12,12 +12,12 @@
 
 	<WidgetGroup>
 	<ObjectName>SamplersOptionsBg</ObjectName>
-	<BackPath>gfx_hifi/background_samplers_options.svg</BackPath>
+	<BackPath>skin:graphics/background_samplers_options.svg</BackPath>
 	<MinimumSize>-1,30</MinimumSize>
 	<SizePolicy>me,f</SizePolicy>
 	<Layout>horizontal</Layout>	
 	<Children>
-	<Template src="skin:templates/08_samplers/sampler_toolbar.xml">	
+	<Template src="skin:templates/samplers_1/sampler_toolbar.xml">	
 	<SetVariable name="toolbarnum_a">1</SetVariable>
 	<SetVariable name="toolbarnum_b">2</SetVariable>
 	<SetVariable name="samplernum_a">1</SetVariable>
@@ -38,7 +38,7 @@
 	
 	<WidgetGroup> <!-- Design only: Visual Rack Left -->
 	<ObjectName>Rack120</ObjectName>
-	<BackPath>gfx_hifi/rack_120.svg</BackPath>
+	<BackPath>skin:graphics/rack_120.svg</BackPath>
 	<MinimumSize>15,120</MinimumSize>
 	<SizePolicy>f,me</SizePolicy>
 	<Children><!-- Design --></Children>
@@ -49,16 +49,16 @@
 		<SizePolicy>me,f</SizePolicy>
 		<Layout>horizontal</Layout>	
 		<Children>
-		<Template src="skin:templates/08_samplers/sampler_module.xml"><SetVariable name="samplernum">1</SetVariable></Template>	
-		<Template src="skin:templates/08_samplers/sampler_module.xml"><SetVariable name="samplernum">2</SetVariable></Template>
-		<Template src="skin:templates/08_samplers/sampler_module.xml"><SetVariable name="samplernum">3</SetVariable></Template>
-		<Template src="skin:templates/08_samplers/sampler_module.xml"><SetVariable name="samplernum">4</SetVariable></Template>	
+		<Template src="skin:templates/samplers_1/sampler_module.xml"><SetVariable name="samplernum">1</SetVariable></Template>	
+		<Template src="skin:templates/samplers_1/sampler_module.xml"><SetVariable name="samplernum">2</SetVariable></Template>
+		<Template src="skin:templates/samplers_1/sampler_module.xml"><SetVariable name="samplernum">3</SetVariable></Template>
+		<Template src="skin:templates/samplers_1/sampler_module.xml"><SetVariable name="samplernum">4</SetVariable></Template>	
 		</Children>
 		</WidgetGroup>
 
 	<WidgetGroup> <!-- Design only: Visual Rack Right -->
 	<ObjectName>Rack120</ObjectName>
-	<BackPath>gfx_hifi/rack_120.svg</BackPath>
+	<BackPath>skin:graphics/rack_120.svg</BackPath>
 	<MinimumSize>15,120</MinimumSize>
 	<SizePolicy>f,me</SizePolicy>
 	<Children><!-- Design --></Children>

@@ -14,7 +14,7 @@
    viewBox="0 0 20 18"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.1 r15371"
    sodipodi:docname="btn_quantize.svg">
   <defs
      id="defs4">
@@ -33,11 +33,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="8.8486816"
-     inkscape:cx="-3.6932601"
-     inkscape:cy="9.7343785"
+     inkscape:zoom="17.697363"
+     inkscape:cx="3.6427984"
+     inkscape:cy="9.8232149"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="g4151"
      showgrid="false"
      units="px"
      inkscape:window-width="1920"
@@ -50,11 +50,13 @@
     <sodipodi:guide
        position="-4.5549256,14.943352"
        orientation="0,1"
-       id="guide4888" />
+       id="guide4888"
+       inkscape:locked="false" />
     <sodipodi:guide
        position="3.436172,4.7147476"
        orientation="0,1"
-       id="guide4890" />
+       id="guide4890"
+       inkscape:locked="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata7">
@@ -64,7 +66,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
         <dc:creator>
           <cc:Agent>
             <dc:title>Jorge Rosa</dc:title>
@@ -87,29 +89,11 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
        id="g4151"
        transform="translate(3.3867518,0)">
       <path
+         style="fill:#553289;fill-opacity:1"
+         d="m 5.5082169,1037.7704 c -3.1949111,0 -4.99110948,1.9871 -4.99110948,4.9219 0.088026,3.3973 2.48203328,4.8215 4.99110948,4.9237 H 8.935951 v -2.5156 H 5.5082169 c -1.6525828,-0.059 -2.1807869,-0.8074 -2.2567344,-2.4081 0,-1.5488 0.5716457,-2.4575 2.2567344,-2.4083 H 8.935951 v -2.5136 z m 4.2910161,0.049 v 2.4551 h 2.910156 v -2.4551 z m -0.01367,7.3203 v 2.4551 h 2.910156 v -2.4551 z"
          id="path4958"
-         d="m 5.9088365,1045.5012 c -0.8164724,0 -1.5843094,-0.2922 -2.1609466,-0.8219 -0.5777973,-0.5314 -0.8959295,-1.2363 -0.8959295,-1.9868 0,-1.5488 1.3710705,-2.8087 3.0568761,-2.8087 l 3.4273732,0 0,-2.5141 -3.4273732,0 c -3.1949111,0 -5.7919192,2.388 -5.7919192,5.3228 0,1.4221 0.6015487,2.7593 1.6951682,3.7645 1.0947519,1.0054 2.5498089,1.5592 4.0967786,1.5592 l 3.4273726,0 0,-2.5153 -3.4273726,0 z"
          inkscape:connector-curvature="0"
-         style="fill:#553289;fill-opacity:1" />
-      <path
-         id="path4964"
-         d="m 8.4087425,1044.7064 4.2416245,-2.4135 -3.3405655,0.9404 -0.437482,-2.2197 -3.5308773,1.8664 2.8499873,-0.2635 z"
-         inkscape:connector-curvature="0"
-         style="fill:#553289;fill-opacity:1" />
-      <rect
-         y="1037.4188"
-         x="10.199541"
-         height="2.455616"
-         width="2.910038"
-         id="rect4988"
-         style="opacity:1;fill:#553289;fill-opacity:1;stroke:none;stroke-width:2.03600001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-      <rect
-         y="1045.5403"
-         x="10.185414"
-         height="2.455616"
-         width="2.910038"
-         id="rect4988-1"
-         style="opacity:1;fill:#553289;fill-opacity:1;stroke:none;stroke-width:2.03600001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         sodipodi:nodetypes="sccccccsccscccccccccc" />
     </g>
   </g>
 </svg>
