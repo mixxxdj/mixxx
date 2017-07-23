@@ -17,7 +17,7 @@
 #include "mixer/playermanager.h"
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
-#include "library/features/crates/cratestorage.h"
+#include "library/features/crates/cratemanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
@@ -52,7 +52,8 @@ AutoDJFeature::AutoDJFeature(UserSettingsPointer pConfig,
           m_iAutoDJPlaylistId(findOrCrateAutoDjPlaylistId(m_playlistDao)),
           m_pAutoDJProcessor(nullptr),
           m_pAutoDJView(nullptr),
-          m_autoDjCratesDao(m_iAutoDJPlaylistId, pTrackCollection, pConfig) {
+          m_autoDjCratesDao(m_iAutoDJPlaylistId, pTrackCollection, pConfig),
+          m_pCrates(pTrackCollection->crates()) {
 
     qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
     m_pAutoDJProcessor = new AutoDJProcessor(
@@ -72,11 +73,11 @@ AutoDJFeature::AutoDJFeature(UserSettingsPointer pConfig,
     m_childModel.setRootItem(std::move(pRootItem));
 
     // Be notified when the status of crates changes.
-    connect(m_pTrackCollection, SIGNAL(crateInserted(CrateId)),
+    connect(m_pCrates, SIGNAL(crateInserted(CrateId)),
             this, SLOT(slotCrateChanged(CrateId)));
-    connect(m_pTrackCollection, SIGNAL(crateUpdated(CrateId)),
+    connect(m_pCrates, SIGNAL(crateUpdated(CrateId)),
             this, SLOT(slotCrateChanged(CrateId)));
-    connect(m_pTrackCollection, SIGNAL(crateDeleted(CrateId)),
+    connect(m_pCrates, SIGNAL(crateDeleted(CrateId)),
             this, SLOT(slotCrateChanged(CrateId)));
 
     // Create context-menu items to allow crates to be added to, and removed
@@ -197,18 +198,18 @@ bool AutoDJFeature::dragMoveAccept(QUrl url) {
 
 // Add a crate to the auto-DJ queue.
 void AutoDJFeature::slotAddCrateToAutoDj(int iCrateId) {
-    m_pTrackCollection->updateAutoDjCrate(CrateId(iCrateId), true);
+    m_pCrates->updateAutoDjCrate(CrateId(iCrateId), true);
 }
 
 void AutoDJFeature::slotRemoveCrateFromAutoDj() {
     CrateId crateId(m_pRemoveCrateFromAutoDj->data());
     DEBUG_ASSERT(crateId.isValid());
-    m_pTrackCollection->updateAutoDjCrate(crateId, false);
+    m_pCrates->updateAutoDjCrate(crateId, false);
 }
 
 void AutoDJFeature::slotCrateChanged(CrateId crateId) {
     Crate crate;
-    if (m_pTrackCollection->crates().readCrateById(crateId, &crate) && crate.isAutoDjSource()) {
+    if (m_pCrates->storage().readCrateById(crateId, &crate) && crate.isAutoDjSource()) {
         // Crate exists and is already a source for AutoDJ
         // -> Find and update the corresponding child item
         for (int i = 0; i < m_crateList.length(); ++i) {
@@ -287,7 +288,7 @@ void AutoDJFeature::slotAddRandomTrack() {
 
 void AutoDJFeature::constructCrateChildModel() {
     m_crateList.clear();
-    CrateSelectResult autoDjCrates(m_pTrackCollection->crates().selectAutoDjCrates(true));
+    CrateSelectResult autoDjCrates(m_pCrates->storage().selectAutoDjCrates(true));
     Crate crate;
     while (autoDjCrates.populateNext(&crate)) {
         // Create the TreeItem for this crate.
@@ -304,7 +305,7 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
         // Bring up the context menu.
         QMenu crateMenu;
         crateMenu.setTitle(tr("Add Crate as Track Source"));
-        CrateSelectResult nonAutoDjCrates(m_pTrackCollection->crates().selectAutoDjCrates(false));
+        CrateSelectResult nonAutoDjCrates(m_pCrates->storage().selectAutoDjCrates(false));
         Crate crate;
         while (nonAutoDjCrates.populateNext(&crate)) {
             auto pAction = std::make_unique<QAction>(crate.getName(), &crateMenu);

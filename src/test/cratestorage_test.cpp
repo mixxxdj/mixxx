@@ -1,12 +1,13 @@
 #include "test/librarytest.h"
 
 #include "library/features/crates/cratestorage.h"
+#include "library/features/crates/cratemanager.h"
 
 
 class CrateStorageTest : public LibraryTest {
   protected:
     CrateStorageTest() {
-        m_crateStorage.connectDatabase(dbConnection());
+        m_crateStorage.initialize(dbConnection());
     }
 
     CrateStorage m_crateStorage;

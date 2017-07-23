@@ -82,6 +82,8 @@ class AutoDJFeature : public LibraryFeature {
     // How we access the auto-DJ-crates database.
     AutoDJCratesDAO m_autoDjCratesDao;
 
+    CrateManager* m_pCrates;
+
     // A context-menu item that allows crates to be removed from the
     // auto-DJ list.
     QAction *m_pRemoveCrateFromAutoDj;

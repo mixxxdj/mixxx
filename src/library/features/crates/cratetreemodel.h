@@ -5,7 +5,7 @@
 #include <QMap>
 
 #include "library/treeitemmodel.h"
-#include "library/features/crates/cratehierarchy.h"
+#include "library/features/crates/cratemanager.h"
 #include "library/crate/crate.h"
 
 // This class represents the crate tree for the nested crates feature
@@ -13,8 +13,8 @@
 class CrateTreeModel : public TreeItemModel {
   public:
     CrateTreeModel(LibraryFeature* pFeature,
-                   TrackCollection* pTrackCollection);
-          //virtual ~CrateTreeModel();
+                   CrateManager* pCrates);
+    //virtual ~CrateTreeModel();
 
     // QVariant data(const QModelIndex& index, int role) const override;
     // bool setData(const QModelIndex& index, const QVariant& value, int role) override;
@@ -26,7 +26,7 @@ class CrateTreeModel : public TreeItemModel {
     void fillTree(const QStringList& idPaths, QMap<CrateId,TreeItem*> treeCrates);
 
     LibraryFeature* m_pFeature;
-    TrackCollection* m_pTrackCollection;
+    CrateManager* m_pCrates;
 
     parented_ptr<TreeItem> m_pRecursion;
 };

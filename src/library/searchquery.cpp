@@ -1,6 +1,7 @@
 #include <QtDebug>
 
 #include "library/searchquery.h"
+#include "library/features/crates/cratestoragehelpers.h"
 
 #include "library/queryutil.h"
 #include "track/keyutils.h"
@@ -207,9 +208,9 @@ QString ExactFilterNode::toSql() const {
     return concatSqlClauses(searchClauses, concatOp);
 }
 
-CrateFilterNode::CrateFilterNode(const CrateStorage* pCrateStorage,
+CrateFilterNode::CrateFilterNode(const CrateManager* pCrates,
                                  const QString& crateNameLike)
-    : m_pCrateStorage(pCrateStorage),
+    : m_pCrates(pCrates),
       m_crateNameLike(crateNameLike),
       m_matchInitialized(false) {
 }
@@ -217,7 +218,7 @@ CrateFilterNode::CrateFilterNode(const CrateStorage* pCrateStorage,
 bool CrateFilterNode::match(const TrackPointer& pTrack) const {
     if (!m_matchInitialized) {
         CrateTrackSelectResult crateTracks(
-             m_pCrateStorage->selectTracksSortedByCrateNameLike(m_crateNameLike));
+          m_pCrates->tracks().selectTracksSortedByCrateNameLike(m_crateNameLike));
 
         while (crateTracks.next()) {
             m_matchingTrackIds.push_back(crateTracks.trackId());
@@ -230,7 +231,7 @@ bool CrateFilterNode::match(const TrackPointer& pTrack) const {
 }
 
 QString CrateFilterNode::toSql() const {
-    return QString("id IN (%1)").arg(m_pCrateStorage->formatQueryForTrackIdsByCrateNameLike(m_crateNameLike));
+    return QString("id IN (%1)").arg(m_pCrates->tracks().formatQueryForTrackIdsByCrateNameLike(m_crateNameLike));
 }
 
 NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns)

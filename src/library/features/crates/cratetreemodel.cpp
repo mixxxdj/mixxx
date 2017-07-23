@@ -7,47 +7,52 @@
 
 namespace {
 
-const CrateId rootId(-1);
+const CrateId kRootId(-1);
 
 } // anonymous namespace
 
 CrateTreeModel::CrateTreeModel(LibraryFeature* pFeature,
-                               TrackCollection* pTrackCollection)
+                               CrateManager* pCrates)
     : m_pFeature(pFeature),
-      m_pTrackCollection(pTrackCollection) {
+      m_pCrates(pCrates) {
 }
 
 void CrateTreeModel::fillTree(const QStringList& idPaths, QMap<CrateId,TreeItem*> treeCrates) {
-    Crate parent, child;
+    CrateId parentId, childId;
+    Crate child;
 
     // looping through the paths we are gsonna get the parent crate and the child crate of
     // each path (2nd to last and last IDs respectivly). Then we insert the child under the
     // parent. Since it's sorted alphabetically the parent will always exist before the child
     for (const auto& idPath : idPaths) {
         // if there is no parent set the parent as the root of the tree
-        if (!m_pTrackCollection->crates().findParentAndChildFromPath(parent, child, idPath)) {
-            parent.setId(rootId);
+        if (!m_pCrates->hierarchy().findParentAndChildIdFromPath(parentId, childId, idPath)) {
+            parentId = kRootId;
         }
-        if (child.getName() == "") {
+
+        if (!childId.isValid()) {
             continue;
         }
-        treeCrates.insert(child.getId(), // key is the id of child
+
+        m_pCrates->storage().readCrateById(childId, &child);
+
+        treeCrates.insert(childId, // key is the id of child
                             // value is the treeItem returned by asdasdasppendChild()
-                            treeCrates.value(parent.getId())->appendChild(child.getName(),
-                                                                    child.getId().toInt()));
+                            treeCrates.value(parentId)->appendChild(child.getName(),
+                                                                    childId.toInt()));
 
         //        treeCrates.value(child.getId())->setLabel(idPath);
     }
 }
 
 void CrateTreeModel::reloadTree() {
-    const QStringList idPaths = m_pTrackCollection->crates().collectIdPaths();
+    const QStringList idPaths = m_pCrates->hierarchy().collectIdPaths();
     QMap<CrateId,TreeItem*> treeCrates;
 
     beginResetModel();
     // Create root item
     TreeItem* pRootItem = setRootItem(std::make_unique<TreeItem>(m_pFeature));
-    treeCrates.insert(rootId, pRootItem);
+    treeCrates.insert(kRootId, pRootItem);
     // Create recursion button
     m_pRecursion = parented_ptr<TreeItem>(pRootItem->appendChild(tr("Recursion"), ""));
 

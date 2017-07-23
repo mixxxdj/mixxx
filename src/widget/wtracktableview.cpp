@@ -831,7 +831,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOCRATE)) {
         m_pCrateMenu->clear();
-        CrateSelectResult allCrates(m_pTrackCollection->crates().selectCrates());
+        CrateSelectResult allCrates(m_pTrackCollection->crates()->storage().selectCrates());
         Crate crate;
         while (allCrates.populateNext(&crate)) {
             auto pAction = std::make_unique<QAction>(crate.getName(), m_pCrateMenu);
@@ -1435,11 +1435,11 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
     CrateId crateId(iCrateId);
     if (!crateId.isValid()) { // i.e. a new crate is suppose to be created
         crateId = CrateFeatureHelper(
-                m_pTrackCollection, m_pConfig).createEmptyCrate();
+          m_pTrackCollection->crates(), m_pConfig).createEmptyCrate();
     }
     if (crateId.isValid()) {
         m_pTrackCollection->unhideTracks(trackIds);
-        m_pTrackCollection->addCrateTracks(crateId, trackIds);
+        m_pTrackCollection->crates()->addCrateTracks(crateId, trackIds);
     }
 }
 
@@ -1455,7 +1455,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
 
     QItemSelectionModel* currentSelection = selectionModel();
     currentSelection->reset(); // remove current selection
-    
+
     QModelIndexList savedSelection = trackModel->getSavedSelectionIndices();
     QModelIndex first;
     for (const QModelIndex& index : savedSelection) {

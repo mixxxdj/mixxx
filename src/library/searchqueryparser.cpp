@@ -140,7 +140,7 @@ void SearchQueryParser::parseTokens(QStringList tokens,
             if (field == "crate") {
                 if (!argument.isEmpty()) {
                     pNode = std::make_unique<CrateFilterNode>(
-                          &m_pTrackCollection->crates(), argument);
+                          m_pTrackCollection->crates(), argument);
                 } else {
                     //TODO(gramanas) It should generate a query to
                     //match all the tracks that are not in a crate.

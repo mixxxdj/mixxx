@@ -6,6 +6,7 @@
 
 #include "preferences/usersettings.h"
 #include "library/crate/crateid.h"
+#include "library/features/crates/cratemanager.h"
 #include "track/track.h"
 #include "util/class.h"
 
@@ -103,6 +104,7 @@ class AutoDJCratesDAO : public QObject {
     const int m_iAutoDjPlaylistId;
 
     TrackCollection* m_pTrackCollection;
+    CrateManager* m_pCrates;
 
     // The SQL database we interact with.
     QSqlDatabase m_database;

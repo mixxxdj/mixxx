@@ -947,11 +947,14 @@ class MixxxCore(Feature):
 
                    "library/features/crates/cratefeature.cpp",
                    "library/features/crates/cratetablemodel.cpp",
-                   "library/features/crates/cratetreemodel.cpp",
-                   "library/features/crates/cratestorage.cpp",
+                   "library/features/crates/cratetracks.cpp",
+                   "library/features/crates/cratehierarchy.cpp",
                    "library/features/crates/cratestoragehelpers.cpp",
+                   "library/features/crates/cratestorage.cpp",
+                   "library/features/crates/cratetreemodel.cpp",
                    "library/features/crates/cratefeaturehelper.cpp",
-
+                   "library/features/crates/cratemanager.cpp",
+                
                    "library/features/history/historyfeature.cpp",
                    "library/features/history/historytreemodel.cpp",
                    

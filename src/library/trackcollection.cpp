@@ -128,11 +128,11 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     // TODO(XXX): Move signals from TrackDAO to TrackCollection
     m_trackDao.afterHidingTracks(trackIds);
     QSet<CrateId> modifiedCrateSummaries(
-            m_crates.collectCrateIdsOfTracks(trackIds));
+      m_crates.tracks().collectCrateIdsOfTracks(trackIds));
 
     // Emit signal(s)
     // TODO(XXX): Emit signals here instead of from DAOs
-    emit(crateSummaryChanged(modifiedCrateSummaries));
+    //emit(m_crates.crateSummaryChanged(modifiedCrateSummaries));
 
     return true;
 }
@@ -158,8 +158,8 @@ bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
     // Emit signal(s)
     // TODO(XXX): Emit signals here instead of from DAOs
     QSet<CrateId> modifiedCrateSummaries(
-            m_crates.collectCrateIdsOfTracks(trackIds));
-    emit(crateSummaryChanged(modifiedCrateSummaries));
+      m_crates.tracks().collectCrateIdsOfTracks(trackIds));
+    //emit(m_crates.crateSummaryChanged(modifiedCrateSummaries));
 
     return true;
 }
@@ -178,7 +178,7 @@ bool TrackCollection::purgeTracks(
     // them within the same transactions. Those tracks will be removed from
     // all crates on purging.
     QSet<CrateId> modifiedCrateSummaries(
-            m_crates.collectCrateIdsOfTracks(trackIds));
+      m_crates.tracks().collectCrateIdsOfTracks(trackIds));
     VERIFY_OR_DEBUG_ASSERT(m_crates.onPurgingTracks(trackIds)) {
         return false;
     }
@@ -196,7 +196,7 @@ bool TrackCollection::purgeTracks(
 
     // Emit signal(s)
     // TODO(XXX): Emit signals here instead of from DAOs
-    emit(crateSummaryChanged(modifiedCrateSummaries));
+    //emit(m_crates.crateSummaryChanged(modifiedCrateSummaries));
 
     return true;
 }
@@ -205,126 +205,4 @@ bool TrackCollection::purgeTracks(
         const QDir& dir) {
     QList<TrackId> trackIds(m_trackDao.getTrackIds(dir));
     return purgeTracks(trackIds);
-}
-
-bool TrackCollection::insertCrate(
-        const Crate& crate,
-        CrateId* pCrateId) {
-    // Transactional
-    SqlTransaction transaction(m_database);
-    VERIFY_OR_DEBUG_ASSERT(transaction) {
-        return false;
-    }
-    CrateId crateId;
-    VERIFY_OR_DEBUG_ASSERT(m_crates.onInsertingCrate(crate, &crateId)) {
-        return false;
-    }
-    DEBUG_ASSERT(crateId.isValid());
-    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
-        return false;
-    }
-
-    // Emit signals
-    emit(crateInserted(crateId));
-
-    if (pCrateId != nullptr) {
-        *pCrateId = crateId;
-    }
-    return true;
-}
-
-bool TrackCollection::updateCrate(
-        const Crate& crate) {
-    // Transactional
-    SqlTransaction transaction(m_database);
-    VERIFY_OR_DEBUG_ASSERT(transaction) {
-        return false;
-    }
-    VERIFY_OR_DEBUG_ASSERT(m_crates.onUpdatingCrate(crate)) {
-        return false;
-    }
-    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
-        return false;
-    }
-
-    // Emit signals
-    emit(crateUpdated(crate.getId()));
-
-    return true;
-}
-
-bool TrackCollection::deleteCrate(
-        CrateId crateId) {
-    // Transactional
-    SqlTransaction transaction(m_database);
-    VERIFY_OR_DEBUG_ASSERT(transaction) {
-        return false;
-    }
-    VERIFY_OR_DEBUG_ASSERT(m_crates.onDeletingCrate(crateId)) {
-        return false;
-    }
-    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
-        return false;
-    }
-
-    // Emit signals
-    emit(crateDeleted(crateId));
-
-    return true;
-}
-
-bool TrackCollection::addCrateTracks(
-        CrateId crateId,
-        const QList<TrackId>& trackIds) {
-    // Transactional
-    SqlTransaction transaction(m_database);
-    VERIFY_OR_DEBUG_ASSERT(transaction) {
-        return false;
-    }
-    VERIFY_OR_DEBUG_ASSERT(m_crates.onAddingCrateTracks(crateId, trackIds)) {
-        return false;
-    }
-    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
-        return false;
-    }
-
-    // Emit signals
-    emit(crateTracksChanged(crateId, trackIds, QList<TrackId>()));
-
-    return true;
-}
-
-bool TrackCollection::removeCrateTracks(
-        CrateId crateId,
-        const QList<TrackId>& trackIds) {
-    // Transactional
-    SqlTransaction transaction(m_database);
-    VERIFY_OR_DEBUG_ASSERT(transaction) {
-        return false;
-    }
-    VERIFY_OR_DEBUG_ASSERT(m_crates.onRemovingCrateTracks(crateId, trackIds)) {
-        return false;
-    }
-    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
-        return false;
-    }
-
-    // Emit signals
-    emit(crateTracksChanged(crateId, QList<TrackId>(), trackIds));
-
-    return true;
-}
-
-bool TrackCollection::updateAutoDjCrate(
-        CrateId crateId,
-        bool isAutoDjSource) {
-    Crate crate;
-    VERIFY_OR_DEBUG_ASSERT(crates().readCrateById(crateId, &crate)) {
-        return false; // inexistent or failure
-    }
-    if (crate.isAutoDjSource() == isAutoDjSource) {
-        return false; // nothing to do
-    }
-    crate.setAutoDjSource(isAutoDjSource);
-    return updateCrate(crate);
 }

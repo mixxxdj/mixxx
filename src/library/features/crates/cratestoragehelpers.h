@@ -202,7 +202,7 @@ public:
     }
 
 private:
-    friend class CrateStorage;
+    friend class CrateTracks;
     CrateTrackSelectResult() = default;
     explicit CrateTrackSelectResult(FwdSqlQuery&& query)
         : FwdSqlQuerySelectResult(std::move(query)),

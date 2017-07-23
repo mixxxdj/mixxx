@@ -12,7 +12,7 @@
 
 #include "library/features/crates/cratetablemodel.h"
 #include "library/features/crates/cratetreemodel.h"
-
+#include "library/features/crates/cratemanager.h"
 
 #include "library/libraryfeature.h"
 #include "library/treeitemmodel.h"
@@ -114,6 +114,7 @@ class CrateFeature : public LibraryFeature {
     void showTable(int paneId);
 
     TrackCollection* m_pTrackCollection;
+    CrateManager* m_pCrates;
 
     CrateTableModel* m_pCrateTableModel;
 

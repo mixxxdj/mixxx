@@ -1,4 +1,3 @@
-
 #include "library/features/crates/cratetablemodel.h"
 
 #include "library/dao/trackschema.h"
@@ -11,7 +10,8 @@
 CrateTableModel::CrateTableModel(QObject* pParent,
                                  TrackCollection* pTrackCollection)
         : BaseSqlTableModel(pParent, pTrackCollection,
-                            "mixxx.db.model.crate") {
+                            "mixxx.db.model.crate"),
+          m_pCrates(pTrackCollection->crates()){
 }
 
 CrateTableModel::~CrateTableModel() {
@@ -44,7 +44,7 @@ void CrateTableModel::selectCrate(CrateId crateId) {
                                columns.join(","),
                                LIBRARY_TABLE,
                                LIBRARYTABLE_ID,
-                               CrateStorage::formatSubselectQueryForCrateTrackIds(crateId),
+                               CrateTracks::formatSubselectQueryForCrateTrackIds(crateId),
                                LIBRARYTABLE_MIXXXDELETED);
     FwdSqlQuery(m_database, queryString).execPrepared();
 
@@ -87,7 +87,7 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
 
     QList<TrackId> trackIds;
     trackIds.append(pTrack->getId());
-    if (m_pTrackCollection->addCrateTracks(m_selectedCrate, trackIds)) {
+    if (m_pCrates->addCrateTracks(m_selectedCrate, trackIds)) {
         // TODO(rryan) just add the track dont select
         select();
         return true;
@@ -117,7 +117,7 @@ TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
             | TRACKMODELCAPS_RESETPLAYED;
     if (m_selectedCrate.isValid()) {
         Crate crate;
-        if (m_pTrackCollection->crates().readCrateById(m_selectedCrate, &crate)) {
+        if (m_pCrates->storage().readCrateById(m_selectedCrate, &crate)) {
             if (crate.isLocked()) {
                 caps |= TRACKMODELCAPS_LOCKED;
             }
@@ -157,7 +157,7 @@ int CrateTableModel::addTracks(const QModelIndex& index,
     }
 
     QList<TrackId> trackIds(m_pTrackCollection->getTrackDAO().addMultipleTracks(fileInfoList, true));
-    if (m_pTrackCollection->addCrateTracks(m_selectedCrate, trackIds)) {
+    if (m_pCrates->addCrateTracks(m_selectedCrate, trackIds)) {
         select();
         return trackIds.size();
     } else {
@@ -177,7 +177,7 @@ void CrateTableModel::removeTracks(const QModelIndexList& indices) {
     }
 
     Crate crate;
-    if (!m_pTrackCollection->crates().readCrateById(m_selectedCrate, &crate)) {
+    if (!m_pCrates->storage().readCrateById(m_selectedCrate, &crate)) {
         qWarning() << "Failed to read create" << m_selectedCrate;
         return;
     }
@@ -191,7 +191,7 @@ void CrateTableModel::removeTracks(const QModelIndexList& indices) {
     for (const QModelIndex& index: indices) {
         trackIds.append(getTrackId(index));
     }
-    if (m_pTrackCollection->removeCrateTracks(crate.getId(), trackIds)) {
+    if (m_pCrates->removeCrateTracks(crate.getId(), trackIds)) {
         select();
     } else {
         qWarning() << "Failed to remove tracks from crate" << crate;

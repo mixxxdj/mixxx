@@ -44,6 +44,7 @@ AutoDJCratesDAO::AutoDJCratesDAO(
         UserSettingsPointer pConfig)
         : m_iAutoDjPlaylistId(iAutoDjPlaylistId),
           m_pTrackCollection(pTrackCollection),
+          m_pCrates(pTrackCollection->crates()),
           m_database(pTrackCollection->database()),
           m_pConfig(pConfig),
           // The database has not been created yet.
@@ -198,13 +199,13 @@ void AutoDJCratesDAO::createAndConnectAutoDjCratesDatabase() {
             this, SLOT(slotTrackDirty(TrackId)));
 
     // Be notified when the status of crates changes.
-    connect(m_pTrackCollection, SIGNAL(crateInserted(CrateId)),
+    connect(m_pCrates, SIGNAL(crateInserted(CrateId)),
             this, SLOT(slotCrateInserted(CrateId)));
-    connect(m_pTrackCollection, SIGNAL(crateDeleted(CrateId)),
+    connect(m_pCrates, SIGNAL(crateDeleted(CrateId)),
             this, SLOT(slotCrateDeleted(CrateId)));
-    connect(m_pTrackCollection, SIGNAL(crateUpdated(CrateId)),
+    connect(m_pCrates, SIGNAL(crateUpdated(CrateId)),
             this, SLOT(slotCrateUpdated(CrateId)));
-    connect(m_pTrackCollection, SIGNAL(crateTracksChanged(CrateId,QList<TrackId>,QList<TrackId>)),
+    connect(m_pCrates, SIGNAL(crateTracksChanged(CrateId,QList<TrackId>,QList<TrackId>)),
             this, SLOT(slotCrateTracksChanged(CrateId,QList<TrackId>,QList<TrackId>)));
 
     // Be notified when playlists are added/removed.
@@ -720,7 +721,7 @@ void AutoDJCratesDAO::slotTrackDirty(TrackId trackId) {
 void AutoDJCratesDAO::slotCrateInserted(CrateId crateId) {
     // If this newly-added crate is in the auto-DJ queue, add it to the list.
     Crate crate;
-    if (m_pTrackCollection->crates().readCrateById(crateId, &crate)) {
+    if (m_pCrates->storage().readCrateById(crateId, &crate)) {
         if (crate.isAutoDjSource()) {
             updateAutoDjCrate(crateId);
         }
@@ -729,7 +730,7 @@ void AutoDJCratesDAO::slotCrateInserted(CrateId crateId) {
 
 void AutoDJCratesDAO::slotCrateUpdated(CrateId crateId) {
     Crate crate;
-    if (m_pTrackCollection->crates().readCrateById(crateId, &crate)) {
+    if (m_pCrates->storage().readCrateById(crateId, &crate)) {
         if (crate.isAutoDjSource()) {
             updateAutoDjCrate(crateId);
         } else {
@@ -875,7 +876,7 @@ void AutoDJCratesDAO::slotCrateTracksChanged(
         const QList<TrackId>& removedTrackIds) {
     // Skip this if it's not an auto-DJ crate.
     Crate crate;
-    if (!m_pTrackCollection->crates().readCrateById(crateId, &crate)
+    if (!m_pCrates->storage().readCrateById(crateId, &crate)
             || !crate.isAutoDjSource()) {
         return;
     }

@@ -7,6 +7,8 @@
 #include "library/crate/crate.h"
 #include "preferences/usersettings.h"
 
+#include "library/features/crates/cratemanager.h"
+
 // forward declaration(s)
 class TrackCollection;
 
@@ -15,7 +17,7 @@ class CrateFeatureHelper: public QObject {
     Q_OBJECT
   public:
     CrateFeatureHelper(
-            TrackCollection* pTrackCollection,
+            CrateManager* pCrates,
             UserSettingsPointer pConfig);
     ~CrateFeatureHelper() override {}
 
@@ -27,7 +29,7 @@ class CrateFeatureHelper: public QObject {
     QString proposeNameForNewCrate(
             const QString& initialName = QString()) const;
 
-    TrackCollection* m_pTrackCollection;
+    CrateManager* m_pCrates;
 
     UserSettingsPointer m_pConfig;
 };

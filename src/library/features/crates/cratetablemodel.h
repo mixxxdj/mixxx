@@ -31,6 +31,7 @@ class CrateTableModel : public BaseSqlTableModel {
 
   private:
     CrateId m_selectedCrate;
+    CrateManager* m_pCrates;
 };
 
 

@@ -14,7 +14,7 @@
 #include "proto/keys.pb.h"
 #include "util/assert.h"
 #include "util/memory.h"
-#include "library/features/crates/cratestorage.h"
+#include "library/features/crates/cratemanager.h"
 
 QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column);
 
@@ -102,14 +102,14 @@ class ExactFilterNode : public TextFilterNode {
 
 class CrateFilterNode : public QueryNode {
   public:
-    CrateFilterNode(const CrateStorage* pCrateStorage,
+    CrateFilterNode(const CrateManager* pCrates,
                     const QString& crateNameLike);
 
     bool match(const TrackPointer& pTrack) const override;
     QString toSql() const override;
 
   private:
-    const CrateStorage* m_pCrateStorage;
+    const CrateManager* m_pCrates;
     QString m_crateNameLike;
     mutable bool m_matchInitialized;
     mutable std::vector<TrackId> m_matchingTrackIds;

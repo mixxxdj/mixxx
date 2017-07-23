@@ -7,9 +7,9 @@
 
 
 CrateFeatureHelper::CrateFeatureHelper(
-        TrackCollection* pTrackCollection,
+        CrateManager* pCrates,
         UserSettingsPointer pConfig)
-        : m_pTrackCollection(pTrackCollection),
+        : m_pCrates(pCrates),
           m_pConfig(pConfig) {
 }
 
@@ -26,7 +26,7 @@ QString CrateFeatureHelper::proposeNameForNewCrate(
         } else {
             proposedName = initialName;
         }
-    } while (m_pTrackCollection->crates().readCrateByName(proposedName));
+    } while (m_pCrates->storage().readCrateByName(proposedName));
     // Found an unused crate name
     return proposedName;
 }
@@ -60,7 +60,7 @@ CrateId CrateFeatureHelper::createEmptyCrate() {
         // check if it has parent, if not compare with names from above
         // in closure.
         // Else split path into tokens and compare to those
-        if (m_pTrackCollection->crates().collectRootCrates().contains(newCrate.getName())) {
+        if (m_pCrates->hierarchy().collectRootCrateNames().contains(newCrate.getName())) {
             QMessageBox::warning(
                     nullptr,
                     tr("Creating Crate Failed"),
@@ -71,11 +71,11 @@ CrateId CrateFeatureHelper::createEmptyCrate() {
     }
 
     CrateId newCrateId;
-    if (m_pTrackCollection->insertCrate(newCrate, &newCrateId)) {
+    if (m_pCrates->insertCrate(newCrate, &newCrateId)) {
         DEBUG_ASSERT(newCrateId.isValid());
         newCrate.setId(newCrateId);
-        m_pTrackCollection->crates().initClosureForCrate(newCrateId);
-        m_pTrackCollection->crates().generateCratePaths(newCrate);
+        m_pCrates->hierarchy().initClosureForCrate(newCrateId);
+        m_pCrates->hierarchy().generateCratePaths(newCrate);
         qDebug() << "Created new crate" << newCrate;
     } else {
         DEBUG_ASSERT(!newCrateId.isValid());
@@ -118,7 +118,7 @@ CrateId CrateFeatureHelper::createEmptySubrate(const Crate& parent) {
         // check if it has parent, if not compare with names from above
         // in closure.
         // Else split path into tokens and compare to those
-        if (m_pTrackCollection->crates().tokenizeCratePath(parent.getId()).contains(newCrate.getName())) {
+        if (m_pCrates->hierarchy().tokenizeCratePath(parent.getId()).contains(newCrate.getName())) {
             QMessageBox::warning(
                     nullptr,
                     tr("Creating Crate Failed"),
@@ -129,12 +129,12 @@ CrateId CrateFeatureHelper::createEmptySubrate(const Crate& parent) {
     }
 
     CrateId newCrateId;
-    if (m_pTrackCollection->insertCrate(newCrate, &newCrateId)) {
+    if (m_pCrates->insertCrate(newCrate, &newCrateId)) {
         DEBUG_ASSERT(newCrateId.isValid());
         newCrate.setId(newCrateId);
-        m_pTrackCollection->crates().initClosureForCrate(newCrateId);
-        if (m_pTrackCollection->crates().insertIntoClosure(parent.getId(), newCrateId)) {
-            m_pTrackCollection->crates().generateCratePaths(newCrate);
+        m_pCrates->hierarchy().initClosureForCrate(newCrateId);
+        if (m_pCrates->hierarchy().insertIntoClosure(parent.getId(), newCrateId)) {
+            m_pCrates->hierarchy().generateCratePaths(newCrate);
             }
         qDebug() << "Created new crate" << newCrate;
     } else {
@@ -175,7 +175,7 @@ CrateId CrateFeatureHelper::duplicateCrate(const Crate& oldCrate) {
                     tr("A crate cannot have a blank name."));
             continue;
         }
-        if (m_pTrackCollection->crates().readCrateByName(newCrate.getName())) {
+        if (m_pCrates->storage().readCrateByName(newCrate.getName())) {
             QMessageBox::warning(
                     nullptr,
                     tr("Duplicating Crate Failed"),
@@ -186,21 +186,21 @@ CrateId CrateFeatureHelper::duplicateCrate(const Crate& oldCrate) {
     }
 
     CrateId newCrateId;
-    if (m_pTrackCollection->insertCrate(newCrate, &newCrateId)) {
+    if (m_pCrates->insertCrate(newCrate, &newCrateId)) {
         DEBUG_ASSERT(newCrateId.isValid());
         newCrate.setId(newCrateId);
         qDebug() << "Created new crate" << newCrate;
         QList<TrackId> trackIds;
         trackIds.reserve(
-                m_pTrackCollection->crates().countCrateTracks(oldCrate.getId()));
+                m_pCrates->tracks().countCrateTracks(oldCrate.getId()));
         {
             CrateTrackSelectResult crateTracks(
-                    m_pTrackCollection->crates().selectCrateTracksSorted(oldCrate.getId()));
+              m_pCrates->tracks().selectCrateTracksSorted(oldCrate.getId()));
             while (crateTracks.next()) {
                 trackIds.append(crateTracks.trackId());
             }
         }
-        if (m_pTrackCollection->addCrateTracks(newCrateId, trackIds)) {
+        if (m_pCrates->addCrateTracks(newCrateId, trackIds)) {
             qDebug() << "Duplicated crate"
                 << oldCrate << "->" << newCrate;
         } else {
