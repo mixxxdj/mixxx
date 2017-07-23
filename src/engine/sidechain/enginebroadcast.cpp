@@ -31,6 +31,10 @@ EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig,
     connect(m_pBroadcastEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(slotEnableCO(double)));
 
+    m_pStatusCO = new ControlObject(ConfigKey(BROADCAST_PREF_KEY, "status"));
+    m_pStatusCO->setReadOnly();
+    m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
+
     QList<BroadcastProfilePtr> profiles = m_settings->profiles();
     for(BroadcastProfilePtr profile : profiles) {
     	addConnection(profile);
@@ -55,6 +59,8 @@ EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig,
 }
 
 EngineBroadcast::~EngineBroadcast() {
+	delete m_pStatusCO;
+
     m_pBroadcastEnabled->set(0);
     m_readSema.release();
 
@@ -142,6 +148,13 @@ void EngineBroadcast::run() {
     	m_pOutputFifo->flushReadData(m_pOutputFifo->readAvailable());
     }
     m_threadWaiting = true; // no frames received without this
+    m_pStatusCO->forceSet(STATUSCO_CONNECTING);
+
+    for(ShoutOutputPtr output : m_connections.values()) {
+    	if(output->profile()->getEnabled() && !output->isConnected()) {
+    		output->serverConnect();
+    	}
+    }
 
     while(true) {
         setFunctionCode(1);
@@ -155,6 +168,8 @@ void EngineBroadcast::run() {
             setFunctionCode(2);
             break;
         }
+
+        m_pStatusCO->forceSet(STATUSCO_CONNECTED);
 
         int readAvailable = m_pOutputFifo->readAvailable();
         if (readAvailable) {
@@ -178,7 +193,9 @@ void EngineBroadcast::run() {
             m_pOutputFifo->releaseReadRegions(readAvailable);
         }
     }
+
     m_threadWaiting = false;
+    m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
 
     qDebug() << "EngineBroadcast::run: Thread stopped";
 }
