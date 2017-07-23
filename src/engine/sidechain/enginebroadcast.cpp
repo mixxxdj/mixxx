@@ -100,7 +100,7 @@ bool EngineBroadcast::removeConnection(BroadcastProfilePtr profile) {
     ShoutOutputPtr output = m_connections.take(profile->getProfileName());
     if(output) {
         output->serverDisconnect();
-        qDebug() << "EngineBroadcast::addConnection: removed connection for profile" << profile->getProfileName();
+        qDebug() << "EngineBroadcast::removeConnection: removed connection for profile" << profile->getProfileName();
         return true;
     }
 
@@ -131,7 +131,7 @@ void EngineBroadcast::setOutputFifo(FIFO<CSAMPLE>* pOutputFifo) {
 }
 
 void EngineBroadcast::run() {
-    QThread::currentThread()->setObjectName(QString("EngineBroadcast"));
+    QThread::currentThread()->setObjectName("EngineBroadcast");
     qDebug() << "EngineBroadcast::run: Starting thread";
 
 #ifndef __WINDOWS__
@@ -168,6 +168,8 @@ void EngineBroadcast::run() {
             setFunctionCode(2);
             break;
         }
+
+        // TODO(Palakis): have this value governed by the connections' statuses
 
         m_pStatusCO->forceSet(STATUSCO_CONNECTED);
 

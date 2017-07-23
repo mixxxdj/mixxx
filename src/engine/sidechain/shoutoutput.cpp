@@ -61,6 +61,8 @@ ShoutOutput::ShoutOutput(BroadcastProfilePtr profile,
           m_noDelayFirstReconnect(true),
           m_limitReconnects(true),
           m_maximumRetries(10) {
+	setObjectName(QString("ShoutOutput '%1'").arg(m_pProfile->getProfileName()));
+
     m_pStatusCO = new ControlObject(ConfigKey(m_pProfile->getProfileName(), "status"));
     m_pStatusCO->setReadOnly();
     m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
@@ -131,13 +133,13 @@ QByteArray ShoutOutput::encodeString(const QString& string) {
 }
 
 void ShoutOutput::updateFromPreferences() {
-    qDebug() << "EngineBroadcast: updating from preferences";
+    qDebug() << m_pProfile->getProfileName() << ": updating from preferences";
 
     double dStatus = m_pStatusCO->get();
     if (dStatus == STATUSCO_CONNECTED ||
             dStatus == STATUSCO_CONNECTING) {
-        qDebug() << "EngineBroadcast::updateFromPreferences status:"
-                 << dStatus
+    	qDebug() << m_pProfile->getProfileName()
+    			 << "updateFromPreferences status:" << dStatus
                  << ". Can't edit preferences when playing";
         return;
     }
@@ -414,7 +416,7 @@ bool ShoutOutput::serverDisconnect() {
 }
 
 bool ShoutOutput::processConnect() {
-    qDebug() << "EngineBroadcast::processConnect()";
+    qDebug() << "ShoutOutput::processConnect()";
 
     // Make sure that we call updateFromPreferences always
     updateFromPreferences();
@@ -422,7 +424,7 @@ bool ShoutOutput::processConnect() {
     if (!m_encoder) {
         // updateFromPreferences failed
         m_pStatusCO->forceSet(STATUSCO_FAILURE);
-        qDebug() << "EngineBroadcast::processConnect() returning false";
+        qDebug() << "ShoutOutput::processConnect() returning false";
         return false;
     }
 
@@ -510,15 +512,15 @@ bool ShoutOutput::processConnect() {
 
             m_pStatusCO->forceSet(STATUSCO_CONNECTED);
             emit(broadcastConnected());
-            qDebug() << "EngineBroadcast::processConnect() returning true";
+            qDebug() << "ShoutOutput::processConnect() returning true";
             return true;
         } else if (m_iShoutStatus == SHOUTERR_SOCKET) {
             m_lastErrorStr = "Socket error";
-            qDebug() << "EngineBroadcast::processConnect() socket error."
+            qDebug() << "ShoutOutput::processConnect() socket error."
                      << "Is socket already in use?";
         } else if (m_pProfile->getEnabled()) {
             m_lastErrorStr = shout_get_error(m_pShout);
-            qDebug() << "EngineBroadcast::processConnect() error:"
+            qDebug() << "ShoutOutput::processConnect() error:"
                      << m_iShoutStatus << m_lastErrorStr;
         }
     }
@@ -533,12 +535,12 @@ bool ShoutOutput::processConnect() {
     } else {
         m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
     }
-    qDebug() << "EngineBroadcast::processConnect() returning false";
+    qDebug() << "ShoutOutput::processConnect() returning false";
     return false;
 }
 
 bool ShoutOutput::processDisconnect() {
-    qDebug() << "EngineBroadcast::processDisconnect()";
+    qDebug() << "ShoutOutput::processDisconnect()";
     bool disconnected = false;
     if (isConnected()) {
         // We are connected but broadcast is disabled. Disconnect.
@@ -604,13 +606,13 @@ bool ShoutOutput::writeSingle(const unsigned char* data, size_t len) {
     if (ret == SHOUTERR_BUSY) {
         // in case of busy, frames are queued
         // try to flush queue after a short sleep
-        qDebug() << "EngineBroadcast::writeSingle() SHOUTERR_BUSY, trying again";
+        qDebug() << "ShoutOutput::writeSingle() SHOUTERR_BUSY, trying again";
         usleep(10000); // wait 10 ms until "busy" is over. TODO() tweak for an optimum.
         // if this fails, the queue is transmitted after the next regular shout_send_raw()
         (void)shout_send_raw(m_pShout, nullptr, 0);
     } else if (ret < SHOUTERR_SUCCESS) {
         m_lastErrorStr = shout_get_error(m_pShout);
-        qDebug() << "EngineBroadcast::writeSingle() error:"
+        qDebug() << "ShoutOutput::writeSingle() error:"
                  << ret << m_lastErrorStr;
         if (++m_iShoutFailures > kMaxShoutFailures) {
             tryReconnect();
