@@ -908,10 +908,6 @@ void ShoutOutput::run() {
     m_pStatusCO->forceSet(STATUSCO_CONNECTED);
 
     while(true) {
-        setFunctionCode(1);
-        incRunCount();
-        m_readSema.acquire();
-
         // Stop the thread if broadcasting is turned off
         if (!m_pProfile->getEnabled()) {
             m_threadWaiting = false;
@@ -921,6 +917,12 @@ void ShoutOutput::run() {
             }
             setFunctionCode(2);
             break;
+        }
+
+        setFunctionCode(1);
+        incRunCount();
+        if(!m_readSema.tryAcquire(1, 1000)) {
+            continue;
         }
 
         int readAvailable = m_pOutputFifo->readAvailable();
