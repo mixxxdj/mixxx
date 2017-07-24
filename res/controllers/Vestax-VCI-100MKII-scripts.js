@@ -1,6 +1,6 @@
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2017-7-1
+// description: 2017-8-1
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 // JSHint Configuration
@@ -13,6 +13,7 @@ VCI102.deck = ["[Channel1]", "[Channel2]", "[Channel3]", "[Channel4]"];
 VCI102.fx12 = ["[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit2]"];
 VCI102.fx34 = ["[EffectRack1_EffectUnit3]", "[EffectRack1_EffectUnit4]"];
 VCI102.fxButton = [VCI102.fx12, VCI102.fx12];
+VCI102.lpButton = ["beatloop_size", "beatloop_size"];
 VCI102.shift = [0, 0];
 
 VCI102.setShift = function(ch, midino, value, status, group) {
@@ -20,11 +21,15 @@ VCI102.setShift = function(ch, midino, value, status, group) {
     VCI102.shift[ch] = value;
     // if shift then show the state of fx3/4 else fx1/2
     VCI102.fxButton[ch] = value ? VCI102.fx34 : VCI102.fx12;
+    // if shift then show the state of beatjump_size else beatloop_size
+    VCI102.lpButton[ch] = value ? "beatjump_size" : "beatloop_size";
+    // refresh LED
     [VCI102.deck[ch], VCI102.deck[ch + 2]].forEach(function(deck) {
         var enable = "group_" + deck + "_enable";
         VCI102.fxButton[ch].forEach(function(fx) {
             engine.trigger(fx, enable);
         });
+        engine.trigger(deck, VCI102.lpButton[ch]);
     });
 };
 
@@ -225,12 +230,11 @@ VCI102.parameter4 = function(ch, midino, value, status, group) {
 };
 
 VCI102.prev_effect = function(ch, midino, value, status, group) {
-    var key, n = engine.getValue(group, "focused_effect");
+    var n = engine.getValue(group, "focused_effect");
+    var key = "prev_chain";
     if (n) {
         group = VCI102.slot(group, n);
         key = "prev_effect";
-    } else {
-        key = "prev_chain";
     }
     if (VCI102.shift[1 - ch % 2]) {
         // clear effect if shift of the other Deck
@@ -240,7 +244,8 @@ VCI102.prev_effect = function(ch, midino, value, status, group) {
 };
 
 VCI102.next_effect = function(ch, midino, value, status, group) {
-    var key, n = engine.getValue(group, "focused_effect");
+    var n = engine.getValue(group, "focused_effect");
+    var key = "next_chain";
     if (VCI102.shift[1 - ch % 2]) {
         // change focus if shift of the other Deck
         if (value) {
@@ -250,8 +255,6 @@ VCI102.next_effect = function(ch, midino, value, status, group) {
         if (n) {
             group = VCI102.slot(group, n);
             key = "next_effect";
-        } else {
-            key = "next_chain";
         }
         engine.setValue(group, key, value > 0);
     }
@@ -345,6 +348,10 @@ VCI102.init = function(id, debug) {
         [0x2C, 0x25, 0x27, 0x28],
         [0x28, 0x25, 0x27, 0x2C]
     ];
+    var LEDlp = [
+        [0x33, 0x29],
+        [0x29, 0x26]
+    ];
 
     function headMix(value, group, key) {
         if (value) {
@@ -377,11 +384,26 @@ VCI102.init = function(id, debug) {
         };
     }
 
+    function makeLEDlp(ch) {
+        return function(value, group, key) {
+            if (key == VCI102.lpButton[ch % 2]) {
+                [value < 4 || value > 64, value > 4 || value < 1 / 4
+                ].forEach(function(on, i) {
+                    midi.sendShortMsg(0x90 + ch, LEDlp[ch % 2][i], on * 127);
+                });
+            }
+        };
+    }
+
     VCI102.deck.forEach(function(deck, i) {
         var enable = "group_" + deck + "_enable";
+        var show_size = makeLEDlp(i);
         [makeLEDfx(i, 0), makeLEDfx(i, 1)].forEach(function(led, j) {
             engine.connectControl(VCI102.fx12[j], enable, led);
             engine.connectControl(VCI102.fx34[j], enable, led);
+        });
+        ["beatloop_size", "beatjump_size"].forEach(function(key) {
+            engine.connectControl(deck, key, show_size);
         });
         ["loop_enabled", "play", "reverse"].forEach(function(key) {
             engine.connectControl(deck, key, VCI102.slip);
