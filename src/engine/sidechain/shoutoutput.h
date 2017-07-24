@@ -66,7 +66,6 @@ class ShoutOutput
 
     /** connects to server **/
     bool serverConnect();
-    bool serverDisconnect();
     bool isConnected();
     void applySettings();
 

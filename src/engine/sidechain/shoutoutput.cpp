@@ -114,19 +114,19 @@ bool ShoutOutput::isConnected() {
     return false;
 }
 
+// Only called when applying settings while broadcasting is active
 void ShoutOutput::applySettings() {
-    double dStatus = m_pStatusCO->get();
-    if(!m_pProfile->getEnabled()) {
-        if(dStatus == STATUSCO_CONNECTED || dStatus == STATUSCO_CONNECTING) {
-            serverDisconnect();
-        }
+    // Do nothing if profile is disabled
+    if(!m_pProfile->getEnabled())
         return;
-    }
 
-    if(dStatus == STATUSCO_UNCONNECTED || dStatus == STATUSCO_FAILURE) {
+    // Setting the profile's enabled value to false tells the
+    // connection's thread to exit, so no need to call
+    // processDisconnect manually
+
+    double dStatus = m_pStatusCO->get();
+    if((dStatus == STATUSCO_UNCONNECTED || dStatus == STATUSCO_FAILURE)) {
         serverConnect();
-    } else {
-        serverDisconnect();
     }
 }
 
@@ -407,11 +407,6 @@ bool ShoutOutput::serverConnect() {
     start(QThread::HighPriority);
     setState(NETWORKSTREAMWORKER_STATE_CONNECTING);
     return true;
-}
-
-bool ShoutOutput::serverDisconnect() {
-    m_pProfile->setEnabled(false);
-    return false;
 }
 
 bool ShoutOutput::processConnect() {

@@ -119,7 +119,9 @@ bool EngineBroadcast::removeConnection(BroadcastProfilePtr profile) {
 
     ShoutOutputPtr output = m_connections.take(profile->getProfileName());
     if(output) {
-        output->serverDisconnect();
+        // Disabling the profile tells ShoutOutput's thread to disconnect
+        output->profile()->setEnabled(false);
+
         qDebug() << "EngineBroadcast::removeConnection: removed connection for profile" << profile->getProfileName();
         return true;
     }
