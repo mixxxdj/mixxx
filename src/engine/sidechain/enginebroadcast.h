@@ -18,6 +18,7 @@
 #include "util/fifo.h"
 #include "preferences/broadcastsettings.h"
 #include "engine/sidechain/shoutoutput.h"
+#include "soundio/soundmanager.h"
 
 class ControlPushButton;
 
@@ -33,7 +34,8 @@ class EngineBroadcast
     };
 
     EngineBroadcast(UserSettingsPointer pConfig,
-                    BroadcastSettingsPointer pBroadcastSettings);
+                    BroadcastSettingsPointer pBroadcastSettings,
+                    QSharedPointer<EngineNetworkStream> pNetworkStream);
     virtual ~EngineBroadcast();
 
     bool addConnection(BroadcastProfilePtr profile);
@@ -65,6 +67,7 @@ class EngineBroadcast
 
     BroadcastSettingsPointer m_settings;
     UserSettingsPointer m_pConfig;
+    QSharedPointer<EngineNetworkStream> m_pNetworkStream;
     ControlPushButton* m_pBroadcastEnabled;
     ControlObject* m_pStatusCO;
 

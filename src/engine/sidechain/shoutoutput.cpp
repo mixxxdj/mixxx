@@ -33,23 +33,10 @@ static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
 // Shoutcast default receive buffer 1048576 and autodumpsourcetime 30 s
 // http://wiki.shoutcast.com/wiki/SHOUTcast_DNAS_Server_2
 static const int kMaxShoutFailures = 3;
-
-const int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
-// Related chunk sizes:
-// Mp3 frames = 1152 samples
-// Ogg frames = 64 to 8192 samples.
-// In Mixxx 1.11 we transmit every decoder-frames at once,
-// Which results in case of ogg in a dynamic latency from 0.14 ms to to 185 ms
-// Now we have switched to a fixed latency of 8192 frames (stereo samples) =
-// which is 185 @ 44100 ms and twice the maximum of the max mixxx audio buffer
-const int kBufferFrames = kNetworkLatencyFrames * 4; // 743 ms @ 44100 Hz
-// normally * 2 is sufficient.
-// We allow to buffer two extra chunks for a CPU overload case, when
-// the broadcast thread is not scheduled in time.
 }
 
 ShoutOutput::ShoutOutput(BroadcastProfilePtr profile,
-        UserSettingsPointer pConfig)
+        UserSettingsPointer pConfig, int fifoSize)
         : m_pTextCodec(nullptr),
           m_pMetaData(),
           m_pShout(nullptr),
@@ -80,8 +67,7 @@ ShoutOutput::ShoutOutput(BroadcastProfilePtr profile,
     m_pStatusCO->setReadOnly();
     m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
 
-    // TODO(Palakis): hardcoded channel count for testing only. FIX THIS ASAP.
-    m_pOutputFifo = new FIFO<CSAMPLE>(2 * kBufferFrames);
+    m_pOutputFifo = new FIFO<CSAMPLE>(fifoSize);
 
     setState(NETWORKSTREAMWORKER_STATE_INIT);
 
@@ -580,7 +566,7 @@ bool ShoutOutput::processDisconnect() {
     return disconnected;
 }
 
-void ShoutOutput::write(const unsigned char *header, const unsigned char *body,
+void ShoutOutput::write(const unsigned char* header, const unsigned char* body,
                             int headerLen, int bodyLen) {
     setFunctionCode(7);
 	if (!m_pShout || m_iShoutStatus != SHOUTERR_CONNECTED) {

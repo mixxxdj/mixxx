@@ -43,7 +43,7 @@ class ShoutOutput
         STATUSCO_FAILURE = 3 // Happens when disconnected by an error
     };
 
-    ShoutOutput(BroadcastProfilePtr profile, UserSettingsPointer pConfig);
+    ShoutOutput(BroadcastProfilePtr profile, UserSettingsPointer pConfig, int fifoSize);
     virtual ~ShoutOutput();
 
     // This is called by the Engine implementation for each sample. Encode and
@@ -55,7 +55,7 @@ class ShoutOutput
 
     // Called by the encoder in method 'encodebuffer()' to flush the stream to
     // the server.
-    void write(const unsigned char *header, const unsigned char *body,
+    void write(const unsigned char* header, const unsigned char* body,
                int headerLen, int bodyLen) override;
     // gets stream position
     int tell() override;

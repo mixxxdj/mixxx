@@ -15,7 +15,8 @@ BroadcastManager::BroadcastManager(SettingsManager* pSettingsManager,
     if (!pNetworkStream.isNull()) {
         m_pBroadcast = QSharedPointer<EngineBroadcast>(
                 new EngineBroadcast(m_pConfig,
-                                    pSettingsManager->broadcastSettings()));
+                                    pSettingsManager->broadcastSettings(),
+                                    pNetworkStream));
         pNetworkStream->addWorker(m_pBroadcast);
     }
 

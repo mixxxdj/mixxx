@@ -17,10 +17,27 @@
 
 #include "engine/sidechain/enginebroadcast.h"
 
+namespace {
+const int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
+// Related chunk sizes:
+// Mp3 frames = 1152 samples
+// Ogg frames = 64 to 8192 samples.
+// In Mixxx 1.11 we transmit every decoder-frames at once,
+// Which results in case of ogg in a dynamic latency from 0.14 ms to to 185 ms
+// Now we have switched to a fixed latency of 8192 frames (stereo samples) =
+// which is 185 @ 44100 ms and twice the maximum of the max mixxx audio buffer
+const int kBufferFrames = kNetworkLatencyFrames * 4; // 743 ms @ 44100 Hz
+// normally * 2 is sufficient.
+// We allow to buffer two extra chunks for a CPU overload case, when
+// the broadcast thread is not scheduled in time.
+}
+
 EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig,
-                                 BroadcastSettingsPointer pBroadcastSettings)
+                                 BroadcastSettingsPointer pBroadcastSettings,
+                                 QSharedPointer<EngineNetworkStream> pNetworkStream)
         : m_settings(pBroadcastSettings),
           m_pConfig(pConfig),
+          m_pNetworkStream(pNetworkStream),
           m_threadWaiting(false),
           m_pOutputFifo(nullptr) {
     const bool persist = true;
@@ -87,7 +104,9 @@ bool EngineBroadcast::addConnection(BroadcastProfilePtr profile) {
     if(m_connections.contains(profileName))
         return false;
 
-    ShoutOutputPtr output(new ShoutOutput(profile, m_pConfig));
+    int fifoSize = m_pNetworkStream->getNumOutputChannels() * kBufferFrames;
+
+    ShoutOutputPtr output(new ShoutOutput(profile, m_pConfig, fifoSize));
     m_connections.insert(profileName, output);
 
     qDebug() << "EngineBroadcast::addConnection: created connection for profile" << profileName;
