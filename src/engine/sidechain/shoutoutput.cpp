@@ -69,7 +69,7 @@ ShoutOutput::ShoutOutput(BroadcastProfilePtr profile,
           m_protocol_is_icecast2(false),
           m_protocol_is_shoutcast(false),
           m_ogg_dynamic_update(false),
-		  m_threadWaiting(false),
+          m_threadWaiting(false),
           m_retryCount(0),
           m_reconnectFirstDelay(0.0),
           m_reconnectPeriod(5.0),
@@ -129,12 +129,12 @@ bool ShoutOutput::isConnected() {
 }
 
 void ShoutOutput::applySettings() {
-	double dStatus = m_pStatusCO->get();
-	if(!m_pProfile->getEnabled()) {
-    	if(dStatus == STATUSCO_CONNECTED || dStatus == STATUSCO_CONNECTING) {
-    		serverDisconnect();
-    	}
-    	return;
+    double dStatus = m_pStatusCO->get();
+    if(!m_pProfile->getEnabled()) {
+        if(dStatus == STATUSCO_CONNECTED || dStatus == STATUSCO_CONNECTING) {
+            serverDisconnect();
+        }
+        return;
     }
 
     if(dStatus == STATUSCO_UNCONNECTED || dStatus == STATUSCO_FAILURE) {
@@ -157,8 +157,8 @@ void ShoutOutput::updateFromPreferences() {
     double dStatus = m_pStatusCO->get();
     if (dStatus == STATUSCO_CONNECTED ||
             dStatus == STATUSCO_CONNECTING) {
-    	qDebug() << m_pProfile->getProfileName()
-    			 << "updateFromPreferences status:" << dStatus
+        qDebug() << m_pProfile->getProfileName()
+                 << "updateFromPreferences status:" << dStatus
                  << ". Can't edit preferences when playing";
         return;
     }
@@ -628,7 +628,7 @@ int ShoutOutput::filelen() {
 
 bool ShoutOutput::writeSingle(const unsigned char* data, size_t len) {
     setFunctionCode(8);
-	int ret = shout_send_raw(m_pShout, data, len);
+    int ret = shout_send_raw(m_pShout, data, len);
     if (ret == SHOUTERR_BUSY) {
         // in case of busy, frames are queued
         // try to flush queue after a short sleep
@@ -652,7 +652,7 @@ bool ShoutOutput::writeSingle(const unsigned char* data, size_t len) {
 
 void ShoutOutput::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     setFunctionCode(4);
-	if(!m_pProfile->getEnabled())
+    if(!m_pProfile->getEnabled())
         return;
 
     setState(NETWORKSTREAMWORKER_STATE_BUSY);
@@ -663,7 +663,7 @@ void ShoutOutput::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 
     // If we are connected, encode the samples.
     if (iBufferSize > 0 && m_encoder) {
-    	setFunctionCode(6);
+        setFunctionCode(6);
         m_encoder->encodeBuffer(pBuffer, iBufferSize);
         // the encoded frames are received by the write() callback.
     }
@@ -706,7 +706,7 @@ bool ShoutOutput::metaDataHasChanged() {
 }
 
 void ShoutOutput::updateMetaData() {
-	setFunctionCode(5);
+    setFunctionCode(5);
     if (!m_pShout || !m_pShoutMetaData)
         return;
 
@@ -895,76 +895,76 @@ void ShoutOutput::setOutputFifo(FIFO<CSAMPLE>* pOutputFifo) {
 }
 
 FIFO<CSAMPLE>* ShoutOutput::getOutputFifo() {
-	return m_pOutputFifo;
+    return m_pOutputFifo;
 }
 
 bool ShoutOutput::threadWaiting() {
-	return m_threadWaiting;
+    return m_threadWaiting;
 }
 
 void ShoutOutput::run() {
-	QThread::currentThread()->setObjectName(
-			QString("ShoutOutput '%1'").arg(m_pProfile->getProfileName()));
-	qDebug() << "ShoutOutput::run: Starting thread";
+    QThread::currentThread()->setObjectName(
+            QString("ShoutOutput '%1'").arg(m_pProfile->getProfileName()));
+    qDebug() << "ShoutOutput::run: Starting thread";
 
 #ifndef __WINDOWS__
-	ignoreSigpipe();
+    ignoreSigpipe();
 #endif
 
-	VERIFY_OR_DEBUG_ASSERT(m_pOutputFifo) {
-		qDebug() << "ShoutOutput::run: Broadcast FIFO handle is not available. Aborting";
-		return;
-	}
+    VERIFY_OR_DEBUG_ASSERT(m_pOutputFifo) {
+        qDebug() << "ShoutOutput::run: Broadcast FIFO handle is not available. Aborting";
+        return;
+    }
 
-	if (!processConnect()) {
-		m_pProfile->setEnabled(false);
-		errorDialog(tr("Can't connect to streaming server"),
-				m_lastErrorStr + "\n" +
-				tr("Please check your connection to the Internet and verify that your username and password are correct."));
-		return;
-	}
+    if (!processConnect()) {
+        m_pProfile->setEnabled(false);
+        errorDialog(tr("Can't connect to streaming server"),
+                m_lastErrorStr + "\n" +
+                tr("Please check your connection to the Internet and verify that your username and password are correct."));
+        return;
+    }
 
-	m_pStatusCO->forceSet(STATUSCO_CONNECTED);
+    m_pStatusCO->forceSet(STATUSCO_CONNECTED);
 
-	while(true) {
-		setFunctionCode(1);
-		incRunCount();
-		m_readSema.acquire();
+    while(true) {
+        setFunctionCode(1);
+        incRunCount();
+        m_readSema.acquire();
 
-		// Stop the thread if broadcasting is turned off
-		if (!m_pProfile->getEnabled()) {
-			m_threadWaiting = false;
-			qDebug() << "ShoutOutput::run: Connection disabled. Disconnecting";
-			if(processDisconnect()) {
-				m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
-			}
-			setFunctionCode(2);
-			break;
-		}
+        // Stop the thread if broadcasting is turned off
+        if (!m_pProfile->getEnabled()) {
+            m_threadWaiting = false;
+            qDebug() << "ShoutOutput::run: Connection disabled. Disconnecting";
+            if(processDisconnect()) {
+                m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
+            }
+            setFunctionCode(2);
+            break;
+        }
 
-		int readAvailable = m_pOutputFifo->readAvailable();
-		if (readAvailable) {
-			setFunctionCode(3);
-			CSAMPLE* dataPtr1;
-			ring_buffer_size_t size1;
-			CSAMPLE* dataPtr2;
-			ring_buffer_size_t size2;
+        int readAvailable = m_pOutputFifo->readAvailable();
+        if (readAvailable) {
+            setFunctionCode(3);
+            CSAMPLE* dataPtr1;
+            ring_buffer_size_t size1;
+            CSAMPLE* dataPtr2;
+            ring_buffer_size_t size2;
 
-			// We use size1 and size2, so we can ignore the return value
-			(void)m_pOutputFifo->aquireReadRegions(readAvailable, &dataPtr1, &size1,
-					&dataPtr2, &size2);
+            // We use size1 and size2, so we can ignore the return value
+            (void)m_pOutputFifo->aquireReadRegions(readAvailable, &dataPtr1, &size1,
+                    &dataPtr2, &size2);
 
-			// Push frames to the encoder.
-			process(dataPtr1, size1);
-			if (size2 > 0) {
-				process(dataPtr2, size2);
-			}
+            // Push frames to the encoder.
+            process(dataPtr1, size1);
+            if (size2 > 0) {
+                process(dataPtr2, size2);
+            }
 
-			m_pOutputFifo->releaseReadRegions(readAvailable);
-		}
-	}
+            m_pOutputFifo->releaseReadRegions(readAvailable);
+        }
+    }
 
-	qDebug() << "ShoutOutput::run: Thread stopped";
+    qDebug() << "ShoutOutput::run: Thread stopped";
 }
 
 #ifndef __WINDOWS__

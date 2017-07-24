@@ -35,9 +35,10 @@ EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig,
     m_pStatusCO->setReadOnly();
     m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
 
+    // Initialize connections list from the current state of BroadcastSettings
     QList<BroadcastProfilePtr> profiles = m_settings->profiles();
     for(BroadcastProfilePtr profile : profiles) {
-    	addConnection(profile);
+        addConnection(profile);
     }
 
     // Connect add/remove/renamed profiles signals.
@@ -59,7 +60,7 @@ EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig,
 }
 
 EngineBroadcast::~EngineBroadcast() {
-	delete m_pStatusCO;
+    delete m_pStatusCO;
 
     m_pBroadcastEnabled->set(0);
     m_readSema.release();
@@ -111,30 +112,29 @@ void EngineBroadcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     setFunctionCode(4);
 
     QList<ShoutOutputPtr> connections = m_connections.values();
-	for(ShoutOutputPtr c : connections) {
-		if(!c)
-			continue;
+    for(ShoutOutputPtr c : connections) {
+        if(!c)
+            continue;
 
-		if(!c->threadWaiting())
-			continue;
+        if(!c->threadWaiting())
+            continue;
 
-		FIFO<CSAMPLE>* cFifo = c->getOutputFifo();
-		if(cFifo) {
-			int available = cFifo->writeAvailable();
+        FIFO<CSAMPLE>* cFifo = c->getOutputFifo();
+        if(cFifo) {
+            int available = cFifo->writeAvailable();
 
-			int copyCount = math_min(available, iBufferSize);
-			if(copyCount > 0) {
-				cFifo->write(pBuffer, copyCount);
-			}
+            int copyCount = math_min(available, iBufferSize);
+            if(copyCount > 0) {
+                cFifo->write(pBuffer, copyCount);
+            }
 
-			c->outputAvailable();
-		}
-	}
+            c->outputAvailable();
+        }
+    }
 }
 
 // Is called from the Mixxx engine thread
 void EngineBroadcast::outputAvailable() {
-	//qDebug() << "EngineBroadcast::outputAvailable";
     m_readSema.release();
 }
 
@@ -153,7 +153,7 @@ void EngineBroadcast::run() {
     }
 
     if(m_pOutputFifo->readAvailable()) {
-    	m_pOutputFifo->flushReadData(m_pOutputFifo->readAvailable());
+        m_pOutputFifo->flushReadData(m_pOutputFifo->readAvailable());
     }
     m_threadWaiting = true; // no frames received without this
     m_pStatusCO->forceSet(STATUSCO_CONNECTING);
@@ -165,7 +165,7 @@ void EngineBroadcast::run() {
 
         // Stop the thread if broadcasting is turned off
         if (!m_pBroadcastEnabled->toBool()) {
-        	qDebug() << "EngineBroadcast::run: Broadcasting disabled. Terminating thread";
+            qDebug() << "EngineBroadcast::run: Broadcasting disabled. Terminating thread";
             m_threadWaiting = false;
             setFunctionCode(2);
             break;
@@ -242,9 +242,9 @@ void EngineBroadcast::slotProfileRenamed(QString oldName, BroadcastProfilePtr pr
 }
 
 void EngineBroadcast::slotProfilesChanged() {
-	if(m_pBroadcastEnabled->toBool()) {
-		for(ShoutOutputPtr c : m_connections.values()) {
-			if(c) c->applySettings();
-		}
-	}
+    if(m_pBroadcastEnabled->toBool()) {
+        for(ShoutOutputPtr c : m_connections.values()) {
+            if(c) c->applySettings();
+        }
+    }
 }

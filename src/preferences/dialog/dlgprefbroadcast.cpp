@@ -25,22 +25,22 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
         : DlgPreferencePage(parent),
           m_pBroadcastSettings(pBroadcastSettings),
           m_pProfileListSelection(nullptr) {
-	setupUi(this);
-	connect(profileList->horizontalHeader(), SIGNAL(sectionResized(int, int, int)),
-			this, SLOT(onSectionResized()));
-	connect(cbRemoveMode, SIGNAL(stateChanged(int)),
-			this, SLOT(onRemoveModeChanged(int)));
+    setupUi(this);
+    connect(profileList->horizontalHeader(), SIGNAL(sectionResized(int, int, int)),
+            this, SLOT(onSectionResized()));
+    //connect(cbRemoveMode, SIGNAL(stateChanged(int)),
+    //		this, SLOT(onRemoveModeChanged(int)));
 
-	// Should be safe to directly access the underlying pointer
+    // Should be safe to directly access the underlying pointer
     profileList->setModel(m_pBroadcastSettings.data());
     profileList->setColumnHidden(kColumnRemove, true);
 
     QAbstractItemDelegate* removeDelegate =
-    		m_pBroadcastSettings->delegateForColumn(kColumnRemove, this);
+            m_pBroadcastSettings->delegateForColumn(kColumnRemove, this);
     connect(removeDelegate, SIGNAL(clicked(int, int)),
-    		this, SLOT(onRemoveButtonClicked(int, int)));
+            this, SLOT(onRemoveButtonClicked(int, int)));
     profileList->setItemDelegateForColumn(kColumnRemove,
-    		removeDelegate);
+            removeDelegate);
 
     connect(btnCreateProfile, SIGNAL(clicked(bool)),
             this, SLOT(btnCreateConnectionClicked(bool)));
@@ -161,11 +161,11 @@ void DlgPrefBroadcast::slotUpdate() {
     // Don't let user modify information if
     // sending is enabled.
     if(m_pBroadcastEnabled->toBool()) {
-    	groupBoxProfileSettings->setEnabled(false);
-    	btnCreateProfile->setEnabled(false);
+        groupBoxProfileSettings->setEnabled(false);
+        btnCreateProfile->setEnabled(false);
     } else {
-    	groupBoxProfileSettings->setEnabled(true);
-    	btnCreateProfile->setEnabled(true);
+        groupBoxProfileSettings->setEnabled(true);
+        btnCreateProfile->setEnabled(true);
     }
 }
 
@@ -218,19 +218,19 @@ void DlgPrefBroadcast::enableCustomMetadataChanged(int value) {
 }
 
 void DlgPrefBroadcast::btnCreateConnectionClicked(bool enabled) {
-	int profileNumber = m_pBroadcastSettings->rowCount();
+    int profileNumber = m_pBroadcastSettings->rowCount();
 
-	// Generate a new profile name based on the current profile count.
-	// Try the number above if the generated name is already taken.
-	BroadcastProfilePtr existingProfile(nullptr);
-	QString newName;
-	do {
-		profileNumber++;
-		newName = tr("Profile %1").arg(profileNumber);
-		existingProfile = m_pBroadcastSettings->getProfileByName(newName);
-	} while(!existingProfile.isNull());
+    // Generate a new profile name based on the current profile count.
+    // Try the number above if the generated name is already taken.
+    BroadcastProfilePtr existingProfile(nullptr);
+    QString newName;
+    do {
+        profileNumber++;
+        newName = tr("Profile %1").arg(profileNumber);
+        existingProfile = m_pBroadcastSettings->getProfileByName(newName);
+    } while(!existingProfile.isNull());
 
-	// TODO(Palakis): add a safety check to avoid infinite looping
+    // TODO(Palakis): add a safety check to avoid infinite looping
 
     m_pBroadcastSettings->createProfile(newName);
 }
@@ -415,36 +415,36 @@ void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
 }
 
 void DlgPrefBroadcast::onRemoveButtonClicked(int column, int row) {
-	if(m_pBroadcastSettings->rowCount() < 2) {
-		QMessageBox::information(this, tr("Action forbidden"),
-				tr("At least one connection profile is required."));
-		return;
-	}
+    if(m_pBroadcastSettings->rowCount() < 2) {
+        QMessageBox::information(this, tr("Action forbidden"),
+                tr("At least one connection profile is required."));
+        return;
+    }
 
-	BroadcastProfilePtr profile = m_pBroadcastSettings->profileAt(row);
-	if(profile) {
-		m_pBroadcastSettings->deleteProfile(profile);
-	}
+    BroadcastProfilePtr profile = m_pBroadcastSettings->profileAt(row);
+    if(profile) {
+        m_pBroadcastSettings->deleteProfile(profile);
+    }
 }
 
 void DlgPrefBroadcast::onSectionResized() {
-	float width = (float)profileList->width();
+    float width = (float)profileList->width();
 
-	sender()->blockSignals(true);
-	profileList->setColumnWidth(kColumnEnabled, 100);
-	profileList->setColumnWidth(kColumnName, width * 0.65); // 70% of profileList's width
-	// The last column, kColumnRemove, is automatically resized to fill
-	// the remaining width, thanks to stretchLastSection set to true.
-	sender()->blockSignals(false);
+    sender()->blockSignals(true);
+    profileList->setColumnWidth(kColumnEnabled, 100);
+    profileList->setColumnWidth(kColumnName, width * 0.65); // 70% of profileList's width
+    // The last column, kColumnRemove, is automatically resized to fill
+    // the remaining width, thanks to stretchLastSection set to true.
+    sender()->blockSignals(false);
 }
 
 void DlgPrefBroadcast::onRemoveModeChanged(int value) {
-	bool enabled = (value == Qt::Checked ? true : false);
+    bool enabled = (value == Qt::Checked ? true : false);
 
-	btnCreateProfile->setEnabled(!enabled);
-	groupBoxProfileSettings->setEnabled(!enabled);
+    btnCreateProfile->setEnabled(!enabled);
+    groupBoxProfileSettings->setEnabled(!enabled);
 
-	// Hide the "Enabled" column and show the "remove" column
-	profileList->setColumnHidden(kColumnEnabled, enabled);
-	profileList->setColumnHidden(kColumnRemove, !enabled);
+    // Hide the "Enabled" column and show the "remove" column
+    profileList->setColumnHidden(kColumnEnabled, enabled);
+    profileList->setColumnHidden(kColumnRemove, !enabled);
 }
