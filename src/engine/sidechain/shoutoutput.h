@@ -128,6 +128,7 @@ class ShoutOutput
     BroadcastProfilePtr m_pProfile;
     EncoderPointer m_encoder;
     ControlProxy* m_pMasterSamplerate;
+    ControlProxy* m_pBroadcastEnabled;
     ControlObject* m_pStatusCO;
     // static metadata according to prefereneces
     bool m_custom_metadata;

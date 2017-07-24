@@ -48,6 +48,7 @@ ShoutOutput::ShoutOutput(BroadcastProfilePtr profile,
           m_pProfile(profile),
           m_encoder(nullptr),
           m_pMasterSamplerate(new ControlProxy("[Master]", "samplerate")),
+          m_pBroadcastEnabled(new ControlProxy(BROADCAST_PREF_KEY, "enabled")),
           m_custom_metadata(false),
           m_firstCall(false),
           m_format_is_mp3(false),
@@ -873,6 +874,7 @@ void ShoutOutput::outputAvailable() {
 }
 
 void ShoutOutput::setOutputFifo(FIFO<CSAMPLE>* pOutputFifo) {
+    Q_UNUSED(pOutputFifo);
 }
 
 FIFO<CSAMPLE>* ShoutOutput::getOutputFifo() {
@@ -909,7 +911,7 @@ void ShoutOutput::run() {
 
     while(true) {
         // Stop the thread if broadcasting is turned off
-        if (!m_pProfile->getEnabled()) {
+        if (!m_pProfile->getEnabled() || !m_pBroadcastEnabled->toBool()) {
             m_threadWaiting = false;
             qDebug() << "ShoutOutput::run: Connection disabled. Disconnecting";
             if(processDisconnect()) {
