@@ -28,8 +28,8 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
     setupUi(this);
     connect(profileList->horizontalHeader(), SIGNAL(sectionResized(int, int, int)),
             this, SLOT(onSectionResized()));
-    //connect(cbRemoveMode, SIGNAL(stateChanged(int)),
-    //		this, SLOT(onRemoveModeChanged(int)));
+    connect(cbRemoveMode, SIGNAL(stateChanged(int)),
+            this, SLOT(onRemoveModeChanged(int)));
 
     // Should be safe to directly access the underlying pointer
     profileList->setModel(m_pBroadcastSettings.data());
