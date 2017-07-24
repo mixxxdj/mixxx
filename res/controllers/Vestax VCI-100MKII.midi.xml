@@ -3,7 +3,7 @@
   <info>
     <name>Vestax VCI-100MKII</name>
     <author>Takeshi Soejima</author>
-    <description>2017-7-1</description>
+    <description>2017-8-1</description>
     <wiki>http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii</wiki>
   </info>
   <controller id="VCI-100MKII">
@@ -1975,78 +1975,6 @@
         <status>0x93</status>
         <midino>0x33</midino>
         <minimum>1</minimum>
-      </output>
-      <output>
-        <group>[Channel1]</group>
-        <key>beatloop_size</key>
-        <status>0x90</status>
-        <midino>0x33</midino>
-        <minimum>0</minimum>
-        <maximum>2</maximum>
-      </output>
-      <output>
-        <group>[Channel2]</group>
-        <key>beatloop_size</key>
-        <status>0x91</status>
-        <midino>0x29</midino>
-        <minimum>0</minimum>
-        <maximum>2</maximum>
-      </output>
-      <output>
-        <group>[Channel3]</group>
-        <key>beatloop_size</key>
-        <status>0x92</status>
-        <midino>0x33</midino>
-        <minimum>0</minimum>
-        <maximum>2</maximum>
-      </output>
-      <output>
-        <group>[Channel4]</group>
-        <key>beatloop_size</key>
-        <status>0x93</status>
-        <midino>0x29</midino>
-        <minimum>0</minimum>
-        <maximum>2</maximum>
-      </output>
-      <output>
-        <group>[Channel1]</group>
-        <key>beatloop_size</key>
-        <status>0x90</status>
-        <midino>0x29</midino>
-        <minimum>0.25</minimum>
-        <maximum>4</maximum>
-        <off>127</off>
-        <on>0</on>
-      </output>
-      <output>
-        <group>[Channel2]</group>
-        <key>beatloop_size</key>
-        <status>0x91</status>
-        <midino>0x26</midino>
-        <minimum>0.25</minimum>
-        <maximum>4</maximum>
-        <off>127</off>
-        <on>0</on>
-      </output>
-      <output>
-        <group>[Channel3]</group>
-        <key>beatloop_size</key>
-        <status>0x92</status>
-        <midino>0x29</midino>
-        <minimum>0.25</minimum>
-        <maximum>4</maximum>
-        <off>127</off>
-        <on>0</on>
-      </output>
-      <output>
-        <group>[Channel4]</group>
-        <key>beatloop_size</key>
-        <status>0x93</status>
-        <midino>0x26</midino>
-        <minimum>0.25</minimum>
-        <maximum>4</maximum>
-        <off>127</off>
-        <on>0</on>
       </output>
       <output>
         <group>[Channel1]</group>
