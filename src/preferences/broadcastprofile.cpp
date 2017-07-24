@@ -226,7 +226,6 @@ bool BroadcastProfile::loadValues(const QString& filename) {
     if(doc.childNodes().size() < 1)
         return false;
 
-    m_profileName = doc.attribute(kProfileNameAttr, m_profileName);
     m_enabled = (bool)XmlParse::selectNodeInt(doc, kEnabled);
 
     m_host = XmlParse::selectNodeQString(doc, kHost);
@@ -275,7 +274,6 @@ bool BroadcastProfile::loadValues(const QString& filename) {
 bool BroadcastProfile::save(const QString& filename) {
     QDomDocument doc(kDoctype);
     QDomElement docRoot = doc.createElement(kDocumentRoot);
-    docRoot.setAttribute(kProfileNameAttr, m_profileName);
 
     XmlParse::addElement(doc, docRoot,
                          kEnabled, QString::number((int)m_enabled));
