@@ -34,7 +34,7 @@ double knobValueToBiquadGainDb (double value, bool kill) {
     }
 
     double ret = value - 1;
-    if (value >= 0) {
+    if (ret >= 0) {
         ret *= kBoostGain;
     } else {
         ret *= -kKillGain;
