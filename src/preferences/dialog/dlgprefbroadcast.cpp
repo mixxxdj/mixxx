@@ -158,6 +158,8 @@ void DlgPrefBroadcast::slotResetToDefaults() {
 void DlgPrefBroadcast::slotUpdate() {
     enableLiveBroadcasting->setChecked(m_pBroadcastEnabled->toBool());
 
+    cbRemoveMode->setChecked(false);
+
     // Don't let user modify information if
     // sending is enabled.
     if(m_pBroadcastEnabled->toBool()) {
@@ -424,6 +426,10 @@ void DlgPrefBroadcast::onRemoveButtonClicked(int column, int row) {
     BroadcastProfilePtr profile = m_pBroadcastSettings->profileAt(row);
     if(profile) {
         m_pBroadcastSettings->deleteProfile(profile);
+
+        profileList->selectRow(0);
+        QItemSelectionModel* selected = profileList->selectionModel();
+        profileListItemSelected(selected->currentIndex());
     }
 }
 
