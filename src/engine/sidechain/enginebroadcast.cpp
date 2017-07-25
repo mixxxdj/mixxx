@@ -30,7 +30,8 @@ static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
 // http://wiki.shoutcast.com/wiki/SHOUTcast_DNAS_Server_2
 static const int kMaxShoutFailures = 3;
 
-EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig)
+EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig,
+                                 BroadcastSettingsPointer pBroadcastSettings)
         : m_pTextCodec(nullptr),
           m_pMetaData(),
           m_pShout(nullptr),
@@ -38,7 +39,7 @@ EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig)
           m_iMetaDataLife(0),
           m_iShoutStatus(0),
           m_iShoutFailures(0),
-          m_settings(pConfig),
+          m_settings(pBroadcastSettings),
           m_pConfig(pConfig),
           m_encoder(nullptr),
           m_pMasterSamplerate(new ControlProxy("[Master]", "samplerate")),
@@ -135,6 +136,8 @@ QByteArray EngineBroadcast::encodeString(const QString& string) {
 }
 
 void EngineBroadcast::updateFromPreferences() {
+    const BroadcastProfilePtr& profile = m_settings->profileAt(0);
+
     qDebug() << "EngineBroadcast: updating from preferences";
     NetworkStreamWorker::debugState();
 
@@ -164,7 +167,7 @@ void EngineBroadcast::updateFromPreferences() {
     // Convert a bunch of QStrings to QByteArrays so we can get regular C char*
     // strings to pass to libshout.
 
-    QString codec = m_settings.getMetadataCharset();
+    QString codec = profile->getMetadataCharset();
     QByteArray baCodec = codec.toLatin1();
     m_pTextCodec = QTextCodec::codecForName(baCodec);
     if (!m_pTextCodec) {
@@ -175,9 +178,9 @@ void EngineBroadcast::updateFromPreferences() {
     // Indicates our metadata is in the provided charset.
     shout_metadata_add(m_pShoutMetaData, "charset",  baCodec.constData());
 
-    QString serverType = m_settings.getServertype();
+    QString serverType = profile->getServertype();
 
-    QString host = m_settings.getHost();
+    QString host = profile->getHost();
     int start = host.indexOf(QLatin1String("//"));
     if (start == -1) {
         // the host part requires preceding //.
@@ -187,10 +190,10 @@ void EngineBroadcast::updateFromPreferences() {
     }
     QUrl serverUrl = host;
 
-    int port = m_settings.getPort();
+    int port = profile->getPort();
     serverUrl.setPort(port);
 
-    QString mountPoint = m_settings.getMountpoint();
+    QString mountPoint = profile->getMountpoint();
     if (!mountPoint.isEmpty()) {
         if (!mountPoint.startsWith('/')) {
             mountPoint.prepend('/');
@@ -198,43 +201,43 @@ void EngineBroadcast::updateFromPreferences() {
         serverUrl.setPath(mountPoint);
     }
 
-    QString login = m_settings.getLogin();
+    QString login = profile->getLogin();
     if (!login.isEmpty()) {
         serverUrl.setUserName(login);
     }
 
     qDebug() << "Using server URL:" << serverUrl;
 
-    QByteArray baPassword = m_settings.getPassword().toLatin1();
-    QByteArray baFormat = m_settings.getFormat().toLatin1();
-    int iBitrate = m_settings.getBitrate();
+    QByteArray baPassword = profile->getPassword().toLatin1();
+    QByteArray baFormat = profile->getFormat().toLatin1();
+    int iBitrate = profile->getBitrate();
 
     // Encode metadata like stream name, website, desc, genre, title/author with
     // the chosen TextCodec.
-    QByteArray baStreamName = encodeString(m_settings.getStreamName());
-    QByteArray baStreamWebsite = encodeString(m_settings.getStreamWebsite());
-    QByteArray baStreamDesc = encodeString(m_settings.getStreamDesc());
-    QByteArray baStreamGenre = encodeString(m_settings.getStreamGenre());
+    QByteArray baStreamName = encodeString(profile->getStreamName());
+    QByteArray baStreamWebsite = encodeString(profile->getStreamWebsite());
+    QByteArray baStreamDesc = encodeString(profile->getStreamDesc());
+    QByteArray baStreamGenre = encodeString(profile->getStreamGenre());
 
     // Whether the stream is public.
-    bool streamPublic = m_settings.getStreamPublic();
+    bool streamPublic = profile->getStreamPublic();
 
     // Dynamic Ogg metadata update
-    m_ogg_dynamic_update = m_settings.getOggDynamicUpdate();
+    m_ogg_dynamic_update = profile->getOggDynamicUpdate();
 
-    m_custom_metadata = m_settings.getEnableMetadata();
-    m_customTitle = m_settings.getCustomTitle();
-    m_customArtist = m_settings.getCustomArtist();
+    m_custom_metadata = profile->getEnableMetadata();
+    m_customTitle = profile->getCustomTitle();
+    m_customArtist = profile->getCustomArtist();
 
-    m_metadataFormat = m_settings.getMetadataFormat();
+    m_metadataFormat = profile->getMetadataFormat();
 
-    bool enableReconnect = m_settings.getEnableReconnect();
+    bool enableReconnect = profile->getEnableReconnect();
     if (enableReconnect) {
-        m_reconnectFirstDelay = m_settings.getReconnectFirstDelay();
-        m_reconnectPeriod = m_settings.getReconnectPeriod();
-        m_noDelayFirstReconnect = m_settings.getNoDelayFirstReconnect();
-        m_limitReconnects = m_settings.getLimitReconnects();
-        m_maximumRetries = m_settings.getMaximumRetries();
+        m_reconnectFirstDelay = profile->getReconnectFirstDelay();
+        m_reconnectPeriod = profile->getReconnectPeriod();
+        m_noDelayFirstReconnect = profile->getNoDelayFirstReconnect();
+        m_limitReconnects = profile->getLimitReconnects();
+        m_maximumRetries = profile->getMaximumRetries();
     } else {
         m_limitReconnects = true;
         m_maximumRetries = 0;
