@@ -67,6 +67,8 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
             this, SLOT(slotSetVisualGainHigh(double)));
     connect(normalizeOverviewCheckBox, SIGNAL(toggled(bool)),
             this, SLOT(slotSetNormalizeOverview(bool)));
+    connect(beatGridLinesCheckBox, SIGNAL(toggled(bool)),
+            this, SLOT(slotSetGridLines(bool)));
     connect(factory, SIGNAL(waveformMeasured(float,int)),
             this, SLOT(slotWaveformMeasured(float,int)));
     connect(waveformOverviewComboBox, SIGNAL(currentIndexChanged(int)),
@@ -104,6 +106,7 @@ void DlgPrefWaveform::slotUpdate() {
     highVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::High));
     normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
     defaultZoomComboBox->setCurrentIndex(factory->getDefaultZoom() - 1);
+    beatGridLinesCheckBox->setChecked(factory->isBeatGridEnabled());
 
     // By default we set RGB woverview = "2"
     int overviewType = m_pConfig->getValue(
@@ -161,6 +164,9 @@ void DlgPrefWaveform::slotResetToDefaults() {
     // Waveform caching enabled.
     enableWaveformCaching->setChecked(true);
     enableWaveformGenerationWithAnalysis->setChecked(false);
+
+    // Beat grid lines on waveform is default
+    beatGridLinesCheckBox->setChecked(true);
 }
 
 void DlgPrefWaveform::slotSetFrameRate(int frameRate) {
@@ -224,6 +230,10 @@ void DlgPrefWaveform::slotClearCachedWaveforms() {
     analysisDao.deleteAnalysesByType(dbConnection, AnalysisDao::TYPE_WAVEFORM);
     analysisDao.deleteAnalysesByType(dbConnection, AnalysisDao::TYPE_WAVESUMMARY);
     calculateCachedWaveformDiskUsage();
+}
+
+void DlgPrefWaveform::slotSetGridLines(bool displayGrid) {
+    WaveformWidgetFactory::instance()->setDisplayBeatGrid(displayGrid);
 }
 
 void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {
