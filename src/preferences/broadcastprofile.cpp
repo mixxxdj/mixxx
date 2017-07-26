@@ -412,7 +412,7 @@ QString BroadcastProfile::getSecureValue(QString key) {
 
     QEventLoop loop;
     readJob.connect(&readJob, SIGNAL(finished(QKeychain::Job*)),
-                    &loop, SIGNAL(quit()));
+                    &loop, SLOT(quit()));
     readJob.start();
     loop.exec();
 
