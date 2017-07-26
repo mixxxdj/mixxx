@@ -392,22 +392,22 @@ IndexRange SoundSourceM4A::readOrSkipSampleFrames(
         return readableFrames;
     }
 
-    if (m_curFrameIndex != readableFrames.head()) {
+    if (m_curFrameIndex != readableFrames.start()) {
         // NOTE(uklotzde): Resetting the decoder near to the beginning
         // of the stream when seeking backwards produces invalid sample
         // values! As a consequence the seeking test fails.
         if ((m_curSampleBlockId != MP4_INVALID_SAMPLE_ID) &&
-                (readableFrames.head() < m_curFrameIndex) &&
-                (readableFrames.head() <= (frameIndexMin() + kNumberOfPrefetchFrames))) {
+                (readableFrames.start() < m_curFrameIndex) &&
+                (readableFrames.start() <= (frameIndexMin() + kNumberOfPrefetchFrames))) {
             // Workaround: Reset the decoder when seeking near to the beginning
             // of the stream while decoding.
             reopenDecoder();
         }
 
         MP4SampleId sampleBlockId = kSampleBlockIdMin
-                + (readableFrames.head() / m_framesPerSampleBlock);
+                + (readableFrames.start() / m_framesPerSampleBlock);
         DEBUG_ASSERT(isValidSampleBlockId(sampleBlockId));
-        if ((readableFrames.head() < m_curFrameIndex) || // seeking backwards?
+        if ((readableFrames.start() < m_curFrameIndex) || // seeking backwards?
                 !isValidSampleBlockId(m_curSampleBlockId) || // invalid seek position?
                 (sampleBlockId
                         > (m_curSampleBlockId + m_numberOfPrefetchSampleBlocks))) { // jumping forward?
@@ -426,9 +426,9 @@ IndexRange SoundSourceM4A::readOrSkipSampleFrames(
         }
 
         // Decoding starts before the actual target position
-        DEBUG_ASSERT(m_curFrameIndex <= readableFrames.head());
+        DEBUG_ASSERT(m_curFrameIndex <= readableFrames.start());
         const auto precedingFrames =
-                IndexRange::between(m_curFrameIndex, readableFrames.head());
+                IndexRange::between(m_curFrameIndex, readableFrames.start());
         if (!precedingFrames.empty()
                 && (precedingFrames != skipSampleFrames(precedingFrames))) {
             kLogger.warning()
@@ -437,7 +437,7 @@ IndexRange SoundSourceM4A::readOrSkipSampleFrames(
             return IndexRange();
         }
     }
-    DEBUG_ASSERT(m_curFrameIndex == readableFrames.head());
+    DEBUG_ASSERT(m_curFrameIndex == readableFrames.start());
 
     const SINT numberOfSamplesTotal = frames2samples(readableFrames.length());
     SINT numberOfSamplesRemaining = numberOfSamplesTotal;
@@ -590,7 +590,7 @@ IndexRange SoundSourceM4A::readOrSkipSampleFrames(
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(numberOfSamplesTotal >= numberOfSamplesRemaining);
-    return readableFrames.splitHead(
+    return readableFrames.splitFront(
             samples2frames(numberOfSamplesTotal - numberOfSamplesRemaining));
 }
 

@@ -28,10 +28,10 @@ IndexRange LegacyAudioSourceAdapter::readOrSkipSampleFrames(
         return readableFrames;
     }
 
-    const SINT seekFrameIndex = m_pImpl->seekSampleFrame(readableFrames.head());
-    if (seekFrameIndex < readableFrames.head()) {
+    const SINT seekFrameIndex = m_pImpl->seekSampleFrame(readableFrames.start());
+    if (seekFrameIndex < readableFrames.start()) {
         const auto precedingFrames =
-                IndexRange::between(seekFrameIndex, readableFrames.head());
+                IndexRange::between(seekFrameIndex, readableFrames.start());
         kLogger.info()
                 << "Skipping preceding frames"
                 << precedingFrames;
@@ -42,21 +42,21 @@ IndexRange LegacyAudioSourceAdapter::readOrSkipSampleFrames(
             return IndexRange();
         }
     }
-    DEBUG_ASSERT(seekFrameIndex >= readableFrames.head());
+    DEBUG_ASSERT(seekFrameIndex >= readableFrames.start());
 
     SINT outputSampleOffset = 0;
-    if (seekFrameIndex > readableFrames.head()) {
-        const auto unreadableFrames = readableFrames.splitHead(seekFrameIndex - readableFrames.head());
+    if (seekFrameIndex > readableFrames.start()) {
+        const auto unreadableFrames = readableFrames.splitFront(seekFrameIndex - readableFrames.start());
         kLogger.warning()
                 << "Dropping unreadable frames"
                 << unreadableFrames;
         outputSampleOffset += unreadableFrames.length();
     }
-    DEBUG_ASSERT(seekFrameIndex == readableFrames.head());
+    DEBUG_ASSERT(seekFrameIndex == readableFrames.start());
 
     // Read or skip data
     return IndexRange::forward(
-            readableFrames.head(),
+            readableFrames.start(),
             m_pImpl->readSampleFrames(
                     readableFrames.length(),
                     pOutputBuffer ? pOutputBuffer->data(outputSampleOffset) : nullptr));

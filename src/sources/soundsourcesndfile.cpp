@@ -95,9 +95,9 @@ IndexRange SoundSourceSndFile::readOrSkipSampleFrames(
     }
 
     if (pOutputBuffer) {
-        if (m_curFrameIndex != readableFrames.head()) {
-            const sf_count_t seekResult = sf_seek(m_pSndFile, readableFrames.head(), SEEK_SET);
-            if (seekResult == readableFrames.head()) {
+        if (m_curFrameIndex != readableFrames.start()) {
+            const sf_count_t seekResult = sf_seek(m_pSndFile, readableFrames.start(), SEEK_SET);
+            if (seekResult == readableFrames.start()) {
                 m_curFrameIndex = seekResult;
             } else {
                 kLogger.warning() << "Failed to seek libsnd file:" << seekResult
@@ -113,12 +113,12 @@ IndexRange SoundSourceSndFile::readOrSkipSampleFrames(
         // we don't want to read samples into a temporary buffer that
         // has to be allocated we are seeking to the position after
         // the skipped samples.
-        if (m_curFrameIndex != readableFrames.tail()) {
-            const sf_count_t seekResult = sf_seek(m_pSndFile, readableFrames.tail(), SEEK_SET);
+        if (m_curFrameIndex != readableFrames.end()) {
+            const sf_count_t seekResult = sf_seek(m_pSndFile, readableFrames.end(), SEEK_SET);
             if (seekResult >= 0) {
-                DEBUG_ASSERT(seekResult >= readableFrames.head());
+                DEBUG_ASSERT(seekResult >= readableFrames.start());
                 m_curFrameIndex = seekResult;
-                return IndexRange::between(readableFrames.head(), seekResult);
+                return IndexRange::between(readableFrames.start(), seekResult);
             } else {
                 kLogger.warning() << "Failed to seek libsnd file:" << seekResult
                         << sf_strerror(m_pSndFile);
@@ -128,7 +128,7 @@ IndexRange SoundSourceSndFile::readOrSkipSampleFrames(
         }
     }
 
-    DEBUG_ASSERT(m_curFrameIndex == readableFrames.head());
+    DEBUG_ASSERT(m_curFrameIndex == readableFrames.start());
     DEBUG_ASSERT(pOutputBuffer);
     const sf_count_t readCount =
             sf_readf_float(m_pSndFile, pOutputBuffer->data(), readableFrames.length());

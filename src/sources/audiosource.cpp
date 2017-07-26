@@ -100,9 +100,9 @@ IndexRange AudioSource::adjustReadableFrameIndexRangeAndOutputBuffer(
     if (readableFrames.empty()) {
         return readableFrames;
     }
-    DEBUG_ASSERT(readableFrames.head() >= frameIndexRange.head());
+    DEBUG_ASSERT(readableFrames.start() >= frameIndexRange.start());
     if (pOutputBuffer) {
-        const SINT readableFrameOffset = readableFrames.head() - frameIndexRange.head();
+        const SINT readableFrameOffset = readableFrames.start() - frameIndexRange.start();
         if (readableFrameOffset > 0) {
             *pOutputBuffer = SampleBuffer::WritableSlice(
                     pOutputBuffer->data(frames2samples(readableFrameOffset)),

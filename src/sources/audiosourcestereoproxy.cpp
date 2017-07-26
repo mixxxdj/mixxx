@@ -78,9 +78,9 @@ IndexRange AudioSourceStereoProxy::readOrSkipSampleFrames(
                     m_tempSampleBuffer);
     DEBUG_ASSERT(resultFrameIndexRange <= frameIndexRange);
     if (!resultFrameIndexRange.empty()) {
-        DEBUG_ASSERT(resultFrameIndexRange.head() >= frameIndexRange.head());
+        DEBUG_ASSERT(resultFrameIndexRange.start() >= frameIndexRange.start());
         const SINT frameOffset =
-                resultFrameIndexRange.head() - frameIndexRange.head();
+                resultFrameIndexRange.start() - frameIndexRange.start();
         const auto pDstSamples =
                 pOutputBuffer->data(frames2samples(frameOffset));
         const auto pSrcSamples =

@@ -131,9 +131,9 @@ IndexRange SoundSourceFLAC::readOrSkipSampleFrames(
         return readableFrames;
     }
 
-    if (m_curFrameIndex != readableFrames.head()) {
+    if (m_curFrameIndex != readableFrames.start()) {
         // Seek to the new position
-        SINT seekFrameIndex = readableFrames.head();
+        SINT seekFrameIndex = readableFrames.start();
         int retryCount = 0;
         // NOTE(uklotzde): This loop avoids unnecessary seek operations.
         // If the file is decoded from the beginning to the end during
@@ -187,9 +187,9 @@ IndexRange SoundSourceFLAC::readOrSkipSampleFrames(
         }
 
         // Decoding starts before the actual target position
-        DEBUG_ASSERT(m_curFrameIndex <= readableFrames.head());
+        DEBUG_ASSERT(m_curFrameIndex <= readableFrames.start());
         const auto precedingFrames =
-                IndexRange::between(m_curFrameIndex, readableFrames.head());
+                IndexRange::between(m_curFrameIndex, readableFrames.start());
         if (!precedingFrames.empty()
                 && (precedingFrames != skipSampleFrames(precedingFrames))) {
             kLogger.warning()
@@ -198,7 +198,7 @@ IndexRange SoundSourceFLAC::readOrSkipSampleFrames(
             return IndexRange();
         }
     }
-    DEBUG_ASSERT(m_curFrameIndex == readableFrames.head());
+    DEBUG_ASSERT(m_curFrameIndex == readableFrames.start());
 
     const SINT numberOfSamplesTotal = frames2samples(readableFrames.length());
     SINT numberOfSamplesRemaining = numberOfSamplesTotal;
@@ -272,7 +272,7 @@ IndexRange SoundSourceFLAC::readOrSkipSampleFrames(
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(numberOfSamplesTotal >= numberOfSamplesRemaining);
-    return readableFrames.splitHead(
+    return readableFrames.splitFront(
             samples2frames(numberOfSamplesTotal - numberOfSamplesRemaining));
 }
 
