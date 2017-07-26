@@ -272,11 +272,11 @@ SINT CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPL
         // silence. This may happen when the engine is in preroll,
         // i.e. if the frame index points a region before the first
         // track sample.
-        if (remainingFrameIndexRange.head() < m_readableFrameIndexRange.head()) {
+        if (remainingFrameIndexRange.start() < m_readableFrameIndexRange.start()) {
             const auto prerollFrameIndexRange =
                     mixxx::IndexRange::between(
-                            remainingFrameIndexRange.head(),
-                            m_readableFrameIndexRange.head());
+                            remainingFrameIndexRange.start(),
+                            m_readableFrameIndexRange.start());
             DEBUG_ASSERT(prerollFrameIndexRange.length() <= remainingFrameIndexRange.length());
             kLogger.debug()
                     << "Prepending"
@@ -291,7 +291,7 @@ SINT CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPL
                 buffer += prerollSamples;
             }
             samplesRead += prerollSamples;
-            remainingFrameIndexRange.splitHead(prerollFrames);
+            remainingFrameIndexRange.splitFront(prerollFrames);
         }
 
         // Read the actual samples from the audio source into the
@@ -302,12 +302,12 @@ SINT CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPL
             // The intersection between the readable samples from the track
             // and the requested samples is not empty, so start reading.
             DEBUG_ASSERT(!intersect(remainingFrameIndexRange, m_readableFrameIndexRange).empty());
-            DEBUG_ASSERT(remainingFrameIndexRange.head() >= m_readableFrameIndexRange.head());
+            DEBUG_ASSERT(remainingFrameIndexRange.start() >= m_readableFrameIndexRange.start());
 
             const SINT firstCachingReaderChunkIndex =
-                    CachingReaderChunk::indexForFrame(remainingFrameIndexRange.head());
+                    CachingReaderChunk::indexForFrame(remainingFrameIndexRange.start());
             SINT lastCachingReaderChunkIndex =
-                    CachingReaderChunk::indexForFrame(remainingFrameIndexRange.tail() - 1);
+                    CachingReaderChunk::indexForFrame(remainingFrameIndexRange.end() - 1);
             for (SINT chunkIndex = firstCachingReaderChunkIndex;
                     chunkIndex <= lastCachingReaderChunkIndex;
                     ++chunkIndex) {
@@ -356,11 +356,11 @@ SINT CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPL
                     break;
                 }
                 DEBUG_ASSERT(bufferedFrameIndexRange <= remainingFrameIndexRange);
-                if (remainingFrameIndexRange.head() < bufferedFrameIndexRange.head()) {
+                if (remainingFrameIndexRange.start() < bufferedFrameIndexRange.start()) {
                     const auto paddingFrameIndexRange =
                             mixxx::IndexRange::between(
-                                    remainingFrameIndexRange.head(),
-                                    bufferedFrameIndexRange.head());
+                                    remainingFrameIndexRange.start(),
+                                    bufferedFrameIndexRange.start());
                     kLogger.warning()
                             << "Inserting"
                             << paddingFrameIndexRange.length()
@@ -373,7 +373,7 @@ SINT CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPL
                         buffer += paddingSamples;
                     }
                     samplesRead += paddingSamples;
-                    remainingFrameIndexRange.splitHead(paddingFrameIndexRange.length());
+                    remainingFrameIndexRange.splitFront(paddingFrameIndexRange.length());
                 }
                 const SINT chunkSamples =
                         CachingReaderChunk::frames2samples(bufferedFrameIndexRange.length());
@@ -381,7 +381,7 @@ SINT CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPL
                     buffer += chunkSamples;
                 }
                 samplesRead += chunkSamples;
-                remainingFrameIndexRange.splitHead(bufferedFrameIndexRange.length());
+                remainingFrameIndexRange.splitFront(bufferedFrameIndexRange.length());
             }
         }
     }
@@ -429,8 +429,8 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
             continue;
         }
 
-        const int firstCachingReaderChunkIndex = CachingReaderChunk::indexForFrame(readableFrameIndexRange.head());
-        const int lastCachingReaderChunkIndex = CachingReaderChunk::indexForFrame(readableFrameIndexRange.tail() - 1);
+        const int firstCachingReaderChunkIndex = CachingReaderChunk::indexForFrame(readableFrameIndexRange.start());
+        const int lastCachingReaderChunkIndex = CachingReaderChunk::indexForFrame(readableFrameIndexRange.end() - 1);
         for (int chunkIndex = firstCachingReaderChunkIndex; chunkIndex <= lastCachingReaderChunkIndex; ++chunkIndex) {
             CachingReaderChunkForOwner* pChunk = lookupChunk(chunkIndex);
             if (pChunk == nullptr) {

@@ -498,16 +498,16 @@ IndexRange SoundSourceMp3::readOrSkipSampleFrames(
         return readableFrames;
     }
 
-    if ((m_curFrameIndex != readableFrames.head())) {
-        SINT seekFrameIndex = findSeekFrameIndex(readableFrames.head());
+    if ((m_curFrameIndex != readableFrames.start())) {
+        SINT seekFrameIndex = findSeekFrameIndex(readableFrames.start());
         DEBUG_ASSERT(SINT(m_seekFrameList.size()) > seekFrameIndex);
         const SINT curSeekFrameIndex = findSeekFrameIndex(m_curFrameIndex);
         DEBUG_ASSERT(SINT(m_seekFrameList.size()) > curSeekFrameIndex);
         // some consistency checks
-        DEBUG_ASSERT((curSeekFrameIndex >= seekFrameIndex) || (m_curFrameIndex < readableFrames.head()));
-        DEBUG_ASSERT((curSeekFrameIndex <= seekFrameIndex) || (m_curFrameIndex > readableFrames.head()));
+        DEBUG_ASSERT((curSeekFrameIndex >= seekFrameIndex) || (m_curFrameIndex < readableFrames.start()));
+        DEBUG_ASSERT((curSeekFrameIndex <= seekFrameIndex) || (m_curFrameIndex > readableFrames.start()));
         if ((frameIndexMax() <= m_curFrameIndex) || // out of range
-                (readableFrames.head() < m_curFrameIndex) || // seek backward
+                (readableFrames.start() < m_curFrameIndex) || // seek backward
                 (seekFrameIndex > (curSeekFrameIndex + kMp3SeekFramePrefetchCount))) { // jump forward
 
             // Adjust the seek frame index for prefetching
@@ -526,9 +526,9 @@ IndexRange SoundSourceMp3::readOrSkipSampleFrames(
         }
 
         // Decoding starts before the actual target position
-        DEBUG_ASSERT(m_curFrameIndex <= readableFrames.head());
+        DEBUG_ASSERT(m_curFrameIndex <= readableFrames.start());
         const auto precedingFrames =
-                IndexRange::between(m_curFrameIndex, readableFrames.head());
+                IndexRange::between(m_curFrameIndex, readableFrames.start());
         if (!precedingFrames.empty()
                 && (precedingFrames != skipSampleFrames(precedingFrames))) {
             kLogger.warning()
@@ -537,7 +537,7 @@ IndexRange SoundSourceMp3::readOrSkipSampleFrames(
             return IndexRange();
         }
     }
-    DEBUG_ASSERT(m_curFrameIndex == readableFrames.head());
+    DEBUG_ASSERT(m_curFrameIndex == readableFrames.start());
 
     CSAMPLE* pSampleBuffer = pOutputBuffer ?
             pOutputBuffer->data() : nullptr;
@@ -703,7 +703,7 @@ IndexRange SoundSourceMp3::readOrSkipSampleFrames(
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(readableFrames.length() >= numberOfFramesRemaining);
-    return readableFrames.splitHead(readableFrames.length() - numberOfFramesRemaining);
+    return readableFrames.splitFront(readableFrames.length() - numberOfFramesRemaining);
 }
 
 QString SoundSourceProviderMp3::getName() const {

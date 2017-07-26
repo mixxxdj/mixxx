@@ -24,29 +24,29 @@ class IndexRange final: private std::pair<SINT, SINT> {
         DEBUG_ASSERT(empty());
     }
 
-    static IndexRange between(SINT head, SINT tail) {
-        return IndexRange(head, tail);
+    static IndexRange between(SINT start, SINT end) {
+        return IndexRange(start, end);
     }
-    static IndexRange forward(SINT head, SINT length) {
+    static IndexRange forward(SINT start, SINT length) {
         DEBUG_ASSERT(length >= 0);
-        return IndexRange(head, head + length);
+        return IndexRange(start, start + length);
     }
-    static IndexRange backward(SINT head, SINT length) {
+    static IndexRange backward(SINT start, SINT length) {
         DEBUG_ASSERT(length >= 0);
-        return IndexRange(head, head - length);
+        return IndexRange(start, start - length);
     }
 
-    // The near boundary (inclusive)
-    SINT head() const {
+    // The first index within this range (inclusive)
+    SINT start() const {
         return first;
     }
-    // The opposite boundary (exclusive)
-    SINT tail() const {
+    // The next index beyond this range (exclusive)
+    SINT end() const {
         return second;
     }
 
     bool empty() const {
-        return head() == tail();
+        return start() == end();
     }
 
     enum class Orientation {
@@ -58,7 +58,7 @@ class IndexRange final: private std::pair<SINT, SINT> {
         if (empty()) {
             return Orientation::Empty; // undefined
         } else {
-            if (head() < tail()) {
+            if (start() < end()) {
                 return Orientation::Forward;
             } else {
                 return Orientation::Backward;
@@ -67,58 +67,58 @@ class IndexRange final: private std::pair<SINT, SINT> {
     }
 
     SINT length() const {
-        return (head() <= tail()) ? (tail() - head()) : (head() - tail());
+        return (start() <= end()) ? (end() - start()) : (start() - end());
     }
 
-    // Clamps index by this range including both head() and tail()
+    // Clamps index by this range including both start() and end()
     // boundaries.
     SINT clamp(SINT index) const {
-        if (head() <= tail()) {
-            return std::max(head(), std::min(tail(), index));
+        if (start() <= end()) {
+            return std::max(start(), std::min(end(), index));
         } else {
-            return std::min(head(), std::max(tail(), index));
+            return std::min(start(), std::max(end(), index));
         }
     }
 
     bool contains(SINT index) const {
-        if (head() <= tail()) {
-            return (head() <= index) && (index < tail());
+        if (start() <= end()) {
+            return (start() <= index) && (index < end());
         } else {
-            return (head() >= index) && (index > tail());
+            return (start() >= index) && (index > end());
         }
     }
 
     // Splits this range into two adjacent parts by slicing off
     // and returning a range of given length and same direction
-    // from the head side. The given head length must not exceed
+    // from the front side. The given front length must not exceed
     // the length of this range.
-    IndexRange splitHead(SINT headLength);
+    IndexRange splitFront(SINT frontLength);
 
     // Splits this range into two adjacent parts by slicing off
     // and returning a range of given length and same direction
-    // from the tail side. The given tail length must not exceed
+    // from the back side. The given back length must not exceed
     // the length of this range.
-    IndexRange splitTail(SINT tailLength);
+    IndexRange splitBack(SINT backLength);
 
-    // Same as splitHead(), but omitting the return value.
-    void dropHead(SINT headLength) {
-        DEBUG_ASSERT(headLength >= 0);
-        DEBUG_ASSERT(headLength <= length());
-        if (head() <= tail()) {
-            first += headLength;
+    // Same as splitFront(), but omitting the return value.
+    void dropFront(SINT frontLength) {
+        DEBUG_ASSERT(frontLength >= 0);
+        DEBUG_ASSERT(frontLength <= length());
+        if (start() <= end()) {
+            first += frontLength;
         } else {
-            first -= headLength;
+            first -= frontLength;
         }
     }
 
-    // Same as splitTail(), but omitting the return value.
-    void dropTail(SINT tailLength) {
-        DEBUG_ASSERT(tailLength >= 0);
-        DEBUG_ASSERT(tailLength <= length());
-        if (head() <= tail()) {
-            second -= tailLength;
+    // Same as splitBack(), but omitting the return value.
+    void dropBack(SINT backLength) {
+        DEBUG_ASSERT(backLength >= 0);
+        DEBUG_ASSERT(backLength <= length());
+        if (start() <= end()) {
+            second -= backLength;
         } else {
-            second += tailLength;
+            second += backLength;
         }
     }
 
@@ -128,8 +128,8 @@ class IndexRange final: private std::pair<SINT, SINT> {
     }
 
   private:
-    IndexRange(SINT head, SINT tail)
-        : Super(head, tail) {
+    IndexRange(SINT start, SINT end)
+        : Super(start, end) {
     }
 };
 
@@ -137,7 +137,7 @@ IndexRange reverse(IndexRange arg);
 
 IndexRange intersect(IndexRange lhs, IndexRange rhs);
 
-IndexRange join(IndexRange lhs, IndexRange rhs);
+IndexRange span(IndexRange lhs, IndexRange rhs);
 
 inline
 bool operator!=(IndexRange lhs, IndexRange rhs) {

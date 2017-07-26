@@ -81,9 +81,9 @@ mixxx::IndexRange CachingReaderChunk::readBufferedSampleFrames(
             intersect(frameIndexRange, m_bufferedFrameIndexRange);
     if (!copyableFrameIndexRange.empty()) {
         const SINT dstSampleOffset =
-                frames2samples(copyableFrameIndexRange.head() - frameIndexRange.head());
+                frames2samples(copyableFrameIndexRange.start() - frameIndexRange.start());
         const SINT srcSampleOffset =
-                frames2samples(copyableFrameIndexRange.head() - m_bufferedFrameIndexRange.head());
+                frames2samples(copyableFrameIndexRange.start() - m_bufferedFrameIndexRange.start());
         const SINT sampleCount = frames2samples(copyableFrameIndexRange.length());
         SampleUtil::copy(
                 sampleBuffer + dstSampleOffset,
@@ -100,9 +100,9 @@ mixxx::IndexRange CachingReaderChunk::readBufferedSampleFramesReverse(
             intersect(frameIndexRange, m_bufferedFrameIndexRange);
     if (!copyableFrameIndexRange.empty()) {
         const SINT dstSampleOffset =
-                frames2samples(copyableFrameIndexRange.head() - frameIndexRange.head());
+                frames2samples(copyableFrameIndexRange.start() - frameIndexRange.start());
         const SINT srcSampleOffset =
-                frames2samples(copyableFrameIndexRange.head() - m_bufferedFrameIndexRange.head());
+                frames2samples(copyableFrameIndexRange.start() - m_bufferedFrameIndexRange.start());
         const SINT sampleCount = frames2samples(copyableFrameIndexRange.length());
         SampleUtil::copyReverse(
                 reverseSampleBuffer - dstSampleOffset - sampleCount,

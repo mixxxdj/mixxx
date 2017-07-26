@@ -122,10 +122,10 @@ IndexRange SoundSourceOggVorbis::readOrSkipSampleFrames(
         return readableFrames;
     }
 
-    if (m_curFrameIndex != readableFrames.head()) {
-        const int seekResult = ov_pcm_seek(&m_vf, readableFrames.head());
+    if (m_curFrameIndex != readableFrames.start()) {
+        const int seekResult = ov_pcm_seek(&m_vf, readableFrames.start());
         if (seekResult == 0) {
-            m_curFrameIndex = readableFrames.head();
+            m_curFrameIndex = readableFrames.start();
         } else {
             kLogger.warning() << "Failed to seek file:" << seekResult;
             const ogg_int64_t pcmOffset = ov_pcm_tell(&m_vf);
@@ -138,7 +138,7 @@ IndexRange SoundSourceOggVorbis::readOrSkipSampleFrames(
             return IndexRange();
         }
     }
-    DEBUG_ASSERT(m_curFrameIndex == readableFrames.head());
+    DEBUG_ASSERT(m_curFrameIndex == readableFrames.start());
 
     CSAMPLE* pSampleBuffer = pOutputBuffer ?
             pOutputBuffer->data() : nullptr;
@@ -181,7 +181,7 @@ IndexRange SoundSourceOggVorbis::readOrSkipSampleFrames(
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(readableFrames.length() >= numberOfFramesRemaining);
-    return readableFrames.splitHead(readableFrames.length() - numberOfFramesRemaining);
+    return readableFrames.splitFront(readableFrames.length() - numberOfFramesRemaining);
 }
 
 

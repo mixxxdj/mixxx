@@ -6,39 +6,39 @@
 
 namespace mixxx {
 
-IndexRange IndexRange::splitHead(SINT headLength) {
-    DEBUG_ASSERT(headLength >= 0);
-    DEBUG_ASSERT(headLength <= length());
-    if (head() <= tail()) {
-        auto headRange = forward(first, headLength);
-        DEBUG_ASSERT(headRange.length() == headLength);
-        first += headLength;
-        DEBUG_ASSERT(head() == headRange.tail()); // adjacent
-        return headRange;
+IndexRange IndexRange::splitFront(SINT startLength) {
+    DEBUG_ASSERT(startLength >= 0);
+    DEBUG_ASSERT(startLength <= length());
+    if (start() <= end()) {
+        auto startRange = forward(first, startLength);
+        DEBUG_ASSERT(startRange.length() == startLength);
+        first += startLength;
+        DEBUG_ASSERT(start() == startRange.end()); // adjacent
+        return startRange;
     } else {
-        auto headRange = backward(first, headLength);
-        DEBUG_ASSERT(headRange.length() == headLength);
-        first -= headLength;
-        DEBUG_ASSERT(head() == headRange.tail()); // adjacent
-        return headRange;
+        auto startRange = backward(first, startLength);
+        DEBUG_ASSERT(startRange.length() == startLength);
+        first -= startLength;
+        DEBUG_ASSERT(start() == startRange.end()); // adjacent
+        return startRange;
     }
 }
 
-IndexRange IndexRange::splitTail(SINT tailLength) {
-    DEBUG_ASSERT(tailLength >= 0);
-    DEBUG_ASSERT(tailLength <= length());
-    if (head() <= tail()) {
-        auto tailRange = between(tail() - tailLength, tail());
-        DEBUG_ASSERT(tailRange.length() == tailLength);
-        second -= tailLength;
-        DEBUG_ASSERT(tail() == tailRange.head()); // adjacent
-        return tailRange;
+IndexRange IndexRange::splitBack(SINT endLength) {
+    DEBUG_ASSERT(endLength >= 0);
+    DEBUG_ASSERT(endLength <= length());
+    if (start() <= end()) {
+        auto endRange = between(end() - endLength, end());
+        DEBUG_ASSERT(endRange.length() == endLength);
+        second -= endLength;
+        DEBUG_ASSERT(end() == endRange.start()); // adjacent
+        return endRange;
     } else {
-        auto tailRange = between(tail() + tailLength, tail());
-        DEBUG_ASSERT(tailRange.length() == tailLength);
-        second += tailLength;
-        DEBUG_ASSERT(tail() == tailRange.head()); // adjacent
-        return tailRange;
+        auto endRange = between(end() + endLength, end());
+        DEBUG_ASSERT(endRange.length() == endLength);
+        second += endLength;
+        DEBUG_ASSERT(end() == endRange.start()); // adjacent
+        return endRange;
     }
 }
 
@@ -46,31 +46,31 @@ IndexRange reverse(IndexRange arg) {
     if (arg.empty()) {
         return arg;
     } else {
-        if (arg.head() < arg.tail()) {
-            return IndexRange::between(arg.tail() - 1, arg.head() - 1);
+        if (arg.start() < arg.end()) {
+            return IndexRange::between(arg.end() - 1, arg.start() - 1);
         } else {
-            return IndexRange::between(arg.tail() + 1, arg.head() + 1);
+            return IndexRange::between(arg.end() + 1, arg.start() + 1);
         }
     }
 }
 
 IndexRange intersect(IndexRange lhs, IndexRange rhs) {
-    if (lhs.head() <= lhs.tail()) {
-        if (rhs.head() <= rhs.tail()) {
-            const SINT head = std::max(lhs.head(), rhs.head());
-            const SINT tail = std::min(lhs.tail(), rhs.tail());
-            if (head <= tail) {
-                return IndexRange::between(head, tail);
+    if (lhs.start() <= lhs.end()) {
+        if (rhs.start() <= rhs.end()) {
+            const SINT start = std::max(lhs.start(), rhs.start());
+            const SINT end = std::min(lhs.end(), rhs.end());
+            if (start <= end) {
+                return IndexRange::between(start, end);
             }
         } else {
             DEBUG_ASSERT(!"Cannot intersect index ranges with contrary orientations");
         }
     } else {
-        if (rhs.head() >= rhs.tail()) {
-            const SINT head = std::min(lhs.head(), rhs.head());
-            const SINT tail = std::max(lhs.tail(), rhs.tail());
-            if (head >= tail) {
-                return IndexRange::between(head, tail);
+        if (rhs.start() >= rhs.end()) {
+            const SINT start = std::min(lhs.start(), rhs.start());
+            const SINT end = std::max(lhs.end(), rhs.end());
+            if (start >= end) {
+                return IndexRange::between(start, end);
             }
         } else {
             DEBUG_ASSERT(!"Cannot intersect index ranges with contrary orientations");
@@ -79,31 +79,31 @@ IndexRange intersect(IndexRange lhs, IndexRange rhs) {
     return IndexRange();
 }
 
-IndexRange join(IndexRange lhs, IndexRange rhs) {
-    if (lhs.head() <= lhs.tail()) {
-        if (rhs.head() <= rhs.tail()) {
-            const SINT head = std::min(lhs.head(), rhs.head());
-            const SINT tail = std::max(lhs.tail(), rhs.tail());
-            DEBUG_ASSERT(head <= tail);
-            return IndexRange::between(head, tail);
+IndexRange span(IndexRange lhs, IndexRange rhs) {
+    if (lhs.start() <= lhs.end()) {
+        if (rhs.start() <= rhs.end()) {
+            const SINT start = std::min(lhs.start(), rhs.start());
+            const SINT end = std::max(lhs.end(), rhs.end());
+            DEBUG_ASSERT(start <= end);
+            return IndexRange::between(start, end);
         } else {
-            DEBUG_ASSERT(!"Cannot join index ranges with contrary orientations");
+            DEBUG_ASSERT(!"Cannot span index ranges with contrary orientations");
         }
     } else {
-        if (rhs.head() >= rhs.tail()) {
-            const SINT head = std::max(lhs.head(), rhs.head());
-            const SINT tail = std::min(lhs.tail(), rhs.tail());
-            DEBUG_ASSERT(head >= tail);
-            return IndexRange::between(head, tail);
+        if (rhs.start() >= rhs.end()) {
+            const SINT start = std::max(lhs.start(), rhs.start());
+            const SINT end = std::min(lhs.end(), rhs.end());
+            DEBUG_ASSERT(start >= end);
+            return IndexRange::between(start, end);
         } else {
-            DEBUG_ASSERT(!"Cannot join index ranges with contrary orientations");
+            DEBUG_ASSERT(!"Cannot span index ranges with contrary orientations");
         }
     }
     return IndexRange();
 }
 
 std::ostream& operator<<(std::ostream& os, IndexRange arg) {
-    return os << '[' << arg.head() << " -> " << arg.tail() << ')';
+    return os << '[' << arg.start() << " -> " << arg.end() << ')';
 }
 
 QDebug operator<<(QDebug dbg, IndexRange arg) {

@@ -195,7 +195,7 @@ bool AnalyzerQueue::doAnalysis(
         ScopedTimer t("AnalyzerQueue::doAnalysis block");
 
         const auto inputFrameIndexRange =
-                remainingFrames.splitHead(
+                remainingFrames.splitFront(
                         math_min(kAnalysisFramesPerBlock, remainingFrames.length()));
         DEBUG_ASSERT(!inputFrameIndexRange.empty());
         const auto outputFrameIndexRange =

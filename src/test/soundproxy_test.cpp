@@ -168,7 +168,7 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
                             SampleBuffer::WritableSlice(contReadData));
             ASSERT_FALSE(contFrameIndexRange.empty());
             ASSERT_LE(contFrameIndexRange, readFrameIndexRange);
-            ASSERT_EQ(contFrameIndexRange.head(), readFrameIndexRange.head());
+            ASSERT_EQ(contFrameIndexRange.start(), readFrameIndexRange.start());
             contFrameIndex += contFrameIndexRange.length();
 
             const SINT sampleCount =
@@ -286,7 +286,7 @@ TEST_F(SoundSourceProxyTest, skipAndRead) {
                                 skippingFrameIndexRange,
                                 SampleBuffer::WritableSlice(contReadData));
                 ASSERT_FALSE(skippedFrameIndexRange.empty());
-                ASSERT_EQ(skippedFrameIndexRange.head(), contFrameIndex);
+                ASSERT_EQ(skippedFrameIndexRange.start(), contFrameIndex);
                 contFrameIndex += skippedFrameIndexRange.length();
             }
             ASSERT_EQ(minFrameIndex, contFrameIndex);
@@ -296,7 +296,7 @@ TEST_F(SoundSourceProxyTest, skipAndRead) {
                             SampleBuffer::WritableSlice(contReadData));
             ASSERT_FALSE(contFrameIndexRange.empty());
             ASSERT_LE(contFrameIndexRange, readFrameIndexRange);
-            ASSERT_EQ(contFrameIndexRange.head(), readFrameIndexRange.head());
+            ASSERT_EQ(contFrameIndexRange.start(), readFrameIndexRange.start());
             contFrameIndex += contFrameIndexRange.length();
 
             const SINT sampleCount =
@@ -309,7 +309,7 @@ TEST_F(SoundSourceProxyTest, skipAndRead) {
                         pSkipReadSource->skipSampleFrames(
                                 mixxx::IndexRange::between(skipFrameIndex, minFrameIndex));
                 ASSERT_FALSE(skippedFrameIndexRange.empty());
-                ASSERT_EQ(skippedFrameIndexRange.head(), skipFrameIndex);
+                ASSERT_EQ(skippedFrameIndexRange.start(), skipFrameIndex);
                 skipFrameIndex += skippedFrameIndexRange.length();
             }
             ASSERT_EQ(minFrameIndex, skipFrameIndex);
@@ -399,7 +399,7 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
                                     pContReadSource->frameIndexMin(),
                                     seekFrameIndex));
             ASSERT_TRUE(skipFrameIndexRange.empty() ||
-                    (skipFrameIndexRange.tail() == seekFrameIndex));
+                    (skipFrameIndexRange.end() == seekFrameIndex));
             SampleBuffer contReadData(
                     pContReadSource->frames2samples(kReadFrameCount));
             const auto contFrameIndexRange =

@@ -898,7 +898,7 @@ IndexRange SoundSourceFFmpeg::readOrSkipSampleFrames(
     }
 
     const SINT seekFrameIndex =
-            pOutputBuffer ? readableFrames.head() : readableFrames.tail();
+            pOutputBuffer ? readableFrames.start() : readableFrames.end();
     if ((m_currentMixxxFrameIndex != seekFrameIndex) || (pOutputBuffer && (m_SCache.size() == 0))) {
         int ret = 0;
         qint64 i = 0;
@@ -982,13 +982,13 @@ IndexRange SoundSourceFFmpeg::readOrSkipSampleFrames(
     DEBUG_ASSERT(m_currentMixxxFrameIndex == seekFrameIndex);
 
     if (pOutputBuffer) {
-        DEBUG_ASSERT(m_currentMixxxFrameIndex == readableFrames.head());
+        DEBUG_ASSERT(m_currentMixxxFrameIndex == readableFrames.start());
         DEBUG_ASSERT(m_SCache.size() > 0);
         getBytesFromCache(pOutputBuffer->data(), m_currentMixxxFrameIndex, readableFrames.length());
         m_currentMixxxFrameIndex += readableFrames.length();
         m_bIsSeeked = false;
     } else {
-        DEBUG_ASSERT(m_currentMixxxFrameIndex == readableFrames.tail());
+        DEBUG_ASSERT(m_currentMixxxFrameIndex == readableFrames.end());
     }
     return readableFrames;
 }

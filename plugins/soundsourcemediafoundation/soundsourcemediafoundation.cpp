@@ -248,8 +248,8 @@ IndexRange SoundSourceMediaFoundation::readOrSkipSampleFrames(
         return readableFrames;
     }
 
-    seekSampleFrame(readableFrames.head());
-    if (m_currentFrameIndex != readableFrames.head()) {
+    seekSampleFrame(readableFrames.start());
+    if (m_currentFrameIndex != readableFrames.start()) {
          kLogger.warning()
                 << "Failed to position reader at beginning of decoding range"
                 << readableFrames;
@@ -452,7 +452,7 @@ IndexRange SoundSourceMediaFoundation::readOrSkipSampleFrames(
         }
     }
 
-    return readableFrames.splitHead(readableFrames.length() - numberOfFramesRemaining);
+    return readableFrames.splitFront(readableFrames.length() - numberOfFramesRemaining);
 }
 
 //-------------------------------------------------------------------

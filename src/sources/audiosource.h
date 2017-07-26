@@ -91,14 +91,14 @@ class AudioSource: public UrlResource, public AudioSignal, public virtual /*impl
 
     // The index of the first frame.
     SINT frameIndexMin() const {
-        DEBUG_ASSERT(m_frameIndexRange.head() <= m_frameIndexRange.tail());
-        return m_frameIndexRange.head();
+        DEBUG_ASSERT(m_frameIndexRange.start() <= m_frameIndexRange.end());
+        return m_frameIndexRange.start();
     }
 
     // The index after the last frame.
     SINT frameIndexMax() const {
-        DEBUG_ASSERT(m_frameIndexRange.head() <= m_frameIndexRange.tail());
-        return m_frameIndexRange.tail();
+        DEBUG_ASSERT(m_frameIndexRange.start() <= m_frameIndexRange.end());
+        return m_frameIndexRange.end();
     }
 
     // The sample frame index is valid within the range

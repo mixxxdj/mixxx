@@ -113,9 +113,9 @@ IndexRange SoundSourceWV::readOrSkipSampleFrames(
     }
 
     if (pOutputBuffer) {
-        if (m_curFrameIndex != readableFrames.head()) {
-            if (WavpackSeekSample(m_wpc, readableFrames.head())) {
-                m_curFrameIndex = readableFrames.head();
+        if (m_curFrameIndex != readableFrames.start()) {
+            if (WavpackSeekSample(m_wpc, readableFrames.start())) {
+                m_curFrameIndex = readableFrames.start();
             } else {
                 kLogger.warning()
                         << "Could not seek to frame index range"
@@ -131,9 +131,9 @@ IndexRange SoundSourceWV::readOrSkipSampleFrames(
         // we don't want to read samples into a temporary buffer that
         // has to be allocated we are seeking to the position after
         // the skipped samples.
-        if (m_curFrameIndex != readableFrames.tail()) {
-            if (WavpackSeekSample(m_wpc, readableFrames.tail())) {
-                m_curFrameIndex = readableFrames.tail();
+        if (m_curFrameIndex != readableFrames.end()) {
+            if (WavpackSeekSample(m_wpc, readableFrames.end())) {
+                m_curFrameIndex = readableFrames.end();
                 return readableFrames;
             } else {
                 kLogger.warning()
@@ -145,7 +145,7 @@ IndexRange SoundSourceWV::readOrSkipSampleFrames(
         }
     }
 
-    DEBUG_ASSERT(m_curFrameIndex == readableFrames.head());
+    DEBUG_ASSERT(m_curFrameIndex == readableFrames.start());
     DEBUG_ASSERT(pOutputBuffer);
     static_assert(sizeof(CSAMPLE) == sizeof(int32_t),
             "CSAMPLE and int32_t must have the same size");
