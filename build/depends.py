@@ -632,6 +632,12 @@ class Reverb(Dependence):
     def sources(self, build):
         return ['#lib/reverb/Reverb.cc']
 
+class QtKeychain(Dependence):
+    def configure(self, build, conf):
+        libs = ['qtkeychain']
+        if not conf.CheckLib(libs):
+            raise Exception(
+                "Could not find qtkeychain.")
 
 class MixxxCore(Feature):
 
@@ -1417,7 +1423,7 @@ class MixxxCore(Feature):
         return [SoundTouch, ReplayGain, Ebur128Mit, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
-                QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer]
+                QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, QtKeychain]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

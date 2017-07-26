@@ -1,12 +1,15 @@
 // broadcastprofile.cpp
 // Created June 2nd 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
 
+#include <QEventLoop>
 #include <QFile>
 #include <QFileInfo>
 #include <QTextStream>
 #include <QRegExp>
 #include <QDebug>
+#include <QString>
 #include <QStringList>
+#include <qtkeychain/keychain.h>
 
 #include "broadcast/defs_broadcast.h"
 #include "defs_urls.h"
@@ -15,9 +18,12 @@
 
 #include "broadcastprofile.h"
 
+using namespace QKeychain;
+
 namespace {
 const char* kDoctype = "broadcastprofile";
 const char* kDocumentRoot = "BroadcastProfile";
+const char* kSecureCredentials = "SecureCredentialsStorage";
 const char* kBitrate = "Bitrate";
 const char* kChannels = "Channels";
 const char* kCustomArtist = "CustomArtist";
@@ -45,7 +51,8 @@ const char* kStreamGenre = "StreamGenre";
 const char* kStreamName = "StreamName";
 const char* kStreamPublic = "StreamPublic";
 const char* kStreamWebsite = "StreamWebsite";
-const char* kProfileNameAttr = "name";
+
+const char* kKeychainPrefix = "Mixxx - ";
 
 const double kDefaultBitrate = 128;
 const int kDefaultChannels = 2;
@@ -111,6 +118,7 @@ bool BroadcastProfile::equals(BroadcastProfilePtr other) {
 
 bool BroadcastProfile::valuesEquals(BroadcastProfilePtr other) {
     if(getEnabled() == other->getEnabled()
+            && secureCredentialStorage() == other->secureCredentialStorage()
             && getHost() == other->getHost()
             && getPort() == other->getPort()
             && getServertype() == other->getServertype()
@@ -147,6 +155,7 @@ BroadcastProfilePtr BroadcastProfile::valuesCopy() {
     BroadcastProfile* newProfile = new BroadcastProfile(getProfileName());
 
     newProfile->setEnabled(getEnabled());
+    newProfile->setSecureCredentialStorage(secureCredentialStorage());
 
     newProfile->setHost(getHost());
     newProfile->setPort(getPort());
@@ -186,6 +195,7 @@ BroadcastProfilePtr BroadcastProfile::valuesCopy() {
 }
 
 void BroadcastProfile::adoptDefaultValues() {
+    m_secureCredentials = false;
     m_enabled = false;
 
     m_host = QString();
@@ -226,13 +236,20 @@ bool BroadcastProfile::loadValues(const QString& filename) {
     if(doc.childNodes().size() < 1)
         return false;
 
+    m_secureCredentials = (bool)XmlParse::selectNodeInt(doc, kSecureCredentials);
     m_enabled = (bool)XmlParse::selectNodeInt(doc, kEnabled);
 
     m_host = XmlParse::selectNodeQString(doc, kHost);
     m_port = XmlParse::selectNodeInt(doc, kPort);
     m_serverType = XmlParse::selectNodeQString(doc, kServertype);
-    m_login = XmlParse::selectNodeQString(doc, kLogin);
-    m_password = XmlParse::selectNodeQString(doc, kPassword);
+
+    if(m_secureCredentials) {
+        m_login = getSecureValue(kLogin);
+        m_password = getSecureValue(kPassword);
+    } else {
+        m_login = XmlParse::selectNodeQString(doc, kLogin);
+        m_password = XmlParse::selectNodeQString(doc, kPassword);
+    }
 
     m_enableReconnect =
             (bool)XmlParse::selectNodeInt(doc, kEnableReconnect);
@@ -276,13 +293,21 @@ bool BroadcastProfile::save(const QString& filename) {
     QDomElement docRoot = doc.createElement(kDocumentRoot);
 
     XmlParse::addElement(doc, docRoot,
+                         kSecureCredentials, QString::number((int)m_secureCredentials));
+    XmlParse::addElement(doc, docRoot,
                          kEnabled, QString::number((int)m_enabled));
 
     XmlParse::addElement(doc, docRoot, kHost, m_host);
     XmlParse::addElement(doc, docRoot, kPort, QString::number(m_port));
     XmlParse::addElement(doc, docRoot, kServertype, m_serverType);
-    XmlParse::addElement(doc, docRoot, kLogin, m_login);
-    XmlParse::addElement(doc, docRoot, kPassword, m_password);
+
+    if(m_secureCredentials) {
+        setSecureValue(kLogin, m_login);
+        setSecureValue(kPassword, m_password);
+    } else {
+        XmlParse::addElement(doc, docRoot, kLogin, m_login);
+        XmlParse::addElement(doc, docRoot, kPassword, m_password);
+    }
 
     XmlParse::addElement(doc, docRoot, kEnableReconnect,
                          QString::number((int)m_enableReconnect));
@@ -344,6 +369,61 @@ void BroadcastProfile::setProfileName(const QString &profileName) {
 
 QString BroadcastProfile::getProfileName() const {
     return m_profileName;
+}
+
+void BroadcastProfile::setSecureCredentialStorage(bool value) {
+    m_secureCredentials = value;
+}
+
+bool BroadcastProfile::secureCredentialStorage() {
+    return m_secureCredentials;
+}
+
+bool BroadcastProfile::setSecureValue(QString key, QString value) {
+    QString serviceName = QString(kKeychainPrefix) + getProfileName();
+
+    WritePasswordJob writeJob(serviceName);
+    writeJob.setAutoDelete(false);
+    writeJob.setKey(key);
+    writeJob.setTextData(value);
+
+    QEventLoop loop;
+    writeJob.connect(&writeJob, SIGNAL(finished(QKeychain::Job*)),
+                     &loop, SLOT(quit()));
+    writeJob.start();
+    loop.exec();
+
+    if(writeJob.error() == Error::NoError) {
+        qDebug() << "BroadcastProfile::setSecureValue: success";
+        return true;
+    } else {
+        qDebug() << "BroadcastProfile::setSecureValue: write job failed with error:"
+                << writeJob.errorString();
+        return false;
+    }
+}
+
+QString BroadcastProfile::getSecureValue(QString key) {
+    QString serviceName = QString(kKeychainPrefix) + getProfileName();
+
+    ReadPasswordJob readJob(serviceName);
+    readJob.setAutoDelete(false);
+    readJob.setKey(key);
+
+    QEventLoop loop;
+    readJob.connect(&readJob, SIGNAL(finished(QKeychain::Job*)),
+                    &loop, SIGNAL(quit()));
+    readJob.start();
+    loop.exec();
+
+    if(readJob.error() == Error::NoError) {
+        qDebug() << "BroadcastProfile::getSecureValue: success";
+        return readJob.textData();
+    } else {
+        qDebug() << "BroadcastProfile::getSecureValue: read job failed with error:"
+                        << readJob.errorString();
+        return QString();
+    }
 }
 
 // This was useless before, but now comes in handy for multi-broadcasting,
