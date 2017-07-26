@@ -394,7 +394,7 @@ bool BroadcastProfile::setSecureValue(QString key, QString value) {
     loop.exec();
 
     if(writeJob.error() == Error::NoError) {
-        qDebug() << "BroadcastProfile::setSecureValue: success";
+        qDebug() << "BroadcastProfile::setSecureValue: write successful";
         return true;
     } else {
         qDebug() << "BroadcastProfile::setSecureValue: write job failed with error:"
@@ -417,7 +417,7 @@ QString BroadcastProfile::getSecureValue(QString key) {
     loop.exec();
 
     if(readJob.error() == Error::NoError) {
-        qDebug() << "BroadcastProfile::getSecureValue: success";
+        qDebug() << "BroadcastProfile::getSecureValue: read successful";
         return readJob.textData();
     } else {
         qDebug() << "BroadcastProfile::getSecureValue: read job failed with error:"
