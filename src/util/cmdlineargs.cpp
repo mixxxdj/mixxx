@@ -11,8 +11,9 @@ CmdlineArgs::CmdlineArgs()
       m_midiDebug(false),
       m_developer(false),
       m_safeMode(false),
+      m_debugAssertBreak(false),
       m_settingsPathSet(false),
-      m_logLevel(mixxx::Logging::kLogLevelDefault),
+      m_logLevel(mixxx::LogLevel::Default),
 // We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see lp:1463273
 #ifdef __LINUX__
     m_settingsPath(QDir::homePath().append("/").append(SETTINGS_PATH)) {
@@ -57,16 +58,18 @@ bool CmdlineArgs::Parse(int &argc, char **argv) {
         } else if (argv[i] == QString("--logLevel") && i+1 < argc) {
             logLevelSet = true;
             auto level = QLatin1String(argv[i+1]);
-            if (level == "debug") {
-                m_logLevel = mixxx::Logging::LogLevel::Debug;
+            if (level == "trace") {
+                m_logLevel = mixxx::LogLevel::Trace;
+            } else if (level == "debug") {
+                m_logLevel = mixxx::LogLevel::Debug;
             } else if (level == "info") {
-                m_logLevel = mixxx::Logging::LogLevel::Info;
+                m_logLevel = mixxx::LogLevel::Info;
             } else if (level == "warning") {
-                m_logLevel = mixxx::Logging::LogLevel::Warning;
+                m_logLevel = mixxx::LogLevel::Warning;
             } else if (level == "critical") {
-                m_logLevel = mixxx::Logging::LogLevel::Critical;
+                m_logLevel = mixxx::LogLevel::Critical;
             } else {
-                fputs("\nlogLevel argument wasn't 'debug', 'info', 'warning', or 'critical'! Mixxx will only output\n\
+                fputs("\nlogLevel argument wasn't 'trace', 'debug', 'info', 'warning', or 'critical'! Mixxx will only output\n\
 warnings and errors to the console unless this is set properly.\n", stdout);
             }
             i++;
@@ -77,6 +80,8 @@ warnings and errors to the console unless this is set properly.\n", stdout);
             m_developer = true;
         } else if (QString::fromLocal8Bit(argv[i]).contains("--safeMode", Qt::CaseInsensitive)) {
             m_safeMode = true;
+        } else if (QString::fromLocal8Bit(argv[i]).contains("--debugAssertBreak", Qt::CaseInsensitive)) {
+            m_debugAssertBreak = true;
         } else {
             m_musicFiles += QString::fromLocal8Bit(argv[i]);
         }
@@ -85,7 +90,7 @@ warnings and errors to the console unless this is set properly.\n", stdout);
     // If --logLevel was unspecified and --developer is enabled then set
     // logLevel to debug.
     if (m_developer && !logLevelSet) {
-        m_logLevel = mixxx::Logging::LogLevel::Debug;
+        m_logLevel = mixxx::LogLevel::Debug;
     }
 
     return true;
@@ -139,10 +144,19 @@ void CmdlineArgs::printUsage() {
 \n\
 --logLevel LEVEL        Sets the verbosity of command line logging\n\
                         critical - Critical/Fatal only\n\
-                        warning - Above + Warnings\n\
-                        info - Above + Informational messages\n\
-                        debug - Above + Debug/Developer messages\n\
-\n\
+                        warning  - Above + Warnings\n\
+                        info     - Above + Informational messages\n\
+                        debug    - Above + Debug/Developer messages\n\
+                        trace    - Above + Profiling messages\n\
+\n"
+#ifdef MIXXX_BUILD_DEBUG
+"\
+--debugAssertBreak      Breaks (SIGINT) Mixxx, if a DEBUG_ASSERT\n\
+                        evaluates to false. Under a debugger you can\n\
+                        continue afterwards.\
+\n"
+#endif
+"\
 -h, --help              Display this help message and exit", stdout);
 
     fputs("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n",stdout);

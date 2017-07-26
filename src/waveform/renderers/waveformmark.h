@@ -17,14 +17,19 @@ class WOverview;
 
 class WaveformMark {
   public:
-    static const int kDefaultHotCue = -1;
+    static const int kNoHotCue = -1;
+    WaveformMark(
+            const QString& group,
+            const QDomNode& node,
+            const SkinContext& context,
+            const WaveformSignalColors& signalColors);
+
     WaveformMark(
             const QString& group,
             const QDomNode& node,
             const SkinContext& context,
             const WaveformSignalColors& signalColors,
-            int hotCue = kDefaultHotCue,
-            QString item = "");
+            int hotCue);
 
 
     // Disable copying
@@ -39,16 +44,12 @@ class WaveformMark {
     };
 
     int getHotCue() const { return m_iHotCue; };
-    void setHotCue(int hotCue) { m_iHotCue = hotCue; };
 
     //The m_pPointCos related function
     bool isValid() const { return m_pPointCos && m_pPointCos->valid(); }
     void connectSamplePositionChanged(const QObject *, const char *) const;
     double getSamplePosition() const { return m_pPointCos->get(); }
-    void setHotcueNumber(int i) {
-        m_properties.m_text = m_properties.m_text.arg(i);
-    }
-    
+    QString getItem() const { return m_pPointCos->getKey().item; }
 
   private:
     std::unique_ptr<ControlProxy> m_pPointCos;

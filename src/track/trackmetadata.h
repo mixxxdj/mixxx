@@ -130,7 +130,7 @@ public:
     }
 
     // beats / minute
-    Bpm getBpm() const {
+    const Bpm& getBpm() const {
         return m_bpm;
     }
     void setBpm(Bpm bpm) {

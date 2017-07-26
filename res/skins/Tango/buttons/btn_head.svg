@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="56"
+   height="56"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="btn_head.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="2.8"
+     inkscape:cx="-107.58876"
+     inkscape:cy="25.550003"
+     inkscape:document-units="px"
+     inkscape:current-layer="g3923"
+     showgrid="false"
+     inkscape:snap-page="true"
+     inkscape:snap-bbox="true"
+     inkscape:snap-bbox-midpoints="true"
+     inkscape:snap-bbox-edge-midpoints="true"
+     inkscape:bbox-nodes="true"
+     inkscape:bbox-paths="true"
+     inkscape:snap-object-midpoints="true"
+     inkscape:object-nodes="true"
+     inkscape:snap-smooth-nodes="true"
+     inkscape:object-paths="true"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="1366"
+     inkscape:window-height="746"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(0,-996.3622)"
+     id="g3923"
+     inkscape:groupmode="layer"
+     inkscape:label="OFF"
+     style="display:inline">
+    <path
+       id="path3925"
+       d="m 28,1004.081 c -11.176118,0 -20.28125,9.1049 -20.28125,20.2812 0,1.2779 0.1165944,2.5073 0.34375,3.7188 l 2,10.6875 1,5.0937 4.40625,-0.8437 -0.96875,-5.0625 -2.03125,-10.6875 -0.0625,-0.2813 0.0625,0 c -0.147469,-0.8597 -0.25,-1.7157 -0.25,-2.625 0,-8.7438 7.037512,-15.7812 15.78125,-15.7812 8.743738,-10e-5 15.78125,7.0374 15.78125,15.7812 0,1.0064 -0.104443,1.9581 -0.28125,2.9063 l -2,10.6875 -0.96875,5.0937 4.40625,0.8125 1,-5.0937 1.9375,-10.375 -0.03125,0 0.0625,-0.3125 c 0.227911,-1.2155 0.375,-2.445 0.375,-3.7188 0,-11.1763 -9.105133,-20.2812 -20.28125,-20.2812 z"
+       style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#d2d2d2;fill-opacity:1;stroke:none;stroke-width:0.50000000000000000;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans"
+       inkscape:connector-curvature="0" />
+    <rect
+       inkscape:transform-center-y="-2.1158793"
+       inkscape:transform-center-x="4.7981406"
+       transform="matrix(0.98257665,-0.18585783,0.18585783,0.98257665,0,0)"
+       ry="1.9949069"
+       rx="1.9949069"
+       y="1013.2284"
+       x="-184.45441"
+       height="16.861713"
+       width="8.5496006"
+       id="rect3927"
+       style="fill:#d2d2d2;fill-opacity:1;fill-rule:nonzero;stroke:none" />
+    <rect
+       inkscape:transform-center-y="-2.1159343"
+       inkscape:transform-center-x="-4.7982362"
+       transform="matrix(-0.98257725,-0.18585464,-0.18586102,0.98257604,0,0)"
+       ry="1.9949082"
+       rx="1.9949412"
+       y="1002.8427"
+       x="-239.36707"
+       height="16.861725"
+       width="8.5497475"
+       id="rect3929"
+       style="fill:#d2d2d2;fill-opacity:1;fill-rule:nonzero;stroke:none" />
+  </g>
+</svg>

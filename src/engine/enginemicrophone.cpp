@@ -14,7 +14,7 @@
 
 EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& handle_group,
                                    EffectsManager* pEffectsManager)
-        : EngineChannel(handle_group, EngineChannel::CENTER),
+        : EngineChannel(handle_group, EngineChannel::CENTER, true),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
           m_vuMeter(getGroup()),
           m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),

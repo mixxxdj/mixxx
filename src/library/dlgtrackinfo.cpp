@@ -170,7 +170,7 @@ void DlgTrackInfo::populateFields(const Track& track) {
 
     // Non-editable fields
     txtDuration->setText(track.getDurationText(mixxx::Duration::Precision::SECONDS));
-    txtLocation->setPlainText(track.getLocation());
+    txtLocation->setPlainText(QDir::toNativeSeparators(track.getLocation()));
     txtType->setText(track.getType());
     txtBitrate->setText(QString(track.getBitrateText()) + (" ") + tr("kbps"));
     txtBpm->setText(track.getBpmText());
@@ -622,11 +622,11 @@ void DlgTrackInfo::reloadTrackMetadata() {
         // We cannot reuse m_pLoadedTrack, because it might already been
         // modified and we want to read fresh metadata directly from the
         // file. Otherwise the changes in m_pLoadedTrack would be lost.
-        TrackPointer pTrack(Track::newTemporary(
+        TrackPointer pTrack = Track::newTemporary(
                 m_pLoadedTrack->getFileInfo(),
-                m_pLoadedTrack->getSecurityToken()));
-        SoundSourceProxy(pTrack).loadTrackMetadata();
+                m_pLoadedTrack->getSecurityToken());
         if (pTrack) {
+            SoundSourceProxy(pTrack).updateTrack();
             populateFields(*pTrack);
         }
     }

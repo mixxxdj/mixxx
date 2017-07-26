@@ -39,7 +39,9 @@ SoundManagerConfig::SoundManagerConfig()
       m_deckCount(kDefaultDeckCount),
       m_audioBufferSizeIndex(kDefaultAudioBufferSizeIndex),
       m_syncBuffers(2),
-      m_forceNetworkClock(false) {
+      m_forceNetworkClock(false),
+      m_iNumMicInputs(0),
+      m_bExternalRecordBroadcastConnected(false) {
     m_configFile = QFileInfo(QDir(CmdlineArgs::Instance().getSettingsPath()).filePath(SOUNDMANAGERCONFIG_FILENAME));
 }
 
@@ -262,6 +264,8 @@ unsigned int SoundManagerConfig::getAudioBufferSizeIndex() const {
     return m_audioBufferSizeIndex;
 }
 
+// FIXME: This is incorrect when using JACK as the sound API!
+// m_audioBufferSizeIndex does not reflect JACK's buffer size.
 unsigned int SoundManagerConfig::getFramesPerBuffer() const {
     // endless loop otherwise
     unsigned int audioBufferSizeIndex = m_audioBufferSizeIndex;
@@ -278,6 +282,12 @@ unsigned int SoundManagerConfig::getFramesPerBuffer() const {
         framesPerBuffer <<= 1; // *= 2
     }
     return framesPerBuffer;
+}
+
+// FIXME: This is incorrect when using JACK as the sound API!
+// m_audioBufferSizeIndex does not reflect JACK's buffer size.
+double SoundManagerConfig::getProcessingLatency() const {
+    return static_cast<double>(getFramesPerBuffer()) / m_sampleRate * 1000.0;
 }
 
 
@@ -299,6 +309,11 @@ void SoundManagerConfig::addOutput(const QString &device, const AudioOutput &out
 
 void SoundManagerConfig::addInput(const QString &device, const AudioInput &in) {
     m_inputs.insert(device, in);
+    if (in.getType() == AudioPath::MICROPHONE) {
+        m_iNumMicInputs++;
+    } else if (in.getType() == AudioPath::RECORD_BROADCAST) {
+        m_bExternalRecordBroadcastConnected = true;
+    }
 }
 
 QMultiHash<QString, AudioOutput> SoundManagerConfig::getOutputs() const {
@@ -315,6 +330,16 @@ void SoundManagerConfig::clearOutputs() {
 
 void SoundManagerConfig::clearInputs() {
     m_inputs.clear();
+    m_iNumMicInputs = 0;
+    m_bExternalRecordBroadcastConnected = false;
+}
+
+bool SoundManagerConfig::hasMicInputs() {
+    return m_iNumMicInputs;
+}
+
+bool SoundManagerConfig::hasExternalRecordBroadcast() {
+    return m_bExternalRecordBroadcastConnected;
 }
 
 /**

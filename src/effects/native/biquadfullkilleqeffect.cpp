@@ -396,7 +396,7 @@ void BiquadFullKillEQEffect::processChannel(
         double fHigh = knobValueToBesselRatio(
                 m_pPotHigh->value(), m_pKillHigh->toBool());
         pState->m_lvMixIso->processChannel(
-                pInput, pOutput, numSamples, sampleRate, fLow, fMid, fHigh,
+                pOutput, pOutput, numSamples, sampleRate, fLow, fMid, fHigh,
                 m_pLoFreqCorner->get(), m_pHiFreqCorner->get());
     }
 }

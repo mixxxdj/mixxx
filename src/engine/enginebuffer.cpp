@@ -1165,7 +1165,7 @@ void EngineBuffer::processSeek(bool paused) {
     }
 
     if ((seekType & SEEK_PHASE) && !paused && m_pQuantize->toBool()) {
-        position += m_pBpmControl->getPhaseOffset(position);
+        position = m_pBpmControl->getNearestPositionInPhase(position, true, true);
     }
 
     double newPlayFrame = position / kSamplesPerFrame;
@@ -1244,15 +1244,17 @@ void EngineBuffer::hintReader(const double dRate) {
     //if slipping, hint about virtual position so we're ready for it
     if (m_bSlipEnabledProcessing) {
         Hint hint;
-        hint.length = 2048; //default length please
-        hint.sample = m_dSlipRate >= 0 ? m_dSlipPosition : m_dSlipPosition - 2048;
+        hint.frame = SampleUtil::floorPlayPosToFrame(m_dSlipPosition);
         hint.priority = 1;
+        if (m_dSlipRate >= 0) {
+            hint.frameCount = Hint::kFrameCountForward;
+        } else {
+            hint.frameCount = Hint::kFrameCountBackward;
+        }
         m_hintList.append(hint);
     }
 
-    QListIterator<EngineControl*> it(m_engineControls);
-    while (it.hasNext()) {
-        EngineControl* pControl = it.next();
+    for (const auto& pControl: m_engineControls) {
         pControl->hintReader(&m_hintList);
     }
     m_pReader->hintAndMaybeWake(m_hintList);

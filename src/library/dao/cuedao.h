@@ -16,11 +16,12 @@ class Cue;
 
 class CueDAO : public DAO {
   public:
-    CueDAO(QSqlDatabase& database);
-    virtual ~CueDAO();
-    void setDatabase(QSqlDatabase& database) { m_database = database; }
+    ~CueDAO() override {}
 
-    void initialize();
+    void initialize(const QSqlDatabase& database) override {
+        m_database = database;
+    }
+
     int cueCount();
     int numCuesForTrack(TrackId trackId);
     QList<CuePointer> getCuesForTrack(TrackId trackId) const;
@@ -34,7 +35,7 @@ class CueDAO : public DAO {
   private:
     CuePointer cueFromRow(const QSqlQuery& query) const;
 
-    QSqlDatabase& m_database;
+    QSqlDatabase m_database;
     mutable QMap<int, CuePointer> m_cues;
 };
 

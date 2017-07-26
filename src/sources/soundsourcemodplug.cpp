@@ -3,6 +3,7 @@
 #include "track/trackmetadata.h"
 #include "util/timer.h"
 #include "util/sample.h"
+#include "util/logger.h"
 
 #include <QFile>
 
@@ -12,6 +13,8 @@
 namespace mixxx {
 
 namespace {
+
+const Logger kLogger("SoundSourceModPlug");
 
 /* read files in 512k chunks */
 const SINT kChunkSizeInBytes = SINT(1) << 19;
@@ -99,7 +102,7 @@ SoundSource::OpenResult SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*a
     // read module file to byte array
     const QString fileName(getLocalFileName());
     QFile modFile(fileName);
-    qDebug() << "[ModPlug] Loading ModPlug module " << modFile.fileName();
+    kLogger.debug() << "Loading ModPlug module " << modFile.fileName();
     modFile.open(QIODevice::ReadOnly);
     m_fileBuf = modFile.readAll();
     modFile.close();
@@ -110,7 +113,7 @@ SoundSource::OpenResult SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*a
     if (m_pModFile == nullptr) {
         // an error occurred
         t.cancel();
-        qDebug() << "[ModPlug] Could not load module file: " << fileName;
+        kLogger.debug() << "Could not load module file: " << fileName;
         return OpenResult::FAILED;
     }
 
@@ -131,7 +134,7 @@ SoundSource::OpenResult SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*a
     const SampleBuffer::size_type sampleBufferCapacity = math_min(
             estimateChunks * chunkSizeInSamples, bufferSizeLimitInSamples);
     m_sampleBuf.reserve(sampleBufferCapacity);
-    qDebug() << "[ModPlug] Reserved " << m_sampleBuf.capacity() << " #samples";
+    kLogger.debug() << "Reserved " << m_sampleBuf.capacity() << " #samples";
 
     // decode samples into sample buffer
     while (m_sampleBuf.size() < bufferSizeLimitInSamples) {
@@ -152,9 +155,9 @@ SoundSource::OpenResult SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*a
             break; // exit loop
         }
     }
-    qDebug() << "[ModPlug] Filled Sample buffer with " << m_sampleBuf.size()
+    kLogger.debug() << "Filled Sample buffer with " << m_sampleBuf.size()
             << " samples.";
-    qDebug() << "[ModPlug] Sample buffer has "
+    kLogger.debug() << "Sample buffer has "
             << m_sampleBuf.capacity() - m_sampleBuf.size()
             << " samples unused capacity.";
 

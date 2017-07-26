@@ -44,7 +44,6 @@ WWaveformViewer::~WWaveformViewer() {
 }
 
 void WWaveformViewer::setup(const QDomNode& node, const SkinContext& context) {
-    Q_UNUSED(context);
     if (m_waveformWidget) {
         m_waveformWidget->setup(node, context);
     }
@@ -214,6 +213,10 @@ void WWaveformViewer::setZoom(int zoom) {
     if (m_pZoom->get() != zoom) {
         m_pZoom->set(zoom);
     }
+}
+
+void WWaveformViewer::setDisplayBeatGrid(bool set) {
+    m_waveformWidget->setDisplayBeatGrid(set);
 }
 
 void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) {

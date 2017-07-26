@@ -1,0 +1,242 @@
+<!--
+Description:
+  An effect chain widget.
+  * EffectSlots, with or without highlight/focus option
+  * mixer with Wet/Dry knob and Super knob
+  * Enable button
+Variables:
+  fxRack: Number of effect rack.
+  fxUnit: Number of effect unit.
+-->
+<Template>
+  <WidgetGroup><!-- EffectUnit -->
+    <ObjectName>EffectUnitRight</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup><!-- EffectUnitMixer + Master, Headphone -->
+        <ObjectName>EffectUnitControlsRight</ObjectName>
+        <Layout>vertical</Layout>
+        <Size>44f,1me</Size>
+        <Children>
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="ObjectName">FXSamplersMiniMaxiButton</SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
+            <SetVariable name="Size">22me,14f</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[<Variable name="fxGroup"/>],show_parameters</SetVariable>
+          </Template>
+
+          <Label>
+            <ObjectName>EffectUnitLabel</ObjectName>
+            <Size>44f,18f</Size>
+            <Text>FX<Variable name="fxUnit"/></Text>
+            <Alignment>center</Alignment>
+          </Label>
+
+          <WidgetGroup><!-- EffectUnitMixer -->
+            <ObjectName>EffectUnitMixerRight</ObjectName>
+            <Layout>vertical</Layout>
+            <Size>44f,1me</Size>
+            <Children>
+
+              <WidgetGroup>
+                <ObjectName>SuperWetDryContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+                    <WidgetGroup><Size>1min,0me</Size><Children/></WidgetGroup>
+                  <Template src="skin:knob_textless.xml">
+                    <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
+                    <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
+                    <SetVariable name="Size">32f,32f</SetVariable>
+                    <SetVariable name="group">[<Variable name="fxGroup"/>]</SetVariable>
+                    <SetVariable name="ConfigKey">mix</SetVariable>
+                    <SetVariable name="Color">red</SetVariable>
+                  </Template>
+                    <WidgetGroup><Size>1min,0me</Size><Children/></WidgetGroup>
+                  <Template src="skin:knob_textless.xml">
+                    <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
+                    <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
+                    <SetVariable name="Size">32f,32f</SetVariable>
+                    <SetVariable name="group">[<Variable name="fxGroup"/>]</SetVariable>
+                    <SetVariable name="ConfigKey">super1</SetVariable>
+                    <SetVariable name="Color">blue</SetVariable>
+                  </Template>
+                    <WidgetGroup><Size>1min,0me</Size><Children/></WidgetGroup>
+                </Children>
+              </WidgetGroup><!-- SuperWetDryContainer -->
+
+              <WidgetGroup><Size>1min,1f</Size><Children/></WidgetGroup>
+
+              <WidgetGroup><!-- Master, Headphone -->
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Template src="skin:fx_assign_button.xml">
+                    <SetVariable name="Size">21f,21f</SetVariable>
+                    <SetVariable name="sourceType">master</SetVariable>
+                    <SetVariable name="labelOff">fx_master_off</SetVariable>
+                    <SetVariable name="labelOn">fx_master_on</SetVariable>
+                    <SetVariable name="group">[Master]</SetVariable>
+                  </Template>
+                    <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+                  <Template src="skin:fx_assign_button.xml">
+                    <SetVariable name="Size">21f,21f</SetVariable>
+                    <SetVariable name="sourceType">headphones</SetVariable>
+                    <SetVariable name="labelOff">fx_head_off</SetVariable>
+                    <SetVariable name="labelOn">fx_head_on</SetVariable>
+                    <SetVariable name="group">[Headphone]</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup><!-- /Master, Headphone -->
+
+            </Children>
+          </WidgetGroup><!-- EffectUnitMixer -->
+        </Children>
+      </WidgetGroup><!-- /EffectUnitMixer + Master, Headphone -->
+
+      <WidgetGroup><!-- EffectSlots 1-3 * highlightable -->
+        <ObjectName>EffectSlots</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup><!-- EffectSlot 1 * highlightable -->
+            <ObjectName>EffectSlotRightHighlight</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:fx_selector_meta_right.xml">
+                <SetVariable name="fxNum">1</SetVariable>
+              </Template>
+              <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
+              <Template src="skin:fx_parameter_row.xml">
+                <SetVariable name="fxNum">1</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
+              <BindProperty>highlight</BindProperty>
+              <Transform>
+                <IsEqual>1</IsEqual>
+              </Transform>
+            </Connection>
+          </WidgetGroup><!-- /EffectSlot 1 * highlightable -->
+
+          <WidgetGroup><Size>1me,1f</Size><Children/></WidgetGroup>
+
+          <WidgetGroup><!-- EffectSlot 2 * highlightable -->
+            <ObjectName>EffectSlotRightHighlight</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:fx_selector_meta_right.xml">
+                <SetVariable name="fxNum">2</SetVariable>
+              </Template>
+              <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
+              <Template src="skin:fx_parameter_row.xml">
+                <SetVariable name="fxNum">2</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
+              <BindProperty>highlight</BindProperty>
+              <Transform>
+                <IsEqual>2</IsEqual>
+              </Transform>
+            </Connection>
+          </WidgetGroup><!-- /EffectSlot 2 * highlightable -->
+
+          <WidgetGroup><Size>1me,1f</Size><Children/></WidgetGroup>
+
+          <WidgetGroup><!-- EffectSlot 3 * highlightable -->
+            <ObjectName>EffectSlotRightHighlight</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:fx_selector_meta_right.xml">
+                <SetVariable name="fxNum">3</SetVariable>
+              </Template>
+              <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
+              <Template src="skin:fx_parameter_row.xml">
+                <SetVariable name="fxNum">3</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
+              <BindProperty>highlight</BindProperty>
+              <Transform>
+                <IsEqual>3</IsEqual>
+              </Transform>
+            </Connection>
+          </WidgetGroup><!-- /EffectSlot 3 * highlightable -->
+        </Children>
+        <Connection>
+          <ConfigKey>[<Variable name="fxGroup"/>],show_focus</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /EffectSlots 1-3 * highlightable -->
+
+      <WidgetGroup><!-- EffectSlots 1-3 * no highlight -->
+        <ObjectName>EffectSlots</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup><!-- EffectSlot 1 -->
+            <ObjectName>EffectSlotRight</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:fx_selector_meta_right.xml">
+                <SetVariable name="fxNum">1</SetVariable>
+              </Template>
+              <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
+              <Template src="skin:fx_parameter_row.xml">
+                <SetVariable name="fxNum">1</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- /EffectSlot 1 -->
+
+          <WidgetGroup><Size>1me,1f</Size><Children/></WidgetGroup>
+
+          <WidgetGroup><!-- EffectSlot 2 -->
+            <ObjectName>EffectSlotRight</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:fx_selector_meta_right.xml">
+                <SetVariable name="fxNum">2</SetVariable>
+              </Template>
+              <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
+              <Template src="skin:fx_parameter_row.xml">
+                <SetVariable name="fxNum">2</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- /EffectSlot 2 -->
+
+          <WidgetGroup><Size>1me,1f</Size><Children/></WidgetGroup>
+
+          <WidgetGroup><!-- EffectSlot 3 -->
+            <ObjectName>EffectSlotRight</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:fx_selector_meta_right.xml">
+                <SetVariable name="fxNum">3</SetVariable>
+              </Template>
+              <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
+              <Template src="skin:fx_parameter_row.xml">
+                <SetVariable name="fxNum">3</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- /EffectSlot 3 -->
+        </Children>
+        <Connection>
+          <ConfigKey>[<Variable name="fxGroup"/>],show_focus</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform><Not/></Transform>
+        </Connection>
+      </WidgetGroup><!-- /EffectSlots 1-3 * no highlight -->
+    </Children>
+  </WidgetGroup><!-- /EffectUnit -->
+</Template>

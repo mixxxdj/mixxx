@@ -12,7 +12,8 @@ class WaveformMarkProperties final {
     WaveformMarkProperties() = default;
     WaveformMarkProperties(const QDomNode& node,
                            const SkinContext& context,
-                           const WaveformSignalColors& signalColors);
+                           const WaveformSignalColors& signalColors,
+                           int hotCue);
 
     QColor m_color;
     QColor m_textColor;

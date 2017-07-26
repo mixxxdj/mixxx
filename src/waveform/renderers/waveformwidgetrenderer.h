@@ -23,6 +23,7 @@ class WaveformWidgetRenderer {
   public:
     static const int s_waveformMinZoom;
     static const int s_waveformMaxZoom;
+    static const int s_waveformDefaultZoom;
 
   public:
     explicit WaveformWidgetRenderer(const char* group);
@@ -42,6 +43,8 @@ class WaveformWidgetRenderer {
     double getLastDisplayedPosition() const { return m_lastDisplayedPosition;}
 
     void setZoom(int zoom);
+
+    void setDisplayBeatGrid(bool set);
 
     double getVisualSamplePerPixel() const { return m_visualSamplePerPixel;};
     double getAudioSamplePerPixel() const { return m_audioSamplePerPixel;};
@@ -69,6 +72,8 @@ class WaveformWidgetRenderer {
     double getRateAdjust() const { return m_rateAdjust;}
     double getGain() const { return m_gain;}
     int getTrackSamples() const { return m_trackSamples;}
+
+    bool isBeatGridEnabled() const { return m_enableBeatGrid; }
 
     void resize(int width, int height);
     int getHeight() const { return m_height;}
@@ -105,6 +110,8 @@ class WaveformWidgetRenderer {
     double m_visualSamplePerPixel;
     double m_audioSamplePerPixel;
 
+    bool m_enableBeatGrid;
+
     //TODO: vRince create some class to manage control/value
     //ControlConnection
     QSharedPointer<VisualPlayPosition> m_visualPlayPosition;
@@ -120,6 +127,7 @@ class WaveformWidgetRenderer {
     double m_gain;
     ControlProxy* m_pTrackSamplesControlObject;
     int m_trackSamples;
+    double m_scaleFactor;
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     PerformanceTimer* m_timer;

@@ -64,8 +64,8 @@ install:
   ####
   # OS X Build
 
-  # Define QTDIR.
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export QTDIR=$(find /usr/local/Cellar/qt5 -d 1 | tail -n 1) ; fi
+  # Define QTDIR. Homebrew does not support Qt4 anymore, so /usr/local/Cellar/qt stores Qt5 installs.
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export QTDIR=$(find /usr/local/Cellar/qt -d 1 | tail -n 1) ; fi
 
   # Workaround for bug in libopus's opus.h including <opus_multistream.h>
   # instead of <opus/opus_multistream.h>.

@@ -2,6 +2,8 @@
 
 #include "encoder/encoderffmpegresample.h"
 
+#include "util/logger.h"
+
 #include <mutex>
 #include <vector>
 
@@ -17,6 +19,8 @@ namespace mixxx {
 
 namespace {
 
+const Logger kLogger("SoundSourceFFmpeg");
+
 std::once_flag initFFmpegLibFlag;
 
 // This function must be called once during startup.
@@ -30,7 +34,7 @@ const SINT kMaxChannelCount = 2;
 
 inline
 AVMediaType getMediaTypeOfStream(AVStream* pStream) {
-    return pStream->codec->codec_type;
+    return m_pAVStreamWrapper.getMediaTypeOfStream(pStream);
 }
 
 AVStream* findFirstAudioStream(AVFormatContext* pFormatCtx) {
@@ -51,17 +55,17 @@ AVStream* findFirstAudioStream(AVFormatContext* pFormatCtx) {
 
 inline
 AVCodec* findDecoderForStream(AVStream* pStream) {
-    return avcodec_find_decoder(pStream->codec->codec_id);
+    return m_pAVStreamWrapper.findDecoderForStream(pStream);
 }
 
 inline
 SINT getChannelCountOfStream(AVStream* pStream) {
-    return pStream->codec->channels;
+    return m_pAVStreamWrapper.getChannelCountOfStream(pStream);
 }
 
 inline
 SINT getSamplingRateOfStream(AVStream* pStream) {
-    return pStream->codec->sample_rate;
+    return m_pAVStreamWrapper.getSamplingRateOfStream(pStream);
 }
 
 inline
@@ -80,7 +84,7 @@ bool getFrameCountOfStream(AVStream* pStream, SINT* pFrameCount) {
     int64val *= getSamplingRateOfStream(pStream);
     VERIFY_OR_DEBUG_ASSERT(int64val > 0) {
         // Integer overflow
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "Integer overflow during calculation of frame count";
         return false;
     }
@@ -88,7 +92,7 @@ bool getFrameCountOfStream(AVStream* pStream, SINT* pFrameCount) {
     int64val *= pStream->time_base.num;
     VERIFY_OR_DEBUG_ASSERT(int64val > 0) {
         // Integer overflow
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "Integer overflow during calculation of frame count";
         return false;
     }
@@ -97,7 +101,7 @@ bool getFrameCountOfStream(AVStream* pStream, SINT* pFrameCount) {
     SINT frameCount = int64val;
     VERIFY_OR_DEBUG_ASSERT(static_cast<int64_t>(frameCount) == int64val) {
         // Integer truncation
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "Integer truncation during calculation of frame count";
         return false;
     }
@@ -107,7 +111,7 @@ bool getFrameCountOfStream(AVStream* pStream, SINT* pFrameCount) {
 
 inline
 AVSampleFormat getSampleFormatOfStream(AVStream* pStream) {
-    return pStream->codec->sample_fmt;
+  return m_pAVStreamWrapper.getSampleFormatOfStream(pStream);
 }
 
 } // anonymous namespace
@@ -125,7 +129,7 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
             break; // exit loop
         }
 
-        qDebug() << "FFmpeg input format:" << l_SInputFmt->name;
+        kLogger.debug() << "FFmpeg input format:" << l_SInputFmt->name;
 
         if (!strcmp(l_SInputFmt->name, "ac3")) {
             list.append("ac3");
@@ -175,7 +179,7 @@ AVFormatContext* SoundSourceFFmpeg::openInputFile(
     // the AVFormatContext struct before opening the input file???
     AVFormatContext *pInputFormatContext = avformat_alloc_context();
     if (pInputFormatContext == nullptr) {
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "avformat_alloc_context() failed";
         return nullptr;
     }
@@ -203,7 +207,7 @@ AVFormatContext* SoundSourceFFmpeg::openInputFile(
             avformat_open_input(
                     &pInputFormatContext, qBAFilename.constData(), nullptr, nullptr);
     if (avformat_open_input_result != 0) {
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "avformat_open_input() failed and returned"
                 << avformat_open_input_result;
         DEBUG_ASSERT(pInputFormatContext == nullptr);
@@ -230,18 +234,12 @@ void SoundSourceFFmpeg::ClosableInputAVFormatContextPtr::close() {
 
 //static
 SoundSource::OpenResult SoundSourceFFmpeg::openAudioStream(
-        AVStream* pAudioStream) {
-    DEBUG_ASSERT(pAudioStream != nullptr);
-    AVCodec* pDecoder = findDecoderForStream(pAudioStream);
-    if (pDecoder == nullptr) {
-        qWarning() << "[SoundSourceFFmpeg]"
-                << "Failed to find a decoder for stream"
-                << pAudioStream->index;
-        return SoundSource::OpenResult::ABORTED;
-    }
-    const int avcodec_open2_result = avcodec_open2(pAudioStream->codec, pDecoder, nullptr);
+        AVCodecContext* pCodecContext, AVCodec *pDecoder) {
+    DEBUG_ASSERT(pCodecContext != nullptr);
+
+    const int avcodec_open2_result = avcodec_open2(pCodecContext, pDecoder, nullptr);
     if (avcodec_open2_result < 0) {
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "avcodec_open2() failed and returned"
                 << avcodec_open2_result;
         return SoundSource::OpenResult::FAILED;
@@ -260,16 +258,36 @@ void SoundSourceFFmpeg::ClosableAVStreamPtr::take(AVStream** ppClosableStream) {
 
 void SoundSourceFFmpeg::ClosableAVStreamPtr::close() {
     if (m_pClosableStream != nullptr) {
+#if ! AVSTREAM_FROM_API_VERSION_3_1
         const int avcodec_close_result = avcodec_close(m_pClosableStream->codec);
         if (avcodec_close_result != 0) {
-            qWarning() << "[SoundSourceFFmpeg]"
+            kLogger.warning()
                     << "avcodec_close() failed and returned"
                     << avcodec_close_result;
             // ignore error and continue
         }
+#endif
         m_pClosableStream = nullptr;
     }
 }
+
+#if AVSTREAM_FROM_API_VERSION_3_1
+void SoundSourceFFmpeg::ClosableAVCodecContextPtr::take(AVCodecContext** ppClosableContext) {
+    DEBUG_ASSERT(ppClosableContext != nullptr);
+    if (m_pClosableContext != *ppClosableContext) {
+        close();
+        m_pClosableContext = *ppClosableContext;
+        *ppClosableContext = nullptr;
+    }
+}
+
+void SoundSourceFFmpeg::ClosableAVCodecContextPtr::close() {
+    if (m_pClosableContext != nullptr) {
+        avcodec_free_context(&m_pClosableContext);
+        m_pClosableContext = nullptr;
+    }
+}
+#endif
 
 SoundSourceFFmpeg::SoundSourceFFmpeg(const QUrl& url)
     : SoundSource(url),
@@ -294,7 +312,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
     AVFormatContext *pInputFormatContext =
             openInputFile(getLocalFileName());
     if (pInputFormatContext == nullptr) {
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "Failed to open input file"
                 << getLocalFileName();
         return OpenResult::FAILED;
@@ -305,7 +323,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
     const int avformat_find_stream_info_result =
             avformat_find_stream_info(m_pInputFormatContext, nullptr);
     if (avformat_find_stream_info_result < 0) {
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "avformat_find_stream_info() failed and returned"
                 << avformat_find_stream_info_result;
         return OpenResult::FAILED;
@@ -317,27 +335,69 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
     // Find and open audio stream for decoding
     AVStream* pAudioStream = findFirstAudioStream(m_pInputFormatContext);
     if (pAudioStream == nullptr) {
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "No audio stream found";
         return OpenResult::ABORTED;
     }
-    const OpenResult openAudioStreamResult = openAudioStream(pAudioStream);
+
+    // Find codec to decode stream or pass out
+    AVCodec* pDecoder = findDecoderForStream(pAudioStream);
+    if (pDecoder == nullptr) {
+        kLogger.warning()
+                << "Failed to find a decoder for stream"
+                << pAudioStream->index;
+        return SoundSource::OpenResult::ABORTED;
+    }
+
+#if AVSTREAM_FROM_API_VERSION_3_1
+    AVCodecContext *pCodecContext = avcodec_alloc_context3(pDecoder);
+
+    if (pCodecContext == nullptr) {
+        kLogger.warning()
+                << "Failed to allocate codec context"
+                << pAudioStream->index;
+        return SoundSource::OpenResult::ABORTED;
+    }
+
+    // Add stream parameters to context
+    if(avcodec_parameters_to_context(pCodecContext,pAudioStream->codecpar)) {
+        kLogger.warning()
+                << "Failed to find to set Code parameter for AVCodecContext"
+                << pAudioStream->index;
+        return SoundSource::OpenResult::ABORTED;
+    }
+
+    // Se timebase correct
+    av_codec_set_pkt_timebase(pCodecContext, pAudioStream->time_base);
+
+    // Make sure that Codecs are identical or  avcodec_open2 fails.
+    pCodecContext->codec_id = pDecoder->id;
+
+    const OpenResult openAudioStreamResult = openAudioStream(pCodecContext, pDecoder);
+
+    m_pAudioContext.take(&pCodecContext);
+#else
+    const OpenResult openAudioStreamResult = openAudioStream(pAudioStream->codec, pDecoder);
+#endif
+
+
     if (openAudioStreamResult != OpenResult::SUCCEEDED) {
         return openAudioStreamResult; // early exit on any error
     }
+
     // Now set the member, because the audio stream has been opened
     // successfully and needs to be closed eventually.
     m_pAudioStream.take(&pAudioStream);
 
     const SINT channelCount = getChannelCountOfStream(m_pAudioStream);
     if (!isValidChannelCount(channelCount)) {
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "Stream has invalid number of channels:"
                 << channelCount;
         return OpenResult::FAILED;
     }
     if (channelCount > kMaxChannelCount) {
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "Stream has unsupported number of channels:"
                 << channelCount << ">" << kMaxChannelCount;
         return OpenResult::ABORTED;
@@ -345,15 +405,15 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
 
     const SINT samplingRate = getSamplingRateOfStream(m_pAudioStream);
     if (!isValidSamplingRate(samplingRate)) {
-        qWarning() << "[SoundSourceFFmpeg]"
+        kLogger.warning()
                 << "Stream has invalid sampling rate:"
                 << samplingRate;
         return OpenResult::FAILED;
     }
 
     SINT frameCount = getFrameCount();
-    if (getFrameCountOfStream(m_pAudioStream, &frameCount) && isValidFrameCount(frameCount)) {
-        qWarning() << "[SoundSourceFFmpeg]"
+    if (getFrameCountOfStream(m_pAudioStream, &frameCount) && isValidFrameCount(frameCount) == false) {
+        kLogger.warning()
                 << "Stream has invalid number of frames:"
                 << frameCount;
         return OpenResult::FAILED;
@@ -363,7 +423,11 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
     setSamplingRate(samplingRate);
     setFrameCount(frameCount);
 
+#if AVSTREAM_FROM_API_VERSION_3_1
+    m_pResample = std::make_unique<EncoderFfmpegResample>(m_pAudioContext);
+#else
     m_pResample = std::make_unique<EncoderFfmpegResample>(m_pAudioStream->codec);
+#endif
     m_pResample->openMixxx(getSampleFormatOfStream(m_pAudioStream), AV_SAMPLE_FMT_FLT);
 
     return OpenResult::SUCCEEDED;
@@ -380,6 +444,9 @@ void SoundSourceFFmpeg::close() {
         free(l_SRmJmp);
     }
 
+#if AVSTREAM_FROM_API_VERSION_3_1
+    m_pAudioContext.close();
+#endif
     m_pAudioStream.close();
     m_pInputFormatContext.close();
 }
@@ -401,7 +468,9 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
     l_SPacket.size = 0;
     AVFrame *l_pFrame = nullptr;
     bool l_bStop = false;
+#if ! AVSTREAM_FROM_API_VERSION_3_1
     int l_iFrameFinished = 0;
+#endif
     struct ffmpegCacheObject *l_SObj = nullptr;
     struct ffmpegCacheObject *l_SRmObj = nullptr;
     qint64 l_lLastPacketPos = -1;
@@ -437,7 +506,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
 #endif
 
         if (l_pFrame == nullptr) {
-            qDebug() << "SoundSourceFFmpeg::readFramesToCache: Can't alloc memory!";
+            kLogger.debug() << "readFramesToCache: Can't alloc memory!";
             return false;
         }
 
@@ -447,8 +516,17 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
             // Are we on correct audio stream. Currently we are always
             // Using first audio stream but in future there should be
             // possibility to choose which to use
+            // If Pos is -1 it meand FFmpeg/AVConv doesn't know it
+            // So then we use pts instead
             if (l_SPacket.stream_index == m_pAudioStream->index &&
-                    l_SPacket.pos >= 0) {
+                    (l_SPacket.pos >= 0 || l_SPacket.pos == -1)) {
+
+                // Codecs like Wavpack does it like this
+                // They work but you can say about position nothing
+                if (l_SPacket.pos == -1)
+                {
+                   l_SPacket.pos = l_SPacket.pts;
+                }
                 if (m_lStoredSeekPoint > 0) {
                     struct ffmpegLocationObject *l_STestObj = nullptr;
                     if (m_SJumpPoints.size() > 0) {
@@ -474,21 +552,50 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                     m_SStoredJumpPoint = nullptr;
                 }
 
+#if AVSTREAM_FROM_API_VERSION_3_1
+                l_iRet = avcodec_send_packet(m_pAudioContext, &l_SPacket);
+
+                // AVERROR(EAGAIN) means that we need to feed more
+                // That we can decode Frame or Packet
+                if (l_iRet == AVERROR(EAGAIN)) {
+                  kLogger.debug() << "readFramesToCache: Need more packets to decode!";
+                  continue;
+                }
+
+                if(l_iRet == AVERROR_EOF || l_iRet == AVERROR(EINVAL)) {
+                      kLogger.debug() << "readFramesToCache: Warning can't decode frame!";
+                }
+
+                l_iRet = avcodec_receive_frame(m_pAudioContext, l_pFrame);
+
+                // AVERROR(EAGAIN) means that we need to feed more
+                // That we can decode Frame or Packet
+                if (l_iRet == AVERROR(EAGAIN)) {
+                  kLogger.debug() << "readFramesToCache: Need more packets to decode!";
+                  continue;
+                }
+
+                if(l_iRet == AVERROR_EOF || l_iRet == AVERROR(EINVAL)) {
+                      kLogger.debug() << "readFramesToCache: Warning can't decode frame!";
+                }
+
+                if (l_iRet == AVERROR_EOF || l_iRet < 0) {
+#else
                 // Decode audio bytes (These can be S16P or FloatP [P is Planar])
                 l_iRet = avcodec_decode_audio4(m_pAudioStream->codec,l_pFrame,&l_iFrameFinished,
                                                &l_SPacket);
-
                 if (l_iRet <= 0) {
+#endif
                     // An error or EOF occurred,index break out and return what
                     // we have so far.
-                    qDebug() << "EOF!";
+                    kLogger.debug() << "readFramesToCache: EOF or uncoverable error!";
                     l_bStop = true;
                     continue;
                 } else {
                     l_iRet = 0;
                     l_SObj = (struct ffmpegCacheObject *)malloc(sizeof(struct ffmpegCacheObject));
                     if (l_SObj == nullptr) {
-                        qDebug() << "SoundSourceFFmpeg::readFramesToCache: Not enough memory!";
+                        kLogger.debug() << "readFramesToCache: Not enough memory!";
                         l_bStop = true;
                         continue;
                     }
@@ -553,8 +660,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                     } else {
                         free(l_SObj);
                         l_SObj = nullptr;
-                        qDebug() <<
-                                 "SoundSourceFFmpeg::readFramesToCache: General error in audio decode:" <<
+                        kLogger.debug() << "readFramesToCache: General error in audio decode:" <<
                                  l_iRet;
                     }
                 }
@@ -577,7 +683,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
 
 
         } else {
-            qDebug() << "SoundSourceFFmpeg::readFramesToCache: Packet too big or File end";
+            kLogger.debug() << "readFramesToCache: Packet too big or File end";
             l_bStop = true;
         }
 
@@ -601,13 +707,12 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
     }
 
     if (l_iFrameCount > 0) {
-        qDebug() <<
-                 "SoundSourceFFmpeg::readFramesToCache(): Frame balance is not 0 it is: " <<
+        kLogger.debug() << "readFramesToCache(): Frame balance is not 0 it is: " <<
                  l_iFrameCount;
     }
 
     if (m_SCache.isEmpty()) {
-        qDebug() << "SoundSourceFFmpeg::readFramesToCache(): Can't read frames. Cache empty!";
+        kLogger.debug() << "readFramesToCache(): Can't read frames. Cache empty!";
         return false;
     }
 
@@ -636,8 +741,11 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
 
     // If cache is empty then retun without crash.
     if (m_SCache.isEmpty()) {
-        qDebug() << "SoundSourceFFmpeg::getBytesFromCache: Cache is empty can't return bytes";
-        memset(l_pBuffer, 0x00, l_lLeft);
+        kLogger.debug() << "getBytesFromCache: Cache is empty can't return bytes";
+        if(l_pBuffer != nullptr)
+        {
+            memset(l_pBuffer, 0x00, l_lLeft);
+        }
         return false;
     }
 
@@ -681,12 +789,12 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
         l_SObj = m_SCache[l_lPos];
 
         if (l_SObj == nullptr) {
-            qDebug() << "SoundSourceFFmpeg::getBytesFromCache: Cache object nullptr";
+            kLogger.debug() << "getBytesFromCache: Cache object nullptr";
             return false;
         }
 
         if (l_pBuffer == nullptr) {
-            qDebug() << "SoundSourceFFmpeg::getBytesFromCache: Out buffer nullptr";
+            kLogger.debug() << "getBytesFromCache: Out buffer nullptr";
             return false;
         }
 
@@ -733,9 +841,11 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
                     l_SObj = m_SCache[++ l_lPos];
                     continue;
                 } else {
-                    qDebug() <<
-                             "SoundSourceFFmpeg::getBytesFromCache: Buffer run out. Shouldn't happen!";
-                    memset(l_pBuffer, 0x00, l_lLeft);
+                    kLogger.debug() << "getBytesFromCache: Buffer run out. Shouldn't happen!";
+                    if(l_pBuffer != nullptr)
+                    {
+                        memset(l_pBuffer, 0x00, l_lLeft);
+                    }
                     return false;
                 }
             }
@@ -808,7 +918,7 @@ SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
                                  AVSEEK_FLAG_BACKWARD);
 
         if (ret < 0) {
-            qDebug() << "SoundSourceFFmpeg::seek: Can't seek to 0 byte!";
+            kLogger.debug() << "seek: Can't seek to 0 byte!";
             return -1;
         }
 
@@ -870,25 +980,27 @@ SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
 SINT SoundSourceFFmpeg::readSampleFrames(SINT numberOfFrames,
         CSAMPLE* sampleBuffer) {
 
-    if (m_SCache.size() == 0) {
-        // Make sure we always start at beginning and cache have some
-        // material that we can consume.
-        seekSampleFrame(0);
+    const SINT prevFrameIndex = m_currentMixxxFrameIndex;
+    const SINT numberOfFramesRemaining = math_min(
+            numberOfFrames, getMaxFrameIndex() - m_currentMixxxFrameIndex);
+
+    if (sampleBuffer != nullptr) {
+        if (m_SCache.size() == 0) {
+            // Make sure we always start at beginning and cache have some
+            // material that we can consume.
+            seekSampleFrame(0);
+            m_bIsSeeked = false;
+        }
+        getBytesFromCache(sampleBuffer, m_currentMixxxFrameIndex, numberOfFramesRemaining);
+        m_currentMixxxFrameIndex += numberOfFramesRemaining;
         m_bIsSeeked = false;
+    } else {
+       // No output buffer -> just skip frames
+       seekSampleFrame(prevFrameIndex + numberOfFramesRemaining);
     }
 
-    getBytesFromCache(sampleBuffer, m_currentMixxxFrameIndex, numberOfFrames);
-
-    //  As this is also Hack
-    // If we don't seek like we don't on analyzer.. keep
-    // place in mind..
-    if (m_bIsSeeked == false) {
-        m_currentMixxxFrameIndex += numberOfFrames;
-    }
-
-    m_bIsSeeked = false;
-
-    return numberOfFrames;
+    DEBUG_ASSERT(prevFrameIndex <= m_currentMixxxFrameIndex);
+    return m_currentMixxxFrameIndex - prevFrameIndex;
 }
 
 } // namespace mixxx

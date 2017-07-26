@@ -33,7 +33,7 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
           m_bIsCaching(isCaching),
           m_trackDAO(pTrackCollection->getTrackDAO()),
           m_database(pTrackCollection->database()),
-          m_pQueryParser(new SearchQueryParser(pTrackCollection->database())) {
+          m_pQueryParser(new SearchQueryParser(pTrackCollection)) {
     m_searchColumns << "artist"
                     << "album"
                     << "album_artist"
@@ -302,7 +302,7 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER) == column) {
         trackValue.setValue(pTrack->getTrackNumber());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOCATION) == column) {
-        trackValue.setValue(pTrack->getLocation());
+        trackValue.setValue(QDir::toNativeSeparators(pTrack->getLocation()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT) == column) {
         trackValue.setValue(pTrack->getComment());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) == column) {

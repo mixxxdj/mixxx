@@ -65,6 +65,8 @@ public:
 
     unsigned int getAudioBufferSizeIndex() const;
     unsigned int getFramesPerBuffer() const;
+    // Returns the processing latency in milliseconds
+    double getProcessingLatency() const;
     void setAudioBufferSizeIndex(unsigned int latency);
     unsigned int getSyncBuffers() const;
     void setSyncBuffers(unsigned int sampleRate);
@@ -76,6 +78,8 @@ public:
     QMultiHash<QString, AudioInput> getInputs() const;
     void clearOutputs();
     void clearInputs();
+    bool hasMicInputs();
+    bool hasExternalRecordBroadcast();
     void loadDefaults(SoundManager *soundManager, unsigned int flags);
 private:
     QFileInfo m_configFile;
@@ -93,5 +97,7 @@ private:
     bool m_forceNetworkClock;
     QMultiHash<QString, AudioOutput> m_outputs;
     QMultiHash<QString, AudioInput> m_inputs;
+    int m_iNumMicInputs;
+    bool m_bExternalRecordBroadcastConnected;
 };
 #endif

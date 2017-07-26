@@ -23,6 +23,21 @@ class parented_ptr {
         DEBUG_ASSERT(u->parent() != nullptr);
     }
 
+#if defined(__GNUC__) && __GNUC__ < 5
+    // gcc 4.8 does not implicit use the typ conversion move constructor
+    // from above when returning form a function and use finally RVO.
+    // It requires
+    //return std::move(pObject)
+    // This hack avoids it:
+    template <typename U>
+    operator parented_ptr<U>() const {
+        static_assert(std::is_convertible<T*, U*>::value,
+                "No implicit conversion from T* to U* found.");
+        return parented_ptr<U>(this->get());
+    }
+
+#endif
+
     // Delete copy constructor and copy assignment operator
     parented_ptr(const parented_ptr<T>&) = delete;
     parented_ptr& operator=(const parented_ptr<T>&) = delete;
@@ -41,22 +56,6 @@ class parented_ptr {
 
     T* operator-> () const {
         return m_pObject;
-    }
-
-    bool operator== (const parented_ptr& other) const {
-        return m_pObject == other.m_pObject;
-    }
-
-    bool operator== (const T* other) const {
-        return m_pObject == other;
-    }
-
-    bool operator!= (const parented_ptr& other) const {
-        return m_pObject != other.m_pObject;
-    }
-
-    bool operator!= (const T* other) const {
-        return m_pObject != other;
     }
 
     operator bool() const {
@@ -87,6 +86,37 @@ namespace {
 template<typename T, typename... Args>
 inline parented_ptr<T> make_parented(Args&&... args) {
     return parented_ptr<T>(new T(std::forward<Args>(args)...));
+}
+
+// Comparison operator definitions
+template<typename T, typename U>
+inline bool operator== (const T* lhs, const parented_ptr<U>& rhs) {
+    return lhs == rhs.get();
+}
+
+template<typename T, typename U>
+inline bool operator== (const parented_ptr<T>& lhs, const U* rhs) {
+    return lhs.get() == rhs;
+}
+
+template<typename T, typename U>
+inline bool operator== (const parented_ptr<T>& lhs, const parented_ptr<U>& rhs) const {
+    return lhs.get() == rhs.get();
+}
+
+template<typename T, typename U>
+inline bool operator!= (const T* lhs, const parented_ptr<U>& rhs) {
+    return !(lhs == rhs.get());
+}
+
+template<typename T, typename U>
+inline bool operator!= (const parented_ptr<T>& lhs, const U* rhs) {
+    return !(lhs.get() == rhs);
+}
+
+template<typename T, typename U>
+inline bool operator!= (const parented_ptr<T>& lhs, const parented_ptr<U>& rhs) const {
+    return !(lhs.get() == rhs.get());
 }
 
 } // namespace

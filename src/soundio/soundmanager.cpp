@@ -29,6 +29,7 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
 #include "engine/sidechain/enginenetworkstream.h"
+#include "engine/sidechain/enginesidechain.h"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddevicenetwork.h"
 #include "soundio/sounddevicenotfound.h"
@@ -194,6 +195,7 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
                          m_registeredDestinations.find(in);
                  it != m_registeredDestinations.end() && it.key() == in; ++it) {
                 it.value()->onInputUnconfigured(in);
+                m_pMaster->onInputDisconnected(in);
             }
         }
         foreach (AudioOutput out, pDevice->outputs()) {
@@ -398,6 +400,7 @@ SoundDeviceError SoundManager::setupDevices() {
                     it != m_registeredDestinations.end() && it.key() == in;
                     ++it) {
                 it.value()->onInputConfigured(in);
+                m_pMaster->onInputConnected(in);
             }
         }
         QList<AudioOutput> outputs =
@@ -405,7 +408,7 @@ SoundDeviceError SoundManager::setupDevices() {
 
         // Statically connect the Network Device to the Sidechain
         if (device->getInternalName() == kNetworkDeviceInternalName) {
-            AudioOutput out(AudioPath::SIDECHAIN, 0, 2, 0);
+            AudioOutput out(AudioPath::RECORD_BROADCAST, 0, 2, 0);
             outputs.append(out);
             if (m_config.getForceNetworkClock()) {
                 pNewMasterClockRef = device;
@@ -632,7 +635,6 @@ void SoundManager::readProcess() {
         }
     }
 }
-
 
 void SoundManager::registerOutput(AudioOutput output, AudioSource *src) {
     if (m_registeredSources.contains(output)) {
