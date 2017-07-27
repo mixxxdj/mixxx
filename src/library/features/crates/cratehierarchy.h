@@ -40,6 +40,8 @@ class CrateHierarchy : public virtual DAO {
                                       CrateId& childId,
                                       const QString& idPath) const;
 
+    QString formatQueryForTrackIdsByCratePathLike(const QString& cratePathLike) const;
+    QString getNamePathFromId(CrateId id) const;
 
     bool initClosureForCrate(CrateId id) const;
     bool insertIntoClosure(CrateId parent, CrateId child) const;

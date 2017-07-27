@@ -51,7 +51,7 @@ void CrateTableModel::selectCrate(Crate crate) {
     setTable(tableName, LIBRARYTABLE_ID, columns,
              m_pTrackCollection->getTrackSource());
     //setSearch("crate: one");
-    search(QString("crate: %1").arg(crate.getName()));
+    search(QString("crate: %1").arg(m_pCrates->hierarchy().getNamePathFromId(crate.getId())));
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
 

@@ -1,3 +1,5 @@
+#include "util/db/sqllikewildcards.h"
+#include "library/queryutil.h"
 #include "library/features/crates/cratehierarchy.h"
 #include "util/logger.h"
 
@@ -242,6 +244,42 @@ void CrateHierarchy::deleteCrate(CrateId id) const {
     if (!query2.execPrepared()) {
         return;
     }
+}
+
+QString CrateHierarchy::formatQueryForTrackIdsByCratePathLike(const QString& cratePathLike) const {
+    FieldEscaper escaper(m_database);
+    QString escapedArgument = escaper.escapeString(kSqlLikeMatchAll + cratePathLike + kSqlLikeMatchAll);
+
+    return QString(
+        "SELECT DISTINCT %1 FROM %2 "
+        "JOIN %3 ON %4=%5 "
+        "WHERE %6 LIKE %7 "
+        "ORDER BY %1").arg(
+            CRATETRACKSTABLE_TRACKID,
+            CRATE_TRACKS_TABLE,
+            CRATE_PATH_TABLE,
+            PATHTABLE_CRATEID,
+            CRATETRACKSTABLE_CRATEID,
+            PATHTABLE_NAME_PATH,
+            escapedArgument);
+
+}
+
+QString CrateHierarchy::getNamePathFromId(CrateId id) const {
+    FwdSqlQuery query(
+      m_database, QString(
+        "SELECT %1 FROM %2 "
+        "WHERE %3 = :id").arg(
+          PATHTABLE_NAME_PATH,
+          CRATE_PATH_TABLE,
+          PATHTABLE_CRATEID));
+
+    query.bindValue(":id", id);
+    if (query.execPrepared() && query.next()) {
+        return query.fieldValue(0).toString();
+    }
+    return QString();
+
 }
 
 bool CrateHierarchy::hasChildern(CrateId id) const {

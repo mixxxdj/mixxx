@@ -39,8 +39,6 @@ class CrateFeature : public LibraryFeature {
     QString getSettingsName() const override;
     bool isSinglePane() const override;
 
-    void onSearch(const QString&) override;
-
     bool dragMoveAccept(QUrl url) override;
     bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                          QObject* pSource) override;

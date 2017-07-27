@@ -147,13 +147,6 @@ void CrateFeature::connectTrackCollection() {
             this, SLOT(slotUpdateCrateLabels(QSet<CrateId>)));
 }
 
-void CrateFeature::onSearch(const QString&) {
-    showBreadCrumb();
-    //    if (!m_pSidebar.isNull()) {
-    m_pChildModel->
-        //}
-}
-
 QVariant CrateFeature::title() {
     return tr("Crates");
 }
@@ -332,7 +325,7 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     m_pCrates->storage().readCrateById(crateId, &crate);
     m_pCrateTableModel->selectCrate(crate);
     showTable(m_featurePane);
-    restoreSearch(QString("crate: %1").arg(crate.getName()));
+    restoreSearch(QString("crate: %1").arg(m_pCrates->hierarchy().getNamePathFromId(crate.getId())));
     showBreadCrumb(index);
     showTrackModel(m_pCrateTableModel);
 }
