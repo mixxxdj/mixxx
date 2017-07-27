@@ -147,6 +147,13 @@ void CrateFeature::connectTrackCollection() {
             this, SLOT(slotUpdateCrateLabels(QSet<CrateId>)));
 }
 
+void CrateFeature::onSearch(const QString&) {
+    showBreadCrumb();
+    //    if (!m_pSidebar.isNull()) {
+    m_pChildModel->
+        //}
+}
+
 QVariant CrateFeature::title() {
     return tr("Crates");
 }
@@ -321,9 +328,11 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     }
 
     m_pCrateTableModel = getTableModel(m_featurePane);
-    m_pCrateTableModel->selectCrate(crateId);
+    Crate crate;
+    m_pCrates->storage().readCrateById(crateId, &crate);
+    m_pCrateTableModel->selectCrate(crate);
     showTable(m_featurePane);
-    restoreSearch("");
+    restoreSearch(QString("crate: %1").arg(crate.getName()));
     showBreadCrumb(index);
     showTrackModel(m_pCrateTableModel);
 }
@@ -346,7 +355,9 @@ bool CrateFeature::activateCrate(CrateId crateId) {
     // a corresponding table model? m_pCrateTableModel = nullptr
     // when creating crates by clicking the link on the HTML view.
     if (m_pCrateTableModel) {
-        m_pCrateTableModel->selectCrate(crateId);
+        Crate crate;
+        m_pCrates->storage().readCrateById(crateId, &crate);
+        m_pCrateTableModel->selectCrate(crate);
         emit(showTrackModel(m_pCrateTableModel));
     }
     emit(enableCoverArtDisplay(true));
@@ -706,7 +717,9 @@ void CrateFeature::slotCreateImportCrate() {
         }
 
         if (m_pCrates->insertCrate(crate, &lastCrateId)) {
-            m_pCrateTableModel->selectCrate(lastCrateId);
+                Crate crate;
+                m_pCrates->storage().readCrateById(lastCrateId, &crate);
+                m_pCrateTableModel->selectCrate(crate);
         } else {
             QMessageBox::warning(
                     nullptr,
@@ -782,7 +795,9 @@ void CrateFeature::slotExportPlaylist() {
     // Create a new table model since the main one might have an active search.
     QScopedPointer<CrateTableModel> pCrateTableModel(
         new CrateTableModel(this, m_pTrackCollection));
-    pCrateTableModel->selectCrate(m_pCrateTableModel->selectedCrate());
+    Crate selectedCrate;
+    m_pCrates->storage().readCrateById(m_pCrateTableModel->selectedCrate(), &selectedCrate);
+    pCrateTableModel->selectCrate(selectedCrate);
     pCrateTableModel->select();
 
     if (file_location.endsWith(".csv", Qt::CaseInsensitive)) {
@@ -819,7 +834,9 @@ void CrateFeature::slotExportTrackFiles() {
     // Create a new table model since the main one might have an active search.
     QScopedPointer<CrateTableModel> pCrateTableModel(
         new CrateTableModel(this, m_pTrackCollection));
-    pCrateTableModel->selectCrate(m_pCrateTableModel->selectedCrate());
+    Crate crate;
+    m_pCrates->storage().readCrateById(m_pCrateTableModel->selectedCrate(), &crate);
+    pCrateTableModel->selectCrate(crate);
     pCrateTableModel->select();
 
     int rows = pCrateTableModel->rowCount();

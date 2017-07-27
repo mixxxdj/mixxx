@@ -11,19 +11,19 @@ CrateTableModel::CrateTableModel(QObject* pParent,
                                  TrackCollection* pTrackCollection)
         : BaseSqlTableModel(pParent, pTrackCollection,
                             "mixxx.db.model.crate"),
-          m_pCrates(pTrackCollection->crates()){
+          m_pCrates(pTrackCollection->crates()) {
 }
 
 CrateTableModel::~CrateTableModel() {
 }
 
-void CrateTableModel::selectCrate(CrateId crateId) {
+void CrateTableModel::selectCrate(Crate crate) {
     //qDebug() << "CrateTableModel::setCrate()" << crateId;
-    if (crateId == m_selectedCrate) {
-        qDebug() << "Already focused on crate " << crateId;
+    if (crate.getId() == m_selectedCrate) {
+        qDebug() << "Already focused on crate " << crate.getId();
         return;
     }
-    m_selectedCrate = crateId;
+    m_selectedCrate = crate.getId();
 
     QString tableName = QString("crate_%1").arg(m_selectedCrate.toString());
     QStringList columns;
@@ -38,13 +38,10 @@ void CrateTableModel::selectCrate(CrateId crateId) {
     // track property, which persist over a hide / unhide cycle.
     QString queryString = QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
                                   "SELECT %2 FROM %3 "
-                                  "WHERE %4 IN (%5) "
-                                  "AND %6=0")
+                                  "WHERE %4=0")
                           .arg(tableName,
                                columns.join(","),
                                LIBRARY_TABLE,
-                               LIBRARYTABLE_ID,
-                               CrateTracks::formatSubselectQueryForCrateTrackIds(crateId),
                                LIBRARYTABLE_MIXXXDELETED);
     FwdSqlQuery(m_database, queryString).execPrepared();
 
@@ -53,7 +50,8 @@ void CrateTableModel::selectCrate(CrateId crateId) {
     columns[2] = LIBRARYTABLE_COVERART;
     setTable(tableName, LIBRARYTABLE_ID, columns,
              m_pTrackCollection->getTrackSource());
-    setSearch("");
+    //setSearch("crate: one");
+    search(QString("crate: %1").arg(crate.getName()));
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
 

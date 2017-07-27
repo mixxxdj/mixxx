@@ -154,7 +154,6 @@ CrateTrackSelectResult CrateTracks::selectCrateTracksSorted(CrateId crateId) con
     }
 }
 
-// CrateTrackSelectResult();
 CrateTrackSelectResult CrateTracks::selectTrackCratesSorted(TrackId trackId) const {
     FwdSqlQuery query(m_database, QString(
             "SELECT * FROM %1 WHERE %2=:trackId ORDER BY %3").arg(
@@ -169,7 +168,6 @@ CrateTrackSelectResult CrateTracks::selectTrackCratesSorted(TrackId trackId) con
     }
 }
 
-// CrateTrackSelectResult();
 CrateTrackSelectResult CrateTracks::selectTracksSortedByCrateNameLike(const QString& crateNameLike) const {
     FwdSqlQuery query(m_database, QString(
             "SELECT %1,%2 FROM %3 JOIN %4 ON %5 = %6 WHERE %7 LIKE :crateNameLike ORDER BY %1").arg(
