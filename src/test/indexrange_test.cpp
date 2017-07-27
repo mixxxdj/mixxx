@@ -43,31 +43,31 @@ TEST_F(IndexRangeTest, length) {
     EXPECT_EQ(1, IndexRange::between(-2, -1).length());
 }
 
-TEST_F(IndexRangeTest, contains) {
-    EXPECT_FALSE(IndexRange().contains(0));
-    EXPECT_FALSE(IndexRange().contains(-1));
-    EXPECT_FALSE(IndexRange().contains(2));
-    EXPECT_TRUE(IndexRange::between(1, -2).contains(0));
-    EXPECT_TRUE(IndexRange::between(1, -2).contains(1));
-    EXPECT_FALSE(IndexRange::between(1, -2).contains(-2));
-    EXPECT_TRUE(IndexRange::between(-2, 5).contains(-2));
-    EXPECT_TRUE(IndexRange::between(-2, 5).contains(0));
-    EXPECT_TRUE(IndexRange::between(-2, 5).contains(4));
-    EXPECT_FALSE(IndexRange::between(-2, 5).contains(5));
+TEST_F(IndexRangeTest, containsIndex) {
+    EXPECT_FALSE(IndexRange().containsIndex(0));
+    EXPECT_FALSE(IndexRange().containsIndex(-1));
+    EXPECT_FALSE(IndexRange().containsIndex(2));
+    EXPECT_TRUE(IndexRange::between(1, -2).containsIndex(0));
+    EXPECT_TRUE(IndexRange::between(1, -2).containsIndex(1));
+    EXPECT_FALSE(IndexRange::between(1, -2).containsIndex(-2));
+    EXPECT_TRUE(IndexRange::between(-2, 5).containsIndex(-2));
+    EXPECT_TRUE(IndexRange::between(-2, 5).containsIndex(0));
+    EXPECT_TRUE(IndexRange::between(-2, 5).containsIndex(4));
+    EXPECT_FALSE(IndexRange::between(-2, 5).containsIndex(5));
 }
 
-TEST_F(IndexRangeTest, clamp) {
-    EXPECT_EQ(-1, IndexRange::between(-1, 1).clamp(-2));
-    EXPECT_EQ(-1, IndexRange::between(-1, 1).clamp(-1));
-    EXPECT_EQ(0, IndexRange::between(-1, 1).clamp(0));
-    EXPECT_EQ(1, IndexRange::between(-1, 1).clamp(1));
-    EXPECT_EQ(1, IndexRange::between(-1, 1).clamp(2));
-    EXPECT_EQ(-1, IndexRange::between(-1, -1).clamp(-2));
-    EXPECT_EQ(-1, IndexRange::between(-1, -1).clamp(2));
-    EXPECT_EQ(0, IndexRange::between(0, 0).clamp(-2));
-    EXPECT_EQ(0, IndexRange::between(0, 0).clamp(2));
-    EXPECT_EQ(1, IndexRange::between(1, 1).clamp(-2));
-    EXPECT_EQ(1, IndexRange::between(1, 1).clamp(2));
+TEST_F(IndexRangeTest, clampIndex) {
+    EXPECT_EQ(-1, IndexRange::between(-1, 1).clampIndex(-2));
+    EXPECT_EQ(-1, IndexRange::between(-1, 1).clampIndex(-1));
+    EXPECT_EQ(0, IndexRange::between(-1, 1).clampIndex(0));
+    EXPECT_EQ(1, IndexRange::between(-1, 1).clampIndex(1));
+    EXPECT_EQ(1, IndexRange::between(-1, 1).clampIndex(2));
+    EXPECT_EQ(-1, IndexRange::between(-1, -1).clampIndex(-2));
+    EXPECT_EQ(-1, IndexRange::between(-1, -1).clampIndex(2));
+    EXPECT_EQ(0, IndexRange::between(0, 0).clampIndex(-2));
+    EXPECT_EQ(0, IndexRange::between(0, 0).clampIndex(2));
+    EXPECT_EQ(1, IndexRange::between(1, 1).clampIndex(-2));
+    EXPECT_EQ(1, IndexRange::between(1, 1).clampIndex(2));
 }
 
 TEST_F(IndexRangeTest, startend) {
@@ -83,75 +83,75 @@ TEST_F(IndexRangeTest, startend) {
     EXPECT_EQ(1, IndexRange::between(1, 1).end());
 }
 
-TEST_F(IndexRangeTest, dropFront) {
+TEST_F(IndexRangeTest, dropFrontRange) {
     auto r1 = IndexRange::between(-4, 9);
-    r1.dropFront(3);
+    r1.dropFrontRange(3);
     EXPECT_EQ(IndexRange::between(-1, 9), r1);
-    r1.dropFront(0);
+    r1.dropFrontRange(0);
     EXPECT_EQ(IndexRange::between(-1, 9), r1);
-    r1.dropFront(r1.length());
+    r1.dropFrontRange(r1.length());
     EXPECT_TRUE(r1.empty());
 
     auto r2 = IndexRange::between(9, -4);
-    r2.dropFront(3);
+    r2.dropFrontRange(3);
     EXPECT_EQ(IndexRange::between(6, -4), r2);
-    r2.dropFront(0);
+    r2.dropFrontRange(0);
     EXPECT_EQ(IndexRange::between(6, -4), r2);
-    r2.dropFront(r2.length());
+    r2.dropFrontRange(r2.length());
     EXPECT_TRUE(r2.empty());
 }
 
-TEST_F(IndexRangeTest, splitFront) {
+TEST_F(IndexRangeTest, cutFrontRange) {
     auto r1 = IndexRange::between(-4, 9);
-    EXPECT_EQ(IndexRange::between(-4, -1), r1.splitFront(3));
+    EXPECT_EQ(IndexRange::between(-4, -1), r1.cutFrontRange(3));
     EXPECT_EQ(IndexRange::between(-1, 9), r1);
-    EXPECT_TRUE(r1.splitFront(0).empty());
+    EXPECT_TRUE(r1.cutFrontRange(0).empty());
     EXPECT_EQ(IndexRange::between(-1, 9), r1);
-    EXPECT_EQ(IndexRange::between(-1, 9), r1.splitFront(r1.length()));
+    EXPECT_EQ(IndexRange::between(-1, 9), r1.cutFrontRange(r1.length()));
     EXPECT_TRUE(r1.empty());
 
     auto r2 = IndexRange::between(9, -4);
-    EXPECT_EQ(IndexRange::between(9, 6), r2.splitFront(3));
+    EXPECT_EQ(IndexRange::between(9, 6), r2.cutFrontRange(3));
     EXPECT_EQ(IndexRange::between(6, -4), r2);
-    EXPECT_TRUE(r2.splitFront(0).empty());
+    EXPECT_TRUE(r2.cutFrontRange(0).empty());
     EXPECT_EQ(IndexRange::between(6, -4), r2);
-    EXPECT_EQ(IndexRange::between(6, -4), r2.splitFront(r2.length()));
+    EXPECT_EQ(IndexRange::between(6, -4), r2.cutFrontRange(r2.length()));
     EXPECT_TRUE(r2.empty());
 }
 
-TEST_F(IndexRangeTest, dropBack) {
+TEST_F(IndexRangeTest, dropBackRange) {
     auto r1 = IndexRange::between(-4, 9);
-    r1.dropBack(3);
+    r1.dropBackRange(3);
     EXPECT_EQ(IndexRange::between(-4, 6), r1);
-    r1.dropBack(0);
+    r1.dropBackRange(0);
     EXPECT_EQ(IndexRange::between(-4, 6), r1);
-    r1.dropBack(r1.length());
+    r1.dropBackRange(r1.length());
     EXPECT_TRUE(r1.empty());
 
     auto r2 = IndexRange::between(9, -4);
-    r2.dropBack(3);
+    r2.dropBackRange(3);
     EXPECT_EQ(IndexRange::between(9, -1), r2);
-    r2.dropBack(0);
+    r2.dropBackRange(0);
     EXPECT_EQ(IndexRange::between(9, -1), r2);
-    r2.dropBack(r2.length());
+    r2.dropBackRange(r2.length());
     EXPECT_TRUE(r2.empty());
 }
 
-TEST_F(IndexRangeTest, splitBack) {
+TEST_F(IndexRangeTest, cutBackRange) {
     auto r1 = IndexRange::between(-4, 9);
-    EXPECT_EQ(IndexRange::between(6, 9), r1.splitBack(3));
+    EXPECT_EQ(IndexRange::between(6, 9), r1.cutBackRange(3));
     EXPECT_EQ(IndexRange::between(-4, 6), r1);
-    EXPECT_TRUE(r1.splitBack(0).empty());
+    EXPECT_TRUE(r1.cutBackRange(0).empty());
     EXPECT_EQ(IndexRange::between(-4, 6), r1);
-    EXPECT_EQ(IndexRange::between(-4, 6), r1.splitBack(r1.length()));
+    EXPECT_EQ(IndexRange::between(-4, 6), r1.cutBackRange(r1.length()));
     EXPECT_TRUE(r1.empty());
 
     auto r2 = IndexRange::between(9, -4);
-    EXPECT_EQ(IndexRange::between(-1, -4), r2.splitBack(3));
+    EXPECT_EQ(IndexRange::between(-1, -4), r2.cutBackRange(3));
     EXPECT_EQ(IndexRange::between(9, -1), r2);
-    EXPECT_TRUE(r2.splitBack(0).empty());
+    EXPECT_TRUE(r2.cutBackRange(0).empty());
     EXPECT_EQ(IndexRange::between(9, -1), r2);
-    EXPECT_EQ(IndexRange::between(9, -1), r2.splitBack(r2.length()));
+    EXPECT_EQ(IndexRange::between(9, -1), r2.cutBackRange(r2.length()));
     EXPECT_TRUE(r2.empty());
 }
 

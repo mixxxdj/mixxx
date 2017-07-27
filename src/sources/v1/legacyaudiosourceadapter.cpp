@@ -46,7 +46,7 @@ IndexRange LegacyAudioSourceAdapter::readOrSkipSampleFrames(
 
     SINT outputSampleOffset = 0;
     if (seekFrameIndex > readableFrames.start()) {
-        const auto unreadableFrames = readableFrames.splitFront(seekFrameIndex - readableFrames.start());
+        const auto unreadableFrames = readableFrames.cutFrontRange(seekFrameIndex - readableFrames.start());
         kLogger.warning()
                 << "Dropping unreadable frames"
                 << unreadableFrames;

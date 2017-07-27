@@ -291,7 +291,7 @@ SINT CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPL
                 buffer += prerollSamples;
             }
             samplesRead += prerollSamples;
-            remainingFrameIndexRange.splitFront(prerollFrames);
+            remainingFrameIndexRange.cutFrontRange(prerollFrames);
         }
 
         // Read the actual samples from the audio source into the
@@ -373,7 +373,7 @@ SINT CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPL
                         buffer += paddingSamples;
                     }
                     samplesRead += paddingSamples;
-                    remainingFrameIndexRange.splitFront(paddingFrameIndexRange.length());
+                    remainingFrameIndexRange.cutFrontRange(paddingFrameIndexRange.length());
                 }
                 const SINT chunkSamples =
                         CachingReaderChunk::frames2samples(bufferedFrameIndexRange.length());
@@ -381,7 +381,7 @@ SINT CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPL
                     buffer += chunkSamples;
                 }
                 samplesRead += chunkSamples;
-                remainingFrameIndexRange.splitFront(bufferedFrameIndexRange.length());
+                remainingFrameIndexRange.cutFrontRange(bufferedFrameIndexRange.length());
             }
         }
     }
