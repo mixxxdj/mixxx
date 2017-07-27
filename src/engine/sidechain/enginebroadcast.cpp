@@ -14,6 +14,7 @@
 #include "broadcast/defs_broadcast.h"
 #include "control/controlpushbutton.h"
 #include "preferences/usersettings.h"
+#include "util/sample.h"
 
 #include "engine/sidechain/enginebroadcast.h"
 
@@ -147,8 +148,29 @@ void EngineBroadcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             int copyCount = math_min(available, iBufferSize);
             if(copyCount > 0) {
                 cFifo->write(pBuffer, copyCount);
+            } else {
+                // A full FIFO queue means that its associated thread
+                // is stalled. In that case, flush the queue
+                // and push silence
+                CSAMPLE* dataPtr1;
+                ring_buffer_size_t size1;
+                CSAMPLE* dataPtr2;
+                ring_buffer_size_t size2;
+
+                cFifo->flushReadData(cFifo->readAvailable());
+                int clearCount =
+                        math_min(cFifo->writeAvailable(), iBufferSize);
+
+                (void)cFifo->aquireWriteRegions(clearCount,
+                        &dataPtr1, &size1, &dataPtr2, &size2);
+                SampleUtil::clear(dataPtr1,size1);
+                if (size2 > 0) {
+                    SampleUtil::clear(dataPtr2,size2);
+                }
+                cFifo->releaseWriteRegions(clearCount);
             }
 
+            // ----
             // Below is code replicating the behaviour of
             // EngineNetworkStream::writingDone(int interval).
             // This function is called by SoundDeviceNetwork when
