@@ -58,7 +58,7 @@
   </Page>
   <Page Name="Success">
     <Image X="0" Y="0" Width="450" Height="450" ImageFile="logo.png"/>
-    <Text Name="SuccessHeader" X="11" Y="65" Width="-11" Height="32" FontId="2" DisablePrefix="yes">#(loc.SuccessHeader)</Text>
+    <Text X="11" Y="65" Width="-11" Height="32" FontId="2" DisablePrefix="yes">#(loc.SuccessHeader)</Text>
     <Text Name="SuccessInstallHeader" X="11" Y="106" Width="-11" Height="64" FontId="3" HideWhenDisabled="yes" DisablePrefix="yes">#(loc.SuccessInstallHeader)</Text>
     <Text Name="SuccessRepairHeader" X="11" Y="106" Width="-11" Height="64" FontId="3" HideWhenDisabled="yes" DisablePrefix="yes">#(loc.SuccessRepairHeader)</Text>
     <Text Name="SuccessUninstallHeader" X="11" Y="106" Width="-11" Height="64" FontId="3" HideWhenDisabled="yes" DisablePrefix="yes">#(loc.SuccessUninstallHeader)</Text>
@@ -69,7 +69,7 @@
   </Page>
   <Page Name="Failure">
     <Image X="0" Y="0" Width="450" Height="450" ImageFile="logo.png"/>
-    <Text Name="FailureHeader" X="11" Y="65" Width="-11" Height="32" FontId="2" DisablePrefix="yes">#(loc.FailureHeader)</Text>
+    <Text X="11" Y="65" Width="-11" Height="32" FontId="2" DisablePrefix="yes">#(loc.FailureHeader)</Text>
     <Text Name="FailureInstallHeader" X="11" Y="106" Width="-11" Height="64" FontId="3" HideWhenDisabled="yes" DisablePrefix="yes">#(loc.FailureInstallHeader)</Text>
     <Text Name="FailureUninstallHeader" X="11" Y="106" Width="-11" Height="64" FontId="3" HideWhenDisabled="yes" DisablePrefix="yes">#(loc.FailureRepairHeader)</Text>
     <Text Name="FailureRepairHeader" X="11" Y="106" Width="-11" Height="64" FontId="3" HideWhenDisabled="yes" DisablePrefix="yes">#(loc.FailureUninstallHeader)</Text>
