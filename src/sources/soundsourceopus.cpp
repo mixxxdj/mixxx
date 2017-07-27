@@ -329,7 +329,7 @@ IndexRange SoundSourceOpus::readOrSkipSampleFrames(
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(readableFrames.length() >= numberOfFramesRemaining);
-    return readableFrames.splitFront(readableFrames.length() - numberOfFramesRemaining);
+    return readableFrames.cutFrontRange(readableFrames.length() - numberOfFramesRemaining);
 }
 
 QString SoundSourceProviderOpus::getName() const {

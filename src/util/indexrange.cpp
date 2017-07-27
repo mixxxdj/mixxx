@@ -6,7 +6,7 @@
 
 namespace mixxx {
 
-IndexRange IndexRange::splitFront(SINT startLength) {
+IndexRange IndexRange::cutFrontRange(SINT startLength) {
     DEBUG_ASSERT(startLength >= 0);
     DEBUG_ASSERT(startLength <= length());
     if (start() <= end()) {
@@ -24,7 +24,7 @@ IndexRange IndexRange::splitFront(SINT startLength) {
     }
 }
 
-IndexRange IndexRange::splitBack(SINT endLength) {
+IndexRange IndexRange::cutBackRange(SINT endLength) {
     DEBUG_ASSERT(endLength >= 0);
     DEBUG_ASSERT(endLength <= length());
     if (start() <= end()) {

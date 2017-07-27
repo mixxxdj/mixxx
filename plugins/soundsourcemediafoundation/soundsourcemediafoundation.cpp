@@ -452,7 +452,7 @@ IndexRange SoundSourceMediaFoundation::readOrSkipSampleFrames(
         }
     }
 
-    return readableFrames.splitFront(readableFrames.length() - numberOfFramesRemaining);
+    return readableFrames.cutFrontRange(readableFrames.length() - numberOfFramesRemaining);
 }
 
 //-------------------------------------------------------------------

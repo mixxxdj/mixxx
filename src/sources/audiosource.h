@@ -105,7 +105,7 @@ class AudioSource: public UrlResource, public AudioSignal, public virtual /*impl
     // [frameIndexMin(), frameIndexMax()]
     // including the upper bound of the range!
     bool isValidFrameIndex(SINT frameIndex) const {
-        return m_frameIndexRange.clamp(frameIndex) == frameIndex;
+        return m_frameIndexRange.clampIndex(frameIndex) == frameIndex;
     }
 
 

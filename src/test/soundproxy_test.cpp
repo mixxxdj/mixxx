@@ -156,7 +156,7 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
                 pContReadSource->frames2samples(kReadFrameCount));
 
         SINT contFrameIndex = pContReadSource->frameIndexMin();
-        while (pContReadSource->frameIndexRange().contains(contFrameIndex)) {
+        while (pContReadSource->frameIndexRange().containsIndex(contFrameIndex)) {
             const auto readFrameIndexRange =
                     mixxx::IndexRange::forward(contFrameIndex, kReadFrameCount);
             qDebug() << "Seeking and reading" << readFrameIndexRange;
@@ -265,7 +265,7 @@ TEST_F(SoundSourceProxyTest, skipAndRead) {
 
         SINT minFrameIndex = pContReadSource->frameIndexMin();
         SINT skipCount = 1;
-        while (pContReadSource->frameIndexRange().contains(minFrameIndex += skipCount)) {
+        while (pContReadSource->frameIndexRange().containsIndex(minFrameIndex += skipCount)) {
             skipCount = minFrameIndex / 4 + 1; // for next iteration
 
             qDebug() << "Skipping to:" << minFrameIndex;

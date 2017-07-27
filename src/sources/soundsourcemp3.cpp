@@ -702,7 +702,7 @@ IndexRange SoundSourceMp3::readOrSkipSampleFrames(
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(readableFrames.length() >= numberOfFramesRemaining);
-    return readableFrames.splitFront(readableFrames.length() - numberOfFramesRemaining);
+    return readableFrames.cutFrontRange(readableFrames.length() - numberOfFramesRemaining);
 }
 
 QString SoundSourceProviderMp3::getName() const {

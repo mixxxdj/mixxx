@@ -72,7 +72,7 @@ class IndexRange final: private std::pair<SINT, SINT> {
 
     // Clamps index by this range including both start() and end()
     // boundaries.
-    SINT clamp(SINT index) const {
+    SINT clampIndex(SINT index) const {
         if (start() <= end()) {
             return std::max(start(), std::min(end(), index));
         } else {
@@ -80,7 +80,7 @@ class IndexRange final: private std::pair<SINT, SINT> {
         }
     }
 
-    bool contains(SINT index) const {
+    bool containsIndex(SINT index) const {
         if (start() <= end()) {
             return (start() <= index) && (index < end());
         } else {
@@ -92,16 +92,16 @@ class IndexRange final: private std::pair<SINT, SINT> {
     // and returning a range of given length and same direction
     // from the front side. The given front length must not exceed
     // the length of this range.
-    IndexRange splitFront(SINT frontLength);
+    IndexRange cutFrontRange(SINT frontLength);
 
     // Splits this range into two adjacent parts by slicing off
     // and returning a range of given length and same direction
     // from the back side. The given back length must not exceed
     // the length of this range.
-    IndexRange splitBack(SINT backLength);
+    IndexRange cutBackRange(SINT backLength);
 
-    // Same as splitFront(), but omitting the return value.
-    void dropFront(SINT frontLength) {
+    // Same as cutFrontRange(), but omitting the return value.
+    void dropFrontRange(SINT frontLength) {
         DEBUG_ASSERT(frontLength >= 0);
         DEBUG_ASSERT(frontLength <= length());
         if (start() <= end()) {
@@ -111,8 +111,8 @@ class IndexRange final: private std::pair<SINT, SINT> {
         }
     }
 
-    // Same as splitBack(), but omitting the return value.
-    void dropBack(SINT backLength) {
+    // Same as cutBackRange(), but omitting the return value.
+    void dropBackRange(SINT backLength) {
         DEBUG_ASSERT(backLength >= 0);
         DEBUG_ASSERT(backLength <= length());
         if (start() <= end()) {

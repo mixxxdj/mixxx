@@ -590,7 +590,7 @@ IndexRange SoundSourceM4A::readOrSkipSampleFrames(
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(numberOfSamplesTotal >= numberOfSamplesRemaining);
-    return readableFrames.splitFront(
+    return readableFrames.cutFrontRange(
             samples2frames(numberOfSamplesTotal - numberOfSamplesRemaining));
 }
 
