@@ -149,11 +149,20 @@ void EngineBroadcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
                 cFifo->write(pBuffer, copyCount);
             }
 
+            // Below is code replicating the behaviour of
+            // EngineNetworkStream::writingDone(int interval).
+            // This function is called by SoundDeviceNetwork when
+            // enough frames are available for streaming.
+
+            // As SoundDeviceNetwork uses writingDone, the "interval" parameter
+            // passed to the latter is the number of bytes written (copyCount).
+            // We have that too here, so we use it.
             int interval = copyCount;
             int outputChannels = m_pNetworkStream->getNumOutputChannels();
+
             // Same formula as in EngineNetworkStream::writingDone:
-            // Check for desired kNetworkLatencyFrames + 1/2 interval to
-            // avoid big jitter due to interferences with sync code
+            // "Check for desired kNetworkLatencyFrames + 1/2 interval to
+            // avoid big jitter due to interferences with sync code"
             if(cFifo->readAvailable() + interval / 2
                     >= (outputChannels * kNetworkLatencyFrames)) {
                 c->outputAvailable();
