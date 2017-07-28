@@ -9,10 +9,10 @@ Description:
     * track comment (if enabled)
     * deck buttons
 Variables:
-  channum : [ChannelN]
+  chanNum : [ChannelN]
 -->
 <Template>
-  <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
+  <SetVariable name="group">[Channel<Variable name="chanNum"/>]</SetVariable>
   <WidgetGroup>
     <ObjectName>DeckContainer</ObjectName>
     <Layout>horizontal</Layout>
@@ -21,11 +21,11 @@ Variables:
 
       <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
 
-      <WidgetGroup><!-- Mixer / [ [Spinny / Cover / none] + VUMeter ] + Pitch + spacer -->
+      <WidgetGroup><!-- Mixer / [ Spinny/Cover/none + VUMeter ] + Pitch + spacer -->
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <WidgetGroup><!-- Mixer / [ [Spinny / Cover / none] + VUMeter ] + Pitch -->
+          <WidgetGroup><!-- Mixer / [ Spinny/Cover/none + VUMeter ] + Pitch -->
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
@@ -43,7 +43,7 @@ Variables:
               </WidgetGroup>
               <!-- /Pitch slider & Key controls -->
               
-              <!-- Mixer / [ [Spinny / Cover] + VUMeter ] -->
+              <!-- Mixer / Spinny/Cover/none + VUMeter ] -->
               <WidgetStack currentpage="[Tango],mixer_spinnyCover" persist="true">
                 <ObjectName>MixerCoverStack</ObjectName>
                 <SizePolicy>f,min</SizePolicy>
@@ -51,14 +51,27 @@ Variables:
                 
                   <!-- Mixer -->
                   <WidgetGroup trigger="[Tango],channel_mixer" persist="true" on-hide-select="1">
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>f,f</SizePolicy>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>f,min</SizePolicy>
                     <Children>
                       <Template src="skin:mixer_channel_right.xml"/>
+
+                      <WidgetGroup>
+                        <Layout>vertical</Layout>
+                        <Size>1me,25f</Size>
+                        <Children>
+                          <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,3f</Size></WidgetGroup>
+                          <WidgetGroup><ObjectName>Spacer25</ObjectName><Size>1me,22f</Size></WidgetGroup>
+                        </Children>
+                        <Connection>
+                          <ConfigKey>[Tango],loop_beatjump_controls</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
                     </Children>
                   </WidgetGroup><!-- /Mixer -->
                   
-                  <WidgetGroup><!-- [Spinny / Cover / none] + VUMeter -->
+                  <WidgetGroup><!-- Spinny/Cover/none + VUMeter -->
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,me</SizePolicy>
                     <Children>
@@ -74,7 +87,7 @@ Variables:
                         </Connection>
                       </WidgetGroup>
                     
-                      <WidgetGroup><!-- [Spinny / Cover / none] -->
+                      <WidgetGroup><!-- Spinny/Cover/none -->
                         <Layout>horizontal</Layout>
                         <SizePolicy>min,min</SizePolicy>
                         <Children>
@@ -82,11 +95,8 @@ Variables:
                             <Layout>horizontal</Layout>
                             <SizePolicy>min,min</SizePolicy>
                             <Children>
-                            
-                                <Template src="skin:spinnyCover.xml"/>
-			
-                                <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
-                                
+                              <Template src="skin:spinnyCover.xml"/>
+                              <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
                             </Children>
                             <Connection>
                               <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
@@ -99,33 +109,33 @@ Variables:
                           <Transform><IsEqual>2</IsEqual><Not/></Transform>
                           <BindProperty>visible</BindProperty>
                         </Connection>
-                      </WidgetGroup>
+                      </WidgetGroup><!-- /Spinny/Cover/none -->
                         
                     </Children>
-                  </WidgetGroup><!-- /[Spinny / Cover / none] + VUMeter -->
+                  </WidgetGroup><!-- /Spinny/Cover/none + VUMeter -->
                     
                 </Children>
-              </WidgetStack><!-- /Mixer / [ [Spinny / Cover / none] + VUMeter ] -->
+              </WidgetStack><!-- /Mixer / [ Spinny/Cover/none + VUMeter ] -->
             
             </Children>
-          </WidgetGroup><!-- /Mixer / [ [Spinny / Cover / none] + VUMeter ] + Pitch -->
+          </WidgetGroup><!-- /Mixer / [ Spinny/Cover/none + VUMeter ] + Pitch -->
           
-          Expanding spacer, necessary because obviously WidgetStack breaks
+          <!-- Expanding spacer, necessary because obviously WidgetStack breaks
           qproperty-layoutAlignment of parent Widget -->
           <WidgetGroup><SizePolicy>min,me</SizePolicy><Children/></WidgetGroup>
           
         </Children>
-      </WidgetGroup><!-- /Mixer / [ [Spinny / Cover] + VUMeter ] + Pitch + spacer -->
+      </WidgetGroup><!-- /Mixer / Spinny/Cover/none + VUMeter ] + Pitch + spacer -->
 
       <WidgetGroup><!-- [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
-        <ObjectName>Deck<Variable name="channum"/></ObjectName>
+        <ObjectName>Deck<Variable name="chanNum"/></ObjectName>
         <Size>250me,136min</Size>
         <Layout>vertical</Layout>
         <Children>
         
           <!-- Packed Waveform & ArtistTitle into a fixed-size container,
           so Deck stays steady while Comment and LoopBeatjump controls can be toggled.
-          On request, I also added the option for symmetrical left & right decks:
+          Symmetrical decks [Waveforn/Artist/Deckbuttons] can be enabled in skin settings.
           1 Waveform
           2 Comment (optional)
           3 Title / Play position
@@ -141,8 +151,7 @@ Variables:
 
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],stacked_overviews</ConfigKey>
-              <Transform><Not/></Transform>
+              <ConfigKey persist="true">[Tango],symmetric_overviews</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /Overview, Comment, ArtistTitle -->
@@ -153,18 +162,31 @@ Variables:
             <Children>
 
               <Template src="skin:deck_artist_title_right.xml"/>
-              <Template src="skin:deck_overview_right.xml"/>
               <Template src="skin:deck_comment_right.xml"/>
+              <Template src="skin:deck_overview_right.xml"/>
 
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],stacked_overviews</ConfigKey>
+              <ConfigKey persist="true">[Tango],symmetric_overviews</ConfigKey>
+              <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /ArtistTitle, Overview, Comment -->
 
-          <Template src="skin:deck_buttons_right.xml" /><!-- 24f -->
-          <Template src="skin:deck_loop_beatjump_right.xml"/><!-- 50+1 -->
+          <Template src="skin:deck_buttons_right.xml" />
+
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Size>1me,25f</Size>
+            <Children>
+              <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,3f</Size></WidgetGroup>
+              <Template src="skin:loop_controls_right.xml"/>
+            </Children>
+            <Connection>
+              <ConfigKey>[Tango],loop_beatjump_controls</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
           
         </Children>
       </WidgetGroup><!-- / [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->

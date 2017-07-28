@@ -43,6 +43,7 @@ class TestEngineMaster : public EngineMaster {
                        bEnableSidechain) {
         m_pMasterEnabled->forceSet(1);
         m_pHeadphoneEnabled->forceSet(1);
+        m_pBoothEnabled->forceSet(1);
     }
 
     CSAMPLE* masterBuffer() {

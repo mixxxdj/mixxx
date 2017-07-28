@@ -28,7 +28,8 @@ EngineChannel::EngineChannel(const ChannelHandleAndGroup& handle_group,
           m_pEffectsManager(pEffectsManager),
           m_vuMeter(getGroup()),
           m_pSampleRate(new ControlProxy("[Master]", "samplerate")),
-          m_sampleBuffer(nullptr) {
+          m_sampleBuffer(nullptr),
+          m_bIsTalkoverChannel(isTalkoverChannel) {
     m_pPFL = new ControlPushButton(ConfigKey(getGroup(), "pfl"));
     m_pPFL->setButtonMode(ControlPushButton::TOGGLE);
     m_pMaster = new ControlPushButton(ConfigKey(getGroup(), "master"));

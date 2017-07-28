@@ -146,8 +146,8 @@ void BrowseThread::populateModel() {
         }
 
         QString filepath = fileIt.next();
-        TrackPointer pTrack(Track::newTemporary(filepath, thisPath.token()));
-        SoundSourceProxy(pTrack).loadTrackMetadata();
+        auto pTrack = Track::newTemporary(filepath, thisPath.token());
+        SoundSourceProxy(pTrack).updateTrack();
 
         QList<QStandardItem*> row_data;
 

@@ -63,6 +63,7 @@ class EngineChannel : public EngineObject {
     virtual bool isMasterEnabled() const;
     void setTalkover(bool enabled);
     virtual bool isTalkoverEnabled() const;
+    inline bool isTalkoverChannel() { return m_bIsTalkoverChannel; };
 
     virtual void process(CSAMPLE* pOut, const int iBufferSize) = 0;
     virtual void collectFeatures(GroupFeatureState* pGroupFeatures) const = 0;
@@ -94,6 +95,8 @@ class EngineChannel : public EngineObject {
     ControlPushButton* m_pOrientationRight;
     ControlPushButton* m_pOrientationCenter;
     ControlPushButton* m_pTalkover;
+    bool m_bIsTalkoverChannel;
 };
 
 #endif
+

@@ -216,6 +216,7 @@ void DlgAutoDJ::updateSelectionInfo() {
     if (!indices.isEmpty()) {
         label.append(mixxx::Duration::formatSeconds(duration));
         label.append(QString(" (%1)").arg(indices.size()));
+        labelSelectionInfo->setToolTip(tr("Displays the duration and number of selected tracks."));
         labelSelectionInfo->setText(label);
         labelSelectionInfo->setEnabled(true);
     } else {

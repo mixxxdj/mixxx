@@ -203,11 +203,10 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     launchProgress(8);
 
-    // Initialize player device
-    // while this is created here, setupDevices needs to be called sometime
-    // after the players are added to the engine (as is done currently) -- bkgood
-    // (long)
+    // Although m_pSoundManager is created here, m_pSoundManager->setupDevices()
+    // needs to be called after m_pPlayerManager registers sound IO for each EngineChannel.
     m_pSoundManager = new SoundManager(pConfig, m_pEngine);
+    m_pEngine->registerNonEngineChannelSoundIO(m_pSoundManager);
 
     m_pRecordingManager = new RecordingManager(pConfig, m_pEngine);
 
