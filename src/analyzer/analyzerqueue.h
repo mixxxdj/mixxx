@@ -73,6 +73,7 @@ class AnalyzerQueue : public QThread {
     bool doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAudioSource);
     void emitUpdateProgress(TrackPointer tio, int progress);
     void emptyCheck();
+    void updateSize();
 
     bool m_exit;
     QAtomicInt m_aiCheckPriorities;
@@ -80,7 +81,7 @@ class AnalyzerQueue : public QThread {
     SampleBuffer m_sampleBuffer;
 
     // The processing queue and associated mutex
-    QQueue<TrackPointer> m_tioq;
+    QQueue<TrackPointer> m_queuedTracks;
     QMutex m_qm;
     QWaitCondition m_qwait;
     struct progress_info m_progressInfo;

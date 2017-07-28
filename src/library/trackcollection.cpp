@@ -36,6 +36,7 @@ void TrackCollection::connectDatabase(QSqlDatabase database) {
     m_playlistDao.initialize(database);
     m_cueDao.initialize(database);
     m_directoryDao.initialize(database);
+    m_analysisDao.initialize(database);
     m_libraryHashDao.initialize(database);
     m_crates.connectDatabase(database);
 }

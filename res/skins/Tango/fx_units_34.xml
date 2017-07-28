@@ -17,11 +17,9 @@ Description:
         <Layout>vertical</Layout>
         <SizePolicy>min,max</SizePolicy>
         <Children>
-          <!-- margin not respected, workaround -->
-          <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
           <Template src="skin:fx_unit_left.xml">
-              <SetVariable name="EffectRack">1</SetVariable>
-              <SetVariable name="EffectUnit">3</SetVariable>
+              <SetVariable name="fxRack">1</SetVariable>
+              <SetVariable name="fxUnit">3</SetVariable>
               <SetVariable name="fxGroup">EffectRack1_EffectUnit3</SetVariable>
           </Template>
         </Children>
@@ -36,11 +34,9 @@ Description:
         <Layout>vertical</Layout>
         <SizePolicy>min,me</SizePolicy>
         <Children>
-          <!-- margin not respected, workaround -->
-          <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
           <Template src="skin:fx_unit_left_mini.xml">
-              <SetVariable name="EffectRack">1</SetVariable>
-              <SetVariable name="EffectUnit">3</SetVariable>
+              <SetVariable name="fxRack">1</SetVariable>
+              <SetVariable name="fxUnit">3</SetVariable>
               <SetVariable name="fxGroup">EffectRack1_EffectUnit3</SetVariable>
           </Template>
           <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
@@ -57,12 +53,8 @@ Description:
         <SizePolicy>min,min</SizePolicy>
         <Children>
 
-          <!-- Spacer to keep Deck & FX unit aligned -->
-          <WidgetGroup><Size>108f,1min</Size><Children/>
-            <Connection>
-              <ConfigKey>[Tango],normal_mode</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
+          <WidgetGroup><!-- Skin Controls spacer -->
+            <Size>110f,1min</Size>
           </WidgetGroup>
 
           <WidgetGroup> <!-- Spacer to keep Deck & FX unit aligned without Pitch fader-->
@@ -103,7 +95,7 @@ Description:
       </WidgetGroup><!-- /Spacers for normal width -->
 
       <WidgetGroup><!-- Spacer for netbook mode -->
-        <Size>4f,1min</Size>
+        <Size>10f,1min</Size>
         <Children/>
         <Connection>
           <ConfigKey>[Tango],netbook_mode</ConfigKey>
@@ -116,11 +108,9 @@ Description:
         <Layout>vertical</Layout>
         <SizePolicy>min,max</SizePolicy>
         <Children>
-          <!-- margin not respected, workaround -->
-          <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
           <Template src="skin:fx_unit_right.xml">
-              <SetVariable name="EffectRack">1</SetVariable>
-              <SetVariable name="EffectUnit">4</SetVariable>
+              <SetVariable name="fxRack">1</SetVariable>
+              <SetVariable name="fxUnit">4</SetVariable>
               <SetVariable name="fxGroup">EffectRack1_EffectUnit4</SetVariable>
           </Template>
         </Children>
@@ -135,11 +125,9 @@ Description:
         <Layout>vertical</Layout>
         <SizePolicy>min,me</SizePolicy>
         <Children>
-          <!-- margin not respected, workaround -->
-          <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
           <Template src="skin:fx_unit_right_mini.xml">
-              <SetVariable name="EffectRack">1</SetVariable>
-              <SetVariable name="EffectUnit">4</SetVariable>
+              <SetVariable name="fxRack">1</SetVariable>
+              <SetVariable name="fxUnit">4</SetVariable>
               <SetVariable name="fxGroup">EffectRack1_EffectUnit4</SetVariable>
           </Template>
           <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
