@@ -9,15 +9,20 @@ namespace mixxx {
 
 class AudioSourceStereoProxy: public AudioSource {
 public:
-    static SINT calcTempBufferSize(
-            const AudioSourcePointer& pAudioSource,
+    static AudioSourcePointer create(
+            AudioSourcePointer pAudioSource,
             SINT maxReadableFrames) {
-        return pAudioSource->frames2samples(maxReadableFrames);
+        return std::make_shared<AudioSourceStereoProxy>(
+                pAudioSource,
+                maxReadableFrames);
     }
 
     AudioSourceStereoProxy(
             AudioSourcePointer pAudioSource,
-            SampleBuffer::WritableSlice tempSampleBuffer);
+            SINT maxReadableFrames);
+    AudioSourceStereoProxy(
+            AudioSourcePointer pAudioSource,
+            SampleBuffer::WritableSlice tempSampleBufferSlice);
 
     IndexRange readOrSkipSampleFrames(
             IndexRange frameIndexRange,
@@ -30,7 +35,8 @@ public:
 
 private:
     AudioSourcePointer m_pAudioSource;
-    SampleBuffer::WritableSlice m_tempSampleBuffer;
+    SampleBuffer m_tempSampleBuffer;
+    SampleBuffer::WritableSlice m_tempOutputBuffer;
 };
 
 } // namespace mixxx

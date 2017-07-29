@@ -3,6 +3,7 @@
 #include "test/mixxxtest.h"
 
 #include "sources/soundsourceproxy.h"
+#include "sources/audiosourcestereoproxy.h"
 #include "track/trackmetadata.h"
 #include "util/samplebuffer.h"
 
@@ -13,6 +14,8 @@
 namespace {
 
 const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
+
+const SINT kMaxReadFrameCount = 10000;
 
 } // anonymous namespace
 
@@ -67,7 +70,20 @@ class SoundSourceProxyTest: public MixxxTest {
             return mixxx::AudioSourcePointer();
         }
 
-        return proxy.openAudioSource();
+        // All test files are mono, but we are requesting a stereo signal
+        // to test the upscaling of channels
+        mixxx::AudioSourceConfig config;
+        config.setChannelCount(mixxx::AudioSignal::ChannelCount::stereo());
+        auto pAudioSource = proxy.openAudioSource();
+        EXPECT_FALSE(!pAudioSource);
+        if (pAudioSource->channelCount() != mixxx::AudioSignal::ChannelCount::stereo()) {
+            // Wrap into proxy object
+            pAudioSource = mixxx::AudioSourceStereoProxy::create(
+                    pAudioSource,
+                    kMaxReadFrameCount);
+        }
+        EXPECT_EQ(pAudioSource->channelCount(), mixxx::AudioSignal::ChannelCount::stereo());
+        return pAudioSource;
     }
 
     static void expectDecodedSamplesEqual(

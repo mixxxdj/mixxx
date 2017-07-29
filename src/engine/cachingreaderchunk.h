@@ -55,7 +55,7 @@ public:
     // range of frames that have been read.
     mixxx::IndexRange bufferSampleFrames(
             const mixxx::AudioSourcePointer& pAudioSource,
-            SampleBuffer::WritableSlice tempSampleBuffer);
+            SampleBuffer::WritableSlice tempOutputBuffer);
 
     mixxx::IndexRange readBufferedSampleFrames(
             CSAMPLE* sampleBuffer,
