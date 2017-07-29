@@ -14,10 +14,22 @@ const Logger kLogger("AudioSourceStereoProxy");
 
 AudioSourceStereoProxy::AudioSourceStereoProxy(
         AudioSourcePointer pAudioSource,
-        SampleBuffer::WritableSlice tempSampleBuffer)
+        SINT maxReadableFrames)
     : AudioSource(*pAudioSource),
       m_pAudioSource(std::move(pAudioSource)),
-      m_tempSampleBuffer(std::move(tempSampleBuffer)) {
+      m_tempSampleBuffer(
+              (m_pAudioSource->channelCount() != ChannelCount::stereo()) ?
+                      m_pAudioSource->frames2samples(maxReadableFrames) : 0),
+      m_tempOutputBuffer(m_tempSampleBuffer) {
+    setChannelCount(ChannelCount::stereo());
+}
+
+AudioSourceStereoProxy::AudioSourceStereoProxy(
+        AudioSourcePointer pAudioSource,
+        SampleBuffer::WritableSlice m_tempOutputBuffer)
+    : AudioSource(*pAudioSource),
+      m_pAudioSource(std::move(pAudioSource)),
+      m_tempOutputBuffer(m_tempOutputBuffer) {
     setChannelCount(ChannelCount::stereo());
 }
 
@@ -53,17 +65,17 @@ IndexRange AudioSourceStereoProxy::readOrSkipSampleFrames(
     }
 
     // Check location and capacity of temporary buffer
-    VERIFY_OR_DEBUG_ASSERT(isDisjunct(m_tempSampleBuffer, *pOutputBuffer)) {
+    VERIFY_OR_DEBUG_ASSERT(isDisjunct(m_tempOutputBuffer, *pOutputBuffer)) {
         kLogger.warning()
                 << "Overlap between output and temporary sample buffer detected";
         return IndexRange();
     }
     {
         const SINT numberOfSamplesToRead = m_pAudioSource->frames2samples(frameIndexRange.length());
-        VERIFY_OR_DEBUG_ASSERT(m_tempSampleBuffer.size() >= numberOfSamplesToRead) {
+        VERIFY_OR_DEBUG_ASSERT(m_tempOutputBuffer.size() >= numberOfSamplesToRead) {
             kLogger.warning()
                     << "Insufficient temporary sample buffer capacity"
-                    << m_tempSampleBuffer.size()
+                    << m_tempOutputBuffer.size()
                     << "<"
                     << numberOfSamplesToRead
                     << "for reading frames"
@@ -75,7 +87,7 @@ IndexRange AudioSourceStereoProxy::readOrSkipSampleFrames(
     const IndexRange resultFrameIndexRange =
             m_pAudioSource->readSampleFrames(
                     frameIndexRange,
-                    m_tempSampleBuffer);
+                    m_tempOutputBuffer);
     DEBUG_ASSERT(resultFrameIndexRange <= frameIndexRange);
     if (!resultFrameIndexRange.empty()) {
         DEBUG_ASSERT(resultFrameIndexRange.start() >= frameIndexRange.start());
@@ -84,7 +96,7 @@ IndexRange AudioSourceStereoProxy::readOrSkipSampleFrames(
         const auto pDstSamples =
                 pOutputBuffer->data(frames2samples(frameOffset));
         const auto pSrcSamples =
-                m_tempSampleBuffer.data(m_pAudioSource->frames2samples(frameOffset));
+                m_tempOutputBuffer.data(m_pAudioSource->frames2samples(frameOffset));
         if (m_pAudioSource->channelCount().isMono()) {
             SampleUtil::copyMonoToDualMono(
                     pDstSamples,

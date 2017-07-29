@@ -179,13 +179,9 @@ bool AnalyzerQueue::doAnalysis(
     QTime progressUpdateInhibitTimer;
     progressUpdateInhibitTimer.start(); // Inhibit Updates for 60 milliseconds
 
-    SampleBuffer tempSampleBuffer(
-            mixxx::AudioSourceStereoProxy::calcTempBufferSize(
-                    pAudioSource,
-                    kAnalysisFramesPerBlock));
     mixxx::AudioSourceStereoProxy audioSourceProxy(
             pAudioSource,
-            SampleBuffer::WritableSlice(tempSampleBuffer));
+            kAnalysisFramesPerBlock);
     DEBUG_ASSERT(audioSourceProxy.channelCount() == kAnalysisChannels);
 
     mixxx::IndexRange remainingFrames = pAudioSource->frameIndexRange();

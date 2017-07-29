@@ -8,7 +8,6 @@
 #include "sources/soundsourceproxy.h"
 #include "sources/audiosourcestereoproxy.h"
 #include "util/sample.h"
-#include "util/samplebuffer.h"
 #include "util/performancetimer.h"
 
 namespace
@@ -42,15 +41,10 @@ QString calcFingerprint(const mixxx::AudioSourcePointer& pAudioSource) {
             mixxx::IndexRange::forward(
                     pAudioSource->frameIndexMin(),
                     kFingerprintDuration * pAudioSource->samplingRate()));
-    const SINT fingerprintSampleCapacity = inputFrameIndexRange.length() * kFingerprintChannels;
 
-    SampleBuffer tempSampleBuffer(
-            mixxx::AudioSourceStereoProxy::calcTempBufferSize(
-                    pAudioSource,
-                    fingerprintSampleCapacity));
     mixxx::AudioSourceStereoProxy audioSourceProxy(
             pAudioSource,
-            SampleBuffer::WritableSlice(tempSampleBuffer));
+            inputFrameIndexRange.length());
     DEBUG_ASSERT(audioSourceProxy.channelCount() == kFingerprintChannels);
 
     // Allocate a sample buffer with maximum size to avoid the

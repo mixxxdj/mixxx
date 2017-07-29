@@ -60,11 +60,11 @@ mixxx::IndexRange CachingReaderChunk::frameIndexRange(
 
 mixxx::IndexRange CachingReaderChunk::bufferSampleFrames(
         const mixxx::AudioSourcePointer& pAudioSource,
-        SampleBuffer::WritableSlice tempSampleBuffer) {
+        SampleBuffer::WritableSlice tempOutputBuffer) {
     const auto sourceFrameIndexRange = frameIndexRange(pAudioSource);
     mixxx::AudioSourceStereoProxy audioSourceProxy(
             pAudioSource,
-            tempSampleBuffer);
+            tempOutputBuffer);
     DEBUG_ASSERT(audioSourceProxy.channelCount() == kChannels);
     m_bufferedFrameIndexRange =
             audioSourceProxy.readSampleFrames(
