@@ -51,7 +51,7 @@ void CrateTableModel::selectCrate(Crate crate) {
     setTable(tableName, LIBRARYTABLE_ID, columns,
              m_pTrackCollection->getTrackSource());
     //setSearch("crate: one");
-    search(QString("crate: %1").arg(m_pCrates->hierarchy().getNamePathFromId(crate.getId())));
+    search(QString("crate: \"%1\"").arg(m_pCrates->hierarchy().getNamePathFromId(crate.getId())));
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
 
@@ -85,7 +85,7 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
 
     QList<TrackId> trackIds;
     trackIds.append(pTrack->getId());
-    if (m_pCrates->addCrateTracks(m_selectedCrate, trackIds)) {
+    if (m_pCrates->addTracksToCrate(m_selectedCrate, trackIds)) {
         // TODO(rryan) just add the track dont select
         select();
         return true;
@@ -155,7 +155,7 @@ int CrateTableModel::addTracks(const QModelIndex& index,
     }
 
     QList<TrackId> trackIds(m_pTrackCollection->getTrackDAO().addMultipleTracks(fileInfoList, true));
-    if (m_pCrates->addCrateTracks(m_selectedCrate, trackIds)) {
+    if (m_pCrates->addTracksToCrate(m_selectedCrate, trackIds)) {
         select();
         return trackIds.size();
     } else {
@@ -189,7 +189,7 @@ void CrateTableModel::removeTracks(const QModelIndexList& indices) {
     for (const QModelIndex& index: indices) {
         trackIds.append(getTrackId(index));
     }
-    if (m_pCrates->removeCrateTracks(crate.getId(), trackIds)) {
+    if (m_pCrates->removeTracksFromCrate(crate.getId(), trackIds)) {
         select();
     } else {
         qWarning() << "Failed to remove tracks from crate" << crate;

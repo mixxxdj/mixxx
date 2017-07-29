@@ -1439,7 +1439,7 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
     }
     if (crateId.isValid()) {
         m_pTrackCollection->unhideTracks(trackIds);
-        m_pTrackCollection->crates()->addCrateTracks(crateId, trackIds);
+        m_pTrackCollection->crates()->addTracksToCrate(crateId, trackIds);
     }
 }
 

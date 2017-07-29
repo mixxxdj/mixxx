@@ -55,18 +55,12 @@ CrateFeature::CrateFeature(UserSettingsPointer pConfig,
 
     initActions();
 
-    // construct child model
-    // m_childModel.setRootItem(std::make_unique<TreeItem>(this));
-    // rebuildChildModel();
-
     // if closure does not have the same number of crates as the crates table
     // this means that the user just started mixxx with nested crates for the
     // first time, so we have to fill the closure table with (self,self,0)
     m_pCrates->checkClosure();
-    //m_pCrates->hierarchy().generateAllPaths(m_pCrates->storage().selectCrates());
 
-    m_pChildModel = std::make_unique<CrateTreeModel>(this,
-                                                     m_pCrates);
+    m_pChildModel = std::make_unique<CrateTreeModel>(this, m_pCrates);
     m_pChildModel->reloadTree();
 
     connectLibrary(pLibrary);
@@ -254,7 +248,7 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
             trackIds.removeAt(trackIdIndex--);
         }
     }
-    m_pCrates->addCrateTracks(crateId, trackIds);
+    m_pCrates->addTracksToCrate(crateId, trackIds);
     return true;
 }
 
@@ -325,7 +319,7 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     m_pCrates->storage().readCrateById(crateId, &crate);
     m_pCrateTableModel->selectCrate(crate);
     showTable(m_featurePane);
-    restoreSearch(QString("crate: %1").arg(m_pCrates->hierarchy().getNamePathFromId(crate.getId())));
+    restoreSearch(QString("crate: \"%1\"").arg(m_pCrates->hierarchy().getNamePathFromId(crate.getId())));
     showBreadCrumb(index);
     showTrackModel(m_pCrateTableModel);
 }
@@ -347,15 +341,15 @@ bool CrateFeature::activateCrate(CrateId crateId) {
     // TODO(XXX): How to select the newly created crate without
     // a corresponding table model? m_pCrateTableModel = nullptr
     // when creating crates by clicking the link on the HTML view.
-    if (m_pCrateTableModel) {
-        Crate crate;
-        m_pCrates->storage().readCrateById(crateId, &crate);
-        m_pCrateTableModel->selectCrate(crate);
-        emit(showTrackModel(m_pCrateTableModel));
-    }
-    emit(enableCoverArtDisplay(true));
-    // Update selection
-    emit(featureSelect(this, m_lastRightClickedIndex));
+    // if (m_pCrateTableModel) {
+    //     Crate crate;
+    //     m_pCrates->storage().readCrateById(crateId, &crate);
+    //     m_pCrateTableModel->selectCrate(crate);
+    //     emit(showTrackModel(m_pCrateTableModel));
+    // }
+    // emit(enableCoverArtDisplay(true));
+    // // Update selection
+    // emit(featureSelect(this, m_lastRightClickedIndex));
     activateChild(m_lastRightClickedIndex);
     return true;
 }
@@ -435,7 +429,7 @@ void CrateFeature::slotCreateChildCrate() {
     Crate parent;
     if (readLastRightClickedCrate(&parent)) {
         CrateId newCrateId = CrateFeatureHelper(
-          m_pCrates, m_pConfig).createEmptySubrate(parent);
+          m_pCrates, m_pConfig).createEmptyCrate(parent);
         if (newCrateId.isValid()) {
             m_pChildModel->reloadTree();
         }
@@ -515,6 +509,7 @@ void CrateFeature::slotDuplicateCrate() {
         CrateId crateId = CrateFeatureHelper(
                 m_pCrates, m_pConfig).duplicateCrate(crate);
         if (crateId.isValid()) {
+            m_pChildModel->reloadTree();
             activateCrate(crateId);
         }
     } else {
@@ -844,18 +839,7 @@ void CrateFeature::slotExportTrackFiles() {
 }
 
 void CrateFeature::slotCrateTableChanged(CrateId crateId) {
-    Q_UNUSED(crateId)
-    // if (m_lastRightClickedIndex.isValid() &&
-    //         (crateIdFromIndex(m_lastRightClickedIndex) == crateId)) {
-    //     // Preserve crate selection
-    //     m_lastRightClickedIndex = rebuildChildModel(crateId);
-    //     if (m_lastRightClickedIndex.isValid()) {
-    //         activateCrate(crateId);
-    //     }
-    // } else {
-    //     // Discard crate selection
-    //     rebuildChildModel();
-    // }
+    Q_UNUSED(crateId);
     m_pChildModel->reloadTree();
 }
 

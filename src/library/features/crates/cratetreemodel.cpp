@@ -7,7 +7,7 @@
 
 namespace {
 
-const CrateId kRootId(-1);
+    const CrateId kRootId(CrateId(-1));
 
 } // anonymous namespace
 
@@ -17,10 +17,11 @@ CrateTreeModel::CrateTreeModel(LibraryFeature* pFeature,
       m_pCrates(pCrates) {
 }
 
-void CrateTreeModel::fillTree(const QStringList& idPaths, QMap<CrateId,TreeItem*> treeCrates) {
+void CrateTreeModel::populateTree(const QStringList& idPaths, QMap<CrateId,TreeItem*> treeCrates) {
     CrateId parentId, childId;
     Crate child;
 
+    //TODO(gramanas) This algorithms needs to be optimized to play well with a lot of crates
     // looping through the paths we are gsonna get the parent crate and the child crate of
     // each path (2nd to last and last IDs respectivly). Then we insert the child under the
     // parent. Since it's sorted alphabetically the parent will always exist before the child
@@ -40,8 +41,6 @@ void CrateTreeModel::fillTree(const QStringList& idPaths, QMap<CrateId,TreeItem*
                             // value is the treeItem returned by asdasdasppendChild()
                             treeCrates.value(parentId)->appendChild(child.getName(),
                                                                     childId.toInt()));
-
-        //        treeCrates.value(child.getId())->setLabel(idPath);
     }
 }
 
@@ -56,6 +55,6 @@ void CrateTreeModel::reloadTree() {
     // Create recursion button
     m_pRecursion = parented_ptr<TreeItem>(pRootItem->appendChild(tr("Recursion"), ""));
 
-    fillTree(idPaths, treeCrates);
+    populateTree(idPaths, treeCrates);
     endResetModel();
 }

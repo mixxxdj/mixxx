@@ -13,6 +13,13 @@ void CrateHierarchy::initialize(const QSqlDatabase& database) {
     m_database = database;
 }
 
+void CrateHierarchy::reset(const CrateStorage* pCrateStorage) {
+    resetClosure();
+    initClosure(pCrateStorage->selectCrates());
+    resetPath();
+    generateAllPaths(pCrateStorage->selectCrates());
+}
+
 uint CrateHierarchy::countCratesInClosure() const {
     FwdSqlQuery query(
       m_database, QString(
@@ -46,7 +53,6 @@ void CrateHierarchy::resetClosure() const {
 bool CrateHierarchy::initClosure(CrateSelectResult crates) const {
     std::vector<CrateId> crateIds;
 
-    //    CrateSelectResult crates(selectCrates());
     Crate crate;
 
     while (crates.populateNext(&crate)) {
@@ -84,6 +90,18 @@ void CrateHierarchy::resetPath() const {
     }
     if (!query.execPrepared()) {
         return;
+    }
+}
+
+void CrateHierarchy::addCrateToHierarchy(const Crate &crate, const Crate parent) const {
+    if (parent.getId().isValid()) {
+        initClosureForCrate(crate.getId());
+        if (insertIntoClosure(parent.getId(), crate.getId())) {
+            generateCratePaths(crate);
+        }
+    } else {
+        initClosureForCrate(crate.getId());
+        generateCratePaths(crate);
     }
 }
 
@@ -144,9 +162,7 @@ bool CrateHierarchy::generateCratePaths(Crate crate) const {
     return writeCratePaths(crate.getId(), namePath, idPath);
 }
 
-// slectCrates
 bool CrateHierarchy::generateAllPaths(CrateSelectResult crates) const {
-    //CrateSelectResult crates(selectCrates());
     Crate crate;
     while (crates.populateNext(&crate)) {
         generateCratePaths(crate);
@@ -222,7 +238,7 @@ bool CrateHierarchy::insertIntoClosure(CrateId parent, CrateId child) const {
 }
 
 void CrateHierarchy::deleteCrate(CrateId id) const {
-    // TODO(gramanas) cratedeletion from the hierarchy must
+    // TODO(gramanas) crate deletion from the hierarchy must
     // be smart (delete crate with children)
     FwdSqlQuery query(
       m_database, QString(
@@ -262,7 +278,15 @@ QString CrateHierarchy::formatQueryForTrackIdsByCratePathLike(const QString& cra
             CRATETRACKSTABLE_CRATEID,
             PATHTABLE_NAME_PATH,
             escapedArgument);
+}
 
+bool CrateHierarchy::nameIsValidForHierarchy(const QString& crateName,
+                                             const CrateId parentId) const {
+    if (parentId.isValid()) {
+        return tokenizeCratePath(parentId).contains(crateName);
+    } else {
+        return collectRootCrateNames().contains(crateName);
+    }
 }
 
 QString CrateHierarchy::getNamePathFromId(CrateId id) const {
@@ -279,7 +303,6 @@ QString CrateHierarchy::getNamePathFromId(CrateId id) const {
         return query.fieldValue(0).toString();
     }
     return QString();
-
 }
 
 bool CrateHierarchy::hasChildern(CrateId id) const {

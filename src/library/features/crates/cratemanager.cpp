@@ -96,7 +96,6 @@ void CrateManager::repairDatabase(QSqlDatabase database) {
     }
 }
 
-
 void CrateManager::connectDatabase(QSqlDatabase database) {
     m_database = database;
 
@@ -106,7 +105,6 @@ void CrateManager::connectDatabase(QSqlDatabase database) {
 
     createViews();
 }
-
 
 void CrateManager::disconnectDatabase() {
     // Ensure that we don't use the current database connection
@@ -118,15 +116,9 @@ bool CrateManager::onPurgingTracks(const QList<TrackId> &trackIds) {
     m_crateTracks.onPurgingTracks(trackIds);
 }
 
-
-
-
-void CrateManager::checkClosure() const {
+void CrateManager::checkClosure() {
     if (m_crateHierarchy.countCratesInClosure() != m_crateStorage.countCrates()) {
-        m_crateHierarchy.resetClosure();
-        m_crateHierarchy.initClosure(m_crateStorage.selectCrates());
-        m_crateHierarchy.resetPath();
-        m_crateHierarchy.generateAllPaths(m_crateStorage.selectCrates());
+        m_crateHierarchy.reset(&storage());
     }
 }
 
@@ -196,7 +188,7 @@ bool CrateManager::deleteCrate(
     return true;
 }
 
-bool CrateManager::addCrateTracks(
+bool CrateManager::addTracksToCrate(
         CrateId crateId,
         const QList<TrackId>& trackIds) {
     // Transactional
@@ -217,7 +209,7 @@ bool CrateManager::addCrateTracks(
     return true;
 }
 
-bool CrateManager::removeCrateTracks(
+bool CrateManager::removeTracksFromCrate(
         CrateId crateId,
         const QList<TrackId>& trackIds) {
     // Transactional
@@ -243,7 +235,7 @@ bool CrateManager::updateAutoDjCrate(
         bool isAutoDjSource) {
     Crate crate;
     VERIFY_OR_DEBUG_ASSERT(m_crateStorage.readCrateById(crateId, &crate)) {
-        return false; // inexistent or failure
+        return false; // nonexistent or failure
     }
     if (crate.isAutoDjSource() == isAutoDjSource) {
         return false; // nothing to do

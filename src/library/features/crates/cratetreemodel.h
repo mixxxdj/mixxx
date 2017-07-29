@@ -14,16 +14,13 @@ class CrateTreeModel : public TreeItemModel {
   public:
     CrateTreeModel(LibraryFeature* pFeature,
                    CrateManager* pCrates);
-    //virtual ~CrateTreeModel();
-
-    // QVariant data(const QModelIndex& index, int role) const override;
-    // bool setData(const QModelIndex& index, const QVariant& value, int role) override;
+    ~CrateTreeModel() override = default;
 
   public slots:
     void reloadTree() override;
 
   private:
-    void fillTree(const QStringList& idPaths, QMap<CrateId,TreeItem*> treeCrates);
+    void populateTree(const QStringList& idPaths, QMap<CrateId,TreeItem*> treeCrates);
 
     LibraryFeature* m_pFeature;
     CrateManager* m_pCrates;

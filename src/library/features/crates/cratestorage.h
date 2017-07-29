@@ -7,6 +7,7 @@
 
 #include "library/crate/cratesummary.h"
 #include "library/features/crates/cratestoragehelpers.h"
+#include "library/features/crates/cratehierarchy.h"
 #include "library/dao/dao.h"
 
 #include "util/db/fwdsqlqueryselectresult.h"
@@ -64,6 +65,9 @@ class CrateStorage: public virtual DAO {
     // The following list results are ordered by crate name:
     //  - case-insensitive
     //  - locale-aware
+    
+    // crate hierarchy needs access to selectCrates();
+    friend class CrateHierarchy;
     CrateSelectResult selectCrates() const; // all crates
     CrateSelectResult selectCratesByIds( // subset of crates
             const QString& subselectForCrateIds,

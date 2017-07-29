@@ -704,7 +704,7 @@ TEST_F(SearchQueryParserTest, CrateFilter) {
     // Add track A to the newly created crate
     QList<TrackId> trackIds;
     trackIds << trackAId;
-    collection()->crates()->addCrateTracks(testCrateId, trackIds);
+    collection()->crates()->addTracksToCrate(testCrateId, trackIds);
 
     EXPECT_TRUE(pQuery->match(pTrackA));
     EXPECT_FALSE(pQuery->match(pTrackB));
@@ -758,7 +758,7 @@ TEST_F(SearchQueryParserTest, CrateFilterQuote){
     // Add track A to the newly created crate
     QList<TrackId> trackIds;
     trackIds << trackAId;
-    collection()->crates()->addCrateTracks(testCrateId, trackIds);
+    collection()->crates()->addTracksToCrate(testCrateId, trackIds);
 
     EXPECT_TRUE(pQuery->match(pTrackA));
     EXPECT_FALSE(pQuery->match(pTrackB));
@@ -802,7 +802,7 @@ TEST_F(SearchQueryParserTest, CrateFilterWithOther){
     // Add trackA to the newly created crate
     QList<TrackId> trackIds;
     trackIds << trackAId;
-    collection()->crates()->addCrateTracks(testCrateId, trackIds);
+    collection()->crates()->addTracksToCrate(testCrateId, trackIds);
 
     pTrackA->setArtist("asdf");
     pTrackB->setArtist("asdf");
@@ -850,12 +850,12 @@ TEST_F(SearchQueryParserTest, CrateFilterWithCrateFilterAndNegation){
     // Add trackA and trackB to crate A
     QList<TrackId> trackIdsA;
     trackIdsA << trackAId << trackBId;
-    collection()->crates()->addCrateTracks(testCrateAId, trackIdsA);
+    collection()->crates()->addTracksToCrate(testCrateAId, trackIdsA);
 
     // Add trackA to crate B
     QList<TrackId> trackIdsB;
     trackIdsB << trackAId;
-    collection()->crates()->addCrateTracks(testCrateBId, trackIdsB);
+    collection()->crates()->addTracksToCrate(testCrateBId, trackIdsB);
 
     EXPECT_TRUE(pQueryA->match(pTrackA));
     EXPECT_FALSE(pQueryA->match(pTrackB));

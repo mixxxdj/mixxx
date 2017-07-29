@@ -31,6 +31,8 @@ class CrateManager : public QObject, public virtual SqlStorage {
             QSqlDatabase database) override;
     void disconnectDatabase() override;
 
+    void checkClosure();
+
     ///////////////////
     // Member access //
     ///////////////////
@@ -47,30 +49,30 @@ class CrateManager : public QObject, public virtual SqlStorage {
         return m_crateHierarchy;
     }
 
-    //////////////////////////////////////
-    // wrappers for non const fucntions //
-    // to be called by trackCollection  //
-    //////////////////////////////////////
+    ////////////////////////////////////////////
+    // wrappers for non const functions to be //
+    // called by trackCollection they return  //
+    // wether the transaction succeded or not //
+    ////////////////////////////////////////////
 
     bool onPurgingTracks(const QList<TrackId>& trackIds);
 
     ////////////////////////////////////////////////////////
-
-    void crateCrate();
-    void deleteCrate();
-    void moveCrate();
-    void renameCrate();
-    void updateCrateTracks();
-    void checkClosure() const;
-
+    // TODO's:
+    //void moveCrate();
+    //void renameCrate();
+    //void updateCrateTracks();
     ////////////////////////////////////////////////////////
 
-    bool insertCrate(const Crate& crate, CrateId* pCrateId = nullptr);
+    bool insertCrate(const Crate& crate,
+                     CrateId* pCrateId = nullptr);
+    // called when a crate is renamed or it's autoDj or locked status are changed.
     bool updateCrate(const Crate& crate);
     bool deleteCrate(CrateId crateId);
-    bool addCrateTracks(CrateId crateId, const QList<TrackId>& trackIds);
-    bool removeCrateTracks(CrateId crateId, const QList<TrackId>& trackIds);
+    bool addTracksToCrate(CrateId crateId, const QList<TrackId>& trackIds);
+    bool removeTracksFromCrate(CrateId crateId, const QList<TrackId>& trackIds);
 
+    // called to update a crate's AutoDj status
     bool updateAutoDjCrate(CrateId crateId, bool isAutoDjSource);
 
   signals:
@@ -82,20 +84,16 @@ class CrateManager : public QObject, public virtual SqlStorage {
             CrateId crate,
             const QList<TrackId>& tracksAdded,
             const QList<TrackId>& tracksRemoved);
-    //trackCollection @ unhideTracks()
     void crateSummaryChanged(
             const QSet<CrateId>& crates);
 
   private:
     void createViews();
 
-    CrateStorage m_crateStorage; //Manages crate storage
-    CrateTracks m_crateTracks; //Manages tracks on crates
-    CrateHierarchy m_crateHierarchy; //Manages the hierarchy
-    //CrateHierarchy should contain the data that the tree uses to display the crates
-    //specifically the QMap<> and have wrapper functions to set it and get it
+    CrateStorage m_crateStorage; // Manages crate storage
+    CrateTracks m_crateTracks; // Manages tracks on crates
+    CrateHierarchy m_crateHierarchy; // Manages the hierarchy
     QSqlDatabase m_database;
-
 };
 
 #endif // MIXXX_CRATEMANAGER_H
