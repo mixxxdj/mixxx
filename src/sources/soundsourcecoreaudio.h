@@ -22,7 +22,7 @@
 
 namespace mixxx {
 
-class SoundSourceCoreAudio: public mixxx::SoundSource, public virtual LegacyAudioSource, public LegacyAudioSourceAdapter {
+class SoundSourceCoreAudio: public SoundSource, public virtual LegacyAudioSource, public LegacyAudioSourceAdapter {
 public:
     explicit SoundSourceCoreAudio(QUrl url);
     ~SoundSourceCoreAudio() override;

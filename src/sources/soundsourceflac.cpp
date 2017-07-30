@@ -121,19 +121,20 @@ void SoundSourceFLAC::close() {
     m_file.close();
 }
 
-IndexRange SoundSourceFLAC::readOrSkipSampleFrames(
-        IndexRange frameIndexRange,
-        SampleBuffer::WritableSlice* pOutputBuffer) {
-    auto readableFrames =
-            adjustReadableFrameIndexRangeAndOutputBuffer(
-                    frameIndexRange, pOutputBuffer);
-    if (readableFrames.empty()) {
-        return readableFrames;
+ReadableSampleFrames SoundSourceFLAC::readSampleFrames(
+        ReadMode readMode,
+        WritableSampleFrames sampleFrames) {
+    const auto writableSampleFrames =
+            clampWritableSampleFrames(readMode, sampleFrames);
+    if (writableSampleFrames.frameIndexRange().empty()) {
+        return ReadableSampleFrames(writableSampleFrames.frameIndexRange());
     }
 
-    if (m_curFrameIndex != readableFrames.start()) {
+    const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
+
+    if (m_curFrameIndex != firstFrameIndex) {
         // Seek to the new position
-        SINT seekFrameIndex = readableFrames.start();
+        SINT seekFrameIndex = firstFrameIndex;
         int retryCount = 0;
         // NOTE(uklotzde): This loop avoids unnecessary seek operations.
         // If the file is decoded from the beginning to the end during
@@ -164,7 +165,10 @@ IndexRange SoundSourceFLAC::readOrSkipSampleFrames(
                                 << "in file" << m_file.fileName();
                         invalidateCurFrameIndex();
                         // ...and abort
-                        return IndexRange();
+                        return ReadableSampleFrames(
+                                IndexRange::between(
+                                        m_curFrameIndex,
+                                        m_curFrameIndex));
                     }
                 }
                 if (frameIndexMin() < seekFrameIndex) {
@@ -187,20 +191,25 @@ IndexRange SoundSourceFLAC::readOrSkipSampleFrames(
         }
 
         // Decoding starts before the actual target position
-        DEBUG_ASSERT(m_curFrameIndex <= readableFrames.start());
+        DEBUG_ASSERT(m_curFrameIndex <= firstFrameIndex);
         const auto precedingFrames =
-                IndexRange::between(m_curFrameIndex, readableFrames.start());
+                IndexRange::between(m_curFrameIndex, firstFrameIndex);
         if (!precedingFrames.empty()
                 && (precedingFrames != skipSampleFrames(precedingFrames))) {
             kLogger.warning()
                     << "Failed to skip preceding frames"
                     << precedingFrames;
-            return IndexRange();
+            // Abort
+            return ReadableSampleFrames(
+                    IndexRange::between(
+                            m_curFrameIndex,
+                            m_curFrameIndex));
         }
     }
-    DEBUG_ASSERT(m_curFrameIndex == readableFrames.start());
+    DEBUG_ASSERT(m_curFrameIndex == firstFrameIndex);
 
-    const SINT numberOfSamplesTotal = frames2samples(readableFrames.length());
+    const SINT numberOfSamplesTotal = frames2samples(writableSampleFrames.frameIndexRange().length());
+
     SINT numberOfSamplesRemaining = numberOfSamplesTotal;
     SINT outputSampleOffset = 0;
     while (0 < numberOfSamplesRemaining) {
@@ -259,9 +268,9 @@ IndexRange SoundSourceFLAC::readOrSkipSampleFrames(
         const SampleBuffer::ReadableSlice readableSlice(
                 m_sampleBuffer.readFromHead(numberOfSamplesRead));
         DEBUG_ASSERT(readableSlice.size() == numberOfSamplesRead);
-        if (pOutputBuffer) {
+        if (readMode == ReadMode::Store) {
             SampleUtil::copy(
-                    pOutputBuffer->data(outputSampleOffset),
+                    writableSampleFrames.sampleBuffer().data(outputSampleOffset),
                     readableSlice.data(),
                     readableSlice.size());
             outputSampleOffset += numberOfSamplesRead;
@@ -272,8 +281,12 @@ IndexRange SoundSourceFLAC::readOrSkipSampleFrames(
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(numberOfSamplesTotal >= numberOfSamplesRemaining);
-    return readableFrames.cutFrontRange(
-            samples2frames(numberOfSamplesTotal - numberOfSamplesRemaining));
+    const SINT numberOfSamples = numberOfSamplesTotal - numberOfSamplesRemaining;
+    return ReadableSampleFrames(
+            IndexRange::forward(firstFrameIndex, samples2frames(numberOfSamples)),
+            SampleBuffer::ReadableSlice(
+                    writableSampleFrames.sampleBuffer().data(),
+                    std::min(writableSampleFrames.sampleBuffer().size(), numberOfSamples)));
 }
 
 // flac callback methods

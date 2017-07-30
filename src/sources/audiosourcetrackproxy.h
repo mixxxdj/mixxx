@@ -16,6 +16,14 @@ namespace mixxx {
 // is still in use.
 class AudioSourceTrackProxy: public AudioSource {
 public:
+    static AudioSourcePointer create(
+            AudioSourcePointer pAudioSource,
+            TrackPointer pTrack) {
+        return std::make_shared<AudioSourceTrackProxy>(
+                std::move(pAudioSource),
+                std::move(pTrack));
+    }
+
     AudioSourceTrackProxy(
             AudioSourcePointer pAudioSource,
             TrackPointer pTrack)
@@ -24,12 +32,12 @@ public:
           m_pTrack(std::move(pTrack)) {
     }
 
-    IndexRange readOrSkipSampleFrames(
-            IndexRange readFrameIndexRange,
-            SampleBuffer::WritableSlice* pOutputBuffer) override {
-        return m_pAudioSource->readOrSkipSampleFrames(
-                readFrameIndexRange,
-                pOutputBuffer);
+    ReadableSampleFrames readSampleFrames(
+            ReadMode readMode,
+            WritableSampleFrames sampleFrames) override {
+        return m_pAudioSource->readSampleFrames(
+                readMode,
+                sampleFrames);
     }
 
     IndexRange skipSampleFrames(

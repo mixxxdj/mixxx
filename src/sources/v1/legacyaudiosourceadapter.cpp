@@ -18,20 +18,22 @@ LegacyAudioSourceAdapter::LegacyAudioSourceAdapter(
       m_pImpl(pImpl) {
 }
 
-IndexRange LegacyAudioSourceAdapter::readOrSkipSampleFrames(
-        IndexRange frameIndexRange,
-        SampleBuffer::WritableSlice* pOutputBuffer) {
-    auto readableFrames =
-            m_pOwner->adjustReadableFrameIndexRangeAndOutputBuffer(
-                    frameIndexRange, pOutputBuffer);
-    if (readableFrames.empty()) {
-        return readableFrames;
+ReadableSampleFrames LegacyAudioSourceAdapter::readSampleFrames(
+        ReadMode readMode,
+        WritableSampleFrames sampleFrames) {
+    auto writableSampleFrames =
+            m_pOwner->clampWritableSampleFrames(
+                    readMode, sampleFrames);
+    if (writableSampleFrames.frameIndexRange().empty()) {
+        return ReadableSampleFrames(writableSampleFrames.frameIndexRange());
     }
 
-    const SINT seekFrameIndex = m_pImpl->seekSampleFrame(readableFrames.start());
-    if (seekFrameIndex < readableFrames.start()) {
+    const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
+
+    const SINT seekFrameIndex = m_pImpl->seekSampleFrame(firstFrameIndex);
+    if (seekFrameIndex < firstFrameIndex) {
         const auto precedingFrames =
-                IndexRange::between(seekFrameIndex, readableFrames.start());
+                IndexRange::between(seekFrameIndex, firstFrameIndex);
         kLogger.info()
                 << "Skipping preceding frames"
                 << precedingFrames;
@@ -39,27 +41,49 @@ IndexRange LegacyAudioSourceAdapter::readOrSkipSampleFrames(
             kLogger.warning()
                     << "Failed to skip preceding frames"
                     << precedingFrames;
-            return IndexRange();
+            return ReadableSampleFrames();
         }
     }
-    DEBUG_ASSERT(seekFrameIndex >= readableFrames.start());
+    DEBUG_ASSERT(seekFrameIndex >= firstFrameIndex);
 
-    SINT outputSampleOffset = 0;
-    if (seekFrameIndex > readableFrames.start()) {
-        const auto unreadableFrames = readableFrames.cutFrontRange(seekFrameIndex - readableFrames.start());
+    if (seekFrameIndex > firstFrameIndex) {
+        const SINT unreadableFrameOffset = seekFrameIndex - firstFrameIndex;
         kLogger.warning()
-                << "Dropping unreadable frames"
-                << unreadableFrames;
-        outputSampleOffset += unreadableFrames.length();
+                << "Dropping"
+                << unreadableFrameOffset
+                << "unreadable frames";
+        if (writableSampleFrames.frameIndexRange().containsIndex(seekFrameIndex)) {
+            const auto remainingFrameIndexRange =
+                    IndexRange::between(seekFrameIndex, writableSampleFrames.frameIndexRange().end());
+            if (readMode == ReadMode::Store) {
+                writableSampleFrames = WritableSampleFrames(
+                        remainingFrameIndexRange,
+                        SampleBuffer::WritableSlice(
+                                writableSampleFrames.sampleBuffer().data(m_pOwner->frames2samples(unreadableFrameOffset)),
+                                m_pOwner->frames2samples(remainingFrameIndexRange.length())));
+            } else {
+                writableSampleFrames = WritableSampleFrames(remainingFrameIndexRange);
+            }
+        } else {
+            writableSampleFrames = WritableSampleFrames();
+        }
     }
-    DEBUG_ASSERT(seekFrameIndex == readableFrames.start());
-
     // Read or skip data
-    return IndexRange::forward(
-            readableFrames.start(),
+    const SINT numFramesRead =
             m_pImpl->readSampleFrames(
-                    readableFrames.length(),
-                    pOutputBuffer ? pOutputBuffer->data(outputSampleOffset) : nullptr));
+                    writableSampleFrames.frameIndexRange().length(),
+                    (readMode == ReadMode::Store) ? writableSampleFrames.sampleBuffer().data() : nullptr);
+    const auto resultFrameIndexRange =
+            IndexRange::forward(writableSampleFrames.frameIndexRange().start(), numFramesRead);
+    if (readMode == ReadMode::Store) {
+        return ReadableSampleFrames(
+                resultFrameIndexRange,
+                SampleBuffer::ReadableSlice(
+                        writableSampleFrames.sampleBuffer().data(),
+                        m_pOwner->frames2samples(resultFrameIndexRange.length())));
+    } else {
+        return ReadableSampleFrames(resultFrameIndexRange);
+    }
 }
 
 } // namespace mixxx

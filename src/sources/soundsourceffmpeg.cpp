@@ -887,19 +887,21 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
     return false;
 }
 
-IndexRange SoundSourceFFmpeg::readOrSkipSampleFrames(
-        IndexRange frameIndexRange,
-        SampleBuffer::WritableSlice* pOutputBuffer) {
-    auto readableFrames =
-            adjustReadableFrameIndexRangeAndOutputBuffer(
-                    frameIndexRange, pOutputBuffer);
-    if (readableFrames.empty()) {
-        return readableFrames;
+ReadableSampleFrames SoundSourceFFmpeg::readSampleFrames(
+        ReadMode readMode,
+        WritableSampleFrames sampleFrames) {
+    const auto writableSampleFrames =
+            clampWritableSampleFrames(readMode, sampleFrames);
+    if (writableSampleFrames.frameIndexRange().empty()) {
+        return ReadableSampleFrames(writableSampleFrames.frameIndexRange());
     }
 
-    const SINT seekFrameIndex =
-            pOutputBuffer ? readableFrames.start() : readableFrames.end();
-    if ((m_currentMixxxFrameIndex != seekFrameIndex) || (pOutputBuffer && (m_SCache.size() == 0))) {
+    const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
+
+    const SINT seekFrameIndex = (readMode == ReadMode::Store) ?
+                firstFrameIndex : writableSampleFrames.frameIndexRange().end();
+    if ((m_currentMixxxFrameIndex != seekFrameIndex) ||
+            ((readMode == ReadMode::Store) && (m_SCache.size() == 0))) {
         int ret = 0;
         qint64 i = 0;
         struct ffmpegLocationObject *l_STestObj = nullptr;
@@ -924,7 +926,7 @@ IndexRange SoundSourceFFmpeg::readOrSkipSampleFrames(
 
             if (ret < 0) {
                 kLogger.warning() << "seek: Can't seek to 0 byte!";
-                return IndexRange();
+                return ReadableSampleFrames();
             }
 
             clearCache();
@@ -981,16 +983,24 @@ IndexRange SoundSourceFFmpeg::readOrSkipSampleFrames(
     }
     DEBUG_ASSERT(m_currentMixxxFrameIndex == seekFrameIndex);
 
-    if (pOutputBuffer) {
-        DEBUG_ASSERT(m_currentMixxxFrameIndex == readableFrames.start());
+    const SINT numberOfFrames = writableSampleFrames.frameIndexRange().length();
+
+    if (readMode == ReadMode::Store) {
+        DEBUG_ASSERT(m_currentMixxxFrameIndex == firstFrameIndex);
         DEBUG_ASSERT(m_SCache.size() > 0);
-        getBytesFromCache(pOutputBuffer->data(), m_currentMixxxFrameIndex, readableFrames.length());
-        m_currentMixxxFrameIndex += readableFrames.length();
+        getBytesFromCache(
+                writableSampleFrames.sampleBuffer().data(),
+                m_currentMixxxFrameIndex, numberOfFrames);
+        m_currentMixxxFrameIndex += numberOfFrames;
         m_bIsSeeked = false;
     } else {
-        DEBUG_ASSERT(m_currentMixxxFrameIndex == readableFrames.end());
+        DEBUG_ASSERT(m_currentMixxxFrameIndex == writableSampleFrames.frameIndexRange().end());
     }
-    return readableFrames;
+    return ReadableSampleFrames(
+            IndexRange::forward(firstFrameIndex, numberOfFrames),
+            SampleBuffer::ReadableSlice(
+                    writableSampleFrames.sampleBuffer().data(),
+                    std::min(writableSampleFrames.sampleBuffer().size(), frames2samples(numberOfFrames))));
 }
 
 } // namespace mixxx

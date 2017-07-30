@@ -54,17 +54,19 @@ QString calcFingerprint(const mixxx::AudioSourcePointer& pAudioSource) {
             inputFrameIndexRange.length() * kFingerprintChannels,
             pAudioSource->frames2samples(inputFrameIndexRange.length())));
 
-    const auto outputFrameIndexRange =
+    const auto readableSampleFrames =
             audioSourceProxy.readSampleFrames(
-                    inputFrameIndexRange,
-                    SampleBuffer::WritableSlice(sampleBuffer));
-    if (inputFrameIndexRange != outputFrameIndexRange) {
+                    mixxx::IAudioSource::ReadMode::Store,
+                    mixxx::WritableSampleFrames(
+                            inputFrameIndexRange,
+                            SampleBuffer::WritableSlice(sampleBuffer)));
+    if (inputFrameIndexRange != readableSampleFrames.frameIndexRange()) {
         qWarning() << "Failed to read sample data for fingerprint";
         return QString();
     }
 
     std::vector<SAMPLE> fingerprintSamples(
-            outputFrameIndexRange.length() * kFingerprintChannels);
+            readableSampleFrames.frameIndexRange().length() * kFingerprintChannels);
     // Convert floating-point to integer
     SampleUtil::convertFloat32ToS16(
             &fingerprintSamples[0],

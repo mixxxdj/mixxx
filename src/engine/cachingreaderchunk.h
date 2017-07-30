@@ -81,7 +81,7 @@ private:
     // The worker thread will fill the sample buffer and
     // set the corresponding frame index range.
     SampleBuffer::WritableSlice m_sampleBuffer;
-    mixxx::IndexRange m_bufferedFrameIndexRange;
+    mixxx::ReadableSampleFrames m_bufferedSampleFrames;
 };
 
 // This derived class is only accessible for the cache as the owner,

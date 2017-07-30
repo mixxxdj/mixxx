@@ -194,16 +194,20 @@ bool AnalyzerQueue::doAnalysis(
                 remainingFrames.cutFrontRange(
                         math_min(kAnalysisFramesPerBlock, remainingFrames.length()));
         DEBUG_ASSERT(!inputFrameIndexRange.empty());
-        const auto outputFrameIndexRange =
+        const auto readableSampleFrames =
                 audioSourceProxy.readSampleFrames(
-                        inputFrameIndexRange,
-                        SampleBuffer::WritableSlice(m_sampleBuffer));
+                        mixxx::IAudioSource::ReadMode::Store,
+                        mixxx::WritableSampleFrames(
+                                inputFrameIndexRange,
+                                SampleBuffer::WritableSlice(m_sampleBuffer)));
         // To compare apples to apples, let's only look at blocks that are
         // the full block size.
-        if (outputFrameIndexRange.length() == kAnalysisFramesPerBlock) {
+        if (readableSampleFrames.frameIndexRange().length() == kAnalysisFramesPerBlock) {
             // Complete analysis block of audio samples has been read.
             for (auto const& pAnalyzer: m_pAnalyzers) {
-                pAnalyzer->process(m_sampleBuffer.data(), m_sampleBuffer.size());
+                pAnalyzer->process(
+                        readableSampleFrames.sampleBuffer().data(),
+                        readableSampleFrames.sampleBuffer().size());
             }
         } else {
             // Partial analysis block of audio samples has been read.
@@ -215,7 +219,7 @@ bool AnalyzerQueue::doAnalysis(
                         << "Aborting analysis after failed to read sample data from"
                         << pTrack->getLocation()
                         << ": expected frames =" << inputFrameIndexRange
-                        << ", actual frames =" << outputFrameIndexRange;
+                        << ", actual frames =" << readableSampleFrames.frameIndexRange();
                 dieflag = true; // abort
                 cancelled = false; // completed, no retry
             }

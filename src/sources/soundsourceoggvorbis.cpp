@@ -112,20 +112,21 @@ void SoundSourceOggVorbis::close() {
     m_pFile.reset();
 }
 
-IndexRange SoundSourceOggVorbis::readOrSkipSampleFrames(
-        IndexRange frameIndexRange,
-        SampleBuffer::WritableSlice* pOutputBuffer) {
-    auto readableFrames =
-            adjustReadableFrameIndexRangeAndOutputBuffer(
-                    frameIndexRange, pOutputBuffer);
-    if (readableFrames.empty()) {
-        return readableFrames;
+ReadableSampleFrames SoundSourceOggVorbis::readSampleFrames(
+        ReadMode readMode,
+        WritableSampleFrames sampleFrames) {
+    const auto writableSampleFrames =
+            clampWritableSampleFrames(readMode, sampleFrames);
+    if (writableSampleFrames.frameIndexRange().empty()) {
+        return ReadableSampleFrames(writableSampleFrames.frameIndexRange());
     }
 
-    if (m_curFrameIndex != readableFrames.start()) {
-        const int seekResult = ov_pcm_seek(&m_vf, readableFrames.start());
+    const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
+
+    if (m_curFrameIndex != firstFrameIndex) {
+        const int seekResult = ov_pcm_seek(&m_vf, firstFrameIndex);
         if (seekResult == 0) {
-            m_curFrameIndex = readableFrames.start();
+            m_curFrameIndex = firstFrameIndex;
         } else {
             kLogger.warning() << "Failed to seek file:" << seekResult;
             const ogg_int64_t pcmOffset = ov_pcm_tell(&m_vf);
@@ -135,14 +136,20 @@ IndexRange SoundSourceOggVorbis::readOrSkipSampleFrames(
                 // Reset to EOF
                 m_curFrameIndex = frameIndexMax();
             }
-            return IndexRange();
+            // Abort
+            return ReadableSampleFrames(
+                    mixxx::IndexRange::between(
+                            m_curFrameIndex,
+                            m_curFrameIndex));
         }
     }
-    DEBUG_ASSERT(m_curFrameIndex == readableFrames.start());
+    DEBUG_ASSERT(m_curFrameIndex == firstFrameIndex);
 
-    CSAMPLE* pSampleBuffer = pOutputBuffer ?
-            pOutputBuffer->data() : nullptr;
-    SINT numberOfFramesRemaining = readableFrames.length();
+    const SINT numberOfFramesTotal = writableSampleFrames.frameIndexRange().length();
+
+    CSAMPLE* pSampleBuffer = (readMode == ReadMode::Store) ?
+            writableSampleFrames.sampleBuffer().data() : nullptr;
+    SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         float** pcmChannels;
         int currentSection;
@@ -155,16 +162,19 @@ IndexRange SoundSourceOggVorbis::readOrSkipSampleFrames(
         if (0 < readResult) {
             m_curFrameIndex += readResult;
             if (pSampleBuffer) {
-                if (channelCount().isMono()) {
+                switch (channelCount()) {
+                case 1:
                     for (long i = 0; i < readResult; ++i) {
                         *pSampleBuffer++ = pcmChannels[0][i];
                     }
-                } else if (channelCount().isStereo()) {
+                    break;
+                case 2:
                     for (long i = 0; i < readResult; ++i) {
                         *pSampleBuffer++ = pcmChannels[0][i];
                         *pSampleBuffer++ = pcmChannels[1][i];
                     }
-                } else {
+                    break;
+                default:
                     for (long i = 0; i < readResult; ++i) {
                         for (SINT j = 0; j < channelCount(); ++j) {
                             *pSampleBuffer++ = pcmChannels[j][i];
@@ -180,8 +190,13 @@ IndexRange SoundSourceOggVorbis::readOrSkipSampleFrames(
     }
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-    DEBUG_ASSERT(readableFrames.length() >= numberOfFramesRemaining);
-    return readableFrames.cutFrontRange(readableFrames.length() - numberOfFramesRemaining);
+    DEBUG_ASSERT(numberOfFramesTotal >= numberOfFramesRemaining);
+    const SINT numberOfFrames = numberOfFramesTotal - numberOfFramesRemaining;
+    return ReadableSampleFrames(
+            IndexRange::forward(firstFrameIndex, numberOfFrames),
+            SampleBuffer::ReadableSlice(
+                    writableSampleFrames.sampleBuffer().data(),
+                    std::min(writableSampleFrames.sampleBuffer().size(), frames2samples(numberOfFrames))));
 }
 
 

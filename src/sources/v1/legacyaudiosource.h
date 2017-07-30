@@ -7,6 +7,7 @@
 namespace mixxx {
 
 // The legacy API that has been deprecated.
+// Only required for SoundSourceCoreAudio.
 class LegacyAudioSource {
   public:
     virtual ~LegacyAudioSource() = default;

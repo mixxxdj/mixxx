@@ -78,38 +78,50 @@ bool AudioSource::verifyReadable() const {
 }
 
 
-IndexRange AudioSource::adjustReadableFrameIndexRangeAndOutputBuffer(
-        IndexRange frameIndexRange,
-        SampleBuffer::WritableSlice* pOutputBuffer) const {
-    const SINT minOutputBufferSize =
-            frames2samples(frameIndexRange.length());
-    VERIFY_OR_DEBUG_ASSERT(!pOutputBuffer ||
-            (pOutputBuffer->size() >= minOutputBufferSize)) {
-        kLogger.critical()
-                << "Output buffer is too small"
-                << pOutputBuffer->size()
-                << "<"
-                << minOutputBufferSize
-                << "to store all sample frames"
-                << frameIndexRange;
-        return IndexRange();
-    }
-
-    auto readableFrames =
-            intersect(frameIndexRange, this->frameIndexRange());
-    if (readableFrames.empty()) {
-        return readableFrames;
-    }
-    DEBUG_ASSERT(readableFrames.start() >= frameIndexRange.start());
-    if (pOutputBuffer) {
-        const SINT readableFrameOffset = readableFrames.start() - frameIndexRange.start();
-        if (readableFrameOffset > 0) {
-            *pOutputBuffer = SampleBuffer::WritableSlice(
-                    pOutputBuffer->data(frames2samples(readableFrameOffset)),
-                    frames2samples(readableFrames.length()));
+WritableSampleFrames AudioSource::clampWritableSampleFrames(
+        ReadMode readMode,
+        WritableSampleFrames sampleFrames) const {
+    const auto readableFrameIndexRange =
+            clampFrameIndexRange(sampleFrames.frameIndexRange());
+    if ((readMode == ReadMode::Skip) ||
+            readableFrameIndexRange.empty() ||
+            sampleFrames.sampleBuffer().empty()) {
+        // should not write any samples into buffer
+        return WritableSampleFrames(readableFrameIndexRange);
+    } else {
+        // adjust offset and length of the sample buffer
+        DEBUG_ASSERT(sampleFrames.frameIndexRange().start() <= readableFrameIndexRange.end());
+        auto writableFrameIndexRange =
+                IndexRange::between(sampleFrames.frameIndexRange().start(), readableFrameIndexRange.end());
+        const SINT minSampleBufferCapacity =
+                frames2samples(writableFrameIndexRange.length());
+        VERIFY_OR_DEBUG_ASSERT(sampleFrames.sampleBuffer().size() >= minSampleBufferCapacity) {
+            kLogger.critical()
+                    << "Capacity of output buffer is too small"
+                    << sampleFrames.sampleBuffer().size()
+                    << "<"
+                    << minSampleBufferCapacity
+                    << "to store all readable sample frames"
+                    << readableFrameIndexRange
+                    << "into writable sample frames"
+                    << writableFrameIndexRange;
+            writableFrameIndexRange =
+                    writableFrameIndexRange.cutFrontRange(
+                            samples2frames(sampleFrames.sampleBuffer().size()));
+            kLogger.warning()
+                    << "Reduced writable sample frames"
+                    << writableFrameIndexRange;
         }
+        DEBUG_ASSERT(readableFrameIndexRange.start() >= writableFrameIndexRange.start());
+        const SINT writableFrameOffset =
+                readableFrameIndexRange.start() - writableFrameIndexRange.start();
+        writableFrameIndexRange.dropFrontRange(writableFrameOffset);
+        return WritableSampleFrames(
+                writableFrameIndexRange,
+                SampleBuffer::WritableSlice(
+                        sampleFrames.sampleBuffer().data(frames2samples(writableFrameOffset)),
+                        frames2samples(writableFrameIndexRange.length())));
     }
-    return readableFrames;
 }
 
 } // namespace mixxx

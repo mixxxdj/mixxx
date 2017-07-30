@@ -54,24 +54,25 @@ bool isDisjunct(
 
 }
 
-IndexRange AudioSourceStereoProxy::readOrSkipSampleFrames(
-        IndexRange frameIndexRange,
-        SampleBuffer::WritableSlice* pOutputBuffer) {
-    if (!pOutputBuffer) {
-        return m_pAudioSource->skipSampleFrames(frameIndexRange);
-    }
-    if (m_pAudioSource->channelCount() == channelCount()) {
-        return m_pAudioSource->readOrSkipSampleFrames(frameIndexRange, pOutputBuffer);
+ReadableSampleFrames AudioSourceStereoProxy::readSampleFrames(
+        ReadMode readMode,
+        WritableSampleFrames sampleFrames) {
+    if ((readMode == ReadMode::Skip) ||
+            (m_pAudioSource->channelCount() == channelCount())) {
+        return m_pAudioSource->readSampleFrames(readMode, sampleFrames);
     }
 
     // Check location and capacity of temporary buffer
-    VERIFY_OR_DEBUG_ASSERT(isDisjunct(m_tempOutputBuffer, *pOutputBuffer)) {
+    VERIFY_OR_DEBUG_ASSERT(isDisjunct(
+            m_tempOutputBuffer,
+            SampleBuffer::WritableSlice(sampleFrames.sampleBuffer()))) {
         kLogger.warning()
                 << "Overlap between output and temporary sample buffer detected";
-        return IndexRange();
+        return ReadableSampleFrames();
     }
     {
-        const SINT numberOfSamplesToRead = m_pAudioSource->frames2samples(frameIndexRange.length());
+        const SINT numberOfSamplesToRead =
+                m_pAudioSource->frames2samples(sampleFrames.frameIndexRange().length());
         VERIFY_OR_DEBUG_ASSERT(m_tempOutputBuffer.size() >= numberOfSamplesToRead) {
             kLogger.warning()
                     << "Insufficient temporary sample buffer capacity"
@@ -79,38 +80,45 @@ IndexRange AudioSourceStereoProxy::readOrSkipSampleFrames(
                     << "<"
                     << numberOfSamplesToRead
                     << "for reading frames"
-                    << frameIndexRange;
-            return IndexRange();
+                    << sampleFrames.frameIndexRange();
+            return ReadableSampleFrames();
         }
     }
 
-    const IndexRange resultFrameIndexRange =
+    const auto readableSampleFrames =
             m_pAudioSource->readSampleFrames(
-                    frameIndexRange,
-                    m_tempOutputBuffer);
-    DEBUG_ASSERT(resultFrameIndexRange <= frameIndexRange);
-    if (!resultFrameIndexRange.empty()) {
-        DEBUG_ASSERT(resultFrameIndexRange.start() >= frameIndexRange.start());
-        const SINT frameOffset =
-                resultFrameIndexRange.start() - frameIndexRange.start();
-        const auto pDstSamples =
-                pOutputBuffer->data(frames2samples(frameOffset));
-        const auto pSrcSamples =
-                m_tempOutputBuffer.data(m_pAudioSource->frames2samples(frameOffset));
-        if (m_pAudioSource->channelCount().isMono()) {
-            SampleUtil::copyMonoToDualMono(
-                    pDstSamples,
-                    pSrcSamples,
-                    resultFrameIndexRange.length());
-        } else {
-            SampleUtil::copyMultiToStereo(
-                    pDstSamples,
-                    pSrcSamples,
-                    resultFrameIndexRange.length(),
-                    m_pAudioSource->channelCount());
-        }
+                    readMode,
+                    WritableSampleFrames(
+                            sampleFrames.frameIndexRange(),
+                            m_tempOutputBuffer));
+    DEBUG_ASSERT(readableSampleFrames.frameIndexRange() <= sampleFrames.frameIndexRange());
+    if (readableSampleFrames.frameIndexRange().empty()) {
+        return ReadableSampleFrames(
+                readableSampleFrames.frameIndexRange());
     }
-    return resultFrameIndexRange;
+    DEBUG_ASSERT(readableSampleFrames.frameIndexRange().start() >= sampleFrames.frameIndexRange().start());
+    const SINT frameOffset =
+            readableSampleFrames.frameIndexRange().start() - sampleFrames.frameIndexRange().start();
+    SampleBuffer::WritableSlice writableSlice(
+            sampleFrames.sampleBuffer().data(frames2samples(frameOffset)),
+            frames2samples(readableSampleFrames.frameIndexRange().length()));
+    if (m_pAudioSource->channelCount().isMono()) {
+        SampleUtil::copyMonoToDualMono(
+                writableSlice.data(),
+                readableSampleFrames.sampleBuffer().data(),
+                readableSampleFrames.frameIndexRange().length());
+    } else {
+        SampleUtil::copyMultiToStereo(
+                writableSlice.data(),
+                readableSampleFrames.sampleBuffer().data(),
+                readableSampleFrames.frameIndexRange().length(),
+                m_pAudioSource->channelCount());
+    }
+    return ReadableSampleFrames(
+            readableSampleFrames.frameIndexRange(),
+            SampleBuffer::ReadableSlice(
+                    writableSlice.data(),
+                    writableSlice.size()));
 }
 
 }
