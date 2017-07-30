@@ -4,7 +4,10 @@
 
 #include <QtDebug>
 
+#include "library/library.h"
 #include "library/analysisfeature.h"
+
+#include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
 #include "library/dlganalysis.h"
@@ -17,16 +20,17 @@
 
 const QString AnalysisFeature::m_sAnalysisViewName = QString("Analysis");
 
-AnalysisFeature::AnalysisFeature(QObject* parent,
+AnalysisFeature::AnalysisFeature(Library* parent,
                                UserSettingsPointer pConfig,
                                TrackCollection* pTrackCollection) :
         LibraryFeature(parent),
         m_pConfig(pConfig),
+        m_pDbConnectionPool(parent->dbConnectionPool()),
         m_pTrackCollection(pTrackCollection),
-        m_pAnalyzerQueue(NULL),
+        m_pAnalyzerQueue(nullptr),
         m_iOldBpmEnabled(0),
         m_analysisTitleName(tr("Analyze")),
-        m_pAnalysisView(NULL) {
+        m_pAnalysisView(nullptr) {
     setTitleDefault();
 }
 
@@ -108,6 +112,18 @@ void AnalysisFeature::activate() {
     emit(enableCoverArtDisplay(true));
 }
 
+namespace {
+    inline
+    AnalyzerQueue::Mode getAnalyzerQueueMode(
+            const UserSettingsPointer& pConfig) {
+        if (pConfig->getValue<bool>(ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"), true)) {
+            return AnalyzerQueue::Mode::Default;
+        } else {
+            return AnalyzerQueue::Mode::WithoutWaveform;
+        }
+    }
+} // anonymous namespace
+
 void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
     if (m_pAnalyzerQueue == NULL) {
         // Save the old BPM detection prefs setting (on or off)
@@ -116,7 +132,10 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
         m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(1));
         // Note: this sucks... we should refactor the prefs/analyzer to fix this hacky bit ^^^^.
 
-        m_pAnalyzerQueue = AnalyzerQueue::createAnalysisFeatureAnalyzerQueue(m_pConfig, m_pTrackCollection);
+        m_pAnalyzerQueue = new AnalyzerQueue(
+                m_pDbConnectionPool,
+                m_pConfig,
+                getAnalyzerQueueMode(m_pConfig));
 
         connect(m_pAnalyzerQueue, SIGNAL(trackProgress(int)),
                 m_pAnalysisView, SLOT(trackAnalysisProgress(int)));

@@ -6,7 +6,7 @@ Description:
   * Vinyl controls
 Variables:
   group               : [ChannelN]
-  channum             : channel number
+  chanNum             : channel number
   SignalBgColor       : defined in skin.xml
   SignalColor         :
   SignalRGBLowColor   :
@@ -22,14 +22,14 @@ Variables:
     <SizePolicy>me,f</SizePolicy>
     <Children>
       <WidgetGroup>
-        <ObjectName>DeckOverview<Variable name="channum"/></ObjectName>
+        <ObjectName>DeckOverview<Variable name="chanNum"/></ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>me,f</SizePolicy>
         <Children>
 
           <Overview>
             <TooltipId>waveform_overview</TooltipId>
-            <Channel><Variable name="channum"/></Channel>
+            <Channel><Variable name="chanNum"/></Channel>
             <Size>1me,50f</Size>
             <BgColor><Variable name="SignalBgColor"/></BgColor>
             <SignalColor><Variable name="SignalColor"/></SignalColor>
@@ -64,27 +64,16 @@ Variables:
             </Connection>
           </Overview><!-- /Overview -->
 
-          <WidgetGroup><!-- Vinyl Controls -->
-            <Layout>horizontal</Layout>
-            <Children>
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
 
-              <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
+          <Template src="skin:vinyl_controls_left.xml"/>
 
-              <Template src="skin:vinyl_controls_left.xml"/>
-
-              <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
-                <SetVariable name="ObjectName">VinylTogglerLeft</SetVariable>
-                <SetVariable name="Size">11f,50f</SetVariable>
-                <SetVariable name="TooltipId"></SetVariable>
-                <SetVariable name="ConfigKeyPerm">[Tango],vinylControlsDeck<Variable name="channum"/></SetVariable>
-              </Template>
-
-            </Children>
-            <Connection>
-              <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup><!-- /Vinyl Controls -->
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="ObjectName">VinylTogglerLeft</SetVariable>
+            <SetVariable name="Size">11f,50f</SetVariable>
+            <SetVariable name="TooltipId"></SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
+          </Template>
 
           <WidgetGroup><!-- [Spinny / Cover / none] -->
             <Layout>vertical</Layout>
@@ -143,14 +132,14 @@ Variables:
       <WidgetGroup>
         <Size>50f,50f</Size>
         <Children>
-          <!-- Colors contain actually deck-specific Variable "channum" is already
+          <!-- Colors contain actually deck-specific Variable "chanNum" is already
           but here this is already passed as variable and we can't set a variable name
           containing another variable.
           Here it doesn't matter since waveform is invisble.                           
           -->
           <Template src="skin:waveform.xml">
             <SetVariable name="Size">0me,50me</SetVariable>
-            <SetVariable name="channum"><Variable name="channum"/></SetVariable>
+            <SetVariable name="chanNum"><Variable name="chanNum"/></SetVariable>
             <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_1"/></SetVariable>
             <SetVariable name="SignalColor"><Variable name="SignalColor_1"/></SetVariable>
           </Template>

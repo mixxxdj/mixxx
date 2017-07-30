@@ -24,6 +24,7 @@
 #include <QScopedPointer>
 
 #include "preferences/usersettings.h"
+#include "database/mixxxdb.h"
 #include "controllers/defs_controllers.h"
 #include "defs_version.h"
 #include "library/library_preferences.h"
@@ -31,6 +32,8 @@
 #include "track/beat_preferences.h"
 #include "util/cmdlineargs.h"
 #include "util/math.h"
+#include "util/db/dbconnectionpooler.h"
+#include "util/db/dbconnectionpooled.h"
 
 Upgrade::Upgrade()
         : m_bFirstRun(false),
@@ -358,21 +361,34 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 
     if (configVersion.startsWith("1.11")) {
         qDebug() << "Upgrading from v1.11.x...";
+        bool successful = false;
+        {
+            MixxxDb mixxxDb(config);
+            const mixxx::DbConnectionPooler dbConnectionPooler(
+                    mixxxDb.connectionPool());
+            if (dbConnectionPooler.isPooling()) {
+                QSqlDatabase dbConnection = mixxx::DbConnectionPooled(mixxxDb.connectionPool());
+                DEBUG_ASSERT(dbConnection.isOpen());
+                if (MixxxDb::initDatabaseSchema(dbConnection)) {
+                    TrackCollection tc(config);
+                    tc.connectDatabase(dbConnection);
 
-        // upgrade to the multi library folder settings
-        QString currentFolder = config->getValueString(PREF_LEGACY_LIBRARY_DIR);
-        // to migrate the DB just add the current directory to the new
-        // directories table
-        TrackCollection tc(config);
-        DirectoryDAO directoryDAO = tc.getDirectoryDAO();
+                    // upgrade to the multi library folder settings
+                    QString currentFolder = config->getValueString(PREF_LEGACY_LIBRARY_DIR);
+                    // to migrate the DB just add the current directory to the new
+                    // directories table
+                    // NOTE(rryan): We don't have to ask for sandbox permission to this
+                    // directory because the normal startup integrity check in Library will
+                    // notice if we don't have permission and ask for access. Also, the
+                    // Sandbox isn't setup yet at this point in startup because it relies on
+                    // the config settings path and this function is what loads the config
+                    // so it's not ready yet.
+                    successful = tc.getDirectoryDAO().addDirectory(currentFolder);
 
-        // NOTE(rryan): We don't have to ask for sandbox permission to this
-        // directory because the normal startup integrity check in Library will
-        // notice if we don't have permission and ask for access. Also, the
-        // Sandbox isn't setup yet at this point in startup because it relies on
-        // the config settings path and this function is what loads the config
-        // so it's not ready yet.
-        bool successful = directoryDAO.addDirectory(currentFolder);
+                    tc.disconnectDatabase();
+                }
+            }
+        }
 
         // ask for library rescan to activate cover art. We can later ask for
         // this variable when the library scanner is constructed.

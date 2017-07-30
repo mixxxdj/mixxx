@@ -2,8 +2,6 @@
 
 #include <QSqlRecord>
 
-#include <QtDebug>
-
 #include "util/performancetimer.h"
 #include "util/logger.h"
 #include "util/assert.h"
@@ -41,9 +39,10 @@ FwdSqlQuery::FwdSqlQuery(
       m_prepared(prepareQuery(*this, statement)) {
     if (!m_prepared) {
         DEBUG_ASSERT(!database.isOpen() || hasError());
-        qCritical() << "Failed to prepare SQL query"
-                << "for [" << statement << "]"
-                << "on [" << database.connectionName() << "]:"
+        kLogger.critical()
+                << "Failed to prepare"
+                << statement
+                << ":"
                 << lastError();
     }
 }
@@ -70,16 +69,11 @@ bool FwdSqlQuery::execPrepared() {
         DEBUG_ASSERT(size() < 0);
         return true;
     } else {
-        if (lastQuery() == executedQuery()) {
-            qCritical() << "Failed to execute prepared SQL query"
-                    << "lastQuery [" << lastQuery() << "]:"
-                    << lastError();
-        } else {
-            qCritical() << "Failed to execute prepared SQL query"
-                    << "lastQuery [" << lastQuery() << "]"
-                    << "executedQuery [" << executedQuery() << "]:"
-                    << lastError();
-        }
+        kLogger.warning()
+                << "Failed to execute"
+                << lastQuery()
+                << ":"
+                << lastError();
         DEBUG_ASSERT(hasError());
         return false;
     }
@@ -90,9 +84,9 @@ DbFieldIndex FwdSqlQuery::fieldIndex(const QString& fieldName) const {
     DEBUG_ASSERT(isSelect());
     DbFieldIndex fieldIndex(record().indexOf(fieldName));
     VERIFY_OR_DEBUG_ASSERT(fieldIndex.isValid()) {
-        qCritical() << "Field named"
-                << fieldName
-                << "not found in record of SQL query"
+        kLogger.critical()
+                << "Field named" << fieldName
+                << "not found in result from"
                 << executedQuery();
     }
     DEBUG_ASSERT(!hasError());
@@ -112,12 +106,16 @@ namespace {
         bool ok = false;
         int value = variant.toInt(&ok);
         VERIFY_OR_DEBUG_ASSERT(ok) {
-            qWarning() << "Invalid boolean value in database:" << variant;
+            kLogger.critical()
+                    << "Invalid boolean value in database:"
+                    << variant;
         }
         VERIFY_OR_DEBUG_ASSERT(
                 (value == FwdSqlQuery::BOOLEAN_FALSE) ||
                 (value == FwdSqlQuery::BOOLEAN_TRUE)) {
-            qWarning() << "Invalid boolean value in database:" << value;
+            kLogger.critical()
+                    << "Invalid boolean value in database:"
+                    << value;
         }
         // C-style conversion from int to bool
         DEBUG_ASSERT(FwdSqlQuery::BOOLEAN_FALSE == 0);
