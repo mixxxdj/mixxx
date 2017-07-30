@@ -488,26 +488,27 @@ SINT SoundSourceMp3::findSeekFrameIndex(
     return seekFrameIndex;
 }
 
-IndexRange SoundSourceMp3::readOrSkipSampleFrames(
-        IndexRange frameIndexRange,
-        SampleBuffer::WritableSlice* pOutputBuffer) {
-    auto readableFrames =
-            adjustReadableFrameIndexRangeAndOutputBuffer(
-                    frameIndexRange, pOutputBuffer);
-    if (readableFrames.empty()) {
-        return readableFrames;
+ReadableSampleFrames SoundSourceMp3::readSampleFrames(
+        ReadMode readMode,
+        WritableSampleFrames sampleFrames) {
+    const auto writableSampleFrames =
+            clampWritableSampleFrames(readMode, sampleFrames);
+    if (writableSampleFrames.frameIndexRange().empty()) {
+        return ReadableSampleFrames(writableSampleFrames.frameIndexRange());
     }
 
-    if ((m_curFrameIndex != readableFrames.start())) {
-        SINT seekFrameIndex = findSeekFrameIndex(readableFrames.start());
+    const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
+
+    if ((m_curFrameIndex != firstFrameIndex)) {
+        SINT seekFrameIndex = findSeekFrameIndex(firstFrameIndex);
         DEBUG_ASSERT(SINT(m_seekFrameList.size()) > seekFrameIndex);
         const SINT curSeekFrameIndex = findSeekFrameIndex(m_curFrameIndex);
         DEBUG_ASSERT(SINT(m_seekFrameList.size()) > curSeekFrameIndex);
         // some consistency checks
-        DEBUG_ASSERT((curSeekFrameIndex >= seekFrameIndex) || (m_curFrameIndex < readableFrames.start()));
-        DEBUG_ASSERT((curSeekFrameIndex <= seekFrameIndex) || (m_curFrameIndex > readableFrames.start()));
+        DEBUG_ASSERT((curSeekFrameIndex >= seekFrameIndex) || (m_curFrameIndex < firstFrameIndex));
+        DEBUG_ASSERT((curSeekFrameIndex <= seekFrameIndex) || (m_curFrameIndex > firstFrameIndex));
         if ((frameIndexMax() <= m_curFrameIndex) || // out of range
-                (readableFrames.start() < m_curFrameIndex) || // seek backward
+                (firstFrameIndex < m_curFrameIndex) || // seek backward
                 (seekFrameIndex > (curSeekFrameIndex + kMp3SeekFramePrefetchCount))) { // jump forward
 
             // Adjust the seek frame index for prefetching
@@ -526,22 +527,28 @@ IndexRange SoundSourceMp3::readOrSkipSampleFrames(
         }
 
         // Decoding starts before the actual target position
-        DEBUG_ASSERT(m_curFrameIndex <= readableFrames.start());
+        DEBUG_ASSERT(m_curFrameIndex <= firstFrameIndex);
         const auto precedingFrames =
-                IndexRange::between(m_curFrameIndex, readableFrames.start());
+                IndexRange::between(m_curFrameIndex, firstFrameIndex);
         if (!precedingFrames.empty()
                 && (precedingFrames != skipSampleFrames(precedingFrames))) {
             kLogger.warning()
                     << "Failed to skip preceding frames"
                     << precedingFrames;
-            return IndexRange();
+            // Abort
+            return ReadableSampleFrames(
+                    IndexRange::between(
+                            m_curFrameIndex,
+                            m_curFrameIndex));
         }
     }
-    DEBUG_ASSERT(m_curFrameIndex == readableFrames.start());
+    DEBUG_ASSERT(m_curFrameIndex == firstFrameIndex);
 
-    CSAMPLE* pSampleBuffer = pOutputBuffer ?
-            pOutputBuffer->data() : nullptr;
-    SINT numberOfFramesRemaining = readableFrames.length();
+    const SINT numberOfFramesTotal = writableSampleFrames.frameIndexRange().length();
+
+    CSAMPLE* pSampleBuffer = (readMode == ReadMode::Store) ?
+            writableSampleFrames.sampleBuffer().data() : nullptr;
+    SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         if (0 >= m_madSynthCount) {
             // When all decoded output data has been consumed...
@@ -601,7 +608,8 @@ IndexRange SoundSourceMp3::readOrSkipSampleFrames(
                 }
                 if (isRecoverableError(m_madStream)) {
                     if (pMadThisFrame != m_madStream.this_frame) {
-                        if (!pOutputBuffer || (m_madStream.error == MAD_ERROR_LOSTSYNC)) {
+                        if ((readMode == ReadMode::Skip) ||
+                                (m_madStream.error == MAD_ERROR_LOSTSYNC)) {
                             // Don't bother the user with warnings from recoverable
                             // errors while skipping decoded samples or that even
                             // might occur for files that are perfectly ok.
@@ -646,7 +654,7 @@ IndexRange SoundSourceMp3::readOrSkipSampleFrames(
 
         const SINT synthReadCount = math_min(
                 m_madSynthCount, numberOfFramesRemaining);
-        if (pOutputBuffer) {
+        if (readMode == ReadMode::Store) {
             DEBUG_ASSERT(m_madSynthCount <= m_madSynth.pcm.length);
             const SINT madSynthOffset =
                     m_madSynth.pcm.length - m_madSynthCount;
@@ -701,8 +709,13 @@ IndexRange SoundSourceMp3::readOrSkipSampleFrames(
     }
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-    DEBUG_ASSERT(readableFrames.length() >= numberOfFramesRemaining);
-    return readableFrames.cutFrontRange(readableFrames.length() - numberOfFramesRemaining);
+    DEBUG_ASSERT(numberOfFramesTotal >= numberOfFramesRemaining);
+    const SINT numberOfFrames = numberOfFramesTotal - numberOfFramesRemaining;
+    return ReadableSampleFrames(
+            IndexRange::forward(firstFrameIndex, numberOfFrames),
+            SampleBuffer::ReadableSlice(
+                    writableSampleFrames.sampleBuffer().data(),
+                    std::min(writableSampleFrames.sampleBuffer().size(), frames2samples(numberOfFrames))));
 }
 
 QString SoundSourceProviderMp3::getName() const {

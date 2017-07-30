@@ -57,9 +57,7 @@ void SoundSourceModPlug::configure(unsigned int bufferSizeLimit,
 
 SoundSourceModPlug::SoundSourceModPlug(const QUrl& url)
         : SoundSource(url, getModPlugTypeFromUrl(url)),
-          LegacyAudioSourceAdapter(this, this),
-          m_pModFile(nullptr),
-          m_seekPos(0) {
+          m_pModFile(nullptr) {
 }
 
 SoundSourceModPlug::~SoundSourceModPlug() {
@@ -121,18 +119,18 @@ SoundSource::OpenResult SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*a
     DEBUG_ASSERT(0 == (kChunkSizeInBytes % sizeof(m_sampleBuf[0])));
     const SINT chunkSizeInSamples = kChunkSizeInBytes / sizeof(m_sampleBuf[0]);
 
-    const SampleBuffer::size_type bufferSizeLimitInSamples = s_bufferSizeLimit / sizeof(m_sampleBuf[0]);
+    const ModSampleBuffer::size_type bufferSizeLimitInSamples = s_bufferSizeLimit / sizeof(m_sampleBuf[0]);
 
     // Estimate size of sample buffer (for better performance) aligned
     // with the chunk size. Beware: Module length estimation is unreliable
     // due to loops!
-    const SampleBuffer::size_type estimateMilliseconds =
+    const ModSampleBuffer::size_type estimateMilliseconds =
             ModPlug::ModPlug_GetLength(m_pModFile);
-    const SampleBuffer::size_type estimateSamples =
+    const ModSampleBuffer::size_type estimateSamples =
             estimateMilliseconds * kChannelCount * kSamplingRate;
-    const SampleBuffer::size_type estimateChunks =
+    const ModSampleBuffer::size_type estimateChunks =
             (estimateSamples + (chunkSizeInSamples - 1)) / chunkSizeInSamples;
-    const SampleBuffer::size_type sampleBufferCapacity = math_min(
+    const ModSampleBuffer::size_type sampleBufferCapacity = math_min(
             estimateChunks * chunkSizeInSamples, bufferSizeLimitInSamples);
     m_sampleBuf.reserve(sampleBufferCapacity);
     kLogger.debug() << "Reserved " << m_sampleBuf.capacity() << " #samples";
@@ -140,7 +138,7 @@ SoundSource::OpenResult SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*a
     // decode samples into sample buffer
     while (m_sampleBuf.size() < bufferSizeLimitInSamples) {
         // reserve enough space in sample buffer
-        const SampleBuffer::size_type currentSize = m_sampleBuf.size();
+        const ModSampleBuffer::size_type currentSize = m_sampleBuf.size();
         m_sampleBuf.resize(currentSize + chunkSizeInSamples);
         const int bytesRead = ModPlug::ModPlug_Read(m_pModFile,
                 &m_sampleBuf[currentSize],
@@ -148,7 +146,7 @@ SoundSource::OpenResult SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*a
         // adjust size of sample buffer after reading
         if (0 < bytesRead) {
             DEBUG_ASSERT(0 == (bytesRead % sizeof(m_sampleBuf[0])));
-            const SampleBuffer::size_type samplesRead = bytesRead / sizeof(m_sampleBuf[0]);
+            const ModSampleBuffer::size_type samplesRead = bytesRead / sizeof(m_sampleBuf[0]);
             m_sampleBuf.resize(currentSize + samplesRead);
         } else {
             // nothing read -> EOF
@@ -165,11 +163,9 @@ SoundSource::OpenResult SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*a
     setChannelCount(kChannelCount);
     setSamplingRate(kSamplingRate);
     initFrameIndexRange(
-            mixxx::IndexRange::forward(
+            IndexRange::forward(
                     0,
                     samples2frames(m_sampleBuf.size())));
-
-    m_seekPos = 0;
 
     return OpenResult::SUCCEEDED;
 }
@@ -181,25 +177,27 @@ void SoundSourceModPlug::close() {
     }
 }
 
-SINT SoundSourceModPlug::seekSampleFrame(
-        SINT frameIndex) {
-    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
+ReadableSampleFrames SoundSourceModPlug::readSampleFrames(
+        ReadMode readMode,
+        WritableSampleFrames sampleFrames) {
+    const auto writableSampleFrames =
+            clampWritableSampleFrames(readMode, sampleFrames);
+    if (writableSampleFrames.frameIndexRange().empty()) {
+        return ReadableSampleFrames(writableSampleFrames.frameIndexRange());
+    }
 
-    return m_seekPos = frameIndex;
-}
+    const SINT readOffset = frames2samples(writableSampleFrames.frameIndexRange().start());
+    const SINT readSamples = frames2samples(writableSampleFrames.frameIndexRange().length());
+    SampleUtil::convertS16ToFloat32(
+            writableSampleFrames.sampleBuffer().data(),
+            &m_sampleBuf[readOffset],
+            readSamples);
 
-SINT SoundSourceModPlug::readSampleFrames(
-        SINT numberOfFrames, CSAMPLE* sampleBuffer) {
-    DEBUG_ASSERT(0 <= numberOfFrames);
-    DEBUG_ASSERT(isValidFrameIndex(m_seekPos));
-    const SINT readFrames = math_min(frameIndexRange().length() - m_seekPos, numberOfFrames);
-
-    const SINT readSamples = frames2samples(readFrames);
-    const SINT readOffset = frames2samples(m_seekPos);
-    SampleUtil::convertS16ToFloat32(sampleBuffer, &m_sampleBuf[readOffset], readSamples);
-    m_seekPos += readFrames;
-
-    return readFrames;
+    return ReadableSampleFrames(
+            writableSampleFrames.frameIndexRange(),
+            SampleBuffer::ReadableSlice(
+                    writableSampleFrames.sampleBuffer().data(),
+                    writableSampleFrames.sampleBuffer().size()));
 }
 
 QString SoundSourceProviderModPlug::getName() const {

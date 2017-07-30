@@ -382,32 +382,33 @@ void SoundSourceM4A::restartDecoding(MP4SampleId sampleBlockId) {
     m_sampleBuffer.reset();
 }
 
-IndexRange SoundSourceM4A::readOrSkipSampleFrames(
-        IndexRange frameIndexRange,
-        SampleBuffer::WritableSlice* pOutputBuffer) {
-    auto readableFrames =
-            adjustReadableFrameIndexRangeAndOutputBuffer(
-                    frameIndexRange, pOutputBuffer);
-    if (readableFrames.empty()) {
-        return readableFrames;
+ReadableSampleFrames SoundSourceM4A::readSampleFrames(
+        ReadMode readMode,
+        WritableSampleFrames sampleFrames) {
+    const auto writableSampleFrames =
+            clampWritableSampleFrames(readMode, sampleFrames);
+    if (writableSampleFrames.frameIndexRange().empty()) {
+        return ReadableSampleFrames(writableSampleFrames.frameIndexRange());
     }
 
-    if (m_curFrameIndex != readableFrames.start()) {
+    const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
+
+    if (m_curFrameIndex != firstFrameIndex) {
         // NOTE(uklotzde): Resetting the decoder near to the beginning
         // of the stream when seeking backwards produces invalid sample
         // values! As a consequence the seeking test fails.
         if ((m_curSampleBlockId != MP4_INVALID_SAMPLE_ID) &&
-                (readableFrames.start() < m_curFrameIndex) &&
-                (readableFrames.start() <= (frameIndexMin() + kNumberOfPrefetchFrames))) {
+                (firstFrameIndex < m_curFrameIndex) &&
+                (firstFrameIndex <= (frameIndexMin() + kNumberOfPrefetchFrames))) {
             // Workaround: Reset the decoder when seeking near to the beginning
             // of the stream while decoding.
             reopenDecoder();
         }
 
         MP4SampleId sampleBlockId = kSampleBlockIdMin
-                + (readableFrames.start() / m_framesPerSampleBlock);
+                + (firstFrameIndex / m_framesPerSampleBlock);
         DEBUG_ASSERT(isValidSampleBlockId(sampleBlockId));
-        if ((readableFrames.start() < m_curFrameIndex) || // seeking backwards?
+        if ((firstFrameIndex < m_curFrameIndex) || // seeking backwards?
                 !isValidSampleBlockId(m_curSampleBlockId) || // invalid seek position?
                 (sampleBlockId
                         > (m_curSampleBlockId + m_numberOfPrefetchSampleBlocks))) { // jumping forward?
@@ -426,20 +427,25 @@ IndexRange SoundSourceM4A::readOrSkipSampleFrames(
         }
 
         // Decoding starts before the actual target position
-        DEBUG_ASSERT(m_curFrameIndex <= readableFrames.start());
+        DEBUG_ASSERT(m_curFrameIndex <= firstFrameIndex);
         const auto precedingFrames =
-                IndexRange::between(m_curFrameIndex, readableFrames.start());
+                IndexRange::between(m_curFrameIndex, firstFrameIndex);
         if (!precedingFrames.empty()
                 && (precedingFrames != skipSampleFrames(precedingFrames))) {
             kLogger.warning()
                     << "Failed to skip preceding frames"
                     << precedingFrames;
-            return IndexRange();
+            // Abort
+            return ReadableSampleFrames(
+                    IndexRange::between(
+                            m_curFrameIndex,
+                            m_curFrameIndex));
         }
     }
-    DEBUG_ASSERT(m_curFrameIndex == readableFrames.start());
+    DEBUG_ASSERT(m_curFrameIndex == firstFrameIndex);
 
-    const SINT numberOfSamplesTotal = frames2samples(readableFrames.length());
+    const SINT numberOfSamplesTotal = frames2samples(writableSampleFrames.frameIndexRange().length());
+
     SINT numberOfSamplesRemaining = numberOfSamplesTotal;
     SINT outputSampleOffset = 0;
     while (0 < numberOfSamplesRemaining) {
@@ -448,9 +454,9 @@ IndexRange SoundSourceM4A::readOrSkipSampleFrames(
             // Consume previously decoded sample data
             const SampleBuffer::ReadableSlice readableSlice(
                     m_sampleBuffer.readFromHead(numberOfSamplesRemaining));
-            if (pOutputBuffer) {
+            if (readMode == ReadMode::Store) {
                 SampleUtil::copy(
-                        pOutputBuffer->data(outputSampleOffset),
+                        writableSampleFrames.sampleBuffer().data(outputSampleOffset),
                         readableSlice.data(),
                         readableSlice.size());
                 outputSampleOffset += readableSlice.size();
@@ -499,9 +505,10 @@ IndexRange SoundSourceM4A::readOrSkipSampleFrames(
         CSAMPLE* pDecodeBuffer; // in/out parameter
         SINT decodeBufferCapacity;
         const SINT decodeBufferCapacityMin = frames2samples(m_framesPerSampleBlock);
-        if (pOutputBuffer && (decodeBufferCapacityMin <= numberOfSamplesRemaining)) {
+        if ((readMode == ReadMode::Store) &&
+                (decodeBufferCapacityMin <= numberOfSamplesRemaining)) {
             // Decode samples directly into the output buffer
-            pDecodeBuffer = pOutputBuffer->data(outputSampleOffset);
+            pDecodeBuffer = writableSampleFrames.sampleBuffer().data(outputSampleOffset);
             decodeBufferCapacity = numberOfSamplesRemaining;
         } else {
             // Decode next sample block into temporary buffer
@@ -555,7 +562,8 @@ IndexRange SoundSourceM4A::readOrSkipSampleFrames(
         const SINT numberOfSamplesDecoded = decFrameInfo.samples;
         DEBUG_ASSERT(numberOfSamplesDecoded <= decodeBufferCapacity);
         SINT numberOfSamplesRead;
-        if (pOutputBuffer && (pDecodeBuffer == pOutputBuffer->data(outputSampleOffset))) {
+        if ((readMode == ReadMode::Store) &&
+                (pDecodeBuffer == writableSampleFrames.sampleBuffer().data(outputSampleOffset))) {
             // Decoded in-place
             DEBUG_ASSERT(numberOfSamplesDecoded <= numberOfSamplesRemaining);
             numberOfSamplesRead = numberOfSamplesDecoded;
@@ -572,9 +580,9 @@ IndexRange SoundSourceM4A::readOrSkipSampleFrames(
             const SampleBuffer::ReadableSlice readableSlice(
                     m_sampleBuffer.readFromHead(numberOfSamplesRead));
             DEBUG_ASSERT(readableSlice.size() == numberOfSamplesRead);
-            if (pOutputBuffer) {
+            if (readMode == ReadMode::Store) {
                 SampleUtil::copy(
-                        pOutputBuffer->data(outputSampleOffset),
+                        writableSampleFrames.sampleBuffer().data(outputSampleOffset),
                         readableSlice.data(),
                         readableSlice.size());
                 outputSampleOffset += numberOfSamplesRead;
@@ -590,8 +598,12 @@ IndexRange SoundSourceM4A::readOrSkipSampleFrames(
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(numberOfSamplesTotal >= numberOfSamplesRemaining);
-    return readableFrames.cutFrontRange(
-            samples2frames(numberOfSamplesTotal - numberOfSamplesRemaining));
+    const SINT numberOfSamples = numberOfSamplesTotal - numberOfSamplesRemaining;
+    return ReadableSampleFrames(
+            IndexRange::forward(firstFrameIndex, samples2frames(numberOfSamples)),
+            SampleBuffer::ReadableSlice(
+                    writableSampleFrames.sampleBuffer().data(),
+                    std::min(writableSampleFrames.sampleBuffer().size(), numberOfSamples)));
 }
 
 QString SoundSourceProviderM4A::getName() const {

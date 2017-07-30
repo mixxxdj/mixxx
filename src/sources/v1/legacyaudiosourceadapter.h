@@ -9,15 +9,16 @@
 
 namespace mixxx {
 
+// Only required for SoundSourceCoreAudio.
 class LegacyAudioSourceAdapter: public virtual IAudioSource {
   public:
     LegacyAudioSourceAdapter(
             AudioSource* pOwner,
             LegacyAudioSource* pImpl);
 
-    IndexRange readOrSkipSampleFrames(
-            IndexRange frameIndexRange,
-            SampleBuffer::WritableSlice* pOutputBuffer) override;
+    ReadableSampleFrames readSampleFrames(
+            ReadMode readMode,
+            WritableSampleFrames sampleFrames) override;
 
   private:
     AudioSource* m_pOwner;

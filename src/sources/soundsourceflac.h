@@ -18,9 +18,9 @@ public:
 
     void close() override;
 
-    IndexRange readOrSkipSampleFrames(
-            IndexRange frameIndexRange,
-            SampleBuffer::WritableSlice* pOutputBuffer) override;
+    ReadableSampleFrames readSampleFrames(
+            ReadMode readMode,
+            WritableSampleFrames sampleFrames) override;
 
     // Internal callbacks
     FLAC__StreamDecoderReadStatus flacRead(FLAC__byte buffer[], size_t* bytes);

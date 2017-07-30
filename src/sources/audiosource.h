@@ -11,17 +11,81 @@
 
 namespace mixxx {
 
-// forward declaration(s)
-class AudioSource;
-class AudioSourceConfig;
+class SampleFrames {
+  public:
+    SampleFrames() = default;
+    explicit SampleFrames(
+            IndexRange frameIndexRange)
+        : m_frameIndexRange(frameIndexRange) {
+    }
+    /*non-virtual*/ ~SampleFrames() = default;
 
-typedef std::shared_ptr<AudioSource> AudioSourcePointer;
+    IndexRange frameIndexRange() const {
+        return m_frameIndexRange;
+    }
+
+  private:
+    IndexRange m_frameIndexRange;
+};
+
+class ReadableSampleFrames: public SampleFrames {
+  public:
+    ReadableSampleFrames() = default;
+    explicit ReadableSampleFrames(
+            IndexRange frameIndexRange,
+            SampleBuffer::ReadableSlice sampleBuffer = SampleBuffer::ReadableSlice())
+          : SampleFrames(frameIndexRange),
+            m_sampleBuffer(sampleBuffer) {
+    }
+    /*non-virtual*/ ~ReadableSampleFrames() = default;
+
+    // The readable slice should cover the whole range of
+    // frame indices and starts with the first frame. An
+    // empty slice indicates that no sample data is available
+    // for reading.
+    SampleBuffer::ReadableSlice sampleBuffer() const {
+        return m_sampleBuffer;
+    }
+
+  private:
+    SampleBuffer::ReadableSlice m_sampleBuffer;
+};
+
+class WritableSampleFrames: public SampleFrames {
+  public:
+    WritableSampleFrames() = default;
+    explicit WritableSampleFrames(
+            IndexRange frameIndexRange,
+            SampleBuffer::WritableSlice sampleBuffer = SampleBuffer::WritableSlice())
+          : SampleFrames(frameIndexRange),
+            m_sampleBuffer(sampleBuffer) {
+    }
+    /*non-virtual*/ ~WritableSampleFrames() = default;
+
+    // The writable slice should cover the whole range of
+    // frame indices and starts with the first frame. An
+    // empty slice indicates that no sample data must
+    // be written.
+    SampleBuffer::WritableSlice sampleBuffer() const {
+        return m_sampleBuffer;
+    }
+
+  private:
+    SampleBuffer::WritableSlice m_sampleBuffer;
+};
 
 // AudioSource v2 interface
 class IAudioSource {
   public:
     virtual ~IAudioSource() = default;
 
+    enum class ReadMode {
+        Store, // write/copy decoded sample data into buffer
+        Skip,  // discard decoded sample data
+    };
+
+    // TODO(uklotzde): Rephrase after changing the parameters
+    //
     // Read sample frames from the requested frame index range. Only
     // forward-oriented index ranges need to be supported. The implementation
     // is responsible for restricting the requested range to the range that
@@ -41,22 +105,19 @@ class IAudioSource {
     // sample values.
     //
     // On errors only a sub range of the requested frames might be returned.
-    virtual IndexRange readOrSkipSampleFrames(
-            IndexRange frameIndexRange,
-            SampleBuffer::WritableSlice* pOutputBuffer) = 0;
-
-
-    /*non-virtual*/ IndexRange readSampleFrames(
-            IndexRange frameIndexRange,
-            SampleBuffer::WritableSlice outputBuffer) {
-        return readOrSkipSampleFrames(frameIndexRange, &outputBuffer);
+    virtual ReadableSampleFrames readSampleFrames(
+            ReadMode readMode,
+            WritableSampleFrames sampleFrames) {
+        Q_UNUSED(readMode);
+        Q_UNUSED(sampleFrames);
+        return ReadableSampleFrames();
     }
 
-    // Might be overridden by derived classes to provide an optimized
-    // implementation for this special case.
     virtual IndexRange skipSampleFrames(
             IndexRange frameIndexRange) {
-        return readOrSkipSampleFrames(frameIndexRange, nullptr);
+        return readSampleFrames(
+                ReadMode::Skip,
+                WritableSampleFrames(frameIndexRange)).frameIndexRange();
     }
 };
 
@@ -167,9 +228,13 @@ class AudioSource: public UrlResource, public AudioSignal, public virtual /*impl
     }
 
     friend class LegacyAudioSourceAdapter;
-    IndexRange adjustReadableFrameIndexRangeAndOutputBuffer(
-            IndexRange frameIndexRange,
-            SampleBuffer::WritableSlice* pOutputBuffer) const;
+    WritableSampleFrames clampWritableSampleFrames(
+            ReadMode readMode,
+            WritableSampleFrames sampleFrames) const;
+    IndexRange clampFrameIndexRange(
+            IndexRange frameIndexRange) const {
+        return intersect(frameIndexRange, this->frameIndexRange());
+    }
 
   private:
     friend class AudioSourceConfig;
@@ -192,6 +257,8 @@ class AudioSourceConfig : public AudioSignal {
     using AudioSignal::setChannelCount;
     using AudioSignal::setSamplingRate;
 };
+
+typedef std::shared_ptr<AudioSource> AudioSourcePointer;
 
 } // namespace mixxx
 

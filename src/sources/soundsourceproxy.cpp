@@ -587,8 +587,7 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
             continue; // try again
         }
         if ((openResult == mixxx::SoundSource::OpenResult::SUCCEEDED) && m_pSoundSource->verifyReadable()) {
-            m_pAudioSource =
-                    std::make_shared<mixxx::AudioSourceTrackProxy>(m_pSoundSource, m_pTrack);
+            m_pAudioSource = mixxx::AudioSourceTrackProxy::create(m_pSoundSource, m_pTrack);
             DEBUG_ASSERT(m_pAudioSource);
             if (m_pAudioSource->frameIndexRange().empty()) {
                 kLogger.warning() << "File is empty"

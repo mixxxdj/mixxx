@@ -84,26 +84,27 @@ void SoundSourceSndFile::close() {
     }
 }
 
-IndexRange SoundSourceSndFile::readOrSkipSampleFrames(
-        IndexRange frameIndexRange,
-        SampleBuffer::WritableSlice* pOutputBuffer) {
-    auto readableFrames =
-            adjustReadableFrameIndexRangeAndOutputBuffer(
-                    frameIndexRange, pOutputBuffer);
-    if (readableFrames.empty()) {
-        return readableFrames;
+ReadableSampleFrames SoundSourceSndFile::readSampleFrames(
+        ReadMode readMode,
+        WritableSampleFrames sampleFrames) {
+    const auto writableSampleFrames =
+            clampWritableSampleFrames(readMode, sampleFrames);
+    if (writableSampleFrames.frameIndexRange().empty()) {
+        return ReadableSampleFrames(writableSampleFrames.frameIndexRange());
     }
 
-    if (pOutputBuffer) {
-        if (m_curFrameIndex != readableFrames.start()) {
-            const sf_count_t seekResult = sf_seek(m_pSndFile, readableFrames.start(), SEEK_SET);
-            if (seekResult == readableFrames.start()) {
+    const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
+
+    if (readMode == ReadMode::Store) {
+        if (m_curFrameIndex != firstFrameIndex) {
+            const sf_count_t seekResult = sf_seek(m_pSndFile, firstFrameIndex, SEEK_SET);
+            if (seekResult == firstFrameIndex) {
                 m_curFrameIndex = seekResult;
             } else {
                 kLogger.warning() << "Failed to seek libsnd file:" << seekResult
                         << sf_strerror(m_pSndFile);
                 m_curFrameIndex = sf_seek(m_pSndFile, 0, SEEK_CUR);
-                return IndexRange::between(m_curFrameIndex, m_curFrameIndex);
+                return ReadableSampleFrames(IndexRange::between(m_curFrameIndex, m_curFrameIndex));
             }
         }
     } else {
@@ -113,35 +114,48 @@ IndexRange SoundSourceSndFile::readOrSkipSampleFrames(
         // we don't want to read samples into a temporary buffer that
         // has to be allocated we are seeking to the position after
         // the skipped samples.
-        if (m_curFrameIndex != readableFrames.end()) {
-            const sf_count_t seekResult = sf_seek(m_pSndFile, readableFrames.end(), SEEK_SET);
+        if (m_curFrameIndex != writableSampleFrames.frameIndexRange().end()) {
+            const sf_count_t seekResult = sf_seek(m_pSndFile, writableSampleFrames.frameIndexRange().end(), SEEK_SET);
             if (seekResult >= 0) {
-                DEBUG_ASSERT(seekResult >= readableFrames.start());
+                DEBUG_ASSERT(seekResult >= firstFrameIndex);
                 m_curFrameIndex = seekResult;
-                return IndexRange::between(readableFrames.start(), seekResult);
+                return ReadableSampleFrames(IndexRange::between(firstFrameIndex, seekResult));
             } else {
                 kLogger.warning() << "Failed to seek libsnd file:" << seekResult
                         << sf_strerror(m_pSndFile);
                 m_curFrameIndex = sf_seek(m_pSndFile, 0, SEEK_CUR);
-                return IndexRange::between(m_curFrameIndex, m_curFrameIndex);
+                // Abort
+                return ReadableSampleFrames(
+                        IndexRange::between(
+                                m_curFrameIndex,
+                                m_curFrameIndex));
             }
         }
     }
+    DEBUG_ASSERT(m_curFrameIndex == firstFrameIndex);
+    DEBUG_ASSERT(readMode == ReadMode::Store);
 
-    DEBUG_ASSERT(m_curFrameIndex == readableFrames.start());
-    DEBUG_ASSERT(pOutputBuffer);
+    const SINT numberOfFramesTotal = writableSampleFrames.frameIndexRange().length();
+
     const sf_count_t readCount =
-            sf_readf_float(m_pSndFile, pOutputBuffer->data(), readableFrames.length());
+            sf_readf_float(m_pSndFile, writableSampleFrames.sampleBuffer().data(), numberOfFramesTotal);
     if (readCount >= 0) {
-        DEBUG_ASSERT(readCount <= readableFrames.length());
-        const auto result = IndexRange::forward(m_curFrameIndex, readCount);
+        DEBUG_ASSERT(readCount <= numberOfFramesTotal);
+        const auto resultRange = IndexRange::forward(m_curFrameIndex, readCount);
         m_curFrameIndex += readCount;
-        return result;
+        return ReadableSampleFrames(
+                resultRange,
+                SampleBuffer::ReadableSlice(
+                        writableSampleFrames.sampleBuffer().data(),
+                        frames2samples(readCount)));
     } else {
         kLogger.warning() << "Failed to read from libsnd file:"
                 << readCount
                 << sf_strerror(m_pSndFile);
-        return IndexRange();
+        return ReadableSampleFrames(
+                IndexRange::between(
+                        m_curFrameIndex,
+                        m_curFrameIndex));
     }
 }
 

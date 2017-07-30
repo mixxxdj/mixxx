@@ -24,9 +24,9 @@ public:
             AudioSourcePointer pAudioSource,
             SampleBuffer::WritableSlice tempSampleBufferSlice);
 
-    IndexRange readOrSkipSampleFrames(
-            IndexRange frameIndexRange,
-            SampleBuffer::WritableSlice* pOutputBuffer) override;
+    ReadableSampleFrames readSampleFrames(
+            ReadMode readMode,
+            WritableSampleFrames sampleFrames) override;
 
     IndexRange skipSampleFrames(
             IndexRange frameIndexRange) override {

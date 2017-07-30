@@ -240,22 +240,23 @@ void SoundSourceOpus::close() {
     }
 }
 
-IndexRange SoundSourceOpus::readOrSkipSampleFrames(
-        IndexRange frameIndexRange,
-        SampleBuffer::WritableSlice* pOutputBuffer) {
-    auto readableFrames =
-            adjustReadableFrameIndexRangeAndOutputBuffer(
-                    frameIndexRange, pOutputBuffer);
-    if (readableFrames.empty()) {
-        return readableFrames;
+ReadableSampleFrames SoundSourceOpus::readSampleFrames(
+        ReadMode readMode,
+        WritableSampleFrames sampleFrames) {
+    const auto writableSampleFrames =
+            clampWritableSampleFrames(readMode, sampleFrames);
+    if (writableSampleFrames.frameIndexRange().empty()) {
+        return ReadableSampleFrames(writableSampleFrames.frameIndexRange());
     }
 
-    if (m_curFrameIndex != readableFrames.start()) {
+    const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
+
+    if (m_curFrameIndex != firstFrameIndex) {
         // Prefer skipping over seeking if the seek position is up to
         // 2 * kNumberOfPrefetchFrames in front of the current position
-        if ((m_curFrameIndex > readableFrames.start()) ||
-                ((readableFrames.start() - m_curFrameIndex) > 2 * kNumberOfPrefetchFrames)) {
-            SINT seekIndex = std::max(readableFrames.start() - kNumberOfPrefetchFrames, frameIndexMin());
+        if ((m_curFrameIndex > firstFrameIndex) ||
+                ((firstFrameIndex - m_curFrameIndex) > 2 * kNumberOfPrefetchFrames)) {
+            SINT seekIndex = std::max(firstFrameIndex - kNumberOfPrefetchFrames, frameIndexMin());
             int seekResult = op_pcm_seek(m_pOggOpusFile, seekIndex);
             if (0 == seekResult) {
                 m_curFrameIndex = seekIndex;
@@ -268,30 +269,36 @@ IndexRange SoundSourceOpus::readOrSkipSampleFrames(
                     // Reset to EOF
                     m_curFrameIndex = frameIndexMax();
                 }
-                return IndexRange();
+                // Abort
+                return ReadableSampleFrames(
+                        IndexRange::between(
+                                m_curFrameIndex,
+                                m_curFrameIndex));
             }
         }
         // Decoding starts before the actual target position
-        DEBUG_ASSERT(m_curFrameIndex <= readableFrames.start());
+        DEBUG_ASSERT(m_curFrameIndex <= firstFrameIndex);
         const auto precedingFrames =
-                IndexRange::between(m_curFrameIndex, readableFrames.start());
+                IndexRange::between(m_curFrameIndex, firstFrameIndex);
         if (!precedingFrames.empty()
                 && (precedingFrames != skipSampleFrames(precedingFrames))) {
             kLogger.warning()
                     << "Failed to skip preceding frames"
                     << precedingFrames;
-            return IndexRange();
+            return ReadableSampleFrames(IndexRange::between(m_curFrameIndex, m_curFrameIndex));
         }
     }
-    DEBUG_ASSERT(m_curFrameIndex == readableFrames.start());
+    DEBUG_ASSERT(m_curFrameIndex == firstFrameIndex);
 
-    CSAMPLE* pSampleBuffer = pOutputBuffer ?
-            pOutputBuffer->data() : nullptr;
-    SINT numberOfFramesRemaining = readableFrames.length();
+    const SINT numberOfFramesTotal = writableSampleFrames.frameIndexRange().length();
+
+    CSAMPLE* pSampleBuffer = (readMode == ReadMode::Store) ?
+            writableSampleFrames.sampleBuffer().data() : nullptr;
+    SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         SINT numberOfSamplesToRead =
                 frames2samples(numberOfFramesRemaining);
-        if (!pOutputBuffer) {
+        if (readMode != ReadMode::Store) {
             // NOTE(uklotzde): The opusfile API does not provide any
             // functions for skipping samples in the audio stream. Calling
             // API functions with a nullptr buffer does not return. Since
@@ -328,8 +335,13 @@ IndexRange SoundSourceOpus::readOrSkipSampleFrames(
     }
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-    DEBUG_ASSERT(readableFrames.length() >= numberOfFramesRemaining);
-    return readableFrames.cutFrontRange(readableFrames.length() - numberOfFramesRemaining);
+    DEBUG_ASSERT(numberOfFramesTotal >= numberOfFramesRemaining);
+    const SINT numberOfFrames = numberOfFramesTotal - numberOfFramesRemaining;
+    return ReadableSampleFrames(
+            IndexRange::forward(firstFrameIndex, numberOfFrames),
+            SampleBuffer::ReadableSlice(
+                    writableSampleFrames.sampleBuffer().data(),
+                    std::min(writableSampleFrames.sampleBuffer().size(), frames2samples(numberOfFrames))));
 }
 
 QString SoundSourceProviderOpus::getName() const {

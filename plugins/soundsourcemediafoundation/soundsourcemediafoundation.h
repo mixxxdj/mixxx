@@ -57,9 +57,9 @@ public:
 
     void close() override;
 
-    IndexRange readOrSkipSampleFrames(
-            IndexRange frameIndexRange,
-            SampleBuffer::WritableSlice* pOutputBuffer) override;
+    ReadableSampleFrames readSampleFrames(
+            ReadMode readMode,
+            WritableSampleFrames sampleFrames) override;
 
 private:
     OpenResult tryOpen(const mixxx::AudioSourceConfig& audioSrcCfg) override;
