@@ -107,20 +107,20 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     // Clamp gain to within [0, 10.0] to prevent insane gains. This can happen
     // (some corrupt files get really high replay gain values).
     // 10 allows a maximum replay Gain Boost * calculated replay gain of ~2
-    float totalGain = (float)m_pPotmeterPregain->get() *
+    CSAMPLE_GAIN totalGain = (CSAMPLE_GAIN)m_pPotmeterPregain->get() *
             math_clamp(fReplayGainCorrection, 0.0f, 10.0f);
 
     m_pTotalGain->set(totalGain);
 
     // Vinylsoundemu:
-    // As the speed approaches zero, hearing small bursts of sound at full volume
-    // is distracting and doesn't mimic the way that vinyl sounds when played slowly.
-    // Instead, reduce gain to provide a soft rolloff.
-    // This is also applied for for fading from and to pause
-    const float kThresholdSpeed = 0.070; // Scale volume if playback speed is below 7%.
-    //if (m_scratching || fabs(m_dSpeed) < kThresholdSpeed) {
-        totalGain *= log10((fabs(m_dSpeed) * 4) + 1) / 0.7;
-    //}
+    // Apply Gain change depending on the speed.
+    // This is quite linear in the rang up to x 3.
+    // For faster speeds it is hard to measure. It turns out that it is physically
+    // not possible to scratch faster then x 5 without the needle loosing contact.
+    // So we apply a curve here that emulates the gain change up to 3 natural
+    // to 4 dB and than limits the gain towards < 6 dB at faster speeds to
+    // avoid clipping during waveform scratching.
+    totalGain *= tanhf(fabs(m_dSpeed)/2) * 1.8f;
 
     if ((m_dSpeed * m_dOldSpeed < 0) && m_scratching) {
         // direction changed, go though zero if scratching
