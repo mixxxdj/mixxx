@@ -1,12 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
+<?xml version="1.1" encoding="utf-8"?>
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="2.0.0">
   <info>
     <name>FaderFox DJ2</name>
-    <author>Sacha Berger</author>
+    <author>Sacha Berger, Gosseyn</author>
     <description>MIDI Mapping for FaderFoxDJ2</description>
+    <wiki>http://www.mixxx.org/wiki/doku.php/faderfox_dj2</wiki>
   </info>
   <controller id="FaderFoxDJ2" port="Port">
     <controls>
+
+<!-- MASTER-->
+
       <control>
         <group>[Master]</group>
         <key>crossfader</key>
@@ -19,66 +23,89 @@
         <status>0xB0</status>
         <midino>0x0c</midino>
       </control>
-      <control>
-        <group>[Flanger]</group>
-        <key>lfoDepth</key>
-        <status>0xB0</status>
-        <midino>0x21</midino>
-      </control>
-      <control>
-        <group>[Flanger]</group>
-        <key>lfoPeriod</key>
-        <status>0xB0</status>
-        <midino>0x22</midino>
-      </control>
+
+<!-- CHANNEL 1 -->
+
+  <!-- Encoder -->
       <control>
         <group>[Channel1]</group>
         <key>pregain</key>
         <status>0xB0</status>
         <midino>0x07</midino>
-        <options>
-
-	</options>
+        <options><diff/></options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>mute</key>
+        <status>0x90</status>
+        <midino>0x48</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>mute</key>
+        <status>0x80</status>
+        <midino>0x48</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>jog</key>
+        <status>0xB0</status>
+        <midino>0x0E</midino>
+	<options><diff/></options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>sync_enabled</key>
+        <status>0x90</status>
+        <midino>0x09</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>sync_enabled</key>
+        <status>0x80</status>
+        <midino>0x09</midino>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>rate</key>
         <status>0xB0</status>
         <midino>0x1b</midino>
-        <options>
-
-	</options>
+        <options><diff/></options>
       </control>
       <control>
-        <group>[Channel1]</group>
-        <key>jog</key>
-        <status>0xB0</status>
-        <midino>0x0e</midino>
-        <options>
-
-	</options>
-        <!-- Not a valid mixxx 1.11 control <sensitivity>700</sensitivity> -->
+	<group>[Channel1]</group>
+	<key>LoadSelectedTrack</key>
+	<status>0x90</status>
+	<midino>0x0F</midino>
       </control>
+      <control>
+	<group>[Channel1]</group>
+	<key>LoadSelectedTrack</key>
+	<status>0x80</status>
+	<midino>0x0F</midino>
+      </control>
+
+  <!-- Transport Buttons -->	
       <control>
         <group>[Channel1]</group>
         <key>rate_temp_up</key>
-        <status>0x90</status>
-        <midino>0x1c</midino>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>rate_temp_up</key>
-        <status>0x80</status>
-        <midino>0x1c</midino>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>rate_temp_down</key>
         <status>0x90</status>
         <midino>0x1d</midino>
       </control>
       <control>
         <group>[Channel1]</group>
+        <key>rate_temp_up</key>
+        <status>0x80</status>
+        <midino>0x1d</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>rate_temp_down</key>
+        <status>0x90</status>
+        <midino>0x1c</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
         <key>rate_temp_down</key>
         <status>0x80</status>
         <midino>0x1c</midino>
@@ -87,25 +114,25 @@
         <group>[Channel1]</group>
         <key>rate_temp_up_small</key>
         <status>0x90</status>
-        <midino>0x2b</midino>
+        <midino>0x2c</midino>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>rate_temp_up_small</key>
         <status>0x80</status>
+        <midino>0x2c</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>rate_temp_down_small</key>
+        <status>0x90</status>
         <midino>0x2b</midino>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>rate_temp_down_small</key>
-        <status>0x90</status>
-        <midino>0x2c</midino>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>rate_temp_down_small</key>
         <status>0x80</status>
-        <midino>0x2c</midino>
+        <midino>0x2b</midino>
       </control>
       <control>
         <group>[Channel1]</group>
@@ -121,57 +148,143 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>cue_set</key>
+        <key>keylock</key>
         <status>0x90</status>
         <midino>0x21</midino>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>cue_set</key>
+        <key>keylock</key>
         <status>0x80</status>
         <midino>0x21</midino>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>cue_preview</key>
+        <key>beats_translate_curpos</key>
         <status>0x90</status>
         <midino>0x18</midino>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>cue_preview</key>
+        <key>beats_translate_curpos</key>
         <status>0x80</status>
         <midino>0x18</midino>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>cue_goto</key>
+        <key>cue_default</key>
         <status>0x90</status>
         <midino>0x19</midino>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>cue_goto</key>
+        <key>cue_default</key>
         <status>0x80</status>
         <midino>0x19</midino>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>filterLow</key>
+        <key>beatjump_1_backward</key>
+        <status>0x90</status>
+        <midino>0x29</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>beatjump_1_backward</key>
+        <status>0x80</status>
+        <midino>0x29</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>beatjump_1_forward</key>
+        <status>0x90</status>
+        <midino>0x28</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>beatjump_1_forward</key>
+        <status>0x80</status>
+        <midino>0x28</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>quantize</key>
+        <status>0x90</status>
+        <midino>0x27</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>quantize</key>
+        <status>0x80</status>
+        <midino>0x27</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>reverse</key>
+        <status>0x90</status>
+        <midino>0x30</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>reverse</key>
+        <status>0x80</status>
+        <midino>0x30</midino>
+      </control>
+
+  <!-- Mixer -->
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter1</key>
         <status>0xB0</status>
         <midino>0x01</midino>
       </control>
       <control>
-        <group>[Channel1]</group>
-        <key>filterMid</key>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>button_parameter1</key>
+        <status>0x90</status>
+        <midino>0x17</midino>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>button_parameter1</key>
+        <status>0x80</status>
+        <midino>0x17</midino>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter2</key>
         <status>0xB0</status>
         <midino>0x02</midino>
       </control>
+     <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>button_parameter2</key>
+        <status>0x90</status>
+        <midino>0x20</midino>
+      </control>
       <control>
-        <group>[Channel1]</group>
-        <key>filterHigh</key>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>button_parameter2</key>
+        <status>0x80</status>
+        <midino>0x20</midino>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter3</key>
         <status>0xB0</status>
         <midino>0x05</midino>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>button_parameter3</key>
+        <status>0x90</status>
+        <midino>0x26</midino>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>button_parameter3</key>
+        <status>0x80</status>
+        <midino>0x26</midino>
       </control>
       <control>
         <group>[Channel1]</group>
@@ -191,107 +304,169 @@
         <status>0x80</status>
         <midino>0x11</midino>
       </control>
+
+  <!-- Effects Buttons -->
       <control>
-        <group>[Channel1]</group>
-        <key>reverse</key>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>group_[Channel1]_enable</key>
         <status>0x90</status>
         <midino>0x14</midino>
       </control>
       <control>
-        <group>[Channel1]</group>
-        <key>reverse</key>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>group_[Channel1]_enable</key>
         <status>0x80</status>
         <midino>0x14</midino>
       </control>
       <control>
-        <group>[Channel1]</group>
-        <key>flanger</key>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>group_[Channel1]_enable</key>
         <status>0x90</status>
         <midino>0x15</midino>
       </control>
       <control>
-        <group>[Channel1]</group>
-        <key>flanger</key>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>group_[Channel1]_enable</key>
         <status>0x80</status>
         <midino>0x15</midino>
       </control>
+      <control>
+        <group>[EffectRack1_EffectUnit3]</group>
+        <key>group_[Channel1]_enable</key>
+        <status>0x90</status>
+        <midino>0x23</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit3]</group>
+        <key>group_[Channel1]_enable</key>
+        <status>0x80</status>
+        <midino>0x23</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit4]</group>
+        <key>group_[Channel1]_enable</key>
+        <status>0x90</status>
+        <midino>0x24</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit4]</group>
+        <key>group_[Channel1]_enable</key>
+        <status>0x80</status>
+        <midino>0x24</midino>
+      </control>
+
+ <!-- CHANNEL 2 -->
+
+  <!-- Encoder -->
       <control>
         <group>[Channel2]</group>
         <key>pregain</key>
         <status>0xB0</status>
         <midino>0x0a</midino>
-        <options>
-
-	</options>
+        <options><diff/></options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>mute</key>
+        <status>0x90</status>
+        <midino>0x4d</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>mute</key>
+        <status>0x80</status>
+        <midino>0x4d</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>jog</key>
+        <status>0xB0</status>
+        <midino>0x0F</midino>
+	<options><diff/></options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>sync_enabled</key>
+        <status>0x90</status>
+        <midino>0x0A</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>sync_enabled</key>
+        <status>0x80</status>
+        <midino>0x0A</midino>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>rate</key>
         <status>0xB0</status>
         <midino>0x1c</midino>
-        <options>
-
+        <options><diff/>
 	</options>
       </control>
       <control>
-        <group>[Channel2]</group>
-        <key>jog</key>
-        <status>0xB0</status>
-        <midino>0x0f</midino>
-        <options>
+	<group>[Channel2]</group>
+	<key>LoadSelectedTrack</key>
+	<status>0x90</status>
+	<midino>0x10</midino>
+      </control>
+      <control>
+	<group>[Channel2]</group>
+	<key>LoadSelectedTrack</key>
+	<status>0x80</status>
+	<midino>0x10</midino>
+      </control>
 
-    </options>
-        <!-- Not a valid mixxx 1.11 control <sensitivity>700</sensitivity> -->
-      </control>
+  <!-- Transport Buttons -->
       <control>
         <group>[Channel2]</group>
         <key>rate_temp_up</key>
-        <status>0x90</status>
-        <midino>0x3a</midino>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>rate_temp_up</key>
-        <status>0x80</status>
-        <midino>0x3a</midino>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>rate_temp_down</key>
         <status>0x90</status>
         <midino>0x3b</midino>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>rate_temp_down</key>
+        <key>rate_temp_up</key>
         <status>0x80</status>
         <midino>0x3b</midino>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>rate_temp_up_small</key>
+        <key>rate_temp_down</key>
         <status>0x90</status>
-        <midino>0x49</midino>
+        <midino>0x3a</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>rate_temp_down</key>
+        <status>0x80</status>
+        <midino>0x3a</midino>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>rate_temp_up_small</key>
-        <status>0x80</status>
-        <midino>0x49</midino>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>rate_temp_down_small</key>
         <status>0x90</status>
         <midino>0x4a</midino>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>rate_temp_down_small</key>
+        <key>rate_temp_up_small</key>
         <status>0x80</status>
         <midino>0x4a</midino>
       </control>
       <control>
+        <group>[Channel2]</group>
+        <key>rate_temp_down_small</key>
+        <status>0x90</status>
+        <midino>0x49</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>rate_temp_down_small</key>
+        <status>0x80</status>
+        <midino>0x49</midino>
+      </control>
+       <control>
         <group>[Channel2]</group>
         <key>play</key>
         <status>0x90</status>
@@ -305,57 +480,143 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>cue_set</key>
+        <key>keylock</key>
         <status>0x90</status>
         <midino>0x3f</midino>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>cue_set</key>
+        <key>keylock</key>
         <status>0x80</status>
         <midino>0x3f</midino>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>cue_preview</key>
+        <key>beats_translate_curpos</key>
         <status>0x90</status>
         <midino>0x36</midino>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>cue_preview</key>
+        <key>beats_translate_curpos</key>
         <status>0x80</status>
         <midino>0x36</midino>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>cue_goto</key>
+        <key>cue_default</key>
         <status>0x90</status>
         <midino>0x37</midino>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>cue_goto</key>
+        <key>cue_default</key>
         <status>0x80</status>
         <midino>0x37</midino>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>filterLow</key>
+        <key>beatjump_1_backward</key>
+        <status>0x90</status>
+        <midino>0x47</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>beatjump_1_backward</key>
+        <status>0x80</status>
+        <midino>0x47</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>beatjump_1_forward</key>
+        <status>0x90</status>
+        <midino>0x46</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>beatjump_1_forward</key>
+        <status>0x80</status>
+        <midino>0x46</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>quantize</key>
+        <status>0x90</status>
+        <midino>0x45</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>quantize</key>
+        <status>0x80</status>
+        <midino>0x45</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>reverse</key>
+        <status>0x90</status>
+        <midino>0x4e</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>reverse</key>
+        <status>0x80</status>
+        <midino>0x4e</midino>
+      </control>
+
+  <!-- Mixer -->
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter1</key>
         <status>0xB0</status>
         <midino>0x0b</midino>
       </control>
       <control>
-        <group>[Channel2]</group>
-        <key>filterMid</key>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>button_parameter1</key>
+        <status>0x90</status>
+        <midino>0x35</midino>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>button_parameter1</key>
+        <status>0x80</status>
+        <midino>0x35</midino>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter2</key>
         <status>0xB0</status>
         <midino>0x08</midino>
       </control>
+       <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>button_parameter2</key>
+        <status>0x90</status>
+        <midino>0x22</midino>
+      </control>
       <control>
-        <group>[Channel2]</group>
-        <key>filterHigh</key>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>button_parameter2</key>
+        <status>0x80</status>
+        <midino>0x22</midino>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter3</key>
         <status>0xB0</status>
         <midino>0x09</midino>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>button_parameter3</key>
+        <status>0x90</status>
+        <midino>0x44</midino>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>button_parameter3</key>
+        <status>0x80</status>
+        <midino>0x44</midino>
       </control>
       <control>
         <group>[Channel2]</group>
@@ -377,27 +638,101 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>reverse</key>
-        <status>0x90</status>
-        <midino>0x32</midino>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>reverse</key>
+        <key>filter</key>
         <status>0x80</status>
-        <midino>0x32</midino>
+        <midino>0x22</midino>
       </control>
+     
+  <!-- Effects Buttons -->
       <control>
-        <group>[Channel2]</group>
-        <key>flanger</key>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>group_[Channel2]_enable</key>
         <status>0x90</status>
         <midino>0x33</midino>
       </control>
       <control>
-        <group>[Channel2]</group>
-        <key>flanger</key>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>group_[Channel2]_enable</key>
         <status>0x80</status>
         <midino>0x33</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>group_[Channel2]_enable</key>
+        <status>0x90</status>
+        <midino>0x32</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>group_[Channel2]_enable</key>
+        <status>0x80</status>
+        <midino>0x32</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit3]</group>
+        <key>group_[Channel2]_enable</key>
+        <status>0x90</status>
+        <midino>0x42</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit3]</group>
+        <key>group_[Channel2]_enable</key>
+        <status>0x80</status>
+        <midino>0x42</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit4]</group>
+        <key>group_[Channel2]_enable</key>
+        <status>0x90</status>
+        <midino>0x41</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit4]</group>
+        <key>group_[Channel2]_enable</key>
+        <status>0x80</status>
+        <midino>0x41</midino>
+      </control>
+
+<!-- JOYSTICK -->
+
+      <control>
+	<group>[EffectRack1_EffectUnit1]</group>
+	<key>mix</key>
+	<status>0xB0</status>
+	<midino>0x04</midino>
+      </control>
+      <control>
+	<group>[EffectRack1_EffectUnit1]</group>
+	<key>super1</key>
+	<status>0xB0</status>
+	<midino>0x06</midino>
+      </control>
+      <control>
+	<group>[EffectRack1_EffectUnit2]</group>
+	<key>mix</key>
+	<status>0xB0</status>
+	<midino>0x14</midino>
+      </control>
+      <control>
+	<group>[EffectRack1_EffectUnit2]</group>
+	<key>super1</key>
+	<status>0xB0</status>
+	<midino>0x16</midino>
+      </control>
+
+<!-- PLAYLIST -->
+
+      <control>
+	<group>[Playlist]</group>
+	<key>SelectNextTrack</key>
+	<status>0x90</status>
+	<midino>0x0B</midino>
+      </control>
+      <control>
+	<group>[Playlist]</group>
+	<key>SelectPrevTrack</key>
+	<status>0x90</status>
+	<midino>0x0C</midino>
       </control>
     </controls>
   </controller>

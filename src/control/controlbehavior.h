@@ -110,6 +110,7 @@ class ControlPushButtonBehavior : public ControlNumericBehavior {
          TOGGLE,
          POWERWINDOW,
          LONGPRESSLATCHING,
+         TRIGGER
     };
 
     ControlPushButtonBehavior(ButtonMode buttonMode, int iNumStates);

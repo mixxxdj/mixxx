@@ -57,23 +57,12 @@ void WaveformRendererEndOfTrack::setup(const QDomNode& node, const SkinContext& 
         m_color.setNamedColor(endOfTrackColorName);
         m_color = WSkinColor::getCorrectColor(m_color);
     }
-    m_pen = QPen(QBrush(m_color), 2.5);
+    m_pen = QPen(QBrush(m_color), 2.5 * scaleFactor());
+    generateBackRects();
 }
 
 void WaveformRendererEndOfTrack::onResize() {
-    m_backRects.resize(4);
-    for (int i = 0; i < 4; i++) {
-        m_backRects[i].setTop(0);
-        m_backRects[i].setBottom(m_waveformRenderer->getHeight());
-        m_backRects[i].setLeft(m_waveformRenderer->getWidth() / 2 +
-                i*m_waveformRenderer->getWidth()/8);
-        m_backRects[i].setRight(m_waveformRenderer->getWidth());
-    }
-    // This is significant slower
-    //m_gradient.setStart(m_waveformRenderer->getWidth() / 2, 0);
-    //m_gradient.setFinalStop(m_waveformRenderer->getWidth(), 0);
-    //m_gradient.setColorAt(0, Qt::transparent);
-    //m_gradient.setColorAt(1, m_color);
+    generateBackRects();
 }
 
 void WaveformRendererEndOfTrack::draw(QPainter* painter,
@@ -151,4 +140,28 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
     //        m_waveformRenderer->getWidth() - 2, m_waveformRenderer->getHeight() - 2,
     //        m_gradient);
     painter->restore();
+}
+
+void WaveformRendererEndOfTrack::generateBackRects() {
+    m_backRects.resize(4);
+    for (int i = 0; i < 4; i++) {
+        if (m_waveformRenderer->getOrientation() == Qt::Vertical) {
+            m_backRects[i].setTop(m_waveformRenderer->getHeight() / 2 +
+                    i * m_waveformRenderer->getHeight() / 8);
+            m_backRects[i].setBottom(m_waveformRenderer->getHeight());
+            m_backRects[i].setLeft(0);
+            m_backRects[i].setRight(m_waveformRenderer->getWidth());
+        } else {
+            m_backRects[i].setTop(0);
+            m_backRects[i].setBottom(m_waveformRenderer->getHeight());
+            m_backRects[i].setLeft(m_waveformRenderer->getWidth() / 2 +
+                    i * m_waveformRenderer->getWidth() / 8);
+            m_backRects[i].setRight(m_waveformRenderer->getWidth());
+        }
+    }
+    // This is significant slower
+    //m_gradient.setStart(m_waveformRenderer->getWidth() / 2, 0);
+    //m_gradient.setFinalStop(m_waveformRenderer->getWidth(), 0);
+    //m_gradient.setColorAt(0, Qt::transparent);
+    //m_gradient.setColorAt(1, m_color);
 }

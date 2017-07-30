@@ -794,6 +794,38 @@
              </property>
             </widget>
            </item>
+           <item row="3" column="0">
+            <widget class="QPushButton" name="bpmThreeHalves">
+             <property name="minimumSize">
+              <size>
+               <width>125</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Sets the BPM to 150% of the current value.</string>
+             </property>
+             <property name="text">
+              <string>3/2 BPM</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QPushButton" name="bpmFourThirds">
+             <property name="minimumSize">
+              <size>
+               <width>125</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Sets the BPM to 133% of the current value.</string>
+             </property>
+             <property name="text">
+              <string>4/3 BPM</string>
+             </property>
+            </widget>
+           </item>
            <item row="1" column="2">
             <widget class="QPushButton" name="bpmClear">
              <property name="text">
@@ -814,7 +846,7 @@
            <property name="maximumSize">
             <size>
              <width>123</width>
-             <height>91</height>
+             <height>128</height>
             </size>
            </property>
            <property name="toolTip">

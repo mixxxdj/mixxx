@@ -20,9 +20,8 @@
 #include <QLineEdit>
 #include <QMessageBox>
 
-#include "analyzer/vamp/vampanalyzer.h"
 #include "analyzer/vamp/vamppluginloader.h"
-#include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "track/key_preferences.h"
 #include "util/xml.h"
 
@@ -65,6 +64,8 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer _config)
     m_keyLineEdits.insert(mixxx::track::io::key::A_MINOR, a_minor_edit);
     m_keyLineEdits.insert(mixxx::track::io::key::B_FLAT_MINOR, b_flat_minor_edit);
     m_keyLineEdits.insert(mixxx::track::io::key::B_MINOR, b_minor_edit);
+
+    m_pKeyNotation = new ControlProxy(ConfigKey("[Library]", "key_notation"), this);
 
     populate();
     loadSettings();
@@ -277,18 +278,17 @@ void DlgPrefKey::slotUpdate() {
 }
 
 void DlgPrefKey::populate() {
-   VampAnalyzer::initializePluginPaths();
    m_listIdentifier.clear();
    m_listName.clear();
    m_listLibrary.clear();
    plugincombo->clear();
    plugincombo->setDuplicatesEnabled(false);
-   VampPluginLoader* loader = VampPluginLoader::getInstance();
-   std::vector<PluginLoader::PluginKey> plugins = loader->listPlugins();
+   mixxx::VampPluginLoader vampPluginLoader;
+   std::vector<PluginLoader::PluginKey> plugins = vampPluginLoader.listPlugins();
    qDebug() << "VampPluginLoader::listPlugins() returned" << plugins.size() << "plugins";
    for (unsigned int iplugin=0; iplugin < plugins.size(); iplugin++) {
        // TODO(XXX): WTF, 48000
-       Plugin* plugin = loader->loadPlugin(plugins[iplugin], 48000);
+       Plugin* plugin = vampPluginLoader.loadPlugin(plugins[iplugin], 48000);
        //TODO(XXX): find a general way to add key detectors only
        if (plugin) {
            Plugin::OutputList outputs = plugin->getOutputDescriptors();
@@ -325,6 +325,7 @@ void DlgPrefKey::setNotationCustom(bool active) {
          it != m_keyLineEdits.end(); ++it) {
         it.value()->setEnabled(true);
     }
+    m_pKeyNotation->set(KeyUtils::CUSTOM);
     slotUpdate();
 }
 
@@ -334,6 +335,7 @@ void DlgPrefKey::setNotation(KeyUtils::KeyNotation notation) {
         it.value()->setText(KeyUtils::keyToString(it.key(), notation));
         it.value()->setEnabled(false);
     }
+    m_pKeyNotation->set(notation);
     slotUpdate();
 }
 

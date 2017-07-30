@@ -38,7 +38,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
 
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
-    DEBUG_ASSERT_AND_HANDLE(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
+    VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
     } else {
         box->removeWidget(m_pTrackTablePlaceholder);
         m_pTrackTablePlaceholder->hide();
@@ -216,10 +216,15 @@ void DlgAutoDJ::updateSelectionInfo() {
     if (!indices.isEmpty()) {
         label.append(mixxx::Duration::formatSeconds(duration));
         label.append(QString(" (%1)").arg(indices.size()));
+        labelSelectionInfo->setToolTip(tr("Displays the duration and number of selected tracks."));
         labelSelectionInfo->setText(label);
         labelSelectionInfo->setEnabled(true);
     } else {
         labelSelectionInfo->setText("");
         labelSelectionInfo->setEnabled(false);
     }
+}
+
+bool DlgAutoDJ::hasFocus() const {
+    return QWidget::hasFocus();
 }

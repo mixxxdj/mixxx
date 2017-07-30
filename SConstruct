@@ -53,7 +53,7 @@ available_features = [features.Mad,
                       features.TestSuite,
                       features.Vamp,
                       features.ColorDiagnostics,
-                      features.AddressSanitizer,
+                      features.Sanitizers,
                       features.LocaleCompare,
                       features.Battery,
 

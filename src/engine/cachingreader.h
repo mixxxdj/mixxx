@@ -22,17 +22,22 @@
 // SoundSource will be used 'soon' and so it should be brought into memory by
 // the reader work thread.
 typedef struct Hint {
-    // The sample to ensure is present in memory.
-    int sample;
-    // If a range of samples should be present, use length to indicate that the
-    // range (sample, sample+length) should be present in memory.
-    int length;
+    // The frame to ensure is present in memory.
+    SINT frame;
+    // If a range of frames should be present, use frameCount to indicate that the
+    // range (frame, frame + frameCount) should be present in memory.
+    SINT frameCount;
     // Currently unused -- but in the future could be used to prioritize certain
     // hints over others. A priority of 1 is the highest priority and should be
     // used for samples that will be read imminently. Hints for samples that
     // have the potential to be read (i.e. a cue point) should be issued with
     // priority >10.
     int priority;
+
+    // for the default frame count in forward direction
+    static constexpr SINT kFrameCountForward = 0;
+    static constexpr SINT kFrameCountBackward = -1;
+
 } Hint;
 
 // Note that we use a QVarLengthArray here instead of a QVector. Since this list
@@ -77,10 +82,10 @@ class CachingReader : public QObject {
 
     virtual void process();
 
-    // Read num_samples from the SoundSource starting with sample into
+    // Read numSamples from the SoundSource starting with sample into
     // buffer. Returns the total number of samples actually written to buffer
     // support reading stereo samples in reverse (backward) order
-    virtual int read(int sample, bool reverse, int numSamples, CSAMPLE* buffer);
+    virtual SINT read(SINT startSample, SINT numSamples, bool reverse, CSAMPLE* buffer);
 
     // Issue a list of hints, but check whether any of the hints request a chunk
     // that is not in the cache. If any hints do request a chunk not in cache,

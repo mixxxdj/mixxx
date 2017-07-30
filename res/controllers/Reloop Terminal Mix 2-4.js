@@ -44,6 +44,7 @@ TerminalMix.init = function (id,debug) {
         engine.softTakeover("[Channel"+i+"]","filterHigh",true);
         engine.softTakeover("[Channel"+i+"]","filterMid",true);
         engine.softTakeover("[Channel"+i+"]","filterLow",true);
+        engine.softTakeover("[Channel"+i+"]","rate",true);
     }
 
     engine.softTakeover("[Master]","crossfader",true);
@@ -121,6 +122,11 @@ TerminalMix.samplerVolume = function (channel, control, value) {
     }
 }
 
+TerminalMix.pitchSlider = function (channel, control, value, status, group) {
+    // invert pitch slider (down=faster) so it matches the labels on controller
+    engine.setValue(group,"rate",-script.midiPitch(control, value, status));
+}
+
 TerminalMix.pitchRange = function (channel, control, value, status, group) {
     midi.sendShortMsg(status,control,value); // Make button light or extinguish
     if (value<=0) return;
@@ -161,7 +167,13 @@ TerminalMix.loopLengthKnob = function (channel, control, value, status, group) {
 }
 
 TerminalMix.loopMoveKnob = function (channel, control, value, status, group) {
+    // numberOfBeats not defined, uses default 0.5 beats
     script.loopMove(group,value-64);
+}
+
+TerminalMix.tinyLoopMoveKnob = function (channel, control, value, status, group) {
+    // do smaller steps (1/8 beat) with [Shift]+LoopMove knob
+    script.loopMove(group,value-64,0.125);
 }
 
 TerminalMix.cfAssignL = function (channel, control, value, status, group) {
@@ -180,6 +192,18 @@ TerminalMix.faderStart = function (channel, control, value, status, group) {
     if (value<=0) return;
 
     TerminalMix.faderStart[group]=!TerminalMix.faderStart[group];
+}
+
+TerminalMix.brake = function (channel, control, value, status, group) {
+    // var1 Start brake effect on button press, don't care about button release.
+    // Can be stopped by shortly tapping wheel (when it's in touch mode).
+    if (value) {
+        script.brake(channel, control, value, status, group);
+    }
+    // var2 Start brake effect on button press, stop on release.
+    /*if (value) {
+        script.brake(channel, control, value, status, group);
+    }	*/
 }
 
 TerminalMix.faderStartFlash = function () {
@@ -319,48 +343,6 @@ TerminalMix.crossFader = function (channel, control, value, status, group) {
     }
 
     TerminalMix.lastFader["crossfader"] = cfValue;
-}
-
-TerminalMix.filterReset = function (channel, control, value, status, group) {
-    if (value>0) {
-        var index = group+"high";
-        TerminalMix.lastEQs[index] = engine.getValue(group,"filterHigh");
-        index = group+"mid";
-        TerminalMix.lastEQs[index] = engine.getValue(group,"filterMid");
-        index = group+"low";
-        TerminalMix.lastEQs[index] = engine.getValue(group,"filterLow");
-    }
-    else {
-        // Centered, so reset EQs
-        var index = group+"high";
-        engine.setValue(group,"filterHigh",TerminalMix.lastEQs[index]);
-        TerminalMix.lastEQs[index] = undefined;
-        index = group+"mid";
-        engine.setValue(group,"filterMid",TerminalMix.lastEQs[index]);
-        TerminalMix.lastEQs[index] = undefined;
-        index = group+"low";
-        engine.setValue(group,"filterLow",TerminalMix.lastEQs[index]);
-        TerminalMix.lastEQs[index] = undefined;
-    }
-}
-
-TerminalMix.filterTurn = function (channel, control, value, status, group) {
-    var index = group+"high";
-    if (TerminalMix.lastEQs[index] == undefined) return;
-    index = group+"low";
-    if (TerminalMix.lastEQs[index] == undefined) return;
-    index = group+"mid";
-    if (TerminalMix.lastEQs[index] == undefined) return;
-
-    if (value < 0x40) {
-        engine.setValue(group,"filterMid",script.absoluteLin(value,0,TerminalMix.lastEQs[index],0x00,0x1F));
-        index = group+"high";
-        engine.setValue(group,"filterHigh",script.absoluteLin(value,0,TerminalMix.lastEQs[index],0x20,0x3F));
-    } else {
-        engine.setValue(group,"filterMid",script.absoluteLin(value,TerminalMix.lastEQs[index],0,0x60,0x7F));
-        index = group+"low";
-        engine.setValue(group,"filterLow",script.absoluteLin(value,TerminalMix.lastEQs[index],0,0x40,0x5F));
-    }
 }
 
 TerminalMix.traxKnobTurn = function (channel, control, value, status, group) {

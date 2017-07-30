@@ -213,6 +213,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                    tr("Cue button (CDJ mode)"), cueMenu);
     addDeckControl("play_stutter", tr("Stutter Cue"),
                    tr("Stutter cue"), cueMenu);
+    addDeckControl("cue_play", tr("CUP (Cue + Play)"),
+                       tr("Go to cue point and play after release"), cueMenu);
 
     // Hotcues
     QMenu* hotcueMenu = addSubmenu(tr("Hotcues"));
@@ -352,47 +354,64 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Library Controls
     QMenu* libraryMenu = addSubmenu(tr("Library"));
-    addPrefixedControl("[Playlist]", "ToggleSelectedSidebarItem",
-                       tr("Expand/Collapse View"),
-                       tr("Expand/collapse the selected view (library, playlist..)"),
+    addPrefixedControl("[Library]", "MoveUp",
+                       tr("Move up"),
+                       tr("Equivalent to pressing the UP key on the keyboard"),
                        m_libraryStr, libraryMenu);
-
-    addPrefixedControl("[Playlist]", "SelectPlaylist",
-                       tr("Switch Next/Previous View"),
-                       tr("Switch to the next or previous view (library, playlist..)"),
+    addPrefixedControl("[Library]", "MoveDown",
+                       tr("Move down"),
+                       tr("Equivalent to pressing the DOWN key on the keyboard"),
                        m_libraryStr, libraryMenu);
-    addPrefixedControl("[Playlist]", "SelectNextPlaylist",
-                       tr("Switch To Next View"),
-                       tr("Switch to the next view (library, playlist..)"),
+    addPrefixedControl("[Library]", "MoveVertical",
+                       tr("Move up/down"),
+                       tr("Move vertically in either direction using a knob, as if pressing UP/DOWN keys"),
                        m_libraryStr, libraryMenu);
-    addPrefixedControl("[Playlist]", "SelectPrevPlaylist",
-                       tr("Switch To Previous View"),
-                       tr("Switch to the previous view (library, playlist..)"),
+    addPrefixedControl("[Library]", "ScrollUp",
+                       tr("Scroll Up"),
+                       tr("Equivalent to pressing the PAGE UP key on the keyboard"),
                        m_libraryStr, libraryMenu);
-    addPrefixedControl("[Playlist]", "SelectTrackKnob",
-                       tr("Scroll To Next/Previous Track"),
-                       tr("Scroll up or down in library/playlist"),
+    addPrefixedControl("[Library]", "ScrollDown",
+                       tr("Scroll Down"),
+                       tr("Equivalent to pressing the PAGE DOWN key on the keyboard"),
                        m_libraryStr, libraryMenu);
-    addPrefixedControl("[Playlist]", "SelectNextTrack",
-                       tr("Scroll To Next Track"),
-                       tr("Scroll to next track in library/playlist"),
+    addPrefixedControl("[Library]", "ScrollVertical",
+                       tr("Scroll up/down"),
+                       tr("Scroll vertically in either direction using a knob, as if pressing PGUP/PGDOWN keys"),
                        m_libraryStr, libraryMenu);
-    addPrefixedControl("[Playlist]", "SelectPrevTrack",
-                       tr("Scroll To Previous Track"),
-                       tr("Scroll to previous track in library/playlist"),
+    addPrefixedControl("[Library]", "MoveLeft",
+                       tr("Move left"),
+                       tr("Equivalent to pressing the LEFT key on the keyboard"),
                        m_libraryStr, libraryMenu);
-    addPrefixedControl("[Playlist]", "LoadSelectedIntoFirstStopped",
-                       tr("Load Track Into Stopped Deck"),
-                       tr("Load selected track into first stopped deck"),
+    addPrefixedControl("[Library]", "MoveRight",
+                       tr("Move right"),
+                       tr("Equivalent to pressing the RIGHT key on the keyboard"),
                        m_libraryStr, libraryMenu);
-    addPrefixedControl("[Playlist]", "AutoDjAddBottom",
+    addPrefixedControl("[Library]", "MoveHorizontal",
+                       tr("Move left/right"),
+                       tr("Move horizontally in either direction using a knob, as if pressing LEFT/RIGHT keys"),
+                       m_libraryStr, libraryMenu);
+    addPrefixedControl("[Library]", "MoveFocusForward",
+                       tr("Move focus to right pane"),
+                       tr("Equivalent to pressing the TAB key on the keyboard"),
+                       m_libraryStr, libraryMenu);
+    addPrefixedControl("[Library]", "MoveFocusBackward",
+                       tr("Move focus to left pane"),
+                       tr("Equivalent to pressing the SHIFT+TAB key on the keyboard"),
+                       m_libraryStr, libraryMenu);
+    addPrefixedControl("[Library]", "MoveFocus",
+                       tr("Move focus to right/left pane"),
+                       tr("Move focus one pane to right or left using a knob, as if pressing TAB/SHIFT+TAB keys"),
+                       m_libraryStr, libraryMenu);
+    addPrefixedControl("[Library]", "AutoDjAddBottom",
                        tr("Add to Auto DJ Queue (bottom)"),
                        tr("Append the selected track to the Auto DJ Queue"),
                        m_libraryStr, libraryMenu);
-    addPrefixedControl("[Playlist]", "AutoDjAddTop",
+    addPrefixedControl("[Library]", "AutoDjAddTop",
                        tr("Add to Auto DJ Queue (top)"),
                        tr("Prepend selected track to the Auto DJ Queue"),
                        m_libraryStr, libraryMenu);
+
+    // Load track (these can be loaded into any channel)
     addDeckAndSamplerControl("LoadSelectedTrack",
                              tr("Load Track"),
                              tr("Load selected track"), libraryMenu);

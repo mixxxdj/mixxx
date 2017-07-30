@@ -1,13 +1,21 @@
 #include "soundsourceproviderregistry.h"
 
+#include "util/logger.h"
+
 namespace mixxx {
+
+namespace {
+
+const Logger kLogger("SoundSourceProviderRegistry");
+
+} // anonymous namespace
 
 void SoundSourceProviderRegistry::registerProvider(
         const SoundSourceProviderPointer& pProvider) {
     const QStringList supportedFileExtensions(
             pProvider->getSupportedFileExtensions());
     if (supportedFileExtensions.isEmpty()) {
-        qWarning() << "SoundSource provider"
+        kLogger.warning() << "SoundSource provider"
                 << pProvider->getName()
                 << "does not support any file extensions";
         return; // abort registration
@@ -25,16 +33,12 @@ void SoundSourceProviderRegistry::registerProvider(
 void SoundSourceProviderRegistry::registerPluginLibrary(
         const SoundSourcePluginLibraryPointer& pPluginLibrary) {
     SoundSourceProviderPointer pProvider(
-            pPluginLibrary->createSoundSourceProvider());
-    if (!pProvider) {
-        qWarning() << "Failed to obtain SoundSource provider from plugin library"
-                << pPluginLibrary->getFilePath();
-        return; // abort registration
-    }
+            pPluginLibrary->getSoundSourceProvider());
+    DEBUG_ASSERT(pProvider);
     const QStringList supportedFileExtensions(
             pProvider->getSupportedFileExtensions());
     if (supportedFileExtensions.isEmpty()) {
-        qWarning() << "SoundSource provider"
+        kLogger.warning() << "SoundSource provider"
                 << pProvider->getName()
                 << "does not support any file extensions";
         return; // abort registration

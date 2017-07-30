@@ -18,10 +18,11 @@ class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
     DlgHidden(QWidget* parent, UserSettingsPointer pConfig,
               Library* pLibrary, TrackCollection* pTrackCollection,
               KeyboardEventFilter* pKeyboard);
-    virtual ~DlgHidden();
+    ~DlgHidden() override;
 
-    void onShow();
-    void onSearch(const QString& text);
+    void onShow() override;
+    bool hasFocus() const override;
+    void onSearch(const QString& text) override;
 
   public slots:
     void clicked();

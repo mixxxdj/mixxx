@@ -1,0 +1,59 @@
+<!--
+Description:
+  An effect parameter button.
+  Stacked layout of invisible button, parameter name
+  and button display underneath.
+Variables:
+  fxRack            : rack number
+  fxUnit            : unit number
+  fxGroup_fxNum     : EffectRack1_EffectUnitX_EffectY
+  fxNum             : effect number
+  fxButtonParameter : the parameter
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>stacked</Layout>
+    <ObjectName>EffectButtonParameter</ObjectName>
+    <!-- working around default AlignVCenter when Connection is applied.
+      Available height is 38px, button is 18px & we want it
+      in the same height as the knobs -->
+    <Size>52f,26f</Size>
+    <Children><!-- Actual button, invisible except hover border -->
+      <Template src="skin:button_2state.xml">
+        <SetVariable name="ObjectName">EffectButtonParameterOverlay</SetVariable>
+        <SetVariable name="TooltipId">EffectSlot_button_parameter</SetVariable>
+        <SetVariable name="Size">51f,18f</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="fxGroup_fxNum"/>,button_parameter<Variable name="fxButtonParameter"/></SetVariable>
+      </Template>
+
+      <WidgetGroup><!-- Name of effect parameter -->
+        <Size>51f,18f</Size>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+          <EffectButtonParameterName>
+            <SizePolicy>min,me</SizePolicy>
+            <ObjectName>EffectButtonParameterName</ObjectName>
+            <EffectRack><Variable name="fxRack"/></EffectRack>
+            <EffectUnit><Variable name="fxUnit"/></EffectUnit>
+            <Effect><Variable name="fxNum"/></Effect>
+            <EffectButtonParameter><Variable name="fxButtonParameter"/></EffectButtonParameter>
+            <Alignment>center</Alignment>
+          </EffectButtonParameterName>
+          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+      <Template src="skin:button_2state.xml"><!-- Button to display parameter state -->
+        <SetVariable name="ObjectName">EffectButtonParameterUnderlay</SetVariable>
+        <SetVariable name="Size">51f,18f</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="fxGroup_fxNum"/>,button_parameter<Variable name="fxButtonParameter"/></SetVariable>
+      </Template>
+    </Children>
+    <!-- show only if button parameter is loaded -->
+    <Connection>
+      <ConfigKey><Variable name="fxGroup_fxNum"/>,button_parameter<Variable name="fxButtonParameter"/>_loaded</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

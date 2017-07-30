@@ -9,24 +9,27 @@
 -->
 <Template>
 	<WidgetGroup>
-	    <Layout>horizontal</Layout>
-	    <Style> WEffect, WPushButton { 
+		<Layout>horizontal</Layout>
+		<Style> WEffect, WPushButton { 
 			font: bold 12px/10px sans-serif;
 			font-family: "Open Sans";
 			background-color: transparent; 
 			color: #191F24; 
-			padding-left: 1px; 
+			padding-left: 1px;
 		}
-	    </Style>
-	    <Children>
-	    	<PushButton>
+		</Style>
+		<Children>
+			<WidgetGroup>
+				<Size>4,4</Size>
+			</WidgetGroup>
+			<PushButton>
 				<TooltipId></TooltipId>
 				<Style></Style>
 				<NumberStates>2</NumberStates>
 				<State>
-					<Number>0</Number>
-					<Pressed>btn_kill_down.png</Pressed>
-					<Unpressed>btn_kill.png</Unpressed>
+				<Number>0</Number>
+				<Pressed>btn_kill_down.png</Pressed>
+				<Unpressed>btn_kill.png</Unpressed>
 				</State>
 				<State>
 					<Number>1</Number>
@@ -34,33 +37,33 @@
 					<Unpressed>btn_kill_over.png</Unpressed>
 				</State>
 				<Connection>
-		        <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],enabled</ConfigKey>
-		        	<ButtonState>LeftButton</ButtonState>
-		 		</Connection>
-			</PushButton>
-			<PushButton>
-				<Size>20f,20f</Size>
-				<NumberStates>1</NumberStates>
-				<State>
-					<Number>0</Number>
-					<Pressed>btn_previous_over.png</Pressed>
-					<Unpressed>btn_previous.png</Unpressed>
-				</State>
-				<Connection>
-		      		<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],prev_effect</ConfigKey>
+					<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],enabled</ConfigKey>
 					<ButtonState>LeftButton</ButtonState>
-		        </Connection>
-		    </PushButton>
+		 		</Connection>
+			 </PushButton>
+			 <PushButton>
+				 <Size>20f,20f</Size>
+				 <NumberStates>1</NumberStates>
+				 <State>
+					 <Number>0</Number>
+					 <Pressed>btn_previous_over.png</Pressed>
+					 <Unpressed>btn_previous.png</Unpressed>
+				 </State>
+				 <Connection>
+					<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],prev_effect</ConfigKey>
+					<ButtonState>LeftButton</ButtonState>
+				</Connection>
+			</PushButton>
 			<EffectName>
-		      	<Style>
-		      		QLabel { qproperty-alignment: AlignCenter; }
-		      	</Style>
-		        <Size>110,e</Size>
-		        <EffectRack>1</EffectRack>
-		        <EffectUnit><Variable name="effectunitnum"/></EffectUnit>
-		        <Effect><Variable name="effectnum"/></Effect>
-		        <Elide>middle</Elide>
-		    </EffectName>	
+				<Style>
+					QLabel { qproperty-alignment: AlignCenter; }
+				</Style>
+				<Size>110,e</Size>
+				<EffectRack>1</EffectRack>
+				<EffectUnit><Variable name="effectunitnum"/></EffectUnit>
+				<Effect><Variable name="effectnum"/></Effect>
+				<Elide>middle</Elide>
+			</EffectName>	
 			<PushButton>
 				<Size>20f,20f</Size>
 				<NumberStates>1</NumberStates>
@@ -68,10 +71,10 @@
 					<Number>0</Number>
 					<Pressed>btn_next_over.png</Pressed>
 					<Unpressed>btn_next.png</Unpressed>
-			    </State>
+				</State>
 				<Connection>
-			        <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],next_effect</ConfigKey>
-			    	<ButtonState>LeftButton</ButtonState>
+					<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],next_effect</ConfigKey>
+					<ButtonState>LeftButton</ButtonState>
 				</Connection>
 			</PushButton>
 		</Children>

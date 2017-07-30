@@ -20,7 +20,7 @@ SettingsManager::SettingsManager(QObject* pParent,
     // after an upgrade and make any needed changes.
     Upgrade upgrader;
     m_pSettings = upgrader.versionUpgrade(settingsPath);
-    DEBUG_ASSERT_AND_HANDLE(!m_pSettings.isNull()) {
+    VERIFY_OR_DEBUG_ASSERT(!m_pSettings.isNull()) {
         m_pSettings = UserSettingsPointer(new UserSettings(""));
     }
     m_bShouldRescanLibrary = upgrader.rescanLibrary();

@@ -62,11 +62,12 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_skipRender(false),
         m_frameRate(30),
         m_endOfTrackWarningTime(30),
-        m_defaultZoom(3),
+        m_defaultZoom(WaveformWidgetRenderer::s_waveformDefaultZoom),
         m_zoomSync(false),
         m_overviewNormalized(false),
         m_openGLAvailable(false),
         m_openGLShaderAvailable(false),
+        m_beatGridEnabled(true),
         m_vsyncThread(NULL),
         m_frameCnt(0),
         m_actualFrameRate(0),
@@ -77,7 +78,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
     m_visualGain[Mid] = 1.0;
     m_visualGain[High] = 1.0;
 
-    if (QGLFormat::hasOpenGL()) {
+    if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
         QGLFormat glFormat;
         glFormat.setDirectRendering(true);
         glFormat.setDoubleBuffer(true);
@@ -168,7 +169,8 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
 
         QGLWidget* glWidget = new QGLWidget(); // create paint device
         // QGLShaderProgram::hasOpenGLShaderPrograms(); valgind error
-        m_openGLShaderAvailable = QGLShaderProgram::hasOpenGLShaderPrograms(glWidget->context());
+        m_openGLShaderAvailable =
+                QGLShaderProgram::hasOpenGLShaderPrograms(glWidget->context());
         delete glWidget;
     }
 
@@ -201,10 +203,11 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     if (ok) {
         setEndOfTrackWarningTime(endTime);
     } else {
-        m_config->set(ConfigKey("[Waveform]","EndOfTrackWarningTime"), ConfigValue(m_endOfTrackWarningTime));
+        m_config->set(ConfigKey("[Waveform]","EndOfTrackWarningTime"),
+                ConfigValue(m_endOfTrackWarningTime));
     }
 
-    int vsync = m_config->getValueString(ConfigKey("[Waveform]","VSync"),"0").toInt();
+    int vsync = m_config->getValue(ConfigKey("[Waveform]","VSync"), 0);
     setVSyncType(vsync);
 
     int defaultZoom = m_config->getValueString(ConfigKey("[Waveform]","DefaultZoom")).toInt(&ok);
@@ -221,15 +224,18 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
         m_config->set(ConfigKey("[Waveform]","ZoomSynchronization"), ConfigValue(m_zoomSync));
     }
 
+    bool showBeatGrid = m_config->getValue(ConfigKey("[Waveform]", "beatGridLinesCheckBox"), m_beatGridEnabled);
+    setDisplayBeatGrid(showBeatGrid);
+
     WaveformWidgetType::Type type = static_cast<WaveformWidgetType::Type>(
-                m_config->getValueString(ConfigKey("[Waveform]","WaveformType")).toInt(&ok));
+            m_config->getValueString(ConfigKey("[Waveform]","WaveformType")).toInt(&ok));
     if (!ok || !setWidgetType(type)) {
         setWidgetType(autoChooseWidgetType());
     }
 
     for (int i = 0; i < FilterCount; i++) {
         double visualGain = m_config->getValueString(
-                    ConfigKey("[Waveform]","VisualGain_" + QString::number(i))).toDouble(&ok);
+                ConfigKey("[Waveform]","VisualGain_" + QString::number(i))).toDouble(&ok);
 
         if (ok) {
             setVisualGain(FilterIndex(i), visualGain);
@@ -294,6 +300,7 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
     }
 
     viewer->setZoom(m_defaultZoom);
+    viewer->setDisplayBeatGrid(m_beatGridEnabled);
     viewer->update();
 
     qDebug() << "WaveformWidgetFactory::setWaveformWidget - waveform widget added in factory, index" << index;
@@ -428,6 +435,22 @@ void WaveformWidgetFactory::setZoomSync(bool sync) {
     for (int i = 1; i < m_waveformWidgetHolders.size(); i++) {
         m_waveformWidgetHolders[i].m_waveformViewer->setZoom(refZoom);
     }
+}
+
+void WaveformWidgetFactory::setDisplayBeatGrid(bool sync) {
+    m_beatGridEnabled = sync;
+    if (m_config) {
+        m_config->set(ConfigKey("[Waveform]", "beatGridLinesCheckBox"), ConfigValue(m_beatGridEnabled));
+    }
+
+    if (m_waveformWidgetHolders.size() == 0) {
+        return;
+    }
+
+    for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
+        m_waveformWidgetHolders[i].m_waveformWidget->setDisplayBeatGrid(m_beatGridEnabled);
+    }
+
 }
 
 void WaveformWidgetFactory::setVisualGain(FilterIndex index, double gain) {

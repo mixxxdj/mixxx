@@ -52,10 +52,6 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
     bool isSolo();
     double getSoloDamping();
 
-  private slots:
-    // Reject all change requests for input configured.
-    void slotInputConfiguredChangeRequest(double) {}
-
   private:
     EngineEffectsManager* m_pEngineEffectsManager;
     EngineVuMeter m_vuMeter;

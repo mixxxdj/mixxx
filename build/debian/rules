@@ -1,13 +1,5 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
-# Sample debian/rules that uses debhelper.
-# This file was originally written by Joey Hess and Craig Small.
-# As a special exception, when this file is copied by dh-make into a
-# dh-make output file, you may use that output file without restriction.
-# This special exception was added by Craig Small in version 0.37 of dh-make.
-
-# Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
 
 # no thanks dpkg-buildpackage, we will handle our own C++ optimizations
 DEB_BUILD_OPTIONS= noopt
@@ -25,107 +17,36 @@ ifneq (,$(findstring amd64,$(ARCH)))
        MIXXX_SCONS_FLAGS += machine=x86_64
 endif
 
-# detect number of processors
-NCPUS := $(shell getconf _NPROCESSORS_ONLN 2>/dev/null || echo 1)
-ifeq ($(NCPUS),-1)
-	NCPUS:=1
-endif
-ifeq ($(NCPUS),0)
-	NCPUS:=1
+# parallel builds for scons
+ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+MIXXX_SCONS_FLAGS += -j$(NUMJOBS)
 endif
 
-MIXXX_SCONS_FLAGS += -j$(NCPUS) prefix=/usr install_root=$(CURDIR)/debian/tmp/usr
-SCONS = scons
+MIXXX_SCONS_FLAGS += prefix=/usr
+MIXXX_SCONS_FLAGS += install_root=$(CURDIR)/debian/tmp/usr
 
-configure: configure-stamp
-configure-stamp:
-	dh_testdir
-	touch configure-stamp
+%:
+	dh $@ --parallel
 
-
-build: build-stamp
-
-build-stamp: configure-stamp
-	dh_testdir
-
-	mkdir -p $(CURDIR)/debian/tmp/usr
-
-	# Add here commands to compile the package.
-	($(SCONS) $(MIXXX_SCONS_FLAGS))
+override_dh_auto_build:
+	scons $(MIXXX_SCONS_FLAGS) w=1
 	docbook-to-man debian/mixxx.sgml > mixxx.1
 
-	touch build-stamp
+override_dh_auto_clean:
+	scons $(MIXXX_SCONS_FLAGS) -c || true
+	rm -rf .sconf_temp/ cache/ linux_build/
+	dh_clean .sconsign.dblite cachecustom.py \
+		config.log src/build.h build/*.pyc mixxx.1
+	dh_auto_clean
 
-clean:
-	dh_testdir
-	dh_testroot
-	rm -f build-stamp configure-stamp
-	rm -f mixxx.1
+override_dh_auto_install:
+	scons $(MIXXX_SCONS_FLAGS) install
+	find $(CURDIR)/debian/tmp \( -name COPYING -o -name Thumbs.db \
+		-o -name shifter.sh -o -name '*.xsl' -o -name '*.php' \) \
+		-exec rm -f {} \;
+	find $(CURDIR)/debian/tmp -name '*.js' -exec chmod -x {} \;
+	find $(CURDIR)/debian/tmp/usr/share/mixxx/ -type f -exec chmod -x {} \;
 
-	# Add here commands to clean up after the build process.
-	($(SCONS) $(MIXXX_SCONS_FLAGS) -c)
-	# hand cleaning!
-	rm -rf src/.{configure.def,moc,obj,summary.log,ui} src/{mixxx,a.out,Makefile}
-	rm -f build/*.pyc
-	rm -f .sconsign.dblite
-	rm -rf .sconf_temp
-	rm -f $(CURDIR)/debian/tmp
-
-	dh_clean
-
-install: build
-	dh_testdir
-	dh_testroot
-	dh_clean -k
-	dh_installdirs
-	mkdir -p $(CURDIR)/debian/tmp/usr
-	mkdir -p $(CURDIR)/debian/tmp/usr/share/applications
-	mkdir -p $(CURDIR)/debian/tmp/usr/share/mixxx
-	# Add here commands to install the package into debian/mixxx.
-	$(SCONS) $(MIXXX_SCONS_FLAGS) install
-	#the scons prefix path is in MIXXX_SCONS_FLAGS at the top of this file.
-	#(cd src; $(MAKE) install INSTALL_ROOT=$(CURDIR)/debian/tmp DESTDIR=$(CURDIR)/debian/tmp)
-
-	dh_install --sourcedir=$(CURDIR)/debian/tmp
-
-# Build architecture-independent files here.
-binary-indep: build install
-# We have nothing to do by default.
-
-# Build architecture-dependent files here.
-binary-arch: build install
-	dh_testdir
-	dh_testroot
-	dh_installchangelogs
-	dh_installdocs
-	dh_installexamples
-        # Install mixxx.mixxx-usb.udev.
-	dh_installudev --name=mixxx-usb
-#	dh_install
-	dh_installmenu
-#	dh_installdebconf
-#	dh_installlogrotate
-#	dh_installemacsen
-#	dh_installpam
-#	dh_installmime
-#	dh_installinit
-#	dh_installcron
-#	dh_installinfo
-	dh_installman mixxx.1
-	dh_link
-# We don't want our binaries stripped.
-#	dh_strip
-	dh_compress -Xpdf
-	dh_fixperms
-#	dh_perl
-#	dh_python
-#	dh_makeshlibs
-	dh_installdeb
-	dh_shlibdeps -- --ignore-missing-info #This command complains about libQtXml.so.4 as of Ubuntu 8.10 (Intrepid), unless I tell it to ignore missing info. I don't understand why - Albert 04/13/2009
-	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
-
-binary: binary-indep binary-arch
-# .PHONY: build clean binary-indep binary-arch binary install configure
-.PHONY: build binary-indep binary-arch binary install configure
+override_dh_gencontrol:
+	dh_gencontrol -- $(SUBSTVARS)

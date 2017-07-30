@@ -14,7 +14,7 @@ class DlgCoverArtFullSize
     DlgCoverArtFullSize(QWidget* parent=0);
     virtual ~DlgCoverArtFullSize();
 
-    void init(CoverInfo info);
+    void init(QPixmap pixmap);
 };
 
 #endif // DLGCOVERARTFULLSIZE_H

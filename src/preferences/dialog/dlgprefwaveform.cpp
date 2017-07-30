@@ -1,9 +1,11 @@
 #include "preferences/dialog/dlgprefwaveform.h"
 
 #include "mixxx.h"
+#include "library/library.h"
 #include "preferences/waveformsettings.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
+#include "util/db/dbconnectionpooled.h"
 
 DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
                                  UserSettingsPointer pConfig, Library* pLibrary)
@@ -65,6 +67,8 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
             this, SLOT(slotSetVisualGainHigh(double)));
     connect(normalizeOverviewCheckBox, SIGNAL(toggled(bool)),
             this, SLOT(slotSetNormalizeOverview(bool)));
+    connect(beatGridLinesCheckBox, SIGNAL(toggled(bool)),
+            this, SLOT(slotSetGridLines(bool)));
     connect(factory, SIGNAL(waveformMeasured(float,int)),
             this, SLOT(slotWaveformMeasured(float,int)));
     connect(waveformOverviewComboBox, SIGNAL(currentIndexChanged(int)),
@@ -102,22 +106,27 @@ void DlgPrefWaveform::slotUpdate() {
     highVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::High));
     normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
     defaultZoomComboBox->setCurrentIndex(factory->getDefaultZoom() - 1);
+    beatGridLinesCheckBox->setChecked(factory->isBeatGridEnabled());
 
-    // By default we set filtered woverview = "0"
-    int overviewType = m_pConfig->getValueString(
-            ConfigKey("[Waveform]","WaveformOverviewType"), "0").toInt();
+    // By default we set RGB woverview = "2"
+    int overviewType = m_pConfig->getValue(
+            ConfigKey("[Waveform]","WaveformOverviewType"), 2);
     if (overviewType != waveformOverviewComboBox->currentIndex()) {
         waveformOverviewComboBox->setCurrentIndex(overviewType);
     }
 
     WaveformSettings waveformSettings(m_pConfig);
     enableWaveformCaching->setChecked(waveformSettings.waveformCachingEnabled());
+    enableWaveformGenerationWithAnalysis->setChecked(
+        waveformSettings.waveformGenerationWithAnalysisEnabled());
     calculateCachedWaveformDiskUsage();
 }
 
 void DlgPrefWaveform::slotApply() {
     WaveformSettings waveformSettings(m_pConfig);
     waveformSettings.setWaveformCachingEnabled(enableWaveformCaching->isChecked());
+    waveformSettings.setWaveformGenerationWithAnalysisEnabled(
+        enableWaveformGenerationWithAnalysis->isChecked());
 }
 
 void DlgPrefWaveform::slotResetToDefaults() {
@@ -142,8 +151,8 @@ void DlgPrefWaveform::slotResetToDefaults() {
     // Don't synchronize zoom by default.
     synchronizeZoomCheckBox->setChecked(false);
 
-    // Filtered overview.
-    waveformOverviewComboBox->setCurrentIndex(0);
+    // RGB overview.
+    waveformOverviewComboBox->setCurrentIndex(2);
 
     // Don't normalize overview.
     normalizeOverviewCheckBox->setChecked(false);
@@ -154,6 +163,10 @@ void DlgPrefWaveform::slotResetToDefaults() {
 
     // Waveform caching enabled.
     enableWaveformCaching->setChecked(true);
+    enableWaveformGenerationWithAnalysis->setChecked(false);
+
+    // Beat grid lines on waveform is default
+    beatGridLinesCheckBox->setChecked(true);
 }
 
 void DlgPrefWaveform::slotSetFrameRate(int frameRate) {
@@ -212,27 +225,27 @@ void DlgPrefWaveform::slotWaveformMeasured(float frameRate, int droppedFrames) {
 }
 
 void DlgPrefWaveform::slotClearCachedWaveforms() {
-    TrackCollection* pTrackCollection = m_pLibrary->getTrackCollection();
-    if (pTrackCollection != nullptr) {
-        AnalysisDao& analysisDao = pTrackCollection->getAnalysisDAO();
-        analysisDao.deleteAnalysesByType(AnalysisDao::TYPE_WAVEFORM);
-        analysisDao.deleteAnalysesByType(AnalysisDao::TYPE_WAVESUMMARY);
-        calculateCachedWaveformDiskUsage();
-    }
+    AnalysisDao analysisDao(m_pConfig);
+    QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pLibrary->dbConnectionPool());
+    analysisDao.deleteAnalysesByType(dbConnection, AnalysisDao::TYPE_WAVEFORM);
+    analysisDao.deleteAnalysesByType(dbConnection, AnalysisDao::TYPE_WAVESUMMARY);
+    calculateCachedWaveformDiskUsage();
+}
+
+void DlgPrefWaveform::slotSetGridLines(bool displayGrid) {
+    WaveformWidgetFactory::instance()->setDisplayBeatGrid(displayGrid);
 }
 
 void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {
-    TrackCollection* pTrackCollection = m_pLibrary->getTrackCollection();
-    if (pTrackCollection != nullptr) {
-        AnalysisDao& analysisDao = pTrackCollection->getAnalysisDAO();
-        size_t waveformBytes = analysisDao.getDiskUsageInBytes(AnalysisDao::TYPE_WAVEFORM);
-        size_t wavesummaryBytes = analysisDao.getDiskUsageInBytes(AnalysisDao::TYPE_WAVESUMMARY);
+    AnalysisDao analysisDao(m_pConfig);
+    QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pLibrary->dbConnectionPool());
+    size_t numBytes = analysisDao.getDiskUsageInBytes(dbConnection, AnalysisDao::TYPE_WAVEFORM) +
+            analysisDao.getDiskUsageInBytes(dbConnection, AnalysisDao::TYPE_WAVESUMMARY);
 
-        // Display total cached waveform size in mebibytes with 2 decimals.
-        QString sizeMebibytes = QString::number(
-                (waveformBytes + wavesummaryBytes) / (1024.0 * 1024.0), 'f', 2);
+    // Display total cached waveform size in mebibytes with 2 decimals.
+    QString sizeMebibytes = QString::number(
+            numBytes / (1024.0 * 1024.0), 'f', 2);
 
-        waveformDiskUsage->setText(
-                tr("Cached waveforms occupy %1 MiB on disk.").arg(sizeMebibytes));
-    }
+    waveformDiskUsage->setText(
+            tr("Cached waveforms occupy %1 MiB on disk.").arg(sizeMebibytes));
 }

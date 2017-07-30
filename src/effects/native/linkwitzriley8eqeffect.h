@@ -31,7 +31,7 @@ class LinkwitzRiley8EQEffectGroupState {
     double old_high;
 
     CSAMPLE* m_pLowBuf;
-    CSAMPLE* m_pBandBuf;
+    CSAMPLE* m_pMidBuf;
     CSAMPLE* m_pHighBuf;
 
     unsigned int m_oldSampleRate;

@@ -20,14 +20,15 @@ class BaseExternalPlaylistModel : public BaseSqlTableModel {
                               const char* settingsNamespace, const QString& playlistsTable,
                               const QString& playlistTracksTable, QSharedPointer<BaseTrackCache> trackSource);
 
-    virtual ~BaseExternalPlaylistModel();
+    ~BaseExternalPlaylistModel() override;
 
-    virtual TrackPointer getTrack(const QModelIndex& index) const;
-    virtual bool isColumnInternal(int column);
-    Qt::ItemFlags flags(const QModelIndex &index) const;
     void setPlaylist(QString path_name);
-    virtual void trackLoaded(QString group, TrackPointer pTrack);
-    virtual TrackModel::CapabilitiesFlags getCapabilities() const;
+
+    TrackPointer getTrack(const QModelIndex& index) const override;
+    bool isColumnInternal(int column) override;
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
+    void trackLoaded(QString group, TrackPointer pTrack) override;
+    CapabilitiesFlags getCapabilities() const override;
 
   private:
     QString m_playlistsTable;

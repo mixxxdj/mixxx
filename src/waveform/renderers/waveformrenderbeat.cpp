@@ -37,20 +37,26 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     if (!trackBeats)
         return;
 
+    if (!m_waveformRenderer->isBeatGridEnabled())
+        return;
+
     const int trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
         return;
     }
 
-    const double firstDisplayedPosition = m_waveformRenderer->getFirstDisplayedPosition();
-    const double lastDisplayedPosition = m_waveformRenderer->getLastDisplayedPosition();
+    const double firstDisplayedPosition =
+            m_waveformRenderer->getFirstDisplayedPosition();
+    const double lastDisplayedPosition =
+            m_waveformRenderer->getLastDisplayedPosition();
 
     // qDebug() << "trackSamples" << trackSamples
     //          << "firstDisplayedPosition" << firstDisplayedPosition
     //          << "lastDisplayedPosition" << lastDisplayedPosition;
 
     std::unique_ptr<BeatIterator> it(trackBeats->findBeats(
-            firstDisplayedPosition * trackSamples, lastDisplayedPosition * trackSamples));
+            firstDisplayedPosition * trackSamples,
+            lastDisplayedPosition * trackSamples));
 
     // if no beat do not waste time saving/restoring painter
     if (!it || !it->hasNext()) {
@@ -61,16 +67,19 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     painter->setRenderHint(QPainter::Antialiasing);
 
     QPen beatPen(m_beatColor);
-    beatPen.setWidthF(1);
+    beatPen.setWidthF(std::max(1.0, scaleFactor()));
     painter->setPen(beatPen);
 
+    const Qt::Orientation orientation = m_waveformRenderer->getOrientation();
+    const float rendererWidth = m_waveformRenderer->getWidth();
     const float rendererHeight = m_waveformRenderer->getHeight();
 
     int beatCount = 0;
 
     while (it->hasNext()) {
-        int beatPosition = it->next();
-        double xBeatPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(beatPosition);
+        double beatPosition = it->next();
+        double xBeatPoint =
+                m_waveformRenderer->transformSamplePositionInRendererWorld(beatPosition);
 
         xBeatPoint = qRound(xBeatPoint);
 
@@ -79,7 +88,11 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
             m_beats.resize(m_beats.size() * 2);
         }
 
-        m_beats[beatCount++].setLine(xBeatPoint, 0.0f, xBeatPoint, rendererHeight);
+        if (orientation == Qt::Horizontal) {
+            m_beats[beatCount++].setLine(xBeatPoint, 0.0f, xBeatPoint, rendererHeight);
+        } else {
+            m_beats[beatCount++].setLine(0.0f, xBeatPoint, rendererWidth, xBeatPoint);
+        }
     }
 
     // Make sure to use constData to prevent detaches!

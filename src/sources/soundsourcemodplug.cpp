@@ -3,6 +3,7 @@
 #include "track/trackmetadata.h"
 #include "util/timer.h"
 #include "util/sample.h"
+#include "util/logger.h"
 
 #include <QFile>
 
@@ -12,6 +13,8 @@
 namespace mixxx {
 
 namespace {
+
+const Logger kLogger("SoundSourceModPlug");
 
 /* read files in 512k chunks */
 const SINT kChunkSizeInBytes = SINT(1) << 19;
@@ -39,9 +42,9 @@ QString getModPlugTypeFromUrl(QUrl url) {
 
 } // anonymous namespace
 
-const SINT SoundSourceModPlug::kChannelCount = AudioSource::kChannelCountStereo;
-const SINT SoundSourceModPlug::kBitsPerSample = 16;
-const SINT SoundSourceModPlug::kSamplingRate = 44100; // 44.1 kHz
+/*static*/ constexpr SINT SoundSourceModPlug::kChannelCount;
+/*static*/ constexpr SINT SoundSourceModPlug::kBitsPerSample;
+/*static*/ constexpr SINT SoundSourceModPlug::kSamplingRate;
 
 unsigned int SoundSourceModPlug::s_bufferSizeLimit = 0;
 
@@ -64,17 +67,19 @@ SoundSourceModPlug::~SoundSourceModPlug() {
 
 Result SoundSourceModPlug::parseTrackMetadataAndCoverArt(
         TrackMetadata* pTrackMetadata,
-        QImage* /*pCoverArt*/) const {
-    // The modplug library currently does not support reading cover-art from
-    // modplug files -- kain88 (Oct 2014)
-    QFile modFile(getLocalFileName());
-    modFile.open(QIODevice::ReadOnly);
-    const QByteArray fileBuf(modFile.readAll());
-    modFile.close();
+        QImage* pCoverArt) const {
+    if (pTrackMetadata != nullptr) {
+        QFile modFile(getLocalFileName());
+        modFile.open(QIODevice::ReadOnly);
+        const QByteArray fileBuf(modFile.readAll());
+        modFile.close();
 
-    ModPlug::ModPlugFile* pModFile = ModPlug::ModPlug_Load(fileBuf.constData(),
-            fileBuf.length());
-    if (nullptr != pModFile) {
+        ModPlug::ModPlugFile* pModFile = ModPlug::ModPlug_Load(fileBuf.constData(),
+                fileBuf.length());
+        if (pModFile == nullptr) {
+            return ERR;
+        }
+
         pTrackMetadata->setComment(QString(ModPlug::ModPlug_GetMessage(pModFile)));
         pTrackMetadata->setTitle(QString(ModPlug::ModPlug_GetName(pModFile)));
         pTrackMetadata->setDuration(ModPlug::ModPlug_GetLength(pModFile) / 1000.0);
@@ -82,7 +87,13 @@ Result SoundSourceModPlug::parseTrackMetadataAndCoverArt(
         ModPlug::ModPlug_Unload(pModFile);
     }
 
-    return pModFile ? OK : ERR;
+    // The modplug library currently does not support reading cover-art from
+    // modplug files -- kain88 (Oct 2014)
+    // NOTE(uklotzde, 2016-11-02): Leave the QImage passed by the caller untouched
+    // if pCoverArt != nullptr.
+    Q_UNUSED(pCoverArt);
+
+    return OK;
 }
 
 SoundSource::OpenResult SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
@@ -91,7 +102,7 @@ SoundSource::OpenResult SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*a
     // read module file to byte array
     const QString fileName(getLocalFileName());
     QFile modFile(fileName);
-    qDebug() << "[ModPlug] Loading ModPlug module " << modFile.fileName();
+    kLogger.debug() << "Loading ModPlug module " << modFile.fileName();
     modFile.open(QIODevice::ReadOnly);
     m_fileBuf = modFile.readAll();
     modFile.close();
@@ -102,7 +113,7 @@ SoundSource::OpenResult SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*a
     if (m_pModFile == nullptr) {
         // an error occurred
         t.cancel();
-        qDebug() << "[ModPlug] Could not load module file: " << fileName;
+        kLogger.debug() << "Could not load module file: " << fileName;
         return OpenResult::FAILED;
     }
 
@@ -123,7 +134,7 @@ SoundSource::OpenResult SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*a
     const SampleBuffer::size_type sampleBufferCapacity = math_min(
             estimateChunks * chunkSizeInSamples, bufferSizeLimitInSamples);
     m_sampleBuf.reserve(sampleBufferCapacity);
-    qDebug() << "[ModPlug] Reserved " << m_sampleBuf.capacity() << " #samples";
+    kLogger.debug() << "Reserved " << m_sampleBuf.capacity() << " #samples";
 
     // decode samples into sample buffer
     while (m_sampleBuf.size() < bufferSizeLimitInSamples) {
@@ -144,9 +155,9 @@ SoundSource::OpenResult SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*a
             break; // exit loop
         }
     }
-    qDebug() << "[ModPlug] Filled Sample buffer with " << m_sampleBuf.size()
+    kLogger.debug() << "Filled Sample buffer with " << m_sampleBuf.size()
             << " samples.";
-    qDebug() << "[ModPlug] Sample buffer has "
+    kLogger.debug() << "Sample buffer has "
             << m_sampleBuf.capacity() - m_sampleBuf.size()
             << " samples unused capacity.";
 

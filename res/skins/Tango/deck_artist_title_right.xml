@@ -1,0 +1,223 @@
+<!--
+Description:
+  Container for:
+  * artist/title
+  * play position (elapsed/remaining)
+  * track duration
+  * indicator for enabled loop (if loop controls are hidden)
+  Time/duration can be set to left-hand side so that left and rigt decks
+  both show time/duration at the inner side.
+Variables:
+  group   : [ChannelN]
+  chanNum : channel number
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>DeckArtistTitleRight</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,me</SizePolicy>
+    <Children>
+
+      <Template src="skin:loop_indicator.xml"/>
+
+      <WidgetGroup><!-- Symmetric time display -->
+        <ObjectName>SymmetricTimeDuration</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+          <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+          <WidgetGroup><!-- TimeDurationColumn -->
+            <ObjectName>TimeDurationColumn</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <NumberPos>
+                <ObjectName>TrackTime</ObjectName>
+                <TooltipId>track_time</TooltipId>
+                <Size>72min,22f</Size>
+                <Alignment>left</Alignment>
+                <Channel><Variable name="chanNum"/></Channel>
+                <NumberOfDigits>1</NumberOfDigits>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Controls],ShowDurationRemaining</ConfigKey>
+                  <Transform><IsEqual>0</IsEqual></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </NumberPos>
+              
+              <NumberPos>
+                <ObjectName>TrackTime</ObjectName>
+                <TooltipId>track_time</TooltipId>
+                <Size>78min,22f</Size>
+                <Alignment>left</Alignment>
+                <Channel><Variable name="chanNum"/></Channel>
+                <NumberOfDigits>1</NumberOfDigits>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Controls],ShowDurationRemaining</ConfigKey>
+                  <Transform><IsEqual>1</IsEqual></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </NumberPos>
+              
+              <NumberPos>
+                <ObjectName>TrackTime</ObjectName>
+                <TooltipId>track_time</TooltipId>
+                <Size>158min,22f</Size>
+                <Alignment>left</Alignment>
+                <Channel><Variable name="chanNum"/></Channel>
+                <NumberOfDigits>1</NumberOfDigits>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Controls],ShowDurationRemaining</ConfigKey>
+                  <Transform><IsEqual>2</IsEqual></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </NumberPos>
+
+              <TrackProperty>
+                <ObjectName>TrackDuration</ObjectName>
+                <Size>60min,22f</Size>
+                <TooltipId>track_duration</TooltipId>
+                <Property>durationFormatted</Property>
+                <Alignment>left</Alignment>
+                <Channel><Variable name="chanNum"/></Channel>
+              </TrackProperty>
+            </Children>
+          </WidgetGroup><!-- /TimeDurationColumn -->
+
+          <WidgetGroup><Size>20f,1min</Size></WidgetGroup>
+
+          <WidgetGroup><!-- TitleArtistColumn -->
+            <ObjectName>TitleArtistColumn</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <TrackProperty>
+                <ObjectName>TrackTitle</ObjectName>
+                <TooltipId>track_title</TooltipId>
+                <Property>title</Property>
+                <Alignment>Left</Alignment>
+                <Elide>right</Elide>
+                <Size>1me,22f</Size>
+                <Channel><Variable name="chanNum"/></Channel>
+              </TrackProperty>
+
+              <WidgetGroup><!-- by Artist -->
+                <SizePolicy>min,me</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Label>
+                    <ObjectName>TrackBy</ObjectName>
+                    <Size>22f,22f</Size>
+                    <Text>by </Text>
+                    <Alignment>left</Alignment>
+                  </Label>
+
+                  <TrackProperty>
+                    <ObjectName>TrackArtist</ObjectName>
+                    <Elide>right</Elide>
+                    <Size>1me,22f</Size>
+                    <TooltipId>track_artist</TooltipId>
+                    <Property>artist</Property>
+                    <Channel><Variable name="chanNum"/></Channel>
+                  </TrackProperty>
+                </Children>
+              </WidgetGroup><!-- /by Artist -->
+            </Children>
+          </WidgetGroup><!-- /TitleArtistColumn -->
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Tango],symmetric_time</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Symmetric time display -->
+
+      <WidgetGroup><!-- Parallel time display -->
+        <Layout>vertical</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+          <WidgetGroup><!-- TitleTimeRow -->
+            <ObjectName>TitleTimeRow</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,me</SizePolicy>
+            <Children>
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <TrackProperty>
+                <ObjectName>TrackTitle</ObjectName>
+                <TooltipId>track_title</TooltipId>
+                <Property>title</Property>
+                <Alignment>Left</Alignment>
+                <Elide>right</Elide>
+                <Size>1me,22f</Size>
+                <Channel><Variable name="chanNum"/></Channel>
+              </TrackProperty>
+
+              <NumberPos>
+                <ObjectName>TrackTime</ObjectName>
+                <TooltipId>track_time</TooltipId>
+                <Size>80min,22f</Size>
+                <Alignment>right</Alignment>
+                <Channel><Variable name="chanNum"/></Channel>
+                <NumberOfDigits>1</NumberOfDigits>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+                </Connection>
+              </NumberPos>
+            </Children>
+          </WidgetGroup><!-- /TitleTimeRow -->
+
+          <WidgetGroup><!-- ArtistDurationRow -->
+            <ObjectName>ArtistDurationRow</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,me</SizePolicy>
+            <Children>
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Label>
+                <ObjectName>TrackBy</ObjectName>
+                <Size>20f,22f</Size>
+                <Text>by </Text>
+                <Alignment>left</Alignment>
+              </Label>
+
+              <TrackProperty>
+                <ObjectName>TrackArtist</ObjectName>
+                <Elide>right</Elide>
+                <Size>1me,22f</Size>
+                <TooltipId>track_artist</TooltipId>
+                <Property>artist</Property>
+                <Channel><Variable name="chanNum"/></Channel>
+              </TrackProperty>
+
+              <TrackProperty>
+                <ObjectName>TrackDuration</ObjectName>
+                <Size>50f,22f</Size>
+                <TooltipId>track_duration</TooltipId>
+                <Property>durationFormatted</Property>
+                <Alignment>right</Alignment>
+                <Channel><Variable name="chanNum"/></Channel>
+              </TrackProperty>
+
+            </Children>
+          </WidgetGroup><!-- /ArtistDurationRow -->
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Tango],symmetric_time</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Parallel time display -->
+    </Children>
+  </WidgetGroup>
+</Template>

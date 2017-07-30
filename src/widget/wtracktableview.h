@@ -9,6 +9,7 @@
 #include "library/coverart.h"
 #include "library/dlgtagfetcher.h"
 #include "library/libraryview.h"
+#include "library/trackcollection.h"
 #include "library/trackmodel.h" // Can't forward declare enums
 #include "track/track.h"
 #include "util/duration.h"
@@ -32,6 +33,7 @@ class WTrackTableView : public WLibraryTableView {
     void contextMenuEvent(QContextMenuEvent * event) override;
     void onSearch(const QString& text) override;
     void onShow() override;
+    bool hasFocus() const override;
     void keyPressEvent(QKeyEvent* event) override;
     void loadSelectedTrack() override;
     void loadSelectedTrackToGroup(QString group, bool play) override;
@@ -43,8 +45,9 @@ class WTrackTableView : public WLibraryTableView {
     void slotPurge();
     void onSearchStarting();
     void onSearchCleared();
-    void slotSendToAutoDJ() override;
+    void slotSendToAutoDJBottom() override;
     void slotSendToAutoDJTop() override;
+    void slotSendToAutoDJReplace() override;
 
   private slots:
     void slotRemove();
@@ -67,18 +70,20 @@ class WTrackTableView : public WLibraryTableView {
     void slotUnlockBpm();
     void slotScaleBpm(int);
     void slotClearBeats();
+    void slotClearWaveform();
     void slotReplayGainReset();
     // Signalled 20 times per second (every 50ms) by GuiTick.
     void slotGuiTick50ms(double);
     void slotScrollValueChanged(int);
-    void slotCoverArtSelected(const CoverArt& art);
+    void slotCoverInfoSelected(const CoverInfo& coverInfo);
     void slotReloadCoverArt();
 
     void slotTrackInfoClosed();
     void slotTagFetcherClosed();
 
   private:
-    void sendToAutoDJ(bool bTop);
+
+    void sendToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
     void showTrackInfo(QModelIndex index);
     void showDlgTagFetcher(QModelIndex index);
     void createActions();
@@ -96,8 +101,10 @@ class WTrackTableView : public WLibraryTableView {
     void mouseMoveEvent(QMouseEvent *pEvent) override;
 
     // Returns the current TrackModel, or returns NULL if none is set.
-    TrackModel* getTrackModel();
-    bool modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities);
+    TrackModel* getTrackModel() const;
+    bool modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) const;
+
+    QList<TrackId> getSelectedTrackIds() const;
 
     UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;
@@ -127,8 +134,9 @@ class WTrackTableView : public WLibraryTableView {
     QAction* m_pAddToPreviewDeck;
 
     // Send to Auto-DJ Action
-    QAction *m_pAutoDJAct;
+    QAction *m_pAutoDJBottomAct;
     QAction *m_pAutoDJTopAct;
+    QAction *m_pAutoDJReplaceAct;
 
     // Remove from table
     QAction *m_pRemoveAct;
@@ -151,9 +159,14 @@ class WTrackTableView : public WLibraryTableView {
     QAction *m_pBpmHalveAction;
     QAction *m_pBpmTwoThirdsAction;
     QAction *m_pBpmThreeFourthsAction;
+    QAction *m_pBpmFourThirdsAction;
+    QAction *m_pBpmThreeHalvesAction;
 
     // Clear track beats
     QAction* m_pClearBeatsAction;
+
+    // Clear track waveform
+    QAction* m_pClearWaveformAction;
 
     // Replay Gain feature
     QAction *m_pReplayGainResetAction;

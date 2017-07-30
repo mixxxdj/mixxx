@@ -49,10 +49,10 @@
 //
 // $ dpkg --compare-versions 2.0.0~rc1-0ubuntu1 lt 2.0.0-0ubuntu1 && echo true
 //
-#ifndef VERSION
+#ifndef MIXXX_VERSION
     // In that case, this value is used
-    
+
     // READ ABOVE CAREFULLY BEFORE CHANGING!
     // USE 3 DIGITS VERSION ONLY /!\ _
-    #define VERSION "2.1.0-alpha-pre"
+    #define MIXXX_VERSION "2.1.0-alpha-pre"
 #endif

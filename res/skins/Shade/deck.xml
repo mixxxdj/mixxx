@@ -149,18 +149,18 @@
 								<!-- Spinning Vinyl & VinylControl -->
 								<WidgetGroup>
 									<Style>
-                                        QGroupBox { 
-                                            border: 0px solid yellow;
-                                        } 
-                                        QWidget { margin: 0; padding: 0; }
-                                    </Style>
+										QGroupBox {
+											border: 0px solid yellow;
+										}
+										QWidget { margin: 0; padding: 0; }
+									</Style>
 									<Layout>vertical</Layout>
 									<Children>
-                                        <WidgetGroup>
-											<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0;}                                         
-                                            </Style>
+										<WidgetGroup>
+											<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0;}
+											</Style>
 											<Size>f,e</Size>
-                                         </WidgetGroup>
+										 </WidgetGroup>
 										<!-- Spinning Vinyl sub-widget -->
 										<WidgetGroup>
 											<!--<Pos>296,0</Pos>-->
@@ -188,14 +188,14 @@
 												<BindProperty>visible</BindProperty>
 											</Connection>
 										</WidgetGroup>
-                                        <WidgetGroup>
-											<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0;}                                         
-                                            </Style>
+										<WidgetGroup>
+											<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0;}
+											</Style>
 											<Size>f,e</Size>
-                                         </WidgetGroup>
-                 						<Template src="skin:vinylcontrol.xml">
-							                <SetVariable name="channum"><Variable name="channum"/></SetVariable>
-						                </Template>	
+										 </WidgetGroup>
+				 						<Template src="skin:vinylcontrol.xml">
+											<SetVariable name="channum"><Variable name="channum"/></SetVariable>
+										</Template>
 									</Children>
 								</WidgetGroup>
 	
@@ -223,7 +223,7 @@
 							<PlayPosColor>#00FF00</PlayPosColor>
 							<EndOfTrackColor>#EA0000</EndOfTrackColor>
 							<DefaultMark>
-								<Align>bottom</Align>
+								<Align>bottom|right</Align>
 								<Color>#FD0564</Color>
 								<TextColor>#FFFFFF</TextColor>
 								<Text> %1 </Text>
@@ -238,7 +238,7 @@
 							<Mark>
 								<Control>cue_point</Control>
 								<Text>C</Text>
-								<Align>top</Align>
+								<Align>top|right</Align>
 								<Color>#FF001C</Color>
 								<TextColor>#FFFFFF</TextColor>
 							</Mark>
@@ -258,7 +258,7 @@
 
 						<!--
 						**********************************************
-                    	Text- Track Title
+						Text- Track Title
 						**********************************************
 						-->
 						<TrackProperty>
@@ -278,51 +278,63 @@
 							<Size>275f,18</Size>
 							<Elide>right</Elide>
 						</TrackProperty>
-	
-						<!--
-						**********************************************
-						Text- Track Artist
-						**********************************************
-						-->
-						<TrackProperty>
-							<TooltipId>track_artist</TooltipId>
-							<Style>QLabel { font: bold 13px sans-serif;
-									font-family: "Open Sans";
-									background-color: transparent; 
-									color: #191F24; 
-									text-align: left; 
-									padding-left: 1px; }
-							</Style>
-							<Property>artist</Property>
-							<Channel><Variable name="channum"/></Channel>
+
+						<WidgetGroup>
+							<ObjectName>ArtistAndTimeRow</ObjectName>
 							<Pos>39,24</Pos>
-							<Size>210f,18</Size>
-							<Elide>right</Elide>
-						</TrackProperty>
-		
-						<!--
-						**********************************************
-						Text- Playing position / Time remaining
-						**********************************************
-						-->
-						<NumberPos>
-							<TooltipId>track_time</TooltipId>
-							<Style>QLabel { font: bold 13px sans-serif;
-                                                                        font-family: Open Sans;
-							                background-color: transparent; 
-                                                                        color: #191F24;  
-                                                                        text-align: left; 
-                                                                        padding-left: 1px; }
-							</Style>
-							<Channel><Variable name="channum"/></Channel>
-							<Pos>249,24</Pos>
-							<Size>66,18</Size>
-							<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
-							<Alignment>right</Alignment>
-							<Connection>
-								<ConfigKey>[Channel<Variable name="channum"/>],playposition</ConfigKey>
-							</Connection>
-						</NumberPos>
+							<Size>276f,18f</Size>
+							<Layout>horizontal</Layout>
+							<Children>
+							<!--
+							**********************************************
+							Text- Track Artist
+							**********************************************
+							-->
+							<TrackProperty>
+								<TooltipId>track_artist</TooltipId>
+								<Style>QLabel { font: bold 13px sans-serif;
+										font-family: "Open Sans";
+										background-color: transparent;
+										color: #191F24;
+										text-align: left;
+										padding-left: 1px; }
+								</Style>
+								<Property>artist</Property>
+								<Channel><Variable name="channum"/></Channel>
+								<SizePolicy>me,max</SizePolicy>
+								<Elide>right</Elide>
+							</TrackProperty>
+
+							<!--
+							**********************************************
+							Text- Playing position / Time remaining
+							**********************************************
+							-->
+
+							<WidgetGroup>
+								<ObjectName>PositionGutter</ObjectName>
+								<Layout>horizontal</Layout>
+								<SizePolicy>min,max</SizePolicy>
+								<MinimumSize>66,20</MinimumSize>
+								<MaximumSize>160,30</MaximumSize>
+								<Children>
+								<NumberPos>
+									<TooltipId>track_time</TooltipId>
+									<Style>QLabel { font: bold 13px sans-serif;
+												font-family: Open Sans;
+												background-color: transparent;
+												color: #191F24;
+												text-align: right;
+												padding-left: 1px; }
+									</Style>
+									<Group>[Channel<Variable name="channum"/>]</Group>
+									<Alignment>right</Alignment>
+								</NumberPos>
+								</Children>
+							</WidgetGroup>
+
+							</Children>
+						</WidgetGroup>
 						
 						<!--
 						**********************************************
@@ -404,16 +416,16 @@
 
 						<PushButton>
 							<TooltipId>pitch_up</TooltipId>
-                            <Size>10f,10f</Size>							
-                            <Style></Style>
+							<Size>10f,10f</Size>
+							<Style></Style>
 							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
-                                <Text>►</Text>
+								<Text>►</Text>
 							</State>
-						    <State>
+							<State>
 								<Number>0</Number>
-                                <Text>►</Text>
+								<Text>►</Text>
 							</State>
 							<Pos>353,55</Pos>
 							<Connection>
@@ -428,16 +440,16 @@
 
 						<PushButton>
 							<TooltipId>pitch_down</TooltipId>
-                            <Size>10f,10f</Size>
+							<Size>10f,10f</Size>
 							<Style></Style>
 							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
-                                <Text>◄</Text>
+								<Text>◄</Text>
 							</State>
 							<State>
 								<Number>1</Number>
-                                <Text>◄</Text>
+								<Text>◄</Text>
 							</State>
 							<Pos>320,55</Pos>
 							<Connection>

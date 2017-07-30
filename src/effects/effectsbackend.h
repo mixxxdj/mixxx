@@ -32,7 +32,7 @@ class EffectsBackend : public QObject {
             EffectsManager* pEffectsManager, const QString& effectId);
 
   signals:
-    void effectRegistered();
+    void effectRegistered(EffectManifest);
 
   protected:
     void registerEffect(const QString& id,

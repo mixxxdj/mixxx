@@ -13,7 +13,9 @@
 WWidgetGroup::WWidgetGroup(QWidget* pParent)
         : QFrame(pParent),
           WBaseWidget(this),
-          m_pPixmapBack(nullptr) {
+          m_pPixmapBack(nullptr),
+          m_pPixmapBackHighlighted(nullptr),
+          m_highlight(0) {
     setObjectName("WidgetGroup");
 }
 
@@ -99,8 +101,20 @@ void WWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
     // Set background pixmap if available
     QDomElement backPathNode = context.selectElement(node, "BackPath");
     if (!backPathNode.isNull()) {
-        setPixmapBackground(context.getPixmapSource(backPathNode),
-                            context.selectScaleMode(backPathNode, Paintable::TILE));
+        setPixmapBackground(
+                context.getPixmapSource(backPathNode),
+                context.selectScaleMode(backPathNode, Paintable::TILE),
+                context.getScaleFactor());
+    }
+
+    // Set background pixmap for the highlighted state
+    QDomElement backPathNodeHighlighted =
+            context.selectElement(node, "BackPathHighlighted");
+    if (!backPathNodeHighlighted.isNull()) {
+        setPixmapBackgroundHighlighted(
+                context.getPixmapSource(backPathNodeHighlighted),
+                context.selectScaleMode(backPathNodeHighlighted, Paintable::TILE),
+                context.getScaleFactor());
     }
 
     QLayout* pLayout = nullptr;
@@ -134,11 +148,27 @@ void WWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
     }
 }
 
-void WWidgetGroup::setPixmapBackground(PixmapSource source, Paintable::DrawMode mode) {
+void WWidgetGroup::setPixmapBackground(
+        PixmapSource source,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
     // Load background pixmap
-    m_pPixmapBack = WPixmapStore::getPaintable(source, mode);
+    m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (!m_pPixmapBack) {
-        qDebug() << "WWidgetGroup: Error loading background pixmap:" << source.getPath();
+        qWarning() << "WWidgetGroup: Error loading background pixmap:"
+                 << source.getPath();
+    }
+}
+
+void WWidgetGroup::setPixmapBackgroundHighlighted(
+        PixmapSource source,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
+    // Load background pixmap for the highlighted state
+    m_pPixmapBackHighlighted = WPixmapStore::getPaintable(source, mode, scaleFactor);
+    if (!m_pPixmapBackHighlighted) {
+        qWarning() << "WWidgetGroup: Error loading background highlighted pixmap:"
+                 << source.getPath();
     }
 }
 
@@ -152,9 +182,16 @@ void WWidgetGroup::addWidget(QWidget* pChild) {
 void WWidgetGroup::paintEvent(QPaintEvent* pe) {
     QFrame::paintEvent(pe);
 
-    if (m_pPixmapBack) {
-        QStylePainter p(this);
-        m_pPixmapBack->draw(rect(), &p);
+    if (m_highlight > 0) {
+        if (m_pPixmapBackHighlighted) {
+            QStylePainter p(this);
+            m_pPixmapBackHighlighted->draw(rect(), &p);
+        }
+    } else {
+        if (m_pPixmapBack) {
+            QStylePainter p(this);
+            m_pPixmapBack->draw(rect(), &p);
+        }
     }
 }
 
@@ -175,4 +212,16 @@ void WWidgetGroup::fillDebugTooltip(QStringList* debug) {
     *debug << QString("LayoutAlignment: %1").arg(toDebugString(layoutAlignment()))
            << QString("LayoutContentsMargins: %1").arg(toDebugString(layoutContentsMargins()))
            << QString("LayoutSpacing: %1").arg(layoutSpacing());
+}
+
+int WWidgetGroup::getHighlight() const {
+    return m_highlight;
+}
+
+void WWidgetGroup::setHighlight(int highlight) {
+    m_highlight = highlight;
+    style()->unpolish(this);
+    style()->polish(this);
+    update();
+    emit highlightChanged(m_highlight);
 }

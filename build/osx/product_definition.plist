@@ -4,12 +4,11 @@
 <dict>
 	<key>arch</key>
 	<array>
-		<string>i386</string>
                 <string>x86_64</string>
 	</array>
 	<key>os</key>
 	<array>
-		<string>10.7.0</string>
+		<string>10.8.0</string>
 	</array>
 </dict>
 </plist>

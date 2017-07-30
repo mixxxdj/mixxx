@@ -15,6 +15,7 @@
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
 #include "util/math.h"
+#include "util/screensaver.h"
 
 MidiController::MidiController()
         : Controller() {
@@ -160,53 +161,6 @@ void MidiController::destroyOutputHandlers() {
     }
 }
 
-QString formatMidiMessage(const QString& controllerName,
-                          unsigned char status, unsigned char control,
-                          unsigned char value, unsigned char channel,
-                          unsigned char opCode, mixxx::Duration timestamp) {
-    switch (opCode) {
-        case MIDI_PITCH_BEND:
-            return QString("%1: t:%2 status 0x%3: pitch bend ch %4, value 0x%5")
-                    .arg(controllerName, timestamp.formatMillisWithUnit(),
-                         QString::number(status, 16).toUpper(),
-                         QString::number(channel+1, 10),
-                         QString::number((value << 7) | control, 16).toUpper().rightJustified(4,'0'));
-        case MIDI_SONG_POS:
-            return QString("%1: t:%5 status 0x%3: song position 0x%4")
-                    .arg(controllerName, timestamp.formatMillisWithUnit(),
-                         QString::number(status, 16).toUpper(),
-                         QString::number((value << 7) | control, 16).toUpper().rightJustified(4,'0'));
-        case MIDI_PROGRAM_CH:
-        case MIDI_CH_AFTERTOUCH:
-            return QString("%1: t:%2 status 0x%3 (ch %4, opcode 0x%5), value 0x%6")
-                    .arg(controllerName, timestamp.formatMillisWithUnit(),
-                         QString::number(status, 16).toUpper(),
-                         QString::number(channel+1, 10),
-                         QString::number((status & 255)>>4, 16).toUpper(),
-                         QString::number(control, 16).toUpper().rightJustified(2,'0'));
-        case MIDI_SONG:
-            return QString("%1: t:%2 status 0x%3: select song #%4")
-                    .arg(controllerName, timestamp.formatMillisWithUnit(),
-                         QString::number(status, 16).toUpper(),
-                         QString::number(control+1, 10));
-        case MIDI_NOTE_OFF:
-        case MIDI_NOTE_ON:
-        case MIDI_AFTERTOUCH:
-        case MIDI_CC:
-            return QString("%1: t:%2 status 0x%3 (ch %4, opcode 0x%5), ctrl 0x%6, val 0x%7")
-                    .arg(controllerName, timestamp.formatMillisWithUnit(),
-                         QString::number(status, 16).toUpper(),
-                         QString::number(channel+1, 10),
-                         QString::number((status & 255)>>4, 16).toUpper(),
-                         QString::number(control, 16).toUpper().rightJustified(2,'0'),
-                         QString::number(value, 16).toUpper().rightJustified(2,'0'));
-        default:
-            return QString("%1: t:%2 status 0x%3")
-                    .arg(controllerName, timestamp.formatMillisWithUnit(),
-                         QString::number(status, 16).toUpper());
-    }
-}
-
 void MidiController::learnTemporaryInputMappings(const MidiInputMappings& mappings) {
     foreach (const MidiInputMapping& mapping, mappings) {
         m_temporaryInputMappings.insert(mapping.key.key, mapping);
@@ -249,10 +203,11 @@ void MidiController::receive(unsigned char status, unsigned char control,
     unsigned char channel = MidiUtils::channelFromStatus(status);
     unsigned char opCode = MidiUtils::opCodeFromStatus(status);
 
-    controllerDebug(formatMidiMessage(getName(), status, control, value,
-                                      channel, opCode, timestamp));
+    controllerDebug(MidiUtils::formatMidiMessage(getName(), status, control, value,
+                                                 channel, opCode, timestamp));
     MidiKey mappingKey(status, control);
 
+    triggerActivity();
     if (isLearning()) {
         emit(messageReceived(status, control, value));
 
@@ -497,24 +452,12 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
     return _newmidivalue;
 }
 
-QString formatSysexMessage(const QString& controllerName, const QByteArray& data,
-                           mixxx::Duration timestamp) {
-    QString message = QString("%1: t:%2 %3 bytes: [")
-            .arg(controllerName).arg(timestamp.formatMillisWithUnit())
-            .arg(data.size());
-    for (int i = 0; i < data.size(); ++i) {
-        message += QString("%1%2").arg(
-            QString("%1").arg((unsigned char)(data.at(i)), 2, 16, QChar('0')).toUpper(),
-            QString("%1").arg((i < (data.size()-1)) ? ' ' : ']'));
-    }
-    return message;
-}
-
 void MidiController::receive(QByteArray data, mixxx::Duration timestamp) {
-    controllerDebug(formatSysexMessage(getName(), data, timestamp));
+    controllerDebug(MidiUtils::formatSysexMessage(getName(), data, timestamp));
 
     MidiKey mappingKey(data.at(0), 0xFF);
 
+    triggerActivity();
     // TODO(rryan): Need to review how MIDI learn works with sysex messages. I
     // don't think this actually does anything useful.
     if (isLearning()) {
@@ -555,12 +498,5 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
         return;
     }
     qWarning() << "MidiController: No script function specified for"
-               << formatSysexMessage(getName(), data, timestamp);
-}
-
-void MidiController::sendShortMsg(unsigned char status, unsigned char byte1,
-                                  unsigned char byte2) {
-    unsigned int word = (((unsigned int)byte2) << 16) |
-            (((unsigned int)byte1) << 8) | status;
-    sendWord(word);
+               << MidiUtils::formatSysexMessage(getName(), data, timestamp);
 }

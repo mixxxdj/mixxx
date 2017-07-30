@@ -16,7 +16,7 @@ DlgMissing::DlgMissing(QWidget* parent, UserSettingsPointer pConfig,
 
     // Install our own trackTable
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
-    DEBUG_ASSERT_AND_HANDLE(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
+    VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
     } else {
         box->removeWidget(m_pTrackTablePlaceholder);
         m_pTrackTablePlaceholder->hide();
@@ -86,4 +86,8 @@ void DlgMissing::setTrackTableFont(const QFont& font) {
 
 void DlgMissing::setTrackTableRowHeight(int rowHeight) {
     m_pTrackTableView->setTrackTableRowHeight(rowHeight);
+}
+
+bool DlgMissing::hasFocus() const {
+    return QWidget::hasFocus();
 }

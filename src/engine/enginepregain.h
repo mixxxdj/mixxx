@@ -15,7 +15,7 @@ class ControlObject;
 class EnginePregain : public EngineObject {
   public:
     EnginePregain(QString group);
-    virtual ~EnginePregain();
+    ~EnginePregain() override;
 
     // If the user is scratching and the record reverses direction, the volume
     // will be ramped to zero and back up again to mimic a vinyl scratch.
@@ -24,7 +24,9 @@ class EnginePregain : public EngineObject {
     // reversed without a ramp to zero.
     void setSpeedAndScratching(double speed, bool scratching);
 
-    void process(CSAMPLE* pInOut, const int iBufferSize);
+    void process(CSAMPLE* pInOut, const int iBufferSize) override;
+
+    void collectFeatures(GroupFeatureState* pGroupFeatures) const override;
 
   private:
     double m_dSpeed;

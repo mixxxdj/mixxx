@@ -271,6 +271,7 @@ class Duration : public DurationBase {
 
 }  // namespace mixxx
 
+Q_DECLARE_TYPEINFO(mixxx::Duration, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(mixxx::Duration)
 
 #endif /* MIXXX_UTIL_DURATION_H */

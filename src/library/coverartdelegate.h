@@ -36,7 +36,6 @@ class CoverArtDelegate : public QStyledItemDelegate {
     void slotOnlyCachedCoverArt(bool b);
 
     void slotCoverFound(const QObject* pRequestor,
-                        int requestReference,
                         const CoverInfo& info,
                         QPixmap pixmap, bool fromCache);
 

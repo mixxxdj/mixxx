@@ -231,10 +231,11 @@ void SyncControl::setMasterBpm(double bpm) {
     }
 
     double localBpm = m_pLocalBpm->get();
-    if (localBpm > 0.0) {
+    double rateRange = m_pRateRange->get();
+    if (localBpm > 0.0 && rateRange > 0.0) {
         double newRate = m_pRateDirection->get() *
                 ((bpm * m_masterBpmAdjustFactor / localBpm) - 1.0) /
-                m_pRateRange->get();
+                rateRange;
         m_pRateSlider->set(newRate);
     } else {
         m_pRateSlider->set(0);
@@ -250,6 +251,9 @@ void SyncControl::setMasterParams(double beatDistance, double baseBpm, double bp
 
 double SyncControl::determineBpmMultiplier(double myBpm, double targetBpm) const {
     double multiplier = kBpmUnity;
+    if (myBpm == 0.0) {
+        return multiplier;
+    }
     double best_margin = fabs((targetBpm / myBpm) - 1.0);
 
     double try_margin = fabs((targetBpm * kBpmHalve / myBpm) - 1.0);
@@ -314,7 +318,7 @@ void SyncControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
         // If we change or remove a new track while master, hand off.
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_NONE);
     }
-    if (!pNewTrack.isNull()) {
+    if (pNewTrack) {
         m_masterBpmAdjustFactor = kBpmUnity;
         if (getSyncMode() != SYNC_NONE) {
             // Because of the order signals get processed, the file/local_bpm COs and

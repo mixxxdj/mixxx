@@ -10,10 +10,12 @@
 #include "util/performancetimer.h"
 
 const int WaveformWidgetRenderer::s_waveformMinZoom = 1;
-const int WaveformWidgetRenderer::s_waveformMaxZoom = 6;
+const int WaveformWidgetRenderer::s_waveformMaxZoom = 10;
+const int WaveformWidgetRenderer::s_waveformDefaultZoom = 3;
 
 WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
     : m_group(group),
+      m_orientation(Qt::Horizontal),
       m_height(-1),
       m_width(-1),
 
@@ -25,6 +27,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
       m_rateAdjust(0.0),
       m_visualSamplePerPixel(1.0),
       m_audioSamplePerPixel(1.0),
+      m_enableBeatGrid(true),
 
       // Really create some to manage those;
       m_visualPlayPosition(NULL),
@@ -39,7 +42,8 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
       m_pGainControlObject(NULL),
       m_gain(1.0),
       m_pTrackSamplesControlObject(NULL),
-      m_trackSamples(0.0) {
+      m_trackSamples(0.0),
+      m_scaleFactor(1.0) {
 
     //qDebug() << "WaveformWidgetRenderer";
 
@@ -119,7 +123,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     //rate adjust may have change sampling per
     //vRince for the moment only more than one sample per pixel is supported
     //due to the fact we play the visual play pos modulo floor m_visualSamplePerPixel ...
-    double visualSamplePerPixel = m_zoomFactor * (1.0 + m_rateAdjust);
+    double visualSamplePerPixel = m_zoomFactor * (1.0 + m_rateAdjust) / m_scaleFactor;
     m_visualSamplePerPixel = math_max(1.0, visualSamplePerPixel);
 
     TrackPointer pTrack(m_pTrack);
@@ -138,9 +142,9 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
         // Track length in pixels.
         m_trackPixelCount = static_cast<double>(m_trackSamples) / 2.0 / m_audioSamplePerPixel;
 
-        // Ratio of half the width of the renderer to the track length in
+        // Ratio of half the length of the renderer to the track length in
         // pixels. Percent of the track shown in half the waveform widget.
-        double displayedLengthHalf = static_cast<double>(m_width) / m_trackPixelCount / 2.0;
+        double displayedLengthHalf = static_cast<double>(getLength()) / m_trackPixelCount / 2.0;
         // Avoid pixel jitter in play position by rounding to the nearest track
         // pixel.
         m_playPos = round(truePlayPos * m_trackPixelCount) / m_trackPixelCount; // Avoid pixel jitter in play position
@@ -188,11 +192,20 @@ void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
         }
 
         painter->setPen(m_colors.getPlayPosColor());
-        painter->drawLine(m_width/2,0,m_width/2,m_height);
+        if (m_orientation == Qt::Horizontal) {
+            painter->drawLine(m_width / 2, 0, m_width / 2, m_height);
+        } else {
+            painter->drawLine(0, m_height / 2, m_width, m_height / 2);
+        }
         painter->setOpacity(0.5);
         painter->setPen(m_colors.getBgColor());
-        painter->drawLine(m_width/2 + 1,0,m_width/2 + 1,m_height);
-        painter->drawLine(m_width/2 - 1,0,m_width/2 - 1,m_height);
+        if (m_orientation == Qt::Horizontal) {
+            painter->drawLine(m_width / 2 + 1, 0, m_width / 2 + 1, m_height);
+            painter->drawLine(m_width / 2 - 1, 0, m_width / 2 - 1, m_height);
+        } else {
+            painter->drawLine(0, m_height / 2 + 1, m_width, m_height / 2 + 1);
+            painter->drawLine(0, m_height / 2 - 1, m_width, m_height / 2 - 1);
+        }
     }
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
@@ -240,9 +253,19 @@ void WaveformWidgetRenderer::resize(int width, int height) {
     }
 }
 
-void WaveformWidgetRenderer::setup(const QDomNode& node, const SkinContext& context) {
+void WaveformWidgetRenderer::setup(
+        const QDomNode& node, const SkinContext& context) {
+    m_scaleFactor = context.getScaleFactor();
+    QString orientationString = context.selectString(node, "Orientation").toLower();
+    if (orientationString == "vertical") {
+        m_orientation = Qt::Vertical;
+    } else {
+        m_orientation = Qt::Horizontal;
+    }
+
     m_colors.setup(node, context);
     for (int i = 0; i < m_rendererStack.size(); ++i) {
+        m_rendererStack[i]->setScaleFactor(m_scaleFactor);
         m_rendererStack[i]->setup(node, context);
     }
 }
@@ -250,6 +273,10 @@ void WaveformWidgetRenderer::setup(const QDomNode& node, const SkinContext& cont
 void WaveformWidgetRenderer::setZoom(int zoom) {
     //qDebug() << "WaveformWidgetRenderer::setZoom" << zoom;
     m_zoomFactor = math_clamp<double>(zoom, s_waveformMinZoom, s_waveformMaxZoom);
+}
+
+void WaveformWidgetRenderer::setDisplayBeatGrid(bool set) {
+    m_enableBeatGrid = set;
 }
 
 void WaveformWidgetRenderer::setTrack(TrackPointer track) {

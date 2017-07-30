@@ -29,6 +29,8 @@ private:
     OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     SNDFILE* m_pSndFile;
+
+    SINT m_curFrameIndex;
 };
 
 class SoundSourceProviderSndFile: public SoundSourceProvider {
@@ -45,7 +47,7 @@ public:
     QStringList getSupportedFileExtensions() const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
-        return SoundSourcePointer(new SoundSourceSndFile(url));
+        return newSoundSourceFromUrl<SoundSourceSndFile>(url);
     }
 };
 

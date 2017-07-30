@@ -19,6 +19,7 @@
 #include "preferences/dialog/ui_dlgprefsounddlg.h"
 #include "preferences/usersettings.h"
 #include "soundio/soundmanagerconfig.h"
+#include "soundio/sounddeviceerror.h"
 #include "preferences/dlgpreferencepage.h"
 
 class SoundManager;
@@ -59,14 +60,15 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void slotResetToDefaults();
     void bufferUnderflow(double count);
     void masterLatencyChanged(double latency);
-    void headDelayChanged(double value);
-    void masterDelayChanged(double value);
+    void latencyCompensationSpinboxChanged(double value);
+    void masterDelaySpinboxChanged(double value);
+    void headDelaySpinboxChanged(double value);
+    void boothDelaySpinboxChanged(double value);
     void masterMixChanged(int value);
     void masterEnabledChanged(double value);
     void masterOutputModeComboBoxChanged(int value);
     void masterMonoMixdownChanged(double value);
-    void talkoverMixComboBoxChanged(int value);
-    void talkoverMixChanged(double value);
+    void micMonitorModeComboBoxChanged(int value);
 
   private slots:
     void addPath(AudioOutput output);
@@ -80,6 +82,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void syncBuffersChanged(int index);
     void refreshDevices();
     void settingChanged();
+    void deviceSettingChanged();
     void queryClicked();
 
   private:
@@ -87,6 +90,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void connectSoundItem(DlgPrefSoundItem *item);
     void loadSettings(const SoundManagerConfig &config);
     void insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout);
+    void checkLatencyCompensation();
 
     SoundManager *m_pSoundManager;
     PlayerManager *m_pPlayerManager;
@@ -95,13 +99,17 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     ControlProxy* m_pMasterLatency;
     ControlProxy* m_pHeadDelay;
     ControlProxy* m_pMasterDelay;
+    ControlProxy* m_pBoothDelay;
+    ControlProxy* m_pLatencyCompensation;
     ControlProxy* m_pKeylockEngine;
     ControlProxy* m_pMasterEnabled;
     ControlProxy* m_pMasterMonoMixdown;
-    ControlProxy* m_pMasterTalkoverMix;
+    ControlProxy* m_pMicMonitorMode;
     QList<SoundDevice*> m_inputDevices;
     QList<SoundDevice*> m_outputDevices;
     bool m_settingsModified;
+    bool m_bLatencyChanged;
+    bool m_bSkipConfigClear;
     SoundManagerConfig m_config;
     bool m_loading;
 };

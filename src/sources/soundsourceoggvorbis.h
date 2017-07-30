@@ -53,7 +53,7 @@ public:
     QStringList getSupportedFileExtensions() const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
-        return SoundSourcePointer(new SoundSourceOggVorbis(url));
+        return newSoundSourceFromUrl<SoundSourceOggVorbis>(url);
     }
 };
 

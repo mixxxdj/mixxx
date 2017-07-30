@@ -16,12 +16,14 @@ protected:
     }
 };
 
-// Wraps the SoundSourcePlugin allocated with operator new
-// into a SoundSourcePointer that ensures that the managed
-// object will deleted from within the external library (DLL)
-// eventually.
-SoundSourcePointer exportSoundSourcePlugin(
-        SoundSourcePlugin* pSoundSourcePlugin);
+void deleteSoundSourcePlugin(SoundSource* pSoundSource);
+
+template<typename T>
+SoundSourcePointer newSoundSourcePluginFromUrl(const QUrl& url) {
+    // Ensures that the managed object will deleted from within the external
+    // library (DLL) eventually.
+    return SoundSourcePointer(new T(url), deleteSoundSourcePlugin);
+}
 
 } // namespace mixxx
 

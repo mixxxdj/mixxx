@@ -93,14 +93,13 @@ class EffectChain : public QObject {
 
     EngineEffectChain* getEngineEffectChain();
 
-    QDomElement toXML(QDomDocument* doc) const;
-    static EffectChainPointer fromXML(EffectsManager* pEffectsManager,
+    static EffectChainPointer createFromXml(EffectsManager* pEffectsManager,
                                       const QDomElement& element);
     static EffectChainPointer clone(EffectChainPointer pChain);
 
   signals:
     // Signal that indicates that an effect has been added or removed.
-    void effectsChanged();
+    void effectChanged(unsigned int effectSlotNumber);
     void nameChanged(const QString& name);
     void descriptionChanged(const QString& name);
     void enabledChanged(bool enabled);

@@ -19,16 +19,12 @@
 // the no-argument constructor be non-explicit. All methods are left virtual to
 // allow a backend to replace the entire functionality with its own (for
 // example, a database-backed manifest)
-class EffectManifest {
+class EffectManifest final {
   public:
     EffectManifest()
         : m_isMixingEQ(false),
           m_isMasterEQ(false),
-          m_isForFilterKnob(false),
           m_effectRampsFromDry(false) {
-    }
-    virtual ~EffectManifest() {
-        //qDebug() << debugString() << "deleted";
     }
 
     virtual const QString& id() const {
@@ -43,6 +39,21 @@ class EffectManifest {
     }
     virtual void setName(const QString& name) {
         m_name = name;
+    }
+
+    virtual const QString& shortName() const {
+        return m_shortName;
+    }
+    virtual void setShortName(const QString& shortName) {
+        m_shortName = shortName;
+    }
+
+    virtual const QString& displayName() const {
+        if (!m_shortName.isEmpty()) {
+            return m_shortName;
+        } else {
+            return m_name;
+        }
     }
 
     virtual const QString& author() const {
@@ -79,19 +90,15 @@ class EffectManifest {
         m_isMasterEQ = value;
     }
 
-    virtual const bool& isForFilterKnob() const {
-        return m_isForFilterKnob;
-    }
-
-    virtual void setIsForFilterKnob(const bool value) {
-        m_isForFilterKnob = value;
-    }
-
     virtual void setDescription(const QString& description) {
         m_description = description;
     }
 
     virtual const QList<EffectManifestParameter>& parameters() const {
+        return m_parameters;
+    }
+
+    virtual QList<EffectManifestParameter>& parameters() {
         return m_parameters;
     }
 
@@ -114,14 +121,13 @@ class EffectManifest {
 
     QString m_id;
     QString m_name;
+    QString m_shortName;
     QString m_author;
     QString m_version;
     QString m_description;
     // This helps us at DlgPrefEQ's basic selection of Equalizers
     bool m_isMixingEQ;
     bool m_isMasterEQ;
-    // This helps us at DlgPrefEQ's basic selection of Filter knob effects
-    bool m_isForFilterKnob;
     QList<EffectManifestParameter> m_parameters;
     bool m_effectRampsFromDry;
 };

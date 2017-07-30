@@ -25,17 +25,31 @@ class Controller;
 class ControlObjectScript;
 class ControllerEngine;
 
-// ControllerEngineConnection class for closure-compatible engine.connectControl
-class ControllerEngineConnection {
+// ScriptConnection represents a connection between
+// a ControlObject and a script callback function that gets executed when
+// the value of the ControlObject changes.
+class ScriptConnection {
   public:
     ConfigKey key;
-    QString id;
-    QScriptValue function;
-    ControllerEngine *ce;
+    QUuid id;
+    QScriptValue callback;
+    ControllerEngine *controllerEngine;
     QScriptValue context;
+
+    void executeCallback(double value) const;
+
+    // Required for various QList methods and iteration to work.
+    inline bool operator==(const ScriptConnection& other) const {
+        return id == other.id;
+    }
+    inline bool operator!=(const ScriptConnection& other) const {
+        return !(*this == other);
+    }
 };
 
-class ControllerEngineConnectionScriptValue : public QObject {
+// ScriptConnectionInvokableWrapper is a class providing scripts
+// with an interface to ScriptConnection.
+class ScriptConnectionInvokableWrapper : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString id READ readId)
     // We cannot expose ConfigKey directly since it's not a
@@ -44,20 +58,18 @@ class ControllerEngineConnectionScriptValue : public QObject {
     // There's little use in exposing the function...
     //Q_PROPERTY(QScriptValue function READ function)
   public:
-    ControllerEngineConnectionScriptValue(ControllerEngineConnection conn) {
-        m_conn = conn;
+    ScriptConnectionInvokableWrapper(ScriptConnection conn) {
+        m_scriptConnection = conn;
+        m_idString = conn.id.toString();
     }
-    const QString& readId() const { return m_conn.id; }
+    const QString& readId() const { return m_idString; }
     Q_INVOKABLE void disconnect();
+    Q_INVOKABLE void trigger();
 
   private:
-    ControllerEngineConnection m_conn;
+    ScriptConnection m_scriptConnection;
+    QString m_idString;
 };
-
-/* comparison function for ControllerEngineConnection */
-inline bool operator==(const ControllerEngineConnection &c1, const ControllerEngineConnection &c2) {
-    return c1.id == c2.id && c1.key.group == c2.key.group && c1.key.item == c2.key.item;
-}
 
 class ControllerEngine : public QObject {
     Q_OBJECT
@@ -79,12 +91,14 @@ class ControllerEngine : public QObject {
 
     // Wrap a snippet of JS code in an anonymous function
     QScriptValue wrapFunctionCode(const QString& codeSnippet, int numberOfArgs);
+    QScriptValue getThisObjectInFunctionCall();
 
     // Look up registered script function prefixes
     const QList<QString>& getScriptFunctionPrefixes() { return m_scriptFunctionPrefixes; };
 
-    // Disconnect a ControllerEngineConnection
-    void disconnectControl(const ControllerEngineConnection conn);
+    // Disconnect a ScriptConnection
+    void removeScriptConnection(const ScriptConnection conn);
+    void triggerScriptConnection(const ScriptConnection conn);
 
   protected:
     Q_INVOKABLE double getValue(QString group, QString name);
@@ -95,8 +109,12 @@ class ControllerEngine : public QObject {
     Q_INVOKABLE void reset(QString group, QString name);
     Q_INVOKABLE double getDefaultValue(QString group, QString name);
     Q_INVOKABLE double getDefaultParameter(QString group, QString name);
+    Q_INVOKABLE QScriptValue makeConnection(QString group, QString name,
+                                            const QScriptValue callback);
+    // DEPRECATED: Use makeConnection instead.
     Q_INVOKABLE QScriptValue connectControl(QString group, QString name,
-                                            QScriptValue function, bool disconnect = false);
+                                            const QScriptValue passedCallback,
+                                            bool disconnect = false);
     // Called indirectly by the objects returned by connectControl
     Q_INVOKABLE void trigger(QString group, QString name);
     Q_INVOKABLE void log(QString message);
@@ -109,8 +127,9 @@ class ControllerEngine : public QObject {
     Q_INVOKABLE bool isScratching(int deck);
     Q_INVOKABLE void softTakeover(QString group, QString name, bool set);
     Q_INVOKABLE void softTakeoverIgnoreNextValue(QString group, QString name);
-    Q_INVOKABLE void brake(int deck, bool activate, double factor=0.9, double rate=1.0);
+    Q_INVOKABLE void brake(int deck, bool activate, double factor=1.0, double rate=1.0);
     Q_INVOKABLE void spinback(int deck, bool activate, double factor=1.8, double rate=-10.0);
+    Q_INVOKABLE void softStart(int deck, bool activate, double factor=1.0, double finalRate=1.0);
 
     // Handler for timers that scripts set.
     virtual void timerEvent(QTimerEvent *event);
@@ -174,7 +193,6 @@ class ControllerEngine : public QObject {
 
     Controller* m_pController;
     bool m_bPopups;
-    QMultiHash<ConfigKey, ControllerEngineConnection> m_connectedControls;
     QList<QString> m_scriptFunctionPrefixes;
     QMap<QString, QStringList> m_scriptErrors;
     QHash<ConfigKey, ControlObjectScript*> m_controlCache;
@@ -191,7 +209,7 @@ class ControllerEngine : public QObject {
     QVarLengthArray<int> m_intervalAccumulator;
     QVarLengthArray<mixxx::Duration> m_lastMovement;
     QVarLengthArray<double> m_dx, m_rampTo, m_rampFactor;
-    QVarLengthArray<bool> m_ramp, m_brakeActive;
+    QVarLengthArray<bool> m_ramp, m_brakeActive, m_softStartActive;
     QVarLengthArray<AlphaBetaFilter*> m_scratchFilters;
     QHash<int, int> m_scratchTimers;
     QHash<QString, QScriptValue> m_scriptWrappedFunctionCache;

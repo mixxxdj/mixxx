@@ -17,7 +17,7 @@
 BrowseTableModel::BrowseTableModel(QObject* parent,
                                    TrackCollection* pTrackCollection,
                                    RecordingManager* pRecordingManager)
-        : TrackModel(pTrackCollection->getDatabase(),
+        : TrackModel(pTrackCollection->database(),
                      "mixxx.db.model.browse"),
           QStandardItemModel(parent),
           m_pTrackCollection(pTrackCollection),
@@ -316,7 +316,7 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
 
     QStandardItem* item = itemFromIndex(index);
     QString track_location(getTrackLocation(index));
-    if (OK == writeTrackMetadataIntoFile(trackMetadata, track_location)) {
+    if (OK == mixxx::taglib::writeTrackMetadataIntoFile(trackMetadata, track_location)) {
         // Modify underlying interalPointer object
         item->setText(value.toString());
         item->setToolTip(item->text());

@@ -1,4 +1,6 @@
 #include "effects/native/linkwitzriley8eqeffect.h"
+
+#include "effects/native/equalizer_util.h"
 #include "util/math.h"
 
 static const unsigned int kStartupSamplerate = 44100;
@@ -14,83 +16,15 @@ QString LinkwitzRiley8EQEffect::getId() {
 EffectManifest LinkwitzRiley8EQEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
-    manifest.setName(QObject::tr("LinkwitzRiley8 EQ"));
+    manifest.setName(QObject::tr("LinkwitzRiley8 Isolator"));
+    manifest.setShortName(QObject::tr("LR8 ISO"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-        "A Linkwitz-Riley 8th order filter equalizer (optimized crossover, constant phase shift, roll-off -48 db/Oct). "
-        "To adjust frequency shelves see the Equalizer preferences."));
+        "A Linkwitz-Riley 8th-order filter isolator (optimized crossover, constant phase shift, roll-off -48 dB/octave).") + " " + EqualizerUtil::adjustFrequencyShelvesTip());
     manifest.setIsMixingEQ(true);
 
-    EffectManifestParameter* low = manifest.addParameter();
-    low->setId("low");
-    low->setName(QObject::tr("Low"));
-    low->setDescription(QObject::tr("Gain for Low Filter"));
-    low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    low->setNeutralPointOnScale(0.5);
-    low->setDefault(1.0);
-    low->setMinimum(0);
-    low->setMaximum(4.0);
-
-    EffectManifestParameter* killLow = manifest.addParameter();
-    killLow->setId("killLow");
-    killLow->setName(QObject::tr("Kill Low"));
-    killLow->setDescription(QObject::tr("Kill the Low Filter"));
-    killLow->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
-    killLow->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    killLow->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    killLow->setDefault(0);
-    killLow->setMinimum(0);
-    killLow->setMaximum(1);
-
-    EffectManifestParameter* mid = manifest.addParameter();
-    mid->setId("mid");
-    mid->setName(QObject::tr("Mid"));
-    mid->setDescription(QObject::tr("Gain for Band Filter"));
-    mid->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    mid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    mid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    mid->setNeutralPointOnScale(0.5);
-    mid->setDefault(1.0);
-    mid->setMinimum(0);
-    mid->setMaximum(4.0);
-
-    EffectManifestParameter* killMid = manifest.addParameter();
-    killMid->setId("killMid");
-    killMid->setName(QObject::tr("Kill Mid"));
-    killMid->setDescription(QObject::tr("Kill the Mid Filter"));
-    killMid->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
-    killMid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    killMid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    killMid->setDefault(0);
-    killMid->setMinimum(0);
-    killMid->setMaximum(1);
-
-    EffectManifestParameter* high = manifest.addParameter();
-    high->setId("high");
-    high->setName(QObject::tr("High"));
-    high->setDescription(QObject::tr("Gain for High Filter"));
-    high->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    high->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    high->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    high->setNeutralPointOnScale(0.5);
-    high->setDefault(1.0);
-    high->setMinimum(0);
-    high->setMaximum(4.0);
-
-    EffectManifestParameter* killHigh = manifest.addParameter();
-    killHigh->setId("killHigh");
-    killHigh->setName(QObject::tr("Kill High"));
-    killHigh->setDescription(QObject::tr("Kill the High Filter"));
-    killHigh->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
-    killHigh->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    killHigh->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    killHigh->setDefault(0);
-    killHigh->setMinimum(0);
-    killHigh->setMaximum(1);
-
+    EqualizerUtil::createCommonParameters(&manifest);
     return manifest;
 }
 
@@ -103,7 +37,7 @@ LinkwitzRiley8EQEffectGroupState::LinkwitzRiley8EQEffectGroupState()
           m_hiFreq(kStartupHiFreq) {
 
     m_pLowBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pBandBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_pMidBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pHighBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
 
     m_low1 = new EngineFilterLinkwtzRiley8Low(kStartupSamplerate, kStartupLoFreq);
@@ -118,7 +52,7 @@ LinkwitzRiley8EQEffectGroupState::~LinkwitzRiley8EQEffectGroupState() {
     delete m_low2;
     delete m_high2;
     SampleUtil::free(m_pLowBuf);
-    SampleUtil::free(m_pBandBuf);
+    SampleUtil::free(m_pMidBuf);
     SampleUtil::free(m_pHighBuf);
 }
 
@@ -194,18 +128,18 @@ void LinkwitzRiley8EQEffect::processChannel(const ChannelHandle& handle,
                 numSamples);
     }
 
-    pState->m_high1->process(pState->m_pHighBuf, pState->m_pBandBuf, numSamples); // HighPass + BandPass second run
+    pState->m_high1->process(pState->m_pHighBuf, pState->m_pMidBuf, numSamples); // HighPass + BandPass second run
     pState->m_low1->process(pState->m_pLowBuf, pState->m_pLowBuf, numSamples); // LowPass second run
 
     if (fLow != pState->old_low) {
         SampleUtil::copy2WithRampingGain(pOutput,
                 pState->m_pLowBuf, pState->old_low, fLow,
-                pState->m_pBandBuf, 1, 1,
+                pState->m_pMidBuf, 1, 1,
                 numSamples);
     } else {
         SampleUtil::copy2WithGain(pOutput,
                 pState->m_pLowBuf, fLow,
-                pState->m_pBandBuf, 1,
+                pState->m_pMidBuf, 1,
                 numSamples);
     }
 

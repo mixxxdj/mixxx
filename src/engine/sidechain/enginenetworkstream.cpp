@@ -117,7 +117,6 @@ void EngineNetworkStream::write(const CSAMPLE* buffer, int frames) {
         // stream by writing silence, once the buffer is free.
         m_streamFramesWritten += copyCount / m_numOutputChannels;
     }
-    scheduleWorker();
 }
 
 void EngineNetworkStream::writeSilence(int frames) {
@@ -154,15 +153,17 @@ void EngineNetworkStream::writeSilence(int frames) {
         // we advance the frame only by the samples we have actually cleared
         m_streamFramesWritten += clearCount / m_numOutputChannels;
     }
-    scheduleWorker();
 }
 
-void EngineNetworkStream::scheduleWorker() {
+void EngineNetworkStream::writingDone(int interval) {
+    // Signal worker if any
     if (m_pWorker.isNull()) {
         return;
     }
-    if (m_pOutputFifo->readAvailable()
-            >= m_numOutputChannels * kNetworkLatencyFrames) {
+    // Check for desired kNetworkLatencyFrames + 1/2 interval to
+    // avoid big jitter due to interferences with sync code
+    if (m_pOutputFifo->readAvailable() + interval / 2
+            >= (m_numOutputChannels * kNetworkLatencyFrames)) {
         m_pWorker->outputAvailable();
     }
 }

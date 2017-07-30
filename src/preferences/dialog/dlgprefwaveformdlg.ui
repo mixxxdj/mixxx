@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>536</width>
-    <height>390</height>
+    <width>1032</width>
+    <height>836</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,7 +16,7 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="7" column="0">
+     <item row="9" column="0">
       <widget class="QLabel" name="visualGainLabel">
        <property name="text">
         <string>Visual gain</string>
@@ -57,14 +57,14 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
+     <item row="8" column="1">
       <widget class="QCheckBox" name="normalizeOverviewCheckBox">
        <property name="text">
         <string>Normalize waveform overview</string>
        </property>
       </widget>
      </item>
-     <item row="10" column="1">
+     <item row="12" column="1">
       <widget class="QLabel" name="openGlStatusIcon">
        <property name="toolTip">
         <string>Displays which OpenGL version is supported by the current platform.</string>
@@ -93,7 +93,7 @@
        </property>
       </widget>
      </item>
-     <item row="11" column="0">
+     <item row="13" column="0">
       <widget class="QLabel" name="openGlStatusLabel_2">
        <property name="toolTip">
         <string/>
@@ -119,17 +119,17 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="1" colspan="3">
+     <item row="5" column="1" colspan="3">
       <widget class="QComboBox" name="defaultZoomComboBox"/>
      </item>
-     <item row="9" column="0" colspan="4">
+     <item row="11" column="0" colspan="4">
       <widget class="Line" name="line">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
       </widget>
      </item>
-     <item row="10" column="0">
+     <item row="12" column="0">
       <widget class="QLabel" name="openGlStatusLabel">
        <property name="toolTip">
         <string/>
@@ -164,7 +164,7 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="1" colspan="3">
+     <item row="9" column="1" colspan="3">
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="1" column="2">
         <widget class="QDoubleSpinBox" name="midVisualGain">
@@ -188,7 +188,7 @@
        <item row="0" column="3">
         <widget class="QLabel" name="visualGainLabel_5">
          <property name="text">
-          <string>Low</string>
+          <string>High</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -265,7 +265,7 @@
        <item row="0" column="1">
         <widget class="QLabel" name="visualGainLabel_3">
          <property name="text">
-          <string>High</string>
+          <string>Low</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -320,7 +320,7 @@
        </property>
       </widget>
      </item>
-     <item row="11" column="1">
+     <item row="13" column="1">
       <widget class="QLabel" name="frameRateAverage">
        <property name="toolTip">
         <string>Displays the actual frame rate.</string>
@@ -387,7 +387,7 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
+     <item row="5" column="0">
       <widget class="QLabel" name="defaultZoomLabel">
        <property name="text">
         <string extracomment="Waveform zoom">Default zoom level</string>
@@ -400,7 +400,7 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="1" colspan="3">
+     <item row="6" column="1" colspan="3">
       <widget class="QCheckBox" name="synchronizeZoomCheckBox">
        <property name="toolTip">
         <string>Synchronize zoom level across all waveform displays.</string>
@@ -410,7 +410,7 @@
        </property>
       </widget>
      </item>
-     <item row="8" column="0">
+     <item row="10" column="0">
       <widget class="QLabel" name="cachedWaveforms">
        <property name="text">
         <string>Caching</string>
@@ -420,9 +420,16 @@
        </property>
       </widget>
      </item>
-     <item row="8" column="1" colspan="3">
+     <item row="10" column="1" colspan="3">
       <layout class="QGridLayout" name="cachingGridLayout">
-       <item row="1" column="0" colspan="2">
+       <item row="3" column="1">
+        <widget class="QPushButton" name="clearCachedWaveforms">
+         <property name="text">
+          <string>Clear Cached Waveforms</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="2">
         <widget class="QLabel" name="waveformCachingInfo">
          <property name="text">
           <string>Mixxx caches the waveforms of your tracks on disk the first time you load a track. This reduces CPU usage when you are playing live but requires extra disk space.</string>
@@ -432,21 +439,7 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
-        <widget class="QPushButton" name="clearCachedWaveforms">
-         <property name="text">
-          <string>Clear Cached Waveforms</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0" colspan="2">
-        <widget class="QCheckBox" name="enableWaveformCaching">
-         <property name="text">
-          <string>Enable Waveform Caching</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
+       <item row="3" column="0">
         <widget class="QLabel" name="waveformDiskUsage">
          <property name="text">
           <string notr="true">PLACEHOLDER FOR DISK USAGE</string>
@@ -456,7 +449,44 @@
          </property>
         </widget>
        </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QCheckBox" name="enableWaveformCaching">
+         <property name="text">
+          <string>Enable waveform caching</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QCheckBox" name="enableWaveformGenerationWithAnalysis">
+         <property name="text">
+          <string>Generate waveforms when analyzing library</string>
+         </property>
+        </widget>
+       </item>
       </layout>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="BeatgridWaveform">
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="text">
+        <string>Beat Grid</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QCheckBox" name="beatGridLinesCheckBox">
+       <property name="toolTip">
+        <string>Beat Grid</string>
+       </property>
+       <property name="text">
+        <string>Show Beat Markers</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

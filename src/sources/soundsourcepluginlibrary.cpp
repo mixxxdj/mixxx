@@ -1,8 +1,16 @@
 #include "soundsourcepluginlibrary.h"
 
+#include "util/logger.h"
+
 #include <QMutexLocker>
 
 namespace mixxx {
+
+namespace {
+
+const Logger kLogger("SoundSourcePluginLibrary");
+
+} // anonymous namespace
 
 /*static*/ QMutex SoundSourcePluginLibrary::s_loadedPluginLibrariesMutex;
 /*static*/ QMap<QString, SoundSourcePluginLibraryPointer> SoundSourcePluginLibrary::s_loadedPluginLibraries;
@@ -14,8 +22,8 @@ namespace mixxx {
     if (s_loadedPluginLibraries.contains(libFilePath)) {
         return s_loadedPluginLibraries.value(libFilePath);
     } else {
-        SoundSourcePluginLibraryPointer pPluginLibrary(
-                new SoundSourcePluginLibrary(libFilePath));
+        auto pPluginLibrary =
+                std::make_shared<SoundSourcePluginLibrary>(libFilePath);
         if (pPluginLibrary->init()) {
             s_loadedPluginLibraries.insert(libFilePath, pPluginLibrary);
             return pPluginLibrary;
@@ -27,9 +35,7 @@ namespace mixxx {
 
 SoundSourcePluginLibrary::SoundSourcePluginLibrary(const QString& libFilePath)
     : m_library(libFilePath),
-      m_apiVersion(0),
-      m_createSoundSourceProviderFunc(nullptr),
-      m_destroySoundSourceProviderFunc(nullptr){
+      m_apiVersion(0) {
 }
 
 SoundSourcePluginLibrary::~SoundSourcePluginLibrary() {
@@ -38,60 +44,72 @@ SoundSourcePluginLibrary::~SoundSourcePluginLibrary() {
 bool SoundSourcePluginLibrary::init() {
     DEBUG_ASSERT(!m_library.isLoaded());
     if (!m_library.load()) {
-        qWarning() << "Failed to dynamically load plugin library"
+        kLogger.warning() << "Failed to dynamically load plugin library"
                 << m_library.fileName()
                 << ":" << m_library.errorString();
         return false;
     }
-    qDebug() << "Dynamically loaded plugin library"
+    kLogger.debug() << "Dynamically loaded plugin library"
             << m_library.fileName();
 
     SoundSourcePluginAPI_getVersionFunc getVersionFunc = (SoundSourcePluginAPI_getVersionFunc)
             m_library.resolve(SoundSourcePluginAPI_getVersionFuncName);
-    if (!getVersionFunc) {
+    if (getVersionFunc == nullptr) {
         // Try to resolve the legacy plugin API function name
         getVersionFunc = (SoundSourcePluginAPI_getVersionFunc)
                     m_library.resolve("getSoundSourceAPIVersion");
     }
-    if (getVersionFunc) {
-        m_apiVersion = getVersionFunc();
-        if (m_apiVersion == MIXXX_SOUNDSOURCEPLUGINAPI_VERSION) {
-            m_createSoundSourceProviderFunc = (SoundSourcePluginAPI_createSoundSourceProviderFunc)
-                    m_library.resolve(SoundSourcePluginAPI_createSoundSourceProviderFuncName);
-            if (nullptr == m_createSoundSourceProviderFunc) {
-                qWarning() << "Failed to resolve SoundSource plugin API function"
-                        << SoundSourcePluginAPI_createSoundSourceProviderFuncName;
-            }
-            m_destroySoundSourceProviderFunc = (SoundSourcePluginAPI_destroySoundSourceProviderFunc)
-                    m_library.resolve(SoundSourcePluginAPI_destroySoundSourceProviderFuncName);
-            if (nullptr == m_destroySoundSourceProviderFunc) {
-                qWarning() << "Failed to resolve SoundSource plugin API function"
-                        << SoundSourcePluginAPI_destroySoundSourceProviderFuncName;
-            }
-        } else {
-            qWarning() << "Incompatible SoundSource plugin API version"
-                    << m_apiVersion << "<>" << MIXXX_SOUNDSOURCEPLUGINAPI_VERSION;
-        }
-    } else {
-        qWarning() << "Failed to resolve SoundSource plugin API function"
+    if (getVersionFunc == nullptr) {
+        kLogger.warning() << "Failed to resolve SoundSource plugin API function"
                 << SoundSourcePluginAPI_getVersionFuncName;
+        return initFailedForIncompatiblePlugin();
     }
 
-    if (getVersionFunc && m_createSoundSourceProviderFunc && m_destroySoundSourceProviderFunc) {
+    m_apiVersion = getVersionFunc();
+    if (m_apiVersion != MIXXX_SOUNDSOURCEPLUGINAPI_VERSION) {
+        kLogger.warning() << "Incompatible SoundSource plugin API version"
+                << m_apiVersion << "<>" << MIXXX_SOUNDSOURCEPLUGINAPI_VERSION;
+        return initFailedForIncompatiblePlugin();
+    }
+
+    auto const createSoundSourceProviderFunc =
+            reinterpret_cast<SoundSourcePluginAPI_createSoundSourceProviderFunc>(
+                    m_library.resolve(SoundSourcePluginAPI_createSoundSourceProviderFuncName));
+    if (createSoundSourceProviderFunc == nullptr) {
+        kLogger.warning() << "Failed to resolve SoundSource plugin API function"
+                << SoundSourcePluginAPI_createSoundSourceProviderFuncName;
+        return initFailedForIncompatiblePlugin();
+    }
+
+    auto const destroySoundSourceProviderFunc =
+            reinterpret_cast<SoundSourcePluginAPI_destroySoundSourceProviderFunc>(
+                m_library.resolve(SoundSourcePluginAPI_destroySoundSourceProviderFuncName));
+    if (destroySoundSourceProviderFunc == nullptr) {
+        kLogger.warning() << "Failed to resolve SoundSource plugin API function"
+                << SoundSourcePluginAPI_destroySoundSourceProviderFuncName;
+        return initFailedForIncompatiblePlugin();
+    }
+
+    m_pSoundSourceProvider = SoundSourceProviderPointer(
+            (*createSoundSourceProviderFunc)(),
+            destroySoundSourceProviderFunc);
+    if (m_pSoundSourceProvider) {
         return true;
     } else {
-        qWarning() << "Incompatible SoundSource plugin"
+        kLogger.warning() << "Failed to create SoundSource provider for plugin library"
                 << m_library.fileName();
         return false;
     }
 }
 
-SoundSourceProviderPointer SoundSourcePluginLibrary::createSoundSourceProvider() const {
-    DEBUG_ASSERT(m_createSoundSourceProviderFunc);
-    DEBUG_ASSERT(m_destroySoundSourceProviderFunc);
-    return SoundSourceProviderPointer(
-            (*m_createSoundSourceProviderFunc)(),
-            m_destroySoundSourceProviderFunc);
+bool SoundSourcePluginLibrary::initFailedForIncompatiblePlugin() const {
+    kLogger.warning() << "Incompatible SoundSource plugin"
+            << m_library.fileName();
+    return false;
+}
+
+SoundSourceProviderPointer SoundSourcePluginLibrary::getSoundSourceProvider() const {
+    return m_pSoundSourceProvider;
 }
 
 } // Mixxx

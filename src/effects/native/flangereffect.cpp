@@ -24,25 +24,14 @@ EffectManifest FlangerEffect::getManifest() {
         "A simple modulation effect, created by taking the input signal "
         "and mixing it with a delayed, pitch modulated copy of itself."));
 
-    EffectManifestParameter* depth = manifest.addParameter();
-    depth->setId("depth");
-    depth->setName(QObject::tr("Depth"));
-    depth->setDescription(QObject::tr("Controls the intensity of the effect."));
-    depth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    depth->setDefault(0.0);
-    depth->setMinimum(0.0);
-    depth->setMaximum(1.0);
-
     EffectManifestParameter* delay = manifest.addParameter();
     delay->setId("delay");
     delay->setName(QObject::tr("Delay"));
     delay->setDescription(QObject::tr("Sets the value for the delay length."));
-    delay->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    delay->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    delay->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    delay->setDefault(50.0);
+    delay->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    delay->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    delay->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    delay->setDefault(3333.3);
     delay->setMinimum(50.0);
     delay->setMaximum(10000.0);
 
@@ -50,12 +39,25 @@ EffectManifest FlangerEffect::getManifest() {
     period->setId("period");
     period->setName(QObject::tr("Period"));
     period->setDescription(QObject::tr("Controls the speed of the effect."));
-    period->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    period->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    period->setDefault(50000.0);
+    period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    period->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    period->setDefault(666666.6);
     period->setMinimum(50000.0);
     period->setMaximum(2000000.0);
+
+    EffectManifestParameter* depth = manifest.addParameter();
+    depth->setId("depth");
+    depth->setName(QObject::tr("Depth"));
+    depth->setDescription(QObject::tr("Controls the intensity of the effect."));
+    depth->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    depth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    depth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    depth->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
+    depth->setDefault(0.0);
+    depth->setMinimum(0.0);
+    depth->setMaximum(1.0);
+
 
     return manifest;
 }

@@ -219,12 +219,34 @@ void GLSLWaveformRendererSignal::onSetup(const QDomNode& node) {
 }
 
 void GLSLWaveformRendererSignal::onSetTrack() {
-    m_loadedWaveform = 0;
-    loadTexture();
+    if (m_loadedTrack) {
+        disconnect(m_loadedTrack.get(), SIGNAL(waveformUpdated()),
+                   this, SLOT(slotWaveformUpdated()));
+    }
+
+    slotWaveformUpdated();
+
+    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+    if (!pTrack) {
+        return;
+    }
+
+    // When the track's waveform has been changed (or cleared), it is necessary
+    // to update (or delete) the texture containing the waveform which was
+    // uploaded to GPU. Otherwise, previous waveform will be shown.
+    connect(pTrack.get(), SIGNAL(waveformUpdated()),
+            this, SLOT(slotWaveformUpdated()));
+
+    m_loadedTrack = pTrack;
 }
 
 void GLSLWaveformRendererSignal::onResize() {
     createFrameBuffers();
+}
+
+void GLSLWaveformRendererSignal::slotWaveformUpdated() {
+    m_loadedWaveform = 0;
+    loadTexture();
 }
 
 void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
@@ -285,6 +307,10 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
         glLoadIdentity();
+        if (m_orientation == Qt::Vertical) {
+            glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+            glScalef(-1.0f, 1.0f, 1.0f);
+        }
         glOrtho(firstVisualIndex, lastVisualIndex, -1.0, 1.0, -10.0, 10.0);
 
         glMatrixMode(GL_MODELVIEW);

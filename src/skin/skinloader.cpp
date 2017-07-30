@@ -18,6 +18,7 @@
 #include "util/debug.h"
 #include "skin/launchimage.h"
 #include "util/timer.h"
+#include "recording/recordingmanager.h"
 
 SkinLoader::SkinLoader(UserSettingsPointer pConfig) :
         m_pConfig(pConfig) {
@@ -115,7 +116,8 @@ QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
                                      ControllerManager* pControllerManager,
                                      Library* pLibrary,
                                      VinylControlManager* pVCMan,
-                                     EffectsManager* pEffectsManager) {
+                                     EffectsManager* pEffectsManager,
+                                     RecordingManager* pRecordingManager) {
     ScopedTimer timer("SkinLoader::loadDefaultSkin");
     QString skinPath = getSkinPath();
 
@@ -126,15 +128,15 @@ QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
 
     LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager,
                             pControllerManager, pLibrary, pVCMan,
-                            pEffectsManager);
+                            pEffectsManager, pRecordingManager);
     return legacy.parseSkin(skinPath, pParent);
 }
 
 LaunchImage* SkinLoader::loadLaunchImage(QWidget* pParent) {
     QString skinPath = getSkinPath();
-    LegacySkinParser parser;
+    LegacySkinParser parser(m_pConfig);
     LaunchImage* pLaunchImage = parser.parseLaunchImage(skinPath, pParent);
-    if (pLaunchImage == NULL) {
+    if (pLaunchImage == nullptr) {
         // Construct default LaunchImage
         pLaunchImage = new LaunchImage(pParent, QString());
     }

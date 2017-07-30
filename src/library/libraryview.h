@@ -14,6 +14,7 @@ class LibraryView {
     virtual ~LibraryView() {};
 
     virtual void onShow() = 0;
+    virtual bool hasFocus() const = 0;
     // reimplement if LibraryView should be able to search
     virtual void onSearch(const QString& text) {Q_UNUSED(text);}
 
@@ -21,8 +22,9 @@ class LibraryView {
     // track. Does nothing otherwise.
     virtual void loadSelectedTrack() {};
 
-    virtual void slotSendToAutoDJ() {};
+    virtual void slotSendToAutoDJBottom() {};
     virtual void slotSendToAutoDJTop() {};
+    virtual void slotSendToAutoDJReplace() {};
 
     // If applicable, requests that the LibraryView load the selected track to
     // the specified group. Does nothing otherwise.

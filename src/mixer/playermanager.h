@@ -23,8 +23,8 @@ class Library;
 class Microphone;
 class PreviewDeck;
 class Sampler;
+class SamplerBank;
 class SoundManager;
-class TrackCollection;
 
 // For mocking PlayerManager.
 class PlayerManagerInterface {
@@ -70,6 +70,9 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Add a sampler to the PlayerManager
     void addSampler();
 
+    // Load samplers from samplers.xml file in config directory
+    void loadSamplers();
+
     // Add a PreviewDeck to the PlayerManager
     void addPreviewDeck();
 
@@ -89,6 +92,10 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Returns true if the group is a deck group. If index is non-NULL,
     // populates it with the deck number (1-indexed).
     static bool isDeckGroup(const QString& group, int* number=NULL);
+
+    // Returns true if the group is a sampler group. If index is non-NULL,
+    // populates it with the deck number (1-indexed).
+    static bool isSamplerGroup(const QString& group, int* number=nullptr);
 
     // Returns true if the group is a preview deck group. If index is non-NULL,
     // populates it with the deck number (1-indexed).
@@ -228,9 +235,12 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     SoundManager* m_pSoundManager;
     EffectsManager* m_pEffectsManager;
     EngineMaster* m_pEngine;
+    SamplerBank* m_pSamplerBank;
     AnalyzerQueue* m_pAnalyzerQueue;
     ControlObject* m_pCONumDecks;
     ControlObject* m_pCONumSamplers;
+    ControlObject* m_pCOSamplerBankLoad;
+    ControlObject* m_pCOSamplerBankSave;
     ControlObject* m_pCONumPreviewDecks;
     ControlObject* m_pCONumMicrophones;
     ControlObject* m_pCONumAuxiliaries;

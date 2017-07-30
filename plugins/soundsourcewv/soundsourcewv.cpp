@@ -1,8 +1,16 @@
-#include "soundsourcewv.h"
-
 #include <QFile>
 
+#include "soundsourcewv.h"
+
+#include "util/logger.h"
+
 namespace mixxx {
+
+namespace {
+
+const Logger kLogger("SoundSourceWV");
+
+} // anonymous namespace
 
 //static
 WavpackStreamReader SoundSourceWV::s_streamReader = {
@@ -21,7 +29,8 @@ SoundSourceWV::SoundSourceWV(const QUrl& url)
           m_wpc(nullptr),
           m_sampleScaleFactor(CSAMPLE_ZERO), 
           m_pWVFile(nullptr),
-          m_pWVCFile(nullptr) {
+          m_pWVCFile(nullptr),
+          m_curFrameIndex(getMinFrameIndex()) {
 }
 
 SoundSourceWV::~SoundSourceWV() {
@@ -51,7 +60,7 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrc
     m_wpc = WavpackOpenFileInputEx(&s_streamReader, m_pWVFile, m_pWVCFile,
             msg, openFlags, 0);
     if (!m_wpc) {
-        qDebug() << "SSWV::open: failed to open file : " << msg;
+        kLogger.debug() << "failed to open file : " << msg;
         return OpenResult::FAILED;
     }
 
@@ -86,23 +95,50 @@ void SoundSourceWV::close() {
         delete m_pWVCFile;
         m_pWVCFile = nullptr;
     }
+    m_curFrameIndex = getMinFrameIndex();
 }
 
 SINT SoundSourceWV::seekSampleFrame(SINT frameIndex) {
-    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
+    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
+
+    if (frameIndex >= getMaxFrameIndex()) {
+        // EOF reached
+        m_curFrameIndex = getMaxFrameIndex();
+        return m_curFrameIndex;
+    }
+
+    if (frameIndex == m_curFrameIndex) {
+        return m_curFrameIndex;
+    }
+
     if (WavpackSeekSample(m_wpc, frameIndex) == true) {
+        m_curFrameIndex = frameIndex;
         return frameIndex;
     } else {
-        qDebug() << "SSWV::seek : could not seek to frame #" << frameIndex;
+        kLogger.debug() << "could not seek to frame #" << frameIndex;
         return WavpackGetSampleIndex(m_wpc);
     }
 }
 
 SINT SoundSourceWV::readSampleFrames(
         SINT numberOfFrames, CSAMPLE* sampleBuffer) {
+    if (sampleBuffer == nullptr) {
+        // NOTE(uklotzde): The WavPack API does not provide any
+        // functions for skipping samples in the audio stream. Calling
+        // API functions with a nullptr buffer does not return. Since
+        // we don't want to read samples into a temporary buffer that
+        // has to be allocated we are seeking to the position after
+        // the skipped samples.
+        SINT curFrameIndexBefore = m_curFrameIndex;
+        SINT curFrameIndexAfter = seekSampleFrame(m_curFrameIndex + numberOfFrames);
+        DEBUG_ASSERT(curFrameIndexBefore <= curFrameIndexAfter);
+        DEBUG_ASSERT(m_curFrameIndex == curFrameIndexAfter);
+        return curFrameIndexAfter - curFrameIndexBefore;
+    }
     // static assert: sizeof(CSAMPLE) == sizeof(int32_t)
     SINT unpackCount = WavpackUnpackSamples(m_wpc,
             reinterpret_cast<int32_t*>(sampleBuffer), numberOfFrames);
+    DEBUG_ASSERT(unpackCount >= 0);
     if (!(WavpackGetMode(m_wpc) & MODE_FLOAT)) {
         // signed integer -> float
         const SINT sampleCount = frames2samples(unpackCount);
@@ -112,6 +148,7 @@ SINT SoundSourceWV::readSampleFrames(
             sampleBuffer[i] = CSAMPLE(sampleValue) * m_sampleScaleFactor;
         }
     }
+    m_curFrameIndex += unpackCount;
     return unpackCount;
 }
 
@@ -126,7 +163,7 @@ QStringList SoundSourceProviderWV::getSupportedFileExtensions() const {
 }
 
 SoundSourcePointer SoundSourceProviderWV::newSoundSource(const QUrl& url) {
-    return exportSoundSourcePlugin(new SoundSourceWV(url));
+    return newSoundSourcePluginFromUrl<SoundSourceWV>(url);
 }
 
 //static

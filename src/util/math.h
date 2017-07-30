@@ -65,13 +65,6 @@ inline int roundUpToPowerOf2(int v) {
     return power;
 }
 
-// MSVS 2013 (_MSC_VER 1800) introduced C99 support.
-#if defined(__WINDOWS__) &&  _MSC_VER < 1800
-inline int round(double x) {
-    return x < 0.0 ? ceil(x - 0.5) : floor(x + 0.5);
-}
-#endif
-
 template <typename T>
 inline const T ratio2db(const T a) {
     return log10(a) * 20;

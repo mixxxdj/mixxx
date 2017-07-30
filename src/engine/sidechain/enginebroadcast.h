@@ -3,6 +3,7 @@
 
 #include <QMessageBox>
 #include <QMutex>
+#include <QWaitCondition>
 #include <QObject>
 #include <QSemaphore>
 #include <QTextCodec>
@@ -12,13 +13,14 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "encoder/encodercallback.h"
+#include "encoder/encoder.h"
 #include "engine/sidechain/networkstreamworker.h"
 #include "errordialoghandler.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/fifo.h"
+#include "preferences/broadcastsettings.h"
 
-class Encoder;
 class ControlPushButton;
 
 // Forward declare libshout structures to prevent leaking shout.h definitions
@@ -51,8 +53,15 @@ class EngineBroadcast
 
     // Called by the encoder in method 'encodebuffer()' to flush the stream to
     // the server.
-    void write(unsigned char *header, unsigned char *body,
-               int headerLen, int bodyLen);
+    void write(const unsigned char *header, const unsigned char *body,
+               int headerLen, int bodyLen) override;
+    // gets stream position
+    int tell() override;
+    // sets stream position
+    void seek(int pos) override;
+    // gets stream length
+    int filelen() override;
+
     /** connects to server **/
     bool serverConnect();
     bool serverDisconnect();
@@ -66,7 +75,6 @@ class EngineBroadcast
     virtual void run();
 
   private slots:
-    void slotStatusCO(double v);
     void slotEnableCO(double v);
 
   signals:
@@ -75,7 +83,7 @@ class EngineBroadcast
 
   private:
     bool processConnect();
-    void processDisconnect();
+    bool processDisconnect();
 
     // Update the libshout struct with info from Mixxx's broadcast preferences.
     void updateFromPreferences();
@@ -102,6 +110,12 @@ class EngineBroadcast
     bool writeSingle(const unsigned char *data, size_t len);
 
     QByteArray encodeString(const QString& string);
+
+    bool waitForRetry();
+
+    void tryReconnect();
+
+
     QTextCodec* m_pTextCodec;
     TrackPointer m_pMetaData;
     shout_t *m_pShout;
@@ -109,8 +123,9 @@ class EngineBroadcast
     int m_iMetaDataLife;
     long m_iShoutStatus;
     long m_iShoutFailures;
+    BroadcastSettings m_settings;
     UserSettingsPointer m_pConfig;
-    Encoder* m_encoder;
+    EncoderPointer m_encoder;
     ControlPushButton* m_pBroadcastEnabled;
     ControlProxy* m_pMasterSamplerate;
     ControlObject* m_pStatusCO;
@@ -133,7 +148,18 @@ class EngineBroadcast
     QAtomicInt m_threadWaiting;
     QSemaphore m_readSema;
     FIFO<CSAMPLE>* m_pOutputFifo;
+
     QString m_lastErrorStr;
+    int m_retryCount;
+
+    double m_reconnectFirstDelay;
+    double m_reconnectPeriod;
+    bool m_noDelayFirstReconnect;
+    bool m_limitReconnects;
+    int m_maximumRetries;
+
+    QMutex m_enabledMutex;
+    QWaitCondition m_waitEnabled;
 };
 
 #endif // ENGINE_SIDECHAIN_ENGINEBROADCAST_H

@@ -3,7 +3,6 @@
 
 #include "util/performancetimer.h"
 #include "util/threadcputimer.h"
-#include "util/timer.h"
 #include "util/duration.h"
 
 namespace mixxx {

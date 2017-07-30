@@ -35,6 +35,7 @@ public:
     ControlProxy* m_pHighKillControlObject;
 
     Qt::Alignment m_alignment;
+    Qt::Orientation m_orientation;
 
     const WaveformSignalColors* m_pColors;
     qreal m_axesColor_r, m_axesColor_g, m_axesColor_b, m_axesColor_a;

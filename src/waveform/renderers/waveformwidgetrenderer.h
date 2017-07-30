@@ -23,6 +23,7 @@ class WaveformWidgetRenderer {
   public:
     static const int s_waveformMinZoom;
     static const int s_waveformMaxZoom;
+    static const int s_waveformDefaultZoom;
 
   public:
     explicit WaveformWidgetRenderer(const char* group);
@@ -43,19 +44,21 @@ class WaveformWidgetRenderer {
 
     void setZoom(int zoom);
 
+    void setDisplayBeatGrid(bool set);
+
     double getVisualSamplePerPixel() const { return m_visualSamplePerPixel;};
     double getAudioSamplePerPixel() const { return m_audioSamplePerPixel;};
 
-    //those function replace at its best sample position to an admissible
-    //sample position according to the current visual resampling
-    //this make mark and signal deterministic
+    // those function replace at its best sample position to an admissible
+    // sample position according to the current visual resampling
+    // this make mark and signal deterministic
     void regulateVisualSample(int& sampleIndex) const;
 
-    //this "regulate" against visual sampling to make the position in widget
-    //stable and deterministic
+    // this "regulate" against visual sampling to make the position in widget
+    // stable and deterministic
     // Transform sample index to pixel in track.
-    inline double transformSampleIndexInRendererWorld(int sampleIndex) const {
-        const double relativePosition = (double)sampleIndex / (double)m_trackSamples;
+    inline double transformSamplePositionInRendererWorld(double samplePosition) const {
+        const double relativePosition = samplePosition / m_trackSamples;
         return transformPositionInRendererWorld(relativePosition);
     }
     // Transform position (percentage of track) to pixel in track.
@@ -70,9 +73,14 @@ class WaveformWidgetRenderer {
     double getGain() const { return m_gain;}
     int getTrackSamples() const { return m_trackSamples;}
 
+    bool isBeatGridEnabled() const { return m_enableBeatGrid; }
+
     void resize(int width, int height);
     int getHeight() const { return m_height;}
     int getWidth() const { return m_width;}
+    int getLength() const { return m_orientation == Qt::Horizontal ? m_width : m_height;}
+    int getBreadth() const { return m_orientation == Qt::Horizontal ? m_height : m_width;}
+    Qt::Orientation getOrientation() const { return m_orientation;}
     const WaveformSignalColors* getWaveformSignalColors() const { return &m_colors; };
 
     template< class T_Renderer>
@@ -88,6 +96,7 @@ class WaveformWidgetRenderer {
     const char* m_group;
     TrackPointer m_pTrack;
     QList<WaveformRendererAbstract*> m_rendererStack;
+    Qt::Orientation m_orientation;
     int m_height;
     int m_width;
     WaveformSignalColors m_colors;
@@ -100,6 +109,8 @@ class WaveformWidgetRenderer {
     double m_rateAdjust;
     double m_visualSamplePerPixel;
     double m_audioSamplePerPixel;
+
+    bool m_enableBeatGrid;
 
     //TODO: vRince create some class to manage control/value
     //ControlConnection
@@ -116,6 +127,7 @@ class WaveformWidgetRenderer {
     double m_gain;
     ControlProxy* m_pTrackSamplesControlObject;
     int m_trackSamples;
+    double m_scaleFactor;
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     PerformanceTimer* m_timer;

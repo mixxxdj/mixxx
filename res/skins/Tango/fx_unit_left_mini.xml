@@ -1,0 +1,201 @@
+<!--
+Description:
+  An effect chain widget.
+  * EffectSlots, with or without highlight/focus option
+  * mixer with Wet/Dry knob and Super knob
+  * Enable button
+Variables:
+  fxRack: Number of effect rack.
+  fxUnit: Number of effect unit.
+-->
+<Template>
+  <WidgetGroup><!-- EffectUnit -->
+    <ObjectName>EffectUnitLeftMini</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+
+      <WidgetGroup><!-- Effect _selector_meta_s * highlightable -->
+        <ObjectName>AlignRightCenter</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup><ObjectName>Spacer33</ObjectName><Size>0me,1min</Size></WidgetGroup>
+
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1max,1min</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>EffectSlotLeftHighlight</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+              <Template src="skin:fx_selector_meta_left.xml">
+                <SetVariable name="fxNum">1</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
+              <BindProperty>highlight</BindProperty>
+              <Transform><IsEqual>1</IsEqual></Transform>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>EffectSlotLeftHighlight</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+              <Template src="skin:fx_selector_meta_left.xml">
+                <SetVariable name="fxNum">2</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
+              <BindProperty>highlight</BindProperty>
+              <Transform><IsEqual>2</IsEqual></Transform>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>EffectSlotLeftHighlight</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+              <Template src="skin:fx_selector_meta_left.xml">
+                <SetVariable name="fxNum">3</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
+              <BindProperty>highlight</BindProperty>
+              <Transform><IsEqual>3</IsEqual></Transform>
+            </Connection>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey>[<Variable name="fxGroup"/>],show_focus</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Effect _selector_meta_s * highlightable -->
+
+      <WidgetGroup><!-- Effect _selector_meta_s * no highlight -->
+        <ObjectName>AlignRightCenter</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup><ObjectName>Spacer33</ObjectName><Size>0me,1min</Size></WidgetGroup>
+
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>EffectSlotLeft</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+              <Template src="skin:fx_selector_meta_left.xml">
+                <SetVariable name="fxNum">1</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>EffectSlotLeft</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+              <Template src="skin:fx_selector_meta_left.xml">
+                <SetVariable name="fxNum">2</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>EffectSlotLeft</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+              <Template src="skin:fx_selector_meta_left.xml">
+                <SetVariable name="fxNum">3</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey>[<Variable name="fxGroup"/>],show_focus</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform><Not/></Transform>
+        </Connection>
+      </WidgetGroup><!-- /Effect _selector_meta_s * no highlight -->
+
+      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>SuperWetDryContainer</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:knob_textless.xml">
+            <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
+            <SetVariable name="Size">30f,30f</SetVariable>
+            <SetVariable name="group">[<Variable name="fxGroup"/>]</SetVariable>
+            <SetVariable name="ConfigKey">super1</SetVariable>
+            <SetVariable name="Color">blue</SetVariable>
+          </Template>
+
+          <Template src="skin:knob_textless.xml">
+            <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
+            <SetVariable name="Size">30f,30f</SetVariable>
+            <SetVariable name="group">[<Variable name="fxGroup"/>]</SetVariable>
+            <SetVariable name="ConfigKey">mix</SetVariable>
+            <SetVariable name="Color">red</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup><!-- /SuperWetDryContainer -->
+
+      <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <Size>28f,30f</Size>
+        <Children>
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="ObjectName">FXSamplersMiniMaxiButton</SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
+            <SetVariable name="Size">28f,13f</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[<Variable name="fxGroup"/>],show_parameters</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
+
+          <Label>
+            <ObjectName>EffectUnitLabel</ObjectName>
+            <Size>28f,12f</Size>
+            <Text>FX<Variable name="fxUnit"/></Text>
+            <Alignment>center</Alignment>
+          </Label>
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup><!-- /EffectUnit -->
+</Template>

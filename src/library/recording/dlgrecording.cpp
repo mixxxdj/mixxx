@@ -34,13 +34,13 @@ DlgRecording::DlgRecording(QWidget* parent, UserSettingsPointer pConfig,
 
     connect(m_pRecordingManager, SIGNAL(isRecording(bool)),
             this, SLOT(slotRecordingEnabled(bool)));
-    connect(m_pRecordingManager, SIGNAL(bytesRecorded(long)),
-            this, SLOT(slotBytesRecorded(long)));
+    connect(m_pRecordingManager, SIGNAL(bytesRecorded(int)),
+            this, SLOT(slotBytesRecorded(int)));
     connect(m_pRecordingManager, SIGNAL(durationRecorded(QString)),
             this, SLOT(slotDurationRecorded(QString)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
-    DEBUG_ASSERT_AND_HANDLE(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
+    VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
     } else {
         box->removeWidget(m_pTrackTablePlaceholder);
         m_pTrackTablePlaceholder->hide();
@@ -69,6 +69,10 @@ void DlgRecording::onShow() {
     m_browseModel.setPath(m_recordingDir);
 }
 
+bool DlgRecording::hasFocus() const {
+    return QWidget::hasFocus();
+}
+
 void DlgRecording::refreshBrowseModel() {
      m_browseModel.setPath(m_recordingDir);
 }
@@ -85,12 +89,16 @@ void DlgRecording::loadSelectedTrack() {
     m_pTrackTableView->loadSelectedTrack();
 }
 
-void DlgRecording::slotSendToAutoDJ() {
-    m_pTrackTableView->slotSendToAutoDJ();
+void DlgRecording::slotSendToAutoDJBottom() {
+    m_pTrackTableView->slotSendToAutoDJBottom();
 }
 
 void DlgRecording::slotSendToAutoDJTop() {
     m_pTrackTableView->slotSendToAutoDJTop();
+}
+
+void DlgRecording::slotSendToAutoDJReplace() {
+    m_pTrackTableView->slotSendToAutoDJReplace();
 }
 
 void DlgRecording::loadSelectedTrackToGroup(QString group, bool play) {
@@ -129,7 +137,7 @@ void DlgRecording::slotRecordingEnabled(bool isRecording) {
 }
 
 // gets number of recorded bytes and update label
-void DlgRecording::slotBytesRecorded(long bytes) {
+void DlgRecording::slotBytesRecorded(int bytes) {
     double megabytes = bytes / 1048576.0;
     m_bytesRecordedStr = QString::number(megabytes,'f',2);
     refreshLabel();

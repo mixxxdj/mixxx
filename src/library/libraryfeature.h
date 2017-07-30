@@ -16,7 +16,7 @@
 #include <QFileDialog>
 
 #include "track/track.h"
-#include "treeitemmodel.h"
+#include "library/treeitemmodel.h"
 #include "library/coverartcache.h"
 #include "library/dao/trackdao.h"
 
@@ -66,8 +66,17 @@ class LibraryFeature : public QObject {
     virtual TreeItemModel* getChildModel() = 0;
 
   protected:
-    inline QStringList getPlaylistFiles() { return getPlaylistFiles(QFileDialog::ExistingFiles); }
-    inline QString getPlaylistFile() { return getPlaylistFiles(QFileDialog::ExistingFile).first(); }
+    QStringList getPlaylistFiles() const {
+        return getPlaylistFiles(QFileDialog::ExistingFiles);
+    }
+    QString getPlaylistFile() const {
+        const QStringList playListFiles = getPlaylistFiles();
+        if (playListFiles.isEmpty()) {
+            return QString(); // no file chosen
+        } else {
+            return playListFiles.first();
+        }
+    }
     UserSettingsPointer m_pConfig;
 
   public slots:
@@ -109,7 +118,7 @@ class LibraryFeature : public QObject {
     void trackSelected(TrackPointer pTrack);
 
   private: 
-    QStringList getPlaylistFiles(QFileDialog::FileMode mode);
+    QStringList getPlaylistFiles(QFileDialog::FileMode mode) const;
 
 };
 

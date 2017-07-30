@@ -7,7 +7,8 @@
 #include <QtDebug>
 #include <QtGlobal>
 
-struct CoverInfo {
+class CoverInfoRelative {
+  public:
     // DO NOT CHANGE THESE CONSTANT VALUES. THEY ARE STORED IN THE DATABASE.
     enum Source {
         // We don't know where we got this cover.
@@ -28,49 +29,81 @@ struct CoverInfo {
         FILE = 2
     };
 
-    CoverInfo() : source(UNKNOWN),
-                  type(NONE),
-                  coverLocation(QString()),
-                  trackLocation(QString()),
-                  // This default value is fine: qChecksum(NULL, 0) is 0.
-                  hash(0) {}
+    CoverInfoRelative();
 
-    bool operator==(const CoverInfo& other) const {
-        return other.source == source &&
-                other.type == type &&
-                other.coverLocation == coverLocation &&
-                other.trackLocation == trackLocation &&
-                other.hash == hash;
-    }
-    bool operator!=(const CoverInfo& other) const {
-        return !(*this == other);
-    }
+    // all-default memory management
+    CoverInfoRelative(const CoverInfoRelative&) = default;
+    CoverInfoRelative& operator=(const CoverInfoRelative&) = default;
+    virtual ~CoverInfoRelative() = default;
+// Visual Studio does not support default generated move constructors yet
+#if !defined(_MSC_VER) || _MSC_VER > 1900
+    CoverInfoRelative(CoverInfoRelative&&) = default;
+    CoverInfoRelative& operator=(CoverInfoRelative&&) = default;
+#endif
 
     Source source;
     Type type;
-    QString coverLocation;
-    QString trackLocation;
+    QString coverLocation; // relative path, from track location
     quint16 hash;
 };
 
-struct CoverArt {
-    CoverArt() {}
+bool operator==(const CoverInfoRelative& a, const CoverInfoRelative& b);
+bool operator!=(const CoverInfoRelative& a, const CoverInfoRelative& b);
+QDebug operator<<(QDebug dbg, const CoverInfoRelative& info);
 
-    bool operator==(const CoverArt& other) const {
-        // Only count image in the equality if both are non-null.
-        return other.info == info &&
-                (other.image.isNull() || image.isNull() ||
-                 other.image == image);
-    }
-    bool operator!=(const CoverArt& other) const {
-        return !(*this == other);
+class CoverInfo : public CoverInfoRelative {
+  public:
+    CoverInfo() {}
+
+    CoverInfo(const CoverInfoRelative& base, const QString& tl)
+        : CoverInfoRelative(base),
+          trackLocation(tl) {
     }
 
-    CoverInfo info;
-    QImage image;
+    // all-default memory management
+    CoverInfo(const CoverInfo&) = default;
+    CoverInfo& operator=(const CoverInfo&) = default;
+    virtual ~CoverInfo() override = default;
+// Visual Studio does not support default generated move constructors yet
+#if !defined(_MSC_VER) || _MSC_VER > 1900
+    CoverInfo(CoverInfo&&) = default;
+    CoverInfo& operator=(CoverInfo&&) = default;
+#endif
+
+    QString trackLocation;
 };
 
+bool operator==(const CoverInfo& a, const CoverInfo& b);
+bool operator!=(const CoverInfo& a, const CoverInfo& b);
 QDebug operator<<(QDebug dbg, const CoverInfo& info);
+
+class CoverArt : public CoverInfo {
+  public:
+    CoverArt()
+        : resizedToWidth(0) {
+    }
+
+    CoverArt(const CoverInfo& base, const QImage& img, int rtw)
+        : CoverInfo(base),
+          image(img),
+          resizedToWidth(rtw) {
+    }
+
+    // all-default memory management
+    CoverArt(const CoverArt&) = default;
+    virtual ~CoverArt() override = default;
+// Visual Studio does not support default generated move constructors yet
+#if !defined(_MSC_VER) || _MSC_VER > 1900
+    CoverArt(CoverArt&&) = default;
+    CoverArt& operator=(CoverArt&&) = default;
+#endif
+
+    // it is not a QPixmap, because it is not safe to use pixmaps 
+    // outside the GUI thread
+    QImage image; 
+    int resizedToWidth;
+};
+
 QDebug operator<<(QDebug dbg, const CoverArt& art);
 
 #endif /* COVERART_H */

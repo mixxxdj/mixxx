@@ -66,7 +66,7 @@ void SidebarModel::activateDefaultSelection() {
 QModelIndex SidebarModel::index(int row, int column,
                                 const QModelIndex& parent) const {
     // qDebug() << "SidebarModel::index row=" << row
-      //       << "column=" << column << "parent=" << parent.data();
+      //       << "column=" << column << "parent=" << parent.getData();
     if (parent.isValid()) {
         /* If we have selected the root of a library feature at position 'row'
          * its internal pointer is the current sidebar object model
@@ -85,14 +85,20 @@ QModelIndex SidebarModel::index(int row, int column,
             // We have selected an item within the childmodel
             // This item has always an internal pointer of (sub)type TreeItem
             TreeItem* tree_item = (TreeItem*)parent.internalPointer();
-            return createIndex(row, column, (void*) tree_item->child(row));
+            if (row < tree_item->childRows()) {
+                return createIndex(row, column, (void*) tree_item->child(row));
+            } else {
+                // Otherwise this row might have been removed just now
+                // (just a dirty workaround for unmaintainable GUI code)
+                return QModelIndex();
+            }
         }
     }
     return createIndex(row, column, (void*)this);
 }
 
 QModelIndex SidebarModel::parent(const QModelIndex& index) const {
-    //qDebug() << "SidebarModel::parent index=" << index.data();
+    //qDebug() << "SidebarModel::parent index=" << index.getData();
     if (index.isValid()) {
         // If we have selected the root of a library feature
         // its internal pointer is the current sidebar object model
@@ -108,8 +114,8 @@ QModelIndex SidebarModel::parent(const QModelIndex& index) const {
             // if we have selected an item at the first level of a childnode
 
             if (tree_item_parent) {
-                if (tree_item_parent->data() == "$root") {
-                    LibraryFeature* feature = tree_item->getFeature();
+                if (tree_item_parent->isRoot()) {
+                    LibraryFeature* feature = tree_item->feature();
                     for (int i = 0; i < m_sFeatures.size(); ++i) {
                         if (feature == m_sFeatures[i]) {
                             // create a ModelIndex for parent 'this' having a
@@ -119,7 +125,7 @@ QModelIndex SidebarModel::parent(const QModelIndex& index) const {
                     }
                 }
                 // if we have selected an item at some deeper level of a childnode
-                return createIndex(tree_item_parent->row(), 0 , tree_item_parent);
+                return createIndex(tree_item_parent->parentRow(), 0 , tree_item_parent);
             }
         }
     }
@@ -127,7 +133,7 @@ QModelIndex SidebarModel::parent(const QModelIndex& index) const {
 }
 
 int SidebarModel::rowCount(const QModelIndex& parent) const {
-    //qDebug() << "SidebarModel::rowCount parent=" << parent.data();
+    //qDebug() << "SidebarModel::rowCount parent=" << parent.getData();
     if (parent.isValid()) {
         if (parent.internalPointer() == this) {
             return m_sFeatures[parent.row()]->getChildModel()->rowCount();
@@ -135,7 +141,7 @@ int SidebarModel::rowCount(const QModelIndex& parent) const {
             // We support tree models deeper than 1 level
             TreeItem* tree_item = (TreeItem*)parent.internalPointer();
             if (tree_item) {
-                return tree_item->childCount();
+                return tree_item->childRows();
             }
             return 0;
         }
@@ -159,7 +165,7 @@ bool SidebarModel::hasChildren(const QModelIndex& parent) const {
         {
             TreeItem* tree_item = (TreeItem*)parent.internalPointer();
             if (tree_item) {
-                LibraryFeature* feature = tree_item->getFeature();
+                LibraryFeature* feature = tree_item->feature();
                 return feature->getChildModel()->hasChildren(parent);
             }
         }
@@ -189,17 +195,17 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
         TreeItem* tree_item = (TreeItem*)index.internalPointer();
         if (tree_item) {
             if (role == Qt::DisplayRole) {
-                return tree_item->data();
+                return tree_item->getLabel();
             } else if (role == Qt::ToolTipRole) {
                 // If it's the "Quick Links" node, display it's name
-                if (tree_item->dataPath() == QUICK_LINK_NODE) {
-                    return tree_item->data();
+                if (tree_item->getData().toString() == QUICK_LINK_NODE) {
+                    return tree_item->getLabel();
                 } else {
-                    return tree_item->dataPath();
+                    return tree_item->getData();
                 }
-            } else if (role == TreeItemModel::kDataPathRole) {
+            } else if (role == TreeItemModel::kDataRole) {
                 // We use Qt::UserRole to ask for the datapath.
-                return tree_item->dataPath();
+                return tree_item->getData();
             } else if (role == Qt::FontRole) {
                 QFont font;
                 font.setBold(tree_item->isBold());
@@ -228,7 +234,7 @@ void SidebarModel::clicked(const QModelIndex& index) {
         } else {
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
             if (tree_item) {
-                LibraryFeature* feature = tree_item->getFeature();
+                LibraryFeature* feature = tree_item->feature();
                 feature->activateChild(index);
             }
         }
@@ -241,7 +247,7 @@ void SidebarModel::doubleClicked(const QModelIndex& index) {
         } else {
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
             if (tree_item) {
-                LibraryFeature* feature = tree_item->getFeature();
+                LibraryFeature* feature = tree_item->feature();
                 feature->onLazyChildExpandation(index);
             }
         }
@@ -259,7 +265,7 @@ void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& inde
         {
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
             if (tree_item) {
-                LibraryFeature* feature = tree_item->getFeature();
+                LibraryFeature* feature = tree_item->feature();
                 feature->activateChild(index);
                 feature->onRightClickChild(globalPos, index);
             }
@@ -277,7 +283,7 @@ bool SidebarModel::dropAccept(const QModelIndex& index, QList<QUrl> urls,
         } else {
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
             if (tree_item) {
-                LibraryFeature* feature = tree_item->getFeature();
+                LibraryFeature* feature = tree_item->feature();
                 result = feature->dropAcceptChild(index, urls, pSource);
             }
         }
@@ -295,7 +301,7 @@ bool SidebarModel::dragMoveAccept(const QModelIndex& index, QUrl url) {
         } else {
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
             if (tree_item) {
-                LibraryFeature* feature = tree_item->getFeature();
+                LibraryFeature* feature = tree_item->feature();
                 result = feature->dragMoveAcceptChild(index, url);
             }
         }
@@ -315,7 +321,7 @@ QModelIndex SidebarModel::translateSourceIndex(const QModelIndex& index) {
      */
 
     const QAbstractItemModel* model = dynamic_cast<QAbstractItemModel*>(sender());
-    DEBUG_ASSERT_AND_HANDLE(model != NULL) {
+    VERIFY_OR_DEBUG_ASSERT(model != NULL) {
         return QModelIndex();
     }
 

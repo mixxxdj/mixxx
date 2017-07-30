@@ -1,0 +1,84 @@
+<!--
+Description:
+  An effect parameter knob with a 5 state button below
+  that controls SuperKnob linking type.
+Variables:
+  fxRack          : rack number
+  fxUnit          : unit number
+  fxGroup_fxNum   : EffectRack1_EffectUnitX_EffectY
+  fxNum           : effect number
+  fxKnobParameter : the parameter
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <Size>52f,45f</Size>
+    <Children>
+      <WidgetGroup>
+        <Layout>stacked</Layout>
+        <Size>52f,34f</Size>
+        <Children>
+
+          <WidgetGroup><!-- Effect parameter knob -->
+            <ObjectName>EffectKnobParameter</ObjectName>
+            <Layout>vertical</Layout>
+            <Size>51f,26f</Size>
+            <Children>
+              <Template src="skin:knob_textless.xml">
+                <SetVariable name="TooltipId">EffectSlot_parameter</SetVariable>
+                <SetVariable name="group"><Variable name="fxGroup_fxNum"/></SetVariable>
+                <SetVariable name="ConfigKey">parameter<Variable name="fxKnobParameter"/></SetVariable>
+                <SetVariable name="Size">26f,26f</SetVariable>
+                <SetVariable name="Color">fx_yellow</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup><!-- Name of paramter -->
+            <Size>51f,34f</Size>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+              <EffectParameterName>
+                <ObjectName>EffectKnobParameterName</ObjectName>
+                <Size>-1min,34f</Size>
+                <EffectRack><Variable name="fxRack"/></EffectRack>
+                <EffectUnit><Variable name="fxUnit"/></EffectUnit>
+                <Effect><Variable name="fxNum"/></Effect>
+                <EffectParameter><Variable name="fxKnobParameter"/></EffectParameter>
+                <Alignment>left</Alignment>
+              </EffectParameterName>
+              <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
+
+      <!-- Meta knob link button -->
+      <Template src="skin:button_5state.xml">
+        <SetVariable name="ObjectName">EffectLinkTypeButton</SetVariable>
+        <SetVariable name="TooltipId">EffectSlot_parameter_link_type</SetVariable>
+        <SetVariable name="Size">51f,5f</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="fxGroup_fxNum"/>,parameter<Variable name="fxKnobParameter"/>_link_type</SetVariable>
+      </Template>
+
+      <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
+
+      <!-- Meta knob link invert button -->
+      <Template src="skin:button_2state.xml">
+        <SetVariable name="ObjectName">EffectLinkInvertButton</SetVariable>
+        <SetVariable name="TooltipId">EffectSlot_parameter_inversion</SetVariable>
+        <SetVariable name="Size">51f,5f</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="fxGroup_fxNum"/>,parameter<Variable name="fxKnobParameter"/>_link_inverse</SetVariable>
+      </Template>
+
+    </Children>
+    <!-- show only if parameter is loaded -->
+    <Connection>
+      <ConfigKey><Variable name="fxGroup_fxNum"/>,parameter<Variable name="fxKnobParameter"/>_loaded</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

@@ -48,10 +48,6 @@ class EngineAux : public EngineChannel, public AudioDestination {
     // a soundcard input.
     virtual void onInputUnconfigured(AudioInput input);
 
-  private slots:
-    // Reject all change requests for input configured.
-    void slotInputConfiguredChangeRequest(double) {}
-
   private:
     EngineEffectsManager* m_pEngineEffectsManager;
     EngineVuMeter m_vuMeter;

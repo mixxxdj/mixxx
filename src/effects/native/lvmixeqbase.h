@@ -158,6 +158,82 @@ class LVMixEQEffectGroupState {
         }
     }
 
+    void processChannelAndPause(
+            const CSAMPLE* pInput, CSAMPLE* pOutput, const int numSamples) {
+
+        // Note: We do not call pauseFilter() here because this will introduce a
+        // buffer size-dependent start delay. During such start delay some unwanted
+        // frequencies are slipping though or wanted frequencies are damped.
+        // We know the exact group delay here so we can just hold off the ramping.
+        m_delay3->processAndPauseFilter(pInput, m_pHighBuf, numSamples);
+
+        if (m_oldMid) {
+            m_delay2->processAndPauseFilter(pInput, m_pBandBuf, numSamples);
+            m_low2->processAndPauseFilter(m_pBandBuf, m_pBandBuf, numSamples);
+        }
+
+        if (m_oldLow) {
+            m_low1->processAndPauseFilter(pInput, m_pLowBuf, numSamples);
+        }
+
+        SampleUtil::copy3WithRampingGain(pOutput,
+                m_pLowBuf, m_oldLow, 0.0,
+                m_pBandBuf, m_oldMid, 0.0,
+                m_pHighBuf, m_oldHigh, 1.0,
+                numSamples);
+    }
+
+    /*
+
+        int copySamples = 0;
+        int rampingSamples = numSamples;
+        if ((fLow && !m_oldLow) ||
+                (fMid && !m_oldMid) ||
+                (fHigh && !m_oldHigh)) {
+            // we have just switched at least one filter on
+            // Hold off ramping for the group delay
+            if (m_rampHoldOff == kRampDone) {
+                // multiply the group delay * 2 to ensure that the filter is
+                // settled it is actually at a factor of 1,8 at default setting
+                m_rampHoldOff = m_groupDelay * 2;
+                // ensure that we have at least 128 samples for ramping
+                // (the smallest buffer, that suits for de-clicking)
+                int rampingSamples = numSamples - (m_rampHoldOff % numSamples);
+                if (rampingSamples < 128) {
+                    m_rampHoldOff += rampingSamples;
+                }
+            }
+
+            // ramping is done in one of the following calls if
+            // pState->m_rampHoldOff >= numSamples;
+            copySamples = math_min<int>(m_rampHoldOff, numSamples);
+            m_rampHoldOff -= copySamples;
+            rampingSamples = numSamples - copySamples;
+
+            SampleUtil::copy3WithGain(pOutput,
+                    m_pLowBuf, m_oldLow,
+                    m_pBandBuf, m_oldMid,
+                    m_pHighBuf, m_oldHigh,
+                    copySamples);
+        }
+
+        if (rampingSamples) {
+            SampleUtil::copy3WithRampingGain(&pOutput[copySamples],
+                    &m_pLowBuf[copySamples], m_oldLow, fLow,
+                    &m_pBandBuf[copySamples], m_oldMid, fMid,
+                    &m_pHighBuf[copySamples], m_oldHigh, fHigh,
+                    rampingSamples);
+
+            m_oldLow = fLow;
+            m_oldMid = fMid;
+            m_oldHigh = fHigh;
+            m_rampHoldOff = kRampDone;
+
+        }
+    }
+
+*/
+
   private:
     LPF* m_low1;
     LPF* m_low2;

@@ -12,7 +12,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
           WBaseWidget(this) {
     setAcceptDrops(false);
     m_clearButton = new QToolButton(this);
-    QPixmap pixmap(":/skins/cross.png");
+    QPixmap pixmap(":/images/library/cross.png");
     m_clearButton->setIcon(QIcon(pixmap));
     m_clearButton->setIconSize(pixmap.size());
     m_clearButton->setCursor(Qt::ArrowCursor);

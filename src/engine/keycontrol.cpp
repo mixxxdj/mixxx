@@ -9,8 +9,9 @@
 #include "engine/enginebuffer.h"
 #include "track/keyutils.h"
 
-static const double kLockOriginalKey = 0;
+//static const double kLockOriginalKey = 0;
 static const double kLockCurrentKey = 1;
+static const double kKeepUnlockedKey = 1;
 
 KeyControl::KeyControl(QString group,
                        UserSettingsPointer pConfig)
@@ -71,6 +72,9 @@ KeyControl::KeyControl(QString group,
 
     m_keylockMode = new ControlPushButton(ConfigKey(group, "keylockMode"));
     m_keylockMode->setButtonMode(ControlPushButton::TOGGLE);
+
+    m_keyunlockMode = new ControlPushButton(ConfigKey(group, "keyunlockMode"));
+    m_keyunlockMode->setButtonMode(ControlPushButton::TOGGLE);
 
     // In case of vinyl control "rate" is a filtered mean value for display
     m_pRateSlider = ControlObject::getControl(ConfigKey(group, "rate"));
@@ -135,6 +139,7 @@ KeyControl::~KeyControl() {
     delete m_pEngineKey;
     delete m_pEngineKeyDistance;
     delete m_keylockMode;
+    delete m_keyunlockMode;
 }
 
 KeyControl::PitchTempoRatio KeyControl::getPitchTempoRatio() {
@@ -212,12 +217,22 @@ void KeyControl::updateRate() {
         // !bKeylock
         if (m_pitchRateInfo.keylock) {
             // Disabling Keylock
-            if (m_keylockMode->get() == kLockCurrentKey) {
-                // reset to linear pitch
-                m_pitchRateInfo.pitchTweakRatio = 1.0;
-                // For not resetting to linear pitch:
-                // Adopt speedPitchRatio change as pitchTweakRatio
-                //pitchRateInfo.pitchTweakRatio *= (m_speedSliderPitchRatio / pitchRateInfo.tempoRatio);
+            // If "Keep unlocked key" is enabled
+            if (m_keyunlockMode->get() == kKeepUnlockedKey) {
+                // don't reset to linear pitch, instead adopt speedSliderPitchRatio
+                // change as pitchTweakRatio
+                m_pitchRateInfo.pitchTweakRatio *=
+                 (speedSliderPitchRatio / m_pitchRateInfo.tempoRatio);
+                // adopt pitch_adjust now so that it doesn't jump and resets key
+                // when touching pitch_adjust knob after unlock with offset key
+                m_pPitchAdjust->set(
+                    KeyUtils::powerOf2ToSemitoneChange(m_pitchRateInfo.pitchTweakRatio));
+            } else {
+                // If 'current' aka 'not original' key was locked
+                if (m_keylockMode->get() == kLockCurrentKey) {
+                    // reset to linear pitch
+                    m_pitchRateInfo.pitchTweakRatio = 1.0;
+                }
             }
             m_pitchRateInfo.keylock = false;
         }

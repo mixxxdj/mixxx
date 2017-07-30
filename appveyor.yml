@@ -1,0 +1,76 @@
+---
+version: '{branch}-{build}'
+skip_tags: true
+max_jobs: 1
+image: Visual Studio 2015
+init:
+  - git config --global core.autocrlf input
+# Uncomment the following line to show RDP info at beginning of job
+#  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+clone_folder: c:\projects\mixxx
+skip_commits:
+  files:
+    - doc/
+    - LICENCE
+    - README
+    - README.md
+    - COPYING
+    - CODE_OF_CONDUCT.md
+
+configuration:
+  - release-fastbuild
+#  - release
+#  - debug
+environment:
+  ENVIRONMENTS_URL: https://downloads.mixxx.org/builds/buildserver/2.1.x-windows/
+  ENVIRONMENTS_PATH: C:\mixxx-buildserver
+  matrix:
+    - platform: x64
+      distdir: dist64
+    - platform: x86
+      distdir: dist32
+matrix:
+  fast_finish: false     # set this flag to true to immediately finish build once one of the jobs fails.
+cache:
+  - C:\mixxx-buildserver
+install:
+  - set /P ENVIRONMENT_NAME=<build/windows/golden_environment
+  - call set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:PLATFORM=%platform%%%
+  - call set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:CONFIGURATION=%configuration%%%
+  - cd %TEMP%
+  - echo *** Patching NSIS
+  - cd %APPVEYOR_BUILD_FOLDER%
+  - patch "C:\Program Files (x86)\NSIS\Include\MultiUser.nsh" < build\appveyor\NSIS.patch
+  - echo *** Downloading precompiled build environment if not in build-cache
+  - cd %APPVEYOR_BUILD_FOLDER%
+  - build\windows\install_buildenv.bat %ENVIRONMENTS_URL% %ENVIRONMENT_NAME% %ENVIRONMENTS_PATH%
+before_build:
+  - cd %APPVEYOR_BUILD_FOLDER%
+build_script:
+  - build\appveyor\build_mixxx.bat %platform% %configuration% %ENVIRONMENTS_PATH%\%ENVIRONMENT_NAME%
+test_script:
+  - echo *** Testing
+  # Calling mixxx-test under bash to have standard output
+  # and use stdbuf to unbuffer standard & error output
+  - bash -c "stdbuf -oL -eL %distdir%/mixxx-test.exe --gtest_output=xml:test_results.xml 2>&1"
+  - timeout 5 > NUL
+  - bash -c "stdbuf -oL -eL %distdir%/mixxx-test.exe --benchmark 2>&1"
+  - timeout 5 > NUL
+after_test:
+  - ps: (new-object net.webclient).UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\test_results.xml))
+artifacts:
+  - path: '*.exe'
+  - path: '*.msi'
+on_success:
+  - echo "*** SUCCESS ***"
+on_failure:
+  - echo "*** FAILURE ***"
+on_finish:
+  # Uncomment the following line if you don't want the build VM to be destroyed
+  # and be able to RDP on it until a special “lock” file on VM desktop is deleted
+  # The RDP session is limited by overall build time (60 min).
+#  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+  - echo "*** DONE ***"
+deploy:
+  - provider: Environment
+    name: downloads.mixxx.org

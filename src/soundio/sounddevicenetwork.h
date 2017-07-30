@@ -18,9 +18,9 @@ class SoundDeviceNetwork : public SoundDevice {
                        QSharedPointer<EngineNetworkStream> pNetworkStream);
     virtual ~SoundDeviceNetwork();
 
-    virtual Result open(bool isClkRefDevice, int syncBuffers);
+    virtual SoundDeviceError open(bool isClkRefDevice, int syncBuffers);
     virtual bool isOpen() const;
-    virtual Result close();
+    virtual SoundDeviceError close();
     virtual void readProcess();
     virtual void writeProcess();
     virtual QString getError() const;

@@ -27,7 +27,7 @@ static inline bool useAlignedAlloc() {
 }
 
 // static
-CSAMPLE* SampleUtil::alloc(int size) {
+CSAMPLE* SampleUtil::alloc(SINT size) {
     // To speed up vectorization we align our sample buffers to 16-byte (128
     // bit) boundaries so that vectorized loops doesn't have to do a serial
     // ramp-up before going parallel.
@@ -46,7 +46,7 @@ CSAMPLE* SampleUtil::alloc(int size) {
     // TODO(XXX): consider 32 byte alignement to optimize for AVX builds
     if (useAlignedAlloc()) {
 #ifdef _MSC_VER
-        return static_cast<CSAMPLE*>(_aligned_malloc(sizeof(CSAMPLE)*size, 16));
+        return static_cast<CSAMPLE*>(_aligned_malloc(sizeof(CSAMPLE) * size, 16));
 #else
         // This block will be only used on non-Windows platforms that don't
         // produce 16-byte aligned pointers via malloc. We allocate 16 bytes of
@@ -91,37 +91,37 @@ void SampleUtil::free(CSAMPLE* pBuffer) {
 
 // static
 void SampleUtil::applyGain(CSAMPLE* pBuffer, CSAMPLE_GAIN gain,
-        int iNumSamples) {
+        SINT numSamples) {
     if (gain == CSAMPLE_GAIN_ONE)
         return;
     if (gain == CSAMPLE_GAIN_ZERO) {
-        clear(pBuffer, iNumSamples);
+        clear(pBuffer, numSamples);
         return;
     }
 
     // note: LOOP VECTORIZED.
-    for (int i = 0; i < iNumSamples; ++i) {
+    for (SINT i = 0; i < numSamples; ++i) {
         pBuffer[i] *= gain;
     }
 }
 
 // static
 void SampleUtil::applyRampingGain(CSAMPLE* pBuffer, CSAMPLE_GAIN old_gain,
-        CSAMPLE_GAIN new_gain, int iNumSamples) {
+        CSAMPLE_GAIN new_gain, SINT numSamples) {
     if (old_gain == CSAMPLE_GAIN_ONE && new_gain == CSAMPLE_GAIN_ONE) {
         return;
     }
     if (old_gain == CSAMPLE_GAIN_ZERO && new_gain == CSAMPLE_GAIN_ZERO) {
-        clear(pBuffer, iNumSamples);
+        clear(pBuffer, numSamples);
         return;
     }
 
     const CSAMPLE_GAIN gain_delta = (new_gain - old_gain)
-            / CSAMPLE_GAIN(iNumSamples / 2);
+            / CSAMPLE_GAIN(numSamples / 2);
     if (gain_delta) {
         const CSAMPLE_GAIN start_gain = old_gain + gain_delta;
         // note: LOOP VECTORIZED.
-        for (int i = 0; i < iNumSamples / 2; ++i) {
+        for (int i = 0; i < numSamples / 2; ++i) {
             const CSAMPLE_GAIN gain = start_gain + gain_delta * i;
             // a loop counter i += 2 prevents vectorizing.
             pBuffer[i * 2] *= gain;
@@ -129,7 +129,7 @@ void SampleUtil::applyRampingGain(CSAMPLE* pBuffer, CSAMPLE_GAIN old_gain,
         }
     } else {
         // note: LOOP VECTORIZED.
-        for (int i = 0; i < iNumSamples; ++i) {
+        for (int i = 0; i < numSamples; ++i) {
             pBuffer[i] *= old_gain;
         }
     }
@@ -137,105 +137,111 @@ void SampleUtil::applyRampingGain(CSAMPLE* pBuffer, CSAMPLE_GAIN old_gain,
 
 // static
 void SampleUtil::applyAlternatingGain(CSAMPLE* pBuffer, CSAMPLE gain1,
-        CSAMPLE gain2, int iNumSamples) {
+        CSAMPLE gain2, SINT numSamples) {
     // This handles gain1 == CSAMPLE_GAIN_ONE && gain2 == CSAMPLE_GAIN_ONE as well.
     if (gain1 == gain2) {
-        return applyGain(pBuffer, gain1, iNumSamples);
+        return applyGain(pBuffer, gain1, numSamples);
     }
 
     // note: LOOP VECTORIZED.
-    for (int i = 0; i < iNumSamples / 2; ++i) {
+    for (SINT i = 0; i < numSamples / 2; ++i) {
         pBuffer[i * 2] *= gain1;
         pBuffer[i * 2 + 1] *= gain2;
     }
 }
 
 // static
-void SampleUtil::addWithGain(CSAMPLE* M_RESTRICT pDest, const CSAMPLE* M_RESTRICT pSrc,
-        CSAMPLE_GAIN gain, int iNumSamples) {
+void SampleUtil::addWithGain(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc,
+        CSAMPLE_GAIN gain, SINT numSamples) {
     if (gain == CSAMPLE_GAIN_ZERO) {
         return;
     }
 
     // note: LOOP VECTORIZED.
-    for (int i = 0; i < iNumSamples; ++i) {
+    for (SINT i = 0; i < numSamples; ++i) {
         pDest[i] += pSrc[i] * gain;
     }
 }
 
-void SampleUtil::addWithRampingGain(CSAMPLE* M_RESTRICT pDest, const CSAMPLE* M_RESTRICT pSrc,
+void SampleUtil::addWithRampingGain(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc,
         CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain,
-        int iNumSamples) {
+        SINT numSamples) {
     if (old_gain == CSAMPLE_GAIN_ZERO && new_gain == CSAMPLE_GAIN_ZERO) {
         return;
     }
 
     const CSAMPLE_GAIN gain_delta = (new_gain - old_gain)
-            / CSAMPLE_GAIN(iNumSamples / 2);
+            / CSAMPLE_GAIN(numSamples / 2);
     if (gain_delta) {
         const CSAMPLE_GAIN start_gain = old_gain + gain_delta;
         // note: LOOP VECTORIZED.
-        for (int i = 0; i < iNumSamples / 2; ++i) {
+        for (int i = 0; i < numSamples / 2; ++i) {
             const CSAMPLE_GAIN gain = start_gain + gain_delta * i;
             pDest[i * 2] += pSrc[i * 2] * gain;
             pDest[i * 2 + 1] += pSrc[i * 2 + 1] * gain;
         }
     } else {
         // note: LOOP VECTORIZED.
-        for (int i = 0; i < iNumSamples; ++i) {
+        for (int i = 0; i < numSamples; ++i) {
             pDest[i] += pSrc[i] * old_gain;
         }
     }
 }
 
 // static
-void SampleUtil::add2WithGain(CSAMPLE* M_RESTRICT pDest, const CSAMPLE* M_RESTRICT pSrc1,
-        CSAMPLE_GAIN gain1, const CSAMPLE* M_RESTRICT pSrc2, CSAMPLE_GAIN gain2,
-        int iNumSamples) {
+void SampleUtil::add2WithGain(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc1, CSAMPLE_GAIN gain1,
+        const CSAMPLE* M_RESTRICT pSrc2, CSAMPLE_GAIN gain2,
+        SINT numSamples) {
     if (gain1 == CSAMPLE_GAIN_ZERO) {
-        return addWithGain(pDest, pSrc2, gain2, iNumSamples);
+        return addWithGain(pDest, pSrc2, gain2, numSamples);
     } else if (gain2 == CSAMPLE_GAIN_ZERO) {
-        return addWithGain(pDest, pSrc1, gain1, iNumSamples);
+        return addWithGain(pDest, pSrc1, gain1, numSamples);
     }
 
     // note: LOOP VECTORIZED.
-    for (int i = 0; i < iNumSamples; ++i) {
+    for (int i = 0; i < numSamples; ++i) {
         pDest[i] += pSrc1[i] * gain1 + pSrc2[i] * gain2;
     }
 }
 
 // static
-void SampleUtil::add3WithGain(CSAMPLE* pDest, const CSAMPLE* M_RESTRICT pSrc1,
-        CSAMPLE_GAIN gain1, const CSAMPLE* M_RESTRICT pSrc2, CSAMPLE_GAIN gain2,
-        const CSAMPLE* M_RESTRICT pSrc3, CSAMPLE_GAIN gain3, int iNumSamples) {
+void SampleUtil::add3WithGain(CSAMPLE* pDest,
+        const CSAMPLE* M_RESTRICT pSrc1, CSAMPLE_GAIN gain1,
+        const CSAMPLE* M_RESTRICT pSrc2, CSAMPLE_GAIN gain2,
+        const CSAMPLE* M_RESTRICT pSrc3, CSAMPLE_GAIN gain3,
+        SINT numSamples) {
     if (gain1 == CSAMPLE_GAIN_ZERO) {
-        return add2WithGain(pDest, pSrc2, gain2, pSrc3, gain3, iNumSamples);
+        return add2WithGain(pDest, pSrc2, gain2, pSrc3, gain3, numSamples);
     } else if (gain2 == CSAMPLE_GAIN_ZERO) {
-        return add2WithGain(pDest, pSrc1, gain1, pSrc3, gain3, iNumSamples);
+        return add2WithGain(pDest, pSrc1, gain1, pSrc3, gain3, numSamples);
     } else if (gain3 == CSAMPLE_GAIN_ZERO) {
-        return add2WithGain(pDest, pSrc1, gain1, pSrc2, gain2, iNumSamples);
+        return add2WithGain(pDest, pSrc1, gain1, pSrc2, gain2, numSamples);
     }
 
     // note: LOOP VECTORIZED.
-    for (int i = 0; i < iNumSamples; ++i) {
+    for (SINT i = 0; i < numSamples; ++i) {
         pDest[i] += pSrc1[i] * gain1 + pSrc2[i] * gain2 + pSrc3[i] * gain3;
     }
 }
 
 // static
-void SampleUtil::copyWithGain(CSAMPLE* M_RESTRICT pDest, const CSAMPLE* M_RESTRICT pSrc,
-        CSAMPLE_GAIN gain, int iNumSamples) {
+void SampleUtil::copyWithGain(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc,
+        CSAMPLE_GAIN gain, SINT numSamples) {
     if (gain == CSAMPLE_GAIN_ONE) {
-        copy(pDest, pSrc, iNumSamples);
+        copy(pDest, pSrc, numSamples);
         return;
     }
     if (gain == CSAMPLE_GAIN_ZERO) {
-        clear(pDest, iNumSamples);
+        clear(pDest, numSamples);
         return;
     }
 
     // note: LOOP VECTORIZED.
-    for (int i = 0; i < iNumSamples; ++i) {
+    for (SINT i = 0; i < numSamples; ++i) {
         pDest[i] = pSrc[i] * gain;
     }
 
@@ -245,30 +251,33 @@ void SampleUtil::copyWithGain(CSAMPLE* M_RESTRICT pDest, const CSAMPLE* M_RESTRI
 }
 
 // static
-void SampleUtil::copyWithRampingGain(CSAMPLE* M_RESTRICT pDest, const CSAMPLE* M_RESTRICT pSrc,
-        CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain, int iNumSamples) {
+void SampleUtil::copyWithRampingGain(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc,
+        CSAMPLE_GAIN old_gain,
+        CSAMPLE_GAIN new_gain,
+        SINT numSamples) {
     if (old_gain == CSAMPLE_GAIN_ONE && new_gain == CSAMPLE_GAIN_ONE) {
-        copy(pDest, pSrc, iNumSamples);
+        copy(pDest, pSrc, numSamples);
         return;
     }
     if (old_gain == CSAMPLE_GAIN_ZERO && new_gain == CSAMPLE_GAIN_ZERO) {
-        clear(pDest, iNumSamples);
+        clear(pDest, numSamples);
         return;
     }
 
     const CSAMPLE_GAIN gain_delta = (new_gain - old_gain)
-            / CSAMPLE_GAIN(iNumSamples / 2);
+            / CSAMPLE_GAIN(numSamples / 2);
     if (gain_delta) {
         const CSAMPLE_GAIN start_gain = old_gain + gain_delta;
-        // note: LOOP VECTORIZED.
-        for (int i = 0; i < iNumSamples / 2; ++i) {
+        // note: LOOP VECTORIZED only with "int i"
+        for (int i = 0; i < numSamples / 2; ++i) {
             const CSAMPLE_GAIN gain = start_gain + gain_delta * i;
             pDest[i * 2] = pSrc[i * 2] * gain;
             pDest[i * 2 + 1] = pSrc[i * 2 + 1] * gain;
         }
     } else {
         // note: LOOP VECTORIZED.
-        for (int i = 0; i < iNumSamples; ++i) {
+        for (SINT i = 0; i < numSamples; ++i) {
             pDest[i] = pSrc[i] * old_gain;
         }
     }
@@ -279,39 +288,40 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* M_RESTRICT pDest, const CSAMPLE* M
 }
 
 // static
-void SampleUtil::convertS16ToFloat32(CSAMPLE* M_RESTRICT pDest, const SAMPLE* M_RESTRICT pSrc,
-        int iNumSamples) {
+void SampleUtil::convertS16ToFloat32(CSAMPLE* M_RESTRICT pDest,
+        const SAMPLE* M_RESTRICT pSrc, SINT numSamples) {
     // SAMPLE_MIN = -32768 is a valid low sample, whereas SAMPLE_MAX = 32767
     // is the highest valid sample. Note that this means that although some
     // sample values convert to -1.0, none will convert to +1.0.
     DEBUG_ASSERT(-SAMPLE_MIN >= SAMPLE_MAX);
     const CSAMPLE kConversionFactor = -SAMPLE_MIN;
     // note: LOOP VECTORIZED.
-    for (int i = 0; i < iNumSamples; ++i) {
+    for (SINT i = 0; i < numSamples; ++i) {
         pDest[i] = CSAMPLE(pSrc[i]) / kConversionFactor;
     }
 }
 
 //static
 void SampleUtil::convertFloat32ToS16(SAMPLE* pDest, const CSAMPLE* pSrc,
-        unsigned int iNumSamples) {
+        SINT numSamples) {
     DEBUG_ASSERT(-SAMPLE_MIN >= SAMPLE_MAX);
     const CSAMPLE kConversionFactor = -SAMPLE_MIN;
-    for (unsigned int i = 0; i < iNumSamples; ++i) {
+    // note: LOOP VECTORIZED only with "int i"
+    for (int i = 0; i < numSamples; ++i) {
         pDest[i] = SAMPLE(pSrc[i] * kConversionFactor);
     }
 }
 
 // static
-SampleUtil::CLIP_STATUS SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
-        const CSAMPLE* pBuffer, int iNumSamples) {
+SampleUtil::CLIP_STATUS SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL,
+        CSAMPLE* pfAbsR, const CSAMPLE* pBuffer, SINT numSamples) {
     CSAMPLE fAbsL = CSAMPLE_ZERO;
     CSAMPLE fAbsR = CSAMPLE_ZERO;
     CSAMPLE clippedL = 0;
     CSAMPLE clippedR = 0;
 
     // note: LOOP VECTORIZED.
-    for (int i = 0; i < iNumSamples / 2; ++i) {
+    for (SINT i = 0; i < numSamples / 2; ++i) {
         CSAMPLE absl = fabs(pBuffer[i * 2]);
         fAbsL += absl;
         clippedL += absl > CSAMPLE_PEAK ? 1 : 0;
@@ -334,29 +344,33 @@ SampleUtil::CLIP_STATUS SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* p
 }
 
 // static
-void SampleUtil::copyClampBuffer(CSAMPLE* M_RESTRICT pDest, const CSAMPLE* M_RESTRICT pSrc,
-        int iNumSamples) {
+void SampleUtil::copyClampBuffer(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc, SINT iNumSamples) {
     // note: LOOP VECTORIZED.
-    for (int i = 0; i < iNumSamples; ++i) {
+    for (SINT i = 0; i < iNumSamples; ++i) {
         pDest[i] = clampSample(pSrc[i]);
     }
 }
 
 // static
-void SampleUtil::interleaveBuffer(CSAMPLE* M_RESTRICT pDest, const CSAMPLE* M_RESTRICT pSrc1,
-        const CSAMPLE* M_RESTRICT pSrc2, int iNumSamples) {
+void SampleUtil::interleaveBuffer(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc1,
+        const CSAMPLE* M_RESTRICT pSrc2,
+        SINT numFrames) {
     // note: LOOP VECTORIZED.
-    for (int i = 0; i < iNumSamples; ++i) {
+    for (SINT i = 0; i < numFrames; ++i) {
         pDest[2 * i] = pSrc1[i];
         pDest[2 * i + 1] = pSrc2[i];
     }
 }
 
 // static
-void SampleUtil::deinterleaveBuffer(CSAMPLE* pDest1, CSAMPLE* pDest2,
-        const CSAMPLE* pSrc, int iNumSamples) {
+void SampleUtil::deinterleaveBuffer(CSAMPLE* M_RESTRICT pDest1,
+        CSAMPLE* M_RESTRICT pDest2,
+        const CSAMPLE* M_RESTRICT pSrc,
+        SINT numFrames) {
     // note: LOOP VECTORIZED.
-    for (int i = 0; i < iNumSamples; ++i) {
+    for (SINT i = 0; i < numFrames; ++i) {
         pDest1[i] = pSrc[i * 2];
         pDest2[i] = pSrc[i * 2 + 1];
     }
@@ -365,11 +379,11 @@ void SampleUtil::deinterleaveBuffer(CSAMPLE* pDest1, CSAMPLE* pDest2,
 // static
 void SampleUtil::linearCrossfadeBuffers(CSAMPLE* pDest,
         const CSAMPLE* pSrcFadeOut, const CSAMPLE* pSrcFadeIn,
-        int iNumSamples) {
+        SINT numSamples) {
     const CSAMPLE_GAIN cross_inc = CSAMPLE_GAIN_ONE
-            / CSAMPLE_GAIN(iNumSamples / 2);
-    // note: LOOP VECTORIZED.
-    for (int i = 0; i < iNumSamples / 2; ++i) {
+            / CSAMPLE_GAIN(numSamples / 2);
+    // note: LOOP VECTORIZED. only with "int i"
+    for (int i = 0; i < numSamples / 2; ++i) {
         const CSAMPLE_GAIN cross_mix = cross_inc * i;
         pDest[i * 2] = pSrcFadeIn[i * 2] * cross_mix
                 + pSrcFadeOut[i * 2] * (CSAMPLE_GAIN_ONE - cross_mix);
@@ -381,20 +395,20 @@ void SampleUtil::linearCrossfadeBuffers(CSAMPLE* pDest,
 
 // static
 void SampleUtil::mixStereoToMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
-        int iNumSamples) {
+        SINT numSamples) {
     const CSAMPLE_GAIN mixScale = CSAMPLE_GAIN_ONE
             / (CSAMPLE_GAIN_ONE + CSAMPLE_GAIN_ONE);
     // note: LOOP VECTORIZED
-    for (int i = 0; i < iNumSamples / 2; ++i) {
+    for (SINT i = 0; i < numSamples / 2; ++i) {
         pDest[i * 2] = (pSrc[i * 2] + pSrc[i * 2 + 1]) * mixScale;
         pDest[i * 2 + 1] = pDest[i * 2];
     }
 }
 
 // static
-void SampleUtil::doubleMonoToDualMono(CSAMPLE* pBuffer, int numFrames) {
+void SampleUtil::doubleMonoToDualMono(CSAMPLE* pBuffer, SINT numFrames) {
     // backward loop
-    int i = numFrames;
+    SINT i = numFrames;
     // Unvectorizable Loop
     while (0 < i--) {
         const CSAMPLE s = pBuffer[i];
@@ -404,11 +418,11 @@ void SampleUtil::doubleMonoToDualMono(CSAMPLE* pBuffer, int numFrames) {
 }
 
 // static
-void SampleUtil::copyMonoToDualMono(CSAMPLE* M_RESTRICT pDest, const CSAMPLE* M_RESTRICT pSrc,
-        int numFrames) {
+void SampleUtil::copyMonoToDualMono(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc, SINT numFrames) {
     // forward loop
     // note: LOOP VECTORIZED
-    for (int i = 0; i < numFrames; ++i) {
+    for (SINT i = 0; i < numFrames; ++i) {
         const CSAMPLE s = pSrc[i];
         pDest[i * 2] = s;
         pDest[i * 2 + 1] = s;
@@ -416,20 +430,21 @@ void SampleUtil::copyMonoToDualMono(CSAMPLE* M_RESTRICT pDest, const CSAMPLE* M_
 }
 
 // static
-void SampleUtil::stripMultiToStereo(CSAMPLE* pBuffer, int numFrames,
+void SampleUtil::stripMultiToStereo(CSAMPLE* pBuffer, SINT numFrames,
         int numChannels) {
     // forward loop
-    for (int i = 0; i < numFrames; ++i) {
+    for (SINT i = 0; i < numFrames; ++i) {
         pBuffer[i * 2] = pBuffer[i * numChannels];
         pBuffer[i * 2 + 1] = pBuffer[i * numChannels + 1];
     }
 }
 
 // static
-void SampleUtil::copyMultiToStereo(CSAMPLE* M_RESTRICT pDest, const CSAMPLE* M_RESTRICT pSrc,
-        int numFrames, int numChannels) {
+void SampleUtil::copyMultiToStereo(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc,
+        SINT numFrames, int numChannels) {
     // forward loop
-    for (int i = 0; i < numFrames; ++i) {
+    for (SINT i = 0; i < numFrames; ++i) {
         pDest[i * 2] = pSrc[i * numChannels];
         pDest[i * 2 + 1] = pSrc[i * numChannels + 1];
     }
@@ -437,9 +452,9 @@ void SampleUtil::copyMultiToStereo(CSAMPLE* M_RESTRICT pDest, const CSAMPLE* M_R
 
 
 // static
-void SampleUtil::reverse(CSAMPLE* pBuffer, int iNumSamples) {
-    for (int j = 0; j < iNumSamples / 4; ++j) {
-        const int endpos = (iNumSamples - 1) - j * 2 ;
+void SampleUtil::reverse(CSAMPLE* pBuffer, SINT numSamples) {
+    for (SINT j = 0; j < numSamples / 4; ++j) {
+        const SINT endpos = (numSamples - 1) - j * 2 ;
         CSAMPLE temp1 = pBuffer[j * 2];
         CSAMPLE temp2 = pBuffer[j * 2 + 1];
         pBuffer[j * 2] = pBuffer[endpos - 1];
@@ -450,10 +465,10 @@ void SampleUtil::reverse(CSAMPLE* pBuffer, int iNumSamples) {
 }
 
 // static
-void SampleUtil::copyReverse(CSAMPLE* M_RESTRICT pDest, const CSAMPLE* M_RESTRICT pSrc,
-        int iNumSamples) {
-    for (int j = 0; j < iNumSamples / 2; ++j) {
-        const int endpos = (iNumSamples - 1) - j * 2;
+void SampleUtil::copyReverse(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc, SINT numSamples) {
+    for (SINT j = 0; j < numSamples / 2; ++j) {
+        const int endpos = (numSamples - 1) - j * 2;
         pDest[j * 2] = pSrc[endpos - 1];
         pDest[j * 2 + 1] = pSrc[endpos];
     }

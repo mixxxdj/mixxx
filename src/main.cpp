@@ -36,6 +36,27 @@
 #include <X11/Xlib.h>
 #endif
 
+namespace {
+
+int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
+    int result = -1;
+    MixxxMainWindow mainWindow(app, args);
+    // If startup produced a fatal error, then don't even start the
+    // Qt event loop.
+    if (ErrorDialogHandler::instance()->checkError()) {
+        mainWindow.finalize();
+    } else {
+        qDebug() << "Displaying main window";
+        mainWindow.show();
+
+        qDebug() << "Running Mixxx";
+        result = app->exec();
+    }
+    return result;
+}
+
+} // anonymous namespace
+
 int main(int argc, char * argv[]) {
     Console console;
 
@@ -66,9 +87,10 @@ int main(int argc, char * argv[]) {
     // ErrorDialogHandler::errorDialog(). TODO(XXX): Remove this hack.
     QThread::currentThread()->setObjectName("Main");
 
-    mixxx::Logging::initialize();
+    mixxx::Logging::initialize(args.getSettingsPath(),
+                               args.getLogLevel(), args.getDebugAssertBreak());
 
-    MixxxApplication a(argc, argv);
+    MixxxApplication app(argc, argv);
 
     // Support utf-8 for all translation strings. Not supported in Qt 5.
     // TODO(rryan): Is this needed when we switch to qt5? Some sources claim it
@@ -97,26 +119,10 @@ int main(int argc, char * argv[]) {
     }
 #endif
 
-    MixxxMainWindow* mixxx = new MixxxMainWindow(&a, args);
-
     // When the last window is closed, terminate the Qt event loop.
-    QObject::connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
+    QObject::connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
 
-    int result = -1;
-
-    // If startup produced a fatal error, then don't even start the Qt event
-    // loop.
-    if (ErrorDialogHandler::instance()->checkError()) {
-        mixxx->finalize();
-    } else {
-        qDebug() << "Displaying mixxx";
-        mixxx->show();
-
-        qDebug() << "Running Mixxx";
-        result = a.exec();
-    }
-
-    delete mixxx;
+    int result = runMixxx(&app, args);
 
     qDebug() << "Mixxx shutdown complete with code" << result;
 

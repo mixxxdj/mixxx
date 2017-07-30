@@ -6,7 +6,7 @@ EngineEffect::EngineEffect(const EffectManifest& manifest,
                            const QSet<ChannelHandleAndGroup>& registeredChannels,
                            EffectInstantiatorPointer pInstantiator)
         : m_manifest(manifest),
-          m_enableState(EffectProcessor::ENABLING),
+          m_enableState(EffectProcessor::DISABLED),
           m_parameters(manifest.parameters().size()) {
     const QList<EffectManifestParameter>& parameters = m_manifest.parameters();
     for (int i = 0; i < parameters.size(); ++i) {
@@ -105,12 +105,14 @@ void EngineEffect::process(const ChannelHandle& handle,
     if (!m_effectRampsFromDry) {
         // the effect does not fade, so we care for it
         if (effectiveEnableState == EffectProcessor::DISABLING) {
+            DEBUG_ASSERT(pInput != pOutput); // Fade to dry only works if pInput is not touched by pOutput
             // Fade out (fade to dry signal)
             SampleUtil::copy2WithRampingGain(pOutput,
                     pInput, 0.0, 1.0,
                     pOutput, 1.0, 0.0,
                     numSamples);
         } else if (effectiveEnableState == EffectProcessor::ENABLING) {
+            DEBUG_ASSERT(pInput != pOutput); // Fade to dry only works if pInput is not touched by pOutput
             // Fade in (fade to wet signal)
             SampleUtil::copy2WithRampingGain(pOutput,
                     pInput, 1.0, 0.0,

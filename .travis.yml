@@ -7,7 +7,7 @@ matrix:
       compiler: gcc
 
     - os: osx
-      osx_image: xcode7.2
+      osx_image: xcode7.3
       compiler: clang
 # install dependencies
 addons:
@@ -15,6 +15,8 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
+      - gdb
+      - libavformat-dev
       - libchromaprint-dev
       - libfaad-dev
       - libfftw3-dev
@@ -27,6 +29,7 @@ addons:
       - libportmidi-dev
       - libprotobuf-dev
       - libqt4-dev
+      - libqt4-opengl-dev
       - libqt4-sql-sqlite
       - librubberband-dev
       - libshout3-dev
@@ -46,14 +49,14 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export DISPLAY=:99.0         ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sh -e /etc/init.d/xvfb start ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install scons portaudio libsndfile libogg libvorbis portmidi taglib libshout protobuf flac libjpeg qt chromaprint rubberband fftw libmodplug libid3tag libmad mp4v2 faad2 wavpack opusfile; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install scons portaudio libsndfile libogg libvorbis portmidi taglib libshout protobuf flac ffmpeg libjpeg qt chromaprint rubberband fftw libmodplug libid3tag libmad mp4v2 faad2 wavpack opusfile; fi
 
 install:
   ####
   # Common
 
   # Build flags common to OS X and Linux.
-  - export COMMON="test=1 localecompare=1 mad=1 faad=1 opus=1 modplug=1 wv=1 hss1394=0 virtualize=0"
+  - export COMMON="test=1 mad=1 faad=1 ffmpeg=1 opus=1 modplug=1 wv=1 hss1394=0 virtualize=0 debug_assertions_fatal=1"
 
   #####
   # Ubuntu Trusty Build
@@ -61,7 +64,7 @@ install:
   ####
   # OS X Build
 
-  # Define QTDIR.
+  # Define QTDIR. Homebrew does not support Qt4 anymore, so /usr/local/Cellar/qt stores Qt5 installs.
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export QTDIR=$(find /usr/local/Cellar/qt -d 1 | tail -n 1) ; fi
 
   # Workaround for bug in libopus's opus.h including <opus_multistream.h>
@@ -69,13 +72,18 @@ install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CXXFLAGS="-isystem /usr/local/include/opus" ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CFLAGS="-isystem /usr/local/include/opus" ; fi
 
-  # We support OS X 10.7 by default.
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export ARCH_FLAGS="osx_sdk_version_min=10.7" ; fi
+  # NOTE(rryan): 11/15/2016 we are experiencing Travis timeouts for the OSX
+  # build.  Turning off optimizations to see if that speeds up compile times. We
+  # also need to avoid going over 4MB of output so we turn off verbose mode.
+  # NOTE(rryan): 12/31/2016 Homebrew has dropped qt4 support. Build with qt5.
+  # TODO(rryan): localecompare doesn't work on Travis with qt5 for some reason.
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export EXTRA_FLAGS="optimize=none asan=0 verbose=0 qt5=1 localecompare=0" ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export EXTRA_FLAGS="localecompare=1" ; fi
 
   ####
   # Common Build
-
-  - scons $COMMON $ARCH_FLAGS
+  - scons $COMMON $EXTRA_FLAGS
 
 script:
-  - ./mixxx-test
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then gdb --batch -ex run -ex "thread apply all bt full" -ex quit ./mixxx-test ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then lldb ./mixxx-test --batch -o run -o quit -k 'thread backtrace all' -k quit ; fi

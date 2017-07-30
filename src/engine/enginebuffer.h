@@ -146,8 +146,8 @@ class EngineBuffer : public EngineObject {
     void setScalerForTest(EngineBufferScale* pScaleVinyl,
                           EngineBufferScale* pScaleKeylock);
 
-    // For dependency injection of fake tracks, with an optional filebpm value.
-    TrackPointer loadFakeTrack(double filebpm = 0);
+    // For injection of fake tracks.
+    void loadFakeTrack(TrackPointer pTrack, bool bPlay);
 
     static QString getKeylockEngineName(KeylockEngine engine) {
         switch (engine) {
@@ -231,9 +231,12 @@ class EngineBuffer : public EngineObject {
     UserSettingsPointer m_pConfig;
 
     LoopingControl* m_pLoopingControl;
-    FRIEND_TEST(LoopingControlTest, LoopHalveButton_HalvesLoop);
+    FRIEND_TEST(LoopingControlTest, LoopScale_HalvesLoop);
     FRIEND_TEST(LoopingControlTest, LoopMoveTest);
     FRIEND_TEST(LoopingControlTest, LoopResizeSeek);
+    FRIEND_TEST(LoopingControlTest, ReloopToggleButton_DoesNotJumpAhead);
+    FRIEND_TEST(LoopingControlTest, ReloopAndStopButton);
+    FRIEND_TEST(LoopingControlTest, Beatjump_JumpsByBeats);
     FRIEND_TEST(SyncControlTest, TestDetermineBpmMultiplier);
     FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
     FRIEND_TEST(EngineSyncTest, HalfDoubleThenPlay);
@@ -332,6 +335,7 @@ class EngineBuffer : public EngineObject {
     ControlProxy* m_pPassthroughEnabled;
 
     ControlPushButton* m_pEject;
+    ControlObject* m_pTrackLoaded;
 
     // Whether or not to repeat the track when at the end
     ControlPushButton* m_pRepeat;

@@ -142,7 +142,7 @@ SoundDevicePortAudio::~SoundDevicePortAudio() {
     delete m_pMasterAudioLatencyOverload;
 }
 
-Result SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers) {
+SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers) {
     qDebug() << "SoundDevicePortAudio::open()" << getInternalName();
     PaError err;
 
@@ -150,7 +150,7 @@ Result SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers) {
         m_lastError = QString::fromAscii(
                 "No inputs or outputs in SDPA::open() "
                 "(THIS IS A BUG, this should be filtered by SM::setupDevices)");
-        return ERR;
+        return SOUNDDEVICE_ERROR_ERR;
     }
 
     memset(&m_outputParams, 0, sizeof(m_outputParams));
@@ -318,7 +318,7 @@ Result SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers) {
     if (err != paNoError) {
         qWarning() << "Error opening stream:" << Pa_GetErrorText(err);
         m_lastError = QString::fromUtf8(Pa_GetErrorText(err));
-        return ERR;
+        return SOUNDDEVICE_ERROR_ERR;
     } else {
         qDebug() << "Opened PortAudio stream successfully... starting";
     }
@@ -351,7 +351,7 @@ Result SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers) {
             qWarning() << "PortAudio: Close stream error:"
                        << Pa_GetErrorText(err) << getInternalName();
         }
-        return ERR;
+        return SOUNDDEVICE_ERROR_ERR;
     } else {
         qDebug() << "PortAudio: Started stream successfully";
     }
@@ -377,14 +377,14 @@ Result SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers) {
         m_invalidTimeInfoCount = 0;
     }
     m_pStream = pStream;
-    return OK;
+    return SOUNDDEVICE_ERROR_OK;
 }
 
 bool SoundDevicePortAudio::isOpen() const {
     return m_pStream != NULL;
 }
 
-Result SoundDevicePortAudio::close() {
+SoundDeviceError SoundDevicePortAudio::close() {
     //qDebug() << "SoundDevicePortAudio::close()" << getInternalName();
     PaStream* pStream = m_pStream;
     m_pStream = NULL;
@@ -394,13 +394,13 @@ Result SoundDevicePortAudio::close() {
         // 1 means the stream is stopped. 0 means active.
         if (err == 1) {
             //qDebug() << "PortAudio: Stream already stopped, but no error.";
-            return OK;
+            return SOUNDDEVICE_ERROR_OK;
         }
         // Real PaErrors are always negative.
         if (err < 0) {
             qWarning() << "PortAudio: Stream already stopped:"
                        << Pa_GetErrorText(err) << getInternalName();
-            return ERR;
+            return SOUNDDEVICE_ERROR_ERR;
         }
 
         //Stop the stream.
@@ -416,7 +416,7 @@ Result SoundDevicePortAudio::close() {
         if (err != paNoError) {
             qWarning() << "PortAudio: Stop stream error:"
                        << Pa_GetErrorText(err) << getInternalName();
-            return ERR;
+            return SOUNDDEVICE_ERROR_ERR;
         }
 
         // Close stream
@@ -424,7 +424,7 @@ Result SoundDevicePortAudio::close() {
         if (err != paNoError) {
             qWarning() << "PortAudio: Close stream error:"
                        << Pa_GetErrorText(err) << getInternalName();
-            return ERR;
+            return SOUNDDEVICE_ERROR_ERR;
         }
 
         if (m_outputFifo) {
@@ -439,7 +439,7 @@ Result SoundDevicePortAudio::close() {
     m_inputFifo = NULL;
     m_bSetThreadPriority = false;
 
-    return OK;
+    return SOUNDDEVICE_ERROR_OK;
 }
 
 QString SoundDevicePortAudio::getError() const {
@@ -681,7 +681,7 @@ int SoundDevicePortAudio::callbackProcessDrift(
     // sound card overtakes the other. This always happens, if they are driven form
     // two crystals. In a test case every 30 s @ 23 ms. After they are consumed,
     // the drift correction takes place and fills or clears the reserve buffers.
-    // If this is finished before an other overtake happens, we do not face any
+    // If this is finished before another overtake happens, we do not face any
     // dropouts or clicks.
     // So thats why we need a Fifo of 3 chunks.
     //
@@ -887,7 +887,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
         // verify if flush to zero or denormals to zero works
         // test passes if one of the two flag is set.
         volatile double doubleMin = DBL_MIN; // the smallest normalized double
-        DEBUG_ASSERT_AND_HANDLE(doubleMin / 2 == 0.0) {
+        VERIFY_OR_DEBUG_ASSERT(doubleMin / 2 == 0.0) {
             qWarning() << "Denormals to zero mode is not working. EQs and effects may suffer high CPU load";
         } else {
             qDebug() << "Denormals to zero mode is working";
@@ -1017,12 +1017,14 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
         m_invalidTimeInfoCount++;
 
         if (m_invalidTimeInfoCount == m_invalidTimeInfoWarningCount) {
-            qWarning() << "SoundDevicePortAudio: Audio API provides invalid time stamps,"
-                       << "syncing waveforms with a CPU Timer"
-                       << "DacTime:" << timeInfo->outputBufferDacTime
-                       << "EntrytoDac:" << callbackEntrytoDacSecs
-                       << "TimeSinceLastCb:" << timeSinceLastCbSecs
-                       << "diff:" << diff;
+            if (CmdlineArgs::Instance().getDeveloper()) {
+                qWarning() << "SoundDevicePortAudio: Audio API provides invalid time stamps,"
+                           << "syncing waveforms with a CPU Timer"
+                           << "DacTime:" << timeInfo->outputBufferDacTime
+                           << "EntrytoDac:" << callbackEntrytoDacSecs
+                           << "TimeSinceLastCb:" << timeSinceLastCbSecs
+                           << "diff:" << diff;
+            }
         }
 
         callbackEntrytoDacSecs = (m_lastCallbackEntrytoDacSecs + bufferSizeSec)

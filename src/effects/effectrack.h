@@ -40,6 +40,10 @@ class EffectRack : public QObject {
     int numEffectChainSlots() const;
     EffectChainSlotPointer getEffectChainSlot(int i);
 
+    void maybeLoadEffect(const unsigned int iChainSlotNumber,
+                         const unsigned int iEffectSlotNumber,
+                         const QString& id);
+
     unsigned int getRackNumber() const {
         return m_iRackNumber;
     }
@@ -48,9 +52,10 @@ class EffectRack : public QObject {
         return m_group;
     }
 
+    QDomElement toXml(QDomDocument* doc) const;
+
   public slots:
     void slotClearRack(double v);
-    void slotNumEffectChainSlots(double v);
 
   private slots:
     void loadNextChain(const unsigned int iChainSlotNumber,
@@ -67,7 +72,6 @@ class EffectRack : public QObject {
 
   protected:
     void addEffectChainSlotInternal(EffectChainSlotPointer pChainSlot);
-    virtual EffectChainPointer makeEmptyChain();
 
     // We could make accessors for these for sub-classes. Doesn't really matter.
     EffectsManager* m_pEffectsManager;

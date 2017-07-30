@@ -1,11 +1,23 @@
 # This udev rule allows Mixxx to access HID and USB Bulk controllers when running as a normal user
 
-# Allow scanning and use of USB HID devices
-SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{bInterfaceClass}=="03", GROUP="users", MODE="0660"
+# Allow write access for all users in the "users" group for USB devices from known vendors
+# that make HID or USB bulk controllers. Note that the udev rule must match on the USB device level;
+# matching the USB interface descriptor with bInterfaceClass does not work.
 
-# Vendors with USB Bulk-transfer DJ controllers
-SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="06f8", GROUP="users", MODE="0660" # Hercules
-SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="15e4", GROUP="users", MODE="0660" # Numark (may be needed for NS7/V7)
+# Native Instruments
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="17cc", GROUP="users", MODE="0660"
+# Hercules
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="06f8", GROUP="users", MODE="0660"
+# Pioneer
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="08e4", GROUP="users", MODE="0660"
+# Numark (may be needed for NS7 & V7)
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="15e4", GROUP="users", MODE="0660"
+# Eks
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="1157", GROUP="users", MODE="0660"
+# Nintendo
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="057e", GROUP="users", MODE="0660"
+# Sony
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="054c", GROUP="users", MODE="0660"
 
 # Only some distribuions require the below
 KERNEL=="hiddev*", NAME="usb/%k", GROUP="users"

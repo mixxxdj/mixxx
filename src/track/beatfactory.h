@@ -4,14 +4,15 @@
 #include <QHash>
 
 #include "track/beats.h"
+#include "track/track.h"
 
 class BeatFactory {
   public:
-    static BeatsPointer loadBeatsFromByteArray(TrackPointer pTrack,
+    static BeatsPointer loadBeatsFromByteArray(const Track& track,
                                                QString beatsVersion,
                                                QString beatsSubVersion,
-                                               QByteArray* beatsSerialized);
-    static BeatsPointer makeBeatGrid(Track* pTrack,
+                                               const QByteArray& beatsSerialized);
+    static BeatsPointer makeBeatGrid(const Track& track,
                                      double dBpm, double dFirstBeatSample);
 
     static QString getPreferredVersion(const bool bEnableFixedTempoCorrection);
@@ -23,7 +24,7 @@ class BeatFactory {
         const QHash<QString, QString> extraVersionInfo);
 
     static BeatsPointer makePreferredBeats(
-        TrackPointer pTrack, QVector<double> beats,
+        const Track& track, QVector<double> beats,
         const QHash<QString, QString> extraVersionInfo,
         const bool bEnableFixedTempoCorrection,
         const bool bEnableOffsetCorrection,

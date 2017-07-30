@@ -14,7 +14,7 @@ namespace {
 
 class EngineMicrophoneTest : public testing::Test {
   protected:
-    virtual void SetUp() {
+    void SetUp() override {
         inputLength = MAX_BUFFER_LEN;
         outputLength = MAX_BUFFER_LEN;
         input = SampleUtil::alloc(inputLength);
@@ -27,7 +27,7 @@ class EngineMicrophoneTest : public testing::Test {
         m_pTalkover = ControlObject::getControl(ConfigKey("[Microphone]", "talkover"));
     }
 
-    virtual void TearDown() {
+    void TearDown() override {
         SampleUtil::free(input);
         SampleUtil::free(output);
         SampleUtil::free(test);

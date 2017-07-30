@@ -4,9 +4,7 @@
 // NOTE(rryan): Do not change this from [Shoutcast] unless you also put upgrade
 // logic in src/preferences/upgrade.h.
 #define BROADCAST_PREF_KEY "[Shoutcast]"
-#define BROADCAST_DEFAULT_PORT "8000"
-
-#define BROADCAST_CHANNELS_STEREO 2
+#define BROADCAST_DEFAULT_PORT 8000
 
 #define BROADCAST_SERVER_SHOUTCAST "Shoutcast"
 #define BROADCAST_SERVER_ICECAST1 "Icecast1"

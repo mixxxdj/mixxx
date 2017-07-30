@@ -1,20 +1,3 @@
-/***************************************************************************
-                          dlgprefrecord.h  -  description
-                             -------------------
-    begin                : Thu Jun 7 2007
-    copyright            : (C) 2007 by John Sully
-    email                : jsully@scs.ryerson.ca
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #ifndef DLGPREFRECORD_H
 #define DLGPREFRECORD_H
 
@@ -24,12 +7,15 @@
 #include "preferences/dialog/ui_dlgprefrecorddlg.h"
 #include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
+#include "encoder/encoder.h"
+#include "util/widgethider.h"
 
 class ControlObject;
 class ControlProxy;
 
 class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     Q_OBJECT
+    WidgetHider m_hider;
   public:
     DlgPrefRecord(QWidget *parent, UserSettingsPointer _config);
     virtual ~DlgPrefRecord();
@@ -40,35 +26,38 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     void slotUpdate();
     void slotResetToDefaults();
 
-
-    void slotEncoding();
-    void slotSliderQuality();
-    void slotRecordPathChange();
-    void slotEnableCueFile(int);
-    void slotChangeSplitSize();
     // Dialog to browse for recordings directory
     void slotBrowseRecordingsDir();
+
+    void slotFormatChanged();
+    void slotSliderQuality();
+    void slotSliderCompression();
+    void slotGroupChanged();
 
   signals:
     void apply(const QString &);
 
   private:
-    void setRecordingFolder();
-    void setMetaData();
+    void retainSizeFor(QWidget* widget);
+    inline void showWidget(QWidget* widget);
+    inline void hideWidget(QWidget* widget);
+    void setupEncoderUI(Encoder::Format selformat);
     void loadMetaData();
-    int getSliderQualityVal();
     void updateTextQuality();
+    void updateTextCompression();
+    void saveRecordingFolder();
+    void saveMetaData();
+    void saveEncoding();
+    void saveUseCueFile();
+    void saveSplitSize();
 
     // Pointer to config object
     UserSettingsPointer m_pConfig;
-    ControlProxy* m_pRecordControl;
-    bool m_bConfirmOverwrite;
-    QString fileTypeExtension;
-    QRadioButton* m_pRadioOgg;
-    QRadioButton* m_pRadioMp3;
-    QRadioButton* m_pRadioAiff;
-    QRadioButton* m_pRadioFlac;
-    QRadioButton* m_pRadioWav;
+    Encoder::Format m_selFormat;
+    QButtonGroup encodersgroup;
+    QButtonGroup optionsgroup;
+    QList<QRadioButton*> m_formatButtons;
+    QList<QAbstractButton*> m_optionWidgets;
 };
 
 #endif

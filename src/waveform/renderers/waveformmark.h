@@ -1,39 +1,65 @@
 #ifndef WAVEFORMMARK_H
 #define WAVEFORMMARK_H
 
-#include <QString>
+#include <QDomNode>
 #include <QImage>
-#include <QColor>
 
-#include "preferences/usersettings.h"
-#include "skin/skincontext.h"
+#include "control/controlproxy.h"
+#include "util/memory.h"
 
-class ControlProxy;
-class QDomNode;
+#include "waveform/renderers/waveformmarkproperties.h"
+#include "control/controlobject.h"
+
+class SkinContext;
 class WaveformSignalColors;
+
+class WOverview;
 
 class WaveformMark {
   public:
-    WaveformMark();
-    ~WaveformMark();
-    void setup(const QString& group, const QDomNode& node,
-               const SkinContext& context,
-               const WaveformSignalColors& signalColors);
-    void setKeyAndIndex(const ConfigKey& key, int i);
+    static const int kNoHotCue = -1;
+    WaveformMark(
+            const QString& group,
+            const QDomNode& node,
+            const SkinContext& context,
+            const WaveformSignalColors& signalColors);
+
+    WaveformMark(
+            const QString& group,
+            const QDomNode& node,
+            const SkinContext& context,
+            const WaveformSignalColors& signalColors,
+            int hotCue);
+
+
+    // Disable copying
+    WaveformMark(const WaveformMark&) = delete;
+    WaveformMark& operator=(const WaveformMark&) = delete;
+
+    const WaveformMarkProperties& getProperties() const {
+        return m_properties;
+    };
+    void setProperties(const WaveformMarkProperties& properties) {
+        m_properties = properties;
+    };
+
+    int getHotCue() const { return m_iHotCue; };
+
+    //The m_pPointCos related function
+    bool isValid() const { return m_pPointCos && m_pPointCos->valid(); }
+    void connectSamplePositionChanged(const QObject *, const char *) const;
+    double getSamplePosition() const { return m_pPointCos->get(); }
+    QString getItem() const { return m_pPointCos->getKey().item; }
 
   private:
-    ControlProxy* m_pPointCos;
-
-    QColor m_color;
-    QColor m_textColor;
-    QString m_text;
-    Qt::Alignment m_align;
-    QString m_pixmapPath;
+    std::unique_ptr<ControlProxy> m_pPointCos;
+    WaveformMarkProperties m_properties;
+    int m_iHotCue;
     QImage m_image;
 
-    friend class WaveformMarkSet;
     friend class WaveformRenderMark;
-    friend class WOverview;
 };
+
+typedef QSharedPointer<WaveformMark> WaveformMarkPointer;
 
 #endif // WAVEFORMMARK_H

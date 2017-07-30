@@ -8,66 +8,66 @@
     Effect: the effect
 -->
 <Template>
-  <WidgetGroup>
-  	<Size>e,45</Size>
-    <Layout>horizontal</Layout>
-    <Style> WEffect, WPushButton { 
-		font: bold 12px/10px sans-serif;
-		font-family: "Open Sans";
-		background-color: transparent; 
-		color: #191F24; 
-		padding-left: 1px; 
-	}
-    </Style>
-    <Children>
-    	<Template src="skin:effect_parameter_knob.xml">
-	        <SetVariable name="effectparameternum">1</SetVariable>
-	</Template>	
-    	<Template src="skin:effect_parameter_button.xml">
-		<SetVariable name="effectparameternum">1</SetVariable>
-	</Template>	
-	<Template src="skin:effect_parameter_knob.xml">
-		<SetVariable name="effectparameternum">2</SetVariable>
-		</Template>	
-    	<Template src="skin:effect_parameter_button.xml">
-		<SetVariable name="effectparameternum">2</SetVariable>
-	</Template>	
-	<Template src="skin:effect_parameter_knob.xml">
-		<SetVariable name="effectparameternum">3</SetVariable>
-	</Template>	
-    	<Template src="skin:effect_parameter_button.xml">
-		<SetVariable name="effectparameternum">3</SetVariable>
-	</Template>	
-	<Template src="skin:effect_parameter_knob.xml">
-		<SetVariable name="effectparameternum">4</SetVariable>
-	</Template>	
-       	<Template src="skin:effect_parameter_button.xml">
-		<SetVariable name="effectparameternum">4</SetVariable>
-	</Template>			
-        <Template src="skin:effect_parameter_knob.xml">
-		<SetVariable name="effectparameternum">5</SetVariable>
-	</Template>	
-    	<Template src="skin:effect_parameter_button.xml">
-		<SetVariable name="effectparameternum">5</SetVariable>
-	</Template>	
-	<Template src="skin:effect_parameter_knob.xml">
-		<SetVariable name="effectparameternum">6</SetVariable>
-	</Template>	
-    	<Template src="skin:effect_parameter_button.xml">
-		<SetVariable name="effectparameternum">6</SetVariable>
-	</Template>	
-	<Template src="skin:effect_parameter_knob.xml">
-		<SetVariable name="effectparameternum">7</SetVariable>
-	</Template>	
-    	<Template src="skin:effect_parameter_button.xml">
-		<SetVariable name="effectparameternum">7</SetVariable>
-	</Template>	
-	<Template src="skin:effect_parameter_knob.xml">
-		<SetVariable name="effectparameternum">8</SetVariable>
-	</Template>
-    	<Template src="skin:effect_parameter_button.xml">
-		<SetVariable name="effectparameternum">8</SetVariable>
-	</Template>
-    </Children>
-  </WidgetGroup>
+	<WidgetGroup>
+		<Size>e,45</Size>
+		<Layout>horizontal</Layout>
+		<Style> WEffect, WPushButton { 
+			font: bold 12px/10px sans-serif;
+			font-family: "Open Sans";
+			background-color: transparent; 
+			color: #191F24; 
+			padding-left: 1px; 
+		}
+		</Style>
+		<Children>
+			<Template src="skin:effect_parameter_knob.xml">
+				<SetVariable name="effectparameternum">1</SetVariable>
+			</Template>	
+			<Template src="skin:effect_parameter_button.xml">
+				<SetVariable name="effectparameternum">1</SetVariable>
+			</Template>	
+			<Template src="skin:effect_parameter_knob.xml">
+				<SetVariable name="effectparameternum">2</SetVariable>
+			</Template>	
+			<Template src="skin:effect_parameter_button.xml">
+				<SetVariable name="effectparameternum">2</SetVariable>
+			</Template>	
+			<Template src="skin:effect_parameter_knob.xml">
+				<SetVariable name="effectparameternum">3</SetVariable>
+			</Template>	
+			<Template src="skin:effect_parameter_button.xml">
+				<SetVariable name="effectparameternum">3</SetVariable>
+			</Template>	
+			<Template src="skin:effect_parameter_knob.xml">
+				<SetVariable name="effectparameternum">4</SetVariable>
+			</Template>	
+			<Template src="skin:effect_parameter_button.xml">
+				<SetVariable name="effectparameternum">4</SetVariable>
+			</Template>			
+			<Template src="skin:effect_parameter_knob.xml">
+				<SetVariable name="effectparameternum">5</SetVariable>
+			</Template>	
+			<Template src="skin:effect_parameter_button.xml">
+				<SetVariable name="effectparameternum">5</SetVariable>
+			</Template>	
+			<Template src="skin:effect_parameter_knob.xml">
+				<SetVariable name="effectparameternum">6</SetVariable>
+			</Template>	
+			<Template src="skin:effect_parameter_button.xml">
+				<SetVariable name="effectparameternum">6</SetVariable>
+			</Template>	
+			<Template src="skin:effect_parameter_knob.xml">
+				<SetVariable name="effectparameternum">7</SetVariable>
+			</Template>	
+			<Template src="skin:effect_parameter_button.xml">
+				<SetVariable name="effectparameternum">7</SetVariable>
+			</Template>	
+			<Template src="skin:effect_parameter_knob.xml">
+				<SetVariable name="effectparameternum">8</SetVariable>
+			</Template>
+			<Template src="skin:effect_parameter_button.xml">
+				<SetVariable name="effectparameternum">8</SetVariable>
+			</Template>
+		</Children>
+	</WidgetGroup>
 </Template>

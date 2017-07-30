@@ -37,7 +37,7 @@
 
 // static
 QString Version::version() {
-    return VERSION;
+    return MIXXX_VERSION;
 }
 
 // static
@@ -50,11 +50,11 @@ QString Version::applicationTitle() {
 #ifdef __APPLE__
     QString base("Mixxx");
 #elif defined(AMD64) || defined(EM64T) || defined(x86_64)
-    QString base("Mixxx " VERSION " x64");
+    QString base("Mixxx " MIXXX_VERSION " x64");
 #elif defined(IA64)
-    QString base("Mixxx " VERSION " Itanium");
+    QString base("Mixxx " MIXXX_VERSION " Itanium");
 #else
-    QString base("Mixxx " VERSION);
+    QString base("Mixxx " MIXXX_VERSION);
 #endif
 
 #ifdef MIXXX_BUILD_NUMBER_IN_TITLE_BAR
