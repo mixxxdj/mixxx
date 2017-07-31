@@ -52,7 +52,7 @@ void WEffectSelector::populate() {
 
     for (int i = 0; i < availableEffectManifests.size(); ++i) {
         const EffectManifest& manifest = availableEffectManifests.at(i);
-        QString elidedDisplayName = metrics.elidedText(manifest.displayName(),
+        QString elidedDisplayName = metrics.elidedText(manifest.shortName(),
                                                        Qt::ElideMiddle,
                                                        width() - 2);
         addItem(elidedDisplayName, QVariant(manifest.id()));

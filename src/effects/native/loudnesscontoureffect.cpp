@@ -24,7 +24,9 @@ QString LoudnessContourEffect::getId() {
 EffectManifest LoudnessContourEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
+    //: Long name
     manifest.setName(QObject::tr("Loudness Contour"));
+    //: Short name
     manifest.setShortName(QObject::tr("Loudness"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");

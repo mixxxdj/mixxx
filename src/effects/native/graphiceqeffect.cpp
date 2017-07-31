@@ -12,7 +12,9 @@ QString GraphicEQEffect::getId() {
 EffectManifest GraphicEQEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
+    //: Long name
     manifest.setName(QObject::tr("Graphic Equalizer"));
+    //: Short name
     manifest.setShortName(QObject::tr("Graphic EQ"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");

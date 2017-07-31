@@ -19,7 +19,10 @@ QString EchoEffect::getId() {
 EffectManifest EchoEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
+    //: Long name
     manifest.setName(QObject::tr("Echo"));
+    //: Short name
+    manifest.setShortName(QObject::tr("Echo"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr("Simple Echo with pingpong"));

@@ -15,7 +15,9 @@ QString MoogLadder4FilterEffect::getId() {
 EffectManifest MoogLadder4FilterEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
+    //: Long name
     manifest.setName(QObject::tr("Moog Ladder 4 Filter"));
+    //: Short name
     manifest.setShortName(QObject::tr("Moog Filter"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
