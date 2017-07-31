@@ -72,7 +72,7 @@ Variables:
                         <ObjectName>SamplerCover</ObjectName>
                         <Size>34f,34f</Size>
                         <Group><Variable name="group"/></Group>
-                        <DefaultCover>skin:/buttons/btn_.svg</DefaultCover>
+                        <DefaultCover>skin:/graphics/blank_1x1.svg</DefaultCover>
                       </CoverArt>
                   <!-- Background turns Orange when playing preview from Cue/HotCue.
                       Only visible when play_indicator=0 -->
