@@ -29,10 +29,6 @@ Variables:
                   <Knob>skin:/knobs_sliders/knob_fx_yellow.svg</Knob>
                   <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                   <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
-                  <EffectRack><Variable name="fxRack"/></EffectRack>
-                  <EffectUnit><Variable name="fxUnit"/></EffectUnit>
-                  <Effect><Variable name="fxNum"/></Effect>
-                  <EffectParameter><Variable name="fxKnobParameter"/></EffectParameter>
                   <Connection>
                       <ConfigKey><Variable name="fxGroup_fxNum"/>,parameter<Variable name="fxKnobParameter"/></ConfigKey>
                   </Connection>

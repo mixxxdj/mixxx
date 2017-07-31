@@ -12,7 +12,7 @@ class WEffectParameterKnobComposed : public WKnobComposed {
         m_pEffectsManager(pEffectsManager) {
     };
 
-    void setup(const QDomNode& node, const SkinContext& context);
+    void setupEffectParameterSlot(const ConfigKey& configKey);
 
   private slots:
     void parameterUpdated();

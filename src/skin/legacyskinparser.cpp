@@ -1634,6 +1634,11 @@ QWidget* LegacySkinParser::parseEffectParameterKnobComposed(const QDomElement& n
     pParameterKnob->installEventFilter(
         m_pControllerManager->getControllerLearningEventFilter());
     pParameterKnob->Init();
+    const QList<ControlParameterWidgetConnection*> connections =
+            pParameterKnob->connections();
+    if (!connections.isEmpty()) {
+        pParameterKnob->setupEffectParameterSlot(connections.at(0)->getKey());
+    }
     return pParameterKnob;
 }
 

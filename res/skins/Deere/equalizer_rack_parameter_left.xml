@@ -83,10 +83,6 @@
                 <MinAngle>-135</MinAngle>
                 <MaxAngle>135</MaxAngle>
                 <KnobCenterYOffset>1.602</KnobCenterYOffset>
-                <EffectRackGroup><Variable name="EqualizerRackGroup"/></EffectRackGroup>
-                <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>
-                <Effect><Variable name="EffectNumber"/></Effect>
-                <EffectParameter><Variable name="parameter"/></EffectParameter>
                 <Connection>
                   <ConfigKey><Variable name="EqualizerEffectGroup"/>,parameter<Variable name="parameter"/></ConfigKey>
                 </Connection>
@@ -107,10 +103,6 @@
                 <MinAngle>-135</MinAngle>
                 <MaxAngle>135</MaxAngle>
                 <KnobCenterYOffset>1.602</KnobCenterYOffset>
-                <EffectRackGroup><Variable name="EqualizerRackGroup"/></EffectRackGroup>
-                <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>
-                <Effect><Variable name="EffectNumber"/></Effect>
-                <EffectParameter><Variable name="parameter"/></EffectParameter>
                 <Connection>
                   <ConfigKey><Variable name="EqualizerEffectGroup"/>,parameter<Variable name="parameter"/></ConfigKey>
                 </Connection>

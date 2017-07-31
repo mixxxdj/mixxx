@@ -46,10 +46,6 @@ Variables:
                   <Knob>skin:/knobs_sliders/knob_white.svg</Knob>
                   <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                   <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
-                  <EffectRackGroup><Variable name="EqualizerRackGroup"/></EffectRackGroup>
-                  <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>
-                  <Effect><Variable name="EffectNumber"/></Effect>
-                  <EffectParameter><Variable name="parameter"/></EffectParameter>
                   <Connection>
                       <ConfigKey><Variable name="EqualizerEffectGroup"/>,parameter<Variable name="parameter"/></ConfigKey>
                   </Connection>
