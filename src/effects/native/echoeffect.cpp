@@ -155,23 +155,18 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     gs.prev_delay_samples = delay_samples;
 
     // Feedback the delay buffer and then add the new input.
+    const CSAMPLE_GAIN send_delta = (send_amount - gs.prev_send) /
+            (numSamples / EchoGroupState::kChannelCount);
+    const CSAMPLE_GAIN send_start = send_amount + send_delta;
     for (unsigned int i = 0; i < numSamples; i += EchoGroupState::kChannelCount) {
-        // Ramp the beginning and end of the delay buffer to prevent clicks.
-        double write_ramper = 1.0;
-        // When feedback is 1.0, continously applying ramping to the buffer creates
-        // an unpleasant artifact.
-        if (feedback_amount != 1.0) {
-            if (gs.write_position < EchoGroupState::kRampLength) {
-                write_ramper = static_cast<double>(gs.write_position) / EchoGroupState::kRampLength;
-            } else if (gs.write_position > delay_samples - EchoGroupState::kRampLength) {
-                write_ramper = static_cast<double>(delay_samples - gs.write_position)
-                        / EchoGroupState::kRampLength;
-            }
+        CSAMPLE_GAIN send_ramped = send_start;
+        if (send_delta > 0.0) {
+            send_ramped += send_delta * i / EchoGroupState::kChannelCount;
         }
         gs.delay_buf[gs.write_position] *= feedback_amount;
         gs.delay_buf[gs.write_position + 1] *= feedback_amount;
-        gs.delay_buf[gs.write_position] += pInput[i] * send_amount * write_ramper;
-        gs.delay_buf[gs.write_position + 1] += pInput[i + 1] * send_amount * write_ramper;
+        gs.delay_buf[gs.write_position] += pInput[i] * send_ramped;
+        gs.delay_buf[gs.write_position + 1] += pInput[i + 1] * send_ramped;
         // Actual delays distort and saturate, so clamp the buffer here.
         gs.delay_buf[gs.write_position] =
                 SampleUtil::clampSample(gs.delay_buf[gs.write_position]);
@@ -215,4 +210,5 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     if (enableState == EffectProcessor::DISABLING) {
         gs.delay_buf.clear();
     }
+    gs.prev_send = send_amount;
 }

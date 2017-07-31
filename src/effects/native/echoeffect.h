@@ -28,6 +28,7 @@ struct EchoGroupState {
                         kChannelCount) {
         delay_buf.clear();
         prev_period = 0.0;
+        prev_send = 0.0;
         prev_delay_samples = 0;
         write_position = 0;
         ping_pong_left = true;
@@ -35,6 +36,7 @@ struct EchoGroupState {
 
     SampleBuffer delay_buf;
     double prev_period;
+    CSAMPLE_GAIN prev_send;
     int prev_delay_samples;
     int write_position;
     bool ping_pong_left;
