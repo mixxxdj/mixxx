@@ -50,7 +50,7 @@ EffectManifest FlangerEffect::getManifest() {
     depth->setId("depth");
     depth->setName(QObject::tr("Depth"));
     depth->setDescription(QObject::tr("Controls the intensity of the effect."));
-    depth->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    depth->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     depth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     depth->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
@@ -86,7 +86,7 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     Q_UNUSED(groupFeatures);
     Q_UNUSED(sampleRate);
     CSAMPLE lfoPeriod = m_pPeriodParameter->value();
-    CSAMPLE lfoDepth = m_pDepthParameter->value();
+    CSAMPLE depth = m_pDepthParameter->value();
     // Unused in EngineFlanger
     // CSAMPLE lfoDelay = m_pDelayParameter ?
     //         m_pDelayParameter->value().toDouble() : 0.0f;
@@ -126,7 +126,12 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
         CSAMPLE delayedSampleLeft = prevLeft + frac * (nextLeft - prevLeft);
         CSAMPLE delayedSampleRight = prevRight + frac * (nextRight - prevRight);
 
-        pOutput[i] = pInput[i] + lfoDepth * delayedSampleLeft;
-        pOutput[i+1] = pInput[i+1] + lfoDepth * delayedSampleRight;
+        // The depth knob acts like a dry/wet knob. The wet signal is made by adding
+        // the dry and computed sample, so to avoid making the output louder, divide
+        // the wet signal by 2.
+        pOutput[i] = pInput[i] * (1.0f - depth)
+                   + (pInput[i] + delayedSampleLeft) / 2.0f * depth;
+        pOutput[i + 1] = (pInput[i + 1] * (1.0f - depth))
+                       + (pInput[i+1] + delayedSampleRight) / 2.0f * depth;
     }
 }
