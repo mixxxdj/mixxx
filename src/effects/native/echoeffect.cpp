@@ -151,8 +151,6 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     }
 
     int read_position = gs.write_position;
-    gs.prev_period = period;
-    gs.prev_delay_samples = delay_samples;
 
     // Feedback the delay buffer and then add the new input.
     const CSAMPLE_GAIN send_delta = (send_amount - gs.prev_send) /
@@ -210,5 +208,8 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     if (enableState == EffectProcessor::DISABLING) {
         gs.delay_buf.clear();
     }
+
+    gs.prev_period = period;
     gs.prev_send = send_amount;
+    gs.prev_delay_samples = delay_samples;
 }
