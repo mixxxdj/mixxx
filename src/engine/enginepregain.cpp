@@ -114,13 +114,15 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
 
     // Vinylsoundemu:
     // Apply Gain change depending on the speed.
-    // This is quite linear in the rang up to x 3.
-    // For faster speeds it is hard to measure. It turns out that it is physically
-    // not possible to scratch faster then x 5 without the needle loosing contact.
-    // So we apply a curve here that emulates the gain change up to 3 natural
-    // to 4 dB and than limits the gain towards < 6 dB at faster speeds to
-    // avoid clipping during waveform scratching.
-    totalGain *= tanhf(fabs(m_dSpeed)/2) * 1.8f;
+    // We have -Inf dB at x0, -6 dB at x0.3 and 0 dB at x1.
+    // For faster speeds it is hard to measure it, but it looks like we had an
+    // increasing gain there which would lead to undesired clipping.
+    // This is ignored here, to avoid that.
+    // It also turns out that it is physically not possible to scratch faster
+    // then x5 without the needle loosing contact, our threshold for the effect.
+    // So we apply a curve here that emulates the gain change up to x 2.5 natural
+    // to 3.5 dB and then limits the gain towards <= 5.5 dB at am maximum of x5.
+    totalGain *= log10((math_min(fabs(m_dSpeed), 5.0) * 4) + 1) / log10((1 * 4) + 1);
 
     if ((m_dSpeed * m_dOldSpeed < 0) && m_scratching) {
         // direction changed, go though zero if scratching
