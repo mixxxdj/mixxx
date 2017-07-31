@@ -237,48 +237,48 @@ QVariant BroadcastSettings::headerData(int section, Qt::Orientation orientation,
 }
 
 Qt::ItemFlags BroadcastSettings::flags(const QModelIndex& index) const {
-	if(index.column() == kColumnEnabled)
-		return QAbstractItemModel::flags(index) | Qt::ItemIsUserCheckable;
+    if(index.column() == kColumnEnabled)
+        return QAbstractItemModel::flags(index) | Qt::ItemIsUserCheckable;
 
-	if(index.column() == kColumnName)
-		return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+    if(index.column() == kColumnName)
+        return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
 
-	if(index.column() == kColumnRemove)
-		return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+    if(index.column() == kColumnRemove)
+        return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
 
-	return Qt::ItemIsEnabled;
+    return Qt::ItemIsEnabled;
 }
 
 bool BroadcastSettings::setData(const QModelIndex& index, const QVariant& value, int role) {
-	if(index.isValid()) {
-		BroadcastProfilePtr profile = profileAt(index.row());
-		if(profile) {
-			if(index.column() == kColumnEnabled && role == Qt::CheckStateRole) {
-				profile->setEnabled(value.toBool());
-			}
-			if(index.column() == kColumnName && role == Qt::EditRole) {
-				QString newName = value.toString();
-				newName = newName.trimmed();
+    if(index.isValid()) {
+        BroadcastProfilePtr profile = profileAt(index.row());
+        if(profile) {
+            if(index.column() == kColumnEnabled && role == Qt::CheckStateRole) {
+                profile->setEnabled(value.toBool());
+            }
+            if(index.column() == kColumnName && role == Qt::EditRole) {
+                QString newName = value.toString();
+                newName = newName.trimmed();
 
-				if(!newName.isNull() && !newName.isEmpty())
-					profile->setProfileName(newName);
-			}
-		}
-	}
-	return true;
+                if(!newName.isNull() && !newName.isEmpty())
+                    profile->setProfileName(newName);
+            }
+        }
+    }
+    return true;
 }
 
 QAbstractItemDelegate* BroadcastSettings::delegateForColumn(const int i, QObject* parent) {
-	if(i == kColumnRemove) {
-		return new PushButtonDelegate(parent);
-	}
-	return nullptr;
+    if(i == kColumnRemove) {
+        return new PushButtonDelegate(parent);
+    }
+    return nullptr;
 }
 
 BroadcastProfilePtr BroadcastSettings::profileAt(int index) {
-	return m_profiles.values().value(index, BroadcastProfilePtr(nullptr));
+    return m_profiles.values().value(index, BroadcastProfilePtr(nullptr));
 }
 
 QList<BroadcastProfilePtr> BroadcastSettings::profiles() {
-	return m_profiles.values();
+    return m_profiles.values();
 }
