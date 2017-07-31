@@ -11,7 +11,7 @@ Variables:
     <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
-      <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>3f,1min</Size></WidgetGroup>
+      <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
       <!-- Loopmove / beatjump controls -->
       <WidgetGroup>
@@ -42,7 +42,7 @@ Variables:
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>3f,1min</Size></WidgetGroup>
+      <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
       <BeatSpinBox>
         <TooltipId>beatjump_size</TooltipId>
@@ -50,10 +50,13 @@ Variables:
       </BeatSpinBox>
 
       <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-      <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
+      <Template src="skin:spacer.xml">
+        <SetVariable name="Color">25</SetVariable>
+        <SetVariable name="Size">0me,0me</SetVariable>
+      </Template>
       <!-- /Loopmove / beatjump controls -->
 
-      <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>3f,1min</Size></WidgetGroup>
+      <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
       <!-- Beatloop controls -->
       <Template src="skin:button_2state_right.xml">
@@ -68,7 +71,7 @@ Variables:
         <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatlooproll_activate</SetVariable>
       </Template>
 
-      <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>3f,1min</Size></WidgetGroup>
+      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
       <BeatSpinBox>
         <TooltipId>beatloop_size</TooltipId>
@@ -81,8 +84,6 @@ Variables:
         <ObjectName>Spacer0f</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
-          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-
           <Template src="skin:button_2state_right_display.xml">
             <SetVariable name="TooltipId">reloop_toggle</SetVariable>
             <SetVariable name="ObjectName">ReloopButton</SetVariable>
@@ -119,13 +120,16 @@ Variables:
             <SetVariable name="ConfigKey"><Variable name="group"/>,loop_out</SetVariable>
             <SetVariable name="ConfigKeyRight"><Variable name="group"/>,loop_out_goto</SetVariable>
           </Template>
-
-          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
         </Children>
       </WidgetGroup>
       <!-- /Beatloop controls -->
 
-      <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
+      <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+      <Template src="skin:spacer.xml">
+        <SetVariable name="Color">25</SetVariable>
+        <SetVariable name="Size">0me,0me</SetVariable>
+      </Template>
     </Children>
   </WidgetGroup>
 </Template>

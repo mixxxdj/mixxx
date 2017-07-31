@@ -14,7 +14,7 @@
    id="svg3769"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_arrow_down_hover.svg">
+   sodipodi:docname="btn_beatbox_left_up.svg">
   <defs
      id="defs3771" />
   <sodipodi:namedview
@@ -24,18 +24,18 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="22.627417"
-     inkscape:cx="8.3303708"
-     inkscape:cy="-2.0446528"
+     inkscape:zoom="16"
+     inkscape:cx="11.23979"
+     inkscape:cy="8.7873875"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1366"
-     inkscape:window-height="747"
+     inkscape:window-height="746"
      inkscape:window-x="0"
-     inkscape:window-y="21"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
-     showguides="false"
+     showguides="true"
      inkscape:guide-bbox="true"
      inkscape:snap-bbox="true"
      inkscape:snap-bbox-edge-midpoints="true"
@@ -54,6 +54,10 @@
        orientation="1,0"
        position="15.5,15.224983"
        id="guide3166" />
+    <sodipodi:guide
+       orientation="0,1"
+       position="9.0156044,16.999985"
+       id="guide3865" />
   </sodipodi:namedview>
   <metadata
      id="metadata3774">
@@ -74,13 +78,13 @@
      transform="translate(0,-1034.3622)">
     <path
        style="fill:#d2d2d2;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       d="m 9.0003033,1048.2803 4.5715187,-7.9181 -9.1430385,0 z"
+       d="m 8.9996967,1038.4441 -4.5715187,7.9181 9.143038,0 z"
        id="path3018"
        inkscape:connector-curvature="0"
-       inkscape:transform-center-y="0.57041933" />
+       inkscape:transform-center-y="-0.57041933" />
     <path
        style="color:#000000;fill:#d2d2d2;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-       d="M 9 0 C 4.0294373 0 0 4.0294 0 9 C 0 13.9706 4.0294373 18 9 18 C 11.55716 18 13.861527 16.931175 15.5 15.21875 L 15.5 13.65625 C 14.04822 15.679076 11.679878 17 9 17 C 4.581722 17 1 13.4183 1 9 C 1 4.5817 4.581722 1 9 1 C 11.679878 1 14.04822 2.3209236 15.5 4.34375 L 15.5 2.78125 C 13.861527 1.0688246 11.55716 0 9 0 z "
+       d="M 9 0 C 6.44284 0 4.138473 1.06875 2.5 2.78125 L 2.5 4.34375 C 3.95178 2.32085 6.320122 1 9 1 L 15 1 C 16.108 1 17 1.79635 17 2.78125 L 17 15.21875 C 17 16.20365 16.108 17 15 17 L 9 17 C 6.320122 17 3.95178 15.67905 2.5 13.65625 L 2.5 15.21875 C 4.138473 16.93115 6.44284 18 9 18 L 16 18 C 17.108 18 18 17.108 18 16 L 18 2 C 18 0.892 17.108 0 16 0 L 9 0 z "
        transform="translate(0,1034.3622)"
        id="path3056" />
   </g>

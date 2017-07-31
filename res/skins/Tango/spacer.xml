@@ -1,0 +1,31 @@
+<!--
+Description:
+  An expanding filler that appears only if more than XY pixels are available
+Variables:
+  ObjectName        : object name
+  TooolTipID        : standard Tooltip from mixxx db
+    see: https://github.com/mixxxdj/mixxx/blob/master/src/skin/tooltips.cpp
+  Size              : button size
+  state_X_text      : label text for state X
+  state_X_pressed   : background graphic for pressed state X
+  state_X_unpressed : background graphic for unpressed state X
+  Align             : alignment of text
+  ConfigKey         : left-click control
+-->
+<Template>
+  <SizeAwareStack>
+    <Size><Variable name="Size"/></Size>
+    <Children>
+      <WidgetGroup>
+        <MinimumSize>0,0</MinimumSize>
+        <MaximumSize>15,-1</MaximumSize>
+        <Children/>
+      </WidgetGroup>
+      <WidgetGroup>
+        <ObjectName>RoundFiller<Variable name="Color"/></ObjectName>
+        <MinimumSize>16,-1</MinimumSize>
+        <Children/>
+      </WidgetGroup>
+    </Children>
+  </SizeAwareStack>
+</Template>

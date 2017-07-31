@@ -585,7 +585,7 @@ WWidgetGroup {
 
 #LoopBeatJumpContainer_Left, #LoopBeatJumpContainer_Right {
   qproperty-layoutAlignment: 'AlignCenter';
-  background-color: #252525;
+  background-color: #1e1e1e;
 }
   #LoopBeatJumpButton, #LoopSizeButton, #LoopRollButton {
     font-weight: bold;
@@ -642,19 +642,22 @@ WWidgetGroup {
 
 WBeatSpinBox {
   /* make it 2px smaller in each dimension,
-    border is added for actual size */
+    border is added for final size */
   min-width: 52px;
   max-width: 52px;
   min-height: 20px;
   max-height: 20px;
-  border: 1px solid #666666; /* = 54x22px */
+  border: 1px solid #666666;  /* = 54x22px */ 
   border-radius: 2px;
-  background-color: #0f0f0f;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
   color: #aaaaaa;
-  selection-background-color: #d2d2d2;
+  background-color: #0f0f0f;
   selection-color: #0f0f0f;
+  selection-background-color: #d2d2d2;
   font-size: 13px/13px;
-  padding: 0;
+  padding-left: 3px;
+  margin: 0 13px 0 0;
 }
   WBeatSpinBox:hover {
     border-color: #888888;
@@ -671,49 +674,37 @@ WBeatSpinBox {
       define it with same width as hover border, otherwise size jumps */
     width: 18px;
     height: 18px;
-    border: 0px solid #777777; /* = 18x18px */
+    border: 0px solid #333333; /* = 18x18px */
     border-radius: 8px;
     background-color: #333333;
     }
 
   WBeatSpinBox::up-button {
-    image: url(skin:/buttons/btn_arrow_up.svg);
+    subcontrol-position: center right;
+    image: url(skin:/buttons/btn_beatbox_up.svg);
     }
     WBeatSpinBox::up-button:hover {
-      image: url(skin:/buttons/btn_arrow_up_hover.svg);
+      image: url(skin:/buttons/btn_beatbox_up_hover.svg);
     }
+    /* Make right hand corners 'sharp' to visually attach it
+    to beatjump/loop buttons next to spinbox
+    #LoopBeatJumpContainer_Left > WBeatSpinBox::up-button {
+      border-top-right-radius: 2px;
+      border-bottom-right-radius: 2px;
+      image: url(skin:/buttons/btn_beatbox_left_up.svg);
+      }
+    #LoopBeatJumpContainer_Left > WBeatSpinBox::up-button:hover {
+      border-top-right-radius: 2px;
+      border-bottom-right-radius: 2px;
+      image: url(skin:/buttons/btn_beatbox_left_up_hover.svg);
+      } */
   WBeatSpinBox::down-button {
-    image: url(skin:/buttons/btn_arrow_down.svg);
+    subcontrol-position: center right;
+    left: -13px;
+    image: url(skin:/buttons/btn_beatbox_down.svg);
     }
     WBeatSpinBox::down-button:hover {
-      image: url(skin:/buttons/btn_arrow_down_hover.svg);
-    }
-
-  #LoopBeatJumpContainer_Right > WBeatSpinBox {
-    padding-left: 3px;
-    margin: 0 19px 0 0;
-    border-top-right-radius: 8px;
-    border-bottom-right-radius: 8px;
-    }
-    #LoopBeatJumpContainer_Right > WBeatSpinBox::up-button {
-      subcontrol-position: center right;
-      }
-    #LoopBeatJumpContainer_Right > WBeatSpinBox::down-button {
-      subcontrol-position: center right;
-      left: -13px;
-    }
-
-  #LoopBeatJumpContainer_Left > WBeatSpinBox {
-    margin: 0 0 0 19px;
-    border-top-left-radius: 8px;
-    border-bottom-left-radius: 8px;
-    }
-    #LoopBeatJumpContainer_Left > WBeatSpinBox::up-button {
-      subcontrol-position: center left;
-      right: -13px;
-      }
-    #LoopBeatJumpContainer_Left > WBeatSpinBox::down-button {
-      subcontrol-position: center left;
+      image: url(skin:/buttons/btn_beatbox_down_hover.svg);
     }
 
 /*################################################################
@@ -1614,6 +1605,10 @@ QToolTip {
 #Text33 {
   color: #333333;
   font-size: 1px/1px;
+}
+#RoundFiller25 {
+  background-color: #252525;
+  border-radius: 3px;
 }
 
 /*################################################################
