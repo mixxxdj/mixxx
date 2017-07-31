@@ -1127,8 +1127,7 @@ WBeatSpinBox {
 
   #EffectToggleButton {
     }
-    #EffectToggleButton[displayValue="0"]:hover { /*
-      border: 1px solid #ffb401;  */
+    #EffectToggleButton[displayValue="0"]:hover {
       border: 1px solid #ff8f00;
       }
     #EffectToggleButton[displayValue="1"]:hover {
@@ -1137,8 +1136,7 @@ WBeatSpinBox {
     #EffectToggleButtonUnderlay[displayValue="0"] {
       background-color: #777777;
       }
-    #EffectToggleButtonUnderlay[displayValue="1"] { /*
-      background-color: #ffa601;*/
+    #EffectToggleButtonUnderlay[displayValue="1"] {
       background-color: #ff8f00;	/* yellow2 	*/
       }
     #fxNameContainer {
@@ -1152,7 +1150,6 @@ WBeatSpinBox {
         font-size: 13px/12px;
       }
 
-    /* TODO: copied from Deere */
     WEffectSelector {
       font-family: Ubuntu;
       font-weight: normal;
@@ -1168,31 +1165,17 @@ WBeatSpinBox {
       border: 0px solid #666666;
       border-radius: 2px;
       }
-    #EffectTogglerLeft > WEffectSelector {
-      margin: 0px -73px 0px 2px;
-      }
       WEffectSelector::drop-down {
-        /* This causes the Qt theme's widget style to magically not apply. Go figure. */
-        border: 0;
-      }
-      #EffectTogglerLeft > WEffectSelector::drop-down {
-        subcontrol-origin: margin;
-        subcontrol-position: bottom left;
-        /* This causes the Qt theme's widget style to magically not apply. Go figure. */
         border: 0;
       }
       WEffectSelector::down-arrow {
         width: 16px;
-        height: 16px; /*
-        margin-right: -2px;
-        image: url(skin:/buttons/btn_arrow_down.svg);
-        background-color: #FF00CA; */
+        height: 16px;
         image: url(skin:/buttons/btn_fx_selector.svg);
         }
         WEffectSelector::down-arrow:hover {
           width: 16px;
-          height: 16px; /*
-          image: url(skin:/buttons/btn_arrow_down_hover.svg); */
+          height: 16px;
           image: url(skin:/buttons/btn_fx_selector_hover.svg);
         }
 
