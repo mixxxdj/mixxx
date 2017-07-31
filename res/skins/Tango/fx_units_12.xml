@@ -15,7 +15,7 @@ Description:
       <WidgetGroup><!-- EffectUnit 1 -->
         <ObjectName>EffectUnit1_maxi</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>me,max</SizePolicy>
+        <SizePolicy>min,max</SizePolicy>
         <Children>
           <Template src="skin:fx_unit_left.xml">
             <SetVariable name="fxRack">1</SetVariable>
@@ -32,7 +32,7 @@ Description:
       <WidgetGroup>
         <ObjectName>EffectUnit1_mini</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>me,me</SizePolicy>
+        <SizePolicy>min,me</SizePolicy>
         <Children>
           <Template src="skin:fx_unit_left_mini.xml">
             <SetVariable name="fxRack">1</SetVariable>
@@ -53,8 +53,8 @@ Description:
         <SizePolicy>min,min</SizePolicy>
         <Children>
 
-          <WidgetGroup><!-- Skin Controls spacer -->
-            <Size>110f,1min</Size>
+          <WidgetGroup><!-- Skin Controls spacer - FX label offset -->
+            <Size>52f,1min</Size>
           </WidgetGroup>
 
           <WidgetGroup> <!-- Pitch fader spacer -->
@@ -107,7 +107,7 @@ Description:
       <WidgetGroup><!-- EffectUnit 2 -->
         <ObjectName>EffectUnit2_maxi</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>me,max</SizePolicy>
+        <SizePolicy>min,max</SizePolicy>
         <Children>
           <Template src="skin:fx_unit_right.xml">
             <SetVariable name="fxRack">1</SetVariable>
@@ -124,7 +124,7 @@ Description:
       <WidgetGroup>
         <ObjectName>EffectUnit2_mini</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>me,me</SizePolicy>
+        <SizePolicy>min,me</SizePolicy>
         <Children>
           <Template src="skin:fx_unit_right_mini.xml">
             <SetVariable name="fxRack">1</SetVariable>
