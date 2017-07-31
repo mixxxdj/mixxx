@@ -65,7 +65,7 @@ class CrateStorage: public virtual DAO {
     // The following list results are ordered by crate name:
     //  - case-insensitive
     //  - locale-aware
-    
+
     // crate hierarchy needs access to selectCrates();
     friend class CrateHierarchy;
     CrateSelectResult selectCrates() const; // all crates

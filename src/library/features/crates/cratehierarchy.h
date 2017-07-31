@@ -27,6 +27,8 @@ class CrateHierarchy : public virtual DAO {
     ////////////////////////////////////
     void reset(const CrateStorage* pCrateStorage);
 
+    // crate hierarchy only cares whether a crates name has changed or not
+    bool onUpdatingCrate(const Crate& crate, const CrateStorage* pCrateStorage);
 
     uint countCratesInClosure() const;
 
@@ -41,17 +43,24 @@ class CrateHierarchy : public virtual DAO {
                                       const QString& idPath) const;
 
     QString formatQueryForTrackIdsByCratePathLike(const QString& cratePathLike) const;
-    // namePath is the string that represnets the placement of the crate in the tree
+    // namePath is the string that represents the placement of the crate in the tree
     // just like a path in a file system
     QString getNamePathFromId(CrateId id) const;
 
-    // checks whether a name is valid for the hiararchy
+    bool canBeRenamed(const QString& newName,
+                      const Crate& crate,
+                      const CrateId parentId = CrateId()) const;
+
+    // checks whether a name is valid for the hierarchy
     // parent id only applies to subcrates.
-    bool nameIsValidForHierarchy(const QString& crateName,
-                                 const CrateId parentId = CrateId()) const;
+    bool nameIsValidForHierarchy(const QString& newName,
+                                 const Crate parent = Crate()) const;
 
     void deleteCrate(CrateId id) const;
     bool hasChildern(CrateId id) const;
+
+    // returns -1 when there is no parent
+    int getParentId(const CrateId id) const;
 
     QStringList collectIdPaths() const;
 
@@ -71,6 +80,11 @@ class CrateHierarchy : public virtual DAO {
     bool writeCratePaths(CrateId id, QString namePath, QString idPath) const;
     QStringList tokenizeCratePath(CrateId id) const;
     QStringList collectRootCrateNames() const;
+
+    // returns a list with names that exist in the path of
+    // the crate so that it can't be named like them
+    QStringList collectParentCrateNames(const Crate& crate) const;
+    QStringList collectChildCrateNames(const Crate& crate) const;
 
     QSqlDatabase m_database;
 };

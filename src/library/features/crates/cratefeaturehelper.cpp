@@ -48,6 +48,7 @@ CrateId CrateFeatureHelper::createEmptyCrate(const Crate& parent) {
         if (!ok) {
             return CrateId();
         }
+        newCrate.setName(newCrate.getName().simplified());
         if (!newCrate.hasName()) {
             QMessageBox::warning(
               nullptr,
@@ -56,7 +57,7 @@ CrateId CrateFeatureHelper::createEmptyCrate(const Crate& parent) {
             continue;
         }
 
-        if (m_pCrates->hierarchy().nameIsValidForHierarchy(newCrate.getName(), parent.getId())) {
+        if (!m_pCrates->hierarchy().nameIsValidForHierarchy(newCrate.getName(), parent)) {
             QMessageBox::warning(
               nullptr,
               tr("Creating Crate Failed"),

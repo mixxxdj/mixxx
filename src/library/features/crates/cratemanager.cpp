@@ -28,10 +28,13 @@ void CrateManager::repairDatabase(QSqlDatabase database) {
     // Crates
     {
         // Delete crates with empty names
-        FwdSqlQuery query(database, QString(
-                "DELETE FROM %1 WHERE %2 IS NULL OR TRIM(%2)=''").arg(
-                        CRATE_TABLE,
-                        CRATETABLE_NAME));
+        FwdSqlQuery query(
+          database, QString(
+            "DELETE FROM %1 "
+            "WHERE %2 IS NULL "
+            "OR TRIM(%2)=''").arg(
+              CRATE_TABLE,
+              CRATETABLE_NAME));
         if (query.execPrepared() && (query.numRowsAffected() > 0)) {
             kLogger.warning()
                     << "Deleted" << query.numRowsAffected()
@@ -40,10 +43,12 @@ void CrateManager::repairDatabase(QSqlDatabase database) {
     }
     {
         // Fix invalid values in the "locked" column
-        FwdSqlQuery query(database, QString(
-                "UPDATE %1 SET %2=0 WHERE %2 NOT IN (0,1)").arg(
-                        CRATE_TABLE,
-                        CRATETABLE_LOCKED));
+        FwdSqlQuery query(
+          database, QString(
+            "UPDATE %1 SET %2=0 "
+            "WHERE %2 NOT IN (0,1)").arg(
+              CRATE_TABLE,
+              CRATETABLE_LOCKED));
         if (query.execPrepared() && (query.numRowsAffected() > 0)) {
             kLogger.warning()
                     << "Fixed boolean values in table" << CRATE_TABLE
@@ -53,10 +58,12 @@ void CrateManager::repairDatabase(QSqlDatabase database) {
     }
     {
         // Fix invalid values in the "autodj_source" column
-        FwdSqlQuery query(database, QString(
-                "UPDATE %1 SET %2=0 WHERE %2 NOT IN (0,1)").arg(
-                        CRATE_TABLE,
-                        CRATETABLE_AUTODJ_SOURCE));
+        FwdSqlQuery query(
+          database, QString(
+            "UPDATE %1 SET %2=0 "
+            "WHERE %2 NOT IN (0,1)").arg(
+              CRATE_TABLE,
+              CRATETABLE_AUTODJ_SOURCE));
         if (query.execPrepared() && (query.numRowsAffected() > 0)) {
             kLogger.warning()
                     << "Fixed boolean values in table" << CRATE_TABLE
@@ -68,12 +75,15 @@ void CrateManager::repairDatabase(QSqlDatabase database) {
     // Crate tracks
     {
         // Remove tracks from non-existent crates
-        FwdSqlQuery query(database, QString(
-                "DELETE FROM %1 WHERE %2 NOT IN (SELECT %3 FROM %4)").arg(
-                        CRATE_TRACKS_TABLE,
-                        CRATETRACKSTABLE_CRATEID,
-                        CRATETABLE_ID,
-                        CRATE_TABLE));
+        FwdSqlQuery query(
+          database, QString(
+            "DELETE FROM %1 "
+            "WHERE %2 NOT IN "
+            "(SELECT %3 FROM %4)").arg(
+              CRATE_TRACKS_TABLE,
+              CRATETRACKSTABLE_CRATEID,
+              CRATETABLE_ID,
+              CRATE_TABLE));
         if (query.execPrepared() && (query.numRowsAffected() > 0)) {
             kLogger.warning()
                     << "Removed" << query.numRowsAffected()
@@ -82,16 +92,38 @@ void CrateManager::repairDatabase(QSqlDatabase database) {
     }
     {
         // Remove library purged tracks from crates
-        FwdSqlQuery query(database, QString(
-                "DELETE FROM %1 WHERE %2 NOT IN (SELECT %3 FROM %4)").arg(
-                        CRATE_TRACKS_TABLE,
-                        CRATETRACKSTABLE_TRACKID,
-                        LIBRARYTABLE_ID,
-                        LIBRARY_TABLE));
+        FwdSqlQuery query(
+          database, QString(
+            "DELETE FROM %1 "
+            "WHERE %2 NOT IN "
+            "(SELECT %3 FROM %4)").arg(
+              CRATE_TRACKS_TABLE,
+              CRATETRACKSTABLE_TRACKID,
+              LIBRARYTABLE_ID,
+              LIBRARY_TABLE));
         if (query.execPrepared() && (query.numRowsAffected() > 0)) {
             kLogger.warning()
                     << "Removed" << query.numRowsAffected()
                     << "library purged tracks from crates";
+        }
+    }
+
+    // Crate hierarchy
+    {
+        // Remove paths from non-existent crates
+        FwdSqlQuery query(
+          database, QString(
+            "DELETE FROM %1 "
+            "WHERE %2 NOT IN "
+            "(SELECT %3 FROM $4)").arg(
+              CRATE_PATH_TABLE,
+              PATHTABLE_CRATEID,
+              CRATE_TABLE,
+              CRATETABLE_ID));
+        if (query.execPrepared() && (query.numRowsAffected() > 0)) {
+            kLogger.warning()
+                << "Removed" << query.numRowsAffected()
+                << "paths from non-existent crates";
         }
     }
 }
@@ -156,6 +188,9 @@ bool CrateManager::updateCrate(
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(m_crateStorage.onUpdatingCrate(crate)) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_crateHierarchy.onUpdatingCrate(crate, &storage())) {
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {

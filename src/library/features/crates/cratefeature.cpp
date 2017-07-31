@@ -478,6 +478,7 @@ void CrateFeature::slotRenameCrate() {
             if (!ok || (crate.getName() == oldName)) {
                 return;
             }
+            crate.setName(crate.getName().simplified());
             if (!crate.hasName()) {
                 QMessageBox::warning(
                         nullptr,
@@ -485,7 +486,11 @@ void CrateFeature::slotRenameCrate() {
                         tr("A crate cannot have a blank name."));
                 continue;
             }
-            if (m_pCrates->storage().readCrateByName(crate.getName())) {
+            CrateId parentId(m_pCrates->hierarchy().getParentId(crate.getId()));
+            Crate parent;
+            m_pCrates->storage().readCrateById(parentId, &parent);
+
+            if (!m_pCrates->hierarchy().canBeRenamed(crate.getName(), crate, parent.getId())) {
                 QMessageBox::warning(
                         nullptr,
                         tr("Renaming Crate Failed"),

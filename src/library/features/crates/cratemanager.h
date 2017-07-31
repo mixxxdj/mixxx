@@ -49,24 +49,24 @@ class CrateManager : public QObject, public virtual SqlStorage {
         return m_crateHierarchy;
     }
 
-    ////////////////////////////////////////////
-    // wrappers for non const functions to be //
-    // called by trackCollection they return  //
-    // wether the transaction succeded or not //
-    ////////////////////////////////////////////
+    /////////////////////////////////////////////
+    // Wrappers for non const functions to be  //
+    // called by trackCollection. They return  //
+    // whether the transaction succeded or not //
+    /////////////////////////////////////////////
 
     bool onPurgingTracks(const QList<TrackId>& trackIds);
 
     ////////////////////////////////////////////////////////
     // TODO's:
     //void moveCrate();
-    //void renameCrate();
     //void updateCrateTracks();
     ////////////////////////////////////////////////////////
 
     bool insertCrate(const Crate& crate,
                      CrateId* pCrateId = nullptr);
-    // called when a crate is renamed or it's autoDj or locked status are changed.
+    // update crate information (name, locked status, AutoDJ use)
+    // in the database with info from Crate object
     bool updateCrate(const Crate& crate);
     bool deleteCrate(CrateId crateId);
     bool addTracksToCrate(CrateId crateId, const QList<TrackId>& trackIds);

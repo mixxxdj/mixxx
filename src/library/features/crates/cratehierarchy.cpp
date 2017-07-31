@@ -5,7 +5,7 @@
 
 namespace {
 
-const mixxx::Logger kLogger("CrateStorage");
+const mixxx::Logger kLogger("CrateHierarchy");
 
 } // anonymus namespace
 
@@ -18,6 +18,12 @@ void CrateHierarchy::reset(const CrateStorage* pCrateStorage) {
     initClosure(pCrateStorage->selectCrates());
     resetPath();
     generateAllPaths(pCrateStorage->selectCrates());
+}
+
+bool CrateHierarchy::onUpdatingCrate(const Crate& crate, const CrateStorage* pCrateStorage) {
+    Q_UNUSED(crate);
+    resetPath();
+    return generateAllPaths(pCrateStorage->selectCrates());
 }
 
 uint CrateHierarchy::countCratesInClosure() const {
@@ -33,6 +39,8 @@ uint CrateHierarchy::countCratesInClosure() const {
         DEBUG_ASSERT(!query.next());
         return result;
     } else {
+        kLogger.warning()
+            << "Closure is empty";
         return 0;
     }
 }
@@ -132,7 +140,7 @@ bool CrateHierarchy::generateCratePaths(Crate crate) const {
         "SELECT p.%1, p.%2 FROM %3 "
         "JOIN %4 p ON %5 = p.%2 "
         "JOIN %4 c ON %6 = c.%2 "
-        "where c.%1 = :childName and %7 != 0 "
+        "where c.%2 = :childId and %7 != 0 "
         "ORDER BY %7 DESC").arg(
           CRATETABLE_NAME,
           CRATETABLE_ID,
@@ -142,7 +150,7 @@ bool CrateHierarchy::generateCratePaths(Crate crate) const {
           CLOSURE_CHILDID,
           CLOSURE_DEPTH));
 
-    query.bindValue(":childName", crate.getName());
+    query.bindValue(":childId", crate.getId().toString());
     query.setForwardOnly(true);
     QString namePath;
     QString idPath;
@@ -280,13 +288,34 @@ QString CrateHierarchy::formatQueryForTrackIdsByCratePathLike(const QString& cra
             escapedArgument);
 }
 
-bool CrateHierarchy::nameIsValidForHierarchy(const QString& crateName,
-                                             const CrateId parentId) const {
+bool CrateHierarchy::canBeRenamed(const QString& newName,
+                                  const Crate& crate,
+                                  const CrateId parentId) const {
     if (parentId.isValid()) {
-        return tokenizeCratePath(parentId).contains(crateName);
+        if (collectParentCrateNames(crate).contains(newName) ||
+            collectChildCrateNames(crate).contains(newName)) {
+            return false;
+        }
     } else {
-        return collectRootCrateNames().contains(crateName);
+        if (collectRootCrateNames().contains(newName) ||
+            collectChildCrateNames(crate).contains(newName)) {
+            return false;
+        }
     }
+    return true;
+}
+
+bool CrateHierarchy::nameIsValidForHierarchy(const QString& newName,
+                                             const Crate parent) const {
+    if (parent.getId().isValid()) {
+        if (tokenizeCratePath(parent.getId()).contains(newName) ||
+            collectChildCrateNames(parent).contains(newName)) {
+            return false;
+        }
+    } else {
+        return !collectRootCrateNames().contains(newName);
+    }
+    return true;
 }
 
 QString CrateHierarchy::getNamePathFromId(CrateId id) const {
@@ -319,6 +348,25 @@ bool CrateHierarchy::hasChildern(CrateId id) const {
         return query.fieldValue(0).toUInt() != 0;
     }
     return false;
+}
+
+int CrateHierarchy::getParentId(const CrateId id) const {
+    FwdSqlQuery query(
+      m_database, QString(
+        "SELECT %1 FROM %2 "
+        "WHERE %3 = :id "
+        "AND %4 = 1").arg(
+          CLOSURE_PARENTID,
+          CRATE_CLOSURE_TABLE,
+          CLOSURE_CHILDID,
+          CLOSURE_DEPTH));
+
+    query.bindValue(":id", id);
+    if (query.execPrepared() && query.next()) {
+        return query.fieldValue(0).toInt();
+    }
+    // no parent found
+    return -1;
 }
 
 QStringList CrateHierarchy::collectIdPaths() const {
@@ -381,6 +429,62 @@ QStringList CrateHierarchy::collectRootCrateNames() const {
           CRATE_TABLE,
           CRATETABLE_ID,
           CLOSURE_CHILDID));
+
+    if (query.execPrepared())
+        while (query.next()) {
+            names << query.fieldValue(0).toString();
+    }
+
+    return names;
+}
+
+QStringList CrateHierarchy::collectParentCrateNames(const Crate& crate) const {
+    FwdSqlQuery query(
+      m_database, QString(
+        "SELECT p.%1 FROM %2 "
+        "JOIN %3 c ON c.%4 = %5 "
+        "JOIN %3 p ON p.%4 = %6 "
+        "WHERE c.%4 = :id "
+        "AND %7 != 0").arg(
+          CRATETABLE_NAME,
+          CRATE_CLOSURE_TABLE,
+          CRATE_TABLE,
+          CRATETABLE_ID,
+          CLOSURE_CHILDID,
+          CLOSURE_PARENTID,
+          CLOSURE_DEPTH));
+
+    query.bindValue("id", crate.getId());
+
+    QStringList names;
+
+    if (query.execPrepared())
+        while (query.next()) {
+            names << query.fieldValue(0).toString();
+    }
+
+    return names;
+}
+
+QStringList CrateHierarchy::collectChildCrateNames(const Crate& crate) const {
+    FwdSqlQuery query(
+      m_database, QString(
+        "SELECT c.%1 FROM %2 "
+        "JOIN %3 c ON c.%4 = %5 "
+        "JOIN %3 p ON p.%4 = %6 "
+        "WHERE p.%4 = :id "
+        "AND %7 != 0").arg(
+          CRATETABLE_NAME,
+          CRATE_CLOSURE_TABLE,
+          CRATE_TABLE,
+          CRATETABLE_ID,
+          CLOSURE_CHILDID,
+          CLOSURE_PARENTID,
+          CLOSURE_DEPTH));
+
+    query.bindValue("id", crate.getId());
+
+    QStringList names;
 
     if (query.execPrepared())
         while (query.next()) {
