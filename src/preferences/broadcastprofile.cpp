@@ -243,11 +243,10 @@ bool BroadcastProfile::loadValues(const QString& filename) {
     m_port = XmlParse::selectNodeInt(doc, kPort);
     m_serverType = XmlParse::selectNodeQString(doc, kServertype);
 
+    m_login = XmlParse::selectNodeQString(doc, kLogin);
     if(m_secureCredentials) {
-        m_login = getSecureValue(kLogin);
-        m_password = getSecureValue(kPassword);
+        m_password = getSecurePassword(m_login);
     } else {
-        m_login = XmlParse::selectNodeQString(doc, kLogin);
         m_password = XmlParse::selectNodeQString(doc, kPassword);
     }
 
@@ -301,11 +300,10 @@ bool BroadcastProfile::save(const QString& filename) {
     XmlParse::addElement(doc, docRoot, kPort, QString::number(m_port));
     XmlParse::addElement(doc, docRoot, kServertype, m_serverType);
 
+    XmlParse::addElement(doc, docRoot, kLogin, m_login);
     if(m_secureCredentials) {
-        setSecureValue(kLogin, m_login);
-        setSecureValue(kPassword, m_password);
+        setSecurePassword(m_login, m_password);
     } else {
-        XmlParse::addElement(doc, docRoot, kLogin, m_login);
         XmlParse::addElement(doc, docRoot, kPassword, m_password);
     }
 
@@ -379,13 +377,13 @@ bool BroadcastProfile::secureCredentialStorage() {
     return m_secureCredentials;
 }
 
-bool BroadcastProfile::setSecureValue(QString key, QString value) {
+bool BroadcastProfile::setSecurePassword(QString login, QString password) {
     QString serviceName = QString(kKeychainPrefix) + getProfileName();
 
     WritePasswordJob writeJob(serviceName);
     writeJob.setAutoDelete(false);
-    writeJob.setKey(key);
-    writeJob.setTextData(value);
+    writeJob.setKey(login);
+    writeJob.setTextData(password);
 
     QEventLoop loop;
     writeJob.connect(&writeJob, SIGNAL(finished(QKeychain::Job*)),
@@ -403,12 +401,12 @@ bool BroadcastProfile::setSecureValue(QString key, QString value) {
     }
 }
 
-QString BroadcastProfile::getSecureValue(QString key) {
+QString BroadcastProfile::getSecurePassword(QString login) {
     QString serviceName = QString(kKeychainPrefix) + getProfileName();
 
     ReadPasswordJob readJob(serviceName);
     readJob.setAutoDelete(false);
-    readJob.setKey(key);
+    readJob.setKey(login);
 
     QEventLoop loop;
     readJob.connect(&readJob, SIGNAL(finished(QKeychain::Job*)),

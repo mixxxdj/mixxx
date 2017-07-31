@@ -123,8 +123,8 @@ class BroadcastProfile : public QObject {
     void adoptDefaultValues();
     bool loadValues(const QString& filename);
 
-    bool setSecureValue(QString key, QString value);
-    QString getSecureValue(QString key);
+    bool setSecurePassword(QString login, QString password);
+    QString getSecurePassword(QString login);
 
     bool m_secureCredentials;
 
