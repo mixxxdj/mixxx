@@ -246,19 +246,30 @@ Description:
                     <Layout>vertical</Layout>
                     <SizePolicy>me,min</SizePolicy>
                     <Children>
-                      <Label>
-                        <ObjectName>CoverSpinnyHint</ObjectName>
-                        <Size>182f,15f</Size>
-                        <Text>                                   &#9664; !</Text>
+                      <WidgetGroup><!-- Show hint when Channel mixer is visible -->
+                        <Layout>vertical</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Children>
+                          <Label>
+                            <ObjectName>CoverSpinnyHint</ObjectName>
+                            <Size>182f,15f</Size>
+                            <Text>                                   &#9664;</Text>
+                            <Connection>
+                              <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </Label>
+                        </Children>
                         <Connection>
-                          <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
+                          <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
-                      </Label>
+                      </WidgetGroup>
                     </Children>
                     <Connection>
-                      <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
+                      <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
                       <BindProperty>visible</BindProperty>
+                      <Transform><IsEqual>2</IsEqual><Not/></Transform>
                     </Connection>
                   </WidgetGroup>
                 </Children>
@@ -397,34 +408,45 @@ Description:
                 </Children>
               </WidgetGroup><!-- /Spinny/Cover small/BIG-->
 
-              <WidgetGroup><!-- Show hint when Channel mixer is visible -->
+              <WidgetGroup><!-- Show hint when Cover or Spinny is enabled -->
                 <Layout>vertical</Layout>
                 <SizePolicy>me,min</SizePolicy>
                 <Children>
-                  <Label>
-                    <ObjectName>CoverSpinnyHint</ObjectName>
-                    <Size>182f,15f</Size>
-                    <Text>      hide Channel Mixer</Text>
+                  <WidgetGroup><!-- and when Channel mixer is visible -->
+                    <Layout>vertical</Layout>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Children>
+                      <Label>
+                        <ObjectName>CoverSpinnyHint</ObjectName>
+                        <Size>182f,15f</Size>
+                        <Text>      hide Channel Mixer</Text>
+                        <Connection>
+                          <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </Label>
+                      <Label>
+                        <ObjectName>CoverSpinnyHint</ObjectName>
+                        <Size>182f,15f</Size>
+                        <Text>      to see big Cover/Spinny</Text>
+                        <Connection>
+                          <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </Label>
+                    </Children>
                     <Connection>
-                      <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
+                      <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
-                  </Label>
-                  <Label>
-                    <ObjectName>CoverSpinnyHint</ObjectName>
-                    <Size>182f,15f</Size>
-                    <Text>      to see big Cover/Spinny</Text>
-                    <Connection>
-                      <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </Label>
+                  </WidgetGroup><!-- /and when Channel mixer is visible -->
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
+                  <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
                   <BindProperty>visible</BindProperty>
+                  <Transform><IsEqual>2</IsEqual><Not/></Transform>
                 </Connection>
-              </WidgetGroup>
+              </WidgetGroup><!-- /Show hint when Cover or Spinny is enabled -->
 
               <WidgetGroup><!-- Spinny/Cover Cover on Spinny-->
                 <Layout>stacked</Layout>
