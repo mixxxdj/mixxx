@@ -30,11 +30,10 @@ class CrateHierarchy : public virtual DAO {
     // crate hierarchy only cares whether a crates name has changed or not
     bool onUpdatingCrate(const Crate& crate, const CrateStorage* pCrateStorage);
 
-    uint countCratesInClosure() const;
-
     void addCrateToHierarchy(const Crate& crate,
-                             const Crate parent = Crate()) const;
+                             const Crate& parent = Crate());
 
+    uint countCratesInClosure() const;
 
     // parent and child are assigned the corresponding crate
     // returns false if the crate does not have a parent (is level 1)

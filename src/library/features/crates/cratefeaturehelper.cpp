@@ -68,10 +68,7 @@ CrateId CrateFeatureHelper::createEmptyCrate(const Crate& parent) {
     }
 
     CrateId newCrateId;
-    if (m_pCrates->insertCrate(newCrate, &newCrateId)) {
-        DEBUG_ASSERT(newCrateId.isValid());
-        newCrate.setId(newCrateId);
-        m_pCrates->hierarchy().addCrateToHierarchy(newCrate, parent);
+    if (m_pCrates->insertCrate(newCrate, &newCrateId,  parent)) {
         qDebug() << "Created new crate" << newCrate;
     } else {
         DEBUG_ASSERT(!newCrateId.isValid());
@@ -123,9 +120,6 @@ CrateId CrateFeatureHelper::duplicateCrate(const Crate& oldCrate) {
 
     CrateId newCrateId;
     if (m_pCrates->insertCrate(newCrate, &newCrateId)) {
-        DEBUG_ASSERT(newCrateId.isValid());
-        newCrate.setId(newCrateId);
-        m_pCrates->hierarchy().addCrateToHierarchy(newCrate);
         qDebug() << "Created new crate" << newCrate;
         QList<TrackId> trackIds;
         trackIds.reserve(

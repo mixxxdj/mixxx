@@ -26,6 +26,18 @@ bool CrateHierarchy::onUpdatingCrate(const Crate& crate, const CrateStorage* pCr
     return generateAllPaths(pCrateStorage->selectCrates());
 }
 
+void CrateHierarchy::addCrateToHierarchy(const Crate& crate, const Crate& parent) {
+    if (parent.getId().isValid()) {
+        initClosureForCrate(crate.getId());
+        if (insertIntoClosure(parent.getId(), crate.getId())) {
+            generateCratePaths(crate);
+        }
+    } else {
+        initClosureForCrate(crate.getId());
+        generateCratePaths(crate);
+    }
+}
+
 uint CrateHierarchy::countCratesInClosure() const {
     FwdSqlQuery query(
       m_database, QString(
@@ -98,18 +110,6 @@ void CrateHierarchy::resetPath() const {
     }
     if (!query.execPrepared()) {
         return;
-    }
-}
-
-void CrateHierarchy::addCrateToHierarchy(const Crate &crate, const Crate parent) const {
-    if (parent.getId().isValid()) {
-        initClosureForCrate(crate.getId());
-        if (insertIntoClosure(parent.getId(), crate.getId())) {
-            generateCratePaths(crate);
-        }
-    } else {
-        initClosureForCrate(crate.getId());
-        generateCratePaths(crate);
     }
 }
 

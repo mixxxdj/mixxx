@@ -709,11 +709,7 @@ void CrateFeature::slotCreateImportCrate() {
             }
         }
 
-        if (m_pCrates->insertCrate(crate, &lastCrateId)) {
-                Crate crate;
-                m_pCrates->storage().readCrateById(lastCrateId, &crate);
-                m_pCrateTableModel->selectCrate(crate);
-        } else {
+        if (!m_pCrates->insertCrate(crate, &lastCrateId)) {
             QMessageBox::warning(
                     nullptr,
                     tr("Crate Creation Failed"),

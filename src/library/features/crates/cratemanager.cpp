@@ -145,7 +145,7 @@ void CrateManager::disconnectDatabase() {
 }
 
 bool CrateManager::onPurgingTracks(const QList<TrackId> &trackIds) {
-    m_crateTracks.onPurgingTracks(trackIds);
+    return m_crateTracks.onPurgingTracks(trackIds);
 }
 
 void CrateManager::checkClosure() {
@@ -155,8 +155,9 @@ void CrateManager::checkClosure() {
 }
 
 bool CrateManager::insertCrate(
-        const Crate& crate,
-        CrateId* pCrateId) {
+  Crate& crate,
+  CrateId* pCrateId,
+  const Crate& parent) {
     // Transactional
     SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
@@ -166,7 +167,11 @@ bool CrateManager::insertCrate(
     VERIFY_OR_DEBUG_ASSERT(m_crateStorage.onInsertingCrate(crate, &crateId)) {
         return false;
     }
+
     DEBUG_ASSERT(crateId.isValid());
+    crate.setId(crateId);
+    m_crateHierarchy.addCrateToHierarchy(crate, parent);
+
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
         return false;
     }
@@ -177,6 +182,7 @@ bool CrateManager::insertCrate(
     if (pCrateId != nullptr) {
         *pCrateId = crateId;
     }
+
     return true;
 }
 

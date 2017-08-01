@@ -63,8 +63,9 @@ class CrateManager : public QObject, public virtual SqlStorage {
     //void updateCrateTracks();
     ////////////////////////////////////////////////////////
 
-    bool insertCrate(const Crate& crate,
-                     CrateId* pCrateId = nullptr);
+    bool insertCrate(Crate& crate,
+                     CrateId* pCrateId,
+                     const Crate& parent = Crate());
     // update crate information (name, locked status, AutoDJ use)
     // in the database with info from Crate object
     bool updateCrate(const Crate& crate);
