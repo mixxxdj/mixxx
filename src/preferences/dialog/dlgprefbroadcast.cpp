@@ -26,6 +26,14 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
           m_pBroadcastSettings(pBroadcastSettings),
           m_pProfileListSelection(nullptr) {
     setupUi(this);
+
+#ifndef __QTKEYCHAIN__
+    // If secure storage is disabled, hide the checkbox
+    // and force the value to false.
+    cbSecureCredentials->setVisible(false);
+    cbSecureCredentials->setChecked(false);
+#endif
+
     connect(profileList->horizontalHeader(), SIGNAL(sectionResized(int, int, int)),
             this, SLOT(onSectionResized()));
     connect(cbRemoveMode, SIGNAL(stateChanged(int)),

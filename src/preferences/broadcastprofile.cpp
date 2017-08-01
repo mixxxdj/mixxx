@@ -9,7 +9,11 @@
 #include <QDebug>
 #include <QString>
 #include <QStringList>
+
+#ifdef __QTKEYCHAIN__
 #include <qtkeychain/keychain.h>
+using namespace QKeychain;
+#endif
 
 #include "broadcast/defs_broadcast.h"
 #include "defs_urls.h"
@@ -17,8 +21,6 @@
 #include "util/memory.h"
 
 #include "broadcastprofile.h"
-
-using namespace QKeychain;
 
 namespace {
 const char* kDoctype = "broadcastprofile";
@@ -237,6 +239,12 @@ bool BroadcastProfile::loadValues(const QString& filename) {
         return false;
 
     m_secureCredentials = (bool)XmlParse::selectNodeInt(doc, kSecureCredentials);
+#ifndef __QTKEYCHAIN__
+    // Secure credentials storage can't be enabled nor disabled from the UI,
+    // so force it to disabled to avoid issues if enabled.
+    m_secureCredentials = false;
+#endif
+
     m_enabled = (bool)XmlParse::selectNodeInt(doc, kEnabled);
 
     m_host = XmlParse::selectNodeQString(doc, kHost);
@@ -378,6 +386,7 @@ bool BroadcastProfile::secureCredentialStorage() {
 }
 
 bool BroadcastProfile::setSecurePassword(QString login, QString password) {
+#ifdef __QTKEYCHAIN__
     QString serviceName = QString(kKeychainPrefix) + getProfileName();
 
     WritePasswordJob writeJob(serviceName);
@@ -399,9 +408,12 @@ bool BroadcastProfile::setSecurePassword(QString login, QString password) {
                 << writeJob.errorString();
         return false;
     }
+#endif
+    return false;
 }
 
 QString BroadcastProfile::getSecurePassword(QString login) {
+#ifdef __QTKEYCHAIN__
     QString serviceName = QString(kKeychainPrefix) + getProfileName();
 
     ReadPasswordJob readJob(serviceName);
@@ -420,8 +432,9 @@ QString BroadcastProfile::getSecurePassword(QString login) {
     } else {
         qDebug() << "BroadcastProfile::getSecureValue: read job failed with error:"
                         << readJob.errorString();
-        return QString();
     }
+#endif
+    return QString();
 }
 
 // This was useless before, but now comes in handy for multi-broadcasting,
