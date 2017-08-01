@@ -1312,12 +1312,11 @@ class QtKeychain(Feature):
         return False
 
     def add_options(self, build, vars):
-        vars.Add('qtkeychain', 'Set to 1 to enable secure credentials storage support for Live Broadcasting profiles', 1)
+        vars.Add('qtkeychain', 'Set to 1 to enable secure credentials storage support for Live Broadcasting profiles', 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-
         build.env.Append(CPPDEFINES='__QTKEYCHAIN__')
 
     def sources(self, build):
