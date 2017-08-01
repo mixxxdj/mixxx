@@ -116,10 +116,6 @@ const QList<EffectManifest> EffectsManager::getAvailableEffectManifestsFiltered(
     return list;
 }
 
-bool EffectsManager::isEQ(const QString& effectId) const {
-    return getEffectManifest(effectId).isMixingEQ();
-}
-
 QString EffectsManager::getNextEffectId(const QString& effectId) {
     if (m_availableEffectManifests.isEmpty()) {
         return QString();

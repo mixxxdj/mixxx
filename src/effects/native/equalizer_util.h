@@ -9,6 +9,8 @@ class EqualizerUtil {
   public:
     // Creates common EQ parameters like low/mid/high gain and kill buttons.
     static void createCommonParameters(EffectManifest* manifest) {
+        manifest->setIsWaveformChangingEQ(true);
+
         EffectManifestParameter* low = manifest->addParameter();
         low->setId("low");
         low->setName(QObject::tr("Low"));

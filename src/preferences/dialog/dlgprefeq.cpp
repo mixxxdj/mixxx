@@ -156,7 +156,9 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
             configuredEffect = kDefaultEqId;
         }
         m_deckEqEffectSelectors[i]->setCurrentIndex(selectedEffectIndex);
-        m_filterWaveformEffectLoaded[i] = m_pEffectsManager->isEQ(configuredEffect);
+        const EffectManifest manifest =
+                m_pEffectsManager->getEffectManifest(configuredEffect);
+        m_filterWaveformEffectLoaded[i] = manifest.isWaveformChangingEQ();
         m_filterWaveformEnableCOs[i]->set(
                 m_filterWaveformEffectLoaded[i] &&
                 !CheckBoxBypass->checkState());
@@ -470,7 +472,10 @@ void DlgPrefEQ::applySelections() {
             m_pEQEffectRack->loadEffectToGroup(group, pEffect);
             m_pConfig->set(ConfigKey(kConfigKey, "EffectForGroup_" + group),
                     ConfigValue(effectId));
-            m_filterWaveformEnableCOs[deck]->set(m_pEffectsManager->isEQ(effectId));
+
+            m_filterWaveformEnableCOs[deck]->set(
+                    pEffect->getManifest().isWaveformChangingEQ());
+            qDebug() << "DlgPrefEq::applySelections" << pEffect->getManifest().isWaveformChangingEQ() << m_filterWaveformEnableCOs[deck]->get();
 
             // This is required to remove a previous selected effect that does not
             // fit to the current ShowAllEffects checkbox

@@ -709,6 +709,8 @@ class MixxxCore(Feature):
                    "effects/native/bessel8lvmixeqeffect.cpp",
                    "effects/native/threebandbiquadeqeffect.cpp",
                    "effects/native/biquadfullkilleqeffect.cpp",
+                   "effects/native/semiparametriceq3knobeffect.cpp",
+                   "effects/native/semiparametriceq4knobeffect.cpp",
                    "effects/native/loudnesscontoureffect.cpp",
                    "effects/native/graphiceqeffect.cpp",
                    "effects/native/flangereffect.cpp",
