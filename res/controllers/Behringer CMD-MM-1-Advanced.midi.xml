@@ -9,8 +9,8 @@
         <name>Behringer CMD MM-1 Advanced</name>
         <author>Swiftb0y</author>
         <description>This mapping is supposed to be used in combination with the Launchpad Mk2 mapping by midiparse</description>
-        <forums></forums>
-        <wiki></wiki>
+        <forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=9276</forums>
+        <wiki>https://www.mixxx.org/wiki/doku.php/behringer_cmd_mm-1_advanced_mapping</wiki>
     </info>
     <controller id="CMD">
         <scriptfiles>
