@@ -151,8 +151,6 @@ double EngineBufferScaleST::scaleBuffer(
             } else {
                 if (last_read_failed) {
                     m_pSoundTouch->flush();
-                    qWarning() << __FILE__ << "- only wrote" << total_received_frames
-                             << "frames instead of requested" << getAudioSignal().samples2frames(iOutputBufferSize);
                     break; // exit loop after failure
                 }
                 last_read_failed = true;
