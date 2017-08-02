@@ -64,7 +64,7 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
         } else {
             // Adjust lower bound of readable audio data
             if (chunkFrameIndexRange.start() < bufferedFrameIndexRange.start()) {
-                m_readableFrameIndexRange.cutFrontRange(bufferedFrameIndexRange.start() - m_readableFrameIndexRange.start());
+                m_readableFrameIndexRange.dropFrontRange(bufferedFrameIndexRange.start() - m_readableFrameIndexRange.start());
             }
             // Adjust upper bound of readable audio data
             if (chunkFrameIndexRange.end() > bufferedFrameIndexRange.end()) {
