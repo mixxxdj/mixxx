@@ -13,9 +13,10 @@ BroadcastManager::BroadcastManager(SettingsManager* pSettingsManager,
             pSoundManager->getNetworkStream();
 
     if (!pNetworkStream.isNull()) {
-        m_pBroadcast = new EngineBroadcast(m_pConfig,
+        m_pBroadcast = QSharedPointer<EngineBroadcast>(
+                new EngineBroadcast(m_pConfig,
                                     pSettingsManager->broadcastSettings(),
-                                    pNetworkStream->getNumOutputChannels());
+                                    pNetworkStream->getNumOutputChannels()));
         pNetworkStream->addWorker(m_pBroadcast);
     }
 
@@ -27,7 +28,6 @@ BroadcastManager::BroadcastManager(SettingsManager* pSettingsManager,
 BroadcastManager::~BroadcastManager() {
     // Disable broadcast so when Mixxx starts again it will not connect.
     m_pBroadcastEnabled->set(0);
-    delete m_pBroadcast;
 }
 
 void BroadcastManager::setEnabled(bool value) {
