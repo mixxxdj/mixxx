@@ -6,7 +6,6 @@
 #include "broadcast/defs_broadcast.h"
 #include "defs_urls.h"
 #include "preferences/broadcastsettings.h"
-#include "preferences/pushbuttondelegate.h"
 #include "util/logger.h"
 #include "util/memory.h"
 

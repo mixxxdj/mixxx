@@ -124,8 +124,8 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     m_wrecord = new DlgPrefRecord(this, m_pConfig);
     addPageWidget(m_wrecord);
 #ifdef __BROADCAST__
-    m_wbroadcast = new DlgPrefBroadcast(this, m_pConfig,
-                                        pSettingsManager->broadcastSettings());
+    m_wbroadcast = new DlgPrefBroadcast(this,
+            pSettingsManager->broadcastSettings());
     addPageWidget(m_wbroadcast);
 #endif
 #ifdef __MODPLUG__

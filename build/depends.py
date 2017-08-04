@@ -690,7 +690,6 @@ class MixxxCore(Feature):
                    "preferences/broadcastprofile.cpp",
                    "preferences/upgrade.cpp",
                    "preferences/dlgpreferencepage.cpp",
-                   "preferences/pushbuttondelegate.cpp",
 
                    "effects/effectmanifest.cpp",
                    "effects/effectmanifestparameter.cpp",

@@ -20,7 +20,6 @@ const int kColumnStatus = 2;
 }
 
 DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
-                                   UserSettingsPointer _config,
                                    BroadcastSettingsPointer pBroadcastSettings)
         : DlgPreferencePage(parent),
           m_pBroadcastSettings(pBroadcastSettings),
@@ -34,21 +33,21 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
     cbSecureCredentials->setChecked(false);
 #endif
 
-    connect(profileList->horizontalHeader(), SIGNAL(sectionResized(int, int, int)),
+    connect(connectionList->horizontalHeader(), SIGNAL(sectionResized(int, int, int)),
             this, SLOT(onSectionResized()));
     connect(btnRemoveConnection, SIGNAL(clicked(bool)),
             this, SLOT(onRemoveButtonClicked()));
 
     // Should be safe to directly access the underlying pointer
-    profileList->setModel(m_pBroadcastSettings.data());
+    connectionList->setModel(m_pBroadcastSettings.data());
 
-    connect(btnCreateProfile, SIGNAL(clicked(bool)),
+    connect(btnCreateConnection, SIGNAL(clicked(bool)),
             this, SLOT(btnCreateConnectionClicked()));
-    connect(profileList, SIGNAL(clicked(const QModelIndex&)),
+    connect(connectionList, SIGNAL(clicked(const QModelIndex&)),
             this, SLOT(profileListItemSelected(const QModelIndex&)));
 
     // Highlight first row
-    profileList->selectRow(0);
+    connectionList->selectRow(0);
 
     m_pBroadcastEnabled = new ControlProxy(
             BROADCAST_PREF_KEY, "enabled", this);
@@ -163,11 +162,11 @@ void DlgPrefBroadcast::slotUpdate() {
     // sending is enabled.
     if(m_pBroadcastEnabled->toBool()) {
         groupBoxProfileSettings->setEnabled(false);
-        btnCreateProfile->setEnabled(false);
+        btnCreateConnection->setEnabled(false);
         btnRemoveConnection->setEnabled(false);
     } else {
         groupBoxProfileSettings->setEnabled(true);
-        btnCreateProfile->setEnabled(true);
+        btnCreateConnection->setEnabled(true);
         btnRemoveConnection->setEnabled(true);
     }
 }
@@ -180,11 +179,11 @@ void DlgPrefBroadcast::slotApply()
     // sending is enabled.
     if(m_pBroadcastEnabled->toBool()) {
         groupBoxProfileSettings->setEnabled(false);
-        btnCreateProfile->setEnabled(false);
+        btnCreateConnection->setEnabled(false);
         btnRemoveConnection->setEnabled(false);
     } else {
         groupBoxProfileSettings->setEnabled(true);
-        btnCreateProfile->setEnabled(true);
+        btnCreateConnection->setEnabled(true);
         btnRemoveConnection->setEnabled(true);
     }
 
@@ -204,7 +203,7 @@ void DlgPrefBroadcast::broadcastEnabledChanged(double value) {
     bool enabled = value == 1.0; // 0 and 2 are disabled
 
     groupBoxProfileSettings->setEnabled(!enabled);
-    btnCreateProfile->setEnabled(!enabled);
+    btnCreateConnection->setEnabled(!enabled);
     btnRemoveConnection->setEnabled(!enabled);
 
     enableLiveBroadcasting->setChecked(enabled);
@@ -235,8 +234,6 @@ void DlgPrefBroadcast::btnCreateConnectionClicked() {
         newName = tr("Profile %1").arg(profileNumber);
         existingProfile = m_pBroadcastSettings->getProfileByName(newName);
     } while(!existingProfile.isNull());
-
-    // TODO(Palakis): add a safety check to avoid infinite looping
 
     m_pBroadcastSettings->createProfile(newName);
 }
@@ -440,20 +437,19 @@ void DlgPrefBroadcast::onRemoveButtonClicked() {
         if(response == QMessageBox::Yes) {
             m_pBroadcastSettings->deleteProfile(m_pProfileListSelection);
 
-            profileList->selectRow(0);
-            QItemSelectionModel* selected = profileList->selectionModel();
+            connectionList->selectRow(0);
+            QItemSelectionModel* selected = connectionList->selectionModel();
             profileListItemSelected(selected->currentIndex());
         }
     }
 }
 
 void DlgPrefBroadcast::onSectionResized() {
-    float width = (float)profileList->width();
+    float width = (float)connectionList->width();
 
     sender()->blockSignals(true);
-    profileList->setColumnWidth(kColumnEnabled, 100);
-    profileList->setColumnWidth(kColumnName, width * 0.45);
-    profileList->setColumnWidth(kColumnStatus, width * 0.20);
+    connectionList->setColumnWidth(kColumnEnabled, 100);
+    connectionList->setColumnWidth(kColumnName, width * 0.70);
     // The last column is automatically resized to fill
     // the remaining width, thanks to stretchLastSection set to true.
     sender()->blockSignals(false);

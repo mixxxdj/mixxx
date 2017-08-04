@@ -17,7 +17,6 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     Q_OBJECT
   public:
     DlgPrefBroadcast(QWidget *parent,
-                     UserSettingsPointer _config,
                      BroadcastSettingsPointer pBroadcastSettings);
     virtual ~DlgPrefBroadcast();
 
