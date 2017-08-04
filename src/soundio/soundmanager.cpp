@@ -77,8 +77,7 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
     m_samplerates.push_back(48000);
     m_samplerates.push_back(96000);
 
-    m_pNetworkStream = QSharedPointer<EngineNetworkStream>(
-            new EngineNetworkStream(2, 0));
+    m_pNetworkStream = std::make_unique<EngineNetworkStream>(2, 0);
 
     queryDevices();
 

@@ -23,6 +23,7 @@
 #include <QString>
 #include <QList>
 #include <QHash>
+#include <QScopedPointer>
 
 #include "preferences/usersettings.h"
 #include "engine/sidechain/enginenetworkstream.h"
@@ -107,7 +108,7 @@ class SoundManager : public QObject {
     QList<AudioOutput> registeredOutputs() const;
     QList<AudioInput> registeredInputs() const;
 
-    QSharedPointer<EngineNetworkStream> getNetworkStream() const {
+    const std::unique_ptr<EngineNetworkStream>& getNetworkStream() const {
         return m_pNetworkStream;
     }
 
@@ -146,7 +147,7 @@ class SoundManager : public QObject {
     ControlObject* m_pControlObjectSoundStatusCO;
     ControlObject* m_pControlObjectVinylControlGainCO;
 
-    QSharedPointer<EngineNetworkStream> m_pNetworkStream;
+    std::unique_ptr<EngineNetworkStream> m_pNetworkStream;
 
     std::unique_ptr<SoundDeviceNotFound> m_soundDeviceNotFound;
 };

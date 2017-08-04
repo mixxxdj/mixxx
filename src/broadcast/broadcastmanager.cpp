@@ -9,10 +9,10 @@
 BroadcastManager::BroadcastManager(SettingsManager* pSettingsManager,
                                    SoundManager* pSoundManager)
         : m_pConfig(pSettingsManager->settings()) {
-    QSharedPointer<EngineNetworkStream> pNetworkStream =
+    const std::unique_ptr<EngineNetworkStream>& pNetworkStream =
             pSoundManager->getNetworkStream();
 
-    if (!pNetworkStream.isNull()) {
+    if (pNetworkStream) {
         m_pBroadcast = QSharedPointer<EngineBroadcast>(
                 new EngineBroadcast(m_pConfig,
                                     pSettingsManager->broadcastSettings(),

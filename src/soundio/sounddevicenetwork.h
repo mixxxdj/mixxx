@@ -15,7 +15,7 @@ class SoundDeviceNetwork : public SoundDevice {
   public:
     SoundDeviceNetwork(UserSettingsPointer config,
                        SoundManager *sm,
-                       QSharedPointer<EngineNetworkStream> pNetworkStream);
+                       const std::unique_ptr<EngineNetworkStream>& pNetworkStream);
     virtual ~SoundDeviceNetwork();
 
     virtual SoundDeviceError open(bool isClkRefDevice, int syncBuffers);
@@ -30,7 +30,7 @@ class SoundDeviceNetwork : public SoundDevice {
     }
 
   private:
-    QSharedPointer<EngineNetworkStream> m_pNetworkStream;
+    const std::unique_ptr<EngineNetworkStream>& m_pNetworkStream;
     FIFO<CSAMPLE>* m_outputFifo;
     FIFO<CSAMPLE>* m_inputFifo;
     bool m_outputDrift;
