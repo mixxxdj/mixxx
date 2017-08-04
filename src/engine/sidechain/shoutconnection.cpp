@@ -4,8 +4,11 @@
 #include <QtDebug>
 #include <QUrl>
 
+// These includes are only required by ignoreSigpipe, which is unix-only
+#ifndef __WINDOWS__
 #include <signal.h>
 #include <unistd.h>
+#endif
 
 // shout.h checks for WIN32 to see if we are on Windows.
 #ifdef WIN64
