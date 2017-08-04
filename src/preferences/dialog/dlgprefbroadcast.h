@@ -30,16 +30,15 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     void checkBoxEnableReconnectChanged(int value);
     void checkBoxLimitReconnectsChanged(int value);
     void enableCustomMetadataChanged(int value);
-    void btnCreateConnectionClicked(bool enabled);
     void profileListItemSelected(const QModelIndex& index);
 
   signals:
     void apply(const QString &);
 
   private slots:
-    void onRemoveButtonClicked(int column, int row);
+    void btnCreateConnectionClicked();
+    void onRemoveButtonClicked();
     void onSectionResized();
-    void onRemoveModeChanged(int value);
 
   private:
     void getValuesFromProfile(BroadcastProfilePtr profile);

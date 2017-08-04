@@ -17,7 +17,6 @@ const mixxx::Logger kLogger("BroadcastSettings");
 const int kColumnEnabled = 0;
 const int kColumnName = 1;
 const int kColumnStatus = 2;
-const int kColumnRemove = 3;
 } // anonymous namespace
 
 BroadcastSettings::BroadcastSettings(
@@ -223,12 +222,10 @@ QVariant BroadcastSettings::data(const QModelIndex& index, int role) const {
         if(column == kColumnEnabled && role == Qt::CheckStateRole) {
             return (profile->getEnabled() == true ? Qt::Checked : Qt::Unchecked);
         } else if(column == kColumnName
-        		&& (role == Qt::DisplayRole || role == Qt::EditRole)) {
+                && (role == Qt::DisplayRole || role == Qt::EditRole)) {
             return profile->getProfileName();
         } else if(column == kColumnStatus && role == Qt::DisplayRole) {
             return connectionStatusString(profile);
-        } else if(column == kColumnRemove && role == Qt::DisplayRole) {
-            return tr("Double-click to remove");
         }
     }
 
@@ -245,8 +242,6 @@ QVariant BroadcastSettings::headerData(int section, Qt::Orientation orientation,
                 return tr("Name");
             } else if(section == kColumnStatus) {
                 return tr("Status");
-            } else if(section == kColumnRemove) {
-                return QString("");
             }
         }
     }
@@ -258,9 +253,6 @@ Qt::ItemFlags BroadcastSettings::flags(const QModelIndex& index) const {
         return QAbstractItemModel::flags(index) | Qt::ItemIsUserCheckable;
 
     if(index.column() == kColumnName)
-        return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
-
-    if(index.column() == kColumnRemove)
         return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
 
     return Qt::ItemIsEnabled;
@@ -286,9 +278,6 @@ bool BroadcastSettings::setData(const QModelIndex& index, const QVariant& value,
 }
 
 QAbstractItemDelegate* BroadcastSettings::delegateForColumn(const int i, QObject* parent) {
-    if(i == kColumnRemove) {
-        return new PushButtonDelegate(parent);
-    }
     return nullptr;
 }
 
