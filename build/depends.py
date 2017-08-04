@@ -764,7 +764,6 @@ class MixxxCore(Feature):
                    "engine/enginedeck.cpp",
                    "engine/engineaux.cpp",
                    "engine/channelmixer_autogen.cpp",
-                   "engine/sidechain/shoutconnection.cpp",
 
                    "engine/enginecontrol.cpp",
                    "engine/ratecontrol.cpp",

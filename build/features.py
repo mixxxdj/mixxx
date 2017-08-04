@@ -853,7 +853,8 @@ class LiveBroadcasting(Feature):
         depends.Qt.uic(build)('preferences/dialog/dlgprefbroadcastdlg.ui')
         return ['preferences/dialog/dlgprefbroadcast.cpp',
                 'broadcast/broadcastmanager.cpp',
-                'engine/sidechain/enginebroadcast.cpp']
+                'engine/sidechain/enginebroadcast.cpp',
+                'engine/sidechain/shoutconnection.cpp']
 
 
 class Opus(Feature):
