@@ -88,6 +88,8 @@ bool BroadcastSettings::addProfile(const BroadcastProfilePtr& profile) {
     // it won't delete the pointer.
     connect(profile.data(), SIGNAL(profileNameChanged(QString, QString)),
             this, SLOT(onProfileNameChanged(QString,QString)));
+    connect(profile.data(), SIGNAL(connectionStatusChanged(int)),
+            this, SLOT(onConnectionStatusChanged(int)));
     m_profiles.insert(profile->getProfileName(), BroadcastProfilePtr(profile));
 
     endInsertRows();
@@ -193,27 +195,20 @@ void BroadcastSettings::onProfileNameChanged(QString oldName, QString newName) {
 }
 
 void BroadcastSettings::onConnectionStatusChanged(int newStatus) {
-    BroadcastProfilePtr profile(
-            qobject_cast<BroadcastProfile*>(sender()));
-
-    if(profile) {
-        //QList<BroadcastProfilePtr> profiles = m_profiles.values();
-        //int row = profiles.indexOf(profile);
-
-        //QModelIndex statusIndex = this->index(row, kColumnStatus);
-        //emit dataChanged(statusIndex, statusIndex);
-
-        QModelIndex start = this->index(0, kColumnStatus);
-        QModelIndex end = this->index(m_profiles.size()-1, kColumnStatus);
-        emit dataChanged(start, end);
-    }
+    Q_UNUSED(newStatus);
+    // Refresh the whole status column
+    QModelIndex start = this->index(0, kColumnStatus);
+    QModelIndex end = this->index(m_profiles.size()-1, kColumnStatus);
+    emit dataChanged(start, end);
 }
 
 int BroadcastSettings::rowCount(const QModelIndex& parent) const {
+    Q_UNUSED(parent);
     return m_profiles.size();
 }
 
 int BroadcastSettings::columnCount(const QModelIndex& parent) const {
+    Q_UNUSED(parent);
     return 4;
 }
 
