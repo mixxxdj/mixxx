@@ -64,14 +64,12 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
           m_noDelayFirstReconnect(true),
           m_limitReconnects(true),
           m_maximumRetries(10) {
-    setStatus(BroadcastProfile::STATUS_UNCONNECTED);
-
     m_pOutputFifo = new FIFO<CSAMPLE>(fifoSize);
 
+    setStatus(BroadcastProfile::STATUS_UNCONNECTED);
     setState(NETWORKSTREAMWORKER_STATE_INIT);
 
     // shout_init() should've already been called by now
-
     if (!(m_pShout = shout_new())) {
         errorDialog(tr("Mixxx encountered a problem"),
                 tr("Could not allocate shout_t"));
@@ -868,7 +866,7 @@ void ShoutConnection::tryReconnect() {
 }
 
 void ShoutConnection::outputAvailable() {
-	m_readSema.release();
+    m_readSema.release();
 }
 
 void ShoutConnection::setOutputFifo(FIFO<CSAMPLE>* pOutputFifo) {
