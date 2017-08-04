@@ -71,6 +71,10 @@ TEST(BroadcastProfileTest, SetGetValues) {
     profile.setProfileName(profileName);
     ASSERT_TRUE(profile.getProfileName() == profileName);
 
+    bool secureCredentials = true;
+    profile.setSecureCredentialStorage(secureCredentials);
+    ASSERT_EQ(profile.secureCredentialStorage(), secureCredentials);
+
     bool enabled = false;
     profile.setEnabled(enabled);
     ASSERT_EQ(profile.getEnabled(), enabled);
@@ -184,7 +188,7 @@ TEST(BroadcastProfileTest, DefaultValues) {
     BroadcastProfile profile("Unit Testing Default Values");
 
     // Check if some select attributes have non-empty default values
-    ASSERT_TRUE(profile.getEnabled());
+    ASSERT_FALSE(profile.getEnabled());
     ASSERT_EQ(profile.getPort(), BROADCAST_DEFAULT_PORT);
     ASSERT_TRUE(profile.getStreamWebsite() == QString(MIXXX_WEBSITE_URL));
     ASSERT_FALSE(profile.getStreamDesc().isEmpty());
