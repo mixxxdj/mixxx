@@ -2,7 +2,7 @@
 // Created July 4th 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
 
 #ifndef ENGINE_SIDECHAIN_SHOUTCONNECTION_H
-#define ENGINE_SIDECHAIN_SHOUTCONNECTIOn_H
+#define ENGINE_SIDECHAIN_SHOUTCONNECTION_H
 
 #include <QMessageBox>
 #include <QMutex>
