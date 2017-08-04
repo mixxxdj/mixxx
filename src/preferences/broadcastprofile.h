@@ -18,6 +18,13 @@ class BroadcastProfile : public QObject {
   Q_OBJECT
 
   public:
+    enum StatusStates {
+          STATUS_UNCONNECTED = 0, // IDLE state, no error
+          STATUS_CONNECTING = 1, // 30 s max
+          STATUS_CONNECTED = 2, // On Air
+          STATUS_FAILURE = 3 // Happens when disconnected by an error
+    };
+
     explicit BroadcastProfile(const QString& profileName,
                               QObject* parent = nullptr);
     bool save(const QString& filename);
@@ -28,6 +35,14 @@ class BroadcastProfile : public QObject {
     static BroadcastProfilePtr loadFromFile(const QString& filename);
     static bool validName(const QString& str);
     static QString stripForbiddenChars(const QString& str);
+
+    void setConnectionStatus(int newState) {
+        m_connectionStatus = newState;
+        emit connectionStatusChanged(m_connectionStatus);
+    }
+    int connectionStatus() {
+        return m_connectionStatus;
+    }
 
     void setProfileName(const QString& profileName);
     QString getProfileName() const;
@@ -115,6 +130,7 @@ class BroadcastProfile : public QObject {
 
   signals:
     void profileNameChanged(QString oldName, QString newName);
+    void connectionStatusChanged(int status);
 
   private:
     void adoptDefaultValues();
@@ -154,6 +170,8 @@ class BroadcastProfile : public QObject {
     QString m_customTitle;
     QString m_metadataFormat;
     bool m_oggDynamicUpdate;
+
+    QAtomicInt m_connectionStatus;
 };
 
 #endif // BROADCASTPROFILE_H

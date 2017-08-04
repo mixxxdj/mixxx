@@ -36,13 +36,6 @@ class ShoutConnection
         : public QThread, public EncoderCallback, public NetworkStreamWorker {
     Q_OBJECT
   public:
-    enum StatusCOStates {
-        STATUSCO_UNCONNECTED = 0, // IDLE state, no error
-        STATUSCO_CONNECTING = 1, // 30 s max
-        STATUSCO_CONNECTED = 2, // On Air
-        STATUSCO_FAILURE = 3 // Happens when disconnected by an error
-    };
-
     ShoutConnection(BroadcastProfilePtr profile, UserSettingsPointer pConfig, int fifoSize);
     virtual ~ShoutConnection();
 
@@ -77,6 +70,13 @@ class ShoutConnection
 
     BroadcastProfilePtr profile() {
         return m_pProfile;
+    }
+
+    void setStatus(int newState) {
+        return m_pProfile->setConnectionStatus(newState);
+    }
+    int getStatus() {
+        return m_pProfile->connectionStatus();
     }
 
   signals:
@@ -129,7 +129,6 @@ class ShoutConnection
     EncoderPointer m_encoder;
     ControlProxy* m_pMasterSamplerate;
     ControlProxy* m_pBroadcastEnabled;
-    ControlObject* m_pStatusCO;
     // static metadata according to prefereneces
     bool m_custom_metadata;
     QString m_customArtist;

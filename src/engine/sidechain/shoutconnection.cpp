@@ -64,9 +64,7 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
           m_noDelayFirstReconnect(true),
           m_limitReconnects(true),
           m_maximumRetries(10) {
-    m_pStatusCO = new ControlObject(ConfigKey(m_pProfile->getProfileName(), "status"));
-    m_pStatusCO->setReadOnly();
-    m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
+    setStatus(BroadcastProfile::STATUS_UNCONNECTED);
 
     m_pOutputFifo = new FIFO<CSAMPLE>(fifoSize);
 
@@ -92,7 +90,6 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
 }
 
 ShoutConnection::~ShoutConnection() {
-    delete m_pStatusCO;
     delete m_pMasterSamplerate;
 
     if (m_pShoutMetaData)
@@ -125,8 +122,9 @@ void ShoutConnection::applySettings() {
     // connection's thread to exit, so no need to call
     // processDisconnect manually
 
-    double dStatus = m_pStatusCO->get();
-    if((dStatus == STATUSCO_UNCONNECTED || dStatus == STATUSCO_FAILURE)) {
+    int dStatus = getStatus();
+    if((dStatus == BroadcastProfile::STATUS_UNCONNECTED
+            || dStatus == BroadcastProfile::STATUS_FAILURE)) {
         serverConnect();
     }
 }
@@ -141,9 +139,9 @@ QByteArray ShoutConnection::encodeString(const QString& string) {
 void ShoutConnection::updateFromPreferences() {
     qDebug() << m_pProfile->getProfileName() << ": updating from preferences";
 
-    double dStatus = m_pStatusCO->get();
-    if (dStatus == STATUSCO_CONNECTED ||
-            dStatus == STATUSCO_CONNECTING) {
+    int dStatus = getStatus();
+    if (dStatus == BroadcastProfile::STATUS_CONNECTED ||
+            dStatus == BroadcastProfile::STATUS_CONNECTING) {
         qDebug() << m_pProfile->getProfileName()
                  << "updateFromPreferences status:" << dStatus
                  << ". Can't edit preferences when playing";
@@ -418,12 +416,12 @@ bool ShoutConnection::processConnect() {
 
     if (!m_encoder) {
         // updateFromPreferences failed
-        m_pStatusCO->forceSet(STATUSCO_FAILURE);
+        setStatus(BroadcastProfile::STATUS_FAILURE);
         qDebug() << "ShoutOutput::processConnect() returning false";
         return false;
     }
 
-    m_pStatusCO->forceSet(STATUSCO_CONNECTING);
+    setStatus(BroadcastProfile::STATUS_CONNECTING);
     m_iShoutFailures = 0;
     m_lastErrorStr.clear();
     // set to a high number to automatically update the metadata
@@ -513,7 +511,7 @@ bool ShoutConnection::processConnect() {
             }
             m_threadWaiting = true;
 
-            m_pStatusCO->forceSet(STATUSCO_CONNECTED);
+            setStatus(BroadcastProfile::STATUS_CONNECTED);
             emit(broadcastConnected());
 
             qDebug() << "ShoutOutput::processConnect() returning true";
@@ -535,9 +533,9 @@ bool ShoutConnection::processConnect() {
     DEBUG_ASSERT(m_iShoutStatus != SHOUTERR_CONNECTED);
     m_encoder.reset();
     if (m_pProfile->getEnabled()) {
-        m_pStatusCO->forceSet(STATUSCO_FAILURE);
+        setStatus(BroadcastProfile::STATUS_FAILURE);
     } else {
-        m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
+        setStatus(BroadcastProfile::STATUS_UNCONNECTED);
     }
     qDebug() << "ShoutOutput::processConnect() returning false";
     return false;
@@ -844,7 +842,7 @@ bool ShoutConnection::waitForRetry() {
 
 void ShoutConnection::tryReconnect() {
     QString originalErrorStr = m_lastErrorStr;
-    m_pStatusCO->forceSet(STATUSCO_FAILURE);
+    setStatus(BroadcastProfile::STATUS_FAILURE);
 
     processDisconnect();
     while (waitForRetry()) {
@@ -853,7 +851,7 @@ void ShoutConnection::tryReconnect() {
         }
     }
 
-    if (m_pStatusCO->get() == STATUSCO_FAILURE) {
+    if (getStatus() == BroadcastProfile::STATUS_FAILURE) {
         m_pProfile->setEnabled(false);
         QString errorText;
         if (m_retryCount > 0) {
@@ -907,7 +905,7 @@ void ShoutConnection::run() {
         return;
     }
 
-    m_pStatusCO->forceSet(STATUSCO_CONNECTED);
+    setStatus(BroadcastProfile::STATUS_CONNECTED);
 
     while(true) {
         // Stop the thread if broadcasting is turned off
@@ -915,7 +913,7 @@ void ShoutConnection::run() {
             m_threadWaiting = false;
             qDebug() << "ShoutOutput::run: Connection disabled. Disconnecting";
             if(processDisconnect()) {
-                m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
+                setStatus(BroadcastProfile::STATUS_UNCONNECTED);
             }
             setFunctionCode(2);
             break;
