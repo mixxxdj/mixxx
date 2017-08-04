@@ -122,14 +122,10 @@ void CrateFeature::initActions() {
     connect(m_pAutoDjTrackSourceAction.get(), SIGNAL(changed()),
             this, SLOT(slotAutoDjTrackSourceChanged()));
 
-    m_pRecursionOnAction = std::make_unique<QAction>(tr("Recursion on"), this);
-    connect(m_pRecursionOnAction.get(), SIGNAL(triggered()),
-            this, SLOT(slotUpdateRecursionStatus(true)));
-
-    m_pRecursionOffAction = std::make_unique<QAction>(tr("Recursion off"), this);
-    connect(m_pRecursionOffAction.get(), SIGNAL(triggered()),
-            this, SLOT(slotUpdateRecursionStatus(false)));
-
+    m_pToggleRecursionAction = std::make_unique<QAction>(tr("Recursion"), this);
+    m_pToggleRecursionAction->setCheckable(true);
+    connect(m_pToggleRecursionAction.get(), SIGNAL(changed()),
+            this, SLOT(slotToggleRecursionStatus()));
 }
 
 void CrateFeature::connectLibrary(Library* pLibrary) {
@@ -320,8 +316,8 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     adoptPreselectedPane();
 
     m_lastClickedIndex[m_featurePane] = index;
-    if (index.data(AbstractRole::RoleData).toString() == "$Recursion$") {
-        onRightClickChild(QCursor::pos(), index);
+    if (index.data(AbstractRole::RoleData).toString() == CrateTreeModel::RECURSION_DATA) {
+        toggleRecursion();
         return;
     }
     CrateId crateId(crateIdFromIndex(index));
@@ -395,16 +391,6 @@ void CrateFeature::onRightClick(const QPoint& globalPos) {
 void CrateFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex& index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
-    if (index.data(AbstractRole::RoleData).toString() == "$Recursion$") {
-        QMenu menu(NULL);
-        if (m_pCrates->isRecursionActive()) {
-            menu.addAction(m_pRecursionOffAction.get());
-        } else {
-            menu.addAction(m_pRecursionOnAction.get());
-        }
-        menu.exec(globalPos);
-        return;
-    }
 
     CrateId crateId(crateIdFromIndex(index));
     if (!crateId.isValid()) {
@@ -442,11 +428,7 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex&
     menu.addAction(m_pExportPlaylistAction.get());
     menu.addAction(m_pExportTrackFilesAction.get());
     menu.addSeparator();
-    if (m_pCrates->isRecursionActive()) {
-        menu.addAction(m_pRecursionOffAction.get());
-    } else {
-        menu.addAction(m_pRecursionOnAction.get());
-    }
+    menu.addAction(m_pToggleRecursionAction.get());
     menu.exec(globalPos);
 }
 
@@ -477,7 +459,7 @@ void CrateFeature::slotDeleteCrate() {
             return;
         }
         // better deletion requeried
-        if (m_pCrates->hierarchy().hasChildern(crate.getId())) {
+        if (m_pCrates->hierarchy().hasChildren(crate.getId())) {
             if (QMessageBox::question(
                   nullptr,
                   tr("Deleting multiple crates"),
@@ -581,9 +563,8 @@ void CrateFeature::slotAutoDjTrackSourceChanged() {
     }
 }
 
-void CrateFeature::slotUpdateRecursionStatus(bool status) {
-    m_pCrates->setRecursionStatus(status);
-    m_pChildModel->reloadTree();
+void CrateFeature::slotToggleRecursionStatus() {
+    toggleRecursion();
 }
 
 QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
@@ -959,4 +940,14 @@ void CrateFeature::showTable(int paneId) {
     if (it != m_panes.end() && !it->isNull() && itId != m_idTable.end()) {
         (*it)->setCurrentIndex(*itId);
     }
+}
+
+void CrateFeature::toggleRecursion() {
+    if (m_pCrates->isRecursionActive()) {
+        m_pCrates->setRecursionStatus(false);
+    } else {
+        m_pCrates->setRecursionStatus(true);
+    }
+    m_pChildModel->reloadTree();
+    activate();
 }

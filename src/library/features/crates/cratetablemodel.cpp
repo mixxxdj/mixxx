@@ -17,13 +17,23 @@ CrateTableModel::CrateTableModel(QObject* pParent,
 CrateTableModel::~CrateTableModel() {
 }
 
-void CrateTableModel::selectCrate(Crate crate) {
+void CrateTableModel::selectCrate(const Crate& crate) {
     //qDebug() << "CrateTableModel::setCrate()" << crateId;
-    if (crate.getId() == m_selectedCrate) {
+    m_selectedCrate = crate.getId();
+
+    QString recursion = "";
+    if (m_pCrates->isRecursionActive()) {
+                // we need a deifferent table for recursive view so we set a different name
+        recursion = "recursive";
+    }
+
+    QString tableName = QString("crate_%1_%2").arg(m_selectedCrate.toString(),
+                                                   recursion);
+    if (crate.getId() == m_selectedCrate &&
+        getTableName() == tableName) {
         qDebug() << "Already focused on crate " << crate.getId();
         return;
     }
-    m_selectedCrate = crate.getId();
 
     QStringList crateIds;
     if (m_pCrates->isRecursionActive()) {
@@ -31,7 +41,6 @@ void CrateTableModel::selectCrate(Crate crate) {
     }
     crateIds << crate.getId().toString();
 
-    QString tableName = QString("crate_%1").arg(m_selectedCrate.toString());
     QStringList columns;
     columns << LIBRARYTABLE_ID
             << "'' AS " + LIBRARYTABLE_PREVIEW

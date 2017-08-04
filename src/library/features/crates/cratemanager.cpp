@@ -152,6 +152,8 @@ bool CrateManager::onPurgingTracks(const QList<TrackId> &trackIds) {
 void CrateManager::checkClosure() {
     if (m_crateHierarchy.countCratesInClosure() != m_crateStorage.countCrates()) {
         m_crateHierarchy.reset(&storage());
+        kLogger.warning()
+            << "Detected inconsistent crate tables";
     }
 }
 
@@ -213,7 +215,7 @@ bool CrateManager::updateCrate(
 bool CrateManager::deleteCrate(
   const Crate& crate) {
     QStringList childIds;
-    if (m_crateHierarchy.hasChildern(crate.getId())) {
+    if (m_crateHierarchy.hasChildren(crate.getId())) {
         childIds = m_crateHierarchy.collectChildCrateIds(crate);
     }
     childIds.push_back(crate.getId().toString());

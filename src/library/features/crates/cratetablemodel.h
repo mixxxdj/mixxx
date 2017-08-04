@@ -15,7 +15,7 @@ class CrateTableModel : public BaseSqlTableModel {
     ~CrateTableModel() final;
 
     void selectCrate(
-        Crate crate = Crate());
+        const Crate& crate = Crate());
     CrateId selectedCrate() const {
         return m_selectedCrate;
     }

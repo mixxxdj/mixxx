@@ -246,27 +246,30 @@ bool CrateHierarchy::insertIntoClosure(CrateId parent, CrateId child) const {
 }
 
 void CrateHierarchy::deleteCrate(CrateId id) const {
-    // TODO(gramanas) crate deletion from the hierarchy must
-    // be smart (delete crate with children)
-    FwdSqlQuery query(
-      m_database, QString(
-        "DELETE FROM cratePath WHERE crateId = :id"));
-    query.bindValue(":id", id);
-    if (!query.isPrepared()) {
-        return;
-    }
-    if (!query.execPrepared()) {
-        return;
+    {
+        FwdSqlQuery query(
+          m_database, QString(
+            "DELETE FROM cratePath WHERE crateId = :id"));
+        query.bindValue(":id", id);
+        if (!query.isPrepared()) {
+            return;
+        }
+        if (!query.execPrepared()) {
+            return;
+        }
     }
 
-    FwdSqlQuery query2(m_database, QString(
-        "DELETE FROM crateClosure WHERE childId = :id"));
-    query2.bindValue(":id", id);
-    if (!query2.isPrepared()) {
-        return;
-    }
-    if (!query2.execPrepared()) {
-        return;
+    {
+        FwdSqlQuery query(
+          m_database, QString(
+            "DELETE FROM crateClosure WHERE childId = :id"));
+        query.bindValue(":id", id);
+        if (!query.isPrepared()) {
+            return;
+        }
+        if (!query.execPrepared()) {
+            return;
+        }
     }
 }
 
@@ -334,7 +337,7 @@ QString CrateHierarchy::getNamePathFromId(CrateId id) const {
     return QString();
 }
 
-bool CrateHierarchy::hasChildern(CrateId id) const {
+bool CrateHierarchy::hasChildren(CrateId id) const {
     FwdSqlQuery query(
       m_database, QString(
         "SELECT COUNT(*) FROM %1 "
@@ -350,7 +353,7 @@ bool CrateHierarchy::hasChildern(CrateId id) const {
     return false;
 }
 
-int CrateHierarchy::getParentId(const CrateId id) const {
+CrateId CrateHierarchy::getParentId(const CrateId id) const {
     FwdSqlQuery query(
       m_database, QString(
         "SELECT %1 FROM %2 "
@@ -363,10 +366,10 @@ int CrateHierarchy::getParentId(const CrateId id) const {
 
     query.bindValue(":id", id);
     if (query.execPrepared() && query.next()) {
-        return query.fieldValue(0).toInt();
+        return CrateId(query.fieldValue(0).toInt());
     }
     // no parent found
-    return -1;
+    return CrateId();
 }
 
 QStringList CrateHierarchy::collectIdPaths() const {

@@ -8,13 +8,14 @@
 #include "library/features/crates/cratemanager.h"
 #include "library/crate/crate.h"
 
-// This class represents the crate tree for the nested crates feature
-
+// This class represents the crate tree for the nested crates featur
 class CrateTreeModel : public TreeItemModel {
   public:
     CrateTreeModel(LibraryFeature* pFeature,
                    CrateManager* pCrates);
     ~CrateTreeModel() override = default;
+
+    static const QString RECURSION_DATA;
 
   public slots:
     void reloadTree() override;
@@ -28,5 +29,4 @@ class CrateTreeModel : public TreeItemModel {
 
     parented_ptr<TreeItem> m_pRecursion;
 };
-
 #endif // CRATE_TREE_MODEL_H

@@ -11,6 +11,9 @@ namespace {
 
 } // anonymous namespace
 
+//static
+const QString CrateTreeModel::RECURSION_DATA = "$Recursion$";
+
 CrateTreeModel::CrateTreeModel(LibraryFeature* pFeature,
                                CrateManager* pCrates)
     : m_pFeature(pFeature),
@@ -67,7 +70,7 @@ void CrateTreeModel::createRecursionEntry(TreeItem* pRootItem) {
         status = "off";
     }
 
-    m_pRecursion = parented_ptr<TreeItem>(pRootItem->appendChild(QString("Recursion %1").arg(status), ""));
-    m_pRecursion->setData(QString("$Recursion$"));
+    m_pRecursion = parented_ptr<TreeItem>(pRootItem->appendChild(QString("Recursion: %1").arg(status), ""));
+    m_pRecursion->setData(RECURSION_DATA);
 
 }

@@ -90,6 +90,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     void setTable(const QString& tableName, const QString& trackIdColumn,
                   const QStringList& tableColumns,
                   QSharedPointer<BaseTrackCache> trackSource);
+    QString getTableName();
     void initHeaderData();
 
     QSet<TrackId> getTrackIdsFromIndices(const QModelIndexList& list) const;

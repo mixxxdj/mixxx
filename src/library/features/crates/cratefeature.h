@@ -60,7 +60,6 @@ class CrateFeature : public LibraryFeature {
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
     void slotCreateCrate();
     void slotCreateChildCrate();
-    void slotUpdateRecursionStatus(bool status);
 
   private slots:
     void slotDeleteCrate();
@@ -81,6 +80,7 @@ class CrateFeature : public LibraryFeature {
     void slotTrackSelected(TrackPointer pTrack);
     void slotResetSelectedTrack();
     void slotUpdateCrateLabels(const QSet<CrateId>& updatedCrateIds);
+    void slotToggleRecursionStatus();
 
   private:
     void initActions();
@@ -112,6 +112,8 @@ class CrateFeature : public LibraryFeature {
     void showBrowse(int paneId);
     void showTable(int paneId);
 
+    void toggleRecursion();
+
     TrackCollection* m_pTrackCollection;
     CrateManager* m_pCrates;
 
@@ -136,8 +138,8 @@ class CrateFeature : public LibraryFeature {
     std::unique_ptr<QAction> m_pExportPlaylistAction;
     std::unique_ptr<QAction> m_pExportTrackFilesAction;
     std::unique_ptr<QAction> m_pAnalyzeCrateAction;
-    std::unique_ptr<QAction> m_pRecursionOnAction;
-    std::unique_ptr<QAction> m_pRecursionOffAction;
+    std::unique_ptr<QAction> m_pToggleRecursionAction;
+
 
     std::unique_ptr<CrateTreeModel> m_pChildModel;
 

@@ -12,7 +12,6 @@
 // forward declaration(s)
 class TrackCollection;
 
-
 class CrateFeatureHelper: public QObject {
     Q_OBJECT
   public:

@@ -391,6 +391,10 @@ void BaseSqlTableModel::setTable(const QString& tableName,
     m_bInitialized = true;
 }
 
+QString BaseSqlTableModel::getTableName() {
+    return m_tableName;
+}
+
 const QString BaseSqlTableModel::currentSearch() const {
     return m_currentSearch;
 }
