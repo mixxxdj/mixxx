@@ -39,7 +39,8 @@ EngineNetworkStream::EngineNetworkStream(int numOutputChannels,
       m_streamStartTimeUs(-1),
       m_streamFramesWritten(0),
       m_streamFramesRead(0),
-      m_writeOverflowCount(0) {
+      m_writeOverflowCount(0),
+      m_pWorker(nullptr) {
     if (numOutputChannels) {
         m_pOutputFifo = new FIFO<CSAMPLE>(numOutputChannels * kBufferFrames);
     }
@@ -90,7 +91,7 @@ int EngineNetworkStream::getReadExpected() {
 }
 
 void EngineNetworkStream::write(const CSAMPLE* buffer, int frames) {
-    if (m_pWorker.isNull()) {
+    if (!m_pWorker) {
         return;
     }
 
@@ -120,7 +121,7 @@ void EngineNetworkStream::write(const CSAMPLE* buffer, int frames) {
 }
 
 void EngineNetworkStream::writeSilence(int frames) {
-    if (m_pWorker.isNull()) {
+    if (!m_pWorker) {
         return;
     }
     //qDebug() << "EngineNetworkStream::writeSilence()" << frames;
@@ -157,7 +158,7 @@ void EngineNetworkStream::writeSilence(int frames) {
 
 void EngineNetworkStream::writingDone(int interval) {
     // Signal worker if any
-    if (m_pWorker.isNull()) {
+    if (!m_pWorker) {
         return;
     }
     // Check for desired kNetworkLatencyFrames + 1/2 interval to
@@ -245,7 +246,7 @@ qint64 EngineNetworkStream::getNetworkTimeUs() {
 #endif
 }
 
-void EngineNetworkStream::addWorker(QSharedPointer<NetworkStreamWorker> pWorker) {
+void EngineNetworkStream::addWorker(NetworkStreamWorker* pWorker) {
     m_pWorker = pWorker;
     if (m_pWorker) {
         m_pWorker->setOutputFifo(m_pOutputFifo);

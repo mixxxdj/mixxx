@@ -36,7 +36,7 @@ class EngineNetworkStream {
 
     static qint64 getNetworkTimeUs();
 
-    void addWorker(QSharedPointer<NetworkStreamWorker> pWorker);
+    void addWorker(NetworkStreamWorker* pWorker);
 
   private:
 
@@ -48,7 +48,7 @@ class EngineNetworkStream {
     qint64 m_streamStartTimeUs;
     qint64 m_streamFramesWritten;
     qint64 m_streamFramesRead;
-    QSharedPointer<NetworkStreamWorker> m_pWorker;
+    NetworkStreamWorker* m_pWorker;
     int m_writeOverflowCount;
 };
 

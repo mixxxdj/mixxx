@@ -32,7 +32,7 @@ class BroadcastManager : public QObject {
 
   private:
     UserSettingsPointer m_pConfig;
-    QSharedPointer<EngineBroadcast> m_pBroadcast;
+    EngineBroadcast* m_pBroadcast;
     ControlProxy* m_pBroadcastEnabled;
 };
 
