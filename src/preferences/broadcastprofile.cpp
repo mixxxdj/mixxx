@@ -114,8 +114,8 @@ BroadcastProfilePtr BroadcastProfile::loadFromFile(
 }
 
 bool BroadcastProfile::equals(BroadcastProfilePtr other) {
-	return ((getProfileName() == other->getProfileName())
-			&& valuesEquals(other));
+    return ((getProfileName() == other->getProfileName())
+            && valuesEquals(other));
 }
 
 bool BroadcastProfile::valuesEquals(BroadcastProfilePtr other) {
