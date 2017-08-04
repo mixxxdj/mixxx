@@ -16,7 +16,8 @@ namespace {
 const char* kSettingsGroupHeader = "Settings for profile '%1'";
 const int kColumnEnabled = 0;
 const int kColumnName = 1;
-const int kColumnRemove = 2;
+const int kColumnStatus = 2;
+const int kColumnRemove = 3;
 }
 
 DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
@@ -438,8 +439,9 @@ void DlgPrefBroadcast::onSectionResized() {
 
     sender()->blockSignals(true);
     profileList->setColumnWidth(kColumnEnabled, 100);
-    profileList->setColumnWidth(kColumnName, width * 0.65); // 70% of profileList's width
-    // The last column, kColumnRemove, is automatically resized to fill
+    profileList->setColumnWidth(kColumnName, width * 0.45);
+    profileList->setColumnWidth(kColumnStatus, width * 0.20);
+    // The last column is automatically resized to fill
     // the remaining width, thanks to stretchLastSection set to true.
     sender()->blockSignals(false);
 }

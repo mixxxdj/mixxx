@@ -16,7 +16,8 @@ const char* kDefaultProfile = "Profile 1"; // Must be used only when initializin
 const mixxx::Logger kLogger("BroadcastSettings");
 const int kColumnEnabled = 0;
 const int kColumnName = 1;
-const int kColumnRemove = 2;
+const int kColumnStatus = 2;
+const int kColumnRemove = 3;
 } // anonymous namespace
 
 BroadcastSettings::BroadcastSettings(
@@ -196,7 +197,7 @@ int BroadcastSettings::rowCount(const QModelIndex& parent) const {
 }
 
 int BroadcastSettings::columnCount(const QModelIndex& parent) const {
-    return 3;
+    return 4;
 }
 
 QVariant BroadcastSettings::data(const QModelIndex& index, int role) const {
@@ -212,6 +213,8 @@ QVariant BroadcastSettings::data(const QModelIndex& index, int role) const {
         } else if(column == kColumnName
         		&& (role == Qt::DisplayRole || role == Qt::EditRole)) {
             return profile->getProfileName();
+        } else if(column == kColumnStatus && role == Qt::DisplayRole) {
+            return "placeholder";
         } else if(column == kColumnRemove && role == Qt::DisplayRole) {
             return tr("Double-click to remove");
         }
@@ -228,6 +231,8 @@ QVariant BroadcastSettings::headerData(int section, Qt::Orientation orientation,
                 return tr("Enabled");
             } else if(section == kColumnName) {
                 return tr("Name");
+            } else if(section == kColumnStatus) {
+                return tr("Status");
             } else if(section == kColumnRemove) {
                 return QString("");
             }
