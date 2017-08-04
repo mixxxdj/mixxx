@@ -60,6 +60,7 @@ class CrateFeature : public LibraryFeature {
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
     void slotCreateCrate();
     void slotCreateChildCrate();
+    void slotUpdateRecursionStatus(bool status);
 
   private slots:
     void slotDeleteCrate();
@@ -135,6 +136,8 @@ class CrateFeature : public LibraryFeature {
     std::unique_ptr<QAction> m_pExportPlaylistAction;
     std::unique_ptr<QAction> m_pExportTrackFilesAction;
     std::unique_ptr<QAction> m_pAnalyzeCrateAction;
+    std::unique_ptr<QAction> m_pRecursionOnAction;
+    std::unique_ptr<QAction> m_pRecursionOffAction;
 
     std::unique_ptr<CrateTreeModel> m_pChildModel;
 

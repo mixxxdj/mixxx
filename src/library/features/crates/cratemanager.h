@@ -49,6 +49,14 @@ class CrateManager : public QObject, public virtual SqlStorage {
         return m_crateHierarchy;
     }
 
+    inline bool isRecursionActive() const {
+        return m_recursionStatus;
+    }
+
+    inline void setRecursionStatus(bool status) {
+        m_recursionStatus = status;
+    }
+
     /////////////////////////////////////////////
     // Wrappers for non const functions to be  //
     // called by trackCollection. They return  //
@@ -57,19 +65,13 @@ class CrateManager : public QObject, public virtual SqlStorage {
 
     bool onPurgingTracks(const QList<TrackId>& trackIds);
 
-    ////////////////////////////////////////////////////////
-    // TODO's:
-    //void moveCrate();
-    //void updateCrateTracks();
-    ////////////////////////////////////////////////////////
-
     bool insertCrate(Crate& crate,
                      CrateId* pCrateId,
                      const Crate& parent = Crate());
     // update crate information (name, locked status, AutoDJ use)
     // in the database with info from Crate object
     bool updateCrate(const Crate& crate);
-    bool deleteCrate(CrateId crateId);
+    bool deleteCrate(const Crate& crate);
     bool addTracksToCrate(CrateId crateId, const QList<TrackId>& trackIds);
     bool removeTracksFromCrate(CrateId crateId, const QList<TrackId>& trackIds);
 
@@ -94,6 +96,8 @@ class CrateManager : public QObject, public virtual SqlStorage {
     CrateStorage m_crateStorage; // Manages crate storage
     CrateTracks m_crateTracks; // Manages tracks on crates
     CrateHierarchy m_crateHierarchy; // Manages the hierarchy
+
+    bool m_recursionStatus;
     QSqlDatabase m_database;
 };
 

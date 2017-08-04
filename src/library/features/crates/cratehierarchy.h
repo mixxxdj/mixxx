@@ -17,21 +17,41 @@
 // forward declarations
 class CrateStorage;
 
+// INFO:
+// The hierarchy is made possible with a closure table.
+// You can read all about it here:
+// http://dirtsimple.org/2010/11/simplest-way-to-do-tree-based-queries.html
+
+// The CrateHierarchy class is initialized inside CrateManager witch is in turn
+// initialized in the TrackCollection(name might change)
+// To get access to the functions we pass a pointer to CrateManager and use the
+// CrateManager::hierarchy() function that returns a const refference to the object.
+// Thus outside CrateManager you can use only functions marked as const.
+
+
 class CrateHierarchy : public virtual DAO {
   public:
     CrateHierarchy() {}
     ~CrateHierarchy() override {}
 
+    ///////////////////////////////////////////////////////////
+    // Non const functions, usable only withint crateManager //
+    ///////////////////////////////////////////////////////////
+
     void initialize(const QSqlDatabase& database) override;
 
-    ////////////////////////////////////
     void reset(const CrateStorage* pCrateStorage);
+
+    void addCrateToHierarchy(const Crate& crate,
+                             const Crate& parent = Crate());
 
     // crate hierarchy only cares whether a crates name has changed or not
     bool onUpdatingCrate(const Crate& crate, const CrateStorage* pCrateStorage);
 
-    void addCrateToHierarchy(const Crate& crate,
-                             const Crate& parent = Crate());
+    //////////////////////////////////////////////////////////////
+    // Const functions, usable with CrateManager::hierarchy()   //
+    // function wherever the crateManager pointer is avaliable. //
+    //////////////////////////////////////////////////////////////
 
     uint countCratesInClosure() const;
 
@@ -41,11 +61,16 @@ class CrateHierarchy : public virtual DAO {
                                       CrateId& childId,
                                       const QString& idPath) const;
 
+    // used in crate filter
     QString formatQueryForTrackIdsByCratePathLike(const QString& cratePathLike) const;
+
     // namePath is the string that represents the placement of the crate in the tree
     // just like a path in a file system
     QString getNamePathFromId(CrateId id) const;
 
+    // Here we need a different function to check the name is ok for renaming
+    // because when renaming your crate might have children, when
+    // the same is not true when you create a new crate.
     bool canBeRenamed(const QString& newName,
                       const Crate& crate,
                       const CrateId parentId = CrateId()) const;
@@ -62,6 +87,7 @@ class CrateHierarchy : public virtual DAO {
     int getParentId(const CrateId id) const;
 
     QStringList collectIdPaths() const;
+    QStringList collectChildCrateIds(const Crate& crate) const;
 
   private:
     // empties the closure table

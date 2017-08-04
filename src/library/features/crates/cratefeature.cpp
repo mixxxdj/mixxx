@@ -60,6 +60,8 @@ CrateFeature::CrateFeature(UserSettingsPointer pConfig,
     // first time, so we have to fill the closure table with (self,self,0)
     m_pCrates->checkClosure();
 
+    m_pCrates->setRecursionStatus(true);
+
     m_pChildModel = std::make_unique<CrateTreeModel>(this, m_pCrates);
     m_pChildModel->reloadTree();
 
@@ -71,27 +73,27 @@ CrateFeature::~CrateFeature() {
 }
 
 void CrateFeature::initActions() {
-    m_pCreateCrateAction = std::make_unique<QAction>(tr("Create New Crate"),this);
+    m_pCreateCrateAction = std::make_unique<QAction>(tr("Create New Crate"), this);
     connect(m_pCreateCrateAction.get(), SIGNAL(triggered()),
             this, SLOT(slotCreateCrate()));
 
-    m_pCreateChildCrateAction = std::make_unique<QAction>(tr("Create Subcrate"),this);
+    m_pCreateChildCrateAction = std::make_unique<QAction>(tr("Create Subcrate"), this);
     connect(m_pCreateChildCrateAction.get(), SIGNAL(triggered()),
             this, SLOT(slotCreateChildCrate()));
 
-    m_pDeleteCrateAction = std::make_unique<QAction>(tr("Remove"),this);
+    m_pDeleteCrateAction = std::make_unique<QAction>(tr("Remove"), this);
     connect(m_pDeleteCrateAction.get(), SIGNAL(triggered()),
             this, SLOT(slotDeleteCrate()));
 
-    m_pRenameCrateAction = std::make_unique<QAction>(tr("Rename"),this);
+    m_pRenameCrateAction = std::make_unique<QAction>(tr("Rename"), this);
     connect(m_pRenameCrateAction.get(), SIGNAL(triggered()),
             this, SLOT(slotRenameCrate()));
 
-    m_pLockCrateAction = std::make_unique<QAction>(tr("Lock"),this);
+    m_pLockCrateAction = std::make_unique<QAction>(tr("Lock"), this);
     connect(m_pLockCrateAction.get(), SIGNAL(triggered()),
             this, SLOT(slotToggleCrateLock()));
 
-    m_pImportPlaylistAction = std::make_unique<QAction>(tr("Import Crate"),this);
+    m_pImportPlaylistAction = std::make_unique<QAction>(tr("Import Crate"), this);
     connect(m_pImportPlaylistAction.get(), SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
 
@@ -107,18 +109,27 @@ void CrateFeature::initActions() {
     connect(m_pExportTrackFilesAction.get(), SIGNAL(triggered()),
             this, SLOT(slotExportTrackFiles()));
 
-    m_pDuplicateCrateAction = std::make_unique<QAction>(tr("Duplicate"),this);
+    m_pDuplicateCrateAction = std::make_unique<QAction>(tr("Duplicate"), this);
     connect(m_pDuplicateCrateAction.get(), SIGNAL(triggered()),
             this, SLOT(slotDuplicateCrate()));
 
-    m_pAnalyzeCrateAction = std::make_unique<QAction>(tr("Analyze entire Crate"),this);
+    m_pAnalyzeCrateAction = std::make_unique<QAction>(tr("Analyze entire Crate"), this);
     connect(m_pAnalyzeCrateAction.get(), SIGNAL(triggered()),
             this, SLOT(slotAnalyzeCrate()));
 
-    m_pAutoDjTrackSourceAction = std::make_unique<QAction>(tr("Auto DJ Track Source"),this);
+    m_pAutoDjTrackSourceAction = std::make_unique<QAction>(tr("Auto DJ Track Source"), this);
     m_pAutoDjTrackSourceAction->setCheckable(true);
     connect(m_pAutoDjTrackSourceAction.get(), SIGNAL(changed()),
             this, SLOT(slotAutoDjTrackSourceChanged()));
+
+    m_pRecursionOnAction = std::make_unique<QAction>(tr("Recursion on"), this);
+    connect(m_pRecursionOnAction.get(), SIGNAL(triggered()),
+            this, SLOT(slotUpdateRecursionStatus(true)));
+
+    m_pRecursionOffAction = std::make_unique<QAction>(tr("Recursion off"), this);
+    connect(m_pRecursionOffAction.get(), SIGNAL(triggered()),
+            this, SLOT(slotUpdateRecursionStatus(false)));
+
 }
 
 void CrateFeature::connectLibrary(Library* pLibrary) {
@@ -309,6 +320,10 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     adoptPreselectedPane();
 
     m_lastClickedIndex[m_featurePane] = index;
+    if (index.data(AbstractRole::RoleData).toString() == "$Recursion$") {
+        onRightClickChild(QCursor::pos(), index);
+        return;
+    }
     CrateId crateId(crateIdFromIndex(index));
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         return;
@@ -319,7 +334,8 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     m_pCrates->storage().readCrateById(crateId, &crate);
     m_pCrateTableModel->selectCrate(crate);
     showTable(m_featurePane);
-    restoreSearch(QString("crate: \"%1\"").arg(m_pCrates->hierarchy().getNamePathFromId(crate.getId())));
+    //    restoreSearch(QString("crate: \"%1\"").arg(m_pCrates->hierarchy().getNamePathFromId(crate.getId())));
+    restoreSearch(QString(""));
     showBreadCrumb(index);
     showTrackModel(m_pCrateTableModel);
 }
@@ -379,6 +395,17 @@ void CrateFeature::onRightClick(const QPoint& globalPos) {
 void CrateFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex& index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
+    if (index.data(AbstractRole::RoleData).toString() == "$Recursion$") {
+        QMenu menu(NULL);
+        if (m_pCrates->isRecursionActive()) {
+            menu.addAction(m_pRecursionOffAction.get());
+        } else {
+            menu.addAction(m_pRecursionOnAction.get());
+        }
+        menu.exec(globalPos);
+        return;
+    }
+
     CrateId crateId(crateIdFromIndex(index));
     if (!crateId.isValid()) {
         return;
@@ -414,6 +441,12 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex&
     }
     menu.addAction(m_pExportPlaylistAction.get());
     menu.addAction(m_pExportTrackFilesAction.get());
+    menu.addSeparator();
+    if (m_pCrates->isRecursionActive()) {
+        menu.addAction(m_pRecursionOffAction.get());
+    } else {
+        menu.addAction(m_pRecursionOnAction.get());
+    }
     menu.exec(globalPos);
 }
 
@@ -445,15 +478,19 @@ void CrateFeature::slotDeleteCrate() {
         }
         // better deletion requeried
         if (m_pCrates->hierarchy().hasChildern(crate.getId())) {
-            qWarning() << "Can't delete " << crate;
-            qWarning() << "Currently only delete leaf crates";
-            return;
+            if (QMessageBox::question(
+                  nullptr,
+                  tr("Deleting multiple crates"),
+                  tr("Deleting this crate will also delete all it's childer. Are you sure?"),
+                  QMessageBox::Ok,
+                  QMessageBox::Cancel) == QMessageBox::Cancel) {
+                return;
+            }
         }
-        //TODO(gramanas) CHANGE IT!
-        if (m_pCrates->deleteCrate(crate.getId())) {
-            m_pCrates->hierarchy().deleteCrate(crate.getId());
+        if (m_pCrates->deleteCrate(crate)) {
             qDebug() << "Deleted crate" << crate;
             m_pChildModel->reloadTree();
+            activate();
             return;
         }
     }
@@ -542,6 +579,11 @@ void CrateFeature::slotAutoDjTrackSourceChanged() {
             m_pCrates->updateCrate(crate);
         }
     }
+}
+
+void CrateFeature::slotUpdateRecursionStatus(bool status) {
+    m_pCrates->setRecursionStatus(status);
+    m_pChildModel->reloadTree();
 }
 
 QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {

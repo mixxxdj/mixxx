@@ -493,3 +493,34 @@ QStringList CrateHierarchy::collectChildCrateNames(const Crate& crate) const {
 
     return names;
 }
+
+QStringList CrateHierarchy::collectChildCrateIds(const Crate& crate) const {
+    FwdSqlQuery query(
+      m_database, QString(
+        "SELECT c.%1 FROM %2 "
+        "JOIN %3 c ON c.%4 = %5 "
+        "JOIN %3 p ON p.%4 = %6 "
+        "WHERE p.%4 = :id "
+        "AND %7 != 0 "
+        // this is the deletion order
+        // bottom to top
+        "ORDER BY %7 DESC").arg(
+          CRATETABLE_ID,
+          CRATE_CLOSURE_TABLE,
+          CRATE_TABLE,
+          CRATETABLE_ID,
+          CLOSURE_CHILDID,
+          CLOSURE_PARENTID,
+          CLOSURE_DEPTH));
+
+    query.bindValue("id", crate.getId());
+
+    QStringList ids;
+
+    if (query.execPrepared())
+        while (query.next()) {
+            ids << query.fieldValue(0).toString();
+    }
+
+    return ids;
+}

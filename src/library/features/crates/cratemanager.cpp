@@ -135,6 +135,7 @@ void CrateManager::connectDatabase(QSqlDatabase database) {
     m_crateTracks.initialize(database);
     m_crateHierarchy.initialize(database);
 
+    // default recursion status is on
     createViews();
 }
 
@@ -210,21 +211,37 @@ bool CrateManager::updateCrate(
 }
 
 bool CrateManager::deleteCrate(
-        CrateId crateId) {
-    // Transactional
-    SqlTransaction transaction(m_database);
-    VERIFY_OR_DEBUG_ASSERT(transaction) {
-        return false;
+  const Crate& crate) {
+    QStringList childIds;
+    if (m_crateHierarchy.hasChildern(crate.getId())) {
+        childIds = m_crateHierarchy.collectChildCrateIds(crate);
     }
-    VERIFY_OR_DEBUG_ASSERT(m_crateStorage.onDeletingCrate(crateId)) {
-        return false;
-    }
-    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
-        return false;
+    childIds.push_back(crate.getId().toString());
+
+    for (const QString& it : childIds) {
+        CrateId crateId(it.toInt());
+
+        // Transactional
+        SqlTransaction transaction(m_database);
+        VERIFY_OR_DEBUG_ASSERT(transaction) {
+            return false;
+        }
+
+        VERIFY_OR_DEBUG_ASSERT(m_crateStorage.onDeletingCrate(crateId)) {
+            return false;
+        }
+        // remove hierarchy stuff
+        m_crateHierarchy.deleteCrate(crateId);
+
+        VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
+            return false;
+        }
+
+        // Emit signals
+        emit(crateDeleted(crateId));
+
     }
 
-    // Emit signals
-    emit(crateDeleted(crateId));
 
     return true;
 }

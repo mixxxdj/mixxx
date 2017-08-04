@@ -53,8 +53,21 @@ void CrateTreeModel::reloadTree() {
     TreeItem* pRootItem = setRootItem(std::make_unique<TreeItem>(m_pFeature));
     treeCrates.insert(kRootId, pRootItem);
     // Create recursion button
-    m_pRecursion = parented_ptr<TreeItem>(pRootItem->appendChild(tr("Recursion"), ""));
+    createRecursionEntry(pRootItem);
 
     populateTree(idPaths, treeCrates);
     endResetModel();
+}
+
+void CrateTreeModel::createRecursionEntry(TreeItem* pRootItem) {
+    QString status;
+    if (m_pCrates->isRecursionActive()) {
+        status = "on";
+    } else {
+        status = "off";
+    }
+
+    m_pRecursion = parented_ptr<TreeItem>(pRootItem->appendChild(QString("Recursion %1").arg(status), ""));
+    m_pRecursion->setData(QString("$Recursion$"));
+
 }

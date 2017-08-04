@@ -21,6 +21,7 @@ class CrateTreeModel : public TreeItemModel {
 
   private:
     void populateTree(const QStringList& idPaths, QMap<CrateId,TreeItem*> treeCrates);
+    void createRecursionEntry(TreeItem* pRootItem);
 
     LibraryFeature* m_pFeature;
     CrateManager* m_pCrates;

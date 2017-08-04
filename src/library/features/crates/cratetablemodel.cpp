@@ -25,6 +25,12 @@ void CrateTableModel::selectCrate(Crate crate) {
     }
     m_selectedCrate = crate.getId();
 
+    QStringList crateIds;
+    if (m_pCrates->isRecursionActive()) {
+        crateIds = m_pCrates->hierarchy().collectChildCrateIds(crate);
+    }
+    crateIds << crate.getId().toString();
+
     QString tableName = QString("crate_%1").arg(m_selectedCrate.toString());
     QStringList columns;
     columns << LIBRARYTABLE_ID
@@ -37,12 +43,19 @@ void CrateTableModel::selectCrate(Crate crate) {
     // They are kept in the database, because we treat crate membership as a
     // track property, which persist over a hide / unhide cycle.
     QString queryString = QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-                                  "SELECT %2 FROM %3 "
-                                  "WHERE %4=0")
+                                  "SELECT DISTINCT %2 FROM %3 "
+                                  "JOIN %4 ON %5 = %6 "
+                                  "WHERE %7=0 AND "
+                                  "%8 IN (%9)")
                           .arg(tableName,
                                columns.join(","),
                                LIBRARY_TABLE,
-                               LIBRARYTABLE_MIXXXDELETED);
+                               CRATE_TRACKS_TABLE,
+                               CRATETRACKSTABLE_TRACKID,
+                               LIBRARYTABLE_ID,
+                               LIBRARYTABLE_MIXXXDELETED,
+                               CRATETRACKSTABLE_CRATEID,
+                               crateIds.join(","));
     FwdSqlQuery(m_database, queryString).execPrepared();
 
     columns[0] = LIBRARYTABLE_ID;
@@ -51,7 +64,7 @@ void CrateTableModel::selectCrate(Crate crate) {
     setTable(tableName, LIBRARYTABLE_ID, columns,
              m_pTrackCollection->getTrackSource());
     //setSearch("crate: one");
-    search(QString("crate: \"%1\"").arg(m_pCrates->hierarchy().getNamePathFromId(crate.getId())));
+    //x    search(QString("crate: \"%1\"").arg(m_pCrates->hierarchy().getNamePathFromId(crate.getId())));
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
 
