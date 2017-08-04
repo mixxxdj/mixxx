@@ -52,7 +52,7 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install scons portaudio libsndfile libogg libvorbis portmidi taglib libshout protobuf flac ffmpeg libjpeg qt chromaprint rubberband fftw libmodplug libid3tag libmad mp4v2 faad2 wavpack opusfile; fi
   # Install QtKeychain
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew tap owncloud/owncloud; brew install qtkeychain; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew tap owncloud/homebrew-owncloud; brew install qtkeychain; fi
 
 install:
   ####
