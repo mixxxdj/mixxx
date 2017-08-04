@@ -35,10 +35,10 @@ const int kBufferFrames = kNetworkLatencyFrames * 4; // 743 ms @ 44100 Hz
 
 EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig,
                                  BroadcastSettingsPointer pBroadcastSettings,
-                                 QSharedPointer<EngineNetworkStream> pNetworkStream)
+                                 int numOutputChannels)
         : m_settings(pBroadcastSettings),
           m_pConfig(pConfig),
-          m_pNetworkStream(pNetworkStream),
+          m_numOutputChannels(numOutputChannels),
           m_threadWaiting(false),
           m_pOutputFifo(nullptr) {
     const bool persist = true;
@@ -105,7 +105,7 @@ bool EngineBroadcast::addConnection(BroadcastProfilePtr profile) {
     if(m_connections.contains(profileName))
         return false;
 
-    int fifoSize = m_pNetworkStream->getNumOutputChannels() * kBufferFrames;
+    int fifoSize = m_numOutputChannels * kBufferFrames;
 
     ShoutConnectionPtr output(new ShoutConnection(profile, m_pConfig, fifoSize));
     m_connections.insert(profileName, output);
@@ -180,13 +180,12 @@ void EngineBroadcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             // passed to the latter is the number of bytes written (copyCount).
             // We have that too here, so we use it.
             int interval = copyCount;
-            int outputChannels = m_pNetworkStream->getNumOutputChannels();
 
             // Same formula as in EngineNetworkStream::writingDone:
             // "Check for desired kNetworkLatencyFrames + 1/2 interval to
             // avoid big jitter due to interferences with sync code"
             if(cFifo->readAvailable() + interval / 2
-                    >= (outputChannels * kNetworkLatencyFrames)) {
+                    >= (m_numOutputChannels * kNetworkLatencyFrames)) {
                 c->outputAvailable();
             }
         }

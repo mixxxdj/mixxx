@@ -15,7 +15,7 @@ BroadcastManager::BroadcastManager(SettingsManager* pSettingsManager,
     if (!pNetworkStream.isNull()) {
         m_pBroadcast = new EngineBroadcast(m_pConfig,
                                     pSettingsManager->broadcastSettings(),
-                                    pNetworkStream);
+                                    pNetworkStream->getNumOutputChannels());
         pNetworkStream->addWorker(m_pBroadcast);
     }
 
