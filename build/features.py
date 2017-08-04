@@ -1300,3 +1300,27 @@ class Battery(Feature):
 
     def depends(self, build):
         return [depends.IOKit, depends.UPower]
+
+class QtKeychain(Feature):
+    def description(self):
+        return "Secure credentials storage support for Live Broadcasting profiles"
+
+    def enabled(self, build):
+        build.flags['qtkeychain'] = util.get_flags(build.env, 'qtkeychain', 0)
+        if int(build.flags['qtkeychain']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('qtkeychain', 'Set to 1 to enable secure credentials storage support for Live Broadcasting profiles', 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        build.env.Append(CPPDEFINES='__QTKEYCHAIN__')
+
+    def sources(self, build):
+        return []
+
+    def depends(self, build):
+        return [depends.QtKeychain]

@@ -233,6 +233,19 @@
            </item>
           </layout>
          </item>
+         <item row="2" column="0">
+          <widget class="QCheckBox" name="cbSecureCredentials">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="text">
+            <string>Store username and password in the System Keychain</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>

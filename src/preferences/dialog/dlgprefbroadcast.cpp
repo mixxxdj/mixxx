@@ -27,6 +27,14 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
           m_pBroadcastSettings(pBroadcastSettings),
           m_pProfileListSelection(nullptr) {
     setupUi(this);
+
+#ifndef __QTKEYCHAIN__
+    // If secure storage is disabled, hide the checkbox
+    // and force the value to false.
+    cbSecureCredentials->setVisible(false);
+    cbSecureCredentials->setChecked(false);
+#endif
+
     connect(profileList->horizontalHeader(), SIGNAL(sectionResized(int, int, int)),
             this, SLOT(onSectionResized()));
     connect(cbRemoveMode, SIGNAL(stateChanged(int)),
@@ -118,6 +126,7 @@ void DlgPrefBroadcast::slotResetToDefaults() {
 
     // Make sure to keep these values in sync with the constructor.
     enableLiveBroadcasting->setChecked(false);
+    cbSecureCredentials->setChecked(false);
     comboBoxServerType->setCurrentIndex(0);
     mountpoint->setText(dProfile.getMountpoint());
     host->setText(dProfile.getHost());
@@ -261,6 +270,8 @@ void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
             .arg(profile->getProfileName());
     groupBoxProfileSettings->setTitle(headerText);
 
+    cbSecureCredentials->setChecked(profile->secureCredentialStorage());
+
     // Server type combo list
     int tmp_index = comboBoxServerType->findData(profile->getServertype());
     if (tmp_index < 0) { // Set default if invalid.
@@ -368,6 +379,8 @@ void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
 void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
     if(!profile)
         return;
+
+    profile->setSecureCredentialStorage(cbSecureCredentials->isChecked());
 
     // Combo boxes, make sure to load their data not their display strings.
     profile->setServertype(comboBoxServerType->itemData(

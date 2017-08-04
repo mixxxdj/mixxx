@@ -44,6 +44,9 @@ class BroadcastProfile : public QObject {
         return m_connectionStatus;
     }
 
+    void setSecureCredentialStorage(bool enabled);
+    bool secureCredentialStorage();
+
     void setProfileName(const QString& profileName);
     QString getProfileName() const;
 
@@ -136,8 +139,12 @@ class BroadcastProfile : public QObject {
     void adoptDefaultValues();
     bool loadValues(const QString& filename);
 
-    QString m_profileName;
+    bool setSecurePassword(QString login, QString password);
+    QString getSecurePassword(QString login);
 
+    bool m_secureCredentials;
+
+    QString m_profileName;
     bool m_enabled;
 
     QString m_host;
