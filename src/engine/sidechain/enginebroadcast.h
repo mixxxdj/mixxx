@@ -1,6 +1,7 @@
 #ifndef ENGINE_SIDECHAIN_ENGINEBROADCAST_H
 #define ENGINE_SIDECHAIN_ENGINEBROADCAST_H
 
+#include <engine/sidechain/shoutconnection.h>
 #include <QMessageBox>
 #include <QMutex>
 #include <QWaitCondition>
@@ -17,7 +18,6 @@
 #include "preferences/usersettings.h"
 #include "util/fifo.h"
 #include "preferences/broadcastsettings.h"
-#include "engine/sidechain/shoutoutput.h"
 #include "soundio/soundmanager.h"
 
 class ControlPushButton;
@@ -63,7 +63,7 @@ class EngineBroadcast
     void slotProfilesChanged();
 
   private:
-    QMap<QString,ShoutOutputPtr> m_connections;
+    QMap<QString,ShoutConnectionPtr> m_connections;
 
     BroadcastSettingsPointer m_settings;
     UserSettingsPointer m_pConfig;

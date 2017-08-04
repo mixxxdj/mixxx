@@ -107,7 +107,7 @@ bool EngineBroadcast::addConnection(BroadcastProfilePtr profile) {
 
     int fifoSize = m_pNetworkStream->getNumOutputChannels() * kBufferFrames;
 
-    ShoutOutputPtr output(new ShoutOutput(profile, m_pConfig, fifoSize));
+    ShoutConnectionPtr output(new ShoutConnection(profile, m_pConfig, fifoSize));
     m_connections.insert(profileName, output);
 
     qDebug() << "EngineBroadcast::addConnection: created connection for profile" << profileName;
@@ -118,7 +118,7 @@ bool EngineBroadcast::removeConnection(BroadcastProfilePtr profile) {
     if(!profile)
         return false;
 
-    ShoutOutputPtr output = m_connections.take(profile->getProfileName());
+    ShoutConnectionPtr output = m_connections.take(profile->getProfileName());
     if(output) {
         // Disabling the profile tells ShoutOutput's thread to disconnect
         output->profile()->setEnabled(false);
@@ -133,8 +133,8 @@ bool EngineBroadcast::removeConnection(BroadcastProfilePtr profile) {
 void EngineBroadcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     setFunctionCode(4);
 
-    QList<ShoutOutputPtr> connections = m_connections.values();
-    for(ShoutOutputPtr c : connections) {
+    QList<ShoutConnectionPtr> connections = m_connections.values();
+    for(ShoutConnectionPtr c : connections) {
         if(!c)
             continue;
 
@@ -292,7 +292,7 @@ void EngineBroadcast::slotProfileRemoved(BroadcastProfilePtr profile) {
 }
 
 void EngineBroadcast::slotProfileRenamed(QString oldName, BroadcastProfilePtr profile) {
-    ShoutOutputPtr oldItem = m_connections.take(oldName);
+    ShoutConnectionPtr oldItem = m_connections.take(oldName);
     if(oldItem) {
         // Profile in ShoutOutput is a reference, which is supposed
         // to have already been updated
@@ -303,7 +303,7 @@ void EngineBroadcast::slotProfileRenamed(QString oldName, BroadcastProfilePtr pr
 
 void EngineBroadcast::slotProfilesChanged() {
     if(m_pBroadcastEnabled->toBool()) {
-        for(ShoutOutputPtr c : m_connections.values()) {
+        for(ShoutConnectionPtr c : m_connections.values()) {
             if(c) c->applySettings();
         }
     }

@@ -1,8 +1,8 @@
-// shoutoutput.h
+// shoutconnection.h
 // Created July 4th 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
 
-#ifndef ENGINE_SIDECHAIN_SHOUTOUTPUT_H
-#define ENGINE_SIDECHAIN_SHOUTOUTPUT_H
+#ifndef ENGINE_SIDECHAIN_SHOUTCONNECTION_H
+#define ENGINE_SIDECHAIN_SHOUTCONNECTIOn_H
 
 #include <QMessageBox>
 #include <QMutex>
@@ -32,7 +32,7 @@ typedef struct shout shout_t;
 struct _util_dict;
 typedef struct _util_dict shout_metadata_t;
 
-class ShoutOutput
+class ShoutConnection
         : public QThread, public EncoderCallback, public NetworkStreamWorker {
     Q_OBJECT
   public:
@@ -43,8 +43,8 @@ class ShoutOutput
         STATUSCO_FAILURE = 3 // Happens when disconnected by an error
     };
 
-    ShoutOutput(BroadcastProfilePtr profile, UserSettingsPointer pConfig, int fifoSize);
-    virtual ~ShoutOutput();
+    ShoutConnection(BroadcastProfilePtr profile, UserSettingsPointer pConfig, int fifoSize);
+    virtual ~ShoutConnection();
 
     // This is called by the Engine implementation for each sample. Encode and
     // send the stream, as well as check for metadata changes.
@@ -163,7 +163,7 @@ class ShoutOutput
     QWaitCondition m_waitEnabled;
 };
 
-typedef QSharedPointer<ShoutOutput> ShoutOutputPtr;
+typedef QSharedPointer<ShoutConnection> ShoutConnectionPtr;
 
-#endif // ENGINE_SIDECHAIN_SHOUTOUTPUT_H
+#endif // ENGINE_SIDECHAIN_SHOUTCONNECTION_H
 
