@@ -192,6 +192,23 @@ void BroadcastSettings::onProfileNameChanged(QString oldName, QString newName) {
     }
 }
 
+void BroadcastSettings::onConnectionStatusChanged(int newStatus) {
+    BroadcastProfilePtr profile(
+            qobject_cast<BroadcastProfile*>(sender()));
+
+    if(profile) {
+        //QList<BroadcastProfilePtr> profiles = m_profiles.values();
+        //int row = profiles.indexOf(profile);
+
+        //QModelIndex statusIndex = this->index(row, kColumnStatus);
+        //emit dataChanged(statusIndex, statusIndex);
+
+        QModelIndex start = this->index(0, kColumnStatus);
+        QModelIndex end = this->index(m_profiles.size()-1, kColumnStatus);
+        emit dataChanged(start, end);
+    }
+}
+
 int BroadcastSettings::rowCount(const QModelIndex& parent) const {
     return m_profiles.size();
 }
@@ -214,7 +231,7 @@ QVariant BroadcastSettings::data(const QModelIndex& index, int role) const {
         		&& (role == Qt::DisplayRole || role == Qt::EditRole)) {
             return profile->getProfileName();
         } else if(column == kColumnStatus && role == Qt::DisplayRole) {
-            return "placeholder";
+            return connectionStatusString(profile);
         } else if(column == kColumnRemove && role == Qt::DisplayRole) {
             return tr("Double-click to remove");
         }
@@ -286,4 +303,21 @@ BroadcastProfilePtr BroadcastSettings::profileAt(int index) {
 
 QList<BroadcastProfilePtr> BroadcastSettings::profiles() {
     return m_profiles.values();
+}
+
+QString BroadcastSettings::connectionStatusString(BroadcastProfilePtr profile) {
+    int status = profile->connectionStatus();
+    switch(status) {
+        case BroadcastProfile::STATUS_UNCONNECTED:
+            return tr("Disconnected");
+        case BroadcastProfile::STATUS_CONNECTING:
+            return tr("Connecting...");
+        case BroadcastProfile::STATUS_CONNECTED:
+            return tr("Connected");
+        case BroadcastProfile::STATUS_FAILURE:
+            return tr("Failed");
+
+        default:
+            return tr("Unknown");
+    }
 }

@@ -46,8 +46,11 @@ class BroadcastSettings : public QAbstractTableModel {
 
   private slots:
     void onProfileNameChanged(QString oldName, QString newName);
+    void onConnectionStatusChanged(int newStatus);
 
   private:
+    static QString connectionStatusString(BroadcastProfilePtr profile);
+
     void loadProfiles();
     QString filePathForProfile(const BroadcastProfilePtr& profile);
     QString filePathForProfile(const QString& profileName);
