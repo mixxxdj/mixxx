@@ -41,7 +41,7 @@ void CrateTreeModel::populateTree(const QStringList& idPaths, QMap<CrateId,TreeI
         m_pCrates->storage().readCrateById(childId, &child);
 
         treeCrates.insert(childId, // key is the id of child
-                            // value is the treeItem returned by asdasdasppendChild()
+                            // value is the treeItem returned by appendChild()
                             treeCrates.value(parentId)->appendChild(child.getName(),
                                                                     childId.toInt()));
     }
@@ -70,7 +70,5 @@ void CrateTreeModel::createRecursionEntry(TreeItem* pRootItem) {
         status = "off";
     }
 
-    m_pRecursion = parented_ptr<TreeItem>(pRootItem->appendChild(QString("Show tracks in subcrates: %1").arg(status), ""));
-    m_pRecursion->setData(RECURSION_DATA);
-
+    m_pRecursion = parented_ptr<TreeItem>(pRootItem->appendChild(QString("Show tracks in subcrates: %1").arg(status), RECURSION_DATA));
 }

@@ -83,7 +83,6 @@ class CrateHierarchy : public virtual DAO {
     void deleteCrate(CrateId id) const;
     bool hasChildren(CrateId id) const;
 
-    // returns -1 when there is no parent
     CrateId getParentId(const CrateId id) const;
 
     QStringList collectIdPaths() const;

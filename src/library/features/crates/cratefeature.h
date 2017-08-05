@@ -94,7 +94,7 @@ class CrateFeature : public LibraryFeature {
             TreeItem* pTreeItem,
             const CrateSummary& crateSummary) const;
 
-    QModelIndex rebuildChildModel(CrateId selectedCrateId = CrateId());
+    void rebuildChildModel(CrateId selectedCrateId = CrateId());
     void updateChildModel(const QSet<CrateId>& updatedCrateIds);
 
     CrateId crateIdFromIndex(const QModelIndex& index) const;
