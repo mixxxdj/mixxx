@@ -548,7 +548,7 @@ Description:
                   <Template src="skin:button_1state.xml">
                     <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
                     <SetVariable name="Size">122f,15f</SetVariable>
-                    <SetVariable name="state_0_text"> Save Sampler Banks</SetVariable>
+                    <SetVariable name="state_0_text"> Save Sampler Bank</SetVariable>
                     <SetVariable name="Align">left</SetVariable>
                     <SetVariable name="ConfigKey">[Sampler],SaveSamplerBank</SetVariable>
                   </Template>
