@@ -57,8 +57,12 @@ void WEffectSelector::populate() {
                                                        width() - 2);
         addItem(elidedDisplayName, QVariant(manifest.id()));
 
+        // NOTE(Be): Using \n instead of : as the separator does not work in
+        // QComboBox item tooltips.
+        // TODO(Be): Check if this is also the case with Qt5.
         //: %1 = effect name; %2 = effect description
-        QString description = tr("%1: %2").arg(manifest.name(), manifest.description());
+        QString description = tr("%1: %2").arg(manifest.name(),
+                                               manifest.description());
         // The <span/> is a hack to get Qt to treat the string as rich text so
         // it automatically wraps long lines.
         setItemData(i, QVariant("<span/>" + description), Qt::ToolTipRole);

@@ -689,6 +689,7 @@ void DlgPrefSound::checkLatencyCompensation() {
             }
         } else {
             latencyCompensationSpinBox->setEnabled(false);
+            latencyCompensationWarningLabel->hide();
         }
     } else {
         micMonitorModeComboBox->setEnabled(false);

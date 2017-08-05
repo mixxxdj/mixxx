@@ -1178,10 +1178,14 @@ void MixxxMainWindow::rebootMixxxView() {
     qDebug() << "Now in rebootMixxxView...";
 
     QPoint initPosition = pos();
-    // this->frameSize()  : Window size including all borders and only if the window manager works.
-    // this->size() : Window without the borders nor title, but including the Menu!
-    // this->centralWidget()->size() : Size of the internal window Widget.
-    QSize initSize = this->centralWidget()->size();
+    // frameSize()  : Window size including all borders and only if the window manager works.
+    // size() : Window without the borders nor title, but including the Menu!
+    // centralWidget()->size() : Size of the internal window Widget.
+    QSize initSize;
+    QWidget* pWidget = centralWidget(); // can be null if previous skin loading fails
+    if (pWidget) {
+        initSize = centralWidget()->size();
+    }
 
     // We need to tell the menu bar that we are about to delete the old skin and
     // create a new one. It holds "visibility" controls (e.g. "Show Samplers")
@@ -1226,7 +1230,7 @@ void MixxxMainWindow::rebootMixxxView() {
 
     if (wasFullScreen) {
         slotViewFullScreen(true);
-    } else {
+    } else if (!initSize.isEmpty()) {
         // Not all OSs and/or window managers keep the window inside of the screen, so force it.
         int newX = initPosition.x() + (initSize.width() - m_pWidgetParent->width()) / 2;
         int newY = initPosition.y() + (initSize.height() - m_pWidgetParent->height()) / 2;
