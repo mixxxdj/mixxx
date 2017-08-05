@@ -60,7 +60,7 @@ CrateFeature::CrateFeature(UserSettingsPointer pConfig,
     // first time, so we have to fill the closure table with (self,self,0)
     m_pCrates->checkClosure();
 
-    m_pCrates->setRecursionStatus(true);
+    m_pCrates->setRecursionEnabled();
 
     m_pChildModel = std::make_unique<CrateTreeModel>(this, m_pCrates);
     m_pChildModel->reloadTree();
@@ -121,11 +121,6 @@ void CrateFeature::initActions() {
     m_pAutoDjTrackSourceAction->setCheckable(true);
     connect(m_pAutoDjTrackSourceAction.get(), SIGNAL(changed()),
             this, SLOT(slotAutoDjTrackSourceChanged()));
-
-    m_pToggleRecursionAction = std::make_unique<QAction>(tr("Recursion"), this);
-    m_pToggleRecursionAction->setCheckable(true);
-    connect(m_pToggleRecursionAction.get(), SIGNAL(changed()),
-            this, SLOT(slotToggleRecursionStatus()));
 }
 
 void CrateFeature::connectLibrary(Library* pLibrary) {
@@ -427,8 +422,6 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex&
     }
     menu.addAction(m_pExportPlaylistAction.get());
     menu.addAction(m_pExportTrackFilesAction.get());
-    menu.addSeparator();
-    menu.addAction(m_pToggleRecursionAction.get());
     menu.exec(globalPos);
 }
 
@@ -463,7 +456,7 @@ void CrateFeature::slotDeleteCrate() {
             if (QMessageBox::question(
                   nullptr,
                   tr("Deleting multiple crates"),
-                  tr("Deleting this crate will also delete all it's childer. Are you sure?"),
+                  tr("Deleting this crate will also delete all it's children. Are you sure?"),
                   QMessageBox::Ok,
                   QMessageBox::Cancel) == QMessageBox::Cancel) {
                 return;
@@ -563,8 +556,14 @@ void CrateFeature::slotAutoDjTrackSourceChanged() {
     }
 }
 
-void CrateFeature::slotToggleRecursionStatus() {
-    toggleRecursion();
+void CrateFeature::toggleRecursion() {
+    if (m_pCrates->isRecursionEnabled()) {
+        m_pCrates->setRecursionEnabled(false);
+    } else {
+        m_pCrates->setRecursionEnabled();
+    }
+    m_pChildModel->reloadTree();
+    activate();
 }
 
 QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
@@ -940,14 +939,4 @@ void CrateFeature::showTable(int paneId) {
     if (it != m_panes.end() && !it->isNull() && itId != m_idTable.end()) {
         (*it)->setCurrentIndex(*itId);
     }
-}
-
-void CrateFeature::toggleRecursion() {
-    if (m_pCrates->isRecursionActive()) {
-        m_pCrates->setRecursionStatus(false);
-    } else {
-        m_pCrates->setRecursionStatus(true);
-    }
-    m_pChildModel->reloadTree();
-    activate();
 }

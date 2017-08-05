@@ -527,3 +527,22 @@ QStringList CrateHierarchy::collectChildCrateIds(const Crate& crate) const {
 
     return ids;
 }
+
+QString CrateHierarchy::formatQueryForChildCrateIds(const Crate& crate) const {
+    QString query = QString(
+      "SELECT c.%1 FROM %2 "
+      "JOIN %3 c ON c.%4 = %5 "
+      "JOIN %3 p ON p.%4 = %6 "
+      "WHERE p.%4 = %7 "
+      "AND %8 != 0").arg(
+        CRATETABLE_ID,
+        CRATE_CLOSURE_TABLE,
+        CRATE_TABLE,
+        CRATETABLE_ID,
+        CLOSURE_CHILDID,
+        CLOSURE_PARENTID,
+        crate.getId().toString(),
+        CLOSURE_DEPTH);
+
+    return query;
+}

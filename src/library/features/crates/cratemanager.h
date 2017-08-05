@@ -49,12 +49,12 @@ class CrateManager : public QObject, public virtual SqlStorage {
         return m_crateHierarchy;
     }
 
-    inline bool isRecursionActive() const {
-        return m_recursionStatus;
+    inline bool isRecursionEnabled() const {
+        return m_recursionEnabled;
     }
 
-    inline void setRecursionStatus(bool status) {
-        m_recursionStatus = status;
+    inline void setRecursionEnabled(bool recursionEnabled = true) {
+        m_recursionEnabled = recursionEnabled;
     }
 
     /////////////////////////////////////////////
@@ -97,7 +97,7 @@ class CrateManager : public QObject, public virtual SqlStorage {
     CrateTracks m_crateTracks; // Manages tracks on crates
     CrateHierarchy m_crateHierarchy; // Manages the hierarchy
 
-    bool m_recursionStatus;
+    bool m_recursionEnabled;
     QSqlDatabase m_database;
 };
 

@@ -64,13 +64,13 @@ void CrateTreeModel::reloadTree() {
 
 void CrateTreeModel::createRecursionEntry(TreeItem* pRootItem) {
     QString status;
-    if (m_pCrates->isRecursionActive()) {
+    if (m_pCrates->isRecursionEnabled()) {
         status = "on";
     } else {
         status = "off";
     }
 
-    m_pRecursion = parented_ptr<TreeItem>(pRootItem->appendChild(QString("Recursion: %1").arg(status), ""));
+    m_pRecursion = parented_ptr<TreeItem>(pRootItem->appendChild(QString("Show tracks in subcrates: %1").arg(status), ""));
     m_pRecursion->setData(RECURSION_DATA);
 
 }

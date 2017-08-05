@@ -80,7 +80,6 @@ class CrateFeature : public LibraryFeature {
     void slotTrackSelected(TrackPointer pTrack);
     void slotResetSelectedTrack();
     void slotUpdateCrateLabels(const QSet<CrateId>& updatedCrateIds);
-    void slotToggleRecursionStatus();
 
   private:
     void initActions();

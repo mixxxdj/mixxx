@@ -88,6 +88,7 @@ class CrateHierarchy : public virtual DAO {
 
     QStringList collectIdPaths() const;
     QStringList collectChildCrateIds(const Crate& crate) const;
+    QString formatQueryForChildCrateIds(const Crate& crate) const;
 
   private:
     // empties the closure table

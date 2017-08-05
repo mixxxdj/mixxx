@@ -21,18 +21,6 @@ class CrateTracks : public virtual DAO {
 
     /////////////////////////////////////////////////////////////////////////
     // Crate write operations (transactional, non-const)
-    //
-    // Naming conventions:
-    //  on<present participle>...()
-    //    - Invoked within active transaction
-    //    - May fail
-    //    - Performs only database modifications that are either committed
-    //      or implicitly reverted on rollback
-    //  after<present participle>...()
-    //    - Invoked after preceding transaction has been committed (see above)
-    //    - Must not fail
-    //    - Typical use case: Update internal caches and compute change set
-    //      for notifications
     /////////////////////////////////////////////////////////////////////////
 
     bool onAddingCrateTracks(

@@ -241,10 +241,7 @@ bool CrateManager::deleteCrate(
 
         // Emit signals
         emit(crateDeleted(crateId));
-
     }
-
-
     return true;
 }
 

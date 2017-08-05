@@ -22,10 +22,20 @@ void CrateTableModel::selectCrate(const Crate& crate) {
     m_selectedCrate = crate.getId();
 
     QString recursion = "";
-    if (m_pCrates->isRecursionActive()) {
-                // we need a deifferent table for recursive view so we set a different name
+    QString queryPart = "";
+    if (m_pCrates->isRecursionEnabled() &&
+        m_pCrates->hierarchy().hasChildren(crate.getId())) {
+        // we need a different table for recursive view so we set a different name
+        // that table is only needed when the crate has children, cause then subcrate tracks
+        // wont's show if we create some subcrates later, until the db connection is restarted
         recursion = "recursive";
+        queryPart = QString("%1 IN (%2) OR ").arg(
+          CRATETRACKSTABLE_CRATEID,
+          m_pCrates->hierarchy().formatQueryForChildCrateIds(crate));
     }
+    queryPart = queryPart + QString("%1 IN (%2)").arg(
+      CRATETRACKSTABLE_CRATEID,
+      crate.getId().toString());
 
     QString tableName = QString("crate_%1_%2").arg(m_selectedCrate.toString(),
                                                    recursion);
@@ -34,12 +44,6 @@ void CrateTableModel::selectCrate(const Crate& crate) {
         qDebug() << "Already focused on crate " << crate.getId();
         return;
     }
-
-    QStringList crateIds;
-    if (m_pCrates->isRecursionActive()) {
-        crateIds = m_pCrates->hierarchy().collectChildCrateIds(crate);
-    }
-    crateIds << crate.getId().toString();
 
     QStringList columns;
     columns << LIBRARYTABLE_ID
@@ -55,7 +59,7 @@ void CrateTableModel::selectCrate(const Crate& crate) {
                                   "SELECT DISTINCT %2 FROM %3 "
                                   "JOIN %4 ON %5 = %6 "
                                   "WHERE %7=0 AND "
-                                  "%8 IN (%9)")
+                                  "%8")
                           .arg(tableName,
                                columns.join(","),
                                LIBRARY_TABLE,
@@ -63,8 +67,8 @@ void CrateTableModel::selectCrate(const Crate& crate) {
                                CRATETRACKSTABLE_TRACKID,
                                LIBRARYTABLE_ID,
                                LIBRARYTABLE_MIXXXDELETED,
-                               CRATETRACKSTABLE_CRATEID,
-                               crateIds.join(","));
+                               queryPart);
+
     FwdSqlQuery(m_database, queryString).execPrepared();
 
     columns[0] = LIBRARYTABLE_ID;
@@ -72,8 +76,7 @@ void CrateTableModel::selectCrate(const Crate& crate) {
     columns[2] = LIBRARYTABLE_COVERART;
     setTable(tableName, LIBRARYTABLE_ID, columns,
              m_pTrackCollection->getTrackSource());
-    //setSearch("crate: one");
-    //x    search(QString("crate: \"%1\"").arg(m_pCrates->hierarchy().getNamePathFromId(crate.getId())));
+
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
 
