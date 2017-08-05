@@ -13,22 +13,15 @@ Variables:
 	ConfigKey: The control to connect to.
 -->
 <Template>
-	<WidgetGroup>
-		<ObjectName>KnobTextless</ObjectName>
-		<Layout>horizontal</Layout>
-		<SizePolicy>f,f</SizePolicy>
-		<Children>
-			<KnobComposed>
-				<TooltipId><Variable name="TooltipId"/></TooltipId>
-				<ObjectName><Variable name="ObjectName"/></ObjectName>
-				<Size><Variable name="Size"/></Size>
-				<Knob>skin:/knobs_sliders/knob_<Variable name="Color"/>.svg</Knob>
-				<MinAngle><Variable name="PotiMinAngle"/></MinAngle>
-				<MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
-				<Connection>
-					<ConfigKey><Variable name="group"/>,<Variable name="ConfigKey"/></ConfigKey>
-				</Connection>
-			</KnobComposed>
-		</Children>
-	</WidgetGroup>
+  <KnobComposed>
+    <TooltipId><Variable name="TooltipId"/></TooltipId>
+    <ObjectName><Variable name="ObjectName"/></ObjectName>
+    <Size><Variable name="Size"/></Size>
+    <Knob>skin:/knobs_sliders/knob_<Variable name="Color"/>.svg</Knob>
+    <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+    <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,<Variable name="ConfigKey"/></ConfigKey>
+    </Connection>
+  </KnobComposed>
 </Template>

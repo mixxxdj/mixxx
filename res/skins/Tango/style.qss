@@ -1538,18 +1538,6 @@ QToolTip {
   border: 1px solid #333333;
 }
 
-#KnobTextless {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-}
-#KnobLabel {
-  qproperty-alignment: 'AlignCenter | AlignBottom';
-  font-size: 10px/12px;
-  font-weight: bold;
-  color: #585858;
-  text-align: center;
-  padding-top: -1px;
-}
-
 #TEST {
   background-color: #451278;
 }
