@@ -1054,40 +1054,141 @@ WBeatSpinBox {
   background-color: #333333;
   }
 
-#EffectSlots {
+#EffectSlotsLeft, #EffectSlotsRight {
   background-color: #0f0f0f;
 }
-
-#EffectSlotLeft {
-  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  background-color: #333333;
-  }
-  #EffectSlotLeftHighlight {
+  #EffectSlotsLeft > #EffectSlot {
     qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
   }
-  #EffectSlotLeftHighlight[highlight="0"] {
-    background-color: #333333;
-  }
-  #EffectSlotLeftHighlight[highlight="1"] {
-    background-color: #0f0f0f;
-  }
-#EffectSlotRight {
-  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-  /* Here border would show up...
-  border-left: 1px solid #0f0f0f;	*/
-  background-color: #333333;
-  }
-  #EffectSlotRightHighlight {
+  #EffectSlotsRight > #EffectSlot {
     qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-    /* ...and here it wouldn't. Use spacer instead
-    border-left: 1px solid #0f0f0f;	*/
   }
-  #EffectSlotRightHighlight[highlight="0"] {
-    background-color: #333333;
+
+#EffectSlot {
   }
-  #EffectSlotRightHighlight[highlight="1"] {
-    background-color: #0f0f0f;
-  }
+  /* minimal EffectSlots in horizontal layout */
+  /* with focus */
+  #EffectSlot_mini_focus1[highlight="0"] {
+    border-image: url(skin:/graphics/fxChainFlow_hori_unfocused1.svg) 0px 10px 0px 0px ;
+    border-width: 0px 10px 0px 0px;
+    }
+
+  #EffectSlot_mini_focus2[highlight="0"] {
+    margin-left: 125px;
+    border-image: url(skin:/graphics/fxChainFlow_hori_unfocused2.svg) 0px 10px 0px 10px;
+    border-width: 0px 10px 0px 10px;
+    }
+    #EffectSlot_mini_focus2[highlight="1"] {
+      margin-left: 125px;
+    }
+
+  #EffectSlot_mini_focus3[highlight="0"] {
+    margin-left: 259px;
+    border-image: url(skin:/graphics/fxChainFlow_hori_unfocused3.svg) 0px 0px 0px 10px;
+    border-width: 0px 0px 0px 10px;
+    }
+    #EffectSlot_mini_focus3[highlight="1"] {
+      margin-left: 259px;
+    }
+
+  /* no focus */
+  #EffectSlot_mini_noFocus1 {
+    border-image: url(skin:/graphics/fxChainFlow_hori_unfocused1.svg) 0px 10px 0px 0px;
+    border-width: 0px 10px 0px 0px;
+    }
+  #EffectSlot_mini_noFocus2 {
+    margin-left: 111px;
+    border-image: url(skin:/graphics/fxChainFlow_hori_unfocused2.svg) 0px 10px 0px 10px;
+    border-width: 0px 10px 0px 10px;
+    }
+  #EffectSlot_mini_noFocus3 {
+    margin-left: 231px;
+    border-image: url(skin:/graphics/fxChainFlow_hori_unfocused3.svg) 0px 0px 0px 10px;
+    border-width: 0px 0px 0px 10px;
+    }
+
+  /* maximized EffectSlots in vertical layout */
+  /* with focus, right-hand FX units */
+  #EffectSlot_maxi_focus1[highlight="0"] {
+    border-image: url(skin:/graphics/fxChainFlow_vert_unfocused1.svg) 0px 0px 0px 99px ;
+    border-width: 0px 0px 0px 99px;
+    }
+
+  #EffectSlot_maxi_focus2[highlight="0"] {
+    margin-top: 46px;
+    border-image: url(skin:/graphics/fxChainFlow_vert_unfocused2.svg) 0px 0px 0px 99px;
+    border-width: 0px 0px 0px 99px;
+    }
+    #EffectSlot_maxi_focus2[highlight="1"] {
+      margin-top: 46px;
+    }
+
+  #EffectSlot_maxi_focus3[highlight="0"] {
+    margin-top: 92px;
+    border-image: url(skin:/graphics/fxChainFlow_vert_unfocused3.svg) 0px 0px 0px 99px;
+    border-width: 0px 0px 0px 99px;
+    }
+    #EffectSlot_maxi_focus3[highlight="1"] {
+      margin-top: 92px;
+    }
+
+  /* no focus */
+  #EffectSlot_maxi_noFocus1 {
+    border-image: url(skin:/graphics/fxChainFlow_vert_noFocus1.svg) 0px 0px 0px 85px;
+    border-width: 0px 00px 0px 85px;
+    }
+  #EffectSlot_maxi_noFocus2 {
+    margin-top: 46px;
+    border-image: url(skin:/graphics/fxChainFlow_vert_noFocus2.svg) 0px 10px 0px 85px;
+    border-width: 0px 0px 0px 85px;
+    }
+  #EffectSlot_maxi_noFocus3 {
+    margin-top: 92px;
+    border-image: url(skin:/graphics/fxChainFlow_vert_noFocus3.svg) 0px 0px 0px 85px;
+    border-width: 0px 0px 0px 85px;
+    }
+
+  /* maximized EffectSlots in vertical layout */
+  /* with focus, left-hand FX units */
+  #EffectSlot_maxi_left_focus1[highlight="0"] {
+    border-image: url(skin:/graphics/fxChainFlow_vert_left_unfocused1.svg) 0px 109px 0px 0px;
+    border-width: 0px 109px 0px 0px;
+    }
+
+  #EffectSlot_maxi_left_focus2[highlight="0"] {
+    margin-top: 46px;
+    border-image: url(skin:/graphics/fxChainFlow_vert_left_unfocused2.svg) 0px 109px 0px 0px;
+    border-width: 0px 109px 0px 0px;
+    }
+    #EffectSlot_maxi_left_focus2[highlight="1"] {
+      margin-top: 46px;
+    }
+
+  #EffectSlot_maxi_left_focus3[highlight="0"] {
+    margin-top: 92px;
+    border-image: url(skin:/graphics/fxChainFlow_vert_left_unfocused3.svg) 0px 109px 0px 0px;
+    border-width: 0px 109px 0px 0px;
+    }
+    #EffectSlot_maxi_left_focus3[highlight="1"] {
+      margin-top: 92px;
+    }
+
+  /* no focus */
+  #EffectSlot_maxi_left_noFocus1 {
+    border-image: url(skin:/graphics/fxChainFlow_vert_left_noFocus1.svg) 0px 95px 0px 0px;
+    border-width: 0px 95px 0px 0px;
+    }
+  #EffectSlot_maxi_left_noFocus2 {
+    margin-top: 46px;
+    border-image: url(skin:/graphics/fxChainFlow_vert_left_noFocus2.svg) 0px 95px 0px 0px;
+    border-width: 0px 95px 0px 0px;
+    }
+  #EffectSlot_maxi_left_noFocus3 {
+    margin-top: 92px;
+    border-image: url(skin:/graphics/fxChainFlow_vert_left_noFocus3.svg) 0px 95px 0px 0px;
+    border-width: 0px 95px 0px 0px;
+    }
+
 
 #EffectSlotParameters {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
@@ -1109,7 +1210,8 @@ WBeatSpinBox {
       image: url(skin:/buttons/btn_fx_focus_on_hover.svg) no-repeat center center;
     }
 
-#EffectTogglerMetaKnob, #EffectToggler {
+#EffectTogglerMetaKnob1, #EffectTogglerMetaKnob2, #EffectTogglerMetaKnob3,
+#EffectToggler {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
 }
 #EffectToggler {
@@ -1154,25 +1256,27 @@ WBeatSpinBox {
       padding: 0px;
       /* The 3D frame on the combo box becomes flat when you give it a border */
       border: 0px solid #666666;
-      border-radius: 2px;
+      border-radius: 3px;
       }
       WEffectSelector::drop-down {
+        width: 10px;
+        height: 20px;
         border: 0;
       }
       WEffectSelector::down-arrow {
-        width: 16px;
-        height: 16px;
-        image: url(skin:/buttons/btn_fx_selector.svg);
+        width: 10px;
+        height: 20px;
+        image: url(skin:/buttons/btn_fx_selector_dots.svg);
         }
         WEffectSelector::down-arrow:hover {
-          width: 16px;
-          height: 16px;
-          image: url(skin:/buttons/btn_fx_selector_hover.svg);
+          width: 10px;
+          height: 20px;
+          image: url(skin:/buttons/btn_fx_selector_dots_hover.svg);
         }
 
       WEffectSelector QAbstractItemView {
-        min-width: 90px;
-        max-width: 90px;
+        min-width: 82px;
+        max-width: 82px;
         background-color: #202020;
         padding-left: 6px;
         font-family: Ubuntu;

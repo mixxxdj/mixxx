@@ -14,17 +14,17 @@ Variables:
 <Template>
   <SetVariable name="fxGroup_fxNum">[<Variable name="fxGroup"/>_Effect<Variable name="fxNum"/>]</SetVariable>
   <WidgetGroup>
-    <ObjectName>EffectTogglerMetaKnob</ObjectName>
+    <ObjectName>EffectTogglerMetaKnob<Variable name="fxNum"/></ObjectName>
     <Layout>horizontal</Layout>
-    <MinimunSize>123,30</MinimunSize>
-    <MaximumSize>134,39</MaximumSize>
-    <SizePolicy>max,me</SizePolicy>
+    <Size>120f,30f</Size>
     <Children>
+
+      <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
 
       <WidgetGroup><!-- Effect toggler + Effect selector -->
         <ObjectName>EffectToggler</ObjectName>
         <Layout>stacked</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>min,min</SizePolicy><!-- 82f,20f -->
         <Children>
 
           <!-- invisible, clickable Overlay to toggle Effect -->
@@ -58,7 +58,7 @@ Variables:
           </Template>
 
           <EffectSelector>
-            <Size>90f,20f</Size>
+            <Size>82f,20f</Size>
             <EffectRack><Variable name="fxRack"/></EffectRack>
             <EffectUnit><Variable name="fxUnit"/></EffectUnit>
             <Effect><Variable name="fxNum"/></Effect>
@@ -66,21 +66,17 @@ Variables:
 
         </Children>
       </WidgetGroup><!-- /Effect toggler + Effect selector -->
-      
-      <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
       <Template src="skin:knob_textless.xml">
         <SetVariable name="TooltipId">EffectSlot_metaknob</SetVariable>
+        <SetVariable name="ObjectName">EffectSlot_metaknob</SetVariable>
         <SetVariable name="group"><Variable name="fxGroup_fxNum"/></SetVariable>
         <SetVariable name="ConfigKey">meta</SetVariable>
         <SetVariable name="Size">30f,30f</SetVariable>
         <SetVariable name="Color">blue</SetVariable>
       </Template>
 
-      <!-- 12x30 -->
-      <Template src="skin:fx_focus_button.xml"/>
-
-      <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+      <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
 
     </Children>
   </WidgetGroup>

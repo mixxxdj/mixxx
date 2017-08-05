@@ -15,135 +15,127 @@ Variables:
     <SizePolicy>me,max</SizePolicy>
     <Children>
 
-      <WidgetGroup><!-- Effect _selector_meta_s * highlightable -->
-        <ObjectName>AlignRightCenter</ObjectName>
-        <Layout>horizontal</Layout>
-        <SizePolicy>me,min</SizePolicy>
+      <WidgetGroup><ObjectName>Spacer33</ObjectName><Size>0me,1min</Size></WidgetGroup>
+
+      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+
+      <WidgetGroup><!-- EffectSlots + Underlays, no focus -->
+        <ObjectName>EffectSlot_stack</ObjectName>
+        <Layout>stacked</Layout>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
-
-          <WidgetGroup><ObjectName>Spacer33</ObjectName><Size>0me,1min</Size></WidgetGroup>
-
-          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1max,1min</Size></WidgetGroup>
-
-          <WidgetGroup>
-            <ObjectName>EffectSlotLeftHighlight</ObjectName>
+          <WidgetGroup><!-- EffectSlots, no focus -->
             <Layout>horizontal</Layout>
-            <SizePolicy>min,me</SizePolicy>
+            <SizePolicy>max,min</SizePolicy>
             <Children>
-              <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-              <Template src="skin:fx_selector_meta_left.xml">
+              <Template src="skin:fx_selector_left_noFocus.xml">
                 <SetVariable name="fxNum">1</SetVariable>
               </Template>
-            </Children>
-            <Connection>
-              <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
-              <BindProperty>highlight</BindProperty>
-              <Transform><IsEqual>1</IsEqual></Transform>
-            </Connection>
-          </WidgetGroup>
 
-          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
-
-          <WidgetGroup>
-            <ObjectName>EffectSlotLeftHighlight</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>min,me</SizePolicy>
-            <Children>
-              <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-              <Template src="skin:fx_selector_meta_left.xml">
+              <Template src="skin:fx_selector_left_noFocus.xml">
                 <SetVariable name="fxNum">2</SetVariable>
               </Template>
-            </Children>
-            <Connection>
-              <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
-              <BindProperty>highlight</BindProperty>
-              <Transform><IsEqual>2</IsEqual></Transform>
-            </Connection>
-          </WidgetGroup>
 
-          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
-
-          <WidgetGroup>
-            <ObjectName>EffectSlotLeftHighlight</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>min,me</SizePolicy>
-            <Children>
-              <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-              <Template src="skin:fx_selector_meta_left.xml">
+              <Template src="skin:fx_selector_left_noFocus.xml">
                 <SetVariable name="fxNum">3</SetVariable>
               </Template>
             </Children>
-            <Connection>
-              <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
-              <BindProperty>highlight</BindProperty>
-              <Transform><IsEqual>3</IsEqual></Transform>
-            </Connection>
-          </WidgetGroup>
+          </WidgetGroup><!-- /EffectSlots, no focus -->
 
+          <WidgetGroup><!-- Underlays, no focus -->
+            <ObjectName>Spacer0f</ObjectName>
+            <Layout>stacked</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <WidgetGroup><!-- EffectSlot 1 -->
+                <ObjectName>EffectSlot_mini_noFocus1</ObjectName>
+                <Size>120f,30f</Size>
+              </WidgetGroup>
+
+              <WidgetGroup><!-- EffectSlot 2 -->
+                <ObjectName>EffectSlot_mini_noFocus2</ObjectName>
+                <Size>240f,30f</Size>
+              </WidgetGroup>
+
+              <WidgetGroup><!-- EffectSlot 3 -->
+                <ObjectName>EffectSlot_mini_noFocus3</ObjectName>
+                <Size>360f,30f</Size>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup><!-- /Underlays, no focus -->
         </Children>
         <Connection>
           <ConfigKey>[<Variable name="fxGroup"/>],show_focus</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup><!-- /Effect _selector_meta_s * highlightable -->
-
-      <WidgetGroup><!-- Effect _selector_meta_s * no highlight -->
-        <ObjectName>AlignRightCenter</ObjectName>
-        <Layout>horizontal</Layout>
-        <SizePolicy>me,min</SizePolicy>
-        <Children>
-
-          <WidgetGroup><ObjectName>Spacer33</ObjectName><Size>0me,1min</Size></WidgetGroup>
-
-          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
-
-          <WidgetGroup>
-            <ObjectName>EffectSlotLeft</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>min,me</SizePolicy>
-            <Children>
-              <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-              <Template src="skin:fx_selector_meta_left.xml">
-                <SetVariable name="fxNum">1</SetVariable>
-              </Template>
-            </Children>
-          </WidgetGroup>
-
-          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
-
-          <WidgetGroup>
-            <ObjectName>EffectSlotLeft</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>min,me</SizePolicy>
-            <Children>
-              <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-              <Template src="skin:fx_selector_meta_left.xml">
-                <SetVariable name="fxNum">2</SetVariable>
-              </Template>
-            </Children>
-          </WidgetGroup>
-
-          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
-
-          <WidgetGroup>
-            <ObjectName>EffectSlotLeft</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>min,me</SizePolicy>
-            <Children>
-              <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-              <Template src="skin:fx_selector_meta_left.xml">
-                <SetVariable name="fxNum">3</SetVariable>
-              </Template>
-            </Children>
-          </WidgetGroup>
-
-        </Children>
-        <Connection>
-          <ConfigKey>[<Variable name="fxGroup"/>],show_focus</ConfigKey>
-          <BindProperty>visible</BindProperty>
           <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- /Effect _selector_meta_s * no highlight -->
+      </WidgetGroup><!-- /EffectSlots + Underlays, no focus -->
+
+      <WidgetGroup><!-- EffectSlots + Underlays, with focus -->
+        <ObjectName>EffectSlot_stack</ObjectName>
+        <Layout>stacked</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup><!-- EffectSlots with focus button -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skin:fx_selector_left_focus.xml">
+                <SetVariable name="fxNum">1</SetVariable>
+              </Template>
+
+              <Template src="skin:fx_selector_left_focus.xml">
+                <SetVariable name="fxNum">2</SetVariable>
+              </Template>
+
+              <Template src="skin:fx_selector_left_focus.xml">
+                <SetVariable name="fxNum">3</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- /EffectSlots with focus button -->
+
+          <WidgetGroup><!-- Underlays with focus -->
+            <ObjectName>Spacer0f</ObjectName>
+            <Layout>stacked</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <WidgetGroup><!-- EffectSlot 1 -->
+                <ObjectName>EffectSlot_mini_focus1</ObjectName>
+                <Size>134f,30f</Size>
+                <Connection>
+                  <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
+                  <Transform><IsEqual>1</IsEqual></Transform>
+                  <BindProperty>highlight</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup><!-- EffectSlot 2 -->
+                <ObjectName>EffectSlot_mini_focus2</ObjectName>
+                <Size>268f,30f</Size>
+                <Connection>
+                  <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
+                  <Transform><IsEqual>2</IsEqual></Transform>
+                  <BindProperty>highlight</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup><!-- EffectSlot 3 -->
+                <ObjectName>EffectSlot_mini_focus3</ObjectName>
+                <Size>402f,30f</Size>
+                <Connection>
+                  <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
+                  <Transform><IsEqual>3</IsEqual></Transform>
+                  <BindProperty>highlight</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup><!-- /Underlays with focus -->
+        </Children>
+        <Connection>
+          <ConfigKey>[<Variable name="fxGroup"/>],show_focus</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /EffectSlots + Underlays, with focus -->
 
       <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
@@ -152,14 +144,14 @@ Variables:
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:knob_textless.xml">
+       <!--   <Template src="skin:knob_textless.xml">
             <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
             <SetVariable name="Size">30f,30f</SetVariable>
             <SetVariable name="group">[<Variable name="fxGroup"/>]</SetVariable>
             <SetVariable name="ConfigKey">super1</SetVariable>
             <SetVariable name="Color">blue</SetVariable>
-          </Template>
+          </Template> -->
 
           <Template src="skin:knob_textless.xml">
             <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
