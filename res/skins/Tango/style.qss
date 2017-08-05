@@ -1930,7 +1930,7 @@ QPushButton {
       }
   /* selected table row */ 
   QTableView::item:selected {
-    color: #D9D9D9;
+    color: #FFFFFF;
     background-color: #7A7A7A;
   }
   
