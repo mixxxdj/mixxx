@@ -684,18 +684,6 @@ WBeatSpinBox {
     WBeatSpinBox::up-button:hover {
       image: url(skin:/buttons/btn_beatbox_up_hover.svg);
     }
-    /* Make right hand corners 'sharp' to visually attach it
-    to beatjump/loop buttons next to spinbox
-    #LoopBeatJumpContainer_Left > WBeatSpinBox::up-button {
-      border-top-right-radius: 2px;
-      border-bottom-right-radius: 2px;
-      image: url(skin:/buttons/btn_beatbox_left_up.svg);
-      }
-    #LoopBeatJumpContainer_Left > WBeatSpinBox::up-button:hover {
-      border-top-right-radius: 2px;
-      border-bottom-right-radius: 2px;
-      image: url(skin:/buttons/btn_beatbox_left_up_hover.svg);
-      } */
   WBeatSpinBox::down-button {
     subcontrol-position: center right;
     left: -13px;
@@ -765,14 +753,6 @@ WBeatSpinBox {
 /*################################################################
  #######  Channel Mixer  ########################################
 ##############################################################*/
-    
-#MixerMaster {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-}
-
-#MixerHeadphone {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-}
 #MixerChannelLeft {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   background-color: #333333;
@@ -984,14 +964,6 @@ WBeatSpinBox {
     border: 1px solid #666666;
   }
 
-#LogoMaxi:hover, #LogoMini:hover {
-/*  background-color: #0f0f0f;  */
-}
-
-#CrossfaderBox {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
-}
-
 /*################################################################
 ######  Effects  ###############################################
 ##############################################################*/
@@ -1002,22 +974,6 @@ WBeatSpinBox {
 #EffectUnits34 {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
-
-#EffectRack {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  }
-  #EffectUnitLeft {
-    qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-    }
-  #EffectUnitRight {
-    qproperty-layoutAlignment: 'AlignRight | AlignTop';
-    }
-  #EffectUnitLeftMini {
-    qproperty-layoutAlignment: 'AlignRight | AlignTop';
-    }
-  #EffectUnitRightMini {
-    qproperty-layoutAlignment: 'AlignRight | AlignTop';
-    }
 
 #EffectUnitLabel {
   font-size: 14px/14px;
@@ -1401,20 +1357,6 @@ WBeatSpinBox {
       background-color: #ff0000;
     }
 
-#EffectUnitToggleButton[displayValue="0"] {
-  background: #333333 url(skin:/buttons/btn_off.svg) no-repeat center center;
-  }
-  #EffectUnitToggleButton[displayValue="0"]:hover {
-    background: #333333 url(skin:/buttons/btn_on.svg) no-repeat center center;
-    border: 1px solid #888888;
-  }
-#EffectUnitToggleButton[displayValue="1"] {
-    background: #666666 url(skin:/buttons/btn_on.svg) no-repeat center center;
-  }
-  #EffectUnitToggleButton[displayValue="1"]:hover {
-      border: 1px solid #eeeeee;
-    }
-
 #FxAssignButton {
   font-size: 13px/13px;
   font-weight: bold;
@@ -1434,14 +1376,6 @@ WBeatSpinBox {
     #FxAssignButton[displayValue="1"]:hover {
       border: 1px solid #FFFFFF;
     }
-
-#EffectEject {
-  background-color: #333333;
-  }
-  #EffectEject:hover {
-    background-color: #ca0000;
-    border: 1px solid #ff0000;
-  }
 
 /*################################################################
  ######  Samplers  ##############################################
@@ -1524,9 +1458,6 @@ WTrackProperty#SamplerTitle_mini {
   background-color: #1a1a1a;
 }
 
-#SamplerOverview_mini {
-}
-
 #SamplerSyncGainPfl {
   padding: 1px;	
 }
@@ -1540,17 +1471,17 @@ WTrackProperty#SamplerTitle_mini {
 #SamplerButton_mini, #SamplerGainKnob {
   background-color: #333333;
   border-radius: 2px;
-}
+  }
   #SamplerButton:hover, #SamplerButton_mini:hover {
     background-color: #0f0f0f;
   }
-  #SamplerKeylock {
-    margin-left: 3px;
-  }
+#SamplerKeylock {
+  margin-left: 3px;
+}
 
 #SamplerVU, #SamplerPitchSlider {
   background-color: #333333;
-  }
+}
 
 #SamplerVU {
   padding: 2px 2px 1px 2px;
@@ -1565,7 +1496,7 @@ WTrackProperty#SamplerTitle_mini {
         
 #SamplerSyncButton {
   background-color: #0f0f0f;
-}
+  }
   #SamplerSyncButton:hover {
     background-color: #0f0f0f;
     border: 1px solid #888888;

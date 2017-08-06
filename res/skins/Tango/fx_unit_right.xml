@@ -10,7 +10,6 @@ Variables:
 -->
 <Template>
   <WidgetGroup><!-- EffectUnit -->
-    <ObjectName>EffectUnitRight</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>

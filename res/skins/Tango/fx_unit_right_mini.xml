@@ -7,7 +7,6 @@
 -->
 <Template>
   <WidgetGroup><!-- EffectUnit -->
-    <ObjectName>EffectUnitRightMini</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>

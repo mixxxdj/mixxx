@@ -243,8 +243,7 @@ Description:
         </Children>
       </WidgetGroup><!-- /Broadcast + Clock Skin + Settings -->
 
-      <!-- LogoCrossfaderBox 2 Decks-->
-      <WidgetGroup>
+      <WidgetGroup><!-- Logo + Crossfader 2 Decks-->
         <Layout>horizontal</Layout>
         <Size>104f,28max</Size>
         <Children>
@@ -298,7 +297,7 @@ Description:
           </SliderComposed>
 
         </Children>
-      </WidgetGroup><!-- /LogoCrossfaderBox 2 Decks -->
+      </WidgetGroup><!-- /Logo + Crossfader 2 Decks-->
 
     </Children>
     <Connection>
