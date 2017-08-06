@@ -436,7 +436,7 @@ WWidgetGroup {
     
 #DeckButtonsPlay {
   margin-top: 1px;
-  background-color: #333333;
+  background-color: #0f0f0f;
   }
   #DeckControlsLeft {
     qproperty-layoutAlignment: 'Alignleft | AlignVCenter';
@@ -521,14 +521,10 @@ WWidgetGroup {
     background-color: none;
     }
 
-#Hotcues {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  background-color: #0f0f0f;
+#HotcueButton {
+  font-size: 13px/15px;
+  font-weight: bold;
   }
-  #HotcueButton {
-    font-size: 13px/15px;
-    font-weight: bold;
-    }
   #HotcueButton[displayValue="0"], #CueUnderlay {
     color: #888888;
     background-color: #333333;
@@ -536,18 +532,20 @@ WWidgetGroup {
   #HotcueButton[displayValue="0"]:hover {
     border: 1px solid #888888;
     }
-  #HotcueButton[displayValue="1"], #CueButton[displayValue="1"],
-  #CueUnderlay[displayValue="1"] {
+  #HotcueButton[displayValue="1"],
+  #CueButton[displayValue="1"], #CueUnderlay[displayValue="1"] {
     color: #eeeeee;
     background-color: #666666;
     }
-  #HotcueButton[displayValue="1"]:hover, #CueButton[displayValue="1"]:hover {
+  #HotcueButton[displayValue="1"]:hover,
+  #CueButton[displayValue="1"]:hover {
     border: 1px solid #eeeeee;
     }
 
 /* Actual Play button. Receives click events, turns red
   when playing regularly, not from Cue or HotCue */
-#PlayCue[displayValue="0"], #SamplerPlayCue[displayValue="0"] {
+#PlayCue[displayValue="0"],
+#SamplerPlayCue[displayValue="0"] {
     background: none url(skin:/buttons/btn_paused.svg) no-repeat center center;
     }
   #PlayCue[displayValue="0"]:hover {
@@ -943,7 +941,8 @@ WBeatSpinBox {
   #BroadcastButton[displayValue="3"] {
     background: transparent url(skin:/buttons/btn_broadcast_failure.svg) no-repeat center center;
     }
-    #BroadcastButton[displayValue="2"]:hover, #BroadcastButton[displayValue="3"]:hover {
+    #BroadcastButton[displayValue="2"]:hover,
+    #BroadcastButton[displayValue="3"]:hover {
       background-color: #0f0f0f;
       border: 1px solid #666666;
     }
@@ -966,7 +965,8 @@ WBeatSpinBox {
   #BroadcastButtonNetbook[displayValue="3"] {
     background: transparent url(skin:/buttons/btn_broadcast_mini_failure.svg) no-repeat center center;
     }
-    #BroadcastButtonNetbook[displayValue="2"]:hover, #BroadcastButtonNetbook[displayValue="3"]:hover {
+    #BroadcastButtonNetbook[displayValue="2"]:hover,
+    #BroadcastButtonNetbook[displayValue="3"]:hover {
       background-color: #0f0f0f;
       border: 1px solid #666666;
     }

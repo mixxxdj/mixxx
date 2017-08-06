@@ -6,25 +6,25 @@ Variables:
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>Hotcues</ObjectName>
+    <ObjectName>Spacer33</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,f</SizePolicy>
+    <SizePolicy>me,me</SizePolicy>
     <Children>
 
       <WidgetGroup>
         <Layout>horizontal</Layout>
-        <SizePolicy>min,f</SizePolicy>
+        <SizePolicy>min,me</SizePolicy>
         <Children>
 
       <!-- Qt is fun to design with...not.
           This spacer is necessary to fill (expanding) container
           when 4 hotcues are enabled. -->
           <WidgetGroup>
-            <ObjectName>Spacer33</ObjectName>
             <SizePolicy>min,me</SizePolicy>
           </WidgetGroup>
 
           <WidgetGroup><!-- 4 -->
+            <ObjectName>Spacer0f</ObjectName>
             <Layout>horizontal</Layout>
             <MinimumSize>64,24</MinimumSize>
             <MaximumSize>96,24</MaximumSize>
@@ -52,9 +52,10 @@ Variables:
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
-          </WidgetGroup><!-- 4 -->
+          </WidgetGroup><!-- /4 -->
 
           <WidgetGroup><!-- 8 -->
+            <ObjectName>Spacer0f</ObjectName>
             <Layout>horizontal</Layout>
             <MinimumSize>128,24</MinimumSize>
             <MaximumSize>192,24</MaximumSize>
@@ -97,13 +98,14 @@ Variables:
               <ConfigKey persist="true">[Tango],8_hotcues</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
-          </WidgetGroup><!-- 8 -->
+          </WidgetGroup><!-- /8 -->
         </Children>
         <Connection>
           <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
+
     </Children>
   </WidgetGroup>
 </Template>

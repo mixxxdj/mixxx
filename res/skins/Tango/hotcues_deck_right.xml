@@ -6,18 +6,17 @@ Variables:
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>Hotcues</ObjectName>
+    <ObjectName>Spacer33</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,f</SizePolicy>
+    <SizePolicy>me,me</SizePolicy>
     <Children>
 
       <WidgetGroup>
-        <ObjectName>HotcueBox</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>min,f</SizePolicy>
         <Children>
           <WidgetGroup><!-- 4 -->
-            <ObjectName>Hotcues4</ObjectName>
+            <ObjectName>Spacer0f</ObjectName>
             <Layout>horizontal</Layout>
             <MinimumSize>64,24</MinimumSize>
             <MaximumSize>96,24</MaximumSize>
@@ -48,7 +47,7 @@ Variables:
           </WidgetGroup><!-- 4 -->
 
           <WidgetGroup><!-- 8 -->
-            <ObjectName>Hotcues8</ObjectName>
+            <ObjectName>Spacer0f</ObjectName>
             <Layout>horizontal</Layout>
             <MinimumSize>128,24</MinimumSize>
             <MaximumSize>192,24</MaximumSize>
@@ -97,7 +96,6 @@ Variables:
           This spacer is necessary to fill (expanding) container
           when 4 hotcues are enabled. -->
           <WidgetGroup>
-            <ObjectName>Spacer33</ObjectName>
             <SizePolicy>min,me</SizePolicy>
           </WidgetGroup>
         </Children>
