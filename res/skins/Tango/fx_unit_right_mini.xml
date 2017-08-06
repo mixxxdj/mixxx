@@ -72,15 +72,15 @@
             <Layout>horizontal</Layout>
             <SizePolicy>max,min</SizePolicy>
             <Children>
-              <Template src="skin:fx_selector_left_noFocus.xml">
+              <Template src="skin:fx_selector_right_noFocus.xml">
                 <SetVariable name="fxNum">1</SetVariable>
               </Template>
 
-              <Template src="skin:fx_selector_left_noFocus.xml">
+              <Template src="skin:fx_selector_right_noFocus.xml">
                 <SetVariable name="fxNum">2</SetVariable>
               </Template>
 
-              <Template src="skin:fx_selector_left_noFocus.xml">
+              <Template src="skin:fx_selector_right_noFocus.xml">
                 <SetVariable name="fxNum">3</SetVariable>
               </Template>
             </Children>
@@ -124,15 +124,15 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Template src="skin:fx_selector_left_focus.xml">
+              <Template src="skin:fx_selector_right_focus.xml">
                 <SetVariable name="fxNum">1</SetVariable>
               </Template>
 
-              <Template src="skin:fx_selector_left_focus.xml">
+              <Template src="skin:fx_selector_right_focus.xml">
                 <SetVariable name="fxNum">2</SetVariable>
               </Template>
 
-              <Template src="skin:fx_selector_left_focus.xml">
+              <Template src="skin:fx_selector_right_focus.xml">
                 <SetVariable name="fxNum">3</SetVariable>
               </Template>
             </Children>

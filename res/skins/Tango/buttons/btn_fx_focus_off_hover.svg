@@ -11,7 +11,7 @@
    viewBox="0 0 18 18"
    id="svg2"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_fx_focus_on.svg"
+   sodipodi:docname="btn_fx_focus_off_hover.svg"
    width="100%"
    height="100%">
   <metadata
@@ -22,7 +22,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -41,20 +41,24 @@
      inkscape:window-height="746"
      id="namedview8"
      showgrid="false"
-     inkscape:zoom="13.111111"
-     inkscape:cx="-16.322034"
-     inkscape:cy="9.3050845"
+     inkscape:zoom="16"
+     inkscape:cx="18.089732"
+     inkscape:cy="12.829981"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg2"
-     inkscape:snap-page="true" />
-  <path
-     style="fill:#ffffff;fill-opacity:1"
-     d="M 9 2 C 5.1323 2 2 5.1323 2 9 C 2 12.8677 5.1323 16 9 16 C 12.8677 16 16 12.8677 16 9 C 16 5.1323 12.868 2 9 2 z M 9 3.40625 C 12.094 3.40625 14.59375 5.906 14.59375 9 C 14.59375 12.094 12.094 14.59375 9 14.59375 C 5.906 14.59375 3.40625 12.094 3.40625 9 C 3.40625 5.906 5.906 3.40625 9 3.40625 z "
-     id="path3909" />
+     inkscape:snap-page="true"
+     inkscape:snap-object-midpoints="true"
+     inkscape:snap-bbox="true"
+     inkscape:snap-center="true"
+     inkscape:object-nodes="true" />
   <path
      fill="none"
      d="m0-30h48v48h-48z"
      id="path6" />
+  <path
+     style="fill:#cccccc;fill-opacity:1"
+     d="M 4.53125 3.5625 L 3.5625 4.53125 C 4.6563942 5.625144 5.6875 7.569258 5.6875 9 C 5.6875 10.430742 4.6563942 12.374856 3.5625 13.46875 L 4.53125 14.4375 C 5.625144 13.343606 7.569258 12.3125 9 12.3125 C 10.430742 12.3125 12.374856 13.343606 13.46875 14.4375 L 14.4375 13.46875 C 13.343606 12.374856 12.3125 10.430742 12.3125 9 C 12.3125 7.569258 13.343606 5.625144 14.4375 4.53125 L 13.46875 3.5625 C 12.374856 4.6563942 10.430742 5.6875 9 5.6875 C 7.5692579 5.6875 5.6251442 4.6563942 4.53125 3.5625 z M 6.5 6.5 C 7.3471501 6.8669366 8.2222372 7.0937385 9 7.09375 C 9.7777629 7.0937385 10.65285 6.8669366 11.5 6.5 C 11.133063 7.3471501 10.906262 8.2222371 10.90625 9 C 10.906262 9.7777629 11.133063 10.65285 11.5 11.5 C 10.65285 11.133063 9.7777629 10.906262 9 10.90625 C 8.2222371 10.906262 7.3471501 11.133063 6.5 11.5 C 6.8669366 10.65285 7.0937383 9.7777629 7.09375 9 C 7.0937383 8.2222371 6.8669366 7.3471501 6.5 6.5 z "
+     id="path3909-6" />
 </svg>
