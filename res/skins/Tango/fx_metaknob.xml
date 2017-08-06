@@ -1,0 +1,22 @@
+<!--
+Description:
+	An effect meta knob that controls all knobs linked to it.
+Variables:
+	PotiMinAngle:	see skin.xml
+	PotiMaxAngle: see skin.xml
+	fxGroup_fxNum: The affected [group],[effectX]
+-->
+<Template>
+  <SetVariable name="fxGroup_fxNum">[<Variable name="fxGroup"/>_Effect<Variable name="fxNum"/>]</SetVariable>
+  <KnobComposed>
+    <TooltipId>EffectSlot_metaknob</TooltipId>
+    <ObjectName>EffectSlot_metaknob</ObjectName>
+    <Size>30f,30f</Size>
+    <Knob>skin:/knobs_sliders/knob_blue.svg</Knob>
+    <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+    <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+    <Connection>
+      <ConfigKey><Variable name="fxGroup_fxNum"/>,meta</ConfigKey>
+    </Connection>
+  </KnobComposed>
+</Template>

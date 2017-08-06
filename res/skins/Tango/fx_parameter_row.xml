@@ -8,7 +8,7 @@ Variables:
 <Template>
   <SetVariable name="fxGroup_fxNum">[<Variable name="fxGroup"/>_Effect<Variable name="fxNum"/>]</SetVariable>
   <WidgetGroup>
-    <ObjectName>EffectSlotParameters</ObjectName>
+    <ObjectName>EffectParameters</ObjectName>
     <Layout>horizontal</Layout>
     <Size>max,45f</Size>
     <Children>

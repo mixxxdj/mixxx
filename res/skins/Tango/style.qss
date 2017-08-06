@@ -1064,134 +1064,125 @@ WBeatSpinBox {
     qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
   }
 
-#EffectSlot {
+/* minimal EffectSlots in horizontal layout */
+/* with focus */
+#EffectUnderlay_mini_focus1[highlight="0"] {
+  border-image: url(skin:/graphics/fxChainFlow_hori_unfocused1.svg) 0px 10px 0px 0px ;
+  border-width: 0px 10px 0px 0px;
   }
-  /* minimal EffectSlots in horizontal layout */
-  /* with focus */
-  #EffectSlot_mini_focus1[highlight="0"] {
-    border-image: url(skin:/graphics/fxChainFlow_hori_unfocused1.svg) 0px 10px 0px 0px ;
-    border-width: 0px 10px 0px 0px;
-    }
-
-  #EffectSlot_mini_focus2[highlight="0"] {
+#EffectUnderlay_mini_focus2[highlight="0"] {
+  margin-left: 125px;
+  border-image: url(skin:/graphics/fxChainFlow_hori_unfocused2.svg) 0px 10px 0px 10px;
+  border-width: 0px 10px 0px 10px;
+  }
+  #EffectUnderlay_mini_focus2[highlight="1"] {
     margin-left: 125px;
-    border-image: url(skin:/graphics/fxChainFlow_hori_unfocused2.svg) 0px 10px 0px 10px;
-    border-width: 0px 10px 0px 10px;
-    }
-    #EffectSlot_mini_focus2[highlight="1"] {
-      margin-left: 125px;
-    }
-
-  #EffectSlot_mini_focus3[highlight="0"] {
+  }
+#EffectUnderlay_mini_focus3[highlight="0"] {
+  margin-left: 259px;
+  border-image: url(skin:/graphics/fxChainFlow_hori_unfocused3.svg) 0px 0px 0px 10px;
+  border-width: 0px 0px 0px 10px;
+  }
+  #EffectUnderlay_mini_focus3[highlight="1"] {
     margin-left: 259px;
-    border-image: url(skin:/graphics/fxChainFlow_hori_unfocused3.svg) 0px 0px 0px 10px;
-    border-width: 0px 0px 0px 10px;
-    }
-    #EffectSlot_mini_focus3[highlight="1"] {
-      margin-left: 259px;
-    }
+  }
 
-  /* no focus */
-  #EffectSlot_mini_noFocus1 {
-    border-image: url(skin:/graphics/fxChainFlow_hori_unfocused1.svg) 0px 10px 0px 0px;
-    border-width: 0px 10px 0px 0px;
-    }
-  #EffectSlot_mini_noFocus2 {
-    margin-left: 111px;
-    border-image: url(skin:/graphics/fxChainFlow_hori_unfocused2.svg) 0px 10px 0px 10px;
-    border-width: 0px 10px 0px 10px;
-    }
-  #EffectSlot_mini_noFocus3 {
-    margin-left: 231px;
-    border-image: url(skin:/graphics/fxChainFlow_hori_unfocused3.svg) 0px 0px 0px 10px;
-    border-width: 0px 0px 0px 10px;
-    }
+/* no focus */
+#EffectUnderlay_mini_noFocus1 {
+  border-image: url(skin:/graphics/fxChainFlow_hori_unfocused1.svg) 0px 10px 0px 0px;
+  border-width: 0px 10px 0px 0px;
+}
+#EffectUnderlay_mini_noFocus2 {
+  margin-left: 111px;
+  border-image: url(skin:/graphics/fxChainFlow_hori_unfocused2.svg) 0px 10px 0px 10px;
+  border-width: 0px 10px 0px 10px;
+}
+#EffectUnderlay_mini_noFocus3 {
+  margin-left: 231px;
+  border-image: url(skin:/graphics/fxChainFlow_hori_unfocused3.svg) 0px 0px 0px 10px;
+  border-width: 0px 0px 0px 10px;
+}
 
-  /* maximized EffectSlots in vertical layout */
-  /* with focus, right-hand FX units */
-  #EffectSlot_maxi_focus1[highlight="0"] {
-    border-image: url(skin:/graphics/fxChainFlow_vert_unfocused1.svg) 0px 0px 0px 99px ;
-    border-width: 0px 0px 0px 99px;
-    }
+/* maximized EffectSlots in vertical layout */
+/* right-hand FX units, with focus */
+#EffectUnderlay_maxi_right_focus1[highlight="0"] {
+  border-image: url(skin:/graphics/fxChainFlow_vert_right_unfocused1.svg) 0px 0px 0px 99px ;
+  border-width: 0px 0px 0px 99px;
+  }
 
-  #EffectSlot_maxi_focus2[highlight="0"] {
+#EffectUnderlay_maxi_right_focus2[highlight="0"] {
+  margin-top: 46px;
+  border-image: url(skin:/graphics/fxChainFlow_vert_right_unfocused2.svg) 0px 0px 0px 99px;
+  border-width: 0px 0px 0px 99px;
+  }
+  #EffectUnderlay_maxi_right_focus2[highlight="1"] {
     margin-top: 46px;
-    border-image: url(skin:/graphics/fxChainFlow_vert_unfocused2.svg) 0px 0px 0px 99px;
-    border-width: 0px 0px 0px 99px;
-    }
-    #EffectSlot_maxi_focus2[highlight="1"] {
-      margin-top: 46px;
-    }
+  }
 
-  #EffectSlot_maxi_focus3[highlight="0"] {
+#EffectUnderlay_maxi_right_focus3[highlight="0"] {
+  margin-top: 92px;
+  border-image: url(skin:/graphics/fxChainFlow_vert_right_unfocused3.svg) 0px 0px 0px 99px;
+  border-width: 0px 0px 0px 99px;
+  }
+  #EffectUnderlay_maxi_right_focus3[highlight="1"] {
     margin-top: 92px;
-    border-image: url(skin:/graphics/fxChainFlow_vert_unfocused3.svg) 0px 0px 0px 99px;
-    border-width: 0px 0px 0px 99px;
-    }
-    #EffectSlot_maxi_focus3[highlight="1"] {
-      margin-top: 92px;
-    }
+  }
 
-  /* no focus */
-  #EffectSlot_maxi_noFocus1 {
-    border-image: url(skin:/graphics/fxChainFlow_vert_noFocus1.svg) 0px 0px 0px 85px;
-    border-width: 0px 00px 0px 85px;
-    }
-  #EffectSlot_maxi_noFocus2 {
+/* right-hand FX units, no focus */
+#EffectUnderlay_maxi_right_noFocus1 {
+  border-image: url(skin:/graphics/fxChainFlow_vert_right_noFocus1.svg) 0px 0px 0px 85px;
+  border-width: 0px 0px 0px 85px;
+}
+#EffectUnderlay_maxi_right_noFocus2 {
+  margin-top: 46px;
+  border-image: url(skin:/graphics/fxChainFlow_vert_right_noFocus2.svg) 0px 10px 0px 85px;
+  border-width: 0px 0px 0px 85px;
+}
+#EffectUnderlay_maxi_right_noFocus3 {
+  margin-top: 92px;
+  border-image: url(skin:/graphics/fxChainFlow_vert_right_noFocus3.svg) 0px 0px 0px 85px;
+  border-width: 0px 0px 0px 85px;
+}
+
+/* maximized EffectSlots in vertical layout */
+/* left-hand FX units, with focus */
+#EffectUnderlay_maxi_left_focus1[highlight="0"] {
+  border-image: url(skin:/graphics/fxChainFlow_vert_left_unfocused1.svg) 0px 109px 0px 0px;
+  border-width: 0px 109px 0px 0px;
+  }
+
+#EffectUnderlay_maxi_left_focus2[highlight="0"] {
+  margin-top: 46px;
+  border-image: url(skin:/graphics/fxChainFlow_vert_left_unfocused2.svg) 0px 109px 0px 0px;
+  border-width: 0px 109px 0px 0px;
+  }
+  #EffectUnderlay_maxi_left_focus2[highlight="1"] {
     margin-top: 46px;
-    border-image: url(skin:/graphics/fxChainFlow_vert_noFocus2.svg) 0px 10px 0px 85px;
-    border-width: 0px 0px 0px 85px;
-    }
-  #EffectSlot_maxi_noFocus3 {
+  }
+
+#EffectUnderlay_maxi_left_focus3[highlight="0"] {
+  margin-top: 92px;
+  border-image: url(skin:/graphics/fxChainFlow_vert_left_unfocused3.svg) 0px 109px 0px 0px;
+  border-width: 0px 109px 0px 0px;
+  }
+  #EffectUnderlay_maxi_left_focus3[highlight="1"] {
     margin-top: 92px;
-    border-image: url(skin:/graphics/fxChainFlow_vert_noFocus3.svg) 0px 0px 0px 85px;
-    border-width: 0px 0px 0px 85px;
-    }
+  }
 
-  /* maximized EffectSlots in vertical layout */
-  /* with focus, left-hand FX units */
-  #EffectSlot_maxi_left_focus1[highlight="0"] {
-    border-image: url(skin:/graphics/fxChainFlow_vert_left_unfocused1.svg) 0px 109px 0px 0px;
-    border-width: 0px 109px 0px 0px;
-    }
-
-  #EffectSlot_maxi_left_focus2[highlight="0"] {
-    margin-top: 46px;
-    border-image: url(skin:/graphics/fxChainFlow_vert_left_unfocused2.svg) 0px 109px 0px 0px;
-    border-width: 0px 109px 0px 0px;
-    }
-    #EffectSlot_maxi_left_focus2[highlight="1"] {
-      margin-top: 46px;
-    }
-
-  #EffectSlot_maxi_left_focus3[highlight="0"] {
-    margin-top: 92px;
-    border-image: url(skin:/graphics/fxChainFlow_vert_left_unfocused3.svg) 0px 109px 0px 0px;
-    border-width: 0px 109px 0px 0px;
-    }
-    #EffectSlot_maxi_left_focus3[highlight="1"] {
-      margin-top: 92px;
-    }
-
-  /* no focus */
-  #EffectSlot_maxi_left_noFocus1 {
-    border-image: url(skin:/graphics/fxChainFlow_vert_left_noFocus1.svg) 0px 95px 0px 0px;
-    border-width: 0px 95px 0px 0px;
-    }
-  #EffectSlot_maxi_left_noFocus2 {
-    margin-top: 46px;
-    border-image: url(skin:/graphics/fxChainFlow_vert_left_noFocus2.svg) 0px 95px 0px 0px;
-    border-width: 0px 95px 0px 0px;
-    }
-  #EffectSlot_maxi_left_noFocus3 {
-    margin-top: 92px;
-    border-image: url(skin:/graphics/fxChainFlow_vert_left_noFocus3.svg) 0px 95px 0px 0px;
-    border-width: 0px 95px 0px 0px;
-    }
-
-
-#EffectSlotParameters {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+/* left-hand FX units, no focus */
+#EffectUnderlay_maxi_left_noFocus1 {
+  border-image: url(skin:/graphics/fxChainFlow_vert_left_noFocus1.svg) 0px 95px 0px 0px;
+  border-width: 0px 95px 0px 0px;
+}
+#EffectUnderlay_maxi_left_noFocus2 {
+  margin-top: 46px;
+  border-image: url(skin:/graphics/fxChainFlow_vert_left_noFocus2.svg) 0px 95px 0px 0px;
+  border-width: 0px 95px 0px 0px;
+}
+#EffectUnderlay_maxi_left_noFocus3 {
+  margin-top: 92px;
+  border-image: url(skin:/graphics/fxChainFlow_vert_left_noFocus3.svg) 0px 95px 0px 0px;
+  border-width: 0px 95px 0px 0px;
 }
 
 #EffectFocusButton {
@@ -1210,11 +1201,11 @@ WBeatSpinBox {
       image: url(skin:/buttons/btn_fx_focus_on_hover.svg) no-repeat center center;
     }
 
-#EffectTogglerMetaKnob1, #EffectTogglerMetaKnob2, #EffectTogglerMetaKnob3,
-#EffectToggler {
+#EffectTogglerMetaKnob1, #EffectTogglerMetaKnob2, #EffectTogglerMetaKnob3 {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
 }
-#EffectToggler {
+#EffectToggleSelector {
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
   border-radius: 3px;
 }
 
@@ -1304,38 +1295,41 @@ WBeatSpinBox {
         background-color: transparent;
       }
 
-#EffectKnobParameter {
-  qproperty-layoutAlignment: 'AlignCenter';
-  margin-right: 1px;
+#EffectParameters {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   }
-  #EffectKnobParameterName {
-    qproperty-alignment: 'AlignLeft | AlignTop';
-    font-size: 10px/10px;
-    font-weight: bold;
-    color: #999999;
-    margin-top: 19px;
-  }
+  #EffectKnobParameter {
+    qproperty-layoutAlignment: 'AlignCenter';
+    margin-right: 1px;
+    }
+    #EffectKnobParameterName {
+      qproperty-alignment: 'AlignLeft | AlignTop';
+      font-size: 10px/10px;
+      font-weight: bold;
+      color: #999999;
+      margin-top: 19px;
+    }
 
-#EffectButtonParameter {
-  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-  margin-right: 1px;
-  }
-  #EffectButtonParameterOverlay:hover {
-    border: 1px solid #eeeeee;
+  #EffectButtonParameter {
+    qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+    margin-right: 1px;
     }
-  #EffectButtonParameterUnderlay[displayValue="0"] {
-    background-color: #4b4b4b;
-    }
-  #EffectButtonParameterUnderlay[displayValue="1"] {
-    background-color: #006596;
-    }
-  #EffectButtonParameterName {
-    font-size: 10px/10px;
-    font-weight: bold;
-    color: #999999;
-    qproperty-alignment: 'AlignLeft | AlignVCenter';
-    margin-left: 1px;
-    }
+    #EffectButtonParameterOverlay:hover {
+      border: 1px solid #eeeeee;
+      }
+    #EffectButtonParameterUnderlay[displayValue="0"] {
+      background-color: #4b4b4b;
+      }
+    #EffectButtonParameterUnderlay[displayValue="1"] {
+      background-color: #006596;
+      }
+    #EffectButtonParameterName {
+      font-size: 10px/10px;
+      font-weight: bold;
+      color: #999999;
+      qproperty-alignment: 'AlignLeft | AlignVCenter';
+      margin-left: 1px;
+      }
 
   #EffectLinkTypeButton[value="0"],
   #EffectLinkInvertButton[displayValue="0"] {
