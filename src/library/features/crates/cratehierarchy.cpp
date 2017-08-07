@@ -291,34 +291,36 @@ QString CrateHierarchy::formatQueryForTrackIdsByCratePathLike(const QString& cra
             escapedArgument);
 }
 
-bool CrateHierarchy::canBeRenamed(const QString& newName,
-                                  const Crate& crate,
-                                  const CrateId parentId) const {
-    if (parentId.isValid()) {
-        if (collectParentCrateNames(crate).contains(newName) ||
-            collectChildCrateNames(crate).contains(newName)) {
-            return false;
+bool CrateHierarchy::isNameValidForHierarchy(const QString& newName,
+                                             const Crate& selectedCrate,
+                                             const Crate& parent) const {
+    // if crate is valid it means we are trying to rename an existing crate
+    // else it's a new crate that is not yet in the database
+    // so we use the corresponding functions
+    if (selectedCrate.getId().isValid()) {
+        if (parent.getId().isValid()) {
+            if (collectParentCrateNames(selectedCrate).contains(newName) ||
+                collectChildCrateNames(parent).contains(newName)) {
+                return false;
+            }
+        } else {
+            if (collectRootCrateNames().contains(newName) ||
+                collectChildCrateNames(selectedCrate).contains(newName)) {
+                return false;
+            }
         }
+        return true;
     } else {
-        if (collectRootCrateNames().contains(newName) ||
-            collectChildCrateNames(crate).contains(newName)) {
-            return false;
+        if (parent.getId().isValid()) {
+            if (tokenizeCratePath(parent.getId()).contains(newName) ||
+                collectChildCrateNames(parent).contains(newName)) {
+                return false;
+            }
+        } else {
+            return !collectRootCrateNames().contains(newName);
         }
+        return true;
     }
-    return true;
-}
-
-bool CrateHierarchy::nameIsValidForHierarchy(const QString& newName,
-                                             const Crate parent) const {
-    if (parent.getId().isValid()) {
-        if (tokenizeCratePath(parent.getId()).contains(newName) ||
-            collectChildCrateNames(parent).contains(newName)) {
-            return false;
-        }
-    } else {
-        return !collectRootCrateNames().contains(newName);
-    }
-    return true;
 }
 
 QString CrateHierarchy::getNamePathFromId(CrateId id) const {
@@ -542,6 +544,29 @@ QString CrateHierarchy::formatQueryForChildCrateIds(const Crate& crate) const {
         CLOSURE_CHILDID,
         CLOSURE_PARENTID,
         crate.getId().toString(),
+        CLOSURE_DEPTH);
+
+    return query;
+}
+
+QString CrateHierarchy::formatQueryForChildCrateIdsByCrateNameLike(const QString& crateNameLike) const {
+    FieldEscaper escaper(m_database);
+    QString escapedArgument = escaper.escapeString(kSqlLikeMatchAll + crateNameLike + kSqlLikeMatchAll);
+
+    QString query = QString(
+      "SELECT c.%1 FROM %2 "
+      "JOIN %3 c ON c.%4 = %5 "
+      "JOIN %3 p ON p.%4 = %6 "
+      "WHERE p.%7 LIKE %8 "
+      "AND %9 != 0").arg(
+        CRATETABLE_ID,
+        CRATE_CLOSURE_TABLE,
+        CRATE_TABLE,
+        CRATETABLE_ID,
+        CLOSURE_CHILDID,
+        CLOSURE_PARENTID,
+        CRATETABLE_NAME,
+        escapedArgument,
         CLOSURE_DEPTH);
 
     return query;

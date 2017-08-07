@@ -84,7 +84,7 @@ class CrateFeature : public LibraryFeature {
   private:
     void initActions();
     void connectLibrary(Library* pLibrary);
-    void connectTrackCollection();
+    void connectCrateManager();
 
     bool activateCrate(CrateId crateId);
 

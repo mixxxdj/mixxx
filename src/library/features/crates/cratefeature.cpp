@@ -66,7 +66,7 @@ CrateFeature::CrateFeature(UserSettingsPointer pConfig,
     m_pChildModel->reloadTree();
 
     connectLibrary(pLibrary);
-    connectTrackCollection();
+    connectCrateManager();
 }
 
 CrateFeature::~CrateFeature() {
@@ -128,7 +128,7 @@ void CrateFeature::connectLibrary(Library* pLibrary) {
             this, SLOT(slotTrackSelected(TrackPointer)));
 }
 
-void CrateFeature::connectTrackCollection() {
+void CrateFeature::connectCrateManager() {
     connect(m_pCrates, SIGNAL(crateInserted(CrateId)),
             this, SLOT(slotCrateTableChanged(CrateId)));
     connect(m_pCrates, SIGNAL(crateUpdated(CrateId)),
@@ -460,9 +460,11 @@ void CrateFeature::slotDeleteCrate() {
                 return;
             }
         }
+
+        CrateId parentId = m_pCrates->hierarchy().getParentId(crate.getId());
         if (m_pCrates->deleteCrate(crate)) {
             qDebug() << "Deleted crate" << crate;
-            rebuildChildModel();
+            rebuildChildModel(parentId);
             return;
         }
     }
@@ -499,7 +501,7 @@ void CrateFeature::slotRenameCrate() {
             Crate parent;
             m_pCrates->storage().readCrateById(parentId, &parent);
 
-            if (!m_pCrates->hierarchy().canBeRenamed(crate.getName(), crate, parent.getId())) {
+            if (!m_pCrates->hierarchy().isNameValidForHierarchy(crate.getName(), crate, parent)) {
                 QMessageBox::warning(
                         nullptr,
                         tr("Renaming Crate Failed"),
@@ -561,12 +563,19 @@ void CrateFeature::toggleRecursion() {
     rebuildChildModel();
 }
 
+//TODO(gramanas): don't reset the tree in every change
 void CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
     qDebug() << "CrateFeature::rebuildChildModel()" << selectedCrateId;
     m_pChildModel->reloadTree();
+
+    if (selectedCrateId.isValid()) {
+        QModelIndex index = indexFromCrateId(selectedCrateId);
+        if (index.isValid()) {
+            activateChild(index);
+        }
+    }
     activate();
 
-    //TODO(gramanas): don't reset the tree in every change
     // TreeItem* pRootItem = m_pChildModel->getRootItem();
     // VERIFY_OR_DEBUG_ASSERT(pRootItem != nullptr) {
     //     return QModelIndex();
@@ -644,22 +653,21 @@ QModelIndex CrateFeature::indexFromCrateId(CrateId crateId) const {
         qDebug() << "CrateId is invalid:" << crateId;
         return QModelIndex();
     }
-    qDebug() << "row cound: " << m_pChildModel->rowCount();
-    for (int row = 0; row < m_pChildModel->rowCount(); ++row) {
-        QModelIndexList indexList = m_pChildModel->match(m_pChildModel->index(row, 0),
-                                                         AbstractRole::RoleData,
-                                                         crateId.toInt());
-        // default match returns only the first item found so this list actually only contains 1 item.
-        if (!indexList.isEmpty()) {
-            return indexList.back();
-        }
-        // QModelIndex index = m_pChildModel->index(row, 0);
-        // TreeItem* pTreeItem = m_pChildModel->getItem(index);
-        // DEBUG_ASSERT(pTreeItem != nullptr);
-        // if (index.isValid() && CrateId(pTreeItem->getData()) == crateId) {
-        //     return index;
-        // }
+
+    QModelIndexList indexList = m_pChildModel->match(m_pChildModel->index(0, 0),
+                                                     AbstractRole::RoleData,
+                                                     crateId.toVariant(), 1,
+                                                     Qt::MatchRecursive);
+    // default match returns only the first item found so this list actually only contains 1 item.
+    if (!indexList.isEmpty()) {
+        return indexList.back();
     }
+    // QModelIndex index = m_pChildModel->index(row, 0);
+    // TreeItem* pTreeItem = m_pChildModel->getItem(index);
+    // DEBUG_ASSERT(pTreeItem != nullptr);
+    // if (index.isValid() && CrateId(pTreeItem->getData()) == crateId) {
+    //     return index;
+    // }
     qDebug() << "Tree item for crate not found:" << crateId;
     return QModelIndex();
 }
@@ -872,7 +880,7 @@ void CrateFeature::slotExportTrackFiles() {
 
 void CrateFeature::slotCrateTableChanged(CrateId crateId) {
     Q_UNUSED(crateId);
-    rebuildChildModel();
+    rebuildChildModel(crateId);
 }
 
 void CrateFeature::slotCrateContentChanged(CrateId crateId) {

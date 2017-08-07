@@ -189,9 +189,6 @@ bool CrateStorage::readCrateSummaryById(CrateId id, CrateSummary* pCrateSummary)
     return false;
 }
 
-
-
-
 bool CrateStorage::onInsertingCrate(
         const Crate& crate,
         CrateId* pCrateId) {
@@ -319,4 +316,25 @@ bool CrateStorage::onDeletingCrate(
 }
 
 
+QStringList CrateStorage::collectCrateIdsByCrateNameLike(const QString& crateNameLike) const {
+    FieldEscaper escaper(m_database);
+    QString escapedArgument = escaper.escapeString(kSqlLikeMatchAll + crateNameLike + kSqlLikeMatchAll);
 
+    FwdSqlQuery query(
+      m_database, QString(
+        "SELECT %1 FROM %2 "
+        "WHERE %3 LIKE %4").arg(
+          CRATETABLE_ID,
+          CRATE_TABLE,
+          CRATETABLE_NAME,
+          escapedArgument));
+
+    QStringList ids;
+
+    if (query.execPrepared())
+        while (query.next()) {
+            ids << query.fieldValue(0).toString();
+    }
+
+    return ids;
+}

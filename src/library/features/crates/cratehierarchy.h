@@ -68,17 +68,13 @@ class CrateHierarchy : public virtual DAO {
     // just like a path in a file system
     QString getNamePathFromId(CrateId id) const;
 
-    // Here we need a different function to check the name is ok for renaming
-    // because when renaming your crate might have children, when
-    // the same is not true when you create a new crate.
-    bool canBeRenamed(const QString& newName,
-                      const Crate& crate,
-                      const CrateId parentId = CrateId()) const;
-
     // checks whether a name is valid for the hierarchy
     // parent id only applies to subcrates.
-    bool nameIsValidForHierarchy(const QString& newName,
-                                 const Crate parent = Crate()) const;
+    // the selectedCrate variable is only valid when we rename a crate and it already exists
+    // if we are creating it we pass a Crate() instead
+    bool isNameValidForHierarchy(const QString& newName,
+                                 const Crate& selectedCrate,
+                                 const Crate& parent = Crate()) const;
 
     void deleteCrate(CrateId id) const;
     bool hasChildren(CrateId id) const;
@@ -110,6 +106,8 @@ class CrateHierarchy : public virtual DAO {
     // the crate so that it can't be named like them
     QStringList collectParentCrateNames(const Crate& crate) const;
     QStringList collectChildCrateNames(const Crate& crate) const;
+
+    QString formatQueryForChildCrateIdsByCrateNameLike(const QString& crateNameLike) const;
 
     QSqlDatabase m_database;
 };
