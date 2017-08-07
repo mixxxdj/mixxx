@@ -182,13 +182,13 @@ void BroadcastSettings::onProfileNameChanged(QString oldName, QString newName) {
     if(!m_profiles.contains(oldName))
         return;
 
-    BroadcastProfilePtr oldItem = m_profiles.take(oldName);
-    if(oldItem) {
-        m_profiles.insert(newName, oldItem);
-        emit profileRenamed(oldName, oldItem);
+    BroadcastProfilePtr profile = m_profiles.take(oldName);
+    if(profile) {
+        m_profiles.insert(newName, profile);
+        emit profileRenamed(oldName, profile);
 
         deleteFileForProfile(oldName);
-
+        saveProfile(profile);
     }
 }
 
