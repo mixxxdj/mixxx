@@ -112,47 +112,6 @@ DlgPrefBroadcast::~DlgPrefBroadcast() {
 }
 
 void DlgPrefBroadcast::slotResetToDefaults() {
-    BroadcastProfile dProfile("dontsave");
-
-    // Make sure to keep these values in sync with the constructor.
-    enableLiveBroadcasting->setChecked(false);
-    cbSecureCredentials->setChecked(false);
-    comboBoxServerType->setCurrentIndex(0);
-    mountpoint->setText(dProfile.getMountpoint());
-    host->setText(dProfile.getHost());
-    int iPort = dProfile.getPort();
-    VERIFY_OR_DEBUG_ASSERT(iPort != 0 && iPort <= 0xffff) {
-        port->setText(QString());
-    } else {
-        port->setText(QString::number(iPort));
-    }
-    login->setText(dProfile.getLogin());
-    password->setText(dProfile.getPassword());
-
-    checkBoxEnableReconnect->setChecked(dProfile.getEnableReconnect());
-    widgetReconnectControls->setEnabled(true);
-    spinBoxFirstDelay->setValue(dProfile.getReconnectFirstDelay());
-    spinBoxReconnectPeriod->setValue(dProfile.getReconnectPeriod());
-    checkBoxLimitReconnects->setChecked(dProfile.getLimitReconnects());
-    spinBoxMaximumRetries->setValue(dProfile.getMaximumRetries());
-    spinBoxMaximumRetries->setEnabled(true);
-    stream_name->setText(dProfile.getStreamName());
-    stream_website->setText(dProfile.getStreamWebsite());
-    stream_desc->setText(dProfile.getStreamDesc());
-    stream_genre->setText(dProfile.getStreamGenre());
-    stream_public->setChecked(dProfile.getStreamPublic());
-    ogg_dynamicupdate->setChecked(dProfile.getOggDynamicUpdate());
-    comboBoxEncodingBitrate->setCurrentIndex(comboBoxEncodingBitrate->findData(
-            dProfile.getBitrate()));
-    comboBoxEncodingFormat->setCurrentIndex(0);
-    comboBoxEncodingChannels->setCurrentIndex(0);
-    enableUtf8Metadata->setChecked(false);
-    enableCustomMetadata->setChecked(false);
-    metadata_format->setText(dProfile.getMetadataFormat());
-    custom_artist->setText(dProfile.getCustomArtist());
-    custom_title->setText(dProfile.getCustomTitle());
-    custom_artist->setEnabled(false);
-    custom_title->setEnabled(false);
 }
 
 void DlgPrefBroadcast::slotUpdate() {
