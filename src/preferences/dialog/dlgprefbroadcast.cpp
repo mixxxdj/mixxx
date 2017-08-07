@@ -196,7 +196,9 @@ void DlgPrefBroadcast::btnCreateConnectionClicked() {
         existingProfile = m_pBroadcastSettings->getProfileByName(newName);
     } while(!existingProfile.isNull());
 
-    m_pBroadcastSettings->createProfile(newName);
+    BroadcastProfilePtr clone = m_pProfileListSelection->valuesCopy();
+    clone->setProfileName(newName);
+    m_pBroadcastSettings->addProfile(clone);
 }
 
 void DlgPrefBroadcast::profileListItemSelected(const QModelIndex& index) {
