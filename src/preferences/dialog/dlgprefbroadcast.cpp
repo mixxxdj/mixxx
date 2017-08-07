@@ -224,8 +224,7 @@ void DlgPrefBroadcast::updateModel() {
 
 void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
     if(!profile) {
-        // Set empty values
-        profile = BroadcastProfilePtr(new BroadcastProfile(""));
+        return;
     }
 
     // Set groupbox header
