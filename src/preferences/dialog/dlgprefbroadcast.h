@@ -36,7 +36,8 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
 
   private slots:
     void btnCreateConnectionClicked();
-    void onRemoveButtonClicked();
+    void btnRenameConnectionClicked();
+    void btnRemoveConnectionClicked();
     void onSectionResized();
 
   private:

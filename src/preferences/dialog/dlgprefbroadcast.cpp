@@ -35,16 +35,18 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
 
     connect(connectionList->horizontalHeader(), SIGNAL(sectionResized(int, int, int)),
             this, SLOT(onSectionResized()));
-    connect(btnRemoveConnection, SIGNAL(clicked(bool)),
-            this, SLOT(onRemoveButtonClicked()));
 
     // Should be safe to directly access the underlying pointer
     connectionList->setModel(m_pBroadcastSettings.data());
 
-    connect(btnCreateConnection, SIGNAL(clicked(bool)),
-            this, SLOT(btnCreateConnectionClicked()));
     connect(connectionList, SIGNAL(clicked(const QModelIndex&)),
             this, SLOT(profileListItemSelected(const QModelIndex&)));
+    connect(btnRemoveConnection, SIGNAL(clicked(bool)),
+            this, SLOT(btnRemoveConnectionClicked()));
+    connect(btnRenameConnection, SIGNAL(clicked(bool)),
+            this, SLOT(btnRenameConnectionClicked()));
+    connect(btnCreateConnection, SIGNAL(clicked(bool)),
+            this, SLOT(btnCreateConnectionClicked()));
 
     // Highlight first row
     connectionList->selectRow(0);
@@ -380,7 +382,7 @@ void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
     profile->setMetadataFormat(metadata_format->text());
 }
 
-void DlgPrefBroadcast::onRemoveButtonClicked() {
+void DlgPrefBroadcast::btnRemoveConnectionClicked() {
     if(m_pBroadcastSettings->rowCount() < 2) {
         QMessageBox::information(this, tr("Action forbidden"),
                 tr("At least one connection profile is required."));
@@ -399,6 +401,21 @@ void DlgPrefBroadcast::onRemoveButtonClicked() {
             connectionList->selectRow(0);
             QItemSelectionModel* selected = connectionList->selectionModel();
             profileListItemSelected(selected->currentIndex());
+        }
+    }
+}
+
+void DlgPrefBroadcast::btnRenameConnectionClicked() {
+    if(m_pProfileListSelection) {
+        QString profileName = m_pProfileListSelection->getProfileName();
+
+        bool ok = false;
+        QString newName =
+                QInputDialog::getText(this, tr("Renaming '%1'").arg(profileName),
+                        tr("New name for '%1':").arg(profileName),
+                        QLineEdit::Normal, profileName, &ok);
+        if(ok) {
+            m_pProfileListSelection->setProfileName(newName);
         }
     }
 }
