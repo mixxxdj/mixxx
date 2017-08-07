@@ -62,7 +62,7 @@ class CrateHierarchy : public virtual DAO {
                                       const QString& idPath) const;
 
     // used in crate filter
-    QString formatQueryForTrackIdsByCratePathLike(const QString& cratePathLike) const;
+    QString formatQueryForTrackIdsByCrateNameLikeRecursively(const QString& crateNameLike) const;
 
     // namePath is the string that represents the placement of the crate in the tree
     // just like a path in a file system
@@ -82,7 +82,7 @@ class CrateHierarchy : public virtual DAO {
     CrateId getParentId(const CrateId id) const;
 
     QStringList collectIdPaths() const;
-    QStringList collectChildCrateIds(const Crate& crate) const;
+    QStringList collectChildCrateIds(const CrateId& crateId) const;
     QString formatQueryForChildCrateIds(const Crate& crate) const;
 
   private:
@@ -107,7 +107,7 @@ class CrateHierarchy : public virtual DAO {
     QStringList collectParentCrateNames(const Crate& crate) const;
     QStringList collectChildCrateNames(const Crate& crate) const;
 
-    QString formatQueryForChildCrateIdsByCrateNameLike(const QString& crateNameLike) const;
+    QStringList collectCrateIdsByCrateNameLike(const QString& crateNameLike) const;
 
     QSqlDatabase m_database;
 };

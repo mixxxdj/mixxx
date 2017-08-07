@@ -216,7 +216,7 @@ bool CrateManager::deleteCrate(
   const Crate& crate) {
     QStringList childIds;
     if (m_crateHierarchy.hasChildren(crate.getId())) {
-        childIds = m_crateHierarchy.collectChildCrateIds(crate);
+        childIds = m_crateHierarchy.collectChildCrateIds(crate.getId());
     }
     childIds.push_back(crate.getId().toString());
 

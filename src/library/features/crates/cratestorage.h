@@ -97,8 +97,6 @@ class CrateStorage: public virtual DAO {
     // Omit the pCrate parameter for checking if the corresponding crate exists.
     bool readCrateSummaryById(CrateId id, CrateSummary* pCrateSummary = nullptr) const;
 
-    QStringList collectCrateIdsByCrateNameLike(const QString& crateNameLike) const;
-
   private:
     QSqlDatabase m_database;
 };

@@ -273,22 +273,48 @@ void CrateHierarchy::deleteCrate(CrateId id) const {
     }
 }
 
-QString CrateHierarchy::formatQueryForTrackIdsByCratePathLike(const QString& cratePathLike) const {
+QStringList CrateHierarchy::collectCrateIdsByCrateNameLike(const QString& crateNameLike) const {
     FieldEscaper escaper(m_database);
-    QString escapedArgument = escaper.escapeString(kSqlLikeMatchAll + cratePathLike + kSqlLikeMatchAll);
+    QString escapedArgument = escaper.escapeString(kSqlLikeMatchAll + crateNameLike + kSqlLikeMatchAll);
+
+    FwdSqlQuery query(
+      m_database, QString(
+        "SELECT DISTINCT %1 FROM %2 "
+        "WHERE %3 LIKE %4").arg(
+          CRATETABLE_ID,
+          CRATE_TABLE,
+          CRATETABLE_NAME,
+          escapedArgument));
+
+    QStringList ids;
+    if (query.execPrepared())
+        while (query.next()) {
+            ids << query.fieldValue(0).toString();
+    }
+
+}
+
+QString CrateHierarchy::formatQueryForTrackIdsByCrateNameLikeRecursively(const QString& crateNameLike) const {
+    QStringList childIds;
+    QStringList ids = collectCrateIdsByCrateNameLike(crateNameLike);
+    
+    for (const auto& id : ids) {
+        childIds = childIds + collectChildCrateIds(CrateId(id.toInt()));
+    }
 
     return QString(
         "SELECT DISTINCT %1 FROM %2 "
         "JOIN %3 ON %4=%5 "
-        "WHERE %6 LIKE %7 "
+        "WHERE %4 IN (%6) "
+        "OR %4 IN (%7) "
         "ORDER BY %1").arg(
             CRATETRACKSTABLE_TRACKID,
             CRATE_TRACKS_TABLE,
             CRATE_PATH_TABLE,
             PATHTABLE_CRATEID,
             CRATETRACKSTABLE_CRATEID,
-            PATHTABLE_NAME_PATH,
-            escapedArgument);
+            ids.join(","),
+            childIds.join(","));
 }
 
 bool CrateHierarchy::isNameValidForHierarchy(const QString& newName,
@@ -499,7 +525,8 @@ QStringList CrateHierarchy::collectChildCrateNames(const Crate& crate) const {
     return names;
 }
 
-QStringList CrateHierarchy::collectChildCrateIds(const Crate& crate) const {
+
+QStringList CrateHierarchy::collectChildCrateIds(const CrateId& crateId) const {
     FwdSqlQuery query(
       m_database, QString(
         "SELECT c.%1 FROM %2 "
@@ -518,7 +545,7 @@ QStringList CrateHierarchy::collectChildCrateIds(const Crate& crate) const {
           CLOSURE_PARENTID,
           CLOSURE_DEPTH));
 
-    query.bindValue("id", crate.getId());
+    query.bindValue("id", crateId);
 
     QStringList ids;
 
@@ -544,29 +571,6 @@ QString CrateHierarchy::formatQueryForChildCrateIds(const Crate& crate) const {
         CLOSURE_CHILDID,
         CLOSURE_PARENTID,
         crate.getId().toString(),
-        CLOSURE_DEPTH);
-
-    return query;
-}
-
-QString CrateHierarchy::formatQueryForChildCrateIdsByCrateNameLike(const QString& crateNameLike) const {
-    FieldEscaper escaper(m_database);
-    QString escapedArgument = escaper.escapeString(kSqlLikeMatchAll + crateNameLike + kSqlLikeMatchAll);
-
-    QString query = QString(
-      "SELECT c.%1 FROM %2 "
-      "JOIN %3 c ON c.%4 = %5 "
-      "JOIN %3 p ON p.%4 = %6 "
-      "WHERE p.%7 LIKE %8 "
-      "AND %9 != 0").arg(
-        CRATETABLE_ID,
-        CRATE_CLOSURE_TABLE,
-        CRATE_TABLE,
-        CRATETABLE_ID,
-        CLOSURE_CHILDID,
-        CLOSURE_PARENTID,
-        CRATETABLE_NAME,
-        escapedArgument,
         CLOSURE_DEPTH);
 
     return query;

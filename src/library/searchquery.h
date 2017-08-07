@@ -110,7 +110,7 @@ class CrateFilterNode : public QueryNode {
 
   private:
     const CrateManager* m_pCrates;
-    QString m_crateNameLike;
+    const QString m_crateNameLike;
     mutable bool m_matchInitialized;
     mutable std::vector<TrackId> m_matchingTrackIds;
 };
