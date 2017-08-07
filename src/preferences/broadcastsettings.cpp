@@ -72,7 +72,7 @@ void BroadcastSettings::loadProfiles() {
     }
 }
 
-bool BroadcastSettings::addProfile(const BroadcastProfilePtr& profile) {
+bool BroadcastSettings::addProfile(BroadcastProfilePtr profile) {
     if(!profile)
         return false;
 
@@ -108,7 +108,7 @@ BroadcastProfilePtr BroadcastSettings::createProfile(const QString& profileName)
     return BroadcastProfilePtr(nullptr);
 }
 
-bool BroadcastSettings::saveProfile(const BroadcastProfilePtr& profile) {
+bool BroadcastSettings::saveProfile(BroadcastProfilePtr profile) {
     if(!profile)
         return false;
 
@@ -121,15 +121,14 @@ QString BroadcastSettings::filePathForProfile(const QString& profileName) {
     return QDir(getProfilesFolder()).absoluteFilePath(filename);
 }
 
-QString BroadcastSettings::filePathForProfile(
-        const BroadcastProfilePtr& profile) {
+QString BroadcastSettings::filePathForProfile(BroadcastProfilePtr profile) {
     if(!profile)
         return QString();
 
     return filePathForProfile(profile->getProfileName());
 }
 
-bool BroadcastSettings::deleteFileForProfile(const BroadcastProfilePtr& profile) {
+bool BroadcastSettings::deleteFileForProfile(BroadcastProfilePtr profile) {
     if(!profile)
         return false;
 
@@ -162,7 +161,7 @@ void BroadcastSettings::saveAll() {
     emit profilesChanged();
 }
 
-void BroadcastSettings::deleteProfile(const BroadcastProfilePtr& profile) {
+void BroadcastSettings::deleteProfile(BroadcastProfilePtr profile) {
     if(!profile)
         return;
 
@@ -277,6 +276,8 @@ bool BroadcastSettings::setData(const QModelIndex& index, const QVariant& value,
 }
 
 QAbstractItemDelegate* BroadcastSettings::delegateForColumn(const int i, QObject* parent) {
+    Q_UNUSED(i);
+    Q_UNUSED(parent);
     return nullptr;
 }
 

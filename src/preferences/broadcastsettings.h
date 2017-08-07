@@ -19,11 +19,11 @@ class BroadcastSettings : public QAbstractTableModel {
     BroadcastSettings(UserSettingsPointer pConfig, QObject* parent = nullptr);
 
     BroadcastProfilePtr getProfileByName(const QString& profileName);
-    bool saveProfile(const BroadcastProfilePtr& profile);
+    bool saveProfile(BroadcastProfilePtr profile);
     void saveAll();
     BroadcastProfilePtr createProfile(const QString& profileName);
-    bool addProfile(const BroadcastProfilePtr& profile);
-    void deleteProfile(const BroadcastProfilePtr& profile);
+    bool addProfile(BroadcastProfilePtr profile);
+    void deleteProfile(BroadcastProfilePtr profile);
 
     int rowCount(const QModelIndex& parent = QModelIndex()) const;
     int columnCount(const QModelIndex& parent = QModelIndex()) const;
@@ -52,12 +52,12 @@ class BroadcastSettings : public QAbstractTableModel {
     static QString connectionStatusString(BroadcastProfilePtr profile);
 
     void loadProfiles();
-    QString filePathForProfile(const BroadcastProfilePtr& profile);
+    QString filePathForProfile(BroadcastProfilePtr profile);
     QString filePathForProfile(const QString& profileName);
-    bool deleteFileForProfile(const BroadcastProfilePtr& profile);
+    bool deleteFileForProfile(BroadcastProfilePtr profile);
     bool deleteFileForProfile(const QString& profileName);
     QString getProfilesFolder();
-    void loadLegacySettings(const BroadcastProfilePtr& profile);
+    void loadLegacySettings(BroadcastProfilePtr profile);
 
     // Pointer to config object
     UserSettingsPointer m_pConfig;

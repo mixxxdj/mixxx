@@ -8,7 +8,6 @@ const char* kCustomArtist = "custom_artist";
 const char* kCustomTitle = "custom_title";
 const char* kEnableMetadata = "enable_metadata";
 const char* kEnableReconnect = "enable_reconnect";
-const char* kEnabled = "enabled";
 const char* kFormat = "format";
 const char* kHost = "host";
 const char* kLimitReconnects = "limit_reconnects";
@@ -31,7 +30,7 @@ const char* kStreamPublic = "stream_public";
 const char* kStreamWebsite = "stream_website";
 }
 
-void BroadcastSettings::loadLegacySettings(const BroadcastProfilePtr& profile) {
+void BroadcastSettings::loadLegacySettings(BroadcastProfilePtr profile) {
     if(!profile)
         return;
 
