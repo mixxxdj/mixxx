@@ -2,6 +2,7 @@
 #define SOUNDDEVICENETWORK_H
 
 #include <QString>
+#include <QSharedPointer>
 
 #include "soundio/sounddevice.h"
 
@@ -15,7 +16,7 @@ class SoundDeviceNetwork : public SoundDevice {
   public:
     SoundDeviceNetwork(UserSettingsPointer config,
                        SoundManager *sm,
-                       const std::unique_ptr<EngineNetworkStream>& pNetworkStream);
+                       QSharedPointer<EngineNetworkStream> pNetworkStream);
     virtual ~SoundDeviceNetwork();
 
     virtual SoundDeviceError open(bool isClkRefDevice, int syncBuffers);
@@ -30,7 +31,7 @@ class SoundDeviceNetwork : public SoundDevice {
     }
 
   private:
-    const std::unique_ptr<EngineNetworkStream>& m_pNetworkStream;
+    QSharedPointer<EngineNetworkStream> m_pNetworkStream;
     FIFO<CSAMPLE>* m_outputFifo;
     FIFO<CSAMPLE>* m_inputFifo;
     bool m_outputDrift;

@@ -962,7 +962,7 @@ void ShoutConnection::ignoreSigpipe() {
     memset(&sa, 0, sizeof(sa));
     sa.sa_handler = SIG_IGN;
     if (sigaction(SIGPIPE, &sa, NULL) != 0) {
-        qDebug() << "EngineBroadcast::ignoreSigpipe() failed";
+        qDebug() << "ShoutConnection::ignoreSigpipe() failed";
     }
 #else
     // http://www.microhowto.info/howto/ignore_sigpipe_without_affecting_other_threads_in_a_process.html
@@ -971,7 +971,7 @@ void ShoutConnection::ignoreSigpipe() {
     sigaddset(&sigpipe_mask, SIGPIPE);
     sigset_t saved_mask;
     if (pthread_sigmask(SIG_BLOCK, &sigpipe_mask, &saved_mask) != 0) {
-        qDebug() << "EngineBroadcast::ignoreSigpipe() failed";
+        qDebug() << "ShoutConnection::ignoreSigpipe() failed";
     }
 #endif
 }

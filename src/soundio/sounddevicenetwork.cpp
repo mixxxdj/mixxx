@@ -13,7 +13,7 @@ volatile int SoundDeviceNetwork::m_underflowHappened = 0;
 
 SoundDeviceNetwork::SoundDeviceNetwork(UserSettingsPointer config,
                                        SoundManager *sm,
-                                       const std::unique_ptr<EngineNetworkStream>& pNetworkStream)
+                                       QSharedPointer<EngineNetworkStream> pNetworkStream)
         : SoundDevice(config, sm),
           m_pNetworkStream(pNetworkStream),
           m_outputFifo(NULL),
