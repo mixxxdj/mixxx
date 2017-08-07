@@ -155,45 +155,48 @@ bool BroadcastProfile::valuesEquals(BroadcastProfilePtr other) {
 
 BroadcastProfilePtr BroadcastProfile::valuesCopy() {
     BroadcastProfile* newProfile = new BroadcastProfile(getProfileName());
-
-    newProfile->setEnabled(getEnabled());
-    newProfile->setSecureCredentialStorage(secureCredentialStorage());
-
-    newProfile->setHost(getHost());
-    newProfile->setPort(getPort());
-
-    newProfile->setServertype(getServertype());
-    newProfile->setLogin(getLogin());
-    newProfile->setPassword(getPassword());
-
-    newProfile->setEnableReconnect(getEnableReconnect());
-    newProfile->setReconnectPeriod(getReconnectPeriod());
-
-    newProfile->setLimitReconnects(getLimitReconnects());
-    newProfile->setMaximumRetries(getMaximumRetries());
-
-    newProfile->setNoDelayFirstReconnect(getNoDelayFirstReconnect());
-    newProfile->setReconnectFirstDelay(getReconnectFirstDelay());
-
-    newProfile->setFormat(getFormat());
-    newProfile->setBitrate(getBitrate());
-    newProfile->setChannels(getChannels());
-
-    newProfile->setMountPoint(getMountpoint());
-    newProfile->setStreamName(getStreamName());
-    newProfile->setStreamDesc(getStreamDesc());
-    newProfile->setStreamGenre(getStreamGenre());
-    newProfile->setStreamPublic(getStreamPublic());
-    newProfile->setStreamWebsite(getStreamWebsite());
-
-    newProfile->setEnableMetadata(getEnableMetadata());
-    newProfile->setMetadataCharset(getMetadataCharset());
-    newProfile->setCustomArtist(getCustomArtist());
-    newProfile->setCustomTitle(getCustomTitle());
-    newProfile->setMetadataFormat(getMetadataFormat());
-    newProfile->setOggDynamicUpdate(getOggDynamicUpdate());
-
+    newProfile->adoptValues(BroadcastProfilePtr(this));
     return BroadcastProfilePtr(newProfile);
+}
+
+void BroadcastProfile::adoptValues(BroadcastProfilePtr other) {
+    setSecureCredentialStorage(other->secureCredentialStorage());
+
+    setHost(other->getHost());
+    setPort(other->getPort());
+
+    setServertype(other->getServertype());
+    setLogin(other->getLogin());
+    setPassword(other->getPassword());
+
+    setEnableReconnect(other->getEnableReconnect());
+    setReconnectPeriod(other->getReconnectPeriod());
+
+    setLimitReconnects(other->getLimitReconnects());
+    setMaximumRetries(other->getMaximumRetries());
+
+    setNoDelayFirstReconnect(other->getNoDelayFirstReconnect());
+    setReconnectFirstDelay(other->getReconnectFirstDelay());
+
+    setFormat(other->getFormat());
+    setBitrate(other->getBitrate());
+    setChannels(other->getChannels());
+
+    setMountPoint(other->getMountpoint());
+    setStreamName(other->getStreamName());
+    setStreamDesc(other->getStreamDesc());
+    setStreamGenre(other->getStreamGenre());
+    setStreamPublic(other->getStreamPublic());
+    setStreamWebsite(other->getStreamWebsite());
+
+    setEnableMetadata(other->getEnableMetadata());
+    setMetadataCharset(other->getMetadataCharset());
+    setCustomArtist(other->getCustomArtist());
+    setCustomTitle(other->getCustomTitle());
+    setMetadataFormat(other->getMetadataFormat());
+    setOggDynamicUpdate(other->getOggDynamicUpdate());
+
+    setEnabled(other->getEnabled());
 }
 
 void BroadcastProfile::adoptDefaultValues() {
