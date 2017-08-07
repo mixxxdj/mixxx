@@ -1,42 +1,29 @@
 #ifndef PREFERENCES_BROADCASTSETTINGS_H
 #define PREFERENCES_BROADCASTSETTINGS_H
 
-#include <QAbstractTableModel>
-#include <QAbstractItemDelegate>
 #include <QMap>
 #include <QSharedPointer>
 #include <QString>
-#include <QVariant>
 
 #include "preferences/usersettings.h"
+#include "preferences/broadcastsettingsmodel.h"
+#include "preferences/broadcastprofile.h"
 #include "track/track.h"
-#include "broadcastprofile.h"
 
-class BroadcastSettings : public QAbstractTableModel {
+class BroadcastSettings : public QObject {
   Q_OBJECT
 
   public:
     BroadcastSettings(UserSettingsPointer pConfig, QObject* parent = nullptr);
 
-    BroadcastProfilePtr getProfileByName(const QString& profileName);
     bool saveProfile(BroadcastProfilePtr profile);
     void saveAll();
     BroadcastProfilePtr createProfile(const QString& profileName);
-    bool addProfile(BroadcastProfilePtr profile);
-    void deleteProfile(BroadcastProfilePtr profile);
-
-    int rowCount(const QModelIndex& parent = QModelIndex()) const;
-    int columnCount(const QModelIndex& parent = QModelIndex()) const;
-    QVariant headerData(int section, Qt::Orientation orientation,
-            int role = Qt::DisplayRole) const;
-    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
-    Qt::ItemFlags flags(const QModelIndex& index) const;
-    bool setData(const QModelIndex& index, const QVariant& value,
-            int role = Qt::EditRole);
-    QAbstractItemDelegate* delegateForColumn(const int i, QObject* parent);
-
-    BroadcastProfilePtr profileAt(int index);
     QList<BroadcastProfilePtr> profiles();
+    BroadcastProfilePtr profileAt(int index);
+
+    void resetModel(BroadcastSettingsModel* pModel);
+    void applyModel(BroadcastSettingsModel* pModel);
 
   signals:
     void profileAdded(BroadcastProfilePtr profile);
@@ -49,14 +36,16 @@ class BroadcastSettings : public QAbstractTableModel {
     void onConnectionStatusChanged(int newStatus);
 
   private:
-    static QString connectionStatusString(BroadcastProfilePtr profile);
-
     void loadProfiles();
+    bool addProfile(BroadcastProfilePtr profile);
+    void deleteProfile(BroadcastProfilePtr profile);
+
     QString filePathForProfile(BroadcastProfilePtr profile);
     QString filePathForProfile(const QString& profileName);
     bool deleteFileForProfile(BroadcastProfilePtr profile);
     bool deleteFileForProfile(const QString& profileName);
     QString getProfilesFolder();
+
     void loadLegacySettings(BroadcastProfilePtr profile);
 
     // Pointer to config object

@@ -154,49 +154,50 @@ bool BroadcastProfile::valuesEquals(BroadcastProfilePtr other) {
 }
 
 BroadcastProfilePtr BroadcastProfile::valuesCopy() {
-    BroadcastProfile* newProfile = new BroadcastProfile(getProfileName());
-    newProfile->adoptValues(BroadcastProfilePtr(this));
-    return BroadcastProfilePtr(newProfile);
+    BroadcastProfilePtr newProfile(
+            new BroadcastProfile(getProfileName()));
+    copyValuesTo(newProfile);
+    return newProfile;
 }
 
-void BroadcastProfile::adoptValues(BroadcastProfilePtr other) {
-    setSecureCredentialStorage(other->secureCredentialStorage());
+void BroadcastProfile::copyValuesTo(BroadcastProfilePtr other) {
+    other->setSecureCredentialStorage(this->secureCredentialStorage());
 
-    setHost(other->getHost());
-    setPort(other->getPort());
+    other->setHost(this->getHost());
+    other->setPort(this->getPort());
 
-    setServertype(other->getServertype());
-    setLogin(other->getLogin());
-    setPassword(other->getPassword());
+    other->setServertype(this->getServertype());
+    other->setLogin(this->getLogin());
+    other->setPassword(this->getPassword());
 
-    setEnableReconnect(other->getEnableReconnect());
-    setReconnectPeriod(other->getReconnectPeriod());
+    other->setEnableReconnect(this->getEnableReconnect());
+    other->setReconnectPeriod(this->getReconnectPeriod());
 
-    setLimitReconnects(other->getLimitReconnects());
-    setMaximumRetries(other->getMaximumRetries());
+    other->setLimitReconnects(this->getLimitReconnects());
+    other->setMaximumRetries(this->getMaximumRetries());
 
-    setNoDelayFirstReconnect(other->getNoDelayFirstReconnect());
-    setReconnectFirstDelay(other->getReconnectFirstDelay());
+    other->setNoDelayFirstReconnect(this->getNoDelayFirstReconnect());
+    other->setReconnectFirstDelay(this->getReconnectFirstDelay());
 
-    setFormat(other->getFormat());
-    setBitrate(other->getBitrate());
-    setChannels(other->getChannels());
+    other->setFormat(this->getFormat());
+    other->setBitrate(this->getBitrate());
+    other->setChannels(this->getChannels());
 
-    setMountPoint(other->getMountpoint());
-    setStreamName(other->getStreamName());
-    setStreamDesc(other->getStreamDesc());
-    setStreamGenre(other->getStreamGenre());
-    setStreamPublic(other->getStreamPublic());
-    setStreamWebsite(other->getStreamWebsite());
+    other->setMountPoint(this->getMountpoint());
+    other->setStreamName(this->getStreamName());
+    other->setStreamDesc(this->getStreamDesc());
+    other->setStreamGenre(this->getStreamGenre());
+    other->setStreamPublic(this->getStreamPublic());
+    other->setStreamWebsite(this->getStreamWebsite());
 
-    setEnableMetadata(other->getEnableMetadata());
-    setMetadataCharset(other->getMetadataCharset());
-    setCustomArtist(other->getCustomArtist());
-    setCustomTitle(other->getCustomTitle());
-    setMetadataFormat(other->getMetadataFormat());
-    setOggDynamicUpdate(other->getOggDynamicUpdate());
+    other->setEnableMetadata(this->getEnableMetadata());
+    other->setMetadataCharset(this->getMetadataCharset());
+    other->setCustomArtist(this->getCustomArtist());
+    other->setCustomTitle(this->getCustomTitle());
+    other->setMetadataFormat(this->getMetadataFormat());
+    other->setOggDynamicUpdate(this->getOggDynamicUpdate());
 
-    setEnabled(other->getEnabled());
+    other->setEnabled(this->getEnabled());
 }
 
 void BroadcastProfile::adoptDefaultValues() {
@@ -438,6 +439,12 @@ QString BroadcastProfile::getSecurePassword(QString login) {
     }
 #endif
     return QString();
+}
+
+// Used by BroadcastSettings to relay connection status
+// to copies in BroadcastSettingsModel
+void BroadcastProfile::relayConnectionStatus(int status) {
+    setConnectionStatus(status);
 }
 
 // This was useless before, but now comes in handy for multi-broadcasting,

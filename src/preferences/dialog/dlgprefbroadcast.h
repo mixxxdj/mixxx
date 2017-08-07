@@ -10,6 +10,7 @@
 #include "broadcast/defs_broadcast.h"
 #include "preferences/dlgpreferencepage.h"
 #include "preferences/broadcastsettings.h"
+#include "preferences/broadcastsettingsmodel.h"
 
 class ControlProxy;
 
@@ -41,10 +42,12 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     void onSectionResized();
 
   private:
+    void updateModel();
     void getValuesFromProfile(BroadcastProfilePtr profile);
     void setValuesToProfile(BroadcastProfilePtr profile);
 
     BroadcastSettingsPointer m_pBroadcastSettings;
+    BroadcastSettingsModel* m_pSettingsModel;
     ControlProxy* m_pBroadcastEnabled;
     BroadcastProfilePtr m_pProfileListSelection;
 };

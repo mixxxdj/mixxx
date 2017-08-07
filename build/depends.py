@@ -687,6 +687,7 @@ class MixxxCore(Feature):
                    "preferences/replaygainsettings.cpp",
                    "preferences/broadcastsettings.cpp",
                    "preferences/broadcastsettings_legacy.cpp",
+                   "preferences/broadcastsettingsmodel.cpp",
                    "preferences/broadcastprofile.cpp",
                    "preferences/upgrade.cpp",
                    "preferences/dlgpreferencepage.cpp",
