@@ -35,7 +35,7 @@ class EngineBroadcast
 
     EngineBroadcast(UserSettingsPointer pConfig,
                     BroadcastSettingsPointer pBroadcastSettings,
-                    int numOutputChannels);
+                    int numEngineOutputChannels);
     virtual ~EngineBroadcast();
 
     bool addConnection(BroadcastProfilePtr profile);
@@ -67,7 +67,7 @@ class EngineBroadcast
 
     BroadcastSettingsPointer m_settings;
     UserSettingsPointer m_pConfig;
-    int m_numOutputChannels;
+    int m_numEngineOutputChannels;
     ControlPushButton* m_pBroadcastEnabled;
     ControlObject* m_pStatusCO;
 

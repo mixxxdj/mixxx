@@ -35,10 +35,10 @@ const int kBufferFrames = kNetworkLatencyFrames * 4; // 743 ms @ 44100 Hz
 
 EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig,
                                  BroadcastSettingsPointer pBroadcastSettings,
-                                 int numOutputChannels)
+                                 int numEngineOutputChannels)
         : m_settings(pBroadcastSettings),
           m_pConfig(pConfig),
-          m_numOutputChannels(numOutputChannels),
+          m_numEngineOutputChannels(numEngineOutputChannels),
           m_threadWaiting(false),
           m_pOutputFifo(nullptr) {
     const bool persist = true;
@@ -105,7 +105,7 @@ bool EngineBroadcast::addConnection(BroadcastProfilePtr profile) {
     if(m_connections.contains(profileName))
         return false;
 
-    int fifoSize = m_numOutputChannels * kBufferFrames;
+    int fifoSize = m_numEngineOutputChannels * kBufferFrames;
 
     ShoutConnectionPtr output(new ShoutConnection(profile, m_pConfig, fifoSize));
     m_connections.insert(profileName, output);
@@ -185,7 +185,7 @@ void EngineBroadcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             // "Check for desired kNetworkLatencyFrames + 1/2 interval to
             // avoid big jitter due to interferences with sync code"
             if(cFifo->readAvailable() + interval / 2
-                    >= (m_numOutputChannels * kNetworkLatencyFrames)) {
+                    >= (m_numEngineOutputChannels * kNetworkLatencyFrames)) {
                 c->outputAvailable();
             }
         }
