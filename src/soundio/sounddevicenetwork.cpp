@@ -8,6 +8,21 @@
 #include "soundio/soundmanagerutil.h"
 #include "util/sample.h"
 
+namespace {
+const int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
+// Related chunk sizes:
+// Mp3 frames = 1152 samples
+// Ogg frames = 64 to 8192 samples.
+// In Mixxx 1.11 we transmit every decoder-frames at once,
+// Which results in case of ogg in a dynamic latency from 0.14 ms to to 185 ms
+// Now we have switched to a fixed latency of 8192 frames (stereo samples) =
+// which is 185 @ 44100 ms and twice the maximum of the max mixxx audio buffer
+const int kBufferFrames = kNetworkLatencyFrames * 4; // 743 ms @ 44100 Hz
+// normally * 2 is sufficient.
+// We allow to buffer two extra chunks for a CPU overload case, when
+// the broadcast thread is not scheduled in time.
+}
+
 // static
 volatile int SoundDeviceNetwork::m_underflowHappened = 0;
 
@@ -18,7 +33,6 @@ SoundDeviceNetwork::SoundDeviceNetwork(UserSettingsPointer config,
           m_pNetworkStream(pNetworkStream),
           m_outputFifo(NULL),
           m_inputFifo(NULL),
-          m_outputDrift(false),
           m_inputDrift(false) {
     // Setting parent class members:
     m_hostAPI = "Network stream";
@@ -216,54 +230,154 @@ void SoundDeviceNetwork::writeProcess() {
         }
         m_outputFifo->releaseWriteRegions(writeCount);
     }
-    writeAvailable = m_pNetworkStream->getWriteExpected()
-            * m_iNumOutputChannels;
+
     int readAvailable = m_outputFifo->readAvailable();
+
+    CSAMPLE* dataPtr1;
+    ring_buffer_size_t size1;
+    CSAMPLE* dataPtr2;
+    ring_buffer_size_t size2;
+    // Try to read as most frames as possible.
+    // NetworkStreamWorker::processWrite will take care
+    // of buffer handling
+    m_outputFifo->aquireReadRegions(readAvailable,
+            &dataPtr1, &size1, &dataPtr2, &size2);
+
+    QVector<NetworkStreamWorkerPtr> workers = m_pNetworkStream->workers();
+    for(auto pWorker : workers) {
+        if(pWorker.isNull()) {
+            continue;
+        }
+
+        workerWriteProcess(pWorker,
+                outChunkSize, readAvailable,
+                dataPtr1, size1,
+                dataPtr2, size2);
+    }
+
+    m_outputFifo->releaseReadRegions(readAvailable);
+}
+
+void SoundDeviceNetwork::workerWriteProcess(NetworkStreamWorkerPtr pWorker,
+        int outChunkSize, int readAvailable,
+        CSAMPLE* dataPtr1, ring_buffer_size_t size1,
+        CSAMPLE* dataPtr2, ring_buffer_size_t size2) {
+    int writeExpected = static_cast<int>(pWorker->getStreamTimeFrames() - pWorker->framesWritten());
+
+    int writeAvailable = writeExpected * m_iNumOutputChannels;
     int copyCount = qMin(readAvailable, writeAvailable);
+
     //qDebug() << "SoundDevicePortAudio::writeProcess()" << toRead << writeAvailable;
     if (copyCount > 0) {
-        CSAMPLE* dataPtr1;
-        ring_buffer_size_t size1;
-        CSAMPLE* dataPtr2;
-        ring_buffer_size_t size2;
-        m_outputFifo->aquireReadRegions(copyCount,
-                &dataPtr1, &size1, &dataPtr2, &size2);
+
         if (writeAvailable >= outChunkSize * 2) {
             // Underflow
             //qDebug() << "SoundDeviceNetwork::writeProcess() Buffer empty";
             // catch up by filling buffer until we are synced
-            m_pNetworkStream->writeSilence(writeAvailable - copyCount);
-            m_underflowHappened = 1;
+            workerWriteSilence(pWorker, writeAvailable - copyCount);
         } else if (writeAvailable > readAvailable + outChunkSize / 2) {
             // try to keep PAs buffer filled up to 0.5 chunks
-            if (m_outputDrift) {
+            if (pWorker->outputDrift()) {
                 // duplicate one frame
                 //qDebug() << "SoundDeviceNetwork::writeProcess() duplicate one frame"
                 //         << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;
-                m_pNetworkStream->write(dataPtr1, 1);
+                workerWrite(pWorker, dataPtr1, 1);
             } else {
-                m_outputDrift = true;
+                pWorker->setOutputDrift(true);
             }
         } else if (writeAvailable < outChunkSize / 2) {
             // We are not able to store all new frames
-            if (m_outputDrift) {
+            if (pWorker->outputDrift()) {
                 //qDebug() << "SoundDeviceNetwork::writeProcess() skip one frame"
                 //         << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;
                 ++copyCount;
             } else {
-                m_outputDrift = true;
+                pWorker->setOutputDrift(true);
             }
         } else {
-            m_outputDrift = false;
+            pWorker->setOutputDrift(false);
         }
 
-        m_pNetworkStream->write(dataPtr1,
-                size1 / m_iNumOutputChannels);
+        workerWrite(pWorker, dataPtr1, size1 / m_iNumOutputChannels);
         if (size2 > 0) {
-            m_pNetworkStream->write(dataPtr2,
-                    size2 / m_iNumOutputChannels);
+            workerWrite(pWorker, dataPtr2, size2 / m_iNumOutputChannels);
         }
-        m_outputFifo->releaseReadRegions(copyCount);
-        m_pNetworkStream->writingDone(copyCount);
+
+        QSharedPointer<FIFO<CSAMPLE>> pFifo = pWorker->getOutputFifo();
+        if(pFifo) {
+            // interval = copyCount
+            // Check for desired kNetworkLatencyFrames + 1/2 interval to
+            // avoid big jitter due to interferences with sync code
+            if (pFifo->readAvailable() + copyCount / 2
+                    >= (m_iNumOutputChannels * kNetworkLatencyFrames)) {
+                pWorker->outputAvailable();
+            }
+        }
     }
 }
+
+void SoundDeviceNetwork::workerWrite(NetworkStreamWorkerPtr pWorker,
+        const CSAMPLE* buffer, int frames) {
+    if (!pWorker->threadWaiting()) {
+        pWorker->addFramesWritten(frames);
+        return;
+    }
+
+    QSharedPointer<FIFO<CSAMPLE>> pFifo = pWorker->getOutputFifo();
+    if (pFifo) {
+        int writeAvailable = pFifo->writeAvailable();
+        int writeRequired = frames * m_iNumOutputChannels;
+        if (writeAvailable < writeRequired) {
+            qDebug() << "NetworkStreamWorker::write: worker buffer full, loosing samples";
+            pWorker->incOverflowCount();
+        }
+
+        int copyCount = math_min(writeAvailable, writeRequired);
+        if (copyCount > 0) {
+            (void)pFifo->write(buffer, copyCount);
+            // we advance the frame only by the samples we have actually copied
+            // This means in case of buffer full (where we loose some frames)
+            // we do not get out of sync, and the syncing code tries to catch up the
+            // stream by writing silence, once the buffer is free.
+            pWorker->addFramesWritten(copyCount / m_iNumOutputChannels);
+        }
+    }
+}
+
+void SoundDeviceNetwork::workerWriteSilence(NetworkStreamWorkerPtr pWorker, int frames) {
+    if (!pWorker->threadWaiting()) {
+        pWorker->addFramesWritten(frames);
+        return;
+    }
+
+    QSharedPointer<FIFO<CSAMPLE>> pFifo = pWorker->getOutputFifo();
+    if(pFifo) {
+        int writeAvailable = pFifo->writeAvailable();
+        int writeRequired = frames * m_iNumOutputChannels;
+        if (writeAvailable < writeRequired) {
+            qDebug() <<
+                    "NetworkStreamWorker::writeSilence: worker buffer full, loosing samples";
+            pWorker->incOverflowCount();
+        }
+
+        int clearCount = math_min(writeAvailable, writeRequired);
+        if (clearCount > 0) {
+            CSAMPLE* dataPtr1;
+            ring_buffer_size_t size1;
+            CSAMPLE* dataPtr2;
+            ring_buffer_size_t size2;
+
+            (void)pFifo->aquireWriteRegions(clearCount,
+                    &dataPtr1, &size1, &dataPtr2, &size2);
+            SampleUtil::clear(dataPtr1, size1);
+            if (size2 > 0) {
+                SampleUtil::clear(dataPtr2, size2);
+            }
+            pFifo->releaseWriteRegions(clearCount);
+
+            // we advance the frame only by the samples we have actually cleared
+            pWorker->addFramesWritten(clearCount / m_iNumOutputChannels);
+        }
+    }
+}
+

@@ -183,6 +183,13 @@ void DlgPrefBroadcast::enableCustomMetadataChanged(int value) {
 }
 
 void DlgPrefBroadcast::btnCreateConnectionClicked() {
+    if(m_pSettingsModel->rowCount() >= BROADCAST_MAX_CONNECTIONS) {
+        QMessageBox::warning(this, tr("Action failed."),
+                tr("You can't create more than %1 Live Broadcasting connections.")
+                .arg(BROADCAST_MAX_CONNECTIONS));
+        return;
+    }
+  
     int profileNumber = m_pSettingsModel->rowCount();
 
     // Generate a new profile name based on the current profile count.

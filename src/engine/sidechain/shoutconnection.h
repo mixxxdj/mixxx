@@ -36,7 +36,7 @@ class ShoutConnection
         : public QThread, public EncoderCallback, public NetworkStreamWorker {
     Q_OBJECT
   public:
-    ShoutConnection(BroadcastProfilePtr profile, UserSettingsPointer pConfig, int fifoSize);
+    ShoutConnection(BroadcastProfilePtr profile, UserSettingsPointer pConfig);
     virtual ~ShoutConnection();
 
     // This is called by the Engine implementation for each sample. Encode and
@@ -63,8 +63,8 @@ class ShoutConnection
     void applySettings();
 
     virtual void outputAvailable();
-    virtual void setOutputFifo(FIFO<CSAMPLE>* pOutputFifo);
-    FIFO<CSAMPLE>* getOutputFifo();
+    virtual void setOutputFifo(QSharedPointer<FIFO<CSAMPLE>> pOutputFifo);
+    QSharedPointer<FIFO<CSAMPLE>> getOutputFifo();
     virtual bool threadWaiting();
     virtual void run();
 
@@ -147,7 +147,7 @@ class ShoutConnection
     bool m_ogg_dynamic_update;
     QAtomicInt m_threadWaiting;
     QSemaphore m_readSema;
-    FIFO<CSAMPLE>* m_pOutputFifo;
+    QSharedPointer<FIFO<CSAMPLE>> m_pOutputFifo;
 
     QString m_lastErrorStr;
     int m_retryCount;

@@ -1,6 +1,8 @@
 #ifndef NETWORKSTREAMWORKER_H
 #define NETWORKSTREAMWORKER_H
 
+#include <QSharedPointer>
+
 #include "util/types.h"
 #include "util/fifo.h"
 
@@ -48,15 +50,33 @@ class NetworkStreamWorker {
     virtual void shutdown() = 0;
 
     virtual void outputAvailable();
-    virtual void setOutputFifo(FIFO<CSAMPLE>* pOutputFifo);
+    virtual void setOutputFifo(QSharedPointer<FIFO<CSAMPLE>> pOutputFifo);
+    virtual QSharedPointer<FIFO<CSAMPLE>> getOutputFifo();
+
+    void startStream(double samplerate, int numOutputChannels);
+    void stopStream();
 
     virtual bool threadWaiting();
 
-    static int getState();
-    static int getFunctionCode();
-    static int getRunCount();
+    qint64 getStreamTimeUs();
+    qint64 getStreamTimeFrames();
 
-    static void debugState();
+    void resetFramesWritten();
+    void addFramesWritten(qint64 frames);
+    qint64 framesWritten();
+
+    void resetOverflowCount();
+    void incOverflowCount();
+    int overflowCount();
+
+    void setOutputDrift(bool drift);
+    bool outputDrift();
+
+    int getState();
+    int getFunctionCode();
+    int getRunCount();
+
+    void debugState();
 
 protected:
     void setState(int state);
@@ -64,10 +84,19 @@ protected:
     void incRunCount();
     
 private:
-    static int s_networkStreamWorkerState;
-    static int s_functionCode;
-    static int s_runCount;
+    double m_sampleRate;
+    int m_numOutputChannels;
+
+    int m_networkStreamWorkerState;
+    int m_functionCode;
+    int m_runCount;
+
+    qint64 m_streamStartTimeUs;
+    qint64 m_streamFramesWritten;
+    int m_writeOverflowCount;
+    bool m_outputDrift;
 };
 
+typedef QSharedPointer<NetworkStreamWorker> NetworkStreamWorkerPtr;
 
 #endif /* NETWORKSTREAMWORKER_H */

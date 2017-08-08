@@ -39,7 +39,7 @@ static const int kMaxShoutFailures = 3;
 }
 
 ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
-        UserSettingsPointer pConfig, int fifoSize)
+        UserSettingsPointer pConfig)
         : m_pTextCodec(nullptr),
           m_pMetaData(),
           m_pShout(nullptr),
@@ -67,8 +67,6 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
           m_noDelayFirstReconnect(true),
           m_limitReconnects(true),
           m_maximumRetries(10) {
-    m_pOutputFifo = new FIFO<CSAMPLE>(fifoSize);
-
     setStatus(BroadcastProfile::STATUS_UNCONNECTED);
     setState(NETWORKSTREAMWORKER_STATE_INIT);
 
@@ -101,7 +99,15 @@ ShoutConnection::~ShoutConnection() {
         shout_free(m_pShout);
     }
 
-    shout_shutdown();
+    // Wait maximum ~4 seconds. User will get annoyed but
+    // if there is some network problems we let them settle
+    wait(4000);
+
+    // Signal user if thread doesn't die
+    VERIFY_OR_DEBUG_ASSERT(!isRunning()) {
+       qWarning() << "ShoutOutput::~ShoutOutput(): Thread didn't die.\
+       Ignored but file a bug report if problems rise!";
+    }
 }
 
 bool ShoutConnection::isConnected() {
@@ -872,11 +878,11 @@ void ShoutConnection::outputAvailable() {
     m_readSema.release();
 }
 
-void ShoutConnection::setOutputFifo(FIFO<CSAMPLE>* pOutputFifo) {
-    Q_UNUSED(pOutputFifo);
+void ShoutConnection::setOutputFifo(QSharedPointer<FIFO<CSAMPLE>> pOutputFifo) {
+    m_pOutputFifo = pOutputFifo;
 }
 
-FIFO<CSAMPLE>* ShoutConnection::getOutputFifo() {
+QSharedPointer<FIFO<CSAMPLE>> ShoutConnection::getOutputFifo() {
     return m_pOutputFifo;
 }
 
