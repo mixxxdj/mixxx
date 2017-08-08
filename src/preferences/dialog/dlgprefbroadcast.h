@@ -43,6 +43,8 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
 
   private:
     void updateModel();
+    void selectConnectionRow(int row);
+    void selectConnectionRowByName(QString rowName);
     void getValuesFromProfile(BroadcastProfilePtr profile);
     void setValuesToProfile(BroadcastProfilePtr profile);
 

@@ -90,8 +90,7 @@ QVariant BroadcastSettingsModel::data(const QModelIndex& index, int role) const 
         int column = index.column();
         if(column == kColumnEnabled && role == Qt::CheckStateRole) {
             return (profile->getEnabled() == true ? Qt::Checked : Qt::Unchecked);
-        } else if(column == kColumnName
-                && (role == Qt::DisplayRole || role == Qt::EditRole)) {
+        } else if(column == kColumnName && role == Qt::DisplayRole) {
             return profile->getProfileName();
         } else if(column == kColumnStatus && role == Qt::DisplayRole) {
             return connectionStatusString(profile);
@@ -120,9 +119,6 @@ QVariant BroadcastSettingsModel::headerData(int section, Qt::Orientation orienta
 Qt::ItemFlags BroadcastSettingsModel::flags(const QModelIndex& index) const {
     if(index.column() == kColumnEnabled)
         return QAbstractItemModel::flags(index) | Qt::ItemIsUserCheckable;
-
-    if(index.column() == kColumnName)
-        return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
 
     return Qt::ItemIsEnabled;
 }

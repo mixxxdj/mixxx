@@ -151,11 +151,6 @@ void DlgPrefBroadcast::slotApply()
         btnRemoveConnection->setEnabled(true);
     }
 
-    // TODO(Palakis) : keep a local deep copy of the profiles list to
-    // apply settings to profiles only when clicking "Apply"
-    // Here would be a call to a method of BroadcastSettings that syncs
-    // another list with its internal list
-
     if(m_pProfileListSelection) {
         setValuesToProfile(m_pProfileListSelection);
     }
@@ -205,6 +200,7 @@ void DlgPrefBroadcast::btnCreateConnectionClicked() {
         m_pProfileListSelection->copyValuesTo(newProfile);
     }
     m_pSettingsModel->addProfileToModel(newProfile);
+    selectConnectionRowByName(newProfile->getProfileName());
 }
 
 void DlgPrefBroadcast::profileListItemSelected(const QModelIndex& index) {
@@ -222,6 +218,31 @@ void DlgPrefBroadcast::profileListItemSelected(const QModelIndex& index) {
 
 void DlgPrefBroadcast::updateModel() {
     m_pSettingsModel->resetFromSettings(m_pBroadcastSettings);
+}
+
+void DlgPrefBroadcast::selectConnectionRow(int row) {
+    if(row < 0 || row > m_pSettingsModel->rowCount()) {
+        return;
+    }
+
+    connectionList->selectRow(row);
+    profileListItemSelected(m_pSettingsModel->index(row, kColumnName));
+}
+
+void DlgPrefBroadcast::selectConnectionRowByName(QString rowName) {
+    int row = -1;
+    for (int i = 0; i < m_pSettingsModel->rowCount(); i++) {
+        QModelIndex index = m_pSettingsModel->index(i, kColumnName);
+        QVariant value = m_pSettingsModel->data(index, Qt::DisplayRole);
+        if (value.toString() == rowName) {
+            row = i;
+            break;
+        }
+    }
+
+    if (row > -1) {
+        selectConnectionRow(row);
+    }
 }
 
 void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
@@ -410,10 +431,7 @@ void DlgPrefBroadcast::btnRemoveConnectionClicked() {
 
         if(response == QMessageBox::Yes) {
             m_pSettingsModel->deleteProfileFromModel(m_pProfileListSelection);
-
-            connectionList->selectRow(0);
-            QItemSelectionModel* selected = connectionList->selectionModel();
-            profileListItemSelected(selected->currentIndex());
+            selectConnectionRow(0);
         }
     }
 }
@@ -429,6 +447,7 @@ void DlgPrefBroadcast::btnRenameConnectionClicked() {
                         QLineEdit::Normal, profileName, &ok);
         if(ok) {
             m_pProfileListSelection->setProfileName(newName);
+            getValuesFromProfile(m_pProfileListSelection);
         }
     }
 }
