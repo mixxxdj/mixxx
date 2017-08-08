@@ -200,8 +200,10 @@ void DlgPrefBroadcast::btnCreateConnectionClicked() {
         existingProfile = m_pSettingsModel->getProfileByName(newName);
     } while(!existingProfile.isNull());
 
-    BroadcastProfilePtr clone = m_pProfileListSelection->valuesCopy();
-    clone->setProfileName(newName);
+    BroadcastProfilePtr clone(new BroadcastProfile(newName));
+    if(m_pProfileListSelection) {
+        m_pProfileListSelection->copyValuesTo(clone);
+    }
     m_pSettingsModel->addProfileToModel(clone);
 }
 
