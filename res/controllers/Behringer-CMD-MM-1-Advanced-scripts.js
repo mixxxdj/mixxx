@@ -268,7 +268,7 @@ CMDMM.fader = function (channel, control, value, status, group) {
 	} else {
 		CMDMM.modes(
 			function () {
-				engine.setParameter("[EffectRack1_EffectUnit"+CMDMM.varStorage.channelSequence[(control-47)]+"]","mix", value/127);
+				engine.setParameter("[EffectRack1_EffectUnit"+CMDMM.varStorage.channelSequence[(control-0x30)]+"]","mix", value/127);
 			}
 		);
 	}
@@ -339,26 +339,14 @@ CMDMM.middleButton = function (channel, control, value, status, group) {
 	function(){
 		CMDMM.varStorage.channelSequence = defaultChannelSequence;
 		CMDMM.updateLEDs();
-		/*
-		CMDMM.varStorage.channelSequence = CMDMM.varStorage.channelSequence[0] === 3 ? [1,2,3,4]:[3,1,2,4]; // not very expandable but it works while Array===Array doesnt;
-		//CMDMM.varStorage.channelSequence = _.isEqual(CMDMM.varStorage.channelSequence, [3,1,2,4]) ? [1,2,3,4]:[3,1,2,4];
-		print(CMDMM.varStorage.channelSequence);
-		FUNCTIONS.mapWholeController(true);
-		FUNCTIONS.enableSoftTakeover();
-		CALLBACK.registerCallbacks();
-		CMDMM.updateLEDs();
-		print(CMDMM.varStorage.channelSequence);
-		*/
 	}
 	);
 };
 
 CALLBACK.vuMeterL =  function (value, group, control) {
-	print("vuMeterL");
     midi.sendShortMsg(MIDI.CC, 80, (value * 15) + 48);
 };
 CALLBACK.vuMeterR =  function (value, group, control) {
-	print("vuMeterR");
     midi.sendShortMsg(MIDI.CC, 81, (value * 15) + 48);
 };
 
@@ -398,7 +386,6 @@ CALLBACK.middleButton = function () {
 	}
 };
 CALLBACK.fxButton = function () {
-	print(CMDMM.varStorage.channelSequence);
 	for (var channel=1;channel<=4;channel++) {
 		if (CMDMM.varStorage.channelKind[channel-1]) {
 			switch (CMDMM.getLevel()) {
@@ -423,7 +410,7 @@ CALLBACK.fxButton = function () {
 					break;
 				case 3:
 					for (var i =1;i<=2;i++) {
-						midi.sendShortMsg(MIDI.noteOn, CMDMM.buttons[(channel-1)*2+i], CMDMM.varStorage.ChannelAssignmentStatus[channel-1][i-1]?CMDMM.on:CMDMM.off)
+						midi.sendShortMsg(MIDI.noteOn, CMDMM.buttons[(channel-1)*2+i], CMDMM.varStorage.ChannelAssignmentStatus[channel-1][i-1]?CMDMM.on:CMDMM.off);
 					}
 					break;
 			}
@@ -448,6 +435,11 @@ CALLBACK.fxButton = function () {
 						var value = engine.getValue("[EffectRack1_EffectUnit"+CMDMM.varStorage.channelSequence[channel-1]+"_Effect"+fxUnit+"]", "enabled");
 						midi.sendShortMsg(MIDI.noteOn, CMDMM.buttons[(channel-1)*2+fxUnit],value?CMDMM.on:CMDMM.off);
 						//                                                 ^strange but working solution to get values from 1 to 8
+					}
+					break;
+				case 3:
+					for (var i =1;i<=2;i++) {
+						midi.sendShortMsg(MIDI.noteOn, CMDMM.buttons[(channel-1)*2+i], CMDMM.varStorage.ChannelAssignmentStatus[channel-1][i-1]?CMDMM.on:CMDMM.off);
 					}
 					break;
 			}
@@ -517,7 +509,6 @@ FUNCTIONS.enableSoftTakeover = function () {
 CMDMM.init = function () {
 	FUNCTIONS.resetColor();
 	FUNCTIONS.buttonFromChannelNumber();
-	print(CMDMM.varStorage.ChannelAssignmentStatus);
 	FUNCTIONS.cycleKnobAssignment();
 	FUNCTIONS.enableSoftTakeover();
 	CALLBACK.registerCallbacks();
