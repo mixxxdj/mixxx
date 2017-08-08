@@ -11,15 +11,18 @@
 
 #include "preferences/broadcastprofile.h"
 
+class BroadcastSettings;
+typedef QSharedPointer<BroadcastSettings> BroadcastSettingsPointer;
+
 class BroadcastSettingsModel : public QAbstractTableModel {
   Q_OBJECT
   public:
     BroadcastSettingsModel();
 
+    void resetFromSettings(BroadcastSettingsPointer pSettings);
     bool addProfileToModel(BroadcastProfilePtr profile);
     void deleteProfileFromModel(BroadcastProfilePtr profile);
     BroadcastProfilePtr getProfileByName(const QString& profileName);
-    void clearProfiles();
     QList<BroadcastProfilePtr> profiles() {
         return m_profiles.values();
     }

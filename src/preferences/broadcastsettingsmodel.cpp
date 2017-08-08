@@ -3,6 +3,8 @@
 
 #include <preferences/broadcastsettingsmodel.h>
 
+#include <preferences/broadcastsettings.h>
+
 namespace {
 const int kColumnEnabled = 0;
 const int kColumnName = 1;
@@ -10,6 +12,23 @@ const int kColumnStatus = 2;
 }
 
 BroadcastSettingsModel::BroadcastSettingsModel() {
+}
+
+void BroadcastSettingsModel::resetFromSettings(BroadcastSettingsPointer pSettings) {
+    if(!pSettings) {
+        return;
+    }
+
+    beginRemoveRows(QModelIndex(), 0, m_profiles.size()-1);
+    endRemoveRows();
+    m_profiles.clear();
+
+    for(BroadcastProfilePtr profile : pSettings->profiles()) {
+        BroadcastProfilePtr copy = profile->valuesCopy();
+        connect(profile.data(), SIGNAL(connectionStatusChanged(int)),
+                copy.data(), SLOT(relayConnectionStatus(int)));
+        addProfileToModel(copy);
+    }
 }
 
 bool BroadcastSettingsModel::addProfileToModel(BroadcastProfilePtr profile) {
@@ -49,12 +68,6 @@ void BroadcastSettingsModel::deleteProfileFromModel(BroadcastProfilePtr profile)
 BroadcastProfilePtr BroadcastSettingsModel::getProfileByName(
         const QString& profileName) {
     return m_profiles.value(profileName, BroadcastProfilePtr());
-}
-
-void BroadcastSettingsModel::clearProfiles() {
-    beginRemoveRows(QModelIndex(), 0, m_profiles.size()-1);
-    endRemoveRows();
-    m_profiles.clear();
 }
 
 int BroadcastSettingsModel::rowCount(const QModelIndex& parent) const {

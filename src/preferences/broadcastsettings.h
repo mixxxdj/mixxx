@@ -22,7 +22,6 @@ class BroadcastSettings : public QObject {
     QList<BroadcastProfilePtr> profiles();
     BroadcastProfilePtr profileAt(int index);
 
-    void resetModel(BroadcastSettingsModel* pModel);
     void applyModel(BroadcastSettingsModel* pModel);
 
   signals:

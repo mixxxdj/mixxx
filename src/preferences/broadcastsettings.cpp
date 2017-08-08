@@ -183,21 +183,6 @@ QList<BroadcastProfilePtr> BroadcastSettings::profiles() {
     return m_profiles.values();
 }
 
-// TODO(Palakis): move this to BroadcastSettingsModel
-void BroadcastSettings::resetModel(BroadcastSettingsModel* pModel) {
-    if(!pModel) {
-        return;
-    }
-
-    pModel->clearProfiles();
-    for(BroadcastProfilePtr profile : m_profiles.values()) {
-        BroadcastProfilePtr copy = profile->valuesCopy();
-        connect(profile.data(), SIGNAL(connectionStatusChanged(int)),
-                copy.data(), SLOT(relayConnectionStatus(int)));
-        pModel->addProfileToModel(copy);
-    }
-}
-
 void BroadcastSettings::applyModel(BroadcastSettingsModel* pModel) {
     if(!pModel) {
         return;
