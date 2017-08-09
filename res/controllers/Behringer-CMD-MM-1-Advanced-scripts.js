@@ -76,6 +76,7 @@ CMDMM.cue = function (channel, control, value, status, group) {
 			function() {/*
 				//enable pfl for EffectN N = number of channel (a bit weird, but it works)
 				script.toggleControl("[EffectRack1_EffectUnit"+cueChannel+"]", "group_[Headphone]_enable");
+				//OBSOLETE
 			*/},
 			function () {
 				CMDMM.varStorage.channelKind[control - 0x30] = !CMDMM.varStorage.channelKind[control - 0x30];
@@ -109,11 +110,6 @@ CMDMM.fxButton = function (channel, control, value, status, group) {
 	if (CMDMM.varStorage.channelKind[realChannel]) {
 		CMDMM.modes(
 			function(){
-				var effectUnit = button%2===0 ? 2:1; //checks if buttonnumber is even, if true, return effectUnit 2 if false, return effectUnit 1;
-				// maps button to range [0;7], divides and floors it (result: [0;3]). That value is being used to lookup the right channel.
-				script.toggleControl("[EffectRack1_EffectUnit"+effectUnit+"]","group_[Channel"+mixxxChannel+"]_enable");
-			},
-			function(){
 				var channelButton = button%2===0?2:0;
 				if (engine.getValue("[Channel"+mixxxChannel+"]","orientation")===channelButton) {
 					engine.setValue("[Channel"+mixxxChannel+"]","orientation", 1);
@@ -121,6 +117,11 @@ CMDMM.fxButton = function (channel, control, value, status, group) {
 					engine.setValue("[Channel"+mixxxChannel+"]","orientation", channelButton); //checks if buttonnumber is even, if true, return Left if false, return right;
 				}
 
+			},
+			function(){
+				var effectUnit = button%2===0 ? 2:1; //checks if buttonnumber is even, if true, return effectUnit 2 if false, return effectUnit 1;
+				// maps button to range [0;7], divides and floors it (result: [0;3]). That value is being used to lookup the right channel.
+				script.toggleControl("[EffectRack1_EffectUnit"+effectUnit+"]","group_[Channel"+mixxxChannel+"]_enable");
 			},
 			function(){
 				var effectUnit = button%2===0 ? 4:3; //checks if buttonnumber is even, if true, return effectUnit 4 if false, return effectUnit 3;
@@ -147,12 +148,12 @@ CMDMM.fxButton = function (channel, control, value, status, group) {
 			function() {
 				var effectUnit = button%2===0 ? 2:1; //checks if buttonnumber is even, if true, return effectUnit 2 if false, return effectUnit 1;
 				// maps button to range [0;7], divides and floors it (result: [0;3]). That value is being used to lookup the right channel.
-				script.toggleControl("[EffectRack1_EffectUnit"+effectUnit+"]","group_[Channel"+mixxxChannel+"]_enable");
+				script.toggleControl("[EffectRack1_EffectUnit"+mixxxChannel+"]","group_[Channel"+effectUnit+"]_enable");
 			},
 			function() {
 				var effectUnit = button%2===0 ? 4:3; //checks if buttonnumber is even, if true, return effectUnit 4 if false, return effectUnit 3;
 				// maps button to range [0;7], divides and floors it (result: [0;3]). That value is being used to lookup the right channel.
-				script.toggleControl("[EffectRack1_EffectUnit"+effectUnit+"]","group_[Channel"+mixxxChannel+"]_enable");
+				script.toggleControl("[EffectRack1_EffectUnit"+mixxxChannel+"]","group_[Channel"+effectUnit+"]_enable");
 			},
 			function() {
 				var effectUnit = button%2===0 ? 2:1;
@@ -390,16 +391,16 @@ CALLBACK.fxButton = function () {
 		if (CMDMM.varStorage.channelKind[channel-1]) {
 			switch (CMDMM.getLevel()) {
 				case 0:
+					var orientationButton = engine.getValue("[Channel"+CMDMM.varStorage.channelSequence[channel-1]+"]","orientation");
+					midi.sendShortMsg(MIDI.noteOn,CMDMM.buttons[(channel)*2-1],orientationButton===0?CMDMM.on:CMDMM.off);
+					midi.sendShortMsg(MIDI.noteOn,CMDMM.buttons[(channel)*2-0],orientationButton===2?CMDMM.on:CMDMM.off);
+					break;
+				case 1:
 					for (var fxUnit=1; fxUnit<=2;fxUnit++) {
 						var effectUnitValue = engine.getValue("[EffectRack1_EffectUnit"+fxUnit+"]", "group_[Channel"+CMDMM.varStorage.channelSequence[channel-1]+"]_enable");
 						midi.sendShortMsg(MIDI.noteOn, CMDMM.buttons[(channel-1)*2+fxUnit],effectUnitValue?CMDMM.on:CMDMM.off);
 						//                                                 ^strange but working solution to get values from 1 to 8
 					}
-					break;
-				case 1:
-					var orientationButton = engine.getValue("[Channel"+CMDMM.varStorage.channelSequence[channel-1]+"]","orientation");
-					midi.sendShortMsg(MIDI.noteOn,CMDMM.buttons[(channel)*2-1],orientationButton===0?CMDMM.on:CMDMM.off);
-					midi.sendShortMsg(MIDI.noteOn,CMDMM.buttons[(channel)*2-0],orientationButton===2?CMDMM.on:CMDMM.off);
 					break;
 				case 2:
 					for (var fxUnit=3; fxUnit<=4;fxUnit++) {
@@ -418,14 +419,14 @@ CALLBACK.fxButton = function () {
 			switch (CMDMM.getLevel()) {
 				case 0:
 					for (var fxUnit=1; fxUnit<=2;fxUnit++) {
-						var effectUnitValue = engine.getValue("[EffectRack1_EffectUnit"+fxUnit+"]", "group_[Channel"+CMDMM.varStorage.channelSequence[channel-1]+"]_enable");
+						var effectUnitValue = engine.getValue("[EffectRack1_EffectUnit"+CMDMM.varStorage.channelSequence[channel-1]+"]", "group_[Channel"+fxUnit+"]_enable");
 						midi.sendShortMsg(MIDI.noteOn, CMDMM.buttons[(channel-1)*2+fxUnit],effectUnitValue?CMDMM.on:CMDMM.off);
 						//                                                 ^strange but working solution to get values from 1 to 8
 					}
 					break;
 				case 1:
 					for (var fxUnit=3; fxUnit<=4;fxUnit++) {
-						var effectUnitValue = engine.getValue("[EffectRack1_EffectUnit"+fxUnit+"]", "group_[Channel"+CMDMM.varStorage.channelSequence[channel-1]+"]_enable");
+						var effectUnitValue = engine.getValue("[EffectRack1_EffectUnit"+CMDMM.varStorage.channelSequence[channel-1]+"]", "group_[Channel"+fxUnit+"]_enable");
 						midi.sendShortMsg(MIDI.noteOn, CMDMM.buttons[(channel-1)*2+fxUnit-2],effectUnitValue?CMDMM.on:CMDMM.off);
 						//                                                 ^strange but working solution to get values from 1 to 8
 					}
