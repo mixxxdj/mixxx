@@ -218,7 +218,7 @@ CrateFilterNode::CrateFilterNode(const CrateManager* pCrates,
 bool CrateFilterNode::match(const TrackPointer& pTrack) const {
     if (!m_matchInitialized) {
         CrateTrackSelectResult crateTracks(
-          m_pCrates->tracks().selectTracksSortedByCrateNameLike(m_crateNameLike));
+          m_pCrates->hierarchy().selectTracksSortedByCrateNameLikeRecursively(m_crateNameLike));
 
         while (crateTracks.next()) {
             m_matchingTrackIds.push_back(crateTracks.trackId());

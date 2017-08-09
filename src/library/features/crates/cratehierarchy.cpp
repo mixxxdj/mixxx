@@ -273,48 +273,59 @@ void CrateHierarchy::deleteCrate(CrateId id) const {
     }
 }
 
-QStringList CrateHierarchy::collectCrateIdsByCrateNameLike(const QString& crateNameLike) const {
+CrateSelectResult CrateHierarchy::selectCrateIdsByCrateNameLike(const QString& crateNameLike) const {
     FieldEscaper escaper(m_database);
     QString escapedArgument = escaper.escapeString(kSqlLikeMatchAll + crateNameLike + kSqlLikeMatchAll);
 
     FwdSqlQuery query(
       m_database, QString(
-        "SELECT DISTINCT %1 FROM %2 "
-        "WHERE %3 LIKE %4").arg(
-          CRATETABLE_ID,
+        "SELECT * FROM %1 "
+        "WHERE %2 LIKE %3").arg(
           CRATE_TABLE,
           CRATETABLE_NAME,
           escapedArgument));
 
-    QStringList ids;
-    if (query.execPrepared())
-        while (query.next()) {
-            ids << query.fieldValue(0).toString();
+    if (query.execPrepared()) {
+        return CrateSelectResult(std::move(query));
+    } else {
+        return CrateSelectResult();
     }
-
 }
 
-QString CrateHierarchy::formatQueryForTrackIdsByCrateNameLikeRecursively(const QString& crateNameLike) const {
-    QStringList childIds;
-    QStringList ids = collectCrateIdsByCrateNameLike(crateNameLike);
-    
-    for (const auto& id : ids) {
-        childIds = childIds + collectChildCrateIds(CrateId(id.toInt()));
+CrateTrackSelectResult CrateHierarchy::selectTracksSortedByCrateNameLikeRecursively(const QString& crateNameLike) const {
+    FwdSqlQuery query(m_database, formatQueryForTrackIdsByCrateNameLikeRecursively(crateNameLike, true));
+
+    if (query.execPrepared()) {
+        return CrateTrackSelectResult(std::move(query));
+    } else {
+        return CrateTrackSelectResult();
     }
+}
+
+
+QString CrateHierarchy::formatQueryForTrackIdsByCrateNameLikeRecursively(const QString& crateNameLike, bool flag) const {
+    QStringList ids, childIds;
+    CrateSelectResult crates(selectCrateIdsByCrateNameLike(crateNameLike));
+
+    Crate crate;
+    while (crates.populateNext(&crate)) {
+        ids << crate.getId().toString();
+        childIds += collectChildCrateIds(crate.getId());
+    }
+
+    QString selection = flag?CRATETRACKSTABLE_CRATEID  + "," + CRATETRACKSTABLE_TRACKID:CRATETRACKSTABLE_TRACKID;
 
     return QString(
         "SELECT DISTINCT %1 FROM %2 "
-        "JOIN %3 ON %4=%5 "
-        "WHERE %4 IN (%6) "
-        "OR %4 IN (%7) "
-        "ORDER BY %1").arg(
-            CRATETRACKSTABLE_TRACKID,
-            CRATE_TRACKS_TABLE,
-            CRATE_PATH_TABLE,
-            PATHTABLE_CRATEID,
-            CRATETRACKSTABLE_CRATEID,
-            ids.join(","),
-            childIds.join(","));
+        "WHERE %3 IN (%4) "
+        "OR %3 IN (%5) "
+        "ORDER BY %6").arg(
+          selection,
+          CRATE_TRACKS_TABLE,
+          CRATETRACKSTABLE_CRATEID,
+          ids.join(","),
+          childIds.join(","),
+          CRATETRACKSTABLE_TRACKID);
 }
 
 bool CrateHierarchy::isNameValidForHierarchy(const QString& newName,

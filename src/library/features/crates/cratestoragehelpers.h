@@ -1,3 +1,4 @@
+
 #ifndef MIXXX_CRATESTORAGEHELPERS_H
 #define MIXXX_CRATESTORAGEHELPERS_H
 
@@ -99,6 +100,7 @@ public:
 
 private:
     friend class CrateStorage;
+    friend class CrateHierarchy;
     CrateSelectResult() = default;
     explicit CrateSelectResult(FwdSqlQuery&& query)
         : FwdSqlQuerySelectResult(std::move(query)),
@@ -203,6 +205,7 @@ public:
 
 private:
     friend class CrateTracks;
+    friend class CrateHierarchy;
     CrateTrackSelectResult() = default;
     explicit CrateTrackSelectResult(FwdSqlQuery&& query)
         : FwdSqlQuerySelectResult(std::move(query)),
