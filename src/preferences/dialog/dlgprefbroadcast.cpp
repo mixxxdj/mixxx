@@ -28,10 +28,13 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
     setupUi(this);
 
 #ifndef __QTKEYCHAIN__
-    // If secure storage is disabled, hide the checkbox
+    // If secure storage is disabled, hide the radio buttons
     // and force the value to false.
-    cbSecureCredentials->setVisible(false);
-    cbSecureCredentials->setChecked(false);
+    rbPasswordKeychain->setChecked(false);
+    rbPasswordCleartext->setChecked(true);
+
+    rbPasswordKeychain->setEnabled(false);
+    groupPasswordStorage->setVisible(false);
 #endif
 
     connect(connectionList->horizontalHeader(), SIGNAL(sectionResized(int, int, int)),
@@ -263,7 +266,8 @@ void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
             .arg(profile->getProfileName());
     groupBoxProfileSettings->setTitle(headerText);
 
-    cbSecureCredentials->setChecked(profile->secureCredentialStorage());
+    rbPasswordCleartext->setChecked(!profile->secureCredentialStorage());
+    rbPasswordKeychain->setChecked(profile->secureCredentialStorage());
 
     // Server type combo list
     int tmp_index = comboBoxServerType->findData(profile->getServertype());
@@ -373,7 +377,7 @@ void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
     if(!profile)
         return;
 
-    profile->setSecureCredentialStorage(cbSecureCredentials->isChecked());
+    profile->setSecureCredentialStorage(rbPasswordKeychain->isChecked());
 
     // Combo boxes, make sure to load their data not their display strings.
     profile->setServertype(comboBoxServerType->itemData(
