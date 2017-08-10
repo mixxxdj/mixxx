@@ -259,7 +259,9 @@ VCI102.next_effect = function(ch, midino, value, status, group) {
 
 [0, 1, 2, 3].forEach(function(n) {
     VCI102["focusEffect" + n] = function(ch, midino, value, status, group) {
-        engine.setValue(group, "focused_effect", n);
+        if (value) {
+            engine.setValue(group, "focused_effect", n);
+        }
     };
 });
 
