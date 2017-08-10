@@ -13,29 +13,38 @@ VCI102.deck = ["[Channel1]", "[Channel2]", "[Channel3]", "[Channel4]"];
 VCI102.fx12 = ["[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit2]"];
 VCI102.fx34 = ["[EffectRack1_EffectUnit3]", "[EffectRack1_EffectUnit4]"];
 VCI102.fxButton = [VCI102.fx12, VCI102.fx12];
-VCI102.lpButton = ["beatloop_size", "beatloop_size"];
+VCI102.sizeButton = ["beatloop_size", "beatloop_size"];
+
+VCI102.refreshLED = function(ch) {
+    var deck = VCI102.deck[ch];
+    VCI102.fxButton[ch % 2].forEach(function(fx) {
+        engine.trigger(fx, "group_" + deck + "_enable");
+    });
+    engine.trigger(deck, VCI102.sizeButton[ch % 2]);
+};
+
 VCI102.shift = [0, 0];
 
 VCI102.setShift = function(ch, midino, value, status, group) {
     ch = VCI102.deck.indexOf(group);  // override channel by group
     VCI102.shift[ch] = value;
-    // if shift then show the state of fx3/4 else fx1/2
-    VCI102.fxButton[ch] = value ? VCI102.fx34 : VCI102.fx12;
-    // if shift then show the state of beatjump_size else beatloop_size
-    VCI102.lpButton[ch] = value ? "beatjump_size" : "beatloop_size";
-    // refresh LED
-    [VCI102.deck[ch], VCI102.deck[ch + 2]].forEach(function(deck) {
-        var enable = "group_" + deck + "_enable";
-        VCI102.fxButton[ch].forEach(function(fx) {
-            engine.trigger(fx, enable);
-        });
-        engine.trigger(deck, VCI102.lpButton[ch]);
-    });
+    if (value) {
+        VCI102.fxButton[ch] = VCI102.fx34;
+        VCI102.sizeButton[ch] = "beatjump_size";
+    } else {
+        VCI102.fxButton[ch] = VCI102.fx12;
+        VCI102.sizeButton[ch] = "beatloop_size";
+    }
+    VCI102.refreshLED(ch);
+    VCI102.refreshLED(ch + 2);
 };
 
 VCI102.MoveFocus = function(ch, midino, value, status, group) {
-    engine.setValue(group, VCI102.shift[0] + VCI102.shift[1] ? "ChooseItem" :
-                    "MoveFocusForward", value > 0);
+    if (VCI102.shift[0] + VCI102.shift[1]) {
+        engine.setValue(group, "ChooseItem", value > 0);
+    } else {
+        engine.setValue(group, "MoveFocusForward", value > 0);
+    }
 };
 
 VCI102.selectTimer = 0;
@@ -348,7 +357,7 @@ VCI102.init = function(id, debug) {
         [0x2C, 0x25, 0x27, 0x28],
         [0x28, 0x25, 0x27, 0x2C]
     ];
-    var LEDlp = [
+    var LEDsize = [
         [0x33, 0x29],
         [0x29, 0x26]
     ];
@@ -384,12 +393,12 @@ VCI102.init = function(id, debug) {
         };
     }
 
-    function makeLEDlp(ch) {
+    function makeLEDsize(ch) {
         return function(value, group, key) {
-            if (key == VCI102.lpButton[ch % 2]) {
+            if (key == VCI102.sizeButton[ch % 2]) {
                 [value < 4 || value > 64, value > 4 || value < 1 / 4
                 ].forEach(function(on, i) {
-                    midi.sendShortMsg(0x90 + ch, LEDlp[ch % 2][i], on * 127);
+                    midi.sendShortMsg(0x90 + ch, LEDsize[ch % 2][i], on * 127);
                 });
             }
         };
@@ -397,13 +406,13 @@ VCI102.init = function(id, debug) {
 
     VCI102.deck.forEach(function(deck, i) {
         var enable = "group_" + deck + "_enable";
-        var show_size = makeLEDlp(i);
+        var size = makeLEDsize(i);
         [makeLEDfx(i, 0), makeLEDfx(i, 1)].forEach(function(led, j) {
             engine.connectControl(VCI102.fx12[j], enable, led);
             engine.connectControl(VCI102.fx34[j], enable, led);
         });
         ["beatloop_size", "beatjump_size"].forEach(function(key) {
-            engine.connectControl(deck, key, show_size);
+            engine.connectControl(deck, key, size);
         });
         ["loop_enabled", "play", "reverse"].forEach(function(key) {
             engine.connectControl(deck, key, VCI102.slip);
@@ -411,6 +420,7 @@ VCI102.init = function(id, debug) {
         engine.connectControl(deck, "pfl", headMix);
         engine.softTakeover(deck, "rate", true);
         engine.softTakeover(deck, "pitch_adjust", true);
+        VCI102.refreshLED(i);
     });
     // to use fx parameter buttons for hotcue
     VCI102.hc.forEach(function(hc, i) {
