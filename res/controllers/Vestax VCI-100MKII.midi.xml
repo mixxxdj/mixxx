@@ -1275,44 +1275,32 @@
         <midino>0x46</midino>
       </control>
       <control>
-        <group>[Channel1]</group>
-        <key>VCI102.hotcue_1_activate</key>
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>enabled</key>
         <status>0x90</status>
         <midino>0x2C</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
-        <group>[Channel2]</group>
-        <key>VCI102.hotcue_1_activate</key>
+        <group>[EffectRack1_EffectUnit2_Effect1]</group>
+        <key>enabled</key>
         <status>0x91</status>
         <midino>0x28</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
-        <group>[Channel3]</group>
-        <key>VCI102.hotcue_1_activate</key>
+        <group>[EffectRack1_EffectUnit3_Effect1]</group>
+        <key>enabled</key>
         <status>0x92</status>
         <midino>0x2C</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
-        <group>[Channel4]</group>
-        <key>VCI102.hotcue_1_activate</key>
+        <group>[EffectRack1_EffectUnit4_Effect1]</group>
+        <key>enabled</key>
         <status>0x93</status>
         <midino>0x28</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
-        <group>[Channel1]</group>
-        <key>VCI102.hotcue_1_clear</key>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>VCI102.focusEffect1</key>
         <status>0x90</status>
         <midino>0x4C</midino>
         <options>
@@ -1320,8 +1308,8 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
-        <key>VCI102.hotcue_1_clear</key>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>VCI102.focusEffect1</key>
         <status>0x91</status>
         <midino>0x48</midino>
         <options>
@@ -1329,8 +1317,8 @@
         </options>
       </control>
       <control>
-        <group>[Channel3]</group>
-        <key>VCI102.hotcue_1_clear</key>
+        <group>[EffectRack1_EffectUnit3]</group>
+        <key>VCI102.focusEffect1</key>
         <status>0x92</status>
         <midino>0x4C</midino>
         <options>
@@ -1338,8 +1326,8 @@
         </options>
       </control>
       <control>
-        <group>[Channel4]</group>
-        <key>VCI102.hotcue_1_clear</key>
+        <group>[EffectRack1_EffectUnit4]</group>
+        <key>VCI102.focusEffect1</key>
         <status>0x93</status>
         <midino>0x48</midino>
         <options>
@@ -1347,44 +1335,32 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
-        <key>VCI102.hotcue_2_activate</key>
+        <group>[EffectRack1_EffectUnit1_Effect2]</group>
+        <key>enabled</key>
         <status>0x90</status>
         <midino>0x25</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
-        <group>[Channel2]</group>
-        <key>VCI102.hotcue_2_activate</key>
+        <group>[EffectRack1_EffectUnit2_Effect2]</group>
+        <key>enabled</key>
         <status>0x91</status>
         <midino>0x25</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
-        <group>[Channel3]</group>
-        <key>VCI102.hotcue_2_activate</key>
+        <group>[EffectRack1_EffectUnit3_Effect2]</group>
+        <key>enabled</key>
         <status>0x92</status>
         <midino>0x25</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
-        <group>[Channel4]</group>
-        <key>VCI102.hotcue_2_activate</key>
+        <group>[EffectRack1_EffectUnit4_Effect2]</group>
+        <key>enabled</key>
         <status>0x93</status>
         <midino>0x25</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
-        <group>[Channel1]</group>
-        <key>VCI102.hotcue_2_clear</key>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>VCI102.focusEffect2</key>
         <status>0x90</status>
         <midino>0x45</midino>
         <options>
@@ -1392,8 +1368,8 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
-        <key>VCI102.hotcue_2_clear</key>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>VCI102.focusEffect2</key>
         <status>0x91</status>
         <midino>0x45</midino>
         <options>
@@ -1401,8 +1377,8 @@
         </options>
       </control>
       <control>
-        <group>[Channel3]</group>
-        <key>VCI102.hotcue_2_clear</key>
+        <group>[EffectRack1_EffectUnit3]</group>
+        <key>VCI102.focusEffect2</key>
         <status>0x92</status>
         <midino>0x45</midino>
         <options>
@@ -1410,8 +1386,8 @@
         </options>
       </control>
       <control>
-        <group>[Channel4]</group>
-        <key>VCI102.hotcue_2_clear</key>
+        <group>[EffectRack1_EffectUnit4]</group>
+        <key>VCI102.focusEffect2</key>
         <status>0x93</status>
         <midino>0x45</midino>
         <options>
@@ -1419,44 +1395,32 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
-        <key>VCI102.hotcue_3_activate</key>
+        <group>[EffectRack1_EffectUnit1_Effect3]</group>
+        <key>enabled</key>
         <status>0x90</status>
         <midino>0x27</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
-        <group>[Channel2]</group>
-        <key>VCI102.hotcue_3_activate</key>
+        <group>[EffectRack1_EffectUnit2_Effect3]</group>
+        <key>enabled</key>
         <status>0x91</status>
         <midino>0x27</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
-        <group>[Channel3]</group>
-        <key>VCI102.hotcue_3_activate</key>
+        <group>[EffectRack1_EffectUnit3_Effect3]</group>
+        <key>enabled</key>
         <status>0x92</status>
         <midino>0x27</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
-        <group>[Channel4]</group>
-        <key>VCI102.hotcue_3_activate</key>
+        <group>[EffectRack1_EffectUnit4_Effect3]</group>
+        <key>enabled</key>
         <status>0x93</status>
         <midino>0x27</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
-        <group>[Channel1]</group>
-        <key>VCI102.hotcue_3_clear</key>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>VCI102.focusEffect3</key>
         <status>0x90</status>
         <midino>0x47</midino>
         <options>
@@ -1464,8 +1428,8 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
-        <key>VCI102.hotcue_3_clear</key>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>VCI102.focusEffect3</key>
         <status>0x91</status>
         <midino>0x47</midino>
         <options>
@@ -1473,8 +1437,8 @@
         </options>
       </control>
       <control>
-        <group>[Channel3]</group>
-        <key>VCI102.hotcue_3_clear</key>
+        <group>[EffectRack1_EffectUnit3]</group>
+        <key>VCI102.focusEffect3</key>
         <status>0x92</status>
         <midino>0x47</midino>
         <options>
@@ -1482,8 +1446,8 @@
         </options>
       </control>
       <control>
-        <group>[Channel4]</group>
-        <key>VCI102.hotcue_3_clear</key>
+        <group>[EffectRack1_EffectUnit4]</group>
+        <key>VCI102.focusEffect3</key>
         <status>0x93</status>
         <midino>0x47</midino>
         <options>
@@ -1491,44 +1455,32 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
-        <key>VCI102.hotcue_4_activate</key>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>enabled</key>
         <status>0x90</status>
         <midino>0x28</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
-        <group>[Channel2]</group>
-        <key>VCI102.hotcue_4_activate</key>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>enabled</key>
         <status>0x91</status>
         <midino>0x2C</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
-        <group>[Channel3]</group>
-        <key>VCI102.hotcue_4_activate</key>
+        <group>[EffectRack1_EffectUnit3]</group>
+        <key>enabled</key>
         <status>0x92</status>
         <midino>0x28</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
-        <group>[Channel4]</group>
-        <key>VCI102.hotcue_4_activate</key>
+        <group>[EffectRack1_EffectUnit4]</group>
+        <key>enabled</key>
         <status>0x93</status>
         <midino>0x2C</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
-        <group>[Channel1]</group>
-        <key>VCI102.hotcue_4_clear</key>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>VCI102.focusEffect0</key>
         <status>0x90</status>
         <midino>0x48</midino>
         <options>
@@ -1536,8 +1488,8 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
-        <key>VCI102.hotcue_4_clear</key>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>VCI102.focusEffect0</key>
         <status>0x91</status>
         <midino>0x4C</midino>
         <options>
@@ -1545,8 +1497,8 @@
         </options>
       </control>
       <control>
-        <group>[Channel3]</group>
-        <key>VCI102.hotcue_4_clear</key>
+        <group>[EffectRack1_EffectUnit3]</group>
+        <key>VCI102.focusEffect0</key>
         <status>0x92</status>
         <midino>0x48</midino>
         <options>
@@ -1554,8 +1506,8 @@
         </options>
       </control>
       <control>
-        <group>[Channel4]</group>
-        <key>VCI102.hotcue_4_clear</key>
+        <group>[EffectRack1_EffectUnit4]</group>
+        <key>VCI102.focusEffect0</key>
         <status>0x93</status>
         <midino>0x4C</midino>
         <options>
@@ -1974,6 +1926,118 @@
         <key>loop_enabled</key>
         <status>0x93</status>
         <midino>0x33</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>enabled</key>
+        <status>0x90</status>
+        <midino>0x2C</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit2_Effect1]</group>
+        <key>enabled</key>
+        <status>0x91</status>
+        <midino>0x28</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit3_Effect1]</group>
+        <key>enabled</key>
+        <status>0x92</status>
+        <midino>0x2C</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit4_Effect1]</group>
+        <key>enabled</key>
+        <status>0x93</status>
+        <midino>0x28</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit1_Effect2]</group>
+        <key>enabled</key>
+        <status>0x90</status>
+        <midino>0x25</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit2_Effect2]</group>
+        <key>enabled</key>
+        <status>0x91</status>
+        <midino>0x25</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit3_Effect2]</group>
+        <key>enabled</key>
+        <status>0x92</status>
+        <midino>0x25</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit4_Effect2]</group>
+        <key>enabled</key>
+        <status>0x93</status>
+        <midino>0x25</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit1_Effect3]</group>
+        <key>enabled</key>
+        <status>0x90</status>
+        <midino>0x27</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit2_Effect3]</group>
+        <key>enabled</key>
+        <status>0x91</status>
+        <midino>0x27</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit3_Effect3]</group>
+        <key>enabled</key>
+        <status>0x92</status>
+        <midino>0x27</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit4_Effect3]</group>
+        <key>enabled</key>
+        <status>0x93</status>
+        <midino>0x27</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>enabled</key>
+        <status>0x90</status>
+        <midino>0x28</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>enabled</key>
+        <status>0x91</status>
+        <midino>0x2C</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit3]</group>
+        <key>enabled</key>
+        <status>0x92</status>
+        <midino>0x28</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit4]</group>
+        <key>enabled</key>
+        <status>0x93</status>
+        <midino>0x2C</midino>
         <minimum>1</minimum>
       </output>
       <output>
