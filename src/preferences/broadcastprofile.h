@@ -146,6 +146,8 @@ class BroadcastProfile : public QObject {
     bool setSecurePassword(QString login, QString password);
     QString getSecurePassword(QString login);
 
+    void errorDialog(QString text, QString detailedError);
+
     bool m_secureCredentials;
 
     QString m_profileName;

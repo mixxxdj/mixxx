@@ -410,6 +410,8 @@ bool BroadcastProfile::setSecurePassword(QString login, QString password) {
     } else {
         qDebug() << "BroadcastProfile::setSecureValue: write job failed with error:"
                 << writeJob.errorString();
+        errorDialog(tr("Can't use secure password storage: keychain access failed."),
+                writeJob.errorString());
         return false;
     }
 #endif
@@ -439,6 +441,19 @@ QString BroadcastProfile::getSecurePassword(QString login) {
     }
 #endif
     return QString();
+}
+
+void BroadcastProfile::errorDialog(QString text, QString detailedError) {
+    ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+    props->setType(DLG_WARNING);
+    props->setTitle(tr("Live broadcasting : %1").arg(getProfileName()));
+    props->setText(tr("<b>Error with settings for '%1':</b><br>")
+            .arg(getProfileName()) + text);
+    props->setDetails(detailedError);
+    props->setKey(detailedError);   // To prevent multiple windows for the same error
+    props->setDefaultButton(QMessageBox::Close);
+    props->setModal(false);
+    ErrorDialogHandler::instance()->requestErrorDialog(props);
 }
 
 // Used by BroadcastSettings to relay connection status
