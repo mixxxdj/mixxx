@@ -120,7 +120,8 @@
                       Root="HKLM"
                       Key="SOFTWARE\!(loc.ApplicationName)"
                       Name="installed$(var.notarch)"
-                      Type="raw" />
+                      Type="raw"
+                      Win64="no" />
     </Property>
 
     <!-- Look for old mixxx installation <= 2.0 -->
@@ -261,6 +262,12 @@
     <!-- Outermost folder (kind of virtual). Fixed entry. -->
     <Directory Id="TARGETDIR" Name="SourceDir">
 
+      <Component Id="mixxxRegistry" Guid="*" Win64="no">
+        <RegistryValue Root="HKLM" Key="SOFTWARE\!(loc.ApplicationName)" Type="string" Value='' KeyPath="yes" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\!(loc.ApplicationName)" Name="installed" Type="integer" Value="1" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\!(loc.ApplicationName)" Name="installed$(var.arch)" Type="integer" Value="1" />
+      </Component>
+
       <!-- We start building our directory structure here -->
       <!-- "ProgramFilesFolder" is a variable containing the absolute path. -->
       <!-- For a list of folder variables, see: http://msdn.microsoft.com/en-us/library/aa372057%28VS.85%29.aspx -->
@@ -282,11 +289,6 @@
                         WorkingDirectory='INSTALLDIR' Advertise="yes" Icon="Icon.exe" />
             </File>
             <RegistryValue Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\mixxx.exe" Value="[!mixxxExe]" Type="string" />
-          </Component>
-          <Component Id="mixxxRegistry" Guid="*" Win64="$(var.Win64)">
-            <RegistryValue Root="HKLM" Key="SOFTWARE\!(loc.ApplicationName)" Type="string" Value='' KeyPath="yes" />
-            <RegistryValue Root="HKLM" Key="SOFTWARE\!(loc.ApplicationName)" Name="installed" Type="integer" Value="1" />
-            <RegistryValue Root="HKLM" Key="SOFTWARE\!(loc.ApplicationName)" Name="installed$(var.arch)" Type="integer" Value="1" />
           </Component>
 
           <Component Id="LICENSE_comp" Guid="*" Win64="$(var.Win64)">
