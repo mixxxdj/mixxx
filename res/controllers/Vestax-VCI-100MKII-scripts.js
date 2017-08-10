@@ -1,6 +1,6 @@
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2017-8-1
+// description: 2017-8-9
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 // JSHint Configuration
@@ -13,6 +13,7 @@ VCI102.deck = ["[Channel1]", "[Channel2]", "[Channel3]", "[Channel4]"];
 VCI102.fx12 = ["[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit2]"];
 VCI102.fx34 = ["[EffectRack1_EffectUnit3]", "[EffectRack1_EffectUnit4]"];
 VCI102.fxButton = [VCI102.fx12, VCI102.fx12];
+VCI102.lockButton = ["keylock", "keylock"];
 VCI102.sizeButton = ["beatloop_size", "beatloop_size"];
 
 VCI102.refreshLED = function(ch) {
@@ -20,6 +21,7 @@ VCI102.refreshLED = function(ch) {
     VCI102.fxButton[ch % 2].forEach(function(fx) {
         engine.trigger(fx, "group_" + deck + "_enable");
     });
+    engine.trigger(deck, VCI102.lockButton[ch % 2]);
     engine.trigger(deck, VCI102.sizeButton[ch % 2]);
 };
 
@@ -30,9 +32,11 @@ VCI102.setShift = function(ch, midino, value, status, group) {
     VCI102.shift[ch] = value;
     if (value) {
         VCI102.fxButton[ch] = VCI102.fx34;
+        VCI102.lockButton[ch] = "quantize";
         VCI102.sizeButton[ch] = "beatjump_size";
     } else {
         VCI102.fxButton[ch] = VCI102.fx12;
+        VCI102.lockButton[ch] = "keylock";
         VCI102.sizeButton[ch] = "beatloop_size";
     }
     VCI102.refreshLED(ch);
@@ -334,6 +338,7 @@ VCI102.shutdown = function() {
 
 VCI102.init = function(id, debug) {
     var LEDfx = [0x3A, 0x38];
+    var LEDlock = 0x2D;
     var LEDsize = [
         [0x33, 0x29],
         [0x29, 0x26]
@@ -361,6 +366,14 @@ VCI102.init = function(id, debug) {
         };
     }
 
+    function makeLEDlock(ch) {
+        return function(value, group, key) {
+            if (key == VCI102.lockButton[ch % 2]) {
+                midi.sendShortMsg(0x90 + ch, LEDlock, value * 127);
+            }
+        };
+    }
+
     function makeLEDsize(ch) {
         return function(value, group, key) {
             if (key == VCI102.sizeButton[ch % 2]) {
@@ -374,10 +387,14 @@ VCI102.init = function(id, debug) {
 
     VCI102.deck.forEach(function(deck, i) {
         var enable = "group_" + deck + "_enable";
+        var lock = makeLEDlock(i);
         var size = makeLEDsize(i);
         [makeLEDfx(i, 0), makeLEDfx(i, 1)].forEach(function(led, j) {
             engine.connectControl(VCI102.fx12[j], enable, led);
             engine.connectControl(VCI102.fx34[j], enable, led);
+        });
+        ["keylock", "quantize"].forEach(function(key) {
+            engine.connectControl(deck, key, lock);
         });
         ["beatloop_size", "beatjump_size"].forEach(function(key) {
             engine.connectControl(deck, key, size);
