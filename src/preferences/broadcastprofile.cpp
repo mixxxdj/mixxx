@@ -446,7 +446,7 @@ QString BroadcastProfile::getSecurePassword(QString login) {
 void BroadcastProfile::errorDialog(QString text, QString detailedError) {
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
-    props->setTitle(tr("Live broadcasting : %1").arg(getProfileName()));
+    props->setTitle(tr("Settings error"));
     props->setText(tr("<b>Error with settings for '%1':</b><br>")
             .arg(getProfileName()) + text);
     props->setDetails(detailedError);

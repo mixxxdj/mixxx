@@ -798,7 +798,7 @@ void ShoutConnection::errorDialog(QString text, QString detailedError) {
     qWarning() << "Streaming error: " << detailedError;
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
-    props->setTitle(tr("Live broadcasting : %1").arg(m_pProfile->getProfileName()));
+    props->setTitle(tr("Connection error"));
     props->setText(tr("<b>Error with connection '%1':</b><br>")
             .arg(profile()->getProfileName()) + text);
     props->setDetails(detailedError);
@@ -812,7 +812,7 @@ void ShoutConnection::errorDialog(QString text, QString detailedError) {
 void ShoutConnection::infoDialog(QString text, QString detailedInfo) {
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_INFO);
-    props->setTitle(tr("Live broadcasting : %1").arg(m_pProfile->getProfileName()));
+    props->setTitle(tr("Connection message"));
     props->setText(tr("<b>Connection '%1':</b><br>")
             .arg(profile()->getProfileName()) + text);
     props->setDetails(detailedInfo);
