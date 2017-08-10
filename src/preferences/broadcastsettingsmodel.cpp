@@ -82,18 +82,25 @@ int BroadcastSettingsModel::columnCount(const QModelIndex& parent) const {
 
 QVariant BroadcastSettingsModel::data(const QModelIndex& index, int role) const {
     int rowIndex = index.row();
-    if(!index.isValid() || rowIndex >= m_profiles.size())
+    if (!index.isValid() || rowIndex >= m_profiles.size())
         return QVariant();
 
     BroadcastProfilePtr profile = m_profiles.values().at(rowIndex);
-    if(profile) {
+    if (profile) {
         int column = index.column();
-        if(column == kColumnEnabled && role == Qt::CheckStateRole) {
+        if (column == kColumnEnabled && role == Qt::CheckStateRole) {
             return (profile->getEnabled() == true ? Qt::Checked : Qt::Unchecked);
-        } else if(column == kColumnName && role == Qt::DisplayRole) {
+        }
+        else if (column == kColumnName && role == Qt::DisplayRole) {
             return profile->getProfileName();
-        } else if(column == kColumnStatus && role == Qt::DisplayRole) {
-            return connectionStatusString(profile);
+        }
+        else if (column == kColumnStatus) {
+            if (role == Qt::DisplayRole) {
+                return connectionStatusString(profile);
+            }
+            else if (role == Qt::BackgroundRole) {
+                return QBrush(connectionStatusColor(profile));
+            }
         }
     }
 
@@ -163,6 +170,25 @@ QString BroadcastSettingsModel::connectionStatusString(BroadcastProfilePtr profi
         default:
             return tr("Unknown");
     }
+}
+
+QColor BroadcastSettingsModel::connectionStatusColor(BroadcastProfilePtr profile) {
+    // Manual colors below were picked using Google's color picker (query: colorpicker)
+    //
+    int status = profile->connectionStatus();
+        switch(status) {
+            case BroadcastProfile::STATUS_UNCONNECTED:
+                return Qt::white;
+            case BroadcastProfile::STATUS_CONNECTING:
+                return QColor(25, 224, 255); // turquoise blue
+            case BroadcastProfile::STATUS_CONNECTED:
+                return QColor(96, 255, 81); // warm green
+            case BroadcastProfile::STATUS_FAILURE:
+                return QColor(255, 228, 56); // toned-down yellow
+
+            default:
+                return Qt::white;
+        }
 }
 
 void BroadcastSettingsModel::onProfileNameChanged(QString oldName, QString newName) {

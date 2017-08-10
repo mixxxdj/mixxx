@@ -43,6 +43,7 @@ class BroadcastSettingsModel : public QAbstractTableModel {
 
   private:
     static QString connectionStatusString(BroadcastProfilePtr profile);
+    static QColor connectionStatusColor(BroadcastProfilePtr profile);
 
     QMap<QString, BroadcastProfilePtr> m_profiles;
 };
