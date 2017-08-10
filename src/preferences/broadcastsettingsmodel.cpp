@@ -89,8 +89,13 @@ QVariant BroadcastSettingsModel::data(const QModelIndex& index, int role) const 
     BroadcastProfilePtr profile = m_profiles.values().at(rowIndex);
     if (profile) {
         int column = index.column();
-        if (column == kColumnEnabled && role == Qt::CheckStateRole) {
-            return (profile->getEnabled() == true ? Qt::Checked : Qt::Unchecked);
+        if (column == kColumnEnabled) {
+            if (role == Qt::CheckStateRole) {
+                return (profile->getEnabled() == true ? Qt::Checked : Qt::Unchecked);
+            }
+            else if (role == Qt::TextAlignmentRole) {
+                return Qt::AlignCenter;
+            }
         }
         else if (column == kColumnName && role == Qt::DisplayRole) {
             return profile->getProfileName();
@@ -101,6 +106,9 @@ QVariant BroadcastSettingsModel::data(const QModelIndex& index, int role) const 
             }
             else if (role == Qt::BackgroundRole) {
                 return QBrush(connectionStatusColor(profile));
+            }
+            else if (role == Qt::TextAlignmentRole) {
+                return Qt::AlignCenter;
             }
         }
     }

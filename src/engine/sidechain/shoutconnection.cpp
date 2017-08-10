@@ -799,7 +799,8 @@ void ShoutConnection::errorDialog(QString text, QString detailedError) {
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
     props->setTitle(tr("Live broadcasting : %1").arg(m_pProfile->getProfileName()));
-    props->setText(text);
+    props->setText(tr("<b>Error with connection '%1':</b><br>")
+            .arg(profile()->getProfileName()) + text);
     props->setDetails(detailedError);
     props->setKey(detailedError);   // To prevent multiple windows for the same error
     props->setDefaultButton(QMessageBox::Close);
@@ -812,7 +813,8 @@ void ShoutConnection::infoDialog(QString text, QString detailedInfo) {
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_INFO);
     props->setTitle(tr("Live broadcasting : %1").arg(m_pProfile->getProfileName()));
-    props->setText(text);
+    props->setText(tr("<b>Connection '%1':</b><br>")
+            .arg(profile()->getProfileName()) + text);
     props->setDetails(detailedInfo);
     props->setKey(text + detailedInfo);
     props->setDefaultButton(QMessageBox::Close);
