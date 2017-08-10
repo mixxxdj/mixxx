@@ -138,11 +138,24 @@ Description:
             <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
             <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
           </Template>
-          <RecordingDuration>
-            <ObjectName>RecDurationLabel</ObjectName>
+          <WidgetGroup><!-- 'REC' + RecDuration -->
+            <Layout>horizontal</Layout>
             <Size>104f,20f</Size>
-            <Alignment>center</Alignment>
-          </RecordingDuration>
+            <Children>
+              <Label>
+                <ObjectName>RecRec</ObjectName>
+                <Size>40f,20f</Size>
+                <Text>REC</Text>
+                <Alignment>center</Alignment>
+              </Label>
+
+              <RecordingDuration>
+                <ObjectName>RecDurationLabel</ObjectName>
+                <Size>64f,20f</Size>
+                <Alignment>center</Alignment>
+              </RecordingDuration>
+            </Children>
+          </WidgetGroup><!-- /'REC' + RecDuration -->
         </Children>
       </WidgetGroup><!-- /Recording button & recording duration label -->
 

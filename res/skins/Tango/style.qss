@@ -884,15 +884,19 @@ WBeatSpinBox {
   #RecordingButton[displayValue="2"]:hover {
     border: 1px solid #dddddd;
   }
-/* RecordingDuration underneath RecordingButton */
-#RecDurationLabel {
+/* RecordingDuration underneath RecordingButton, as well as 'REC' text & Rec icon */
+#RecDurationLabel, #RecRec {
   /* RecordingButton is transparent so label needs bg-color */
   background-color: #333333;
   font-family: Ubuntu;
   font-weight: bold;
   font-size: 12px/12px;
   color: #d2d2d2;
+  text-align: center
 }
+  #RecDot {
+    background: #333333 url(skin:/buttons/btn_rec_dot.svg) no-repeat center right;
+  }
 
 #ClockBox {
   qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';	
