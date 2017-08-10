@@ -691,10 +691,12 @@ def BuildRelease(target, source, env):
         # Generating random ProductID (should change on every run)
         # and put it in mixxx.wxs using the template
         ProductID = str(uuid.uuid1()).upper()
-        with open("build/wix/mixxx.wxs.tmpl", "rt") as fin:
-            with open("build/wix/mixxx.wxs", "wt") as fout:
+        with open("build/wix/ProductID.wxi.in", "rt") as fin:
+            with open("build/wix/ProductID.wxi", "wt") as fout:
                 for line in fin:
-                    fout.write(line.replace('==SCONS-GENERATED-PRODUCTID==', ProductID))
+                    fout.write(line.replace('@PRODUCT_ID@', ProductID))
+        fin.close()
+        fout.close()
 
         # The default language
         defaultLanguage="en-us"
@@ -916,7 +918,6 @@ def BuildRelease(target, source, env):
             os.remove(file)
         for file in glob.glob('build\wix\subdirs\*.wxs'):
             os.remove(file)
-        os.remove("build/wix/mixxx.wxs")
         os.remove(exe_name)
 
     else:
