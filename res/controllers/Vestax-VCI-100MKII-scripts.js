@@ -195,10 +195,7 @@ VCI102.parameter = function(ch, value, group, key) {
     }
 };
 
-VCI102.meta = function(ch, value, group, key) {
-    if (VCI102.shift[ch % 2]) {
-        engine.setValue(group, "enabled", value > 0);
-    }
+VCI102.meta = function(value, group, key) {
     engine.setValue(group, key, value < 127 ? value / 128 : 1);
 };
 
@@ -207,7 +204,7 @@ VCI102.parameter1 = function(ch, midino, value, status, group) {
     if (n) {
         VCI102.parameter(ch, value, VCI102.slot(group, n), "parameter1");
     } else {
-        VCI102.meta(ch, value, VCI102.slot(group, 1), "meta");
+        VCI102.meta(value, VCI102.slot(group, 1), "meta");
     }
 };
 
@@ -216,7 +213,7 @@ VCI102.parameter2 = function(ch, midino, value, status, group) {
     if (n) {
         VCI102.parameter(ch, value, VCI102.slot(group, n), "parameter2");
     } else {
-        VCI102.meta(ch, value, VCI102.slot(group, 2), "meta");
+        VCI102.meta(value, VCI102.slot(group, 2), "meta");
     }
 };
 
@@ -225,7 +222,7 @@ VCI102.parameter3 = function(ch, midino, value, status, group) {
     if (n) {
         VCI102.parameter(ch, value, VCI102.slot(group, n), "parameter3");
     } else {
-        VCI102.meta(ch, value, VCI102.slot(group, 3), "meta");
+        VCI102.meta(value, VCI102.slot(group, 3), "meta");
     }
 };
 
@@ -234,40 +231,33 @@ VCI102.parameter4 = function(ch, midino, value, status, group) {
     if (n) {
         VCI102.parameter(ch, value, VCI102.slot(group, n), "parameter4");
     } else {
-        VCI102.meta(ch, value, group, "super1");
+        VCI102.meta(value, group, "super1");
     }
 };
 
 VCI102.prev_effect = function(ch, midino, value, status, group) {
     var n = engine.getValue(group, "focused_effect");
-    var key = "prev_chain";
     if (n) {
-        group = VCI102.slot(group, n);
-        key = "prev_effect";
+        engine.setValue(VCI102.slot(group, n), "prev_effect", value > 0);
+    } else {
+        engine.setValue(group, "prev_chain", value > 0);
     }
-    if (VCI102.shift[1 - ch % 2]) {
-        // clear effect if shift of the other Deck
-        key = "clear";
-    }
-    engine.setValue(group, key, value > 0);
 };
 
 VCI102.next_effect = function(ch, midino, value, status, group) {
     var n = engine.getValue(group, "focused_effect");
-    var key = "next_chain";
-    if (VCI102.shift[1 - ch % 2]) {
-        // change focus if shift of the other Deck
-        if (value) {
-            engine.setValue(group, "focused_effect", (n + 1) % 4);
-        }
+    if (n) {
+        engine.setValue(VCI102.slot(group, n), "next_effect", value > 0);
     } else {
-        if (n) {
-            group = VCI102.slot(group, n);
-            key = "next_effect";
-        }
-        engine.setValue(group, key, value > 0);
+        engine.setValue(group, "next_chain", value > 0);
     }
 };
+
+[0, 1, 2, 3].forEach(function(n) {
+    VCI102["focusEffect" + n] = function(ch, midino, value, status, group) {
+        engine.setValue(group, "focused_effect", n);
+    };
+});
 
 VCI102.loop = function(ch, midino, value, status, group) {
     if (value) {
@@ -318,19 +308,10 @@ VCI102.loop_double = function(ch, midino, value, status, group) {
 };
 
 VCI102.Deck = ["[Channel1]", "[Channel2]"];
-VCI102.hc = [
-    "hotcue_1_enabled",
-    "hotcue_2_enabled",
-    "hotcue_3_enabled",
-    "hotcue_4_enabled"
-];
 
 VCI102.setDeck = function(ch, midino, value, status, group) {
     if (value) {
         VCI102.Deck[ch] = group;
-        VCI102.hc.forEach(function(hc) {
-            engine.trigger(group, hc);
-        });
     }
 };
 
@@ -353,10 +334,6 @@ VCI102.shutdown = function() {
 
 VCI102.init = function(id, debug) {
     var LEDfx = [0x3A, 0x38];
-    var LEDhc = [
-        [0x2C, 0x25, 0x27, 0x28],
-        [0x28, 0x25, 0x27, 0x2C]
-    ];
     var LEDsize = [
         [0x33, 0x29],
         [0x29, 0x26]
@@ -380,15 +357,6 @@ VCI102.init = function(id, debug) {
         return function(value, group, key) {
             if (group == VCI102.fxButton[ch % 2][i]) {
                 midi.sendShortMsg(0x90 + ch, LEDfx[i], value * 127);
-            }
-        };
-    }
-
-    function makeLEDhc(ch, i) {
-        return function(value, group, key) {
-            if (group == VCI102.Deck[ch]) {
-                midi.sendShortMsg(0x90 + ch, LEDhc[ch][i], value * 127);
-                midi.sendShortMsg(0x92 + ch, LEDhc[ch][i], value * 127);
             }
         };
     }
@@ -421,21 +389,6 @@ VCI102.init = function(id, debug) {
         engine.softTakeover(deck, "rate", true);
         engine.softTakeover(deck, "pitch_adjust", true);
         VCI102.refreshLED(i);
-    });
-    // to use fx parameter buttons for hotcue
-    VCI102.hc.forEach(function(hc, i) {
-        var activate = hc.replace("enabled", "activate");
-        [makeLEDhc(0, i), makeLEDhc(1, i)].forEach(function(led, j) {
-            [VCI102.deck[j], VCI102.deck[j + 2]].forEach(function(deck) {
-                engine.connectControl(deck, activate, VCI102.slip);
-                engine.connectControl(deck, hc, led);
-            });
-        });
-        [activate, hc.replace("enabled", "clear")].forEach(function(key) {
-            VCI102[key] = function(ch, midino, value, status, group) {
-                engine.setValue(VCI102.Deck[ch % 2], key, value > 0);
-            };
-        });
     });
     VCI102.fx12.concat(VCI102.fx34).forEach(function(fx) {
         engine.setValue(fx, "show_focus", 1);
