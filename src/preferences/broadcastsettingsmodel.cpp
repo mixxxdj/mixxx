@@ -78,7 +78,7 @@ int BroadcastSettingsModel::rowCount(const QModelIndex& parent) const {
 
 int BroadcastSettingsModel::columnCount(const QModelIndex& parent) const {
     Q_UNUSED(parent);
-    return 4;
+    return 3;
 }
 
 QVariant BroadcastSettingsModel::data(const QModelIndex& index, int role) const {
