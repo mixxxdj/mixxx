@@ -13,7 +13,7 @@
 #include "encoder/encodersettings.h"
 
 namespace {
-const char* kSettingsGroupHeader = "Settings for profile '%1'";
+const char* kSettingsGroupHeader = "Settings for %1";
 const int kColumnEnabled = 0;
 const int kColumnName = 1;
 const int kColumnStatus = 2;
@@ -198,7 +198,7 @@ void DlgPrefBroadcast::btnCreateConnectionClicked() {
     QString newName;
     do {
         profileNumber++;
-        newName = tr("Profile %1").arg(profileNumber);
+        newName = tr("Connection %1").arg(profileNumber);
         existingProfile = m_pSettingsModel->getProfileByName(newName);
     } while(!existingProfile.isNull());
 
@@ -426,7 +426,7 @@ void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
 void DlgPrefBroadcast::btnRemoveConnectionClicked() {
     if(m_pSettingsModel->rowCount() < 2) {
         QMessageBox::information(this, tr("Action forbidden"),
-                tr("At least one connection profile is required."));
+                tr("At least one connection is required."));
         return;
     }
 

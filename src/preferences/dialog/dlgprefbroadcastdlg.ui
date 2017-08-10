@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>731</width>
-    <height>872</height>
+    <height>895</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,7 +27,7 @@
    <item row="1" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBoxProfiles">
      <property name="title">
-      <string>Live Streaming outputs</string>
+      <string>Live Broadcasting source connections</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_7">
       <item>
@@ -130,7 +130,7 @@
    <item row="2" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBoxProfileSettings">
      <property name="title">
-      <string>Settings for profile &quot;%s&quot;</string>
+      <string>Settings for %1</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_8">
       <item row="1" column="0" colspan="2">
