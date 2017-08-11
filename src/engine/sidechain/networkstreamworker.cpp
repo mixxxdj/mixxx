@@ -1,7 +1,12 @@
 #include "engine/sidechain/enginenetworkstream.h"
+#include "util/logger.h"
 #include "util/sample.h"
 
 #include "networkstreamworker.h"
+
+namespace {
+const mixxx::Logger kLogger("NetworkStreamWorker");
+}
 
 NetworkStreamWorker::NetworkStreamWorker()
     : m_networkStreamWorkerState(NETWORKSTREAMWORKER_STATE_NEW),
@@ -101,10 +106,11 @@ int NetworkStreamWorker::getRunCount() {
 }
 
 void NetworkStreamWorker::debugState() {
-    qDebug() << "NetworkStreamWorker state:"
-             << m_networkStreamWorkerState
-             << m_functionCode
-             << m_runCount;
+    kLogger.debug()
+            << "NetworkStreamWorker state:"
+            << m_networkStreamWorkerState
+            << m_functionCode
+            << m_runCount;
 }
 
 void NetworkStreamWorker::setState(int state) {

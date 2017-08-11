@@ -12,8 +12,13 @@
 #include "engine/sidechain/enginenetworkstream.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "soundio/soundmanager.h"
+#include "util/logger.h"
 
 #include "broadcast/broadcastmanager.h"
+
+namespace {
+const mixxx::Logger kLogger("BroadcastManager");
+}
 
 BroadcastManager::BroadcastManager(SettingsManager* pSettingsManager,
                                    SoundManager* pSoundManager)
@@ -119,7 +124,8 @@ bool BroadcastManager::addConnection(BroadcastProfilePtr profile) {
     ShoutConnectionPtr connection(new ShoutConnection(profile, m_pConfig));
     m_pNetworkStream->addWorker(connection);
 
-    qDebug() << "BroadcastManager::addConnection: created connection for profile" << profile->getProfileName();
+    kLogger.debug() << "addConnection: created connection for profile"
+                    << profile->getProfileName();
     return true;
 }
 
@@ -133,7 +139,8 @@ bool BroadcastManager::removeConnection(BroadcastProfilePtr profile) {
         connection->profile()->setEnabled(false);
         m_pNetworkStream->removeWorker(connection);
 
-        qDebug() << "BroadcastManager::removeConnection: removed connection for profile" << profile->getProfileName();
+        kLogger.debug() << "removeConnection: removed connection for profile"
+                        << profile->getProfileName();
         return true;
     }
 

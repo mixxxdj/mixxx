@@ -11,12 +11,14 @@
 #include "defs_urls.h"
 #include "preferences/dialog/dlgprefbroadcast.h"
 #include "encoder/encodersettings.h"
+#include "util/logger.h"
 
 namespace {
 const char* kSettingsGroupHeader = "Settings for %1";
 const int kColumnEnabled = 0;
 const int kColumnName = 1;
 const int kColumnStatus = 2;
+const mixxx::Logger kLogger("DlgPrefBroadcast");
 }
 
 DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
@@ -166,7 +168,7 @@ void DlgPrefBroadcast::slotApply()
 }
 
 void DlgPrefBroadcast::broadcastEnabledChanged(double value) {
-    qDebug() << "DlgPrefBroadcast::broadcastEnabledChanged()" << value;
+    kLogger.debug() << "broadcastEnabledChanged()" << value;
     bool enabled = value == 1.0; // 0 and 2 are disabled
 
     groupBoxProfileSettings->setEnabled(!enabled);

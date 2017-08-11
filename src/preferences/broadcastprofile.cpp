@@ -6,7 +6,6 @@
 #include <QFileInfo>
 #include <QTextStream>
 #include <QRegExp>
-#include <QDebug>
 #include <QString>
 #include <QStringList>
 
@@ -19,6 +18,7 @@ using namespace QKeychain;
 #include "defs_urls.h"
 #include "util/xml.h"
 #include "util/memory.h"
+#include "util/logger.h"
 
 #include "broadcastprofile.h"
 
@@ -76,6 +76,8 @@ const bool kDefaultStreamPublic = false;
 const QRegExp kForbiddenChars =
         QRegExp("[<>:\"\\/|?*\\\\]|(\\.\\.)"
                 "|CON|AUX|PRN|COM(\\d+)|LPT(\\d+)|NUL");
+
+const mixxx::Logger kLogger("BroadcastProfile");
 } // anonymous namespace
 
 BroadcastProfile::BroadcastProfile(const QString& profileName,
@@ -405,10 +407,10 @@ bool BroadcastProfile::setSecurePassword(QString login, QString password) {
     loop.exec();
 
     if(writeJob.error() == Error::NoError) {
-        qDebug() << "BroadcastProfile::setSecureValue: write successful";
+        kLogger.debug() << "setSecureValue: write successful";
         return true;
     } else {
-        qDebug() << "BroadcastProfile::setSecureValue: write job failed with error:"
+        kLogger.warning() << "setSecureValue: write job failed with error:"
                 << writeJob.errorString();
         errorDialog(tr("Can't use secure password storage: keychain access failed."),
                 writeJob.errorString());
@@ -433,10 +435,10 @@ QString BroadcastProfile::getSecurePassword(QString login) {
     loop.exec();
 
     if(readJob.error() == Error::NoError) {
-        qDebug() << "BroadcastProfile::getSecureValue: read successful";
+        kLogger.debug() << "getSecureValue: read successful";
         return readJob.textData();
     } else {
-        qDebug() << "BroadcastProfile::getSecureValue: read job failed with error:"
+        kLogger.warning() << "getSecureValue: read job failed with error:"
                         << readJob.errorString();
     }
 #endif

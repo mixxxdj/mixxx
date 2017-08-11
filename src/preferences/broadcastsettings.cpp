@@ -74,7 +74,7 @@ bool BroadcastSettings::addProfile(BroadcastProfilePtr profile) {
         return false;
 
     if(m_profiles.size() >= BROADCAST_MAX_CONNECTIONS) {
-        qDebug() << "BroadcastSettings::addProfile: connection limit reached."
+        kLogger.warning() << "addProfile: connection limit reached."
                  << "can't add more than" << QString::number(BROADCAST_MAX_CONNECTIONS)
                  << "connections.";
         return false;

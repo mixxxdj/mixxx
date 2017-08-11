@@ -1,7 +1,6 @@
 // shoutconnection.cpp
 // Created July 4th 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
 
-#include <QtDebug>
 #include <QUrl>
 
 // These includes are only required by ignoreSigpipe, which is unix-only
@@ -27,6 +26,7 @@
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
 #include "track/track.h"
+#include "util/logger.h"
 
 #include <engine/sidechain/shoutconnection.h>
 
@@ -36,6 +36,8 @@ static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
 // Shoutcast default receive buffer 1048576 and autodumpsourcetime 30 s
 // http://wiki.shoutcast.com/wiki/SHOUTcast_DNAS_Server_2
 static const int kMaxShoutFailures = 3;
+
+const mixxx::Logger kLogger("ShoutConnection");
 }
 
 ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
@@ -144,14 +146,16 @@ QByteArray ShoutConnection::encodeString(const QString& string) {
 }
 
 void ShoutConnection::updateFromPreferences() {
-    qDebug() << m_pProfile->getProfileName() << ": updating from preferences";
+    kLogger.debug() << m_pProfile->getProfileName()
+                    << ": updating from preferences";
 
     int dStatus = getStatus();
     if (dStatus == BroadcastProfile::STATUS_CONNECTED ||
             dStatus == BroadcastProfile::STATUS_CONNECTING) {
-        qDebug() << m_pProfile->getProfileName()
-                 << "updateFromPreferences status:" << dStatus
-                 << ". Can't edit preferences when playing";
+        kLogger.warning()
+                << m_pProfile->getProfileName()
+                << "updateFromPreferences status:" << dStatus
+                << ". Can't edit preferences when playing";
         return;
     }
 
@@ -176,8 +180,9 @@ void ShoutConnection::updateFromPreferences() {
     QByteArray baCodec = codec.toLatin1();
     m_pTextCodec = QTextCodec::codecForName(baCodec);
     if (!m_pTextCodec) {
-        qDebug() << "Couldn't find broadcast metadata codec for codec:" << codec
-                 << " defaulting to ISO-8859-1.";
+        kLogger.warning()
+                << "Couldn't find broadcast metadata codec for codec:" << codec
+                << " defaulting to ISO-8859-1.";
     }
 
     // Indicates our metadata is in the provided charset.
@@ -211,7 +216,7 @@ void ShoutConnection::updateFromPreferences() {
         serverUrl.setUserName(login);
     }
 
-    qDebug() << "Using server URL:" << serverUrl;
+    kLogger.debug() << "Using server URL:" << serverUrl;
 
     QByteArray baPassword = m_pProfile->getPassword().toLatin1();
     QByteArray baFormat = m_pProfile->getFormat().toLatin1();
@@ -381,7 +386,7 @@ void ShoutConnection::updateFromPreferences() {
             EncoderFactory::getFactory().getFormatFor(ENCODING_OGG), m_pConfig, this);
         m_encoder->setEncoderSettings(broadcastSettings);
     } else {
-        qDebug() << "**** Unknown Encoder Format";
+        kLogger.warning() << "**** Unknown Encoder Format";
         setState(NETWORKSTREAMWORKER_STATE_ERROR);
         m_lastErrorStr = "Encoder format error";
         return;
@@ -391,8 +396,8 @@ void ShoutConnection::updateFromPreferences() {
     if(m_encoder->initEncoder(iMasterSamplerate, errorMsg) < 0) {
         // e.g., if lame is not found
         // init m_encoder itself will display a message box
-        qDebug() << "**** Encoder init failed";
-        qWarning() << errorMsg;
+        kLogger.warning() << "**** Encoder init failed";
+        kLogger.warning() << errorMsg;
 
         // delete m_encoder calls write() make sure it will be exit early
         DEBUG_ASSERT(m_iShoutStatus != SHOUTERR_CONNECTED);
@@ -416,7 +421,7 @@ bool ShoutConnection::serverConnect() {
 }
 
 bool ShoutConnection::processConnect() {
-    qDebug() << "ShoutOutput::processConnect()";
+    kLogger.debug() << "processConnect";
 
     // Make sure that we call updateFromPreferences always
     updateFromPreferences();
@@ -424,7 +429,7 @@ bool ShoutConnection::processConnect() {
     if (!m_encoder) {
         // updateFromPreferences failed
         setStatus(BroadcastProfile::STATUS_FAILURE);
-        qDebug() << "ShoutOutput::processConnect() returning false";
+        kLogger.warning() << "ShoutOutput::processConnect() returning false";
         return false;
     }
 
@@ -473,9 +478,10 @@ bool ShoutConnection::processConnect() {
 
         m_iShoutFailures++;
         m_lastErrorStr = shout_get_error(m_pShout);
-        qDebug() << m_iShoutFailures << "/" << kMaxShoutFailures
-                 << "Streaming server failed connect. Failures:"
-                 << m_lastErrorStr;
+        kLogger.warning()
+                << m_iShoutFailures << "/" << kMaxShoutFailures
+                << "Streaming server failed connect. Failures:"
+                << m_lastErrorStr;
     }
 
     // If we don't have any fatal errors let's try to connect
@@ -489,7 +495,7 @@ bool ShoutConnection::processConnect() {
                 timeout < kConnectRetries &&
                 m_pProfile->getEnabled()) {
         	setState(NETWORKSTREAMWORKER_STATE_WAITING);
-            qDebug() << "Connection pending. Waiting...";
+            kLogger.debug() << "Connection pending. Waiting...";
             m_iShoutStatus = shout_get_connected(m_pShout);
 
             if (m_iShoutStatus != SHOUTERR_BUSY &&
@@ -509,7 +515,7 @@ bool ShoutConnection::processConnect() {
         }
         if (m_iShoutStatus == SHOUTERR_CONNECTED) {
         	setState(NETWORKSTREAMWORKER_STATE_READY);
-            qDebug() << "***********Connected to streaming server...";
+            kLogger.debug() << "***********Connected to streaming server...";
 
             m_retryCount = 0;
 
@@ -521,16 +527,18 @@ bool ShoutConnection::processConnect() {
             setStatus(BroadcastProfile::STATUS_CONNECTED);
             emit(broadcastConnected());
 
-            qDebug() << "ShoutOutput::processConnect() returning true";
+            kLogger.debug() << "processConnect() returning true";
             return true;
         } else if (m_iShoutStatus == SHOUTERR_SOCKET) {
             m_lastErrorStr = "Socket error";
-            qDebug() << "ShoutOutput::processConnect() socket error."
-                     << "Is socket already in use?";
+            kLogger.warning()
+                    << "processConnect() socket error."
+                    << "Is socket already in use?";
         } else if (m_pProfile->getEnabled()) {
             m_lastErrorStr = shout_get_error(m_pShout);
-            qDebug() << "ShoutOutput::processConnect() error:"
-                     << m_iShoutStatus << m_lastErrorStr;
+            kLogger.warning()
+                    << "processConnect() error:"
+                    << m_iShoutStatus << m_lastErrorStr;
         }
     }
 
@@ -544,12 +552,12 @@ bool ShoutConnection::processConnect() {
     } else {
         setStatus(BroadcastProfile::STATUS_UNCONNECTED);
     }
-    qDebug() << "ShoutOutput::processConnect() returning false";
+    kLogger.debug() << "processConnect() returning false";
     return false;
 }
 
 bool ShoutConnection::processDisconnect() {
-    qDebug() << "ShoutOutput::processDisconnect()";
+    kLogger.debug() << "processDisconnect()";
     bool disconnected = false;
     if (isConnected()) {
     	m_threadWaiting = false;
@@ -589,7 +597,7 @@ void ShoutConnection::write(const unsigned char* header, const unsigned char* bo
 
     ssize_t queuelen = shout_queuelen(m_pShout);
     if (queuelen > 0) {
-        qDebug() << "shout_queuelen" << queuelen;
+        kLogger.debug() << "shout_queuelen" << queuelen;
         if (queuelen > kMaxNetworkCache) {
             m_lastErrorStr = tr("Network cache overflow");
             tryReconnect();
@@ -619,14 +627,15 @@ bool ShoutConnection::writeSingle(const unsigned char* data, size_t len) {
     if (ret == SHOUTERR_BUSY) {
         // in case of busy, frames are queued
         // try to flush queue after a short sleep
-        qDebug() << "ShoutOutput::writeSingle() SHOUTERR_BUSY, trying again";
+        kLogger.warning() << "writeSingle() SHOUTERR_BUSY, trying again";
         usleep(10000); // wait 10 ms until "busy" is over. TODO() tweak for an optimum.
         // if this fails, the queue is transmitted after the next regular shout_send_raw()
         (void)shout_send_raw(m_pShout, nullptr, 0);
     } else if (ret < SHOUTERR_SUCCESS) {
         m_lastErrorStr = shout_get_error(m_pShout);
-        qDebug() << "ShoutOutput::writeSingle() error:"
-                 << ret << m_lastErrorStr;
+        kLogger.warning()
+                << "writeSingle() error:"
+                << ret << m_lastErrorStr;
         if (++m_iShoutFailures > kMaxShoutFailures) {
             tryReconnect();
         }
@@ -829,7 +838,7 @@ bool ShoutConnection::waitForRetry() {
     }
     ++m_retryCount;
 
-    qDebug() << "waitForRetry()" << m_retryCount << "/" << m_maximumRetries;
+    kLogger.debug() << "waitForRetry()" << m_retryCount << "/" << m_maximumRetries;
 
     double delay;
     if (m_retryCount == 1) {
@@ -895,14 +904,14 @@ bool ShoutConnection::threadWaiting() {
 void ShoutConnection::run() {
     QThread::currentThread()->setObjectName(
             QString("ShoutOutput '%1'").arg(m_pProfile->getProfileName()));
-    qDebug() << "ShoutOutput::run: Starting thread";
+    kLogger.debug() << "run: Starting thread";
 
 #ifndef __WINDOWS__
     ignoreSigpipe();
 #endif
 
     VERIFY_OR_DEBUG_ASSERT(m_pOutputFifo) {
-        qDebug() << "ShoutOutput::run: Broadcast FIFO handle is not available. Aborting";
+        kLogger.warning() << "run: Broadcast FIFO handle is not available. Aborting";
         return;
     }
 
@@ -920,7 +929,7 @@ void ShoutConnection::run() {
         // Stop the thread if broadcasting is turned off
         if (!m_pProfile->getEnabled() || !m_pBroadcastEnabled->toBool()) {
             m_threadWaiting = false;
-            qDebug() << "ShoutOutput::run: Connection disabled. Disconnecting";
+            kLogger.debug() << "run: Connection disabled. Disconnecting";
             if(processDisconnect()) {
                 setStatus(BroadcastProfile::STATUS_UNCONNECTED);
             }
@@ -956,7 +965,7 @@ void ShoutConnection::run() {
         }
     }
 
-    qDebug() << "ShoutOutput::run: Thread stopped";
+    kLogger.debug() << "run: Thread stopped";
 }
 
 #ifndef __WINDOWS__
@@ -970,7 +979,7 @@ void ShoutConnection::ignoreSigpipe() {
     memset(&sa, 0, sizeof(sa));
     sa.sa_handler = SIG_IGN;
     if (sigaction(SIGPIPE, &sa, NULL) != 0) {
-        qDebug() << "ShoutConnection::ignoreSigpipe() failed";
+        kLogger.warning() << "ignoreSigpipe() failed";
     }
 #else
     // http://www.microhowto.info/howto/ignore_sigpipe_without_affecting_other_threads_in_a_process.html
@@ -979,7 +988,7 @@ void ShoutConnection::ignoreSigpipe() {
     sigaddset(&sigpipe_mask, SIGPIPE);
     sigset_t saved_mask;
     if (pthread_sigmask(SIG_BLOCK, &sigpipe_mask, &saved_mask) != 0) {
-        qDebug() << "ShoutConnection::ignoreSigpipe() failed";
+        kLogger.warning() << "ignoreSigpipe() failed";
     }
 #endif
 }

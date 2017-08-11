@@ -15,8 +15,10 @@ static PgGetSystemTimeFn s_pfpgGetSystemTimeFn = NULL;
 #endif
 
 #include "broadcast/defs_broadcast.h"
+#include "util/logger.h"
 #include "util/sample.h"
 
+namespace {
 const int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
 // Related chunk sizes:
 // Mp3 frames = 1152 samples
@@ -29,6 +31,9 @@ const int kBufferFrames = kNetworkLatencyFrames * 4; // 743 ms @ 44100 Hz
 // normally * 2 is sufficient.
 // We allow to buffer two extra chunks for a CPU overload case, when
 // the broadcast thread is not scheduled in time.
+
+const mixxx::Logger kLogger("EngineNetworkStream");
+}
 
 EngineNetworkStream::EngineNetworkStream(int numOutputChannels,
                                          int numInputChannels)
@@ -114,8 +119,8 @@ void EngineNetworkStream::read(CSAMPLE* buffer, int frames) {
     if (readAvailable < readRequired) {
         // Fill missing Samples with silence
         int silenceCount = readRequired - readAvailable;
-        qDebug() << "EngineNetworkStream::write flushed" << readRequired
-                 << "samples";
+        kLogger.debug() << "write: flushed"
+                        << readRequired << "samples";
         SampleUtil::clear(buffer, silenceCount);
     }
 }
@@ -182,8 +187,8 @@ qint64 EngineNetworkStream::getNetworkTimeUs() {
 
 void EngineNetworkStream::addWorker(QSharedPointer<NetworkStreamWorker> pWorker) {
     if (nextListSlotAvailable() < 0) {
-        qDebug() << "EngineNetworkStream::addWorker: can't add worker:"
-                 << "no free slot left in internal list";
+        kLogger.warning() << "addWorker: can't add worker:"
+                          << "no free slot left in internal list";
         return;
     }
 
@@ -196,7 +201,7 @@ void EngineNetworkStream::addWorker(QSharedPointer<NetworkStreamWorker> pWorker)
             pWorker->startStream(m_sampleRate, m_numOutputChannels);
             m_workers[nextNullItem] = pWorker;
 
-            qDebug() << "EngineNetworkStream::addWorker: worker added";
+            kLogger.debug() << "addWorker: worker added";
             debugSlots();
         }
     }
@@ -206,9 +211,9 @@ void EngineNetworkStream::removeWorker(QSharedPointer<NetworkStreamWorker> pWork
     int index = m_workers.indexOf(pWorker);
     if(index > -1) {
         m_workers[index].clear();
-        qDebug() << "EngineNetworkStream::removeWorker: worker removed";
+        kLogger.debug() << "removeWorker: worker removed";
     } else {
-        qDebug() << "EngineNetworkStream::removeWorker: ERROR: worker not found";
+        kLogger.warning() << "removeWorker: ERROR: worker not found";
     }
     debugSlots();
 }
@@ -220,6 +225,6 @@ int EngineNetworkStream::nextListSlotAvailable() {
 void EngineNetworkStream::debugSlots() {
     int available = m_workers.count(NetworkStreamWorkerPtr(nullptr));
     int total = m_workers.size();
-    qDebug() << "EngineNetworkStream: worker slots used:"
-             << QString("%1 out of %2").arg(total - available).arg(total);
+    kLogger.debug() << "worker slots used:"
+                    << QString("%1 out of %2").arg(total - available).arg(total);
 }
