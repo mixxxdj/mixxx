@@ -11,7 +11,7 @@
 
 namespace {
 const char* kProfilesSubfolder = "broadcast_profiles";
-const char* kDefaultProfile = "Profile 1"; // Must be used only when initializing profiles
+const char* kDefaultProfile = "Connection 1"; // Must be used only when initializing profiles
 const mixxx::Logger kLogger("BroadcastSettings");
 } // anonymous namespace
 
