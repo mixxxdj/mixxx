@@ -127,6 +127,11 @@ void DlgPrefBroadcast::slotUpdate() {
     updateModel();
     enableLiveBroadcasting->setChecked(m_pBroadcastEnabled->toBool());
 
+    // Force select an item to have the current selection
+    // set to a profile pointer belonging to the model
+    connectionList->selectRow(0);
+    profileListItemSelected(m_pSettingsModel->index(0, kColumnName));
+
     // Don't let user modify information if
     // sending is enabled.
     if(m_pBroadcastEnabled->toBool()) {
