@@ -131,10 +131,12 @@ void DlgPrefBroadcast::slotUpdate() {
         groupBoxProfileSettings->setEnabled(false);
         btnCreateConnection->setEnabled(false);
         btnRemoveConnection->setEnabled(false);
+        btnRenameConnection->setEnabled(false);
     } else {
         groupBoxProfileSettings->setEnabled(true);
         btnCreateConnection->setEnabled(true);
         btnRemoveConnection->setEnabled(true);
+        btnRenameConnection->setEnabled(true);
     }
 }
 
@@ -148,10 +150,12 @@ void DlgPrefBroadcast::slotApply()
         groupBoxProfileSettings->setEnabled(false);
         btnCreateConnection->setEnabled(false);
         btnRemoveConnection->setEnabled(false);
+        btnRenameConnection->setEnabled(false);
     } else {
         groupBoxProfileSettings->setEnabled(true);
         btnCreateConnection->setEnabled(true);
         btnRemoveConnection->setEnabled(true);
+        btnRenameConnection->setEnabled(true);
     }
 
     if(m_pProfileListSelection) {
@@ -168,6 +172,7 @@ void DlgPrefBroadcast::broadcastEnabledChanged(double value) {
     groupBoxProfileSettings->setEnabled(!enabled);
     btnCreateConnection->setEnabled(!enabled);
     btnRemoveConnection->setEnabled(!enabled);
+    btnRenameConnection->setEnabled(!enabled);
 
     enableLiveBroadcasting->setChecked(enabled);
 }
