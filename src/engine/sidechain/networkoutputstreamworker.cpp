@@ -9,14 +9,14 @@ const mixxx::Logger kLogger("NetworkStreamWorker");
 }
 
 NetworkOutputStreamWorker::NetworkOutputStreamWorker()
-    : m_workerState(NETWORKSTREAMWORKER_STATE_NEW),
+    : m_sampleRate(0),
+      m_numOutputChannels(0),
+      m_workerState(NETWORKSTREAMWORKER_STATE_NEW),
       m_functionCode(0),
       m_runCount(0),
       m_streamStartTimeUs(-1),
       m_streamFramesWritten(0),
       m_writeOverflowCount(0),
-      m_sampleRate(0),
-      m_numOutputChannels(0),
       m_outputDrift(false) {
 }
 

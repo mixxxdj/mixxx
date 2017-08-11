@@ -760,6 +760,7 @@ class MixxxCore(Feature):
                    "engine/enginesidechaincompressor.cpp",
                    "engine/sidechain/enginesidechain.cpp",
                    "engine/sidechain/networkoutputstreamworker.cpp",
+                   "engine/sidechain/networkinputstreamworker.cpp",
                    "engine/enginexfader.cpp",
                    "engine/enginemicrophone.cpp",
                    "engine/enginedeck.cpp",

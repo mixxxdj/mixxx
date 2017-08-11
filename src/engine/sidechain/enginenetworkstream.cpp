@@ -37,18 +37,15 @@ const mixxx::Logger kLogger("EngineNetworkStream");
 
 EngineNetworkStream::EngineNetworkStream(int numOutputChannels,
                                          int numInputChannels)
-    : m_pOutputFifo(nullptr),
-      m_pInputFifo(nullptr),
+    : m_pInputFifo(nullptr),
       m_numOutputChannels(numOutputChannels),
       m_numInputChannels(numInputChannels),
       m_sampleRate(0),
       m_inputStreamStartTimeUs(-1),
       m_inputStreamFramesWritten(0),
       m_inputStreamFramesRead(0),
-      m_outputWorkers(BROADCAST_MAX_CONNECTIONS) {
-    if (numOutputChannels) {
-        m_pOutputFifo = new FIFO<CSAMPLE>(numOutputChannels * kBufferFrames);
-    }
+      m_outputWorkers(BROADCAST_MAX_CONNECTIONS),
+      m_pInputWorker(nullptr) {
     if (numInputChannels) {
         m_pInputFifo = new FIFO<CSAMPLE>(numInputChannels * kBufferFrames);
     }
@@ -73,7 +70,7 @@ EngineNetworkStream::~EngineNetworkStream() {
     if (m_inputStreamStartTimeUs >= 0) {
         stopStream();
     }
-    delete m_pOutputFifo;
+
     delete m_pInputFifo;
 }
 
@@ -108,11 +105,11 @@ int EngineNetworkStream::getReadExpected() {
 }
 
 void EngineNetworkStream::read(CSAMPLE* buffer, int frames) {
-    int readAvailable = m_pOutputFifo->readAvailable();
+    int readAvailable = m_pInputFifo->readAvailable();
     int readRequired = frames * m_numInputChannels;
     int copyCount = math_min(readAvailable, readRequired);
     if (copyCount > 0) {
-        (void)m_pOutputFifo->read(buffer, copyCount);
+        (void)m_pInputFifo->read(buffer, copyCount);
         buffer += copyCount;
     }
     if (readAvailable < readRequired) {
@@ -215,6 +212,12 @@ void EngineNetworkStream::removeOutputWorker(NetworkOutputStreamWorkerPtr pWorke
         kLogger.warning() << "removeWorker: ERROR: worker not found";
     }
     debugOutputSlots();
+}
+
+void EngineNetworkStream::setInputWorker(NetworkInputStreamWorker* pInputWorker) {
+    if (pInputWorker) {
+        pInputWorker->setSourceFifo(m_pInputFifo);
+    }
 }
 
 int EngineNetworkStream::nextOutputSlotAvailable() {

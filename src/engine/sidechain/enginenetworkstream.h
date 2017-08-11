@@ -2,6 +2,7 @@
 #define ENGINENETWORKSTREAM_H_
 
 #include <engine/sidechain/networkoutputstreamworker.h>
+#include <engine/sidechain/networkinputstreamworker.h>
 #include <QVector>
 
 #include "util/types.h"
@@ -34,6 +35,7 @@ class EngineNetworkStream {
 
     void addOutputWorker(NetworkOutputStreamWorkerPtr pWorker);
     void removeOutputWorker(NetworkOutputStreamWorkerPtr pWorker);
+    void setInputWorker(NetworkInputStreamWorker* pInputWorker);
 
     QVector<NetworkOutputStreamWorkerPtr> outputWorkers() {
         return m_outputWorkers;
@@ -43,7 +45,6 @@ class EngineNetworkStream {
     int nextOutputSlotAvailable();
     void debugOutputSlots();
 
-    FIFO<CSAMPLE>* m_pOutputFifo;
     FIFO<CSAMPLE>* m_pInputFifo;
     int m_numOutputChannels;
     int m_numInputChannels;
@@ -60,6 +61,7 @@ class EngineNetworkStream {
     // the workers are then performed on thread-safe QSharedPointers and not
     // onto the thread-unsafe QVector
     QVector<NetworkOutputStreamWorkerPtr> m_outputWorkers;
+    NetworkInputStreamWorker* m_pInputWorker;
 };
 
 #endif /* ENGINENETWORKSTREAM_H_ */
