@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>731</width>
-    <height>895</height>
+    <height>897</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -37,6 +37,13 @@
           <width>0</width>
           <height>130</height>
          </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QTableView::item::focus {
+	background-color: palette(highlight);
+	color: white;
+}
+</string>
         </property>
         <property name="selectionMode">
          <enum>QAbstractItemView::SingleSelection</enum>
