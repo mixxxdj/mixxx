@@ -4,6 +4,7 @@
 #ifndef ENGINE_SIDECHAIN_SHOUTCONNECTION_H
 #define ENGINE_SIDECHAIN_SHOUTCONNECTION_H
 
+#include <engine/sidechain/networkoutputstreamworker.h>
 #include <QMessageBox>
 #include <QMutex>
 #include <QWaitCondition>
@@ -18,7 +19,6 @@
 #include "control/controlproxy.h"
 #include "encoder/encodercallback.h"
 #include "encoder/encoder.h"
-#include "engine/sidechain/networkstreamworker.h"
 #include "errordialoghandler.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
@@ -33,7 +33,7 @@ struct _util_dict;
 typedef struct _util_dict shout_metadata_t;
 
 class ShoutConnection
-        : public QThread, public EncoderCallback, public NetworkStreamWorker {
+        : public QThread, public EncoderCallback, public NetworkOutputStreamWorker {
     Q_OBJECT
   public:
     ShoutConnection(BroadcastProfilePtr profile, UserSettingsPointer pConfig);

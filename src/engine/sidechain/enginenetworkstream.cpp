@@ -42,11 +42,10 @@ EngineNetworkStream::EngineNetworkStream(int numOutputChannels,
       m_numOutputChannels(numOutputChannels),
       m_numInputChannels(numInputChannels),
       m_sampleRate(0),
-      m_streamStartTimeUs(-1),
-      m_streamFramesWritten(0),
-      m_streamFramesRead(0),
-      m_writeOverflowCount(0),
-      m_workers(BROADCAST_MAX_CONNECTIONS) {
+      m_inputStreamStartTimeUs(-1),
+      m_inputStreamFramesWritten(0),
+      m_inputStreamFramesRead(0),
+      m_outputWorkers(BROADCAST_MAX_CONNECTIONS) {
     if (numOutputChannels) {
         m_pOutputFifo = new FIFO<CSAMPLE>(numOutputChannels * kBufferFrames);
     }
@@ -71,7 +70,7 @@ EngineNetworkStream::EngineNetworkStream(int numOutputChannels,
 }
 
 EngineNetworkStream::~EngineNetworkStream() {
-    if (m_streamStartTimeUs >= 0) {
+    if (m_inputStreamStartTimeUs >= 0) {
         stopStream();
     }
     delete m_pOutputFifo;
@@ -80,10 +79,10 @@ EngineNetworkStream::~EngineNetworkStream() {
 
 void EngineNetworkStream::startStream(double sampleRate) {
     m_sampleRate = sampleRate;
-    m_streamStartTimeUs = getNetworkTimeUs();
-    m_streamFramesWritten = 0;
+    m_inputStreamStartTimeUs = getNetworkTimeUs();
+    m_inputStreamFramesWritten = 0;
 
-    for(auto worker : m_workers) {
+    for(NetworkOutputStreamWorkerPtr worker : m_outputWorkers) {
         if (worker.isNull()) {
             continue;
         }
@@ -93,9 +92,9 @@ void EngineNetworkStream::startStream(double sampleRate) {
 }
 
 void EngineNetworkStream::stopStream() {
-    m_streamStartTimeUs = -1;
+    m_inputStreamStartTimeUs = -1;
 
-    for(auto worker : m_workers) {
+    for(NetworkOutputStreamWorkerPtr worker : m_outputWorkers) {
         if (worker.isNull()) {
             continue;
         }
@@ -105,7 +104,7 @@ void EngineNetworkStream::stopStream() {
 }
 
 int EngineNetworkStream::getReadExpected() {
-    return static_cast<int>(getStreamTimeFrames() - m_streamFramesRead);
+    return static_cast<int>(getInputStreamTimeFrames() - m_inputStreamFramesRead);
 }
 
 void EngineNetworkStream::read(CSAMPLE* buffer, int frames) {
@@ -125,12 +124,12 @@ void EngineNetworkStream::read(CSAMPLE* buffer, int frames) {
     }
 }
 
-qint64 EngineNetworkStream::getStreamTimeFrames() {
-    return static_cast<double>(getStreamTimeUs()) * m_sampleRate / 1000000.0;
+qint64 EngineNetworkStream::getInputStreamTimeFrames() {
+    return static_cast<double>(getInputStreamTimeUs()) * m_sampleRate / 1000000.0;
 }
 
-qint64 EngineNetworkStream::getStreamTimeUs() {
-    return getNetworkTimeUs() - m_streamStartTimeUs;
+qint64 EngineNetworkStream::getInputStreamTimeUs() {
+    return getNetworkTimeUs() - m_inputStreamStartTimeUs;
 }
 
 // static
@@ -185,46 +184,46 @@ qint64 EngineNetworkStream::getNetworkTimeUs() {
 #endif
 }
 
-void EngineNetworkStream::addWorker(QSharedPointer<NetworkStreamWorker> pWorker) {
-    if (nextListSlotAvailable() < 0) {
+void EngineNetworkStream::addOutputWorker(NetworkOutputStreamWorkerPtr pWorker) {
+    if (nextOutputSlotAvailable() < 0) {
         kLogger.warning() << "addWorker: can't add worker:"
                           << "no free slot left in internal list";
         return;
     }
 
     if (pWorker && m_numOutputChannels) {
-        int nextNullItem = nextListSlotAvailable();
+        int nextNullItem = nextOutputSlotAvailable();
         if(nextNullItem > -1) {
             QSharedPointer<FIFO<CSAMPLE>> workerFifo(
                     new FIFO<CSAMPLE>(m_numOutputChannels * kBufferFrames));
             pWorker->setOutputFifo(workerFifo);
             pWorker->startStream(m_sampleRate, m_numOutputChannels);
-            m_workers[nextNullItem] = pWorker;
+            m_outputWorkers[nextNullItem] = pWorker;
 
             kLogger.debug() << "addWorker: worker added";
-            debugSlots();
+            debugOutputSlots();
         }
     }
 }
 
-void EngineNetworkStream::removeWorker(QSharedPointer<NetworkStreamWorker> pWorker) {
-    int index = m_workers.indexOf(pWorker);
+void EngineNetworkStream::removeOutputWorker(NetworkOutputStreamWorkerPtr pWorker) {
+    int index = m_outputWorkers.indexOf(pWorker);
     if(index > -1) {
-        m_workers[index].clear();
+        m_outputWorkers[index].clear();
         kLogger.debug() << "removeWorker: worker removed";
     } else {
         kLogger.warning() << "removeWorker: ERROR: worker not found";
     }
-    debugSlots();
+    debugOutputSlots();
 }
 
-int EngineNetworkStream::nextListSlotAvailable() {
-    return m_workers.indexOf(NetworkStreamWorkerPtr(nullptr));
+int EngineNetworkStream::nextOutputSlotAvailable() {
+    return m_outputWorkers.indexOf(NetworkOutputStreamWorkerPtr(nullptr));
 }
 
-void EngineNetworkStream::debugSlots() {
-    int available = m_workers.count(NetworkStreamWorkerPtr(nullptr));
-    int total = m_workers.size();
+void EngineNetworkStream::debugOutputSlots() {
+    int available = m_outputWorkers.count(NetworkOutputStreamWorkerPtr(nullptr));
+    int total = m_outputWorkers.size();
     kLogger.debug() << "worker slots used:"
                     << QString("%1 out of %2").arg(total - available).arg(total);
 }

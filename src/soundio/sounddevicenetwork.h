@@ -37,13 +37,13 @@ class SoundDeviceNetwork : public SoundDevice {
     bool m_inputDrift;
     static volatile int m_underflowHappened;
 
-    void workerWriteProcess(NetworkStreamWorkerPtr pWorker,
+    void workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker,
             int outChunkSize, int readAvailable,
             CSAMPLE* dataPtr1, ring_buffer_size_t size1,
             CSAMPLE* dataPtr2, ring_buffer_size_t size2);
-    void workerWrite(NetworkStreamWorkerPtr pWorker,
+    void workerWrite(NetworkOutputStreamWorkerPtr pWorker,
             const CSAMPLE* buffer, int frames);
-    void workerWriteSilence(NetworkStreamWorkerPtr pWorker, int frames);
+    void workerWriteSilence(NetworkOutputStreamWorkerPtr pWorker, int frames);
 };
 
 #endif // SOUNDDEVICENETWORK_H

@@ -103,8 +103,8 @@ void BroadcastManager::slotProfileRemoved(BroadcastProfilePtr profile) {
 
 void BroadcastManager::slotProfilesChanged() {
     if(m_pBroadcastEnabled->toBool()) {
-        QVector<NetworkStreamWorkerPtr> workers = m_pNetworkStream->workers();
-        for(NetworkStreamWorkerPtr pWorker : workers) {
+        QVector<NetworkOutputStreamWorkerPtr> workers = m_pNetworkStream->outputWorkers();
+        for(NetworkOutputStreamWorkerPtr pWorker : workers) {
             ShoutConnectionPtr connection = qSharedPointerCast<ShoutConnection>(pWorker);
             if(connection) {
                 connection->applySettings();
@@ -122,7 +122,7 @@ bool BroadcastManager::addConnection(BroadcastProfilePtr profile) {
     }
 
     ShoutConnectionPtr connection(new ShoutConnection(profile, m_pConfig));
-    m_pNetworkStream->addWorker(connection);
+    m_pNetworkStream->addOutputWorker(connection);
 
     kLogger.debug() << "addConnection: created connection for profile"
                     << profile->getProfileName();
@@ -137,7 +137,7 @@ bool BroadcastManager::removeConnection(BroadcastProfilePtr profile) {
     if(connection) {
         // Disabling the profile tells ShoutOutput's thread to disconnect
         connection->profile()->setEnabled(false);
-        m_pNetworkStream->removeWorker(connection);
+        m_pNetworkStream->removeOutputWorker(connection);
 
         kLogger.debug() << "removeConnection: removed connection for profile"
                         << profile->getProfileName();
@@ -148,8 +148,8 @@ bool BroadcastManager::removeConnection(BroadcastProfilePtr profile) {
 }
 
 ShoutConnectionPtr BroadcastManager::findConnectionForProfile(BroadcastProfilePtr profile) {
-    QVector<NetworkStreamWorkerPtr> workers = m_pNetworkStream->workers();
-    for(NetworkStreamWorkerPtr pWorker : workers) {
+    QVector<NetworkOutputStreamWorkerPtr> workers = m_pNetworkStream->outputWorkers();
+    for(NetworkOutputStreamWorkerPtr pWorker : workers) {
         ShoutConnectionPtr connection = qSharedPointerCast<ShoutConnection>(pWorker);
         if(connection.isNull())
             continue;

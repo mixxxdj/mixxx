@@ -246,7 +246,8 @@ void SoundDeviceNetwork::writeProcess() {
     m_outputFifo->aquireReadRegions(readAvailable,
             &dataPtr1, &size1, &dataPtr2, &size2);
 
-    QVector<NetworkStreamWorkerPtr> workers = m_pNetworkStream->workers();
+    QVector<NetworkOutputStreamWorkerPtr> workers =
+            m_pNetworkStream->outputWorkers();
     for(auto pWorker : workers) {
         if(pWorker.isNull()) {
             continue;
@@ -261,7 +262,7 @@ void SoundDeviceNetwork::writeProcess() {
     m_outputFifo->releaseReadRegions(readAvailable);
 }
 
-void SoundDeviceNetwork::workerWriteProcess(NetworkStreamWorkerPtr pWorker,
+void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker,
         int outChunkSize, int readAvailable,
         CSAMPLE* dataPtr1, ring_buffer_size_t size1,
         CSAMPLE* dataPtr2, ring_buffer_size_t size2) {
@@ -318,7 +319,7 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkStreamWorkerPtr pWorker,
     }
 }
 
-void SoundDeviceNetwork::workerWrite(NetworkStreamWorkerPtr pWorker,
+void SoundDeviceNetwork::workerWrite(NetworkOutputStreamWorkerPtr pWorker,
         const CSAMPLE* buffer, int frames) {
     if (!pWorker->threadWaiting()) {
         pWorker->addFramesWritten(frames);
@@ -346,7 +347,7 @@ void SoundDeviceNetwork::workerWrite(NetworkStreamWorkerPtr pWorker,
     }
 }
 
-void SoundDeviceNetwork::workerWriteSilence(NetworkStreamWorkerPtr pWorker, int frames) {
+void SoundDeviceNetwork::workerWriteSilence(NetworkOutputStreamWorkerPtr pWorker, int frames) {
     if (!pWorker->threadWaiting()) {
         pWorker->addFramesWritten(frames);
         return;

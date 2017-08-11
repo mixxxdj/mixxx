@@ -759,7 +759,7 @@ class MixxxCore(Feature):
                    "engine/enginevumeter.cpp",
                    "engine/enginesidechaincompressor.cpp",
                    "engine/sidechain/enginesidechain.cpp",
-                   "engine/sidechain/networkstreamworker.cpp",
+                   "engine/sidechain/networkoutputstreamworker.cpp",
                    "engine/enginexfader.cpp",
                    "engine/enginemicrophone.cpp",
                    "engine/enginedeck.cpp",

@@ -1,5 +1,5 @@
-#ifndef NETWORKSTREAMWORKER_H
-#define NETWORKSTREAMWORKER_H
+#ifndef NETWORKOUTPUTSTREAMWORKER_H
+#define NETWORKOUTPUTSTREAMWORKER_H
 
 #include <QSharedPointer>
 
@@ -27,7 +27,7 @@
  * should support state handling at least this NETWORKSTREAMWORKER_STATE_READY state.
  */
 
-enum NetworkStreamWorkerStates {
+enum NetworkOutputStreamWorkerStates {
     NETWORKSTREAMWORKER_STATE_ERROR = -1,
     NETWORKSTREAMWORKER_STATE_NEW,
     NETWORKSTREAMWORKER_STATE_INIT,
@@ -41,10 +41,10 @@ enum NetworkStreamWorkerStates {
     NETWORKSTREAMWORKER_STATE_DISCONNECTED
 };
 
-class NetworkStreamWorker {
+class NetworkOutputStreamWorker {
   public:
-    NetworkStreamWorker();
-    virtual ~NetworkStreamWorker();
+    NetworkOutputStreamWorker();
+    virtual ~NetworkOutputStreamWorker();
 
     virtual void process(const CSAMPLE* pBuffer, const int iBufferSize) = 0;
     virtual void shutdown() = 0;
@@ -87,7 +87,7 @@ private:
     double m_sampleRate;
     int m_numOutputChannels;
 
-    int m_networkStreamWorkerState;
+    int m_workerState;
     int m_functionCode;
     int m_runCount;
 
@@ -97,6 +97,6 @@ private:
     bool m_outputDrift;
 };
 
-typedef QSharedPointer<NetworkStreamWorker> NetworkStreamWorkerPtr;
+typedef QSharedPointer<NetworkOutputStreamWorker> NetworkOutputStreamWorkerPtr;
 
 #endif /* NETWORKSTREAMWORKER_H */
