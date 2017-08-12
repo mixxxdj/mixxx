@@ -64,6 +64,7 @@ CrateFeature::CrateFeature(UserSettingsPointer pConfig,
 
     m_pChildModel = std::make_unique<CrateTreeModel>(this, m_pCrates);
     m_pChildModel->reloadTree();
+    generateSummaries();
 
     connectLibrary(pLibrary);
     connectCrateManager();
@@ -567,72 +568,52 @@ void CrateFeature::toggleRecursion() {
 void CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
     qDebug() << "CrateFeature::rebuildChildModel()" << selectedCrateId;
     m_pChildModel->reloadTree();
+    generateSummaries();
 
     if (selectedCrateId.isValid()) {
         QModelIndex index = indexFromCrateId(selectedCrateId);
         if (index.isValid()) {
             activateChild(index);
+            return;
         }
     }
     activate();
 
-    // TreeItem* pRootItem = m_pChildModel->getRootItem();
-    // VERIFY_OR_DEBUG_ASSERT(pRootItem != nullptr) {
-    //     return QModelIndex();
-    // }
-    // m_pChildModel->removeRows(0, pRootItem->childRows());
-
-    // QList<TreeItem*> modelRows;
-    // modelRows.reserve(m_pCrates->storage().countCrates());
-
-    // int selectedRow = -1;
-    // CrateSummarySelectResult crateSummaries(
-    //         m_pCrates->storage().selectCrateSummaries());
-    // CrateSummary crateSummary;
-    // while (crateSummaries.populateNext(&crateSummary)) {
-    //     auto pTreeItem = newTreeItemForCrateSummary(crateSummary);
-    //     modelRows.append(pTreeItem.get());
-    //     pTreeItem.release();
-    //     if (selectedCrateId == crateSummary.getId()) {
-    //         // save index for selection
-    //         selectedRow = modelRows.size() - 1;
-    //     }
-    // }
-
-    // // Append all the newly created TreeItems in a dynamic way to the childmodel
-    // m_pChildModel->insertTreeItemRows(modelRows, 0);
-
-    // // Update rendering of crates depending on the currently selected track
-    // slotTrackSelected(m_pSelectedTrack);
-
-    // if (selectedRow >= 0) {
-    //     return m_pChildModel->index(selectedRow, 0);
-    // } else {
-    //     return QModelIndex();
-    // }
+    // TODO(XXX): This is not optimal at all.
+    // The tree item model needs to get revamped in order to allow
+    // the addition of rows one by one. QAbstactItemModel allows this
+    // but our implementation of it so far did not need that feature
+    // so it was not implemented
 }
 
-//TODO(gramanas)
+void CrateFeature::generateSummaries() {
+    CrateSelectResult crates(m_pCrates->storage().selectCrates());
+    Crate crate;
+    QSet<CrateId> ids;
+    while (crates.populateNext(&crate)) {
+        ids.insert(crate.getId());
+    }
+    updateChildModel(ids);
+}
+
 void CrateFeature::updateChildModel(const QSet<CrateId>& updatedCrateIds) {
-    Q_UNUSED(updatedCrateIds);
-    // const CrateStorage& crateStorage = m_pTrackCollection->crates();
-    // for (const CrateId& crateId: updatedCrateIds) {
-    //     QModelIndex index = indexFromCrateId(crateId);
-    //     VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
-    //         continue;
-    //     }
-    //     CrateSummary crateSummary;
-    //     VERIFY_OR_DEBUG_ASSERT(crateStorage.readCrateSummaryById(crateId, &crateSummary)) {
-    //         continue;
-    //     }
-    //     updateTreeItemForCrateSummary(m_pChildModel->getItem(index), crateSummary);
-    //     m_pChildModel->triggerRepaint(index);
-    // }
-    // if (m_pSelectedTrack) {
-    //     // Crates containing the currently selected track might
-    //     // have been modified.
-    //     slotTrackSelected(m_pSelectedTrack);
-    // }
+    for (const CrateId& crateId: updatedCrateIds) {
+        QModelIndex index = indexFromCrateId(crateId);
+        VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
+            continue;
+        }
+        CrateSummary crateSummary;
+        VERIFY_OR_DEBUG_ASSERT(m_pCrates->storage().readCrateSummaryById(crateId, &crateSummary)) {
+            continue;
+        }
+        updateTreeItemForCrateSummary(m_pChildModel->getItem(index), crateSummary);
+        m_pChildModel->triggerRepaint(index);
+    }
+    if (m_pSelectedTrack) {
+        // Crates containing the currently selected track might
+        // have been modified.
+        slotTrackSelected(m_pSelectedTrack);
+    }
 }
 
 CrateId CrateFeature::crateIdFromIndex(const QModelIndex& index) const {
@@ -647,7 +628,6 @@ CrateId CrateFeature::crateIdFromIndex(const QModelIndex& index) const {
     return CrateId();
 }
 
-//TODO(gramanas) figure out if I need it at all
 QModelIndex CrateFeature::indexFromCrateId(CrateId crateId) const {
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         qDebug() << "CrateId is invalid:" << crateId;
@@ -658,16 +638,10 @@ QModelIndex CrateFeature::indexFromCrateId(CrateId crateId) const {
                                                      AbstractRole::RoleData,
                                                      crateId.toVariant(), 1,
                                                      Qt::MatchRecursive);
-    // default match returns only the first item found so this list actually only contains 1 item.
     if (!indexList.isEmpty()) {
         return indexList.back();
     }
-    // QModelIndex index = m_pChildModel->index(row, 0);
-    // TreeItem* pTreeItem = m_pChildModel->getItem(index);
-    // DEBUG_ASSERT(pTreeItem != nullptr);
-    // if (index.isValid() && CrateId(pTreeItem->getData()) == crateId) {
-    //     return index;
-    // }
+
     qDebug() << "Tree item for crate not found:" << crateId;
     return QModelIndex();
 }

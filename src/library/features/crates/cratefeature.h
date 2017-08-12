@@ -87,6 +87,7 @@ class CrateFeature : public LibraryFeature {
     void connectCrateManager();
 
     bool activateCrate(CrateId crateId);
+    void generateSummaries();
 
     std::unique_ptr<TreeItem> newTreeItemForCrateSummary(
             const CrateSummary& crateSummary);
