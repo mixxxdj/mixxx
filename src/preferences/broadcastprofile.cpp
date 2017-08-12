@@ -440,6 +440,8 @@ QString BroadcastProfile::getSecurePassword(QString login) {
     } else {
         kLogger.warning() << "getSecureValue: read job failed with error:"
                         << readJob.errorString();
+        errorDialog(tr("Secure password retrieval unsuccessful: keychain access failed."),
+                        readJob.errorString());
     }
 #endif
     return QString();
