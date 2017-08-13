@@ -423,7 +423,12 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                        tr("Add to Auto DJ Queue (top)"),
                        tr("Prepend selected track to the Auto DJ Queue"),
                        m_libraryStr, libraryMenu);
+    addPrefixedControl("[Library]", "AutoDjAddReplace",
+                       tr("Add to Auto DJ Queue (replace)"),
+                       tr("Replace Auto DJ Queue with selected tracks"),
+                       m_libraryStr, libraryMenu);
 
+            
     // Load track (these can be loaded into any channel)
     addDeckAndSamplerControl("LoadSelectedTrack",
                              tr("Load Track"),
