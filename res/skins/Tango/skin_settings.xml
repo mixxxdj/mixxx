@@ -176,11 +176,11 @@ Description:
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">15f,15f</SetVariable>
-                        <SetVariable name="state_0_pressed">cf_center.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">cf_center.svg</SetVariable>
-                        <SetVariable name="state_1_pressed">cf_visible.svg</SetVariable>
-                        <SetVariable name="state_1_unpressed">cf_visible.svg</SetVariable>
-                        <SetVariable name="ConfigKeyPerm">[Tango],always_visible_cfOrientation</SetVariable>
+                        <SetVariable name="state_0_pressed">xfader_center.svg</SetVariable>
+                        <SetVariable name="state_0_unpressed">xfader_center.svg</SetVariable>
+                        <SetVariable name="state_1_pressed">xfader_visible.svg</SetVariable>
+                        <SetVariable name="state_1_unpressed">xfader_visible.svg</SetVariable>
+                        <SetVariable name="ConfigKeyPerm">[Tango],always_visible_xfaderOrientation</SetVariable>
                       </Template>
 
                       <Template src="skin:button_2state_persist.xml">

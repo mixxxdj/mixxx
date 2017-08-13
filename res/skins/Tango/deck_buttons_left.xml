@@ -114,17 +114,17 @@ Variables:
                 <SetVariable name="ObjectName">DeckButton</SetVariable>
                 <SetVariable name="Size">20f,22f</SetVariable>
                 <SetVariable name="TooltipId">orientation</SetVariable>
-                <SetVariable name="state_0_pressed">cf_left.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">cf_left.svg</SetVariable>
-                <SetVariable name="state_1_pressed">cf_center_attention.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">cf_center_attention.svg</SetVariable>
-                <SetVariable name="state_2_pressed">cf_right_attention.svg</SetVariable>
-                <SetVariable name="state_2_unpressed">cf_right_attention.svg</SetVariable>
+                <SetVariable name="state_0_pressed">xfader_left.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">xfader_left.svg</SetVariable>
+                <SetVariable name="state_1_pressed">xfader_center_attention.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">xfader_center_attention.svg</SetVariable>
+                <SetVariable name="state_2_pressed">xfader_right_attention.svg</SetVariable>
+                <SetVariable name="state_2_unpressed">xfader_right_attention.svg</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
               </Template>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],always_visible_cfOrientation</ConfigKey>
+              <ConfigKey persist="true">[Tango],always_visible_xfaderOrientation</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -258,17 +258,17 @@ Variables:
                     <SetVariable name="ObjectName">DeckButtonExpanded</SetVariable>
                     <SetVariable name="Size">20f,22f</SetVariable>
                     <SetVariable name="TooltipId">orientation</SetVariable>
-                    <SetVariable name="state_0_pressed">cf_left.svg</SetVariable>
-                    <SetVariable name="state_0_unpressed">cf_left.svg</SetVariable>
-                    <SetVariable name="state_1_pressed">cf_center_attention.svg</SetVariable>
-                    <SetVariable name="state_1_unpressed">cf_center_attention.svg</SetVariable>
-                    <SetVariable name="state_2_pressed">cf_right_attention.svg</SetVariable>
-                    <SetVariable name="state_2_unpressed">cf_right_attention.svg</SetVariable>
+                    <SetVariable name="state_0_pressed">xfader_left.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">xfader_left.svg</SetVariable>
+                    <SetVariable name="state_1_pressed">xfader_center_attention.svg</SetVariable>
+                    <SetVariable name="state_1_unpressed">xfader_center_attention.svg</SetVariable>
+                    <SetVariable name="state_2_pressed">xfader_right_attention.svg</SetVariable>
+                    <SetVariable name="state_2_unpressed">xfader_right_attention.svg</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
                   </Template>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Tango],always_visible_cfOrientation</ConfigKey>
+                  <ConfigKey persist="true">[Tango],always_visible_xfaderOrientation</ConfigKey>
                   <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>

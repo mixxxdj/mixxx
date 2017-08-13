@@ -91,12 +91,12 @@ Controls:
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
-      <WidgetGroup><!-- cf orientation -->
+      <WidgetGroup><!-- xfader orientation -->
         <ObjectName>SizeTest</ObjectName>
         <Size>20f,12f</Size>
         <Children/>
         <Connection>
-          <ConfigKey persist="true">[Tango],always_visible_cfOrientation</ConfigKey>
+          <ConfigKey persist="true">[Tango],always_visible_xfaderOrientation</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
@@ -154,12 +154,12 @@ Controls:
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
-          <WidgetGroup><!-- cf orientation expanded -->
+          <WidgetGroup><!-- xfader orientation expanded -->
             <ObjectName>SizeTest</ObjectName>
             <Size>20f,12f</Size>
             <Children/>
             <Connection>
-              <ConfigKey persist="true">[Tango],always_visible_cfOrientation</ConfigKey>
+              <ConfigKey persist="true">[Tango],always_visible_xfaderOrientation</ConfigKey>
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
