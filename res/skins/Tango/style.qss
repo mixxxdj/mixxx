@@ -1381,6 +1381,25 @@ WBeatSpinBox {
       border: 1px solid #FFFFFF;
     }
 
+#FxHeadMasterButton {
+  font-size: 13px/13px;
+  font-weight: bold;
+  text-align: center;
+  background-color: #333333;
+  }
+  #FxHeadMasterButton[displayValue="0"] {
+    color: #888888;
+    }
+    #FxHeadMasterButton[displayValue="0"]:hover {
+      border: 1px solid #ff8f00;
+    }
+  #FxHeadMasterButton[displayValue="1"] {
+    background-color: #ff8f00;
+    }
+    #FxHeadMasterButton[displayValue="1"]:hover {
+      border: 1px solid #ffffff;
+    }
+
 /*################################################################
  ######  Samplers  ##############################################
 ##############################################################*/
