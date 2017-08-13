@@ -766,15 +766,15 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addControl("[PreviewDeck]", "show_previewdeck",
                tr("Preview Deck Show/Hide"),
                tr("Show/hide the preview deck"), guiMenu);
-    addControl("[Master]", "maximize_library",
-               tr("Library Maximize/Restore"),
-               tr("Maximize the track library to take up all the available screen space."), guiMenu);
     addControl("[EffectRack1]", "show",
                tr("Effect Rack Show/Hide"),
                tr("Show/hide the effect rack"), guiMenu);
     addControl("[Library]", "show_coverart",
                tr("Cover Art Show/Hide"),
                tr("Show/hide cover art"), guiMenu);
+    addControl("[Master]", "maximize_library",
+               tr("Library Maximize/Restore"),
+               tr("Maximize the track library to take up all the available screen space."), guiMenu);
 
     QString spinnyTitle = tr("Vinyl Spinner Show/Hide");
     QString spinnyDescription = tr("Show/hide spinning vinyl widget");
