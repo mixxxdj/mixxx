@@ -182,14 +182,24 @@ Variables:
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-       <!--   <Template src="skin:knob_textless.xml">
-            <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
-            <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
-            <SetVariable name="Size">30f,30f</SetVariable>
-            <SetVariable name="group">[<Variable name="fxGroup"/>]</SetVariable>
-            <SetVariable name="ConfigKey">super1</SetVariable>
-            <SetVariable name="Color">blue</SetVariable>
-          </Template> -->
+          <WidgetGroup>
+            <Size>30f,30f</Size>
+            <Layout>vertical</Layout>
+            <Children>
+              <Template src="skin:knob_textless.xml">
+                <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
+                <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
+                <SetVariable name="Size">30f,30f</SetVariable>
+                <SetVariable name="group">[<Variable name="fxGroup"/>]</SetVariable>
+                <SetVariable name="ConfigKey">super1</SetVariable>
+                <SetVariable name="Color">blue</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],fx_super_knob</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
 
           <Template src="skin:knob_textless.xml">
             <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>

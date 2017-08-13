@@ -501,6 +501,12 @@ Description:
               </Template>
 
               <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="state_0_text">      Super Knob (for Meta Knobs)</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Super Knob (for Meta Knobs)</SetVariable>
+                <SetVariable name="Setting">[Tango],fx_super_knob</SetVariable>
+              </Template>
+
+              <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      Sampler FX buttons</SetVariable>
                 <SetVariable name="state_1_text"> &#10004; Sampler FX buttons</SetVariable>
                 <SetVariable name="Setting">[Tango],sampler_fx_buttons</SetVariable>

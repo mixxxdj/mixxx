@@ -47,13 +47,13 @@
       <attribute persist="true" config_key="[Master],maximize_library">0</attribute>
       <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
       <attribute persist="true" config_key="[Library],show_library">1</attribute>
-      <attribute persist="true" config_key="[EffectRack1],show">0</attribute>
+      <attribute persist="true" config_key="[EffectRack1],show">1</attribute>
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
-      <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">1</attribute>
       <!-- [Tango] specific defaults -->
       <attribute persist="true" config_key="[Tango],2or4_fxUnits">0</attribute>
+      <attribute persist="true" config_key="[Tango],fx_super_knob">0</attribute>
       <attribute persist="true" config_key="[Tango],sampler_fx_buttons">1</attribute>
       <attribute persist="true" config_key="[Tango],micaux_fx_buttons">1</attribute>
       <attribute persist="true" config_key="[Tango],beatgrid_buttons">0</attribute>
