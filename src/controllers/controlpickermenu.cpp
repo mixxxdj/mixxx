@@ -610,7 +610,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                    slotDescriptionPrefix,
                                    effectSlotMenu);
                 addPrefixedControl(effectSlotGroup, "meta",
-                                   tr("Meta Knob"), tr("Effect Meta Knob (control linked effect parameters"),
+                                   tr("Meta Knob"), tr("Effect Meta Knob (control linked effect parameters)"),
                                    slotDescriptionPrefix,
                                    effectSlotMenu);
                 addPrefixedControl(effectSlotGroup, "enabled",
