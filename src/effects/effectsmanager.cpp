@@ -10,8 +10,6 @@
 #include "util/assert.h"
 
 namespace {
-const char* kEqualizerRackName = "[EqualizerChain]";
-const char* kQuickEffectRackName = "[QuickEffectChain]";
 const QString kEffectGroupSeparator = "_";
 const QString kGroupClose = "]";
 } // anonymous namespace
