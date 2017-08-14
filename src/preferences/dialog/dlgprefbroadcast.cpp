@@ -149,6 +149,12 @@ void DlgPrefBroadcast::slotUpdate() {
 
 void DlgPrefBroadcast::slotApply()
 {
+    if(m_pProfileListSelection) {
+        setValuesToProfile(m_pProfileListSelection);
+    }
+    m_pBroadcastSettings->applyModel(m_pSettingsModel);
+    updateModel();
+
     m_pBroadcastEnabled->set(enableLiveBroadcasting->isChecked());
 
     // Don't let user modify information if
@@ -164,12 +170,6 @@ void DlgPrefBroadcast::slotApply()
         btnRemoveConnection->setEnabled(true);
         btnRenameConnection->setEnabled(true);
     }
-
-    if(m_pProfileListSelection) {
-        setValuesToProfile(m_pProfileListSelection);
-    }
-    m_pBroadcastSettings->applyModel(m_pSettingsModel);
-    updateModel();
 }
 
 void DlgPrefBroadcast::broadcastEnabledChanged(double value) {
