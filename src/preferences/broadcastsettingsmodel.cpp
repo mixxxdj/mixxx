@@ -26,6 +26,8 @@ void BroadcastSettingsModel::resetFromSettings(BroadcastSettingsPointer pSetting
     for(BroadcastProfilePtr profile : pSettings->profiles()) {
         BroadcastProfilePtr copy = profile->valuesCopy();
         copy->setConnectionStatus(profile->connectionStatus());
+        connect(profile.data(), SIGNAL(statusChanged(bool)),
+                copy.data(), SLOT(relayStatus(bool)));
         connect(profile.data(), SIGNAL(connectionStatusChanged(int)),
                 copy.data(), SLOT(relayConnectionStatus(int)));
         addProfileToModel(copy);

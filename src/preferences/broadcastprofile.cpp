@@ -383,6 +383,15 @@ QString BroadcastProfile::getProfileName() const {
     return m_profileName;
 }
 
+void BroadcastProfile::setConnectionStatus(int newState) {
+    m_connectionStatus = newState;
+    emit connectionStatusChanged(m_connectionStatus);
+}
+
+int BroadcastProfile::connectionStatus() {
+    return m_connectionStatus;
+}
+
 void BroadcastProfile::setSecureCredentialStorage(bool value) {
     m_secureCredentials = value;
 }
@@ -460,10 +469,14 @@ void BroadcastProfile::errorDialog(QString text, QString detailedError) {
     ErrorDialogHandler::instance()->requestErrorDialog(props);
 }
 
+void BroadcastProfile::relayStatus(bool newStatus) {
+    setEnabled(newStatus);
+}
+
 // Used by BroadcastSettings to relay connection status
 // to copies in BroadcastSettingsModel
-void BroadcastProfile::relayConnectionStatus(int status) {
-    setConnectionStatus(status);
+void BroadcastProfile::relayConnectionStatus(int newConnectionStatus) {
+    setConnectionStatus(newConnectionStatus);
 }
 
 // This was useless before, but now comes in handy for multi-broadcasting,
@@ -474,6 +487,7 @@ bool BroadcastProfile::getEnabled() const {
 
 void BroadcastProfile::setEnabled(bool value) {
     m_enabled = value;
+    emit statusChanged(m_enabled);
 }
 
 QString BroadcastProfile::getHost() const {

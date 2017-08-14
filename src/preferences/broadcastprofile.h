@@ -37,13 +37,8 @@ class BroadcastProfile : public QObject {
     static bool validName(const QString& str);
     static QString stripForbiddenChars(const QString& str);
 
-    void setConnectionStatus(int newState) {
-        m_connectionStatus = newState;
-        emit connectionStatusChanged(m_connectionStatus);
-    }
-    int connectionStatus() {
-        return m_connectionStatus;
-    }
+    void setConnectionStatus(int newState);
+    int connectionStatus();
 
     void setSecureCredentialStorage(bool enabled);
     bool secureCredentialStorage();
@@ -134,10 +129,12 @@ class BroadcastProfile : public QObject {
 
   signals:
     void profileNameChanged(QString oldName, QString newName);
-    void connectionStatusChanged(int status);
+    void statusChanged(bool newStatus);
+    void connectionStatusChanged(int newConnectionStatus);
 
   public slots:
-    void relayConnectionStatus(int status);
+    void relayStatus(bool newStatus);
+    void relayConnectionStatus(int newConnectionStatus);
 
   private:
     void adoptDefaultValues();
