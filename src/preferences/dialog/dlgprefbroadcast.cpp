@@ -468,9 +468,18 @@ void DlgPrefBroadcast::btnRenameConnectionClicked() {
                 QInputDialog::getText(this, tr("Renaming '%1'").arg(profileName),
                         tr("New name for '%1':").arg(profileName),
                         QLineEdit::Normal, profileName, &ok);
-        if(ok) {
-            m_pProfileListSelection->setProfileName(newName);
-            getValuesFromProfile(m_pProfileListSelection);
+        if(ok && newName != profileName) {
+            BroadcastProfilePtr existingProfile = m_pSettingsModel->getProfileByName(newName);
+            if(!existingProfile) {
+                // Requested name not used already
+                m_pProfileListSelection->setProfileName(newName);
+                getValuesFromProfile(m_pProfileListSelection);
+            } else {
+                // Requested name different from current name but already used
+                QMessageBox::warning(this, tr("Action forbidden"),
+                        tr("Can't rename '%1' to '%2': name already in use")
+                        .arg(profileName).arg(newName));
+            }
         }
     }
 }
