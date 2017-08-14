@@ -58,6 +58,7 @@
 #include "widget/weffect.h"
 #include "widget/weffectselector.h"
 #include "widget/weffectparameter.h"
+#include "widget/weffectparameterknob.h"
 #include "widget/weffectparameterknobcomposed.h"
 #include "widget/weffectbuttonparameter.h"
 #include "widget/weffectparameterbase.h"
@@ -554,6 +555,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseEffectName(node));
     } else if (nodeName == "EffectSelector") {
         result = wrapWidget(parseEffectSelector(node));
+    } else if (nodeName == "EffectParameterKnob") {
+        result = wrapWidget(parseEffectParameterKnob(node));
     } else if (nodeName == "EffectParameterKnobComposed") {
         result = wrapWidget(parseEffectParameterKnobComposed(node));
     } else if (nodeName == "EffectParameterName") {
@@ -1623,6 +1626,23 @@ QWidget* LegacySkinParser::parseEffectSelector(const QDomElement& node) {
         m_pControllerManager->getControllerLearningEventFilter());
     pSelector->Init();
     return pSelector;
+}
+
+QWidget* LegacySkinParser::parseEffectParameterKnob(const QDomElement& node) {
+    WEffectParameterKnob* pParameterKnob =
+            new WEffectParameterKnob(m_pParent, m_pEffectsManager);
+    commonWidgetSetup(node, pParameterKnob);
+    pParameterKnob->setup(node, *m_pContext);
+    pParameterKnob->installEventFilter(m_pKeyboard);
+    pParameterKnob->installEventFilter(
+        m_pControllerManager->getControllerLearningEventFilter());
+    pParameterKnob->Init();
+    const QList<ControlParameterWidgetConnection*> connections =
+            pParameterKnob->connections();
+    if (!connections.isEmpty()) {
+        pParameterKnob->setupEffectParameterSlot(connections.at(0)->getKey());
+    }
+    return pParameterKnob;
 }
 
 QWidget* LegacySkinParser::parseEffectParameterKnobComposed(const QDomElement& node) {
