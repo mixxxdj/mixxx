@@ -4,6 +4,11 @@
 #include "widget/wknob.h"
 #include "effects/effectparameterslot.h"
 
+// This is used for effect parameter knobs with dynamic
+// tooltips, if the knob value is displayed by one of e.g.
+// 64 pixmaps.
+// If the knob value can be displayed by rotating a single
+// SVG, use WEffectParameterKnobComposed.
 class WEffectParameterKnob : public WKnob {
   Q_OBJECT
   public:
