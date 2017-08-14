@@ -754,48 +754,42 @@
 								<ConfigKey>[Channel1],pregain</ConfigKey>
 							</Connection>
 						</Knob>
-						<Knob>
-							<TooltipId>filterHigh</TooltipId>
-							<Style></Style>
+						<EffectParameterKnob>
 							<NumberStates>64</NumberStates>
 							<Path>knobs/knob_rotary_s%1.png</Path>
 							<Pos>32,112</Pos>
 							<Connection>
-								<ConfigKey>[Channel1],filterHigh</ConfigKey>
+								<ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter3</ConfigKey>
 							</Connection>
-								<Connection>
-						        	<ConfigKey>[Channel1],filterHigh_loaded</ConfigKey>
-						        	<BindProperty>visible</BindProperty>
-					        	</Connection>
-						</Knob>
-						<Knob>
-							<TooltipId>filterMid</TooltipId>
-							<Style></Style>
+							<Connection>
+								<ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter3_loaded</ConfigKey>
+								<BindProperty>visible</BindProperty>
+							</Connection>
+						</EffectParameterKnob>
+						<EffectParameterKnob>
 							<NumberStates>64</NumberStates>
 							<Path>knobs/knob_rotary_s%1.png</Path>
 							<Pos>32,141</Pos>
 							<Connection>
-								<ConfigKey>[Channel1],filterMid</ConfigKey>
+								<ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter2</ConfigKey>
 							</Connection>
 							<Connection>
-						        	<ConfigKey>[Channel1],filterMid_loaded</ConfigKey>
-						        	<BindProperty>visible</BindProperty>
-					        	</Connection>
-						</Knob>
-						<Knob>
-							<TooltipId>filterLow</TooltipId>
-							<Style></Style>
+							<ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter2_loaded</ConfigKey>
+								<BindProperty>visible</BindProperty>
+							</Connection>
+						</EffectParameterKnob>
+						<EffectParameterKnob>
 							<NumberStates>64</NumberStates>
 							<Path>knobs/knob_rotary_s%1.png</Path>
 							<Pos>32,170</Pos>
 							<Connection>
-								<ConfigKey>[Channel1],filterLow</ConfigKey>
+								<ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter1</ConfigKey>
 							</Connection>
 							<Connection>
-								<ConfigKey>[Channel1],filterLow_loaded</ConfigKey>
+								<ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter1_loaded</ConfigKey>
 								<BindProperty>visible</BindProperty>
 							</Connection>
-						</Knob>
+						</EffectParameterKnob>
 
 						<Knob>
 							<TooltipId>pregain</TooltipId>
@@ -807,48 +801,46 @@
 								<ConfigKey>[Channel2],pregain</ConfigKey>
 							</Connection>
 						</Knob>
-						<Knob>
-							<TooltipId>filterHigh</TooltipId>
-							<Style></Style>
+						<EffectParameterKnob>
 							<NumberStates>64</NumberStates>
 							<Path>knobs/knob_rotary_s%1.png</Path>
 							<Pos>196,112</Pos>
 							<Connection>
-								<ConfigKey>[Channel2],filterHigh</ConfigKey>
+								<ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter3</ConfigKey>
 							</Connection>
 							<Connection>
-						        	<ConfigKey>[Channel2],filterHigh_loaded</ConfigKey>
-						        	<BindProperty>visible</BindProperty>
-					        	</Connection>
-						</Knob>
-						<Knob>
+								<ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter3_loaded</ConfigKey>
+								<BindProperty>visible</BindProperty>
+							</Connection>
+						</EffectParameterKnob>
+						<EffectParameterKnob>
 							<TooltipId>filterMid</TooltipId>
 							<Style></Style>
 							<NumberStates>64</NumberStates>
 							<Path>knobs/knob_rotary_s%1.png</Path>
 							<Pos>196,141</Pos>
 							<Connection>
-								<ConfigKey>[Channel2],filterMid</ConfigKey>
+								<ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter2</ConfigKey>
 							</Connection>
 							<Connection>
-						        	<ConfigKey>[Channel2],filterMid_loaded</ConfigKey>
-						        	<BindProperty>visible</BindProperty>
-					        	</Connection>
-						</Knob>
-						<Knob>
+								<ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter2_loaded</ConfigKey>
+								<BindProperty>visible</BindProperty>
+							</Connection>
+						</EffectParameterKnob>
+						<EffectParameterKnob>
 							<TooltipId>filterLow</TooltipId>
 							<Style></Style>
 							<NumberStates>64</NumberStates>
 							<Path>knobs/knob_rotary_s%1.png</Path>
 							<Pos>196,170</Pos>
 							<Connection>
-								<ConfigKey>[Channel2],filterLow</ConfigKey>
+								<ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter1</ConfigKey>
 							</Connection>
 							<Connection>
-								<ConfigKey>[Channel2],filterLow_loaded</ConfigKey>
+								<ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter1_loaded</ConfigKey>
 								<BindProperty>visible</BindProperty>
 							</Connection>
-						</Knob>
+						</EffectParameterKnob>
 
 						<!--
 						**********************************************
