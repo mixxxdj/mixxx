@@ -85,7 +85,6 @@ void BroadcastManager::slotControlEnabled(double v) {
 
     if (v > 0.0) {
         slotProfilesChanged();
-        m_pStatusCO->forceSet(STATUSCO_CONNECTED);
     } else {
         m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
     }
@@ -124,6 +123,9 @@ bool BroadcastManager::addConnection(BroadcastProfilePtr profile) {
     ShoutConnectionPtr connection(new ShoutConnection(profile, m_pConfig));
     m_pNetworkStream->addOutputWorker(connection);
 
+    connect(profile.data(), SIGNAL(connectionStatusChanged(int)),
+            this, SLOT(slotConnectionStatusChanged(int)));
+
     kLogger.debug() << "addConnection: created connection for profile"
                     << profile->getProfileName();
     return true;
@@ -135,6 +137,9 @@ bool BroadcastManager::removeConnection(BroadcastProfilePtr profile) {
 
     ShoutConnectionPtr connection = findConnectionForProfile(profile);
     if(connection) {
+        disconnect(profile.data(), SIGNAL(connectionStatusChanged(int)),
+                   this, SLOT(slotConnectionStatusChanged(int)));
+
         // Disabling the profile tells ShoutOutput's thread to disconnect
         connection->profile()->setEnabled(false);
         m_pNetworkStream->removeOutputWorker(connection);
@@ -160,4 +165,38 @@ ShoutConnectionPtr BroadcastManager::findConnectionForProfile(BroadcastProfilePt
     }
 
     return ShoutConnectionPtr();
+}
+
+void BroadcastManager::slotConnectionStatusChanged(int newState) {
+    Q_UNUSED(newState);
+    // Collect status info
+    int connectingCount = 0, connectedCount = 0, failedCount = 0;
+    QList<BroadcastProfilePtr> profiles = m_pBroadcastSettings->profiles();
+    for (BroadcastProfilePtr profile : profiles) {
+        int status = profile->connectionStatus();
+        if (status == BroadcastProfile::STATUS_FAILURE) {
+            failedCount++;
+        }
+        else if (status == BroadcastProfile::STATUS_CONNECTING) {
+            connectingCount++;
+        }
+        else if (status == BroadcastProfile::STATUS_CONNECTED) {
+            connectedCount++;
+        }
+
+    }
+
+    // Changed global status indicator depending on global connections status
+    if (failedCount > 0) {
+        m_pStatusCO->forceSet(STATUSCO_FAILURE);
+    }
+    else if (connectingCount > 0) {
+        m_pStatusCO->forceSet(STATUSCO_CONNECTING);
+    }
+    else if (connectedCount > 0) {
+        m_pStatusCO->forceSet(STATUSCO_CONNECTED);
+    }
+    else {
+        m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
+    }
 }

@@ -41,18 +41,19 @@ class BroadcastManager : public QObject {
     void slotProfileAdded(BroadcastProfilePtr profile);
     void slotProfileRemoved(BroadcastProfilePtr profile);
     void slotProfilesChanged();
+    void slotConnectionStatusChanged(int newState);
 
   private:
+    bool addConnection(BroadcastProfilePtr profile);
+    bool removeConnection(BroadcastProfilePtr profile);
+    ShoutConnectionPtr findConnectionForProfile(BroadcastProfilePtr profile);
+
     UserSettingsPointer m_pConfig;
     BroadcastSettingsPointer m_pBroadcastSettings;
     QSharedPointer<EngineNetworkStream> m_pNetworkStream;
 
     ControlPushButton* m_pBroadcastEnabled;
     ControlObject* m_pStatusCO;
-
-    bool addConnection(BroadcastProfilePtr profile);
-    bool removeConnection(BroadcastProfilePtr profile);
-    ShoutConnectionPtr findConnectionForProfile(BroadcastProfilePtr profile);
 };
 
 #endif /* BROADCAST_BROADCASTMANAGER_H */
