@@ -2,7 +2,7 @@
 #define WEFFECTKNOB_H
 
 #include "widget/wknob.h"
-#include "effects/effectparameterslotbase.h"
+#include "effects/effectparameterslot.h"
 
 class WEffectParameterKnob : public WKnob {
   Q_OBJECT
@@ -20,7 +20,7 @@ class WEffectParameterKnob : public WKnob {
   private:
     // Set the EffectParameterSlot that should be monitored by this
     // WEffectKnobComposed.
-    void setEffectParameterSlot(EffectParameterSlotBasePointer pEffectParameterSlot);
+    void setEffectParameterSlot(EffectParameterSlotPointer pParameterSlot);
 
     EffectsManager* m_pEffectsManager;
     EffectParameterSlotBasePointer m_pEffectParameterSlot;

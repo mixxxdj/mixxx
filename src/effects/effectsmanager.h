@@ -58,6 +58,9 @@ class EffectsManager : public QObject {
 
     EffectRackPointer getEffectRack(const QString& group);
 
+    EffectParameterSlotPointer getEffectParameterSlot(
+            const ConfigKey& configKey);
+
     QString getNextEffectId(const QString& effectId);
     QString getPrevEffectId(const QString& effectId);
 
