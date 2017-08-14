@@ -239,7 +239,18 @@ void DlgPrefBroadcast::profileListItemSelected(const QModelIndex& index) {
 }
 
 void DlgPrefBroadcast::updateModel() {
+    // Resetting the model will clear the current list selection
+    // so store the name of the current selection before resetting
+    QString selected("");
+    if(m_pProfileListSelection) {
+        selected = m_pProfileListSelection->getProfileName();
+    }
+
     m_pSettingsModel->resetFromSettings(m_pBroadcastSettings);
+    if(!selected.isEmpty()) {
+        // Restore previous selection with the name fetched before
+        selectConnectionRowByName(selected);
+    }
 }
 
 void DlgPrefBroadcast::selectConnectionRow(int row) {

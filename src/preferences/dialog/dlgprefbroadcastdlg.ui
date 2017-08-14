@@ -39,11 +39,7 @@
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">QTableView::item::focus {
-	background-color: palette(highlight);
-	color: white;
-}
-</string>
+         <string notr="true"/>
         </property>
         <property name="selectionMode">
          <enum>QAbstractItemView::SingleSelection</enum>

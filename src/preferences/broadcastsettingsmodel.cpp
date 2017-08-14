@@ -136,7 +136,10 @@ Qt::ItemFlags BroadcastSettingsModel::flags(const QModelIndex& index) const {
     if(index.column() == kColumnEnabled)
         return QAbstractItemModel::flags(index) | Qt::ItemIsUserCheckable;
 
-    return Qt::ItemIsEnabled;
+    if(index.column() == kColumnName)
+        return QAbstractItemModel::flags(index) | Qt::ItemIsSelectable;
+
+    return QAbstractItemModel::flags(index) | Qt::ItemIsEnabled;
 }
 
 bool BroadcastSettingsModel::setData(const QModelIndex& index, const QVariant& value, int role) {
