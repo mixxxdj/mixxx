@@ -31,7 +31,7 @@ Description:
             <SetVariable name="ConfigKeyPerm">[EffectRack1],show</SetVariable>
           </Template>
 
-          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml"><!-- Samplers -->
             <SetVariable name="TooltipId">show_samplers</SetVariable>
@@ -42,7 +42,7 @@ Description:
             <SetVariable name="ConfigKeyPerm">[Samplers],show_samplers</SetVariable>
           </Template>
 
-          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml"><!-- Library -->
             <SetVariable name="TooltipId">show_library</SetVariable>
@@ -53,7 +53,7 @@ Description:
             <SetVariable name="ConfigKeyPerm">[Library],show_library</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>10f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml"><!-- 4 Decks -->
             <SetVariable name="ObjectName">GuiToggleButton2</SetVariable>
@@ -66,7 +66,7 @@ Description:
             <SetVariable name="ConfigKeyPerm">[Master],show_4decks</SetVariable>
           </Template>
 
-          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml"><!-- Waveforms -->
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
@@ -78,7 +78,7 @@ Description:
             <SetVariable name="ConfigKeyPerm">[Tango],stacked_waveforms</SetVariable>
           </Template>
 
-          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml"><!-- Spinny -->
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
@@ -90,7 +90,7 @@ Description:
             <SetVariable name="ConfigKeyPerm">[Tango],mixerbar</SetVariable>
           </Template>
 
-          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml">
               <SetVariable name="TooltipId"></SetVariable>
@@ -103,7 +103,7 @@ Description:
               <SetVariable name="ConfigKeyPerm">[Tango],hotcues</SetVariable>
           </Template>
 
-          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml"><!-- Mixer -->
             <SetVariable name="TooltipId">show_mixer</SetVariable>
@@ -133,7 +133,7 @@ Description:
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <WidgetGroup><Size>10f,1min</Size><Children/></WidgetGroup>
+              <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
               <SliderComposed>
                 <ObjectName>Crossfader</ObjectName>
                 <TooltipId>crossfader</TooltipId>
@@ -144,7 +144,7 @@ Description:
                   <ConfigKey>[Master],crossfader</ConfigKey>
                 </Connection>
               </SliderComposed>
-              <WidgetGroup><Size>10f,1min</Size><Children/></WidgetGroup>
+              <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
             </Children>
             <Connection>
               <ConfigKey persist="true">[Tango],crossfader</ConfigKey>
@@ -175,9 +175,7 @@ Description:
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                   <WidgetGroup>
-                    <Layout>horizontal</Layout>
                     <Size>22f,0f</Size>
-                    <Children/>
                     <Connection>
                       <ConfigKey>[Tango],vumeter</ConfigKey>
                       <BindProperty>visible</BindProperty>
@@ -255,7 +253,7 @@ Description:
             <SetVariable name="ConfigKeyPerm">[Tango],colorLogo</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
 
           <WidgetGroup><!-- Recording button & recording duration label -->
             <Layout>stacked</Layout>
@@ -289,7 +287,7 @@ Description:
             </Children>
           </WidgetGroup><!-- /Recording button & recording duration label -->
 
-          <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_4state_display.xml">
             <SetVariable name="TooltipId">broadcast_enabled</SetVariable>
@@ -299,7 +297,7 @@ Description:
             <SetVariable name="ConfigKeyDisp">[Shoutcast],status</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
           <Time>
             <TooltipId>time</TooltipId>
@@ -310,7 +308,7 @@ Description:
             <Align>center</Align>   -->
           </Time>
 
-          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state.xml">
             <SetVariable name="ObjectName">SkinSettingsToggler</SetVariable>

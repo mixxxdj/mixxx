@@ -59,7 +59,6 @@ Description:
 
           <WidgetGroup> <!-- Pitch fader spacer -->
             <Size>106f,1min</Size>
-            <Children/>
             <Connection>
               <ConfigKey>[Tango],pitch_fader</ConfigKey>
               <BindProperty>visible</BindProperty>
@@ -97,7 +96,6 @@ Description:
 
       <WidgetGroup><!-- Spacer for netbook mode -->
         <Size>10f,1min</Size>
-        <Children/>
         <Connection>
           <ConfigKey>[Tango],netbook_mode</ConfigKey>
           <BindProperty>visible</BindProperty>

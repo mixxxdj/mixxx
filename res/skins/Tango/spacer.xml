@@ -19,12 +19,10 @@ Variables:
       <WidgetGroup>
         <MinimumSize>0,0</MinimumSize>
         <MaximumSize>15,-1</MaximumSize>
-        <Children/>
       </WidgetGroup>
       <WidgetGroup>
         <ObjectName>RoundFiller<Variable name="Color"/></ObjectName>
         <MinimumSize>16,-1</MinimumSize>
-        <Children/>
       </WidgetGroup>
     </Children>
   </SizeAwareStack>

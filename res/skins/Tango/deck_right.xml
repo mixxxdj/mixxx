@@ -19,14 +19,13 @@ Variables:
     <Size>504me,136min</Size>
     <Children>
 
-      <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
+      <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
       <!-- Pitch slider & Key controls -->
       <Template src="skin:rate_pitch_key.xml"/>
 
       <WidgetGroup>
         <Size>3f,1me</Size>
-        <Children/>
         <Connection>
           <ConfigKey>[Tango],pitch_fader</ConfigKey>
           <BindProperty>visible</BindProperty>
@@ -68,7 +67,6 @@ Variables:
 
           <WidgetGroup>
             <Size>3f,1me</Size>
-            <Children/>
             <Connection>
               <ConfigKey>[Tango],vumeter</ConfigKey>
               <BindProperty>visible</BindProperty>
@@ -84,7 +82,7 @@ Variables:
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                   <Template src="skin:spinnyCover.xml"/>
-                  <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
+                  <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>

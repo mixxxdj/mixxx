@@ -195,7 +195,8 @@
             <WidgetGroup>
               <Layout>vertical</Layout>
               <Children>
-                <WidgetGroup><Size>1me,3f</Size><Children/>
+                <WidgetGroup>
+                  <Size>1me,3f</Size>
                   <Connection>
                     <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
                     <Transform><Not/></Transform>
@@ -343,7 +344,6 @@
 
                         <WidgetGroup>
                           <Size>1me,5f</Size>
-                          <Children/>
                           <Connection>
                             <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
                             <BindProperty>visible</BindProperty>
@@ -360,7 +360,6 @@
 
                         <WidgetGroup>
                           <Size>1me,5f</Size>
-                          <Children/>
                           <Connection>
                             <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
                             <BindProperty>visible</BindProperty>
@@ -389,7 +388,6 @@
 
                         <WidgetGroup>
                           <Size>1me,5f</Size>
-                          <Children/>
                           <Connection>
                             <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
                             <BindProperty>visible</BindProperty>
@@ -400,7 +398,6 @@
 
                         <WidgetGroup>
                           <Size>1me,5f</Size>
-                          <Children/>
                           <Connection>
                             <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
                             <BindProperty>visible</BindProperty>
@@ -417,7 +414,6 @@
 
                         <WidgetGroup>
                           <Size>1me,5f</Size>
-                          <Children/>
                           <Connection>
                             <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
                             <BindProperty>visible</BindProperty>

@@ -64,7 +64,7 @@ Variables:
             </Connection>
           </Overview><!-- /Overview -->
 
-          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
           <Template src="skin:vinyl_controls_left.xml"/>
 

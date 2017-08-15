@@ -61,7 +61,6 @@ Variables:
                           <ObjectName>KeyOffsetWarning</ObjectName>
                           <Size>50f,13f</Size>
                           <Layout>horizontal</Layout>
-                          <Children/>
                           <Connection>
                             <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
                             <Transform><Not/><IsEqual>1</IsEqual></Transform>
@@ -150,7 +149,6 @@ Variables:
       <WidgetGroup>
         <ObjectName>Spacer1e</ObjectName>
         <Size>1me,25f</Size>
-        <Children/>
         <Connection>
           <ConfigKey>[Tango],loop_beatjump_controls</ConfigKey>
           <BindProperty>visible</BindProperty>

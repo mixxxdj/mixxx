@@ -178,7 +178,7 @@ Variables:
             <SetVariable name="Color">tiny_red</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>0me,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state.xml">
             <SetVariable name="TooltipId">pfl</SetVariable>
@@ -235,7 +235,7 @@ Variables:
             <SetVariable name="ConfigKey"><Variable name="group"/>,keylock</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>1me,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><Size>1me,1min</Size></WidgetGroup>
 
           <Template src="skin:button_1state_right.xml">
             <SetVariable name="TooltipId">beatsync_beatsync_tempo</SetVariable>
@@ -247,14 +247,13 @@ Variables:
             <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatsync_tempo</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
         </Children>
       </WidgetGroup><!-- /Sampler Buttons -->
 
       <WidgetGroup>
         <ObjectName>Spacer0f</ObjectName>
         <Size>-1me,1f</Size>
-        <Children/>
         <Connection>
           <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
           <BindProperty>visible</BindProperty>
@@ -269,7 +268,7 @@ Variables:
         <Layout>vertical</Layout>
         <Children>
 
-          <WidgetGroup><Size>1min,1f</Size><Children/></WidgetGroup>
+          <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
 
           <WidgetGroup>
             <Size>117me,16f</Size>
@@ -280,19 +279,19 @@ Variables:
                 <SetVariable name="labelText">FX1</SetVariable>
                 <SetVariable name="fxUnit">1</SetVariable>
               </Template>
-                <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+                <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
               <Template src="skin:fx_assign_button.xml">
                 <SetVariable name="Size">28me,16f</SetVariable>
                 <SetVariable name="labelText">FX2</SetVariable>
                 <SetVariable name="fxUnit">2</SetVariable>
               </Template>
-                <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+                <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
               <Template src="skin:fx_assign_button.xml">
                 <SetVariable name="Size">28me,16f</SetVariable>
                 <SetVariable name="labelText">FX3</SetVariable>
                 <SetVariable name="fxUnit">3</SetVariable>
               </Template>
-                <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+                <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
               <Template src="skin:fx_assign_button.xml">
                 <SetVariable name="Size">28me,16f</SetVariable>
                 <SetVariable name="labelText">FX4</SetVariable>

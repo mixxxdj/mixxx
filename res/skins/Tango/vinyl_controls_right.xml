@@ -17,7 +17,6 @@ Variables:
 
       <WidgetGroup>
         <Size>1min,1f</Size>
-        <Children/>
         <Connection>
           <ConfigKey persist="true">[Tango],symmetric_overviews</ConfigKey>
           <Transform><Not/></Transform>
@@ -52,7 +51,7 @@ Variables:
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup><Size>1min,1f</Size><Children/></WidgetGroup>
+      <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>blaaa2</ObjectName>
@@ -82,7 +81,6 @@ Variables:
                 <ObjectName>SubmenuCover</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>me,me</SizePolicy>
-                <Children/>
                 <Connection>
                   <ConfigKey persist="true"><Variable name="group"/>,vinylcontrol_mode</ConfigKey>
                   <Transform><IsEqual>1</IsEqual><Not/></Transform>
@@ -107,7 +105,6 @@ Variables:
 
       <WidgetGroup>
         <Size>1min,1f</Size>
-        <Children/>
         <Connection>
           <ConfigKey persist="true">[Tango],symmetric_overviews</ConfigKey>
           <BindProperty>visible</BindProperty>

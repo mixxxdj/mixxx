@@ -22,14 +22,8 @@ Description:
             <MinimumSize>1,0</MinimumSize>
             <MaximumSize>1259,0</MaximumSize>
             <Children>
-              <WidgetGroup trigger="[Tango],netbook_mode">
-                <Size>2f,0f</Size>
-                <Children/>
-              </WidgetGroup>
-              <WidgetGroup trigger="[Tango],normal_mode">
-                <Size>2f,0f</Size>
-                <Children/>
-              </WidgetGroup>
+              <WidgetGroup trigger="[Tango],netbook_mode"><Size>2f,0f</Size></WidgetGroup>
+              <WidgetGroup trigger="[Tango],normal_mode"><Size>2f,0f</Size></WidgetGroup>
             </Children>
           </WidgetStack>
 
@@ -37,14 +31,8 @@ Description:
             <SizePolicy>me,me</SizePolicy>
             <MinimumSize>1260,0</MinimumSize>
             <Children>
-              <WidgetGroup trigger="[Tango],normal_mode">
-                <Size>2f,0f</Size>
-                <Children/>
-              </WidgetGroup>
-              <WidgetGroup trigger="[Tango],netbook_mode">
-                <Size>2f,0f</Size>
-                <Children/>
-              </WidgetGroup>
+              <WidgetGroup trigger="[Tango],normal_mode"><Size>2f,0f</Size></WidgetGroup>
+              <WidgetGroup trigger="[Tango],netbook_mode"><Size>2f,0f</Size></WidgetGroup>
             </Children>
           </WidgetStack>
         </Children>
@@ -53,7 +41,6 @@ Description:
       <WidgetGroup><!-- Spacer to enforce netbook mode -->
         <ObjectName>EnforceNetbookMode</ObjectName>
         <Size>10000f,0f</Size>
-        <Children/>
         <Connection>
           <ConfigKey persist="true">[Tango],enforce_netbook_mode</ConfigKey>
           <BindProperty>visible</BindProperty>

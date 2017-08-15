@@ -30,7 +30,7 @@ Variables:
                 <Layout>horizontal</Layout>
                 <Children>
                   <Template src="skin:fx_parameter_row.xml"><SetVariable name="fxNum">1</SetVariable></Template>
-                  <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
+                  <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_toggle_selector.xml"><SetVariable name="fxNum">1</SetVariable></Template>
                   <Template src="skin:fx_metaknob.xml"><SetVariable name="fxNum">1</SetVariable></Template>
                   <Template src="skin:fx_focus_button.xml"><SetVariable name="fxNum">1</SetVariable></Template>
@@ -38,7 +38,7 @@ Variables:
                 </Children>
               </WidgetGroup><!-- /EffectSlot 1 -->
 
-                <WidgetGroup><Size>1me,1f</Size><Children/></WidgetGroup>
+                <WidgetGroup><Size>1me,1f</Size></WidgetGroup>
 
               <WidgetGroup><!-- EffectSlot 2 -->
                 <ObjectName>AlignRight</ObjectName>
@@ -46,7 +46,7 @@ Variables:
                 <Layout>horizontal</Layout>
                 <Children>
                   <Template src="skin:fx_parameter_row.xml"><SetVariable name="fxNum">2</SetVariable></Template>
-                  <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
+                  <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_toggle_selector.xml"><SetVariable name="fxNum">2</SetVariable></Template>
                   <Template src="skin:fx_metaknob.xml"><SetVariable name="fxNum">2</SetVariable></Template>
                   <Template src="skin:fx_focus_button.xml"><SetVariable name="fxNum">2</SetVariable></Template>
@@ -54,7 +54,7 @@ Variables:
                 </Children>
               </WidgetGroup><!-- /EffectSlot 2 -->
 
-                <WidgetGroup><Size>1me,1f</Size><Children/></WidgetGroup>
+                <WidgetGroup><Size>1me,1f</Size></WidgetGroup>
 
               <WidgetGroup><!-- EffectSlot 3 -->
                 <ObjectName>AlignRight</ObjectName>
@@ -62,7 +62,7 @@ Variables:
                 <Layout>horizontal</Layout>
                 <Children>
                   <Template src="skin:fx_parameter_row.xml"><SetVariable name="fxNum">3</SetVariable></Template>
-                  <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
+                  <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_toggle_selector.xml"><SetVariable name="fxNum">3</SetVariable></Template>
                   <Template src="skin:fx_metaknob.xml"><SetVariable name="fxNum">3</SetVariable></Template>
                   <Template src="skin:fx_focus_button.xml"><SetVariable name="fxNum">3</SetVariable></Template>
@@ -129,14 +129,14 @@ Variables:
                 <Layout>horizontal</Layout>
                 <Children>
                   <Template src="skin:fx_parameter_row.xml"><SetVariable name="fxNum">1</SetVariable></Template>
-                  <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
+                  <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_toggle_selector.xml"><SetVariable name="fxNum">1</SetVariable></Template>
                   <Template src="skin:fx_metaknob.xml"><SetVariable name="fxNum">1</SetVariable></Template>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                 </Children>
               </WidgetGroup><!-- /EffectSlot 1 -->
 
-                <WidgetGroup><Size>1me,1f</Size><Children/></WidgetGroup>
+                <WidgetGroup><Size>1me,1f</Size></WidgetGroup>
 
               <WidgetGroup><!-- EffectSlot 2 -->
                 <ObjectName>AlignRight</ObjectName>
@@ -144,14 +144,14 @@ Variables:
                 <Layout>horizontal</Layout>
                 <Children>
                   <Template src="skin:fx_parameter_row.xml"><SetVariable name="fxNum">2</SetVariable></Template>
-                  <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
+                  <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_toggle_selector.xml"><SetVariable name="fxNum">2</SetVariable></Template>
                   <Template src="skin:fx_metaknob.xml"><SetVariable name="fxNum">2</SetVariable></Template>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                 </Children>
               </WidgetGroup><!-- /EffectSlot 2 -->
 
-                <WidgetGroup><Size>1me,1f</Size><Children/></WidgetGroup>
+                <WidgetGroup><Size>1me,1f</Size></WidgetGroup>
 
               <WidgetGroup><!-- EffectSlot 3 -->
                 <ObjectName>AlignRight</ObjectName>
@@ -159,7 +159,7 @@ Variables:
                 <Layout>horizontal</Layout>
                 <Children>
                   <Template src="skin:fx_parameter_row.xml"><SetVariable name="fxNum">3</SetVariable></Template>
-                  <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
+                  <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_toggle_selector.xml"><SetVariable name="fxNum">3</SetVariable></Template>
                   <Template src="skin:fx_metaknob.xml"><SetVariable name="fxNum">3</SetVariable></Template>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
@@ -226,7 +226,7 @@ Variables:
                 <Layout>vertical</Layout>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
-                  <WidgetGroup><Size>1min,0me</Size><Children/></WidgetGroup>
+                  <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
 
                   <Template src="skin:knob_textless.xml">
                     <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
@@ -237,7 +237,7 @@ Variables:
                     <SetVariable name="Color">red</SetVariable>
                   </Template>
 
-                  <WidgetGroup><Size>1min,0me</Size><Children/></WidgetGroup>
+                  <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
 
                   <WidgetGroup><!-- Super Knob, if enabled -->
                     <Size>32f,32f</Size>
@@ -260,7 +260,6 @@ Variables:
 
                   <WidgetGroup><!-- additional spacer for Super Knob, if enabled -->
                     <Size>1min,0me</Size>
-                    <Children/>
                     <Connection>
                       <ConfigKey persist="true">[Tango],fx_super_knob</ConfigKey>
                       <BindProperty>visible</BindProperty>
@@ -269,7 +268,7 @@ Variables:
                 </Children>
               </WidgetGroup><!-- /SuperWetDryContainer -->
 
-              <WidgetGroup><Size>1min,1f</Size><Children/></WidgetGroup>
+              <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
 
               <WidgetGroup><!-- Master, Headphone -->
                 <Layout>horizontal</Layout>
@@ -282,7 +281,7 @@ Variables:
                     <SetVariable name="labelOn">fx_master_on</SetVariable>
                     <SetVariable name="group">[Master]</SetVariable>
                   </Template>
-                    <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+                    <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_head_master_button.xml">
                     <SetVariable name="Size">21f,21f</SetVariable>
                     <SetVariable name="sourceType">headphones</SetVariable>

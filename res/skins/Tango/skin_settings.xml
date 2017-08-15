@@ -30,7 +30,7 @@ Description:
                 <Text>Decks / General</Text>
               </Label>
                 <!-- push Close button to far right -->
-                <WidgetGroup><Size>1me,1me</Size><Children/></WidgetGroup>
+                <WidgetGroup><Size>1me,1me</Size></WidgetGroup>
               <Template src="skin:button_2state.xml">
                 <SetVariable name="ObjectName">SkinSettingsClose</SetVariable>
                 <SetVariable name="Size">17f,24f</SetVariable>
@@ -96,7 +96,6 @@ Description:
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
                     <SizePolicy>me,max</SizePolicy>
-                    <Children/>
                     <Connection>
                       <ConfigKey persist="true">[Tango],pitch_fader</ConfigKey>
                       <BindProperty>visible</BindProperty>
@@ -286,7 +285,6 @@ Description:
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
                     <Size>182f,15f</Size>
-                    <Children/>
                     <Connection>
                       <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
                       <BindProperty>visible</BindProperty>
@@ -351,7 +349,6 @@ Description:
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
                     <SizePolicy>me,me</SizePolicy>
-                    <Children/>
                     <Connection>
                       <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
                       <BindProperty>visible</BindProperty>
@@ -424,7 +421,6 @@ Description:
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
                     <SizePolicy>me,me</SizePolicy>
-                    <Children/>
                     <Connection>
                       <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
                       <BindProperty>visible</BindProperty>

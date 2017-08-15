@@ -188,7 +188,7 @@ Variables:
             <SetVariable name="labelOn">fx_master_on</SetVariable>
             <SetVariable name="group">[Master]</SetVariable>
           </Template>
-            <WidgetGroup><Size>1min,1f</Size><Children/></WidgetGroup>
+            <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
           <Template src="skin:fx_head_master_button.xml">
             <SetVariable name="Size">15f,14f</SetVariable>
             <SetVariable name="sourceType">headphones</SetVariable>

@@ -74,7 +74,7 @@ Variables:
             <Size>82me,20f</Size>
             <Children>
 
-              <WidgetGroup><Size>2f,1min</Size><Children/></WidgetGroup>
+              <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 
               <Template src="skin:knob_textless.xml">
                 <SetVariable name="TooltipId">pregain</SetVariable>
@@ -108,7 +108,7 @@ Variables:
                 <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
               </Template>
 
-              <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
               <Template src="skin:button_1state_right.xml">
                 <SetVariable name="TooltipId">beatsync_beatsync_tempo</SetVariable>
@@ -120,7 +120,7 @@ Variables:
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatsync_tempo</SetVariable>
               </Template>
 
-              <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
             </Children>
           </WidgetGroup><!-- Sync, CF assign, Volume -->
 

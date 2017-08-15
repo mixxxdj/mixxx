@@ -70,7 +70,6 @@ Variables:
                 <ObjectName>SubmenuCover</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>me,me</SizePolicy>
-                <Children/>
                 <Connection>
                   <ConfigKey persist="true"><Variable name="group"/>,vinylcontrol_mode</ConfigKey>
                   <Transform><IsEqual>1</IsEqual><Not/></Transform>
@@ -93,7 +92,7 @@ Variables:
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup><Size>1min,1f</Size><Children/></WidgetGroup>
+      <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
 
     </Children>
     <Connection>

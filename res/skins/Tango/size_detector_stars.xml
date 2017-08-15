@@ -19,15 +19,11 @@ Controls:
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
-      <WidgetGroup><!-- Play and deck controls toggler -->
-        <ObjectName>SizeTest</ObjectName>
-        <Size>63f,12f</Size>
-        <Children/>
-      </WidgetGroup>
-      <WidgetGroup><!-- Separate Cue button -->
-        <ObjectName>SizeTest</ObjectName>
+      <!-- Play and deck controls toggler -->
+      <WidgetGroup><Size>63f,12f</Size></WidgetGroup>
+      <!-- Separate Cue button -->
+      <WidgetGroup>
         <Size>25f,12f</Size>
-        <Children/>
         <Connection>
           <ConfigKey persist="true">[Tango],separate_cue_button</ConfigKey>
           <Transform><IsEqual>1</IsEqual></Transform>
@@ -35,9 +31,7 @@ Controls:
         </Connection>
       </WidgetGroup>
       <WidgetGroup><!-- HotCues 1-4 at minimum size -->
-        <ObjectName>SizeTest</ObjectName>
         <Size>64f,12f</Size>
-        <Children/>
         <Connection>
           <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
           <Transform><IsEqual>1</IsEqual></Transform>
@@ -45,9 +39,7 @@ Controls:
         </Connection>
       </WidgetGroup>
       <WidgetGroup><!-- HotCues 1-8 at minimum size -->
-        <ObjectName>SizeTest</ObjectName>
         <Size>128f,12f</Size>
-        <Children/>
         <Connection>
           <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
           <Transform><IsEqual>2</IsEqual></Transform>
@@ -56,54 +48,42 @@ Controls:
       </WidgetGroup>
       <!-- spacers for deck controls that are set to be always visible -->
       <WidgetGroup><!-- keylock -->
-        <ObjectName>SizeTest</ObjectName>
         <Size>20f,12f</Size>
-        <Children/>
         <Connection>
           <ConfigKey persist="true">[Tango],always_visible_keylock</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
       <WidgetGroup><!-- repeat -->
-        <ObjectName>SizeTest</ObjectName>
         <Size>22f,12f</Size>
-        <Children/>
         <Connection>
           <ConfigKey persist="true">[Tango],always_visible_repeat</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
       <WidgetGroup><!-- eject -->
-        <ObjectName>SizeTest</ObjectName>
         <Size>20f,12f</Size>
-        <Children/>
         <Connection>
           <ConfigKey persist="true">[Tango],always_visible_eject</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
       <WidgetGroup><!-- slip mode -->
-        <ObjectName>SizeTest</ObjectName>
         <Size>22f,12f</Size>
-        <Children/>
         <Connection>
           <ConfigKey persist="true">[Tango],always_visible_slipMode</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
       <WidgetGroup><!-- xfader orientation -->
-        <ObjectName>SizeTest</ObjectName>
         <Size>20f,12f</Size>
-        <Children/>
         <Connection>
           <ConfigKey persist="true">[Tango],always_visible_xfaderOrientation</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
       <WidgetGroup><!-- quantize -->
-        <ObjectName>SizeTest</ObjectName>
         <Size>22f,12f</Size>
-        <Children/>
         <Connection>
           <ConfigKey persist="true">[Tango],always_visible_quantize</ConfigKey>
           <BindProperty>visible</BindProperty>
@@ -115,9 +95,7 @@ Controls:
         <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup><!-- keylock expanded -->
-            <ObjectName>SizeTest</ObjectName>
             <Size>20f,12f</Size>
-            <Children/>
             <Connection>
               <ConfigKey persist="true">[Tango],always_visible_keylock</ConfigKey>
               <Transform><Not/></Transform>
@@ -125,9 +103,7 @@ Controls:
             </Connection>
           </WidgetGroup>
           <WidgetGroup><!-- repeat expanded -->
-            <ObjectName>SizeTest</ObjectName>
             <Size>22f,12f</Size>
-            <Children/>
             <Connection>
               <ConfigKey persist="true">[Tango],always_visible_repeat</ConfigKey>
               <Transform><Not/></Transform>
@@ -135,9 +111,7 @@ Controls:
             </Connection>
           </WidgetGroup>
           <WidgetGroup><!-- eject expanded -->
-            <ObjectName>SizeTest</ObjectName>
             <Size>20f,12f</Size>
-            <Children/>
             <Connection>
               <ConfigKey persist="true">[Tango],always_visible_eject</ConfigKey>
               <Transform><Not/></Transform>
@@ -145,9 +119,7 @@ Controls:
             </Connection>
           </WidgetGroup>
           <WidgetGroup><!-- slip mode expanded -->
-            <ObjectName>SizeTest</ObjectName>
             <Size>22f,12f</Size>
-            <Children/>
             <Connection>
               <ConfigKey persist="true">[Tango],always_visible_slipMode</ConfigKey>
               <Transform><Not/></Transform>
@@ -155,9 +127,7 @@ Controls:
             </Connection>
           </WidgetGroup>
           <WidgetGroup><!-- xfader orientation expanded -->
-            <ObjectName>SizeTest</ObjectName>
             <Size>20f,12f</Size>
-            <Children/>
             <Connection>
               <ConfigKey persist="true">[Tango],always_visible_xfaderOrientation</ConfigKey>
               <Transform><Not/></Transform>
@@ -165,9 +135,7 @@ Controls:
             </Connection>
           </WidgetGroup>
           <WidgetGroup><!-- quantize expanded -->
-            <ObjectName>SizeTest</ObjectName>
             <Size>22f,12f</Size>
-            <Children/>
             <Connection>
               <ConfigKey persist="true">[Tango],always_visible_quantize</ConfigKey>
               <Transform><Not/></Transform>
@@ -188,14 +156,8 @@ Controls:
             <MinimumSize>0,12</MinimumSize>
             <MaximumSize>82,12</MaximumSize>
             <Children>
-              <WidgetGroup>
-                <Size>1f,12f</Size>
-                <Children/>
-              </WidgetGroup>
-              <WidgetGroup trigger="[Tango],stars_fit">
-                <Size>1f,12f</Size>
-                <Children/>
-              </WidgetGroup>
+              <WidgetGroup><Size>1f,12f</Size></WidgetGroup>
+              <WidgetGroup trigger="[Tango],stars_fit"><Size>1f,12f</Size></WidgetGroup>
             </Children>
           </WidgetStack>
 
@@ -204,14 +166,8 @@ Controls:
             <MinimumSize>83,12</MinimumSize>
             <MaximumSize>-1,12</MaximumSize>
             <Children>
-              <WidgetGroup trigger="[Tango],stars_fit">
-                <Size>1f,12f</Size>
-                <Children/>
-              </WidgetGroup>
-              <WidgetGroup>
-                <Size>1f,12f</Size>
-                <Children/>
-              </WidgetGroup>
+              <WidgetGroup trigger="[Tango],stars_fit"><Size>1f,12f</Size></WidgetGroup>
+              <WidgetGroup><Size>1f,12f</Size></WidgetGroup>
             </Children>
           </WidgetStack>
 
