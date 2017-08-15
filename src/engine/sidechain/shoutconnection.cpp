@@ -59,6 +59,7 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
           m_firstCall(false),
           m_format_is_mp3(false),
           m_format_is_ov(false),
+          m_format_is_opus(false),
           m_protocol_is_icecast1(false),
           m_protocol_is_icecast2(false),
           m_protocol_is_shoutcast(false),
@@ -340,9 +341,10 @@ void ShoutConnection::updateFromPreferences() {
 
     m_format_is_mp3 = !qstrcmp(baFormat.constData(), BROADCAST_FORMAT_MP3);
     m_format_is_ov = !qstrcmp(baFormat.constData(), BROADCAST_FORMAT_OV);
+    m_format_is_opus = !qstrcmp(baFormat.constData(), BROADCAST_FORMAT_OPUS);
     if (m_format_is_mp3) {
         format = SHOUT_FORMAT_MP3;
-    } else if (m_format_is_ov) {
+    } else if (m_format_is_ov || m_format_is_opus) {
         format = SHOUT_FORMAT_OGG;
     } else {
         qWarning() << "Error: unknown format:" << baFormat.constData();
@@ -360,11 +362,20 @@ void ShoutConnection::updateFromPreferences() {
 
     int iMasterSamplerate = m_pMasterSamplerate->get();
     if (m_format_is_ov && iMasterSamplerate == 96000) {
-        errorDialog(tr("Broadcasting at 96kHz with Ogg Vorbis is not currently "
+        errorDialog(tr("Broadcasting at 96 kHz with Ogg Vorbis is not currently "
                        "supported. Please try a different sample-rate or switch "
                        "to a different encoding."),
                     tr("See https://bugs.launchpad.net/mixxx/+bug/686212 for more "
                        "information."));
+        return;
+    }
+
+    if(m_format_is_opus && iMasterSamplerate != 48000) {
+        errorDialog(tr("Broadcasting at samplerates other than 48 kHz "
+                       "is not supported by the Opus encoder. Please use "
+                       "48000 Hz in \"Sound Hardware\" preferences "
+                       "or switch to a different encoding."),
+                    tr("Unsupported samplerate"));
         return;
     }
 
@@ -411,7 +422,14 @@ void ShoutConnection::updateFromPreferences() {
         m_encoder = EncoderFactory::getFactory().getNewEncoder(
             EncoderFactory::getFactory().getFormatFor(ENCODING_OGG), m_pConfig, this);
         m_encoder->setEncoderSettings(broadcastSettings);
-    } else {
+    }
+#ifdef __OPUS__
+    else if (m_format_is_opus) {
+        m_encoder = EncoderFactory::getFactory().getNewEncoder(
+            EncoderFactory::getFactory().getFormatFor(ENCODING_OPUS), m_pConfig, this);
+    }
+#endif
+    else {
         kLogger.warning() << "**** Unknown Encoder Format";
         setState(NETWORKSTREAMWORKER_STATE_ERROR);
         m_lastErrorStr = "Encoder format error";
