@@ -451,7 +451,6 @@ WWidgetGroup {
 
 #DeckControlsExpanded,
 #Keylock[displayValue="0"]:hover, #Keylock[displayValue="1"],
-#PflButton[displayValue="0"]:hover, #PflButton[displayValue="1"],
 #DeckButton:hover {
   background-color: #151515;
   }
@@ -486,7 +485,7 @@ WWidgetGroup {
       background: #000000 url(skin:/buttons/btn_arrow_right_thin_hover.svg) no-repeat center center;
     }
 
-  #Keylock[displayValue="1"]:hover, #PflButton[displayValue="1"]:hover {
+  #Keylock[displayValue="1"]:hover {
     border: 1px solid #d2d2d2;
   }
   #SyncModeButton {
@@ -747,7 +746,7 @@ WBeatSpinBox {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   }
   #PitchSlider:hover, #Crossfader:hover {
-    background-color: #0f0f0f;
+    /* background-color: #0f0f0f; */
   }
 
 /*################################################################
@@ -762,16 +761,23 @@ WBeatSpinBox {
   background-color: #333333;
 }
 
+#VolumeSliderGain {
+  qproperty-layoutAlignment: 'AlignCenter';
+  margin-top: 2px;
+}
+#GainKnobLeft {;
+}
+
 #EQKnobs {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   }
   #EQKnobLeft {
     qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-    margin: 4px 12px 0px 0px;
+    margin: 4px 4px 0px 2px;
     }
   #EQKnobRight {
     qproperty-layoutAlignment: 'AlignRight | AlignTop';
-    margin: 4px 0px 0px 12px;
+    margin: 4px 2px 0px 4px;
     }
   #EQKillButton {
     border-radius: 1px;
@@ -799,6 +805,12 @@ WBeatSpinBox {
     border-top-right-radius: 15px;
     border-bottom-right-radius: 15px;
     }
+#FilterKnobLeft {
+  margin: 3px 16px 0px 2px
+}
+#FilterKnobRight {
+  margin: 3px 2px 0px 16px
+}
 
 /*  This wouldn't scale the image:
 #PflButton[displayValue="0"] {
@@ -809,19 +821,41 @@ WBeatSpinBox {
   if it is scaled up too much (>120). Source:
   https://forum.qt.io/topic/40151/solved-scaled-background-image-using-stylesheet/6
   border-image: url(skin:/buttons/btn_pfl_off.svg) 0 0 0 0 stretch stretch; */
-        
-#VolumeSliderGain {
-  qproperty-layoutAlignment: 'AlignHCenter';
-  margin-top: 2px;
-}
+#PflBoxLeft, #PflBoxRight {
+  border-color: #0f0f0f;
+  border-style: solid;
+  border-radius: 3px;
+  }
+  #PflBoxLeft {
+    border-width: 1px 0px 0px 1px;
+  }
+  #PflBoxRight {
+    border-width: 1px 1px 0px 0px;
+  }
+  #PflBoxLeft, #PflButtonLeft {
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+  }
+  #PflBoxRight, #PflButtonRight {
+    border-bottom-right-radius: 0px;
+    border-top-left-radius: 0px;
+  }
+#PflButtonLeft[displayValue="0"]:hover, #PflButtonLeft[displayValue="1"]:hover,
+#PflButtonRight[displayValue="0"]:hover, #PflButtonRight[displayValue="1"]:hover {
+    background-color: #151515;
+  }
+  #PflButtonLeft[displayValue="1"],
+  #PflButtonRight[displayValue="1"] {
+    background-color: #000000;
+  }
 
 #VUMeterFloating {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
 }
 #VUMeterMixer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
-  margin not respected!
-  margin-top: 4px;	*/
+  margin not respected when <Connection> attached!	*/
+  margin-top: 4px;
 }
 #VUMeter {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
@@ -1605,26 +1639,30 @@ QToolTip {
     stop: 0 #0f0f0f,
     stop: 1 #006596);
   }
+
+#AlignTop {
+  qproperty-layoutAlignment: 'AlignTop';
+}
 #AlignLeft{
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-  }
-  #AlignTopLeft {
-    qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  }
-  #AlignBottomLeft {
-    qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  }
+}
+#AlignTopLeft {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+}
+#AlignBottomLeft {
+  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+}
 #AlignRight {
-  qproperty-layoutAlignment: 'AlignRight | AlignBottom';
-  }
-  #AlignRightCenter {
-    qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  }
+qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+}
+#AlignRightCenter {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+}
 #AlignVCenter {
   qproperty-layoutAlignment: 'AlignVCenter';
 }
-#AlignTop {
-  qproperty-layoutAlignment: 'AlignTop';
+#AlignCenter {
+  qproperty-layoutAlignment: 'AlignCenter';
 }
 
 #Spacer0f {

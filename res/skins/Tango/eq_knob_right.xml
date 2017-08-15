@@ -12,55 +12,39 @@ Variables:
   <SetVariable name="EqualizerRackGroup">[EqualizerRack<Variable name="EqualizerNumber"/>]</SetVariable>
   <SetVariable name="EqualizerEffectUnitGroup">[EqualizerRack<Variable name="EqualizerNumber"/>_<Variable name="group"/>]</SetVariable>
   <SetVariable name="EqualizerEffectGroup">[EqualizerRack<Variable name="EqualizerNumber"/>_<Variable name="group"/>_Effect<Variable name="EffectNumber"/>]</SetVariable>
-  <WidgetGroup>
+  <WidgetGroup><!-- EQ knob + Kill button -->
+    <ObjectName>EQKnobRight</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
+      <Template src="skin:button_2state.xml">
+        <SetVariable name="ObjectName">EQKillButton</SetVariable>
+        <SetVariable name="TooltipId"><Variable name="TooltipId"/>Kill</SetVariable>
+        <SetVariable name="Size">12f,30f</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="EqualizerEffectGroup"/>,button_parameter<Variable name="parameter"/></SetVariable>
+      </Template><!-- Kill button -->
 
-      <WidgetGroup><!-- create margin when Filter knob is visible -->
-        <Size>6f,1min</Size>
-        <Connection>
-          <ConfigKey persist="true">[Tango],filter_knob</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
-
-      <WidgetGroup><!-- EQ knob + Kill button -->
-        <ObjectName>EQKnobRight</ObjectName>
-        <Layout>horizontal</Layout>
-        <Size>54f,34f</Size><!-- 42f,30f + [4 0 0 12] margin -->
+      <WidgetGroup><!-- EQ knob + Kill indicator underneath -->
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>stacked</Layout>
         <Children>
+          <EffectParameterKnobComposed>
+              <Size>30f,30f</Size>
+              <Knob>skin:/knobs_sliders/knob_white.svg</Knob>
+              <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+              <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+              <Connection>
+                  <ConfigKey><Variable name="EqualizerEffectGroup"/>,parameter<Variable name="parameter"/></ConfigKey>
+              </Connection>
+          </EffectParameterKnobComposed>
           <Template src="skin:button_2state.xml">
-            <SetVariable name="ObjectName">EQKillButton</SetVariable>
-            <SetVariable name="TooltipId"><Variable name="TooltipId"/>Kill</SetVariable>
-            <SetVariable name="Size">12f,30f</SetVariable>
+            <SetVariable name="ObjectName">EQKillButtonUnderlayRight</SetVariable>
+            <SetVariable name="Size">30f,30f</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="EqualizerEffectGroup"/>,button_parameter<Variable name="parameter"/></SetVariable>
-          </Template><!-- Kill button -->
-
-          <WidgetGroup><!-- EQ knob + Kill indicator underneath -->
-            <SizePolicy>min,min</SizePolicy>
-            <Layout>stacked</Layout>
-            <Children>
-              <EffectParameterKnobComposed>
-                  <Size>30f,30f</Size>
-                  <Knob>skin:/knobs_sliders/knob_white.svg</Knob>
-                  <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
-                  <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
-                  <Connection>
-                      <ConfigKey><Variable name="EqualizerEffectGroup"/>,parameter<Variable name="parameter"/></ConfigKey>
-                  </Connection>
-              </EffectParameterKnobComposed>
-              <Template src="skin:button_2state.xml">
-                <SetVariable name="ObjectName">EQKillButtonUnderlayRight</SetVariable>
-                <SetVariable name="Size">30f,30f</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="EqualizerEffectGroup"/>,button_parameter<Variable name="parameter"/></SetVariable>
-              </Template>
-            </Children>
-          </WidgetGroup><!-- /EQ knob + Kill indicator underneath -->
-
+          </Template>
         </Children>
-      </WidgetGroup><!-- /EQ knob + Kill button -->
+      </WidgetGroup><!-- /EQ knob + Kill indicator underneath -->
 
     </Children>
-  </WidgetGroup>
+  </WidgetGroup><!-- /EQ knob + Kill button -->
 </Template>

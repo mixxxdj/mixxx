@@ -275,9 +275,9 @@ Description:
                 </Children>
               </WidgetGroup>
 
-              <WidgetGroup><!-- EQ & QuickEffect knobs submenu -->
+              <WidgetGroup><!-- EQ knobs -->
                 <Layout>stacked</Layout>
-                <Size>182f,30f</Size>
+                <Size>182f,15f</Size>
                 <Children>
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
@@ -285,7 +285,7 @@ Description:
                   <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
-                    <Size>182f,30f</Size>
+                    <Size>182f,15f</Size>
                     <Children/>
                     <Connection>
                       <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
@@ -294,53 +294,18 @@ Description:
                     </Connection>
                   </WidgetGroup>
 
-                  <WidgetGroup><!-- EQ Knobs button -->
-                    <Layout>vertical</Layout>
-                    <Size>182f,30f</Size>
-                    <Children>
-
-                      <Template src="skin:skin_settings_button_2state.xml">
-                        <SetVariable name="state_0_text">      EQ Knobs</SetVariable>
-                        <SetVariable name="state_1_text"> &#10004; EQ Knobs</SetVariable>
-                        <SetVariable name="Setting">[Tango],eq_knobs</SetVariable>
-                      </Template>
-
-                      <WidgetGroup><!-- Filter knob submenu -->
-                        <Layout>stacked</Layout>
-                        <Size>182f,15f</Size>
-                        <Children>
-                          <!-- index 0 due to bug -->
-                          <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
-                          <WidgetGroup><!-- translucent cover when EQ Knobs are hidden -->
-                            <ObjectName>SubmenuCover</ObjectName>
-                            <Layout>vertical</Layout>
-                            <SizePolicy>me,me</SizePolicy>
-                            <Children/>
-                            <Connection>
-                              <ConfigKey persist="true">[Tango],eq_knobs</ConfigKey>
-                              <BindProperty>visible</BindProperty>
-                              <Transform><Not/></Transform>
-                            </Connection>
-                          </WidgetGroup>
-
-                          <Template src="skin:skin_settings_button_2state.xml">
-                            <SetVariable name="state_0_text">      Quick Effect Knob</SetVariable>
-                            <SetVariable name="state_1_text"> &#10004; Quick Effect Knob</SetVariable>
-                            <SetVariable name="Setting">[Tango],filter_knob</SetVariable>
-                          </Template>
-                        </Children>
-                      </WidgetGroup>
-
-                    </Children>
-                  </WidgetGroup><!-- EQ Knobs button --><!-- /Filter knob submenu -->
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="state_0_text">      EQ Knobs</SetVariable>
+                    <SetVariable name="state_1_text"> &#10004; EQ Knobs</SetVariable>
+                    <SetVariable name="Setting">[Tango],eq_knobs</SetVariable>
+                  </Template>
 
                 </Children>
-              </WidgetGroup><!-- /EQ & Filter knobs submenu -->
+              </WidgetGroup><!-- /EQ knobs -->
 
               <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      VU Meter</SetVariable>
-                <SetVariable name="state_1_text"> &#10004; VU Meter</SetVariable>
+                <SetVariable name="state_0_text">      permanent VU Meter</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; permanent VU Meter</SetVariable>
                 <SetVariable name="Setting">[Tango],vumeter</SetVariable>
               </Template>
 
