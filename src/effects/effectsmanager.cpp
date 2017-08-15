@@ -264,6 +264,49 @@ EffectParameterSlotPointer EffectsManager::getEffectParameterSlot(
     return pParameterSlot;
 }
 
+EffectButtonParameterSlotPointer EffectsManager::getEffectButtonParameterSlot(
+        const ConfigKey& configKey) {
+    QStringList parts = configKey.group.split(kEffectGroupSeparator);
+    QRegExp intRegEx(".*(\\d+).*");
+
+    EffectRackPointer pRack = getEffectRack(parts.at(0) + kGroupClose);
+    VERIFY_OR_DEBUG_ASSERT(pRack) {
+        return EffectButtonParameterSlotPointer();
+    }
+
+    EffectChainSlotPointer pChainSlot;
+    if (parts.at(0) == "[EffectRack1") {
+        intRegEx.indexIn(parts.at(1));
+        pChainSlot = pRack->getEffectChainSlot(intRegEx.cap(1).toInt() - 1);
+    } else {
+        // Assume a PerGroupRack
+        const QString chainGroup =
+                parts.at(0) + kEffectGroupSeparator + parts.at(1) + kGroupClose;
+        for (int i = 0; i < pRack->numEffectChainSlots(); ++i) {
+            EffectChainSlotPointer pSlot = pRack->getEffectChainSlot(i);
+            if (pSlot->getGroup() == chainGroup) {
+                pChainSlot = pSlot;
+                break;
+            }
+        }
+    }
+    VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
+        return EffectButtonParameterSlotPointer();
+    }
+
+    intRegEx.indexIn(parts.at(2));
+    EffectSlotPointer pEffectSlot =
+            pChainSlot->getEffectSlot(intRegEx.cap(1).toInt() - 1);
+    VERIFY_OR_DEBUG_ASSERT(pEffectSlot) {
+        return EffectButtonParameterSlotPointer();
+    }
+
+    intRegEx.indexIn(configKey.item);
+    EffectButtonParameterSlotPointer pParameterSlot =
+            pEffectSlot->getEffectButtonParameterSlot(intRegEx.cap(1).toInt() - 1);
+    return pParameterSlot;
+}
+
 
 void EffectsManager::setup() {
     // These controls are used inside EQ Effects

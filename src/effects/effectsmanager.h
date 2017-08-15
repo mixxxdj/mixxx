@@ -60,6 +60,8 @@ class EffectsManager : public QObject {
 
     EffectParameterSlotPointer getEffectParameterSlot(
             const ConfigKey& configKey);
+    EffectButtonParameterSlotPointer getEffectButtonParameterSlot(
+            const ConfigKey& configKey);
 
     QString getNextEffectId(const QString& effectId);
     QString getPrevEffectId(const QString& effectId);
