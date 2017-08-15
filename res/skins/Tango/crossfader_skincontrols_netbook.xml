@@ -160,12 +160,10 @@ Description:
 
               <WidgetGroup><!-- Spacer between decks -->
                 <Size>6f,0f</Size>
-                <Children/>
               </WidgetGroup>
 
               <WidgetGroup><!-- Pitch fader spacer -->
                 <Size>106f,0f</Size>
-                <Children/>
                 <Connection>
                   <ConfigKey>[Tango],pitch_fader</ConfigKey>
                   <BindProperty>visible</BindProperty>
@@ -192,7 +190,6 @@ Description:
                       <WidgetGroup>
                         <Layout>horizontal</Layout>
                         <Size>228f,0f</Size>
-                        <Children/>
                         <Connection>
                           <ConfigKey>[Tango],spinny_cover_none</ConfigKey>
                           <Transform><IsEqual>2</IsEqual><Not/></Transform>
