@@ -15,7 +15,7 @@ Description:
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
-    
+
       <WidgetGroup><!-- Skin Controls -->
         <Layout>horizontal</Layout>
         <ObjectName>SkinControlsBarLeft</ObjectName>
@@ -170,7 +170,7 @@ Description:
                 </Connection>
               </WidgetGroup>
 
-              <WidgetGroup><!-- VU Meter spacer when Channel Mixer is hidden -->
+              <WidgetGroup><!-- VU Meter + Cover/Spinny when Channel Mixer is hidden -->
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
@@ -208,23 +208,15 @@ Description:
                   <BindProperty>visible</BindProperty>
                   <Transform><Not/></Transform>
                 </Connection>
-              </WidgetGroup>
+              </WidgetGroup><!-- /VU Meter + Cover/Spinny when Channel Mixer is hidden -->
 
               <WidgetGroup><!-- Channel Mixer, optional VU meter, EQs and Filter knobs -->
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <WidgetGroup><!-- Basic mixer -->
+                  <WidgetGroup><!-- Basic mixer incl. VU Meter -->
                     <Layout>horizontal</Layout>
-                    <Size>88f,0f</Size>
-                  </WidgetGroup>
-                  <WidgetGroup><!-- VU meter -->
-                    <Layout>horizontal</Layout>
-                    <Size>24f,0f</Size>
-                    <Connection>
-                      <ConfigKey>[Tango],vumeter</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
+                    <Size>136f,0f</Size>
                   </WidgetGroup>
                   <WidgetGroup><!-- EQ knobs -->
                     <Layout>horizontal</Layout>
@@ -233,54 +225,37 @@ Description:
                       <ConfigKey>[Tango],eq_knobs</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
-                  </WidgetGroup><!-- /EQ knobs -->
+                  </WidgetGroup>
                 </Children>
                 <Connection>
                   <ConfigKey>[Tango],channel_mixer</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup>
+              </WidgetGroup><!-- /Channel Mixer, EQs and Filter knobs -->
             </Children>
           </WidgetGroup><!-- /Spacers instead of Crossfader -->
 
         </Children>
       </WidgetGroup><!-- Stack of spacers for PitchSlider, VUMeter etc.
                       Crossfader lies on top if enabled -->
-      
+
       <WidgetGroup><!-- Logo, Rec, Broadcast, Clock, Skinsettings -->
         <Layout>horizontal</Layout>
         <ObjectName>SkinControlsBarRight</ObjectName>
         <SizePolicy>me,min</SizePolicy>
         <Children>
 
-          <Template src="skin:button_2state.xml">
-            <SetVariable name="ObjectName">SkinSettingsToggler</SetVariable>
-            <SetVariable name="Size">24f,24f</SetVariable>
-            <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="ObjectName">LogoMaxi</SetVariable>
+            <SetVariable name="Size">81f,20f</SetVariable>
+            <SetVariable name="state_0_pressed">logo_104x26_grey.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">logo_104x26_grey.svg</SetVariable>
+            <SetVariable name="state_1_pressed">logo_104x26.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">logo_104x26.svg</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Tango],colorLogo</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
-
-          <Time>
-            <TooltipId>time</TooltipId>
-            <ObjectName>Clock</ObjectName>
-            <Size>30min,20f</Size>
-            <ShowSeconds>false</ShowSeconds>
-            <!-- This has no effect, neither has 'text-align' in qss.
-            <Align>center</Align>   -->
-          </Time>
-
-          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
-
-          <Template src="skin:button_4state_display.xml">
-            <SetVariable name="TooltipId">broadcast_enabled</SetVariable>
-            <SetVariable name="ObjectName">BroadcastButtonNetbook</SetVariable>
-            <SetVariable name="Size">24f,24f</SetVariable>
-            <SetVariable name="ConfigKey">[Shoutcast],enabled</SetVariable>
-            <SetVariable name="ConfigKeyDisp">[Shoutcast],status</SetVariable>
-          </Template>
-
-          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
 
           <WidgetGroup><!-- Recording button & recording duration label -->
             <Layout>stacked</Layout>
@@ -315,15 +290,32 @@ Description:
           </WidgetGroup><!-- /Recording button & recording duration label -->
 
           <WidgetGroup><Size>5f,1min</Size><Children/></WidgetGroup>
-          
-          <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="ObjectName">LogoMaxi</SetVariable>
-            <SetVariable name="Size">81f,20f</SetVariable>
-            <SetVariable name="state_0_pressed">logo_104x26_grey.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">logo_104x26_grey.svg</SetVariable>
-            <SetVariable name="state_1_pressed">logo_104x26.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">logo_104x26.svg</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[Tango],colorLogo</SetVariable>
+
+          <Template src="skin:button_4state_display.xml">
+            <SetVariable name="TooltipId">broadcast_enabled</SetVariable>
+            <SetVariable name="ObjectName">BroadcastButtonNetbook</SetVariable>
+            <SetVariable name="Size">24f,24f</SetVariable>
+            <SetVariable name="ConfigKey">[Shoutcast],enabled</SetVariable>
+            <SetVariable name="ConfigKeyDisp">[Shoutcast],status</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+
+          <Time>
+            <TooltipId>time</TooltipId>
+            <ObjectName>Clock</ObjectName>
+            <Size>30min,20f</Size>
+            <ShowSeconds>false</ShowSeconds>
+            <!-- This has no effect, neither has 'text-align' in qss.
+            <Align>center</Align>   -->
+          </Time>
+
+          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="ObjectName">SkinSettingsToggler</SetVariable>
+            <SetVariable name="Size">24f,24f</SetVariable>
+            <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>
           </Template>
 
         </Children>
