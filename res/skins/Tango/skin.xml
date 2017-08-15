@@ -59,7 +59,6 @@
       <attribute persist="true" config_key="[Tango],beatgrid_buttons">0</attribute>
       <attribute persist="true" config_key="[Tango],channel_mixer">1</attribute>
       <attribute persist="true" config_key="[Tango],crossfader">1</attribute>
-      <attribute persist="true" config_key="[Tango],crossfader_logo_Stack">1</attribute>
       <attribute persist="true" config_key="[Tango],deck_controls">1</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_keylock">1</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_eject">0</attribute>

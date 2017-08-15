@@ -33,7 +33,7 @@ Description:
             <SetVariable name="ConfigKeyPerm">[Master],show_4decks</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml"><!-- Waveforms -->
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
@@ -45,7 +45,7 @@ Description:
             <SetVariable name="ConfigKeyPerm">[Tango],stacked_waveforms</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml"><!-- Spinny -->
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
@@ -57,7 +57,7 @@ Description:
             <SetVariable name="ConfigKeyPerm">[Tango],mixerbar</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml">
               <SetVariable name="TooltipId"></SetVariable>
@@ -70,7 +70,7 @@ Description:
               <SetVariable name="ConfigKeyPerm">[Tango],hotcues</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml"><!-- Mixer -->
             <SetVariable name="TooltipId">show_mixer</SetVariable>
@@ -101,7 +101,7 @@ Description:
             <SetVariable name="ConfigKeyPerm">[EffectRack1],show</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml"><!-- Samplers -->
             <SetVariable name="TooltipId">show_samplers</SetVariable>
@@ -112,7 +112,7 @@ Description:
             <SetVariable name="ConfigKeyPerm">[Samplers],show_samplers</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml"><!-- Library -->
             <SetVariable name="TooltipId">show_library</SetVariable>
