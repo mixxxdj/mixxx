@@ -556,6 +556,7 @@ WWidgetGroup {
     border: 1px solid #ca0000;
     }
   #PlayCue[displayValue="1"]:hover {
+    background: #a90000 url(skin:/buttons/btn_playing_hover.svg) no-repeat center center;
     border: 1px solid #ff0000;
     }
   /* The button which signals alternate play status when

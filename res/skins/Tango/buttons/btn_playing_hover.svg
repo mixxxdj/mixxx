@@ -14,7 +14,7 @@
    id="svg3769"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_paused_hover.svg">
+   sodipodi:docname="btn_playing_hover.svg">
   <defs
      id="defs3771" />
   <sodipodi:namedview
@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="31.678384"
-     inkscape:cx="8.2223539"
-     inkscape:cy="13.179973"
+     inkscape:zoom="11.313708"
+     inkscape:cx="-5.874972"
+     inkscape:cy="5.6045976"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -52,22 +52,19 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-1028.3622)">
-    <path
-       sodipodi:type="star"
-       style="fill:#eeeeee;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       id="path3018"
-       sodipodi:sides="3"
-       sodipodi:cx="3"
-       sodipodi:cy="5"
-       sodipodi:r1="15.119611"
-       sodipodi:r2="7.5598059"
-       sodipodi:arg1="0"
-       sodipodi:arg2="1.0471976"
-       inkscape:flatsided="true"
-       inkscape:rounded="0"
-       inkscape:randomized="0"
-       d="m 18.119611,5 -22.6794164,13.093967 0,-26.187934 z"
-       transform="matrix(0.45822504,0,0,0.45822504,10.089417,1038.0711)"
-       inkscape:transform-center-x="-1.7320461" />
+    <rect
+       style="opacity:1;fill:#eeeeee;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect4333"
+       width="3"
+       height="12"
+       x="13"
+       y="1034.3622" />
+    <rect
+       style="opacity:1;fill:#eeeeee;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect4333-3"
+       width="3"
+       height="12"
+       x="7"
+       y="1034.3622" />
   </g>
 </svg>
