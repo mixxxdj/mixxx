@@ -9,7 +9,9 @@ const QString groupClose = "]";
 void WEffectParameterKnobComposed::setupEffectParameterSlot(const ConfigKey& configKey) {
     EffectParameterSlotPointer pParameterSlot =
             m_pEffectsManager->getEffectParameterSlot(configKey);
-    VERIFY_OR_DEBUG_ASSERT(pParameterSlot) {
+    if (!pParameterSlot) {
+        qWarning() << "EffectParameterKnobComposed" << configKey <<
+                "is not an effect parameter.";
         return;
     }
     setEffectParameterSlot(pParameterSlot);

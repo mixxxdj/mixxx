@@ -4,7 +4,9 @@
 void WEffectParameterKnob::setupEffectParameterSlot(const ConfigKey& configKey) {
     EffectParameterSlotPointer pParameterSlot =
             m_pEffectsManager->getEffectParameterSlot(configKey);
-    VERIFY_OR_DEBUG_ASSERT(pParameterSlot) {
+    if (!pParameterSlot) {
+        qWarning() << "EffectParameterKnob" << configKey <<
+                "is not an effect parameter.";
         return;
     }
     setEffectParameterSlot(pParameterSlot);
