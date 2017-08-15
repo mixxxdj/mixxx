@@ -15,7 +15,7 @@
     <Layout>horizontal</Layout>
     <Children>
 
-      <!--Wrap the EffectPushButton in a vertical WidgetGroup with spacers to ensure it stays in the
+      <!--Wrap the PushButton in a vertical WidgetGroup with spacers to ensure it stays in the
       correct position when the knobs get further apart and closer together.-->
       <WidgetGroup>
         <Layout>vertical</Layout>
