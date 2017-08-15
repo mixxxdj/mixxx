@@ -8,7 +8,14 @@
 #include "library/features/crates/cratemanager.h"
 #include "library/crate/crate.h"
 
-// This class represents the crate tree for the nested crates featur
+// This class represents the crate tree for the nested crates feature
+
+//NOTE(gramanas): This model needs a way to update it's items without folding
+// all the children. The TreeItemModel did not need to update on the fly
+// since every feature that made use of it either didn't use hierarchy
+// or did not need to add extra items once it was initialized.
+// Atm the tree folds with every change in the crates, it's not optimal but
+// it's usable.
 class CrateTreeModel : public TreeItemModel {
   public:
     CrateTreeModel(LibraryFeature* pFeature,

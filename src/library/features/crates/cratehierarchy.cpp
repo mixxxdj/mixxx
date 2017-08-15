@@ -113,7 +113,9 @@ void CrateHierarchy::resetPath() const {
     }
 }
 
-bool CrateHierarchy::writeCratePaths(CrateId id, QString namePath, QString idPath) const {
+bool CrateHierarchy::writeCratePaths(const CrateId& id,
+                                     const QString& namePath,
+                                     const QString& idPath) const {
     FwdSqlQuery query(
       m_database, QString(
         "INSERT INTO %1 "
@@ -132,7 +134,7 @@ bool CrateHierarchy::writeCratePaths(CrateId id, QString namePath, QString idPat
     return true;
 }
 
-bool CrateHierarchy::generateCratePaths(Crate crate) const {
+bool CrateHierarchy::generateCratePaths(const Crate& crate) const {
     QSqlQuery query(m_database);
 
     query.prepare(
@@ -198,7 +200,7 @@ bool CrateHierarchy::findParentAndChildIdFromPath(CrateId& parentId,
 }
 
 
-bool CrateHierarchy::initClosureForCrate(CrateId id) const {
+bool CrateHierarchy::initClosureForCrate(const CrateId& id) const {
     FwdSqlQuery query(
       m_database, QString(
         "INSERT INTO %1 "
@@ -219,7 +221,8 @@ bool CrateHierarchy::initClosureForCrate(CrateId id) const {
     return true;
 }
 
-bool CrateHierarchy::insertIntoClosure(CrateId parent, CrateId child) const {
+bool CrateHierarchy::insertIntoClosure(const CrateId& parent,
+                                       const CrateId& child) const {
     FwdSqlQuery query(
       m_database, QString(
         "INSERT INTO %1(%2, %3, %4) "
@@ -245,7 +248,7 @@ bool CrateHierarchy::insertIntoClosure(CrateId parent, CrateId child) const {
     return true;
 }
 
-void CrateHierarchy::deleteCrate(CrateId id) const {
+void CrateHierarchy::deleteCrate(const CrateId& id) const {
     {
         FwdSqlQuery query(
           m_database, QString(
@@ -360,7 +363,7 @@ bool CrateHierarchy::isNameValidForHierarchy(const QString& newName,
     }
 }
 
-QString CrateHierarchy::getNamePathFromId(CrateId id) const {
+QString CrateHierarchy::getNamePathFromId(const CrateId& id) const {
     FwdSqlQuery query(
       m_database, QString(
         "SELECT %1 FROM %2 "
@@ -376,7 +379,7 @@ QString CrateHierarchy::getNamePathFromId(CrateId id) const {
     return QString();
 }
 
-bool CrateHierarchy::hasChildren(CrateId id) const {
+bool CrateHierarchy::hasChildren(const CrateId& id) const {
     FwdSqlQuery query(
       m_database, QString(
         "SELECT COUNT(*) FROM %1 "
@@ -392,7 +395,7 @@ bool CrateHierarchy::hasChildren(CrateId id) const {
     return false;
 }
 
-CrateId CrateHierarchy::getParentId(const CrateId id) const {
+CrateId CrateHierarchy::getParentId(const CrateId& id) const {
     FwdSqlQuery query(
       m_database, QString(
         "SELECT %1 FROM %2 "
@@ -439,7 +442,7 @@ QStringList CrateHierarchy::collectIdPaths() const {
     return idPaths;
 }
 
-QStringList CrateHierarchy::tokenizeCratePath(CrateId id) const {
+QStringList CrateHierarchy::tokenizeCratePath(const CrateId& id) const {
     FwdSqlQuery query(
       m_database, QString(
         "SELECT %1 FROM %2 "
