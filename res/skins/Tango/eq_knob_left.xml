@@ -7,11 +7,7 @@ Variables:
   parameter : EQ parameter number
 -->
 <Template>
-  <SetVariable name="EqualizerNumber">1</SetVariable>
-  <SetVariable name="EffectNumber">1</SetVariable>
-  <SetVariable name="EqualizerRackGroup">[EqualizerRack<Variable name="EqualizerNumber"/>]</SetVariable>
-  <SetVariable name="EqualizerEffectUnitGroup">[EqualizerRack<Variable name="EqualizerNumber"/>_<Variable name="group"/>]</SetVariable>
-  <SetVariable name="EqualizerEffectGroup">[EqualizerRack<Variable name="EqualizerNumber"/>_<Variable name="group"/>_Effect<Variable name="EffectNumber"/>]</SetVariable>
+  <SetVariable name="EqualizerEfeefect">[EqualizerRack1_<Variable name="group"/>_Effect1]</SetVariable>
   <WidgetGroup><!-- EQ knob + Kill button -->
     <ObjectName>EQKnobLeft</ObjectName>
     <Layout>horizontal</Layout>
@@ -27,13 +23,13 @@ Variables:
               <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
               <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
               <Connection>
-                  <ConfigKey><Variable name="EqualizerEffectGroup"/>,parameter<Variable name="parameter"/></ConfigKey>
+                  <ConfigKey><Variable name="EqualizerEfeefect"/>,parameter<Variable name="parameter"/></ConfigKey>
               </Connection>
           </EffectParameterKnobComposed>
           <Template src="skin:button_2state.xml">
             <SetVariable name="ObjectName">EQKillButtonUnderlayLeft</SetVariable>
             <SetVariable name="Size">30f,30f</SetVariable>
-            <SetVariable name="ConfigKey"><Variable name="EqualizerEffectGroup"/>,button_parameter<Variable name="parameter"/></SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="EqualizerEfeefect"/>,button_parameter<Variable name="parameter"/></SetVariable>
           </Template>
         </Children>
       </WidgetGroup><!-- /EQ knob + Kill indicator underneath -->
@@ -42,7 +38,7 @@ Variables:
         <SetVariable name="ObjectName">EQKillButton</SetVariable>
         <SetVariable name="TooltipId"><Variable name="TooltipId"/>Kill</SetVariable>
         <SetVariable name="Size">12f,30f</SetVariable>
-        <SetVariable name="ConfigKey"><Variable name="EqualizerEffectGroup"/>,button_parameter<Variable name="parameter"/></SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="EqualizerEfeefect"/>,button_parameter<Variable name="parameter"/></SetVariable>
       </Template><!-- Kill button -->
     </Children>
   </WidgetGroup><!-- /EQ knob + Kill button -->
