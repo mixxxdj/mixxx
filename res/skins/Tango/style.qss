@@ -1252,12 +1252,12 @@ WBeatSpinBox {
       WEffectSelector::down-arrow {
         width: 10px;
         height: 20px;
-        image: url(skin:/buttons/btn_fx_selector_dots.svg);
+        image: url(skin:/buttons/btn_fx_selector_list.svg);
         }
         WEffectSelector::down-arrow:hover {
           width: 10px;
           height: 20px;
-          image: url(skin:/buttons/btn_fx_selector_dots_hover.svg);
+          image: url(skin:/buttons/btn_fx_selector_list_hover.svg);
         }
 
       WEffectSelector QAbstractItemView {
