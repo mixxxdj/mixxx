@@ -15,7 +15,7 @@
    viewBox="0 0 11 22"
    id="svg2"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_arrow_left_thin.svg">
+   sodipodi:docname="btn_arrow_right_thin_black.svg">
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -30,7 +30,7 @@
      id="namedview11"
      showgrid="false"
      inkscape:zoom="5.6568542"
-     inkscape:cx="13.146541"
+     inkscape:cx="-16.728721"
      inkscape:cy="-3.6507576"
      inkscape:window-x="0"
      inkscape:window-y="0"
@@ -67,8 +67,8 @@
     </g>
   </g>
   <path
-     style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none"
-     d="M 8.8941125,15.525483 4.3686285,11 8.8941125,6.4745166 7.7627415,5.3431458 3.2372585,9.8686286 2.1058875,11 l 1.131371,1.131371 4.525483,4.525483 1.131371,-1.131371 z"
+     style="fill:#151515;fill-opacity:1;fill-rule:nonzero;stroke:none"
+     d="M 2.1058875,6.4745169 6.6313715,11 2.1058875,15.525483 3.2372585,16.656854 7.7627415,12.131371 8.8941125,11 7.7627415,9.8686289 3.2372585,5.3431459 2.1058875,6.4745169 z"
      id="rect2987-7-3"
      inkscape:connector-curvature="0" />
 </svg>

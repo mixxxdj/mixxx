@@ -77,10 +77,12 @@ Variables:
             </Connection>
           </WidgetGroup><!-- /[Spinny / Cover / none] -->
 
-          <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
+          <!-- Toggle Vinyl Controls -->
+          <Template src="skin:button_2state_persist_highlight.xml">
             <SetVariable name="ObjectName">VinylTogglerRight</SetVariable>
             <SetVariable name="Size">11f,50f</SetVariable>
             <SetVariable name="ConfigKeyPerm">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
+            <SetVariable name="HighlightKey"><Variable name="group"/>,passthrough</SetVariable>
           </Template>
 
           <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
@@ -101,27 +103,27 @@ Variables:
             <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
             <EndOfTrackColor>#EA0085</EndOfTrackColor>
             <DefaultMark>
-                <Align>bottom|right</Align>
-                <Color>#00FF00</Color>
-                <TextColor>#FFFFFF</TextColor>
-                <Text> %1 </Text>
+              <Align>bottom|right</Align>
+              <Color>#00FF00</Color>
+              <TextColor>#FFFFFF</TextColor>
+              <Text> %1 </Text>
             </DefaultMark>
             <MarkRange>
-                <StartControl>loop_start_position</StartControl>
-                <EndControl>loop_end_position</EndControl>
-                <EnabledControl>loop_enabled</EnabledControl>
-                <Color>#00FF00</Color>
-                <DisabledColor>#FFFFFF</DisabledColor>
+              <StartControl>loop_start_position</StartControl>
+              <EndControl>loop_end_position</EndControl>
+              <EnabledControl>loop_enabled</EnabledControl>
+              <Color>#00FF00</Color>
+              <DisabledColor>#FFFFFF</DisabledColor>
             </MarkRange>
             <Mark>
-                <Control>cue_point</Control>
-                <Text>C</Text>
-                <Align>top|right</Align>
-                <Color>#FF0080</Color>
-                <TextColor>#FFFFFF</TextColor>
+              <Control>cue_point</Control>
+              <Text>C</Text>
+              <Align>top|right</Align>
+              <Color>#FF0080</Color>
+              <TextColor>#FFFFFF</TextColor>
             </Mark>
             <Connection>
-                <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+              <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
             </Connection>
           </Overview>
 

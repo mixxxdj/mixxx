@@ -68,11 +68,12 @@ Variables:
 
           <Template src="skin:vinyl_controls_left.xml"/>
 
-          <Template src="skin:button_2state_persist.xml">
+          <!-- Toggle Vinyl Controls -->
+          <Template src="skin:button_2state_persist_highlight.xml">
             <SetVariable name="ObjectName">VinylTogglerLeft</SetVariable>
             <SetVariable name="Size">11f,50f</SetVariable>
-            <SetVariable name="TooltipId"></SetVariable>
             <SetVariable name="ConfigKeyPerm">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
+            <SetVariable name="HighlightKey"><Variable name="group"/>,passthrough</SetVariable>
           </Template>
 
           <WidgetGroup><!-- [Spinny / Cover / none] -->

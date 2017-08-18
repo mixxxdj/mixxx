@@ -14,7 +14,7 @@
    id="svg5600"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_fx_selector_dots.svg">
+   sodipodi:docname="btn_fx_selector_list_hover.svg">
   <defs
      id="defs5602" />
   <sodipodi:namedview
@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="7.9195959"
-     inkscape:cx="-1.9639942"
-     inkscape:cy="26.06681"
+     inkscape:zoom="22.627417"
+     inkscape:cx="4.7349413"
+     inkscape:cy="9.6216053"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -52,20 +52,40 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-1032.3622)">
-    <path
-       inkscape:connector-curvature="0"
-       id="path5608"
-       d="m 6.75,1036.1122 c 0,0.9665 -0.7835017,1.75 -1.75,1.75 -0.9664983,0 -1.75,-0.7835 -1.75,-1.75 0,-0.9665 0.7835017,-1.75 1.75,-1.75 0.9664983,0 1.75,0.7835 1.75,1.75 z"
-       style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none" />
-    <path
-       inkscape:connector-curvature="0"
-       id="path5608-3"
-       d="m 6.75,1042.3622 c 0,0.9665 -0.7835017,1.75 -1.75,1.75 -0.9664983,0 -1.75,-0.7835 -1.75,-1.75 0,-0.9665 0.7835017,-1.75 1.75,-1.75 0.9664983,0 1.75,0.7835 1.75,1.75 z"
-       style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none" />
-    <path
-       inkscape:connector-curvature="0"
-       id="path5608-3-6"
-       d="m 6.75,1048.6122 c 0,0.9665 -0.7835017,1.75 -1.75,1.75 -0.9664983,0 -1.75,-0.7835 -1.75,-1.75 0,-0.9665 0.7835017,-1.75 1.75,-1.75 0.9664983,0 1.75,0.7835 1.75,1.75 z"
-       style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none" />
+    <rect
+       style="fill:#eeeeee;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect2985"
+       width="6"
+       height="2"
+       x="2"
+       y="1033.3622" />
+    <rect
+       style="fill:#eeeeee;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect2985-6"
+       width="6"
+       height="2"
+       x="2"
+       y="1037.3622" />
+    <rect
+       style="fill:#eeeeee;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect2985-6-2"
+       width="6"
+       height="2"
+       x="2"
+       y="1041.3622" />
+    <rect
+       style="fill:#eeeeee;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect2985-6-2-9"
+       width="6"
+       height="2"
+       x="2"
+       y="1045.3622" />
+    <rect
+       style="fill:#eeeeee;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect2985-6-2-9-1"
+       width="6"
+       height="2"
+       x="2"
+       y="1049.3622" />
   </g>
 </svg>

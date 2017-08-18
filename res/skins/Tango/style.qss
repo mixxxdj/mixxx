@@ -338,6 +338,8 @@ WWidgetGroup {
     }
   #VinylTogglerRight {
     }
+  #VinylTogglerLeft[highlight="0"], #VinylTogglerRight[highlight="0"] {
+    }
   #VinylTogglerLeft[displayValue="0"], #VinylTogglerRight[displayValue="1"] {
     background: transparent url(skin:/buttons/btn_arrow_left_thin.svg) no-repeat top center;
     }
@@ -349,6 +351,20 @@ WWidgetGroup {
     }
   #VinylTogglerLeft[displayValue="1"]:hover, #VinylTogglerRight[displayValue="0"]:hover {
     background: transparent url(skin:/buttons/btn_arrow_right_thin_hover.svg) no-repeat top center;
+    }
+  /* When passthrough is active but Vinyl Controls are hidden,
+    yellow background and black arrow indicate passthrough */
+  #VinylTogglerLeft[displayValue="0"][highlight="1"] {
+    background: #ff8f00 url(skin:/buttons/btn_arrow_left_thin_black.svg) no-repeat top center;
+    }
+  #VinylTogglerRight[displayValue="0"][highlight="1"] {
+    background: #ff8f00 url(skin:/buttons/btn_arrow_right_thin_black.svg) no-repeat top center;
+    }
+  #VinylTogglerLeft[displayValue="0"][highlight="1"]:hover {
+    background: #ff8f00 url(skin:/buttons/btn_arrow_left_thin_black_hover.svg) no-repeat top center;
+    }
+  #VinylTogglerRight[displayValue="0"][highlight="1"]:hover {
+    background: #ff8f00 url(skin:/buttons/btn_arrow_right_thin_black_hover.svg) no-repeat top center;
     }
   #VinylControls {
     qproperty-layoutAlignment: 'AlignRight | AlignTop';
