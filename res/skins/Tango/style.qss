@@ -183,16 +183,16 @@ WWidgetGroup {
     background-color: #1e1e1e;
   }
   #BeatgridButtonToggler[displayValue="0"] {
-    image: url(skin:/buttons/btn_arrow_left_thin.svg) no-repeat center center;
+    image: url(skin:/buttons/btn_arrow_left.svg) no-repeat center center;
   }
   #BeatgridButtonToggler[displayValue="0"]:hover {
-    image: url(skin:/buttons/btn_arrow_left_thin_hover.svg) no-repeat center center;
+    image: url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat center center;
   }
 #BeatgridButtonToggler[displayValue="1"] {
-  image: url(skin:/buttons/btn_arrow_right_thin.svg) no-repeat center center;
+  image: url(skin:/buttons/btn_arrow_right.svg) no-repeat center center;
 }
   #BeatgridButtonToggler[displayValue="1"]:hover {
-    image: url(skin:/buttons/btn_arrow_right_thin_hover.svg) no-repeat center center;
+    image: url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat center center;
   }
 
 #BeatgridButtonBox {
@@ -229,29 +229,29 @@ WWidgetGroup {
 
 
 #MixerBar_BelowLibrary[displayValue="0"] {
-  background: transparent url(skin:/buttons/btn_arrow_downleft_thin.svg) no-repeat center top;
+  background: transparent url(skin:/buttons/btn_arrow_downleft.svg) no-repeat center top;
   }
   #MixerBar_BelowLibrary[displayValue="0"]:hover {
-    background: transparent url(skin:/buttons/btn_arrow_downleft_thin_hover.svg) no-repeat center top;
+    background: transparent url(skin:/buttons/btn_arrow_downleft_hover.svg) no-repeat center top;
   }
   #MixerBar_BelowLibrary[displayValue="1"] {
-    background: transparent url(skin:/buttons/btn_arrow_upright_thin.svg) no-repeat center top;
+    background: transparent url(skin:/buttons/btn_arrow_upright.svg) no-repeat center top;
   }
   #MixerBar_BelowLibrary[displayValue="1"]:hover {
-    background: transparent url(skin:/buttons/btn_arrow_upright_thin_hover.svg) no-repeat center top;
+    background: transparent url(skin:/buttons/btn_arrow_upright_hover.svg) no-repeat center top;
   }
 
 #MixerBarToggler[displayValue="0"] {
-  background: transparent url(skin:/buttons/btn_arrow_right_thin.svg) no-repeat center top;
+  background: transparent url(skin:/buttons/btn_arrow_right.svg) no-repeat center top;
   }
   #MixerBarToggler[displayValue="0"]:hover {
-    background: transparent url(skin:/buttons/btn_arrow_right_thin_hover.svg) no-repeat center top;
+    background: transparent url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat center top;
   }
   #MixerBarToggler[displayValue="1"] {
-    background: transparent url(skin:/buttons/btn_arrow_left_thin.svg) no-repeat center top;
+    background: transparent url(skin:/buttons/btn_arrow_left.svg) no-repeat center top;
   }
   #MixerBarToggler[displayValue="1"]:hover {
-    background: transparent url(skin:/buttons/btn_arrow_left_thin_hover.svg) no-repeat center top;
+    background: transparent url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat center top;
   }
   
 
@@ -341,30 +341,30 @@ WWidgetGroup {
   #VinylTogglerLeft[highlight="0"], #VinylTogglerRight[highlight="0"] {
     }
   #VinylTogglerLeft[displayValue="0"], #VinylTogglerRight[displayValue="1"] {
-    background: transparent url(skin:/buttons/btn_arrow_left_thin.svg) no-repeat top center;
+    background: transparent url(skin:/buttons/btn_arrow_left.svg) no-repeat top center;
     }
   #VinylTogglerLeft[displayValue="0"]:hover, #VinylTogglerRight[displayValue="1"]:hover {
-    background: transparent url(skin:/buttons/btn_arrow_left_thin_hover.svg) no-repeat top center;
+    background: transparent url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat top center;
     }
   #VinylTogglerLeft[displayValue="1"], #VinylTogglerRight[displayValue="0"] {
-    background: transparent url(skin:/buttons/btn_arrow_right_thin.svg) no-repeat top center;
+    background: transparent url(skin:/buttons/btn_arrow_right.svg) no-repeat top center;
     }
   #VinylTogglerLeft[displayValue="1"]:hover, #VinylTogglerRight[displayValue="0"]:hover {
-    background: transparent url(skin:/buttons/btn_arrow_right_thin_hover.svg) no-repeat top center;
+    background: transparent url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat top center;
     }
   /* When passthrough is active but Vinyl Controls are hidden,
     yellow background and black arrow indicate passthrough */
   #VinylTogglerLeft[displayValue="0"][highlight="1"] {
-    background: #ff8f00 url(skin:/buttons/btn_arrow_left_thin_black.svg) no-repeat top center;
+    background: #ff8f00 url(skin:/buttons/btn_arrow_left_black.svg) no-repeat top center;
     }
   #VinylTogglerRight[displayValue="0"][highlight="1"] {
-    background: #ff8f00 url(skin:/buttons/btn_arrow_right_thin_black.svg) no-repeat top center;
+    background: #ff8f00 url(skin:/buttons/btn_arrow_right_black.svg) no-repeat top center;
     }
   #VinylTogglerLeft[displayValue="0"][highlight="1"]:hover {
-    background: #ff8f00 url(skin:/buttons/btn_arrow_left_thin_black_hover.svg) no-repeat top center;
+    background: #ff8f00 url(skin:/buttons/btn_arrow_left_black_hover.svg) no-repeat top center;
     }
   #VinylTogglerRight[displayValue="0"][highlight="1"]:hover {
-    background: #ff8f00 url(skin:/buttons/btn_arrow_right_thin_black_hover.svg) no-repeat top center;
+    background: #ff8f00 url(skin:/buttons/btn_arrow_right_black_hover.svg) no-repeat top center;
     }
   #VinylControls {
     qproperty-layoutAlignment: 'AlignRight | AlignTop';
@@ -476,29 +476,29 @@ WWidgetGroup {
     background-color: #000000;
   }
   #DeckButtonTogglerLeft[displayValue="0"] {
-    background: transparent url(skin:/buttons/btn_arrow_right_thin.svg) no-repeat center center;
+    background: transparent url(skin:/buttons/btn_arrow_right.svg) no-repeat center center;
     }
     #DeckButtonTogglerLeft[displayValue="0"]:hover {
-      background: #151515 url(skin:/buttons/btn_arrow_right_thin_hover.svg) no-repeat center center;
+      background: #151515 url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat center center;
     }
     #DeckButtonTogglerLeft[displayValue="1"] {
-      background: #151515 url(skin:/buttons/btn_arrow_left_thin.svg) no-repeat center center;
+      background: #151515 url(skin:/buttons/btn_arrow_left.svg) no-repeat center center;
     }
     #DeckButtonTogglerLeft[displayValue="1"]:hover {
-      background: #000000 url(skin:/buttons/btn_arrow_left_thin_hover.svg) no-repeat center center;
+      background: #000000 url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat center center;
     }
 
   #DeckButtonTogglerRight[displayValue="0"] {
-    background: transparent url(skin:/buttons/btn_arrow_left_thin.svg) no-repeat center center;
+    background: transparent url(skin:/buttons/btn_arrow_left.svg) no-repeat center center;
     }
     #DeckButtonTogglerRight[displayValue="0"]:hover {
-      background: #151515 url(skin:/buttons/btn_arrow_left_thin_hover.svg) no-repeat center center;
+      background: #151515 url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat center center;
     }
     #DeckButtonTogglerRight[displayValue="1"] {
-      background: #151515 url(skin:/buttons/btn_arrow_right_thin.svg) no-repeat center center;
+      background: #151515 url(skin:/buttons/btn_arrow_right.svg) no-repeat center center;
     }
     #DeckButtonTogglerRight[displayValue="1"]:hover {
-      background: #000000 url(skin:/buttons/btn_arrow_right_thin_hover.svg) no-repeat center center;
+      background: #000000 url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat center center;
     }
 
   #Keylock[displayValue="1"]:hover {
@@ -1470,16 +1470,16 @@ WBeatSpinBox {
 }
 
 #FXSamplersMiniMaxiButton[displayValue="0"] {
-  image: url(skin:/buttons/btn_arrow_down_thin.svg) no-repeat top center;
+  image: url(skin:/buttons/btn_arrow_down.svg) no-repeat top center;
   }
   #FXSamplersMiniMaxiButton[displayValue="0"]:hover {
-    image: url(skin:/buttons/btn_arrow_down_thin_hover.svg) no-repeat top center;
+    image: url(skin:/buttons/btn_arrow_down_hover.svg) no-repeat top center;
   }
 #FXSamplersMiniMaxiButton[displayValue="1"] {
-  image: url(skin:/buttons/btn_arrow_up_thin.svg) no-repeat top center;
+  image: url(skin:/buttons/btn_arrow_up.svg) no-repeat top center;
   }
   #FXSamplersMiniMaxiButton[displayValue="1"]:hover {
-    image: url(skin:/buttons/btn_arrow_up_thin_hover.svg) no-repeat top center;
+    image: url(skin:/buttons/btn_arrow_up_hover.svg) no-repeat top center;
   }
 
 #SamplerPlayBox, #SamplerPlayBox_mini {
@@ -1497,7 +1497,6 @@ WBeatSpinBox {
   }
   #SamplerPlayCue[displayValue="0"]:hover {
     border: 1px solid #666666;
-    background-color: #333333;
   }
   #SamplerPlayCue[displayValue="1"] {
     border: 1px solid #ca0000;

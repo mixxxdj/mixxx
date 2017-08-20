@@ -132,9 +132,10 @@ Description:
                     <Size>182f,15f</Size>
                     <Layout>horizontal</Layout>
                     <Children>
+                      <!-- button graphics are 15x15px + 1px margin-right -->
                       <Template src="skin:button_2state_persist.xml"><!-- Keylock -->
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
-                        <SetVariable name="Size">15f,15f</SetVariable>
+                        <SetVariable name="Size">16f,15f</SetVariable>
                         <SetVariable name="state_0_pressed">keylock_off.svg</SetVariable>
                         <SetVariable name="state_0_unpressed">keylock_off.svg</SetVariable>
                         <SetVariable name="state_1_pressed">keylock_on.svg</SetVariable>
@@ -144,7 +145,7 @@ Description:
 
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
-                        <SetVariable name="Size">15f,15f</SetVariable>
+                        <SetVariable name="Size">16f,15f</SetVariable>
                         <SetVariable name="state_0_pressed">eject.svg</SetVariable>
                         <SetVariable name="state_0_unpressed">eject.svg</SetVariable>
                         <SetVariable name="state_1_pressed">eject_pressed.svg</SetVariable>
@@ -155,8 +156,8 @@ Description:
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
-                        <SetVariable name="state_0_pressed">slipmode_off.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">slipmode_off.svg</SetVariable>
+                        <SetVariable name="state_0_pressed">slipmode_hidden.svg</SetVariable>
+                        <SetVariable name="state_0_unpressed">slipmode_hidden.svg</SetVariable>
                         <SetVariable name="state_1_pressed">slipmode_visible.svg</SetVariable>
                         <SetVariable name="state_1_unpressed">slipmode_visible.svg</SetVariable>
                         <SetVariable name="ConfigKeyPerm">[Tango],always_visible_slipMode</SetVariable>
@@ -165,8 +166,8 @@ Description:
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
-                        <SetVariable name="state_0_pressed">repeat_off.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">repeat_off.svg</SetVariable>
+                        <SetVariable name="state_0_pressed">repeat_hidden.svg</SetVariable>
+                        <SetVariable name="state_0_unpressed">repeat_hidden.svg</SetVariable>
                         <SetVariable name="state_1_pressed">repeat_visible.svg</SetVariable>
                         <SetVariable name="state_1_unpressed">repeat_visible.svg</SetVariable>
                         <SetVariable name="ConfigKeyPerm">[Tango],always_visible_repeat</SetVariable>
@@ -174,7 +175,7 @@ Description:
 
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
-                        <SetVariable name="Size">15f,15f</SetVariable>
+                        <SetVariable name="Size">16f,15f</SetVariable>
                         <SetVariable name="state_0_pressed">xfader_center.svg</SetVariable>
                         <SetVariable name="state_0_unpressed">xfader_center.svg</SetVariable>
                         <SetVariable name="state_1_pressed">xfader_visible.svg</SetVariable>
@@ -184,9 +185,9 @@ Description:
 
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
-                        <SetVariable name="Size">15f,15f</SetVariable>
-                        <SetVariable name="state_0_pressed">quantize_off.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">quantize_off.svg</SetVariable>
+                        <SetVariable name="Size">16f,15f</SetVariable>
+                        <SetVariable name="state_0_pressed">quantize_hidden.svg</SetVariable>
+                        <SetVariable name="state_0_unpressed">quantize_hidden.svg</SetVariable>
                         <SetVariable name="state_1_pressed">quantize_visible.svg</SetVariable>
                         <SetVariable name="state_1_unpressed">quantize_visible.svg</SetVariable>
                         <SetVariable name="ConfigKeyPerm">[Tango],always_visible_quantize</SetVariable>
@@ -197,8 +198,8 @@ Description:
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
-                        <SetVariable name="state_0_pressed">stars_off.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">stars_off.svg</SetVariable>
+                        <SetVariable name="state_0_pressed">stars_hidden.svg</SetVariable>
+                        <SetVariable name="state_0_unpressed">stars_hidden.svg</SetVariable>
                         <SetVariable name="state_1_pressed">stars_visible.svg</SetVariable>
                         <SetVariable name="state_1_unpressed">stars_visible.svg</SetVariable>
                         <SetVariable name="ConfigKeyPerm">[Tango],stars</SetVariable>
@@ -302,8 +303,8 @@ Description:
               </WidgetGroup><!-- /EQ knobs -->
 
               <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      permanent VU Meter</SetVariable>
-                <SetVariable name="state_1_text"> &#10004; permanent VU Meter</SetVariable>
+                <SetVariable name="state_0_text">      Permanent VU Meter</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Permanent VU Meter</SetVariable>
                 <SetVariable name="Setting">[Tango],vumeter</SetVariable>
               </Template>
 

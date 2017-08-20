@@ -9,14 +9,14 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="20"
-   height="20"
+   width="15"
+   height="15"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90"
-   sodipodi:docname="btn_eject_hover.svg">
+   sodipodi:docname="btn_quantize_hidden.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -26,11 +26,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="8.0000004"
-     inkscape:cx="14.059327"
-     inkscape:cy="13.438201"
+     inkscape:zoom="22.627417"
+     inkscape:cx="11.001159"
+     inkscape:cy="9.238759"
      inkscape:document-units="px"
-     inkscape:current-layer="g3989"
+     inkscape:current-layer="layer3"
      showgrid="false"
      showguides="true"
      inkscape:guide-bbox="true"
@@ -42,11 +42,20 @@
      inkscape:snap-object-midpoints="true"
      inkscape:snap-global="true"
      inkscape:window-width="1366"
-     inkscape:window-height="747"
+     inkscape:window-height="746"
      inkscape:window-x="0"
-     inkscape:window-y="21"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:snap-page="true" />
+     inkscape:snap-page="true"
+     inkscape:snap-bbox-edge-midpoints="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid2985"
+       empspacing="5"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true" />
+  </sodipodi:namedview>
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -55,42 +64,33 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1"
-     transform="translate(0,-1032.3622)">
-    <g
-       id="g3989"
-       style="fill:#888888;fill-opacity:1">
-      <rect
-         style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
-         id="rect4046"
-         width="12"
-         height="2"
-         x="4"
-         y="1046.3622" />
-      <path
-         sodipodi:type="star"
-         style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
-         id="path4048"
-         sodipodi:sides="3"
-         sodipodi:cx="3"
-         sodipodi:cy="10.5625"
-         sodipodi:r1="9.6718035"
-         sodipodi:r2="4.8359022"
-         sodipodi:arg1="0.52359878"
-         sodipodi:arg2="1.5707963"
-         inkscape:flatsided="false"
-         inkscape:rounded="0"
-         inkscape:randomized="0"
-         d="m 11.376027,15.398402 -8.3760269,0 -8.3760276,0 L -1.1880142,8.144549 3,0.89069653 7.1880141,8.1445488 z"
-         transform="matrix(0.71633003,0,0,0.54765418,7.85101,1034.9292)"
-         inkscape:transform-center-y="-1.3242038" />
-    </g>
+     id="layer3"
+     inkscape:label="22x22"
+     transform="translate(0,-7)">
+    <path
+       style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       d="m 4,10 0,1.8 5.1468752,0 c 1.4911668,0 2.6999998,1.208832 2.6999998,2.7 0,1.491168 -1.208833,2.7 -2.6999998,2.7 L 4,17.2 4,19 9.259375,19 c 2.48528,0 4.5,-2.01472 4.5,-4.5 0,-2.485281 -2.01472,-4.5 -4.5,-4.5 L 4,10 z"
+       id="path2992-3"
+       inkscape:connector-curvature="0" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect2998-3-7-67"
+       width="1.7999986"
+       height="1.7999986"
+       x="2.2093756"
+       y="17.199999" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect2998-3-7-6"
+       width="1.7999986"
+       height="1.7999986"
+       x="2.200001"
+       y="10" />
   </g>
 </svg>

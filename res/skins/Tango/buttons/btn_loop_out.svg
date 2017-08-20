@@ -36,14 +36,14 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:window-width="1366"
-     inkscape:window-height="747"
+     inkscape:window-height="746"
      id="namedview8"
      showgrid="false"
-     inkscape:zoom="9.8333334"
-     inkscape:cx="-10.124514"
-     inkscape:cy="14.97112"
+     inkscape:zoom="2.4583334"
+     inkscape:cx="-69.807484"
+     inkscape:cy="15.920712"
      inkscape:window-x="0"
-     inkscape:window-y="21"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg2" />
   <path
@@ -52,9 +52,4 @@
      inkscape:connector-curvature="0"
      style="fill:#888888;fill-opacity:1"
      sodipodi:nodetypes="ccccccc" />
-  <path
-     d="M 0,-26 H 48 V 22 H 0 z"
-     id="path6"
-     inkscape:connector-curvature="0"
-     style="fill:none" />
 </svg>

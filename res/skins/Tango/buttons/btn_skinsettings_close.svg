@@ -32,9 +32,9 @@
      inkscape:object-paths="true"
      inkscape:snap-bbox="true"
      inkscape:snap-bbox-midpoints="true"
-     inkscape:zoom="16"
-     inkscape:cx="-0.1924847"
-     inkscape:cy="7.8510284"
+     inkscape:zoom="8"
+     inkscape:cx="-3.4603482"
+     inkscape:cy="8.4579685"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -42,24 +42,7 @@
      inkscape:bbox-nodes="true"
      inkscape:snap-page="true"
      showguides="true"
-     inkscape:guide-bbox="true">
-    <sodipodi:guide
-       orientation="1,0"
-       position="3,14.125"
-       id="guide2983" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="17,14.125"
-       id="guide2985" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="13.0625,17"
-       id="guide2987" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="12.75,3"
-       id="guide2989" />
-  </sodipodi:namedview>
+     inkscape:guide-bbox="true" />
   <metadata
      id="metadata12">
     <rdf:RDF>

@@ -40,32 +40,7 @@
      inkscape:snap-smooth-nodes="true"
      inkscape:object-nodes="true"
      showguides="true"
-     inkscape:guide-bbox="true">
-    <sodipodi:guide
-       orientation="0,1"
-       position="14.613525,15.0001"
-       id="guide3871" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="10,15"
-       id="guide3755" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="20.10506,30"
-       id="guide5062" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="30,14.8737"
-       id="guide5064" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="24.496199,30"
-       id="guide5068" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="26.642773,0"
-       id="guide5070" />
-  </sodipodi:namedview>
+     inkscape:guide-bbox="true" />
   <metadata
      id="metadata3774">
     <rdf:RDF>

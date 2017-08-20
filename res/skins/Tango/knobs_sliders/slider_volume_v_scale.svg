@@ -15,7 +15,7 @@
    inkscape:version="0.48.4 r9939"
    width="36"
    height="103"
-   sodipodi:docname="volume_slider.svg"
+   sodipodi:docname="slider_volume_v_scale.svg"
    inkscape:export-filename="/home/ronso/.mixxx/skins/FlatNite/volume_slider.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
@@ -188,9 +188,9 @@
      inkscape:window-height="746"
      id="namedview4453"
      showgrid="false"
-     inkscape:zoom="4"
-     inkscape:cx="-23.253848"
-     inkscape:cy="39.822484"
+     inkscape:zoom="2.8284271"
+     inkscape:cx="4.8145799"
+     inkscape:cy="57.070239"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -219,41 +219,6 @@
        enabled="true"
        snapvisiblegridlinesonly="true" />
   </sodipodi:namedview>
-  <g
-     inkscape:groupmode="layer"
-     id="layer3"
-     inkscape:label="back"
-     style="display:none"
-     sodipodi:insensitive="true">
-    <rect
-       style="fill:#333333;fill-opacity:1"
-       id="rect3787"
-       width="1390.5"
-       height="1131.3716"
-       x="-677.25"
-       y="-567.8924"
-       inkscape:transform-center-x="632.15346"
-       inkscape:transform-center-y="541.64379" />
-  </g>
-  <g
-     inkscape:groupmode="layer"
-     id="layer2"
-     inkscape:label="Layer#1"
-     style="display:none">
-    <path
-       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline;filter:url(#filter4058)"
-       d="m 17,100.07778 2,0 0,-98.0777799 -2,0 z"
-       id="path3028"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccc"
-       transform="matrix(1.504046,0,0,1,-9.0728286,0)" />
-    <path
-       style="fill:#333333;fill-opacity:1"
-       d="m -43.125,-44.78125 0,194.4375 120.1875,0 0,-194.4375 z M 6,2 c 8,0 16,0 24,0 l 0,1 -3,24 0,1 -1,23 0,1 -1,25 0,1 -2,22 0,1 -10,0 0,-1 L 11,78 11,77 10,52 10,51 9,28 9,27 6,3 z"
-       id="rect4365"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cccccccccccccccccccccccccc" />
-  </g>
   <g
      inkscape:groupmode="layer"
      id="layer1"

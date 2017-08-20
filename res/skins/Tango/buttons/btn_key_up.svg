@@ -24,16 +24,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="31.678384"
-     inkscape:cx="-2.6657648"
-     inkscape:cy="5.9153285"
+     inkscape:zoom="11.2"
+     inkscape:cx="-6.2062113"
+     inkscape:cy="4.7538351"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1366"
-     inkscape:window-height="747"
+     inkscape:window-height="746"
      inkscape:window-x="0"
-     inkscape:window-y="21"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true"
@@ -71,6 +71,6 @@
        inkscape:rounded="0"
        inkscape:randomized="0"
        d="m 18.119611,5 -22.6794164,13.093967 0,-26.187934 z"
-       transform="matrix(0,-0.38185525,-0.38185525,0,7.9092763,1048.4511)" />
+       transform="matrix(0,-0.38185525,-0.38185525,0,7.9092763,1048.621)" />
   </g>
 </svg>

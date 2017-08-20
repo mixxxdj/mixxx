@@ -9,14 +9,14 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="22"
-   height="22"
+   width="15"
+   height="15"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90"
-   sodipodi:docname="btn_quantize_off.svg">
+   sodipodi:docname="btn_quantize_visible.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -26,9 +26,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="16"
-     inkscape:cx="-18.939579"
-     inkscape:cy="19.165423"
+     inkscape:zoom="22.627417"
+     inkscape:cx="11.001159"
+     inkscape:cy="9.2166619"
      inkscape:document-units="px"
      inkscape:current-layer="layer3"
      showgrid="false"
@@ -42,12 +42,20 @@
      inkscape:snap-object-midpoints="true"
      inkscape:snap-global="true"
      inkscape:window-width="1366"
-     inkscape:window-height="747"
+     inkscape:window-height="746"
      inkscape:window-x="0"
-     inkscape:window-y="21"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      inkscape:snap-page="true"
-     inkscape:snap-bbox-edge-midpoints="true" />
+     inkscape:snap-bbox-edge-midpoints="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid2985"
+       empspacing="5"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true" />
+  </sodipodi:namedview>
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -56,32 +64,33 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <g
      inkscape:groupmode="layer"
      id="layer3"
-     inkscape:label="22x22">
+     inkscape:label="22x22"
+     transform="translate(0,-7)">
     <path
-       style="fill:#d2d2d2;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       d="m 6.9999987,6.0000001 0,1.9999999 5.7187503,0 c 1.656853,0 3,1.343146 3,3 0,1.656854 -1.343147,3 -3,3 l -5.7187503,0 0,2 5.8437503,0 c 2.761423,0 5,-2.238577 5,-5 0,-2.761424 -2.238577,-4.9999998 -5,-4.9999999 l -5.8437503,0 z"
+       style="fill:#dc0000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       d="m 4,10 0,1.8 5.1468752,0 c 1.4911668,0 2.6999998,1.208832 2.6999998,2.7 0,1.491168 -1.208833,2.7 -2.6999998,2.7 L 4,17.2 4,19 9.259375,19 c 2.48528,0 4.5,-2.01472 4.5,-4.5 0,-2.485281 -2.01472,-4.5 -4.5,-4.5 L 4,10 z"
        id="path2992-3"
        inkscape:connector-curvature="0" />
     <rect
        style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
        id="rect2998-3-7-67"
-       width="1.9999986"
-       height="1.9999986"
-       x="5.010416"
-       y="13.999999" />
+       width="1.7999986"
+       height="1.7999986"
+       x="2.2093756"
+       y="17.199999" />
     <rect
        style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
        id="rect2998-3-7-6"
-       width="1.9999986"
-       height="1.9999986"
-       x="5"
-       y="6" />
+       width="1.7999986"
+       height="1.7999986"
+       x="2.200001"
+       y="10" />
   </g>
 </svg>

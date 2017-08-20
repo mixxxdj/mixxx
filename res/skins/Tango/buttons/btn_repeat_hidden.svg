@@ -9,14 +9,14 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="16"
-   height="16"
-   id="svg2"
-   version="1.1"
-   inkscape:version="0.48.4 r9939"
-   inkscape:export-xdpi="90"
+   sodipodi:docname="btn_repeat_hidden.svg"
    inkscape:export-ydpi="90"
-   sodipodi:docname="btn_sampler_repeat_off.svg">
+   inkscape:export-xdpi="90"
+   inkscape:version="0.48.4 r9939"
+   version="1.1"
+   id="svg2"
+   height="15"
+   width="15">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -26,13 +26,13 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="11.313709"
-     inkscape:cx="4.9140905"
-     inkscape:cy="7.2489704"
+     inkscape:zoom="22.627417"
+     inkscape:cx="6.7799738"
+     inkscape:cy="8.5533741"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     showguides="true"
+     showguides="false"
      inkscape:guide-bbox="true"
      inkscape:snap-bbox="true"
      inkscape:object-paths="true"
@@ -46,10 +46,32 @@
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:snap-page="true">
+     inkscape:snap-page="true"
+     inkscape:snap-grids="true"
+     inkscape:snap-bbox-edge-midpoints="true">
+    <sodipodi:guide
+       orientation="1,0"
+       position="4,14.387144"
+       id="guide9182" />
+    <sodipodi:guide
+       orientation="1,0"
+       position="19,11.844"
+       id="guide9184" />
+    <sodipodi:guide
+       orientation="0,1"
+       position="14.584077,17"
+       id="guide9186" />
+    <sodipodi:guide
+       orientation="0,1"
+       position="13.793869,6"
+       id="guide9188" />
     <inkscape:grid
+       empspacing="5"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true"
        type="xygrid"
-       id="grid3928" />
+       id="grid3037" />
   </sodipodi:namedview>
   <metadata
      id="metadata7">
@@ -67,23 +89,19 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-1036.3622)"
-     style="display:inline">
+     transform="translate(0,-1037.3622)">
     <path
        style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#888888;fill-opacity:1;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans"
-       d="m 6,1037.8622 -4.34375,2.5 4.34375,2.5 0,-1.9687 5.6875,0 c 0.437979,0 0.78125,0.3432 0.78125,0.7812 l 0,3.8125 0.46875,0.25 1.0625,0.625 0,-4.6875 c 0,-1.2609 -1.051601,-2.3125 -2.3125,-2.3125 l -5.6875,0 z"
-       id="path3832"
+       d="m 13,1047.7372 0,-5.875 c 0,-0.8285 -0.671573,-1.5 -1.5,-1.5 l -5.5,0 0,-1.7813 -3.96875,2.2813 3.96875,2.2812 0,-1.7812 5.5,0 c 0.276142,0 0.5,0.2239 0.5,0.5 l 0,5.2812 z"
+       id="path3832-9-1"
        inkscape:connector-curvature="0"
-       inkscape:transform-center-x="0.171875"
-       inkscape:transform-center-y="-1.609375"
-       sodipodi:nodetypes="ccccsscccsscc" />
+       sodipodi:nodetypes="ccscccccsccc" />
     <path
        style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#888888;fill-opacity:1;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans"
-       d="m 10,1050.8623 4.34375,-2.5 -4.34375,-2.5 0,1.9687 -5.6875,0 c -0.437979,0 -0.78125,-0.3432 -0.78125,-0.7812 l 0,-3.8126 -0.46875,-0.25 -1.0625,-0.625 0,4.6876 c 0,1.2609 1.051601,2.3125 2.3125,2.3125 l 5.6875,0 z"
-       id="path3832-56"
+       d="M 2,4.625 2,10.5 C 2,11.3285 2.671573,12 3.5,12 L 9,12 9,13.78125 12.96875,11.5 9,9.21875 9,11 3.5,11 C 3.223858,11 3,10.7761 3,10.5 L 3,5.21875 z"
+       transform="translate(0,1037.3622)"
+       id="path3832-9"
        inkscape:connector-curvature="0"
-       inkscape:transform-center-x="-0.171875"
-       inkscape:transform-center-y="1.609425"
-       sodipodi:nodetypes="ccccsscccsscc" />
+       sodipodi:nodetypes="ccscccccsccc" />
   </g>
 </svg>

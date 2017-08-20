@@ -11,7 +11,7 @@
    viewBox="0 0 18 18"
    id="svg2"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_fx_focus_on.svg"
+   sodipodi:docname="btn_fx_focus_off.svg"
    width="100%"
    height="100%">
   <metadata
@@ -22,7 +22,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -41,9 +41,9 @@
      inkscape:window-height="746"
      id="namedview8"
      showgrid="false"
-     inkscape:zoom="13.111111"
-     inkscape:cx="-3.4322035"
-     inkscape:cy="9.3050846"
+     inkscape:zoom="4.6354778"
+     inkscape:cx="-22.723872"
+     inkscape:cy="13.492174"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -54,8 +54,4 @@
      id="path4"
      inkscape:connector-curvature="0"
      style="fill:#888888;fill-opacity:1" />
-  <path
-     fill="none"
-     d="m0-30h48v48h-48z"
-     id="path6" />
 </svg>

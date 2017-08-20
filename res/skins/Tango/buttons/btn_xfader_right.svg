@@ -16,7 +16,7 @@
    inkscape:version="0.48.4 r9939"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90"
-   sodipodi:docname="btn_cf_right.svg">
+   sodipodi:docname="btn_xfader_right.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -27,8 +27,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="11.313708"
-     inkscape:cx="-12.794203"
-     inkscape:cy="-1.8661398"
+     inkscape:cx="-12.792317"
+     inkscape:cy="-1.8740128"
      inkscape:document-units="px"
      inkscape:current-layer="g3989"
      showgrid="false"
@@ -46,7 +46,11 @@
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:snap-page="true" />
+     inkscape:snap-page="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3781" />
+  </sodipodi:namedview>
   <metadata
      id="metadata7">
     <rdf:RDF>

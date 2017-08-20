@@ -16,7 +16,7 @@
    inkscape:version="0.48.4 r9939"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90"
-   sodipodi:docname="btn_sampler_eject.svg">
+   sodipodi:docname="btn_sampler_eject_pressed.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -26,9 +26,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="11.313709"
-     inkscape:cx="3.2337342"
-     inkscape:cy="7.3221387"
+     inkscape:zoom="22.627418"
+     inkscape:cx="5.6847986"
+     inkscape:cy="8.6051281"
      inkscape:document-units="px"
      inkscape:current-layer="g3989"
      showgrid="false"
@@ -45,7 +45,11 @@
      inkscape:window-height="746"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="1" />
+     inkscape:window-maximized="1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid6183" />
+  </sodipodi:namedview>
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -54,7 +58,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -69,10 +73,10 @@
       <rect
          style="fill:#d2d2d2;fill-opacity:1;fill-rule:nonzero;stroke:none"
          id="rect4046"
-         width="12"
+         width="10"
          height="2"
-         x="1"
-         y="1048.3622" />
+         x="2"
+         y="1047.3622" />
       <path
          sodipodi:type="star"
          style="fill:#d2d2d2;fill-opacity:1;fill-rule:nonzero;stroke:none"
@@ -88,8 +92,8 @@
          inkscape:rounded="0"
          inkscape:randomized="0"
          d="m 11.376027,15.398402 -8.3760269,0 -8.3760276,0 L -1.1880142,8.144549 3,0.89069653 7.1880141,8.1445488 z"
-         transform="matrix(0.71633003,0,0,0.54765418,4.85101,1036.9292)"
-         inkscape:transform-center-y="-1.3242038" />
+         transform="matrix(0.59694169,0,0,0.45637848,5.2091749,1037.3347)"
+         inkscape:transform-center-y="-1.1035031" />
     </g>
   </g>
 </svg>

@@ -31,9 +31,9 @@
      inkscape:window-height="746"
      id="namedview2993"
      showgrid="false"
-     inkscape:zoom="1"
-     inkscape:cx="-0.8146331"
-     inkscape:cy="1.8206048"
+     inkscape:zoom="16"
+     inkscape:cx="6.4943535"
+     inkscape:cy="7.5860279"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -42,7 +42,10 @@
      inkscape:snap-bbox="true"
      inkscape:object-paths="true"
      showguides="false"
-     inkscape:guide-bbox="true">
+     inkscape:guide-bbox="true"
+     inkscape:snap-grids="false"
+     inkscape:snap-intersection-paths="true"
+     inkscape:object-nodes="true">
     <sodipodi:guide
        orientation="0,1"
        position="8.0545172,9.1656634"
@@ -59,6 +62,9 @@
        orientation="1,0"
        position="12.292,6.4718247"
        id="guide6043" />
+    <inkscape:grid
+       type="xygrid"
+       id="grid3797" />
   </sodipodi:namedview>
   <metadata
      id="metadata12">
@@ -68,7 +74,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -93,8 +99,8 @@
        inkscape:rounded="0"
        inkscape:randomized="0"
        d="M 3.9774757,5.736544 2.1452316,1.9412459 -2.0279755,2.5292504 1.015373,-0.38612889 -0.8334444,-4.1733813 2.8796924,-2.1798867 5.9102676,-5.1085419 5.1617639,-0.9611152 8.8835797,1.0161288 4.7078422,1.5858849 z"
-       transform="matrix(1.1854537,-0.23427619,0.23427619,1.1854537,4.5402447,41.285998)"
-       inkscape:transform-center-x="-0.62960604"
-       inkscape:transform-center-y="-0.040535298" />
+       transform="matrix(1.1902928,-0.20829999,0.20829999,1.1902928,4.069572,41.311769)"
+       inkscape:transform-center-x="1.5215002"
+       inkscape:transform-center-y="6.6557137" />
   </g>
 </svg>

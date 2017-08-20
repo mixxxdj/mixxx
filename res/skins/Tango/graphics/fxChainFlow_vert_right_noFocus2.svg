@@ -14,7 +14,7 @@
    id="svg3769"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="fxChainFlow_vert_noFocus1.svg">
+   sodipodi:docname="fxChainFlow_vert_right_noFocus2.svg">
   <defs
      id="defs3771" />
   <sodipodi:namedview
@@ -40,44 +40,7 @@
      inkscape:snap-smooth-nodes="true"
      inkscape:object-nodes="true"
      showguides="true"
-     inkscape:guide-bbox="true">
-    <sodipodi:guide
-       orientation="0,1"
-       position="0,8"
-       id="guide3871" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="85,9.8946"
-       id="guide3755" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="70,0"
-       id="guide5064" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="21.428571,53"
-       id="guide5068" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="26.642773,0"
-       id="guide5070" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="0,6.502857"
-       id="guide2989" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="55,9.895"
-       id="guide2991" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="140,0"
-       id="guide3868" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="0,45"
-       id="guide4628" />
-  </sodipodi:namedview>
+     inkscape:guide-bbox="true" />
   <metadata
      id="metadata3774">
     <rdf:RDF>
@@ -86,7 +49,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>

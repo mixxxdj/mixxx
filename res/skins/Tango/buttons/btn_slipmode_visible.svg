@@ -9,12 +9,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="22"
-   height="22"
+   width="15"
+   height="15"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_slipmode_off.svg">
+   sodipodi:docname="btn_slipmode_visible.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -25,8 +25,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="32"
-     inkscape:cx="3.838385"
-     inkscape:cy="11.676973"
+     inkscape:cx="3.3548048"
+     inkscape:cy="7.5773991"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -41,10 +41,18 @@
      inkscape:object-nodes="true"
      inkscape:snap-smooth-nodes="true"
      inkscape:window-width="1366"
-     inkscape:window-height="747"
+     inkscape:window-height="746"
      inkscape:window-x="0"
-     inkscape:window-y="21"
-     inkscape:window-maximized="1" />
+     inkscape:window-y="0"
+     inkscape:window-maximized="1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid4649"
+       empspacing="5"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true" />
+  </sodipodi:namedview>
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -53,7 +61,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -61,7 +69,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-1030.3622)">
+     transform="translate(0,-1037.3622)">
     <path
        sodipodi:type="star"
        style="fill:#9f9f9f;fill-opacity:1;fill-rule:nonzero;stroke:none"
@@ -77,8 +85,8 @@
        inkscape:rounded="0"
        inkscape:randomized="0"
        d="m 18.119611,5 -22.6794164,13.093967 0,-26.187934 z"
-       transform="matrix(0.39683453,-0.22911252,0.22911252,0.39683453,5.6639174,1038.1372)"
-       inkscape:transform-center-y="1.732056" />
+       transform="matrix(0.26984748,-0.15579651,0.15579651,0.26984748,3.4914638,1042.8362)"
+       inkscape:transform-center-y="1.1777919" />
     <path
        sodipodi:type="star"
        style="fill:#d2d2d2;fill-opacity:1;fill-rule:nonzero;stroke:none"
@@ -94,7 +102,7 @@
        inkscape:rounded="0"
        inkscape:randomized="0"
        d="m 18.119611,5 -22.6794164,13.093967 0,-26.187934 z"
-       transform="matrix(0.39683453,-0.22911252,0.22911252,0.39683453,11.663882,1038.1372)"
-       inkscape:transform-center-y="1.732056" />
+       transform="matrix(0.26984748,-0.15579651,0.15579651,0.26984748,8.3314861,1042.8362)"
+       inkscape:transform-center-y="1.1777919" />
   </g>
 </svg>

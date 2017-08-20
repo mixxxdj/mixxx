@@ -16,7 +16,7 @@
    inkscape:version="0.48.4 r9939"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90"
-   sodipodi:docname="btn_cf_center.svg">
+   sodipodi:docname="btn_xfader_visible.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -26,9 +26,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="11.313708"
-     inkscape:cx="-17.591059"
-     inkscape:cy="15.97165"
+     inkscape:zoom="7.9999996"
+     inkscape:cx="32.921925"
+     inkscape:cy="9.601564"
      inkscape:document-units="px"
      inkscape:current-layer="g3989"
      showgrid="false"
@@ -42,11 +42,15 @@
      inkscape:snap-object-midpoints="true"
      inkscape:snap-global="true"
      inkscape:window-width="1366"
-     inkscape:window-height="747"
+     inkscape:window-height="746"
      inkscape:window-x="0"
-     inkscape:window-y="21"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:snap-page="true" />
+     inkscape:snap-page="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3777" />
+  </sodipodi:namedview>
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -55,7 +59,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>

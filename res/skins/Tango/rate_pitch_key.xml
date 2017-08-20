@@ -54,26 +54,25 @@ Variables:
                 </Children>
               </WidgetGroup><!-- /Overlay buttons: down, reset, up -->
 
-                        <!-- Show/light up if key is not original, like with script.
-                             Not working, only once per skin load.
-                            Tried different controls: pitch (from script), pitch_adjust, ...
-                        <WidgetGroup>
-                          <ObjectName>KeyOffsetWarning</ObjectName>
-                          <Size>50f,13f</Size>
-                          <Layout>horizontal</Layout>
-                          <Connection>
-                            <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
-                            <Transform><Not/><IsEqual>1</IsEqual></Transform>
-                            <BindProperty>visible</BindProperty>
-                          </Connection>
-                        </WidgetGroup> -->
+              <!-- Show/light up if key is not original, like with script.
+                    Not working, only once per skin load.
+                  Tried different controls: pitch (from script), pitch_adjust, ...
+              <WidgetGroup>
+                <ObjectName>KeyOffsetWarning</ObjectName>
+                <Size>50f,13f</Size>
+                <Layout>horizontal</Layout>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+                  <Transform><Not/><IsEqual>1</IsEqual></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup> -->
 
               <Key><!-- Actual Key display -->
                 <TooltipId>visual_key</TooltipId>
                 <ObjectName>KeyDisplay</ObjectName>
                 <Channel><Variable name="chanNum"/></Channel>
                 <Size>50f,13f</Size>
-                <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
                 <Alignment>center</Alignment>
                 <Elide>right</Elide>
                 <Connection>
@@ -85,17 +84,12 @@ Variables:
                 <Layout>horizontal</Layout>
                 <Size>50f,13f</Size>
                 <Children>
-                  <WidgetGroup><!-- key_down -->
-                    <ObjectName>Spacer33</ObjectName>
-                    <Size>12f,13f</Size>
-                  </WidgetGroup>
-                  <WidgetGroup>
-                    <Size>26f,13f</Size>
-                  </WidgetGroup>
-                  <WidgetGroup><!-- key_up -->
-                    <ObjectName>Spacer33</ObjectName>
-                    <Size>12f,13f</Size>
-                  </WidgetGroup>
+                  <!-- key_down -->
+                  <WidgetGroup><ObjectName>Spacer33</ObjectName><Size>12f,13f</Size></WidgetGroup>
+                  <!-- key display -->
+                  <WidgetGroup><Size>26f,13f</Size></WidgetGroup>
+                  <!-- key_up -->
+                  <WidgetGroup><ObjectName>Spacer33</ObjectName><Size>12f,13f</Size></WidgetGroup>
                 </Children>
               </WidgetGroup><!-- /Underlays to mark key_up/down buttons -->
             </Children>
@@ -132,11 +126,11 @@ Variables:
         </Children>
       </WidgetGroup><!-- /BPM + Key controls -->
 
-      <!-- Define size here and for parent RateContainer so that pitch slider
-      stays steady when Key controls are disabled and BPM container expands -->
+      <!-- Define size of slider and parent RateContainer so that slider
+      stays static when Key controls are disabled and BPM container expands -->
       <SliderComposed>
         <ObjectName>PitchSlider</ObjectName>
-        <Size>50f,107f</Size>
+        <Size>50f,106f</Size>
         <TooltipId>rate</TooltipId>
         <Handle>skin:/knobs_sliders/slider_pitch_handle.svg</Handle>
         <Slider>skin:/knobs_sliders/slider_pitch_scale.svg</Slider>
@@ -145,6 +139,8 @@ Variables:
           <ConfigKey><Variable name="group"/>,rate</ConfigKey>
         </Connection>
       </SliderComposed><!-- /PitchSlider -->
+
+      <WidgetGroup><Size>1me,1f</Size></WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>Spacer1e</ObjectName>

@@ -31,7 +31,6 @@ Variables:
             <SetVariable name="TooltipId">play_cue_set</SetVariable>
             <SetVariable name="state_0_pressed">sampler_paused.png</SetVariable>
             <SetVariable name="state_0_unpressed">sampler_paused.png</SetVariable>
-            <SetVariable name="state_0_pressed">sampler_paused.png</SetVariable>
             <SetVariable name="state_1_pressed">sampler_playing.svg</SetVariable>
             <SetVariable name="state_1_unpressed">sampler_playing.svg</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,cue_gotoandplay</SetVariable>

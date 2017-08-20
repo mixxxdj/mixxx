@@ -9,14 +9,14 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="12"
-   height="13"
-   id="svg3769"
+   width="15"
+   height="15"
+   id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_key_down.svg">
+   sodipodi:docname="btn_slipmode_hidden.svg">
   <defs
-     id="defs3771" />
+     id="defs4" />
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -24,23 +24,37 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="15.839192"
-     inkscape:cx="-10.346881"
-     inkscape:cy="1.1145808"
+     inkscape:zoom="32"
+     inkscape:cx="-1.9264452"
+     inkscape:cy="7.5773991"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:snap-bbox="true"
+     inkscape:object-paths="true"
+     inkscape:bbox-nodes="true"
+     inkscape:snap-bbox-midpoints="true"
+     inkscape:snap-bbox-edge-midpoints="true"
+     inkscape:bbox-paths="true"
+     inkscape:object-nodes="true"
+     inkscape:snap-smooth-nodes="true"
      inkscape:window-width="1366"
      inkscape:window-height="746"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="1"
-     showguides="true"
-     inkscape:guide-bbox="true"
-     inkscape:snap-bbox="true"
-     inkscape:snap-bbox-edge-midpoints="true" />
+     inkscape:window-maximized="1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid4649"
+       empspacing="5"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true" />
+  </sodipodi:namedview>
   <metadata
-     id="metadata3774">
+     id="metadata7">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
@@ -55,10 +69,27 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-1039.3622)">
+     transform="translate(0,-1037.3622)">
     <path
        sodipodi:type="star"
-       style="fill:#ff4800;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       style="fill:#666666;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="path3018-5-2"
+       sodipodi:sides="3"
+       sodipodi:cx="3"
+       sodipodi:cy="5"
+       sodipodi:r1="15.119611"
+       sodipodi:r2="7.5598059"
+       sodipodi:arg1="0"
+       sodipodi:arg2="1.0471976"
+       inkscape:flatsided="true"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="m 18.119611,5 -22.6794164,13.093967 0,-26.187934 z"
+       transform="matrix(0.26984748,-0.15579651,0.15579651,0.26984748,3.4914638,1042.8362)"
+       inkscape:transform-center-y="1.1777919" />
+    <path
+       sodipodi:type="star"
+       style="fill:#999999;fill-opacity:1;fill-rule:nonzero;stroke:none"
        id="path3018"
        sodipodi:sides="3"
        sodipodi:cx="3"
@@ -71,6 +102,7 @@
        inkscape:rounded="0"
        inkscape:randomized="0"
        d="m 18.119611,5 -22.6794164,13.093967 0,-26.187934 z"
-       transform="matrix(0,0.38185525,0.38185525,0,4.0907237,1043.1034)" />
+       transform="matrix(0.26984748,-0.15579651,0.15579651,0.26984748,8.3314861,1042.8362)"
+       inkscape:transform-center-y="1.1777919" />
   </g>
 </svg>

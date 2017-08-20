@@ -15,7 +15,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_hotcues_off.svg">
+   sodipodi:docname="btn_hotcues_on.svg">
   <defs
      id="defs4">
     <linearGradient
@@ -784,9 +784,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="4"
-     inkscape:cx="40.214084"
-     inkscape:cy="11.321085"
+     inkscape:zoom="5.6568542"
+     inkscape:cx="4.7823237"
+     inkscape:cy="12.585167"
      inkscape:document-units="px"
      inkscape:current-layer="svg2"
      showgrid="false"
@@ -870,7 +870,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -888,7 +888,7 @@
      inkscape:connector-curvature="0"
      id="path3959"
      style="font-size:13px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#d2d2d2;fill-opacity:1;stroke:none;font-family:Biting My Nails;-inkscape-font-specification:Biting My Nails"
-     d="M 6.8555555,18 2,18 l 0.6555555,-1.311111 3.5777778,0 0,-1.533334 -2.0666666,0 -0.7333334,-1.31111 2.8,0 0,-1.533334 -3.5777778,0 L 2,11 l 4.8555555,0 0.6888889,1.377778 0,4.244444 L 6.8555555,18" />
+     d="M 7.8555555,18 3,18 l 0.6555555,-1.311111 3.5777778,0 0,-1.533334 -2.0666666,0 -0.7333334,-1.31111 2.8,0 0,-1.533334 -3.5777778,0 L 3,11 l 4.8555555,0 0.6888889,1.377778 0,4.244444 L 7.8555555,18" />
   <path
      inkscape:connector-curvature="0"
      id="path3961"

@@ -13,7 +13,7 @@
    version="1.1"
    inkscape:version="0.48.4 r9939"
    width="50"
-   height="107"
+   height="106"
    sodipodi:docname="slider_pitch_scale.svg"
    inkscape:export-filename="/home/ronso/.mixxx/skins/FlatNite/pitch_slider.png"
    inkscape:export-xdpi="90"
@@ -52,8 +52,8 @@
      inkscape:object-nodes="true"
      inkscape:snap-smooth-nodes="true"
      inkscape:zoom="4"
-     inkscape:cx="42.060366"
-     inkscape:cy="38.324744"
+     inkscape:cx="49.584319"
+     inkscape:cy="53.820153"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -62,15 +62,24 @@
      inkscape:snap-bbox-edge-midpoints="true"
      inkscape:snap-object-midpoints="true"
      inkscape:bbox-paths="true"
-     inkscape:bbox-nodes="true" />
+     inkscape:bbox-nodes="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid2983"
+       empspacing="5"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true" />
+  </sodipodi:namedview>
   <g
      inkscape:groupmode="layer"
      id="layer4"
      inkscape:label="Layer#1"
-     style="display:inline">
+     style="display:inline"
+     transform="translate(0,-1)">
     <path
        style="fill:#6e6e6e;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
-       d="m 25,3 c -0.552285,0 -1,0.447715 -1,1 l 0,46 c 0,1.380712 -1.119288,2.5 -2.5,2.5 l -5.5,0 c -0.552285,0 -1,0.447715 -1,1 0,0.552285 0.447715,1 1,1 l 5.5,0 c 1.380712,0 2.5,1.119288 2.5,2.5 l 0,46 c 0,0.55228 0.447715,1 1,1 0.552285,0 1,-0.44772 1,-1 l 0,-46 c 0,-1.380712 1.119288,-2.5 2.5,-2.5 l 5.5,0 c 0.552285,0 1,-0.447715 1,-1 0,-0.552285 -0.447715,-1 -1,-1 l -5.5,0 C 27.119288,52.5 26,51.380712 26,50 L 26,4 C 26,3.447715 25.552285,3 25,3 z m 0,49.5 c 0.552285,0 1,0.447715 1,1 0,0.552285 -0.447715,1 -1,1 -0.552285,0 -1,-0.447715 -1,-1 0,-0.552285 0.447715,-1 1,-1 z"
+       d="m 25,3.5 c -0.552285,0 -1,0.447715 -1,1 l 0,46 C 24,51.880712 22.880712,53 21.5,53 L 16,53 c -0.552285,0 -1,0.447715 -1,1 0,0.552285 0.447715,1 1,1 l 5.5,0 c 1.380712,0 2.5,1.119288 2.5,2.5 l 0,46 c 0,0.55228 0.447715,1 1,1 0.552285,0 1,-0.44772 1,-1 l 0,-46 C 26,56.119288 27.119288,55 28.5,55 l 5.5,0 c 0.552285,0 1,-0.447715 1,-1 0,-0.552285 -0.447715,-1 -1,-1 l -5.5,0 C 27.119288,53 26,51.880712 26,50.5 l 0,-46 c 0,-0.552285 -0.447715,-1 -1,-1 z M 25,53 c 0.552285,0 1,0.447715 1,1 0,0.552285 -0.447715,1 -1,1 -0.552285,0 -1,-0.447715 -1,-1 0,-0.552285 0.447715,-1 1,-1 z"
        id="rect4849-3"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ssssssssssssssssssssssssss" />

@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="32"
-     inkscape:cx="8.72901"
-     inkscape:cy="11.676973"
+     inkscape:zoom="16"
+     inkscape:cx="10.684826"
+     inkscape:cy="10.393421"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -44,7 +44,11 @@
      inkscape:window-height="746"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="1" />
+     inkscape:window-maximized="1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid4125" />
+  </sodipodi:namedview>
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -77,7 +81,7 @@
        inkscape:rounded="0"
        inkscape:randomized="0"
        d="m 18.119611,5 -22.6794164,13.093967 0,-26.187934 z"
-       transform="matrix(0.39683453,-0.22911252,0.22911252,0.39683453,5.6639174,1038.1372)"
+       transform="matrix(0.39683453,-0.22911252,0.22911252,0.39683453,5.6639174,1038.5295)"
        inkscape:transform-center-y="1.732056" />
     <path
        sodipodi:type="star"
@@ -94,7 +98,7 @@
        inkscape:rounded="0"
        inkscape:randomized="0"
        d="m 18.119611,5 -22.6794164,13.093967 0,-26.187934 z"
-       transform="matrix(0.39683453,-0.22911252,0.22911252,0.39683453,11.663882,1038.1372)"
+       transform="matrix(0.39683453,-0.22911252,0.22911252,0.39683453,11.66395,1038.5295)"
        inkscape:transform-center-y="1.732056" />
   </g>
 </svg>

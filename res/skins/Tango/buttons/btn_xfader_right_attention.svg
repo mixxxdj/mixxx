@@ -16,7 +16,7 @@
    inkscape:version="0.48.4 r9939"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90"
-   sodipodi:docname="btn_cf_right_attention.svg">
+   sodipodi:docname="btn_xfader_right_attention.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -46,7 +46,11 @@
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:snap-page="true" />
+     inkscape:snap-page="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3779" />
+  </sodipodi:namedview>
   <metadata
      id="metadata7">
     <rdf:RDF>
