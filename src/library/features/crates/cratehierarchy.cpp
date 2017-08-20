@@ -328,6 +328,33 @@ QString CrateHierarchy::formatQueryForTrackIdsByCrateNameLikeRecursively(const Q
           CRATETRACKSTABLE_TRACKID);
 }
 
+QStringList CrateHierarchy::collectImmediateChildren(const Crate& parent) const {
+    QStringList names;
+    FwdSqlQuery query(
+      m_database, QString(
+        "SELECT c.%1 FROM %2 "
+        "JOIN %3 c ON c.%4 = %5 "
+        "JOIN %3 p ON p.%4 = %6 "
+        "WHERE p.%4 = :id "
+        "AND %7 = 1 ").arg(
+          CRATETABLE_NAME,
+          CRATE_CLOSURE_TABLE,
+          CRATE_TABLE,
+          CRATETABLE_ID,
+          CLOSURE_CHILDID,
+          CLOSURE_PARENTID,
+          CLOSURE_DEPTH));
+
+    query.bindValue(":id", parent.getId().toString());
+
+    if (query.execPrepared())
+        while (query.next()) {
+            names << query.fieldValue(0).toString();
+        }
+
+    return names;
+}
+
 bool CrateHierarchy::isNameValidForHierarchy(const QString& newName,
                                              const Crate& selectedCrate,
                                              const Crate& parent) const {
@@ -336,25 +363,26 @@ bool CrateHierarchy::isNameValidForHierarchy(const QString& newName,
     // so we use the corresponding functions
     if (selectedCrate.getId().isValid()) {
         if (parent.getId().isValid()) {
-            if (collectParentCrateNames(selectedCrate).contains(newName) ||
-                collectChildCrateNames(parent).contains(newName)) {
+            if (collectImmediateChildren(parent).contains(newName) || // siblings
+                collectImmediateChildren(selectedCrate).contains(newName) || // children
+                parent.getName() == newName) { // parent
                 return false;
             }
         } else {
-            if (collectRootCrateNames().contains(newName) ||
-                collectChildCrateNames(selectedCrate).contains(newName)) {
+            if (collectRootCrateNames().contains(newName) || // siblings
+                collectImmediateChildren(selectedCrate).contains(newName)) { // children
                 return false;
             }
         }
         return true;
     } else {
         if (parent.getId().isValid()) {
-            if (tokenizeCratePath(parent.getId()).contains(newName) ||
-                collectChildCrateNames(parent).contains(newName)) {
+            if (collectImmediateChildren(parent).contains(newName) || // siblings
+                parent.getName() == newName) { // parent
                 return false;
             }
         } else {
-            return !collectRootCrateNames().contains(newName);
+            return !collectRootCrateNames().contains(newName); // siblings
         }
         return true;
     }
@@ -409,6 +437,28 @@ CrateId CrateHierarchy::getParentId(const CrateId id) const {
     }
     // no parent found
     return CrateId();
+}
+
+QString CrateHierarchy::getParentName(const CrateId id) const {
+    FwdSqlQuery query(
+      m_database, QString(
+        "SELECT %1 FROM %2 "
+        "JOIN %3 ON %4 = %5"
+        "WHERE %5 = :id "
+        "AND %6 = 1").arg(
+          CRATETABLE_NAME,
+          CRATE_CLOSURE_TABLE,
+          CRATE_TABLE,
+          CRATETABLE_ID,
+          CLOSURE_CHILDID,
+          CLOSURE_DEPTH));
+
+    query.bindValue(":id", id);
+    if (query.execPrepared() && query.next()) {
+        return query.fieldValue(0).toString();
+    }
+    // no parent found
+    return QString();
 }
 
 QStringList CrateHierarchy::collectIdPaths() const {

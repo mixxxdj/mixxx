@@ -84,14 +84,18 @@ class CrateHierarchy : public virtual DAO {
     bool hasChildren(CrateId id) const;
 
     CrateId getParentId(const CrateId id) const;
+    QString getParentName(const CrateId id) const;
 
     QStringList collectIdPaths() const;
     QStringList collectChildCrateIds(const CrateId& crateId) const;
 
-    // (TODO) returns a list of the crates with the same parent of the selected one
-    // or a list of root crates if there is no parent crate.
-    QStringList collectSiblingCrateNames();
+    // returns a list of the children 1 level down
+    QStringList collectImmediateChildren(const Crate& parent) const;
     QString formatQueryForChildCrateIds(const Crate& crate) const;
+
+    // selects all the crates that the selected crate can move to
+    // (All crates other than itself and it's decendants)
+    CrateSelectResult selectCratesToMove(const Crate& crate) const;
 
   private:
     // empties the closure table
