@@ -1,15 +1,14 @@
 <Template>
 	<WidgetGroup>
-		<Pos>5,200</Pos>
-        <Size>372e,50</Size>
-        <SizePolicy>f,f</SizePolicy>
+        <Size>0e,54f</Size>
+        <BackPath>style/style_bg_deck_botom_mid.png</BackPath>
+		<Layout>horizontal</Layout>
         <Children>
             <Template src="skin:microphone.xml">
                 <SetVariable name="micnum"></SetVariable>
             </Template>
     		<WidgetGroup>
-                <Pos>100,0</Pos>
-                <Size>93,50</Size>
+                <Size>93f,54f</Size>
                 <Children>
                 <Template src="skin:microphone.xml">
                     <SetVariable name="micnum">2</SetVariable>
@@ -20,6 +19,10 @@
                     <BindProperty>visible</BindProperty>
                 </Connection>
             </WidgetGroup>
+			<WidgetGroup>
+				<Size>0e,54f</Size>
+				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+			</WidgetGroup>
             <Template src="skin:ducking.xml">
             </Template>
 		</Children>

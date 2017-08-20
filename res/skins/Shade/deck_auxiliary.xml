@@ -1,15 +1,14 @@
 <Template>
 	<WidgetGroup>
-		<Pos>5,200</Pos>
-        <Size>372,50</Size>
-        <SizePolicy>f,f</SizePolicy>
+        <Size>372e,54f</Size>
+        <BackPath>style/style_bg_deck_botom_mid.png</BackPath>
+		<Layout>horizontal</Layout>
         <Children>
             <Template src="skin:auxiliary.xml">
                 <SetVariable name="auxnum">1</SetVariable>
             </Template>
     		<WidgetGroup>
-                <Pos>109,0</Pos>
-                <Size>108,50</Size>
+                <Size>108f,54f</Size>
                 <Children>
                 <Template src="skin:auxiliary.xml">
                     <SetVariable name="auxnum">2</SetVariable>
@@ -20,6 +19,10 @@
                     <BindProperty>visible</BindProperty>
                 </Connection>
             </WidgetGroup>
+			<WidgetGroup>
+				<Size>0e,54f</Size>
+				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+			</WidgetGroup>
 		</Children>
         <Connection>
             <ConfigKey>[Microphone],show_microphone</ConfigKey>

@@ -1,7 +1,7 @@
 <Template>
 	<WidgetGroup>
         <ObjectName>Deck</ObjectName>
-		<Size>369e,201f</Size>
+		<Size>0e,201f</Size>
         <Layout>horizontal</Layout>
 		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 		<Children>
@@ -13,13 +13,13 @@
 			</WidgetGroup>	
 			<WidgetGroup>
 				<ObjectName>DeckLeft</ObjectName>
-				<Size>307e,201f</Size>
+				<Size>0e,201f</Size>
 				<Layout>vertical</Layout>
 				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 				<Children>
 					<WidgetGroup>
 				        <ObjectName>DeckTopLeftMidPart</ObjectName>
-						<Size>318e,45f</Size>
+						<Size>0e,45f</Size>
 						<Layout>horizontal</Layout>
 						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 						<Children>
@@ -40,7 +40,7 @@
 							</WidgetGroup>
 							<WidgetGroup>
 								<ObjectName>DeckTopMidPart</ObjectName>
-								<Size>273e,45f</Size>
+								<Size>0e,45f</Size>
 								<Layout>vertical</Layout>
 								<BackPath>style/style_bg_deck_top_mid.png</BackPath>
 								<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
@@ -59,13 +59,13 @@
 										</Style>
 										<Property>title</Property>
 										<Channel><Variable name="channum"/></Channel>
-										<Size>275e,20f</Size>
+										<Size>0e,20f</Size>
 										<Elide>right</Elide>
 									</TrackProperty>
 
 									<WidgetGroup>
 										<ObjectName>ArtistAndTimeRow</ObjectName>
-										<Size>276e,20f</Size>
+										<Size>0e,20f</Size>
 										<Layout>horizontal</Layout>
 										<Children>
 											<TrackProperty>
@@ -108,13 +108,13 @@
 				    </WidgetGroup>
 					<WidgetGroup>
 				        <ObjectName>DeckUpperLeftMidPart</ObjectName>
-						<Size>318e,117f</Size>
+						<Size>0e,117f</Size>
 						<Layout>horizontal</Layout>
 						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 						<Children>
 							<WidgetGroup>
 								<ObjectName>DeckUpperMidPart</ObjectName>
-								<Size>313e,117f</Size>
+								<Size>0e,117f</Size>
 								<BackPath>style/style_bg_deck_pane.png</BackPath>
 								<Layout>horizontal</Layout>
 								<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
@@ -122,7 +122,7 @@
 									<!-- Collapsing Waveform, VinylControl & spinning Vinyl widget-->
 									<WidgetGroup>
 										<ObjectName>DeckWaveformVinylControlSpinny</ObjectName>
-										<Size>313e,117f</Size>
+										<Size>0e,117f</Size>
 										<Layout>horizontal</Layout>
 										<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 										<Children>
@@ -144,7 +144,7 @@
 												<TooltipId>waveform_display</TooltipId>
 												<Style></Style>
 												<Channel><Variable name="channum"/></Channel>
-												<Pos>0,0</Pos>
+												<Size>0e,117f</Size>
 												<!--See comment about <Size> above-->
 												<!--<Size>415,119</Size>-->
 												<BgColor>#8D98A3</BgColor>
@@ -212,13 +212,12 @@
 													<WidgetGroup>
 														<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0;}
 														</Style>
-														<Size>f,e</Size>
+														<Size>82f,0e</Size>
 													 </WidgetGroup>
 													<!-- Spinning Vinyl sub-widget -->
 													<WidgetGroup>
-														<!--<Pos>296,0</Pos>-->
 														<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0;} </Style>
-														<Size>82,82</Size>
+														<Size>82f,82f</Size>
 														<Children>
 															<!--
 															**********************************************
@@ -244,8 +243,8 @@
 													<WidgetGroup>
 														<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0;}
 														</Style>
-														<Size>f,e</Size>
-													 </WidgetGroup>
+														<Size>82f,0e</Size>
+													</WidgetGroup>
 							 						<Template src="skin:vinylcontrol.xml">
 														<SetVariable name="channum"><Variable name="channum"/></SetVariable>
 													</Template>
@@ -260,13 +259,13 @@
 					</WidgetGroup>	
 					<WidgetGroup>
 				        <ObjectName>DeckLowerLeftMidPart</ObjectName>
-						<Size>318e,39f</Size>
+						<Size>0e,39f</Size>
 						<Layout>horizontal</Layout>
 						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 						<Children>
 							<WidgetGroup>
 								<ObjectName>DeckLowerMidPart</ObjectName>
-								<Size>250e,39f</Size>
+								<Size>0e,39f</Size>
 								<Layout>horizontal</Layout>
 								<BackPath>style/style_bg_deck_woverview.png</BackPath>
 								<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
@@ -275,7 +274,7 @@
 										<TooltipId>waveform_overview</TooltipId>
 										<Style></Style>
 										<Channel><Variable name="channum"/></Channel>
-										<Size>250e,37f</Size>
+										<Size>0e,37f</Size>
 										<!-- transparent background if no <BgColor> & <BgPixmap> is present -->
 										<BgColor></BgColor>
 										<BgPixmap></BgPixmap>
