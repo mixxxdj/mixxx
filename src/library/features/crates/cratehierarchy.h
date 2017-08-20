@@ -70,7 +70,7 @@ class CrateHierarchy : public virtual DAO {
 
     // namePath is the string that represents the placement of the crate in the tree
     // just like a path in a file system
-    QString getNamePathFromId(CrateId id) const;
+    QString getNamePathFromId(const CrateId& id) const;
 
     // checks whether a name is valid for the hierarchy
     // parent id only applies to subcrates.
@@ -80,11 +80,10 @@ class CrateHierarchy : public virtual DAO {
                                  const Crate& selectedCrate,
                                  const Crate& parent = Crate()) const;
 
-    void deleteCrate(CrateId id) const;
-    bool hasChildren(CrateId id) const;
+    void deleteCrate(const CrateId& id) const;
+    bool hasChildren(const CrateId& id) const;
 
-    CrateId getParentId(const CrateId id) const;
-    QString getParentName(const CrateId id) const;
+    CrateId getParentId(const CrateId& id) const;
 
     QStringList collectIdPaths() const;
     QStringList collectChildCrateIds(const CrateId& crateId) const;
@@ -106,12 +105,14 @@ class CrateHierarchy : public virtual DAO {
     void resetPath() const;
     bool generateAllPaths(CrateSelectResult crates) const;
 
-    bool initClosureForCrate(CrateId id) const;
-    bool insertIntoClosure(CrateId parent, CrateId child) const;
-    bool generateCratePaths(Crate crate) const;
+    bool initClosureForCrate(const CrateId& id) const;
+    bool insertIntoClosure(const CrateId& parent, const CrateId& child) const;
+    bool generateCratePaths(const Crate& crate) const;
 
-    bool writeCratePaths(CrateId id, QString namePath, QString idPath) const;
-    QStringList tokenizeCratePath(CrateId id) const;
+    bool writeCratePaths(const CrateId& id,
+                         const QString& namePath,
+                         const QString& idPath) const;
+    QStringList tokenizeCratePath(const CrateId& id) const;
     QStringList collectRootCrateNames() const;
 
     // returns a list with names that exist in the path of
