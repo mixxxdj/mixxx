@@ -1,16 +1,16 @@
 <!--
 Description:
-	A simple knob, packed into a box to allow margin without to
-	distort knob graphics.
+  A simple knob, packed into a box to allow margin without to
+  distort knob graphics.
 Variables:
-	ObjectName  : name of parent container, css for individual margin
-	ToolTip     :
-	Size        : actual knob size
-	PotiMinAngle: see skin.xml
-	PotiMaxAngle: see skin.xml
-	Color       : knob's notch colour.
-	group       : affected group.
-	ConfigKey   : control to connect to.
+  ObjectName  : name of parent container, css for individual margin
+  ToolTip     :
+  Size        : actual knob size
+  PotiMinAngle: -135°, see skin.xml
+  PotiMaxAngle: 135°, see skin.xml
+  Color       : knob's notch colour
+  group       : affected group
+  ConfigKey   : control to connect to
 -->
 <Template>
   <WidgetGroup>

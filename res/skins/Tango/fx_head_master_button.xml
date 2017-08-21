@@ -1,11 +1,10 @@
 <!--
 Description:
-  A simple indicator for usage in decks' artist/duration row,
-  showing if an effect unit is assigned to parent deck.
-  Visible only if assigned.
+  A button to assign parent effect unit to master output or headphones. 
 Variables:
-  fxUnit : [EffectRack1_EffectUnitN]
-  group : [ChannelN]
+  sourceType  : headphone or master
+  fxUnit      : [EffectRack1_EffectUnitN]
+  group       : [ChannelN]
 -->
 <Template>
   <PushButton>

@@ -1,8 +1,8 @@
 <!--
 Description:
   A widget containing hotcue buttons whose number can be set to 4 or 8.
-Variables:
-  HotCue: The hotcue nummber (1-8).
+  They're layed out in a way that they either expand or get squeezed,
+  depending on how many deck buttons/star rating are visible.
 -->
 <Template>
   <WidgetGroup>

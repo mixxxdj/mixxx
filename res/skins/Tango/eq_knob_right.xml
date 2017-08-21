@@ -3,8 +3,14 @@ Description:
   An EQ knob with a Kill button next to it.
   A 'button' underneath the knob turns grey when EQ range is killed.
 Variables:
-  group     : [ChannelN]
-  parameter : EQ parameter number
+  ObjectName  : name of parent container, css for individual margin
+  ToolTip     :
+  Size        : actual knob size
+  PotiMinAngle: -135°, see skin.xml
+  PotiMaxAngle: 135°, see skin.xml
+  Color       : knob's notch colour
+  group       : affected group
+  parameter   : 1, 2, 3 (low, mid, high)
 -->
 <Template>
   <SetVariable name="EqualizerEffect">[EqualizerRack1_<Variable name="group"/>_Effect1]</SetVariable>
@@ -25,13 +31,13 @@ Variables:
         <Layout>stacked</Layout>
         <Children>
           <EffectParameterKnobComposed>
-              <Size>30f,30f</Size>
-              <Knob>skin:/knobs_sliders/knob_white.svg</Knob>
-              <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
-              <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
-              <Connection>
-                  <ConfigKey><Variable name="EqualizerEffect"/>,parameter<Variable name="parameter"/></ConfigKey>
-              </Connection>
+            <Size>30f,30f</Size>
+            <Knob>skin:/knobs_sliders/knob_white.svg</Knob>
+            <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+            <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+            <Connection>
+              <ConfigKey><Variable name="EqualizerEffect"/>,parameter<Variable name="parameter"/></ConfigKey>
+            </Connection>
           </EffectParameterKnobComposed>
           <Template src="skin:button_2state.xml">
             <SetVariable name="ObjectName">EQKillButtonUnderlayRight</SetVariable>

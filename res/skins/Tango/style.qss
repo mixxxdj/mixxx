@@ -883,7 +883,6 @@ WBeatSpinBox {
 ##############################################################*/
 
 #SkinControls {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   }
   #SkinControlsRow {
     qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
@@ -928,8 +927,7 @@ WBeatSpinBox {
     border: 1px solid #a90000;
   }
   #RecordingButton[displayValue="1"] {
-    color: #d2d2d2; /*
-    border: 1px solid #FFA601;  */
+    color: #d2d2d2;
     border: 1px solid #ff8f00;
   }
   #RecordingButton[displayValue="2"]:hover {
@@ -1023,13 +1021,6 @@ WBeatSpinBox {
 ######  Effects  ###############################################
 ##############################################################*/
 
-#EffectUnits12 {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-}
-#EffectUnits34 {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-}
-
 #EffectUnitLabel {
   font-size: 14px/14px;
   font-weight: bold;
@@ -1063,16 +1054,6 @@ WBeatSpinBox {
 #SuperWetDryContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   background-color: #333333;
-  }
-
-#EffectSlotsLeft, #EffectSlotsRight {
-  background-color: #0f0f0f;
-}
-  #EffectSlotsLeft > #EffectSlot {
-    qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  }
-  #EffectSlotsRight > #EffectSlot {
-    qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
   }
 
 /* minimal EffectSlots in horizontal layout */
@@ -1212,9 +1193,6 @@ WBeatSpinBox {
       image: url(skin:/buttons/btn_fx_focus_on_hover.svg) no-repeat center center;
     }
 
-#EffectTogglerMetaKnob1, #EffectTogglerMetaKnob2, #EffectTogglerMetaKnob3 {
-  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-}
 #EffectToggleSelector {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
   border-radius: 3px;

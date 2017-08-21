@@ -8,7 +8,6 @@ Description:
   * Gain knob
   * Eject button
 Variables:
-  group: set to [PreviewDeck1]
   PlayedOverlayColor  : defined in skin.xml
 -->
 <Template>	

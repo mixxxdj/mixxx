@@ -1,9 +1,12 @@
 <!--
-  Description:
-    An effect chain widget.
-  Variables:
-    EffectRack: Number of effect rack.
-    EffectUnit: Number of effect unit.
+Description:
+  An effect chain widget.
+  * EffectSlots, with or without highlight/focus option
+  * mixer with Wet/Dry knob and Super knob (optional)
+  * assignment buttons for master & headphone
+Variables:
+  fxGroup:  EffectRack1_EffectUnitX
+  fxUnit:   number of effect unit for FX label
 -->
 <Template>
   <WidgetGroup><!-- EffectUnit -->
@@ -97,7 +100,6 @@
       <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
       <WidgetGroup><!-- EffectSlots + Underlays, no focus -->
-        <ObjectName>EffectSlot_stack</ObjectName>
         <Layout>stacked</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
@@ -167,7 +169,6 @@
       </WidgetGroup><!-- /EffectSlots + Underlays, no focus -->
 
       <WidgetGroup><!-- EffectSlots + Underlays, with focus -->
-        <ObjectName>EffectSlot_stack</ObjectName>
         <Layout>stacked</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>

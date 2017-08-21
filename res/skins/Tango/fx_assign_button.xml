@@ -1,11 +1,10 @@
 <!--
 Description:
-  A simple indicator for usage in decks' artist/duration row,
-  showing if an effect unit is assigned to parent deck.
-  Visible only if assigned.
+  A button to assign an effect unit to parent deck,
+  used in decks' artist/duration row.
 Variables:
-  fxUnit : [EffectRack1_EffectUnitN]
-  group : [ChannelN]
+  fxUnit: [EffectRack1_EffectUnitN]
+  group:  [ChannelN]
 -->
 <Template>
   <PushButton>

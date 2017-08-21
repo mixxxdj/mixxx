@@ -1,6 +1,6 @@
 <!--
 Description:
-  Box in between decks (displayed in normal mode) with
+  Box in between decks in normal mode.
   * GUI toggle buttons (FX, Sampler, Lib, Wave ...)
   * Crossfader (if enabled)
   * Logo
@@ -16,7 +16,7 @@ Description:
     <Size>104f,1me</Size>
     <Children>
 
-      <WidgetGroup><!-- 4 Decks / Wave / Spinny / HotCues / Mixer -->
+      <WidgetGroup><!-- 4 Decks / Wave / MixerBar / HotCues / Mixer -->
         <Layout>horizontal</Layout>
         <ObjectName>SkinControlsRow</ObjectName>
         <Size>104f,21f</Size>
@@ -47,7 +47,7 @@ Description:
 
           <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
-          <Template src="skin:button_2state_persist.xml"><!-- Spinny -->
+          <Template src="skin:button_2state_persist.xml"><!-- MixerBar -->
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">20f,20f</SetVariable>
             <SetVariable name="state_0_pressed">mixerbar_off.svg</SetVariable>
@@ -84,9 +84,9 @@ Description:
           </Template>
 
         </Children>
-      </WidgetGroup><!-- 4 Decks / Wave / Spinny / HotCues / Mixer -->
+      </WidgetGroup><!-- 4 Decks / Wave / MixerBar / HotCues / Mixer -->
 
-      <WidgetGroup><!-- Lib / FX / Sampler-->
+      <WidgetGroup><!-- FX / Samplers / Library-->
         <Layout>horizontal</Layout>
         <ObjectName>SkinControlsRow</ObjectName>
         <Size>104f,21f</Size>
@@ -124,7 +124,7 @@ Description:
           </Template>
 
         </Children>
-      </WidgetGroup><!-- /Lib / FX / Sampler-->
+      </WidgetGroup><!-- /FX / Samplers / Library -->
 
       <WidgetGroup><!-- Recording button & recording duration label -->
         <Layout>stacked</Layout>
@@ -159,7 +159,7 @@ Description:
         </Children>
       </WidgetGroup><!-- /Recording button & recording duration label -->
 
-      <WidgetGroup><!-- Broadcast + Clock + Skin Settings -->
+      <WidgetGroup><!-- Broadcast + Clock/Logo + Skin Settings -->
         <ObjectName>ClockBox</ObjectName>
         <Layout>horizontal</Layout>
         <Size>104f,30me</Size>
@@ -173,7 +173,7 @@ Description:
             <SetVariable name="ConfigKeyDisp">[Shoutcast],status</SetVariable>
           </Template>
 
-          <WidgetGroup><!-- Clock (& Logo when Crossfader is visible in 2-decks mode) -->
+          <WidgetGroup><!-- Clock (& Logo when Crossfader is enabled) -->
             <ObjectName>AlignVCenter</ObjectName>
             <Size>56me,43me</Size>
             <Layout>vertical</Layout>
@@ -254,7 +254,7 @@ Description:
           </WidgetGroup><!-- /Toggler for skin settings menu -->
 
         </Children>
-      </WidgetGroup><!-- /Broadcast + Clock Skin + Settings -->
+      </WidgetGroup><!-- /Broadcast + Clock/Logo + Skin Settings -->
 
       <WidgetGroup><!-- Logo + Crossfader 2 Decks-->
         <Layout>horizontal</Layout>

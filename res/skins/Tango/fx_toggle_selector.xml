@@ -1,14 +1,14 @@
 <!--
 Description:
-  Container in left effect units with
+  A button stack:
   * effect enable button
-  * effect focus button
+  * effect name
+  * enable feedback
   * effect selector drop-down list
-  * Meta knob
 Variables:
-  fxGroup : EffectRack1_EffectUnitX
   fxRack  : effect rack number
   fxUnit  : effect unit number
+  fxGroup : EffectRack1_EffectUnitX
   fxNum   : effect number
 -->
 <Template>

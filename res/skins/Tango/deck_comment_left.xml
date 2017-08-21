@@ -1,3 +1,10 @@
+<!--
+Description:
+  An extra line below/above waveform overview that contains FX asssign buttons and
+  track commment (optional)
+Variables:
+  chanNum : the channel number
+-->
 <Template>
   <SetVariable name="sourceType">deck</SetVariable>
   <WidgetGroup>
@@ -62,9 +69,7 @@
         </Children>
       </WidgetGroup><!-- /Track comment + FX indicators -->
 
-      <WidgetGroup>
-        <Size>1me,1f</Size>
-      </WidgetGroup>
+      <WidgetGroup><Size>1me,1f</Size></WidgetGroup>
 
     </Children>
   </WidgetGroup>
