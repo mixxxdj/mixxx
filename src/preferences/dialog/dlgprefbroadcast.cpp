@@ -147,15 +147,37 @@ void DlgPrefBroadcast::slotUpdate() {
     }
 }
 
-void DlgPrefBroadcast::slotApply()
-{
+void DlgPrefBroadcast::applyModel() {
     if(m_pProfileListSelection) {
         setValuesToProfile(m_pProfileListSelection);
     }
     m_pBroadcastSettings->applyModel(m_pSettingsModel);
     updateModel();
+}
 
-    m_pBroadcastEnabled->set(enableLiveBroadcasting->isChecked());
+void DlgPrefBroadcast::slotApply()
+{
+    bool broadcastingEnabled = m_pBroadcastEnabled->toBool();
+    bool enablingBroadcasting = enableLiveBroadcasting->isChecked();
+
+    if(broadcastingEnabled && !enablingBroadcasting) {
+        // If Live Broadcasting goes from enabled to disabled, turn
+        // it off first and then apply settings
+        m_pBroadcastEnabled->set(enableLiveBroadcasting->isChecked());
+        applyModel();
+    }
+    else if(!broadcastingEnabled && enablingBroadcasting) {
+        // If Live Broadcasting goes from disabled to enabled, apply settings
+        // first and then turn it on
+        applyModel();
+        m_pBroadcastEnabled->set(enableLiveBroadcasting->isChecked());
+    }
+    else if(broadcastingEnabled == enablingBroadcasting) {
+        // If Live Broadcasting doesn't change state, only apply settings
+        applyModel();
+    }
+
+    applyModel();
 
     // Don't let user modify information if
     // sending is enabled.

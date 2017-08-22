@@ -123,8 +123,9 @@ bool ShoutConnection::isConnected() {
 
 // Only called when applying settings while broadcasting is active
 void ShoutConnection::applySettings() {
-    // Do nothing if profile is disabled
-    if(!m_pProfile->getEnabled())
+    // Do nothing if profile or Live Broadcasting is disabled
+    if(!m_pBroadcastEnabled->toBool()
+            || !m_pProfile->getEnabled())
         return;
 
     // Setting the profile's enabled value to false tells the
@@ -870,7 +871,6 @@ void ShoutConnection::tryReconnect() {
     }
 
     if (getStatus() == BroadcastProfile::STATUS_FAILURE) {
-        m_pProfile->setEnabled(false);
         QString errorText;
         if (m_retryCount > 0) {
             errorText = tr("Lost connection to streaming server and %1 attempts to reconnect have failed.")
@@ -916,7 +916,6 @@ void ShoutConnection::run() {
     }
 
     if (!processConnect()) {
-        m_pProfile->setEnabled(false);
         errorDialog(tr("Can't connect to streaming server"),
                 m_lastErrorStr + "\n" +
                 tr("Please check your connection to the Internet and verify that your username and password are correct."));
@@ -927,9 +926,12 @@ void ShoutConnection::run() {
 
     while(true) {
         // Stop the thread if broadcasting is turned off
-        if (!m_pProfile->getEnabled() || !m_pBroadcastEnabled->toBool()) {
+        if (!m_pProfile->getEnabled()
+                || !m_pBroadcastEnabled->toBool()
+                || getStatus() == BroadcastProfile::STATUS_FAILURE
+                || getStatus() == BroadcastProfile::STATUS_UNCONNECTED) {
             m_threadWaiting = false;
-            kLogger.debug() << "run: Connection disabled. Disconnecting";
+            kLogger.debug() << "run: Connection disabled or failed. Disconnecting";
             if(processDisconnect()) {
                 setStatus(BroadcastProfile::STATUS_UNCONNECTED);
             }

@@ -42,6 +42,7 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     void onSectionResized();
 
   private:
+    void applyModel();
     void updateModel();
     void selectConnectionRow(int row);
     void selectConnectionRowByName(QString rowName);
