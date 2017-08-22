@@ -385,7 +385,7 @@ QString CrateHierarchy::formatQueryForTrackIdsByCrateNameLikeRecursively(const Q
           CRATETRACKSTABLE_TRACKID);
 }
 
-QStringList CrateHierarchy::collectImmediateChildren(const Crate& parent) const {
+QStringList CrateHierarchy::collectImmediateChildrenNames(const Crate& parent) const {
     QStringList names;
     FwdSqlQuery query(
       m_database, QString(
@@ -420,21 +420,21 @@ bool CrateHierarchy::isNameValidForHierarchy(const QString& newName,
     // so we use the corresponding functions
     if (selectedCrate.getId().isValid()) {
         if (parent.getId().isValid()) {
-            if (collectImmediateChildren(parent).contains(newName) || // siblings
-                collectImmediateChildren(selectedCrate).contains(newName) || // children
+            if (collectImmediateChildrenNames(parent).contains(newName) || // siblings
+                collectImmediateChildrenNames(selectedCrate).contains(newName) || // children
                 parent.getName() == newName) { // parent
                 return false;
             }
         } else {
             if (collectRootCrateNames().contains(newName) || // siblings
-                collectImmediateChildren(selectedCrate).contains(newName)) { // children
+                collectImmediateChildrenNames(selectedCrate).contains(newName)) { // children
                 return false;
             }
         }
         return true;
     } else {
         if (parent.getId().isValid()) {
-            if (collectImmediateChildren(parent).contains(newName) || // siblings
+            if (collectImmediateChildrenNames(parent).contains(newName) || // siblings
                 parent.getName() == newName) { // parent
                 return false;
             }

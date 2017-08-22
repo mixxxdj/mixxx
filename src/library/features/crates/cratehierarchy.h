@@ -89,7 +89,7 @@ class CrateHierarchy : public virtual DAO {
     QStringList collectChildCrateIds(const CrateId& crateId) const;
 
     // returns a list of the children 1 level down
-    QStringList collectImmediateChildren(const Crate& parent) const;
+    QStringList collectImmediateChildrenNames(const Crate& parent) const;
     QString formatQueryForChildCrateIds(const Crate& crate) const;
 
     // selects all the crates that the selected crate can move to

@@ -401,7 +401,7 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex&
 
     m_pMoveCrateMenu->clear();
     QSignalMapper* signalMapper = new QSignalMapper(this);
-    // add option to move to root
+    // add option to move to root if the crate isn't there already
     if (m_pCrates->hierarchy().getParentId(crate.getId()).isValid()) {
         auto pAction = std::make_unique<QAction>("Root", this);
         signalMapper->setMapping(pAction.get(), CrateId().toInt());
@@ -587,13 +587,18 @@ void CrateFeature::slotMoveSubtreeToCrate(int iCrateId) {
 
         m_pCrates->hierarchy().moveCrate(selectedCrate, destinationCrateId);
 
+        Crate destinationCrate;
+        m_pCrates->storage().readCrateById(destinationCrateId, &destinationCrate);
+
+        // try to keep naming convention
+        while (selectedCrate.getName() == destinationCrate.getName() ||
+               m_pCrates->hierarchy().collectImmediateChildrenNames(
+                 destinationCrate).contains(selectedCrate.getName())) {
+            selectedCrate.setName(selectedCrate.getName() + "_");
+        };
         // rebuild the paths
         m_pCrates->updateCrate(selectedCrate);
         rebuildChildModel();
-        // keep the crates, remove their pahts, remove them from closure
-        // reinsert them to closure
-
-        // selected crate get's deleted last, gets inserted first
     }
 }
 
