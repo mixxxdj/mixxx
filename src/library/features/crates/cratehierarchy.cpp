@@ -276,6 +276,60 @@ void CrateHierarchy::deleteCrate(const CrateId& id) const {
     }
 }
 
+void CrateHierarchy::moveCrate(const Crate &crate,
+                               CrateId destinationCrateId) const {
+    {
+        QString subquery(
+          QString(
+            "SELECT %1 FROM %2 "
+            "WHERE %3 = %4").arg(
+              CLOSURE_CHILDID,
+              CRATE_CLOSURE_TABLE,
+              CLOSURE_PARENTID,
+              crate.getId().toString()));
+        FwdSqlQuery query(
+          m_database, QString(
+            "DELETE FROM %1 "
+            "WHERE %2 IN (%3)"
+            "AND %4 NOT IN (%3)").arg(
+              CRATE_CLOSURE_TABLE,
+              CLOSURE_CHILDID,
+              subquery,
+              CLOSURE_PARENTID));
+
+        if (!query.isPrepared()) {
+            return;
+        }
+        if (!query.execPrepared()) {
+            return;
+        }
+    }
+    if (destinationCrateId.isValid()) {
+        FwdSqlQuery query(
+          m_database, QString(
+            "INSERT INTO %1 (%2, %3, %4) "
+            "SELECT a.%2, b.%3, a.%4 + b.%4 + 1 "
+            "FROM %1 AS a "
+            "JOIN %1 AS b "
+            "WHERE a.%3 = :destinatnion "
+            "AND b.%2 = :source").arg(
+              CRATE_CLOSURE_TABLE,
+              CLOSURE_PARENTID,
+              CLOSURE_CHILDID,
+              CLOSURE_DEPTH));
+
+        query.bindValue(":destination", destinationCrateId.toString());
+        query.bindValue(":source", crate.getId().toString());
+
+        if (!query.isPrepared()) {
+            return;
+        }
+        if (!query.execPrepared()) {
+            return;
+        }
+    }
+}
+
 CrateSelectResult CrateHierarchy::selectCrateIdsByCrateNameLike(const QString& crateNameLike) const {
     FieldEscaper escaper(m_database);
     QString escapedArgument = escaper.escapeString(kSqlLikeMatchAll + crateNameLike + kSqlLikeMatchAll);

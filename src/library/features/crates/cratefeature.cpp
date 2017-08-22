@@ -122,6 +122,9 @@ void CrateFeature::initActions() {
     m_pAutoDjTrackSourceAction->setCheckable(true);
     connect(m_pAutoDjTrackSourceAction.get(), SIGNAL(changed()),
             this, SLOT(slotAutoDjTrackSourceChanged()));
+
+    m_pMoveCrateMenu = std::make_unique<QMenu>(nullptr);
+    m_pMoveCrateMenu->setTitle(tr("Move subtree to"));
 }
 
 void CrateFeature::connectLibrary(Library* pLibrary) {
@@ -396,6 +399,36 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex&
         return;
     }
 
+    m_pMoveCrateMenu->clear();
+    QSignalMapper* signalMapper = new QSignalMapper(this);
+    // add option to move to root
+    if (m_pCrates->hierarchy().getParentId(crate.getId()).isValid()) {
+        auto pAction = std::make_unique<QAction>("Root", this);
+        signalMapper->setMapping(pAction.get(), CrateId().toInt());
+        connect(pAction.get(), SIGNAL(triggered()),
+                signalMapper, SLOT(map()));
+        m_pMoveCrateMenu->addAction(pAction.get());
+        pAction.release();
+    }
+
+    CrateSelectResult allCrates(m_pCrates->storage().selectCrates());
+    Crate moveCrate;
+    while (allCrates.populateNext(&moveCrate)) {
+        if (moveCrate.getId() == crate.getId() ||
+            m_pCrates->hierarchy().collectChildCrateIds(crate.getId()).contains(moveCrate.getId().toString())) {
+            continue; // skip adding the selected crate and it's children
+        }
+        QString namePath = m_pCrates->hierarchy().getNamePathFromId(moveCrate.getId());
+        auto pAction = std::make_unique<QAction>(namePath.right(namePath.size()-1), this);
+        pAction->setEnabled(!moveCrate.isLocked());
+        signalMapper->setMapping(pAction.get(), moveCrate.getId().toInt());
+        connect(pAction.get(), SIGNAL(triggered()),
+                signalMapper, SLOT(map()));
+        m_pMoveCrateMenu->addAction(pAction.get());
+        pAction.release();
+    }
+    connect(signalMapper, SIGNAL(mapped(int)), this, SLOT(slotMoveSubtreeToCrate(int)));
+
     m_pDeleteCrateAction->setEnabled(!crate.isLocked());
     m_pRenameCrateAction->setEnabled(!crate.isLocked());
 
@@ -411,6 +444,7 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex&
     menu.addAction(m_pDuplicateCrateAction.get());
     menu.addAction(m_pDeleteCrateAction.get());
     menu.addAction(m_pLockCrateAction.get());
+    menu.addMenu(m_pMoveCrateMenu.get());
     menu.addSeparator();
     menu.addAction(m_pAutoDjTrackSourceAction.get());
     menu.addSeparator();
@@ -532,6 +566,37 @@ void CrateFeature::slotDuplicateCrate() {
         qDebug() << "Failed to duplicate selected crate";
     }
 }
+
+void CrateFeature::slotMoveSubtreeToCrate(int iCrateId) {
+    Crate selectedCrate;
+    CrateId destinationCrateId(iCrateId);
+
+    if (readLastRightClickedCrate(&selectedCrate)) {
+        if (selectedCrate.getId() == destinationCrateId) {
+            return;
+        }
+
+        QStringList childIds = m_pCrates->hierarchy().collectChildCrateIds(selectedCrate.getId());
+        if (childIds.contains(destinationCrateId.toString())) {
+            QMessageBox::warning(
+              nullptr,
+              tr("Moving Subtree Failed"),
+              tr("Cannot move a subree into itself."));
+            return;
+        }
+
+        m_pCrates->hierarchy().moveCrate(selectedCrate, destinationCrateId);
+
+        // rebuild the paths
+        m_pCrates->updateCrate(selectedCrate);
+        rebuildChildModel();
+        // keep the crates, remove their pahts, remove them from closure
+        // reinsert them to closure
+
+        // selected crate get's deleted last, gets inserted first
+    }
+}
+
 
 void CrateFeature::slotToggleCrateLock() {
     Crate crate;

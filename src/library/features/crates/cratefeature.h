@@ -80,6 +80,8 @@ class CrateFeature : public LibraryFeature {
     void slotTrackSelected(TrackPointer pTrack);
     void slotResetSelectedTrack();
     void slotUpdateCrateLabels(const QSet<CrateId>& updatedCrateIds);
+    // moves the selected crate and it's subtree under another crate
+    void slotMoveSubtreeToCrate(int iCrateId);
 
   private:
     void initActions();
@@ -139,6 +141,8 @@ class CrateFeature : public LibraryFeature {
     std::unique_ptr<QAction> m_pExportTrackFilesAction;
     std::unique_ptr<QAction> m_pAnalyzeCrateAction;
     std::unique_ptr<QAction> m_pToggleRecursionAction;
+
+    std::unique_ptr<QMenu> m_pMoveCrateMenu;
 
 
     std::unique_ptr<CrateTreeModel> m_pChildModel;

@@ -63,7 +63,7 @@ class CrateHierarchy : public virtual DAO {
 
     // used in crate filter
     // set flag to true if you want to get both crate_id and track_id to be
-    // used it CrateTrackSelectResults
+    // used in CrateTrackSelectResults
     QString formatQueryForTrackIdsByCrateNameLikeRecursively(const QString& crateNameLike,
                                                              bool flag = false) const;
     CrateTrackSelectResult selectTracksSortedByCrateNameLikeRecursively(const QString& crateNameLike) const;
@@ -95,6 +95,7 @@ class CrateHierarchy : public virtual DAO {
     // selects all the crates that the selected crate can move to
     // (All crates other than itself and it's decendants)
     CrateSelectResult selectCratesToMove(const Crate& crate) const;
+    void moveCrate(const Crate& crate, CrateId destinationCrateId) const;
 
   private:
     // empties the closure table
