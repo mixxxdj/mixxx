@@ -487,26 +487,7 @@ WWidgetGroup {
   #Keylock[displayValue="1"]:hover {
     border: 1px solid #d2d2d2;
   }
-  #SyncModeButton {
-    font-weight: bold;
-    color: #888888;
-    }
-    #SyncModeButton:hover {
-      color: #888888;
-      background-color: #151515;
-    }
-    #SyncModeButton[displayValue="1"], #SyncModeButton[displayValue="2"] {
-      background-color: #151515;
-    }
-    #SyncModeButton[displayValue="1"] {
-      color: #c66d00;
-    }
-    #SyncModeButton[displayValue="2"] {
-      color: #00D613;
-    }
-    #SyncModeButton[displayValue="1"]:hover, #SyncModeButton[displayValue="2"]:hover {
-      border: 1px solid #888888;
-    }
+
   #DeckStars:hover {
     background-color: #151515;
     border-radius: 2px;

@@ -11,7 +11,7 @@ Variables:
     <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
-      <Template src="skin:spacer.xml">
+      <Template src="skin:responsive_spacer.xml">
         <SetVariable name="Color">25</SetVariable>
         <SetVariable name="Size">0me,0me</SetVariable>
       </Template>
@@ -88,7 +88,7 @@ Variables:
       <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
       <!-- Loopmove / beatjump controls -->
-      <Template src="skin:spacer.xml">
+      <Template src="skin:responsive_spacer.xml">
         <SetVariable name="Color">25</SetVariable>
         <SetVariable name="Size">0me,0me</SetVariable>
       </Template>

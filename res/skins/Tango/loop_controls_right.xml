@@ -50,7 +50,7 @@ Variables:
       </BeatSpinBox>
 
       <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-      <Template src="skin:spacer.xml">
+      <Template src="skin:spacer.xmlresponsive_spacer.xml">
         <SetVariable name="Color">25</SetVariable>
         <SetVariable name="Size">0me,0me</SetVariable>
       </Template>
@@ -126,7 +126,7 @@ Variables:
 
       <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
-      <Template src="skin:spacer.xml">
+      <Template src="skin:responsive_spacer.xml">
         <SetVariable name="Color">25</SetVariable>
         <SetVariable name="Size">0me,0me</SetVariable>
       </Template>
