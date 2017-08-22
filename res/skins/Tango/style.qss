@@ -408,43 +408,26 @@ WWidgetGroup {
     background-color: #333333;
   }
 
-#DeckArtistTitleLeft, #DeckArtistTitleRight {
-  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+#ArtistTitleTime {
+  qproperty-layoutAlignment: 'AlignVCenter';
   background-color: #333333;
   }
-  #DeckArtistTitleRight > #TitleTimeRow {
-    qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+  WLabel#TrackTime, WLabel#TrackTitle {
+    font-size: 18px/18px;
+    font-weight: bold;
   }
-  #DeckArtistTitleLeft > #TitleTimeRow {
-    qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-    }
-      WLabel#TrackTime, WLabel#TrackTitle {
-        font-size: 18px/18px;
-        font-weight: bold;
-      }
-  #DeckArtistTitleRight > #ArtistDurationRow {
-    qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-    padding: 0px 2px 0px 1px;
+  WLabel#TrackDuration, WLabel#TrackBy, WLabel#TrackArtist {
+    font-size: 16px/16px;
+    font-weight: bold;
   }
-  #DeckArtistTitleLeft > #ArtistDurationRow {
-    qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-    padding: 0px 1px 0px 2px;
-    }
-    WLabel#TrackDuration, WLabel#TrackBy, WLabel#TrackArtist {
-      font-size: 16px/16px;
-      font-weight: bold;
-    }
-    WLabel#TrackBy {
-      color: #888888;
-    }
+  WLabel#TrackBy {
+    color: #888888;
+  }
     
   #LoopIndicator {
     }
     #LoopIndicator:hover {
       border: 1px solid #ffffff;
-    }
-    #LoopIndicator[displayValue="0"] {
-      background: #333333 url(skin:/buttons/btn_reloop_off.svg) no-repeat center center;
     }
     #LoopIndicator[displayValue="1"] {
       background: #FF8F00 url(skin:/buttons/btn_reloop_on.svg) no-repeat center center;
