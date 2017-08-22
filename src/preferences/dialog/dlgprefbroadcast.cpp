@@ -155,8 +155,7 @@ void DlgPrefBroadcast::applyModel() {
     updateModel();
 }
 
-void DlgPrefBroadcast::slotApply()
-{
+void DlgPrefBroadcast::slotApply() {
     bool broadcastingEnabled = m_pBroadcastEnabled->toBool();
     bool enablingBroadcasting = enableLiveBroadcasting->isChecked();
 
