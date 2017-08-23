@@ -604,8 +604,7 @@
 																<Pressed>btn_play_sampler_overdown.png</Pressed>
 																<Unpressed>btn_play_sampler_over.png</Unpressed>
 															</State>
-															<Pos>2,2</Pos>
-															<Connection>
+																<Connection>
 																<ConfigKey>[PreviewDeck1],play</ConfigKey>
 																<EmitOnDownPress>true</EmitOnDownPress>
 																<ButtonState>LeftButton</ButtonState>
@@ -617,12 +616,16 @@
 																<ConnectValueToWidget>false</ConnectValueToWidget>
 															</Connection>
 														</PushButton>
+														<WidgetGroup>
+															<ObjectName>SamplerLeftBorder</ObjectName>
+															<Size>3f,37f</Size>
+															<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+														</WidgetGroup>
 														<Overview>
 															<TooltipId>waveform_overview</TooltipId>
 															<Style></Style>
 															<Group>[PreviewDeck1]</Group>
-															<Size>me,30f</Size>
-															<BgColor>#8D98A3</BgColor>
+															<Size>me,37f</Size>
 															<SignalHighColor>#FFE300</SignalHighColor>
 															<SignalMidColor>#0099FF</SignalMidColor>
 															<SignalLowColor>#FF0035</SignalLowColor>
@@ -666,7 +669,7 @@
 														<Style></Style>
 														<PathStatusLight>btn_clipping_previewdeck_over.png</PathStatusLight>
 														<PathBack>btn_clipping_previewdeck.png</PathBack>
-														<Pos>0,1</Pos>
+														<Pos>0,3</Pos>
 														<Connection>
 															<ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
 														</Connection>
@@ -682,7 +685,7 @@
 														<Style></Style>
 														<PathVu>btn_volume_display_previewdeck_over.png</PathVu>
 														<PathBack>btn_volume_display_previewdeck.png</PathBack>
-														<Pos>0,12</Pos>
+														<Pos>0,14</Pos>
 														<Horizontal>false</Horizontal>
 														<PeakHoldSize>3</PeakHoldSize>
 														<PeakHoldTime>250</PeakHoldTime>
