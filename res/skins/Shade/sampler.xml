@@ -3,13 +3,13 @@
 		<ObjectName>Sampler</ObjectName>
 		<Size>0e,103f</Size>
 		<Layout>horizontal</Layout>
-		<Style>QGroupBox { border: 0px solid red; padding:10px } </Style>
+		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 10px; } </Style>
 		<Children>
 			<WidgetGroup>
 				<ObjectName>SamplerLeftBorder</ObjectName>
 				<Size>5f,100f</Size>
 				<BackPath>style/style_bg_deck_border.png</BackPath>
-				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 			</WidgetGroup>
 			<WidgetGroup>
 				<Size>0e,103f</Size>
@@ -536,6 +536,11 @@
 				<ObjectName>SamplerRightBorder</ObjectName>
 				<Size>5f,100f</Size>
 				<BackPath>style/style_bg_deck_border.png</BackPath>
+				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+			</WidgetGroup>
+			<WidgetGroup>
+				<ObjectName>SamplerRightBorder</ObjectName>
+				<Size>3f,100f</Size>
 				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 			</WidgetGroup>
 		</Children>

@@ -127,8 +127,7 @@
 
 	<ObjectName>Mixxx</ObjectName>
 	<Style src="skin:style.qss"/>
-	<MinimumSize>1024,500</MinimumSize>
-	<SizePolicy>me,me</SizePolicy>
+	<Size>1024e,500e</Size>
 	<Layout>vertical</Layout>
     <LaunchImageStyle>
     	LaunchImage { background-color: #202020; }
@@ -156,16 +155,16 @@
 	<Children>
 		<WidgetGroup>
 			<ObjectName>DecksAndMixer</ObjectName>
-			<MinimumSize>1024e,260f</MinimumSize>
+			<MinimumSize>1024e,259f</MinimumSize>
 			<Layout>horizontal</Layout>
   			<Children>
 				<WidgetGroup>
 					<ObjectName>DeckLeftBorder</ObjectName>
-					<Size>5f,54f</Size>
-					<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+					<Size>3f,259f</Size>
+					<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
 				</WidgetGroup>
   				<WidgetGroup>
-  					<Size>0e,260f</Size>
+  					<Size>0e,259f</Size>
 					<Layout>vertical</Layout>
 					<Children>
 		                <WidgetGroup>
@@ -205,14 +204,14 @@
 					</Children>
 				</WidgetGroup>
 				<WidgetGroup>
-					<Size>261f,260f</Size>
+					<Size>261f,259f</Size>
 					<Children>
 						<Template src="skin:mixer_panel.xml">
 						</Template>
 					</Children>
 				</WidgetGroup>
 				<WidgetGroup>
-  					<Size>0e,260f</Size>
+  					<Size>0e,259f</Size>
 					<Layout>vertical</Layout>
 					<Children>
 	        		    <WidgetGroup>
@@ -253,7 +252,7 @@
 				</WidgetGroup>
 				<WidgetGroup>
 					<ObjectName>DeckRightBorder</ObjectName>
-					<Size>6f,54f</Size>
+					<Size>3f,259f</Size>
 					<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 				</WidgetGroup>
 			</Children>
@@ -294,7 +293,12 @@
 				      <Layout>horizontal</Layout>
 				      <Style>QGroupBox { border: 0px solid yellow; margin: 0px;} </Style>
 				      <Children>
-				          <Template src="skin:sampler.xml">
+						<WidgetGroup>
+							<ObjectName>SamplerLeftBorder</ObjectName>
+							<Size>3f,100f</Size>
+							<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+						</WidgetGroup>
+				        <Template src="skin:sampler.xml">
 				          <SetVariable name="samplernum">1</SetVariable>
 				        </Template>
 				        <Template src="skin:sampler.xml">
@@ -364,7 +368,6 @@
 				-->
 				<WidgetGroup>
 					<ObjectName>Library</ObjectName>
-					<Pos>0,0</Pos>
 					<Size>e,e</Size>
 					<SizePolicy>me,me</SizePolicy>
 					<Layout>horizontal</Layout>
@@ -410,7 +413,7 @@
 
 					<!--library search bar-->
 					WSearchLineEdit {
-						margin: 0px 0px 5px 5px;
+						margin: 2px 0px 3px 3px;
 						padding: 2px;
 						border: 1px solid #656565;
 						font-size: 10pt;
@@ -448,6 +451,8 @@
 						background: transparent;
 						color: #C1C1C1;}
 
+					WLibrary { margin: 2px 3px 0px 0px; }
+
 					<!--Additional space for QRadionButtons and QLabels-->
 					WLibrary QRadioButton, WLibrary QLabel { margin: 9px 3px 6px 3px; }
 
@@ -476,7 +481,7 @@
 					#DlgAutoDJ > QPushButton#pushButtonShuffle { margin: 9px 3px 6px 12px; }
 
 					<!--Spacing between treeview and searchbar-->
-					QTreeView { margin: 0px 0px 0px 5px; }
+					QTreeView { margin: 2px 0px 0px 3px; }
 
 					<!--triangle for closed/opened branches in treeview-->
 					QTreeView { show-decoration-selected: 0;} <!-- Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588-->
@@ -505,7 +510,7 @@
 										<WidgetGroup>
 											<Style>
 												QGroupBox {
-													margin: 0px 0px 4px 5px;
+													margin: 2px 0px 2px 3px;
 													padding: 0px;
 													border: 1px solid #656565;
 													background: transparent;
@@ -547,7 +552,6 @@
 															}
 															</Style>
 															<Group>[PreviewDeck1]</Group>
-															<Pos></Pos>
 															<Size>50me,15f</Size>
 															<Elide>right</Elide>
 														</Text>
@@ -565,7 +569,6 @@
 																<Pressed>btn_eject1_over.png</Pressed>
 																<Unpressed>btn_eject1.png</Unpressed>
 															</State>
-															<Pos></Pos>
 															<Connection>
 																<ConfigKey>[PreviewDeck1],eject</ConfigKey>
 																<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
