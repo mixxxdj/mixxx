@@ -980,26 +980,27 @@ SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
 SINT SoundSourceFFmpeg::readSampleFrames(SINT numberOfFrames,
         CSAMPLE* sampleBuffer) {
 
-    if (sampleBuffer == nullptr) {
-       // They are trying to make us skip
-       seekSampleFrame(m_currentMixxxFrameIndex + numberOfFrames);
-       return numberOfFrames;
-    }
+    const SINT prevFrameIndex = m_currentMixxxFrameIndex;
+    const SINT numberOfFramesRemaining = math_min(
+            numberOfFrames, getMaxFrameIndex() - m_currentMixxxFrameIndex);
 
-    if (m_SCache.size() == 0) {
-        // Make sure we always start at beginning and cache have some
-        // material that we can consume.
-        seekSampleFrame(0);
+    if (sampleBuffer != nullptr) {
+        if (m_SCache.size() == 0) {
+            // Make sure we always start at beginning and cache have some
+            // material that we can consume.
+            seekSampleFrame(0);
+            m_bIsSeeked = false;
+        }
+        getBytesFromCache(sampleBuffer, m_currentMixxxFrameIndex, numberOfFramesRemaining);
+        m_currentMixxxFrameIndex += numberOfFramesRemaining;
         m_bIsSeeked = false;
+    } else {
+       // No output buffer -> just skip frames
+       seekSampleFrame(prevFrameIndex + numberOfFramesRemaining);
     }
 
-    getBytesFromCache(sampleBuffer, m_currentMixxxFrameIndex, numberOfFrames);
-
-    m_currentMixxxFrameIndex += numberOfFrames;
-
-    m_bIsSeeked = false;
-
-    return numberOfFrames;
+    DEBUG_ASSERT(prevFrameIndex <= m_currentMixxxFrameIndex);
+    return m_currentMixxxFrameIndex - prevFrameIndex;
 }
 
 } // namespace mixxx

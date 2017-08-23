@@ -3,7 +3,7 @@ Description:
   VUMeter embedded in channel mixer.
 Variables:
   group   : [ChannelN]
-  channum : channel number
+  chanNum : channel number
 -->
 <Template>
   <WidgetGroup>

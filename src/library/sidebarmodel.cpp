@@ -85,7 +85,13 @@ QModelIndex SidebarModel::index(int row, int column,
             // We have selected an item within the childmodel
             // This item has always an internal pointer of (sub)type TreeItem
             TreeItem* tree_item = (TreeItem*)parent.internalPointer();
-            return createIndex(row, column, (void*) tree_item->child(row));
+            if (row < tree_item->childRows()) {
+                return createIndex(row, column, (void*) tree_item->child(row));
+            } else {
+                // Otherwise this row might have been removed just now
+                // (just a dirty workaround for unmaintainable GUI code)
+                return QModelIndex();
+            }
         }
     }
     return createIndex(row, column, (void*)this);

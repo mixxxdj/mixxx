@@ -4,19 +4,17 @@
 #include <vamp-sdk/Plugin.h>
 #include "BPMDetect.h"
 
-using std::string;
-
 class MixxxBpmDetection : public Vamp::Plugin {
   public:
     MixxxBpmDetection(float inputSampleRate);
     virtual ~MixxxBpmDetection();
 
-    string getIdentifier() const;
-    string getName() const;
-    string getDescription() const;
-    string getMaker() const;
+    std::string getIdentifier() const;
+    std::string getName() const;
+    std::string getDescription() const;
+    std::string getMaker() const;
     int getPluginVersion() const;
-    string getCopyright() const;
+    std::string getCopyright() const;
 
     InputDomain getInputDomain() const;
     size_t getPreferredBlockSize() const;
@@ -25,12 +23,12 @@ class MixxxBpmDetection : public Vamp::Plugin {
     size_t getMaxChannelCount() const;
 
     ParameterList getParameterDescriptors() const;
-    float getParameter(string identifier) const;
-    void setParameter(string identifier, float value);
+    float getParameter(std::string identifier) const;
+    void setParameter(std::string identifier, float value);
 
     ProgramList getPrograms() const;
-    string getCurrentProgram() const;
-    void selectProgram(string name);
+    std::string getCurrentProgram() const;
+    void selectProgram(std::string name);
 
     OutputList getOutputDescriptors() const;
 
