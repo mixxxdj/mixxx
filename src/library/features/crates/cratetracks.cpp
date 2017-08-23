@@ -122,24 +122,6 @@ QString CrateTracks::formatSubselectQueryForCrateTrackIds(
             crateId.toString());
 }
 
-
-QString CrateTracks::formatQueryForTrackIdsByCrateNameLike (
-        const QString& crateNameLike) const {
-    FieldEscaper escaper(m_database);
-    QString escapedArgument = escaper.escapeString(kSqlLikeMatchAll + crateNameLike + kSqlLikeMatchAll);
-
-    return QString(
-        "SELECT DISTINCT %1 FROM %2 JOIN %3 ON %4=%5 WHERE %6 LIKE %7 ORDER BY %1").arg(
-            CRATETRACKSTABLE_TRACKID,
-            CRATE_TRACKS_TABLE,
-            CRATE_TABLE,
-            CRATETRACKSTABLE_CRATEID,
-            CRATETABLE_ID,
-            CRATETABLE_NAME,
-            escapedArgument);
-}
-
-
 CrateTrackSelectResult CrateTracks::selectCrateTracksSorted(CrateId crateId) const {
     FwdSqlQuery query(m_database, QString(
             "SELECT * FROM %1 WHERE %2=:crateId ORDER BY %3").arg(

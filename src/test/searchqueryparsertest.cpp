@@ -26,8 +26,8 @@ class SearchQueryParserTest : public LibraryTest {
 
     // The expected query to be returned by CrateFilterNode
     const QString m_crateFilterQuery =
-        "id IN (SELECT DISTINCT track_id FROM crate_tracks"
-        " JOIN crates ON crate_id=id WHERE name LIKE '%%1%' ORDER BY track_id)";
+        "id IN (SELECT DISTINCT track_id FROM crate_tracks "
+        "WHERE crate_id IN (%1) OR crate_id IN (%2) ORDER BY track_id)";
 };
 
 TEST_F(SearchQueryParserTest, EmptySearch) {
@@ -689,28 +689,40 @@ TEST_F(SearchQueryParserTest, CrateFilter) {
     const QString kTrackBLocationTest(QDir::currentPath() %
                   "/src/test/id3-test-data/cover-test-png.mp3");
 
-    // Create new crate and add it to the collection
+    // Create new crate and child and add them to the collection
     Crate testCrate;
     testCrate.setName(searchTerm);
     CrateId testCrateId;
     collection()->crates()->insertCrate(testCrate, &testCrateId);
 
-    // Add the track in the collection
+    Crate childCrate;
+    childCrate.setName("childcrate");
+    CrateId childCrateId;
+    collection()->crates()->insertCrate(childCrate, &childCrateId, testCrate);
+
+    // Add the tracks in the collection
     TrackId trackAId = addTrackToCollection(kTrackALocationTest);
     TrackPointer pTrackA(Track::newDummy(kTrackALocationTest, trackAId));
     TrackId trackBId = addTrackToCollection(kTrackBLocationTest);
     TrackPointer pTrackB(Track::newDummy(kTrackBLocationTest, trackBId));
 
-    // Add track A to the newly created crate
+    // Add track A to the test crate
     QList<TrackId> trackIds;
     trackIds << trackAId;
     collection()->crates()->addTracksToCrate(testCrateId, trackIds);
 
+    // Add track B to the child crate
+    QList<TrackId> childTrackIds;
+    trackIds << trackBId;
+    collection()->crates()->addTracksToCrate(childCrateId, trackIds);
+
+    // both should match, the filter is recursive
     EXPECT_TRUE(pQuery->match(pTrackA));
-    EXPECT_FALSE(pQuery->match(pTrackB));
+    EXPECT_TRUE(pQuery->match(pTrackB));
 
     EXPECT_STREQ(
-                 qPrintable(m_crateFilterQuery.arg(searchTerm)),
+      qPrintable(m_crateFilterQuery.arg(testCrateId.toString(),
+                                        collection()->crates()->hierarchy().collectChildCrateIds(testCrateId).join(","))),
                  qPrintable(pQuery->toSql()));
 }
 
@@ -764,7 +776,8 @@ TEST_F(SearchQueryParserTest, CrateFilterQuote){
     EXPECT_FALSE(pQuery->match(pTrackB));
 
     EXPECT_STREQ(
-                 qPrintable(m_crateFilterQuery.arg(searchTerm)),
+                 qPrintable(m_crateFilterQuery.arg(testCrateId.toString(),
+                                        collection()->crates()->hierarchy().collectChildCrateIds(testCrateId).join(","))),
                  qPrintable(pQuery->toSql()));
 }
 
@@ -811,7 +824,8 @@ TEST_F(SearchQueryParserTest, CrateFilterWithOther){
     EXPECT_FALSE(pQuery->match(pTrackB));
 
     EXPECT_STREQ(
-                 qPrintable("(" + m_crateFilterQuery.arg(searchTerm) +
+                 qPrintable("(" + m_crateFilterQuery.arg(testCrateId.toString(),
+                                        collection()->crates()->hierarchy().collectChildCrateIds(testCrateId).join(",")) +
                             ") AND ((artist LIKE '%asdf%') OR (album_artist LIKE '%asdf%'))"),
                  qPrintable(pQuery->toSql()));
 }
@@ -861,8 +875,10 @@ TEST_F(SearchQueryParserTest, CrateFilterWithCrateFilterAndNegation){
     EXPECT_FALSE(pQueryA->match(pTrackB));
 
     EXPECT_STREQ(
-                 qPrintable("(" + m_crateFilterQuery.arg(searchTermA) +
-                            ") AND (" + m_crateFilterQuery.arg(searchTermB) + ")"),
+                 qPrintable("(" + m_crateFilterQuery.arg(testCrateAId.toString(),
+                                        collection()->crates()->hierarchy().collectChildCrateIds(testCrateAId).join(",")) +
+                            ") AND (" + m_crateFilterQuery.arg(testCrateBId.toString(),
+                                        collection()->crates()->hierarchy().collectChildCrateIds(testCrateBId).join(",")) + ")"),
                  qPrintable(pQueryA->toSql()));
 
     // parse again to test negation
@@ -873,7 +889,9 @@ TEST_F(SearchQueryParserTest, CrateFilterWithCrateFilterAndNegation){
     EXPECT_TRUE(pQueryB->match(pTrackB));
 
     EXPECT_STREQ(
-                 qPrintable("(" + m_crateFilterQuery.arg(searchTermA) +
-                            ") AND (NOT (" + m_crateFilterQuery.arg(searchTermB) + "))"),
+                 qPrintable("(" + m_crateFilterQuery.arg(testCrateAId.toString(),
+                                        collection()->crates()->hierarchy().collectChildCrateIds(testCrateAId).join(",")) +
+                            ") AND (NOT (" + m_crateFilterQuery.arg(testCrateBId.toString(),
+                                        collection()->crates()->hierarchy().collectChildCrateIds(testCrateBId).join(",")) + "))"),
                  qPrintable(pQueryB->toSql()));
 }
