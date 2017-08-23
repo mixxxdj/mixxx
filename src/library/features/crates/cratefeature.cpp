@@ -415,8 +415,9 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex&
     Crate moveCrate;
     while (allCrates.populateNext(&moveCrate)) {
         if (moveCrate.getId() == crate.getId() ||
-            m_pCrates->hierarchy().collectChildCrateIds(crate.getId()).contains(moveCrate.getId().toString())) {
-            continue; // skip adding the selected crate and it's children
+            m_pCrates->hierarchy().collectChildCrateIds(crate.getId()).contains(moveCrate.getId().toString()) ||
+            moveCrate.getId() == m_pCrates->hierarchy().getParentId(crate.getId())) {
+            continue; // skip adding the selected crate, it's parent and it's children
         }
         QString namePath = m_pCrates->hierarchy().getNamePathFromId(moveCrate.getId());
         auto pAction = std::make_unique<QAction>(namePath.right(namePath.size()-1), this);
