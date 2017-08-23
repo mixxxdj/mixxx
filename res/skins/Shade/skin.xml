@@ -337,9 +337,14 @@
 				    <WidgetGroup>
 				      <SizePolicy>me,min</SizePolicy>
 				      <Layout>horizontal</Layout>
-				      <Style>QGroupBox { border: 0px solid yellow; margin: 0px 0px 6px 0px;} </Style>
+				      <Style>QGroupBox { border: 0px solid yellow; margin: 1px 0px 6px 0px;} </Style>
 				      <Children>
-				          <Template src="skin:effectunit.xml">
+						<WidgetGroup>
+							<ObjectName>EffectLeftBorder</ObjectName>
+							<Size>3f,100f</Size>
+							<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+						</WidgetGroup>
+				        <Template src="skin:effectunit.xml">
 				          <SetVariable name="effectunitnum">1</SetVariable>
 				        </Template>
 				        <Template src="skin:effectunit.xml">
