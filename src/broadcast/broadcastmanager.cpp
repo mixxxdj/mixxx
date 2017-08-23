@@ -178,9 +178,12 @@ ShoutConnectionPtr BroadcastManager::findConnectionForProfile(BroadcastProfilePt
 
 void BroadcastManager::slotConnectionStatusChanged(int newState) {
     Q_UNUSED(newState);
+    int totalConn = 0, connectingCount = 0,
+        connectedCount = 0, failedCount = 0;
+
     // Collect status info
-    int connectingCount = 0, connectedCount = 0, failedCount = 0;
     QList<BroadcastProfilePtr> profiles = m_pBroadcastSettings->profiles();
+    totalConn = profiles.size();
     for (BroadcastProfilePtr profile : profiles) {
         int status = profile->connectionStatus();
         if (status == BroadcastProfile::STATUS_FAILURE) {
@@ -196,8 +199,11 @@ void BroadcastManager::slotConnectionStatusChanged(int newState) {
     }
 
     // Changed global status indicator depending on global connections status
-    if (failedCount > 0) {
+    if (failedCount >= totalConn) {
         m_pStatusCO->forceSet(STATUSCO_FAILURE);
+    }
+    else if (failedCount > 0 && failedCount < totalConn) {
+        m_pStatusCO->forceSet(STATUSCO_WARNING);
     }
     else if (connectingCount > 0) {
         m_pStatusCO->forceSet(STATUSCO_CONNECTING);

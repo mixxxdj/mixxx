@@ -615,7 +615,7 @@
 						
 					    <PushButton>
 							<Style></Style>
-							<NumberStates>4</NumberStates>
+							<NumberStates>5</NumberStates>
 							<State>
 								<Number>0</Number>
 								<Pressed>btn_broadcast_unconnected.png</Pressed>
@@ -635,6 +635,11 @@
 								<Number>3</Number>
 								<Pressed>btn_broadcast_failure.png</Pressed>
 								<Unpressed>btn_broadcast_failure.png</Unpressed>
+							</State>
+							<State>
+								<Number>4</Number>
+								<Pressed>btn_broadcast_warning.png</Pressed>
+								<Unpressed>btn_broadcast_warning.png</Unpressed>
 							</State>
 							<Pos>113,30</Pos>
 							<Connection>

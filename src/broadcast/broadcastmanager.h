@@ -18,7 +18,8 @@ class BroadcastManager : public QObject {
         STATUSCO_UNCONNECTED = 0, // IDLE state, no error
         STATUSCO_CONNECTING = 1, // 30 s max
         STATUSCO_CONNECTED = 2, // On Air
-        STATUSCO_FAILURE = 3 // Happens when disconnected by an error
+        STATUSCO_FAILURE = 3, // Happens when all connection fails
+        STATUSCO_WARNING = 4
     };
 
     BroadcastManager(SettingsManager* pSettingsManager,
