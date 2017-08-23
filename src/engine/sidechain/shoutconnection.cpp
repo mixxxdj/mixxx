@@ -809,7 +809,8 @@ void ShoutConnection::errorDialog(QString text, QString detailedError) {
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
     props->setTitle(tr("Connection error"));
-    props->setText(tr("<b>Error with connection '%1':</b><br>")
+    props->setText(tr("One of the Live Broadcasting connections raised this error:<br>"
+            "<b>Error with connection '%1':</b><br>")
             .arg(profile()->getProfileName()) + text);
     props->setDetails(detailedError);
     props->setKey(detailedError);   // To prevent multiple windows for the same error
@@ -823,7 +824,7 @@ void ShoutConnection::infoDialog(QString text, QString detailedInfo) {
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_INFO);
     props->setTitle(tr("Connection message"));
-    props->setText(tr("<b>Connection '%1':</b><br>")
+    props->setText(tr("<b>Message from Live Broadcasting connection '%1':</b><br>")
             .arg(profile()->getProfileName()) + text);
     props->setDetails(detailedInfo);
     props->setKey(text + detailedInfo);
