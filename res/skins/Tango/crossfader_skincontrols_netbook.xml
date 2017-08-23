@@ -194,7 +194,7 @@ Description:
 
           <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
 
-          <Template src="skin:button_4state_display.xml">
+          <Template src="skin:button_5state_display.xml">
             <SetVariable name="TooltipId">broadcast_enabled</SetVariable>
             <SetVariable name="ObjectName">BroadcastButtonNetbook</SetVariable>
             <SetVariable name="Size">24f,24f</SetVariable>

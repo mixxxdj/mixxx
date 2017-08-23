@@ -887,6 +887,9 @@ WBeatSpinBox {
   #BroadcastButton[displayValue="3"] {
     background: transparent url(skin:/buttons/btn_broadcast_failure.svg) no-repeat center center;
     }
+  #BroadcastButton[displayValue="4"] {
+    background: transparent url(skin:/buttons/btn_broadcast_warning.svg) no-repeat center center;
+    }
     #BroadcastButton[displayValue="2"]:hover, #BroadcastButton[displayValue="3"]:hover {
       background-color: #0f0f0f;
       border: 1px solid #666666;
@@ -909,6 +912,9 @@ WBeatSpinBox {
     }
   #BroadcastButtonNetbook[displayValue="3"] {
     background: transparent url(skin:/buttons/btn_broadcast_mini_failure.svg) no-repeat center center;
+    }
+  #BroadcastButtonNetbook[displayValue="4"] {
+    background: transparent url(skin:/buttons/btn_broadcast_mini_warning.svg) no-repeat center center;
     }
     #BroadcastButtonNetbook[displayValue="2"]:hover, #BroadcastButtonNetbook[displayValue="3"]:hover {
       background-color: #0f0f0f;
