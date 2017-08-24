@@ -7,7 +7,7 @@ Description:
 -->
 <Template>
   <WidgetGroup>
-    <SizePolicy>me,max</SizePolicy>
+    <SizePolicy>min,max</SizePolicy>
     <Layout>horizontal</Layout>
     <Children>
       <WidgetGroup><!-- Spacers for normal width -->
