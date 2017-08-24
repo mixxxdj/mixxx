@@ -67,7 +67,8 @@
 												padding-left: 0px;
 												padding-top: 1px;}
 										</Style>
-										<Pos>0,5</Pos>
+										<Size>42f,24f</Size>
+										<Pos>0,2</Pos>
 										<Group>[Sampler<Variable name="samplernum"/>]</Group>
 										<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 										<Alignment>right</Alignment>
