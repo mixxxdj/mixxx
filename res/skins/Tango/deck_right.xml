@@ -19,7 +19,7 @@ Variables:
     <Size>504me,136min</Size>
     <Children>
 
-      <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+      <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
 
       <!-- Pitch slider & Key controls -->
       <Template src="skin:rate_pitch_key.xml"/>
@@ -66,7 +66,7 @@ Variables:
           <Template src="skin:vumeter_floating.xml"/>
 
           <WidgetGroup>
-            <Size>3f,1me</Size>
+            <Size>5f,1me</Size>
             <Connection>
               <ConfigKey>[Tango],vumeter</ConfigKey>
               <BindProperty>visible</BindProperty>

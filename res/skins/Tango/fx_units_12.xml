@@ -1,9 +1,7 @@
 <!--
 Description:
   Container for EffectUnits 1 & 2.
-  In netbook mode they are pushed apart by several spacers which also
-  aligns them to decks (resp. channel mixer or cover art).
-  For each EffectUnit there's a minimized and a full mode.
+  Units are pushed apart by spacers, see fx_units_spacer.xml.
 -->
 <Template>
   <WidgetGroup><!-- EffectUnits 1 & 2 -->
@@ -12,7 +10,7 @@ Description:
     <Layout>horizontal</Layout>
     <Children>
 
-      <WidgetGroup><!-- EffectUnit 1 -->
+      <WidgetGroup><!-- EffectUnit 1 maxi -->
         <ObjectName>EffectUnit1_maxi</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,max</SizePolicy>
@@ -29,7 +27,7 @@ Description:
         </Connection>
       </WidgetGroup>
 
-      <WidgetGroup>
+      <WidgetGroup><!-- EffectUnit 1 mini -->
         <ObjectName>EffectUnit1_mini</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,me</SizePolicy>
@@ -46,63 +44,11 @@ Description:
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- /EffectUnit 1 -->
+      </WidgetGroup>
 
-      <WidgetGroup><!-- Spacers for normal width -->
-        <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
+      <Template src="skin:fx_units_spacer.xml"/>
 
-          <WidgetGroup><!-- Skin Controls spacer - FX label offset -->
-            <Size>52f,1min</Size>
-          </WidgetGroup>
-
-          <WidgetGroup> <!-- Pitch fader spacer -->
-            <Size>106f,1min</Size>
-            <Connection>
-              <ConfigKey>[Tango],pitch_fader</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-
-          <WidgetGroup><!-- VU Meter spacer when Channel Mixer is hidden -->
-            <Layout>vertical</Layout>
-            <SizePolicy>min,min</SizePolicy>
-            <Children>
-              <WidgetGroup>
-                <Layout>vertical</Layout>
-                <Size>22f,1min</Size>
-                <Children>
-                </Children>
-                <Connection>
-                  <ConfigKey>[Tango],vumeter</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-            </Children>
-            <Connection>
-              <ConfigKey>[Tango],channel_mixer</ConfigKey>
-              <BindProperty>visible</BindProperty>
-              <Transform><Not/></Transform>
-            </Connection>
-          </WidgetGroup>
-
-        </Children>
-        <Connection>
-          <ConfigKey>[Tango],normal_mode</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup><!-- /Spacers for normal width -->
-
-      <WidgetGroup><!-- Spacer for netbook mode -->
-        <Size>10f,1min</Size>
-        <Connection>
-          <ConfigKey>[Tango],netbook_mode</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup><!-- /Spacer for netbook mode -->
-
-      <WidgetGroup><!-- EffectUnit 2 -->
+      <WidgetGroup><!-- EffectUnit 2 maxi -->
         <ObjectName>EffectUnit2_maxi</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,max</SizePolicy>
@@ -119,7 +65,7 @@ Description:
         </Connection>
       </WidgetGroup>
 
-      <WidgetGroup>
+      <WidgetGroup><!-- EffectUnit 2 mini -->
         <ObjectName>EffectUnit2_mini</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,me</SizePolicy>
@@ -136,7 +82,7 @@ Description:
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- /EffectUnit 2 -->
+      </WidgetGroup>
 
     </Children>
     <Connection>

@@ -116,7 +116,7 @@ Variables:
           </WidgetGroup><!-- /Spinny/Cover/none -->
 
           <WidgetGroup>
-            <Size>3f,1me</Size>
+            <Size>5f,1me</Size>
             <Connection>
               <ConfigKey>[Tango],vumeter</ConfigKey>
               <BindProperty>visible</BindProperty>
@@ -145,7 +145,7 @@ Variables:
       <Template src="skin:rate_pitch_key.xml"/>
       <!-- /Pitch slider & Key controls -->
 
-      <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+      <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
 
     </Children>
   </WidgetGroup>
