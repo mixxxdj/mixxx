@@ -33,8 +33,8 @@ EffectManifest MetronomeEffect::getManifest() {
     period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     period->setMinimum(40);
-    period->setMaximum(129.0);
-    period->setDefault(208);
+    period->setDefault(120);
+    period->setMaximum(208);
 
 
     // Period unit
@@ -52,7 +52,9 @@ EffectManifest MetronomeEffect::getManifest() {
     return manifest;
 }
 
-MetronomeEffect::MetronomeEffect(EngineEffect* pEffect, const EffectManifest& manifest) {
+MetronomeEffect::MetronomeEffect(EngineEffect* pEffect, const EffectManifest& manifest)
+    : m_pBpmParameter(pEffect->getParameterById("bpm")),
+      m_pSyncParameter(pEffect->getParameterById("sync")) {
     Q_UNUSED(manifest);
 }
 
@@ -66,24 +68,21 @@ void MetronomeEffect::processChannel(const ChannelHandle& handle, MetronomeGroup
                               const EffectProcessor::EnableState enableState,
                               const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
+    Q_UNUSED(pInput);
 
     if (enableState == EffectProcessor::DISABLED) {
         return;
     }
 
     MetronomeGroupState* gs = pGroupState;
+    const unsigned int maxFrames = sampleRate * 60 / m_pBpmParameter->value();
 
     SampleUtil::clear(pOutput, numSamples);
 
-    /*
-    if (gs->m_framesSinceClickStart < sampleRate) {
-        gs->m_framesSinceClickStart -= sampleRate;
-    }
-*/
     const unsigned int numFrames = numSamples / 2;
 
     if (gs->m_framesSinceClickStart < kClickSize) {
-        // Write remaining click frames.
+        // still in click region, write remaining click frames.
         const unsigned int copyFrames =
                 math_min(numFrames, kClickSize - gs->m_framesSinceClickStart);
         SampleUtil::copyMonoToDualMono(pOutput, &kClick[gs->m_framesSinceClickStart],
@@ -92,13 +91,20 @@ void MetronomeEffect::processChannel(const ChannelHandle& handle, MetronomeGroup
 
     gs->m_framesSinceClickStart += numFrames;
 
-    if (gs->m_framesSinceClickStart > sampleRate) {
-        // overflow, start new click sound
-        gs->m_framesSinceClickStart -= sampleRate;
-        const unsigned int copyFrames =
-                math_min(gs->m_framesSinceClickStart, kClickSize);
+    if (gs->m_framesSinceClickStart > maxFrames) {
+        // overflow, all overflowed frames are the start of a new click sound
+        gs->m_framesSinceClickStart -= maxFrames;
+        while (gs->m_framesSinceClickStart > numFrames) {
+            // loop into a valid region, this happens if the maxFrames was lowered
+            gs->m_framesSinceClickStart -= numFrames;
+        }
+
+        // gs->m_framesSinceClickStart matches now already at the first frame
+        // of next pOutput.
         const unsigned int outputOffset =
                 numFrames - gs->m_framesSinceClickStart;
+        const unsigned int copyFrames =
+                math_min(gs->m_framesSinceClickStart, kClickSize);
         SampleUtil::copyMonoToDualMono(&pOutput[outputOffset * 2], kClick,
                 copyFrames);
     }

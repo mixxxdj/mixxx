@@ -40,6 +40,8 @@ class MetronomeEffect : public PerChannelEffectProcessor<MetronomeGroupState> {
                       const EffectProcessor::EnableState enableState,
                       const GroupFeatureState& groupFeatures);
   private:
+    EngineEffectParameter* m_pBpmParameter;
+    EngineEffectParameter* m_pSyncParameter;
 
     DISALLOW_COPY_AND_ASSIGN(MetronomeEffect);
 };
