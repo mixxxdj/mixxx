@@ -134,17 +134,11 @@ void DlgPrefBroadcast::slotUpdate() {
 
     // Don't let user modify information if
     // sending is enabled.
-    if(m_pBroadcastEnabled->toBool()) {
-        groupBoxProfileSettings->setEnabled(false);
-        btnCreateConnection->setEnabled(false);
-        btnRemoveConnection->setEnabled(false);
-        btnRenameConnection->setEnabled(false);
-    } else {
-        groupBoxProfileSettings->setEnabled(true);
-        btnCreateConnection->setEnabled(true);
-        btnRemoveConnection->setEnabled(true);
-        btnRenameConnection->setEnabled(true);
-    }
+    bool enabled = m_pBroadcastEnabled->toBool();
+    groupBoxProfileSettings->setEnabled(!enabled);
+    btnCreateConnection->setEnabled(!enabled);
+    btnRemoveConnection->setEnabled(!enabled);
+    btnRenameConnection->setEnabled(!enabled);
 }
 
 void DlgPrefBroadcast::applyModel() {
@@ -180,22 +174,16 @@ void DlgPrefBroadcast::slotApply() {
 
     // Don't let user modify information if
     // sending is enabled.
-    if(m_pBroadcastEnabled->toBool()) {
-        groupBoxProfileSettings->setEnabled(false);
-        btnCreateConnection->setEnabled(false);
-        btnRemoveConnection->setEnabled(false);
-        btnRenameConnection->setEnabled(false);
-    } else {
-        groupBoxProfileSettings->setEnabled(true);
-        btnCreateConnection->setEnabled(true);
-        btnRemoveConnection->setEnabled(true);
-        btnRenameConnection->setEnabled(true);
-    }
+    bool enabled = m_pBroadcastEnabled->toBool();
+    groupBoxProfileSettings->setEnabled(!enabled);
+    btnCreateConnection->setEnabled(!enabled);
+    btnRemoveConnection->setEnabled(!enabled);
+    btnRenameConnection->setEnabled(!enabled);
 }
 
 void DlgPrefBroadcast::broadcastEnabledChanged(double value) {
     kLogger.debug() << "broadcastEnabledChanged()" << value;
-    bool enabled = value == 1.0; // 0 and 2 are disabled
+    bool enabled = (value == 1.0); // 0 and 2 are disabled
 
     groupBoxProfileSettings->setEnabled(!enabled);
     btnCreateConnection->setEnabled(!enabled);
