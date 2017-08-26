@@ -160,10 +160,26 @@ void DlgPrefBroadcast::slotApply() {
         applyModel();
     }
     else if(!broadcastingEnabled && enablingBroadcasting) {
-        // If Live Broadcasting goes from disabled to enabled, apply settings
-        // first and then turn it on
+        // If Live Broadcasting goes from disabled to enabled, apply
+        // settings first and turn LB on if possible
         applyModel();
-        m_pBroadcastEnabled->set(enableLiveBroadcasting->isChecked());
+
+        bool atLeastOneEnabled = false;
+        QList<BroadcastProfilePtr> profiles = m_pSettingsModel->profiles();
+        for(BroadcastProfilePtr profile : profiles) {
+            if(profile->getEnabled()) {
+                atLeastOneEnabled = true;
+                break;
+            }
+        }
+
+        if(atLeastOneEnabled) {
+            m_pBroadcastEnabled->set(enableLiveBroadcasting->isChecked());
+        } else {
+            enableLiveBroadcasting->setChecked(false);
+            QMessageBox::warning(this, tr("Action failed"),
+                    tr("Please enable at least one connection to use Live Broadcasting."));
+        }
     }
     else if(broadcastingEnabled == enablingBroadcasting) {
         // If Live Broadcasting doesn't change state, only apply settings
@@ -208,7 +224,7 @@ void DlgPrefBroadcast::enableCustomMetadataChanged(int value) {
 
 void DlgPrefBroadcast::btnCreateConnectionClicked() {
     if(m_pSettingsModel->rowCount() >= BROADCAST_MAX_CONNECTIONS) {
-        QMessageBox::warning(this, tr("Action failed."),
+        QMessageBox::warning(this, tr("Action failed"),
                 tr("You can't create more than %1 Live Broadcasting connections.")
                 .arg(BROADCAST_MAX_CONNECTIONS));
         return;
@@ -461,7 +477,7 @@ void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
 
 void DlgPrefBroadcast::btnRemoveConnectionClicked() {
     if(m_pSettingsModel->rowCount() < 2) {
-        QMessageBox::information(this, tr("Action forbidden"),
+        QMessageBox::information(this, tr("Action failed"),
                 tr("At least one connection is required."));
         return;
     }
@@ -496,7 +512,7 @@ void DlgPrefBroadcast::btnRenameConnectionClicked() {
                 getValuesFromProfile(m_pProfileListSelection);
             } else {
                 // Requested name different from current name but already used
-                QMessageBox::warning(this, tr("Action forbidden"),
+                QMessageBox::warning(this, tr("Action failed"),
                         tr("Can't rename '%1' to '%2': name already in use")
                         .arg(profileName).arg(newName));
             }
