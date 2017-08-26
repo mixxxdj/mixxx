@@ -202,7 +202,7 @@ void BroadcastManager::slotConnectionStatusChanged(int newState) {
     }
 
     // Changed global status indicator depending on global connections status
-    if (failedCount >= enabledCount) {
+    if (failedCount >= enabledCount || enabledCount < 1) {
         m_pStatusCO->forceSet(STATUSCO_FAILURE);
     }
     else if (failedCount > 0 && failedCount < enabledCount) {
