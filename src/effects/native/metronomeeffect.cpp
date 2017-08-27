@@ -81,7 +81,14 @@ void MetronomeEffect::processChannel(const ChannelHandle& handle, MetronomeGroup
     if (m_pSyncParameter->toBool() && groupFeatures.has_beat_length_sec) {
         maxFrames = sampleRate * groupFeatures.beat_length_sec;
         if (groupFeatures.has_beat_fraction) {
-            gs->m_framesSinceClickStart = maxFrames * groupFeatures.beat_fraction;
+            unsigned int currentFrame =  maxFrames * groupFeatures.beat_fraction;
+            if (maxFrames > kClickSize &&
+                    currentFrame > kClickSize &&
+                    currentFrame < maxFrames - kClickSize &&
+                    gs->m_framesSinceClickStart > kClickSize) {
+                // plays a single click on low speed
+                gs->m_framesSinceClickStart = currentFrame;
+            }
         }
     } else {
         maxFrames = sampleRate * 60 / m_pBpmParameter->value();
