@@ -77,7 +77,13 @@ void MetronomeEffect::processChannel(const ChannelHandle& handle, MetronomeGroup
         return;
     }
 
-    const unsigned int maxFrames = sampleRate * 60 / m_pBpmParameter->value();
+    unsigned int maxFrames;
+    if (m_pSyncParameter->toBool() && groupFeatures.has_beat_length) {
+        // TODO:  use beat_length
+        maxFrames = sampleRate * 60 / m_pBpmParameter->value();
+    } else {
+        maxFrames = sampleRate * 60 / m_pBpmParameter->value();
+    }
 
     SampleUtil::clear(pOutput, numSamples);
 
