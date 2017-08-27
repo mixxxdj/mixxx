@@ -70,11 +70,13 @@ void MetronomeEffect::processChannel(const ChannelHandle& handle, MetronomeGroup
     Q_UNUSED(handle);
     Q_UNUSED(pInput);
 
+    MetronomeGroupState* gs = pGroupState;
+
     if (enableState == EffectProcessor::DISABLED) {
+        gs->m_framesSinceClickStart = 0;
         return;
     }
 
-    MetronomeGroupState* gs = pGroupState;
     const unsigned int maxFrames = sampleRate * 60 / m_pBpmParameter->value();
 
     SampleUtil::clear(pOutput, numSamples);
