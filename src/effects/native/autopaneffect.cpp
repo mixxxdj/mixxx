@@ -136,7 +136,7 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
             i--;
         }
 
-        period = groupFeatures.beat_length_sec * beats;
+        period = groupFeatures.beat_length_sec * beats * sampleRate;
     } else {
         // max period is 128 seconds
         period *= sampleRate;
