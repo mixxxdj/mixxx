@@ -30,7 +30,7 @@ Description:
             <SetVariable name="state_0_unpressed">2decks.svg</SetVariable>
             <SetVariable name="state_1_pressed">4decks.svg</SetVariable>
             <SetVariable name="state_1_unpressed">4decks.svg</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[Master],show_4decks</SetVariable>
+            <SetVariable name="ConfigKey">[Master],show_4decks</SetVariable>
           </Template>
 
           <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
@@ -42,7 +42,7 @@ Description:
             <SetVariable name="state_0_unpressed">wave_off.svg</SetVariable>
             <SetVariable name="state_1_pressed">wave_on.svg</SetVariable>
             <SetVariable name="state_1_unpressed">wave_on.svg</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[Tango],stacked_waveforms</SetVariable>
+            <SetVariable name="ConfigKey">[Tango],stacked_waveforms</SetVariable>
           </Template>
 
           <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
@@ -54,20 +54,20 @@ Description:
             <SetVariable name="state_0_unpressed">mixerbar_off.svg</SetVariable>
             <SetVariable name="state_1_pressed">mixerbar_on.svg</SetVariable>
             <SetVariable name="state_1_unpressed">mixerbar_on.svg</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[Tango],mixerbar</SetVariable>
+            <SetVariable name="ConfigKey">[Tango],mixerbar</SetVariable>
           </Template>
 
           <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml">
-              <SetVariable name="TooltipId"></SetVariable>
-              <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-              <SetVariable name="Size">20f,20f</SetVariable>
-              <SetVariable name="state_0_unpressed">hotcues_off.svg</SetVariable>
-              <SetVariable name="state_0_pressed">hotcues_off.svg</SetVariable>
-              <SetVariable name="state_1_unpressed">hotcues_on.svg</SetVariable>
-              <SetVariable name="state_1_pressed">hotcues_on.svg</SetVariable>
-              <SetVariable name="ConfigKeyPerm">[Tango],hotcues</SetVariable>
+            <SetVariable name="TooltipId"></SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">20f,20f</SetVariable>
+            <SetVariable name="state_0_unpressed">hotcues_off.svg</SetVariable>
+            <SetVariable name="state_0_pressed">hotcues_off.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">hotcues_on.svg</SetVariable>
+            <SetVariable name="state_1_pressed">hotcues_on.svg</SetVariable>
+            <SetVariable name="ConfigKey">[Tango],hotcues</SetVariable>
           </Template>
 
           <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
@@ -80,7 +80,7 @@ Description:
             <SetVariable name="state_0_unpressed">mixer_off.svg</SetVariable>
             <SetVariable name="state_1_pressed">mixer_on.svg</SetVariable>
             <SetVariable name="state_1_unpressed">mixer_on.svg</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[Tango],channel_mixer</SetVariable>
+            <SetVariable name="ConfigKey">[Tango],channel_mixer</SetVariable>
           </Template>
 
         </Children>
@@ -98,7 +98,7 @@ Description:
             <SetVariable name="Size">34f,20f</SetVariable>
             <SetVariable name="state_0_text">FX</SetVariable>
             <SetVariable name="state_1_text">FX</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[EffectRack1],show</SetVariable>
+            <SetVariable name="ConfigKey">[EffectRack1],show</SetVariable>
           </Template>
 
           <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
@@ -109,7 +109,7 @@ Description:
             <SetVariable name="Size">34f,20f</SetVariable>
             <SetVariable name="state_0_text">SAM</SetVariable>
             <SetVariable name="state_1_text">SAM</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[Samplers],show_samplers</SetVariable>
+            <SetVariable name="ConfigKey">[Samplers],show_samplers</SetVariable>
           </Template>
 
           <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
@@ -120,7 +120,7 @@ Description:
             <SetVariable name="Size">34f,20f</SetVariable>
             <SetVariable name="state_0_text">LIB</SetVariable>
             <SetVariable name="state_1_text">LIB</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[Library],show_library</SetVariable>
+            <SetVariable name="ConfigKey">[Library],show_library</SetVariable>
           </Template>
 
         </Children>
@@ -211,7 +211,7 @@ Description:
                         <SetVariable name="state_0_unpressed">logo_52x13_grey.svg</SetVariable>
                         <SetVariable name="state_1_pressed">logo_52x13.svg</SetVariable>
                         <SetVariable name="state_1_unpressed">logo_52x13.svg</SetVariable>
-                        <SetVariable name="ConfigKeyPerm">[Tango],colorLogo</SetVariable>
+                        <SetVariable name="ConfigKey">[Tango],colorLogo</SetVariable>
                       </Template>
                     </Children>
                     <Connection>
@@ -277,7 +277,7 @@ Description:
                     <SetVariable name="state_0_unpressed">logo_104x26_grey.svg</SetVariable>
                     <SetVariable name="state_1_pressed">logo_104x26.svg</SetVariable>
                     <SetVariable name="state_1_unpressed">logo_104x26.svg</SetVariable>
-                    <SetVariable name="ConfigKeyPerm">[Tango],colorLogo</SetVariable>
+                    <SetVariable name="ConfigKey">[Tango],colorLogo</SetVariable>
                   </Template>
                 </Children>
                 <Connection>

@@ -38,7 +38,7 @@ Description:
           <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
             <SetVariable name="ObjectName">MixerBar_BelowLibrary</SetVariable>
             <SetVariable name="Size">12f,32f</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[Tango],mixerbar_below_library</SetVariable>
+            <SetVariable name="ConfigKey">[Tango],mixerbar_below_library</SetVariable>
           </Template>
         </Children>
         <Connection>
@@ -146,7 +146,7 @@ Description:
           <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
             <SetVariable name="ObjectName">MixerBarToggler</SetVariable>
             <SetVariable name="Size">11f,32f</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[Tango],mixerbar_headphone</SetVariable>
+            <SetVariable name="ConfigKey">[Tango],mixerbar_headphone</SetVariable>
           </Template>
 
           <WidgetGroup><!-- Headphone expanded -->
@@ -238,7 +238,7 @@ Description:
           <Template src="skin:button_2state_persist.xml">
             <SetVariable name="ObjectName">MixerBarToggler</SetVariable>
             <SetVariable name="Size">11f,32f</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[Tango],mixerbar_mic</SetVariable>
+            <SetVariable name="ConfigKey">[Tango],mixerbar_mic</SetVariable>
           </Template>
 
           <WidgetGroup><!-- MICs expanded -->
@@ -257,7 +257,7 @@ Description:
                     <SetVariable name="state_0_text">DUCK</SetVariable>
                     <SetVariable name="state_1_text">AUTO</SetVariable>
                     <SetVariable name="state_2_text">MAN</SetVariable>
-                    <SetVariable name="ConfigKeyPerm">[Master],talkoverDucking</SetVariable>
+                    <SetVariable name="ConfigKey">[Master],talkoverDucking</SetVariable>
                   </Template>
                   <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
                 </Children>
@@ -336,7 +336,7 @@ Description:
           <Template src="skin:button_2state_persist.xml">
             <SetVariable name="ObjectName">MixerBarToggler</SetVariable>
             <SetVariable name="Size">11f,32f</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[Tango],mixerbar_aux</SetVariable>
+            <SetVariable name="ConfigKey">[Tango],mixerbar_aux</SetVariable>
           </Template>
 
           <WidgetGroup><!-- AUX expanded -->

@@ -205,7 +205,7 @@ Variables:
             <SetVariable name="ObjectName">FXSamplersMiniMaxiButton</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
             <SetVariable name="Size">22me,14f</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[<Variable name="FxGroup"/>],show_parameters</SetVariable>
+            <SetVariable name="ConfigKey">[<Variable name="FxGroup"/>],show_parameters</SetVariable>
           </Template>
 
           <Label>

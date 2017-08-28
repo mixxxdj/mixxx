@@ -16,7 +16,7 @@ Description:
         <SetVariable name="state_0_unpressed">logo_104x26_grey.svg</SetVariable>
         <SetVariable name="state_1_pressed">logo_104x26.svg</SetVariable>
         <SetVariable name="state_1_unpressed">logo_104x26.svg</SetVariable>
-        <SetVariable name="ConfigKeyPerm">[Tango],colorLogo</SetVariable>
+        <SetVariable name="ConfigKey">[Tango],colorLogo</SetVariable>
       </Template>
 
     </Children>

@@ -36,7 +36,7 @@ Variables:
                 <SetVariable name="state_0_unpressed">keylock_off.svg</SetVariable>
                 <SetVariable name="state_1_pressed">keylock_on.svg</SetVariable>
                 <SetVariable name="state_1_unpressed">keylock_on.svg</SetVariable>
-                <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,keylock</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,keylock</SetVariable>
               </Template>
             </Children>
             <Connection>
@@ -141,7 +141,7 @@ Variables:
                 <SetVariable name="state_0_unpressed">quantize_off.svg</SetVariable>
                 <SetVariable name="state_1_pressed">quantize_on.svg</SetVariable>
                 <SetVariable name="state_1_unpressed">quantize_on.svg</SetVariable>
-                <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,quantize</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,quantize</SetVariable>
               </Template>
             </Children>
             <Connection>
@@ -156,7 +156,7 @@ Variables:
           <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
             <SetVariable name="ObjectName">DeckButtonTogglerLeft</SetVariable>
             <SetVariable name="Size">11f,22f</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[Tango],deck_controls</SetVariable>
+            <SetVariable name="ConfigKey">[Tango],deck_controls</SetVariable>
           </Template>
 
           <WidgetGroup><!-- Expandable Deck controls -->
@@ -176,7 +176,7 @@ Variables:
                     <SetVariable name="state_0_unpressed">keylock_off.svg</SetVariable>
                     <SetVariable name="state_1_pressed">keylock_on.svg</SetVariable>
                     <SetVariable name="state_1_unpressed">keylock_on.svg</SetVariable>
-                    <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,keylock</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,keylock</SetVariable>
                   </Template>
                 </Children>
                 <Connection>
@@ -286,7 +286,7 @@ Variables:
                     <SetVariable name="state_0_unpressed">quantize_off.svg</SetVariable>
                     <SetVariable name="state_1_pressed">quantize_on.svg</SetVariable>
                     <SetVariable name="state_1_unpressed">quantize_on.svg</SetVariable>
-                    <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,quantize</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,quantize</SetVariable>
                   </Template>
                 </Children>
                 <Connection>

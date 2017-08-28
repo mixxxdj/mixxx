@@ -81,7 +81,7 @@ Variables:
           <Template src="skin:button_2state_persist_highlight.xml">
             <SetVariable name="ObjectName">VinylTogglerRight</SetVariable>
             <SetVariable name="Size">11f,50f</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
+            <SetVariable name="ConfigKey">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
             <SetVariable name="HighlightKey"><Variable name="group"/>,passthrough</SetVariable>
           </Template>
 

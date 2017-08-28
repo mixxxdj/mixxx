@@ -67,7 +67,7 @@ Variables:
       <Template src="skin:button_2state_persist.xml">
         <SetVariable name="ObjectName">BeatgridButtonToggler</SetVariable>
         <SetVariable name="Size">18f,22me</SetVariable>
-        <SetVariable name="ConfigKeyPerm">[Tango],beatgrid_buttons</SetVariable>
+        <SetVariable name="ConfigKey">[Tango],beatgrid_buttons</SetVariable>
       </Template>
     </Children>
   </WidgetGroup>
