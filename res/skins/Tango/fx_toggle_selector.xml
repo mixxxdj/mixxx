@@ -6,10 +6,10 @@ Description:
   * enable feedback
   * effect selector drop-down list
 Variables:
-  FxRack  : effect rack number
-  FxUnit  : effect unit number
-  FxGroup : EffectRack1_EffectUnitX
-  FxNum   : effect number
+  FxRack    : effect rack number
+  FxUnitNum : effect unit number
+  FxGroup   : EffectRack1_EffectUnitX
+  FxNum     : effect number
 -->
 <Template>
   <SetVariable name="FxGroup_FxNum">[<Variable name="FxGroup"/>_Effect<Variable name="FxNum"/>]</SetVariable>
@@ -35,7 +35,7 @@ Variables:
           <EffectName>
             <ObjectName>FxName</ObjectName>
             <EffectRack><Variable name="FxRackNum"/></EffectRack>
-            <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+            <EffectUnit><Variable name="FxUnitNum"/></EffectUnit>
             <Effect><Variable name="FxNum"/></Effect>
           </EffectName>
           <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
@@ -52,7 +52,7 @@ Variables:
       <EffectSelector>
         <Size>82f,20f</Size>
         <EffectRack><Variable name="FxRackNum"/></EffectRack>
-        <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+        <EffectUnit><Variable name="FxUnitNum"/></EffectUnit>
         <Effect><Variable name="FxNum"/></Effect>
       </EffectSelector>
 

@@ -3,7 +3,6 @@ Description:
   An EQ knob with a Kill button next to it.
   A 'button' underneath the knob turns grey when EQ range is killed.
 Variables:
-  ObjectName  : name of parent container, css for individual margin
   PotiMinAngle: -135°, see skin.xml
   PotiMaxAngle: 135°, see skin.xml
   group       : affected group
@@ -15,38 +14,56 @@ Variables:
   <SetVariable name="EQEffect">[EqualizerRack1_<Variable name="group"/>_Effect1]</SetVariable>
   <WidgetGroup>
     <ObjectName>EQKnobContainerLeft</ObjectName>
-    <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
+    <Layout>vertical</Layout>
     <Children>
-      <!-- EQ knob + Kill indicator underneath -->
-      <WidgetGroup>
+      <WidgetGroup><!-- EQ knob + Kill button -->
         <SizePolicy>min,min</SizePolicy>
-        <Layout>stacked</Layout>
+        <Layout>horizontal</Layout>
         <Children>
-          <EffectParameterKnobComposed>
-            <Size>30f,30f</Size>
-            <Knob>skin:/knobs_sliders/knob_white.svg</Knob>
-            <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
-            <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
-            <Connection>
-              <ConfigKey><Variable name="EQEffect"/>,parameter<Variable name="parameter"/></ConfigKey>
-            </Connection>
-          </EffectParameterKnobComposed>
+          <!-- EQ knob + Kill indicator underneath -->
+          <WidgetGroup>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>stacked</Layout>
+            <Children>
+              <EffectParameterKnobComposed>
+                <Size>30f,30f</Size>
+                <Knob>skin:/knobs_sliders/knob_white.svg</Knob>
+                <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+                <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+                <Connection>
+                  <ConfigKey><Variable name="EQEffect"/>,parameter<Variable name="parameter"/></ConfigKey>
+                </Connection>
+              </EffectParameterKnobComposed>
 
+              <Template src="skin:fx_button.xml">
+                <SetVariable name="ObjectName">EQKillUnderlayLeft</SetVariable>
+                <SetVariable name="Size">30f,30f</SetVariable>
+                <SetVariable name="parameter">button_parameter<Variable name="parameter"/></SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- /EQ knob + Kill indicator underneath -->
+
+          <!-- Kill button -->
           <Template src="skin:fx_button.xml">
-            <SetVariable name="ObjectName">EQKillUnderlayLeft</SetVariable>
-            <SetVariable name="Size">30f,30f</SetVariable>
+            <SetVariable name="ObjectName">EQKillButton</SetVariable>
+            <SetVariable name="Size">12f,30f</SetVariable>
             <SetVariable name="parameter">button_parameter<Variable name="parameter"/></SetVariable>
           </Template>
         </Children>
-      </WidgetGroup>
-
-      <!-- Kill button -->
-      <Template src="skin:fx_button.xml">
-        <SetVariable name="ObjectName">EQKillButton</SetVariable>
-        <SetVariable name="Size">12f,30f</SetVariable>
-        <SetVariable name="parameter">button_parameter<Variable name="parameter"/></SetVariable>
-      </Template>
+        <Connection>
+          <ConfigKey><Variable name="EQEffect"/>,loaded</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /EQ knob + Kill button -->
+      <WidgetGroup><!-- Spacer when no EQ plugin is loaded -->
+        <Size>42me,30f</Size>
+        <Connection>
+          <ConfigKey><Variable name="EQEffect"/>,loaded</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Spacer -->
     </Children>
   </WidgetGroup>
 </Template>

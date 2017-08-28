@@ -4,7 +4,7 @@ Description:
   that controls SuperKnob linking type.
 Variables:
   FxRack        : rack number
-  FxUnit        : unit number
+  FxUnitNum     : unit number
   FxGroup_FxNum : EffectRack1_EffectUnitX_EffectY
   FxNum         : effect number
   parameter     : the parameter
@@ -46,7 +46,7 @@ Variables:
                 <ObjectName>FxKnobParameterName</ObjectName>
                 <Size>-1min,34f</Size>
                 <EffectRack><Variable name="FxRackNum"/></EffectRack>
-                <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+                <EffectUnit><Variable name="FxUnitNum"/></EffectUnit>
                 <Effect><Variable name="FxNum"/></Effect>
                 <EffectParameter><Variable name="parameter"/></EffectParameter>
                 <Alignment>left</Alignment>

@@ -751,11 +751,11 @@ WBeatSpinBox {
 
 #EQKnobContainerLeft {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  margin: 4px 4px 0px 2px;
+  margin: 0px 4px 0px 2px;
   }
 #EQKnobContainerRight {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
-  margin: 4px 2px 0px 4px;
+  margin: 0px 2px 0px 4px;
 }
 
 #EQKillButton {

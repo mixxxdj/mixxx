@@ -79,18 +79,19 @@ Variables:
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
+            <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
           <Template src="skin:eq_knob_button_right.xml"><!-- High EQ -->
             <SetVariable name="parameter">3</SetVariable>
-            <SetVariable name="TooltipId">filterHigh</SetVariable>
           </Template>
+            <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
           <Template src="skin:eq_knob_button_right.xml"><!-- Mid EQ -->
             <SetVariable name="parameter">2</SetVariable>
-            <SetVariable name="TooltipId">filterMid</SetVariable>
           </Template>
+            <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
           <Template src="skin:eq_knob_button_right.xml"><!-- Low EQ -->
             <SetVariable name="parameter">1</SetVariable>
-            <SetVariable name="TooltipId">filterLow</SetVariable>
           </Template>
+            <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
           <Template src="skin:quick_fx_knob_button_right.xml"/><!-- Quick Effect knob -->
         </Children>
         <Connection>

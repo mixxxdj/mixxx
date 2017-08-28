@@ -1,7 +1,8 @@
 <!--
 Description:
   A button that displays focus state of an effect slot.
-  Left-click sets focus, right-click removes focus from all effects
+  Left-click sets focus, right-click removes focus from all effects.
+  If focused, left-click also removes focus.
 Variables:
   FxGroup : [EffectRack1_EffectUnitN]
   FxNum   : effect number

@@ -5,11 +5,11 @@ Description:
   * mixer with Wet/Dry knob and Super knob (optional)
   * assignment buttons for master & headphone
 Variables:
-  FxUnit:   number of effect unit for FX label
+  FxUnitNum:   number of effect unit for FX label
 -->
 <Template>
-  <SetVariable name="FxGroup">EffectRack1_EffectUnit<Variable name="FxUnit"/></SetVariable>
-  <SetVariable name="group">EffectUnit<Variable name="FxUnit"/></SetVariable>
+  <SetVariable name="FxGroup">EffectRack1_EffectUnit<Variable name="FxUnitNum"/></SetVariable>
+  <SetVariable name="group">EffectUnit<Variable name="FxUnitNum"/></SetVariable>
   <WidgetGroup>
     <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
@@ -253,7 +253,7 @@ Variables:
           <Label>
             <ObjectName>FxUnitLabel</ObjectName>
             <Size>28f,12f</Size>
-            <Text>FX<Variable name="FxUnit"/></Text>
+            <Text>FX<Variable name="FxUnitNum"/></Text>
             <Alignment>center</Alignment>
           </Label>
         </Children>

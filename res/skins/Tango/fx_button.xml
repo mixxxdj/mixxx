@@ -1,10 +1,16 @@
 <!--
 Description:
-  A button to assign an effect unit to parent deck,
-  used in decks' artist/duration row.
+  An EffectPushButton template used for EQ kill buttons and
+  effect parameter buttons.
 Variables:
-  FxUnit: [EffectRack1_EffectUnitN]
-  group:  [ChannelN], [EffectUnitX]
+  ObjectName:
+  Size      :
+  FxRack    : [EffectRack1]
+  FxNum     : [EffectY]
+  group     : [ChannelN], [EffectUnitX]
+  parameter : 1, 2, 3, ...
+  labelOn  : button graphic for ON state
+  labelOff  : button graphic for OFF state
 -->
 <Template>
   <SetVariable name="FxGroup"><Variable name="FxRack"/>_<Variable name="group"/></SetVariable>
@@ -15,15 +21,11 @@ Variables:
     <RightClickIsPushButton>false</RightClickIsPushButton>
     <State>
       <Number>0</Number>
-      <Text><Variable name="labelText"/></Text>
-      <Alignment>center</Alignment>
       <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="labelOff"/>.svg</Pressed>
       <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="labelOff"/>.svg</Unpressed>
     </State>
     <State>
       <Number>1</Number>
-      <Text><Variable name="labelText"/></Text>
-      <Alignment>center</Alignment>
       <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="labelOn"/>.svg</Pressed>
       <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="labelOn"/>.svg</Unpressed>
     </State>

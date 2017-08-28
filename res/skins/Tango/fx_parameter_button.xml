@@ -4,21 +4,20 @@ Description:
   Stacked layout of invisible button, parameter name
   and button display underneath.
 Variables:
-  FxRack        : rack number
-  FxUnit        : unit number
+  FxRackNum     : rack number
+  FxUnitNum     : unit number
   FxGroup_FxNum : EffectRack1_EffectUnitX_EffectY
   FxNum         : effect number
   parameter     : the parameter
 -->
 <Template>
-  <SetVariable name="group">EffectUnit<Variable name="FxUnit"/></SetVariable>
-  <SetVariable name="FxGroup">EffectRack1_EffectUnit<Variable name="FxUnit"/></SetVariable>
+  <SetVariable name="group">EffectUnit<Variable name="FxUnitNum"/></SetVariable>
+  <SetVariable name="FxGroup">EffectRack1_EffectUnit<Variable name="FxUnitNum"/></SetVariable>
   <SetVariable name="FxGroup_FxNum">[<Variable name="FxGroup"/>_Effect<Variable name="FxNum"/>]</SetVariable>
   <WidgetGroup>
     <Layout>stacked</Layout>
     <ObjectName>FxButtonParameter</ObjectName>
-  <!-- working around disrespected AlignVCenter when Connection is applied.
-      Available height is 38px, button is 18px & we want it in a row with its adjacent knobs -->
+  <!-- working around disrespected AlignVCenter when Connection is applied. -->
     <Size>52f,26f</Size>
     <Children>
       <!-- Actual button, invisible except hover border -->
@@ -38,7 +37,7 @@ Variables:
             <SizePolicy>min,me</SizePolicy>
             <ObjectName>FxButtonParameterName</ObjectName>
             <EffectRack><Variable name="FxRackNum"/></EffectRack>
-            <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+            <EffectUnit><Variable name="FxUnitNum"/></EffectUnit>
             <Effect><Variable name="FxNum"/></Effect>
             <EffectButtonParameter><Variable name="parameter"/></EffectButtonParameter>
             <Alignment>center</Alignment>

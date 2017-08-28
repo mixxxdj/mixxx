@@ -2,9 +2,11 @@
 Description:
   A button to assign parent effect unit to master output or headphones. 
 Variables:
+  Size        :
   sourceType  : headphone or master
-  FxUnit      : [EffectRack1_EffectUnitN]
-  group       : [ChannelN]
+  FxUnitNum      : [EffectRack1_EffectUnitN]
+  labelOn     : button graphic for ON state
+  labelOff    : button graphic for OFF state
 -->
 <Template>
   <PushButton>
@@ -24,7 +26,7 @@ Variables:
       <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="labelOn"/>.svg</Unpressed>
     </State>
     <Connection>
-      <ConfigKey>[EffectRack1_EffectUnit<Variable name="FxUnit"/>],group_<Variable name="group"/>_enable</ConfigKey>
+      <ConfigKey>[EffectRack1_EffectUnit<Variable name="FxUnitNum"/>],group_<Variable name="group"/>_enable</ConfigKey>
       <ButtonState>LeftButton</ButtonState>
     </Connection>
   </PushButton>
