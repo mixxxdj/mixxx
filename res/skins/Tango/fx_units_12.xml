@@ -4,21 +4,19 @@ Description:
   Units are pushed apart by spacers, see fx_units_spacer.xml.
 -->
 <Template>
-  <WidgetGroup><!-- EffectUnits 1 & 2 -->
-    <ObjectName>EffectUnits12</ObjectName>
+  <SetVariable name="FxRack">EffectRack1</SetVariable>
+  <SetVariable name="FxRackNum">1</SetVariable>
+  <WidgetGroup>
     <SizePolicy>me,max</SizePolicy>
     <Layout>horizontal</Layout>
     <Children>
 
       <WidgetGroup><!-- EffectUnit 1 maxi -->
-        <ObjectName>EffectUnit1_maxi</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,max</SizePolicy>
         <Children>
           <Template src="skin:fx_unit_left.xml">
-            <SetVariable name="fxRack">1</SetVariable>
-            <SetVariable name="fxUnit">1</SetVariable>
-            <SetVariable name="fxGroup">EffectRack1_EffectUnit1</SetVariable>
+            <SetVariable name="FxUnit">1</SetVariable>
           </Template>
         </Children>
         <Connection>
@@ -28,14 +26,11 @@ Description:
       </WidgetGroup>
 
       <WidgetGroup><!-- EffectUnit 1 mini -->
-        <ObjectName>EffectUnit1_mini</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,me</SizePolicy>
         <Children>
           <Template src="skin:fx_unit_left_mini.xml">
-            <SetVariable name="fxRack">1</SetVariable>
-            <SetVariable name="fxUnit">1</SetVariable>
-            <SetVariable name="fxGroup">EffectRack1_EffectUnit1</SetVariable>
+            <SetVariable name="FxUnit">1</SetVariable>
           </Template>
           <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
         </Children>
@@ -49,14 +44,11 @@ Description:
       <Template src="skin:fx_units_spacer.xml"/>
 
       <WidgetGroup><!-- EffectUnit 2 maxi -->
-        <ObjectName>EffectUnit2_maxi</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,max</SizePolicy>
         <Children>
           <Template src="skin:fx_unit_right.xml">
-            <SetVariable name="fxRack">1</SetVariable>
-            <SetVariable name="fxUnit">2</SetVariable>
-            <SetVariable name="fxGroup">EffectRack1_EffectUnit2</SetVariable>
+            <SetVariable name="FxUnit">2</SetVariable>
           </Template>
         </Children>
         <Connection>
@@ -66,14 +58,11 @@ Description:
       </WidgetGroup>
 
       <WidgetGroup><!-- EffectUnit 2 mini -->
-        <ObjectName>EffectUnit2_mini</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,me</SizePolicy>
         <Children>
           <Template src="skin:fx_unit_right_mini.xml">
-            <SetVariable name="fxRack">1</SetVariable>
-            <SetVariable name="fxUnit">2</SetVariable>
-            <SetVariable name="fxGroup">EffectRack1_EffectUnit2</SetVariable>
+            <SetVariable name="FxUnit">2</SetVariable>
           </Template>
           <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
         </Children>

@@ -3,8 +3,8 @@ Description:
   A button that displays focus state of an effect slot.
   Left-click sets focus, right-click removes focus from all effects
 Variables:
-  fxGroup : [EffectRack1_EffectUnitN]
-  fxNum   : effect number
+  FxGroup : [EffectRack1_EffectUnitN]
+  FxNum   : effect number
 -->
 <Template>
   <WidgetGroup>
@@ -14,31 +14,25 @@ Variables:
       <!-- visible if unfocused: left-click > focus, right click > unfocus -->
       <PushButton>
         <TooltipId>EffectSlot_focus</TooltipId>
-        <ObjectName>EffectFocusButton</ObjectName>
+        <ObjectName>FxFocusButton</ObjectName>
         <Size>14f,30me</Size>
         <NumberStates>2</NumberStates>
         <RightClickIsPushButton>true</RightClickIsPushButton>
-        <State>
-          <Number>0</Number>
-        </State>
-        <State>
-          <Number>1</Number>
-        </State>
         <Connection>
-          <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
+          <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
           <EmitOnDownPress>true</EmitOnDownPress>
-          <Transform><IsEqual><Variable name="fxNum"/></IsEqual></Transform>
+          <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
         </Connection>
         <Connection>
-          <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
+          <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
           <ButtonState>RightButton</ButtonState>
           <EmitOnDownPress>true</EmitOnDownPress>
-          <Transform><IsEqual><Variable name="fxNum"/></IsEqual><Not/></Transform>
+          <Transform><IsEqual><Variable name="FxNum"/></IsEqual><Not/></Transform>
         </Connection>
         <Connection>
-          <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
-          <Transform><IsEqual><Variable name="fxNum"/></IsEqual><Not/></Transform>
+          <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
+          <Transform><IsEqual><Variable name="FxNum"/></IsEqual><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
       </PushButton>
@@ -46,36 +40,30 @@ Variables:
       <!-- visible if focused: left-click > unfocus, right click > unfocus -->
       <PushButton>
         <TooltipId>EffectSlot_focus</TooltipId>
-        <ObjectName>EffectFocusButton</ObjectName>
+        <ObjectName>FxFocusButton</ObjectName>
         <Size>14f,30me</Size>
         <NumberStates>2</NumberStates>
         <RightClickIsPushButton>true</RightClickIsPushButton>
-        <State>
-          <Number>0</Number>
-        </State>
-        <State>
-          <Number>1</Number>
-        </State>
         <Connection>
-          <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
+          <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
           <EmitOnDownPress>true</EmitOnDownPress>
-          <Transform><IsEqual><Variable name="fxNum"/></IsEqual><Not/></Transform>
+          <Transform><IsEqual><Variable name="FxNum"/></IsEqual><Not/></Transform>
         </Connection>
         <Connection>
-          <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
+          <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
           <ButtonState>RightButton</ButtonState>
           <EmitOnDownPress>true</EmitOnDownPress>
-          <Transform><IsEqual><Variable name="fxNum"/></IsEqual><Not/></Transform>
+          <Transform><IsEqual><Variable name="FxNum"/></IsEqual><Not/></Transform>
         </Connection>
         <Connection>
-          <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
-          <Transform><IsEqual><Variable name="fxNum"/></IsEqual></Transform>
+          <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
+          <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
           <ConnectValueFromWidget>false</ConnectValueFromWidget>
         </Connection>
         <Connection>
-          <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
-          <Transform><IsEqual><Variable name="fxNum"/></IsEqual></Transform>
+          <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
+          <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
       </PushButton>

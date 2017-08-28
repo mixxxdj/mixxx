@@ -52,7 +52,7 @@
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
       <!-- [Tango] specific defaults -->
-      <attribute persist="true" config_key="[Tango],2or4_fxUnits">0</attribute>
+      <attribute persist="true" config_key="[Tango],2or4_FxUnits">0</attribute>
       <attribute persist="true" config_key="[Tango],fx_super_knob">0</attribute>
       <attribute persist="true" config_key="[Tango],sampler_fx_buttons">1</attribute>
       <attribute persist="true" config_key="[Tango],micaux_fx_buttons">1</attribute>
@@ -371,7 +371,7 @@
 
                       </Children>
                       <Connection>
-                        <ConfigKey persist="true">[Tango],2or4_fxUnits</ConfigKey>
+                        <ConfigKey persist="true">[Tango],2or4_FxUnits</ConfigKey>
                         <Transform><Not/></Transform>
                         <BindProperty>visible</BindProperty>
                       </Connection>
@@ -394,7 +394,7 @@
                           </Connection>
                         </WidgetGroup>
 
-                        <Template src="skin:fx_units_12.xml"/>
+                        <!--Template src="skin:fx_units_12.xml"/-->
 
                         <WidgetGroup>
                           <Size>1me,5f</Size>
@@ -420,16 +420,16 @@
                           </Connection>
                         </WidgetGroup>
 
-                        <Template src="skin:fx_units_34.xml"/>
+                        <!--Template src="skin:fx_units_34.xml"/-->
 
                       </Children>
                       <Connection>
-                        <ConfigKey persist="true">[Tango],2or4_fxUnits</ConfigKey>
+                        <ConfigKey persist="true">[Tango],2or4_FxUnits</ConfigKey>
                         <BindProperty>visible</BindProperty>
                       </Connection>
                     </WidgetGroup><!-- /Decks + 4 FX Units -->
 
-                    <Template src="skin:sample_decks.xml"/>
+                    <!--Template src="skin:sample_decks.xml"/-->
 
                     <SingletonContainer>
                       <ObjectName>Library_Singleton</ObjectName>

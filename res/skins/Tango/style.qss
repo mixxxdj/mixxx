@@ -746,23 +746,20 @@ WBeatSpinBox {
   qproperty-layoutAlignment: 'AlignCenter';
   margin-top: 2px;
 }
-#GainKnobLeft {;
+#GainKnobLeft {
 }
 
-#EQKnobs {
+#EQKnobContainerLeft {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  margin: 4px 4px 0px 2px;
   }
-  #EQKnobLeft {
-    qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-    margin: 4px 4px 0px 2px;
-    }
-  #EQKnobRight {
-    qproperty-layoutAlignment: 'AlignRight | AlignTop';
-    margin: 4px 2px 0px 4px;
-    }
-  #EQKillButton {
-    border-radius: 1px;
-    }
+#EQKnobContainerRight {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  margin: 4px 2px 0px 4px;
+}
+
+#EQKillButton {
+  }
   #EQKillButton[displayValue="0"] {
     background-color: #585858;
     }
@@ -774,24 +771,40 @@ WBeatSpinBox {
     }
   #EQKillButton[displayValue="1"]:hover {
     background-color: #ca0000;
-    }
+  }
 
-  #EQKillButtonUnderlayLeft[displayValue="1"] {
+#EQKillUnderlayLeft[displayValue="1"] {
+  background-color: #585858;
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+  }
+#EQKillUnderlayRight[displayValue="1"] {
+  background-color: #585858;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+  }
+
+#QuickFxEnableButton {
+  margin: 5px 0px 5px 0px;
+  }
+  #QuickFxEnableButton[displayValue="0"] {
     background-color: #585858;
-    border-top-left-radius: 15px;
-    border-bottom-left-radius: 15px;
     }
-  #EQKillButtonUnderlayRight[displayValue="1"] {
+  #QuickFxEnableButton[displayValue="0"]:hover {
+    border: 1px solid #ff8f00;
+    }
+  #QuickFxEnableButton[displayValue="1"] {
+    background-color: #ff8f00;
+    }
+  #QuickFxEnableButton[displayValue="1"]:hover {
+    border: 1px solid #ffffff;
+  }
+    
+  #QuickFxEnableUnderlay[displayValue="0"] {
     background-color: #585858;
-    border-top-right-radius: 15px;
-    border-bottom-right-radius: 15px;
-    }
-#FilterKnobLeft {
-  margin: 3px 16px 0px 2px
-}
-#FilterKnobRight {
-  margin: 3px 2px 0px 16px
-}
+    border-radius: 13px;
+    margin: 2px;
+  }
 
 /*  This wouldn't scale the image:
 #PflButton[displayValue="0"] {
@@ -985,16 +998,16 @@ WBeatSpinBox {
 ######  Effects  ###############################################
 ##############################################################*/
 
-#EffectUnitLabel {
+#FxUnitLabel {
   font-size: 14px/14px;
   font-weight: bold;
   color: #888888;
 }
 
-#EffectUnitControlsLeft {
+#FxUnitControlsLeft {
   qproperty-layoutAlignment: 'AlignRight;
 }
-#EffectUnitControlsRight {
+#FxUnitControlsRight {
   qproperty-layoutAlignment: 'AlignRight | AlignBottom';	/*
   This eliminates 1 black px left...	*/
   border-left: 1px solid #1e1e1e; /*
@@ -1004,12 +1017,12 @@ WBeatSpinBox {
   background-color: #1e1e1e;
 }
 
-#EffectUnitMixerLeft {
+#FxUnitMixerLeft {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   padding-left:1px;
   background-color: #0f0f0f;
 }
-#EffectUnitMixerRight {
+#FxUnitMixerRight {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   padding-right:1px;
   background-color: #0f0f0f;
@@ -1022,38 +1035,38 @@ WBeatSpinBox {
 
 /* minimal EffectSlots in horizontal layout */
 /* with focus */
-#EffectUnderlay_mini_focus1[highlight="0"] {
+#FxUnderlay_mini_focus1[highlight="0"] {
   border-image: url(skin:/graphics/fxChainFlow_hori_unfocused1.svg) 0px 10px 0px 0px ;
   border-width: 0px 10px 0px 0px;
   }
-#EffectUnderlay_mini_focus2[highlight="0"] {
+#FxUnderlay_mini_focus2[highlight="0"] {
   margin-left: 125px;
   border-image: url(skin:/graphics/fxChainFlow_hori_unfocused2.svg) 0px 10px 0px 10px;
   border-width: 0px 10px 0px 10px;
   }
-  #EffectUnderlay_mini_focus2[highlight="1"] {
+  #FxUnderlay_mini_focus2[highlight="1"] {
     margin-left: 125px;
   }
-#EffectUnderlay_mini_focus3[highlight="0"] {
+#FxUnderlay_mini_focus3[highlight="0"] {
   margin-left: 259px;
   border-image: url(skin:/graphics/fxChainFlow_hori_unfocused3.svg) 0px 0px 0px 10px;
   border-width: 0px 0px 0px 10px;
   }
-  #EffectUnderlay_mini_focus3[highlight="1"] {
+  #FxUnderlay_mini_focus3[highlight="1"] {
     margin-left: 259px;
   }
 
 /* no focus */
-#EffectUnderlay_mini_noFocus1 {
+#FxUnderlay_mini_noFocus1 {
   border-image: url(skin:/graphics/fxChainFlow_hori_unfocused1.svg) 0px 10px 0px 0px;
   border-width: 0px 10px 0px 0px;
 }
-#EffectUnderlay_mini_noFocus2 {
+#FxUnderlay_mini_noFocus2 {
   margin-left: 111px;
   border-image: url(skin:/graphics/fxChainFlow_hori_unfocused2.svg) 0px 10px 0px 10px;
   border-width: 0px 10px 0px 10px;
 }
-#EffectUnderlay_mini_noFocus3 {
+#FxUnderlay_mini_noFocus3 {
   margin-left: 231px;
   border-image: url(skin:/graphics/fxChainFlow_hori_unfocused3.svg) 0px 0px 0px 10px;
   border-width: 0px 0px 0px 10px;
@@ -1061,40 +1074,40 @@ WBeatSpinBox {
 
 /* maximized EffectSlots in vertical layout */
 /* right-hand FX units, with focus */
-#EffectUnderlay_maxi_right_focus1[highlight="0"] {
+#FxUnderlay_maxi_right_focus1[highlight="0"] {
   border-image: url(skin:/graphics/fxChainFlow_vert_right_unfocused1.svg) 0px 0px 0px 99px ;
   border-width: 0px 0px 0px 99px;
   }
 
-#EffectUnderlay_maxi_right_focus2[highlight="0"] {
+#FxUnderlay_maxi_right_focus2[highlight="0"] {
   margin-top: 46px;
   border-image: url(skin:/graphics/fxChainFlow_vert_right_unfocused2.svg) 0px 0px 0px 99px;
   border-width: 0px 0px 0px 99px;
   }
-  #EffectUnderlay_maxi_right_focus2[highlight="1"] {
+  #FxUnderlay_maxi_right_focus2[highlight="1"] {
     margin-top: 46px;
   }
 
-#EffectUnderlay_maxi_right_focus3[highlight="0"] {
+#FxUnderlay_maxi_right_focus3[highlight="0"] {
   margin-top: 92px;
   border-image: url(skin:/graphics/fxChainFlow_vert_right_unfocused3.svg) 0px 0px 0px 99px;
   border-width: 0px 0px 0px 99px;
   }
-  #EffectUnderlay_maxi_right_focus3[highlight="1"] {
+  #FxUnderlay_maxi_right_focus3[highlight="1"] {
     margin-top: 92px;
   }
 
 /* right-hand FX units, no focus */
-#EffectUnderlay_maxi_right_noFocus1 {
+#FxUnderlay_maxi_right_noFocus1 {
   border-image: url(skin:/graphics/fxChainFlow_vert_right_noFocus1.svg) 0px 0px 0px 85px;
   border-width: 0px 0px 0px 85px;
 }
-#EffectUnderlay_maxi_right_noFocus2 {
+#FxUnderlay_maxi_right_noFocus2 {
   margin-top: 46px;
   border-image: url(skin:/graphics/fxChainFlow_vert_right_noFocus2.svg) 0px 10px 0px 85px;
   border-width: 0px 0px 0px 85px;
 }
-#EffectUnderlay_maxi_right_noFocus3 {
+#FxUnderlay_maxi_right_noFocus3 {
   margin-top: 92px;
   border-image: url(skin:/graphics/fxChainFlow_vert_right_noFocus3.svg) 0px 0px 0px 85px;
   border-width: 0px 0px 0px 85px;
@@ -1102,85 +1115,85 @@ WBeatSpinBox {
 
 /* maximized EffectSlots in vertical layout */
 /* left-hand FX units, with focus */
-#EffectUnderlay_maxi_left_focus1[highlight="0"] {
+#FxUnderlay_maxi_left_focus1[highlight="0"] {
   border-image: url(skin:/graphics/fxChainFlow_vert_left_unfocused1.svg) 0px 109px 0px 0px;
   border-width: 0px 109px 0px 0px;
   }
 
-#EffectUnderlay_maxi_left_focus2[highlight="0"] {
+#FxUnderlay_maxi_left_focus2[highlight="0"] {
   margin-top: 46px;
   border-image: url(skin:/graphics/fxChainFlow_vert_left_unfocused2.svg) 0px 109px 0px 0px;
   border-width: 0px 109px 0px 0px;
   }
-  #EffectUnderlay_maxi_left_focus2[highlight="1"] {
+  #FxUnderlay_maxi_left_focus2[highlight="1"] {
     margin-top: 46px;
   }
 
-#EffectUnderlay_maxi_left_focus3[highlight="0"] {
+#FxUnderlay_maxi_left_focus3[highlight="0"] {
   margin-top: 92px;
   border-image: url(skin:/graphics/fxChainFlow_vert_left_unfocused3.svg) 0px 109px 0px 0px;
   border-width: 0px 109px 0px 0px;
   }
-  #EffectUnderlay_maxi_left_focus3[highlight="1"] {
+  #FxUnderlay_maxi_left_focus3[highlight="1"] {
     margin-top: 92px;
   }
 
 /* left-hand FX units, no focus */
-#EffectUnderlay_maxi_left_noFocus1 {
+#FxUnderlay_maxi_left_noFocus1 {
   border-image: url(skin:/graphics/fxChainFlow_vert_left_noFocus1.svg) 0px 95px 0px 0px;
   border-width: 0px 95px 0px 0px;
 }
-#EffectUnderlay_maxi_left_noFocus2 {
+#FxUnderlay_maxi_left_noFocus2 {
   margin-top: 46px;
   border-image: url(skin:/graphics/fxChainFlow_vert_left_noFocus2.svg) 0px 95px 0px 0px;
   border-width: 0px 95px 0px 0px;
 }
-#EffectUnderlay_maxi_left_noFocus3 {
+#FxUnderlay_maxi_left_noFocus3 {
   margin-top: 92px;
   border-image: url(skin:/graphics/fxChainFlow_vert_left_noFocus3.svg) 0px 95px 0px 0px;
   border-width: 0px 95px 0px 0px;
 }
 
-#EffectFocusButton {
+#FxFocusButton {
   background-color: transparent;
 }
-  #EffectFocusButton[displayValue="0"] {
+  #FxFocusButton[displayValue="0"] {
     image: url(skin:/buttons/btn_fx_focus_off.svg) no-repeat center center;
     }
-    #EffectFocusButton[displayValue="0"]:hover {
+    #FxFocusButton[displayValue="0"]:hover {
       image: url(skin:/buttons/btn_fx_focus_off_hover.svg) no-repeat center center;
     }
-  #EffectFocusButton[displayValue="1"] {
+  #FxFocusButton[displayValue="1"] {
     image: url(skin:/buttons/btn_fx_focus_on.svg) no-repeat center center;
     }
-    #EffectFocusButton[displayValue="1"]:hover {
+    #FxFocusButton[displayValue="1"]:hover {
       image: url(skin:/buttons/btn_fx_focus_on_hover.svg) no-repeat center center;
     }
 
-#EffectToggleSelector {
+#FxToggleSelector {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
   border-radius: 3px;
 }
 
-  #EffectToggleButton {
+  #FxToggleButton {
     }
-    #EffectToggleButton[displayValue="0"]:hover {
+    #FxToggleButton[displayValue="0"]:hover {
       border: 1px solid #ff8f00;
       }
-    #EffectToggleButton[displayValue="1"]:hover {
+    #FxToggleButton[displayValue="1"]:hover {
       border: 1px solid #FFFFFF;
       }
-    #EffectToggleButtonUnderlay[displayValue="0"] {
+    #FxToggleButtonUnderlay[displayValue="0"] {
       background-color: #777777;
       }
-    #EffectToggleButtonUnderlay[displayValue="1"] {
+    #FxToggleButtonUnderlay[displayValue="1"] {
       background-color: #ff8f00;	/* yellow2 	*/
       }
-    #fxNameContainer {
+    #FxNameContainer {
       padding: 1px;
       qproperty-layoutAlignment: 'AlignLeft';
       }
-      #fxName {
+      #FxName {
         qproperty-alignment: 'AlignLeft | AlignVCenter';
         color: #000000;
         text-align: left;
@@ -1248,14 +1261,14 @@ WBeatSpinBox {
         background-color: transparent;
       }
 
-#EffectParameters {
+#FxParameters {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   }
-  #EffectKnobParameter {
+  #FxKnobParameter {
     qproperty-layoutAlignment: 'AlignCenter';
     margin-right: 1px;
     }
-    #EffectKnobParameterName {
+    #FxKnobParameterName {
       qproperty-alignment: 'AlignLeft | AlignTop';
       font-size: 10px/10px;
       font-weight: bold;
@@ -1263,20 +1276,20 @@ WBeatSpinBox {
       margin-top: 19px;
     }
 
-  #EffectButtonParameter {
+  #FxButtonParameter {
     qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
     margin-right: 1px;
     }
-    #EffectButtonParameterOverlay:hover {
+    #FxButtonParameterOverlay:hover {
       border: 1px solid #eeeeee;
       }
-    #EffectButtonParameterUnderlay[displayValue="0"] {
+    #FxButtonParameterUnderlay[displayValue="0"] {
       background-color: #4b4b4b;
       }
-    #EffectButtonParameterUnderlay[displayValue="1"] {
+    #FxButtonParameterUnderlay[displayValue="1"] {
       background-color: #006596;
       }
-    #EffectButtonParameterName {
+    #FxButtonParameterName {
       font-size: 10px/10px;
       font-weight: bold;
       color: #999999;
@@ -1284,21 +1297,21 @@ WBeatSpinBox {
       margin-left: 1px;
       }
 
-  #EffectLinkTypeButton[value="0"],
-  #EffectLinkInvertButton[displayValue="0"] {
+  #FxLinkTypeButton[value="0"],
+  #FxLinkInvertButton[displayValue="0"] {
     background-color: #4b4b4b;
     }
-    #EffectLinkTypeButton[value="0"]:hover,
-    #EffectLinkInvertButton[displayValue="0"]:hover {
+    #FxLinkTypeButton[value="0"]:hover,
+    #FxLinkInvertButton[displayValue="0"]:hover {
       background-color: #888888;
     }
-  #EffectLinkTypeButton[value="1"] {
+  #FxLinkTypeButton[value="1"] {
     background-color: #006596;
     }
-    #EffectLinkTypeButton[value="1"]:hover {
+    #FxLinkTypeButton[value="1"]:hover {
       background-color: #078DCD;
     }
-  #EffectLinkTypeButton[value="2"] {	/*
+  #FxLinkTypeButton[value="2"] {	/*
     a simple way to achive a partitioning in thirds	*/
     background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
       stop: 0 #006596,
@@ -1306,7 +1319,7 @@ WBeatSpinBox {
       stop: 0.34 #4b4b4b,
       stop: 1 #4b4b4b);
     }
-    #EffectLinkTypeButton[value="2"]:hover {	/*
+    #FxLinkTypeButton[value="2"]:hover {	/*
       a simple way to achive a partitioning in thirds	*/
       background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
         stop: 0 #078dcd,
@@ -1314,21 +1327,21 @@ WBeatSpinBox {
         stop: 0.34 #4b4b4b,
         stop: 1 #4b4b4b);
       }
-  #EffectLinkTypeButton[value="3"] {
+  #FxLinkTypeButton[value="3"] {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
       stop: 0 #4b4b4b,
       stop: 0.66 #4b4b4b,
       stop: 0.67 #006596,
       stop: 1 #006596);
     }
-    #EffectLinkTypeButton[value="3"]:hover {
+    #FxLinkTypeButton[value="3"]:hover {
       background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
         stop: 0 #4b4b4b,
         stop: 0.66 #4b4b4b,
         stop: 0.67 #078dcd,
         stop: 1 #078dcd);
       }
-  #EffectLinkTypeButton[value="4"] {
+  #FxLinkTypeButton[value="4"] {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
       stop: 0 #006596,
       stop: 0.330000 #006596,
@@ -1337,7 +1350,7 @@ WBeatSpinBox {
       stop: 0.670000 #006596,
       stop: 1 #006596);
     }
-    #EffectLinkTypeButton[value="4"]:hover {
+    #FxLinkTypeButton[value="4"]:hover {
       background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
         stop: 0 #078dcd,
         stop: 0.330000 #078dcd,
@@ -1347,10 +1360,10 @@ WBeatSpinBox {
         stop: 1 #078dcd);
     }
 
-  #EffectLinkInvertButton[displayValue="1"] {
+  #FxLinkInvertButton[displayValue="1"] {
     background-color: #a90000;
     }
-    #EffectLinkInvertButton[displayValue="1"]:hover {
+    #FxLinkInvertButton[displayValue="1"]:hover {
       background-color: #ff0000;
     }
 

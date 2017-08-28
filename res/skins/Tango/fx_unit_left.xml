@@ -5,10 +5,11 @@ Description:
   * mixer with Wet/Dry knob and Super knob (optional)
   * assignment buttons for master & headphone
 Variables:
-  fxGroup:  EffectRack1_EffectUnitX
-  fxUnit:   number of effect unit for FX label
+  FxUnit:   number of effect unit for FX label
 -->
 <Template>
+  <SetVariable name="FxGroup">EffectRack1_EffectUnit<Variable name="FxUnit"/></SetVariable>
+  <SetVariable name="group">EffectUnit<Variable name="FxUnit"/></SetVariable>
   <WidgetGroup><!-- EffectUnit -->
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
@@ -28,11 +29,11 @@ Variables:
                 <SizePolicy>min,min</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:fx_parameter_row.xml"><SetVariable name="fxNum">1</SetVariable></Template>
+                  <Template src="skin:fx_parameter_row.xml"><SetVariable name="FxNum">1</SetVariable></Template>
                   <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-                  <Template src="skin:fx_toggle_selector.xml"><SetVariable name="fxNum">1</SetVariable></Template>
-                  <Template src="skin:fx_metaknob.xml"><SetVariable name="fxNum">1</SetVariable></Template>
-                  <Template src="skin:fx_focus_button.xml"><SetVariable name="fxNum">1</SetVariable></Template>
+                  <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">1</SetVariable></Template>
+                  <Template src="skin:fx_metaknob.xml"><SetVariable name="FxNum">1</SetVariable></Template>
+                  <Template src="skin:fx_focus_button.xml"><SetVariable name="FxNum">1</SetVariable></Template>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                 </Children>
               </WidgetGroup><!-- /EffectSlot 1 -->
@@ -44,11 +45,11 @@ Variables:
                 <SizePolicy>min,min</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:fx_parameter_row.xml"><SetVariable name="fxNum">2</SetVariable></Template>
+                  <Template src="skin:fx_parameter_row.xml"><SetVariable name="FxNum">2</SetVariable></Template>
                   <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-                  <Template src="skin:fx_toggle_selector.xml"><SetVariable name="fxNum">2</SetVariable></Template>
-                  <Template src="skin:fx_metaknob.xml"><SetVariable name="fxNum">2</SetVariable></Template>
-                  <Template src="skin:fx_focus_button.xml"><SetVariable name="fxNum">2</SetVariable></Template>
+                  <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">2</SetVariable></Template>
+                  <Template src="skin:fx_metaknob.xml"><SetVariable name="FxNum">2</SetVariable></Template>
+                  <Template src="skin:fx_focus_button.xml"><SetVariable name="FxNum">2</SetVariable></Template>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                 </Children>
               </WidgetGroup><!-- /EffectSlot 2 -->
@@ -60,11 +61,11 @@ Variables:
                 <SizePolicy>min,min</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:fx_parameter_row.xml"><SetVariable name="fxNum">3</SetVariable></Template>
+                  <Template src="skin:fx_parameter_row.xml"><SetVariable name="FxNum">3</SetVariable></Template>
                   <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-                  <Template src="skin:fx_toggle_selector.xml"><SetVariable name="fxNum">3</SetVariable></Template>
-                  <Template src="skin:fx_metaknob.xml"><SetVariable name="fxNum">3</SetVariable></Template>
-                  <Template src="skin:fx_focus_button.xml"><SetVariable name="fxNum">3</SetVariable></Template>
+                  <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">3</SetVariable></Template>
+                  <Template src="skin:fx_metaknob.xml"><SetVariable name="FxNum">3</SetVariable></Template>
+                  <Template src="skin:fx_focus_button.xml"><SetVariable name="FxNum">3</SetVariable></Template>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                 </Children>
               </WidgetGroup><!-- /EffectSlot 3 -->
@@ -76,30 +77,30 @@ Variables:
             <SizePolicy>min,min</SizePolicy>
             <Children>
               <WidgetGroup><!-- EffectSlot 1 -->
-                <ObjectName>EffectUnderlay_maxi_left_focus1</ObjectName>
+                <ObjectName>FxUnderlay_maxi_left_focus1</ObjectName>
                 <Size>1me,53f</Size>
                 <Connection>
-                  <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
+                  <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
                   <BindProperty>highlight</BindProperty>
                   <Transform><IsEqual>1</IsEqual></Transform>
                 </Connection>
               </WidgetGroup>
 
               <WidgetGroup><!-- EffectSlot 2 -->
-                <ObjectName>EffectUnderlay_maxi_left_focus2</ObjectName>
+                <ObjectName>FxUnderlay_maxi_left_focus2</ObjectName>
                 <Size>1me,99f</Size>
                 <Connection>
-                  <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
+                  <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
                   <BindProperty>highlight</BindProperty>
                   <Transform><IsEqual>2</IsEqual></Transform>
                 </Connection>
               </WidgetGroup>
 
               <WidgetGroup><!-- EffectSlot 3 -->
-                <ObjectName>EffectUnderlay_maxi_left_focus3</ObjectName>
+                <ObjectName>FxUnderlay_maxi_left_focus3</ObjectName>
                 <Size>1me,137f</Size>
                 <Connection>
-                  <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
+                  <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
                   <BindProperty>highlight</BindProperty>
                   <Transform><IsEqual>3</IsEqual></Transform>
                 </Connection>
@@ -108,7 +109,7 @@ Variables:
           </WidgetGroup><!-- /Underlays with focus -->
         </Children>
         <Connection>
-          <ConfigKey>[<Variable name="fxGroup"/>],show_focus</ConfigKey>
+          <ConfigKey>[<Variable name="FxGroup"/>],show_focus</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /EffectSlots + Underlays, with focus button -->
@@ -127,10 +128,10 @@ Variables:
                 <SizePolicy>min,min</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:fx_parameter_row.xml"><SetVariable name="fxNum">1</SetVariable></Template>
+                  <Template src="skin:fx_parameter_row.xml"><SetVariable name="FxNum">1</SetVariable></Template>
                   <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-                  <Template src="skin:fx_toggle_selector.xml"><SetVariable name="fxNum">1</SetVariable></Template>
-                  <Template src="skin:fx_metaknob.xml"><SetVariable name="fxNum">1</SetVariable></Template>
+                  <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">1</SetVariable></Template>
+                  <Template src="skin:fx_metaknob.xml"><SetVariable name="FxNum">1</SetVariable></Template>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                 </Children>
               </WidgetGroup><!-- /EffectSlot 1 -->
@@ -142,10 +143,10 @@ Variables:
                 <SizePolicy>min,min</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:fx_parameter_row.xml"><SetVariable name="fxNum">2</SetVariable></Template>
+                  <Template src="skin:fx_parameter_row.xml"><SetVariable name="FxNum">2</SetVariable></Template>
                   <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-                  <Template src="skin:fx_toggle_selector.xml"><SetVariable name="fxNum">2</SetVariable></Template>
-                  <Template src="skin:fx_metaknob.xml"><SetVariable name="fxNum">2</SetVariable></Template>
+                  <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">2</SetVariable></Template>
+                  <Template src="skin:fx_metaknob.xml"><SetVariable name="FxNum">2</SetVariable></Template>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                 </Children>
               </WidgetGroup><!-- /EffectSlot 2 -->
@@ -157,10 +158,10 @@ Variables:
                 <SizePolicy>min,min</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:fx_parameter_row.xml"><SetVariable name="fxNum">3</SetVariable></Template>
+                  <Template src="skin:fx_parameter_row.xml"><SetVariable name="FxNum">3</SetVariable></Template>
                   <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-                  <Template src="skin:fx_toggle_selector.xml"><SetVariable name="fxNum">3</SetVariable></Template>
-                  <Template src="skin:fx_metaknob.xml"><SetVariable name="fxNum">3</SetVariable></Template>
+                  <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">3</SetVariable></Template>
+                  <Template src="skin:fx_metaknob.xml"><SetVariable name="FxNum">3</SetVariable></Template>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                 </Children>
               </WidgetGroup><!-- /EffectSlot 3 -->
@@ -172,31 +173,31 @@ Variables:
             <SizePolicy>min,min</SizePolicy>
             <Children>
               <WidgetGroup><!-- EffectSlot 1 -->
-                <ObjectName>EffectUnderlay_maxi_left_noFocus1</ObjectName>
+                <ObjectName>FxUnderlay_maxi_left_noFocus1</ObjectName>
                 <Size>1me,53f</Size>
               </WidgetGroup>
 
               <WidgetGroup><!-- EffectSlot 2 -->
-                <ObjectName>EffectUnderlay_maxi_left_noFocus2</ObjectName>
+                <ObjectName>FxUnderlay_maxi_left_noFocus2</ObjectName>
                 <Size>1me,99f</Size>
               </WidgetGroup>
 
               <WidgetGroup><!-- EffectSlot 3 -->
-                <ObjectName>EffectUnderlay_maxi_left_noFocus3</ObjectName>
+                <ObjectName>FxUnderlay_maxi_left_noFocus3</ObjectName>
                 <Size>1me,137f</Size>
               </WidgetGroup>
             </Children>
           </WidgetGroup><!-- /Underlays, no focus -->
         </Children>
         <Connection>
-          <ConfigKey>[<Variable name="fxGroup"/>],show_focus</ConfigKey>
+          <ConfigKey>[<Variable name="FxGroup"/>],show_focus</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /EffectSlots + Underlays, no focus -->
 
       <WidgetGroup><!-- EffectUnitMixer + Master, Headphone -->
-        <ObjectName>EffectUnitControlsLeft</ObjectName>
+        <ObjectName>FxUnitControlsLeft</ObjectName>
         <Layout>vertical</Layout>
         <Size>44f,1me</Size>
         <Children>
@@ -204,18 +205,18 @@ Variables:
             <SetVariable name="ObjectName">FXSamplersMiniMaxiButton</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
             <SetVariable name="Size">22me,14f</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[<Variable name="fxGroup"/>],show_parameters</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[<Variable name="FxGroup"/>],show_parameters</SetVariable>
           </Template>
 
           <Label>
-            <ObjectName>EffectUnitLabel</ObjectName>
+            <ObjectName>FxUnitLabel</ObjectName>
             <Size>44f,18f</Size>
-            <Text>FX<Variable name="fxUnit"/></Text>
+            <Text>FX<Variable name="FxUnit"/></Text>
             <Alignment>center</Alignment>
           </Label>
 
           <WidgetGroup><!-- EffectUnitMixer -->
-            <ObjectName>EffectUnitMixerLeft</ObjectName>
+            <ObjectName>FxUnitMixerLeft</ObjectName>
             <Layout>vertical</Layout>
             <Size>44f,1me</Size>
             <Children>
@@ -231,7 +232,7 @@ Variables:
                     <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
                     <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
                     <SetVariable name="Size">32f,32f</SetVariable>
-                    <SetVariable name="group">[<Variable name="fxGroup"/>]</SetVariable>
+                    <SetVariable name="group">[<Variable name="FxGroup"/>]</SetVariable>
                     <SetVariable name="ConfigKey">mix</SetVariable>
                     <SetVariable name="Color">red</SetVariable>
                   </Template>
@@ -246,7 +247,7 @@ Variables:
                         <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
                         <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
                         <SetVariable name="Size">32f,32f</SetVariable>
-                        <SetVariable name="group">[<Variable name="fxGroup"/>]</SetVariable>
+                        <SetVariable name="group">[<Variable name="FxGroup"/>]</SetVariable>
                         <SetVariable name="ConfigKey">super1</SetVariable>
                         <SetVariable name="Color">blue</SetVariable>
                       </Template>

@@ -4,22 +4,22 @@ Description:
   A 'button' underneath the knob turns grey when EQ range is killed.
 Variables:
   ObjectName  : name of parent container, css for individual margin
-  ToolTip     :
-  Size        : actual knob size
   PotiMinAngle: -135°, see skin.xml
   PotiMaxAngle: 135°, see skin.xml
-  Color       : knob's notch colour
   group       : affected group
   parameter   : 1, 2, 3 (low, mid, high)
 -->
 <Template>
-  <SetVariable name="EqualizerEffect">[EqualizerRack1_<Variable name="group"/>_Effect1]</SetVariable>
-  <WidgetGroup><!-- EQ knob + Kill button -->
-    <ObjectName>EQKnobLeft</ObjectName>
+  <SetVariable name="FxRack">EqualizerRack1</SetVariable>
+  <SetVariable name="FxNum">1</SetVariable>
+  <SetVariable name="EQEffect">[EqualizerRack1_<Variable name="group"/>_Effect1]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>EQKnobContainerLeft</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
-      <WidgetGroup><!-- EQ knob + Kill indicator underneath -->
+      <!-- EQ knob + Kill indicator underneath -->
+      <WidgetGroup>
         <SizePolicy>min,min</SizePolicy>
         <Layout>stacked</Layout>
         <Children>
@@ -29,23 +29,24 @@ Variables:
             <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
             <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
             <Connection>
-              <ConfigKey><Variable name="EqualizerEffect"/>,parameter<Variable name="parameter"/></ConfigKey>
+              <ConfigKey><Variable name="EQEffect"/>,parameter<Variable name="parameter"/></ConfigKey>
             </Connection>
           </EffectParameterKnobComposed>
-          <Template src="skin:button_2state.xml">
-            <SetVariable name="ObjectName">EQKillButtonUnderlayLeft</SetVariable>
+
+          <Template src="skin:fx_button.xml">
+            <SetVariable name="ObjectName">EQKillUnderlayLeft</SetVariable>
             <SetVariable name="Size">30f,30f</SetVariable>
-            <SetVariable name="ConfigKey"><Variable name="EqualizerEffect"/>,button_parameter<Variable name="parameter"/></SetVariable>
+            <SetVariable name="parameter">button_parameter<Variable name="parameter"/></SetVariable>
           </Template>
         </Children>
-      </WidgetGroup><!-- /EQ knob + Kill indicator underneath -->
+      </WidgetGroup>
 
-      <Template src="skin:button_2state.xml">
+      <!-- Kill button -->
+      <Template src="skin:fx_button.xml">
         <SetVariable name="ObjectName">EQKillButton</SetVariable>
-        <SetVariable name="TooltipId"><Variable name="TooltipId"/>Kill</SetVariable>
         <SetVariable name="Size">12f,30f</SetVariable>
-        <SetVariable name="ConfigKey"><Variable name="EqualizerEffect"/>,button_parameter<Variable name="parameter"/></SetVariable>
-      </Template><!-- Kill button -->
+        <SetVariable name="parameter">button_parameter<Variable name="parameter"/></SetVariable>
+      </Template>
     </Children>
-  </WidgetGroup><!-- /EQ knob + Kill button -->
+  </WidgetGroup>
 </Template>

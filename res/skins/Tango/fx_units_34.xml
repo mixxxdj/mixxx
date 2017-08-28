@@ -4,6 +4,8 @@ Description:
   Units are pushed apart by spacers, see fx_units_spacer.xml.
 -->
 <Template>
+  <SetVariable name="FxRack">EffectRack1</SetVariable>
+  <SetVariable name="FxRackNum">1</SetVariable>
   <WidgetGroup>
     <SizePolicy>me,max</SizePolicy>
     <Layout>horizontal</Layout>
@@ -14,9 +16,7 @@ Description:
         <SizePolicy>min,max</SizePolicy>
         <Children>
           <Template src="skin:fx_unit_left.xml">
-            <SetVariable name="fxRack">1</SetVariable>
-            <SetVariable name="fxUnit">3</SetVariable>
-            <SetVariable name="fxGroup">EffectRack1_EffectUnit3</SetVariable>
+            <SetVariable name="FxUnit">3</SetVariable>
           </Template>
         </Children>
         <Connection>
@@ -30,9 +30,7 @@ Description:
         <SizePolicy>min,me</SizePolicy>
         <Children>
           <Template src="skin:fx_unit_left_mini.xml">
-            <SetVariable name="fxRack">1</SetVariable>
-            <SetVariable name="fxUnit">3</SetVariable>
-            <SetVariable name="fxGroup">EffectRack1_EffectUnit3</SetVariable>
+            <SetVariable name="FxUnit">3</SetVariable>
           </Template>
           <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
         </Children>
@@ -50,9 +48,7 @@ Description:
         <SizePolicy>min,max</SizePolicy>
         <Children>
           <Template src="skin:fx_unit_right.xml">
-            <SetVariable name="fxRack">1</SetVariable>
-            <SetVariable name="fxUnit">4</SetVariable>
-            <SetVariable name="fxGroup">EffectRack1_EffectUnit4</SetVariable>
+            <SetVariable name="FxUnit">4</SetVariable>
           </Template>
         </Children>
         <Connection>
@@ -66,9 +62,7 @@ Description:
         <SizePolicy>min,me</SizePolicy>
         <Children>
           <Template src="skin:fx_unit_right_mini.xml">
-            <SetVariable name="fxRack">1</SetVariable>
-            <SetVariable name="fxUnit">4</SetVariable>
-            <SetVariable name="fxGroup">EffectRack1_EffectUnit4</SetVariable>
+            <SetVariable name="FxUnit">4</SetVariable>
           </Template>
           <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
         </Children>

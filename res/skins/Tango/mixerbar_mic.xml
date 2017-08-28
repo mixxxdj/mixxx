@@ -106,14 +106,12 @@ Variables:
             <Children>
               <Template src="skin:fx_assign_button.xml">
                 <SetVariable name="Size">26f,15f</SetVariable>
-                <SetVariable name="labelText">FX1</SetVariable>
-                <SetVariable name="fxUnit">1</SetVariable>
+                <SetVariable name="FxUnit">1</SetVariable>
               </Template>
                 <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
               <Template src="skin:fx_assign_button.xml">
                 <SetVariable name="Size">26f,15f</SetVariable>
-                <SetVariable name="labelText">FX2</SetVariable>
-                <SetVariable name="fxUnit">2</SetVariable>
+                <SetVariable name="FxUnit">2</SetVariable>
               </Template>
                 <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
             </Children>
@@ -127,14 +125,12 @@ Variables:
             <Children>
               <Template src="skin:fx_assign_button.xml">
                 <SetVariable name="Size">26f,15f</SetVariable>
-                <SetVariable name="labelText">FX3</SetVariable>
-                <SetVariable name="fxUnit">3</SetVariable>
+                <SetVariable name="FxUnit">3</SetVariable>
               </Template>
                 <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
               <Template src="skin:fx_assign_button.xml">
                 <SetVariable name="Size">26f,15f</SetVariable>
-                <SetVariable name="labelText">FX</SetVariable>
-                <SetVariable name="fxUnit">4</SetVariable>
+                <SetVariable name="FxUnit">4</SetVariable>
               </Template>
                 <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
             </Children>

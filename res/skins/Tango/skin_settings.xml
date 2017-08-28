@@ -459,7 +459,7 @@ Description:
               <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      [ 2 &#9664;  4 ]  Effect Units</SetVariable>
                 <SetVariable name="state_1_text">      [ 2  &#9654; 4 ]  Effect Units</SetVariable>
-                <SetVariable name="Setting">[Tango],2or4_fxUnits</SetVariable>
+                <SetVariable name="Setting">[Tango],2or4_FxUnits</SetVariable>
               </Template>
 
               <Template src="skin:skin_settings_button_2state.xml">
