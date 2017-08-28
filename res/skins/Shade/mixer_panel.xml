@@ -360,7 +360,7 @@
 						**********************************************
 						-->
 						<PushButton>
-							<TooltipId></TooltipId>
+							<TooltipId>EffectUnit_headphones_enabled</TooltipId>
 							<Style></Style>
 							<NumberStates>2</NumberStates>
 							<State>
@@ -381,7 +381,7 @@
 						</PushButton>
 
 						<PushButton>
-							<TooltipId></TooltipId>
+							<TooltipId>EffectUnit_headphones_enabled</TooltipId>
 							<Style></Style>
 							<NumberStates>2</NumberStates>
 							<State>
@@ -699,7 +699,7 @@
 						</Knob>
 
 						<Knob>
-							<TooltipId></TooltipId>
+							<TooltipId>EffectUnit_mix</TooltipId>
 							<Style></Style>
 							<NumberStates>63</NumberStates>
 							<Path>knobs/knob_rotary_s%1.png</Path>
@@ -709,7 +709,7 @@
 							</Connection>
 						</Knob>
 						<Knob>
-							<TooltipId></TooltipId>
+							<TooltipId>EffectUnit_super1</TooltipId>
 							<Style></Style>
 							<NumberStates>63</NumberStates>
 							<Path>knobs/knob_rotary_s%1.png</Path>
@@ -719,7 +719,7 @@
 							</Connection>
 						</Knob>
 						<Knob>
-							<TooltipId></TooltipId>
+							<TooltipId>EffectUnit_mix</TooltipId>
 							<Style></Style>
 							<NumberStates>63</NumberStates>
 							<Path>knobs/knob_rotary_s%1.png</Path>
@@ -729,7 +729,7 @@
 							</Connection>
 						</Knob>
 						<Knob>
-							<TooltipId></TooltipId>
+							<TooltipId>EffectUnit_mix</TooltipId>
 							<Style></Style>
 							<NumberStates>63</NumberStates>
 							<Path>knobs/knob_rotary_s%1.png</Path>
