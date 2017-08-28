@@ -60,7 +60,6 @@ Description:
           <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="TooltipId"></SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">20f,20f</SetVariable>
             <SetVariable name="state_0_unpressed">hotcues_off.svg</SetVariable>

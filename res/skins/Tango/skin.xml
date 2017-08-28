@@ -394,7 +394,7 @@
                           </Connection>
                         </WidgetGroup>
 
-                        <!--Template src="skin:fx_units_12.xml"/-->
+                        <Template src="skin:fx_units_12.xml"/>
 
                         <WidgetGroup>
                           <Size>1me,5f</Size>
@@ -420,7 +420,7 @@
                           </Connection>
                         </WidgetGroup>
 
-                        <!--Template src="skin:fx_units_34.xml"/-->
+                        <Template src="skin:fx_units_34.xml"/>
 
                       </Children>
                       <Connection>

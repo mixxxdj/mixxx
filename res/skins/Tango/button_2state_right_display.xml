@@ -11,7 +11,7 @@ Variables:
   state_X_unpressed : background graphic for unpressed state X
   Align             : alignment of text
   ConfigKey         : left-click control
-  ConfigKeyRight    : persistent left-click control
+  ConfigKeyRight    : right-click control
   ConfigKeyDisp     : display control
 -->
 <Template>
