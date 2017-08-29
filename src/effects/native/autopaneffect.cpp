@@ -120,10 +120,9 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, AutoPanGroupStat
     gs.m_dPreviousPeriod = period;
 
 
-    if (gs.time > period || enableState == EffectProcessor::ENABLING) {
+    if (gs.time >= period || enableState == EffectProcessor::ENABLING) {
         gs.time = 0;
     }
-
 
     // Normally, the position goes from 0 to 1 linearly. Here we make steps at
     // 0.25 and 0.75 to have the sound fully on the right or fully on the left.
@@ -180,10 +179,9 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, AutoPanGroupStat
         pOutput[i] *= gs.frac * lawCoef;
         pOutput[i+1] *= (1.0f - gs.frac) * lawCoef;
 
-        // The time shouldn't be paused if the position does not have its
-        // expected value due to ramping
-        if (enableState != EffectProcessor::ENABLING || gs.frac.ramped) {
-            gs.time++;
+        gs.time++;
+        if (gs.time >= period) {
+            gs.time = 0;
         }
     }
 }
