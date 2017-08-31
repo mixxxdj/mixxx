@@ -57,6 +57,7 @@
       <attribute persist="true" config_key="[Tango],sampler_fx_buttons">1</attribute>
       <attribute persist="true" config_key="[Tango],micaux_fx_buttons">1</attribute>
       <attribute persist="true" config_key="[Tango],beatgrid_buttons">0</attribute>
+      <attribute persist="true" config_key="[Tango],colorLogo">0</attribute>
       <attribute persist="true" config_key="[Tango],channel_mixer">1</attribute>
       <attribute persist="true" config_key="[Tango],crossfader">1</attribute>
       <attribute persist="true" config_key="[Tango],deck_controls">1</attribute>
