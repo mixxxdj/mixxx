@@ -45,8 +45,10 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
     updateModel();
     connectionList->setModel(m_pSettingsModel);
 
-    connect(connectionList, SIGNAL(clicked(const QModelIndex&)),
-            this, SLOT(profileListItemSelected(const QModelIndex&)));
+    connect(connectionList->selectionModel(),
+            SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
+            this,
+            SLOT(profileListItemSelected(const QModelIndex&, const QModelIndex&)));
     connect(btnRemoveConnection, SIGNAL(clicked(bool)),
             this, SLOT(btnRemoveConnectionClicked()));
     connect(btnRenameConnection, SIGNAL(clicked(bool)),
@@ -130,7 +132,6 @@ void DlgPrefBroadcast::slotUpdate() {
     // Force select an item to have the current selection
     // set to a profile pointer belonging to the model
     connectionList->selectRow(0);
-    profileListItemSelected(m_pSettingsModel->index(0, kColumnName));
 
     // Don't let user modify information if
     // sending is enabled.
@@ -250,10 +251,12 @@ void DlgPrefBroadcast::btnCreateConnectionClicked() {
     selectConnectionRowByName(newProfile->getProfileName());
 }
 
-void DlgPrefBroadcast::profileListItemSelected(const QModelIndex& index) {
+void DlgPrefBroadcast::profileListItemSelected(const QModelIndex& selected,
+        const QModelIndex& deselected) {
+    Q_UNUSED(deselected);
     setValuesToProfile(m_pProfileListSelection);
 
-    QString selectedName = m_pSettingsModel->data(index,
+    QString selectedName = m_pSettingsModel->data(selected,
             Qt::DisplayRole).toString();
     BroadcastProfilePtr profile =
             m_pSettingsModel->getProfileByName(selectedName);
@@ -284,7 +287,6 @@ void DlgPrefBroadcast::selectConnectionRow(int row) {
     }
 
     connectionList->selectRow(row);
-    profileListItemSelected(m_pSettingsModel->index(row, kColumnName));
 }
 
 void DlgPrefBroadcast::selectConnectionRowByName(QString rowName) {
@@ -490,7 +492,6 @@ void DlgPrefBroadcast::btnRemoveConnectionClicked() {
 
         if(response == QMessageBox::Yes) {
             m_pSettingsModel->deleteProfileFromModel(m_pProfileListSelection);
-            selectConnectionRow(0);
         }
     }
 }
